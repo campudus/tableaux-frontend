@@ -7,18 +7,24 @@ var Row = React.createClass({
   mixins : [PureRenderMixin],
 
   propTypes : {
-    tableaux : TableauxStateType,
-    row : React.PropTypes.number.isRequired
+    cells : React.PropTypes.arrayOf(React.PropTypes.shape({
+      kind : React.PropTypes.string.isRequired,
+      content : React.PropTypes.any,
+      editing : React.PropTypes.bool
+    })).isRequired,
+    row : React.PropTypes.number.isRequired,
+    save : React.PropTypes.func.isRequired
   },
 
   render : function () {
     var rowId = this.props.row;
-    var tableaux = this.props.tableaux;
+    var cells = this.props.cells;
+    var saveFn = this.props.save;
 
     return (
       <tr>
-      {tableaux[rowId].map(function (data, columnId) {
-        return (<Cell tableaux={tableaux} row={rowId} column={columnId} />);
+      {cells.map(function (data, columnId) {
+        return (<Cell save={saveFn} cell={data} row={rowId} column={columnId} />);
       })}
       </tr>
     );

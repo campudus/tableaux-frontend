@@ -34,6 +34,7 @@
     "gulp-plumber": "^1.0.0",
     "gulp-replace": "^0.5.3",
     "gulp-shell": "^0.4.0",
+    "immutable": "^3.6.4",
     "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
     "karma-browserify": "^4.0.0",

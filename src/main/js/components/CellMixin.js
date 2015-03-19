@@ -1,24 +1,39 @@
 var React = require('react');
+var tableaux = require('../tableaux.js');
 
 var CellMixin = {
   propTypes : {
-    edit : React.PropTypes.bool,
+    cell : React.PropTypes.shape({
+      kind : React.PropTypes.string.isRequired,
+      content : React.PropTypes.any
+    }).isRequired,
     row : React.PropTypes.number.isRequired,
-    column : React.PropTypes.number.isRequired
+    column : React.PropTypes.number.isRequired,
+    save : React.PropTypes.func.isRequired
   },
 
-  startEditMode : function() {
-    this.props.edit = true;
-    console.log('clicked, edit=' + this.props.edit);
+  getInitialState : function () {
+    return {editing : false, value : this.props.cell.content};
   },
 
-  stopEditMode : function() {
-    this.props.edit = false;
-    console.log('blurred, edit=' + this.props.edit);
+  startEditMode : function () {
+    console.log('start edit mode');
+    this.setState({editing : true});
+    this.render();
+  },
+
+  stopEditMode : function () {
+    console.log('stop edit mode');
+    var value = this.refs.input.getDOMNode().value;
+    this.props.save(this.props.row, this.props.column, value);
+    this.setState({value : value, editing : false});
+    this.render();
   },
 
   render : function () {
-    if (this.props.edit) {
+    console.log('rendering cell');
+    console.log(this.props.cell);
+    if (this.state.editing) {
       return this.renderEditing();
     } else {
       return this.renderRegular();

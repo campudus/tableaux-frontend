@@ -8,10 +8,4 @@ var tableaux = [
 ];
 
 
-module.exports = {
-  data : tableaux,
-  reactType : React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.shape({
-    kind : React.PropTypes.string.isRequired,
-    content : React.PropTypes.any
-  }))).isRequired
-};
+module.exports = tableaux;
