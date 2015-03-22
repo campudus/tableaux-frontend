@@ -15,13 +15,23 @@ var Tableaux = React.createClass({
     }))).isRequired
   },
 
-  save : function(rowId, columnId) {
-    return function(content) {
+  save : function (rowId, columnId) {
+    return function (content) {
       console.log('saving cell:');
-      console.log(rowId);
-      console.log(columnId);
+      console.log(tableaux[rowId][columnId].content);
+      console.log('to');
       console.log(content);
       tableaux[rowId][columnId].content = content;
+    };
+  },
+
+  getValue : function (rowId, columnId) {
+    return tableaux[rowId][columnId].content;
+  },
+
+  getRow : function (rowId) {
+    return function () {
+      return tableaux[rowId];
     };
   },
 
@@ -29,7 +39,8 @@ var Tableaux = React.createClass({
     console.log('rendering Tableaux');
     console.log(tableaux);
     var saveFn = this.save;
-    console.log(saveFn);
+    var getRowFn = this.getRow;
+    var getValueFn = this.getValue;
 
     return (
       <table>
@@ -39,7 +50,7 @@ var Tableaux = React.createClass({
           console.log(row);
           return (
             <tr>
-              <Row save={saveFn} cells={row} row={rowId} />
+              <Row save={saveFn} getRow={getRowFn} getValue={getValueFn} cells={row} row={rowId} />
             </tr>
           );
         })}

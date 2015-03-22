@@ -7,24 +7,23 @@ var Row = React.createClass({
   mixins : [PureRenderMixin],
 
   propTypes : {
-    cells : React.PropTypes.arrayOf(React.PropTypes.shape({
-      kind : React.PropTypes.string.isRequired,
-      content : React.PropTypes.any,
-      editing : React.PropTypes.bool
-    })).isRequired,
+    kind : React.PropTypes.string.isRequired,
     row : React.PropTypes.number.isRequired,
-    save : React.PropTypes.func.isRequired
+    save : React.PropTypes.func.isRequired,
+    getRow : React.PropTypes.func.isRequired,
+    getValue : React.PropTypes.func.isRequired
   },
 
   render : function () {
     var rowId = this.props.row;
-    var cells = this.props.cells;
     var saveFn = this.props.save;
+    var getRowFn = this.props.getRow(rowId);
+    var getValueFn = this.props.getValue;
 
     return (
       <tr>
-      {cells.map(function (data, columnId) {
-        return (<Cell save={saveFn} cell={data} row={rowId} column={columnId} />);
+      {getRowFn().map(function (data, columnId) {
+        return (<Cell save={saveFn} getValue={getValueFn} row={rowId} column={columnId} />);
       })}
       </tr>
     );
