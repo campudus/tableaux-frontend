@@ -26,7 +26,6 @@ var Cell = React.createClass({
     console.log('save to value=' + value);
     this.props.save(this.props.row, this.props.column)(value);
     this.setState({editing : false});
-    this.render();
   },
 
   render : function () {

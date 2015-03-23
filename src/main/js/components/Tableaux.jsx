@@ -60,4 +60,4 @@ var Tableaux = React.createClass({
   }
 });
 
-React.render(<Tableaux />, document.getElementById('tableaux'));
+module.exports = Tableaux;
