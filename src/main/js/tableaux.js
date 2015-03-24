@@ -3,9 +3,9 @@ var $ = require('jQuery');
 
 var tableaux = {
   columns : [
-    {id : 1, name : 'first-column', kind : 'number'},
-    {id : 2, name : 'second column', kind : 'number'},
-    {id : 3, name : 'third col', kind : 'string'}
+    {id : 0, name : 'first-column', kind : 'number'},
+    {id : 1, name : 'second column', kind : 'number'},
+    {id : 2, name : 'third col', kind : 'string'}
   ],
   rows : [
     [11, 12, 'a'],
