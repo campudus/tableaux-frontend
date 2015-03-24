@@ -1,56 +1,52 @@
 var React = require('react');
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
-var tableaux = require('../tableaux.js');
 var Row = require('./Row.jsx');
 
 var Tableaux = React.createClass({
   mixins : [PureRenderMixin],
 
   propTypes : {
-    tableaux : React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.shape({
-      kind : React.PropTypes.string.isRequired,
-      content : React.PropTypes.any,
-      editing : React.PropTypes.bool
-    }))).isRequired
+    id : React.PropTypes.number.isRequired,
+    tableaux : React.PropTypes.shape({
+      get : React.PropTypes.func.isRequired,
+      put : React.PropTypes.func.isRequired,
+      getColumns : React.PropTypes.func.isRequired
+    }).isRequired
   },
 
   save : function (rowId, columnId) {
+    var tableaux = this.props.tableaux;
     return function (content) {
-      console.log('saving cell:');
-      console.log(tableaux[rowId][columnId].content);
-      console.log('to');
-      console.log(content);
-      tableaux[rowId][columnId].content = content;
+      tableaux.put(rowId, columnId, content);
     };
   },
 
   getValue : function (rowId, columnId) {
-    return tableaux[rowId][columnId].content;
+    return this.props.tableaux.get(rowId, columnId);
   },
 
-  getRow : function (rowId) {
-    return function () {
-      return tableaux[rowId];
-    };
+  getColumns : function () {
+    return this.props.tableaux.getColumns();
   },
 
   render : function () {
     console.log('rendering Tableaux');
-    console.log(tableaux);
+    var tableaux = this.props.tableaux;
     var saveFn = this.save;
-    var getRowFn = this.getRow;
+    var getColumnsFn = this.getColumns;
     var getValueFn = this.getValue;
+    console.log(tableaux);
 
     return (
       <table>
         <tbody>
-        {tableaux.map(function (row, rowId) {
+        {tableaux.getColumns().map(function (row) {
           console.log('rendering rows in table');
           console.log(row);
           return (
             <tr>
-              <Row save={saveFn} getRow={getRowFn} getValue={getValueFn} cells={row} row={rowId} />
+              <Row save={saveFn} getColumns={getColumnsFn} getValue={getValueFn} row={row.id} />
             </tr>
           );
         })}

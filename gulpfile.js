@@ -49,7 +49,13 @@ function scriptCompile() {
   return gulp.src(['src/main/js/app.js'])
     .pipe(plumber())
     .pipe(browserify({
-      transform : [reactify]
+      transform : [reactify],
+      shim : {
+        'jQuery' : {
+          'path' : './src/vendor/jquery-1.11.0.js',
+          'exports' : '$'
+        }
+      }
     }))
     .pipe(gulp.dest('out/js/'));
 }

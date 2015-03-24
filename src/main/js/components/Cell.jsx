@@ -29,7 +29,7 @@ var Cell = React.createClass({
   },
 
   render : function () {
-    console.log('rendering cell');
+    console.log('rendering cell['+this.props.row+','+this.props.column+']');
     if (this.state.editing) {
       return this.renderEditing();
     } else {
