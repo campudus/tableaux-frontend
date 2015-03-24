@@ -1,5 +1,8 @@
 var React = require('react');
 var Tableaux = require('./components/Tableaux.jsx');
-var tableaux = require('./tableaux.js');
+var store = require('./tableaux.js');
 
-React.render(<Tableaux tableaux={tableaux} />, document.getElementById('tableaux'));
+store.onLoadRegister(function () {
+  console.log('loaded tableaux');
+  React.render(<Tableaux tableaux={store} />, document.getElementById('tableaux'));
+});

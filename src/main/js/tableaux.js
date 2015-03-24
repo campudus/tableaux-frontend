@@ -1,7 +1,6 @@
-var React = require('react');
 var $ = require('jQuery');
 
-var tableaux = {
+var currentTable = {
   columns : [
     {id : 0, name : 'first-column', kind : 'number'},
     {id : 1, name : 'second column', kind : 'number'},
@@ -15,24 +14,59 @@ var tableaux = {
   ]
 };
 
-console.log('getting /tables');
-//$.getJSON('http://localhost:8181/tables')
-//  .done(function(result) {
-//    console.log('result of /tables:');
-//    console.log(result);
-//  });
+var tables = [];
+var loaded = false;
+var waitingForLoadEvent = [];
+
+$.getJSON('/api/tables')
+  .done(function (result) {
+    console.log('read /api/tables');
+    tables = result.tables;
+    console.log(tables);
+    switchTable(tables[0].id);
+  })
+  .error(function (err) {
+    console.log('got an error getting api stuff:');
+    console.log(err);
+  });
+
+var tableaux = {
+  get : get,
+  put : put,
+  getColumns : getColumns,
+  getTables : getTables,
+  getCurrentTable : getCurrentTable,
+  switchTable : switchTable,
+  onLoadRegister : onLoadRegister
+};
+
+function switchTable(id) {
+  $.getJSON('/api/tables/' + id)
+    .done(function (table) {
+      currentTable = table;
+      doneLoading();
+    });
+}
 
 function get(row, column) {
   console.log('get(' + row + ',' + column + ')');
-  return tableaux.rows[row][column];
+  console.log('currentTable:');
+  console.log(currentTable);
+  var rows = currentTable.rows.filter(function (r) {
+    return r.id === row;
+  })[0];
+  return rows.values[column];
 }
 
 function put(row, column, value) {
-  tableaux.rows[row][column] = value;
+  var theRow = currentTable.rows.filter(function (r) {
+    return r.id === row;
+  })[0];
+  theRow.values[column] = value;
 }
 
 function getColumns() {
-  return tableaux.columns.map(function (elem) {
+  return currentTable.columns.map(function (elem) {
     return {
       kind : elem.kind,
       id : elem.id
@@ -40,8 +74,31 @@ function getColumns() {
   });
 }
 
-module.exports = {
-  get : get,
-  put : put,
-  getColumns : getColumns
-};
+function getTables() {
+  return tables;
+}
+
+function doneLoading() {
+  loaded = true;
+  waitingForLoadEvent.forEach(function (fn) {
+    console.log('calling queued loading function');
+    fn();
+  });
+  waitingForLoadEvent = [];
+}
+
+function onLoadRegister(fn) {
+  console.log('registering function for load event');
+  console.log(fn);
+  if (loaded) {
+    fn();
+  } else {
+    waitingForLoadEvent.push(fn);
+  }
+}
+
+function getCurrentTable() {
+  return currentTable;
+}
+
+module.exports = tableaux;

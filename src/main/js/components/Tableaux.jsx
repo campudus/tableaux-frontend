@@ -7,7 +7,6 @@ var Tableaux = React.createClass({
   mixins : [PureRenderMixin],
 
   propTypes : {
-    id : React.PropTypes.number.isRequired,
     tableaux : React.PropTypes.shape({
       get : React.PropTypes.func.isRequired,
       put : React.PropTypes.func.isRequired,
@@ -41,7 +40,7 @@ var Tableaux = React.createClass({
     return (
       <table>
         <tbody>
-        {tableaux.getColumns().map(function (row) {
+        {tableaux.getCurrentTable().rows.map(function (row) {
           console.log('rendering rows in table');
           console.log(row);
           return (

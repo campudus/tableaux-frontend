@@ -12,7 +12,8 @@ var replace = require('gulp-replace');
 var karma = require('gulp-karma');
 var shell = require('gulp-shell');
 var reactify = require('reactify');
-
+var url = require('url');
+var proxy = require('proxy-middleware');
 
 gulp.task('sass', sassCompile);
 gulp.task('assets', assetCopy);
@@ -77,9 +78,13 @@ function test() {
 }
 
 function server() {
+  var proxyOptions = url.parse('http://localhost:8181/');
+  proxyOptions.route = '/api';
+
   browserSync({
     server : {
-      baseDir : 'out'
+      baseDir : 'out',
+      middleware: [proxy(proxyOptions)]
     }
   });
 

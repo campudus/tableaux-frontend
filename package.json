@@ -36,11 +36,13 @@
     "gulp-shell": "^0.4.0",
     "immutable": "^3.6.4",
     "jasmine-core": "^2.2.0",
-    "karma": "^0.12.31",
+    "karma": "^0.12.32",
     "karma-browserify": "^4.0.0",
     "karma-chrome-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.5",
+    "proxy-middleware": "^0.11.0",
     "react": "^0.13.1",
-    "reactify": "^1.1.0"
+    "reactify": "^1.1.0",
+    "url": "^0.10.3"
   }
 }
