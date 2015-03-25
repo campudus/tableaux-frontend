@@ -23,7 +23,7 @@ $.getJSON('/api/tables')
     console.log('read /api/tables');
     tables = result.tables;
     console.log(tables);
-    switchTable(tables[0].id);
+    switchTable(tables[0].id, doneLoading);
   })
   .error(function (err) {
     console.log('got an error getting api stuff:');
@@ -40,12 +40,12 @@ var tableaux = {
   onLoadRegister : onLoadRegister
 };
 
-function switchTable(id) {
+function switchTable(id, done) {
   console.log('switching to table ' + id);
   $.getJSON('/api/tables/' + id)
     .done(function (table) {
       currentTable = table;
-      doneLoading();
+      done();
     });
 }
 

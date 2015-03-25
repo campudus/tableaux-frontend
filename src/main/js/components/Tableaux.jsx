@@ -15,6 +15,10 @@ var Tableaux = React.createClass({
     }).isRequired
   },
 
+  getInitialState : function () {
+    return {loading : false};
+  },
+
   save : function (rowId, columnId) {
     var tableaux = this.props.tableaux;
     return function (content) {
@@ -31,7 +35,11 @@ var Tableaux = React.createClass({
   },
 
   switchTable : function (id) {
-    this.props.tableaux.switchTable(id);
+    var that = this;
+    this.props.tableaux.switchTable(id, function () {
+      that.setState({loading : false});
+    });
+    this.setState({loading : true});
   },
 
   render : function () {
@@ -43,11 +51,19 @@ var Tableaux = React.createClass({
     var switchFn = this.switchTable;
     console.log(tableaux);
 
-    return (
-      <div>
-        <TableSwitcher tables={tableaux.getTables()} switchFn={switchFn} />
-        <table>
-          <tbody>
+    if (this.state.loading) {
+      return (
+        <div>
+          <TableSwitcher tables={tableaux.getTables()} switchFn={switchFn} />
+          <div class="loader">Loading...</div>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <TableSwitcher tables={tableaux.getTables()} switchFn={switchFn} />
+          <table>
+            <tbody>
         {tableaux.getCurrentTable().rows.map(function (row) {
           console.log('rendering rows in table');
           console.log(row);
@@ -57,10 +73,11 @@ var Tableaux = React.createClass({
             </tr>
           );
         })}
-          </tbody>
-        </table>
-      </div>
-    );
+            </tbody>
+          </table>
+        </div>
+      );
+    }
   }
 });
 
