@@ -2,6 +2,7 @@ var React = require('react');
 var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 
 var Row = require('./Row.jsx');
+var TableSwitcher = require('./TableSwitcher.jsx');
 
 var Tableaux = React.createClass({
   mixins : [PureRenderMixin],
@@ -29,17 +30,24 @@ var Tableaux = React.createClass({
     return this.props.tableaux.getColumns();
   },
 
+  switchTable : function (id) {
+    this.props.tableaux.switchTable(id);
+  },
+
   render : function () {
     console.log('rendering Tableaux');
     var tableaux = this.props.tableaux;
     var saveFn = this.save;
     var getColumnsFn = this.getColumns;
     var getValueFn = this.getValue;
+    var switchFn = this.switchTable;
     console.log(tableaux);
 
     return (
-      <table>
-        <tbody>
+      <div>
+        <TableSwitcher tables={tableaux.getTables()} switchFn={switchFn} />
+        <table>
+          <tbody>
         {tableaux.getCurrentTable().rows.map(function (row) {
           console.log('rendering rows in table');
           console.log(row);
@@ -49,8 +57,9 @@ var Tableaux = React.createClass({
             </tr>
           );
         })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     );
   }
 });

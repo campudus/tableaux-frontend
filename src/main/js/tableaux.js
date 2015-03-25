@@ -41,6 +41,7 @@ var tableaux = {
 };
 
 function switchTable(id) {
+  console.log('switching to table ' + id);
   $.getJSON('/api/tables/' + id)
     .done(function (table) {
       currentTable = table;
