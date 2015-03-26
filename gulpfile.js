@@ -29,7 +29,7 @@ gulp.task('default', ['build']);
 
 
 function sassCompile() {
-  return gulp.src('src/main/scss/style.scss')
+  return gulp.src('src/main/scss/main.scss')
     .pipe(plumber({
       errorHandler : function (error) {
         console.log(error.message);

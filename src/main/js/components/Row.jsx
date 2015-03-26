@@ -21,8 +21,8 @@ var Row = React.createClass({
 
     return (
       <tr>
-      {getColumnsFn().map(function (column) {
-        return (<Cell save={saveFn} getValue={getValueFn} kind={column.kind} row={rowId} column={column.id} />);
+      {getColumnsFn().map(function (column, id) {
+        return (<Cell save={saveFn} getValue={getValueFn} kind={column.kind} row={rowId} column={id} />);
       })}
       </tr>
     );

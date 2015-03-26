@@ -54,15 +54,24 @@ var Tableaux = React.createClass({
     if (this.state.loading) {
       return (
         <div>
-          <TableSwitcher tables={tableaux.getTables()} switchFn={switchFn} />
+          <TableSwitcher tables={tableaux.getTables()} selected={tableaux.getCurrentTable()} switchFn={switchFn} />
           <div class="loader">Loading...</div>
         </div>
       );
     } else {
       return (
         <div>
-          <TableSwitcher tables={tableaux.getTables()} switchFn={switchFn} />
-          <table>
+          <TableSwitcher tables={tableaux.getTables()} selected={tableaux.getCurrentTable()} switchFn={switchFn} />
+          <table class="tableaux">
+            <thead>
+              <tr>
+        {tableaux.getCurrentTable().columns.map(function (column) {
+          return (
+            <th>{column.name}</th>
+          );
+        })}
+              </tr>
+            </thead>
             <tbody>
         {tableaux.getCurrentTable().rows.map(function (row) {
           console.log('rendering rows in table');

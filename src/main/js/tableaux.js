@@ -44,6 +44,8 @@ function switchTable(id, done) {
   console.log('switching to table ' + id);
   $.getJSON('/api/tables/' + id)
     .done(function (table) {
+      console.log('switching table to');
+      console.log(table);
       currentTable = table;
       done();
     });

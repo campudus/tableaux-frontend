@@ -29,7 +29,7 @@ var Cell = React.createClass({
   },
 
   render : function () {
-    console.log('rendering cell['+this.props.row+','+this.props.column+']');
+    console.log('rendering cell[' + this.props.row + ',' + this.props.column + ']');
     if (this.state.editing) {
       return this.renderEditing();
     } else {
@@ -40,7 +40,8 @@ var Cell = React.createClass({
   renderEditing : function () {
     return (
       <td>
-        <input onBlur={this.stopEditMode} type={this.props.kind} defaultValue={this.props.getValue(this.props.row, this.props.column)} ref="input" />
+        <input onBlur={this.stopEditMode} type={this.props.kind} defaultValue={this.props.getValue(this.props.row,
+          this.props.column)} ref="input" />
       </td>
     );
   },

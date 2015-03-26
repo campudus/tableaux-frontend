@@ -5,6 +5,7 @@ var TableSwitcher = React.createClass({
   mixins : [PureRenderMixin],
 
   propTypes : {
+    selected : React.PropTypes.number.isRequired,
     switchFn : React.PropTypes.func.isRequired,
     tables : React.PropTypes.arrayOf({
       id : React.PropTypes.number.isRequired,
@@ -24,12 +25,13 @@ var TableSwitcher = React.createClass({
     console.log('rendering TableSwitcher');
     var switchFn = this.switchTable;
     var tables = this.props.tables;
+    var selected = this.props.selected;
 
     return (
       <ul>
       {tables.map(function (t) {
         return (
-          <li onClick={switchFn(t.id)}>{t.name}</li>
+          <li onClick={switchFn(t.id)} className={(t.id === selected.tableId) ? 'active' : ''}>{t.name}</li>
         );
       })}
       </ul>
