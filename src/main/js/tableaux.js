@@ -17,6 +17,7 @@ var currentTable = {
 var tables = [];
 var loaded = false;
 var waitingForLoadEvent = [];
+var currentTableId = 0;
 
 $.getJSON('/api/tables')
   .done(function (result) {
@@ -40,14 +41,20 @@ var tableaux = {
   onLoadRegister : onLoadRegister
 };
 
-function switchTable(id, done) {
+function switchTable(id, done, status) {
   console.log('switching to table ' + id);
   $.getJSON('/api/tables/' + id)
     .done(function (table) {
       console.log('switching table to');
       console.log(table);
       currentTable = table;
+      currentTableId = id;
       done();
+    })
+    .error(function (err) {
+      console.log('error!');
+      console.log(err);
+      status({error : true, message : err});
     });
 }
 
@@ -61,11 +68,35 @@ function get(row, column) {
   return rows.values[column];
 }
 
-function put(row, column, value) {
+function put(row, column, value, status) {
   var theRow = currentTable.rows.filter(function (r) {
     return r.id === row;
   })[0];
   theRow.values[column] = value;
+  $.ajax({
+    url : '/api/tables/' + currentTableId + '',
+    data : {
+      cells : [
+        {
+          column : {id : column},
+          row : {id : row},
+          value : value
+        }
+      ]
+    }, dataType : 'json'
+  })
+    .done(function (res) {
+      console.log('got a result when posting table');
+      console.log(res);
+      if (res.status !== 'ok') {
+        status({error : false, message : 'Saved'});
+      }
+    })
+    .error(function (err) {
+      console.log('error posting data');
+      console.log(err);
+      status({error : true, message : err});
+    });
 }
 
 function getColumns() {

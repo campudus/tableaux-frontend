@@ -14,16 +14,15 @@ var Cell = React.createClass({
     return {editing : false};
   },
 
-  startEditMode : function () {
+  startEditMode : function (e) {
     console.log('start edit mode');
     this.setState({editing : true});
+    console.log(e);
     this.render();
   },
 
   stopEditMode : function () {
-    console.log('stop edit mode');
     var value = this.refs.input.getDOMNode().value;
-    console.log('save to value=' + value);
     this.props.save(this.props.row, this.props.column)(value);
     this.setState({editing : false});
   },
@@ -39,7 +38,7 @@ var Cell = React.createClass({
 
   renderEditing : function () {
     return (
-      <td>
+      <td className="cell editing">
         <input onBlur={this.stopEditMode} type={this.props.kind} defaultValue={this.props.getValue(this.props.row,
           this.props.column)} ref="input" />
       </td>
@@ -48,7 +47,7 @@ var Cell = React.createClass({
 
   renderRegular : function () {
     return (
-      <td onClick={this.startEditMode}>{this.props.getValue(this.props.row, this.props.column)}</td>
+      <td onClick={this.startEditMode} className="cell regular">{this.props.getValue(this.props.row, this.props.column)}</td>
     );
   }
 });

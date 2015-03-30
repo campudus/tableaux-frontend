@@ -8,6 +8,21 @@ body {
   background-color: $body-background-color;
 }
 
+ul.main-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    float: right;
+    padding: 10px 20px;
+    margin-left: 25px;
+    margin-bottom: 25px;
+    background-color: $head-cell-background-color;
+    border-radius: 10px;
+  }
+}
+
 #tableaux {
 
   ul {
@@ -19,7 +34,7 @@ body {
       float: left;
       padding: 10px 20px;
       margin-left: -1px;
-      margin-bottom: 25px;
+      margin-bottom: 0;
       border: 1px solid #000;
 
       &.active {
@@ -48,7 +63,10 @@ body {
 
       td {
         border: 1px solid $head-cell-background-color;
-        padding: 5px;
+
+        &.cell.regular {
+          padding: 5px;
+        }
 
         input {
           width: 100%;

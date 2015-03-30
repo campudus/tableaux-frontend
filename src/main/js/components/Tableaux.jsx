@@ -62,7 +62,7 @@ var Tableaux = React.createClass({
       return (
         <div>
           <TableSwitcher tables={tableaux.getTables()} selected={tableaux.getCurrentTable()} switchFn={switchFn} />
-          <table class="tableaux">
+          <table className="tableaux">
             <thead>
               <tr>
         {tableaux.getCurrentTable().columns.map(function (column) {
