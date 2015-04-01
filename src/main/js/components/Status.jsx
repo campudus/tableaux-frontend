@@ -11,7 +11,7 @@ var TableSwitcher = React.createClass({
 
   render : function () {
     return (
-      <div className={this.props.status.kind}>{this.props.status.text}</div>
+      <div className={this.props.status.kind + ' status'}>{this.props.status.text}</div>
     );
   }
 });

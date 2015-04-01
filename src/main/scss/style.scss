@@ -47,6 +47,28 @@ ul.main-menu {
     }
   }
 
+  .status {
+    float: left;
+    margin-left: 50px;
+    padding: 10px 20px;
+
+    &.empty {
+      display: none;
+    }
+
+    &.saving {
+      color: $status-text-color;
+      border: 1px solid $status-border-color;
+      background-color: $status-background-color;
+    }
+
+    &.error {
+      color: $status-error-text-color;
+      border: 1px solid $status-error-border-color;
+      background-color: $status-error-background-color;
+    }
+  }
+
   table {
 
     width: 100%;

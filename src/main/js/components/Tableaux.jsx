@@ -30,7 +30,7 @@ var Tableaux = React.createClass({
         if (status.error) {
           that.setState({status : {kind : 'error', text : 'Problems while saving!'}});
         } else {
-          that.setState({status : {kind : 'saved', text : 'Everything saved!'}});
+          that.setState({status : {kind : 'saving', text : 'Everything saved!'}});
         }
       });
     };
