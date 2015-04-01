@@ -68,7 +68,7 @@ function get(row, column) {
   return rows.values[column];
 }
 
-function put(row, column, value, status) {
+function put(row, column, value, callback) {
   var theRow = currentTable.rows.filter(function (r) {
     return r.id === row;
   })[0];
@@ -88,14 +88,16 @@ function put(row, column, value, status) {
     .done(function (res) {
       console.log('got a result when posting table');
       console.log(res);
-      if (res.status !== 'ok') {
-        status({error : false, message : 'Saved'});
+      if (res.status === 'ok') {
+        callback({error : false, message : 'Saved'});
+      } else {
+        callback({error : true, message : res.message});
       }
     })
     .error(function (err) {
       console.log('error posting data');
       console.log(err);
-      status({error : true, message : err});
+      callback({error : true, message : err});
     });
 }
 
