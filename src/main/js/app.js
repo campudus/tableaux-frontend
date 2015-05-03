@@ -4,5 +4,5 @@ var store = require('./tableaux.js');
 
 store.onLoadRegister(function () {
   console.log('loaded tableaux');
-  React.render(<Tableaux tableaux={store} />, document.getElementById('tableaux'));
+  React.render(<Tableaux />, document.getElementById('tableaux'));
 });

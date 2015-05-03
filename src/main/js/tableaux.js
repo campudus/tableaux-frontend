@@ -32,7 +32,7 @@ $.getJSON('/api/tables')
   });
 
 var tableaux = {
-  get : get,
+  retrieve : retrieve,
   put : put,
   getColumns : getColumns,
   getTables : getTables,
@@ -58,7 +58,7 @@ function switchTable(id, done, status) {
     });
 }
 
-function get(row, column) {
+function retrieve(row, column) {
   console.log('get(' + row + ',' + column + ')');
   console.log('currentTable:');
   console.log(currentTable);

@@ -4,14 +4,13 @@ var Path = require('path');
 var compass = require('gulp-compass');
 var minifyCss = require('gulp-minify-css');
 var del = require('del');
-var browserify = require('gulp-browserify');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 var plumber = require('gulp-plumber');
-var replace = require('gulp-replace');
 var karma = require('gulp-karma');
-var shell = require('gulp-shell');
+var browserify = require('browserify');
 var reactify = require('reactify');
+var source = require('vinyl-source-stream');
 var url = require('url');
 var proxy = require('proxy-middleware');
 
@@ -47,18 +46,29 @@ function sassCompile() {
 }
 
 function scriptCompile() {
-  return gulp.src(['src/main/js/app.js'])
-    .pipe(plumber())
-    .pipe(browserify({
-      transform : [reactify],
-      shim : {
-        'jQuery' : {
-          'path' : './src/vendor/jquery-1.11.0.js',
-          'exports' : '$'
-        }
-      }
-    }))
+  return browserify()
+    .transform(reactify)
+    .add('./src/main/js/app.js')
+    .bundle()
+    .on('error', function (err) {
+      console.log('error', err);
+      this.emit('end');
+    })
+    .pipe(source('app.js'))
     .pipe(gulp.dest('out/js/'));
+
+  //gulp.src(['src/main/js/app.js'])
+  //  .pipe(plumber())
+  //  .pipe(browserify({
+  //    transform : [reactify],
+  //    shim : {
+  //      'jQuery' : {
+  //        'path' : './src/vendor/jquery-1.11.0.js',
+  //        'exports' : '$'
+  //      }
+  //    }
+  //  }))
+  //  .pipe(gulp.dest('out/js/'));
 }
 
 function assetCopy() {
@@ -89,12 +99,11 @@ function server() {
   });
 
   gulp.watch(['src/main/**', 'src/main/js/**', 'src/main/scss/**/*.scss'], {}, ['reloader']);
-  gulp.watch(['src/flash/**'], {}, ['reloadFlash']);
 
-  gulp.src('src/test/**/*Spec.js').pipe(karma({
-    configFile : 'karma.conf.js',
-    action : 'watch'
-  }));
+  //gulp.src('src/test/**/*Spec.js').pipe(karma({
+  //  configFile : 'karma.conf.js',
+  //  action : 'watch'
+  //}));
 }
 
 function clean(cb) {

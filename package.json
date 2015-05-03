@@ -13,6 +13,12 @@
     "start": "gulp clean && gulp",
     "test": "gulp clean && gulp test"
   },
+  "browser": {
+    "jQuery": "./src/vendor/jquery-1.11.0.js"
+  },
+  "browserify-shim": {
+    "jQuery": "$"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/campudus/tableaux-frontend.git"
@@ -24,25 +30,23 @@
   "homepage": "https://github.com/campudus/tableaux-frontend",
   "dependencies": {},
   "devDependencies": {
-    "browser-sync": "^2.2.4",
+    "browser-sync": "^2.6.10",
+    "browserify": "^10.0.0",
     "del": "^1.1.1",
     "gulp": "^3.8.11",
-    "gulp-browserify": "^0.5.1",
-    "gulp-compass": "^2.0.3",
+    "gulp-compass": "^2.0.4",
     "gulp-karma": "0.0.4",
     "gulp-minify-css": "^1.0.0",
     "gulp-plumber": "^1.0.0",
-    "gulp-replace": "^0.5.3",
-    "gulp-shell": "^0.4.0",
-    "immutable": "^3.6.4",
     "jasmine-core": "^2.2.0",
-    "karma": "^0.12.32",
-    "karma-browserify": "^4.0.0",
-    "karma-chrome-launcher": "^0.1.7",
+    "karma": "^0.12.31",
+    "karma-browserify": "^4.1.2",
+    "karma-chrome-launcher": "^0.1.8",
     "karma-jasmine": "^0.3.5",
     "proxy-middleware": "^0.11.0",
     "react": "^0.13.1",
     "reactify": "^1.1.0",
-    "url": "^0.10.3"
+    "url": "^0.10.3",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
