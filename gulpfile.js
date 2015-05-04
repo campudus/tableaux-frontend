@@ -56,19 +56,6 @@ function scriptCompile() {
     })
     .pipe(source('app.js'))
     .pipe(gulp.dest('out/js/'));
-
-  //gulp.src(['src/main/js/app.js'])
-  //  .pipe(plumber())
-  //  .pipe(browserify({
-  //    transform : [reactify],
-  //    shim : {
-  //      'jQuery' : {
-  //        'path' : './src/vendor/jquery-1.11.0.js',
-  //        'exports' : '$'
-  //      }
-  //    }
-  //  }))
-  //  .pipe(gulp.dest('out/js/'));
 }
 
 function assetCopy() {
