@@ -7,7 +7,7 @@ var del = require('del');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 var plumber = require('gulp-plumber');
-var karma = require('gulp-karma');
+var karma = require('karma').server;
 var browserify = require('browserify');
 var reactify = require('reactify');
 var source = require('vinyl-source-stream');
@@ -22,6 +22,7 @@ gulp.task('clean', clean);
 gulp.task('reloader', ['build'], reload);
 gulp.task('dev', ['build'], server);
 gulp.task('test', ['build'], test);
+gulp.task('testWatch', ['build'], testWatch);
 
 gulp.task('build', ['sass', 'assets', 'scripts']);
 gulp.task('default', ['build']);
@@ -63,15 +64,24 @@ function assetCopy() {
     .pipe(gulp.dest('out/'));
 }
 
-function test() {
-  return gulp.src('src/test/**/*Spec.js')
-    .pipe(karma({
-      configFile : 'karma.conf.js',
-      action : 'run'
-    }))
-    .on('error', function (err) {
-      throw err;
-    });
+function test(done) {
+  karma.start({
+    configFile : __dirname + '/karma.conf.js',
+    action : 'run',
+    proxies : {
+      '/api' : 'http://localhost:8181'
+    }
+  }, done);
+}
+
+function testWatch(done) {
+  karma.start({
+    configFile : __dirname + '/karma.conf.js',
+    action : 'watch',
+    proxies : {
+      '/api' : 'http://localhost:8181'
+    }
+  }, done);
 }
 
 function server() {
@@ -81,7 +91,7 @@ function server() {
   browserSync({
     server : {
       baseDir : 'out',
-      middleware: [proxy(proxyOptions)]
+      middleware : [proxy(proxyOptions)]
     }
   });
 
