@@ -1,14 +1,20 @@
 var React = require('react');
 var Cell = require('./Cell.jsx');
+var BackboneMixin = require('backbone-react-component');
+var TableauxStore = require('../TableauxStore');
 
 var Row = React.createClass({
+  mixins : [BackboneMixin],
+
   render : function () {
-    var className = 'row row-' + this.props.rowId;
+    console.log('rendering Row', this.state.model);
+    var self = this;
+    var className = 'row row-' + this.state.model.id;
     return (
       <tr className={className}>
-        {this.props.collection.map(function(cell) {
+        {this.state.model.values.map(function (cell, index) {
           return (
-            <Cell colId={cell.colId} rowId={cell.rowId} value={cell.value} />
+            <Cell model={new TableauxStore.Cell({row: self.getModel(), value: cell, colIdx: index})}/>
           );
         })}
       </tr>

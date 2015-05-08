@@ -25,8 +25,9 @@ function unregister(token) {
 
 function emit(event, payload) {
   var i;
-  for (i = 0; i < eventCallbacksStore[event].length; i++) {
-    eventCallbacksStore[event][i].fn(payload);
+  var cbStore = eventCallbacksStore[event] || [];
+  for (i = 0; i < cbStore.length; i++) {
+    cbStore[i].fn(payload);
   }
 }
 

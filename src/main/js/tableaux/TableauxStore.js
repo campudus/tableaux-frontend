@@ -3,69 +3,71 @@ var Backbone = require('backbone');
 Backbone.$ = $;
 var TableauxConstants = require('./TableauxConstants');
 
-var Table = Backbone.Model.extend({
+var Row = Backbone.Model.extend({
+  initialize : function (models, options) {
+    console.log('init Row', models, options);
+    this.table = options.table;
+    this.id = this.get('id');
+    this.values = this.get('values');
+  },
+  url : function () {
+    return apiUrl(this.table.url() + '/rows/' + this.id);
+  },
   defaults : {
-    id : 0,
-    name : '',
+    values : []
+  }
+});
+
+var Cell = Backbone.Model.extend({
+  initialize : function (options) {
+    console.log('hello in cell', this);
+    this.row = options.row;
+    this.colIdx = options.colIdx;
+    this.value = options.value;
+  }
+});
+
+var Column = Backbone.Model.extend({
+  initialize : function () {
+    this.id = this.get('id');
+    this.name = this.get('name');
+  }
+});
+
+var Columns = Backbone.Collection.extend({
+  initialize : function (models, options) {
+    this.table = options.table;
+  },
+  url : function () {
+    console.log('the column looks like this:', this);
+    return this.table.url() + '/columns';
+  },
+  model : Column
+});
+
+var Table = Backbone.Model.extend({
+  urlRoot : apiUrl('/tables'),
+  idAttribute : 'id',
+  initialize : function () {
+    var self = this;
+    console.log('id=', self.id);
+    this.name = this.get('name');
+    this.columns = this.get('columns');
+    this.rows = this.get('rows');
+    console.log('initialized this Table=', this);
+  },
+  defaults : {
     columns : [],
     rows : []
   }
 });
 
-var Tables = Backbone.Collection.extend({
-  model : Table
-});
-
-var Column = Backbone.Model.extend({
-  defaults : {
-    tableId : 0,
-    columnId : 0,
-    kind : 'string'
-  }
-});
-
-var Columns = Backbone.Collection.extend({
-  model : Column
-});
-
-var Row = Backbone.Model.extend({
-  defaults : {
-    tableId : 0,
-    rowId : 0,
-    cells : []
-  }
-});
-
-var Rows = Backbone.Collection.extend({
-  model : Row
-});
-
-var Cell = Backbone.Model.extend({
-  defaults : {
-    tableId : 0,
-    columnId : 0,
-    rowId : 0,
-    value : ''
-  }
-});
-
-var Cells = Backbone.Collection.extend({
-  model : Cell
-});
-
 var TableauxStore = Backbone.Collection.extend({
   model : Table,
   url : apiUrl('/tables'),
-  //sync : function(method, model, options) {
-  //  console.log('trying to sync something', method, model, options);
-  //  //options.beforeSend = function (xhr) {
-  //  //  xhr.setRequestHeader('Content-Type', 'application/json');
-  //  //};
-  //  options.method = 'GET';
-  //  return Backbone.sync(method, model, options);
-  //},
   parse : function (response) {
-    console.log('huh?', response);
+    console.log('parsing', response);
+    return response.tables;
   }
 });
 
@@ -73,4 +75,11 @@ function apiUrl(path) {
   return '/api' + path;
 }
 
-module.exports = TableauxStore;
+module.exports = {
+  store : TableauxStore,
+  Table : Table,
+  Column : Column,
+  Columns : Columns,
+  Row : Row,
+  Cell : Cell,
+};

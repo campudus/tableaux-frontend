@@ -1,25 +1,21 @@
 var React = require('react');
 var dispatcher = require('../TableauxDispatcher');
+var BackboneMixin = require('backbone-react-component');
 var TableauxConstants = require('../TableauxConstants');
 
 var Cell = React.createClass({
-
-  getInitialState : function () {
-    return {
-      colId : this.props.colId,
-      rowId : this.props.rowId,
-      value : this.props.value
-    };
-  },
+  mixins : [BackboneMixin],
 
   handleClick : function () {
-    dispatcher.emit(TableauxConstants.START_EDIT_CELL, {colId : this.props.colId, rowId : this.props.rowId});
+    var stuff = {colId : this.state.model.colIdx, rowId : this.state.model.row.id};
+    console.log('handling click', stuff);
+    dispatcher.emit(TableauxConstants.START_EDIT_CELL, stuff);
   },
 
   render : function () {
     return (
       <td className="cell" onClick={this.handleClick}>
-        {this.props.value}
+        {this.state.model.value}
       </td>
     );
   }
