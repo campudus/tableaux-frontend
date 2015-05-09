@@ -4,8 +4,8 @@ Backbone.$ = $;
 var TableauxConstants = require('./TableauxConstants');
 
 var Row = Backbone.Model.extend({
-  initialize : function (models, options) {
-    console.log('init Row', models, options);
+  initialize : function (model, options) {
+    console.log('init Row', model, options);
     this.table = options.table;
     this.id = this.get('id');
     this.values = this.get('values');
@@ -19,16 +19,16 @@ var Row = Backbone.Model.extend({
 });
 
 var Cell = Backbone.Model.extend({
-  initialize : function (options) {
+  initialize : function (model, options) {
     console.log('hello in cell', this);
-    this.row = options.row;
-    this.colIdx = options.colIdx;
-    this.value = options.value;
+    this.row = this.get('row');
+    this.colIdx = this.get('colIdx');
+    this.value = this.get('value');
   }
 });
 
 var Column = Backbone.Model.extend({
-  initialize : function () {
+  initialize : function (model, options) {
     this.id = this.get('id');
     this.name = this.get('name');
   }
