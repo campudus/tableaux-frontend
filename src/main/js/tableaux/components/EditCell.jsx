@@ -17,9 +17,10 @@ var Cell = React.createClass({
 
   render : function () {
     var inputType = 'text';
+    var value = this.props.value || null;
     return (
       <td className="cell editing">
-        <input type={inputType} name={this.props.colId} defaultValue={this.props.value} onBlur={this.emitChangeIfEdited}
+        <input type={inputType} name={this.props.colId} defaultValue={value} onBlur={this.emitChangeIfEdited}
                ref="input"/>
       </td>
     );

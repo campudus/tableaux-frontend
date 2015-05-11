@@ -7,7 +7,7 @@ var Cell = React.createClass({
   mixins : [BackboneMixin],
 
   handleClick : function () {
-    var stuff = {colId : this.state.model.colIdx, rowId : this.state.model.row.id};
+    var stuff = {colId : this.getModel().colId, rowId : this.getModel().rowId};
     console.log('handling click', stuff);
     dispatcher.emit(TableauxConstants.START_EDIT_CELL, stuff);
   },
@@ -15,7 +15,7 @@ var Cell = React.createClass({
   render : function () {
     return (
       <td className="cell" onClick={this.handleClick}>
-        {this.state.model.value}
+        {this.getModel().value}
       </td>
     );
   }

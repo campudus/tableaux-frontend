@@ -18,7 +18,6 @@ var Tableaux = React.createClass({
 
   render : function () {
     var self = this;
-    console.log('state.collection', this.state.collection);
     var tables = this.state.collection.map(function(table) {
       return new TableauxStore.Table(table);
     });

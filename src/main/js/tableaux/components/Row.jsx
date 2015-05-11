@@ -7,15 +7,15 @@ var Row = React.createClass({
   mixins : [BackboneMixin],
 
   render : function () {
-    console.log('rendering Row', this.state.model);
-    var self = this;
-    var className = 'row row-' + this.state.model.id;
+    var className = 'row row-' + this.getModel().id;
     return (
       <tr className={className}>
-        {this.state.model.values.map(function (cell, index) {
-          return (
-            <Cell model={new TableauxStore.Cell({row: self.getModel(), value: cell, colIdx: index})}/>
-          );
+        {this.getModel().cells.map(function (cell) {
+          if (cell.isEditing) {
+            return <EditCell model={cell}/>;
+          } else {
+            return <Cell model={cell}/>;
+          }
         })}
       </tr>
     );
