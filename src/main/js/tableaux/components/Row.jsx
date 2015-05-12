@@ -6,17 +6,16 @@ var TableauxStore = require('../TableauxStore');
 var Row = React.createClass({
   mixins : [BackboneMixin],
 
+  componentDidMount : function () {
+    this.getModel().fetch();
+  },
+
   render : function () {
-    console.log('rendering row');
-    var className = 'row row-' + this.getModel().id;
-    var self = this;
+    var className = 'row row-' + this.getModel().get('id');
     return (
       <tr className={className}>
-        {this.getModel().cells.map(function (cell) {
-          console.log('render cell from row', cell);
-          console.log('cell=', cell);
-          var key = self.getModel().table.id + '-' + cell.colId + '-' + cell.rowId;
-          return <Cell key={key} model={cell}/>
+        {this.getModel().get('cells').map(function (cell) {
+          return <Cell model={cell}/>
         })}
       </tr>
     );

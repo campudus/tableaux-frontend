@@ -7,7 +7,7 @@ var Cell = React.createClass({
   mixins : [BackboneMixin],
 
   emitChangeIfEdited : function () {
-    var value = this.refs.input.value;
+    var value = this.refs.input.getDOMNode().value;
     var event = {
       tableId : this.getModel().tableId,
       colId : this.props.colId,
@@ -16,22 +16,29 @@ var Cell = React.createClass({
       newData : value,
       changed : value !== this.props.value
     };
-    console.log('changed edit cell=', event);
-    dispatcher.emit(TableauxConstants.CHANGE_CELL_EVENT, event);
+    if (this.props.onBlur) {
+      this.props.onBlur(event);
+    }
   },
 
-  componentWillMount : function() {
-    console.log('will mount edit cell');
+  componentDidMount : function () {
+    var node = this.refs.input.getDOMNode();
+    node.focus();
+    // Sets cursor to end of input field
+    node.value = node.value;
+  },
+
+  componentWillMount : function () {
+    this.inputName = 'cell-' + this.getModel().tableId + '-' + this.props.colId + '-' + this.props.rowId;
   },
 
   render : function () {
-    console.log('render edit cell!');
     var inputType = 'text';
-    var value = this.props.value || null;
+    var value = this.getModel().get('value') || null;
     return (
       <td className="cell editing">
         <input type={inputType}
-               name={'new-cell-in-col-' + this.props.colId}
+               name={this.inputName}
                defaultValue={value}
                onBlur={this.emitChangeIfEdited}
                ref="input"/>

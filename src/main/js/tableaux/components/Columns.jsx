@@ -13,7 +13,7 @@ var Columns = React.createClass({
     return (
       <tr className="heading">
         {this.getCollection().map(function (column) {
-          return <th>{column.name}</th>;
+          return <th>{column.get('name')}</th>;
         })}
       </tr>
     );

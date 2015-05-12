@@ -7,10 +7,9 @@ var Cell = React.createClass({
   mixins : [BackboneMixin],
 
   render : function () {
-    console.log('in LabelCell');
     return (
       <td className="cell" onClick={this.props.onClick}>
-        {this.getModel().value}
+        {this.getModel().get('value')}
       </td>
     );
   }

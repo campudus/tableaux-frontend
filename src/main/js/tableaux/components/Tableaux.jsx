@@ -15,8 +15,13 @@ var Tableaux = React.createClass({
   },
 
   onTableChanged : function (entry) {
+    var self = this;
     this.state.currentTableIndex = entry.index;
-    this.getCollection().at(entry.index).fetch();
+    this.getCollection().at(entry.index).fetch({
+      success: function() {
+        console.log('successfully fetched ' + entry.index, self.state);
+      }
+    });
   },
 
   componentDidMount : function () {
@@ -26,17 +31,15 @@ var Tableaux = React.createClass({
   },
 
   render : function () {
-    console.log('(re?)-rendering Tableaux', this.getCollection(), this.state.currentTableIndex);
-    var self = this;
-    var table = (this.getCollection().length > 0) ?
-      <Table model={this.getCollection().at(this.state.currentTableIndex)}/> : '';
-    var entries = self.getCollection().map(function (entry, index) {
-      return {name : entry.name, index : index};
+    var table = (this.getCollection().length > this.state.currentTableIndex) ?
+      <Table key={this.state.currentTableIndex} model={this.getCollection().at(this.state.currentTableIndex)}/> : '';
+    var entries = this.getCollection().map(function (entry, index) {
+      return {name : entry.get('name'), index : index};
     });
 
     return (
       <div className="tableaux">
-        <TableSwitcher currentIndex={self.state.currentTableIndex} entries={entries}/>
+        <TableSwitcher currentIndex={this.state.currentTableIndex} entries={entries}/>
         {table}
       </div>
     );
