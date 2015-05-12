@@ -9,16 +9,17 @@ var Cell = Backbone.Model.extend({
     this.rowId = this.get('rowId');
     this.colId = this.get('colId');
     this.value = this.get('value');
+    this.editing = this.get('editing') || false;
   },
-  url : function() {
-
+  url : function () {
+    return apiUrl('/tables/' + this.tableId + '/columns/' + this.colId + '/rows/' + this.rowId);
   }
 });
 
 var Cells = Backbone.Collection.extend({
   model : Cell,
   initialize : function (model, options) {
-    this.tableId = options.tableId;
+    this.tableId = options.table.id;
     this.rowId = this.get('id');
     this.values = this.get('values');
   },
@@ -33,7 +34,7 @@ var Row = Backbone.Model.extend({
   initialize : function (model, options) {
     var self = this;
     this.id = this.get('id');
-    this.table = this.get('table');
+    this.table = this.get('table') || options.table;
     this.cells = this.get('values').map(function (value, index) {
       return new Cell({
         table : self.table,
@@ -99,23 +100,36 @@ var Columns = Backbone.Collection.extend({
 });
 
 var Table = Backbone.Model.extend({
-  initialize : function () {
-    this.id = this.get('id');
-    this.name = this.get('name');
-    this.columns = new Columns([], {table : this});
-    this.rows = new Rows([], {table : this});
+  initialize : function (model, options) {
+    console.log('init table ', this, model, options);
+    this.id = this.get('id') || this.get('tableId') || model.id;
+    this.name = this.get('name') || this.get('tableName') || model.name;
+    this.columns = new Columns(this.get('columns') || [], {table : this});
+    this.rows = new Rows(this.get('rows') || [], {table : this});
+    console.log('initialized to', this);
   },
   url : function () {
-    return this.id ?
+    var url = this.id ?
       apiUrl('/tables/' + this.id) :
       apiUrl('/tables');
+    console.log('url from table=', url, this);
+    return url;
+  },
+  parse : function (response) {
+    console.log('parsing table = ', response);
+    this.id = response.id || response.tableId;
+    this.name = response.name || response.tableName;
+    this.columns = new Columns(response.columns || [], {table : this});
+    this.rows = new Rows(response.rows || [], {table : this});
+    return response;
   }
 });
 
-var TableauxStore = Backbone.Collection.extend({
+var Tables = Backbone.Collection.extend({
   model : Table,
   url : apiUrl('/tables'),
   parse : function (response) {
+    console.log('parsing tables =', response);
     return response.tables;
   }
 });
@@ -125,8 +139,8 @@ function apiUrl(path) {
 }
 
 module.exports = {
-  store : TableauxStore,
   Table : Table,
+  Tables : Tables,
   Column : Column,
   Columns : Columns,
   Row : Row,

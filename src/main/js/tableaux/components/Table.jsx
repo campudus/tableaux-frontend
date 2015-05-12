@@ -11,11 +11,10 @@ var Table = React.createClass({
 
   componentDidMount : function () {
     this.getModel().fetch();
-    this.getModel().columns.fetch();
-    this.getModel().rows.fetch();
   },
 
   render : function () {
+    console.log('rendering table');
     return (
       <table className="tableaux-table">
         <thead>
