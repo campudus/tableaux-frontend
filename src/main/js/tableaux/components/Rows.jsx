@@ -6,10 +6,6 @@ var TableauxStore = require('../TableauxStore');
 var Rows = React.createClass({
   mixins : [BackboneMixin],
 
-  componentDidMount : function () {
-    this.getCollection().fetch();
-  },
-
   render : function () {
     return (
       <tbody class="data">

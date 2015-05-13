@@ -15,10 +15,13 @@ var Cell = React.createClass({
   },
 
   handleEditDone : function (event) {
+    var self = this;
     this.getModel().set('editing', false);
     if (event.changed) {
       this.getModel().set('value', event.newData);
-      this.getModel().save();
+      this.getModel().save({error : function(err) {
+        self.getModel().set('value', event.oldData);
+      }});
     }
     dispatcher.emit(TableauxConstants.CHANGE_CELL_EVENT, event);
   },

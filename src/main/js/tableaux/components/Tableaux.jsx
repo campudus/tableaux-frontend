@@ -6,6 +6,7 @@ var TableauxConstants = require('../TableauxConstants');
 var BackboneMixin = require('backbone-react-component');
 var Table = require('./Table.jsx');
 var TableSwitcher = require('./TableSwitcher.jsx');
+var TableCreator = require('./TableCreator.jsx');
 
 var Tableaux = React.createClass({
   mixins : [BackboneMixin],
@@ -18,8 +19,31 @@ var Tableaux = React.createClass({
     var self = this;
     this.state.currentTableIndex = entry.index;
     this.getCollection().at(entry.index).fetch({
-      success: function() {
+      success : function () {
         console.log('successfully fetched ' + entry.index, self.state);
+      }
+    });
+  },
+
+  onTableCreate : function (data) {
+    var table = new TableauxStore.Table({
+      name : data.tableName
+    });
+    table.set({
+      columns : new TableauxStore.Columns([new TableauxStore.Column({
+        name : 'Name'
+      })], {table : table}),
+      rows : new TableauxStore.Rows([new TableauxStore.Row({
+        values : [new TableauxStore.Cell({})]
+      }, {table : table})], {table : table})
+    });
+    table.save({
+      success : function (s) {
+        console.log('table saved!', s);
+        self.getCollection().fetch()
+      },
+      error : function (err) {
+        console.log('error saving new table', err);
       }
     });
   },
@@ -28,6 +52,7 @@ var Tableaux = React.createClass({
     this.getCollection().fetch();
 
     dispatcher.register(TableauxConstants.CHANGE_TABLE, this.onTableChanged.bind(this));
+    dispatcher.register(TableauxConstants.CREATE_TABLE, this.onTableCreate.bind(this));
   },
 
   render : function () {
@@ -39,6 +64,7 @@ var Tableaux = React.createClass({
 
     return (
       <div className="tableaux">
+        <TableCreator />
         <TableSwitcher currentIndex={this.state.currentTableIndex} entries={entries}/>
         {table}
       </div>

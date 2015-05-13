@@ -3,5 +3,6 @@ module.exports = {
   CHANGE_COL_EVENT : 'change-col',
   CHANGE_CELL_EVENT : 'change-cell',
   START_EDIT_CELL : 'edit-cell',
-  CHANGE_TABLE : 'change-table'
+  CHANGE_TABLE : 'change-table',
+  CREATE_TABLE : 'create-table'
 };

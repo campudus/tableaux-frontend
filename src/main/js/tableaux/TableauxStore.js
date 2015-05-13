@@ -6,7 +6,6 @@ var TableauxConstants = require('./TableauxConstants');
 
 var Cell = Backbone.Model.extend({
   initialize : function (model, options) {
-    this.set('tableId', model.tableId);
     this.set('editing', this.get('editing') || false);
   },
   whitelist : ['tableId', 'colId', 'rowId', 'value'],
@@ -32,7 +31,9 @@ var Cell = Backbone.Model.extend({
 var Cells = Backbone.Collection.extend({
   model : Cell,
   initialize : function (models, options) {
-    this.tableId = options.table.id;
+    if (options.table) {
+      this.tableId = options.table.id;
+    }
     this.rowId = options.rowId;
     this.set(models);
   },
@@ -48,7 +49,7 @@ var Row = Backbone.Model.extend({
     var self = this;
     this.set('id', model.id);
     this.set('table', options.table);
-    this.set('cells', new Cells(model.values.map(function (value, index) {
+    this.set('values', new Cells(model.values.map(function (value, index) {
       return new Cell({
         tableId : self.get('table').get('id'),
         rowId : self.get('id'),
@@ -65,14 +66,34 @@ var Row = Backbone.Model.extend({
         .get('id');
     }
   },
+  url : function() {
+    return this.get('id') ?
+      apiUrl('/tables/' + this.get('table').get('id') + '/rows/' + this.get('id')) :
+      apiUrl('/tables/' + this.get('table').get('id') + '/rows');
+  },
   parse : function (response) {
-    var mappedCells = [];
-    var values = (response.rows && response.rows[0] || response).values;
-    for (var i = 0; i < values.length; i++) {
-      mappedCells[i] = this.get('cells').at(i);
-      mappedCells[i].set('value', values[i]);
+    console.log('parsing row', response);
+    if (response.rows) {
+      return mapFirstInRows();
+    } else {
+      return mapSingleRow();
     }
-    return mappedCells;
+
+    function mapSingleRow() {
+      return response;
+    }
+
+    function mapFirstInRows() {
+      return response.rows[0];
+    }
+
+    //var mappedCells = [];
+    //var values = (response.rows && response.rows[0] || response).values;
+    //for (var i = 0; i < values.length; i++) {
+    //  mappedCells[i] = this.get('values').at(i);
+    //  mappedCells[i].set('value', values[i]);
+    //}
+    //return mappedCells;
   }
 });
 
@@ -94,7 +115,7 @@ var Rows = Backbone.Collection.extend({
 
 var Column = Backbone.Model.extend({
   url : function () {
-    return this.id ? apiUrl(this.table.url() + '/columns/' + this.id) : apiUrl(this.table.url() + '/rows');
+    return this.id ? apiUrl(this.table.url() + '/columns/' + this.id) : apiUrl(this.table.url() + '/columns');
   }
 });
 
@@ -129,10 +150,23 @@ var Table = Backbone.Model.extend({
     return this.id ? apiUrl('/tables/' + this.id) : apiUrl('/tables');
   },
   parse : function (response) {
-    return {
-      id : response.tableId,
-      name : response.tableName
-    };
+    console.log('parsing table', response);
+    if (response.id) {
+      return mapSimpleTable();
+    } else {
+      return mapCompleteTable();
+    }
+
+    function mapSimpleTable() {
+      return response;
+    }
+
+    function mapCompleteTable() {
+      return {
+        id : response.tableId,
+        name : response.tableName
+      };
+    }
   }
 });
 
