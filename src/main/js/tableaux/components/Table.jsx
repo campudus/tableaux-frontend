@@ -16,12 +16,14 @@ var Table = React.createClass({
   },
 
   render : function () {
+    var columns = this.getModel().get('columns');
+    var rows = this.getModel().get('rows');
     return (
       <table className="tableaux-table">
         <thead>
-        <Columns collection={this.getModel().get('columns')}/>
+        <Columns collection={columns}/>
         </thead>
-        <Rows collection={this.getModel().get('rows')}/>
+        <Rows collection={rows}/>
         <NewRow />
       </table>
     );

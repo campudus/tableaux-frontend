@@ -8,7 +8,7 @@ var Rows = React.createClass({
 
   render : function () {
     return (
-      <tbody class="data">
+      <tbody className="data">
       {this.getCollection().map(function (row, index) {
         return <Row model={row} index={index}/>;
       })}

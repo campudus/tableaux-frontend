@@ -26,24 +26,12 @@ var Tableaux = React.createClass({
   },
 
   onTableCreate : function (data) {
-    var table = new TableauxStore.Table({
-      name : data.tableName
-    });
-    table.set({
-      columns : new TableauxStore.Columns([new TableauxStore.Column({
-        name : 'Name'
-      })], {table : table}),
-      rows : new TableauxStore.Rows([new TableauxStore.Row({
-        values : [new TableauxStore.Cell({})]
-      }, {table : table})], {table : table})
-    });
-    table.save({
-      success : function (s) {
-        console.log('table saved!', s);
-        self.getCollection().fetch()
-      },
-      error : function (err) {
-        console.log('error saving new table', err);
+    new TableauxStore.Table.create({
+      name : data.tableName,
+      success : function () {
+        console.log('success in create table!');
+      }, error : function () {
+        console.log('error creating table ' + data.tableName);
       }
     });
   },
