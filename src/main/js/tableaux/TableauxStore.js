@@ -9,6 +9,9 @@ var Cell = Backbone.Model.extend({
     console.log('init cell', this, model, options);
     this.set('editing', this.get('editing') || false);
     this.set('tableId', options.table.get('id'));
+    this.set('rowId', this.get('rowId') || model.rowId);
+    this.set('colId', this.get('colId') || model.colId);
+    this.set('value', this.get('value') || model.value);
   },
   whitelist : ['tableId', 'colId', 'rowId', 'value'],
   url : function () {
@@ -45,9 +48,12 @@ var Cells = Backbone.Collection.extend({
       console.log('found columns and cells', models);
       this.set(models.map(function (value, index) {
         if (value instanceof Cell) {
+          console.log('found already set cell', value);
           return value;
         } else {
+          console.log('found value in cell', value);
           return new Cell({
+            rowId : options.rowId,
             colId : getColumnId(index),
             value : value
           }, options);
@@ -72,7 +78,7 @@ var Cells = Backbone.Collection.extend({
     var self = this;
     if (this.table && this.table.get('columns').length > 0) {
       response = response.map(function (value, index) {
-        if (!value.tableId) {
+        if (!value.tableId && index < self.table.get('columns').length) {
           return new Cell({
             colId : getColumnId(index),
             value : value
@@ -85,7 +91,7 @@ var Cells = Backbone.Collection.extend({
     return response;
 
     function getColumnId(index) {
-      console.log('getColumnId of cells', index, self.table.get('columns'));
+      console.log('getColumnId of cells', index, self.table.get('columns'), self.table.get('columns').length);
       return self.table.get('columns').at(index).get('id');
     }
   }
@@ -103,18 +109,20 @@ var Row = Backbone.Model.extend({
         this.set('values', model);
       } else {
         this.set('values', new Cells(model.values.map(function (cell, index) {
-          return new Cell({
-            tableId : options.table.id,
-            rowId : model.id,
-            colId : getColumnId(index),
-            value : cell
-          }, {table : options.table});
+          if (options.table.get('columns').length > index) {
+            return new Cell({
+              tableId : options.table.id,
+              rowId : model.id,
+              colId : getColumnId(index),
+              value : cell
+            }, {table : options.table});
+          }
         }), {table : options.table, rowId : model.id}));
       }
     }
 
     function getColumnId(index) {
-      console.log('getColumnId of cells', index, options.table.get('columns'));
+      console.log('getColumnId of row', index, options.table.get('columns'));
       return options.table.get('columns').at(index).get('id');
     }
   },

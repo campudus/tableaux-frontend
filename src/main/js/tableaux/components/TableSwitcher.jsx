@@ -17,6 +17,7 @@ var TableSwitcher = React.createClass({
         {this.props.entries.map(function (entry) {
           return (
             <li
+              key={entry.index}
               onClick={self.handleClick(entry)}
               className={entry.index === self.props.currentIndex ? 'active' : 'inactive'}>{entry.name}</li>
           );

@@ -27,6 +27,7 @@ var Cell = React.createClass({
   },
 
   render : function () {
+    console.log('rendering cell', this.getModel());
     if (this.getModel().get('editing')) {
       return <EditCell model={this.getModel()} onBlur={this.handleEditDone}/>;
     } else {
