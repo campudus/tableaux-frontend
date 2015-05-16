@@ -9,9 +9,6 @@ var Cell = Backbone.Model.extend({
     console.log('init cell', this, model, options);
     this.set('editing', this.get('editing') || false);
     this.set('tableId', options.table.get('id'));
-    if (!model.value) {
-      console.log('wtf?');
-    }
   },
   whitelist : ['tableId', 'colId', 'rowId', 'value'],
   url : function () {
@@ -47,13 +44,13 @@ var Cells = Backbone.Collection.extend({
     if (options.table.get('columns').length > 0) {
       console.log('found columns and cells', models);
       this.set(models.map(function (value, index) {
-        if (!value.tableId) {
+        if (value instanceof Cell) {
+          return value;
+        } else {
           return new Cell({
             colId : getColumnId(index),
             value : value
           }, options);
-        } else {
-          return value;
         }
       }));
     } else {
@@ -72,7 +69,25 @@ var Cells = Backbone.Collection.extend({
   },
   parse : function (response) {
     console.log('parsing cells', response);
+    var self = this;
+    if (this.table && this.table.get('columns').length > 0) {
+      response = response.map(function (value, index) {
+        if (!value.tableId) {
+          return new Cell({
+            colId : getColumnId(index),
+            value : value
+          }, options);
+        } else {
+          return value;
+        }
+      });
+    }
     return response;
+
+    function getColumnId(index) {
+      console.log('getColumnId of cells', index, self.table.get('columns'));
+      return self.table.get('columns').at(index).get('id');
+    }
   }
 });
 
@@ -83,7 +98,24 @@ var Row = Backbone.Model.extend({
     this.set('id', model.id);
     if (options.table) {
       this.set('table', options.table);
-      this.set('values', new Cells(model.values, {table : self.get('table'), rowId : self.get('id')}));
+      console.log('following models', model);
+      if (model instanceof Cells) {
+        this.set('values', model);
+      } else {
+        this.set('values', new Cells(model.values.map(function (cell, index) {
+          return new Cell({
+            tableId : options.table.id,
+            rowId : model.id,
+            colId : getColumnId(index),
+            value : cell
+          }, {table : options.table});
+        }), {table : options.table, rowId : model.id}));
+      }
+    }
+
+    function getColumnId(index) {
+      console.log('getColumnId of cells', index, options.table.get('columns'));
+      return options.table.get('columns').at(index).get('id');
     }
   },
   url : function () {
@@ -123,6 +155,14 @@ var Rows = Backbone.Collection.extend({
     options || (options = {});
     this.table = options.table;
     console.log('init rows', this);
+    this.set(models.map(function (row) {
+      console.log('row looks like', row);
+      if (row instanceof Row) {
+        return row;
+      } else {
+        return new Row(row, {table : options.table});
+      }
+    }));
   },
   url : function () {
     return apiUrl('/tables/' + this.table.get('id') + '/rows');
@@ -156,6 +196,13 @@ var Columns = Backbone.Collection.extend({
   initialize : function (models, options) {
     console.log('init columns', this, models, options);
     this.table = options.table;
+    this.set(models.map(function (col) {
+      if (col instanceof Column) {
+        return col;
+      } else {
+        return new Column(col, {table : options.table});
+      }
+    }));
   },
   url : function () {
     return apiUrl('/tables/' + this.table.get('id') + '/columns');
@@ -182,7 +229,10 @@ var Table = Backbone.Model.extend({
     } else {
       console.log('columns found!');
       this.set('columns', new Columns(model.columns, {table : this}));
-      this.set('rows', new Rows(model.rows, {table : this}));
+      this.set('rows', new Rows(model.rows.map(function (row) {
+        console.log('mapping row', row);
+        return new Row(row, {table : self});
+      }), {table : this}));
     }
   },
   url : function () {
@@ -231,7 +281,22 @@ function apiUrl(path) {
   return '/api' + path;
 }
 
+function init(done) {
+  var tables = new Tables();
+  tables.fetch({
+    success : function () {
+      console.log('done loading!');
+      done(null, tables);
+    },
+    error : function (err) {
+      console.log('error fetching tables');
+      done(err);
+    }
+  })
+}
+
 module.exports = {
+  init : init,
   Table : Table,
   Tables : Tables,
   Column : Column,
