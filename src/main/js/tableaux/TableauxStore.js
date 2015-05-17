@@ -8,7 +8,7 @@ var Cell = Backbone.Model.extend({
   initialize : function (model, options) {
     console.log('init cell', this, model, options);
     this.set('editing', this.get('editing') || false);
-    this.set('tableId', options.table.get('id'));
+    this.set('tableId', this.collection.table.get('id'));
     this.set('rowId', this.get('rowId') || model.rowId);
     this.set('colId', this.get('colId') || model.colId);
     this.set('value', this.get('value') || model.value);
@@ -40,7 +40,6 @@ var Cell = Backbone.Model.extend({
 var Cells = Backbone.Collection.extend({
   model : Cell,
   initialize : function (models, options) {
-    var self = this;
     console.log('init cells', this, models, options);
     this.table = options.table;
     this.rowId = options.rowId;
@@ -52,11 +51,11 @@ var Cells = Backbone.Collection.extend({
           return value;
         } else {
           console.log('found value in cell', value);
-          return new Cell({
+          return {
             rowId : options.rowId,
             colId : getColumnId(index),
             value : value
-          }, options);
+          };
         }
       }));
     } else {
@@ -64,8 +63,8 @@ var Cells = Backbone.Collection.extend({
     }
 
     function getColumnId(index) {
-      console.log('getColumnId of', index, self.table.get('columns'));
-      return self.table.get('columns').at(index).get('id');
+      console.log('getColumnId of', index, options.table.get('columns'));
+      return options.table.get('columns')[index].id;
     }
   },
   url : function () {
@@ -75,55 +74,23 @@ var Cells = Backbone.Collection.extend({
   },
   parse : function (response) {
     console.log('parsing cells', response);
-    var self = this;
-    if (this.table && this.table.get('columns').length > 0) {
-      response = response.map(function (value, index) {
-        if (!value.tableId && index < self.table.get('columns').length) {
-          return new Cell({
-            colId : getColumnId(index),
-            value : value
-          }, options);
-        } else {
-          return value;
-        }
-      });
-    }
     return response;
-
-    function getColumnId(index) {
-      console.log('getColumnId of cells', index, self.table.get('columns'), self.table.get('columns').length);
-      return self.table.get('columns').at(index).get('id');
-    }
   }
 });
 
 var Row = Backbone.Model.extend({
   initialize : function (model, options) {
-    var self = this;
     console.log('init row', this, model, options);
     this.set('id', model.id);
-    if (options.table) {
-      this.set('table', options.table);
-      console.log('following models', model);
-      if (model instanceof Cells) {
-        this.set('values', model);
-      } else {
-        this.set('values', new Cells(model.values.map(function (cell, index) {
-          if (options.table.get('columns').length > index) {
-            return new Cell({
-              tableId : options.table.id,
-              rowId : model.id,
-              colId : getColumnId(index),
-              value : cell
-            }, {table : options.table});
-          }
-        }), {table : options.table, rowId : model.id}));
-      }
-    }
-
-    function getColumnId(index) {
-      console.log('getColumnId of row', index, options.table.get('columns'));
-      return options.table.get('columns').at(index).get('id');
+    this.set('table', this.collection.table);
+    console.log('following models', model);
+    if (model instanceof Cells) {
+      this.set('values', model);
+    } else {
+      this.set('values', new Cells(model.values.map(function (cell, idx) {
+        cell.index = idx;
+        return cell;
+      }), {table : this.get('table'), rowId : model.id}));
     }
   },
   url : function () {
@@ -160,37 +127,24 @@ var Row = Backbone.Model.extend({
 var Rows = Backbone.Collection.extend({
   model : Row,
   initialize : function (models, options) {
+    console.log('init rows', this, models, options);
     options || (options = {});
     this.table = options.table;
-    console.log('init rows', this);
-    this.set(models.map(function (row) {
-      console.log('row looks like', row);
-      if (row instanceof Row) {
-        return row;
-      } else {
-        return new Row(row, {table : options.table});
-      }
-    }));
   },
   url : function () {
     return apiUrl('/tables/' + this.table.get('id') + '/rows');
   },
   parse : function (response) {
-    var self = this;
     console.log('parse Rows', response);
-    response = response.rows.map(function (row) {
-      console.log('row =', row);
-      return new Row(row, {table : self.table});
-    });
     return response.rows;
   }
 });
 
 var Column = Backbone.Model.extend({
   initialize : function (model, options) {
+    console.log('init column', this, model, options);
     this.set('kind', model.kind || 'text');
     this.set('name', model.name);
-    console.log('init column', this, model, options);
   },
   url : function () {
     return this.get('id') ?
@@ -204,29 +158,17 @@ var Columns = Backbone.Collection.extend({
   initialize : function (models, options) {
     console.log('init columns', this, models, options);
     this.table = options.table;
-    this.set(models.map(function (col) {
-      if (col instanceof Column) {
-        return col;
-      } else {
-        return new Column(col, {table : options.table});
-      }
-    }));
   },
   url : function () {
     return apiUrl('/tables/' + this.table.get('id') + '/columns');
   },
   parse : function (response) {
-    var self = this;
-    response = response.columns.map(function (col) {
-      return new Column(col, {table : self.table});
-    });
     return response.columns;
   }
 });
 
 var Table = Backbone.Model.extend({
   initialize : function (model, options) {
-    var self = this;
     console.log('init table', this, model, options);
     this.set('id', this.get('id') || model.id);
     this.set('name', this.get('name') || model.name);
@@ -237,27 +179,14 @@ var Table = Backbone.Model.extend({
     } else {
       console.log('columns found!');
       this.set('columns', new Columns(model.columns, {table : this}));
-      this.set('rows', new Rows(model.rows.map(function (row) {
-        console.log('mapping row', row);
-        return new Row(row, {table : self});
-      }), {table : this}));
+      this.set('rows', new Rows(model.rows, {table : this}));
     }
   },
   url : function () {
     return this.get('id') ? apiUrl('/tables/' + this.get('id')) : apiUrl('/tables');
   },
   parse : function (response) {
-    var self = this;
     console.log('parsing Table', response);
-    if (response.columns && response.columns.length > 0) {
-      response.columns = new Columns(response.columns, {table : this});
-    }
-    if (response.rows && response.rows.length > 0) {
-      response.rows = new Rows(response.rows.map(function (row) {
-        console.log('mapping a row', row);
-        return new Row(row, {table : self});
-      }), {table : this});
-    }
     return response;
   }
 });
