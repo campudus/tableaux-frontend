@@ -16,6 +16,7 @@ var Table = React.createClass({
   },
 
   render : function () {
+    console.log('rendering table', this.getModel());
     var columns = this.getModel().get('columns');
     var rows = this.getModel().get('rows');
     return (

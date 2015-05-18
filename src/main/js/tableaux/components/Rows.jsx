@@ -10,6 +10,7 @@ var Rows = React.createClass({
     return (
       <tbody className="data">
       {this.getCollection().map(function (row, index) {
+        console.log('set model of row to', row);
         return <Row model={row} index={index}/>;
       })}
       </tbody>
