@@ -1,15 +1,19 @@
 var React = require('react');
-var BackboneMixin = require('backbone-react-component');
-var TableauxStore = require('../TableauxStore');
+var AmpersandMixin = require('ampersand-react-mixin');
 
 var Columns = React.createClass({
-  mixins : [BackboneMixin],
+  mixins : [AmpersandMixin],
+
+  componentDidMount : function() {
+    this.props.columns.fetch();
+  },
 
   render : function () {
+    console.log('rendering columns', this.props.columns);
     return (
       <tr className="heading">
-        {this.getCollection().map(function (column) {
-          return <th>{column.get('name')}</th>;
+        {this.props.columns.map(function (col, index) {
+          return <th key={index}>{col.name}</th>;
         })}
       </tr>
     );

@@ -1,14 +1,14 @@
 var React = require('react');
+var app = require('ampersand-app');
+var Tables = require('./tableaux/models/Tables');
 var Tableaux = require('./tableaux/components/Tableaux.jsx');
-var Store = require('./tableaux/TableauxStore');
-var Tables = require('./tableaux/TableauxStore').Tables;
-var store = new Tables([], {});
 
-Store.init(function (err, tables) {
-  if (!err) {
-    React.render(<Tableaux collection={tables}/>, document.getElementById('tableaux'));
-  } else {
-    console.log('error!', err);
+app.extend({
+  init : function () {
+    var self = this;
+    this.tables = new Tables();
+    React.render(<Tableaux tables={self.tables}/>, document.getElementById('tableaux'));
   }
 });
 
+app.init();

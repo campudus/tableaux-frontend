@@ -1,17 +1,16 @@
 var React = require('react');
-var Cell = require('./Cell.jsx');
-var BackboneMixin = require('backbone-react-component');
-var TableauxStore = require('../TableauxStore');
+var AmpersandMixin = require('ampersand-react-mixin');
 
 var Row = React.createClass({
-  mixins : [BackboneMixin],
+  mixins : [AmpersandMixin],
 
   render : function () {
-    var className = 'row row-' + this.getModel().get('id');
+    var className = 'row row-' + this.props.row.getId();
     return (
       <tr className={className}>
-        {this.getModel().get('values').map(function (cell) {
-          return <Cell model={cell}/>
+        {this.props.row.cells.map(function (cell, idx) {
+          console.log('in cell?', cell);
+          return <td key={idx}>hello cell {cell.value}</td>;
         })}
       </tr>
     );

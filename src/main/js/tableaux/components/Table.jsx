@@ -1,31 +1,32 @@
 var React = require('react');
-var Rows = require('./Rows.jsx');
+var AmpersandMixin = require('ampersand-react-mixin');
 var Columns = require('./Columns.jsx');
-var NewRow = require('./NewRow.jsx');
-var Backbone = require('backbone');
-var BackboneMixin = require('backbone-react-component');
-var TableauxStore = require('../TableauxStore');
+var Rows = require('./Rows.jsx');
 
 var Table = React.createClass({
-  mixins : [BackboneMixin],
+  mixins : [AmpersandMixin],
 
   componentDidMount : function () {
-    this.getModel().fetch();
-    this.getModel().get('columns').fetch();
-    this.getModel().get('rows').fetch();
+    // here we should fetch the table
+    console.log('fetching table');
+    this.props.table.fetch();
+    console.log('fetching table.columns');
+    this.props.table.columns.fetch();
+    console.log('fetching table.rows');
+    this.props.table.rows.fetch();
+    console.log('should fetch it..');
   },
 
   render : function () {
-    console.log('rendering table', this.getModel());
-    var columns = this.getModel().get('columns');
-    var rows = this.getModel().get('rows');
+    //console.log('rendering table', this.getModel());
+    //var columns = this.getModel().get('columns');
+    //var rows = this.getModel().get('rows');
+    console.log('rendering table', this.props.table);
+
     return (
       <table className="tableaux-table">
-        <thead>
-        <Columns collection={columns}/>
-        </thead>
-        <Rows collection={rows}/>
-        <NewRow />
+        <Columns columns={this.props.table.columns}/>
+        <Rows rows={this.props.table.rows}/>
       </table>
     );
   }
