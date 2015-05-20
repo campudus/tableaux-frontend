@@ -3,6 +3,7 @@ var apiUrl = require('../apiUrl');
 
 var Column = AmpersandModel.extend({
   props : {
+    id : 'number',
     name : 'string',
     kind : 'string',
     ordering : 'number'
@@ -10,7 +11,7 @@ var Column = AmpersandModel.extend({
 
   urlRoot : function() {
     console.log('get url from column', this);
-    return apiUrl('/tables/' + this.collection.parent.id + '/columns');
+    return apiUrl('/tables/' + this.collection.parent.getId() + '/columns');
   }
 });
 

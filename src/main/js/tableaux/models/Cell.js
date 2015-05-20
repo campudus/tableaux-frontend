@@ -6,12 +6,27 @@ var Cell = AmpersandModel.extend({
     tableId : 'number',
     colId : 'number',
     rowId : 'number',
-    value : 'any'
+    value : 'any',
+    isEditing : 'boolean'
   },
 
-  url : function() {
-    console.log('get url from cell', this);
-    return apiUrl('/tables/' + this.tableId + '/columns/' + this.colId + '/rows/' + this.rowId);
+  toJSON : function () {
+    console.log('serializing cell', this);
+    return {cells : [this.attributes]};
+  },
+
+  url : function () {
+    var url = apiUrl('/tables/' + this.tableId + '/columns/' + this.colId + '/rows/' + this.rowId);
+    console.log('get url from cell', url);
+    return url;
+  },
+
+  parse : function (resp, options) {
+    if (!(options && options.parse)) {
+      return resp;
+    } else {
+      return resp.rows[0];
+    }
   }
 });
 

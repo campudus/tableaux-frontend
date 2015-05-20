@@ -1,37 +1,32 @@
 var React = require('react');
-var BackboneMixin = require('backbone-react-component');
-var dispatcher = require('../TableauxDispatcher');
-var TableauxConstants = require('../TableauxConstants');
+var AmpersandMixin = require('ampersand-react-mixin');
 var EditCell = require('./EditCell.jsx');
 var LabelCell = require('./LabelCell.jsx');
 
 var Cell = React.createClass({
-  mixins : [BackboneMixin],
+  mixins : [AmpersandMixin],
 
-  handleLabelClick : function () {
-    var stuff = {colId : this.getModel().colId, rowId : this.getModel().rowId};
-    this.getModel().set('editing', true);
-    dispatcher.emit(TableauxConstants.START_EDIT_CELL, stuff);
+  componentDidMount : function () {
+    this.props.cell.fetch();
   },
 
-  handleEditDone : function (event) {
-    var self = this;
-    this.getModel().set('editing', false);
-    if (event.changed) {
-      this.getModel().set('value', event.newData);
-      this.getModel().save({error : function(err) {
-        self.getModel().set('value', event.oldData);
-      }});
-    }
-    dispatcher.emit(TableauxConstants.CHANGE_CELL_EVENT, event);
+  handleLabelClick : function () {
+    this.props.cell.isEditing = true;
+  },
+
+  handleEditDone : function (newValue) {
+    this.props.cell.value = newValue;
+    this.props.cell.isEditing = false;
+    console.log('calling save with {parse:false}');
+    this.props.cell.save(this.props.cell, {parse : false});
   },
 
   render : function () {
-    console.log('rendering cell', this.getModel());
-    if (this.getModel().get('editing')) {
-      return <EditCell model={this.getModel()} onBlur={this.handleEditDone}/>;
+    console.log('rendering cell', this.props.cell);
+    if (this.props.cell.isEditing) {
+      return <EditCell cell={this.props.cell} onBlur={this.handleEditDone}/>;
     } else {
-      return <LabelCell model={this.getModel()} onClick={this.handleLabelClick}/>;
+      return <LabelCell cell={this.props.cell} onClick={this.handleLabelClick}/>;
     }
   }
 });

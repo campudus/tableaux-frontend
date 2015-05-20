@@ -1,25 +1,8 @@
 var React = require('react');
-var BackboneMixin = require('backbone-react-component');
-var dispatcher = require('../TableauxDispatcher');
-var TableauxConstants = require('../TableauxConstants');
+var AmpersandMixin = require('ampersand-react-mixin');
 
 var Cell = React.createClass({
-  mixins : [BackboneMixin],
-
-  emitChangeIfEdited : function () {
-    var value = this.refs.input.getDOMNode().value;
-    var event = {
-      tableId : this.getModel().tableId,
-      colId : this.props.colId,
-      rowId : this.props.rowId,
-      oldData : this.props.value,
-      newData : value,
-      changed : value !== this.props.value
-    };
-    if (this.props.onBlur) {
-      this.props.onBlur(event);
-    }
-  },
+  mixins : [AmpersandMixin],
 
   componentDidMount : function () {
     var node = this.refs.input.getDOMNode();
@@ -28,19 +11,23 @@ var Cell = React.createClass({
     node.value = node.value;
   },
 
+  doneEditing : function() {
+    this.props.onBlur(this.refs.input.getDOMNode().value);
+  },
+
   componentWillMount : function () {
-    this.inputName = 'cell-' + this.getModel().tableId + '-' + this.props.colId + '-' + this.props.rowId;
+    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.colId + '-' + this.props.cell.rowId;
   },
 
   render : function () {
     var inputType = 'text';
-    var value = this.getModel().get('value') || null;
+    var value = this.props.cell.value || null;
     return (
       <td className="cell editing">
         <input type={inputType}
                name={this.inputName}
                defaultValue={value}
-               onBlur={this.emitChangeIfEdited}
+               onBlur={this.doneEditing}
                ref="input"/>
       </td>
     );

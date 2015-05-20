@@ -1,5 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
+var Cell = require('./Cell.jsx');
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -9,8 +10,7 @@ var Row = React.createClass({
     return (
       <tr className={className}>
         {this.props.row.cells.map(function (cell, idx) {
-          console.log('in cell?', cell);
-          return <td key={idx}>hello cell {cell.value}</td>;
+          return <Cell key={idx} cell={cell}/>;
         })}
       </tr>
     );

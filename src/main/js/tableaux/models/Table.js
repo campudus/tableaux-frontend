@@ -7,21 +7,9 @@ var Table = Model.extend({
     id : 'number',
     name : 'string'
   },
-  derived : {
-    columns : {
-      deps : ['id'],
-      fn : function () {
-        console.log('deriving columns', this, this.getId());
-        return new Columns([], {parent : this});
-      }
-    },
-    rows : {
-      deps : ['id'],
-      fn : function () {
-        console.log('deriving rows', this, this.getId());
-        return new Rows([], {parent : this});
-      }
-    }
+  collections : {
+    columns: Columns,
+    rows : Rows
   }
 });
 

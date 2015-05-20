@@ -1,15 +1,13 @@
 var React = require('react');
-var dispatcher = require('../TableauxDispatcher');
-var BackboneMixin = require('backbone-react-component');
-var TableauxConstants = require('../TableauxConstants');
+var AmpersandMixin = require('ampersand-react-mixin');
 
 var Cell = React.createClass({
-  mixins : [BackboneMixin],
+  mixins : [AmpersandMixin],
 
   render : function () {
     return (
       <td className="cell" onClick={this.props.onClick}>
-        {this.getModel().get('value')}
+        {this.props.cell.value}
       </td>
     );
   }
