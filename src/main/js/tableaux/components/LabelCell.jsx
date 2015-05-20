@@ -2,7 +2,6 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 
 var Cell = React.createClass({
-  mixins : [AmpersandMixin],
 
   render : function () {
     return (
@@ -11,6 +10,7 @@ var Cell = React.createClass({
       </td>
     );
   }
+
 });
 
 module.exports = Cell;

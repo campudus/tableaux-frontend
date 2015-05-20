@@ -2,7 +2,6 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 
 var Cell = React.createClass({
-  mixins : [AmpersandMixin],
 
   componentDidMount : function () {
     var node = this.refs.input.getDOMNode();

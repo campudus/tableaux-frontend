@@ -18,8 +18,8 @@ var NewRow = React.createClass({
     return (
       <tr className={classes}>
         {this.props.isLoading ?
-          <td colspan={this.props.table.columns.length}>[loading]</td> :
-          <td colspan={this.props.table.columns.length} onClick={this.addRow}>[add]</td>}
+          <td colSpan={this.props.table.columns.length}>[loading]</td> :
+          <td colSpan={this.props.table.columns.length} onClick={this.addRow}>[add]</td>}
       </tr>
     );
   }
