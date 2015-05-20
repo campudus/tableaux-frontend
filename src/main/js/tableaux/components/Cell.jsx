@@ -6,10 +6,6 @@ var LabelCell = require('./LabelCell.jsx');
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
 
-  componentDidMount : function () {
-    this.props.cell.fetch();
-  },
-
   handleLabelClick : function () {
     this.props.cell.isEditing = true;
   },
@@ -17,7 +13,6 @@ var Cell = React.createClass({
   handleEditDone : function (newValue) {
     this.props.cell.value = newValue;
     this.props.cell.isEditing = false;
-    console.log('calling save with {parse:false}');
     this.props.cell.save(this.props.cell, {parse : false});
   },
 

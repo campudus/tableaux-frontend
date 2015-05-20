@@ -1,4 +1,5 @@
 var AmpersandModel = require('ampersand-model');
+var sync = require('ampersand-sync');
 var apiUrl = require('../apiUrl');
 
 var Cell = AmpersandModel.extend({
@@ -10,9 +11,10 @@ var Cell = AmpersandModel.extend({
     isEditing : 'boolean'
   },
 
-  toJSON : function () {
-    console.log('serializing cell', this);
-    return {cells : [this.attributes]};
+  serialize : function () {
+    var result = AmpersandModel.prototype.serialize.apply(this, arguments);
+    delete result.isEditing;
+    return {cells : [result]};
   },
 
   url : function () {

@@ -12,19 +12,18 @@ var Row = AmpersandModel.extend({
       deps : ['values'],
       fn : function() {
         var self = this;
-        return this.values.map(function(cellJson, idx) {
-          console.log('self.collection.parent', self.collection.parent);
+        return this.values.map(function(value, idx) {
+          console.log('cell from row', value);
           var json = {
             tableId : self.collection.parent.getId(),
             colId : getColumnId(idx),
             rowId : self.getId(),
-            value : cellJson.value
+            value : value
           };
           return new Cell(json);
         });
 
         function getColumnId(idx) {
-          console.log('self.collection.parent.columns.at(idx)', self.collection.parent.columns.at(idx));
           return self.collection.parent.columns.at(idx).getId();
         }
       }
@@ -32,8 +31,7 @@ var Row = AmpersandModel.extend({
   },
 
   url : function() {
-    console.log('get url from row', this);
-    return apiUrl('/tables/' + this.collection.parent.id + '/row');
+    return apiUrl('/tables/' + this.collection.parent.getId() + '/row');
   }
 });
 

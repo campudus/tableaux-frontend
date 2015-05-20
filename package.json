@@ -30,6 +30,7 @@
     "ampersand-model": "^5.0.3",
     "ampersand-react-mixin": "^0.1.3",
     "ampersand-rest-collection": "^4.0.0",
+    "ampersand-sync": "^3.0.7",
     "backbone": "^1.1.2",
     "backbone-react-component": "^0.8.1",
     "browser-sync": "^2.6.10",

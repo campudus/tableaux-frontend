@@ -13,7 +13,13 @@ var Tableaux = React.createClass({
   },
 
   componentWillMount : function () {
+    var self = this;
     this.props.tables.fetch();
+    this.props.tables.on('switch-table', function (event) {
+      console.log('got event', event, arguments);
+      self.setState({currentTableIndex : event.index});
+      self.forceUpdate();
+    });
   },
 
   getInitialState : function () {
@@ -21,16 +27,14 @@ var Tableaux = React.createClass({
   },
 
   render : function () {
+    console.log('rendering tableaux', this.props.tables, this.state.currentTableIndex);
     var tables = this.props.tables;
     var table = (tables.length > this.state.currentTableIndex) ?
       <Table key={this.state.currentTableIndex} table={tables.at(this.state.currentTableIndex)}/> : '';
-    var entries = tables.map(function (entry, index) {
-      return {name : entry.get('name'), index : index};
-    });
 
     return (
       <div className="tableaux">
-        <TableSwitcher currentIndex={this.state.currentTableIndex} entries={entries}/>
+        <TableSwitcher currentIndex={this.state.currentTableIndex} tables={tables}/>
         {table}
       </div>
     );

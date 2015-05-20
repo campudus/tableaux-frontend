@@ -2,17 +2,23 @@ var React = require('react');
 
 var TableSwitcher = React.createClass({
   handleClick : function (entry) {
+    var self = this;
     return function () {
       console.log('handling click', entry);
-      //dispatcher.emit(TableauxConstants.CHANGE_TABLE, entry);
+      self.props.tables.trigger('switch-table', entry);
+      console.log('triggered event on', self.props.tables);
     }
   },
 
   render : function () {
     var self = this;
+    var entries = this.props.tables.map(function (entry, index) {
+      return {name : entry.get('name'), index : index};
+    });
+
     return (
       <ul>
-        {this.props.entries.map(function (entry) {
+        {entries.map(function (entry) {
           return (
             <li
               key={entry.index}

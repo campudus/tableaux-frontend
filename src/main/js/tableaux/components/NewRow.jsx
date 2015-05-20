@@ -1,17 +1,25 @@
 var React = require('react');
-var EditCell = require('./EditCell.jsx');
-var BackboneMixin = require('backbone-react-component');
-var TableauxStore = require('../TableauxStore');
+var AmpersandMixin = require('ampersand-react-mixin');
+var Row = require('../models/Row');
 
 var NewRow = React.createClass({
-  mixins : [BackboneMixin],
+  mixins : [AmpersandMixin],
+
+  addRow : function () {
+    this.props.table.trigger('add-row');
+  },
 
   render : function () {
+    var classes = 'new-row';
+    if (this.props.isLoading) {
+      classes = classes + ' loading';
+    }
+
     return (
-      <tr className="new-row">
-        {this.getModel().get('columns').map(function (col) {
-          return <EditCell colId={col.id}/>;
-        })}
+      <tr className={classes}>
+        {this.props.isLoading ?
+          <td colspan={this.props.table.columns.length}>[loading]</td> :
+          <td colspan={this.props.table.columns.length} onClick={this.addRow}>[add]</td>}
       </tr>
     );
   }

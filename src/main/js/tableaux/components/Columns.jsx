@@ -4,7 +4,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
 
-  componentDidMount : function() {
+  componentWillMount : function() {
     this.props.columns.fetch();
   },
 
