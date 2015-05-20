@@ -23,7 +23,7 @@ var Cell = AmpersandModel.extend({
 
   parse : function (resp, options) {
     if (!(options && options.parse)) {
-      return resp;
+      return this;
     } else {
       return resp.rows[0];
     }
