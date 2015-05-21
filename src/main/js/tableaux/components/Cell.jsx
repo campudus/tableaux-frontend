@@ -11,17 +11,19 @@ var Cell = React.createClass({
   },
 
   handleEditDone : function (newValue) {
-    this.props.cell.value = newValue;
     this.props.cell.isEditing = false;
-    this.props.cell.save(this.props.cell, {
-      parse : false,
-      success : function () {
-        console.log('saved successfully');
-      },
-      error : function () {
-        console.log('save unsuccessful!');
-      }
-    });
+    if (this.props.cell.value !== newValue) {
+      this.props.cell.value = newValue;
+      this.props.cell.save(this.props.cell, {
+        parse : false,
+        success : function () {
+          console.log('saved successfully');
+        },
+        error : function () {
+          console.log('save unsuccessful!');
+        }
+      });
+    }
   },
 
   render : function () {
