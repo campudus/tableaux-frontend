@@ -1,5 +1,4 @@
 var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
 
 var Cell = React.createClass({
 

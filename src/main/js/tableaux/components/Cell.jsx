@@ -2,6 +2,7 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var EditCell = require('./EditCell.jsx');
 var LabelCell = require('./LabelCell.jsx');
+var Dispatcher = require('../Dispatcher');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
@@ -11,19 +12,9 @@ var Cell = React.createClass({
   },
 
   handleEditDone : function (newValue) {
-    this.props.cell.isEditing = false;
-    if (this.props.cell.value !== newValue) {
-      this.props.cell.value = newValue;
-      this.props.cell.save(this.props.cell, {
-        parse : false,
-        success : function () {
-          console.log('saved successfully');
-        },
-        error : function () {
-          console.log('save unsuccessful!');
-        }
-      });
-    }
+    var cell = this.props.cell;
+    cell.isEditing = false;
+    Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.colId + ':' + cell.rowId, {newValue : newValue});
   },
 
   render : function () {
