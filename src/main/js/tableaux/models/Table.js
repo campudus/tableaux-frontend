@@ -8,8 +8,13 @@ var Table = Model.extend({
     name : 'string'
   },
   collections : {
-    columns: Columns,
+    columns : Columns,
     rows : Rows
+  },
+  initialize : function () {
+    this.rows.on('remove', function (model, collection, options) {
+      console.log('remove model', model);
+    });
   }
 });
 

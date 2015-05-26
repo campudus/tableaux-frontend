@@ -2,6 +2,7 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var Table = require('./Table.jsx');
 var TableSwitcher = require('./TableSwitcher.jsx');
+var Dispatcher = require('../Dispatcher');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -15,7 +16,8 @@ var Tableaux = React.createClass({
   componentWillMount : function () {
     var self = this;
     this.props.tables.fetch();
-    this.props.tables.on('switch-table', function (event) {
+
+    Dispatcher.on('switch-table', function (event) {
       console.log('got event', event, arguments);
       self.setState({currentTableIndex : event.index});
       self.forceUpdate();
@@ -27,7 +29,6 @@ var Tableaux = React.createClass({
   },
 
   render : function () {
-    console.log('rendering tableaux', this.props.tables, this.state.currentTableIndex);
     var tables = this.props.tables;
     var table = (tables.length > this.state.currentTableIndex) ?
       <Table key={this.state.currentTableIndex} table={tables.at(this.state.currentTableIndex)}/> : '';

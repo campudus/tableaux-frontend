@@ -1,12 +1,11 @@
 var React = require('react');
+var Dispatcher = require('../Dispatcher');
 
 var TableSwitcher = React.createClass({
   handleClick : function (entry) {
-    var self = this;
     return function () {
       console.log('handling click', entry);
-      self.props.tables.trigger('switch-table', entry);
-      console.log('triggered event on', self.props.tables);
+      Dispatcher.trigger('switch-table', entry);
     }
   },
 

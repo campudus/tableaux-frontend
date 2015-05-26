@@ -15,15 +15,23 @@ var Cell = AmpersandModel.extend({
     isEditing : ['boolean', true, false]
   },
 
-  initialize : function () {
-    Dispatcher.on('change-cell:' + this.tableId + ':' + this.colId + ':' + this.rowId, this.changeCell.bind(this));
-  },
+  initialize : function (attrs, options) {
+    console.log('init cell', this);
+    var event = 'change-cell:' + this.tableId + ':' + this.colId + ':' + this.rowId;
+    var self = this;
+    self.changeCellListener = this.changeCell.bind(this);
 
-  destroy : function() {
-    Dispatcher.off('change-cell:' + this.tableId + ':' + this.colId + ':' + this.rowId, this.changeCell);
+    if (options && options.row) {
+      Dispatcher.on(event, self.changeCellListener);
+
+      options.row.once('remove', function () {
+        Dispatcher.off(event, self.changeCellListener);
+      });
+    }
   },
 
   changeCell : function (event) {
+    console.log('change event for cell', event);
     if (this.value !== event.newValue) {
       this.value = event.newValue;
       this.save(this, {
@@ -50,10 +58,13 @@ var Cell = AmpersandModel.extend({
   },
 
   parse : function (resp, options) {
+    console.log('parsing cell', resp, options);
     if (!(options && options.parse)) {
       return this;
-    } else {
+    } else if (resp.rows) {
       return resp.rows[0];
+    } else {
+      return resp;
     }
   }
 });

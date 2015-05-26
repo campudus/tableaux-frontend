@@ -18,7 +18,6 @@ var Cell = React.createClass({
   },
 
   render : function () {
-    console.log('rendering cell', this.props.cell);
     if (this.props.cell.isEditing) {
       return <EditCell cell={this.props.cell} onBlur={this.handleEditDone}/>;
     } else {

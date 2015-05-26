@@ -4,23 +4,27 @@ var Cell = require('./Cell');
 
 var Row = AmpersandModel.extend({
   props : {
-    id : 'number',
+    id : 'number'
+  },
+
+  session : {
     values : 'array'
   },
+
   derived : {
     cells : {
       deps : ['values'],
-      fn : function() {
+      fn : function () {
         var self = this;
-        return this.values.map(function(value, idx) {
-          console.log('cell from row', value);
+        return this.values.map(function (value, idx) {
           var json = {
             tableId : self.collection.parent.getId(),
             colId : getColumnId(idx),
             rowId : self.getId(),
             value : value
           };
-          return new Cell(json);
+          var cell = new Cell(json, {row : self});
+          return cell;
         });
 
         function getColumnId(idx) {
@@ -30,7 +34,7 @@ var Row = AmpersandModel.extend({
     }
   },
 
-  url : function() {
+  url : function () {
     return apiUrl('/tables/' + this.collection.parent.getId() + '/row');
   }
 });

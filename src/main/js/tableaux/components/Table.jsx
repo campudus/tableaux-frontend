@@ -3,6 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Columns = require('./Columns.jsx');
 var Rows = require('./Rows.jsx');
 var NewRow = require('./NewRow.jsx');
+var Dispatcher = require('../Dispatcher');
 
 var Table = React.createClass({
   mixins : [AmpersandMixin],
@@ -23,14 +24,12 @@ var Table = React.createClass({
         });
       }
     });
-    table.on('add-row', function () {
+    Dispatcher.on('add-row:' + table.id, function () {
       self.setState({isCreatingNewRow : true});
     });
   },
 
   render : function () {
-    console.log('rendering table', this.props.table);
-
     return (
       <table className="tableaux-table">
         <Columns columns={this.props.table.columns}/>
