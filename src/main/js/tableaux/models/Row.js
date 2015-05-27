@@ -8,6 +8,7 @@ var Row = AmpersandModel.extend({
   },
 
   session : {
+    columns : 'array',
     values : 'array'
   },
 
@@ -19,7 +20,7 @@ var Row = AmpersandModel.extend({
         return this.values.map(function (value, idx) {
           var json = {
             tableId : self.collection.parent.getId(),
-            colId : getColumnId(idx),
+            column : getColumn(idx),
             rowId : self.getId(),
             value : value
           };
@@ -27,15 +28,21 @@ var Row = AmpersandModel.extend({
           return cell;
         });
 
-        function getColumnId(idx) {
-          return self.collection.parent.columns.at(idx).getId();
+        function getColumn(idx) {
+          return self.collection.parent.columns.at(idx);
         }
       }
     }
   },
 
+  serialize : function () {
+    var ser = {columns : this.columns, rows : [{values : this.values}]};
+    console.log('serializing row?', ser);
+    return ser;
+  },
+
   url : function () {
-    return apiUrl('/tables/' + this.collection.parent.getId() + '/row');
+    return apiUrl('/tables/' + this.collection.parent.getId() + '/rows');
   }
 });
 

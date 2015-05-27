@@ -90,6 +90,17 @@ ul.main-menu {
           padding: 5px;
         }
 
+        &.cell.link span {
+          background-color: $link-background-color;
+          color: $link-foreground-color;
+          padding: 0 5px;
+          margin: 0 5px;
+
+          &.add {
+            color: $link-add-color;
+          }
+        }
+
         input {
           width: 100%;
           height: 100%;

@@ -1,12 +1,13 @@
 var AmpersandModel = require('ampersand-model');
 var Dispatcher = require('../Dispatcher');
+var Column = require('./Column');
 var sync = require('ampersand-sync');
 var apiUrl = require('../apiUrl');
 
 var Cell = AmpersandModel.extend({
   props : {
     tableId : 'number',
-    colId : 'number',
+    column : Column,
     rowId : 'number',
     value : 'any'
   },
@@ -16,7 +17,7 @@ var Cell = AmpersandModel.extend({
   },
 
   initialize : function (attrs, options) {
-    var event = 'change-cell:' + this.tableId + ':' + this.colId + ':' + this.rowId;
+    var event = 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
     var self = this;
     self.changeCellListener = this.changeCell.bind(this);
 
@@ -50,7 +51,7 @@ var Cell = AmpersandModel.extend({
   },
 
   url : function () {
-    var url = apiUrl('/tables/' + this.tableId + '/columns/' + this.colId + '/rows/' + this.rowId);
+    var url = apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
     return url;
   },
 

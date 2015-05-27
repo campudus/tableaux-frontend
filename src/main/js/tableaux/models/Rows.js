@@ -10,6 +10,9 @@ var Rows = Collection.extend({
   },
   parse: function(resp) {
     return resp.rows;
+  },
+  serialize : function(attrs) {
+    console.log('serializing rows?', attrs);
   }
 });
 

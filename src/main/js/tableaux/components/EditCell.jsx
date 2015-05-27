@@ -14,7 +14,7 @@ var Cell = React.createClass({
   },
 
   componentWillMount : function () {
-    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.colId + '-' + this.props.cell.rowId;
+    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
   },
 
   render : function () {

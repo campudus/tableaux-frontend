@@ -24,7 +24,7 @@ var Table = React.createClass({
         });
       }
     });
-    Dispatcher.on('add-row:' + table.id, function () {
+    Dispatcher.on('add-row:' + table.getId(), function () {
       self.setState({isCreatingNewRow : true});
     });
   },
