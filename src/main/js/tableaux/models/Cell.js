@@ -16,7 +16,6 @@ var Cell = AmpersandModel.extend({
   },
 
   initialize : function (attrs, options) {
-    console.log('init cell', this);
     var event = 'change-cell:' + this.tableId + ':' + this.colId + ':' + this.rowId;
     var self = this;
     self.changeCellListener = this.changeCell.bind(this);
@@ -31,7 +30,6 @@ var Cell = AmpersandModel.extend({
   },
 
   changeCell : function (event) {
-    console.log('change event for cell', event);
     if (this.value !== event.newValue) {
       this.value = event.newValue;
       this.save(this, {
@@ -53,7 +51,6 @@ var Cell = AmpersandModel.extend({
 
   url : function () {
     var url = apiUrl('/tables/' + this.tableId + '/columns/' + this.colId + '/rows/' + this.rowId);
-    console.log('get url from cell', url);
     return url;
   },
 
