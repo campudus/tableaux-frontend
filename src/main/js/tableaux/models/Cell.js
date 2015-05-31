@@ -45,14 +45,24 @@ var Cell = AmpersandModel.extend({
     }
   },
 
-  serialize : function () {
-    var result = AmpersandModel.prototype.serialize.apply(this, arguments);
-    return {cells : [result]};
-  },
-
   url : function () {
     var url = apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
     return url;
+  },
+
+  toJSON : function () {
+    var attrs = this.serialize();
+    if (this.column.isLink) {
+      var values = attrs.value.map(function (to) {
+        return to.id;
+      });
+      delete attrs.value;
+      attrs.value = {
+        from : this.rowId,
+        values : values
+      };
+    }
+    return attrs;
   },
 
   parse : function (resp, options) {

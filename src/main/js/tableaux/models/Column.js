@@ -9,6 +9,18 @@ var Column = AmpersandModel.extend({
     ordering : 'number'
   },
 
+  session : {
+    toTable : ['number', false],
+    toColumn : ['number', false],
+    isLink : ['boolean', true, false]
+  },
+
+  initialize : function(attrs, options) {
+    if (attrs.toTable && attrs.toColumn) {
+      this.isLink = true;
+    }
+  },
+
   urlRoot : function() {
     console.log('get url from column', this);
     return apiUrl('/tables/' + this.collection.parent.getId() + '/columns');
