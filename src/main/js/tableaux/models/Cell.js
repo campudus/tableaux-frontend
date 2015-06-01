@@ -1,5 +1,6 @@
 var AmpersandModel = require('ampersand-model');
 var Dispatcher = require('../Dispatcher');
+var Tables = require('./Tables');
 var Column = require('./Column');
 var sync = require('ampersand-sync');
 var apiUrl = require('../apiUrl');
@@ -13,19 +14,20 @@ var Cell = AmpersandModel.extend({
   },
 
   session : {
+    tables : [Tables, true],
     isEditing : ['boolean', true, false]
   },
 
   derived : {
     changeCellEvent : {
       deps : ['tableId', 'column', 'rowId'],
-      fn : function() {
+      fn : function () {
         return 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
       }
     },
     isLink : {
-      deps: ['column'],
-      fn : function() {
+      deps : ['column'],
+      fn : function () {
         return this.column.isLink;
       }
     }
@@ -36,16 +38,19 @@ var Cell = AmpersandModel.extend({
     var self = this;
     self.changeCellListener = this.changeCell.bind(this);
 
-    if (options && options.row) {
+    if (options && options.row && !options.noListeners) {
+      console.log('adding cell listener');
       Dispatcher.on(event, self.changeCellListener);
 
-      options.row.once('remove', function () {
+      options.row.on('remove', function () {
+        console.log('removing cell listener');
         Dispatcher.off(event, self.changeCellListener);
       });
     }
   },
 
   changeCell : function (event) {
+    console.log('got a change cell event for cell(' + this.column.getId() + ',' + this.rowId + '):', event);
     var self = this;
     var oldValue = this.value;
     if (oldValue !== event.newValue) {

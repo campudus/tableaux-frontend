@@ -1,6 +1,6 @@
 var React = require('react');
 
-var Cell = React.createClass({
+var LabelCell = React.createClass({
 
   render : function () {
     var cell = this.props.cell;
@@ -13,4 +13,4 @@ var Cell = React.createClass({
 
 });
 
-module.exports = Cell;
+module.exports = LabelCell;

@@ -13,7 +13,6 @@ var Table = React.createClass({
   },
 
   componentWillMount : function () {
-    var self = this;
     var table = this.props.table;
     table.fetch({
       success : function () {
@@ -24,9 +23,16 @@ var Table = React.createClass({
         });
       }
     });
-    Dispatcher.on('add-row:' + table.getId(), function () {
-      self.setState({isCreatingNewRow : true});
-    });
+    Dispatcher.on('add-row:' + table.getId(), this.addRowEvent);
+  },
+
+  componentWillUnmount : function () {
+    console.log('unmounting table');
+    Dispatcher.off('add-row:' + this.props.table.getId(), this.addRowEvent);
+  },
+
+  addRowEvent : function () {
+    this.setState({isCreatingNewRow : true});
   },
 
   render : function () {

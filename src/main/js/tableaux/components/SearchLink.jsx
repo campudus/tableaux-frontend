@@ -9,7 +9,7 @@ var Cell = React.createClass({
   mixins : [OutsideClick],
 
   getInitialState : function () {
-    return {isAdding : false, tables : new Tables(), searchResults : []};
+    return {isAdding : false, searchResults : []};
   },
 
   addLink : function () {
@@ -42,7 +42,7 @@ var Cell = React.createClass({
 
     var link = this.props.cell.column;
 
-    this.state.tables.getOrFetch(link.toTable, function (err, table) {
+    this.props.cell.tables.getOrFetch(link.toTable, function (err, table) {
       if (err) {
         console.log('error getting table', link.toTable, err);
         return;
@@ -70,7 +70,8 @@ var Cell = React.createClass({
             },
             error : function (err) {
               console.log('error getting rows', err)
-            }
+            },
+            kickListeners : true
           });
         },
         error : function (err) {

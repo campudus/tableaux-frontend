@@ -1,6 +1,6 @@
 var React = require('react');
 
-var Cell = React.createClass({
+var LabelLinkCell = React.createClass({
 
   render : function () {
     return <span className="link" onClick={this.props.click}>{this.props.element.value}</span>;
@@ -8,4 +8,4 @@ var Cell = React.createClass({
 
 });
 
-module.exports = Cell;
+module.exports = LabelLinkCell;

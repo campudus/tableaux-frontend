@@ -19,6 +19,7 @@ var Row = AmpersandModel.extend({
         var self = this;
         return this.values.map(function (value, idx) {
           var json = {
+            tables : self.collection.parent.collection,
             tableId : self.collection.parent.getId(),
             column : getColumn(idx),
             rowId : self.getId(),

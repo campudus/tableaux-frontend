@@ -1,6 +1,6 @@
 var React = require('react');
 
-var Cell = React.createClass({
+var EditCell = React.createClass({
 
   componentDidMount : function () {
     var node = this.refs.input.getDOMNode();
@@ -33,4 +33,4 @@ var Cell = React.createClass({
   }
 });
 
-module.exports = Cell;
+module.exports = EditCell;

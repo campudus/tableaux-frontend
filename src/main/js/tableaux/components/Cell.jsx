@@ -24,13 +24,14 @@ var Cell = React.createClass({
   },
 
   render : function () {
-    if (this.props.cell.isLink) {
-      return <LinkCell cell={this.props.cell}/>;
+    var cell = this.props.cell;
+    if (cell.isLink) {
+      return <LinkCell cell={cell}/>;
     } else {
       if (this.state.isEditing) {
-        return <EditCell cell={this.props.cell} onBlur={this.handleEditDone}/>;
+        return <EditCell cell={cell} onBlur={this.handleEditDone}/>;
       } else {
-        return <LabelCell cell={this.props.cell} onClick={this.handleLabelClick}/>;
+        return <LabelCell cell={cell} onClick={this.handleLabelClick}/>;
       }
     }
   }

@@ -1,7 +1,7 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
 
-var Cell = React.createClass({
+var EditLinkCell = React.createClass({
 
   mixins : [OutsideClick],
 
@@ -11,7 +11,6 @@ var Cell = React.createClass({
   },
 
   handleClickOutside : function (evt) {
-    console.log('clicked outside', evt);
     this.props.onBlur();
   },
 
@@ -26,4 +25,4 @@ var Cell = React.createClass({
 
 });
 
-module.exports = Cell;
+module.exports = EditLinkCell;

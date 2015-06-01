@@ -5,7 +5,7 @@ var LabelLinkCell = require('./LabelLinkCell.jsx');
 var Dispatcher = require('../Dispatcher');
 var _ = require('lodash');
 
-var Cell = React.createClass({
+var LinkCell = React.createClass({
 
   getInitialState : function () {
     return {editing : {}};
@@ -25,6 +25,9 @@ var Cell = React.createClass({
       var newValue = _.filter(cell.value, function (e, i) {
         return i !== idx;
       });
+      var editMap = this.state.editing;
+      editMap[idx] = false;
+      this.setState({editing : editMap});
       Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
         {newValue : newValue});
     };
@@ -61,4 +64,4 @@ var Cell = React.createClass({
 
 });
 
-module.exports = Cell;
+module.exports = LinkCell;

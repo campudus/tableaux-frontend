@@ -20,7 +20,6 @@ var Tableaux = React.createClass({
     Dispatcher.on('switch-table', function (event) {
       console.log('got event', event, arguments);
       self.setState({currentTableIndex : event.index});
-      self.forceUpdate();
     });
   },
 
