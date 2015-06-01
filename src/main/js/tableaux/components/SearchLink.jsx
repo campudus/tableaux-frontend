@@ -1,8 +1,12 @@
 var React = require('react');
-var Tables = require('../models/Tables');
 var _ = require('lodash');
+var OutsideClick = require('react-onclickoutside');
+var Tables = require('../models/Tables');
+var Dispatcher = require('../Dispatcher');
 
 var Cell = React.createClass({
+
+  mixins : [OutsideClick],
 
   getInitialState : function () {
     return {isAdding : false, tables : new Tables(), searchResults : []};
@@ -14,17 +18,22 @@ var Cell = React.createClass({
   },
 
   addLinkValue : function (res) {
-    var self = this;
+    var cell = this.props.cell;
     var link = {
       id : res.rowId,
       value : res.value
     };
 
     return function () {
-      console.log('adding value to ', self.props.cell.value, link);
-      self.props.cell.value.push(link);
-      self.props.cell.save({method : "PUT"});
+      console.log('adding value to ', cell.value, link);
+      var links = _.clone(cell.value);
+      links.push(link);
+      Dispatcher.trigger(cell.changeCellEvent, {newValue : links});
     };
+  },
+
+  handleClickOutside : function (evt) {
+    this.setState({isAdding : false});
   },
 
   searchLink : function (e) {
@@ -78,11 +87,12 @@ var Cell = React.createClass({
 
   render : function () {
     var self = this;
+    var adder = '';
 
     if (!this.state.isAdding) {
-      return <span className="add" onClick={self.addLink}>+</span>;
+      adder = <span className="add" onClick={self.addLink}>+</span>;
     } else {
-      return (
+      adder = (
         <div className="add">
           <input type="text" ref="searchLink" onKeyUp={self.searchLink}/>
           <ul>
@@ -93,6 +103,8 @@ var Cell = React.createClass({
         </div>
       );
     }
+
+    return <div className="searchlink">{adder}</div>
   }
 
 });

@@ -8,22 +8,27 @@ var Dispatcher = require('../Dispatcher');
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
 
+  getInitialState : function () {
+    return {isEditing : false};
+  },
+
   handleLabelClick : function () {
-    this.props.cell.isEditing = true;
+    this.setState({isEditing : true});
   },
 
   handleEditDone : function (newValue) {
     var cell = this.props.cell;
-    cell.isEditing = false;
-    Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId, {newValue : newValue});
+    this.setState({isEditing : false});
+    Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
+      {newValue : newValue});
   },
 
   render : function () {
-    if (this.props.cell.isEditing) {
-      return <EditCell cell={this.props.cell} onBlur={this.handleEditDone}/>;
+    if (this.props.cell.isLink) {
+      return <LinkCell cell={this.props.cell}/>;
     } else {
-      if (this.props.cell.column.kind === 'link') {
-        return <LinkCell cell={this.props.cell}/>;
+      if (this.state.isEditing) {
+        return <EditCell cell={this.props.cell} onBlur={this.handleEditDone}/>;
       } else {
         return <LabelCell cell={this.props.cell} onClick={this.handleLabelClick}/>;
       }

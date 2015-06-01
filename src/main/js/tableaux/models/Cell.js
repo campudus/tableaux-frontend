@@ -17,6 +17,12 @@ var Cell = AmpersandModel.extend({
   },
 
   derived : {
+    changeCellEvent : {
+      deps : ['tableId', 'column', 'rowId'],
+      fn : function() {
+        return 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
+      }
+    },
     isLink : {
       deps: ['column'],
       fn : function() {
@@ -26,7 +32,7 @@ var Cell = AmpersandModel.extend({
   },
 
   initialize : function (attrs, options) {
-    var event = 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
+    var event = this.changeCellEvent;
     var self = this;
     self.changeCellListener = this.changeCell.bind(this);
 
@@ -40,15 +46,19 @@ var Cell = AmpersandModel.extend({
   },
 
   changeCell : function (event) {
-    if (this.value !== event.newValue) {
+    var self = this;
+    var oldValue = this.value;
+    if (oldValue !== event.newValue) {
       this.value = event.newValue;
       this.save(this, {
         parse : false,
         success : function () {
           console.log('saved successfully');
+          oldValue = null;
         },
         error : function () {
           console.log('save unsuccessful!');
+          self.value = oldValue;
         }
       });
     }
