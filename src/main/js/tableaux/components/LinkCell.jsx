@@ -11,12 +11,13 @@ var Cell = React.createClass({
 
   render : function () {
     var self = this;
+    var cell = this.props.cell;
     return (
-      <td className="cell link">
-        {this.props.cell.value.map(function (e, i) {
+      <td className={'cell link cell-' + cell.column.getId() + '-' + cell.rowId}>
+        {cell.value.map(function (e, i) {
           return <span key={i} onClick={self.linkClick(e, i)}>{e.value}</span>;
         })}
-        <SearchLink cell={this.props.cell}/>
+        <SearchLink cell={cell}/>
       </td>
     );
   }

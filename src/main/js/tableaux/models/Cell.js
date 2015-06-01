@@ -16,6 +16,15 @@ var Cell = AmpersandModel.extend({
     isEditing : ['boolean', true, false]
   },
 
+  derived : {
+    isLink : {
+      deps: ['column'],
+      fn : function() {
+        return this.column.isLink;
+      }
+    }
+  },
+
   initialize : function (attrs, options) {
     var event = 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
     var self = this;
@@ -52,7 +61,7 @@ var Cell = AmpersandModel.extend({
 
   toJSON : function () {
     var attrs = this.serialize();
-    if (this.column.isLink) {
+    if (this.isLink) {
       var values = attrs.value.map(function (to) {
         return to.id;
       });

@@ -19,9 +19,10 @@ var Cell = React.createClass({
 
   render : function () {
     var inputType = 'text';
-    var value = this.props.cell.value || null;
+    var cell = this.props.cell;
+    var value = cell.value || null;
     return (
-      <td className="cell editing">
+      <td className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
         <input type={inputType}
                name={this.inputName}
                defaultValue={value}
