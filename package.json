@@ -25,6 +25,7 @@
   "homepage": "https://github.com/campudus/tableaux-frontend",
   "dependencies": {
     "ampersand-router": "^3.0.2",
+    "browser-sync-spa": "^1.0.2",
     "react-dropzone": "^1.2.4",
     "superagent": "^1.2.0"
   },

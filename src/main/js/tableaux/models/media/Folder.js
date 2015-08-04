@@ -19,7 +19,7 @@ var Folder = AmpersandModel.extend({
   url : function () {
     var base = this.urlRoot();
 
-    if (this.isNew() || this.getId() === null) {
+    if (this.isNew() || isNaN(this.getId())) {
       return base;
     } else {
       return base + '/' + this.getId();

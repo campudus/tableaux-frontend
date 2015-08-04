@@ -5,6 +5,7 @@ var compass = require('gulp-compass');
 var minifyCss = require('gulp-minify-css');
 var del = require('del');
 var browserSync = require('browser-sync');
+var spa = require("browser-sync-spa");
 var reload = browserSync.reload;
 var plumber = require('gulp-plumber');
 var karma = require('karma').server;
@@ -16,8 +17,7 @@ var proxy = require('proxy-middleware');
 
 gulp.task('sass', sassCompile);
 gulp.task('assets', assetCopy);
-gulp.task('scripts1', scriptCompileApp);
-gulp.task('scripts2', scriptCompileMedia);
+gulp.task('appScript', scriptCompileApp);
 gulp.task('clean', clean);
 
 gulp.task('reloader', ['build'], reload);
@@ -25,7 +25,7 @@ gulp.task('dev', ['build'], server);
 gulp.task('test', ['build'], test);
 gulp.task('testWatch', ['build'], testWatch);
 
-gulp.task('build', ['sass', 'assets', 'scripts1', 'scripts2']);
+gulp.task('build', ['sass', 'assets', 'appScript']);
 gulp.task('default', ['build']);
 
 
@@ -60,19 +60,6 @@ function scriptCompileApp() {
     .pipe(gulp.dest('out/js/'));
 }
 
-function scriptCompileMedia() {
-  return browserify()
-    .transform(reactify)
-    .add('./src/main/js/media.js')
-    .bundle()
-    .on('error', function (err) {
-      console.log('error', err);
-      this.emit('end');
-    })
-    .pipe(source('media.js'))
-    .pipe(gulp.dest('out/js/'));
-}
-
 function assetCopy() {
   return gulp.src(['src/main/**', '!src/main/js/**', '!src/main/scss', '!src/main/scss/**'])
     .pipe(gulp.dest('out/'));
@@ -102,7 +89,11 @@ function server() {
   var proxyOptions = url.parse('http://localhost:8181/');
   proxyOptions.route = '/api';
 
+  browserSync.use(spa());
+
   browserSync({
+    open : false,
+    files : 'out/*',
     server : {
       baseDir : 'out',
       middleware : [proxy(proxyOptions)]

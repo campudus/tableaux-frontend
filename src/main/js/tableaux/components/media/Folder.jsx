@@ -21,9 +21,9 @@ var Folder = React.createClass({
   render : function () {
     var parent;
     if (this.props.folder.parent !== null) {
-      parent = <a href={'/media.html?folder=' + this.props.folder.parent}>...</a>;
+      parent = <a href={'/media/' + this.props.folder.parent}>...</a>;
     } else if (this.props.folder.id !== null) {
-      parent = <a href={'/media.html'}>...</a>;
+      parent = <a href={'/media'}>...</a>;
     }
 
     var subfolder = this.props.folder.subfolders.map(function (folder, idx) {
