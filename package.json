@@ -23,7 +23,11 @@
     "url": "https://github.com/campudus/tableaux-frontend/issues"
   },
   "homepage": "https://github.com/campudus/tableaux-frontend",
-  "dependencies": {},
+  "dependencies": {
+    "ampersand-router": "^3.0.2",
+    "react-dropzone": "^1.2.4",
+    "superagent": "^1.2.0"
+  },
   "devDependencies": {
     "ampersand-app": "^1.0.4",
     "ampersand-collection": "^1.4.5",
