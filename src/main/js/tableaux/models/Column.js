@@ -6,12 +6,13 @@ var Column = AmpersandModel.extend({
     id : 'number',
     name : 'string',
     kind : 'string',
-    ordering : 'number'
+    ordering : 'number',
+    multilanguage : ['boolean', true, false]
   },
 
   session : {
     toTable : ['number', false],
-    toColumn : ['number', false],
+    toColumn : [Column, false],
     isLink : ['boolean', true, false]
   },
 
