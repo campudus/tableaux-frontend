@@ -16,7 +16,8 @@ var proxy = require('proxy-middleware');
 
 gulp.task('sass', sassCompile);
 gulp.task('assets', assetCopy);
-gulp.task('scripts', scriptCompile);
+gulp.task('scripts1', scriptCompileApp);
+gulp.task('scripts2', scriptCompileMedia);
 gulp.task('clean', clean);
 
 gulp.task('reloader', ['build'], reload);
@@ -24,7 +25,7 @@ gulp.task('dev', ['build'], server);
 gulp.task('test', ['build'], test);
 gulp.task('testWatch', ['build'], testWatch);
 
-gulp.task('build', ['sass', 'assets', 'scripts']);
+gulp.task('build', ['sass', 'assets', 'scripts1', 'scripts2']);
 gulp.task('default', ['build']);
 
 
@@ -46,7 +47,7 @@ function sassCompile() {
     .pipe(gulp.dest('out/css'));
 }
 
-function scriptCompile() {
+function scriptCompileApp() {
   return browserify()
     .transform(reactify)
     .add('./src/main/js/app.js')
@@ -56,6 +57,19 @@ function scriptCompile() {
       this.emit('end');
     })
     .pipe(source('app.js'))
+    .pipe(gulp.dest('out/js/'));
+}
+
+function scriptCompileMedia() {
+  return browserify()
+    .transform(reactify)
+    .add('./src/main/js/media.js')
+    .bundle()
+    .on('error', function (err) {
+      console.log('error', err);
+      this.emit('end');
+    })
+    .pipe(source('media.js'))
     .pipe(gulp.dest('out/js/'));
 }
 
