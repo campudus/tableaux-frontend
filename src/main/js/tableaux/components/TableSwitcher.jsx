@@ -16,16 +16,18 @@ var TableSwitcher = React.createClass({
     });
 
     return (
-      <ul>
-        {entries.map(function (entry) {
-          return (
-            <li
-              key={entry.index}
-              onClick={self.handleClick(entry)}
-              className={entry.index === self.props.currentIndex ? 'active' : 'inactive'}>{entry.name}</li>
-          );
-        })}
-      </ul>
+      <nav id="table-switcher">
+        <ul className="table-switcher-menu">
+          {entries.map(function (entry) {
+            return (
+              <li
+                key={entry.index}
+                onClick={self.handleClick(entry)}
+                className={entry.index === self.props.currentIndex ? 'active' : 'inactive'}>{entry.name}</li>
+            );
+          })}
+        </ul>
+      </nav>
     );
   }
 });

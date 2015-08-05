@@ -1,0 +1,45 @@
+#tableaux {
+  font-size: $font-size-standard;
+  top:$space-height-header;
+  position: relative;
+  height:3000px;
+  background-color:$color-body-background;
+  z-index:1;
+}
+
+#table-switcher {
+  width: 100%;
+  background-color: white;
+  border-top: 3px solid $color-border-grey;
+  height: $space-height-table-switcher;
+  font-family: $font-sec;
+  text-transform: uppercase;
+  font-weight: bold;
+
+  .table-switcher-menu {
+    list-style: none;
+  }
+
+  li {
+    float: left;
+    height: $space-height-table-switcher;
+    line-height: $space-height-table-switcher;
+    max-width: 100px;
+    overflow: hidden;
+    padding: 0 2em;
+
+    &.active {
+      background-color: $color-primary;
+      color: $color-primary-contrast-text;
+    }
+  }
+
+}
+
+#table-wrapper {
+  background-color: white;
+  position: relative;
+  top: 50px;
+  left: 50px;
+  @include box-shadow(0px 0px 50px 0px #999999);
+}

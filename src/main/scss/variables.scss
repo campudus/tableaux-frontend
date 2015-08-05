@@ -1,4 +1,4 @@
-$body-background-color: #eee;
+/*
 $table-background-color: #fafafa;
 $head-cell-background-color: #ffffff;
 $selected-head-cell-background-color: #ffa088;
@@ -13,4 +13,25 @@ $status-background-color: #fefefe;
 
 $status-error-text-color: #333;
 $status-error-border-color: #ff8080;
-$status-error-background-color: #ffa088;
+$status-error-background-color: #ffa088;*/
+
+// Colors ----------------------------------- //
+$color-body-background: #efefef;
+$color-primary: #416e7f;
+$color-border-grey: #efefef;
+$color-primary-contrast-text: #fff;
+$color-primary-text: #333333;
+
+// Fonts ----------------------------------- //
+$font-main: 'Lato', Helvetica Neue, Helvetica, Arial, sans-serif;
+$font-sec: 'Montserrat', Helvetica Neue, Helvetica, Arial, sans-serif;
+
+// Font sizes ----------------------------------- //
+$font-size-base: 10px;
+$font-size-standard: 1.4rem;
+
+// Spaces ----------------------------------- //
+$space-padding-header: 5%;
+$space-height-table-switcher: 60px;
+$space-height-header: 180px;
+

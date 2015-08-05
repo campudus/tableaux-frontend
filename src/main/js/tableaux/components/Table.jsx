@@ -26,6 +26,16 @@ var Table = React.createClass({
     Dispatcher.on('add-row:' + table.getId(), this.addRowEvent);
   },
 
+  componentDidMount: function () {
+    //var width = this.refs.getDOMNode().offsetWidth;
+    console.log("componentDidMount width:");
+    console.log(this.refs.tableInner.getDOMNode());
+    console.log(this.refs.tableInner.getDOMNode().offsetWidth);
+    console.log(this.refs.tableWrapper.getDOMNode().offsetWidth);
+    console.log("findDOMNode");
+    console.log(React.findDOMNode(this));
+  },
+
   componentWillUnmount : function () {
     console.log('unmounting table');
     Dispatcher.off('add-row:' + this.props.table.getId(), this.addRowEvent);
@@ -37,11 +47,13 @@ var Table = React.createClass({
 
   render : function () {
     return (
-      <table className="tableaux-table">
-        <Columns columns={this.props.table.columns}/>
-        <Rows rows={this.props.table.rows}/>
-        <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
-      </table>
+      <div id="table-wrapper" ref="tableWrapper">
+        <table className="tableaux-table" ref="tableInner">
+          <Columns columns={this.props.table.columns}/>
+          <Rows rows={this.props.table.rows}/>
+          <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
+        </table>
+      </div>
     );
   }
 });

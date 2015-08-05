@@ -45,7 +45,7 @@ function sassCompile() {
       sass : 'src/main/scss',
       image : 'src/main/img'
     }))
-    //for speed now disabled.pipe(minifyCss())
+    //for speed now disabled .pipe(minifyCss())
     .pipe(gulp.dest('out/css'))
     .pipe(browserSync.reload({stream : true}));
 }
