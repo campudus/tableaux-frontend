@@ -20,7 +20,9 @@ gulp.task('assets', assetCopy);
 gulp.task('appScript', scriptCompileApp);
 gulp.task('clean', clean);
 
-gulp.task('reloader', ['build'], reload);
+gulp.task('reload:scripts', ['appScript'], reload);
+gulp.task('reload:assets', ['assets'], reload);
+gulp.task('reload:sass', ['sass'], reload);
 gulp.task('dev', ['build'], server);
 gulp.task('test', ['build'], test);
 gulp.task('testWatch', ['build'], testWatch);
@@ -43,8 +45,9 @@ function sassCompile() {
       sass : 'src/main/scss',
       image : 'src/main/img'
     }))
-    .pipe(minifyCss())
-    .pipe(gulp.dest('out/css'));
+    //for speed now disabled.pipe(minifyCss())
+    .pipe(gulp.dest('out/css'))
+    .pipe(browserSync.reload({stream : true}));
 }
 
 function scriptCompileApp() {
@@ -86,7 +89,8 @@ function testWatch(done) {
 }
 
 function server() {
-  var proxyOptions = url.parse('http://localhost:8181/');
+  //var proxyOptions = url.parse('http://10.10.2.36:8181/');
+  var proxyOptions = url.parse('http://localhost:8080/');
   proxyOptions.route = '/api';
 
   browserSync.use(spa());
@@ -100,7 +104,9 @@ function server() {
     }
   });
 
-  gulp.watch(['src/main/**', 'src/main/js/**', 'src/main/scss/**/*.scss'], {}, ['reloader']);
+  gulp.watch(['src/main/**', '!src/main/js/**', '!src/main/scss/**/*.scss'], {}, ['reload:assets']);
+  gulp.watch(['src/main/js/**'], {}, ['reload:scripts']);
+  gulp.watch(['src/main/scss/**/*.scss'], {}, ['sass']);
 
   //gulp.src('src/test/**/*Spec.js').pipe(karma({
   //  configFile : 'karma.conf.js',
