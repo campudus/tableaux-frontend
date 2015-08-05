@@ -17,11 +17,11 @@ var NewRow = React.createClass({
     }
 
     return (
-      <tr className={classes}>
+      <div className={classes}>
         {this.props.isLoading ?
-          <td colSpan={this.props.table.columns.length}>[loading]</td> :
-          <td colSpan={this.props.table.columns.length} onClick={this.addRow}>[add]</td>}
-      </tr>
+          <div colSpan={this.props.table.columns.length}>[loading]</div> :
+          <div colSpan={this.props.table.columns.length} onClick={this.addRow}>[add]</div>}
+      </div>
     );
   }
 });

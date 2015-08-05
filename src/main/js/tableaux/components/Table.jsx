@@ -48,11 +48,11 @@ var Table = React.createClass({
   render : function () {
     return (
       <div id="table-wrapper" ref="tableWrapper">
-        <table className="tableaux-table" ref="tableInner">
+        <div className="tableaux-table" ref="tableInner">
           <Columns columns={this.props.table.columns}/>
           <Rows rows={this.props.table.rows}/>
           <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
-        </table>
+        </div>
       </div>
     );
   }

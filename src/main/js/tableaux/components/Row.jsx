@@ -8,11 +8,11 @@ var Row = React.createClass({
   render : function () {
     var className = 'row row-' + this.props.row.getId();
     return (
-      <tr className={className}>
+      <div className={className}>
         {this.props.row.cells.map(function (cell, idx) {
           return <Cell key={idx} cell={cell}/>;
         })}
-      </tr>
+      </div>
     );
   }
 });

@@ -7,11 +7,11 @@ var Columns = React.createClass({
   render : function () {
     console.log('rendering columns', this.props.columns);
     return (
-      <tr className="heading">
+      <div className="heading">
         {this.props.columns.map(function (col, index) {
-          return <th key={index}>{col.name}</th>;
+          return <div className="column-head" key={index}>{col.name}</div>;
         })}
-      </tr>
+      </div>
     );
   }
 });

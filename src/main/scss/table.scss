@@ -1,10 +1,11 @@
 #tableaux {
   font-size: $font-size-standard;
-  top:$space-height-header;
+  top: $space-height-header;
   position: relative;
-  height:3000px;
-  background-color:$color-body-background;
-  z-index:1;
+  background-color: $color-body-background;
+  z-index: 1;
+  display: table;
+  min-width: 100%;
 }
 
 #table-switcher {
@@ -37,9 +38,56 @@
 }
 
 #table-wrapper {
+  padding: 50px;
+  display: table;
+}
+
+.tableaux-table {
   background-color: white;
   position: relative;
-  top: 50px;
-  left: 50px;
-  @include box-shadow(0px 0px 50px 0px #999999);
+  @include box-shadow(0px 0px 50px 0px #ababab);
+  display: table;
+
+  .heading {
+    border-bottom: 3px solid $color-border-grey;
+    @include box-sizing(border-box);
+    font-weight: bold;
+    background-color: #F9F9F9;
+  }
+
+  .cell, .column-head {
+    border-right: 1px solid $color-border-grey;
+  }
+
+  .row {
+    border-bottom: 1px solid $color-border-grey;
+  }
+
+  .cell span {
+    overflow-y: hidden;
+    max-height: 200px;
+    display: block;
+  }
+
+  .heading, .row {
+    display: table;
+    table-layout: fixed;
+
+    .column-head, .cell {
+      display: table-cell;
+      width: $space-standard-cell-width;
+      min-width: $space-standard-cell-width;
+      max-width: $space-standard-cell-width;
+      padding: 10px;
+      @include box-sizing(border-box);
+    }
+  }
+
+  .new-row{
+    padding:10px;
+    color:$color-primary;
+    font-weight:bold;
+  }
+
 }
+

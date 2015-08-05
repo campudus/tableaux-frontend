@@ -7,11 +7,11 @@ var Rows = React.createClass({
 
   render : function () {
     return (
-      <tbody className="data">
+      <div className="data">
       {this.props.rows.map(function(row, idx) {
         return <Row key={idx} row={row}/>
       })}
-      </tbody>
+      </div>
     );
   }
 });

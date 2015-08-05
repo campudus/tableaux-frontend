@@ -22,13 +22,13 @@ var EditCell = React.createClass({
     var cell = this.props.cell;
     var value = cell.value || null;
     return (
-      <td className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
+      <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
         <input type={inputType}
                name={this.inputName}
                defaultValue={value}
                onBlur={this.doneEditing}
                ref="input"/>
-      </td>
+      </div>
     );
   }
 });

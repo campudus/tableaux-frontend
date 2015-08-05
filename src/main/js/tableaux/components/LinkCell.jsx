@@ -45,7 +45,7 @@ var LinkCell = React.createClass({
     var self = this;
     var cell = this.props.cell;
     return (
-      <td className={'cell link cell-' + cell.column.getId() + '-' + cell.rowId}>
+      <div className={'cell link cell-' + cell.column.getId() + '-' + cell.rowId}>
         {cell.value.map(function (e, i) {
           if (self.state.editing[i]) {
             return <EditLinkCell key={i}
@@ -58,7 +58,7 @@ var LinkCell = React.createClass({
           }
         })}
         <SearchLink cell={cell}/>
-      </td>
+      </div>
     );
   }
 
