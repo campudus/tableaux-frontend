@@ -17,18 +17,18 @@ var Tableaux = React.createClass({
 
   switchTable : function (event) {
     console.log('got switch-table event', event);
-    self.setState({currentTableId : event.id});
+    this.setState({currentTableId : event.id});
   },
 
   componentWillMount : function () {
     var self = this;
     this.props.tables.fetch();
 
-    Dispatcher.on('switch-table', this.switchTable);
+    Dispatcher.on('switch-table', this.switchTable.bind(this));
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('switch-table', this.switchTable);
+    Dispatcher.off('switch-table', this.switchTable.bind(this));
   },
 
   getInitialState : function () {
