@@ -1,11 +1,11 @@
-var App = require('ampersand-app');
+var app = require('ampersand-app');
 var Router = require('./router');
 
-App.extend({
+app.extend({
   init : function () {
     this.router = new Router();
     this.router.history.start();
   }
 });
 
-App.init();
+app.init();

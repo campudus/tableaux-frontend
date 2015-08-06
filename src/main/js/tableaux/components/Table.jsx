@@ -16,13 +16,11 @@ var Table = React.createClass({
     var table = this.props.table;
     table.fetch({
       success : function () {
-        table.columns.fetch({
-          success : function () {
-            table.rows.fetch();
-          }
-        });
+        table.columns.fetch();
+        table.rows.fetch();
       }
     });
+
     Dispatcher.on('add-row:' + table.getId(), this.addRowEvent);
   },
 
@@ -37,7 +35,7 @@ var Table = React.createClass({
   },
 
   componentWillUnmount : function () {
-    console.log('unmounting table');
+    console.log('unmounting table', this.props.table.getId());
     Dispatcher.off('add-row:' + this.props.table.getId(), this.addRowEvent);
   },
 
@@ -48,7 +46,7 @@ var Table = React.createClass({
   render : function () {
     return (
       <div id="table-wrapper" ref="tableWrapper">
-        <div className="tableaux-table" ref="tableInner">
+        <div key={this.props.table.getId()} className='tableaux-table' ref="tableInner">
           <Columns columns={this.props.table.columns}/>
           <Rows rows={this.props.table.rows}/>
           <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
