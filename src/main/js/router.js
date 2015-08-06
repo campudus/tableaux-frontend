@@ -58,7 +58,9 @@ var tableauxRouter = Router.extend({
 
     this.folder.fetch();
 
-    this.renderPage(<FolderView folder={self.folder}/>);
+    this.folder.once('sync', function () {
+      self.renderPage(<FolderView folder={self.folder}/>);
+    });
   },
 
   renderPage : function (page) {

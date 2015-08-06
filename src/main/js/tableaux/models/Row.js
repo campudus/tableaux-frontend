@@ -18,6 +18,7 @@ var Row = AmpersandModel.extend({
       fn : function () {
         var self = this;
         return this.values.map(function (value, idx) {
+
           var json = {
             tables : self.collection.parent.collection,
             tableId : self.collection.parent.getId(),
@@ -25,8 +26,8 @@ var Row = AmpersandModel.extend({
             rowId : self.getId(),
             value : value
           };
-          var cell = new Cell(json, {row : self});
-          return cell;
+
+          return new Cell(json, {row : self});
         });
 
         function getColumn(idx) {
@@ -43,6 +44,16 @@ var Row = AmpersandModel.extend({
   },
 
   url : function () {
+    var base = this.urlRoot();
+
+    if (this.isNew()) {
+      return base;
+    } else {
+      return base + '/' + this.getId();
+    }
+  },
+
+  urlRoot : function () {
     return apiUrl('/tables/' + this.collection.parent.getId() + '/rows');
   }
 });

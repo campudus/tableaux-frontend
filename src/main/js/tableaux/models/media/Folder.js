@@ -5,7 +5,10 @@ var FilesCollection = require('./FilesCollection');
 
 var Folder = AmpersandModel.extend({
   props : {
-    id : 'number',
+    id : {
+      type : 'number',
+      default : null
+    },
     name : 'string',
     description : 'string',
     parent : 'number'
