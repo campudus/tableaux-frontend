@@ -7,18 +7,36 @@ var Column = AmpersandModel.extend({
     name : 'string',
     kind : 'string',
     ordering : 'number',
-    multilanguage : ['boolean', true, false]
+    multilanguage : {
+      type : 'boolean',
+      default : false
+    }
   },
 
   session : {
-    toTable : ['number', false],
-    toColumn : [Column, false],
-    isLink : ['boolean', true, false]
+    toTable : {
+      type : 'number'
+    },
+    toColumn : {
+      type : Column
+    }
   },
 
-  initialize : function(attrs, options) {
-    if (attrs.toTable && attrs.toColumn) {
-      this.isLink = true;
+  derived : {
+    isLink : {
+      deps : ['kind'],
+      fn : function () {
+        return this.kind === 'link';
+      }
+    }
+  },
+
+  url : function () {
+    var base = this.urlRoot();
+    if (this.isNew()) {
+      return base;
+    } else {
+      return base + '/' + this.getId();
     }
   },
 
