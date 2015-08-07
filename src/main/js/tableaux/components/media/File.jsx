@@ -7,12 +7,12 @@ var File = React.createClass({
 
   displayName : 'File',
 
-  onRemove : function() {
+  onRemove : function () {
     this.props.file.destroy({
-      success: function () {
+      success : function () {
         console.log('File destroyed!');
       },
-      error: function () {
+      error : function () {
         console.log('There was an error destroying the file');
       }
     });
@@ -22,8 +22,13 @@ var File = React.createClass({
     var name = this.props.file.name;
     var link = apiUrl(this.props.file.fileUrl);
 
+    var deleteButton = <span className="delete fa fa-trash-o" onClick={this.onRemove}></span>;
+
     return (
-      <li><a href={link}><span className="file">{name}</span></a> <span onClick={this.onRemove}>x</span></li>
+      <div className="file">
+        <a href={link}><span>{name}</span></a>
+        {deleteButton}
+      </div>
     );
   }
 });

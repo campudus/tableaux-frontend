@@ -40,11 +40,9 @@ var FileUpload = React.createClass({
 
   render : function () {
     return (
-      <div>
-        <Dropzone onDrop={this.onDrop} width={100} height={40}>
-          <div>Drop or click to upload.</div>
-        </Dropzone>
-      </div>
+      <Dropzone onDrop={this.onDrop} className="dropzone">
+        <div>Drop or click to upload.</div>
+      </Dropzone>
     );
   }
 });

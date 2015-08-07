@@ -11,7 +11,7 @@ var Subfolder = React.createClass({
     var link = '/media/' + this.props.folder.id;
 
     return (
-      <li><a href={link}><span className="subfolder">{name}</span></a></li>
+      <a href={link}><span className="subfolder">{name}</span></a>
     );
   }
 });

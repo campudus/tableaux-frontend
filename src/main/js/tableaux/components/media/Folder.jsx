@@ -19,35 +19,37 @@ var Folder = React.createClass({
   },
 
   render : function () {
-    var parent;
+    var parent = '';
     if (this.props.folder.parent !== null) {
-      parent = <a href={'/media/' + this.props.folder.parent}>...</a>;
+      parent = <div><i className="fa fa-chevron-left"></i><a href={'/media/' + this.props.folder.parent}>Back</a></div>;
     } else if (this.props.folder.id !== null) {
-      parent = <a href={'/media'}>...</a>;
+      parent = <div><i className="fa fa-chevron-left"></i><a href={'/media'}>Back</a></div>;
     }
 
     var subfolder = this.props.folder.subfolders.map(function (folder, idx) {
-      return <Subfolder key={idx} folder={folder}/>
+      return <li><i className="icon fa fa-folder-open"></i><Subfolder key={idx} folder={folder}/></li>
     });
 
     var files = this.props.folder.files.map(function (file, idx) {
-      return <File key={idx} file={file}/>
+      return <li><i className="icon fa fa-file"></i><File key={idx} file={file}/></li>
     });
 
     return (
-      <div>
-        <div>{parent}</div>
+      <div id="media-wrapper">
 
-        <div>{this.props.folder.name + " – " + this.props.folder.description}</div>
+        <div className="current-folder">
+          <div>{parent}</div>
+          <div>{this.props.folder.name + " – " + this.props.folder.description}</div>
+        </div>
 
-        <div>
-          <ol>
+        <div className="media-switcher">
+          <ol className="media-switcher-menu">
             {subfolder}
           </ol>
         </div>
 
-        <div>
-          <ol>
+        <div className="media-switcher">
+          <ol className="media-switcher-menu">
             {files}
           </ol>
         </div>
