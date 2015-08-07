@@ -14,6 +14,12 @@ var reactify = require('reactify');
 var source = require('vinyl-source-stream');
 var url = require('url');
 var proxy = require('proxy-middleware');
+var config = {"tableauxUrl" : "http://localhost:8080"};
+try {
+  config = require('./config.json');
+} catch (e) {
+  // ignore
+}
 
 gulp.task('sass', sassCompile);
 gulp.task('assets', assetCopy);
@@ -89,8 +95,7 @@ function testWatch(done) {
 }
 
 function server() {
-  //var proxyOptions = url.parse('http://10.10.2.36:8181/');
-  var proxyOptions = url.parse('http://localhost:8080/');
+  var proxyOptions = url.parse(config.tableauxUrl);
   proxyOptions.route = '/api';
 
   browserSync.use(spa());
