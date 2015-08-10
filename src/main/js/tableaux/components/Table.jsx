@@ -14,12 +14,8 @@ var Table = React.createClass({
 
   componentWillMount : function () {
     var table = this.props.table;
-    table.fetch({
-      success : function () {
-        table.columns.fetch();
-        table.rows.fetch();
-      }
-    });
+    table.columns.fetch();
+    table.rows.fetch();
 
     Dispatcher.on('add-row:' + table.getId(), this.addRowEvent);
   },

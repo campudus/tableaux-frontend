@@ -49,7 +49,7 @@ var tableauxRouter = Router.extend({
         var id = parseInt(tableid);
         var key = 'tableaux' + id;
 
-        self.renderPage(<Tableaux key={key} tables={self.tables} currentTableId={id}/>);
+        self.renderPage(<Tableaux key={key} tables={self.tables} initialTableId={id}/>);
       }
     });
   },

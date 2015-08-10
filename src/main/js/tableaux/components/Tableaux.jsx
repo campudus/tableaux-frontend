@@ -12,24 +12,32 @@ var Tableaux = React.createClass({
   displayName : 'Tableaux',
 
   propTypes : {
-    tables : React.PropTypes.object.isRequired
+    tables : React.PropTypes.object.isRequired,
+    initialTableId : React.PropTypes.number.isRequired
   },
 
   switchTable : function (event) {
-    console.log('got switch-table event', event);
-    this.setState({currentTableId : event.id});
+    console.log('Tableaux.switchTable', event);
+
+    var self = this;
+    // refresh Tables collection before switching
+    this.props.tables.fetch({
+      success : function () {
+        self.setState({currentTableId : event.id});
+      }
+    });
   },
 
   componentWillMount : function () {
-    Dispatcher.on('switch-table', this.switchTable.bind(this));
+    Dispatcher.on('switch-table', this.switchTable);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('switch-table', this.switchTable.bind(this));
+    Dispatcher.off('switch-table', this.switchTable);
   },
 
   getInitialState : function () {
-    return {currentTableId : this.props.currentTableId};
+    return {currentTableId : this.props.initialTableId};
   },
 
   render : function () {
