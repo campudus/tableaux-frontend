@@ -21,9 +21,6 @@ var Tableaux = React.createClass({
   },
 
   componentWillMount : function () {
-    var self = this;
-    this.props.tables.fetch();
-
     Dispatcher.on('switch-table', this.switchTable.bind(this));
   },
 

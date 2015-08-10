@@ -25,11 +25,11 @@ var tableauxRouter = Router.extend({
 
     var self = this;
     this.tables = new Tables();
-    this.tables.fetch();
-
-    this.tables.once('sync', function (collection, val) {
-      if (typeof collection.at(0) !== 'undefined') {
-        self.redirectTo('table/' + collection.at(0).getId());
+    this.tables.fetch({
+      success : function (collection) {
+        if (typeof collection.at(0) !== 'undefined') {
+          self.redirectTo('table/' + collection.at(0).getId());
+        }
       }
     });
   },
@@ -37,14 +37,21 @@ var tableauxRouter = Router.extend({
   tableBrowser : function (tableid) {
     console.log("Router.tableBrowser", tableid);
 
+    if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
+      console.error("path param tableid is not valid");
+      return;
+    }
+
     var self = this;
     this.tables = new Tables();
-    this.tables.fetch();
+    this.tables.fetch({
+      success : function () {
+        var id = parseInt(tableid);
+        var key = 'tableaux' + id;
 
-    if (typeof tableid !== 'undefined' && !isNaN(parseInt(tableid))) {
-      this.renderPage(<Tableaux key={'tableaux' + parseInt(tableid)} tables={self.tables}
-                                currentTableId={parseInt(tableid)}/>);
-    }
+        self.renderPage(<Tableaux key={key} tables={self.tables} currentTableId={id}/>);
+      }
+    });
   },
 
   mediaBrowser : function (folderid) {
@@ -56,10 +63,10 @@ var tableauxRouter = Router.extend({
       this.folder = new Folder({id : parseInt(folderid)});
     }
 
-    this.folder.fetch();
-
-    this.folder.once('sync', function () {
-      self.renderPage(<FolderView folder={self.folder}/>);
+    this.folder.fetch({
+      success : function () {
+        self.renderPage(<FolderView folder={self.folder}/>);
+      }
     });
   },
 
