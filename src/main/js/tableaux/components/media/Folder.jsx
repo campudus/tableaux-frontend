@@ -9,10 +9,6 @@ var Folder = React.createClass({
 
   displayName : 'Folder',
 
-  componentWillMount : function () {
-    this.props.folder.fetch();
-  },
-
   componentDidMount : function () {
     this.watch(this.props.folder.files, {reRender : false});
     this.watch(this.props.folder.subfolders, {reRender : false});
