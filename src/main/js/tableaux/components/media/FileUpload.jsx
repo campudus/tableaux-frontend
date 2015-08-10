@@ -15,9 +15,12 @@ var FileUpload = React.createClass({
 
     files.forEach(function (file) {
       // upload each file for it's own
-      var req = request.post(uploadUrl);
-      req.attach(file.name, file, file.name);
-      req.end(self.uploadCallback);
+      request.post(uploadUrl)
+        .attach(file.name, file, file.name)
+        .on('progress', function (e) {
+          console.log('Percentage done:', file.name, e.percent);
+        })
+        .end(self.uploadCallback);
     });
   },
 
@@ -30,7 +33,7 @@ var FileUpload = React.createClass({
     var folder = this.props.folder.id;
 
     if (res) {
-      var result = JSON.parse(res.text);
+      var result = res.body;
       result.folder = folder;
       result.fileUrl = result.url;
       delete result.url;

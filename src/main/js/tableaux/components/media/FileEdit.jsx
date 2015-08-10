@@ -3,7 +3,8 @@ var Dispatcher = require('../../Dispatcher');
 
 var FileEdit = React.createClass({
 
-  saveFile : function () {
+  saveFile : function (event) {
+    event.preventDefault();
 
     var file = this.props.file;
 
@@ -11,7 +12,7 @@ var FileEdit = React.createClass({
     file.description = this.refs.fileDescription.getDOMNode().value;
 
     console.log("FileEdit.saveFile", file);
-    
+
     Dispatcher.trigger('add-file', file);
     Dispatcher.trigger('remove-edit-file', file.uuid);
   },
@@ -22,12 +23,12 @@ var FileEdit = React.createClass({
     }
 
     return this.renderField(id, label,
-      <input type="text" className="form-control" id={id} ref={id} defaultValue={value}/>
+      <input type="text" className="field-text-input" id={id} ref={id} defaultValue={value}/>
     )
   },
 
   renderField : function (id, label, field) {
-    return <div className='field-group'>
+    return <div className='form-item'>
       <label htmlFor={id} className="field-label">{label}</label>
 
       <div className="field-input">
@@ -36,17 +37,19 @@ var FileEdit = React.createClass({
     </div>
   },
 
-  renderFileEdit : function (file, idx) {
+  renderFileEdit : function (file) {
     return (
       <div className="file-edit">
-        <div>
-          {file.name} ({idx})
-        </div>
-        {this.renderTextInput("fileName", "Name", file.name)}
-        {this.renderTextInput("fileDescription", "Description")}
-        <div>
-          <button onClick={this.saveFile}>Save</button>
-        </div>
+        <form onSubmit={this.saveFile}>
+          <div className="form-item">
+            <span><i className="icon fa fa-file"></i>{file.name}</span>
+          </div>
+          {this.renderTextInput("fileName", "Name", file.name)}
+          {this.renderTextInput("fileDescription", "Description")}
+          <div className="form-item">
+            <button type="submit" className="form-button">Save</button>
+          </div>
+        </form>
       </div>
     );
   },
