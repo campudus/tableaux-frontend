@@ -11,10 +11,7 @@ var FileEdit = React.createClass({
     file.name = this.refs.fileName.getDOMNode().value;
     file.description = this.refs.fileDescription.getDOMNode().value;
 
-    console.log("FileEdit.saveFile", file);
-
-    Dispatcher.trigger('add-file', file);
-    Dispatcher.trigger('remove-edit-file', file.uuid);
+    this.props.callback(file);
   },
 
   renderTextInput : function (id, label, value) {
@@ -41,11 +38,8 @@ var FileEdit = React.createClass({
     return (
       <div className="file-edit">
         <form onSubmit={this.saveFile}>
-          <div className="form-item">
-            <span><i className="icon fa fa-file"></i>{file.name}</span>
-          </div>
           {this.renderTextInput("fileName", "Name", file.name)}
-          {this.renderTextInput("fileDescription", "Description")}
+          {this.renderTextInput("fileDescription", "Description", file.description)}
           <div className="form-item">
             <button type="submit" className="form-button">Save</button>
           </div>
@@ -56,7 +50,7 @@ var FileEdit = React.createClass({
 
   render : function () {
     console.log("FileEdit.render", this.props);
-    return this.renderFileEdit(this.props.file, this.props.idx);
+    return this.renderFileEdit(this.props.file);
   }
 });
 

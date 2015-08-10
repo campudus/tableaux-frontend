@@ -61,7 +61,7 @@ var Folder = React.createClass({
 
   renderFiles : function () {
     var files = this.props.folder.files.map(function (file, idx) {
-      return <li key={idx}><i className="icon fa fa-file"></i><File key={idx} file={file}/></li>
+      return <li key={file.uuid}><i className="icon fa fa-file"></i><File key={file.uuid} file={file}/></li>
     });
 
     return (

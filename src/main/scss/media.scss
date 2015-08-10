@@ -75,9 +75,14 @@
   .file {
     display: inline;
 
-    .delete {
+    .button {
       margin-left: 1em;
+      margin-right: 0;
       cursor: pointer;
+
+      &.active {
+        color: $color-primary;
+      }
     }
   }
 }
@@ -86,9 +91,8 @@
   color: $color-primary-text;
   font-family: $font-sec;
   width: inherit;
-  margin-top: 50px;
   background-color: white;
-  padding: 2em;
+  padding: 1em;
   display: block;
 
   .form-item {
