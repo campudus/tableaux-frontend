@@ -1,15 +1,11 @@
 var React = require('react');
 var apiUrl = require('../../apiUrl');
 var Dropzone = require('react-dropzone');
-var _ = require('lodash');
 var request = require('superagent');
 var Dispatcher = require('../../Dispatcher');
-var FileEdit = require('./FileEdit.jsx');
 
 var FileUpload = React.createClass({
   onDrop : function (files) {
-    console.log('Received files: ', files);
-
     var self = this;
     var uploadUrl = apiUrl('/files');
 
@@ -38,44 +34,15 @@ var FileUpload = React.createClass({
       result.fileUrl = result.url;
       delete result.url;
 
-      Dispatcher.trigger('new-edit-file', result);
+      Dispatcher.trigger('add-file', result);
     }
-  },
-
-  getInitialState : function () {
-    return {
-      fileEdit : null
-    }
-  },
-
-  componentWillMount : function () {
-    var self = this;
-    Dispatcher.on('add-edit-file', function (collection) {
-      console.log('add-edit-file', collection);
-
-      self.setState({
-        fileEdit : collection
-      });
-    })
   },
 
   render : function () {
-    var fileEdit = null;
-
-    if (this.state.fileEdit !== null && this.state.fileEdit.isCollection) {
-      fileEdit = this.state.fileEdit.map(function (file, idx) {
-        console.log('get fileedit render', file.uuid);
-        return <FileEdit key={file.uuid} file={file} idx={idx}/>
-      });
-    }
-
     return (
-      <div>
-        {fileEdit}
-        <Dropzone onDrop={this.onDrop} className="dropzone">
-          <a>Drop or click to upload.</a>
-        </Dropzone>
-      </div>
+      <Dropzone onDrop={this.onDrop} className="dropzone">
+        <a>Drop or click to upload.</a>
+      </Dropzone>
     );
   }
 });
