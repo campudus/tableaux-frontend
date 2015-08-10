@@ -10,24 +10,15 @@ var FilesCollection = AmpersandCollection.extend({
     var self = this;
 
     Dispatcher.on('add-file', function (attrs) {
-      console.log(attrs);
+      console.log("Add new file.", attrs);
 
-      var newFile = new File({
-        uuid : attrs.uuid,
-        name : attrs.name,
-        description : attrs.description,
-        folder : attrs.folder
-      });
+      var newFile = new File(attrs);
 
-      self.add(newFile);
+      newFile.save();
 
-      newFile.save({
-        success : function () {
-          console.log('added new file!');
-        },
-        error : function (err) {
-          console.log('could not add new file!', err);
-        }
+      newFile.once('sync', function (a, b) {
+        console.log('File saved', a, b);
+        self.add(a, {merge : true});
       });
     });
   }

@@ -22,7 +22,7 @@ var File = React.createClass({
     var name = this.props.file.name;
     var link = apiUrl(this.props.file.fileUrl);
 
-    var deleteButton = <span className="delete fa fa-trash-o" onClick={this.onRemove}></span>;
+    var deleteButton = <span className="delete fa fa-remove" onClick={this.onRemove}></span>;
 
     return (
       <div className="file">

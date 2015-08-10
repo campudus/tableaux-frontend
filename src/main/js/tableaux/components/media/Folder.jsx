@@ -21,17 +21,17 @@ var Folder = React.createClass({
   render : function () {
     var parent = '';
     if (this.props.folder.parent !== null) {
-      parent = <div><i className="fa fa-chevron-left"></i><a href={'/media/' + this.props.folder.parent}>Back</a></div>;
+      parent = <div><i className="back fa fa-chevron-left"></i><a href={'/media/' + this.props.folder.parent}>Back</a></div>;
     } else if (this.props.folder.id !== null) {
-      parent = <div><i className="fa fa-chevron-left"></i><a href={'/media'}>Back</a></div>;
+      parent = <div><i className="back fa fa-chevron-left"></i><a href={'/media'}>Back</a></div>;
     }
 
     var subfolder = this.props.folder.subfolders.map(function (folder, idx) {
-      return <li><i className="icon fa fa-folder-open"></i><Subfolder key={idx} folder={folder}/></li>
+      return <li key={idx}><i className="icon fa fa-folder-open"></i><Subfolder key={idx} folder={folder}/></li>
     });
 
     var files = this.props.folder.files.map(function (file, idx) {
-      return <li><i className="icon fa fa-file"></i><File key={idx} file={file}/></li>
+      return <li key={idx}><i className="icon fa fa-file"></i><File key={idx} file={file}/></li>
     });
 
     return (

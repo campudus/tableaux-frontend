@@ -2,6 +2,36 @@
   padding: 50px;
 }
 
+.current-folder {
+  width: inherit;
+  background-color: white;
+  border-top: 3px solid $color-border-grey;
+  font-family: $font-sec;
+  text-transform: uppercase;
+  font-weight: bold;
+  display: block;
+  padding: 1em;
+
+  div {
+    margin: 0.5em;
+  }
+
+  .back {
+    cursor: pointer;
+  }
+
+  a {
+    padding-left: 10px;
+
+    text-decoration: none;
+    color: $color-primary-text;
+
+    :hover {
+      color: $color-primary;
+    }
+  }
+}
+
 .media-switcher {
   width: 100%;
   background-color: white;
@@ -22,6 +52,15 @@
       background-color: $color-primary;
       color: $color-primary-contrast-text;
     }
+
+    a {
+      text-decoration: none;
+      color: $color-primary-text;
+
+      :hover {
+        color: $color-primary;
+      }
+    }
   }
 
   .icon {
@@ -37,27 +76,19 @@
 
     .delete {
       margin-left: 1em;
+      cursor: pointer;
     }
   }
 }
 
-.current-folder {
-  width: inherit;
-  background-color: white;
-  border-top: 3px solid $color-border-grey;
+.file-edit {
+  color: $color-primary-text;
   font-family: $font-sec;
-  text-transform: uppercase;
-  font-weight: bold;
+  width: inherit;
+  margin-top: 50px;
+  background-color: white;
+  padding: 2em;
   display: block;
-  padding: 1em;
-
-  div {
-    margin: 0.5em;
-  }
-
-  a {
-    padding-left: 10px;
-  }
 }
 
 .dropzone {
@@ -65,9 +96,18 @@
   font-family: $font-sec;
   width: inherit;
   text-align: center;
-  padding: 2em;
   margin-top: 50px;
   background-color: white;
+
+  a {
+    padding: 2em;
+    display: block;
+
+    :hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+    }
+  }
 
   &.active {
     color: $color-primary-contrast-text;
