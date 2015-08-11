@@ -37,13 +37,13 @@ var Table = React.createClass({
 
   render : function () {
     return (
-      <div id="table-wrapper" ref="tableWrapper">
-        <div key={this.props.table.getId()} className='tableaux-table' ref="tableInner">
+      <section id="table-wrapper" ref="tableWrapper">
+        <div className="tableaux-table" ref="tableInner">
           <Columns columns={this.props.table.columns}/>
           <Rows rows={this.props.table.rows}/>
           <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
         </div>
-      </div>
+      </section>
     );
   }
 });

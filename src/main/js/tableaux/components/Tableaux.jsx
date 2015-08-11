@@ -1,10 +1,11 @@
 var app = require('ampersand-app');
 var React = require('react');
-var _ = require('lodash');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Table = require('./Table.jsx');
-var TableSwitcher = require('./TableSwitcher.jsx');
 var Dispatcher = require('../Dispatcher');
+
+var Header = require('./Header.jsx');
+var TableSwitcher = require('./TableSwitcher.jsx');
+var Table = require('./Table.jsx');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -52,9 +53,13 @@ var Tableaux = React.createClass({
     }
 
     return (
-      <div className="tableaux">
-        <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>
-        {table}
+      <div>
+        <Header key="header" currentId={self.state.currentTableId} tables={tables}/>
+
+        <div className="wrapper">
+          <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>
+          {table}
+        </div>
       </div>
     );
   }
