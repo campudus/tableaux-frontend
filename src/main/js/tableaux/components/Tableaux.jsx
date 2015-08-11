@@ -53,7 +53,7 @@ var Tableaux = React.createClass({
 
     return (
       <div className="tableaux">
-        <TableSwitcher currentId={self.state.currentTableId} tables={tables}/>
+        <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>
         {table}
       </div>
     );
