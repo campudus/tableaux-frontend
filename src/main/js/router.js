@@ -7,7 +7,9 @@ var Tables = require('./tableaux/models/Tables');
 var FolderView = require('./tableaux/components/media/Folder.jsx');
 var Tableaux = require('./tableaux/components/Tableaux.jsx');
 
-var tableauxRouter = Router.extend({
+var Dispatcher = require('./tableaux/Dispatcher');
+
+var TableauxRouter = Router.extend({
   routes : {
     '' : 'home',
     'table' : 'noTable',
@@ -24,6 +26,7 @@ var tableauxRouter = Router.extend({
     console.log("Router.noTable");
 
     var self = this;
+
     this.tables = new Tables();
     this.tables.fetch({
       success : function (collection) {
@@ -38,20 +41,41 @@ var tableauxRouter = Router.extend({
     console.log("Router.tableBrowser", tableid);
 
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
-      console.error("path param tableid is not valid");
+      console.error("path param 'tableid' is not valid");
       return;
     }
 
     var self = this;
-    this.tables = new Tables();
-    this.tables.fetch({
-      success : function () {
-        var id = parseInt(tableid);
-        var key = 'tableaux' + id;
 
-        self.renderPage(<Tableaux key={key} tables={self.tables} initialTableId={id}/>);
+    var id = parseInt(tableid);
+    var key = 'tableaux' + id;
+
+    // router is called even if we switch through
+    // tables with TableSwitcher but we only want to
+    // re-render the page if we are called the very
+    // first time
+    if (this.alreadyCalled) {
+      // Tableaux.jsx is listening on this
+      // state will be changed which triggers
+      // a React render
+      Dispatcher.trigger('switch-table', {id : id});
+    } else {
+      this.alreadyCalled = true;
+
+      // we could be called by route noTable
+      // in this case `this.tables` is already
+      // defined and fetched
+      if (!this.tables) {
+        this.tables = new Tables();
+        this.tables.fetch({
+          success : function () {
+            self.renderPage(<Tableaux tables={self.tables} initialTableId={id}/>);
+          }
+        });
+      } else {
+        self.renderPage(<Tableaux tables={self.tables} initialTableId={id}/>);
       }
-    });
+    }
   },
 
   mediaBrowser : function (folderid) {
@@ -71,9 +95,9 @@ var tableauxRouter = Router.extend({
   },
 
   renderPage : function (page) {
-    console.log("renderPage", page);
+    console.log("TableauxRouter.renderPage", page);
     React.render(page, document.getElementById('tableaux'));
   }
 });
 
-module.exports = tableauxRouter;
+module.exports = TableauxRouter;

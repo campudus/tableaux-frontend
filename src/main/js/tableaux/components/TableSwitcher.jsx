@@ -1,14 +1,11 @@
 var app = require('ampersand-app');
 var React = require('react');
-var Dispatcher = require('../Dispatcher');
 
 var TableSwitcher = React.createClass({
   handleClick : function (entry) {
     return function () {
-      console.log('handling click', entry);
-      Dispatcher.trigger('switch-table', entry);
-
-      app.router.history.navigate('table/' + entry.id, {trigger : false})
+      console.log('TableSwitcher.handleClick', entry);
+      app.router.history.navigate('table/' + entry.id, {trigger : true});
     }
   },
 
