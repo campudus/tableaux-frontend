@@ -8,6 +8,7 @@ var Columns = React.createClass({
     console.log('rendering columns', this.props.columns);
     return (
       <div className="heading">
+        <div className="column-head language" key="-1"></div>
         {this.props.columns.map(function (col, index) {
           return <div className="column-head" key={index}>{col.name}</div>;
         })}

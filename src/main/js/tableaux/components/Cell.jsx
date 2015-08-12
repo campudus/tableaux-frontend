@@ -18,20 +18,24 @@ var Cell = React.createClass({
 
   handleEditDone : function (newValue) {
     var cell = this.props.cell;
+
     this.setState({isEditing : false});
-    Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
-      {newValue : newValue});
+
+    var event = 'change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId;
+    Dispatcher.trigger(event, {newValue : newValue});
   },
 
   render : function () {
     var cell = this.props.cell;
+    var language = this.props.language;
+
     if (cell.isLink) {
-      return <LinkCell cell={cell}/>;
+      return <LinkCell cell={cell} language={language}/>;
     } else {
       if (this.state.isEditing) {
-        return <EditCell cell={cell} onBlur={this.handleEditDone}/>;
+        return <EditCell cell={cell} language={language} onBlur={this.handleEditDone}/>;
       } else {
-        return <LabelCell cell={cell} onClick={this.handleLabelClick}/>;
+        return <LabelCell cell={cell} language={language} onClick={this.handleLabelClick}/>;
       }
     }
   }

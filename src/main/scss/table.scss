@@ -80,13 +80,26 @@
       max-width: $space-standard-cell-width;
       padding: 10px;
       @include box-sizing(border-box);
+
+      &.language {
+        width: 43px;
+        min-width: 43px;
+        max-width: 43px;
+      }
+
+      &.repeat {
+        color: #999;
+        font-size: 1.2em;
+        text-align: center;
+        padding: 0px;
+      }
     }
   }
 
-  .new-row{
-    padding:10px;
-    color:$color-primary;
-    font-weight:bold;
+  .new-row {
+    padding: 10px;
+    color: $color-primary;
+    font-weight: bold;
   }
 
 }
