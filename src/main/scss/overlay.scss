@@ -27,7 +27,7 @@ $overlay-headline-height: 50px;
   #overlay-wrapper {
     max-width: 500px;
     width: 100%;
-    background-color: $color-body-background;
+    background-color: $color-background-very-light-grey;
     z-index: 2;
     position: absolute;
     top: 50%;
@@ -71,17 +71,19 @@ $overlay-headline-height: 50px;
       padding: 0.8em;
       background-color: white;
       margin-bottom: 10px;
-      border-bottom: 2px solid $color-grey-dark;
       @include border-radius(3px);
       cursor: pointer;
+      border: 1px solid $color-grey-dark;
+      border-bottom: 3px solid $color-grey-dark;
 
       &:hover {
         background-color: $color-light-link-color;
       }
 
       &.isLinked {
-        @include opacity(0.3);
-        cursor: default;
+        //@include opacity(0.3);
+        background-color: $color-light-link-color;
+        border-color:$color-darker-link-color;
 
         &:hover {
           background-color: white;
