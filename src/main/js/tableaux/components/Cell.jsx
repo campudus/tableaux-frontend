@@ -4,9 +4,15 @@ var EditCell = require('./EditCell.jsx');
 var LabelCell = require('./LabelCell.jsx');
 var LinkCell = require('./LinkCell.jsx');
 var Dispatcher = require('../Dispatcher');
+var _ = require('lodash');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
+
+  propTypes : {
+    cell : React.PropTypes.object.isRequired,
+    language : React.PropTypes.string.isRequired
+  },
 
   getInitialState : function () {
     return {isEditing : false};
@@ -18,20 +24,29 @@ var Cell = React.createClass({
 
   handleEditDone : function (newValue) {
     var cell = this.props.cell;
+
     this.setState({isEditing : false});
-    Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
-      {newValue : newValue});
+
+    if (cell.isMultiLanguage) {
+      var value = _.clone(cell.value);
+      value[this.props.language] = newValue;
+      newValue = value;
+    }
+
+    Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
   },
 
   render : function () {
     var cell = this.props.cell;
+    var language = this.props.language;
+
     if (cell.isLink) {
-      return <LinkCell cell={cell}/>;
+      return <LinkCell cell={cell} language={language}/>;
     } else {
       if (this.state.isEditing) {
-        return <EditCell cell={cell} onBlur={this.handleEditDone}/>;
+        return <EditCell cell={cell} language={language} onBlur={this.handleEditDone}/>;
       } else {
-        return <LabelCell cell={cell} onClick={this.handleLabelClick}/>;
+        return <LabelCell cell={cell} language={language} onClick={this.handleLabelClick}/>;
       }
     }
   }
