@@ -60,7 +60,6 @@ var LinkCell = React.createClass({
                                  element={e}
                                  cell={cell}/>;
           } else {
-            console.log("render LabelLinkCell i:", i, " e: ", e);
             return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}/>;
           }
         })}

@@ -1,11 +1,21 @@
 var React = require('react');
 var Dispatcher = require('../Dispatcher');
+var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
 
 var LinkOverlay = React.createClass({
-
+  mixins : [AmpersandMixin],
   toColumn : {},
-  cell : {},
+
+  propTypes : {
+
+  },
+
+  getDefaultProps: function() {
+    return {
+      cell: {}
+    };
+  },
 
   getInitialState : function () {
     return {tableId : null, columnName : "", open : false, rowResults : {}};
@@ -15,12 +25,16 @@ var LinkOverlay = React.createClass({
     Dispatcher.on('openOverlay', this.openOverlay);
   },
 
+  componentWillUnmount : function () {
+    Dispatcher.off('openOverlay', this.openOverlay);
+  },
+
   closeOverlay : function () {
     this.setState({open : false});
   },
 
   addLinkValue : function (res) {
-    var cell = this.cell;
+    var cell = this.props.cell;
     var link = {
       id : res.id,
       value : res.values[this.toColumn.id - 1]
@@ -39,7 +53,10 @@ var LinkOverlay = React.createClass({
 
     var self = this;
     this.toColumn = cell.column.toColumn;
-    this.cell = cell;
+
+    //FIXME: is this bad ?
+    this.props.cell = cell;
+    this.watch(this.props.cell, {reRender : true});
     var toTable = cell.column.toTable;
 
     cell.tables.getOrFetch(cell.column.toTable, function (err, table) {
@@ -66,8 +83,6 @@ var LinkOverlay = React.createClass({
   renderOverlay : function () {
     var openClosedClassName = this.state.open ? "open" : "closed";
     var self = this;
-    console.log("renderOverlay, rowResults are: ", this.state.rowResults);
-
     var listItems = {};
     //check for empty obj or map fails
     if (!_.isEmpty(this.state.rowResults)) {
@@ -75,7 +90,7 @@ var LinkOverlay = React.createClass({
         <ul>
           {this.state.rowResults.map(function (res) {
 
-            var currentCellValue = self.cell.value;
+            var currentCellValue = self.props.cell.value;
             var alreadyLinkedClass = "isLinked";
             var contained = _.find(currentCellValue, function (oneVal) {
               return oneVal.id === res.id;
