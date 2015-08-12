@@ -1,5 +1,6 @@
 var React = require('react');
 var SearchLink = require('./SearchLink.jsx');
+var LinkOverlay = require('./LinkOverlay.jsx');
 var EditLinkCell = require('./EditLinkCell.jsx');
 var LabelLinkCell = require('./LabelLinkCell.jsx');
 var Dispatcher = require('../Dispatcher');
@@ -41,6 +42,11 @@ var LinkCell = React.createClass({
     };
   },
 
+  openOverlay:function(){
+    console.log("trigger openOverlay");
+    Dispatcher.trigger('openOverlay',this.props.cell);
+  },
+
   render : function () {
     var self = this;
     var cell = this.props.cell;
@@ -54,10 +60,11 @@ var LinkCell = React.createClass({
                                  element={e}
                                  cell={cell}/>;
           } else {
+            console.log("render LabelLinkCell i:", i, " e: ", e);
             return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}/>;
           }
         })}
-        <SearchLink cell={cell}/>
+        <button onClick={self.openOverlay}>+</button>
       </div>
     );
   }

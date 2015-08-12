@@ -1,3 +1,5 @@
+$overlay-headline-height: 50px;
+
 #overlay {
   display: none;
 
@@ -22,19 +24,69 @@
     @include opacity(0.75);
   }
 
-  #overlay-content {
+  #overlay-wrapper {
     max-width: 500px;
     width: 100%;
-    background-color: white;
-    padding: 5rem;
+    background-color: $color-body-background;
     z-index: 2;
     position: absolute;
     top: 50%;
     left: 50%;
-    @include transform(translate(-50%));
+    height: 60%;
+    overflow: hidden;
+    @include transform(translate(-50%, -50%));
+    @include border-radius(5px);
+
+    .content-scroll {
+      overflow-y: auto;
+      top: $overlay-headline-height;
+      bottom: 0px;
+      position: absolute;
+      left: 0px;
+      width: 100%;
+      z-index: 0;
+    }
+
+    #overlay-content {
+      padding: 5rem;
+      overflow-y: auto;
+      position: relative;
+    }
 
     h2 {
       text-align: center;
+      background-color: $color-light-link-color;
+      border-bottom: 2px solid $color-darker-link-color;
+      color: $color-text-link-color;
+      font-size: 1.6rem;
+      font-weight: bold;
+      height: $overlay-headline-height;
+      line-height: $overlay-headline-height;
+      white-space: nowrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    li {
+      padding: 0.8em;
+      background-color: white;
+      margin-bottom: 10px;
+      border-bottom: 2px solid $color-grey-dark;
+      @include border-radius(3px);
+      cursor: pointer;
+
+      &:hover {
+        background-color: $color-light-link-color;
+      }
+
+      &.isLinked {
+        @include opacity(0.3);
+        cursor: default;
+
+        &:hover {
+          background-color: white;
+        }
+      }
     }
   }
 
