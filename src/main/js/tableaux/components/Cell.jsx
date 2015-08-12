@@ -4,9 +4,15 @@ var EditCell = require('./EditCell.jsx');
 var LabelCell = require('./LabelCell.jsx');
 var LinkCell = require('./LinkCell.jsx');
 var Dispatcher = require('../Dispatcher');
+var _ = require('lodash');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
+
+  propTypes : {
+    cell : React.PropTypes.object.isRequired,
+    language : React.PropTypes.string.isRequired
+  },
 
   getInitialState : function () {
     return {isEditing : false};
@@ -21,8 +27,13 @@ var Cell = React.createClass({
 
     this.setState({isEditing : false});
 
-    var event = 'change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId;
-    Dispatcher.trigger(event, {newValue : newValue});
+    if (cell.isMultiLanguage) {
+      var value = _.clone(cell.value);
+      value[this.props.language] = newValue;
+      newValue = value;
+    }
+
+    Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
   },
 
   render : function () {
