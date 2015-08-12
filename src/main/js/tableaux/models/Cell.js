@@ -45,7 +45,6 @@ var Cell = AmpersandModel.extend({
     self.changeCellListener = this.changeCell.bind(this);
 
     if (options && options.row && !options.noListeners) {
-      console.log('adding cell listener');
       Dispatcher.on(event, self.changeCellListener);
 
       options.row.on('remove', function () {
