@@ -19,8 +19,6 @@ var Row = React.createClass({
   },
 
   renderLanguageRow : function (currentLanguageTag, languageTag) {
-    console.log("renderLanguageRow", currentLanguageTag, languageTag);
-
     var className = 'row row-' + this.props.row.getId();
 
     var language = languageTag.split("_")[0];
@@ -29,13 +27,13 @@ var Row = React.createClass({
     var icon = country.toLowerCase() + ".png";
 
     return (
-      <div className={className}>
+      <div key={languageTag} className={className}>
         <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
           <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
         </div>
         {this.props.row.cells.map(function (cell, idx) {
           if (!cell.isMultiLanguage && currentLanguageTag !== languageTag) {
-            return <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat'}>—.—</div>
+            return <div key={idx} className={'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat'}>—.—</div>
           } else {
             return <Cell key={idx} cell={cell} language={languageTag}/>;
           }

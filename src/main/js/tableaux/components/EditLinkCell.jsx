@@ -14,11 +14,28 @@ var EditLinkCell = React.createClass({
     this.props.onBlur();
   },
 
+  renderSingleLanguage : function (value) {
+    return <span className="link" onClick={this.props.click}>{value}</span>;
+  },
+
+  renderMultiLanguage : function (language, values) {
+    var value = values[language] || null;
+    return <span className="link" onClick={this.props.click}>{value}</span>;
+  },
+
   render : function () {
+
+    var value = null;
+    if (this.props.cell.column.toColumn.multilanguage) {
+      value = this.renderMultiLanguage(this.props.language, this.props.element.value);
+    } else {
+      value = this.renderSingleLanguage(this.props.element.value)
+    }
+
     return (
       <div className="link editing">
-        <span className="delete" onClick={this.removeLink}>x</span>
-        {this.props.element.value}
+        {value}
+        <button className="delete" onClick={this.removeLink}>x</button>
       </div>
     );
   }

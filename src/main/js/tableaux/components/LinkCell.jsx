@@ -1,10 +1,10 @@
 var React = require('react');
-var SearchLink = require('./SearchLink.jsx');
+var Dispatcher = require('../Dispatcher');
+var _ = require('lodash');
+
 var LinkOverlay = require('./LinkOverlay.jsx');
 var EditLinkCell = require('./EditLinkCell.jsx');
 var LabelLinkCell = require('./LabelLinkCell.jsx');
-var Dispatcher = require('../Dispatcher');
-var _ = require('lodash');
 
 var LinkCell = React.createClass({
 
@@ -42,14 +42,17 @@ var LinkCell = React.createClass({
     };
   },
 
-  openOverlay:function(){
+  openOverlay : function () {
     console.log("trigger openOverlay");
-    Dispatcher.trigger('openOverlay',this.props.cell);
+    Dispatcher.trigger('openOverlay', this.props.cell);
   },
 
   render : function () {
     var self = this;
+
     var cell = this.props.cell;
+    var language = this.props.language;
+
     return (
       <div className={'cell link cell-' + cell.column.getId() + '-' + cell.rowId}>
         {cell.value.map(function (e, i) {
@@ -58,12 +61,14 @@ var LinkCell = React.createClass({
                                  onBlur={self.editDone(e, i).bind(self)}
                                  onRemove={self.removeLink(i).bind(self)}
                                  element={e}
-                                 cell={cell}/>;
+                                 cell={cell}
+                                 language={language}/>;
           } else {
-            return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}/>;
+            return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}
+                                  language={language}/>;
           }
         })}
-        <button onClick={self.openOverlay}>+</button>
+        <button className="add" onClick={self.openOverlay}>+</button>
       </div>
     );
   }
