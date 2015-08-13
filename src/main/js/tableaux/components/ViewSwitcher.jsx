@@ -8,7 +8,7 @@ var Header = React.createClass({
   render : function () {
     return (
       <div id="switch-view">
-        <span class="opener">Ansicht wechseln <i class="fa fa-columns"></i></span>
+        <span className="opener">Ansicht wechseln <i className="fa fa-columns"></i></span>
 
         <div id="select-view">
           <ul>
