@@ -47,7 +47,7 @@ var EditCell = React.createClass({
 
     if (multiline) {
       return (
-        <textarea name={this.inputName} onBlur={this.doneEditing} ref="input">{value}</textarea>
+        <textarea name={this.inputName} onBlur={this.doneEditing} defaultValue={value} ref="input"></textarea>
       );
     } else {
       return (
