@@ -8,7 +8,7 @@ var Header = React.createClass({
   render : function () {
     return (
       <div id="settings">
-        <span class="opener"><i class="fa fa-cog"></i></span>
+        <span className="opener"><i className="fa fa-cog"></i></span>
 
         <div id="settings-content">
           <ul>
