@@ -5,17 +5,6 @@ var _ = require('lodash');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
-  toColumn : {},
-
-  propTypes : {
-
-  },
-
-  getDefaultProps: function() {
-    return {
-      cell: {}
-    };
-  },
 
   getInitialState : function () {
     return {tableId : null, columnName : "", open : false, rowResults : {}};
@@ -30,16 +19,16 @@ var LinkOverlay = React.createClass({
   },
 
   closeOverlay : function () {
-    this.setState({open : false});
+    this.stopListening();
+    this.setState(this.getInitialState());
   },
 
   addLinkValue : function (res) {
-    var cell = this.props.cell;
+    var cell = this.cell;
     var link = {
       id : res.id,
       value : res.values[this.toColumn.id - 1]
     };
-    //console.log('res: ', res);
 
     return function () {
       var links = _.clone(cell.value);
@@ -50,13 +39,14 @@ var LinkOverlay = React.createClass({
   },
 
   openOverlay : function (cell) {
-
     var self = this;
-    this.toColumn = cell.column.toColumn;
 
-    //FIXME: is this bad ?
-    this.props.cell = cell;
-    this.watch(this.props.cell, {reRender : true});
+    this.toColumn = cell.column.toColumn;
+    this.cell = cell;
+
+    // listen for changes on this model
+    this.watch(this.cell, {reRender : false});
+
     var toTable = cell.column.toTable;
 
     cell.tables.getOrFetch(cell.column.toTable, function (err, table) {
@@ -81,25 +71,33 @@ var LinkOverlay = React.createClass({
   },
 
   renderOverlay : function () {
-    var openClosedClassName = this.state.open ? "open" : "closed";
     var self = this;
-    var listItems = {};
+
+    var openClosedClassName = this.state.open ? "open" : "closed";
+
+    var listItems = null;
+
     //check for empty obj or map fails
     if (!_.isEmpty(this.state.rowResults)) {
       listItems = (
         <ul>
           {this.state.rowResults.map(function (res) {
 
-            var currentCellValue = self.props.cell.value;
+            var currentCellValue = self.cell.value;
             var alreadyLinkedClass = "isLinked";
             var contained = _.find(currentCellValue, function (oneVal) {
               return oneVal.id === res.id;
             });
 
+            var value = res.values[self.toColumn.id - 1];
+            if (self.toColumn.multilanguage) {
+              value = value[self.props.language] || null;
+            }
+
             if (contained) {
-              return <li className={alreadyLinkedClass}>{res.values[self.toColumn.id - 1]}</li>;
+              return <li key={res.id} className={alreadyLinkedClass}>{value}</li>;
             } else {
-              return <li key={res.id} onClick={self.addLinkValue(res)}>{res.values[self.toColumn.id - 1]}</li>;
+              return <li key={res.id} onClick={self.addLinkValue(res)}>{value}</li>;
             }
           })}
         </ul>

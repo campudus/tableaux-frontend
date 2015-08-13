@@ -46,6 +46,8 @@ var Tableaux = React.createClass({
     var self = this;
     var tables = this.props.tables;
 
+    var currentLanguage = "de_DE";
+
     var table = '';
     if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
       table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}/>
@@ -62,7 +64,7 @@ var Tableaux = React.createClass({
           {table}
         </div>
 
-        <LinkOverlay />
+        <LinkOverlay key="linkoverlay" language={currentLanguage}/>
       </div>
     );
   }
