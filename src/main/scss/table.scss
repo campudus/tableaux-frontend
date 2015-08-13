@@ -2,7 +2,7 @@
   font-size: $font-size-standard;
   background-color: $color-body-background;
 
-  .wrapper{
+  .wrapper {
     top: $space-height-header;
     position: relative;
     background-color: $color-body-background;
@@ -68,10 +68,41 @@
     border-bottom: 1px solid $color-border-grey;
   }
 
+  .cell {
+    position: relative;
+  }
+
   .cell span {
     overflow-y: hidden;
     max-height: 200px;
     display: block;
+
+    &.link {
+      background-color: #8fceff;
+      display: inline-block;
+      padding: 2px;
+      margin: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  .cell .add {
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    vertical-align: bottom;
+    display: block;
+    background-color: white;
+    border: 1px solid $color-border-grey;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+
+    &:hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
   }
 
   .heading, .row {
