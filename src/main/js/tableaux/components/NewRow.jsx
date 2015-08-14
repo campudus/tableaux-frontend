@@ -6,21 +6,39 @@ var Dispatcher = require('../Dispatcher');
 var NewRow = React.createClass({
   mixins : [AmpersandMixin],
 
+  getInitialState : function () {
+    return {
+      "loading" : false
+    }
+  },
+
   addRow : function () {
     Dispatcher.trigger('add-row:' + this.props.table.getId());
+
+    this.setState({loading : true});
+  },
+
+  addedRow : function () {
+    this.setState({loading : false})
+  },
+
+  componentWillMount : function () {
+    Dispatcher.on('added-row:' + this.props.table.getId(), this.addedRow);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off('added-row:' + this.props.table.getId(), this.addedRow);
   },
 
   render : function () {
     var classes = 'new-row';
-    if (this.props.isLoading) {
-      classes = classes + ' loading';
+    if (this.state.loading) {
+      classes += ' loading';
     }
 
     return (
-      <div className={classes}>
-        {this.props.isLoading ?
-          <div colSpan={this.props.table.columns.length}>[loading]</div> :
-          <div colSpan={this.props.table.columns.length} onClick={this.addRow}>[add]</div>}
+      <div className={classes} onClick={this.addRow}>
+        { this.state.loading ? "[loading]" : "[add]" }
       </div>
     );
   }

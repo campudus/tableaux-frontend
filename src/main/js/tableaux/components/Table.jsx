@@ -8,31 +8,18 @@ var Dispatcher = require('../Dispatcher');
 var Table = React.createClass({
   mixins : [AmpersandMixin],
 
-  getInitialState : function () {
-    return {isCreatingNewRow : false};
-  },
-
   componentWillMount : function () {
     var table = this.props.table;
-    table.columns.fetch();
-    table.rows.fetch();
 
-    Dispatcher.on('add-row:' + table.getId(), this.addRowEvent);
-  },
-
-  componentDidMount : function () {
-    console.log("componentDidMount tableInner:");
-    console.log(this.refs.tableInner.getDOMNode());
-    console.log(React.findDOMNode(this));
+    table.columns.fetch({
+      success : function () {
+        table.rows.fetch();
+      }
+    });
   },
 
   componentWillUnmount : function () {
-    console.log('unmounting table', this.props.table.getId());
-    Dispatcher.off('add-row:' + this.props.table.getId(), this.addRowEvent);
-  },
-
-  addRowEvent : function () {
-    this.setState({isCreatingNewRow : true});
+    console.log('Table.componentWillUnmount', this.props.table.getId());
   },
 
   render : function () {
@@ -41,7 +28,8 @@ var Table = React.createClass({
         <div className="tableaux-table" ref="tableInner">
           <Columns columns={this.props.table.columns}/>
           <Rows rows={this.props.table.rows}/>
-          <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
+
+          <NewRow table={this.props.table}/>
         </div>
       </section>
     );
