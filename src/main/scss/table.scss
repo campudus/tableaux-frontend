@@ -78,9 +78,10 @@
     display: block;
 
     &.link {
-      background-color: #8fceff;
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
       display: inline-block;
-      padding: 2px;
+      padding: 5px;
       margin: 2px;
       border-radius: 4px;
     }
