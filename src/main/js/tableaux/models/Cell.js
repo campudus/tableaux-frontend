@@ -36,6 +36,12 @@ var Cell = AmpersandModel.extend({
       fn : function () {
         return this.column.multilanguage;
       }
+    },
+    kind : {
+      deps : ['column'],
+      fn : function () {
+        return this.column.kind;
+      }
     }
   },
 

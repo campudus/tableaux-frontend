@@ -3,8 +3,8 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../Dispatcher');
 
-var Header = require('./Header.jsx');
-var TableSwitcher = require('./TableSwitcher.jsx');
+var Header = require('./header/Header.jsx');
+var TableSwitcher = require('./header/TableSwitcher.jsx');
 var Table = require('./Table.jsx');
 var LinkOverlay = require('./LinkOverlay.jsx');
 

@@ -1,6 +1,6 @@
 var React = require('react');
 
-var EditCell = React.createClass({
+var EditLabelCell = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -59,4 +59,4 @@ var EditCell = React.createClass({
   }
 });
 
-module.exports = EditCell;
+module.exports = EditLabelCell;

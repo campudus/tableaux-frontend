@@ -1,8 +1,8 @@
 var React = require('react');
-var Dispatcher = require('../Dispatcher');
+var Dispatcher = require('../../Dispatcher');
 var _ = require('lodash');
 
-var LinkOverlay = require('./LinkOverlay.jsx');
+var LinkOverlay = require('./../LinkOverlay.jsx');
 var EditLinkCell = require('./EditLinkCell.jsx');
 var LabelLinkCell = require('./LabelLinkCell.jsx');
 
@@ -47,27 +47,39 @@ var LinkCell = React.createClass({
     Dispatcher.trigger('openOverlay', this.props.cell);
   },
 
-  render : function () {
+  renderLinkValue : function () {
     var self = this;
 
     var cell = this.props.cell;
     var language = this.props.language;
 
+    if (cell.value === null) {
+      return null;
+    }
+
+    return cell.value.map(function (e, i) {
+      if (self.state.editing[i]) {
+        return <EditLinkCell key={i}
+                             onBlur={self.editDone(e, i).bind(self)}
+                             onRemove={self.removeLink(i).bind(self)}
+                             element={e}
+                             cell={cell}
+                             language={language}/>;
+      } else {
+        return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}
+                              language={language}/>;
+      }
+    })
+  },
+
+  render : function () {
+    var self = this;
+
+    var cell = this.props.cell;
+
     return (
       <div className={'cell link cell-' + cell.column.getId() + '-' + cell.rowId}>
-        {cell.value.map(function (e, i) {
-          if (self.state.editing[i]) {
-            return <EditLinkCell key={i}
-                                 onBlur={self.editDone(e, i).bind(self)}
-                                 onRemove={self.removeLink(i).bind(self)}
-                                 element={e}
-                                 cell={cell}
-                                 language={language}/>;
-          } else {
-            return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}
-                                  language={language}/>;
-          }
-        })}
+        {this.renderLinkValue()}
         <button className="add" onClick={self.openOverlay}>+</button>
       </div>
     );

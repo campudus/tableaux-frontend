@@ -1,6 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Cell = require('./Cell.jsx');
+var Cell = require('./cell/Cell.jsx');
 var _ = require('lodash');
 
 var Row = React.createClass({
