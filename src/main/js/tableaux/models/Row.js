@@ -1,5 +1,6 @@
 var AmpersandModel = require('ampersand-model');
 var apiUrl = require('../apiUrl');
+var Columns = require('./Columns');
 var Cell = require('./Cell');
 
 var Row = AmpersandModel.extend({
@@ -8,7 +9,8 @@ var Row = AmpersandModel.extend({
   },
 
   session : {
-    columns : 'array',
+    tableId : 'number',
+    columns : Columns,
     values : 'array'
   },
 
@@ -38,9 +40,22 @@ var Row = AmpersandModel.extend({
   },
 
   serialize : function () {
-    var ser = {columns : this.columns, rows : [{values : this.values}]};
-    console.log('serializing row?', ser);
+    var ser = null;
+
+    if (this.columns && this.values) {
+      ser = {columns : this.columns, rows : [{values : this.values}]};
+    }
+
     return ser;
+  },
+
+  toJSON : function () {
+    var attrs = this.serialize();
+
+    // check for a new and empty row
+    if (attrs !== null) {
+      return attrs;
+    }
   },
 
   url : function () {
@@ -54,7 +69,9 @@ var Row = AmpersandModel.extend({
   },
 
   urlRoot : function () {
-    return apiUrl('/tables/' + this.collection.parent.getId() + '/rows');
+    // first try tableId because there could be a Row with out collection
+    var tableId = this.tableId || this.collection.parent.getId();
+    return apiUrl('/tables/' + tableId + '/rows');
   }
 });
 
