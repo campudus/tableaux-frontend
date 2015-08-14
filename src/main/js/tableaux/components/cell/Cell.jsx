@@ -3,6 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 
 var LabelCell = require('./LabelCell.jsx');
 var LinkCell = require('./LinkCell.jsx');
+var AttachmentCell = require('./AttachmentCell.jsx');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
@@ -21,9 +22,9 @@ var Cell = React.createClass({
         return <LinkCell cell={cell} language={language}/>;
         break;
 
-      //case "attachment":
-        //return <AttachmentCell cell={cell} />;
-      //  break;
+      case "attachment":
+        return <AttachmentCell cell={cell}/>;
+        break;
 
       default:
         return <LabelCell cell={cell} language={language}/>;
