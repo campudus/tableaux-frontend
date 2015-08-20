@@ -41,7 +41,6 @@ var Column = AmpersandModel.extend({
   },
 
   urlRoot : function() {
-    console.log('get url from column', this);
     return apiUrl('/tables/' + this.collection.parent.getId() + '/columns');
   }
 });

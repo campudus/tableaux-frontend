@@ -5,7 +5,6 @@ var Column = require('./Column');
 var Columns = Collection.extend({
   model : Column,
   url : function() {
-    console.log('parent of column?', this.parent.getId());
     return apiUrl('/tables/' + this.parent.getId() + '/columns');
   },
   parse: function(resp) {

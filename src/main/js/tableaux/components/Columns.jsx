@@ -5,7 +5,6 @@ var Columns = React.createClass({
   mixins : [AmpersandMixin],
 
   render : function () {
-    console.log('rendering columns', this.props.columns);
     return (
       <div className="heading">
         <div className="column-head language" key="-1"></div>

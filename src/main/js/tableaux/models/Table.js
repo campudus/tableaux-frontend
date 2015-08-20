@@ -19,10 +19,6 @@ var Table = Model.extend({
   initialize : function () {
     var self = this;
 
-    this.rows.on('remove', function (model, collection, options) {
-      console.log('remove model', model);
-    });
-
     Dispatcher.on('add-row:' + this.getId(), function () {
       var newRow = new Row({tableId : self.getId()});
 
@@ -35,7 +31,7 @@ var Table = Model.extend({
           self.rows.getOrFetch(savedRow.id);
         },
         error : function (err) {
-          console.err('could not add new row!', err, arguments);
+          console.error('could not add new row!', err, arguments);
 
           Dispatcher.trigger('added-row:' + self.getId());
         }

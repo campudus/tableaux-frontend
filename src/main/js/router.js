@@ -23,7 +23,7 @@ var TableauxRouter = Router.extend({
   },
 
   noTable : function () {
-    console.log("Router.noTable");
+    console.log("TableauxRouter.noTable");
 
     var self = this;
 
@@ -38,7 +38,7 @@ var TableauxRouter = Router.extend({
   },
 
   tableBrowser : function (tableid) {
-    console.log("Router.tableBrowser", tableid);
+    console.log("TableauxRouter.tableBrowser", tableid);
 
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
       console.error("path param 'tableid' is not valid");
@@ -95,7 +95,6 @@ var TableauxRouter = Router.extend({
   },
 
   renderPage : function (page) {
-    console.log("TableauxRouter.renderPage", page);
     React.render(page, document.getElementById('tableaux'));
   }
 });
