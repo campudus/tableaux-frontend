@@ -7,6 +7,7 @@ var Header = require('./header/Header.jsx');
 var TableSwitcher = require('./header/TableSwitcher.jsx');
 var Table = require('./Table.jsx');
 var LinkOverlay = require('./LinkOverlay.jsx');
+var MediaOverlay = require('./MediaOverlay.jsx');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -65,6 +66,7 @@ var Tableaux = React.createClass({
         </div>
 
         <LinkOverlay key="linkoverlay" language={currentLanguage}/>
+        <MediaOverlay key="mediaoverlay" language={currentLanguage}/>
       </div>
     );
   }
