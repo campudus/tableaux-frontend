@@ -7,15 +7,14 @@ var apiUrl = require('../apiUrl');
 
 var Cell = AmpersandModel.extend({
   props : {
-    tableId : 'number',
-    column : Column,
-    rowId : 'number',
     value : 'any'
   },
 
   session : {
     tables : [Tables, true],
-    isEditing : ['boolean', true, false]
+    tableId : 'number',
+    column : Column,
+    rowId : 'number'
   },
 
   derived : {
@@ -64,13 +63,18 @@ var Cell = AmpersandModel.extend({
     console.log('got a change cell event for cell(' + this.column.getId() + ',' + this.rowId + '):', event);
     var self = this;
     var oldValue = this.value;
+
     if (oldValue !== event.newValue) {
       this.value = event.newValue;
+
       this.save(this, {
         parse : false,
         success : function () {
           console.log('saved successfully');
           oldValue = null;
+          if (event.fetch) {
+            self.fetch();
+          }
         },
         error : function () {
           console.log('save unsuccessful!');
