@@ -11,35 +11,43 @@ var LinkOverlay = React.createClass({
   },
 
   componentWillMount : function () {
-    Dispatcher.on('openOverlay', this.openOverlay);
+    Dispatcher.on('openLinkOverlay', this.openOverlay);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('openOverlay', this.openOverlay);
+    Dispatcher.off('openLinkOverlay', this.openOverlay);
   },
 
-  closeOverlay : function () {
-    this.stopListening();
-    this.setState(this.getInitialState());
-  },
-
-  addLinkValue : function (res) {
+  addLinkValue : function (isLinked, row) {
     var cell = this.cell;
     var link = {
-      id : res.id,
-      value : res.values[this.toColumn.id - 1]
+      id : row.id,
+      // TODO id != position
+      value : row.values[this.toColumn.id - 1]
     };
 
     return function () {
       var links = _.clone(cell.value);
-      links.push(link);
-      console.log('adding value to ', cell.value, links);
+
+      if (isLinked) {
+        _.remove(links, function (linked) {
+          return row.id === linked.id;
+        });
+      } else {
+        links.push(link);
+      }
+
       Dispatcher.trigger(cell.changeCellEvent, {newValue : links});
     };
   },
 
   openOverlay : function (cell) {
     var self = this;
+
+    if (cell.column.kind !== "link") {
+      console.error("Couldn't open LinkOverlay for this column type.");
+      return;
+    }
 
     this.toColumn = cell.column.toColumn;
     this.cell = cell;
@@ -50,12 +58,15 @@ var LinkOverlay = React.createClass({
     var toTable = cell.column.toTable;
 
     cell.tables.getOrFetch(cell.column.toTable, function (err, table) {
+
       var tableName = table.name;
       self.setState({tableId : toTable, columnName : tableName, open : true});
+
       if (err) {
-        console.log('error getting table in overlay', toTable, err);
+        console.log('error getting table in overlay', err);
         return;
       }
+
       table.rows.fetch({
         success : function () {
           console.log("change state to rowResults: ", table.rows);
@@ -67,7 +78,11 @@ var LinkOverlay = React.createClass({
         kickListener : true
       });
     });
+  },
 
+  closeOverlay : function () {
+    this.stopListening();
+    this.setState(this.getInitialState());
   },
 
   renderOverlay : function () {
@@ -78,27 +93,28 @@ var LinkOverlay = React.createClass({
     var listItems = null;
 
     //check for empty obj or map fails
-    if (!_.isEmpty(this.state.rowResults)) {
+    if (this.state.open && !_.isEmpty(this.state.rowResults)) {
       listItems = (
         <ul>
-          {this.state.rowResults.map(function (res) {
+          {this.state.rowResults.map(function (row) {
 
             var currentCellValue = self.cell.value;
-            var alreadyLinkedClass = "isLinked";
-            var contained = _.find(currentCellValue, function (oneVal) {
-              return oneVal.id === res.id;
+
+            var linked = _.find(currentCellValue, function (link) {
+              return link.id === row.id;
             });
 
-            var value = res.values[self.toColumn.id - 1];
+            var isLinked = linked ? true : false;
+
+            // TODO id != position
+            var value = row.values[self.toColumn.id - 1];
+
             if (self.toColumn.multilanguage) {
               value = value[self.props.language] || null;
             }
 
-            if (contained) {
-              return <li key={res.id} className={alreadyLinkedClass}>{value}</li>;
-            } else {
-              return <li key={res.id} onClick={self.addLinkValue(res)}>{value}</li>;
-            }
+            return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                       onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
           })}
         </ul>
       );

@@ -44,7 +44,7 @@ var LinkCell = React.createClass({
 
   openOverlay : function () {
     console.log("trigger openOverlay");
-    Dispatcher.trigger('openOverlay', this.props.cell);
+    Dispatcher.trigger('openLinkOverlay', this.props.cell);
   },
 
   renderLinkValue : function () {
