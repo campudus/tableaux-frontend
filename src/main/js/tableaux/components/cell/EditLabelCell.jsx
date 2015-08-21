@@ -1,6 +1,9 @@
 var React = require('react');
+var KeyboardShortcutsMixin = require('./../mixins/KeyboardShortcutsMixin');
 
 var EditLabelCell = React.createClass({
+
+  mixins : [KeyboardShortcutsMixin],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -8,15 +11,25 @@ var EditLabelCell = React.createClass({
     onBlur : React.PropTypes.func.isRequired
   },
 
+  getKeyboardShortcuts : function () {
+    var arr = [];
+    // enter = 13
+    arr[13] = this.doneEditing;
+    return arr;
+  },
+
+  doneEditing : function (event) {
+    console.log("EditLabelCell.doneEditing()", arguments);
+    event.preventDefault();
+
+    this.props.onBlur(this.refs.input.getDOMNode().value);
+  },
+
   componentDidMount : function () {
     var node = this.refs.input.getDOMNode();
     node.focus();
     // Sets cursor to end of input field
     node.value = node.value;
-  },
-
-  doneEditing : function () {
-    this.props.onBlur(this.refs.input.getDOMNode().value);
   },
 
   componentWillMount : function () {
@@ -47,12 +60,17 @@ var EditLabelCell = React.createClass({
 
     if (multiline) {
       return (
-        <textarea name={this.inputName} onBlur={this.doneEditing} defaultValue={value} ref="input"></textarea>
+        <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
+          <textarea className="input" name={this.inputName} onBlur={this.doneEditing} defaultValue={value}
+                    ref="input"></textarea>
+        </div>
       );
     } else {
       return (
         <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
-          <input type={inputType} name={this.inputName} defaultValue={value} onBlur={this.doneEditing} ref="input"/>
+          <input className="input" type={inputType} name={this.inputName} defaultValue={value} onBlur={this.doneEditing}
+                 onKeyDown={this.onKeyboardShortcut}
+                 ref="input"/>
         </div>
       );
     }
