@@ -5,6 +5,7 @@ html, body {
 
 body {
   background-color: $color-body-background;
+  @include user-select(none)
 }
 
 header {
