@@ -77,19 +77,28 @@ $overlay-headline-height: 50px;
       border-bottom: 3px solid $color-grey-dark;
 
       &:hover {
-        background-color: $color-light-link-color;
+        border-color: $color-darker-link-color;
+        background-color: white;
       }
 
       &.isLinked {
-        //@include opacity(0.3);
+
+        border-color: $color-darker-link-color;
         background-color: $color-light-link-color;
-        border-color:$color-darker-link-color;
 
         &:hover {
+          display: block;
+
+          border-color: lightcoral;
           background-color: white;
+
+          &::after {
+            content: "X";
+            float: right;
+            text-align: right;
+          }
         }
       }
     }
   }
-
 }
