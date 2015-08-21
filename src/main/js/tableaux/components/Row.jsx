@@ -8,7 +8,8 @@ var Row = React.createClass({
 
   getInitialState : function () {
     return {
-      expanded : false
+      expanded : false,
+      hover : false
     }
   },
 
@@ -16,6 +17,14 @@ var Row = React.createClass({
     this.setState({
       expanded : !this.state.expanded
     });
+  },
+
+  onRemove : function () {
+    this.props.row.destroy();
+  },
+
+  toggleDeleteButton : function () {
+    this.setState({hover : !this.state.hover});
   },
 
   renderLanguageRow : function (currentLanguageTag, languageTag) {
@@ -26,14 +35,22 @@ var Row = React.createClass({
 
     var icon = country.toLowerCase() + ".png";
 
+    var displayNone = {display : "none"};
+    var display = {display : "inline"};
+
     return (
-      <div key={languageTag} className={className}>
+      <div onMouseEnter={this.toggleDeleteButton} onMouseLeave={this.toggleDeleteButton} key={languageTag}
+           className={className}>
+        <div className="delete-row" style={ this.state.hover ? display : displayNone }>
+          <button className="button" onClick={this.onRemove}><i className="fa fa-trash"></i></button>
+        </div>
         <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
           <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
         </div>
         {this.props.row.cells.map(function (cell, idx) {
           if (!cell.isMultiLanguage && currentLanguageTag !== languageTag) {
-            return <div key={idx} className={'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat'}>—.—</div>
+            var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
+            return <div key={idx} className={className}>—.—</div>
           } else {
             return <Cell key={idx} cell={cell} language={languageTag}/>;
           }

@@ -24,7 +24,6 @@ var EditLinkCell = React.createClass({
   },
 
   render : function () {
-
     var value = null;
     if (this.props.cell.column.toColumn.multilanguage) {
       value = this.renderMultiLanguage(this.props.language, this.props.element.value);
@@ -35,7 +34,7 @@ var EditLinkCell = React.createClass({
     return (
       <div className="link editing">
         {value}
-        <button className="delete" onClick={this.removeLink}>x</button>
+        <button className="delete-link" onClick={this.removeLink}><i className="fa fa-trash"></i></button>
       </div>
     );
   }

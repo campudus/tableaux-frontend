@@ -93,6 +93,8 @@ $overlay-headline-height: 50px;
           background-color: white;
 
           &::after {
+            color: lightcoral;
+            font-weight: bold;
             content: "X";
             float: right;
             text-align: right;
