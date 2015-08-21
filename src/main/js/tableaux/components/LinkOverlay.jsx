@@ -37,6 +37,7 @@ var LinkOverlay = React.createClass({
         links.push(link);
       }
 
+      console.log("trigger", cell.changeCellEvent);
       Dispatcher.trigger(cell.changeCellEvent, {newValue : links});
     };
   },
@@ -57,26 +58,38 @@ var LinkOverlay = React.createClass({
 
     var toTable = cell.column.toTable;
 
-    cell.tables.getOrFetch(cell.column.toTable, function (err, table) {
+    cell.fetch({
+      success : function (model, response, options) {
+        cell.tables.getOrFetch(toTable, function (err, table) {
 
-      var tableName = table.name;
-      self.setState({tableId : toTable, columnName : tableName, open : true});
+          var tableName = table.name;
+          self.setState({tableId : toTable, columnName : tableName, open : true});
 
-      if (err) {
-        console.log('error getting table in overlay', err);
-        return;
+          if (err) {
+            console.error('error getting table in overlay', err);
+            return;
+          }
+
+          table.columns.fetch({
+            success : function () {
+              table.rows.fetch({
+                success : function () {
+                  self.setState({rowResults : table.rows});
+                },
+                error : function (err) {
+                  console.error('error fetching rows', err);
+                }
+              });
+            },
+            error : function (err) {
+              console.error("error fetching columns", err);
+            }
+          });
+        });
+      },
+      error : function (err) {
+        console.error("error fetching cell", err);
       }
-
-      table.rows.fetch({
-        success : function () {
-          console.log("change state to rowResults: ", table.rows);
-          self.setState({rowResults : table.rows});
-        },
-        error : function (err) {
-          console.log('error fetching rows', err);
-        },
-        kickListener : true
-      });
     });
   },
 
