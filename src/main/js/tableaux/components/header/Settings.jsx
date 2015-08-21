@@ -8,13 +8,10 @@ var Header = React.createClass({
   render : function () {
     return (
       <div id="settings">
-        <span className="opener"><i className="fa fa-cog"></i></span>
-
         <div id="settings-content">
           <ul>
-            <li><a href="/table">Tables</a></li>
-            <li><a href="/media">Media</a></li>
-            <li>Hilfe</li>
+            <li><i className="fa fa-table icon"></i><a href="/table">Tables</a></li>
+            <li><i className="fa fa-file-image-o icon"></i><a href="/media">Media</a></li>
           </ul>
         </div>
       </div>

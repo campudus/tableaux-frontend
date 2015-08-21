@@ -1,5 +1,10 @@
 #media-wrapper {
   padding: 50px;
+
+  top: $space-height-header;
+  position: relative;
+  background-color: $color-body-background;
+  z-index: 1;
 }
 
 .current-folder {

@@ -22,13 +22,10 @@ var Tableaux = React.createClass({
   switchTable : function (event) {
     console.log('Tableaux.switchTable', event);
 
-    var self = this;
-    // refresh Tables collection before switching
-    this.props.tables.fetch({
-      success : function () {
-        self.setState({currentTableId : event.id});
-      }
-    });
+    // refresh Tables collection
+    this.props.tables.fetch();
+
+    this.setState({currentTableId : event.id});
   },
 
   componentWillMount : function () {
@@ -50,15 +47,17 @@ var Tableaux = React.createClass({
     var currentLanguage = "de_DE";
 
     var table = '';
+    var title = '';
     if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
       table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}/>
+      title = tables.get(this.state.currentTableId).name;
     } else {
       console.error("No table found with id " + this.state.currentTableId);
     }
 
     return (
       <div>
-        <Header key="header" currentId={self.state.currentTableId} tables={tables}/>
+        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'} />
 
         <div className="wrapper">
           <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>

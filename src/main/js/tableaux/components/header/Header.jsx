@@ -9,7 +9,8 @@ var Settings = require('./Settings.jsx');
 var Header = React.createClass({
 
   render : function () {
-    var name = this.props.tables.get(this.props.currentId).name;
+    var title = this.props.title;
+    var subtitle = this.props.subtitle;
 
     return (
       <header>
@@ -18,9 +19,9 @@ var Header = React.createClass({
         </div>
 
         <div id="view-headline">
-          <span>Sie arbeiten in der Tabelle</span>
+          <span>{subtitle}</span>
 
-          <h2>{name}</h2>
+          <h2>{title}</h2>
         </div>
 
         <div id="settings-panel">
