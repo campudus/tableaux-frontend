@@ -30,10 +30,42 @@ header {
   }
 
   #settings-panel {
+    font-size: 1.2em;
     position: absolute;
     right: $space-padding-header;
     top: 50%;
     @include transform(translateY(-50%));
+
+    li {
+      display: inline;
+
+      margin-right: 20px;
+      padding: 10px;
+
+      background-color: white;
+      color: $color-primary;
+
+      .icon {
+        margin-right: 5px;
+      }
+
+      a {
+        text-decoration: none;
+
+        &:link {
+          color: inherit;
+        }
+
+        &:visited {
+          color: inherit;
+        }
+      }
+
+      &:hover {
+        color: white;
+        background-color: $color-primary;
+      }
+    }
   }
 
   #view-headline {
