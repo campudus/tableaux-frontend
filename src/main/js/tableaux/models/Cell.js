@@ -100,7 +100,6 @@ var Cell = AmpersandModel.extend({
       });
       delete attrs.value;
       attrs.value = {
-        from : this.rowId,
         values : values
       };
     }
