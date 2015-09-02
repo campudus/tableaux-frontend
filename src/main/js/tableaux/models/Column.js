@@ -6,23 +6,41 @@ var Column = AmpersandModel.extend({
     id : 'number',
     name : 'string',
     kind : 'string',
-    ordering : 'number'
+    ordering : 'number',
+    multilanguage : {
+      type : 'boolean',
+      default : false
+    }
   },
 
   session : {
-    toTable : ['number', false],
-    toColumn : ['number', false],
-    isLink : ['boolean', true, false]
+    toTable : {
+      type : 'number'
+    },
+    toColumn : {
+      type : Column
+    }
   },
 
-  initialize : function(attrs, options) {
-    if (attrs.toTable && attrs.toColumn) {
-      this.isLink = true;
+  derived : {
+    isLink : {
+      deps : ['kind'],
+      fn : function () {
+        return this.kind === 'link';
+      }
+    }
+  },
+
+  url : function () {
+    var base = this.urlRoot();
+    if (this.isNew()) {
+      return base;
+    } else {
+      return base + '/' + this.getId();
     }
   },
 
   urlRoot : function() {
-    console.log('get url from column', this);
     return apiUrl('/tables/' + this.collection.parent.getId() + '/columns');
   }
 });

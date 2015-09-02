@@ -8,40 +8,30 @@ var Dispatcher = require('../Dispatcher');
 var Table = React.createClass({
   mixins : [AmpersandMixin],
 
-  getInitialState : function () {
-    return {isCreatingNewRow : false};
-  },
-
   componentWillMount : function () {
     var table = this.props.table;
-    table.fetch({
+
+    table.columns.fetch({
       success : function () {
-        table.columns.fetch({
-          success : function () {
-            table.rows.fetch();
-          }
-        });
+        table.rows.fetch();
       }
     });
-    Dispatcher.on('add-row:' + table.getId(), this.addRowEvent);
   },
 
   componentWillUnmount : function () {
-    console.log('unmounting table');
-    Dispatcher.off('add-row:' + this.props.table.getId(), this.addRowEvent);
-  },
-
-  addRowEvent : function () {
-    this.setState({isCreatingNewRow : true});
+    console.log('Table.componentWillUnmount', this.props.table.getId());
   },
 
   render : function () {
     return (
-      <table className="tableaux-table">
-        <Columns columns={this.props.table.columns}/>
-        <Rows rows={this.props.table.rows}/>
-        <NewRow table={this.props.table} isLoading={(this.state.isCreatingNewRow)}/>
-      </table>
+      <section id="table-wrapper" ref="tableWrapper">
+        <div className="tableaux-table" ref="tableInner">
+          <Columns columns={this.props.table.columns}/>
+          <Rows rows={this.props.table.rows}/>
+
+          <NewRow table={this.props.table}/>
+        </div>
+      </section>
     );
   }
 });

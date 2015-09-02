@@ -1,0 +1,255 @@
+#tableaux {
+  font-size: $font-size-standard;
+  background-color: $color-body-background;
+
+  .wrapper {
+    top: $space-height-header;
+    position: relative;
+    background-color: $color-body-background;
+    z-index: 1;
+    display: table;
+    min-width: 100%;
+  }
+
+}
+
+#table-switcher {
+  width: 100%;
+  background-color: white;
+  border-top: 3px solid $color-border-grey;
+  height: $space-height-table-switcher;
+  font-family: $font-sec;
+  text-transform: uppercase;
+  font-weight: bold;
+
+  .table-switcher-menu {
+    list-style: none;
+  }
+
+  li {
+    float: left;
+    height: $space-height-table-switcher;
+    line-height: $space-height-table-switcher;
+    max-width: 100px;
+    overflow: hidden;
+    padding: 0 2em;
+
+    &.active {
+      background-color: $color-primary;
+      color: $color-primary-contrast-text;
+    }
+  }
+
+}
+
+#table-wrapper {
+  padding: 50px;
+  display: table;
+}
+
+.tableaux-table {
+  background-color: white;
+  position: relative;
+  @include box-shadow(0px 0px 50px 0px #ababab);
+  display: table;
+
+  .heading {
+    border-bottom: 3px solid $color-border-grey;
+    @include box-sizing(border-box);
+    font-weight: bold;
+    background-color: #F9F9F9;
+  }
+
+  .cell, .column-head {
+    border-right: 1px solid $color-border-grey;
+  }
+
+  .row {
+    border-bottom: 1px solid $color-border-grey;
+  }
+
+  .cell {
+    position: relative;
+    vertical-align: top;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.link {
+      white-space: normal;
+    }
+  }
+
+  .cell .input {
+    font: inherit;
+  }
+
+  .cell textarea {
+    &.input {
+      width: 100%;
+      max-width: 100%;
+      height: 50px;
+    }
+  }
+
+  .cell span {
+    overflow-y: hidden;
+    max-height: 200px;
+    display: block;
+
+    &.link {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      display: inline-block;
+      padding: 4px;
+      margin: 1px;
+      border-radius: 4px;
+
+      text-decoration: none;
+      border: 1px solid white;
+
+      &:hover {
+        background-color: $color-primary-contrast-text;
+        color: $color-primary;
+        border: 1px solid $color-primary;
+      }
+    }
+  }
+
+  .cell .add {
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    vertical-align: bottom;
+    display: block;
+    background-color: white;
+    border: 1px solid $color-border-grey;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+
+    &:hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+  }
+
+  .cell {
+
+    &.attachment {
+
+      a {
+        overflow-y: hidden;
+        max-height: 200px;
+
+        color: $color-primary-contrast-text;
+        background-color: $color-primary;
+        display: inline-block;
+        padding: 4px;
+        margin: 1px;
+        border-radius: 4px;
+
+        text-decoration: none;
+        border: 1px solid white;
+
+        &:hover {
+          background-color: $color-primary-contrast-text;
+          color: $color-primary;
+          border: 1px solid $color-primary;
+        }
+      }
+    }
+  }
+
+  .delete-row {
+    position: absolute;
+    z-index: 9;
+    left: -42px;
+    padding-right: 18px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    .button {
+      width: 35px;
+      height: 35px;
+
+      font-size: 1em;
+
+      border-radius: 35px;
+
+      display: block;
+
+      background-color: white;
+      border: 1px solid $color-border-grey;
+
+      &:hover {
+        color: $color-primary-contrast-text;
+        background-color: $color-primary;
+        border-color: $color-primary;
+      }
+    }
+  }
+
+  .editing {
+    display: inline-block;
+
+    .delete-link {
+      font-size: 1em;
+
+      border-radius: 4px;
+
+      display: inline-block;
+
+      vertical-align: top;
+
+      margin: 1px;
+
+      background-color: white;
+      color: lightcoral;
+      border: 1px solid lightcoral;
+
+      &:hover {
+        color: $color-primary-contrast-text;
+        background-color: lightcoral;
+        border-color: lightcoral;
+      }
+    }
+  }
+
+  .heading, .row {
+    display: table;
+    table-layout: fixed;
+
+    .column-head, .cell {
+      display: table-cell;
+      width: $space-standard-cell-width;
+      min-width: $space-standard-cell-width;
+      max-width: $space-standard-cell-width;
+      padding: 10px;
+      @include box-sizing(border-box);
+
+      &.language {
+        width: 43px;
+        min-width: 43px;
+        max-width: 43px;
+      }
+
+      &.repeat {
+        color: #999;
+        font-size: 1.2em;
+        text-align: center;
+        padding: 0px;
+      }
+    }
+  }
+
+  .new-row {
+    padding: 10px;
+    color: $color-primary;
+    font-weight: bold;
+  }
+
+}
+

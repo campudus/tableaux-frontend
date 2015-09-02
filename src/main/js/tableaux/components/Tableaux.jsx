@@ -1,8 +1,13 @@
+var app = require('ampersand-app');
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Table = require('./Table.jsx');
-var TableSwitcher = require('./TableSwitcher.jsx');
 var Dispatcher = require('../Dispatcher');
+
+var Header = require('./header/Header.jsx');
+var TableSwitcher = require('./header/TableSwitcher.jsx');
+var Table = require('./Table.jsx');
+var LinkOverlay = require('./LinkOverlay.jsx');
+var MediaOverlay = require('./MediaOverlay.jsx');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -10,32 +15,57 @@ var Tableaux = React.createClass({
   displayName : 'Tableaux',
 
   propTypes : {
-    tables : React.PropTypes.object.isRequired
+    tables : React.PropTypes.object.isRequired,
+    initialTableId : React.PropTypes.number.isRequired
+  },
+
+  switchTable : function (event) {
+    console.log('Tableaux.switchTable', event);
+
+    // refresh Tables collection
+    this.props.tables.fetch();
+
+    this.setState({currentTableId : event.id});
   },
 
   componentWillMount : function () {
-    var self = this;
-    this.props.tables.fetch();
+    Dispatcher.on('switch-table', this.switchTable);
+  },
 
-    Dispatcher.on('switch-table', function (event) {
-      console.log('got event', event, arguments);
-      self.setState({currentTableIndex : event.index});
-    });
+  componentWillUnmount : function () {
+    Dispatcher.off('switch-table', this.switchTable);
   },
 
   getInitialState : function () {
-    return {currentTableIndex : 0};
+    return {currentTableId : this.props.initialTableId};
   },
 
   render : function () {
+    var self = this;
     var tables = this.props.tables;
-    var table = (tables.length > this.state.currentTableIndex) ?
-      <Table key={this.state.currentTableIndex} table={tables.at(this.state.currentTableIndex)}/> : '';
+
+    var currentLanguage = "de_DE";
+
+    var table = '';
+    var title = '';
+    if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
+      table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}/>
+      title = tables.get(this.state.currentTableId).name;
+    } else {
+      console.error("No table found with id " + this.state.currentTableId);
+    }
 
     return (
-      <div className="tableaux">
-        <TableSwitcher currentIndex={this.state.currentTableIndex} tables={tables}/>
-        {table}
+      <div>
+        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'} />
+
+        <div className="wrapper">
+          <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>
+          {table}
+        </div>
+
+        <LinkOverlay key="linkoverlay" language={currentLanguage}/>
+        <MediaOverlay key="mediaoverlay" language={currentLanguage}/>
       </div>
     );
   }

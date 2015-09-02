@@ -5,6 +5,7 @@ var compass = require('gulp-compass');
 var minifyCss = require('gulp-minify-css');
 var del = require('del');
 var browserSync = require('browser-sync');
+var spa = require("browser-sync-spa");
 var reload = browserSync.reload;
 var plumber = require('gulp-plumber');
 var karma = require('karma').server;
@@ -13,18 +14,26 @@ var reactify = require('reactify');
 var source = require('vinyl-source-stream');
 var url = require('url');
 var proxy = require('proxy-middleware');
+var config = {"tableauxUrl" : "http://localhost:8080"};
+try {
+  config = require('./config.json');
+} catch (e) {
+  // ignore
+}
 
 gulp.task('sass', sassCompile);
 gulp.task('assets', assetCopy);
-gulp.task('scripts', scriptCompile);
+gulp.task('appScript', scriptCompileApp);
 gulp.task('clean', clean);
 
-gulp.task('reloader', ['build'], reload);
+gulp.task('reload:scripts', ['appScript'], reload);
+gulp.task('reload:assets', ['assets'], reload);
+gulp.task('reload:sass', ['sass'], reload);
 gulp.task('dev', ['build'], server);
 gulp.task('test', ['build'], test);
 gulp.task('testWatch', ['build'], testWatch);
 
-gulp.task('build', ['sass', 'assets', 'scripts']);
+gulp.task('build', ['sass', 'assets', 'appScript']);
 gulp.task('default', ['build']);
 
 
@@ -42,11 +51,12 @@ function sassCompile() {
       sass : 'src/main/scss',
       image : 'src/main/img'
     }))
-    .pipe(minifyCss())
-    .pipe(gulp.dest('out/css'));
+    //for speed now disabled .pipe(minifyCss())
+    .pipe(gulp.dest('out/css'))
+    .pipe(browserSync.reload({stream : true}));
 }
 
-function scriptCompile() {
+function scriptCompileApp() {
   return browserify()
     .transform(reactify)
     .add('./src/main/js/app.js')
@@ -85,17 +95,23 @@ function testWatch(done) {
 }
 
 function server() {
-  var proxyOptions = url.parse('http://localhost:8181/');
+  var proxyOptions = url.parse(config.tableauxUrl);
   proxyOptions.route = '/api';
 
+  browserSync.use(spa());
+
   browserSync({
+    open : false,
+    files : 'out/*',
     server : {
       baseDir : 'out',
       middleware : [proxy(proxyOptions)]
     }
   });
 
-  gulp.watch(['src/main/**', 'src/main/js/**', 'src/main/scss/**/*.scss'], {}, ['reloader']);
+  gulp.watch(['src/main/**', '!src/main/js/**', '!src/main/scss/**/*.scss'], {}, ['reload:assets']);
+  gulp.watch(['src/main/js/**'], {}, ['reload:scripts']);
+  gulp.watch(['src/main/scss/**/*.scss'], {}, ['sass']);
 
   //gulp.src('src/test/**/*Spec.js').pipe(karma({
   //  configFile : 'karma.conf.js',

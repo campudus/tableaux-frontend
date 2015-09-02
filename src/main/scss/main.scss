@@ -1,1 +1,10 @@
-@import "variables.scss", "style.scss";
+@import
+"compass/css3",
+"compass/reset",
+"fontAwesome/font-awesome",
+"variables.scss",
+"layout.scss",
+"typo.scss",
+"media.scss",
+"table.scss",
+"overlay.scss";

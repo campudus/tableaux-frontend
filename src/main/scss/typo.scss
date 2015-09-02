@@ -1,0 +1,21 @@
+html {
+  font-size: $font-size-base;
+}
+
+body {
+  font-size: $font-size-standard;
+  color: $color-primary-text;
+}
+
+html, body {
+  font-family: $font-main;
+  font-weight: normal;
+}
+
+header {
+  font-family: $font-sec;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-sec;
+}

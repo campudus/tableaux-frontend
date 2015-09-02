@@ -7,15 +7,14 @@ var apiUrl = require('../apiUrl');
 
 var Cell = AmpersandModel.extend({
   props : {
-    tableId : 'number',
-    column : Column,
-    rowId : 'number',
     value : 'any'
   },
 
   session : {
     tables : [Tables, true],
-    isEditing : ['boolean', true, false]
+    tableId : 'number',
+    column : Column,
+    rowId : 'number'
   },
 
   derived : {
@@ -30,48 +29,67 @@ var Cell = AmpersandModel.extend({
       fn : function () {
         return this.column.isLink;
       }
+    },
+    isMultiLanguage : {
+      deps : ['column'],
+      fn : function () {
+        return this.column.multilanguage;
+      }
+    },
+    kind : {
+      deps : ['column'],
+      fn : function () {
+        return this.column.kind;
+      }
     }
   },
 
   initialize : function (attrs, options) {
     var event = this.changeCellEvent;
     var self = this;
-    self.changeCellListener = this.changeCell.bind(this);
 
     if (options && options.row && !options.noListeners) {
-      console.log('adding cell listener');
-      Dispatcher.on(event, self.changeCellListener);
+      // Cell could be initialized multiple times, so go and fuck off!
+      Dispatcher.off(event);
+
+      Dispatcher.on(event, this.changeCell.bind(this));
 
       options.row.on('remove', function () {
         console.log('removing cell listener');
-        Dispatcher.off(event, self.changeCellListener);
+        Dispatcher.off(event, self.changeCell.bind(this));
       });
     }
   },
 
   changeCell : function (event) {
-    console.log('got a change cell event for cell(' + this.column.getId() + ',' + this.rowId + '):', event);
     var self = this;
     var oldValue = this.value;
+
     if (oldValue !== event.newValue) {
       this.value = event.newValue;
+
       this.save(this, {
         parse : false,
         success : function () {
-          console.log('saved successfully');
-          oldValue = null;
+          if (event.fetch) {
+            self.fetch();
+          }
         },
         error : function () {
-          console.log('save unsuccessful!');
-          self.value = oldValue;
+          console.error('save unsuccessful!', arguments);
+
+          if (event.fetch) {
+            self.fetch();
+          } else {
+            self.value = oldValue;
+          }
         }
       });
     }
   },
 
   url : function () {
-    var url = apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
-    return url;
+    return apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
   },
 
   toJSON : function () {
@@ -82,7 +100,6 @@ var Cell = AmpersandModel.extend({
       });
       delete attrs.value;
       attrs.value = {
-        from : this.rowId,
         values : values
       };
     }
@@ -90,7 +107,6 @@ var Cell = AmpersandModel.extend({
   },
 
   parse : function (resp, options) {
-    console.log('parsing cell', resp, options);
     if (!(options && options.parse)) {
       return this;
     } else if (resp.rows) {

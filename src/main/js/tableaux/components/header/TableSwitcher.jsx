@@ -1,31 +1,33 @@
+var app = require('ampersand-app');
 var React = require('react');
-var Dispatcher = require('../Dispatcher');
 
 var TableSwitcher = React.createClass({
   handleClick : function (entry) {
     return function () {
-      console.log('handling click', entry);
-      Dispatcher.trigger('switch-table', entry);
+      console.log('TableSwitcher.handleClick', entry);
+      app.router.history.navigate('table/' + entry.id, {trigger : true});
     }
   },
 
   render : function () {
     var self = this;
     var entries = this.props.tables.map(function (entry, index) {
-      return {name : entry.get('name'), index : index};
+      return {name : entry.get('name'), id : entry.get('id'), index : index};
     });
 
     return (
-      <ul>
+      <nav id="table-switcher">
+      <ul className="table-switcher-menu">
         {entries.map(function (entry) {
           return (
             <li
-              key={entry.index}
+              key={entry.id}
               onClick={self.handleClick(entry)}
-              className={entry.index === self.props.currentIndex ? 'active' : 'inactive'}>{entry.name}</li>
+              className={entry.id === self.props.currentId ? 'active' : 'inactive'}>{entry.name}</li>
           );
         })}
       </ul>
+      </nav>
     );
   }
 });
