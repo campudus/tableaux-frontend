@@ -8,6 +8,7 @@ var TableSwitcher = require('./header/TableSwitcher.jsx');
 var Table = require('./Table.jsx');
 var LinkOverlay = require('./LinkOverlay.jsx');
 var MediaOverlay = require('./MediaOverlay.jsx');
+var GenericOverlay = require('./GenericOverlay.jsx');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -57,7 +58,7 @@ var Tableaux = React.createClass({
 
     return (
       <div>
-        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'} />
+        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'}/>
 
         <div className="wrapper">
           <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>
@@ -66,6 +67,7 @@ var Tableaux = React.createClass({
 
         <LinkOverlay key="linkoverlay" language={currentLanguage}/>
         <MediaOverlay key="mediaoverlay" language={currentLanguage}/>
+        <GenericOverlay key="genericoverlay" language={currentLanguage}/>
       </div>
     );
   }
