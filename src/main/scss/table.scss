@@ -132,9 +132,7 @@
   }
 
   .cell {
-
     &.attachment {
-
       a {
         overflow-y: hidden;
         max-height: 200px;
@@ -187,47 +185,52 @@
     }
   }
 
-  .editing {
-
-    display: inline-block;
-    position: relative;
-    @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
-    border: 1px solid $color-primary;
-
-    .input {
-      padding: 10px;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      max-width: none;
-      resize: none;
-      border: none;
-      outline: none;
-      background-color: transparent;
-      box-sizing: border-box;
-    }
-
-    .delete-link {
-      font-size: 1em;
-
-      border-radius: 4px;
-
+  .cell {
+    &.editing {
       display: inline-block;
+      position: relative;
+      @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
+      border: 1px solid $color-primary;
 
-      vertical-align: top;
+      .input {
+        padding: 10px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        resize: none;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        box-sizing: border-box;
+      }
+    }
+  }
 
-      margin: 1px;
+  .link {
+    &.editing {
+      .delete-link {
+        font-size: 1em;
 
-      background-color: white;
-      color: lightcoral;
-      border: 1px solid lightcoral;
+        border-radius: 4px;
 
-      &:hover {
-        color: $color-primary-contrast-text;
-        background-color: lightcoral;
-        border-color: lightcoral;
+        display: inline-block;
+
+        vertical-align: top;
+
+        margin: 1px;
+
+        background-color: white;
+        color: lightcoral;
+        border: 1px solid lightcoral;
+
+        &:hover {
+          color: $color-primary-contrast-text;
+          background-color: lightcoral;
+          border-color: lightcoral;
+        }
       }
     }
   }
@@ -264,6 +267,4 @@
     color: $color-primary;
     font-weight: bold;
   }
-
 }
-

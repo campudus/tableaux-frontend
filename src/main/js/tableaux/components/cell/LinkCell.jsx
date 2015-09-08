@@ -3,8 +3,8 @@ var Dispatcher = require('../../Dispatcher');
 var _ = require('lodash');
 
 var LinkOverlay = require('./../LinkOverlay.jsx');
-var EditLinkCell = require('./EditLinkCell.jsx');
-var LabelLinkCell = require('./LabelLinkCell.jsx');
+var LinkEditCell = require('./LinkEditCell.jsx');
+var LinkLabelCell = require('./LinkLabelCell.jsx');
 
 var LinkCell = React.createClass({
 
@@ -59,14 +59,14 @@ var LinkCell = React.createClass({
 
     return cell.value.map(function (e, i) {
       if (self.state.editing[i]) {
-        return <EditLinkCell key={i}
+        return <LinkEditCell key={i}
                              onBlur={self.editDone(e, i).bind(self)}
                              onRemove={self.removeLink(i).bind(self)}
                              element={e}
                              cell={cell}
                              language={language}/>;
       } else {
-        return <LabelLinkCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}
+        return <LinkLabelCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}
                               language={language}/>;
       }
     })

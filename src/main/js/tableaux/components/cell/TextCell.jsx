@@ -2,9 +2,9 @@ var React = require('react');
 var Dispatcher = require('../../Dispatcher');
 var _ = require('lodash');
 
-var EditLabelCell = require('./EditLabelCell.jsx');
+var TextEditCell = require('./TextEditCell.jsx');
 
-var LabelCell = React.createClass({
+var TextCell = React.createClass({
 
   getInitialState : function () {
     return {isEditing : false};
@@ -60,9 +60,9 @@ var LabelCell = React.createClass({
         return this.renderSingleLanguage();
       }
     } else {
-      return <EditLabelCell cell={cell} language={language} onBlur={this.handleEditDone}/>;
+      return <TextEditCell cell={cell} language={language} onBlur={this.handleEditDone}/>;
     }
   }
 });
 
-module.exports = LabelCell;
+module.exports = TextCell;

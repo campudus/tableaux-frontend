@@ -1,6 +1,6 @@
 var React = require('react');
 
-var LabelLinkCell = React.createClass({
+var LinkLabelCell = React.createClass({
 
   renderSingleLanguage : function (value) {
     return <span className="link" onClick={this.props.click}>{value}</span>;
@@ -22,4 +22,4 @@ var LabelLinkCell = React.createClass({
 
 });
 
-module.exports = LabelLinkCell;
+module.exports = LinkLabelCell;

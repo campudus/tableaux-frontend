@@ -1,7 +1,7 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
 
-var EditLinkCell = React.createClass({
+var LinkEditCell = React.createClass({
 
   mixins : [OutsideClick],
 
@@ -41,4 +41,4 @@ var EditLinkCell = React.createClass({
 
 });
 
-module.exports = EditLinkCell;
+module.exports = LinkEditCell;
