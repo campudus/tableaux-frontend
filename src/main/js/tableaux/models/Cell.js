@@ -55,8 +55,8 @@ var Cell = AmpersandModel.extend({
       Dispatcher.on(event, this.changeCell.bind(this));
 
       options.row.on('remove', function () {
-        console.log('removing cell listener');
-        Dispatcher.off(event, self.changeCell.bind(this));
+        // Remove changeCell listener
+        Dispatcher.off(event);
       });
     }
   },

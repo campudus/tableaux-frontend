@@ -1,7 +1,8 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 
-var LabelCell = require('./LabelCell.jsx');
+var TextCell = require('./TextCell.jsx');
+var NumericCell = require('./NumericCell.jsx');
 var LinkCell = require('./LinkCell.jsx');
 var AttachmentCell = require('./AttachmentCell.jsx');
 
@@ -25,9 +26,12 @@ var Cell = React.createClass({
       case "attachment":
         return <AttachmentCell cell={cell}/>;
         break;
+      case "numeric":
+        return <NumericCell cell={cell} language={language}/>;
+        break;
 
       default:
-        return <LabelCell cell={cell} language={language}/>;
+        return <TextCell cell={cell} language={language}/>;
     }
   }
 });
