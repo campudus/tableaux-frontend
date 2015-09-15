@@ -32,7 +32,9 @@ var TextCell = React.createClass({
     var cell = this.props.cell;
     return (
       <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onClick={this.handleLabelClick}>
-        {cell.value}
+        <span className='cell-content'>
+          {cell.value}
+        </span>
       </div>
     );
   },
@@ -44,7 +46,9 @@ var TextCell = React.createClass({
 
     return (
       <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onClick={this.handleLabelClick}>
-        {value}
+        <span className='cell-content'>
+          {value}
+        </span>
       </div>
     );
   },

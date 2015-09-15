@@ -21,25 +21,27 @@
   font-family: $font-sec;
   text-transform: uppercase;
   font-weight: bold;
+  white-space: nowrap;
 
   .table-switcher-menu {
     list-style: none;
   }
 
   li {
-    float: left;
     height: $space-height-table-switcher;
     line-height: $space-height-table-switcher;
-    max-width: 100px;
+    max-width: 130px;
+    text-align: center;
+    text-overflow: ellipsis;
     overflow: hidden;
     padding: 0 2em;
+    display: inline-block;
 
     &.active {
       background-color: $color-primary;
       color: $color-primary-contrast-text;
     }
   }
-
 }
 
 #table-wrapper {
@@ -76,6 +78,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     border: 1px solid transparent;
+    border-right: 1px solid #efefef;
 
     &.link {
       white-space: normal;
@@ -110,6 +113,12 @@
         border: 1px solid $color-primary;
       }
     }
+  }
+
+  .cell .cell-content {
+    overflow: scroll;
+    max-height: 50px;
+    white-space: pre;
   }
 
   .cell .add {
