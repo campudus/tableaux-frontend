@@ -45,7 +45,7 @@ var TextArea = React.createClass({
     this.setState({richEditor : !this.state.richEditor})
   },
 
-  renderRichEditor : function () {
+  renderRichEditor : function (content) {
     var config = {
       plugins : 'autolink link image lists print code insertdatetime',
       toolbar : 'undo redo | bold | alignleft aligncenter alignright',
@@ -55,7 +55,7 @@ var TextArea = React.createClass({
 
     return (
       <TinyMCE
-        content={this.props.initialContent}
+        content={content}
         config={config}
         onChange={this._onChange}
         />
@@ -64,11 +64,16 @@ var TextArea = React.createClass({
 
   render : function () {
     var editor = "";
+
+    if (typeof this.content === 'undefined') {
+      this.content = this.props.initialContent;
+    }
+
     if (this.state.richEditor) {
-      editor = this.renderRichEditor();
+      editor = this.renderRichEditor(this.content);
     } else {
       editor = (
-        <textarea className="input" type="text" defaultValue={this.props.initialContent} ref="input"
+        <textarea className="input" type="text" defaultValue={this.content} ref="input"
                   onChange={this._onChange}></textarea>
       )
     }
