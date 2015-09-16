@@ -127,9 +127,7 @@ var Row = React.createClass({
 
     var languageTags = [
       "de_DE",
-      "en_GB",
-      "en_US",
-      "fr_FR"
+      "en_GB"
     ];
     var currentLanguageTag = languageTags[0];
 
