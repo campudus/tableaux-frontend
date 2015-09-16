@@ -71,6 +71,40 @@ $overlay-headline-height: 50px;
         height: 100%;
       }
 
+      .search-input-wrapper {
+        position: relative;
+        height: auto;
+        margin-bottom: 30px;
+
+        i {
+          position: absolute;
+          right: 1.5em;
+          top: 50%;
+          margin-top: -0.5em;
+        }
+
+      }
+
+      .search-input {
+        font: inherit;
+        width: 100%;
+        padding: 0.8em 1.5em;
+        margin: 0;
+        border-radius: 2em;
+        cursor: pointer;
+        background-color: #EFEFEF;
+
+        border: 1px solid $color-grey-dark;
+
+        box-sizing: border-box;
+        outline: none;
+        position: relative;
+
+        &:focus {
+          background-color: #fff;
+        }
+      }
+
       .input {
         box-sizing: border-box;
         padding: 10px;

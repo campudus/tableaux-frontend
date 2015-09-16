@@ -7,7 +7,7 @@ var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
 
   getInitialState : function () {
-    return {tableId : null, columnName : "", open : false, rowResults : {}};
+    return {tableId : null, columnName : "", search : "", open : false, rowResults : {}};
   },
 
   componentWillMount : function () {
@@ -16,6 +16,16 @@ var LinkOverlay = React.createClass({
 
   componentWillUnmount : function () {
     Dispatcher.off('openLinkOverlay', this.openOverlay);
+  },
+
+  onSearch : function (event) {
+    console.log("LinkOverlay.onSearch");
+
+    var search = this.refs.search.getDOMNode().value;
+
+    this.setState({
+      search : search
+    });
   },
 
   addLinkValue : function (isLinked, row) {
@@ -126,6 +136,10 @@ var LinkOverlay = React.createClass({
               value = value[self.props.language] || null;
             }
 
+            if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
+              return "";
+            }
+
             return <li key={row.id} className={isLinked ? 'isLinked' : ''}
                        onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
           })}
@@ -140,6 +154,11 @@ var LinkOverlay = React.createClass({
 
           <div className="content-scroll">
             <div id="overlay-content">
+              <div className="search-input-wrapper">
+                <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                       ref="search"/>
+                <i className="fa fa-search"></i>
+              </div>
               {listItems}
             </div>
           </div>
