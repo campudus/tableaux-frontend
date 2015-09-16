@@ -21,7 +21,9 @@ var FilesCollection = AmpersandCollection.extend({
         self.add(a, {merge : true});
       });
     });
-  }
+  },
+
+  comparator : "name"
 });
 
 module.exports = FilesCollection;
