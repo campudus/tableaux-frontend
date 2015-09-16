@@ -3,14 +3,43 @@ var Dispatcher = require('../../Dispatcher');
 var _ = require('lodash');
 
 var TextEditCell = require('./TextEditCell.jsx');
+var TextArea = require('../TextArea.jsx');
+
+var ExpandButton = React.createClass({
+
+  displayName : 'ExpandButton',
+
+  propTypes : {
+    onTrigger : React.PropTypes.func.isRequired
+  },
+
+  render : function () {
+    return <button className="add" onClick={this.props.onTrigger}><span className="fa fa-expand"></span></button>
+  }
+});
 
 var TextCell = React.createClass({
 
   getInitialState : function () {
-    return {isEditing : false};
+    return {
+      isEditing : false,
+      hover : false
+    };
   },
 
-  handleLabelClick : function () {
+  onOver : function () {
+    this.setState({hover : true});
+  },
+
+  onOut : function () {
+    this.setState({hover : false});
+  },
+
+  handleLabelClick : function (event) {
+    console.log("TextCell.handleLabelClick");
+    event.stopPropagation();
+    event.preventDefault();
+
     this.setState({isEditing : true});
   },
 
@@ -28,27 +57,60 @@ var TextCell = React.createClass({
     Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
   },
 
-  renderSingleLanguage : function () {
-    var cell = this.props.cell;
-    return (
-      <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onClick={this.handleLabelClick}>
-        <span className='cell-content'>
-          {cell.value}
-        </span>
-      </div>
-    );
+  openOverlay : function (event) {
+    console.log("TextCell.openOverlay");
+    event.stopPropagation();
+    event.preventDefault();
+
+    var self = this;
+
+    Dispatcher.trigger("openGenericOverlay", {
+      head : this.props.cell.column.name,
+      body : <TextArea initialContent={this.getValue()} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
+    });
   },
 
-  renderMultiLanguage : function () {
+  closeOverlay : function (event) {
+    console.log("TextCell.closeOverlay");
+
+    Dispatcher.trigger("closeGenericOverlay");
+  },
+
+  saveOverlay : function (content, event) {
+    console.log("TextCell.saveOverlay");
+
+    this.closeOverlay(event);
+
+    this.handleEditDone(content);
+  },
+
+  getValue : function () {
     var cell = this.props.cell;
     var language = this.props.language;
-    var value = cell.value[language];
+
+    var value;
+    if (cell.isMultiLanguage) {
+      value = cell.value[language];
+    } else {
+      value = cell.value;
+    }
+
+    return value;
+  },
+
+  renderTextCell : function (cell, value) {
+    var button = "";
+    if (this.state.hover) {
+      button = <ExpandButton onTrigger={this.openOverlay}/>;
+    }
 
     return (
-      <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onClick={this.handleLabelClick}>
-        <span className='cell-content'>
+      <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onMouseEnter={this.onOver}
+           onMouseLeave={this.onOut}>
+        <span className='cell-content' onClick={this.handleLabelClick}>
           {value}
         </span>
+        {button}
       </div>
     );
   },
@@ -58,11 +120,7 @@ var TextCell = React.createClass({
     var language = this.props.language;
 
     if (!this.state.isEditing) {
-      if (cell.isMultiLanguage) {
-        return this.renderMultiLanguage();
-      } else {
-        return this.renderSingleLanguage();
-      }
+      return this.renderTextCell(cell, this.getValue());
     } else {
       return <TextEditCell cell={cell} language={language} onBlur={this.handleEditDone}/>;
     }
