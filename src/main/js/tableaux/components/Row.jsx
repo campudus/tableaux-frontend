@@ -1,7 +1,37 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Cell = require('./cell/Cell.jsx');
 var _ = require('lodash');
+
+var Dispatcher = require('../Dispatcher');
+
+var Cell = require('./cell/Cell.jsx');
+
+var Ask = React.createClass({
+  propTypes : {
+    onYes : React.PropTypes.func.isRequired,
+    onCancel : React.PropTypes.func.isRequired,
+
+    content : React.PropTypes.element.isRequired
+  },
+
+  _onYes : function (event) {
+    this.props.onYes(event);
+  },
+
+  _onCancel : function (event) {
+    this.props.onCancel(event);
+  },
+
+  render : function () {
+    return (
+      <div className="ask">
+        {this.props.content}
+        <button onClick={this._onYes} className="button yes">Yes</button>
+        <button onClick={this._onCancel} className="button cancel">Cancel</button>
+      </div>
+    )
+  }
+});
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -21,6 +51,25 @@ var Row = React.createClass({
 
   onRemove : function () {
     this.props.row.destroy();
+  },
+
+  onClickDelete : function () {
+    var question = <p>Do you really want to delete that row?</p>;
+    var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
+
+    Dispatcher.trigger('openGenericOverlay', {
+      head : "Delete?",
+      body : ask
+    }, "flexible");
+  },
+
+  onYesOverlay : function (event) {
+    this.props.row.destroy();
+    Dispatcher.trigger("closeGenericOverlay");
+  },
+
+  onCancelOverlay : function (event) {
+    Dispatcher.trigger("closeGenericOverlay");
   },
 
   enableDeleteButton : function () {
@@ -46,7 +95,7 @@ var Row = React.createClass({
     if (currentLanguageTag === languageTag) {
       deleteButton = (
         <div className="delete-row" style={ this.state.hover ? display : displayNone }>
-          <button className="button" onClick={this.onRemove}><i className="fa fa-trash"></i></button>
+          <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
         </div>
       )
     }

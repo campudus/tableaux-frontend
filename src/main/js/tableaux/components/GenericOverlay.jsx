@@ -1,13 +1,14 @@
 var React = require('react');
-var Dispatcher = require('../Dispatcher');
 var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
+
+var Dispatcher = require('../Dispatcher');
 
 var GenericOverlay = React.createClass({
   mixins : [AmpersandMixin],
 
   getInitialState : function () {
-    return {open : false, content : {}};
+    return {open : false, content : {}, type : "normal"};
   },
 
   componentWillMount : function () {
@@ -20,10 +21,16 @@ var GenericOverlay = React.createClass({
     Dispatcher.off('closeGenericOverlay');
   },
 
-  openOverlay : function (content) {
+  openOverlay : function (content, type) {
+    var _type = "normal";
+    if (typeof type !== 'undefined') {
+      _type = type
+    }
+
     this.setState({
       open : true,
-      content : content
+      content : content,
+      type : _type
     });
   },
 
@@ -33,26 +40,43 @@ var GenericOverlay = React.createClass({
     this.setState(this.getInitialState());
   },
 
-  renderOverlay : function () {
-    var self = this;
+  renderNormal : function () {
+    var body = (
+      <div id="overlay-wrapper">
+        <h2>{this.state.content.head}</h2>
 
-    var body = "";
-    if (this.state.open) {
-      body = (
-        <div id="overlay-wrapper">
-          <h2>{this.state.content.head}</h2>
-
-          <div className="content-scroll">
-            <div id="overlay-content">
-              {this.state.content.body}
-            </div>
+        <div className="content-scroll">
+          <div id="overlay-content">
+            {this.state.content.body}
           </div>
         </div>
-      );
-    }
+      </div>
+    );
 
     return (
-      <div id="overlay" className={this.state.open ? "open" : "closed"} ref="overlay">
+      <div id="overlay" className="normal open">
+        {body}
+
+        <div onClick={this.closeOverlay} className="background"></div>
+      </div>
+    );
+  },
+
+  renderFlexible : function () {
+    var body = (
+      <div id="overlay-wrapper">
+        <h2>{this.state.content.head}</h2>
+
+        <div className="content-scroll">
+          <div id="overlay-content">
+            {this.state.content.body}
+          </div>
+        </div>
+      </div>
+    );
+
+    return (
+      <div id="overlay" className="flexible open">
         {body}
 
         <div onClick={this.closeOverlay} className="background"></div>
@@ -61,7 +85,18 @@ var GenericOverlay = React.createClass({
   },
 
   render : function () {
-    return this.renderOverlay();
+    if (!this.state.open) {
+      return <div id="overlay" className="closed"/>;
+    }
+
+    switch (this.state.type) {
+      case "normal":
+        return this.renderNormal();
+      case "flexible":
+        return this.renderFlexible();
+      default:
+        throw "GenericOverlay type is not valid!";
+    }
   }
 });
 

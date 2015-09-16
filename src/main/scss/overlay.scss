@@ -13,6 +13,19 @@ $overlay-headline-height: 50px;
     z-index: 99;
   }
 
+  &.flexible {
+    display: block;
+
+    #overlay-wrapper {
+      top: 35%;
+      height: auto;
+
+      .content-scroll {
+        position: static;
+      }
+    }
+  }
+
   .background {
     z-index: 1;
     background-color: black;
