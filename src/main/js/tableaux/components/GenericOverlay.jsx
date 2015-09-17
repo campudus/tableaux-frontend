@@ -86,9 +86,12 @@ var GenericOverlay = React.createClass({
 
   render : function () {
     if (!this.state.open) {
+      document.getElementsByTagName("body")[0].style.overflow = "auto";
       return <div id="overlay" className="closed"/>;
     }
 
+    // TODO works but isn't nice
+    document.getElementsByTagName("body")[0].style.overflow = "hidden";
     switch (this.state.type) {
       case "normal":
         return this.renderNormal();

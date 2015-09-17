@@ -117,6 +117,9 @@ var LinkOverlay = React.createClass({
 
     //check for empty obj or map fails
     if (this.state.open && !_.isEmpty(this.state.rowResults)) {
+      // TODO works but isn't nice
+      document.getElementsByTagName("body")[0].style.overflow = "hidden";
+
       listItems = (
         <ul>
           {this.state.rowResults.map(function (row) {
@@ -145,6 +148,8 @@ var LinkOverlay = React.createClass({
           })}
         </ul>
       );
+    } else {
+      document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
 
     return (

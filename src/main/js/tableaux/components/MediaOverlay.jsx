@@ -91,6 +91,9 @@ var MediaOverlay = React.createClass({
     //check for empty obj or map fails
     var listItems = null;
     if (this.state.open && this.state.folder) {
+      // TODO works but isn't nice
+      document.getElementsByTagName("body")[0].style.overflow = "hidden";
+
       listItems = (
         <div>
           <ul style={{marginBottom: "30px"}}>
@@ -119,6 +122,8 @@ var MediaOverlay = React.createClass({
           </ul>
         </div>
       );
+    } else {
+      document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
 
     return (
