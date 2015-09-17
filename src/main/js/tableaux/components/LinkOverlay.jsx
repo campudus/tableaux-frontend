@@ -111,12 +111,10 @@ var LinkOverlay = React.createClass({
   renderOverlay : function () {
     var self = this;
 
-    var openClosedClassName = this.state.open ? "open" : "closed";
-
     var listItems = null;
 
     //check for empty obj or map fails
-    if (this.state.open && !_.isEmpty(this.state.rowResults)) {
+    if (!_.isEmpty(this.state.rowResults)) {
       // TODO works but isn't nice
       document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
@@ -132,7 +130,7 @@ var LinkOverlay = React.createClass({
 
             var isLinked = linked ? true : false;
 
-            // TODO id != position
+            // TODO column id != value position in array
             var value = row.values[self.toColumn.id - 1];
 
             if (self.toColumn.multilanguage) {
@@ -140,6 +138,7 @@ var LinkOverlay = React.createClass({
             }
 
             if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
+              // TODO kinda hack
               return "";
             }
 
@@ -148,12 +147,10 @@ var LinkOverlay = React.createClass({
           })}
         </ul>
       );
-    } else {
-      document.getElementsByTagName("body")[0].style.overflow = "auto";
     }
 
     return (
-      <div id="overlay" className={openClosedClassName} ref="overlay">
+      <div id="overlay" className="open">
         <div id="overlay-wrapper">
           <h2>{this.state.columnName}</h2>
 
@@ -161,7 +158,7 @@ var LinkOverlay = React.createClass({
             <div id="overlay-content">
               <div className="search-input-wrapper">
                 <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                       ref="search"/>
+                       defaultValue={this.state.search} ref="search"/>
                 <i className="fa fa-search"></i>
               </div>
               {listItems}
@@ -174,11 +171,14 @@ var LinkOverlay = React.createClass({
   },
 
   render : function () {
-    /*
-     Todo: Remove overlay content when animation has finished, so no flashing appears.
-     For now, the last overlay content stays in the DOM.
-     */
-    //return this.renderOverlay(<h2>You clicked {this.state.columnName} with id TableId {this.state.tableId}</h2>);
+    if (!this.state.open) {
+      document.getElementsByTagName("body")[0].style.overflow = "auto";
+      return <div id="overlay" className="closed"/>;
+    }
+
+    // TODO works but isn't nice
+    document.getElementsByTagName("body")[0].style.overflow = "hidden";
+
     return this.renderOverlay();
   }
 
