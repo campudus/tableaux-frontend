@@ -1,13 +1,13 @@
 var Router = require('ampersand-router');
 var React = require('react');
 
-var Folder = require('./tableaux/models/media/Folder');
-var Tables = require('./tableaux/models/Tables');
+var Folder = require('./models/media/Folder');
+var Tables = require('./models/Tables');
 
-var FolderView = require('./tableaux/components/media/Folder.jsx');
-var Tableaux = require('./tableaux/components/Tableaux.jsx');
+var FolderView = require('./components/media/Folder.jsx');
+var Tableaux = require('./components/Tableaux.jsx');
 
-var Dispatcher = require('./tableaux/Dispatcher');
+var Dispatcher = require('./dispatcher/Dispatcher');
 
 var TableauxRouter = Router.extend({
   routes : {
