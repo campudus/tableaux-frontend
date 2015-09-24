@@ -96,7 +96,7 @@ var Cell = AmpersandModel.extend({
   },
 
   url : function () {
-    return apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
+    return App.apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
   },
 
   toJSON : function () {

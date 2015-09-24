@@ -24,8 +24,9 @@ App.extend({
     }, model);
   },
 
-  on : Dispatcher.on,
-  off : Dispatcher.off,
+  on : Dispatcher.on.bind(Dispatcher),
+  off : Dispatcher.off.bind(Dispatcher),
+  trigger : Dispatcher.trigger.bind(Dispatcher),
 
   apiUrl : apiUrl,
   Dispatcher : Dispatcher
