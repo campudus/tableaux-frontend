@@ -28,7 +28,8 @@
     "ampersand-collection": "^1.5.0",
     "ampersand-events": "^1.1.1",
     "ampersand-model": "^6.0.2",
-    "ampersand-react-mixin": "^1.0.0",
+    "ampersand-react-mixin": "^1.0.1",
+    "ampersand-registry": "^0.2.4",
     "ampersand-rest-collection": "^5.0.0",
     "ampersand-router": "^3.0.2",
     "ampersand-sync": "^4.0.2",
@@ -43,7 +44,7 @@
   "devDependencies": {
     "browser-sync": "^2.9.6",
     "browser-sync-spa": "^1.0.3",
-    "browserify": "^11.1.0",
+    "browserify": "^11.2.0",
     "del": "^2.0.2",
     "gulp": "^3.8.11",
     "gulp-compass": "^2.0.4",
