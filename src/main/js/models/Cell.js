@@ -1,12 +1,12 @@
+var App = require('ampersand-app');
 var AmpersandModel = require('ampersand-model');
-
-var Dispatcher = require('../dispatcher/Dispatcher');
-var apiUrl = require('../helpers/apiUrl');
 
 var Tables = require('./Tables');
 var Column = require('./Column');
 
 var Cell = AmpersandModel.extend({
+  modelType : 'Cell',
+
   props : {
     value : 'any'
   },
@@ -19,6 +19,12 @@ var Cell = AmpersandModel.extend({
   },
 
   derived : {
+    id : {
+      deps : ['tableId', 'column', 'rowId'],
+      fn : function () {
+        return 'cell-' + this.tableId + '-' + this.column.getId() + '-' + this.rowId;
+      }
+    },
     changeCellEvent : {
       deps : ['tableId', 'column', 'rowId'],
       fn : function () {
@@ -46,18 +52,18 @@ var Cell = AmpersandModel.extend({
   },
 
   initialize : function (attrs, options) {
+    App.registerModel(this);
+
     var event = this.changeCellEvent;
-    var self = this;
 
     if (options && options.row && !options.noListeners) {
       // Cell could be initialized multiple times, so go and fuck off!
-      Dispatcher.off(event);
-
-      Dispatcher.on(event, this.changeCell.bind(this));
+      App.off(event);
+      App.on(event, this.changeCell.bind(this));
 
       options.row.on('remove', function () {
         // Remove changeCell listener
-        Dispatcher.off(event);
+        App.off(event);
       });
     }
   },
