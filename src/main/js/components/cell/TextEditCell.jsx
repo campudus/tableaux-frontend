@@ -17,10 +17,9 @@ var TextEditCell = React.createClass({
   },
 
   getKeyboardShortcuts : function () {
-    var arr = [];
-    // enter = 13
-    arr[13] = this.doneEditing;
-    return arr;
+    return {
+      enter : this.doneEditing
+    };
   },
 
   handleClickOutside : function (event) {

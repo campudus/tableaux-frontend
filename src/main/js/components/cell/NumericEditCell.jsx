@@ -15,10 +15,9 @@ var NumericEditCell = React.createClass({
   },
 
   getKeyboardShortcuts : function () {
-    var arr = [];
-    // enter = 13
-    arr[13] = this.onSave;
-    return arr;
+    return {
+      "enter" : this.onSave
+    };
   },
 
   handleClickOutside : function (event) {

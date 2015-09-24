@@ -6,6 +6,8 @@
 
 'use strict';
 
+var _ = require('lodash');
+
 var KEYS = {
   enter : 13,
   left : 37,
@@ -18,49 +20,25 @@ var KEYS = {
   command : 91
 };
 
-var pressedKeys = {};
-
-var onKeyDown = function (event) {
-  pressedKeys[event.which] = true;
-};
-
-var onKeyUp = function (event) {
-  pressedKeys[event.which] = null;
-};
-
 var KeyboardShortcutsMixin = {
-  onKeyboardShortcut : function (event, shortcuts) {
-    if (typeof shortcuts !== 'function') {
-      shortcuts = this.getKeyboardShortcuts();
+  onKeyboardShortcut : function (event) {
+    if (typeof this.getKeyboardShortcuts !== "function") {
+      throw "Define function getKeyboardShortcuts in order to use KeyboardShortcutsMixin.";
     }
 
-    return shortcuts.reduce(function (result, handler, key) {
+    var shortcuts = this.getKeyboardShortcuts();
+
+    if (typeof shortcuts !== "object") {
+      throw "Return type of getKeyboardShortcuts must be an object.";
+    }
+
+    _.forEach(shortcuts, function (handler, key) {
       var keyCode = KEYS[key] || key;
 
       if (keyCode === event.keyCode) {
-        if (handler(event) === false) {
-          result = false;
-        }
+        handler(event);
       }
-
-      return result;
-    }, true);
-  },
-
-  isKeyPressed : function (key) {
-    var keyCode = key in KEYS ? KEYS[key] : key;
-
-    return pressedKeys[keyCode];
-  },
-
-  componentDidMount : function () {
-    document.addEventListener('keyup', onKeyUp);
-    document.addEventListener('keydown', onKeyDown);
-  },
-
-  componentWillUnmount : function () {
-    document.removeEventListener('keyup', onKeyUp);
-    document.removeEventListener('keydown', onKeyDown);
+    });
   }
 };
 
