@@ -17,6 +17,7 @@ var Tableaux = React.createClass({
   displayName : 'Tableaux',
 
   propTypes : {
+    langtag : React.PropTypes.string.isRequired,
     tables : React.PropTypes.object.isRequired,
     initialTableId : React.PropTypes.number.isRequired
   },
@@ -46,12 +47,10 @@ var Tableaux = React.createClass({
     var self = this;
     var tables = this.props.tables;
 
-    var currentLanguage = "de_DE";
-
     var table = '';
     var title = '';
     if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
-      table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}/>
+      table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)} langtag={this.props.langtag}/>;
       title = tables.get(this.state.currentTableId).name;
     } else {
       console.error("No table found with id " + this.state.currentTableId);
@@ -66,9 +65,9 @@ var Tableaux = React.createClass({
           {table}
         </div>
 
-        <LinkOverlay key="linkoverlay" language={currentLanguage}/>
-        <MediaOverlay key="mediaoverlay" language={currentLanguage}/>
-        <GenericOverlay key="genericoverlay" language={currentLanguage}/>
+        <LinkOverlay key="linkoverlay" language={this.props.langtag}/>
+        <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
+        <GenericOverlay key="genericoverlay" language={this.props.langtag}/>
       </div>
     );
   }

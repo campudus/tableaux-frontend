@@ -1,5 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
+var App = require('ampersand-app');
 var _ = require('lodash');
 
 var Dispatcher = require('../dispatcher/Dispatcher');
@@ -35,6 +36,13 @@ var Ask = React.createClass({
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
+
+  displayName : 'Row',
+
+  propTypes : {
+    langtag : React.PropTypes.string.isRequired,
+    row : React.PropTypes.object.isRequired
+  },
 
   getInitialState : function () {
     return {
@@ -80,19 +88,61 @@ var Row = React.createClass({
     this.setState({hover : false});
   },
 
-  renderLanguageRow : function (currentLanguageTag, languageTag) {
-    var className = 'row row-' + this.props.row.getId();
-
-    var language = languageTag.split("_")[0];
-    var country = languageTag.split("_")[1];
+  renderLangtag : function (langtag) {
+    var language = langtag.split(/-|_/)[0];
+    var country = langtag.split(/-|_/)[1];
 
     var icon = country.toLowerCase() + ".png";
+
+    return (
+      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
+        <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
+      </div>
+    );
+  },
+
+  renderSingleLanguageCell : function (cell, idx) {
+    var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
+    return <div key={idx} className={className}>—.—</div>;
+  },
+
+  renderCells : function (langtag) {
+    var self = this;
+
+    return this.props.row.cells.map(function (cell, idx) {
+      console.log("renderCells", self.props.langtag, langtag);
+
+      // We want to see single-language value even if not expanded
+      if (!cell.isMultiLanguage && !self.state.expanded) {
+        // TODO we should render with default-language
+        return <Cell key={idx} cell={cell} langtag={langtag}/>;
+      }
+
+      // We don't want to repeat our self if expanded
+      if (!cell.isMultiLanguage && self.state.expanded) {
+        if (langtag === App.langtags[0]) {
+          return <Cell key={idx} cell={cell} langtag={langtag}/>;
+        } else {
+          return self.renderSingleLanguageCell(cell, idx);
+        }
+      }
+
+      if (cell.isMultiLanguage) {
+        return <Cell key={idx} cell={cell} langtag={langtag}/>;
+      }
+    })
+  },
+
+  renderLanguageRow : function (langtag) {
+    var className = 'row row-' + this.props.row.getId();
 
     var displayNone = {display : "none"};
     var display = {display : "inline"};
 
     var deleteButton = "";
-    if (currentLanguageTag === languageTag) {
+    // Add delete button to default-language row
+    // or to every not expanded row
+    if (langtag === App.langtags[0] || !this.state.expanded) {
       deleteButton = (
         <div className="delete-row" style={ this.state.hover ? display : displayNone }>
           <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
@@ -101,23 +151,15 @@ var Row = React.createClass({
     }
 
     return (
-      <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton} key={languageTag}
+      <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
+           key={this.props.row.getId() + "-" + langtag}
            className={className}>
 
         {deleteButton}
 
-        <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-          <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
-        </div>
+        {this.renderLangtag(langtag)}
 
-        {this.props.row.cells.map(function (cell, idx) {
-          if (!cell.isMultiLanguage && currentLanguageTag !== languageTag) {
-            var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
-            return <div key={idx} className={className}>—.—</div>
-          } else {
-            return <Cell key={idx} cell={cell} language={languageTag}/>;
-          }
-        })}
+        {this.renderCells(langtag)}
       </div>
     );
   },
@@ -125,22 +167,15 @@ var Row = React.createClass({
   render : function () {
     var self = this;
 
-    var languageTags = [
-      "de_DE",
-      "en_GB"
-    ];
-    var currentLanguageTag = languageTags[0];
-
     if (this.state.expanded) {
-      return (
-        <div>
-          {languageTags.map(function (languageTag) {
-            return self.renderLanguageRow(currentLanguageTag, languageTag);
-          })}
-        </div>
-      );
+      // render all language-rows for this row
+      var rows = App.langtags.map(function (langtag) {
+        return self.renderLanguageRow(langtag);
+      });
+
+      return <div>{rows}</div>;
     } else {
-      return this.renderLanguageRow(currentLanguageTag, currentLanguageTag);
+      return this.renderLanguageRow(this.props.langtag);
     }
   }
 });

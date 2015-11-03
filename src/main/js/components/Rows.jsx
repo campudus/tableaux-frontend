@@ -6,14 +6,20 @@ var Row = require('./Row.jsx');
 var Rows = React.createClass({
   mixins : [AmpersandMixin],
 
+  displayName : 'Rows',
+
+  propTypes : {
+    langtag : React.PropTypes.string.isRequired,
+    rows : React.PropTypes.object.isRequired
+  },
+
   render : function () {
-    return (
-      <div className="data">
-        {this.props.rows.map(function (row, idx) {
-          return <Row key={idx} row={row}/>
-        })}
-      </div>
-    );
+    var self = this;
+    var rows = this.props.rows.map(function (row, idx) {
+      return <Row key={idx} row={row} langtag={self.props.langtag}/>
+    });
+
+    return <div className="data">{rows}</div>;
   }
 });
 

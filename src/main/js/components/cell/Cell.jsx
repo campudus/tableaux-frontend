@@ -9,14 +9,16 @@ var AttachmentCell = require('./AttachmentCell.jsx');
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
 
+  displayName : "Cell",
+
   propTypes : {
     cell : React.PropTypes.object.isRequired,
-    language : React.PropTypes.string.isRequired
+    langtag : React.PropTypes.string.isRequired
   },
 
   render : function () {
     var cell = this.props.cell;
-    var language = this.props.language;
+    var language = this.props.langtag;
 
     switch (cell.kind) {
       case "link":
@@ -31,7 +33,7 @@ var Cell = React.createClass({
         break;
 
       default:
-        return <TextCell cell={cell} language={language}/>;
+        return <TextCell cell={cell} langtag={language}/>;
     }
   }
 });

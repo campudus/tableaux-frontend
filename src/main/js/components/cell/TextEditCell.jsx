@@ -12,7 +12,7 @@ var TextEditCell = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
-    language : React.PropTypes.string.isRequired,
+    langtag : React.PropTypes.string.isRequired,
     onBlur : React.PropTypes.func.isRequired
   },
 
@@ -77,8 +77,8 @@ var TextEditCell = React.createClass({
 
     var value = null;
     if (cell.isMultiLanguage) {
-      if (cell.value[this.props.language]) {
-        value = cell.value[this.props.language];
+      if (cell.value[this.props.langtag]) {
+        value = cell.value[this.props.langtag];
       } else {
         // in this case we don't
         // have a value for this language

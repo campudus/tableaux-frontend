@@ -1,5 +1,8 @@
+var App = require('ampersand-app');
 var Router = require('ampersand-router');
 var React = require('react');
+var _ = require('lodash');
+var locale = require('browser-locale')();
 
 var Folder = require('./models/media/Folder');
 var Tables = require('./models/Tables');
@@ -13,7 +16,7 @@ var TableauxRouter = Router.extend({
   routes : {
     '' : 'home',
     'table' : 'noTable',
-    'table/:tableid' : 'tableBrowser',
+    ':langtag/table/:tableid' : 'tableBrowser',
     'media' : 'mediaBrowser',
     'media/:folderid' : 'mediaBrowser'
   },
@@ -27,28 +30,32 @@ var TableauxRouter = Router.extend({
 
     var self = this;
 
+    var langtag = App.mapLocaleToLangtag(locale);
+
     this.tables = new Tables();
     this.tables.fetch({
       success : function (collection) {
         if (typeof collection.at(0) !== 'undefined') {
-          self.redirectTo('table/' + collection.at(0).getId());
+          self.redirectTo(langtag + '/table/' + collection.at(0).getId());
         }
       }
     });
   },
 
-  tableBrowser : function (tableid) {
-    console.log("TableauxRouter.tableBrowser", tableid);
+  tableBrowser : function (langtag, tableid) {
+    console.log("TableauxRouter.tableBrowser", langtag, tableid);
 
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
       console.error("path param 'tableid' is not valid");
+      return;
+    } else if (typeof langtag === 'undefined' || App.langtags.indexOf(langtag) === -1) {
+      console.error("path param 'langtag' is not valid");
       return;
     }
 
     var self = this;
 
     var id = parseInt(tableid);
-    var key = 'tableaux' + id;
 
     // router is called even if we switch through
     // tables with TableSwitcher but we only want to
@@ -69,11 +76,11 @@ var TableauxRouter = Router.extend({
         this.tables = new Tables();
         this.tables.fetch({
           success : function () {
-            self.renderPage(<Tableaux tables={self.tables} initialTableId={id}/>);
+            self.renderPage(<Tableaux tables={self.tables} initialTableId={id} langtag={langtag}/>);
           }
         });
       } else {
-        self.renderPage(<Tableaux tables={self.tables} initialTableId={id}/>);
+        self.renderPage(<Tableaux tables={self.tables} initialTableId={id} langtag={langtag}/>);
       }
     }
   },

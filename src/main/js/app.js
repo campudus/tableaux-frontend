@@ -4,6 +4,7 @@ var Registry = require('ampersand-registry');
 var Router = require('./router');
 var Dispatcher = require('./dispatcher/Dispatcher');
 var apiUrl = require('./helpers/apiUrl');
+var multiLanguage = require('./helpers/multiLanguage');
 
 App.extend({
   init : function () {
@@ -14,8 +15,6 @@ App.extend({
   },
 
   registerModel : function (model) {
-    console.log("App.registerModel", model.getType(), model.getId());
-
     var Registry = this.Registry;
     Registry.store(model);
 
@@ -29,7 +28,18 @@ App.extend({
   trigger : Dispatcher.trigger.bind(Dispatcher),
 
   apiUrl : apiUrl,
-  Dispatcher : Dispatcher
+  Dispatcher : Dispatcher,
+
+  // TODO we should request that from tableaux backend
+  langtags : [
+    "de-DE",
+    "en-GB",
+    "fr-FR"
+  ],
+
+  mapLocaleToLangtag : function (locale) {
+    return multiLanguage.mapLocaleToLangtag(this.langtags)(locale)
+  }
 });
 
 App.init();

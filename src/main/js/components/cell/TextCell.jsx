@@ -21,6 +21,13 @@ var ExpandButton = React.createClass({
 
 var TextCell = React.createClass({
 
+  displayName : 'TextCell',
+
+  propTypes : {
+    langtag : React.PropTypes.string.isRequired,
+    cell : React.PropTypes.object.isRequired
+  },
+
   getInitialState : function () {
     return {
       isEditing : false,
@@ -87,16 +94,15 @@ var TextCell = React.createClass({
 
   getValue : function () {
     var cell = this.props.cell;
-    var language = this.props.language;
 
     var value;
     if (cell.isMultiLanguage) {
-      value = cell.value[language];
+      value = cell.value[this.props.langtag];
     } else {
       value = cell.value;
     }
 
-    return value;
+    return typeof value === "undefined" ? null : value;
   },
 
   renderTextCell : function (cell, value) {
@@ -118,12 +124,13 @@ var TextCell = React.createClass({
 
   render : function () {
     var cell = this.props.cell;
-    var language = this.props.language;
+
+    console.log("TextCell.render", this.props.langtag, this.state.isEditing, cell.value, this.getValue());
 
     if (!this.state.isEditing) {
       return this.renderTextCell(cell, this.getValue());
     } else {
-      return <TextEditCell cell={cell} language={language} onBlur={this.handleEditDone}/>;
+      return <TextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}/>;
     }
   }
 });

@@ -10,6 +10,13 @@ var NewRow = require('./NewRow.jsx');
 var Table = React.createClass({
   mixins : [AmpersandMixin],
 
+  displayName : 'Table',
+
+  propTypes : {
+    langtag : React.PropTypes.string.isRequired,
+    table : React.PropTypes.object.isRequired
+  },
+
   componentWillMount : function () {
     var table = this.props.table;
 
@@ -29,9 +36,10 @@ var Table = React.createClass({
       <section id="table-wrapper" ref="tableWrapper">
         <div className="tableaux-table" ref="tableInner">
           <Columns columns={this.props.table.columns}/>
-          <Rows rows={this.props.table.rows}/>
 
-          <NewRow table={this.props.table}/>
+          <Rows rows={this.props.table.rows} langtag={this.props.langtag}/>
+
+          <NewRow table={this.props.table} langtag={this.props.langtag}/>
         </div>
       </section>
     );
