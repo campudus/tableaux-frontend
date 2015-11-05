@@ -1,8 +1,4 @@
-var app = require('ampersand-app');
 var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-
-var Dispatcher = require('../../dispatcher/Dispatcher');
 
 var ViewSwitcher = require('./ViewSwitcher.jsx');
 var Settings = require('./Settings.jsx');
@@ -32,8 +28,8 @@ var Header = React.createClass({
         </div>
 
         <div id="settings-panel">
-          <ViewSwitcher langtag={this.props.langtag} />
-          <Settings langtag={this.props.langtag} />
+          <ViewSwitcher langtag={this.props.langtag}/>
+          <Settings langtag={this.props.langtag}/>
         </div>
       </header>
     )
