@@ -59,15 +59,18 @@ var TableauxRouter = Router.extend({
 
     // router is called even if we switch through
     // tables with TableSwitcher but we only want to
-    // re-render the page if we are called the very
-    // first time
-    if (this.alreadyCalled) {
+    // re-render the page if we are called with a
+    // different langtag.
+    // TODO perhaps we should do that with a setState
+    if (this.alreadyCalled && this.alreadyCalled.langtag === langtag) {
       // Tableaux.jsx is listening on this
       // state will be changed which triggers
       // a React render
       Dispatcher.trigger('switch-table', {id : id});
     } else {
-      this.alreadyCalled = true;
+      this.alreadyCalled = {
+        langtag : langtag
+      };
 
       // we could be called by route noTable
       // in this case `this.tables` is already

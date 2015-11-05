@@ -2,10 +2,19 @@ var app = require('ampersand-app');
 var React = require('react');
 
 var TableSwitcher = React.createClass({
+
+  propTypes : {
+    tables : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired,
+    currentId : React.PropTypes.number.isRequired,
+  },
+
   handleClick : function (entry) {
+    var langtag = this.props.langtag;
+
     return function () {
       console.log('TableSwitcher.handleClick', entry);
-      app.router.history.navigate('table/' + entry.id, {trigger : true});
+      app.router.history.navigate(langtag + '/table/' + entry.id, {trigger : true});
     }
   },
 

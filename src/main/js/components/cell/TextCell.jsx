@@ -58,7 +58,7 @@ var TextCell = React.createClass({
 
     if (cell.isMultiLanguage) {
       var value = _.clone(cell.value);
-      value[this.props.language] = newValue;
+      value[this.props.langtag] = newValue;
       newValue = value;
     }
 
@@ -113,9 +113,10 @@ var TextCell = React.createClass({
 
     return (
       <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onMouseEnter={this.onOver}
-           onMouseLeave={this.onOut}>
-        <span className='cell-content' onClick={this.handleLabelClick}>
-          {value}
+           onMouseLeave={this.onOut}
+           onClick={this.handleLabelClick}>
+        <span className='cell-content'>
+          {value === null ? "" : value}
         </span>
         {button}
       </div>
@@ -124,8 +125,6 @@ var TextCell = React.createClass({
 
   render : function () {
     var cell = this.props.cell;
-
-    console.log("TextCell.render", this.props.langtag, this.state.isEditing, cell.value, this.getValue());
 
     if (!this.state.isEditing) {
       return this.renderTextCell(cell, this.getValue());

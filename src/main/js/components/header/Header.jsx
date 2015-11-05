@@ -9,6 +9,12 @@ var Settings = require('./Settings.jsx');
 
 var Header = React.createClass({
 
+  propTypes : {
+    title : React.PropTypes.string.isRequired,
+    subtitle : React.PropTypes.string.isRequired,
+    langtag : React.PropTypes.string.isRequired
+  },
+
   render : function () {
     var title = this.props.title;
     var subtitle = this.props.subtitle;
@@ -26,7 +32,7 @@ var Header = React.createClass({
         </div>
 
         <div id="settings-panel">
-          <ViewSwitcher />
+          <ViewSwitcher langtag={this.props.langtag} />
           <Settings />
         </div>
       </header>

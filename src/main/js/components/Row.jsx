@@ -110,8 +110,6 @@ var Row = React.createClass({
     var self = this;
 
     return this.props.row.cells.map(function (cell, idx) {
-      console.log("renderCells", self.props.langtag, langtag);
-
       // We want to see single-language value even if not expanded
       if (!cell.isMultiLanguage && !self.state.expanded) {
         // TODO we should render with default-language
@@ -127,6 +125,7 @@ var Row = React.createClass({
         }
       }
 
+      // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
         return <Cell key={idx} cell={cell} langtag={langtag}/>;
       }

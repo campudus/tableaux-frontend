@@ -17,23 +17,18 @@ var Cell = React.createClass({
   },
 
   render : function () {
-    var cell = this.props.cell;
-    var language = this.props.langtag;
-
-    switch (cell.kind) {
+    switch (this.props.cell.kind) {
       case "link":
-        return <LinkCell cell={cell} language={language}/>;
-        break;
+        return <LinkCell cell={this.props.cell} language={this.props.langtag}/>;
 
       case "attachment":
-        return <AttachmentCell cell={cell}/>;
-        break;
+        return <AttachmentCell cell={this.props.cell} language={this.props.langtag}/>;
+
       case "numeric":
-        return <NumericCell cell={cell} language={language}/>;
-        break;
+        return <NumericCell cell={this.props.cell} language={this.props.langtag}/>;
 
       default:
-        return <TextCell cell={cell} langtag={language}/>;
+        return <TextCell cell={this.props.cell} langtag={this.props.langtag}/>;
     }
   }
 });

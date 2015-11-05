@@ -58,10 +58,10 @@ var Tableaux = React.createClass({
 
     return (
       <div>
-        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'}/>
+        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'} langtag={this.props.langtag}/>
 
         <div className="wrapper">
-          <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables}/>
+          <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables} langtag={this.props.langtag}/>
           {table}
         </div>
 

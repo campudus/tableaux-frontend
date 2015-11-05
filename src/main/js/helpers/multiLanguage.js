@@ -5,6 +5,7 @@ var _ = require('lodash');
  *
  * @param json simple json object
  * @param language e.g. de_DE
+ * @param defaultLanguage
  * @returns any
  */
 function retrieveTranslation(json, language, defaultLanguage) {
