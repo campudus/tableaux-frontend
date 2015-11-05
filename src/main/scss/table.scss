@@ -71,6 +71,11 @@
     border-bottom: 1px solid $color-border-grey;
   }
 
+  .row-group.expanded {
+    border-bottom: 2px solid $color-border-grey;
+    background-color: #f9f9f9;
+  }
+
   .cell {
     position: relative;
     vertical-align: top;

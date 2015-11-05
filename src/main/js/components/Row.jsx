@@ -172,7 +172,7 @@ var Row = React.createClass({
         return self.renderLanguageRow(langtag);
       });
 
-      return <div>{rows}</div>;
+      return <div className="row-group expanded">{rows}</div>;
     } else {
       return this.renderLanguageRow(this.props.langtag);
     }
