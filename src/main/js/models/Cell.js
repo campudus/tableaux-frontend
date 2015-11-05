@@ -12,9 +12,12 @@ var Cell = AmpersandModel.extend({
   },
 
   session : {
-    tables : [Tables, true],
+    tables : {
+      type : 'object',
+      required : true
+    },
     tableId : 'number',
-    column : Column,
+    column : 'object',
     rowId : 'number'
   },
 

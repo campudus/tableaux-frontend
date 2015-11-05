@@ -19,7 +19,7 @@ var Column = AmpersandModel.extend({
       type : 'number'
     },
     toColumn : {
-      type : Column
+      type : 'object'
     }
   },
 

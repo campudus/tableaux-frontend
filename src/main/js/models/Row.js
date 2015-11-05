@@ -12,7 +12,7 @@ var Row = AmpersandModel.extend({
 
   session : {
     tableId : 'number',
-    columns : Columns,
+    columns : 'object',
     values : 'array'
   },
 

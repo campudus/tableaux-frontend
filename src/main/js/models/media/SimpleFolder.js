@@ -8,8 +8,9 @@ var SimpleFolder = AmpersandModel.extend({
     name : 'string',
     description : 'string',
     parent : {
-      type : SimpleFolder,
-      default : null
+      type : 'number',
+      default : null,
+      allowNull : true
     }
   }
 });
