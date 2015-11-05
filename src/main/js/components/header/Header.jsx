@@ -33,7 +33,7 @@ var Header = React.createClass({
 
         <div id="settings-panel">
           <ViewSwitcher langtag={this.props.langtag} />
-          <Settings />
+          <Settings langtag={this.props.langtag} />
         </div>
       </header>
     )

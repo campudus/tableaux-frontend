@@ -15,8 +15,12 @@ var Dispatcher = require('./dispatcher/Dispatcher');
 var TableauxRouter = Router.extend({
   routes : {
     '' : 'home',
+
     'table' : 'noTable',
+    ':langtag/table' : 'noTable',
+
     ':langtag/table/:tableid' : 'tableBrowser',
+
     'media' : 'mediaBrowser',
     'media/:folderid' : 'mediaBrowser'
   },
@@ -25,12 +29,14 @@ var TableauxRouter = Router.extend({
     this.redirectTo('table');
   },
 
-  noTable : function () {
+  noTable : function (langtag) {
     console.log("TableauxRouter.noTable");
 
     var self = this;
 
-    var langtag = App.mapLocaleToLangtag(locale);
+    if (!langtag) {
+      langtag = App.mapLocaleToLangtag(locale);
+    }
 
     this.tables = new Tables();
     this.tables.fetch({

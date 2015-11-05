@@ -1,17 +1,17 @@
-var app = require('ampersand-app');
 var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
 
-var Dispatcher = require('../../dispatcher/Dispatcher');
+var Settings = React.createClass({
 
-var Header = React.createClass({
+  propTypes : {
+    langtag : React.PropTypes.string.isRequired
+  },
 
   render : function () {
     return (
       <div id="settings">
         <div id="settings-content">
           <ul>
-            <li><i className="fa fa-table icon"></i><a href="/table">Tables</a></li>
+            <li><i className="fa fa-table icon"></i><a href={ "/" + this.props.langtag + "/table" }>Tables</a></li>
             <li><i className="fa fa-file-image-o icon"></i><a href="/media">Media</a></li>
           </ul>
         </div>
@@ -20,4 +20,4 @@ var Header = React.createClass({
   }
 });
 
-module.exports = Header;
+module.exports = Settings;
