@@ -33,6 +33,7 @@
     "ampersand-rest-collection": "^5.0.0",
     "ampersand-router": "^3.0.2",
     "ampersand-sync": "^4.0.2",
+    "browser-locale": "^1.0.0",
     "keymirror": "^0.1.1",
     "lodash": "^3.10.1",
     "react": "^0.13.1",
