@@ -10,14 +10,15 @@ var _ = require('lodash');
  */
 function retrieveTranslation(json, language, defaultLanguage) {
   if (!_.isPlainObject(json)) {
+    console.error("json is not a plain object", json);
     throw "json is not a plain object"
   }
 
   var content = json[language];
 
-  if (defaultLanguage !== "undefined" && defaultLanguage !== language) {
+  if (typeof defaultLanguage !== "undefined" && defaultLanguage !== language) {
     // fallback to default language if no or empty translation found
-    if (content === null || content === "") {
+    if (typeof content === "undefined" || content === null || content === "") {
       content = json[defaultLanguage];
     }
   }
@@ -78,7 +79,7 @@ module.exports = {
     }
   },
 
-  mapLocaleToLangtag: function(langtags) {
+  mapLocaleToLangtag : function (langtags) {
     return function (locale) {
       return mapLocaleToLangtag(locale, langtags)
     }

@@ -1,7 +1,6 @@
 var App = require('ampersand-app');
 var Router = require('ampersand-router');
 var React = require('react');
-var _ = require('lodash');
 var locale = require('browser-locale')();
 
 var Folder = require('./models/media/Folder');
@@ -21,8 +20,8 @@ var TableauxRouter = Router.extend({
 
     ':langtag/table/:tableid' : 'tableBrowser',
 
-    'media' : 'mediaBrowser',
-    'media/:folderid' : 'mediaBrowser'
+    ':langtag/media' : 'mediaBrowser',
+    ':langtag/media/:folderid' : 'mediaBrowser'
   },
 
   home : function () {
@@ -94,7 +93,14 @@ var TableauxRouter = Router.extend({
     }
   },
 
-  mediaBrowser : function (folderid) {
+  mediaBrowser : function (langtag, folderid) {
+    console.log("TableauxRouter.mediaBrowser", langtag, folderid);
+
+    if (typeof langtag === 'undefined' || App.langtags.indexOf(langtag) === -1) {
+      console.error("path param 'langtag' is not valid");
+      return;
+    }
+
     var self = this;
 
     if (typeof folderid === 'undefined') {
@@ -105,7 +111,7 @@ var TableauxRouter = Router.extend({
 
     this.folder.fetch({
       success : function () {
-        self.renderPage(<FolderView folder={self.folder}/>);
+        self.renderPage(<FolderView folder={self.folder} langtag={langtag}/>);
       }
     });
   },

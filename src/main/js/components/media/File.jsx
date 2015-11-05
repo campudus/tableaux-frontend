@@ -1,7 +1,9 @@
 var React = require('react');
+var App = require('ampersand-app');
 var AmpersandMixin = require('ampersand-react-mixin');
 
 var apiUrl = require('../../helpers/apiUrl');
+var multiLanguage = require('../../helpers/multiLanguage');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 
 var FileEdit = require('./FileEdit.jsx');
@@ -10,6 +12,11 @@ var File = React.createClass({
   mixins : [AmpersandMixin],
 
   displayName : 'File',
+
+  propTypes : {
+    file : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired
+  },
 
   onRemove : function () {
     console.log('File.onRemove', this.props.file.uuid);
@@ -30,10 +37,10 @@ var File = React.createClass({
     });
   },
 
-  onSave : function (newFile) {
-    console.log("File.saveFile", newFile.uuid, newFile.name, newFile.description, newFile, newFile.toJSON());
+  onSave : function (file) {
+    console.log("File.saveFile", file.uuid, file.title, file.description, file, file.toJSON());
     this.onEdit();
-    Dispatcher.trigger('add-file', newFile.toJSON());
+    Dispatcher.trigger('change-file', file.toJSON());
   },
 
   getInitialState : function () {
@@ -43,8 +50,16 @@ var File = React.createClass({
   },
 
   render : function () {
-    var name = this.props.file.name;
-    var link = apiUrl(this.props.file.fileUrl);
+    // default language (for fallback)
+    var retrieveTranslation = multiLanguage.retrieveTranslation(App.langtags[0]);
+
+    // current language
+    var langtag = this.props.langtag;
+
+    console.log("File.render", this.props.file.title);
+
+    var title = retrieveTranslation(this.props.file.title, langtag);
+    var link = apiUrl(retrieveTranslation(this.props.file.fileUrl, langtag));
 
     var deleteButton = <span className="button fa fa-remove" onClick={this.onRemove} alt="delete"></span>;
 
@@ -56,12 +71,13 @@ var File = React.createClass({
 
     var editForm = "";
     if (this.state.edit) {
-      editForm = <FileEdit key={'edit' + this.props.file.uuid} file={this.props.file} callback={this.onSave}/>
+      editForm = <FileEdit key={'edit' + this.props.file.uuid} file={this.props.file} callback={this.onSave}
+                           langtag={this.props.langtag}/>
     }
 
     return (
       <div key={'file' + this.props.file.uuid} className="file">
-        <a href={link}><span>{name}</span></a>
+        <a href={link}><span>{title}</span></a>
         {deleteButton}
         {editButton}
         {editForm}

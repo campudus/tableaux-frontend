@@ -11,6 +11,11 @@ var Folder = React.createClass({
 
   displayName : 'Folder',
 
+  propTypes : {
+    folder : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired
+  },
+
   componentDidMount : function () {
     this.watch(this.props.folder.files, {reRender : false});
     this.watch(this.props.folder.subfolders, {reRender : false});
@@ -19,9 +24,9 @@ var Folder = React.createClass({
   renderCurrentFolder : function () {
     var href = '';
     if (this.props.folder.parent !== null) {
-      href = '/media/' + this.props.folder.parent;
+      href = '/' + this.props.langtag + '/media/' + this.props.folder.parent;
     } else if (this.props.folder.id !== null) {
-      href = '/media';
+      href = '/' + this.props.langtag + '/media';
     }
 
     var parent = null;
@@ -62,8 +67,11 @@ var Folder = React.createClass({
   },
 
   renderFiles : function () {
-    var files = this.props.folder.files.map(function (file, idx) {
-      return <li key={file.uuid}><i className="icon fa fa-file"></i><File key={file.uuid} file={file}/></li>
+    var self = this;
+
+    var files = this.props.folder.files.map(function (file) {
+      return <li key={file.uuid}><i className="icon fa fa-file"></i><File key={file.uuid} file={file}
+                                                                          langtag={self.props.langtag}/></li>;
     });
 
     return (
@@ -75,21 +83,28 @@ var Folder = React.createClass({
     );
   },
 
+  renderMediaManagement : function () {
+    return (
+      <div id="media-wrapper">
+
+        {this.renderCurrentFolder()}
+
+        {this.renderSubfolders()}
+
+        {this.renderFiles()}
+
+        <FileUpload folder={this.props.folder} langtag={this.props.langtag}/>
+      </div>
+    );
+  },
+
   render : function () {
     return (
       <div>
-        <Header key="header" title={this.props.folder.name} subtitle="Sie arbeiten im Ordner"/>
+        <Header key="header" title={this.props.folder.name} subtitle="Sie arbeiten im Ordner"
+                langtag={this.props.langtag}/>
 
-        <div id="media-wrapper">
-
-          {this.renderCurrentFolder()}
-
-          {this.renderSubfolders()}
-
-          {this.renderFiles()}
-
-          {<FileUpload folder={this.props.folder}/>}
-        </div>
+        {this.renderMediaManagement()}
       </div>
     );
   }
