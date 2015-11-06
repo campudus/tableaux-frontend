@@ -7,13 +7,14 @@ var File = AmpersandModel.extend({
 
   props : {
     uuid : 'string',
-    name : 'string',
-    description : 'string',
-    mimeType : 'string',
-    filename : 'string',
+    title : 'object',
+    description : 'object',
+    mimeType : 'object',
+    externalName : 'object',
+    internalName : 'object',
     folder : 'number',
 
-    fileUrl : 'string'
+    fileUrl : 'object'
   },
 
   url : function () {
