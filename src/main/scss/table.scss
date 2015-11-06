@@ -61,6 +61,13 @@
     @include box-sizing(border-box);
     font-weight: bold;
     background-color: #F9F9F9;
+
+    &.sticky {
+      position: fixed;
+      z-index: 9;
+      top: 0px;
+      left: 50px;
+    }
   }
 
   .cell, .column-head {
