@@ -37,7 +37,7 @@ header {
     @include transform(translateY(-50%));
 
     li {
-      display: inline;
+      display: inline-block;
 
       margin-right: 20px;
       padding: 10px;
@@ -86,6 +86,33 @@ header {
       text-transform: uppercase;
       letter-spacing: -1px;
     }
+  }
+
+  /**
+  TODO: Greater Styling
+  **/
+
+  #switch-view {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    background-color: $color-primary;
+
+    select {
+      padding: 1rem;
+      background-color: $color-primary;
+      color: #fff;
+      border: none;
+      outline-style: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+
+      option {
+        padding-bottom: 20px;
+      }
+
+    }
+
   }
 
 }
