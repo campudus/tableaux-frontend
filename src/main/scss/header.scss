@@ -1,0 +1,168 @@
+header {
+  @include box-sizing(border-box);
+  background-color: white;
+  width: 100%;
+  height: $space-height-header;
+  line-height: $space-height-header;
+  padding: 0 20px;
+  border-bottom: 5px solid $color-primary;
+  position: fixed;
+  z-index: 9;
+  overflow: visible;
+  white-space: nowrap;
+
+  #main-navigation-wrapper {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
+
+    #burger {
+      @include header-button-look();
+    }
+
+    #main-navigation {
+      @include header-panel-look();
+      display: none;
+      left: 0;
+      max-width: 600px;
+
+      #logo {
+        img {
+          display: inline-block;
+          max-height: 100px;
+          width: auto;
+        }
+      }
+
+      #main-navigation-list {
+        line-height: 3em;
+        a {
+          display: block;
+        }
+        i {
+          margin-right: 1em;
+          color: $color-text-light-grey;
+        }
+      }
+    }
+
+    &.active {
+      #burger {
+        @include header-button-active();
+      }
+
+      #main-navigation {
+        display: block;
+      }
+
+    }
+
+  }
+
+  #table-tools {
+    display: inline-block;
+    vertical-align: top;
+
+    #table-switcher {
+
+      #current-table {
+        @include header-button-look();
+        span {
+          padding: 0 1em;
+          display: inline-block;
+          max-width: 300px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        * {
+          vertical-align: top;
+          display: inline-block;
+          line-height: 29px;
+        }
+      }
+
+      #table-list-wrapper {
+        @include header-panel-look();
+        padding: 0;
+        display: none;
+        left: 0px;
+        width: 300px;
+        line-height: 1.2em;
+        white-space: normal;
+        height: 400px;
+
+        li {
+          padding: 1em 0;
+        }
+
+        #table-list {
+          padding: 30px;
+          overflow-y: auto;
+          overflow-x: hidden;
+          position: absolute;
+          height: 90%;
+          top: 10%;
+        }
+
+        .search-input-wrapper {
+          width: 100%;
+          position: absolute;
+          top: 0px;
+          height: 10%;
+
+          input {
+            border: 0;
+            border-bottom: 1px solid $color-grey-dark;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 0 40px 0 20px;
+            outline: none;
+            @include box-sizing(border-box);
+            font-size: 1.4rem;
+          }
+
+          i {
+            position: absolute;
+            right: 13px;
+            top: 12px;
+          }
+
+        }
+
+      }
+
+      &.active {
+
+        #current-table {
+          @include header-button-active();
+        }
+
+        #table-list-wrapper {
+          display: block;
+        }
+
+      }
+
+    }
+  }
+
+  /**
+  TODO: Greater Styling
+  **/
+
+  #switch-view {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    @include header-button-look();
+
+    select {
+      border: 0;
+      display: inline-block;
+    }
+
+  }
+
+}

@@ -1,7 +1,7 @@
 var React = require('react');
 var App = require('ampersand-app');
 
-var ViewSwitcher = React.createClass({
+var LanguageSwitcher = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired
@@ -18,7 +18,7 @@ var ViewSwitcher = React.createClass({
 
     var newPath = path.replace(this.props.langtag, langtag);
 
-    console.log('ViewSwitcher.onChange', path, newPath);
+    console.log('LanguageSwitcher.onChange', path, newPath);
 
     his.navigate(newPath, {trigger : true});
 
@@ -40,4 +40,4 @@ var ViewSwitcher = React.createClass({
   }
 });
 
-module.exports = ViewSwitcher;
+module.exports = LanguageSwitcher;

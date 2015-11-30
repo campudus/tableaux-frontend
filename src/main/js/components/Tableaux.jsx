@@ -48,17 +48,17 @@ var Tableaux = React.createClass({
     var tables = this.props.tables;
 
     var table = '';
-    var title = '';
+    var tableName = '';
     if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
       table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)} langtag={this.props.langtag}/>;
-      title = tables.get(this.state.currentTableId).name;
+      tableName = tables.get(this.state.currentTableId).name;
     } else {
       console.error("No table found with id " + this.state.currentTableId);
     }
 
     return (
       <div>
-        <Header key="header" title={title} subtitle={'Sie arbeiten in der Tabelle'} langtag={this.props.langtag}/>
+        <Header key="header" tableName={tableName} langtag={this.props.langtag}/>
 
         <div className="wrapper">
           <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables} langtag={this.props.langtag}/>

@@ -7,7 +7,7 @@ body {
   color: $color-primary-text;
 }
 
-html, body {
+html, body, input {
   font-family: $font-main;
   font-weight: normal;
 }
@@ -18,4 +18,9 @@ header {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-sec;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }

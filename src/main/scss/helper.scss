@@ -1,0 +1,28 @@
+@mixin header-button-look() {
+  height: $space-height-header-buttons;
+  border: 1px solid $color-grey-dark;
+  line-height: $space-height-header-buttons;
+  padding: 0 1em;
+  display: inline-block;
+  color: $color-primary-text;
+  @include border-radius(3px);
+  @include box-sizing(border-box);
+}
+
+@mixin header-button-active() {
+  color: white;
+  background-color: $color-very-dark;
+}
+
+@mixin header-panel-look() {
+  display: block;
+  position: absolute;
+  top: 50px;
+  background-color: white;
+  padding: 30px;
+  min-width: 200px;
+  border-top: 5px solid $color-very-dark;
+  @include box-shadow(0px 0px 50px 0px rgba(black, 0.3));
+  max-height: 400px;
+  overflow: hidden;
+}

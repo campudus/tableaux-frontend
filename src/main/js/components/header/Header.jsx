@@ -1,37 +1,21 @@
 var React = require('react');
-
-var ViewSwitcher = require('./ViewSwitcher.jsx');
-var Settings = require('./Settings.jsx');
+var LanguageSwitcher = require('./LanguageSwitcher.jsx');
+var NavigationList = require('./NavigationList.jsx');
+var TableTools = require('./TableTools.jsx');
 
 var Header = React.createClass({
 
   propTypes : {
-    title : React.PropTypes.string.isRequired,
-    subtitle : React.PropTypes.string.isRequired,
+    tableName : React.PropTypes.string.isRequired,
     langtag : React.PropTypes.string.isRequired
   },
 
   render : function () {
-    var title = this.props.title;
-    var subtitle = this.props.subtitle;
-
     return (
       <header>
-        <div id="logo">
-          <img src="/img/logo.png" alt=""/>
-        </div>
-
-        <div id="view-headline">
-          <span>{subtitle}</span>
-
-          <h2>{title}</h2>
-        </div>
-
-        <div id="settings-panel">
-          <Settings langtag={this.props.langtag}/>
-        </div>
-
-        <ViewSwitcher langtag={this.props.langtag}/>
+        <NavigationList langtag={this.props.langtag}/>
+        <TableTools langtag={this.props.langtag} tableName={this.props.tableName}/>
+        <LanguageSwitcher langtag={this.props.langtag}/>
       </header>
     )
   }
