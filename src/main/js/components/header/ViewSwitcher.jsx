@@ -10,7 +10,7 @@ var ViewSwitcher = React.createClass({
   onChange : function (event) {
     event.preventDefault();
 
-    var langtag = this.refs.langSwitcher.getDOMNode().value;
+    var langtag = this.refs.langSwitchervalue;
 
     var his = App.router.history;
 

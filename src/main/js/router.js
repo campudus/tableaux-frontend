@@ -1,6 +1,7 @@
 var App = require('ampersand-app');
 var Router = require('ampersand-router');
 var React = require('react');
+var ReactDOM = require('react-dom');
 var locale = require('browser-locale')();
 
 var Folder = require('./models/media/Folder');
@@ -117,7 +118,7 @@ var TableauxRouter = Router.extend({
   },
 
   renderPage : function (page) {
-    React.render(page, document.getElementById('tableaux'));
+    ReactDOM.render(page, document.getElementById('tableaux'));
   }
 });
 

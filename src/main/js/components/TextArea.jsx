@@ -20,7 +20,7 @@ var TextArea = React.createClass({
   },
 
   getContent : function (event) {
-    return this.state.richEditor ? event.target.getContent() : this.refs.input.getDOMNode().value
+    return this.state.richEditor ? event.target.getContent() : this.refs.input.value
   },
 
   _onClose : function (event) {

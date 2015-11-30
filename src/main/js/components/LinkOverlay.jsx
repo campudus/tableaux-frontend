@@ -22,7 +22,7 @@ var LinkOverlay = React.createClass({
   onSearch : function (event) {
     console.log("LinkOverlay.onSearch");
 
-    var search = this.refs.search.getDOMNode().value;
+    var search = this.refs.search.value;
 
     this.setState({
       search : search

@@ -29,11 +29,11 @@ var NumericEditCell = React.createClass({
 
     event.preventDefault();
 
-    this.props.onSave(this.refs.input.getDOMNode().value);
+    this.props.onSave(this.refs.input.value);
   },
 
   componentDidMount : function () {
-    var node = this.refs.input.getDOMNode();
+    var node = this.refs.input;
     node.focus();
     // Sets cursor to end of input field
     node.value = node.value;

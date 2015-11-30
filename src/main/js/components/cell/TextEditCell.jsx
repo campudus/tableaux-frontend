@@ -31,7 +31,7 @@ var TextEditCell = React.createClass({
 
     event.preventDefault();
 
-    this.props.onBlur(this.refs.input.getDOMNode().value);
+    this.props.onBlur(this.refs.input.value);
   },
 
   openOverlay : function (event) {
@@ -62,7 +62,7 @@ var TextEditCell = React.createClass({
   },
 
   componentDidMount : function () {
-    var node = this.refs.input.getDOMNode();
+    var node = this.refs.input;
     node.focus();
     // Sets cursor to end of input field
     node.value = node.value;

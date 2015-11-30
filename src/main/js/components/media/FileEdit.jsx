@@ -15,8 +15,8 @@ var FileEdit = React.createClass({
 
     var file = this.props.file;
 
-    file.title[this.props.langtag] = this.refs.fileTitle.getDOMNode().value;
-    file.description[this.props.langtag] = this.refs.fileDescription.getDOMNode().value;
+    file.title[this.props.langtag] = this.refs.fileTitle.value;
+    file.description[this.props.langtag] = this.refs.fileDescription.value;
 
     this.props.callback(file);
   },

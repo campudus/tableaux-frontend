@@ -17,7 +17,7 @@ var Columns = React.createClass({
   },
 
   getHeaderHeight : function () {
-    return this.refs.tableHeader.getDOMNode().offsetHeight;
+    return this.refs.tableHeader.offsetHeight;
   },
 
   //add sticky class, also to parent and set correct x offset of header
@@ -40,7 +40,7 @@ var Columns = React.createClass({
   },
 
   componentDidMount : function () {
-    var tableHeader = this.refs.tableHeader.getDOMNode();
+    var tableHeader = this.refs.tableHeader;
     var rect = tableHeader.getBoundingClientRect();
     this.setState({
       "tableHeaderDefaultCoordinates" : {
