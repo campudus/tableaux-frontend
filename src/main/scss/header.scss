@@ -169,16 +169,26 @@ header {
   **/
 
   #switch-view {
-    position: absolute;
-    right: 20px;
-    top: 10px;
+    position: relative;
+    margin-right: 20px;
+    margin-top: 10px;
+    float: right;
     @include header-button-look();
 
     select {
       border: 0;
       display: inline-block;
+      outline: none;
     }
 
+  }
+
+  #header-pagename {
+    float: right;
+    margin-right: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: $color-text-light-grey;
   }
 
 }

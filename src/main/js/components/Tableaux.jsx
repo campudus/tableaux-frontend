@@ -9,6 +9,7 @@ var GenericOverlay = require('./GenericOverlay.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
 var NavigationList = require('./header/NavigationList.jsx');
 var TableTools = require('./header/TableTools.jsx');
+var PageTitle = require('./header/PageTitle.jsx');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -60,6 +61,7 @@ var Tableaux = React.createClass({
           <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
                       tables={tables}/>
           <LanguageSwitcher langtag={this.props.langtag}/>
+          <PageTitle title="Tables"/>
         </header>
         <div className="wrapper">
           {table}
