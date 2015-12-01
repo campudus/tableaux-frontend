@@ -10,7 +10,7 @@ var LanguageSwitcher = React.createClass({
   onChange : function (event) {
     event.preventDefault();
 
-    var langtag = this.refs.langSwitchervalue;
+    var langtag = this.refs.langSwitcher.value;
 
     var his = App.router.history;
 
