@@ -111,7 +111,6 @@ var LinkOverlay = React.createClass({
 
   renderOverlay : function () {
     var self = this;
-
     var listItems = null;
 
     //check for empty obj or map fails
@@ -127,7 +126,7 @@ var LinkOverlay = React.createClass({
 
             var linked = _.find(currentCellValue, function (link) {
               return link.id === row.id;
-            });
+              });
 
             var isLinked = linked ? true : false;
 
@@ -136,16 +135,16 @@ var LinkOverlay = React.createClass({
 
             if (self.toColumn.multilanguage) {
               value = value[self.props.language] || null;
-            }
+              }
 
             if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
               // TODO kinda hack
               return "";
-            }
+              }
 
             return <li key={row.id} className={isLinked ? 'isLinked' : ''}
                        onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
-          })}
+            })}
         </ul>
       );
     }

@@ -4,7 +4,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Subfolder = require('./Subfolder.jsx');
 var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
-var Header = require('../header/Header.jsx');
+//var Header = require('../header/Header.jsx');
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
@@ -101,8 +101,8 @@ var Folder = React.createClass({
   render : function () {
     return (
       <div>
-        <Header key="header" title={this.props.folder.name} subtitle="Sie arbeiten im Ordner"
-                langtag={this.props.langtag}/>
+        /*<Header key="header" title={this.props.folder.name} subtitle="Sie arbeiten im Ordner"
+         langtag={this.props.langtag}/>*/
 
         {this.renderMediaManagement()}
       </div>

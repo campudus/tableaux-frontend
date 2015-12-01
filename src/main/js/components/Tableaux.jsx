@@ -1,19 +1,17 @@
 var app = require('ampersand-app');
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-
 var Dispatcher = require('../dispatcher/Dispatcher');
-
-var Header = require('./header/Header.jsx');
-var TableSwitcher = require('./header/TableSwitcher.jsx');
 var Table = require('./Table.jsx');
 var LinkOverlay = require('./LinkOverlay.jsx');
 var MediaOverlay = require('./MediaOverlay.jsx');
 var GenericOverlay = require('./GenericOverlay.jsx');
+var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
+var NavigationList = require('./header/NavigationList.jsx');
+var TableTools = require('./header/TableTools.jsx');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
-
   displayName : 'Tableaux',
 
   propTypes : {
@@ -24,10 +22,8 @@ var Tableaux = React.createClass({
 
   switchTable : function (event) {
     console.log('Tableaux.switchTable', event);
-
     // refresh Tables collection
     this.props.tables.fetch();
-
     this.setState({currentTableId : event.id});
   },
 
@@ -50,7 +46,8 @@ var Tableaux = React.createClass({
     var table = '';
     var tableName = '';
     if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
-      table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)} langtag={this.props.langtag}/>;
+      table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}
+                     langtag={this.props.langtag}/>;
       tableName = tables.get(this.state.currentTableId).name;
     } else {
       console.error("No table found with id " + this.state.currentTableId);
@@ -58,13 +55,15 @@ var Tableaux = React.createClass({
 
     return (
       <div>
-        <Header key="header" tableName={tableName} langtag={this.props.langtag}/>
-
+        <header>
+          <NavigationList langtag={this.props.langtag}/>
+          <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
+                      tables={tables}/>
+          <LanguageSwitcher langtag={this.props.langtag}/>
+        </header>
         <div className="wrapper">
-          <TableSwitcher key="tableswitcher" currentId={self.state.currentTableId} tables={tables} langtag={this.props.langtag}/>
           {table}
         </div>
-
         <LinkOverlay key="linkoverlay" language={this.props.langtag}/>
         <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
         <GenericOverlay key="genericoverlay" language={this.props.langtag}/>

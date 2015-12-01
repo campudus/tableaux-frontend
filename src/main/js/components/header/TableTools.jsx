@@ -1,74 +1,64 @@
 var React = require('react');
+var TableSwitcher = require('./TableSwitcher.jsx');
+var Dispatcher = require('../../dispatcher/Dispatcher.js');
 
 var TableTools = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    tableName : React.PropTypes.string.isRequired
+    tableName : React.PropTypes.string.isRequired,
+    currentTableId : React.PropTypes.number.isRequired,
+    tables : React.PropTypes.object
+  },
+
+  getInitialState : function () {
+    return {
+      switcherOpen : false
+    };
+  },
+
+  onTableSwitched : function () {
+    //close overlay
+    this.setState({switcherOpen : false});
+  },
+
+  closeTableSwitch : function () {
+    this.setState({switcherOpen : false});
+  },
+
+  componentWillMount : function () {
+    Dispatcher.on('switch-table', this.onTableSwitched);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off('switch-table', this.onTableSwitched);
+  },
+
+  tableSwitchButton : function (e) {
+    e.preventDefault();
+    this.setState({switcherOpen : !this.state.switcherOpen});
   },
 
   render : function () {
+    var tableSwitcher;
+    if (this.state.switcherOpen) {
+      tableSwitcher = <TableSwitcher key="tableswitcher"
+                                     currentId={this.props.currentTableId}
+                                     tables={this.props.tables}
+                                     langtag={this.props.langtag}
+                                     onClickOutside={this.closeTableSwitch}
+      />
+    }
+
     return (
       <div id="table-tools">
-        <div id="table-switcher" className="active">
-          <a href="#" id="current-table">
+        <div id="table-switcher" className={this.state.switcherOpen ? "active": ""}>
+          <a href="#" onClick={this.tableSwitchButton} id="current-table">
             <i className="fa fa-columns"></i>
             <span>{this.props.tableName}</span>
             <i className="fa fa-angle-down"></i>
           </a>
-          <div id="table-list-wrapper">
-
-            <div className="search-input-wrapper">
-              <input type="text" className="search-input" placeholder="Search Table..."
-                /*onChange={this.onSearch}
-                 defaultValue={this.state.search} ref="search"*/
-              />
-              <i className="fa fa-search"></i>
-            </div>
-
-            <div id="table-list">
-              <ul>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3 kdjfakdjf adkjf akdjfka dfjkad fajdkf adjfka dfkadj fkjadfk adfkja dfkjad kfjadkfj d Ganz
-                  langes wort wo ist das ?
-                </li>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-                <li>Lorem</li>
-                <li>Ipsum</li>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-              </ul>
-            </div>
-
-          </div>
+          {tableSwitcher}
         </div>
       </div>
     )

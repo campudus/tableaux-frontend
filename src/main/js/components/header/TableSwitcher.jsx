@@ -1,40 +1,93 @@
 var App = require('ampersand-app');
 var React = require('react');
+var ReactDOM = require('react-dom');
+var Dispatcher = require('../../dispatcher/Dispatcher.js');
+var _ = require('lodash');
 
 var TableSwitcher = React.createClass({
 
   propTypes : {
     tables : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    currentId : React.PropTypes.number.isRequired
+    currentId : React.PropTypes.number.isRequired,
+    onClickOutside : React.PropTypes.func
+  },
+
+  getInitialState : function () {
+    return {
+      search : ""
+    };
+  },
+
+  clickedOutside : function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    //clicked outside
+    if (!ReactDOM.findDOMNode(this).contains(e.target)) {
+      this.props.onClickOutside();
+    }
+  },
+
+  componentWillMount : function () {
+    document.addEventListener('click', this.clickedOutside, false);
+  },
+
+  componentWillUnmount : function () {
+    document.removeEventListener('click', this.clickedOutside, false);
+  },
+
+  componentDidMount(){
+    console.log("TableSwitcher did mount");
+    ReactDOM.findDOMNode(this.refs.search).focus();
   },
 
   handleClick : function (entry) {
     var langtag = this.props.langtag;
+    App.router.history.navigate(langtag + '/table/' + entry.id, {trigger : true});
+  },
 
-    return function () {
-      console.log('TableSwitcher.handleClick', entry);
-      App.router.history.navigate(langtag + '/table/' + entry.id, {trigger : true});
-    }
+  onSearch : function () {
+    var search = this.refs.search.value;
+    this.setState({
+      search : search
+    });
   },
 
   render : function () {
     var self = this;
 
-    var entries = this.props.tables.map(function (entry, index) {
+    var tableObj = this.props.tables.map(function (entry, index) {
       return {name : entry.get('name'), id : entry.get('id'), index : index};
-    }).map(function (entry) {
-      var className = entry.id === self.props.currentId ? 'active' : 'inactive';
-
-      return <li key={entry.id} onClick={self.handleClick(entry)} className={className}>{entry.name}</li>;
     });
 
+    // Filter + Map = reduce! Awesome! http://elijahmanor.com/reducing-filter-and-map-down-to-reduce/
+    var tableNameListItems = _.reduce(tableObj, function (array, entry) {
+      var isCurrentTable = (entry.id === self.props.currentId);
+      var className = isCurrentTable ? 'active' : 'inactive';
+      var onClickHandler = isCurrentTable ? null : self.handleClick.bind(self, entry);
+      var trimmedSearchVal = self.state.search.trim().toLowerCase();
+      var trimmedTableName = entry.name.trim().toLowerCase();
+      //return items through search
+      if (trimmedSearchVal === "" || trimmedTableName.indexOf(trimmedSearchVal) !== -1) {
+        array.push(<li key={entry.id} onClick={onClickHandler} className={className}>{entry.name}</li>);
+      }
+      return array;
+    }, []);
+
     return (
-      <nav id="table-switcher">
-        <ul className="table-switcher-menu">
-          {entries}
-        </ul>
-      </nav>
+      <div id="table-list-wrapper">
+        <div className="search-input-wrapper">
+          <input type="text" className="search-input" placeholder="Search Table..."
+                 onChange={this.onSearch} defaultValue={this.state.search} ref="search"/>
+          <i className="fa fa-search"></i>
+        </div>
+        <div id="table-list">
+          <ul>
+            {(tableNameListItems.length > 0) ? tableNameListItems : <li className="empty">No Tables with that name</li>}
+          </ul>
+        </div>
+      </div>
     );
   }
 });
