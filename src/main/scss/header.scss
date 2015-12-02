@@ -3,7 +3,6 @@ header {
   background-color: white;
   width: 100%;
   height: $space-height-header;
-  line-height: $space-height-header;
   padding: 0 20px;
   border-bottom: 5px solid $color-primary;
   position: fixed;
@@ -15,6 +14,7 @@ header {
     display: inline-block;
     vertical-align: top;
     margin-right: 20px;
+    margin-top: 10px;
 
     #burger {
       @include header-button-look();
@@ -27,6 +27,9 @@ header {
       max-width: 600px;
 
       #logo {
+
+        margin-bottom: 20px;
+
         img {
           display: inline-block;
           max-height: 100px;
@@ -62,6 +65,7 @@ header {
   #table-tools {
     display: inline-block;
     vertical-align: top;
+    margin-top: 10px;
 
     #table-switcher {
 
@@ -170,7 +174,6 @@ header {
 
   #switch-view {
     position: relative;
-    margin-right: 20px;
     margin-top: 10px;
     float: right;
     @include header-button-look();
@@ -188,7 +191,14 @@ header {
     margin-right: 20px;
     font-weight: bold;
     text-transform: uppercase;
+    line-height: $space-height-header;
     color: $color-text-light-grey;
+
+    //hide on small devices
+    @media (max-width: 800px) {
+      display: none;
+    }
+
   }
 
 }

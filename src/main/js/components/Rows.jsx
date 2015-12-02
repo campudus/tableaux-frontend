@@ -13,6 +13,10 @@ var Rows = React.createClass({
     rows : React.PropTypes.object.isRequired
   },
 
+  componentDidMount : function () {
+    console.log("Rows did mount");
+  },
+
   render : function () {
     var self = this;
     var rows = this.props.rows.map(function (row, idx) {

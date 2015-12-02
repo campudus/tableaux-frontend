@@ -3,33 +3,64 @@
   background-color: $color-body-background;
 
   .wrapper {
-    top: $space-height-header;
-    position: relative;
+    @include box-sizing(border-box);
+    padding-top: $space-height-header;
+    position: absolute;
+    top: 0px;
+    left: 0px;
     background-color: $color-body-background;
     z-index: 1;
-    display: table;
-    min-width: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
 }
 
 #table-wrapper {
-  padding: 50px;
-  display: table;
+  display: block;
   line-height: 1.2em;
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .data {
+
+  }
+
+  .data-wrapper {
+    overflow: auto;
+    position: absolute;
+    width: 100%;
+    height: 85%;
+    @include box-sizing(border-box);
+    top: $space-height-table-header;
+  }
+
 }
 
 .tableaux-table {
   background-color: white;
-  position: relative;
-  @include box-shadow(0px 0px 50px 0px #ababab);
-  display: table;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 
   .heading {
     border-bottom: 3px solid $color-border-grey;
     @include box-sizing(border-box);
     font-weight: bold;
     background-color: #F9F9F9;
+    position: relative;
+    min-width: 100%;
+    left: 0px;
+    top: 0px;
+    z-index: 2;
+    overflow: hidden;
+    height: $space-height-table-header;
 
     &.sticky {
       position: fixed;
