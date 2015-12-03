@@ -22,23 +22,23 @@ var TableSwitcher = React.createClass({
   clickedOutside : function (e) {
     e.preventDefault();
     e.stopPropagation();
-
-    //clicked outside
-    if (!ReactDOM.findDOMNode(this).contains(e.target)) {
-      this.props.onClickOutside();
+    //fixes IE Bug: Invariant Violation: findDOMNode was called on an unmounted component.
+    if (this.isMounted()) {
+      if (!ReactDOM.findDOMNode(this).contains(e.target)) {
+        this.props.onClickOutside();
+      }
     }
   },
 
   componentWillMount : function () {
-    document.addEventListener('click', this.clickedOutside, false);
+    document.addEventListener('click', this.clickedOutside);
   },
 
   componentWillUnmount : function () {
-    document.removeEventListener('click', this.clickedOutside, false);
+    document.removeEventListener('click', this.clickedOutside);
   },
 
-  componentDidMount(){
-    console.log("TableSwitcher did mount");
+  componentDidMount : function () {
     ReactDOM.findDOMNode(this.refs.search).focus();
   },
 

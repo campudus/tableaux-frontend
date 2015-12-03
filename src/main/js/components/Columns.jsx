@@ -5,9 +5,7 @@ var tableHeaderDefaultCoordinates;
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
 
-  propTypes : {
-    scrolledHorizontal : React.PropTypes.number.isRequired
-  },
+  propTypes : {},
 
   componentDidUpdate : function () {
 
@@ -22,15 +20,8 @@ var Columns = React.createClass({
   },
 
   render : function () {
-
-    //TODO: Left or translate ? Check modernizr support?!
-    var styles = {
-      transform : 'translate(-' + this.props.scrolledHorizontal + "px,0)"
-    };
-
     return (
-      <div id="tableHeader" ref="tableHeader" className="heading"
-           style={styles}>
+      <div id="tableHeader" ref="tableHeader" className="heading">
         <div className="tableHeader-inner">
           <div className="column-head language" key="-1"></div>
           {this.props.columns.map(function (col, index) {

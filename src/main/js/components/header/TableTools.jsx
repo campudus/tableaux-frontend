@@ -36,6 +36,7 @@ var TableTools = React.createClass({
 
   tableSwitchButton : function (e) {
     e.preventDefault();
+    e.stopPropagation();
     this.setState({switcherOpen : !this.state.switcherOpen});
   },
 
