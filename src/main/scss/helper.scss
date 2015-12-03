@@ -5,6 +5,7 @@
   padding: 0 1em;
   display: inline-block;
   color: $color-primary-text;
+  white-space: nowrap;
   @include border-radius(3px);
   @include box-sizing(border-box);
 }
