@@ -6,8 +6,7 @@ var Dispatcher = require('../../dispatcher/Dispatcher');
 var BooleanCell = React.createClass({
 
   propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    language : React.PropTypes.string.isRequired
+    cell : React.PropTypes.object.isRequired
   },
 
   getInitialState : function () {
@@ -16,40 +15,23 @@ var BooleanCell = React.createClass({
     }
   },
 
-  componentDidMount : function () {
-    console.log("Boolean did mount");
-    console.log(this.props.cell.column);
-    console.log(this.props.cell.tableId);
-    console.log(this.props.cell.value);
-  },
-
   handleCheckboxClick : function (e) {
-    console.log(e.target.checked);
-    this.setState({checked : !this.state.checked});
-
-    //get the new value
-    var newValue = 0;
-    //this.handleEditDone(newValue);
+    var newVal = e.target.checked;
+    this.setState({checked : newVal});
+    this.handleEditDone(newVal);
   },
 
   handleEditDone : function (newValue) {
-    Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
-  },
-
-  getBooleanValueFromCell : function () {
-    var cellValue = this.props.cell.value;
-    return !!cellValue;
+    Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : newValue});
   },
 
   render : function () {
     var cell = this.props.cell;
-    var language = this.props.language;
-
     return (
-        <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId}>
-          <input type="checkbox" checked={this.state.checked} onClick={this.handleCheckboxClick}/>
-          {cell.value}
-        </div>
+      <div className={'cell holds-checkbox cell-' + cell.column.getId() + '-' + cell.rowId}>
+        <input className="checkbox" type="checkbox" checked={this.state.checked} onChange={this.handleCheckboxClick}/>
+        {cell.value}
+      </div>
     );
 
   }

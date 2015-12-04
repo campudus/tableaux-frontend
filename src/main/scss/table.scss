@@ -184,6 +184,20 @@
     }
   }
 
+  .cell.holds-checkbox {
+    vertical-align: middle;
+    text-align: center;
+
+    .checkbox {
+      vertical-align: middle;
+      margin: 0 auto;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+    }
+  }
+
   .delete-row {
     position: absolute;
     z-index: 9;
