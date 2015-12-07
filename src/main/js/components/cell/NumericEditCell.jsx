@@ -24,12 +24,28 @@ var NumericEditCell = React.createClass({
     this.onSave(event);
   },
 
+  /**
+   * Returns a clean Number and displays the correct value to the input field
+   * @param input
+   * @returns {float|null} result
+   */
+  formatNumberCell : function (input) {
+    var result = null;
+    var curr = input.value;
+    if (curr.trim().length !== 0) {
+      var formattedNumber = curr.replace(/,/g, ".");
+      var realNumber = parseFloat(formattedNumber);
+      if (!isNaN(realNumber)) {
+        result = realNumber;
+      }
+    }
+    input.value = (result === null) ? "" : result;
+    return result;
+  },
+
   onSave : function (event) {
-    console.log("NumericEditCell.onSave");
-
     event.preventDefault();
-
-    this.props.onSave(this.refs.input.value);
+    this.props.onSave(this.formatNumberCell(this.refs.input));
   },
 
   componentDidMount : function () {
