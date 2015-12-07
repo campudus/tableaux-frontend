@@ -5,6 +5,8 @@ var TextCell = require('./TextCell.jsx');
 var NumericCell = require('./NumericCell.jsx');
 var LinkCell = require('./LinkCell.jsx');
 var AttachmentCell = require('./AttachmentCell.jsx');
+var BooleanCell = require('./BooleanCell.jsx');
+var DateTimeCell = require('./DateTimeCell.jsx');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
@@ -18,6 +20,9 @@ var Cell = React.createClass({
 
   render : function () {
     switch (this.props.cell.kind) {
+
+      //todo: switch language to langtag!!! Important LANGTAG
+
       case "link":
         return <LinkCell cell={this.props.cell} language={this.props.langtag}/>;
 
@@ -26,6 +31,12 @@ var Cell = React.createClass({
 
       case "numeric":
         return <NumericCell cell={this.props.cell} language={this.props.langtag}/>;
+
+      case "boolean":
+        return <BooleanCell cell={this.props.cell} language={this.props.langtag}/>;
+
+      case "datetime":
+        return <DateTimeCell cell={this.props.cell} language={this.props.langtag}/>;
 
       default:
         return <TextCell cell={this.props.cell} langtag={this.props.langtag}/>;
