@@ -57,6 +57,8 @@ var Row = AmpersandModel.extend({
     // check for a new and empty row
     if (attrs !== null) {
       return attrs;
+    } else {
+      return null;
     }
   },
 
