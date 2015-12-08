@@ -40,7 +40,9 @@ var NewRow = React.createClass({
 
     return (
       <div className={classes} onClick={this.addRow}>
-        { this.state.loading ? "[loading]" : "[add]" }
+        <i className="fa fa-plus-circle">
+        </i>
+        <span>Add new row</span>
       </div>
     );
   }

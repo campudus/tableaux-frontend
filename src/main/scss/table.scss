@@ -307,8 +307,32 @@
   }
 
   .new-row {
-    padding: 10px;
-    color: $color-primary;
+    padding: 10px 20px;
+    color: white;
     font-weight: bold;
+    background-color: $color-primary;
+    cursor: pointer;
+    display: inline-block;
+    margin: 20px;
+    @include border-radius(3px);
+    @include transition(all 250ms ease-out);
+
+    &.loading {
+      background-color: $color-button-grey;
+    }
+
+    i, span {
+      vertical-align: middle;
+    }
+
+    &:hover {
+      background-color: desaturate(darken($color-primary, 10%), 10%);
+    }
+
+    i {
+      margin-right: 15px;
+      font-size: 20px;
+    }
+
   }
 }
