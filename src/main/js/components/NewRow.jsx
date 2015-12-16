@@ -43,6 +43,7 @@ var NewRow = React.createClass({
         <i className="fa fa-plus-circle">
         </i>
         <span>Add new row</span>
+
       </div>
     );
   }

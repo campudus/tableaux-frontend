@@ -1,14 +1,15 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
-
+var Cell = require('../models/Cell');
+var RowName = require('RowName');
 var Dispatcher = require('../dispatcher/Dispatcher');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
 
   getInitialState : function () {
-    return {tableId : null, columnName : "", search : "", open : false, rowResults : {}};
+    return {tableId : null, columnName : "", rowName : "", search : "", open : false, rowResults : {}, cell : null};
   },
 
   componentWillMount : function () {
@@ -55,6 +56,9 @@ var LinkOverlay = React.createClass({
 
   openOverlay : function (cell) {
     var self = this;
+    self.setState({cell : cell});
+
+    console.log("overlay starting: ", cell);
 
     if (cell.column.kind !== "link") {
       console.error("Couldn't open LinkOverlay for this column type.");
@@ -68,18 +72,57 @@ var LinkOverlay = React.createClass({
     this.watch(this.cell, {reRender : false});
 
     var toTable = cell.column.toTable;
+    var currentTableId = cell.tableId;
+    var currentRowId = cell.rowId;
+    //FIXME: get the tableID better! right now its incorrect when tables get reordered
+    var currentColumn = cell.tables.models[currentTableId - 1].columns.models[0];
+
+    console.log("currentRow is: ", currentRowId);
+    console.log("currentTabel is:", currentTableId);
+    console.log("cell is:", cell);
+    console.log("tables are:", cell.tables);
+    console.log("column:", currentColumn);
+
+    var masterCell = new Cell({
+      rowId : currentRowId,
+      tableId : currentTableId,
+      tables : cell.tables,
+      column : currentColumn
+    });
+
+    //FIXME: Better way to get the first column value?
+    masterCell.fetch({
+      success : function (model, response, options) {
+        console.log("masterCell success: ", model);
+
+        if (model.kind !== "shorttext" && model.kind !== "text" && model.kind !== "richtext") {
+          return;
+        }
+
+        if (model.isMultiLanguage) {
+          self.setState({rowName : model.value[self.props.language]});
+        } else {
+          self.setState({rowName : model.value});
+        }
+      },
+      error : function (err) {
+        console.error("error fetching masterCell", err);
+      }
+    });
+
 
     cell.fetch({
       success : function (model, response, options) {
-        cell.tables.getOrFetch(toTable, function (err, table) {
 
-          var tableName = table.name;
-          self.setState({tableId : toTable, columnName : tableName, open : true});
+        cell.tables.getOrFetch(toTable, function (err, table) {
 
           if (err) {
             console.error('error getting table in overlay', err);
             return;
           }
+
+          var tableName = table.name;
+          self.setState({tableId : toTable, columnName : tableName, open : true});
 
           table.columns.fetch({
             success : function () {
@@ -96,7 +139,9 @@ var LinkOverlay = React.createClass({
               console.error("error fetching columns", err);
             }
           });
+
         });
+
       },
       error : function (err) {
         console.error("error fetching cell", err);
@@ -119,54 +164,56 @@ var LinkOverlay = React.createClass({
       document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
       listItems = (
-        <ul>
-          {this.state.rowResults.map(function (row) {
+          <ul>
+            {this.state.rowResults.map(function (row) {
 
-            var currentCellValue = self.cell.value;
+                var currentCellValue = self.cell.value;
 
-            var linked = _.find(currentCellValue, function (link) {
-              return link.id === row.id;
-              });
+                var linked = _.find(currentCellValue, function (link) {
+                    return link.id === row.id;
+                    });
 
-            var isLinked = linked ? true : false;
+                var isLinked = linked ? true : false;
 
-            // TODO column id != value position in array
-            var value = row.values[self.toColumn.id - 1];
+                // TODO column id != value position in array
+                var value = row.values[self.toColumn.id - 1];
 
-            if (self.toColumn.multilanguage) {
-              value = value[self.props.language] || null;
-              }
+                if (self.toColumn.multilanguage) {
+                    value = value[self.props.language] || null;
+                    }
 
-            if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
-              // TODO kinda hack
-              return "";
-              }
+                if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
+                    // TODO kinda hack
+                    return "";
+                    }
 
-            return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                       onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
-            })}
-        </ul>
+                return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                           onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
+                })}
+          </ul>
       );
     }
 
     return (
-      <div id="overlay" className="open">
-        <div id="overlay-wrapper">
-          <h2>{this.state.columnName}</h2>
+        <div id="overlay" className="open">
+          <div id="overlay-wrapper">
+            <h2>{this.state.columnName}
+              <RowName cell={this.props.cell}> </RowName>
+              {this.state.rowName !== "" ? "(" + this.state.rowName + ")" : "" }</h2>
 
-          <div className="content-scroll">
-            <div id="overlay-content">
-              <div className="search-input-wrapper">
-                <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                       defaultValue={this.state.search} ref="search"/>
-                <i className="fa fa-search"></i>
+            <div className="content-scroll">
+              <div id="overlay-content">
+                <div className="search-input-wrapper">
+                  <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                         defaultValue={this.state.search} ref="search"/>
+                  <i className="fa fa-search"></i>
+                </div>
+                {listItems}
               </div>
-              {listItems}
             </div>
           </div>
+          <div onClick={this.closeOverlay} className="background"></div>
         </div>
-        <div onClick={this.closeOverlay} className="background"></div>
-      </div>
     );
   },
 
