@@ -44,7 +44,7 @@ var TextEditCell = React.createClass({
     Dispatcher.trigger("openGenericOverlay", {
       head : this.props.cell.column.name,
       body : <TextArea initialContent={this.getValue()} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
-    });
+    }, "normal", self.props.cell, this.props.langtag);
   },
 
   closeOverlay : function (event) {
@@ -97,12 +97,12 @@ var TextEditCell = React.createClass({
     var cell = this.props.cell;
 
     return (
-      <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
+        <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
         <textarea className="input" name={this.inputName} defaultValue={this.getValue()}
                   onKeyDown={this.onKeyboardShortcut}
                   ref="input" rows="1"></textarea>
-        <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
-      </div>
+          <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
+        </div>
     );
   }
 });

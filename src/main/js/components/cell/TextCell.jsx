@@ -75,7 +75,7 @@ var TextCell = React.createClass({
     Dispatcher.trigger("openGenericOverlay", {
       head : this.props.cell.column.name,
       body : <TextArea initialContent={this.getValue()} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
-    });
+    }, "normal", self.props.cell, this.props.langtag);
   },
 
   closeOverlay : function (event) {
@@ -112,14 +112,14 @@ var TextCell = React.createClass({
     }
 
     return (
-      <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onMouseEnter={this.onOver}
-           onMouseLeave={this.onOut}
-           onClick={this.handleLabelClick}>
+        <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onMouseEnter={this.onOver}
+             onMouseLeave={this.onOut}
+             onClick={this.handleLabelClick}>
         <span className='cell-content'>
           {value === null ? "" : value}
         </span>
-        {button}
-      </div>
+          {button}
+        </div>
     );
   },
 
