@@ -1,10 +1,8 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
-
-var Dispatcher = require('../../dispatcher/Dispatcher');
-
-var TextArea = require('../TextArea.jsx');
-var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var TextArea = require('./TextArea.jsx');
+var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 
 var TextEditCell = React.createClass({
 

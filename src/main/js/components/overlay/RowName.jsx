@@ -1,5 +1,5 @@
 var React = require('react');
-var Cell = require('../models/Cell');
+var Cell = require('../../models/Cell');
 
 var RowName = React.createClass({
 

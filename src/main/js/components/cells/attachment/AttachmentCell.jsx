@@ -1,8 +1,8 @@
 var React = require('react');
 var _ = require('lodash');
 
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var apiUrl = require('../../helpers/apiUrl');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var apiUrl = require('../../../helpers/apiUrl');
 
 var AttachmentCell = React.createClass({
 

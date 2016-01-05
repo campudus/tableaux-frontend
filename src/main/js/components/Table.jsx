@@ -4,9 +4,9 @@ var AmpersandMixin = require('ampersand-react-mixin');
 
 var Dispatcher = require('../dispatcher/Dispatcher');
 
-var Columns = require('./Columns.jsx');
-var Rows = require('./Rows.jsx');
-var NewRow = require('./NewRow.jsx');
+var Columns = require('./columns/Columns.jsx');
+var Rows = require('./rows/Rows.jsx');
+var NewRow = require('./rows/NewRow.jsx');
 
 var Table = React.createClass({
   mixins : [AmpersandMixin],

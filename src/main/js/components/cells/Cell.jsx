@@ -1,12 +1,12 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 
-var TextCell = require('./TextCell.jsx');
-var NumericCell = require('./NumericCell.jsx');
-var LinkCell = require('./LinkCell.jsx');
-var AttachmentCell = require('./AttachmentCell.jsx');
-var BooleanCell = require('./BooleanCell.jsx');
-var DateTimeCell = require('./DateTimeCell.jsx');
+var TextCell = require('./text/TextCell.jsx');
+var NumericCell = require('./numeric/NumericCell.jsx');
+var LinkCell = require('./link/LinkCell.jsx');
+var AttachmentCell = require('./attachment/AttachmentCell.jsx');
+var BooleanCell = require('./boolean/BooleanCell.jsx');
+var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],

@@ -1,10 +1,9 @@
 var React = require('react');
 var _ = require('lodash');
 
-var Dispatcher = require('../../dispatcher/Dispatcher');
-
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextEditCell = require('./TextEditCell.jsx');
-var TextArea = require('../TextArea.jsx');
+var TextArea = require('./TextArea.jsx');
 
 var ExpandButton = React.createClass({
 

@@ -1,8 +1,7 @@
 var React = require('react');
 var _ = require('lodash');
 
-var Dispatcher = require('../../dispatcher/Dispatcher');
-
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 var NumericEditCell = require('./NumericEditCell.jsx');
 
 var NumericCell = React.createClass({

@@ -3,9 +3,8 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var App = require('ampersand-app');
 var _ = require('lodash');
 
-var Dispatcher = require('../dispatcher/Dispatcher');
-
-var Cell = require('./cell/Cell.jsx');
+var Dispatcher = require('../../dispatcher/Dispatcher');
+var Cell = require('../cells/Cell.jsx');
 
 var Ask = React.createClass({
   propTypes : {

@@ -1,10 +1,8 @@
 var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
-
-var Dispatcher = require('../dispatcher/Dispatcher');
-
-var Folder = require('../models/media/Folder');
+var AmpersandMixin = require('ampersand-react-mixin');
+var Dispatcher = require('../../dispatcher/Dispatcher');
+var Folder = require('../../models/media/Folder');
 
 var MediaOverlay = React.createClass({
   mixins : [AmpersandMixin],

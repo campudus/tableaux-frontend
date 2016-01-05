@@ -1,9 +1,8 @@
 var React = require('react');
 var _ = require('lodash');
 
-var Dispatcher = require('../../dispatcher/Dispatcher');
-
-var LinkOverlay = require('./../LinkOverlay.jsx');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var LinkOverlay = require('./LinkOverlay.jsx');
 var LinkEditCell = require('./LinkEditCell.jsx');
 var LinkLabelCell = require('./LinkLabelCell.jsx');
 

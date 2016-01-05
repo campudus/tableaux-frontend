@@ -1,8 +1,8 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
-var RowName = require('./RowName.jsx');
-var Dispatcher = require('../dispatcher/Dispatcher');
+var RowName = require('../../overlay/RowName.jsx');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],

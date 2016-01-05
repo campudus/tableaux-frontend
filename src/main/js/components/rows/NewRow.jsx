@@ -1,9 +1,9 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 
-var Dispatcher = require('../dispatcher/Dispatcher');
+var Dispatcher = require('../../dispatcher/Dispatcher');
 
-var Row = require('../models/Row');
+var Row = require('../../models/Row');
 
 var NewRow = React.createClass({
   mixins : [AmpersandMixin],
