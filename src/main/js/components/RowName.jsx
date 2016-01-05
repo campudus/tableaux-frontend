@@ -4,7 +4,7 @@ var Cell = require('../models/Cell');
 var RowName = React.createClass({
 
   propTypes : {
-    cell : React.PropTypes.object, //can be null
+    cell : React.PropTypes.object,
     langtag : React.PropTypes.string
   },
 
@@ -24,8 +24,7 @@ var RowName = React.createClass({
     var cell = this.props.cell;
     var currentTableId = cell.tableId;
     var currentRowId = cell.rowId;
-    //FIXME: get the tableID better! right now its incorrect when tables get reordered
-    var currentColumn = cell.tables.models[currentTableId - 1].columns.models[0];
+    var currentColumn = cell.tables.get(currentTableId).columns.at(0);
 
     console.log("currentRow is: ", currentRowId);
     console.log("currentTabel is:", currentTableId);
@@ -40,15 +39,12 @@ var RowName = React.createClass({
       column : currentColumn
     });
 
-    //FIXME: Better way to get the first column value?
     masterCell.fetch({
       success : function (model, response, options) {
         console.log("masterCell success: ", model);
-
         if (model.kind !== "shorttext" && model.kind !== "text" && model.kind !== "richtext") {
           return;
         }
-
         if (model.isMultiLanguage) {
           console.log("multiLanguage: ", model.value[self.props.langtag]);
           self.setState({rowName : model.value[self.props.langtag]});

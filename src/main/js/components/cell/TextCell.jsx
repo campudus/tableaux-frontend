@@ -72,6 +72,12 @@ var TextCell = React.createClass({
 
     var self = this;
 
+    /*
+     TODO Refactor:
+     Head react component
+     body react component with langtag, cell, etc.. Body is responsible for content creation
+     Overlay just has head, body, "normal"
+     */
     Dispatcher.trigger("openGenericOverlay", {
       head : this.props.cell.column.name,
       body : <TextArea initialContent={this.getValue()} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
@@ -88,7 +94,6 @@ var TextCell = React.createClass({
     console.log("TextCell.saveOverlay");
 
     this.closeOverlay(event);
-
     this.handleEditDone(content);
   },
 
