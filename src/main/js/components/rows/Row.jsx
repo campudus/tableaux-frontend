@@ -10,7 +10,6 @@ var Ask = React.createClass({
   propTypes : {
     onYes : React.PropTypes.func.isRequired,
     onCancel : React.PropTypes.func.isRequired,
-
     content : React.PropTypes.element.isRequired
   },
 
@@ -24,11 +23,11 @@ var Ask = React.createClass({
 
   render : function () {
     return (
-      <div className="ask">
-        {this.props.content}
-        <button onClick={this._onYes} className="button yes">Yes</button>
-        <button onClick={this._onCancel} className="button cancel">Cancel</button>
-      </div>
+        <div className="ask">
+          {this.props.content}
+          <button onClick={this._onYes} className="button yes">Yes</button>
+          <button onClick={this._onCancel} className="button cancel">Cancel</button>
+        </div>
     )
   }
 });
@@ -40,7 +39,9 @@ var Row = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    row : React.PropTypes.object.isRequired
+    row : React.PropTypes.object.isRequired,
+    selectedCell : React.PropTypes.object,
+    selectedCellEditing : React.PropTypes.bool
   },
 
   getInitialState : function () {
@@ -94,9 +95,9 @@ var Row = React.createClass({
     var icon = country.toLowerCase() + ".png";
 
     return (
-      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-        <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
-      </div>
+        <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
+          <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
+        </div>
     );
   },
 
@@ -109,16 +110,23 @@ var Row = React.createClass({
     var self = this;
 
     return this.props.row.cells.map(function (cell, idx) {
+
+      //Is this cell currently selected
+      var selected = self.props.selectedCell ? cell.getId() === self.props.selectedCell.getId() : false;
+
+      //Is this cell in edit mode
+      var editing = selected ? self.props.selectedCellEditing : false;
+
       // We want to see single-language value even if not expanded
       if (!cell.isMultiLanguage && !self.state.expanded) {
         // TODO we should render with default-language
-        return <Cell key={idx} cell={cell} langtag={langtag}/>;
+        return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
       }
 
       // We don't want to repeat our self if expanded
       if (!cell.isMultiLanguage && self.state.expanded) {
         if (langtag === App.langtags[0]) {
-          return <Cell key={idx} cell={cell} langtag={langtag}/>;
+          return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
         } else {
           return self.renderSingleLanguageCell(cell, idx);
         }
@@ -126,14 +134,15 @@ var Row = React.createClass({
 
       // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
-        return <Cell key={idx} cell={cell} langtag={langtag}/>;
+        return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
       }
     })
   },
 
   renderLanguageRow : function (langtag) {
-    var className = 'row row-' + this.props.row.getId();
 
+    var selected = this.props.selectedCell ? this.props.row.getId() === this.props.selectedCell.rowId : false;
+    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
     var displayNone = {display : "none"};
     var display = {display : "inline"};
 
@@ -142,23 +151,23 @@ var Row = React.createClass({
     // or to every not expanded row
     if (langtag === App.langtags[0] || !this.state.expanded) {
       deleteButton = (
-        <div className="delete-row" style={ this.state.hover ? display : displayNone }>
-          <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
-        </div>
+          <div className="delete-row" style={ this.state.hover ? display : displayNone }>
+            <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
+          </div>
       )
     }
 
     return (
-      <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
-           key={this.props.row.getId() + "-" + langtag}
-           className={className}>
+        <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
+             key={this.props.row.getId() + "-" + langtag}
+             className={className}>
 
-        {deleteButton}
+          {deleteButton}
 
-        {this.renderLangtag(langtag)}
+          {this.renderLangtag(langtag)}
 
-        {this.renderCells(langtag)}
-      </div>
+          {this.renderCells(langtag)}
+        </div>
     );
   },
 

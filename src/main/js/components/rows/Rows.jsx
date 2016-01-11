@@ -10,7 +10,9 @@ var Rows = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    rows : React.PropTypes.object.isRequired
+    rows : React.PropTypes.object.isRequired,
+    selectedCell : React.PropTypes.object,
+    selectedCellEditing : React.PropTypes.bool
   },
 
   componentDidMount : function () {
@@ -20,7 +22,8 @@ var Rows = React.createClass({
   render : function () {
     var self = this;
     var rows = this.props.rows.map(function (row, idx) {
-      return <Row key={idx} row={row} langtag={self.props.langtag}/>
+      return <Row key={idx} row={row} selectedCell={self.props.selectedCell}
+                  selectedCellEditing={self.props.selectedCellEditing} langtag={self.props.langtag}/>
     });
 
     return <div className="data">{rows}</div>;

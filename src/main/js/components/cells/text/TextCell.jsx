@@ -24,12 +24,13 @@ var TextCell = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired
+    cell : React.PropTypes.object.isRequired,
+    editing : React.PropTypes.bool.isRequired
   },
 
   getInitialState : function () {
+    var self = this;
     return {
-      isEditing : false,
       hover : false
     };
   },
@@ -44,16 +45,15 @@ var TextCell = React.createClass({
 
   handleLabelClick : function (event) {
     console.log("TextCell.handleLabelClick");
-    event.stopPropagation();
     event.preventDefault();
 
-    this.setState({isEditing : true});
+    Dispatcher.trigger('toggleCellEditing', {
+      cell : this.props.cell
+    });
   },
 
   handleEditDone : function (newValue) {
     var cell = this.props.cell;
-
-    this.setState({isEditing : false});
 
     if (cell.isMultiLanguage) {
       var value = _.clone(cell.value);
@@ -62,6 +62,10 @@ var TextCell = React.createClass({
     }
 
     Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
+    Dispatcher.trigger('toggleCellEditing', {
+      cell : this.props.cell,
+      editing : false
+    });
   },
 
   openOverlay : function (event) {
@@ -116,7 +120,7 @@ var TextCell = React.createClass({
     }
 
     return (
-        <div className={'cell cell-' + cell.column.getId() + '-' + cell.rowId} onMouseEnter={this.onOver}
+        <div onMouseEnter={this.onOver}
              onMouseLeave={this.onOut}
              onClick={this.handleLabelClick}>
         <span className='cell-content'>
@@ -130,7 +134,7 @@ var TextCell = React.createClass({
   render : function () {
     var cell = this.props.cell;
 
-    if (!this.state.isEditing) {
+    if (!this.props.editing) {
       return this.renderTextCell(cell, this.getValue());
     } else {
       return <TextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}/>;

@@ -14,7 +14,7 @@ var TextEditCell = React.createClass({
     onBlur : React.PropTypes.func.isRequired
   },
 
-  getKeyboardShortcuts : function () {
+  getKeyboardShortcuts : function (event) {
     return {
       enter : this.doneEditing
     };
@@ -25,10 +25,9 @@ var TextEditCell = React.createClass({
   },
 
   doneEditing : function (event) {
-    console.log("TextEditCell.doneEditing");
-
+    console.log("TextEditCell.doneEditing when pressing Enter");
+    event.stopPropagation();
     event.preventDefault();
-
     this.props.onBlur(this.refs.input.value);
   },
 
@@ -91,7 +90,6 @@ var TextEditCell = React.createClass({
 
   render : function () {
     var self = this;
-
     var cell = this.props.cell;
 
     return (

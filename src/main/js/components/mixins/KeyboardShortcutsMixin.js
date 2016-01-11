@@ -12,12 +12,15 @@ var KEYS = {
   enter : 13,
   left : 37,
   right : 39,
+  up : 38,
+  down : 40,
   escape : 27,
   backspace : 8,
   comma : 188,
   shift : 16,
   control : 17,
-  command : 91
+  command : 91,
+  tab : 9
 };
 
 var KeyboardShortcutsMixin = {
