@@ -16,7 +16,7 @@ var TextEditCell = React.createClass({
 
   getKeyboardShortcuts : function (event) {
     return {
-      enter : this.doneEditing
+      tab : this.doneEditing
     };
   },
 
@@ -25,7 +25,7 @@ var TextEditCell = React.createClass({
   },
 
   doneEditing : function (event) {
-    console.log("TextEditCell.doneEditing when pressing Enter");
+    console.log("TextEditCell.doneEditing when pressing Tab, event: ", event);
     event.stopPropagation();
     event.preventDefault();
     this.props.onBlur(this.refs.input.value);
@@ -59,6 +59,7 @@ var TextEditCell = React.createClass({
   },
 
   componentDidMount : function () {
+    document.addEventListener('keydown', this.onKeyboardShortcut);
     var node = this.refs.input;
     node.focus();
     // Sets cursor to end of input field
@@ -67,6 +68,10 @@ var TextEditCell = React.createClass({
 
   componentWillMount : function () {
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
+  },
+
+  componentWillUnmount : function () {
+    document.removeEventListener('keydown', this.onKeyboardShortcut);
   },
 
   getValue : function () {
@@ -93,12 +98,11 @@ var TextEditCell = React.createClass({
     var cell = this.props.cell;
 
     return (
-        <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
+      <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
         <textarea className="input" name={this.inputName} defaultValue={this.getValue()}
-                  onKeyDown={this.onKeyboardShortcut}
                   ref="input" rows="1"></textarea>
-          <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
-        </div>
+        <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
+      </div>
     );
   }
 });
