@@ -21,6 +21,8 @@ var KEYS = {
   control : 17,
   command : 91,
   tab : 9
+  //text
+  //use text key handler for any letter or number
 };
 
 var KeyboardShortcutsMixin = {
@@ -30,6 +32,7 @@ var KeyboardShortcutsMixin = {
     }
 
     var shortcuts = this.getKeyboardShortcuts();
+    var shortcutFound = false;
 
     if (typeof shortcuts !== "object") {
       throw "Return type of getKeyboardShortcuts must be an object.";
@@ -39,10 +42,30 @@ var KeyboardShortcutsMixin = {
       var keyCode = KEYS[key] || key;
 
       if (keyCode === event.keyCode) {
+        shortcutFound = true;
         handler(event);
       }
     });
+
+    //no shortcut found - check for general letters and call 'text' listener
+    if (!shortcutFound && shortcuts.text && isText(event.keyCode)) {
+      shortcuts.text(event);
+    }
   }
 };
+
+function isText(keyCode) {
+  var k = keyCode;
+  /**
+   * Cheat Sheet for most important letters in german
+   * 32 - 126 key "!" - "~"
+   * ,: 188
+   * ;: 186
+   * .: 190
+   * ß: 225, ä: 132, ö: 148, ü: 129, Ä: 142, Ö: 153, Ü: 154
+   */
+  return ((k >= 32 && k <= 126) || k === 225 || k === 132 || k === 148 || k === 129 || k === 142 || k === 153
+  || k === 154 || k === 188 || k === 190 || k === 186);
+}
 
 module.exports = KeyboardShortcutsMixin;

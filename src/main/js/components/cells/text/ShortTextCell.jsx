@@ -2,22 +2,24 @@ var React = require('react');
 var _ = require('lodash');
 
 var Dispatcher = require('../../../dispatcher/Dispatcher');
-var NumericEditCell = require('./NumericEditCell.jsx');
+var ShortTextEditCell = require('./ShortTextEditCell.jsx');
 
-var NumericCell = React.createClass({
+var TextCell = React.createClass({
+
+  displayName : 'ShortTextCell',
 
   propTypes : {
-    cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
+    cell : React.PropTypes.object.isRequired,
     editing : React.PropTypes.bool.isRequired
   },
 
   getInitialState : function () {
-    return {};
+    return null;
   },
 
   handleLabelClick : function (event) {
-    console.log("Numeric.handleLabelClick");
+    console.log("ShortTextCell.handleLabelClick");
     event.preventDefault();
 
     Dispatcher.trigger('toggleCellEditing', {
@@ -41,41 +43,36 @@ var NumericCell = React.createClass({
     });
   },
 
-  renderSingleLanguage : function () {
+  getValue : function () {
     var cell = this.props.cell;
-    return (
-        <div className={'cell-content'} onClick={this.handleLabelClick}>
-          {cell.value}
-        </div>
-    );
+
+    var value;
+    if (cell.isMultiLanguage) {
+      value = cell.value[this.props.langtag];
+    } else {
+      value = cell.value;
+    }
+
+    return typeof value === "undefined" ? null : value;
   },
 
-  renderMultiLanguage : function () {
-    var cell = this.props.cell;
-    var langtag = this.props.langtag;
-    var value = cell.value[langtag];
-
+  renderTextCell : function (cell, value) {
     return (
-        <div className={'cell-content'} onClick={this.handleLabelClick}>
-          {value}
+        <div className='cell-content' onClick={this.handleLabelClick}>
+          {value === null ? "" : value}
         </div>
     );
   },
 
   render : function () {
     var cell = this.props.cell;
-    var langtag = this.props.langtag;
 
     if (!this.props.editing) {
-      if (cell.isMultiLanguage) {
-        return this.renderMultiLanguage();
-      } else {
-        return this.renderSingleLanguage();
-      }
+      return this.renderTextCell(cell, this.getValue());
     } else {
-      return <NumericEditCell cell={cell} langtag={langtag} onSave={this.handleEditDone}/>;
+      return <ShortTextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}/>;
     }
   }
 });
 
-module.exports = NumericCell;
+module.exports = TextCell;

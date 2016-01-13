@@ -15,12 +15,12 @@ var LinkEditCell = React.createClass({
   },
 
   renderSingleLanguage : function (value) {
-    return <span className="link" onClick={this.props.click}>{value}</span>;
+    return <span className="link-label" onClick={this.props.click}>{value}</span>;
   },
 
   renderMultiLanguage : function (language, values) {
     var value = values[language] || null;
-    return <span className="link" onClick={this.props.click}>{value}</span>;
+    return <span className="link-label" onClick={this.props.click}>{value}</span>;
   },
 
   render : function () {
@@ -32,7 +32,7 @@ var LinkEditCell = React.createClass({
     }
 
     return (
-      <div className="link editing">
+        <div className="link-label editing">
         {value}
         <button className="delete-link" onClick={this.removeLink}><i className="fa fa-trash"></i></button>
       </div>

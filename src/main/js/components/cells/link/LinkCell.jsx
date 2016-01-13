@@ -8,6 +8,11 @@ var LinkLabelCell = require('./LinkLabelCell.jsx');
 
 var LinkCell = React.createClass({
 
+  propTypes : {
+    cell : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired
+  },
+
   getInitialState : function () {
     return {editing : {}};
   },
@@ -30,7 +35,7 @@ var LinkCell = React.createClass({
       editMap[idx] = false;
       this.setState({editing : editMap});
       Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
-        {newValue : newValue});
+          {newValue : newValue});
     };
   },
 
@@ -51,7 +56,7 @@ var LinkCell = React.createClass({
     var self = this;
 
     var cell = this.props.cell;
-    var language = this.props.language;
+    var language = this.props.langtag;
 
     if (cell.value === null) {
       return null;
@@ -78,10 +83,10 @@ var LinkCell = React.createClass({
     var cell = this.props.cell;
 
     return (
-      <div className={'cell link cell-' + cell.column.getId() + '-' + cell.rowId}>
-        {this.renderLinkValue()}
-        <button className="add" onClick={self.openOverlay}>+</button>
-      </div>
+        <div className={'cell-content link'}>
+          {this.renderLinkValue()}
+          <button className="add" onClick={self.openOverlay}>+</button>
+        </div>
     );
   }
 

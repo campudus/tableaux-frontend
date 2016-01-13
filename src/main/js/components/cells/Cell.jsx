@@ -2,6 +2,7 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 
 var TextCell = require('./text/TextCell.jsx');
+var ShortTextCell = require('./text/ShortTextCell.jsx');
 var NumericCell = require('./numeric/NumericCell.jsx');
 var LinkCell = require('./link/LinkCell.jsx');
 var AttachmentCell = require('./attachment/AttachmentCell.jsx');
@@ -27,7 +28,7 @@ var Cell = React.createClass({
      * Fire event which cell wants to toggle selected state.
      * Keep in mind: Child elements needs to allow propagation
      */
-    console.log("cell clicked");
+    console.log("cell clicked: ", this.props.cell);
 
     if (this.props.selected === true) {
       console.log("is selected, edit it");
@@ -65,22 +66,27 @@ var Cell = React.createClass({
 
       //todo: switch language to langtag!!! Important LANGTAG
       case "link":
-        cellKind = <LinkCell cell={this.props.cell} language={this.props.langtag}/>;
+        cellKind = <LinkCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        break;
 
       case "attachment":
-        cellKind = <AttachmentCell cell={this.props.cell} language={this.props.langtag}/>;
+        cellKind = <AttachmentCell cell={this.props.cell} langtag={this.props.langtag}/>;
         break;
 
       case "numeric":
-        cellKind = <NumericCell cell={this.props.cell} language={this.props.langtag}/>;
+        cellKind = <NumericCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
         break;
 
       case "boolean":
-        cellKind = <BooleanCell cell={this.props.cell} language={this.props.langtag}/>;
+        cellKind = <BooleanCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}/>;
         break;
 
       case "datetime":
-        cellKind = <DateTimeCell cell={this.props.cell} language={this.props.langtag}/>;
+        cellKind = <DateTimeCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        break;
+
+      case "shorttext":
+        cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
         break;
 
       default:
@@ -88,7 +94,7 @@ var Cell = React.createClass({
         break;
     }
 
-    var cellClass = "cell" + " cell-" + cell.column.getId() + "-" + cell.rowId + (this.props.selected ? " selected" : "");
+    var cellClass = "cell" + " cell-" + cell.kind + " cell-" + cell.column.getId() + "-" + cell.rowId + (this.props.selected ? " selected" : "") + (this.props.editing ? " editing" : "");
 
     return (
         <div className={cellClass} onClick={this.cellClicked}>

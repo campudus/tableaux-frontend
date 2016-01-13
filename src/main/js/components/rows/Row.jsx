@@ -96,7 +96,7 @@ var Row = React.createClass({
 
     return (
         <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-          <span><img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}</span>
+          <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
         </div>
     );
   },

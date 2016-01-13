@@ -53,12 +53,14 @@ var Table = React.createClass({
     document.addEventListener('keydown', this.onKeyboardShortcut);
     Dispatcher.on('toggleCellSelection', this.toggleCellSelection);
     Dispatcher.on('toggleCellEditing', this.toggleCellEditing);
+    Dispatcher.on('selectNextCell', this.setNextSelectedCell);
   },
 
   componentWillUnmount : function () {
     window.removeEventListener("resize", this.windowResize);
     Dispatcher.off('toggleCellSelection', this.toggleCellSelection);
     Dispatcher.off('toggleCellEditing', this.toggleCellEditing);
+    Dispatcher.off('selectNextCell', this.setNextSelectedCell);
     document.removeEventListener('keydown', this.onKeyboardShortcut);
   },
 
@@ -71,14 +73,13 @@ var Table = React.createClass({
   },
 
   toggleCellEditing : function (params) {
-    console.log("toggleCellEditing");
 
     var editVal = params.editing;
     if (!this.state.selectedCell) {
       return;
     }
 
-    if (params.cell.getId() === this.state.selectedCell.getId()) {
+    if (params.cell.kind !== "boolean" && params.cell.getId() === this.state.selectedCell.getId()) {
       console.log("setting CellEditing to", !_.isUndefined(editVal) ? editVal : true);
       this.setState({
         selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
@@ -96,8 +97,8 @@ var Table = React.createClass({
     var self = this;
     var row;
     var nextCellId;
-    var rowId = self.getCurrentRowId();
-    var columnId = self.getCurrentColumnId();
+    var rowId = self.getCurrentSelectedRowId();
+    var columnId = self.getCurrentSelectedColumnId();
 
     switch (direction) {
       case "left":
@@ -118,7 +119,6 @@ var Table = React.createClass({
     }
 
     row = self.props.table.rows.get(rowId);
-    console.log("get new row with id:", rowId);
     nextCellId = 'cell-' + self.props.table.getId() + '-' + columnId + '-' + rowId;
 
     if (row) {
@@ -139,7 +139,6 @@ var Table = React.createClass({
     var nextIndex = getPrev ? indexCurrentRow - 1 : indexCurrentRow + 1;
     var nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
     var nextRowId = this.props.table.rows.at(nextRowIndex).getId();
-    console.log("index current row: ", indexCurrentRow, " id current row: ", currentRow.getId(), " number of rows: ", numberOfRows, "next row index: ", nextRowIndex, "next row id: ", nextRowId);
     return nextRowId;
   },
 
@@ -154,7 +153,6 @@ var Table = React.createClass({
     var nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
     var nextColumnIndex = Math.max(0, Math.min(nextIndex, numberOfColumns - 1));
     var nextColumnId = this.props.table.columns.at(nextColumnIndex).getId();
-    console.log("index current column: ", indexCurrentColumn, " id current column: ", currentColumn.getId(), " number of columns: ", numberOfColumns, "next column index: ", nextColumnIndex, "next column id: ", nextColumnId);
     return nextColumnId;
   },
 
@@ -187,11 +185,10 @@ var Table = React.createClass({
         self.setNextSelectedCell("down");
       },
 
-      //TODO Enter and escape should be triggered by the edited cell
-      //FIXME: Cancel this enter event listener when pressed in edited cell. Problem is the synthetic event and native js event. Stoppropagation wont work
       enter : function (event) {
-        console.log("Enter Table cellEditing. ", self.state.selectedCellEditing);
-        console.log("Enter Table cellEditing isPropagationStopped ", event);
+        console.log("Enter Table cellEditing, event: ", event);
+        //avoids adding line break to text cell
+        event.preventDefault();
         if (self.state.selectedCell && !self.state.selectedCellEditing) {
           self.toggleCellEditing({cell : self.state.selectedCell});
         }
@@ -202,17 +199,31 @@ var Table = React.createClass({
         if (self.state.selectedCell && self.state.selectedCellEditing) {
           self.toggleCellEditing({cell : self.state.selectedCell, editing : false});
         }
+      },
+
+      text : function (event) {
+        if (self.state.selectedCell && !self.state.selectedCellEditing) {
+          self.toggleCellEditing({cell : self.state.selectedCell});
+        }
       }
 
     };
   },
 
-  getCurrentRowId : function () {
+  getCurrentSelectedRowId : function () {
     return this.state.selectedCell ? this.state.selectedCell.rowId : 0;
   },
 
-  getCurrentColumnId : function () {
+  getCurrentSelectedColumnId : function () {
     return this.state.selectedCell ? this.state.selectedCell.column.getId() : 0;
+  },
+
+  handleClickOutside : function (event) {
+    if (!this.state.selectedCellEditing) {
+      this.setState({
+        selectedCell : null
+      });
+    }
   },
 
   handleScroll : function (e) {
@@ -241,28 +252,18 @@ var Table = React.createClass({
     return {height : (this.state.windowHeight - this.state.offsetTableData) + "px"};
   },
 
-  handleClickOutside : function (event) {
-    console.log("clicked outside");
-    if (!this.state.selectedCellEditing) {
-      this.setState({
-        selectedCell : null
-      });
-    }
-  },
-
   render : function () {
     return (
-      <section id="table-wrapper" ref="tableWrapper">
-        <div className="tableaux-table" ref="tableInner">
-          <Columns ref="columns" columns={this.props.table.columns}/>
-          <div ref="dataWrapper" className="data-wrapper" style={ this.tableDataHeight() }
-               onScroll={this.handleScroll}>
-            <Rows rows={this.props.table.rows} langtag={this.props.langtag} selectedCell={this.state.selectedCell}
-                  selectedCellEditing={this.state.selectedCellEditing}/>
-            <NewRow table={this.props.table} langtag={this.props.langtag}/>
+        <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll}>
+          <div className="tableaux-table" ref="tableInner">
+            <Columns ref="columns" columns={this.props.table.columns}/>
+            <div ref="dataWrapper" className="data-wrapper" style={ this.tableDataHeight() }>
+              <Rows rows={this.props.table.rows} langtag={this.props.langtag} selectedCell={this.state.selectedCell}
+                    selectedCellEditing={this.state.selectedCellEditing}/>
+              <NewRow table={this.props.table} langtag={this.props.langtag}/>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
     );
   }
 });

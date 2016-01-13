@@ -15,8 +15,17 @@ var TextEditCell = React.createClass({
   },
 
   getKeyboardShortcuts : function (event) {
+    var self = this;
     return {
-      tab : this.doneEditing
+      tab : function (event) {
+        self.doneEditing(event);
+        Dispatcher.trigger('selectNextCell', 'right');
+      },
+      enter : function (event) {
+        console.log("enter texteditcell");
+        //stop handling the Table events
+        event.stopPropagation();
+      }
     };
   },
 
@@ -25,9 +34,11 @@ var TextEditCell = React.createClass({
   },
 
   doneEditing : function (event) {
-    console.log("TextEditCell.doneEditing when pressing Tab, event: ", event);
-    event.stopPropagation();
-    event.preventDefault();
+    console.log("TextEditCell.doneEditing, event: ", event);
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     this.props.onBlur(this.refs.input.value);
   },
 
@@ -46,24 +57,27 @@ var TextEditCell = React.createClass({
 
   closeOverlay : function (event) {
     console.log("TextEditCell.closeOverlay");
-
     Dispatcher.trigger("closeGenericOverlay");
   },
 
   saveOverlay : function (content, event) {
     console.log("TextEditCell.saveOverlay");
-
     this.closeOverlay(event);
-
     this.props.onBlur(content);
   },
 
   componentDidMount : function () {
-    document.addEventListener('keydown', this.onKeyboardShortcut);
+    /*
+     * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
+     * stop propagation to the table key listener
+     */
+    document.addEventListener('keydown', this.onKeyboardShortcut, true);
     var node = this.refs.input;
     node.focus();
+    var text = node.value;
     // Sets cursor to end of input field
-    node.value = node.value;
+    node.value = ""; //textarea must be empty first to jump to end of text
+    node.value = text;
   },
 
   componentWillMount : function () {
@@ -71,7 +85,9 @@ var TextEditCell = React.createClass({
   },
 
   componentWillUnmount : function () {
-    document.removeEventListener('keydown', this.onKeyboardShortcut);
+
+    //parameter useCapture must be true or added listener doesn't get removed
+    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
   },
 
   getValue : function () {
@@ -95,14 +111,13 @@ var TextEditCell = React.createClass({
 
   render : function () {
     var self = this;
-    var cell = this.props.cell;
 
     return (
-      <div className={'cell editing cell-' + cell.column.getId() + '-' + cell.rowId}>
+        <div className={'cell-content editing'}>
         <textarea className="input" name={this.inputName} defaultValue={this.getValue()}
-                  ref="input" rows="1"></textarea>
-        <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
-      </div>
+                  ref="input" rows="4"></textarea>
+          <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
+        </div>
     );
   }
 });

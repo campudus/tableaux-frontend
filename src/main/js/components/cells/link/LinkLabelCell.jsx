@@ -9,7 +9,7 @@ var LinkLabelCell = React.createClass({
   renderMultiLanguage : function (language, values) {
     var value = values[language] || null;
 
-    return <span className="link" onClick={this.props.click}>{value}</span>;
+    return <span className="link-label" onClick={this.props.click}>{value}</span>;
   },
 
   render : function () {

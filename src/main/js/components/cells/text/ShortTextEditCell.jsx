@@ -1,19 +1,20 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
+var TextArea = require('./TextArea.jsx');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 
-var NumericEditCell = React.createClass({
+var TextEditCell = React.createClass({
 
   mixins : [KeyboardShortcutsMixin, OutsideClick],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    onSave : React.PropTypes.func.isRequired
+    onBlur : React.PropTypes.func.isRequired
   },
 
-  getKeyboardShortcuts : function () {
+  getKeyboardShortcuts : function (event) {
     var self = this;
     return {
       tab : function (event) {
@@ -21,7 +22,7 @@ var NumericEditCell = React.createClass({
         Dispatcher.trigger('selectNextCell', 'right');
       },
       enter : function (event) {
-        console.log("numeric Enter");
+        console.log("enter shortTextEdit");
         //stop handling the Table events
         event.stopPropagation();
         self.doneEditing(event);
@@ -34,32 +35,15 @@ var NumericEditCell = React.createClass({
     this.doneEditing(event);
   },
 
-  /**
-   * Returns a clean Number and displays the correct value to the input field
-   * @param input
-   * @returns {float|null} result
-   */
-  formatNumberCell : function (input) {
-    var result = null;
-    var curr = input.value;
-    if (curr.trim().length !== 0) {
-      var formattedNumber = curr.replace(/,/g, ".");
-      var realNumber = parseFloat(formattedNumber);
-      if (!isNaN(realNumber)) {
-        result = realNumber;
-      }
-    }
-    input.value = (result === null) ? "" : result;
-    return result;
-  },
-
   doneEditing : function (event) {
+    console.log("TextEditCell.doneEditing, event: ", event);
     if (event) {
       event.stopPropagation();
       event.preventDefault();
     }
-    this.props.onSave(this.formatNumberCell(this.refs.input));
+    this.props.onBlur(this.refs.input.value);
   },
+
 
   componentDidMount : function () {
     /*
@@ -74,7 +58,7 @@ var NumericEditCell = React.createClass({
   },
 
   componentWillMount : function () {
-    // TODO Move this into a mixin
+    //FIXME: Better in static variable ?
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
   },
 
@@ -103,16 +87,13 @@ var NumericEditCell = React.createClass({
   },
 
   render : function () {
-    var self = this;
-
-    var cell = this.props.cell;
-
     return (
         <div className={'cell-content editing'}>
-          <input type="number" className="input" name={this.inputName} defaultValue={this.getValue()} ref="input"/>
+          <input type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
+                 ref="input"></input>
         </div>
     );
   }
 });
 
-module.exports = NumericEditCell;
+module.exports = TextEditCell;

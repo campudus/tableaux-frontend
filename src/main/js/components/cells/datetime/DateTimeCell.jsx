@@ -11,7 +11,7 @@ var DateTimeCell = React.createClass({
     mixins : [OutsideClick],
     propTypes : {
       cell : React.PropTypes.object.isRequired,
-      language : React.PropTypes.string.isRequired
+      langtag : React.PropTypes.string.isRequired
     },
 
     statics : {
@@ -54,7 +54,7 @@ var DateTimeCell = React.createClass({
         var formattedDateValue;
         if (this.props.cell.isMultiLanguage) {
           formattedDateValue = _.clone(this.props.cell.value);
-          formattedDateValue[this.props.language] = this.state.selectedDateTime.format(this.constructor.formatForServer);
+          formattedDateValue[this.props.langtag] = this.state.selectedDateTime.format(this.constructor.formatForServer);
         } else {
           var value = this.state.selectedDateTime;
           formattedDateValue = String(value.format(this.constructor.formatForServer));
@@ -81,7 +81,7 @@ var DateTimeCell = React.createClass({
     getCellValue : function () {
       var value;
       if (this.props.cell.isMultiLanguage) {
-        var currentLangValue = this.props.cell.value[this.props.language];
+        var currentLangValue = this.props.cell.value[this.props.langtag];
         value = currentLangValue ? currentLangValue : null;
       } else {
         var singleVal = this.props.cell.value;
@@ -104,16 +104,13 @@ var DateTimeCell = React.createClass({
 
     render : function () {
       var cell = this.props.cell;
-      var theClassName = 'cell cell-' + cell.column.getId() + '-' + cell.rowId;
+      var theClassName = 'cell-content';
       if (this.state.isEditing) {
         theClassName += ' editing';
       }
       return (
         <div className={theClassName} onClick={this.handleLabelClick}>
-        <span className="cell-content">
           {this.showDateTimeValue()}
-        </span>
-
           {this.state.isEditing? <Datetime onChange={this.onDateTimeChange}
                                            open={true} input={false} value={this.selectDate()}/> : null}
 
