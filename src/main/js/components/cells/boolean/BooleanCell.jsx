@@ -1,8 +1,7 @@
 var React = require('react');
-var _ = require('lodash');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
-
+var BooleanEditCell = require('./BooleanEditCell.jsx');
 
 var BooleanCell = React.createClass({
 
@@ -14,39 +13,38 @@ var BooleanCell = React.createClass({
     selected : React.PropTypes.bool.isRequired
   },
 
-  getInitialState : function () {
-    return {
-      checked : !!this.props.cell.value
-    }
-  },
-
   handleEditDone : function (newValue) {
     Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : newValue});
   },
 
-  checkboxClick : function (event) {
-    console.log("checkbox clicked");
-    event.preventDefault();
+  getCheckboxValue : function () {
+    return !!this.props.cell.value;
+  },
 
-    if (this.props.selected) {
-      console.log("is selected!!!");
-      var newVal = !this.state.checked;
-      this.setState({
-        checked : newVal
-      });
-      console.log("set to: ", newVal);
-      this.handleEditDone(newVal);
-    }
-
+  /**
+   * Toggle value only when selected, changes it visually and saves it to database
+   */
+  toggleCheckboxValue : function () {
+    var newVal = !this.getCheckboxValue();
+    this.handleEditDone(newVal);
   },
 
   render : function () {
-    var cell = this.props.cell;
+
+    var booleanCellNode;
+    //We split this simple boolean into two components to get the keydown listener just once when selected!
+    if (!this.props.selected) {
+      booleanCellNode =
+          <input className="checkbox" type="checkbox" readOnly="readonly" checked={this.getCheckboxValue()}/>;
+    } else {
+      booleanCellNode = <BooleanEditCell checked={this.getCheckboxValue()}
+                                         langtag={this.props.langtag}
+                                         onSave={this.toggleCheckboxValue}/>;
+    }
+
     return (
         <div className={'cell-content'}>
-          <input className="checkbox" type="checkbox" readOnly="readonly" checked={this.state.checked}
-                 onClick={this.checkboxClick}/>
-          {cell.value}
+          {booleanCellNode}
         </div>
     );
 
