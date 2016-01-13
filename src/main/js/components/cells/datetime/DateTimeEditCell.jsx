@@ -1,3 +1,7 @@
+/**
+ * TODO: Auslagern in EditCell damit Listener wieder weniger werden
+ */
+
 var React = require('react');
 var ReactDOM = require('react-dom');
 var _ = require('lodash');
@@ -5,11 +9,10 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var OutsideClick = require('react-onclickoutside');
 var Datetime = require('react-datetime');
 var Moment = require('moment');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 
 var DateTimeCell = React.createClass({
 
-      mixins : [OutsideClick, KeyboardShortcutsMixin],
+      mixins : [OutsideClick],
       propTypes : {
         cell : React.PropTypes.object.isRequired,
         langtag : React.PropTypes.string.isRequired,
@@ -21,22 +24,9 @@ var DateTimeCell = React.createClass({
         formatForUser : "DD.MM.YYYY - HH:mm",
       },
 
-      /**
-       * FIXME: Unbedingt in DateTimeEditCell auslagern damit Events nur bei selection benötigt werden, aktuell erhält jede Zelle das Event
-       *
-       */
-      /*componentDidMount : function () {
-       /!*
-       * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
-       * stop propagation to the table key listener
-       *!/
-       document.addEventListener('keydown', this.onKeyboardShortcut, true);
-       },
+      componentDidMount : function () {
 
-       componentWillUnmount : function () {
-       //parameter useCapture must be true or added listener doesn't get removed
-       document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-       },*/
+      },
 
       getInitialState : function () {
         return {
@@ -44,41 +34,27 @@ var DateTimeCell = React.createClass({
         }
       },
 
-      getKeyboardShortcuts : function (event) {
-        var self = this;
-        return {
-          tab : function (event) {
-            self.handleEditDone(event);
-            Dispatcher.trigger('selectNextCell', 'right');
-          },
-          enter : function (event) {
-            //stop handling the Table events
-            self.handleEditDone(event);
-            Dispatcher.trigger('selectNextCell', 'down');
-          }
-        };
-      },
-
       handleClickOutside : function (event) {
         event.preventDefault();
         event.stopPropagation();
-        console.log("dateTime clicked Outside");
-        if (this.props.editing) {
-          this.handleEditDone();
-        }
-
+        console.log("date outside clicked");
+        this.handleEditDone();
       },
 
       handleLabelClick : function (event) {
         event.stopPropagation();
         event.preventDefault();
+        //this.setState({isEditing : true});
       },
 
       handleEditDone : function () {
-
-        var selectedDateTime = this.state.selectedDateTime;
-
-        if (this.props.editing && selectedDateTime) {
+        if (this.props.editing) {
+          //this.setState({isEditing : false});
+          var selectedDateTime = this.state.selectedDateTime;
+          //when no date selected
+          if (!selectedDateTime) {
+            return;
+          }
 
           var formattedDateValue;
           if (this.props.cell.isMultiLanguage) {
@@ -90,13 +66,8 @@ var DateTimeCell = React.createClass({
           }
           //Save to db
           Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : formattedDateValue});
-        }
 
-        console.log("in handleEditDone fn");
-        Dispatcher.trigger('toggleCellEditing', {
-          cell : this.props.cell,
-          editing : false
-        });
+        }
       },
 
       showDateTimeValue : function () {
@@ -155,3 +126,13 @@ var DateTimeCell = React.createClass({
     ;
 
 module.exports = DateTimeCell;
+
+//{this.dateTimeValue(cell.value)}
+//{this.state.isEditing? : null}
+
+/**
+ * <span className='cell-content'>
+ {this.dateTimeValue(cell.value)}
+ </span>
+ {this.state.isEditing?  : null}
+ */

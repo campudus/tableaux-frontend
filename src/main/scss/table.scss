@@ -114,7 +114,6 @@
           top: 0px;
           left: 0px;
           padding: 9px;
-          white-space: pre;
           height: auto;
           background-color: $color-selected-row;
           border: 1px solid #3296dc;
@@ -127,6 +126,15 @@
           overflow-x: hidden;
         }
       }
+
+      &.cell-link .cell-content {
+        white-space: normal;
+      }
+
+      &.cell-link .cell-text {
+        white-space: pre;
+      }
+
     }
 
     &.editing {

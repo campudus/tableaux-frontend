@@ -85,7 +85,6 @@ var TextEditCell = React.createClass({
   },
 
   componentWillUnmount : function () {
-
     //parameter useCapture must be true or added listener doesn't get removed
     document.removeEventListener('keydown', this.onKeyboardShortcut, true);
   },

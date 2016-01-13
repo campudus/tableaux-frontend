@@ -79,8 +79,8 @@ var Table = React.createClass({
       return;
     }
 
-    if (params.cell.kind !== "boolean" && params.cell.getId() === this.state.selectedCell.getId()) {
-      console.log("setting CellEditing to", !_.isUndefined(editVal) ? editVal : true);
+    var noEditingModeNeeded = params.cell.kind === "boolean";
+    if (!noEditingModeNeeded && params.cell.getId() === this.state.selectedCell.getId()) {
       this.setState({
         selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
       })
