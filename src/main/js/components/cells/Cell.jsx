@@ -90,7 +90,7 @@ var Cell = React.createClass({
         break;
 
       default:
-        cellKind = <TextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        cellKind = <TextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing} selected={this.props.selected}/>;
         break;
     }
 

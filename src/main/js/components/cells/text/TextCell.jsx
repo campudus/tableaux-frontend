@@ -4,19 +4,7 @@ var _ = require('lodash');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextEditCell = require('./TextEditCell.jsx');
 var TextArea = require('./TextArea.jsx');
-
-var ExpandButton = React.createClass({
-
-  displayName : 'ExpandButton',
-
-  propTypes : {
-    onTrigger : React.PropTypes.func.isRequired
-  },
-
-  render : function () {
-    return <button className="add" onClick={this.props.onTrigger}><span className="fa fa-expand"></span></button>
-  }
-});
+var ExpandButton = require('./ExpandButton.jsx');
 
 var TextCell = React.createClass({
 
@@ -25,22 +13,8 @@ var TextCell = React.createClass({
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
     cell : React.PropTypes.object.isRequired,
-    editing : React.PropTypes.bool.isRequired
-  },
-
-  getInitialState : function () {
-    var self = this;
-    return {
-      hover : false
-    };
-  },
-
-  onOver : function () {
-    this.setState({hover : true});
-  },
-
-  onOut : function () {
-    this.setState({hover : false});
+    editing : React.PropTypes.bool.isRequired,
+    selected : React.PropTypes.bool.isRequired
   },
 
   handleLabelClick : function (event) {
@@ -68,12 +42,11 @@ var TextCell = React.createClass({
     });
   },
 
-  openOverlay : function (event) {
-    console.log("TextCell.openOverlay");
+  openOverlay : function (event, withContent) {
+    var self = this;
+    var textValue = withContent ? withContent : this.getValue();
     event.stopPropagation();
     event.preventDefault();
-
-    var self = this;
 
     /*
      TODO Refactor:
@@ -83,19 +56,15 @@ var TextCell = React.createClass({
      */
     Dispatcher.trigger("openGenericOverlay", {
       head : this.props.cell.column.name,
-      body : <TextArea initialContent={this.getValue()} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
+      body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
     }, "normal", self.props.cell, this.props.langtag);
   },
 
   closeOverlay : function (event) {
-    console.log("TextCell.closeOverlay");
-
     Dispatcher.trigger("closeGenericOverlay");
   },
 
   saveOverlay : function (content, event) {
-    console.log("TextCell.saveOverlay");
-
     this.closeOverlay(event);
     this.handleEditDone(content);
   },
@@ -110,23 +79,23 @@ var TextCell = React.createClass({
       value = cell.value;
     }
 
-    return typeof value === "undefined" ? null : value;
+    return typeof value === "undefined" ? "" : value;
   },
 
   renderTextCell : function (cell, value) {
-    var button = "";
-    if (this.state.hover) {
-      button = <ExpandButton onTrigger={this.openOverlay}/>;
+    var self = this;
+
+    var expandButton = "";
+    if (this.props.selected) {
+      expandButton = <ExpandButton onTrigger={self.openOverlay}></ExpandButton>;
     }
 
     return (
-        <div onMouseEnter={this.onOver}
-             onMouseLeave={this.onOut}
-             onClick={this.handleLabelClick}>
+        <div onClick={this.handleLabelClick}>
         <span className='cell-content'>
           {value === null ? "" : value}
+          {expandButton}
         </span>
-          {button}
         </div>
     );
   },
@@ -137,7 +106,10 @@ var TextCell = React.createClass({
     if (!this.props.editing) {
       return this.renderTextCell(cell, this.getValue());
     } else {
-      return <TextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}/>;
+      return <TextEditCell cell={cell} defaultText={this.getValue()} langtag={this.props.langtag}
+                           onBlur={this.handleEditDone}
+                           openOverlay={this.openOverlay} closeOverlay={this.closeOverlay}
+                           saveOverlay={this.saveOverlay}/>;
     }
   }
 });

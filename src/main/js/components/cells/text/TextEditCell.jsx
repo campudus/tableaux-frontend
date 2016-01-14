@@ -3,6 +3,7 @@ var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
+var ExpandButton = require('./ExpandButton.jsx');
 
 var TextEditCell = React.createClass({
 
@@ -11,7 +12,15 @@ var TextEditCell = React.createClass({
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    onBlur : React.PropTypes.func.isRequired
+    onBlur : React.PropTypes.func.isRequired,
+    defaultText : React.PropTypes.string.isRequired,
+    openOverlay : React.PropTypes.func.isRequired,
+    closeOverlay : React.PropTypes.func.isRequired,
+    saveOverlay : React.PropTypes.func.isRequired
+  },
+
+  getInputName : function () {
+    return this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
   },
 
   getKeyboardShortcuts : function (event) {
@@ -43,27 +52,8 @@ var TextEditCell = React.createClass({
   },
 
   openOverlay : function (event) {
-    console.log("TextEditCell.openOverlay");
-
-    this.doneEditing(event);
-
-    var self = this;
-
-    Dispatcher.trigger("openGenericOverlay", {
-      head : this.props.cell.column.name,
-      body : <TextArea initialContent={this.getValue()} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
-    }, "normal", self.props.cell, this.props.langtag);
-  },
-
-  closeOverlay : function (event) {
-    console.log("TextEditCell.closeOverlay");
-    Dispatcher.trigger("closeGenericOverlay");
-  },
-
-  saveOverlay : function (content, event) {
-    console.log("TextEditCell.saveOverlay");
-    this.closeOverlay(event);
-    this.props.onBlur(content);
+    //pass possible new text in editmode to overlay
+    this.props.openOverlay(event, this.refs.input.value);
   },
 
   componentDidMount : function () {
@@ -80,42 +70,17 @@ var TextEditCell = React.createClass({
     node.value = text;
   },
 
-  componentWillMount : function () {
-    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
-  },
-
   componentWillUnmount : function () {
     //parameter useCapture must be true or added listener doesn't get removed
     document.removeEventListener('keydown', this.onKeyboardShortcut, true);
   },
 
-  getValue : function () {
-    var cell = this.props.cell;
-
-    var value = null;
-    if (cell.isMultiLanguage) {
-      if (cell.value[this.props.langtag]) {
-        value = cell.value[this.props.langtag];
-      } else {
-        // in this case we don't
-        // have a value for this language
-        value = "";
-      }
-    } else {
-      value = cell.value || "";
-    }
-
-    return value;
-  },
-
   render : function () {
-    var self = this;
-
     return (
         <div className={'cell-content editing'}>
-        <textarea className="input" name={this.inputName} defaultValue={this.getValue()}
+        <textarea className="input" name={this.getInputName()} defaultValue={this.props.defaultText}
                   ref="input" rows="4"></textarea>
-          <button className="add" onClick={self.openOverlay}><span className="fa fa-expand"></span></button>
+          <ExpandButton onTrigger={this.openOverlay}/>
         </div>
     );
   }
