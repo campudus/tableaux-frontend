@@ -32,7 +32,9 @@ var FoldersCollection = AmpersandCollection.extend({
         self.add(a, {merge : true});
       });
     });
-  }
+  },
+
+  comparator : "name"
 });
 
 module.exports = FoldersCollection;
