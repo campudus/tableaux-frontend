@@ -66,7 +66,7 @@ var Cell = React.createClass({
 
       //todo: switch language to langtag!!! Important LANGTAG
       case "link":
-        cellKind = <LinkCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        cellKind = <LinkCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}/>;
         break;
 
       case "attachment":

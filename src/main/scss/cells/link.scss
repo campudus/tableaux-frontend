@@ -1,0 +1,50 @@
+.cell {
+
+  //Overwrite editing styling because editing mode is with overlay
+  &.cell-link.editing .cell-content {
+    @include box-shadow(none);
+  }
+
+  //Label
+  & .link-label {
+    color: $color-primary-contrast-text;
+    background-color: $color-primary;
+    display: inline-block;
+    padding: 0 5px;
+    height: $space-height-link-delete-button;
+    line-height: $space-height-link-delete-button;
+    margin-right: 5px;
+    @include border-radius(3px);
+    text-decoration: none;
+    cursor: default;
+
+    &.editing {
+      display: inline-block;
+    }
+
+    &.delete {
+      padding-right: 0;
+
+      i {
+        display: inline-block;
+        padding: 0 5px;
+        height: $space-height-link-delete-button - 4px;
+        line-height: $space-height-link-delete-button - 4px;
+        vertical-align: top;
+        margin-top: 1px;
+        margin-right: 1px;
+        margin-left: 5px;
+        border: 1px solid $color-primary;
+        @include border-radius(3px);
+        cursor: pointer;
+
+        &:hover {
+          background-color: $color-primary-contrast-text;
+          color: $color-primary;
+        }
+      }
+    }
+
+  }
+
+}

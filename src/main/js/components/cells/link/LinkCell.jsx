@@ -1,93 +1,52 @@
 var React = require('react');
 var _ = require('lodash');
-
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var LinkOverlay = require('./LinkOverlay.jsx');
-var LinkEditCell = require('./LinkEditCell.jsx');
 var LinkLabelCell = require('./LinkLabelCell.jsx');
+var LinkEditCell = require('./LinkEditCell.jsx');
 
 var LinkCell = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired
+    langtag : React.PropTypes.string.isRequired,
+    selected : React.PropTypes.bool.isRequired
   },
 
   getInitialState : function () {
-    return {editing : {}};
-  },
-
-  editDone : function (e, idx) {
-    return function () {
-      var editMap = this.state.editing;
-      editMap[idx] = false;
-      this.setState({editing : editMap});
-    };
-  },
-
-  removeLink : function (idx) {
-    var cell = this.props.cell;
-    return function () {
-      var newValue = _.filter(cell.value, function (e, i) {
-        return i !== idx;
-      });
-      var editMap = this.state.editing;
-      editMap[idx] = false;
-      this.setState({editing : editMap});
-      Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
-          {newValue : newValue});
-    };
-  },
-
-  linkClick : function (e, idx) {
-    return function () {
-      var editMap = this.state.editing;
-      editMap[idx] = true;
-      this.setState({editing : editMap});
-    };
-  },
-
-  openOverlay : function () {
-    console.log("trigger openOverlay");
-    Dispatcher.trigger('openLinkOverlay', this.props.cell);
-  },
-
-  renderLinkValue : function () {
-    var self = this;
-
-    var cell = this.props.cell;
-    var language = this.props.langtag;
-
-    if (cell.value === null) {
-      return null;
-    }
-
-    return cell.value.map(function (e, i) {
-      if (self.state.editing[i]) {
-        return <LinkEditCell key={i}
-                             onBlur={self.editDone(e, i).bind(self)}
-                             onRemove={self.removeLink(i).bind(self)}
-                             element={e}
-                             cell={cell}
-                             language={language}/>;
-      } else {
-        return <LinkLabelCell key={i} click={self.linkClick(e, i).bind(self)} element={e} cell={cell}
-                              language={language}/>;
-      }
-    })
+    return null;
   },
 
   render : function () {
     var self = this;
 
-    var cell = this.props.cell;
+    if (self.props.selected) {
+      return <LinkEditCell cell={self.props.cell} langtag={self.props.langtag}></LinkEditCell>
+    } else {
+      var tooManyLinks = false;
+      var links = self.props.cell.value.map(function (element, id) {
 
-    return (
-        <div className={'cell-content link'}>
-          {this.renderLinkValue()}
-          <button className="add" onClick={self.openOverlay}>+</button>
-        </div>
-    );
+        //Limit to maximum 3 Links
+        if (id <= 2) {
+          return <LinkLabelCell key={id} linkElement={element} cell={self.props.cell} langtag={self.props.langtag}/>;
+        } else {
+          tooManyLinks = true;
+          return null;
+        }
+
+      }).filter(Boolean); //remove null and empty array values: http://stackoverflow.com/a/13798078
+
+      //More note ...
+      if (tooManyLinks) {
+        links.push(<span key={"more"} className="more">&hellip;</span>);
+      }
+      return (
+          <div className={'cell-content'}>
+            {links}
+          </div>
+      );
+
+    }
   }
 
 });

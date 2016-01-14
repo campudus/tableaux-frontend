@@ -1,5 +1,4 @@
-@import
-"compass/css3",
+@import "compass/css3",
 "compass/reset",
 "fontAwesome/font-awesome",
 "helper",
@@ -10,4 +9,6 @@
 "typo",
 "media",
 "table",
+"cells/cell.scss",
+"cells/link.scss",
 "overlay";

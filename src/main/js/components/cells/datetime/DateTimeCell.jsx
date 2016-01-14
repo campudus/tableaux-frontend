@@ -60,8 +60,8 @@ var DateTimeCell = React.createClass({
       },
 
       handleClickOutside : function (event) {
-        event.preventDefault();
-        event.stopPropagation();
+        /*event.preventDefault();
+         event.stopPropagation();*/
         console.log("dateTime clicked Outside");
         if (this.props.editing) {
           this.handleEditDone();

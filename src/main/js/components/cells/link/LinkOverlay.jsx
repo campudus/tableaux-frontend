@@ -11,6 +11,10 @@ var LinkOverlay = React.createClass({
     return {tableId : null, columnName : "", search : "", open : false, rowResults : {}, cell : null};
   },
 
+  componentDidMount : function () {
+    console.log("LinkOverlay did mount");
+  },
+
   componentWillMount : function () {
     Dispatcher.on('openLinkOverlay', this.openOverlay);
   },

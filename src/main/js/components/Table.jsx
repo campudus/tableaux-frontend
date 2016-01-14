@@ -65,7 +65,7 @@ var Table = React.createClass({
   },
 
   toggleCellSelection : function (params) {
-    console.log("toggleCellSelection: I want to select ", params.cell.column.getId(), " ", params.cell.rowId);
+    console.log("toggleCellSelection: Table wants to select ", params.cell.column.getId(), " ", params.cell.rowId);
     this.setState({
       selectedCell : params.cell,
       selectedCellEditing : false
@@ -79,7 +79,7 @@ var Table = React.createClass({
       return;
     }
 
-    var noEditingModeNeeded = params.cell.kind === "boolean";
+    var noEditingModeNeeded = (params.cell.kind === "boolean");
     if (!noEditingModeNeeded && params.cell.getId() === this.state.selectedCell.getId()) {
       this.setState({
         selectedCellEditing : !_.isUndefined(editVal) ? editVal : true

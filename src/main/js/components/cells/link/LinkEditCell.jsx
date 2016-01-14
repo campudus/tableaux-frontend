@@ -1,44 +1,76 @@
 var React = require('react');
-var OutsideClick = require('react-onclickoutside');
+var _ = require('lodash');
+var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var LinkLabelDeleteCell = require('./LinkLabelDeleteCell.jsx');
 
 var LinkEditCell = React.createClass({
 
-  mixins : [OutsideClick],
+      mixins : [KeyboardShortcutsMixin],
 
-  removeLink : function () {
-    console.log('remove link', this.props.element, 'in', this.props.cell);
-    this.props.onRemove();
-  },
+      propTypes : {
+        cell : React.PropTypes.object.isRequired,
+        langtag : React.PropTypes.string.isRequired
+      },
 
-  handleClickOutside : function (evt) {
-    this.props.onBlur();
-  },
+      componentDidMount : function () {
+        /*
+         * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
+         * stop propagation to the table key listener
+         */
+        document.addEventListener('keydown', this.onKeyboardShortcut, true);
+      },
 
-  renderSingleLanguage : function (value) {
-    return <span className="link-label" onClick={this.props.click}>{value}</span>;
-  },
+      componentWillUnmount : function () {
+        //parameter useCapture must be true or added listener doesn't get removed
+        document.removeEventListener('keydown', this.onKeyboardShortcut, true);
+      },
 
-  renderMultiLanguage : function (language, values) {
-    var value = values[language] || null;
-    return <span className="link-label" onClick={this.props.click}>{value}</span>;
-  },
+      getKeyboardShortcuts : function (event) {
+        var self = this;
+        return {
+          enter : function (event) {
+            //stop handling the Table events
+            event.stopPropagation();
+            event.preventDefault();
+            self.openOverlay();
+          }
+        };
+      },
 
-  render : function () {
-    var value = null;
-    if (this.props.cell.column.toColumn.multilanguage) {
-      value = this.renderMultiLanguage(this.props.language, this.props.element.value);
-    } else {
-      value = this.renderSingleLanguage(this.props.element.value)
-    }
+      removeLink : function (idx) {
+        var cell = this.props.cell;
+        var newValue = _.filter(cell.value, function (element, arrayIndex) {
+          return element.id !== idx;
+        });
+        Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
+            {newValue : newValue});
+      },
 
-    return (
-        <div className="link-label editing">
-        {value}
-        <button className="delete-link" onClick={this.removeLink}><i className="fa fa-trash"></i></button>
-      </div>
-    );
-  }
+      openOverlay : function () {
+        Dispatcher.trigger('toggleCellEditing', {
+          cell : this.props.cell
+        });
+        Dispatcher.trigger('openLinkOverlay', this.props.cell);
+      },
 
-});
+      render : function () {
+        var self = this;
+        var links = self.props.cell.value.map(function (element, arrayIndex) {
+          return <LinkLabelDeleteCell key={arrayIndex} id={element.id} linkElement={element} cell={self.props.cell}
+                                      langtag={self.props.langtag} onDelete={self.removeLink}/>;
+        });
+
+        links.push(<button key={"add-btn"} className="add" onClick={self.openOverlay}>+</button>);
+
+        return (
+            <div className={'cell-content'}>
+              {links}
+            </div>
+        );
+      }
+
+    })
+    ;
 
 module.exports = LinkEditCell;
