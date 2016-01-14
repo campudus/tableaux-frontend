@@ -125,6 +125,7 @@ var TableauxRouter = Router.extend({
     }
 
     this.folder.fetch({
+      data: { langtag: langtag },
       success : function () {
         self.renderPage(<FolderView folder={self.folder} langtag={langtag}/>);
       }

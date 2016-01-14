@@ -4,6 +4,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Subfolder = require('./Subfolder.jsx');
 var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
+var NewFolderAction = require('./NewFolderAction.jsx');
 var LanguageSwitcher = require('../header/LanguageSwitcher.jsx');
 var NavigationList = require('../header/NavigationList.jsx');
 var PageTitle = require('../header/PageTitle.jsx');
@@ -55,8 +56,9 @@ var Folder = React.createClass({
   },
 
   renderSubfolders : function () {
+    var self = this;
     var subfolder = this.props.folder.subfolders.map(function (folder, idx) {
-      return <li key={idx}><i className="icon fa fa-folder-open"></i><Subfolder key={idx} folder={folder}/></li>
+      return <li key={idx}><Subfolder key={idx} folder={folder} langtag={self.props.langtag}/></li>
     });
 
     return (
@@ -72,8 +74,8 @@ var Folder = React.createClass({
     var self = this;
 
     var files = this.props.folder.files.map(function (file) {
-      return <li key={file.uuid}><i className="icon fa fa-file"></i><File key={file.uuid} file={file}
-                                                                          langtag={self.props.langtag}/></li>;
+      return <li key={file.uuid}><File key={file.uuid} file={file}
+                                       langtag={self.props.langtag}/></li>;
     });
 
     return (
@@ -90,6 +92,8 @@ var Folder = React.createClass({
       <div id="media-wrapper">
 
         {this.renderCurrentFolder()}
+
+        <NewFolderAction parentFolder={this.props.folder}/>
 
         {this.renderSubfolders()}
 

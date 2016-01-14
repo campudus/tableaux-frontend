@@ -77,7 +77,7 @@ var File = React.createClass({
 
     return (
       <div key={'file' + this.props.file.uuid} className="file">
-        <a href={link}><span>{title}</span></a>
+        <a href={link}><i className="icon fa fa-file"></i><span>{title}</span></a>
         {deleteButton}
         {editButton}
         {editForm}

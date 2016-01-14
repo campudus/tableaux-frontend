@@ -47,12 +47,17 @@
   font-weight: bold;
   display: block;
 
+  &:nth-child(3) {
+    border-top: none;
+  }
+
   .media-switcher-menu {
 
   }
 
   li {
     padding: 1em;
+    min-height: 19px;
 
     &.active {
       background-color: $color-primary;
@@ -71,13 +76,23 @@
 
   .icon {
     margin-right: 1em;
+    width: 15px;
+    text-align: center;
+  }
+
+  .new_folder {
+    cursor: pointer;
+
+    &:hover {
+      color: $color-primary;
+    }
   }
 
   .subfolder {
 
   }
 
-  .file {
+  .file, .subfolder {
     display: inline;
 
     .button {
