@@ -1,6 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var _ = require('lodash');
+var App = require('ampersand-app');
 var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Columns = require('./columns/Columns.jsx');
@@ -32,7 +33,10 @@ var Table = React.createClass({
       windowHeight : window.innerHeight,
       scrolledHorizontal : 0,
       selectedCell : null,
-      selectedCellEditing : false
+      selectedCellEditing : false,
+      //needed for multilanguage cell selection
+      expandedRowIds : null, //Array
+      selectedCellExpandedRow : null
     }
   },
 
@@ -54,6 +58,7 @@ var Table = React.createClass({
     Dispatcher.on('toggleCellSelection', this.toggleCellSelection);
     Dispatcher.on('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.on('selectNextCell', this.setNextSelectedCell);
+    Dispatcher.on('toggleRowExpand', this.toggleRowExpand);
   },
 
   componentWillUnmount : function () {
@@ -61,14 +66,40 @@ var Table = React.createClass({
     Dispatcher.off('toggleCellSelection', this.toggleCellSelection);
     Dispatcher.off('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.off('selectNextCell', this.setNextSelectedCell);
+    Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
     document.removeEventListener('keydown', this.onKeyboardShortcut);
   },
 
+  toggleRowExpand : function (row) {
+    var toggleRowId = row.id;
+    var newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
+    var rowIdExists = false;
+
+    newExpandedRowIds.forEach(function (rowId, index) {
+      if (rowId === toggleRowId) {
+        //already expanded: remove to close expanding row
+        newExpandedRowIds.splice(index, 1);
+        rowIdExists = true;
+      }
+    });
+
+    // expand this row
+    if (!rowIdExists) {
+      newExpandedRowIds.push(toggleRowId);
+    }
+
+    this.setState({
+      expandedRowIds : newExpandedRowIds
+    });
+
+  },
+
   toggleCellSelection : function (params) {
-    console.log("toggleCellSelection: Table wants to select ", params.cell.column.getId(), " ", params.cell.rowId);
+    console.log("Table.toggleCellSelection: selecting:", params);
     this.setState({
       selectedCell : params.cell,
-      selectedCellEditing : false
+      selectedCellEditing : false,
+      selectedCellExpandedRow : params.langtag || null
     });
   },
 
@@ -97,68 +128,151 @@ var Table = React.createClass({
     var self = this;
     var row;
     var nextCellId;
-    var rowId = self.getCurrentSelectedRowId();
-    var columnId = self.getCurrentSelectedColumnId();
+    var rowCell = {
+      id : self.getCurrentSelectedRowId(),
+      selectedCellExpandedRow : this.props.langtag
+    };
+    var columnCell = {
+      id : self.getCurrentSelectedColumnId(),
+      selectedCellExpandedRow : this.props.langtag
+    };
+    var newSelectedCellExpandedRow; //Either row or column switch changes the selected language
 
     switch (direction) {
       case "left":
-        columnId = self.getPreviousColumnId(columnId);
+        columnCell = self.getPreviousColumn(self.getCurrentSelectedColumnId());
+        newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
         break;
 
       case "right":
-        columnId = self.getNextColumnId(columnId);
+        columnCell = self.getNextColumnCell(self.getCurrentSelectedColumnId());
+        newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
         break;
 
       case "up":
-        rowId = self.getPreviousRowId(rowId);
+        rowCell = self.getPreviousRow(self.getCurrentSelectedRowId());
+        newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
         break;
 
       case "down":
-        rowId = self.getNextRowId(rowId);
+        rowCell = self.getNextRowCell(self.getCurrentSelectedRowId());
+        newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
         break;
     }
 
-    row = self.props.table.rows.get(rowId);
-    nextCellId = 'cell-' + self.props.table.getId() + '-' + columnId + '-' + rowId;
-
+    row = self.props.table.rows.get(rowCell.id);
+    nextCellId = 'cell-' + self.props.table.getId() + '-' + columnCell.id + '-' + rowCell.id;
     if (row) {
       var nextCell = _.find(row.cells, 'id', nextCellId);
       if (nextCell) {
+        console.log("setState:", nextCell, " language ", newSelectedCellExpandedRow);
         self.setState({
-          selectedCell : nextCell
+          selectedCell : nextCell,
+          selectedCellExpandedRow : newSelectedCellExpandedRow
         });
       }
     }
 
   },
 
-  getNextRowId : function (currentRowId, getPrev) {
+  //returns the next row and the next language cell when expanded
+  getNextRowCell : function (currentRowId, getPrev) {
     var currentRow = this.props.table.rows.get(currentRowId);
     var indexCurrentRow = this.props.table.rows.indexOf(currentRow);
     var numberOfRows = this.props.table.rows.length;
+    var expandedRowIds = this.state.expandedRowIds;
+    var selectedCellExpandedRow = this.state.selectedCellExpandedRow;
+    var nextSelectedCellExpandedRow;
     var nextIndex = getPrev ? indexCurrentRow - 1 : indexCurrentRow + 1;
-    var nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
-    var nextRowId = this.props.table.rows.at(nextRowIndex).getId();
-    return nextRowId;
+    var nextRowIndex;
+    var nextRowId;
+    var jumpToNextRow = false;
+
+    //are there expanded rows and is current selection inside of expanded row block
+    if (expandedRowIds && expandedRowIds.length > 0 && expandedRowIds.indexOf(currentRowId) > -1) {
+      //get next (lower / upper) language position
+      var nextLangtagIndex = App.langtags.indexOf(selectedCellExpandedRow) + (getPrev ? -1 : 1);
+      //jump to new language inside expanded row - but just when cell is multilanguage
+      if (nextLangtagIndex >= 0 && nextLangtagIndex <= App.langtags.length - 1 && this.state.selectedCell.isMultiLanguage) {
+        //keep the row
+        nextIndex = indexCurrentRow;
+        //set new language
+        nextSelectedCellExpandedRow = App.langtags[nextLangtagIndex];
+      }
+      //jump from expanded row to next / or previous cell (completely new row)
+      else {
+        jumpToNextRow = true;
+      }
+    }
+    //current row is not expanded so jump to next row
+    else {
+      jumpToNextRow = true;
+    }
+
+    //Get the next row id
+    nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
+    nextRowId = this.props.table.rows.at(nextRowIndex).getId();
+
+    if (jumpToNextRow) {
+      //Next row is expanded
+      if (this.state.expandedRowIds && this.state.expandedRowIds.indexOf(nextRowId) > -1) {
+        //Multilanguage cell
+        if (this.state.selectedCell.isMultiLanguage) {
+          nextSelectedCellExpandedRow = getPrev ? App.langtags[App.langtags.length - 1] : App.langtags[0];
+        }
+        //Skip single language cell to next editable cell - by default the first language
+        else {
+          nextSelectedCellExpandedRow = App.langtags[0];
+        }
+      }
+      //Next row is closed row. Set default language
+      else {
+        nextSelectedCellExpandedRow = this.props.langtag;
+      }
+    }
+
+    return {
+      id : nextRowId,
+      selectedCellExpandedRow : nextSelectedCellExpandedRow
+    };
+
   },
 
-  getPreviousRowId : function (currentRowId) {
-    return this.getNextRowId(currentRowId, true);
-  },
+  getPreviousRow : function (currentRowId) {
+    return this.getNextRowCell(currentRowId, true);
+  }
+  ,
 
-  getNextColumnId : function (currenColumnId, getPrev) {
+  getNextColumnCell : function (currenColumnId, getPrev) {
+    var self = this;
     var currentColumn = this.props.table.columns.get(currenColumnId);
     var indexCurrentColumn = this.props.table.columns.indexOf(currentColumn);
     var numberOfColumns = this.props.table.columns.length;
     var nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
     var nextColumnIndex = Math.max(0, Math.min(nextIndex, numberOfColumns - 1));
-    var nextColumnId = this.props.table.columns.at(nextColumnIndex).getId();
-    return nextColumnId;
-  },
+    var nextColumn = this.props.table.columns.at(nextColumnIndex);
+    var nextColumnId = nextColumn.getId();
+    var currentSelectedRowId = this.state.selectedCell.rowId;
+    var newSelectedCellExpandedRow;
 
-  getPreviousColumnId : function (currenColumnId) {
-    return this.getNextColumnId(currenColumnId, true);
-  },
+    //Not Multilanguage and row is expanded so jump to top language
+    if (!nextColumn.multilanguage && this.state.expandedRowIds.indexOf(currentSelectedRowId) > -1) {
+      newSelectedCellExpandedRow = App.langtags[0];
+    } else {
+      newSelectedCellExpandedRow = self.state.selectedCellExpandedRow;
+    }
+
+    return {
+      id : nextColumnId,
+      selectedCellExpandedRow : newSelectedCellExpandedRow
+    };
+  }
+  ,
+
+  getPreviousColumn : function (currenColumnId) {
+    return this.getNextColumnCell(currenColumnId, true);
+  }
+  ,
 
   getKeyboardShortcuts : function () {
     var self = this;
@@ -259,7 +373,8 @@ var Table = React.createClass({
             <Columns ref="columns" columns={this.props.table.columns}/>
             <div ref="dataWrapper" className="data-wrapper" style={ this.tableDataHeight() }>
               <Rows rows={this.props.table.rows} langtag={this.props.langtag} selectedCell={this.state.selectedCell}
-                    selectedCellEditing={this.state.selectedCellEditing}/>
+                    selectedCellEditing={this.state.selectedCellEditing} expandedRowIds={this.state.expandedRowIds}
+                    selectedCellExpandedRow={this.state.selectedCellExpandedRow}/>
               <NewRow table={this.props.table} langtag={this.props.langtag}/>
             </div>
           </div>

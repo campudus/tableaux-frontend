@@ -41,7 +41,8 @@ var Cell = React.createClass({
 
       Dispatcher.trigger('toggleCellSelection', {
         cell : this.props.cell,
-        selected : this.props.selected
+        selected : this.props.selected,
+        langtag : this.props.langtag
       });
     }
 
@@ -90,7 +91,8 @@ var Cell = React.createClass({
         break;
 
       default:
-        cellKind = <TextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing} selected={this.props.selected}/>;
+        cellKind = <TextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
+                             selected={this.props.selected}/>;
         break;
     }
 

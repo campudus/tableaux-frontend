@@ -17,6 +17,7 @@
     @include border-radius(3px);
     text-decoration: none;
     cursor: default;
+    vertical-align: top;
 
     &.editing {
       display: inline-block;

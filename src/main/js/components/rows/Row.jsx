@@ -41,24 +41,19 @@ var Row = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     row : React.PropTypes.object.isRequired,
     selectedCell : React.PropTypes.object,
-    selectedCellEditing : React.PropTypes.bool
+    selectedCellEditing : React.PropTypes.bool,
+    expanded : React.PropTypes.bool.isRequired,
+    selectedCellExpandedRow : React.PropTypes.string
   },
 
   getInitialState : function () {
     return {
-      expanded : false,
       hover : false
     }
   },
 
   toggleExpand : function () {
-    this.setState({
-      expanded : !this.state.expanded
-    });
-  },
-
-  onRemove : function () {
-    this.props.row.destroy();
+    Dispatcher.trigger('toggleRowExpand', this.props.row);
   },
 
   onClickDelete : function () {
@@ -106,25 +101,25 @@ var Row = React.createClass({
     return <div key={idx} className={className}>—.—</div>;
   },
 
-  renderCells : function (langtag) {
+  renderCells : function (langtag, isRowSelected) {
     var self = this;
 
     return this.props.row.cells.map(function (cell, idx) {
 
+      //Check selected row for expanded multilanguage rows
+      var selectedRow = !!isRowSelected;
       //Is this cell currently selected
-      var selected = self.props.selectedCell ? cell.getId() === self.props.selectedCell.getId() : false;
-
+      var selected = self.props.selectedCell ? (cell.getId() === self.props.selectedCell.getId()) && selectedRow : false;
       //Is this cell in edit mode
       var editing = selected ? self.props.selectedCellEditing : false;
 
       // We want to see single-language value even if not expanded
-      if (!cell.isMultiLanguage && !self.state.expanded) {
-        // TODO we should render with default-language
+      if (!cell.isMultiLanguage && !self.props.expanded) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
       }
 
       // We don't want to repeat our self if expanded
-      if (!cell.isMultiLanguage && self.state.expanded) {
+      if (!cell.isMultiLanguage && self.props.expanded) {
         if (langtag === App.langtags[0]) {
           return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
         } else {
@@ -141,15 +136,25 @@ var Row = React.createClass({
 
   renderLanguageRow : function (langtag) {
 
-    var selected = this.props.selectedCell ? this.props.row.getId() === this.props.selectedCell.rowId : false;
-    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
+    var selected;
+    var className;
     var displayNone = {display : "none"};
     var display = {display : "inline"};
-
     var deleteButton = "";
+
+    //Is this (multilanguage) row selected
+    if (this.props.selectedCell && langtag === this.props.selectedCellExpandedRow) {
+      selected = this.props.row.getId() === this.props.selectedCell.rowId;
+    } else {
+      selected = false;
+    }
+
+    //Set row class optional with selected class
+    className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
+
     // Add delete button to default-language row
     // or to every not expanded row
-    if (langtag === App.langtags[0] || !this.state.expanded) {
+    if (langtag === App.langtags[0] || !this.props.expanded) {
       deleteButton = (
           <div className="delete-row" style={ this.state.hover ? display : displayNone }>
             <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
@@ -159,14 +164,10 @@ var Row = React.createClass({
 
     return (
         <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
-             key={this.props.row.getId() + "-" + langtag}
-             className={className}>
-
+             key={this.props.row.getId() + "-" + langtag} className={className}>
           {deleteButton}
-
           {this.renderLangtag(langtag)}
-
-          {this.renderCells(langtag)}
+          {this.renderCells(langtag, selected)}
         </div>
     );
   },
@@ -174,7 +175,7 @@ var Row = React.createClass({
   render : function () {
     var self = this;
 
-    if (this.state.expanded) {
+    if (this.props.expanded) {
       // render all language-rows for this row
       var rows = App.langtags.map(function (langtag) {
         return self.renderLanguageRow(langtag);
