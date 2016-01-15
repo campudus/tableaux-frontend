@@ -18,12 +18,14 @@ var Rows = React.createClass({
   },
 
   isRowExpanded : function (rowId) {
-    return (this.props.expandedRowIds && this.props.expandedRowIds.indexOf(rowId) > -1);
+    return (this.props.expandedRowIds && this.props.expandedRowIds.indexOf(rowId) > -1) || false;
   },
 
   render : function () {
+    
     var self = this;
     var rows = this.props.rows.map(function (row, idx) {
+      console.log("isRowExpanded", self.isRowExpanded(row.id));
       return <Row key={idx} row={row} selectedCell={self.props.selectedCell}
                   selectedCellEditing={self.props.selectedCellEditing}
                   selectedCellExpandedRow={self.props.selectedCellExpandedRow}
