@@ -59,6 +59,7 @@ var Table = React.createClass({
     Dispatcher.on('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.on('selectNextCell', this.setNextSelectedCell);
     Dispatcher.on('toggleRowExpand', this.toggleRowExpand);
+    Dispatcher.on('createRowOrSelectNext', this.createRowOrSelectNext);
   },
 
   componentWillUnmount : function () {
@@ -67,7 +68,23 @@ var Table = React.createClass({
     Dispatcher.off('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.off('selectNextCell', this.setNextSelectedCell);
     Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
+    Dispatcher.off('createRowOrSelectNext', this.createRowOrSelectNext);
     document.removeEventListener('keydown', this.onKeyboardShortcut);
+  },
+
+  createRowOrSelectNext : function () {
+    var self = this;
+    if (self.isLastRow()) {
+      Dispatcher.trigger('add-row:' + self.props.table.id, function (error) {
+        if (!error) {
+          self.setNextSelectedCell("down");
+        } else {
+          console.error("Error adding row: ", error);
+        }
+      });
+    } else {
+      self.setNextSelectedCell("down");
+    }
   },
 
   toggleRowExpand : function (row) {
@@ -165,7 +182,7 @@ var Table = React.createClass({
     if (row) {
       var nextCell = _.find(row.cells, 'id', nextCellId);
       if (nextCell) {
-        console.log("setState:", nextCell, " language ", newSelectedCellExpandedRow);
+        console.log("setNextSelectedCell setState:", nextCell, " language ", newSelectedCellExpandedRow);
         self.setState({
           selectedCell : nextCell,
           selectedCellExpandedRow : newSelectedCellExpandedRow
@@ -173,6 +190,17 @@ var Table = React.createClass({
       }
     }
 
+  },
+
+  isLastRow : function () {
+    var numberOfRows = this.props.table.rows.length;
+    var currentRowId = this.getCurrentSelectedRowId();
+    var lastRowId;
+    if (numberOfRows <= 0) {
+      return true;
+    }
+    lastRowId = this.props.table.rows.at(numberOfRows - 1).getId();
+    return (currentRowId === lastRowId);
   },
 
   //returns the next row and the next language cell when expanded
@@ -256,7 +284,7 @@ var Table = React.createClass({
     var newSelectedCellExpandedRow;
 
     //Not Multilanguage and row is expanded so jump to top language
-    if (!nextColumn.multilanguage && this.state.expandedRowIds.indexOf(currentSelectedRowId) > -1) {
+    if (!nextColumn.multilanguage && this.state.expandedRowIds && this.state.expandedRowIds.indexOf(currentSelectedRowId) > -1) {
       newSelectedCellExpandedRow = App.langtags[0];
     } else {
       newSelectedCellExpandedRow = self.state.selectedCellExpandedRow;
@@ -368,17 +396,17 @@ var Table = React.createClass({
 
   render : function () {
     return (
-        <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll}>
-          <div className="tableaux-table" ref="tableInner">
-            <Columns ref="columns" columns={this.props.table.columns}/>
-            <div ref="dataWrapper" className="data-wrapper" style={ this.tableDataHeight() }>
-              <Rows rows={this.props.table.rows} langtag={this.props.langtag} selectedCell={this.state.selectedCell}
-                    selectedCellEditing={this.state.selectedCellEditing} expandedRowIds={this.state.expandedRowIds}
-                    selectedCellExpandedRow={this.state.selectedCellExpandedRow}/>
-              <NewRow table={this.props.table} langtag={this.props.langtag}/>
-            </div>
+      <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll}>
+        <div className="tableaux-table" ref="tableInner">
+          <Columns ref="columns" columns={this.props.table.columns}/>
+          <div ref="dataWrapper" className="data-wrapper" style={ this.tableDataHeight() }>
+            <Rows rows={this.props.table.rows} langtag={this.props.langtag} selectedCell={this.state.selectedCell}
+                  selectedCellEditing={this.state.selectedCellEditing} expandedRowIds={this.state.expandedRowIds}
+                  selectedCellExpandedRow={this.state.selectedCellExpandedRow}/>
+            <NewRow table={this.props.table} langtag={this.props.langtag}/>
           </div>
-        </section>
+        </div>
+      </section>
     );
   }
 });

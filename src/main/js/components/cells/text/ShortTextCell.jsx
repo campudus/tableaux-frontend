@@ -4,7 +4,7 @@ var _ = require('lodash');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var ShortTextEditCell = require('./ShortTextEditCell.jsx');
 
-var TextCell = React.createClass({
+var ShortTextCell = React.createClass({
 
   displayName : 'ShortTextCell',
 
@@ -19,7 +19,6 @@ var TextCell = React.createClass({
   },
 
   handleLabelClick : function (event) {
-    console.log("ShortTextCell.handleLabelClick");
     event.preventDefault();
 
     Dispatcher.trigger('toggleCellEditing', {
@@ -75,4 +74,4 @@ var TextCell = React.createClass({
   }
 });
 
-module.exports = TextCell;
+module.exports = ShortTextCell;

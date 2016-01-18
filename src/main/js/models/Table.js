@@ -1,5 +1,4 @@
 var Model = require('ampersand-model');
-
 var Dispatcher = require('../dispatcher/Dispatcher');
 
 var Columns = require('./Columns');
@@ -20,21 +19,22 @@ var Table = Model.extend({
   initialize : function () {
     var self = this;
 
-    Dispatcher.on('add-row:' + this.getId(), function () {
+    Dispatcher.on('add-row:' + this.getId(), function (callbackFn) {
       var newRow = new Row({tableId : self.getId()});
 
       newRow.save({}, {
         success : function (savedRow) {
-          console.log('added new row!', arguments);
-
-          Dispatcher.trigger('added-row:' + self.getId());
-
-          self.rows.getOrFetch(savedRow.id);
+          self.rows.getOrFetch(savedRow.id, function (error) {
+            if (error) {
+              console.error("Error getOrFetch: ", error);
+            } else {
+              callbackFn(); // no error
+            }
+          });
         },
         error : function (err) {
           console.error('could not add new row!', err, arguments);
-
-          Dispatcher.trigger('added-row:' + self.getId());
+          callbackFn(err);
         }
       });
     });

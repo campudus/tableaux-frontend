@@ -4,7 +4,7 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 
-var TextEditCell = React.createClass({
+var ShortTextEditCell = React.createClass({
 
   mixins : [KeyboardShortcutsMixin, OutsideClick],
 
@@ -13,37 +13,6 @@ var TextEditCell = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     onBlur : React.PropTypes.func.isRequired
   },
-
-  getKeyboardShortcuts : function (event) {
-    var self = this;
-    return {
-      tab : function (event) {
-        self.doneEditing(event);
-        Dispatcher.trigger('selectNextCell', 'right');
-      },
-      enter : function (event) {
-        console.log("enter shortTextEdit");
-        //stop handling the Table events
-        event.stopPropagation();
-        self.doneEditing(event);
-        Dispatcher.trigger('selectNextCell', 'down');
-      }
-    };
-  },
-
-  handleClickOutside : function (event) {
-    this.doneEditing(event);
-  },
-
-  doneEditing : function (event) {
-    console.log("TextEditCell.doneEditing, event: ", event);
-    if (event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
-    this.props.onBlur(this.refs.input.value);
-  },
-
 
   componentDidMount : function () {
     /*
@@ -67,6 +36,36 @@ var TextEditCell = React.createClass({
     document.removeEventListener('keydown', this.onKeyboardShortcut, true);
   },
 
+  getKeyboardShortcuts : function (event) {
+    var self = this;
+    return {
+      tab : function (event) {
+        self.doneEditing(event);
+        Dispatcher.trigger('selectNextCell', 'right');
+      },
+      enter : function (event) {
+        //stop handling the Table events
+        event.stopPropagation();
+        self.doneEditing(event);
+        //An event just for ShortTextEditCell to create a new Row when last is editing
+        Dispatcher.trigger('createRowOrSelectNext');
+      }
+    };
+  },
+
+  handleClickOutside : function (event) {
+    this.doneEditing(event);
+  },
+
+  doneEditing : function (event) {
+    console.log("TextEditCell.doneEditing, event: ", event);
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.props.onBlur(this.refs.input.value);
+  },
+
   getValue : function () {
     var cell = this.props.cell;
 
@@ -88,12 +87,12 @@ var TextEditCell = React.createClass({
 
   render : function () {
     return (
-        <div className={'cell-content editing'}>
-          <input type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
-                 ref="input"></input>
-        </div>
+      <div className={'cell-content editing'}>
+        <input type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
+               ref="input"></input>
+      </div>
     );
   }
 });
 
-module.exports = TextEditCell;
+module.exports = ShortTextEditCell;

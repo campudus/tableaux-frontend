@@ -53,8 +53,7 @@ var Cell = React.createClass({
     var self = this;
     return {
       enter : function () {
-        console.log("CELL ENTER");
-
+        console.log("Cell.jsx enter");
       }
     };
   },

@@ -15,21 +15,14 @@ var NewRow = React.createClass({
   },
 
   addRow : function () {
-    Dispatcher.trigger('add-row:' + this.props.table.getId());
-
-    this.setState({loading : true});
-  },
-
-  addedRow : function () {
-    this.setState({loading : false})
-  },
-
-  componentWillMount : function () {
-    Dispatcher.on('added-row:' + this.props.table.getId(), this.addedRow);
-  },
-
-  componentWillUnmount : function () {
-    Dispatcher.off('added-row:' + this.props.table.getId(), this.addedRow);
+    var self = this;
+    self.setState({loading : true});
+    Dispatcher.trigger('add-row:' + this.props.table.getId(), function (error) {
+      if (error) {
+        console.error("callback from add-row with error", error);
+      }
+      self.setState({loading : false});
+    });
   },
 
   render : function () {
@@ -37,7 +30,6 @@ var NewRow = React.createClass({
     if (this.state.loading) {
       classes += ' loading';
     }
-
     return (
       <div className={classes} onClick={this.addRow}>
         <i className="fa fa-plus-circle">

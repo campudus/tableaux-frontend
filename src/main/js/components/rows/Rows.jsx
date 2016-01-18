@@ -25,7 +25,6 @@ var Rows = React.createClass({
 
     var self = this;
     var rows = this.props.rows.map(function (row, idx) {
-      console.log("isRowExpanded", self.isRowExpanded(row.id));
       return <Row key={idx} row={row} selectedCell={self.props.selectedCell}
                   selectedCellEditing={self.props.selectedCellEditing}
                   selectedCellExpandedRow={self.props.selectedCellExpandedRow}
