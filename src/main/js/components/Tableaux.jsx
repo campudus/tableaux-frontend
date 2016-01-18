@@ -21,6 +21,12 @@ var Tableaux = React.createClass({
     initialTableId : React.PropTypes.number.isRequired
   },
 
+  getInitialState : function () {
+    return {
+      activeOverlay : null
+    }
+  },
+
   switchTable : function (event) {
     console.log('Tableaux.switchTable', event);
     // refresh Tables collection
@@ -40,6 +46,13 @@ var Tableaux = React.createClass({
     return {currentTableId : this.props.initialTableId};
   },
 
+  renderActiveOverlay : function () {
+    if (this.state.activeOverlay) {
+
+    }
+  },
+
+  //TODO: Add overlays only when they are needed: Maybe with a state for each overlay
   render : function () {
     var self = this;
     var tables = this.props.tables;
@@ -54,22 +67,24 @@ var Tableaux = React.createClass({
       console.error("No table found with id " + this.state.currentTableId);
     }
 
+
     return (
-      <div>
-        <header>
-          <NavigationList langtag={this.props.langtag}/>
-          <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
-                      tables={tables}/>
-          <LanguageSwitcher langtag={this.props.langtag}/>
-          <PageTitle title="Tables"/>
-        </header>
-        <div className="wrapper">
-          {table}
+        <div>
+          <header>
+            <NavigationList langtag={this.props.langtag}/>
+            <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
+                        tables={tables}/>
+            <LanguageSwitcher langtag={this.props.langtag}/>
+            <PageTitle title="Tables"/>
+          </header>
+          <div className="wrapper">
+            {table}
+          </div>
+          {this.renderActiveOverlay()}
+          <LinkOverlay key="linkoverlay" language={this.props.langtag}/>
+          <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
+          <GenericOverlay key="genericoverlay" language={this.props.langtag}/>
         </div>
-        <LinkOverlay key="linkoverlay" language={this.props.langtag}/>
-        <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
-        <GenericOverlay key="genericoverlay" language={this.props.langtag}/>
-      </div>
     );
   }
 });

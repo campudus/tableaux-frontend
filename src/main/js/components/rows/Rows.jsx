@@ -22,7 +22,7 @@ var Rows = React.createClass({
   },
 
   render : function () {
-    
+
     var self = this;
     var rows = this.props.rows.map(function (row, idx) {
       console.log("isRowExpanded", self.isRowExpanded(row.id));
