@@ -5,6 +5,7 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextEditCell = require('./TextEditCell.jsx');
 var TextArea = require('./TextArea.jsx');
 var ExpandButton = require('./ExpandButton.jsx');
+var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 
 var TextCell = React.createClass({
 
@@ -48,25 +49,24 @@ var TextCell = React.createClass({
     event.stopPropagation();
     event.preventDefault();
 
-    /*
-     TODO Refactor:
-     Head react component
-     body react component with langtag, cell, etc.. Body is responsible for content creation
-     Overlay just has head, body, "normal"
-     */
-    Dispatcher.trigger("openGenericOverlay", {
-      head : this.props.cell.column.name,
-      body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>
-    }, "normal", self.props.cell, this.props.langtag);
+    console.log("trigger overlay");
+    Dispatcher.trigger("open-overlay", {
+      head : <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
+      body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
+      type : "normal"
+    });
+
   },
 
   closeOverlay : function (event) {
-    Dispatcher.trigger("closeGenericOverlay");
+    event.preventDefault();
+    event.stopPropagation();
+    Dispatcher.trigger("close-overlay");
   },
 
   saveOverlay : function (content, event) {
-    this.closeOverlay(event);
     this.handleEditDone(content);
+    this.closeOverlay(event);
   },
 
   getValue : function () {
@@ -91,12 +91,12 @@ var TextCell = React.createClass({
     }
 
     return (
-        <div onClick={this.handleLabelClick}>
+      <div onClick={this.handleLabelClick}>
         <span className='cell-content'>
           {value === null ? "" : value}
           {expandButton}
         </span>
-        </div>
+      </div>
     );
   },
 

@@ -63,7 +63,6 @@ var TextEditCell = React.createClass({
      */
     document.addEventListener('keydown', this.onKeyboardShortcut, true);
     var node = this.refs.input;
-    node.focus();
     var text = node.value;
     // Sets cursor to end of input field
     node.value = ""; //textarea must be empty first to jump to end of text
@@ -77,11 +76,11 @@ var TextEditCell = React.createClass({
 
   render : function () {
     return (
-        <div className={'cell-content editing'}>
-        <textarea className="input" name={this.getInputName()} defaultValue={this.props.defaultText}
+      <div className={'cell-content editing'}>
+        <textarea autoFocus className="input" name={this.getInputName()} defaultValue={this.props.defaultText}
                   ref="input" rows="4"></textarea>
-          <ExpandButton onTrigger={this.openOverlay}/>
-        </div>
+        <ExpandButton onTrigger={this.openOverlay}/>
+      </div>
     );
   }
 });

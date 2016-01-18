@@ -23,32 +23,56 @@ var Tableaux = React.createClass({
 
   getInitialState : function () {
     return {
-      activeOverlay : null
+      activeOverlay : null //holds null or { head:{}, body:{}, type:""}
     }
   },
 
   switchTable : function (event) {
+    var self = this;
     console.log('Tableaux.switchTable', event);
     // refresh Tables collection
-    this.props.tables.fetch();
-    this.setState({currentTableId : event.id});
+    this.props.tables.fetch({
+      success : function (collection, response, options) {
+        self.setState({currentTableId : event.id});
+      },
+      error : function (collection, response, options) {
+        console.error("Error fetching Table in switchTable");
+      }
+    });
   },
 
   componentWillMount : function () {
     Dispatcher.on('switch-table', this.switchTable);
+    Dispatcher.on('open-overlay', this.openOverlay);
+    Dispatcher.on('close-overlay', this.closeOverlay);
   },
 
   componentWillUnmount : function () {
     Dispatcher.off('switch-table', this.switchTable);
+    Dispatcher.off('open-overlay', this.openOverlay);
+    Dispatcher.off('close-overlay', this.closeOverlay);
   },
 
   getInitialState : function () {
     return {currentTableId : this.props.initialTableId};
   },
 
-  renderActiveOverlay : function () {
-    if (this.state.activeOverlay) {
+  openOverlay : function (content) {
+    this.setState({activeOverlay : content});
+  },
 
+  closeOverlay : function () {
+    this.setState({activeOverlay : null});
+  },
+
+  renderActiveOverlay : function () {
+    var overlay = this.state.activeOverlay;
+    if (overlay) {
+      return (<GenericOverlay key="genericoverlay"
+                              head={overlay.head}
+                              body={overlay.body}
+                              type={overlay.type}
+      />);
     }
   },
 
@@ -67,26 +91,26 @@ var Tableaux = React.createClass({
       console.error("No table found with id " + this.state.currentTableId);
     }
 
-
     return (
-        <div>
-          <header>
-            <NavigationList langtag={this.props.langtag}/>
-            <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
-                        tables={tables}/>
-            <LanguageSwitcher langtag={this.props.langtag}/>
-            <PageTitle title="Tables"/>
-          </header>
-          <div className="wrapper">
-            {table}
-          </div>
-          {this.renderActiveOverlay()}
-          <LinkOverlay key="linkoverlay" language={this.props.langtag}/>
-          <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
-          <GenericOverlay key="genericoverlay" language={this.props.langtag}/>
+      <div>
+        <header>
+          <NavigationList langtag={this.props.langtag}/>
+          <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
+                      tables={tables}/>
+          <LanguageSwitcher langtag={this.props.langtag}/>
+          <PageTitle title="Tables"/>
+        </header>
+        <div className="wrapper">
+          {table}
         </div>
+        {this.renderActiveOverlay()}
+      </div>
     );
   }
 });
+
+/*<LinkOverlay key="linkoverlay" language={this.props.langtag}/>
+ <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
+ <GenericOverlay key="genericoverlay" language={this.props.langtag}/>*/
 
 module.exports = Tableaux;

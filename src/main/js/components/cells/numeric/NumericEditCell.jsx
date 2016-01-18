@@ -68,7 +68,6 @@ var NumericEditCell = React.createClass({
      */
     document.addEventListener('keydown', this.onKeyboardShortcut, true);
     var node = this.refs.input;
-    node.focus();
     // Sets cursor to end of input field
     node.value = node.value;
   },
@@ -108,9 +107,10 @@ var NumericEditCell = React.createClass({
     var cell = this.props.cell;
 
     return (
-        <div className={'cell-content editing'}>
-          <input type="number" className="input" name={this.inputName} defaultValue={this.getValue()} ref="input"/>
-        </div>
+      <div className={'cell-content editing'}>
+        <input autoFocus type="number" className="input" name={this.inputName} defaultValue={this.getValue()}
+               ref="input"/>
+      </div>
     );
   }
 });

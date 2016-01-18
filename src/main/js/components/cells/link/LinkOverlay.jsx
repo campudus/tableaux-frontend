@@ -1,7 +1,7 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
-var RowName = require('../../overlay/RowName.jsx');
+var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 
 var LinkOverlay = React.createClass({
@@ -128,55 +128,56 @@ var LinkOverlay = React.createClass({
       document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
       listItems = (
-          <ul>
-            {this.state.rowResults.map(function (row) {
+        <ul>
+          {this.state.rowResults.map(function (row) {
 
-                var currentCellValue = self.cell.value;
+            var currentCellValue = self.cell.value;
 
-                var linked = _.find(currentCellValue, function (link) {
-                    return link.id === row.id;
-                    });
+            var linked = _.find(currentCellValue, function (link) {
+              return link.id === row.id;
+              });
 
-                var isLinked = linked ? true : false;
+            var isLinked = linked ? true : false;
 
-                // TODO column id != value position in array
-                var value = row.values[self.toColumn.id - 1];
+            // TODO column id != value position in array
+            var value = row.values[self.toColumn.id - 1];
 
-                if (self.toColumn.multilanguage) {
-                    value = value[self.props.language] || null;
-                    }
+            if (self.toColumn.multilanguage) {
+              value = value[self.props.language] || null;
+              }
 
-                if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
-                    // TODO kinda hack
-                    return "";
-                    }
+            if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
+              // TODO kinda hack
+              return "";
+              }
 
-                return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                           onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
-                })}
-          </ul>
+            return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                       onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
+            })}
+        </ul>
       );
     }
 
     return (
-        <div id="overlay" className="open">
-          <div id="overlay-wrapper">
-            <h2>{this.state.columnName} <RowName cell={this.state.cell} langtag={this.props.language}/>
-            </h2>
+      <div id="overlay" className="open">
+        <div id="overlay-wrapper">
+          <h2>{this.state.columnName} <OverlayHeadRowIdentificator cell={this.state.cell}
+                                                                   langtag={this.props.language}/>
+          </h2>
 
-            <div className="content-scroll">
-              <div id="overlay-content">
-                <div className="search-input-wrapper">
-                  <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                         defaultValue={this.state.search} ref="search"/>
-                  <i className="fa fa-search"></i>
-                </div>
-                {listItems}
+          <div className="content-scroll">
+            <div id="overlay-content">
+              <div className="search-input-wrapper">
+                <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                       defaultValue={this.state.search} ref="search"/>
+                <i className="fa fa-search"></i>
               </div>
+              {listItems}
             </div>
           </div>
-          <div onClick={this.closeOverlay} className="background"></div>
         </div>
+        <div onClick={this.closeOverlay} className="background"></div>
+      </div>
     );
   },
 

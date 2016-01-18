@@ -1,7 +1,7 @@
 var React = require('react');
 var Cell = require('../../models/Cell');
 
-var RowName = React.createClass({
+var OverlayHeadRowIdentificator = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object,
@@ -77,4 +77,4 @@ var RowName = React.createClass({
 
 });
 
-module.exports = RowName;
+module.exports = OverlayHeadRowIdentificator;

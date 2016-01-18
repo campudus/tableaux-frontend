@@ -39,7 +39,7 @@ var TableSwitcher = React.createClass({
   },
 
   componentDidMount : function () {
-    ReactDOM.findDOMNode(this.refs.search).focus();
+
   },
 
   handleClick : function (entry) {
@@ -78,7 +78,7 @@ var TableSwitcher = React.createClass({
     return (
       <div id="table-list-wrapper">
         <div className="search-input-wrapper">
-          <input type="text" className="search-input" placeholder="Search Table..."
+          <input autoFocus type="text" className="search-input" placeholder="Search Table..."
                  onChange={this.onSearch} defaultValue={this.state.search} ref="search"/>
           <i className="fa fa-search"></i>
         </div>

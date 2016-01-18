@@ -21,7 +21,6 @@ var ShortTextEditCell = React.createClass({
      */
     document.addEventListener('keydown', this.onKeyboardShortcut, true);
     var node = this.refs.input;
-    node.focus();
     // Sets cursor to end of input field
     node.value = node.value;
   },
@@ -88,7 +87,7 @@ var ShortTextEditCell = React.createClass({
   render : function () {
     return (
       <div className={'cell-content editing'}>
-        <input type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
+        <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
                ref="input"></input>
       </div>
     );

@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var TinyMCE = require('react-tinymce');
 
 var TextArea = React.createClass({
@@ -19,8 +20,16 @@ var TextArea = React.createClass({
     }
   },
 
+  componentDidMount : function () {
+    var inputArea = this.refs.inputArea;
+    var text = inputArea.value;
+    // Sets cursor to end of input field
+    inputArea.value = ""; //textarea must be empty first to jump to end of text
+    inputArea.value = text;
+  },
+
   getContent : function (event) {
-    return this.state.richEditor ? event.target.getContent() : this.refs.input.value
+    return this.state.richEditor ? event.target.getContent() : this.refs.inputArea.value
   },
 
   _onClose : function (event) {
@@ -58,7 +67,7 @@ var TextArea = React.createClass({
         content={content}
         config={config}
         onChange={this._onChange}
-        />
+      />
     );
   },
 
@@ -73,7 +82,7 @@ var TextArea = React.createClass({
       editor = this.renderRichEditor(this.content);
     } else {
       editor = (
-        <textarea className="input" type="text" defaultValue={this.content} ref="input"
+        <textarea autoFocus className="input" type="text" defaultValue={this.content} ref="inputArea"
                   onChange={this._onChange}></textarea>
       )
     }

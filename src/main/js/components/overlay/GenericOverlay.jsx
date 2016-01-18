@@ -1,119 +1,78 @@
 var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var _ = require('lodash');
-var RowName = require('./RowName.jsx');
+var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 
 var GenericOverlay = React.createClass({
-  mixins : [AmpersandMixin],
 
-  getInitialState : function () {
-    return {open : false, content : {}, type : "normal", cell : null, langtag : ""};
+  propTypes : {
+    body : React.PropTypes.element.isRequired,
+    head : React.PropTypes.element,
+    type : React.PropTypes.string
   },
 
+  allowedTypes : ["flexible", "normal"],
+
   componentWillMount : function () {
-    Dispatcher.on('openGenericOverlay', this.openOverlay);
-    Dispatcher.on('closeGenericOverlay', this.closeOverlay);
+
+  },
+
+  componentDidMount : function () {
+    //TODO: Focus Textarea when mounted
+    console.log("genericOverlay mounted. ", this.props.type);
+    document.getElementsByTagName("body")[0].style.overflow = "hidden";
+    document.addEventListener('keydown', this.onKeyboardShortcut, true);
+    //document.addEventListener('click', this.onMouseClick, true);
+    document.addEventListener('mousedown', this.onMouseClick, true);
+
+    //http://stackoverflow.com/questions/2520650/how-do-you-clear-the-focus-in-javascript
+    //if (document.activeElement != document.body) document.activeElement.blur();
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('openGenericOverlay');
-    Dispatcher.off('closeGenericOverlay');
+    //Overlay is going to be closed
+    document.getElementsByTagName("body")[0].style.overflow = "auto";
+    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
+    //document.removeEventListener('click', this.onMouseClick, true);
+    document.removeEventListener('mousedown', this.onMouseClick, true);
   },
 
-  openOverlay : function (content, type, cell, langtag) {
-    console.log("openOverlay:", cell);
-    var _type = "normal";
-    if (typeof type !== 'undefined') {
-      _type = type
+  onMouseClick : function (event) {
+    //disable any mouse events from the table
+    event.stopPropagation();
+  },
+
+  onKeyboardShortcut : function (event) {
+    event.stopPropagation();
+    //Prevents from tabbing around while overlay is open
+    if (!ReactDOM.findDOMNode(this).contains(document.activeElement)) {
+      console.log("focus is outside");
+      event.preventDefault();
     }
 
-    if (!cell) {
-      cell = null;
-    }
-
-    if (!langtag) {
-      langtag = null;
-    }
-
-    console.log("setting:", cell);
-
-    this.setState({
-      open : true,
-      content : content,
-      type : _type,
-      cell : cell,
-      langtag : langtag
-    });
-  },
-
-  closeOverlay : function () {
-    this.stopListening();
-
-    this.setState(this.getInitialState());
-  },
-
-  renderNormal : function () {
-    var body = (
-        <div id="overlay-wrapper">
-          <h2>{this.state.content.head} <RowName cell={this.state.cell} langtag={this.state.langtag}/></h2>
-
-          <div className="content-scroll">
-            <div id="overlay-content">
-              {this.state.content.body}
-            </div>
-          </div>
-        </div>
-    );
-
-    return (
-        <div id="overlay" className="normal open">
-          {body}
-
-          <div onClick={this.closeOverlay} className="background"></div>
-        </div>
-    );
-  },
-
-  renderFlexible : function () {
-    var body = (
-        <div id="overlay-wrapper">
-          <h2>{this.state.content.head} <RowName cell={this.state.cell} langtag={this.state.langtag}/></h2>
-
-          <div className="content-scroll">
-            <div id="overlay-content">
-              {this.state.content.body}
-            </div>
-          </div>
-        </div>
-    );
-
-    return (
-        <div id="overlay" className="flexible open">
-          {body}
-
-          <div onClick={this.closeOverlay} className="background"></div>
-        </div>
-    );
   },
 
   render : function () {
-    if (!this.state.open) {
-      document.getElementsByTagName("body")[0].style.overflow = "auto";
-      return <div id="overlay" className="closed"/>;
+    var overlayType = this.props.type || "normal"; //default to normal
+    var overlayWrapperClass = "open " + overlayType;
+
+    if (this.allowedTypes.indexOf(overlayType) === -1) {
+      console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");
+      return null;
     }
 
-    // TODO works but isn't nice
-    document.getElementsByTagName("body")[0].style.overflow = "hidden";
-
-    switch (this.state.type) {
-      case "normal":
-        return this.renderNormal();
-      case "flexible":
-        return this.renderFlexible();
-      default:
-        throw "GenericOverlay type is not valid!";
-    }
+    return (
+      <div id="overlay" className={overlayWrapperClass}>
+        <div id="overlay-wrapper">
+          <h2>{this.props.head}</h2>
+          <div className="content-scroll">
+            <div id="overlay-content">
+              {this.props.body}
+            </div>
+          </div>
+        </div>
+        <div onClick={this.closeOverlay} className="background"></div>
+      </div>
+    );
   }
 });
 
