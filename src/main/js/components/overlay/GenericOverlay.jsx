@@ -1,8 +1,11 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
+var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 
 var GenericOverlay = React.createClass({
+
+  mixins : [KeyboardShortcutsMixin],
 
   propTypes : {
     body : React.PropTypes.element.isRequired,
@@ -12,22 +15,18 @@ var GenericOverlay = React.createClass({
 
   allowedTypes : ["flexible", "normal"],
 
-  componentWillMount : function () {
-
-  },
-
   componentDidMount : function () {
     //TODO: Focus Textarea when mounted
     console.log("genericOverlay mounted. ", this.props.type);
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
-    document.addEventListener('keydown', this.overlayKeyboardHandler, true);
+    document.addEventListener('keydown', this.onKeyboardShortcut, true);
     document.addEventListener('mousedown', this.onMouseClick, true);
   },
 
   componentWillUnmount : function () {
     //Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    document.removeEventListener('keydown', this.overlayKeyboardHandler, true);
+    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
     document.removeEventListener('mousedown', this.onMouseClick, true);
   },
 
@@ -36,26 +35,30 @@ var GenericOverlay = React.createClass({
     event.stopPropagation();
   },
 
-  overlayKeyboardHandler : function (event) {
 
-    //Prevents any underlying handlers
-    event.stopPropagation();
+  getKeyboardShortcuts : function (event) {
+    var self = this;
+    return {
+      escape : function (event) {
+        event.preventDefault();
+        Dispatcher.trigger("close-overlay");
+      },
 
-    //Escape: Close Overlay
-    if (event.keyCode === 27) {
-      Dispatcher.trigger("close-overlay");
-      event.preventDefault();
-      return;
-    }
+      always : function (event, shortcutFound) {
+        console.log("in always. ShortcutFound: ", shortcutFound);
+        //Prevents any underlying handlers
+        event.stopPropagation();
+        //Prevents from tabbing around underneath the overlay while overlay is open
+        if (!shortcutFound && !ReactDOM.findDOMNode(self).contains(document.activeElement)) {
 
-    //Prevents from tabbing around while overlay is open
-    if (!ReactDOM.findDOMNode(this).contains(document.activeElement)) {
-      console.log("focus is outside");
-      event.preventDefault();
-    }
+          //TODO should clear the activeElement
 
+          console.log("focus is outside");
+          event.preventDefault();
+        }
+      }
+    };
   },
-
 
   render : function () {
     var overlayType = this.props.type || "normal"; //default to normal

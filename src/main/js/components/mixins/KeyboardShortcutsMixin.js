@@ -21,8 +21,8 @@ var KEYS = {
   control : 17,
   command : 91,
   tab : 9
-  //text
-  //use text key handler for any letter or number
+  //text : use text key handler for any letter or number
+  //always: Bound function gets called on every keyCode. Passes boolean variable shortcutFound
 };
 
 var KeyboardShortcutsMixin = {
@@ -50,9 +50,10 @@ var KeyboardShortcutsMixin = {
     //no shortcut found - check for general letters and call 'text' listener
     if (!shortcutFound && shortcuts.text && isText(event.keyCode)) {
       shortcuts.text(event);
-    } else if (!shortcutFound) {
-      shortcuts.rest(event);
     }
+
+    //Gets called on every keyCode
+    shortcuts.always(event, shortcutFound);
   }
 };
 
