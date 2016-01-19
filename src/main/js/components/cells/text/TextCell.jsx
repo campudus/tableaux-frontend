@@ -53,7 +53,8 @@ var TextCell = React.createClass({
     Dispatcher.trigger("open-overlay", {
       head : <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
       body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
-      type : "normal"
+      type : "normal",
+      closeOnBackgroundClicked : false
     });
 
   },

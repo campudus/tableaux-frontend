@@ -53,7 +53,9 @@ var KeyboardShortcutsMixin = {
     }
 
     //Gets called on every keyCode
-    shortcuts.always(event, shortcutFound);
+    if (shortcuts.always) {
+      shortcuts.always(event, shortcutFound);
+    }
   }
 };
 

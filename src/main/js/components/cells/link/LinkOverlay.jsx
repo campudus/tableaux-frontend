@@ -8,37 +8,44 @@ var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
 
   getInitialState : function () {
-    return {tableId : null, columnName : "", search : "", open : false, rowResults : {}, cell : null};
+    return {
+      search : "",
+      rowResults : {},
+    };
+  },
+
+  propTypes : {
+    cell : React.PropTypes.object,
+    langtag : React.PropTypes.string.isRequired,
+    tableId : React.PropTypes.number
   },
 
   componentDidMount : function () {
-    console.log("LinkOverlay did mount");
+    //TODO: Get rows of the linked table: Maybe in componentWillMount
   },
 
   componentWillMount : function () {
-    Dispatcher.on('openLinkOverlay', this.openOverlay);
+
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('openLinkOverlay', this.openOverlay);
+
   },
 
   onSearch : function (event) {
     console.log("LinkOverlay.onSearch");
-
     var search = this.refs.search.value;
-
     this.setState({
       search : search
     });
   },
 
   addLinkValue : function (isLinked, row) {
-    var cell = this.cell;
+    var cell = this.props.cell;
     var link = {
       id : row.id,
       // TODO id != position
-      value : row.values[this.toColumn.id - 1]
+      value : row.values[cell.column.toColumn.id - 1]
     };
 
     return function () {
@@ -57,25 +64,12 @@ var LinkOverlay = React.createClass({
     };
   },
 
-  openOverlay : function (cell) {
+  openOverlay : function () {
     var self = this;
-    self.setState({cell : cell});
+    var toColumn = this.props.cell.column.toColumn;
+    var toTable = this.props.cell.column.toTable;
 
-    console.log("overlay starting: ", cell);
-
-    if (cell.column.kind !== "link") {
-      console.error("Couldn't open LinkOverlay for this column type.");
-      return;
-    }
-
-    this.toColumn = cell.column.toColumn;
-    this.cell = cell;
-
-    // listen for changes on this model
-    this.watch(this.cell, {reRender : false});
-    var toTable = cell.column.toTable;
-
-    cell.fetch({
+    this.props.cell.fetch({
       success : function (model, response, options) {
 
         cell.tables.getOrFetch(toTable, function (err, table) {
@@ -114,8 +108,7 @@ var LinkOverlay = React.createClass({
   },
 
   closeOverlay : function () {
-    this.stopListening();
-    this.setState(this.getInitialState());
+    Dispatcher.trigger('close-overlay');
   },
 
   renderOverlay : function () {
@@ -124,9 +117,6 @@ var LinkOverlay = React.createClass({
 
     //check for empty obj or map fails
     if (!_.isEmpty(this.state.rowResults)) {
-      // TODO works but isn't nice
-      document.getElementsByTagName("body")[0].style.overflow = "hidden";
-
       listItems = (
         <ul>
           {this.state.rowResults.map(function (row) {
@@ -156,40 +146,23 @@ var LinkOverlay = React.createClass({
             })}
         </ul>
       );
+    } else {
+      listItems = "No Rows";
     }
 
     return (
-      <div id="overlay" className="open">
-        <div id="overlay-wrapper">
-          <h2>{this.state.columnName} <OverlayHeadRowIdentificator cell={this.state.cell}
-                                                                   langtag={this.props.language}/>
-          </h2>
-
-          <div className="content-scroll">
-            <div id="overlay-content">
-              <div className="search-input-wrapper">
-                <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                       defaultValue={this.state.search} ref="search"/>
-                <i className="fa fa-search"></i>
-              </div>
-              {listItems}
-            </div>
-          </div>
+      <div>
+        <div className="search-input-wrapper">
+          <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                 defaultValue={this.state.search} ref="search"/>
+          <i className="fa fa-search"></i>
         </div>
-        <div onClick={this.closeOverlay} className="background"></div>
+        {listItems}
       </div>
     );
   },
 
   render : function () {
-    if (!this.state.open) {
-      document.getElementsByTagName("body")[0].style.overflow = "auto";
-      return <div id="overlay" className="closed"/>;
-    }
-
-    // TODO works but isn't nice
-    document.getElementsByTagName("body")[0].style.overflow = "hidden";
-
     return this.renderOverlay();
   }
 

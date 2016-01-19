@@ -10,7 +10,14 @@ var GenericOverlay = React.createClass({
   propTypes : {
     body : React.PropTypes.element.isRequired,
     head : React.PropTypes.element,
-    type : React.PropTypes.string
+    type : React.PropTypes.string,
+    closeOnBackgroundClicked : React.PropTypes.bool
+  },
+
+  getDefaultProps : function () {
+    return {
+      closeOnBackgroundClicked : true
+    };
   },
 
   allowedTypes : ["flexible", "normal"],
@@ -33,6 +40,10 @@ var GenericOverlay = React.createClass({
   onMouseClick : function (event) {
     //disable any mouse events from the table
     event.stopPropagation();
+
+    if (this.props.closeOnBackgroundClicked && (event.target === this.refs.overlayBackground)) {
+      Dispatcher.trigger("close-overlay");
+    }
   },
 
 
@@ -50,9 +61,7 @@ var GenericOverlay = React.createClass({
         event.stopPropagation();
         //Prevents from tabbing around underneath the overlay while overlay is open
         if (!shortcutFound && !ReactDOM.findDOMNode(self).contains(document.activeElement)) {
-
           //TODO should clear the activeElement
-
           console.log("focus is outside");
           event.preventDefault();
         }
@@ -79,7 +88,7 @@ var GenericOverlay = React.createClass({
             </div>
           </div>
         </div>
-        <div onClick={this.closeOverlay} className="background"></div>
+        <div ref="overlayBackground" onClick={this.closeOverlay} className="background"></div>
       </div>
     );
   }

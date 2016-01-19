@@ -26,11 +26,11 @@ var OverlayHeadRowIdentificator = React.createClass({
     var currentRowId = cell.rowId;
     var currentColumn = cell.tables.get(currentTableId).columns.at(0);
 
-    console.log("currentRow is: ", currentRowId);
-    console.log("currentTabel is:", currentTableId);
-    console.log("cell is:", cell);
-    console.log("tables are:", cell.tables);
-    console.log("column:", currentColumn);
+    console.log("currentRow: ", currentRowId);
+    console.log("currentTabel:", currentTableId);
+    console.log("cell:", cell);
+    console.log("tables:", cell.tables);
+    console.log("currentColumn:", currentColumn);
 
     var masterCell = new Cell({
       rowId : currentRowId,
@@ -66,9 +66,16 @@ var OverlayHeadRowIdentificator = React.createClass({
 
   render : function () {
 
+    var rowIdentification = null;
+    if (this.state.rowName !== "") {
+      rowIdentification = <span className="row-identification-value">: {this.state.rowName}</span>;
+    }
+
     if (this.props.cell != null) {
       return (
-          <span>{this.state.rowName !== "" ? "(" + this.state.rowName + ")" : "" }</span>
+        <span>
+            <span className="column-name">{this.props.cell.column.name}{rowIdentification}</span>
+          </span>
       );
     } else {
       return null;

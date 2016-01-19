@@ -72,6 +72,7 @@ var Tableaux = React.createClass({
                               head={overlay.head}
                               body={overlay.body}
                               type={overlay.type}
+                              closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
       />);
     }
   },
@@ -108,9 +109,5 @@ var Tableaux = React.createClass({
     );
   }
 });
-
-/*<LinkOverlay key="linkoverlay" language={this.props.langtag}/>
- <MediaOverlay key="mediaoverlay" language={this.props.langtag}/>
- <GenericOverlay key="genericoverlay" language={this.props.langtag}/>*/
 
 module.exports = Tableaux;
