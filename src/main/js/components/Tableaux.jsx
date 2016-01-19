@@ -23,7 +23,8 @@ var Tableaux = React.createClass({
 
   getInitialState : function () {
     return {
-      activeOverlay : null //holds null or { head:{}, body:{}, type:""}
+      activeOverlay : null, //holds null or { head:{}, body:{}, type:""}
+      currentTableId : this.props.initialTableId
     }
   },
 
@@ -51,10 +52,6 @@ var Tableaux = React.createClass({
     Dispatcher.off('switch-table', this.switchTable);
     Dispatcher.off('open-overlay', this.openOverlay);
     Dispatcher.off('close-overlay', this.closeOverlay);
-  },
-
-  getInitialState : function () {
-    return {currentTableId : this.props.initialTableId};
   },
 
   openOverlay : function (content) {
