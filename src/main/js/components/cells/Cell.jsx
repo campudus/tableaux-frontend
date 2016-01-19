@@ -9,10 +9,10 @@ var AttachmentCell = require('./attachment/AttachmentCell.jsx');
 var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var Dispatcher = require('../../dispatcher/Dispatcher');
-var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
+//var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 
 var Cell = React.createClass({
-  mixins : [AmpersandMixin, KeyboardShortcutsMixin],
+  mixins : [AmpersandMixin],
 
   displayName : "Cell",
 
@@ -46,16 +46,6 @@ var Cell = React.createClass({
       });
     }
 
-  },
-
-  // Todo: can be deleted
-  getKeyboardShortcuts : function () {
-    var self = this;
-    return {
-      enter : function () {
-        console.log("Cell.jsx enter");
-      }
-    };
   },
 
   render : function () {

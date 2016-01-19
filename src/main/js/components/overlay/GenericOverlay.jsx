@@ -20,19 +20,14 @@ var GenericOverlay = React.createClass({
     //TODO: Focus Textarea when mounted
     console.log("genericOverlay mounted. ", this.props.type);
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
-    document.addEventListener('keydown', this.onKeyboardShortcut, true);
-    //document.addEventListener('click', this.onMouseClick, true);
+    document.addEventListener('keydown', this.overlayKeyboardHandler, true);
     document.addEventListener('mousedown', this.onMouseClick, true);
-
-    //http://stackoverflow.com/questions/2520650/how-do-you-clear-the-focus-in-javascript
-    //if (document.activeElement != document.body) document.activeElement.blur();
   },
 
   componentWillUnmount : function () {
     //Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-    //document.removeEventListener('click', this.onMouseClick, true);
+    document.removeEventListener('keydown', this.overlayKeyboardHandler, true);
     document.removeEventListener('mousedown', this.onMouseClick, true);
   },
 
@@ -41,8 +36,18 @@ var GenericOverlay = React.createClass({
     event.stopPropagation();
   },
 
-  onKeyboardShortcut : function (event) {
+  overlayKeyboardHandler : function (event) {
+
+    //Prevents any underlying handlers
     event.stopPropagation();
+
+    //Escape: Close Overlay
+    if (event.keyCode === 27) {
+      Dispatcher.trigger("close-overlay");
+      event.preventDefault();
+      return;
+    }
+
     //Prevents from tabbing around while overlay is open
     if (!ReactDOM.findDOMNode(this).contains(document.activeElement)) {
       console.log("focus is outside");
@@ -50,6 +55,7 @@ var GenericOverlay = React.createClass({
     }
 
   },
+
 
   render : function () {
     var overlayType = this.props.type || "normal"; //default to normal

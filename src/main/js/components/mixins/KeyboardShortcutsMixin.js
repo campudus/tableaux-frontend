@@ -50,6 +50,8 @@ var KeyboardShortcutsMixin = {
     //no shortcut found - check for general letters and call 'text' listener
     if (!shortcutFound && shortcuts.text && isText(event.keyCode)) {
       shortcuts.text(event);
+    } else if (!shortcutFound) {
+      shortcuts.rest(event);
     }
   }
 };

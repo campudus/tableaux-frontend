@@ -23,11 +23,11 @@ var Ask = React.createClass({
 
   render : function () {
     return (
-        <div className="ask">
-          {this.props.content}
-          <button onClick={this._onYes} className="button yes">Yes</button>
-          <button onClick={this._onCancel} className="button cancel">Cancel</button>
-        </div>
+      <div className="ask">
+        {this.props.content}
+        <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
+        <button onClick={this._onCancel} className="button cancel">Cancel</button>
+      </div>
     )
   }
 });
@@ -60,19 +60,20 @@ var Row = React.createClass({
     var question = <p>Do you really want to delete that row?</p>;
     var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
 
-    Dispatcher.trigger('openGenericOverlay', {
+    Dispatcher.trigger('open-overlay', {
       head : "Delete?",
-      body : ask
-    }, "flexible");
+      body : ask,
+      type : "flexible"
+    });
   },
 
   onYesOverlay : function (event) {
     this.props.row.destroy();
-    Dispatcher.trigger("closeGenericOverlay");
+    this.onCancelOverlay(event);
   },
 
   onCancelOverlay : function (event) {
-    Dispatcher.trigger("closeGenericOverlay");
+    Dispatcher.trigger("close-overlay");
   },
 
   enableDeleteButton : function () {
@@ -90,9 +91,9 @@ var Row = React.createClass({
     var icon = country.toLowerCase() + ".png";
 
     return (
-        <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-          <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
-        </div>
+      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
+        <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
+      </div>
     );
   },
 
@@ -156,19 +157,19 @@ var Row = React.createClass({
     // or to every not expanded row
     if (langtag === App.langtags[0] || !this.props.expanded) {
       deleteButton = (
-          <div className="delete-row" style={ this.state.hover ? display : displayNone }>
-            <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
-          </div>
+        <div className="delete-row" style={ this.state.hover ? display : displayNone }>
+          <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
+        </div>
       )
     }
 
     return (
-        <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
-             key={this.props.row.getId() + "-" + langtag} className={className}>
-          {deleteButton}
-          {this.renderLangtag(langtag)}
-          {this.renderCells(langtag, selected)}
-        </div>
+      <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
+           key={this.props.row.getId() + "-" + langtag} className={className}>
+        {deleteButton}
+        {this.renderLangtag(langtag)}
+        {this.renderCells(langtag, selected)}
+      </div>
     );
   },
 
