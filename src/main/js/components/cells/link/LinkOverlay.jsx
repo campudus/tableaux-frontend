@@ -4,6 +4,7 @@ var _ = require('lodash');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var RowIdentifier = require('../../helper/RowIdentifier');
+var App = require('ampersand-app');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
@@ -60,11 +61,11 @@ var LinkOverlay = React.createClass({
     var cell = this.props.cell;
     var link = {
       id : row.id,
-      // TODO id != position
-      value : row.values[cell.column.toColumn.id - 1]
+      value : "FIXME" // row.values[0] //TODO: API needs to give us the first column when linking to another table
     };
 
     return function () {
+      console.log("addLinkValue click. cell:", cell, "row:", row);
       var links = _.clone(cell.value);
 
       if (isLinked) {
@@ -92,35 +93,39 @@ var LinkOverlay = React.createClass({
     //check for empty obj or map fails
     if (!_.isEmpty(this.state.rowResults)) {
 
+      console.log("RowResults:", this.state.rowResults);
+
       listItems = (
-        <ul>
-          {this.state.rowResults.map(function (row) {
+          <ul>
+            {this.state.rowResults.map(function (row) {
 
-            //Get identifier string of row
-            var rowIdValue = RowIdentifier.getRowIdentifierByRow(row, self.props.langtag);
-            var currentCellValue = cell ? cell.value : null;
+                //Get identifier string of row
+                var rowIdValue = RowIdentifier.getRowIdentifierByRow(row, self.props.langtag);
+                var currentCellValue = cell ? cell.value : null;
+                var isLinked = !!_.find(currentCellValue, function (link) {
+                    return link.id === row.id;
+                    });
 
-            //var isLinked = !!_.find();
+                //Link Value is empty find default language or don't display
+                if((self.props.langtag != App.defaultLangtag) && (!rowIdValue || rowIdValue === "")){
+                    rowIdValue = RowIdentifier.getRowIdentifierByRow(row, App.defaultLangtag);
 
-            console.log("currentCellValue:", currentCellValue);
+                    if(rowIdValue && rowIdValue != ""){
+                        rowIdValue += " (" + App.defaultLangtag  + ")";
+                        }
+                    }
 
+                if (_.isString(rowIdValue) && self.state.search !== null && rowIdValue.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
+                    if(rowIdValue && rowIdValue !== ""){
+                        return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                                   onClick={self.addLinkValue(isLinked, row)}>{rowIdValue}</li>;
+                        }else{
+                        return null;
+                        }
+                    }
 
-            var isLinked = !!_.find(currentCellValue, function (link) {
-              console.log("link: ", link, "row:", row);
-              return link.id === row.id;
-              });
-
-            if (_.isString(rowIdValue) && self.state.search !== null && rowIdValue.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
-              if(rowIdValue && rowIdValue !== ""){
-                return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                           onClick={self.addLinkValue(isLinked, row)}>{rowIdValue}</li>;
-                }else{
-                return null;
-                }
-              }
-
-            })}
-        </ul>
+                })}
+          </ul>
       );
 
     } else {
@@ -128,14 +133,14 @@ var LinkOverlay = React.createClass({
     }
 
     return (
-      <div>
-        <div className="search-input-wrapper">
-          <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                 defaultValue={this.state.search} ref="search"/>
-          <i className="fa fa-search"></i>
+        <div>
+          <div className="search-input-wrapper">
+            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                   defaultValue={this.state.search} ref="search"/>
+            <i className="fa fa-search"></i>
+          </div>
+          {listItems}
         </div>
-        {listItems}
-      </div>
     );
   },
 

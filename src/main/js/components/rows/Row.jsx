@@ -62,7 +62,7 @@ var Row = React.createClass({
     var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
 
     Dispatcher.trigger('open-overlay', {
-      head : "Delete?",
+      head : <span>Delete?</span>,
       body : ask,
       type : "flexible"
     });

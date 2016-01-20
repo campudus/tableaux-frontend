@@ -19,7 +19,7 @@ var IdentifierCell = React.createClass({
 
   cellClicked : function () {
     console.log("clicked ID Column cell:", this.props.cell);
-    console.log("final concatCellValue:", this.getRowIdentifierByCell(this.props.cell, this.props.langtag));
+    console.log("final concatCellValue:", RowIdentifier.getRowIdentifierByCell(this.props.cell, this.props.langtag));
     console.log("column: ", this.props.cell.column.concats);
   },
 

@@ -41,56 +41,36 @@ var private = {
 
   getRowIdentifierFromText : function (cell, langtag) {
     var value = "";
-    console.log("getRowIdentifierFromText cell:", cell);
     if (cell.isMultiLanguage) {
-      console.log("is multilang ?", cell);
       value = cell.value[langtag];
     } else {
       value = cell.value;
     }
     return value;
-  }
-
-};
-
-var RowIdentifier = {
-
-  //getRowIdentifierByRow
-  getRowIdentifierByRow : function (row, langtag) {
-    return this.getRowIdentifierByCell(row.cells[0], langtag);
   },
 
-  getRowIdentifierByOtherCell : function (cell, langtag) {
-    var currentTableId = cell.tableId;
-    var currentTable = cell.tables.get(currentTableId);
-    var currentRow = currentTable.rows.get(cell.rowId);
-    var idCell = currentRow.cells[0];
-    return this.getRowIdentifierByCell(idCell, langtag);
+  getRowIdentifierFromLink : function (cell, langtag) {
+    console.log("getRowIdentifierFromLink. cell:", cell);
+    //return private.getRowIdentifierFromConcat(cell, langtag);
+
   },
 
-  getRowIdentifierByCell : function (cell, langtag) {
+  getRowIdentifierFromConcat : function (cell, langtag) {
+
     var concatVal = null;
-
-    if (cell.kind === "shorttext" || cell.kind === "text") {
-      return private.getRowIdentifierFromText(cell, langtag);
-    } else if (cell.kind !== "concat") {
-      console.error("cell is not kind concat. Check RowIdentifier.getRowIdentifierByCell()");
-    }
-
-    if (!cell) {
-      return "";
-    }
 
     _.forEach(cell.value, function (value, index) {
 
+      //The column the concat cell points to
       var column = private.getColumnByConcatIndex(cell, index);
       var isMultilanguage = column.multilanguage;
       var isLink = column.isLink;
 
       if (isMultilanguage && _.isObject(value)) {
-        //multilanguage
+        //multilanguage text
         if (!_.isEmpty(value)) {
           if (!_.isUndefined(value[langtag])) {
+            console.log("multilanguage text");
             concatVal = private.appendValue(concatVal, value[langtag]);
           }
         }
@@ -99,14 +79,21 @@ var RowIdentifier = {
         //link
 
         _.forEach(value, function (arrayVal, arrayKey) {
-          //multilanguage object
+
+          //multilanguage link object
           if (_.isObject(arrayVal)) {
+            if (isMultilanguage) {
+              console.log("is multilanguage link");
+              concatVal = private.appendValue(concatVal, arrayVal.value[langtag]);
+            } else {
+              concatVal = private.appendValue(concatVal, arrayVal.value);
+            }
 
           }
 
           else {
             //single value
-
+            concatVal = private.appendValue(concatVal, arrayVal.value);
           }
 
         });
@@ -118,7 +105,45 @@ var RowIdentifier = {
       }
 
     });
-    return concatVal || "";
+
+    return concatVal;
+  }
+
+};
+
+var RowIdentifier = {
+
+  //getRowIdentifierByRow
+  getRowIdentifierByRow : function (row, langtag) {
+    if (row) {
+      return this.getRowIdentifierByCell(row.cells[0], langtag);
+    } else {
+      console.log("RowIdentifier.getRowIdentifierByRow: row is null.");
+    }
+
+  },
+
+  getRowIdentifierByOtherCell : function (cell, langtag) {
+    var currentTableId = cell.tableId;
+    var currentTable = cell.tables.get(currentTableId);
+    var currentRow = currentTable.rows.get(cell.rowId);
+    var idCell = currentRow.cells[0];
+    return this.getRowIdentifierByCell(idCell, langtag);
+  },
+
+  getRowIdentifierByCell : function (cell, langtag) {
+    if (!cell) {
+      return "";
+    } else if (cell.kind === "shorttext" || cell.kind === "text") {
+      return private.getRowIdentifierFromText(cell, langtag);
+    } else if (cell.kind === "concat") {
+      return private.getRowIdentifierFromConcat(cell, langtag);
+    } else if (cell.kind === "link") {
+      return private.getRowIdentifierFromLink(cell, langtag);
+    } else {
+      console.error("cell identifier is unknown kind:", cell.kind, ". Check RowIdentifier.getRowIdentifierByCell(). Cell Object:", cell);
+      return "";
+    }
   }
 
 };

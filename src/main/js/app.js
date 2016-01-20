@@ -37,6 +37,8 @@ App.extend({
     "fr-FR"
   ],
 
+  defaultLangtag : "de-DE",
+
   mapLocaleToLangtag : function (locale) {
     return multiLanguage.mapLocaleToLangtag(this.langtags)(locale)
   }

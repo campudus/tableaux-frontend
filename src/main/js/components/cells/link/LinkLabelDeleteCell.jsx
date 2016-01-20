@@ -1,4 +1,5 @@
 var React = require('react');
+var RowIdentifier = require('../../helper/RowIdentifier.js');
 
 var LinkLabelCell = React.createClass({
 
@@ -23,18 +24,18 @@ var LinkLabelCell = React.createClass({
 
   render : function () {
     var self = this;
-    var toColumnIsMultilanguage = self.props.cell.column.toColumn.multilanguage;
-    var linkName;
 
-    if (toColumnIsMultilanguage) {
-      linkName = self.getLinkName(self.props.linkElement.value, self.props.langtag);
-    } else {
-      linkName = self.getLinkName(self.props.linkElement.value);
+    var toTable = this.props.cell.tables.get(this.props.cell.column.toTable);
+    var toRow = toTable.rows.get(self.props.linkElement.id);
+    var rowIdValue = RowIdentifier.getRowIdentifierByRow(toRow, self.props.langtag);
+
+    if (!rowIdValue || rowIdValue === "") {
+      rowIdValue = "#NO TRANSLATION#";
     }
 
     return (
-        <span className="link-label delete">{linkName}<i onClick={self.removeLinkHandler}
-                                                         className="fa fa-times"></i></span>
+        <span className="link-label delete">{rowIdValue}<i onClick={self.removeLinkHandler}
+                                                           className="fa fa-times"></i></span>
     );
 
   }

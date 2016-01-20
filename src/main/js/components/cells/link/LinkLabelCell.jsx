@@ -1,5 +1,9 @@
 var React = require('react');
+var RowIdentifier = require('../../helper/RowIdentifier.js');
 
+/**
+ * FIXME: This can't go into production. Backend needs proper link values! Just for dev purpose
+ */
 var LinkLabelCell = React.createClass({
 
   propTypes : {
@@ -8,24 +12,48 @@ var LinkLabelCell = React.createClass({
     langtag : React.PropTypes.string.isRequired
   },
 
-  getLinkName : function (value, langtag) {
-    var linkVal = langtag ? value[langtag] : value;
-    return linkVal ? linkVal : null;
+  getInitialState : function () {
+    return {
+      linkName : "loading..."
+    }
+  },
+
+  componentWillMount : function () {
+    this.getRows();
+  },
+
+  getRows : function () {
+
+    var self = this;
+    var toTable = this.props.cell.tables.get(this.props.cell.column.toTable);
+
+
+    toTable.columns.fetch({
+      success : function () {
+        toTable.rows.fetch({
+          success : function () {
+            var toRow = toTable.rows.get(self.props.linkElement.id);
+            var rowIdValue = RowIdentifier.getRowIdentifierByRow(toRow, self.props.langtag);
+
+            if(!rowIdValue || rowIdValue === ""){
+              rowIdValue = "#NO TRANSLATION#";
+            }
+            self.setState({linkName : rowIdValue});
+          },
+          error : function (err) {
+            console.error('error fetching rows', err);
+          }
+        });
+      },
+      error : function (err) {
+        console.error("error fetching columns", err);
+      }
+    });
   },
 
   render : function () {
-    var self = this;
-    var toColumnIsMultilanguage = self.props.cell.column.toColumn.multilanguage;
-    var linkName;
-
-    if (toColumnIsMultilanguage) {
-      linkName = self.getLinkName(self.props.linkElement.value, self.props.langtag);
-    } else {
-      linkName = self.getLinkName(self.props.linkElement.value);
-    }
-
     return (
-        <span className="link-label">{linkName}</span>
+        <span className="link-label">{this.state.linkName}</span>
     );
 
   }

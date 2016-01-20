@@ -94,9 +94,9 @@ var Cell = React.createClass({
     var cellClass = "cell" + " cell-" + cell.kind + " cell-" + cell.column.getId() + "-" + cell.rowId + (this.props.selected ? " selected" : "") + (this.props.editing ? " editing" : "");
 
     return (
-      <div className={cellClass} onClick={this.cellClicked}>
-        {cellKind}
-      </div>
+        <div className={cellClass} onClick={this.cellClicked}>
+          {cellKind}
+        </div>
     )
   }
 });

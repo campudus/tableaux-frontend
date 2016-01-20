@@ -156,13 +156,30 @@ $overlay-headline-height: 50px;
       background-color: $color-light-link-color;
       border-bottom: 2px solid $color-darker-link-color;
       color: $color-text-link-color;
-      font-size: 1.6rem;
-      font-weight: bold;
+      font-size: 1.4rem;
+      font-weight: normal;
       height: $overlay-headline-height;
       line-height: $overlay-headline-height;
       white-space: nowrap;
       position: relative;
       z-index: 2;
+    }
+
+    .column-name.with-link {
+      cursor: pointer;
+      padding: 2px 8px;
+      @include border-radius(3px);
+      margin-right: 10px;
+      border: 2px solid $color-darker-link-color;
+
+      &:hover {
+        //color: white;
+        background-color: $color-darker-link-color;
+      }
+
+      i {
+        margin-right: 5px;
+      }
     }
 
     li {

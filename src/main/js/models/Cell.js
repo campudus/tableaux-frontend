@@ -51,7 +51,16 @@ var Cell = AmpersandModel.extend({
       fn : function () {
         return this.column.kind;
       }
-    }
+    },
+
+    //TODO: Dicuss this with team
+    rowIdentifierCellValue : {
+      deps : ['tables', 'rows', 'rowId', 'tableId'],
+      fn : function () {
+        return this.tables.get(this.tableId).rows.get(this.rowId).values[0];
+      }
+    },
+
   },
 
   initialize : function (attrs, options) {
