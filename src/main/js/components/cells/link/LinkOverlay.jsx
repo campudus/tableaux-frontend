@@ -3,6 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
+var RowIdentifier = require('../../helper/RowIdentifier');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
@@ -10,7 +11,7 @@ var LinkOverlay = React.createClass({
   getInitialState : function () {
     return {
       search : "",
-      rowResults : {},
+      rowResults : {}
     };
   },
 
@@ -20,20 +21,35 @@ var LinkOverlay = React.createClass({
     tableId : React.PropTypes.number
   },
 
-  componentDidMount : function () {
-    //TODO: Get rows of the linked table: Maybe in componentWillMount
-  },
-
   componentWillMount : function () {
+    var self = this;
+    var toTableId = this.props.cell.column.toTable;
+    var toTable = this.props.cell.tables.get(toTableId);
 
-  },
-
-  componentWillUnmount : function () {
+    /*
+     * TODO: Combine both api calls. There's a api route available: http://localhost:8080/completetable/1
+     * TBD: Ampersand Table Models
+     */
+    toTable.columns.fetch({
+      success : function () {
+        toTable.rows.fetch({
+          success : function () {
+            console.log("success fetching table rows: ", toTable.rows);
+            self.setState({rowResults : toTable.rows});
+          },
+          error : function (err) {
+            console.error('error fetching rows', err);
+          }
+        });
+      },
+      error : function (err) {
+        console.error("error fetching columns", err);
+      }
+    });
 
   },
 
   onSearch : function (event) {
-    console.log("LinkOverlay.onSearch");
     var search = this.refs.search.value;
     this.setState({
       search : search
@@ -64,49 +80,6 @@ var LinkOverlay = React.createClass({
     };
   },
 
-  openOverlay : function () {
-    var self = this;
-    var toColumn = this.props.cell.column.toColumn;
-    var toTable = this.props.cell.column.toTable;
-
-    this.props.cell.fetch({
-      success : function (model, response, options) {
-
-        cell.tables.getOrFetch(toTable, function (err, table) {
-
-          if (err) {
-            console.error('error getting table in overlay', err);
-            return;
-          }
-
-          var tableName = table.name;
-          self.setState({tableId : toTable, columnName : tableName, open : true});
-
-          table.columns.fetch({
-            success : function () {
-              table.rows.fetch({
-                success : function () {
-                  self.setState({rowResults : table.rows});
-                },
-                error : function (err) {
-                  console.error('error fetching rows', err);
-                }
-              });
-            },
-            error : function (err) {
-              console.error("error fetching columns", err);
-            }
-          });
-
-        });
-
-      },
-      error : function (err) {
-        console.error("error fetching cell", err);
-      }
-    });
-  },
-
   closeOverlay : function () {
     Dispatcher.trigger('close-overlay');
   },
@@ -114,40 +87,44 @@ var LinkOverlay = React.createClass({
   renderOverlay : function () {
     var self = this;
     var listItems = null;
+    var cell = this.props.cell;
 
     //check for empty obj or map fails
     if (!_.isEmpty(this.state.rowResults)) {
+
       listItems = (
         <ul>
           {this.state.rowResults.map(function (row) {
 
-            var currentCellValue = self.cell.value;
+            //Get identifier string of row
+            var rowIdValue = RowIdentifier.getRowIdentifierByRow(row, self.props.langtag);
+            var currentCellValue = cell ? cell.value : null;
 
-            var linked = _.find(currentCellValue, function (link) {
+            //var isLinked = !!_.find();
+
+            console.log("currentCellValue:", currentCellValue);
+
+
+            var isLinked = !!_.find(currentCellValue, function (link) {
+              console.log("link: ", link, "row:", row);
               return link.id === row.id;
               });
 
-            var isLinked = linked ? true : false;
-
-            // TODO column id != value position in array
-            var value = row.values[self.toColumn.id - 1];
-
-            if (self.toColumn.multilanguage) {
-              value = value[self.props.language] || null;
+            if (_.isString(rowIdValue) && self.state.search !== null && rowIdValue.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
+              if(rowIdValue && rowIdValue !== ""){
+                return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                           onClick={self.addLinkValue(isLinked, row)}>{rowIdValue}</li>;
+                }else{
+                return null;
+                }
               }
 
-            if (value !== null && self.state.search !== null && value.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) === -1) {
-              // TODO kinda hack
-              return "";
-              }
-
-            return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                       onClick={self.addLinkValue(isLinked, row)}>{value}</li>;
             })}
         </ul>
       );
+
     } else {
-      listItems = "No Rows";
+      listItems = "No data in table '" + self.props.cell.column.name + "'";
     }
 
     return (

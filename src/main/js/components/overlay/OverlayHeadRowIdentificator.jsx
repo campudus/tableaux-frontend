@@ -1,74 +1,27 @@
 var React = require('react');
-var Cell = require('../../models/Cell');
+var RowIdentifier = require('../helper/RowIdentifier');
 
 var OverlayHeadRowIdentificator = React.createClass({
+
+  mixins : [RowIdentifier],
 
   propTypes : {
     cell : React.PropTypes.object,
     langtag : React.PropTypes.string
   },
 
-  getInitialState : function () {
-    return {
-      rowName : ""
-    }
-  },
+  rowIdentifierString : "",
 
   componentWillMount : function () {
-
-    if (!this.props.cell) {
-      return;
-    }
-
-    var self = this;
-    var cell = this.props.cell;
-    var currentTableId = cell.tableId;
-    var currentRowId = cell.rowId;
-    var currentColumn = cell.tables.get(currentTableId).columns.at(0);
-
-    console.log("currentRow: ", currentRowId);
-    console.log("currentTabel:", currentTableId);
-    console.log("cell:", cell);
-    console.log("tables:", cell.tables);
-    console.log("currentColumn:", currentColumn);
-
-    var masterCell = new Cell({
-      rowId : currentRowId,
-      tableId : currentTableId,
-      tables : cell.tables,
-      column : currentColumn
-    });
-
-    masterCell.fetch({
-      success : function (model, response, options) {
-        console.log("masterCell success: ", model);
-        if (model.kind !== "shorttext" && model.kind !== "text" && model.kind !== "richtext") {
-          return;
-        }
-        if (model.isMultiLanguage) {
-          console.log("multiLanguage: ", model.value[self.props.langtag]);
-          self.setState({rowName : model.value[self.props.langtag]});
-        } else {
-          console.log("is not multiLanguage");
-          self.setState({rowName : model.value});
-        }
-      },
-      error : function (err) {
-        console.error("error fetching masterCell", err);
-      }
-    });
-
-  },
-
-  componentDidMount : function () {
-
+    this.rowIdentifierString = RowIdentifier.getRowIdentifierByOtherCell(this.props.cell, this.props.langtag);
+    console.log("rowIdentifierString:", this.rowIdentifierString);
   },
 
   render : function () {
 
     var rowIdentification = null;
-    if (this.state.rowName !== "") {
-      rowIdentification = <span className="row-identification-value">: {this.state.rowName}</span>;
+    if (this.rowIdentifierString !== "") {
+      rowIdentification = <span className="row-identification-value">: {this.rowIdentifierString}</span>;
     }
 
     if (this.props.cell != null) {

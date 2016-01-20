@@ -11,6 +11,11 @@ var Column = AmpersandModel.extend({
     multilanguage : {
       type : 'boolean',
       default : false
+    },
+    identifier : 'boolean',
+    concats : {
+      type : 'object',
+      default : null
     }
   },
 

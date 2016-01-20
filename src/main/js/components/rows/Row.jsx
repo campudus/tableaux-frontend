@@ -57,6 +57,7 @@ var Row = React.createClass({
   },
 
   onClickDelete : function () {
+    console.log("i clicked Delete Button");
     var question = <p>Do you really want to delete that row?</p>;
     var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
 
@@ -139,9 +140,7 @@ var Row = React.createClass({
 
     var selected;
     var className;
-    var displayNone = {display : "none"};
-    var display = {display : "inline"};
-    var deleteButton = "";
+    var deleteButton = null;
 
     //Is this (multilanguage) row selected
     if (this.props.selectedCell && langtag === this.props.selectedCellExpandedRow) {
@@ -155,9 +154,9 @@ var Row = React.createClass({
 
     // Add delete button to default-language row
     // or to every not expanded row
-    if (langtag === App.langtags[0] || !this.props.expanded) {
+    if ((langtag === App.langtags[0] || !this.props.expanded) && this.state.hover) {
       deleteButton = (
-        <div className="delete-row" style={ this.state.hover ? display : displayNone }>
+        <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
         </div>
       )

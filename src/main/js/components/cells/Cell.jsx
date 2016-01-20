@@ -8,6 +8,7 @@ var LinkCell = require('./link/LinkCell.jsx');
 var AttachmentCell = require('./attachment/AttachmentCell.jsx');
 var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
+var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 //var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 
@@ -79,6 +80,11 @@ var Cell = React.createClass({
         cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
         break;
 
+      case "concat":
+        cellKind = <IdentifierCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
+                                   editing={this.props.editing}/>;
+        break;
+
       default:
         cellKind = <TextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
                              selected={this.props.selected}/>;
@@ -88,9 +94,9 @@ var Cell = React.createClass({
     var cellClass = "cell" + " cell-" + cell.kind + " cell-" + cell.column.getId() + "-" + cell.rowId + (this.props.selected ? " selected" : "") + (this.props.editing ? " editing" : "");
 
     return (
-        <div className={cellClass} onClick={this.cellClicked}>
-          {cellKind}
-        </div>
+      <div className={cellClass} onClick={this.cellClicked}>
+        {cellKind}
+      </div>
     )
   }
 });
