@@ -1,4 +1,6 @@
 var _ = require('lodash');
+var Moment = require('moment');
+var App = require('ampersand-app');
 
 // No conflict with same object name
 var private = {
@@ -55,6 +57,7 @@ var private = {
 
   },
 
+  //TODO: Needs refactor: check kinds and get multilanguage or single language values better!
   getRowIdentifierFromConcat : function (cell, langtag) {
 
     var concatVal = null;
@@ -65,12 +68,27 @@ var private = {
       var column = private.getColumnByConcatIndex(cell, index);
       var isMultilanguage = column.multilanguage;
       var isLink = column.isLink;
+      var isBoolean = column.kind === "boolean";
+      var isDateTime = column.kind === "datetime";
 
-      if (isMultilanguage && _.isObject(value)) {
+      //TODO: Check all kinds explicitly: Multilanguage boolean could true this if.
+      if (isDateTime && !_.isEmpty(value)) {
+        //datetime
+        var formattedVal = "";
+        if (isMultilanguage) {
+          if (!_.isEmpty(value[langtag])) {
+            formattedVal = Moment(value[langtag], App.dateTimeFormats.formatForServer).format(App.dateTimeFormats.formatForUser);
+          }
+        } else {
+          formattedVal = Moment(value, App.dateTimeFormats.formatForServer).format(App.dateTimeFormats.formatForUser);
+        }
+
+        concatVal = private.appendValue(concatVal, formattedVal);
+      } else if (isMultilanguage && _.isObject(value)) {
         //multilanguage text
+
         if (!_.isEmpty(value)) {
           if (!_.isUndefined(value[langtag])) {
-            console.log("multilanguage text");
             concatVal = private.appendValue(concatVal, value[langtag]);
           }
         }
@@ -100,8 +118,12 @@ var private = {
 
       } else if (_.isString(value) || _.isNumber(value)) {
         concatVal = private.appendValue(concatVal, value);
-      } else if (!_.isNull(value) && !_.isUndefined(value)) {
-        console.error("Unknown identifier type:", value, ". Check RowIdentifier");
+      } else if (isBoolean) {
+        //boolean
+        concatVal = private.appendValue(concatVal, column.name + ": " + (value ? "Yes" : "No"));
+      }
+      else if (!_.isNull(value) && !_.isUndefined(value)) {
+        console.error("Unknown identifier kind:", column.kind, ",value:", value, ". Check RowIdentifier.");
       }
 
     });

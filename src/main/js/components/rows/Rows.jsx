@@ -1,6 +1,8 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var Infinite = require('react-infinite');
+var NewRow = require('./NewRow.jsx');
+
 
 var Row = require('./Row.jsx');
 
@@ -15,7 +17,9 @@ var Rows = React.createClass({
     selectedCell : React.PropTypes.object,
     selectedCellEditing : React.PropTypes.bool,
     expandedRowIds : React.PropTypes.array,
-    selectedCellExpandedRow : React.PropTypes.string
+    selectedCellExpandedRow : React.PropTypes.string,
+    rowsHeight : React.PropTypes.number
+
   },
 
   isRowExpanded : function (rowId) {
@@ -32,16 +36,25 @@ var Rows = React.createClass({
                   expanded={self.isRowExpanded(row.id)}/>
     });
 
+    rows.push(<NewRow key="new-row" table={this.props.table} langtag={this.props.langtag}/>);
+
     return rows;
+  },
+
+  handleInfiniteScroll : function (node) {
+
   },
 
   render : function () {
     return (
-      <div className="data">
-        <Infinite containerHeight={1000} elementHeight={46}>
+        <Infinite className="data-wrapper"
+                  containerHeight={this.props.rowsHeight}
+                  elementHeight={46}
+                  preloadBatchSize={Infinite.containerHeightScaleFactor(0.05)}
+                  preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
+                  handleScroll={this.handleInfiniteScroll}>
           {this.getRows()}
         </Infinite>
-      </div>
     );
   }
 });

@@ -1,158 +1,97 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
-var _ = require('lodash');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
-var OutsideClick = require('react-onclickoutside');
-var Datetime = require('react-datetime');
+var DateTimeEditCell = require('./DateTimeEditCell.jsx');
 var Moment = require('moment');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
+var _ = require('lodash');
+var App = require('ampersand-app');
 
 var DateTimeCell = React.createClass({
 
-      mixins : [OutsideClick, KeyboardShortcutsMixin],
-      propTypes : {
-        cell : React.PropTypes.object.isRequired,
-        langtag : React.PropTypes.string.isRequired,
-        editing : React.PropTypes.bool.isRequired
-      },
+  propTypes : {
+    cell : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired,
+    editing : React.PropTypes.bool.isRequired
+  },
 
-      statics : {
-        formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
-        formatForUser : "DD.MM.YYYY - HH:mm",
-      },
+  getInitialState : function () {
+    var self = this;
+    return {
+      currentDateTimeValue : self.getDateTimeValue()
+    }
+  },
 
-      /**
-       * FIXME: Unbedingt in DateTimeEditCell auslagern damit Events nur bei selection benötigt werden, aktuell erhält jede Zelle das Event
-       *
-       */
-      /*componentDidMount : function () {
-       /!*
-       * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
-       * stop propagation to the table key listener
-       *!/
-       document.addEventListener('keydown', this.onKeyboardShortcut, true);
-       },
+  noDateTimeText : "No date selected",
 
-       componentWillUnmount : function () {
-       //parameter useCapture must be true or added listener doesn't get removed
-       document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-       },*/
+  getDateTimeValue : function () {
+    var cellValue = this.getCellValue();
+    if (cellValue) {
+      var formattedVal = Moment(cellValue, App.dateTimeFormats.formatForServer);
+      return formattedVal;
+    } else {
+      return null;
+    }
+  },
 
-      getInitialState : function () {
-        return {
-          selectedDateTime : null
-        }
-      },
+  getCellValue : function () {
+    var value;
+    if (this.props.cell.isMultiLanguage) {
+      var currentLangValue = this.props.cell.value[this.props.langtag];
+      value = currentLangValue ? currentLangValue : null;
+    } else {
+      var singleVal = this.props.cell.value;
+      value = singleVal ? singleVal : null;
+    }
+    return value;
+  },
 
-      getKeyboardShortcuts : function (event) {
-        var self = this;
-        return {
-          tab : function (event) {
-            self.handleEditDone(event);
-            Dispatcher.trigger('selectNextCell', 'right');
-          },
-          enter : function (event) {
-            //stop handling the Table events
-            self.handleEditDone(event);
-            Dispatcher.trigger('selectNextCell', 'down');
-          }
-        };
-      },
+  onDateTimeUpdate : function (newDateTimeValue) {
+    this.setState({
+      currentDateTimeValue : newDateTimeValue
+    });
+  },
 
-      handleClickOutside : function (event) {
-
-        /*event.preventDefault();
-         event.stopPropagation();*/
-        console.log("dateTime clicked Outside");
-        if (this.props.editing) {
-          this.handleEditDone();
-        }
-
-      },
-
-      handleLabelClick : function (event) {
-        event.stopPropagation();
-        event.preventDefault();
-      },
-
-      handleEditDone : function () {
-
-        var selectedDateTime = this.state.selectedDateTime;
-
-        if (this.props.editing && selectedDateTime) {
-
-          var formattedDateValue;
-          if (this.props.cell.isMultiLanguage) {
-            formattedDateValue = _.clone(this.props.cell.value);
-            formattedDateValue[this.props.langtag] = this.state.selectedDateTime.format(this.constructor.formatForServer);
-          } else {
-            var value = this.state.selectedDateTime;
-            formattedDateValue = String(value.format(this.constructor.formatForServer));
-          }
-          //Save to db
-          Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : formattedDateValue});
-        }
-
-        console.log("in handleEditDone fn");
-        Dispatcher.trigger('toggleCellEditing', {
-          cell : this.props.cell,
-          editing : false
-        });
-      },
-
-      showDateTimeValue : function () {
-        var selectedDateTime = this.state.selectedDateTime;
-        if (selectedDateTime && !_.isEmpty(selectedDateTime)) {
-          return selectedDateTime.format(this.constructor.formatForUser);
-        } else if (this.getCellValue()) {
-          var formattedVal = Moment(this.getCellValue(), this.constructor.formatForServer).format(this.constructor.formatForUser);
-          return formattedVal;
-        } else {
-          return "No date selected";
-        }
-
-      },
-
-      getCellValue : function () {
-        var value;
-        if (this.props.cell.isMultiLanguage) {
-          var currentLangValue = this.props.cell.value[this.props.langtag];
-          value = currentLangValue ? currentLangValue : null;
-        } else {
-          var singleVal = this.props.cell.value;
-          value = singleVal ? singleVal : null;
-        }
-        return value;
-      },
-
-      onDateTimeChange : function (moment) {
-        this.setState({selectedDateTime : moment});
-      },
-
-      selectDate : function () {
-        if (this.state.selectedDateTime) {
-          return this.state.selectedDateTime;
-        } else {
-          return Moment(this.getCellValue(), this.constructor.formatForServer);
-        }
-      },
-
-      render : function () {
-        var cell = this.props.cell;
-        var theClassName = 'cell-content';
-        if (this.props.editing) {
-          theClassName += ' editing';
-        }
-        return (
-            <div className={theClassName}>
-              {this.showDateTimeValue()}
-              {this.props.editing? <Datetime onChange={this.onDateTimeChange}
-                                             open={true} input={false} value={this.selectDate()}/> : null}
-
-            </div>
-        );
+  handleEditDone : function (event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    var currentDateTimeValue = this.state.currentDateTimeValue;
+    //only when date selected
+    if (currentDateTimeValue) {
+      var formattedDateValue;
+      if (this.props.cell.isMultiLanguage) {
+        formattedDateValue = _.clone(this.props.cell.value);
+        formattedDateValue[this.props.langtag] = currentDateTimeValue;
+      } else {
+        formattedDateValue = String(currentDateTimeValue);
       }
-    })
-    ;
+      //Save to db
+      Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : formattedDateValue});
+    }
+  },
+
+  render : function () {
+    var content;
+
+    if (!this.props.editing) {
+      content = this.state.currentDateTimeValue ? this.state.currentDateTimeValue.format(App.dateTimeFormats.formatForUser) : this.noDateTimeText;
+    } else {
+      content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
+                                  noDateTimeText={this.noDateTimeText}
+                                  onDateTimeUpdate={this.onDateTimeUpdate}
+                                  formatForUser={App.dateTimeFormats.formatForUser}
+                                  formatForServer={App.dateTimeFormats.formatForServer}
+                                  handleEditDone={this.handleEditDone}/>;
+    }
+
+    return (
+        <div className="cell-content">
+          {content}
+        </div>
+    );
+
+
+  }
+});
 
 module.exports = DateTimeCell;

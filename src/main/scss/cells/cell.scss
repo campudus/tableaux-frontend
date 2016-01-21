@@ -29,11 +29,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    //Important for datepicker, maybe later own class
-    &.editing {
-      overflow: visible;
-    }
-
     input, textarea {
       outline: none;
       padding: 0;
@@ -68,10 +63,6 @@
       background-color: $color-primary;
       border-color: $color-primary;
     }
-  }
-
-  &.editing {
-    @include box-shadow(inset 0 0 8px rgba($color-primary, 0.75));
   }
 
   &.selected {
@@ -110,11 +101,21 @@
   }
 
   &.editing {
+    @include box-shadow(inset 0 0 8px rgba($color-primary, 0.75));
+
     &.cell-link, &.cell-text {
       .cell-content {
         @include box-shadow(inset 0 0 8px rgba($color-primary, 0.75));
       }
     }
+
+    //Important for datepicker
+    &.cell-datetime {
+      .cell-content {
+        overflow: visible;
+      }
+    }
+
   }
 
   &.attachment {

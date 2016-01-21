@@ -94,19 +94,19 @@ var Tableaux = React.createClass({
     }
 
     return (
-      <div>
-        <header>
-          <NavigationList langtag={this.props.langtag}/>
-          <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
-                      tables={tables}/>
-          <LanguageSwitcher langtag={this.props.langtag}/>
-          <PageTitle title="Tables"/>
-        </header>
-        <div className="wrapper">
-          {table}
+        <div>
+          <header>
+            <NavigationList langtag={this.props.langtag}/>
+            <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
+                        tables={tables}/>
+            <LanguageSwitcher langtag={this.props.langtag}/>
+            <PageTitle title="Tables"/>
+          </header>
+          <div className="wrapper">
+            {table}
+          </div>
+          {this.renderActiveOverlay()}
         </div>
-        {this.renderActiveOverlay()}
-      </div>
     );
   }
 });

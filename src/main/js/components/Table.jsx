@@ -6,7 +6,6 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Columns = require('./columns/Columns.jsx');
 var Rows = require('./rows/Rows.jsx');
-var NewRow = require('./rows/NewRow.jsx');
 var KeyboardShortcutsMixin = require('./mixins/KeyboardShortcutsMixin');
 var OutsideClick = require('react-onclickoutside');
 
@@ -57,7 +56,7 @@ var Table = React.createClass({
   },
 
   componentDidMount : function () {
-    this.setState({offsetTableData : ReactDOM.findDOMNode(this.refs.dataWrapper).getBoundingClientRect().top});
+    this.setState({offsetTableData : ReactDOM.findDOMNode(this.refs.tableRows).getBoundingClientRect().top});
     //Don't change this to state, its more performant during scroll
     this.headerDOMElement = document.getElementById("tableHeader");
     window.addEventListener("resize", this.windowResize);
@@ -128,19 +127,14 @@ var Table = React.createClass({
   },
 
   toggleCellEditing : function (params) {
-
     var editVal = params.editing;
-    if (!this.state.selectedCell) {
-      return;
-    }
-
-    var noEditingModeNeeded = (params.cell.kind === "boolean");
-    if (!noEditingModeNeeded && params.cell.getId() === this.state.selectedCell.getId()) {
+    var selectedCell = this.state.selectedCell;
+    var noEditingModeNeeded = (selectedCell.kind === "boolean");
+    if (this.state.selectedCell && !noEditingModeNeeded) {
       this.setState({
         selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
-      })
+      });
     }
-
   },
 
   setNextSelectedCell : function (direction) {
@@ -346,12 +340,13 @@ var Table = React.createClass({
       escape : function (event) {
         console.log("escape pressed");
         if (self.state.selectedCell && self.state.selectedCellEditing) {
-          self.toggleCellEditing({cell : self.state.selectedCell, editing : false});
+          self.toggleCellEditing({editing : false});
         }
       },
 
       text : function (event) {
-        if (self.state.selectedCell && !self.state.selectedCellEditing) {
+        if (self.state.selectedCell && !self.state.selectedCellEditing
+            && (self.state.selectedCell.kind === "text" || self.state.selectedCell.kind === "shorttext")) {
           self.toggleCellEditing({cell : self.state.selectedCell});
         }
       }
@@ -398,22 +393,26 @@ var Table = React.createClass({
   },
 
   tableDataHeight : function () {
-    return {height : (this.state.windowHeight - this.state.offsetTableData) + "px"};
+    return (this.state.windowHeight - this.state.offsetTableData);
   },
 
   render : function () {
     return (
-      <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll}>
-        <div className="tableaux-table" ref="tableInner">
-          <Columns ref="columns" columns={this.props.table.columns}/>
-          <div ref="dataWrapper" className="data-wrapper" style={ this.tableDataHeight() }>
-            <Rows rows={this.props.table.rows} langtag={this.props.langtag} selectedCell={this.state.selectedCell}
-                  selectedCellEditing={this.state.selectedCellEditing} expandedRowIds={this.state.expandedRowIds}
-                  selectedCellExpandedRow={this.state.selectedCellExpandedRow}/>
-            <NewRow table={this.props.table} langtag={this.props.langtag}/>
+        <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll}>
+          <div className="tableaux-table" ref="tableInner">
+            <Columns ref="columns" columns={this.props.table.columns}/>
+            <Rows ref="tableRows"
+                  rowsHeight={this.tableDataHeight()}
+                  rows={this.props.table.rows}
+                  langtag={this.props.langtag}
+                  selectedCell={this.state.selectedCell}
+                  selectedCellEditing={this.state.selectedCellEditing}
+                  expandedRowIds={this.state.expandedRowIds}
+                  selectedCellExpandedRow={this.state.selectedCellExpandedRow}
+                  table={this.props.table}
+            />
           </div>
-        </div>
-      </section>
+        </section>
     );
   }
 });

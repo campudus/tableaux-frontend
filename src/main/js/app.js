@@ -39,6 +39,11 @@ App.extend({
 
   defaultLangtag : "de-DE",
 
+  dateTimeFormats : {
+    formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
+    formatForUser : "DD.MM.YYYY - HH:mm",
+  },
+
   mapLocaleToLangtag : function (locale) {
     return multiLanguage.mapLocaleToLangtag(this.langtags)(locale)
   }
