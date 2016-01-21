@@ -1,5 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
+var Infinite = require('react-infinite');
 
 var Row = require('./Row.jsx');
 
@@ -21,8 +22,7 @@ var Rows = React.createClass({
     return (this.props.expandedRowIds && this.props.expandedRowIds.indexOf(rowId) > -1) || false;
   },
 
-  render : function () {
-
+  getRows : function () {
     var self = this;
     var rows = this.props.rows.map(function (row, idx) {
       return <Row key={idx} row={row} selectedCell={self.props.selectedCell}
@@ -32,7 +32,17 @@ var Rows = React.createClass({
                   expanded={self.isRowExpanded(row.id)}/>
     });
 
-    return <div className="data">{rows}</div>;
+    return rows;
+  },
+
+  render : function () {
+    return (
+      <div className="data">
+        <Infinite containerHeight={1000} elementHeight={46}>
+          {this.getRows()}
+        </Infinite>
+      </div>
+    );
   }
 });
 

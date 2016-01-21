@@ -42,9 +42,16 @@ var Table = React.createClass({
 
   componentWillMount : function () {
     var table = this.props.table;
+
     table.columns.fetch({
       success : function () {
-        table.rows.fetch();
+        console.log("table columns fetched successfully.");
+      }
+    });
+
+    table.rows.fetch({
+      success : function () {
+        console.log("table rows fetched successfully.");
       }
     });
   },

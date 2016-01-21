@@ -31,15 +31,19 @@ var Tableaux = React.createClass({
   switchTable : function (event) {
     var self = this;
     console.log('Tableaux.switchTable', event);
-    // refresh Tables collection
-    this.props.tables.fetch({
-      success : function (collection, response, options) {
-        self.setState({currentTableId : event.id});
-      },
-      error : function (collection, response, options) {
-        console.error("Error fetching Table in switchTable");
-      }
-    });
+    if (this.props.tables) {
+      self.setState({currentTableId : event.id});
+    } else {
+      // refresh Tables collection
+      this.props.tables.fetch({
+        success : function (collection, response, options) {
+          self.setState({currentTableId : event.id});
+        },
+        error : function (collection, response, options) {
+          console.error("Error fetching Table in switchTable");
+        }
+      });
+    }
   },
 
   componentWillMount : function () {
