@@ -50,9 +50,10 @@ var Rows = React.createClass({
         <Infinite className="data-wrapper"
                   containerHeight={this.props.rowsHeight}
                   elementHeight={46}
-                  preloadBatchSize={Infinite.containerHeightScaleFactor(0.05)}
+                  preloadBatchSize={Infinite.containerHeightScaleFactor(0.1)}
                   preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
-                  handleScroll={this.handleInfiniteScroll}>
+                  handleScroll={undefined}
+                  timeScrollStateLastsForAfterUserScrolls={500}>
           {this.getRows()}
         </Infinite>
     );
