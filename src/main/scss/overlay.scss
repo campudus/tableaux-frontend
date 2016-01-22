@@ -26,6 +26,13 @@ $overlay-headline-height: 50px;
     }
   }
 
+  &.full {
+    #overlay-wrapper {
+      max-width: 90%;
+      height: 80%;
+    }
+  }
+
   .background {
     z-index: 1;
     background-color: black;

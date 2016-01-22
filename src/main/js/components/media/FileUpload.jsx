@@ -9,13 +9,13 @@ var Dispatcher = require('../../dispatcher/Dispatcher');
 var FileUpload = React.createClass({
 
   propTypes : {
-    langtag : React.PropTypes.string.isRequired
+    folder : React.PropTypes.object.isRequired
   },
 
   onDrop : function (files) {
     var self = this;
-
-    var langtag = App.langtags[0];
+    //create language neutral file (zxx is ISO639-2 code for "No linguistic content; Not applicable")
+    var langtag = "zxx_ZXX";
 
     files.forEach(function (file) {
       // upload each file for it's own

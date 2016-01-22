@@ -1,6 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-
+var Dispatcher = require('../../dispatcher/Dispatcher');
 var Subfolder = require('./Subfolder.jsx');
 var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
@@ -8,6 +8,7 @@ var NewFolderAction = require('./NewFolderAction.jsx');
 var LanguageSwitcher = require('../header/LanguageSwitcher.jsx');
 var NavigationList = require('../header/NavigationList.jsx');
 var PageTitle = require('../header/PageTitle.jsx');
+var GenericOverlay = require('../overlay/GenericOverlay.jsx');
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
@@ -19,9 +20,25 @@ var Folder = React.createClass({
     langtag : React.PropTypes.string.isRequired
   },
 
+  getInitialState : function () {
+    return {
+      activeOverlay : null //holds null or { head:{}, body:{}, type:""}
+    }
+  },
+
   componentDidMount : function () {
     this.watch(this.props.folder.files, {reRender : false});
     this.watch(this.props.folder.subfolders, {reRender : false});
+  },
+
+  componentWillMount : function () {
+    Dispatcher.on('open-overlay', this.openOverlay);
+    Dispatcher.on('close-overlay', this.closeOverlay);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off('open-overlay', this.openOverlay);
+    Dispatcher.off('close-overlay', this.closeOverlay);
   },
 
   renderCurrentFolder : function () {
@@ -70,6 +87,26 @@ var Folder = React.createClass({
     );
   },
 
+  openOverlay : function (content) {
+    this.setState({activeOverlay : content});
+  },
+
+  closeOverlay : function () {
+    this.setState({activeOverlay : null});
+  },
+
+  renderActiveOverlay : function () {
+    var overlay = this.state.activeOverlay;
+    if (overlay) {
+      return (<GenericOverlay key="genericoverlay"
+                              head={overlay.head}
+                              body={overlay.body}
+                              type={overlay.type}
+                              closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
+      />);
+    }
+  },
+
   renderFiles : function () {
     var self = this;
 
@@ -99,7 +136,7 @@ var Folder = React.createClass({
 
         {this.renderFiles()}
 
-        <FileUpload folder={this.props.folder} langtag={this.props.langtag}/>
+        <FileUpload folder={this.props.folder} />
       </div>
     );
   },
@@ -115,6 +152,7 @@ var Folder = React.createClass({
           <PageTitle title="Media Management"/>
         </header>
         {this.renderMediaManagement()}
+        {this.renderActiveOverlay()}
       </div>
     );
   }

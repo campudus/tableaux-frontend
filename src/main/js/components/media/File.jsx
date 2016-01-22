@@ -6,7 +6,8 @@ var apiUrl = require('../../helpers/apiUrl');
 var multiLanguage = require('../../helpers/multiLanguage');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 
-var FileEdit = require('./FileEdit.jsx');
+var SingleFileEdit = require('./SingleFileEdit.jsx');
+var FileEditHead = require('./FileEditHead.jsx');
 
 var File = React.createClass({
   mixins : [AmpersandMixin],
@@ -32,31 +33,37 @@ var File = React.createClass({
   },
 
   onEdit : function () {
-    this.setState({
-      edit : !this.state.edit
+    var self = this;
+    var file = this.props.file;
+    var overlayBody;
+    if(file.internalName && file.internalName.length > 1) {
+      overlayBody = <div>mf</div>;
+    } else {
+      overlayBody = <SingleFileEdit file={this.props.file} langtag={this.props.langtag} onClose={self.onEditClose}/>;
+    }
+
+    Dispatcher.trigger('open-overlay', {
+      head : <FileEditHead file={this.props.file} langtag={this.props.langtag}/>,
+      body : overlayBody,
+      type : 'full',
+      closeOnBackgroundClicked : false
     });
   },
 
-  onSave : function (file) {
-    console.log("File.saveFile", file.uuid, file.title, file.description, file, file.toJSON());
-    this.onEdit();
-    Dispatcher.trigger('change-file', file.toJSON());
-  },
-
-  getInitialState : function () {
-    return {
-      edit : false
-    }
+  onEditClose : function (event) {
+    Dispatcher.trigger('close-overlay');
   },
 
   render : function () {
     // default language (for fallback)
-    var retrieveTranslation = multiLanguage.retrieveTranslation(App.langtags[0]);
+    var fallbackLang = App.langtags[0];
+    if (this.props.file.title.zxx_ZXX) {
+      fallbackLang = "zxx_ZXX";
+    }
+    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     // current language
     var langtag = this.props.langtag;
-
-    console.log("File.render", this.props.file.title);
 
     var title = retrieveTranslation(this.props.file.title, langtag);
     var link = apiUrl(retrieveTranslation(this.props.file.fileUrl, langtag));
@@ -64,23 +71,13 @@ var File = React.createClass({
     var deleteButton = <span className="button fa fa-remove" onClick={this.onRemove} alt="delete"></span>;
 
     var classNames = "button fa fa-pencil-square-o";
-    if (this.state.edit) {
-      classNames += ' active';
-    }
     var editButton = <span className={classNames} onClick={this.onEdit} alt="edit"></span>;
-
-    var editForm = "";
-    if (this.state.edit) {
-      editForm = <FileEdit key={'edit' + this.props.file.uuid} file={this.props.file} callback={this.onSave}
-                           langtag={this.props.langtag}/>
-    }
 
     return (
       <div key={'file' + this.props.file.uuid} className="file">
         <a href={link}><i className="icon fa fa-file"></i><span>{title}</span></a>
         {deleteButton}
         {editButton}
-        {editForm}
       </div>
     );
   }

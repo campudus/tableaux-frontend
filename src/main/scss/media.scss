@@ -107,57 +107,6 @@
   }
 }
 
-.file-edit {
-  color: $color-primary-text;
-  font-family: $font-sec;
-  width: inherit;
-  background-color: white;
-  padding: 1em;
-  display: block;
-
-  .form-item {
-    margin-bottom: 15px;
-
-    .icon {
-      margin-right: 1em;
-    }
-
-    input {
-      width: 50%;
-      min-width: 100px;
-      font-size: inherit;
-      background-color: white;
-      border: 2px solid #999999;
-      padding: 5px;
-      margin-top: 5px;
-
-      &:focus {
-        border-color: $color-primary;
-      }
-    }
-  }
-
-  .form-button {
-    display: inline-block;
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-bottom: 0;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    cursor: pointer;
-    background-color: white;
-    border: 2px solid #999999;
-
-    &:hover {
-      border-color: $color-primary;
-      color: $color-primary-contrast-text;
-      background-color: $color-primary;
-    }
-  }
-}
-
 .dropzone {
   color: $color-primary-text;
   font-family: $font-sec;
@@ -179,5 +128,88 @@
   &.active {
     color: $color-primary-contrast-text;
     background-color: $color-primary;
+  }
+}
+
+#overlay {
+  &.full {
+    .singlefile-edit {
+
+      .input-wrapper {
+        height: 90%;
+        overflow-y: auto;
+        .left {
+          float: left;
+          width: 300px;
+          height: 100%;
+          text-align: center;
+
+          img {
+            position: relative;
+            top: 50%;
+            @include transform(translateY(-50%));
+          }
+        }
+
+        .right {
+          margin-left: 310px;
+          .field-item {
+            .field-label {
+              display: inline-block;
+              margin-bottom: 5px;
+              padding-left: 30px;
+            }
+
+            .field-input {
+              input {
+                font-size: $font-size-standard;
+                height: 30px;
+                width: 300px;
+                padding: 2px;
+                margin-left: 10px;
+                box-sizing: border-box;
+              }
+              margin-bottom: 15px;
+
+              .langtag {
+                width: 20px;
+                float: left;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+
+      .button-wrapper {
+        clear: both;
+        text-align: center;
+        height: 10%;
+      }
+    }
+
+    .cover {
+      height: 360px;
+      .dropzone {
+        cursor: pointer;
+        box-sizing: border-box;
+        background-color: transparent;
+        margin: 0;
+        height: 100%;
+        position: relative;
+
+        &:hover {
+          border: 2px dashed $color-button-grey;;
+        }
+
+        span {
+          padding: 0;
+          display: block;
+          position: absolute;
+          width: 95%;
+          bottom: 10px;
+        }
+      }
+    }
   }
 }
