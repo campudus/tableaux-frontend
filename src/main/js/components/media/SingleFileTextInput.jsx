@@ -22,7 +22,6 @@ var SingleFileTextInput = React.createClass({
   },
 
   renderInput : function (name, valueObj, langtag) {
-    console.log("renderInput called");
     var self = this;
     var inputs;
     var retrieveTranslation = multiLanguage.retrieveTranslation('zxx_ZXX');
