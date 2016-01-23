@@ -129,11 +129,13 @@ var Table = React.createClass({
   toggleCellEditing : function (params) {
     var editVal = params.editing;
     var selectedCell = this.state.selectedCell;
-    var noEditingModeNeeded = (selectedCell.kind === "boolean");
-    if (this.state.selectedCell && !noEditingModeNeeded) {
-      this.setState({
-        selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
-      });
+    if (selectedCell) {
+      var noEditingModeNeeded = (selectedCell.kind === "boolean");
+      if (!noEditingModeNeeded) {
+        this.setState({
+          selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
+        });
+      }
     }
   },
 

@@ -23,11 +23,11 @@ var Ask = React.createClass({
 
   render : function () {
     return (
-      <div className="ask">
-        {this.props.content}
-        <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
-        <button onClick={this._onCancel} className="button cancel">Cancel</button>
-      </div>
+        <div className="ask">
+          {this.props.content}
+          <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
+          <button onClick={this._onCancel} className="button cancel">Cancel</button>
+        </div>
     )
   }
 });
@@ -46,9 +46,13 @@ var Row = React.createClass({
     selectedCellExpandedRow : React.PropTypes.string
   },
 
-  getInitialState : function () {
-    return {
-      hover : false
+  //Is this row, including all associated multilanguage rows selected?
+  isRowGroupSelected : function () {
+    var currentSelectedCell = this.props.selectedCell;
+    if (currentSelectedCell) {
+      return (this.props.row.getId() === currentSelectedCell.rowId);
+    } else {
+      return false;
     }
   },
 
@@ -77,14 +81,6 @@ var Row = React.createClass({
     Dispatcher.trigger("close-overlay");
   },
 
-  enableDeleteButton : function () {
-    this.setState({hover : true});
-  },
-
-  disableDeleteButton : function () {
-    this.setState({hover : false});
-  },
-
   renderLangtag : function (langtag) {
     var language = langtag.split(/-|_/)[0];
     var country = langtag.split(/-|_/)[1];
@@ -92,9 +88,9 @@ var Row = React.createClass({
     var icon = country.toLowerCase() + ".png";
 
     return (
-      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-        <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
-      </div>
+        <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
+          <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
+        </div>
     );
   },
 
@@ -137,38 +133,28 @@ var Row = React.createClass({
   },
 
   renderLanguageRow : function (langtag) {
-
-    var selected;
-    var className;
-    var deleteButton = null;
-
     //Is this (multilanguage) row selected
-    if (this.props.selectedCell && langtag === this.props.selectedCellExpandedRow) {
-      selected = this.props.row.getId() === this.props.selectedCell.rowId;
-    } else {
-      selected = false;
-    }
-
+    var selected = (this.isRowGroupSelected() && (langtag === this.props.selectedCellExpandedRow));
     //Set row class optional with selected class
-    className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
+    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
+    var deleteButton = null;
 
     // Add delete button to default-language row
     // or to every not expanded row
-    if ((langtag === App.langtags[0] || !this.props.expanded) && this.state.hover) {
+    if ((langtag === App.defaultLangtag || !this.props.expanded) && this.isRowGroupSelected()) {
       deleteButton = (
-        <div className="delete-row">
-          <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
-        </div>
+          <div className="delete-row">
+            <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
+          </div>
       )
     }
 
     return (
-      <div onMouseEnter={this.enableDeleteButton} onMouseLeave={this.disableDeleteButton}
-           key={this.props.row.getId() + "-" + langtag} className={className}>
-        {deleteButton}
-        {this.renderLangtag(langtag)}
-        {this.renderCells(langtag, selected)}
-      </div>
+        <div key={this.props.row.getId() + "-" + langtag} className={className}>
+          {deleteButton}
+          {this.renderLangtag(langtag)}
+          {this.renderCells(langtag, selected)}
+        </div>
     );
   },
 
@@ -180,7 +166,6 @@ var Row = React.createClass({
       var rows = App.langtags.map(function (langtag) {
         return self.renderLanguageRow(langtag);
       });
-
       return <div className="row-group expanded">{rows}</div>;
     } else {
       return this.renderLanguageRow(this.props.langtag);
