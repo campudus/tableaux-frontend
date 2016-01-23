@@ -36,6 +36,11 @@
     height: 85%;
     @include box-sizing(border-box);
     top: $space-height-table-header;
+
+    > div {
+      background: transparent url("../img/row-grid.gif") repeat;
+    }
+
   }
 
 }
@@ -83,7 +88,7 @@
   }
 
   .row-group.expanded {
-    border-bottom: 2px solid $color-border-grey;
+    //border-bottom: 2px solid $color-border-grey;
     background-color: #f9f9f9;
     display: table;
   }
@@ -146,6 +151,7 @@
 
   .new-row {
     padding: 8px 15px;
+    background-color: white; //overlays the background grid image
 
     .new-row-inner {
       height: 30px;
