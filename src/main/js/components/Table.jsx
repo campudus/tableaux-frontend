@@ -26,6 +26,10 @@ var Table = React.createClass({
   headerDOMElement : null,
   scrolledXBefore : 0,
 
+  //Internal state values
+  keyboardRecentlyUsedTimer : null,
+  canUpdateScrollView : false,
+
   getInitialState : function () {
     return {
       offsetTableData : 0,
@@ -66,6 +70,16 @@ var Table = React.createClass({
     Dispatcher.on('selectNextCell', this.setNextSelectedCell);
     Dispatcher.on('toggleRowExpand', this.toggleRowExpand);
     Dispatcher.on('createRowOrSelectNext', this.createRowOrSelectNext);
+    Dispatcher.on('allowScrollViewUpdate', this.allowScrollViewUpdate);
+  },
+
+  componentDidUpdate : function () {
+    //Just update when used with keyboard or when clicking explicitly on a cell
+    if (this.canUpdateScrollView) {
+      console.log("Scroll View Update happens.");
+      this.canUpdateScrollView = false;
+      this.updateScrollViewToSelectedCell();
+    }
   },
 
   componentWillUnmount : function () {
@@ -75,7 +89,52 @@ var Table = React.createClass({
     Dispatcher.off('selectNextCell', this.setNextSelectedCell);
     Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
     Dispatcher.off('createRowOrSelectNext', this.createRowOrSelectNext);
+    Dispatcher.off('allowScrollViewUpdate', this.allowScrollViewUpdate);
     document.removeEventListener('keydown', this.onKeyboardShortcut);
+  },
+
+
+  /**
+   * Checks if selected cell is overflowing and adjusts the scroll position
+   */
+  updateScrollViewToSelectedCell : function () {
+    //Scrolling container
+    var tableRowsDom = ReactDOM.findDOMNode(this.refs.tableRows);
+    //Are there any selected cells?
+    var cellsDom = tableRowsDom.getElementsByClassName("cell selected");
+    if (cellsDom.length > 0) {
+      //Get the first selected cell
+      var cell = cellsDom[0];
+      //Cell DOM position and dimensions
+      var targetY = cell.offsetTop;
+      var targetX = cell.offsetLeft;
+      var cellWidth = cell.offsetWidth;
+      var cellHeight = cell.offsetHeight;
+      //Scroll container position and dimensions
+      var currentScrollPositionX = tableRowsDom.scrollLeft;
+      var currentScrollPositionY = tableRowsDom.scrollTop;
+      var containerWidth = tableRowsDom.clientWidth;
+      var containerHeight = tableRowsDom.clientHeight;
+
+      //Check if cell is outside the view. Cell has to be completely visible
+      if (targetX < currentScrollPositionX) {
+        //Overflow Left
+        tableRowsDom.scrollLeft = targetX;
+
+      } else if (targetX + cellWidth > currentScrollPositionX + containerWidth) {
+        //Overflow Right
+        tableRowsDom.scrollLeft = targetX - (containerWidth - cellWidth);
+      }
+
+      if (targetY < currentScrollPositionY) {
+        //Overflow Top
+        tableRowsDom.scrollTop = targetY;
+
+      } else if (targetY + cellHeight > currentScrollPositionY + containerHeight) {
+        //Overflow Bottom
+        tableRowsDom.scrollTop = targetY - (containerHeight - cellHeight);
+      }
+    }
   },
 
   createRowOrSelectNext : function () {
@@ -124,6 +183,7 @@ var Table = React.createClass({
       selectedCellEditing : false,
       selectedCellExpandedRow : params.langtag || null
     });
+    this.allowScrollViewUpdate();
   },
 
   toggleCellEditing : function (params) {
@@ -140,7 +200,6 @@ var Table = React.createClass({
   },
 
   setNextSelectedCell : function (direction) {
-    //TODO: Ignore keyDowns when overlay is open
     //ignore all direction key shortcuts when in editing mode
     if (this.state.selectedCellEditing) {
       return;
@@ -185,10 +244,9 @@ var Table = React.createClass({
     if (row) {
       var nextCell = _.find(row.cells, 'id', nextCellId);
       if (nextCell) {
-        console.log("setNextSelectedCell setState:", nextCell, " language ", newSelectedCellExpandedRow);
-        self.setState({
-          selectedCell : nextCell,
-          selectedCellExpandedRow : newSelectedCellExpandedRow
+        this.toggleCellSelection({
+          cell : nextCell,
+          langtag : newSelectedCellExpandedRow
         });
       }
     }
@@ -308,52 +366,97 @@ var Table = React.createClass({
   getKeyboardShortcuts : function () {
     var self = this;
     return {
-
       left : function (event) {
-        self.setNextSelectedCell("left");
-      },
-
-      right : function (event) {
-        self.setNextSelectedCell("right");
-      },
-
-      tab : function (event) {
-        event.preventDefault(); //prevent browser focus of next link element
-        self.setNextSelectedCell("right");
-      },
-
-      up : function () {
-        self.setNextSelectedCell("up");
-      },
-
-      down : function () {
-        self.setNextSelectedCell("down");
-      },
-
-      enter : function (event) {
-        console.log("Enter Table cellEditing, event: ", event);
-        //avoids adding line break to text cell
         event.preventDefault();
-        if (self.state.selectedCell && !self.state.selectedCellEditing) {
-          self.toggleCellEditing({cell : self.state.selectedCell});
-        }
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              self.allowScrollViewUpdate();
+              self.setNextSelectedCell("left");
+            }
+        );
       },
-
+      right : function (event) {
+        event.preventDefault();
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              self.allowScrollViewUpdate();
+              self.setNextSelectedCell("right");
+            }
+        );
+      },
+      tab : function (event) {
+        event.preventDefault();
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              self.allowScrollViewUpdate();
+              self.setNextSelectedCell("right");
+            }
+        );
+      },
+      up : function (event) {
+        event.preventDefault();
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              self.allowScrollViewUpdate();
+              self.setNextSelectedCell("up");
+            }
+        );
+      },
+      down : function (event) {
+        event.preventDefault();
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              self.allowScrollViewUpdate();
+              self.setNextSelectedCell("down");
+            }
+        );
+      },
+      enter : function (event) {
+        event.preventDefault();
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              console.log("Enter Table cellEditing, event: ", event);
+              if (self.state.selectedCell && !self.state.selectedCellEditing) {
+                self.toggleCellEditing({cell : self.state.selectedCell});
+              }
+            }
+        );
+      },
       escape : function (event) {
-        console.log("escape pressed");
-        if (self.state.selectedCell && self.state.selectedCellEditing) {
-          self.toggleCellEditing({editing : false});
-        }
+        event.preventDefault();
+        self.preventSleepingOnTheKeyboard(
+            function () {
+              if (self.state.selectedCell && self.state.selectedCellEditing) {
+                self.toggleCellEditing({editing : false});
+              }
+            }
+        );
       },
-
       text : function (event) {
         if (self.state.selectedCell && !self.state.selectedCellEditing
-            && (self.state.selectedCell.kind === "text" || self.state.selectedCell.kind === "shorttext")) {
+            && (self.state.selectedCell.kind === "text" || self.state.selectedCell.kind === "shorttext" || self.state.selectedCell.kind === "numeric")) {
           self.toggleCellEditing({cell : self.state.selectedCell});
         }
       }
-
     };
+  },
+
+  /**
+   * Helper to prevent massive events on pressing navigation keys for changing cell selections
+   * @param cb
+   */
+  preventSleepingOnTheKeyboard : function (cb) {
+    var self = this;
+    if (this.keyboardRecentlyUsedTimer === null) {
+      this.keyboardRecentlyUsedTimer = setTimeout(function () {
+        self.keyboardRecentlyUsedTimer = null;
+      }, 100);
+      cb();
+    }
+  },
+
+  allowScrollViewUpdate : function () {
+    this.canUpdateScrollView = true;
   },
 
   getCurrentSelectedRowId : function () {
