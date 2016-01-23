@@ -46,6 +46,32 @@ var Row = React.createClass({
     selectedCellExpandedRow : React.PropTypes.string
   },
 
+  //Allows a good performance when editing large tables
+  shouldComponentUpdate : function (nextProps, nextState) {
+    //Update on every available prop change
+    if (this.props.langtag != nextProps.langtag
+        || this.props.row != nextProps.row
+        || this.props.expanded != nextProps.expanded
+    ) {
+      return true;
+    }
+    //Don't update when I'm not selected and I will not get selected
+    else if (!this.isRowGroupSelected() && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
+      return false;
+    }
+    //When nothing is selected and I get selected
+    else if (!this.props.selectedCell && nextProps.selectedCell && nextProps.selectedCell.rowId === this.props.row.getId()) {
+      return true;
+    }
+    //When nothing is selected and I don't get expanded
+    else if (!this.props.selectedCell && !nextProps.expanded) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  },
+
   //Is this row, including all associated multilanguage rows selected?
   isRowGroupSelected : function () {
     var currentSelectedCell = this.props.selectedCell;
