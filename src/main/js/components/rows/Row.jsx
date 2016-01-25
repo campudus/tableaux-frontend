@@ -32,6 +32,10 @@ var Ask = React.createClass({
   }
 });
 
+/**
+ * FIXME: Rows should handle the selectedCell Object and pass rows an selected props with it for performance
+ */
+
 var Row = React.createClass({
   mixins : [AmpersandMixin],
 

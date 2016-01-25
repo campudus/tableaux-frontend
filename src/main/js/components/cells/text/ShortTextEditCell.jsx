@@ -15,24 +15,13 @@ var ShortTextEditCell = React.createClass({
   },
 
   componentDidMount : function () {
-    /*
-     * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
-     * stop propagation to the table key listener
-     */
-    document.addEventListener('keydown', this.onKeyboardShortcut, true);
-    var node = this.refs.input;
     // Sets cursor to end of input field
+    var node = this.refs.input;
     node.value = node.value;
   },
 
   componentWillMount : function () {
-    //FIXME: Better in static variable ?
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
-  },
-
-  componentWillUnmount : function () {
-    //parameter useCapture must be true or added listener doesn't get removed
-    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
   },
 
   getKeyboardShortcuts : function (event) {
@@ -86,7 +75,7 @@ var ShortTextEditCell = React.createClass({
 
   render : function () {
     return (
-      <div className={'cell-content editing'}>
+      <div className={'cell-content editing'} onKeyDown={this.onKeyboardShortcut}>
         <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
                ref="input"></input>
       </div>

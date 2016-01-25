@@ -136,7 +136,7 @@ var LinkOverlay = React.createClass({
         <div>
           <div className="search-input-wrapper">
             <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                   defaultValue={this.state.search} ref="search"/>
+                   defaultValue={this.state.search} ref="search" autoFocus/>
             <i className="fa fa-search"></i>
           </div>
           {listItems}

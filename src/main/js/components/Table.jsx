@@ -64,7 +64,6 @@ var Table = React.createClass({
     //Don't change this to state, its more performant during scroll
     this.headerDOMElement = document.getElementById("tableHeader");
     window.addEventListener("resize", this.windowResize);
-    document.addEventListener('keydown', this.onKeyboardShortcut);
     Dispatcher.on('toggleCellSelection', this.toggleCellSelection);
     Dispatcher.on('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.on('selectNextCell', this.setNextSelectedCell);
@@ -90,7 +89,6 @@ var Table = React.createClass({
     Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
     Dispatcher.off('createRowOrSelectNext', this.createRowOrSelectNext);
     Dispatcher.off('allowScrollViewUpdate', this.allowScrollViewUpdate);
-    document.removeEventListener('keydown', this.onKeyboardShortcut);
   },
 
 
@@ -200,8 +198,7 @@ var Table = React.createClass({
   },
 
   setNextSelectedCell : function (direction) {
-    //ignore all direction key shortcuts when in editing mode
-    if (this.state.selectedCellEditing) {
+    if (!this.state.selectedCell) {
       return;
     }
     var self = this;
@@ -365,6 +362,9 @@ var Table = React.createClass({
 
   getKeyboardShortcuts : function () {
     var self = this;
+
+    console.log("Table getKeyboardShortcuts");
+
     return {
       left : function (event) {
         event.preventDefault();
@@ -468,7 +468,8 @@ var Table = React.createClass({
   },
 
   handleClickOutside : function (event) {
-    if (!this.state.selectedCellEditing) {
+    //Prevent to render when clicking on already selected cell
+    if (this.state.selectedCell) {
       this.setState({
         selectedCell : null
       });
@@ -503,21 +504,21 @@ var Table = React.createClass({
 
   render : function () {
     return (
-        <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll}>
-          <div className="tableaux-table" ref="tableInner">
-            <Columns ref="columns" columns={this.props.table.columns}/>
-            <Rows ref="tableRows"
-                  rowsHeight={this.tableDataHeight()}
-                  rows={this.props.table.rows}
-                  langtag={this.props.langtag}
-                  selectedCell={this.state.selectedCell}
-                  selectedCellEditing={this.state.selectedCellEditing}
-                  expandedRowIds={this.state.expandedRowIds}
-                  selectedCellExpandedRow={this.state.selectedCellExpandedRow}
-                  table={this.props.table}
-            />
-          </div>
-        </section>
+      <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}>
+        <div className="tableaux-table" ref="tableInner">
+          <Columns ref="columns" columns={this.props.table.columns}/>
+          <Rows ref="tableRows"
+                rowsHeight={this.tableDataHeight()}
+                rows={this.props.table.rows}
+                langtag={this.props.langtag}
+                selectedCell={this.state.selectedCell}
+                selectedCellEditing={this.state.selectedCellEditing}
+                expandedRowIds={this.state.expandedRowIds}
+                selectedCellExpandedRow={this.state.selectedCellExpandedRow}
+                table={this.props.table}
+          />
+        </div>
+      </section>
     );
   }
 });

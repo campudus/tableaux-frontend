@@ -21,10 +21,14 @@ var GenericOverlay = React.createClass({
   },
 
   allowedTypes : ["flexible", "normal"],
+  focusedElementBeforeOverlayOpens : null,
+
+  componentWillMount : function () {
+    this.focusedElementBeforeOverlayOpens = document.activeElement;
+    document.activeElement.blur();
+  },
 
   componentDidMount : function () {
-    //TODO: Focus Textarea when mounted
-    console.log("genericOverlay mounted. ", this.props.type);
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
     document.addEventListener('keydown', this.onKeyboardShortcut, true);
     document.addEventListener('mousedown', this.onMouseClick, true);
@@ -35,12 +39,13 @@ var GenericOverlay = React.createClass({
     document.getElementsByTagName("body")[0].style.overflow = "auto";
     document.removeEventListener('keydown', this.onKeyboardShortcut, true);
     document.removeEventListener('mousedown', this.onMouseClick, true);
+    //Reset active element before overlay opened
+    if (this.focusedElementBeforeOverlayOpens) {
+      this.focusedElementBeforeOverlayOpens.focus();
+    }
   },
 
   onMouseClick : function (event) {
-    //disable any mouse events from the table
-    event.stopPropagation();
-
     if (this.props.closeOnBackgroundClicked && (event.target === this.refs.overlayBackground)) {
       Dispatcher.trigger("close-overlay");
     }
@@ -53,25 +58,13 @@ var GenericOverlay = React.createClass({
       escape : function (event) {
         event.preventDefault();
         Dispatcher.trigger("close-overlay");
-      },
-
-      always : function (event, shortcutFound) {
-        console.log("in always. ShortcutFound: ", shortcutFound);
-        //Prevents any underlying handlers
-        event.stopPropagation();
-        //Prevents from tabbing around underneath the overlay while overlay is open
-        if (!shortcutFound && !ReactDOM.findDOMNode(self).contains(document.activeElement)) {
-          //TODO should clear the activeElement
-          console.log("focus is outside");
-          event.preventDefault();
-        }
       }
     };
   },
 
   render : function () {
     var overlayType = this.props.type || "normal"; //default to normal
-    var overlayWrapperClass = "open " + overlayType;
+    var overlayWrapperClass = "ignore-react-onclickoutside open " + overlayType;
 
     if (this.allowedTypes.indexOf(overlayType) === -1) {
       console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");
@@ -79,7 +72,7 @@ var GenericOverlay = React.createClass({
     }
 
     return (
-      <div id="overlay" className={overlayWrapperClass}>
+      <div id="overlay" className={overlayWrapperClass} tabIndex="1">
         <div id="overlay-wrapper">
           <h2>{this.props.head}</h2>
           <div className="content-scroll">

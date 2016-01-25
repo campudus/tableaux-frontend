@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
 
 var TextCell = require('./text/TextCell.jsx');
@@ -10,7 +11,6 @@ var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 var Dispatcher = require('../../dispatcher/Dispatcher');
-//var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin],
@@ -22,6 +22,21 @@ var Cell = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     selected : React.PropTypes.bool,
     editing : React.PropTypes.bool
+  },
+
+
+  componentDidMount : function () {
+    this.checkFocus();
+  },
+
+  componentDidUpdate : function () {
+    this.checkFocus();
+  },
+
+  checkFocus : function () {
+    if (this.props.selected && !this.props.editing) {
+      ReactDOM.findDOMNode(this).focus();
+    }
   },
 
   cellClicked : function () {
@@ -94,9 +109,9 @@ var Cell = React.createClass({
     var cellClass = "cell" + " cell-" + cell.kind + " cell-" + cell.column.getId() + "-" + cell.rowId + (this.props.selected ? " selected" : "") + (this.props.editing ? " editing" : "");
 
     return (
-        <div className={cellClass} onClick={this.cellClicked}>
-          {cellKind}
-        </div>
+      <div className={cellClass} onClick={this.cellClicked} tabIndex="-1">
+        {cellKind}
+      </div>
     )
   }
 });
