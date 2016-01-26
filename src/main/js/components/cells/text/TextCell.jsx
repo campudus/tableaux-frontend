@@ -18,10 +18,7 @@ var TextCell = React.createClass({
     selected : React.PropTypes.bool.isRequired
   },
 
-  handleLabelClick : function (event) {
-    console.log("TextCell.handleLabelClick");
-    event.preventDefault();
-
+  handleClick : function (event) {
     Dispatcher.trigger('toggleCellEditing', {
       cell : this.props.cell
     });
@@ -92,7 +89,7 @@ var TextCell = React.createClass({
     }
 
     return (
-      <div onClick={this.handleLabelClick}>
+      <div onClick={this.handleClick}>
         <span className='cell-content'>
           {value === null ? "" : value}
           {expandButton}

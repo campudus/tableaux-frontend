@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
 var App = require('ampersand-app');
 var _ = require('lodash');
@@ -23,18 +24,14 @@ var Ask = React.createClass({
 
   render : function () {
     return (
-        <div className="ask">
-          {this.props.content}
-          <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
-          <button onClick={this._onCancel} className="button cancel">Cancel</button>
-        </div>
+      <div className="ask">
+        {this.props.content}
+        <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
+        <button onClick={this._onCancel} className="button cancel">Cancel</button>
+      </div>
     )
   }
 });
-
-/**
- * FIXME: Rows should handle the selectedCell Object and pass rows an selected props with it for performance
- */
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -46,21 +43,23 @@ var Row = React.createClass({
     row : React.PropTypes.object.isRequired,
     selectedCell : React.PropTypes.object,
     selectedCellEditing : React.PropTypes.bool,
-    expanded : React.PropTypes.bool.isRequired,
-    selectedCellExpandedRow : React.PropTypes.string
+    selectedCellExpandedRow : React.PropTypes.string,
+    isRowExpanded : React.PropTypes.bool.isRequired,
+    isRowSelected : React.PropTypes.bool,
+    shouldCellFocus : React.PropTypes.bool
   },
 
   //Allows a good performance when editing large tables
   shouldComponentUpdate : function (nextProps, nextState) {
     //Update on every available prop change
     if (this.props.langtag != nextProps.langtag
-        || this.props.row != nextProps.row
-        || this.props.expanded != nextProps.expanded
+      || this.props.row != nextProps.row
+      || this.props.isRowExpanded != nextProps.isRowExpanded
     ) {
       return true;
     }
     //Don't update when I'm not selected and I will not get selected
-    else if (!this.isRowGroupSelected() && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
+    else if (!this.props.isRowSelected && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
       return false;
     }
     //When nothing is selected and I get selected
@@ -68,7 +67,7 @@ var Row = React.createClass({
       return true;
     }
     //When nothing is selected and I don't get expanded
-    else if (!this.props.selectedCell && !nextProps.expanded) {
+    else if (!this.props.selectedCell && !nextProps.isRowExpanded) {
       return false;
     }
     else {
@@ -76,13 +75,18 @@ var Row = React.createClass({
     }
   },
 
-  //Is this row, including all associated multilanguage rows selected?
-  isRowGroupSelected : function () {
-    var currentSelectedCell = this.props.selectedCell;
-    if (currentSelectedCell) {
-      return (this.props.row.getId() === currentSelectedCell.rowId);
-    } else {
-      return false;
+  componentDidMount : function () {
+    this.checkFocus();
+  },
+
+  componentDidUpdate : function () {
+    this.checkFocus();
+  },
+
+  checkFocus : function () {
+    if (this.props.isRowSelected && !this.props.shouldCellFocus) {
+      console.log("Row will force focus");
+      ReactDOM.findDOMNode(this).focus();
     }
   },
 
@@ -118,9 +122,9 @@ var Row = React.createClass({
     var icon = country.toLowerCase() + ".png";
 
     return (
-        <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-          <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
-        </div>
+      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
+        <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
+      </div>
     );
   },
 
@@ -142,14 +146,16 @@ var Row = React.createClass({
       var editing = selected ? self.props.selectedCellEditing : false;
 
       // We want to see single-language value even if not expanded
-      if (!cell.isMultiLanguage && !self.props.expanded) {
-        return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
+      if (!cell.isMultiLanguage && !self.props.isRowExpanded) {
+        return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
+                     shouldFocus={self.props.shouldCellFocus}/>;
       }
 
       // We don't want to repeat our self if expanded
-      if (!cell.isMultiLanguage && self.props.expanded) {
+      if (!cell.isMultiLanguage && self.props.isRowExpanded) {
         if (langtag === App.langtags[0]) {
-          return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
+          return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
+                       shouldFocus={self.props.shouldCellFocus}/>;
         } else {
           return self.renderSingleLanguageCell(cell, idx);
         }
@@ -157,46 +163,47 @@ var Row = React.createClass({
 
       // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
-        return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}/>;
+        return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
+                     shouldFocus={self.props.shouldCellFocus}/>;
       }
     })
   },
 
   renderLanguageRow : function (langtag) {
     //Is this (multilanguage) row selected
-    var selected = (this.isRowGroupSelected() && (langtag === this.props.selectedCellExpandedRow));
+    var selected = (this.props.isRowSelected && (langtag === this.props.selectedCellExpandedRow));
     //Set row class optional with selected class
     var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
     var deleteButton = null;
 
     // Add delete button to default-language row
     // or to every not expanded row
-    if ((langtag === App.defaultLangtag || !this.props.expanded) && this.isRowGroupSelected()) {
+    if ((langtag === App.defaultLangtag || !this.props.isRowExpanded) && this.props.isRowSelected) {
       deleteButton = (
-          <div className="delete-row">
-            <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
-          </div>
+        <div className="delete-row">
+          <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
+        </div>
       )
     }
 
     return (
-        <div key={this.props.row.getId() + "-" + langtag} className={className}>
-          {deleteButton}
-          {this.renderLangtag(langtag)}
-          {this.renderCells(langtag, selected)}
-        </div>
+      <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1">
+        {deleteButton}
+        {this.renderLangtag(langtag)}
+        {this.renderCells(langtag, selected)}
+      </div>
     );
   },
 
   render : function () {
     var self = this;
-
-    if (this.props.expanded) {
+    console.log("----> Render Row <----");
+    if (this.props.isRowExpanded) {
       // render all language-rows for this row
       var rows = App.langtags.map(function (langtag) {
         return self.renderLanguageRow(langtag);
       });
-      return <div className="row-group expanded">{rows}</div>;
+      return <div className="row-group expanded" tabIndex="-1">{rows}</div>;
     } else {
       return this.renderLanguageRow(this.props.langtag);
     }

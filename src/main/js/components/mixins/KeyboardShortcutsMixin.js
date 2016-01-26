@@ -23,6 +23,7 @@ var KEYS = {
   tab : 9
   //text : use text key handler for any letter or number
   //always: Bound function gets called on every keyCode. Passes boolean variable shortcutFound
+  //navigation: left, right, down, up, escape
 };
 
 var KeyboardShortcutsMixin = {
@@ -52,6 +53,11 @@ var KeyboardShortcutsMixin = {
       shortcuts.text(event);
     }
 
+    //Navigation key: left, right, down, up, escape. Useful for saving when selecting out
+    if (!shortcutFound && shortcuts.navigation && isNavigation(event.keyCode)) {
+      shortcuts.navigation(event);
+    }
+
     //Gets called on every keyCode
     if (shortcuts.always) {
       shortcuts.always(event, shortcutFound);
@@ -59,8 +65,11 @@ var KeyboardShortcutsMixin = {
   }
 };
 
-function isText(keyCode) {
-  var k = keyCode;
+function isNavigation(k) {
+  return (k === KEYS.left || k === KEYS.right || k === KEYS.down || k === KEYS.up || k === KEYS.escape || k === KEYS.tab);
+}
+
+function isText(k) {
   /**
    * Cheat Sheet for most important letters in german
    * 32 - 126 key "!" - "~"

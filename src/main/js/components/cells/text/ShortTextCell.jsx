@@ -18,9 +18,7 @@ var ShortTextCell = React.createClass({
     return null;
   },
 
-  handleLabelClick : function (event) {
-    event.preventDefault();
-
+  handleClick : function (event) {
     Dispatcher.trigger('toggleCellEditing', {
       cell : this.props.cell
     });
@@ -57,7 +55,7 @@ var ShortTextCell = React.createClass({
 
   renderTextCell : function (cell, value) {
     return (
-        <div className='cell-content' onClick={this.handleLabelClick}>
+      <div className='cell-content' onClick={this.handleClick}>
           {value === null ? "" : value}
         </div>
     );

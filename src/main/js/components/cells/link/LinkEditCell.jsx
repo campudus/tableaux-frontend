@@ -1,6 +1,6 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var _ = require('lodash');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var LinkLabelDeleteCell = require('./LinkLabelDeleteCell.jsx');
 var LinkOverlay = require('./LinkOverlay.jsx');
@@ -8,36 +8,26 @@ var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentific
 
 var LinkEditCell = React.createClass({
 
-    mixins : [KeyboardShortcutsMixin],
+    mixins : [],
 
     propTypes : {
       cell : React.PropTypes.object.isRequired,
-      langtag : React.PropTypes.string.isRequired
+      langtag : React.PropTypes.string.isRequired,
+      editing : React.PropTypes.bool.isRequired,
+      setCellKeyboardShortcuts : React.PropTypes.func
     },
 
     componentDidMount : function () {
-      /*
-       * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
-       * stop propagation to the table key listener
-       */
-      document.addEventListener('keydown', this.onKeyboardShortcut, true);
-    },
-
-    componentWillUnmount : function () {
-      //parameter useCapture must be true or added listener doesn't get removed
-      document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-    },
-
-    getKeyboardShortcuts : function (event) {
       var self = this;
-      return {
+      this.props.setCellKeyboardShortcuts({
         enter : function (event) {
+          console.log("LINK EDIT CELL ENTER. event:", event);
           //stop handling the Table events
           event.stopPropagation();
           event.preventDefault();
           self.openOverlay();
         }
-      };
+      });
     },
 
     removeLink : function (idx) {
@@ -50,9 +40,7 @@ var LinkEditCell = React.createClass({
     },
 
     openOverlay : function () {
-      Dispatcher.trigger('toggleCellEditing', {
-        cell : this.props.cell
-      });
+      console.log("link open overlay");
       Dispatcher.trigger(
         'open-overlay', {
           head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,

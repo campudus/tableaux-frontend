@@ -10,7 +10,9 @@ var LinkCell = React.createClass({
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    selected : React.PropTypes.bool.isRequired
+    selected : React.PropTypes.bool.isRequired,
+    editing : React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts : React.PropTypes.func
   },
 
   getInitialState : function () {
@@ -21,8 +23,11 @@ var LinkCell = React.createClass({
     var self = this;
 
     if (self.props.selected) {
-      return <LinkEditCell cell={self.props.cell} langtag={self.props.langtag}></LinkEditCell>
+      return <LinkEditCell cell={self.props.cell} langtag={self.props.langtag}
+                           editing={self.props.editing}
+                           setCellKeyboardShortcuts={self.props.setCellKeyboardShortcuts}></LinkEditCell>
     } else {
+      //Show a link preview for performance
       var tooManyLinks = false;
       var links = self.props.cell.value.map(function (element, id) {
 
@@ -41,9 +46,9 @@ var LinkCell = React.createClass({
         links.push(<span key={"more"} className="more">&hellip;</span>);
       }
       return (
-          <div className={'cell-content'}>
-            {links}
-          </div>
+        <div className={'cell-content'}>
+          {links}
+        </div>
       );
 
     }

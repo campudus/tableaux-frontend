@@ -27,9 +27,13 @@ var ShortTextEditCell = React.createClass({
   getKeyboardShortcuts : function (event) {
     var self = this;
     return {
-      tab : function (event) {
-        self.doneEditing(event);
-        Dispatcher.trigger('selectNextCell', 'right');
+      //allow left arrow key inside input
+      left : function (event) {
+        event.stopPropagation();
+      },
+      //allow left arrow key inside input
+      right : function (event) {
+        event.stopPropagation();
       },
       enter : function (event) {
         //stop handling the Table events
@@ -37,6 +41,9 @@ var ShortTextEditCell = React.createClass({
         self.doneEditing(event);
         //An event just for ShortTextEditCell to create a new Row when last is editing
         Dispatcher.trigger('createRowOrSelectNext');
+      },
+      navigation : function (event) {
+        self.doneEditing(event);
       }
     };
   },
@@ -46,11 +53,6 @@ var ShortTextEditCell = React.createClass({
   },
 
   doneEditing : function (event) {
-    console.log("TextEditCell.doneEditing, event: ", event);
-    if (event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
     this.props.onBlur(this.refs.input.value);
   },
 

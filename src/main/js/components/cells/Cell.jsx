@@ -11,9 +11,10 @@ var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 var Dispatcher = require('../../dispatcher/Dispatcher');
+var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 
 var Cell = React.createClass({
-  mixins : [AmpersandMixin],
+  mixins : [AmpersandMixin, KeyboardShortcutsMixin],
 
   displayName : "Cell",
 
@@ -21,9 +22,15 @@ var Cell = React.createClass({
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
     selected : React.PropTypes.bool,
-    editing : React.PropTypes.bool
+    editing : React.PropTypes.bool,
+    shouldFocus : React.PropTypes.bool
   },
 
+  getInitialState : function () {
+    return {
+      keyboardShortcuts : {}
+    };
+  },
 
   componentDidMount : function () {
     this.checkFocus();
@@ -33,33 +40,51 @@ var Cell = React.createClass({
     this.checkFocus();
   },
 
+  getKeyboardShortcuts : function (event) {
+    console.log("Cell.getKeyboardShortcuts()");
+    return this.state.keyboardShortcuts;
+  },
+
+  setKeyboardShortcutsForChildren : function (childrenEvents) {
+    this.setState({
+      keyboardShortcuts : childrenEvents
+    });
+  },
+
   checkFocus : function () {
-    if (this.props.selected && !this.props.editing) {
-      ReactDOM.findDOMNode(this).focus();
+    if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
+      var thisDOMNode = ReactDOM.findDOMNode(this);
+      //Is current focus inside of cell don't change the focus. This way child components can force their focus. (e.g. Links Component)
+      if (!thisDOMNode.contains(document.activeElement)) {
+        console.log("Cell will force focus");
+        thisDOMNode.focus();
+      }
     }
   },
 
-  cellClicked : function () {
-    /**
-     * Fire event which cell wants to toggle selected state.
-     * Keep in mind: Child elements needs to allow propagation
-     */
+  cellClicked : function (e) {
     console.log("cell clicked: ", this.props.cell);
 
     if (this.props.selected === true) {
-      console.log("is selected, edit it");
-
       Dispatcher.trigger('toggleCellEditing', {
         cell : this.props.cell
       });
 
     } else {
-
       Dispatcher.trigger('toggleCellSelection', {
         cell : this.props.cell,
         selected : this.props.selected,
         langtag : this.props.langtag
       });
+    }
+
+    /*
+     Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
+     the table view when clicking on an element other than the cell.
+     */
+    e.stopPropagation();
+    if (!this.props.shouldFocus) {
+      Dispatcher.trigger('enableShouldCellFocus');
     }
 
   },
@@ -72,7 +97,9 @@ var Cell = React.createClass({
 
       //todo: switch language to langtag!!! Important LANGTAG
       case "link":
-        cellKind = <LinkCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}/>;
+        cellKind = <LinkCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
+                             editing={this.props.editing}
+                             setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case "attachment":
@@ -84,7 +111,8 @@ var Cell = React.createClass({
         break;
 
       case "boolean":
-        cellKind = <BooleanCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}/>;
+        cellKind = <BooleanCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
+                                setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case "datetime":
@@ -108,11 +136,22 @@ var Cell = React.createClass({
 
     var cellClass = "cell" + " cell-" + cell.kind + " cell-" + cell.column.getId() + "-" + cell.rowId + (this.props.selected ? " selected" : "") + (this.props.editing ? " editing" : "");
 
-    return (
-      <div className={cellClass} onClick={this.cellClicked} tabIndex="-1">
-        {cellKind}
-      </div>
-    )
+    //onKeyDown event just for selected components
+    if (this.props.selected) {
+      return (
+        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1" onKeyDown={this.onKeyboardShortcut}>
+          {cellKind}
+        </div>
+      )
+    } else {
+      return (
+        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1">
+          {cellKind}
+        </div>
+      )
+    }
+
+
   }
 });
 

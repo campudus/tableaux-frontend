@@ -26,6 +26,9 @@ var TextEditCell = React.createClass({
   getKeyboardShortcuts : function (event) {
     var self = this;
     return {
+      escape : function (event) {
+        self.doneEditing(event);
+      },
       tab : function (event) {
         self.doneEditing(event);
         Dispatcher.trigger('selectNextCell', 'right');
@@ -34,6 +37,13 @@ var TextEditCell = React.createClass({
         console.log("enter texteditcell");
         //stop handling the Table events
         event.stopPropagation();
+      },
+
+      always : function (event, shortcutFound) {
+        if (!shortcutFound) {
+          //When typing text we don't want any table events
+          event.stopPropagation();
+        }
       }
     };
   },
@@ -43,7 +53,6 @@ var TextEditCell = React.createClass({
   },
 
   doneEditing : function (event) {
-    console.log("TextEditCell.doneEditing, event: ", event);
     if (event) {
       event.stopPropagation();
       event.preventDefault();
@@ -57,11 +66,6 @@ var TextEditCell = React.createClass({
   },
 
   componentDidMount : function () {
-    /*
-     * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
-     * stop propagation to the table key listener
-     */
-    document.addEventListener('keydown', this.onKeyboardShortcut, true);
     var node = this.refs.input;
     var text = node.value;
     // Sets cursor to end of input field
@@ -69,16 +73,11 @@ var TextEditCell = React.createClass({
     node.value = text;
   },
 
-  componentWillUnmount : function () {
-    //parameter useCapture must be true or added listener doesn't get removed
-    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-  },
-
   render : function () {
     return (
       <div className={'cell-content editing'}>
         <textarea autoFocus className="input" name={this.getInputName()} defaultValue={this.props.defaultText}
-                  ref="input" rows="4"></textarea>
+                  ref="input" rows="4" onKeyDown={this.onKeyboardShortcut}></textarea>
         <ExpandButton onTrigger={this.openOverlay}/>
       </div>
     );

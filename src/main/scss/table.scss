@@ -79,48 +79,6 @@
     border-right: 1px solid $color-border-grey;
   }
 
-  .row {
-    border-bottom: 1px solid $color-border-grey;
-
-    &.selected {
-      background-color: $color-selected-row;
-    }
-  }
-
-  .row-group.expanded {
-    //border-bottom: 2px solid $color-border-grey;
-    background-color: #f9f9f9;
-    display: table;
-  }
-
-  .delete-row {
-    position: absolute;
-    z-index: 9;
-    left: 2px;
-    padding: 0;
-    margin-top: 10px;
-
-    .button {
-      width: 35px;
-      height: 35px;
-
-      font-size: 1em;
-
-      border-radius: 35px;
-
-      display: block;
-
-      background-color: white;
-      border: 1px solid $color-border-grey;
-
-      &:hover {
-        color: $color-primary-contrast-text;
-        background-color: $color-primary;
-        border-color: $color-primary;
-      }
-    }
-  }
-
   .heading, .row {
     display: table;
     table-layout: fixed;
@@ -149,37 +107,4 @@
     }
   }
 
-  .new-row {
-    padding: 8px 15px;
-    background-color: white; //overlays the background grid image
-
-    .new-row-inner {
-      height: 30px;
-      line-height: 28px;
-      padding: 0 15px;
-      color: white;
-      font-weight: bold;
-      background-color: $color-primary;
-      cursor: pointer;
-      display: inline-block;
-      @include border-radius(3px);
-      @include transition(all 250ms ease-out);
-
-      &:hover {
-        background-color: desaturate(darken($color-primary, 10%), 10%);
-      }
-
-    }
-
-    i, span {
-      vertical-align: middle;
-    }
-
-    i {
-      margin-right: 10px;
-      font-size: 20px;
-
-    }
-
-  }
 }

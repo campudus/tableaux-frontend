@@ -10,7 +10,8 @@ var BooleanCell = React.createClass({
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    selected : React.PropTypes.bool.isRequired
+    selected : React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: React.PropTypes.func
   },
 
   handleEditDone : function (newValue) {
@@ -39,7 +40,8 @@ var BooleanCell = React.createClass({
     } else {
       booleanCellNode = <BooleanEditCell checked={this.getCheckboxValue()}
                                          langtag={this.props.langtag}
-                                         onSave={this.toggleCheckboxValue}/>;
+                                         onSave={this.toggleCheckboxValue}
+                                         setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }
 
     return (

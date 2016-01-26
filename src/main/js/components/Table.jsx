@@ -28,7 +28,6 @@ var Table = React.createClass({
 
   //Internal state values
   keyboardRecentlyUsedTimer : null,
-  canUpdateScrollView : false,
 
   getInitialState : function () {
     return {
@@ -39,22 +38,30 @@ var Table = React.createClass({
       selectedCellEditing : false,
       //needed for multilanguage cell selection
       expandedRowIds : null, //Array
-      selectedCellExpandedRow : null
+      selectedCellExpandedRow : null,
+      shouldCellFocus : true
+    }
+  },
+
+  shouldComponentUpdate : function (nextProps, nextState) {
+    if (_.isEqual(nextProps, this.props) && _.isEqual(nextState, this.state)) {
+      console.log("###### Table Props are equal. dont update.");
+      return false;
+    } else {
+      return true;
     }
   },
 
   componentWillMount : function () {
     var table = this.props.table;
-
+    //We need to fetch columns first, since rows has Cells that depend on the column model
     table.columns.fetch({
       success : function () {
-        console.log("table columns fetched successfully.");
-      }
-    });
-
-    table.rows.fetch({
-      success : function () {
-        console.log("table rows fetched successfully.");
+        table.rows.fetch({
+          success : function () {
+            console.log("table columns & rows fetched successfully.");
+          }
+        });
       }
     });
   },
@@ -70,13 +77,13 @@ var Table = React.createClass({
     Dispatcher.on('toggleRowExpand', this.toggleRowExpand);
     Dispatcher.on('createRowOrSelectNext', this.createRowOrSelectNext);
     Dispatcher.on('allowScrollViewUpdate', this.allowScrollViewUpdate);
+    Dispatcher.on('disableShouldCellFocus', this.disableShouldCellFocus);
+    Dispatcher.on('enableShouldCellFocus', this.enableShouldCellFocus);
   },
 
   componentDidUpdate : function () {
     //Just update when used with keyboard or when clicking explicitly on a cell
-    if (this.canUpdateScrollView) {
-      console.log("Scroll View Update happens.");
-      this.canUpdateScrollView = false;
+    if (this.state.shouldCellFocus) {
       this.updateScrollViewToSelectedCell();
     }
   },
@@ -89,13 +96,30 @@ var Table = React.createClass({
     Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
     Dispatcher.off('createRowOrSelectNext', this.createRowOrSelectNext);
     Dispatcher.off('allowScrollViewUpdate', this.allowScrollViewUpdate);
+    Dispatcher.off('disableShouldCellFocus', this.disableShouldCellFocus);
+    Dispatcher.off('enableShouldCellFocus', this.enableShouldCellFocus);
   },
 
+  disableShouldCellFocus : function () {
+    if (this.state.shouldCellFocus) {
+      console.log("Table.disableShouldCellFocus");
+      this.setState({shouldCellFocus : false});
+    }
+  },
+
+  enableShouldCellFocus : function () {
+    if (!this.state.shouldCellFocus) {
+      console.log("Table.enableShouldCellFocus");
+      this.setState({shouldCellFocus : true});
+    }
+  },
 
   /**
    * Checks if selected cell is overflowing and adjusts the scroll position
+   * This enhances the default browser behaviour because it checks if the selected cell is completely visible.
    */
   updateScrollViewToSelectedCell : function () {
+    console.log("Scroll View Update happens.");
     //Scrolling container
     var tableRowsDom = ReactDOM.findDOMNode(this.refs.tableRows);
     //Are there any selected cells?
@@ -188,8 +212,9 @@ var Table = React.createClass({
     var editVal = params.editing;
     var selectedCell = this.state.selectedCell;
     if (selectedCell) {
-      var noEditingModeNeeded = (selectedCell.kind === "boolean");
+      var noEditingModeNeeded = (selectedCell.kind === "boolean" || selectedCell.kind === "link");
       if (!noEditingModeNeeded) {
+        console.log("i will edit this cell:", selectedCell);
         this.setState({
           selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
         });
@@ -201,6 +226,7 @@ var Table = React.createClass({
     if (!this.state.selectedCell) {
       return;
     }
+
     var self = this;
     var row;
     var nextCellId;
@@ -362,79 +388,82 @@ var Table = React.createClass({
 
   getKeyboardShortcuts : function () {
     var self = this;
-
     console.log("Table getKeyboardShortcuts");
 
+    //Force the next selected cell to be focused
+    if (!this.state.shouldCellFocus) {
+      this.enableShouldCellFocus();
+    }
     return {
       left : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              self.allowScrollViewUpdate();
-              self.setNextSelectedCell("left");
-            }
+          function () {
+            self.allowScrollViewUpdate();
+            self.setNextSelectedCell("left");
+          }
         );
       },
       right : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              self.allowScrollViewUpdate();
-              self.setNextSelectedCell("right");
-            }
+          function () {
+            self.allowScrollViewUpdate();
+            self.setNextSelectedCell("right");
+          }
         );
       },
       tab : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              self.allowScrollViewUpdate();
-              self.setNextSelectedCell("right");
-            }
+          function () {
+            self.allowScrollViewUpdate();
+            self.setNextSelectedCell("right");
+          }
         );
       },
       up : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              self.allowScrollViewUpdate();
-              self.setNextSelectedCell("up");
-            }
+          function () {
+            self.allowScrollViewUpdate();
+            self.setNextSelectedCell("up");
+          }
         );
       },
       down : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              self.allowScrollViewUpdate();
-              self.setNextSelectedCell("down");
-            }
+          function () {
+            self.allowScrollViewUpdate();
+            self.setNextSelectedCell("down");
+          }
         );
       },
       enter : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              console.log("Enter Table cellEditing, event: ", event);
-              if (self.state.selectedCell && !self.state.selectedCellEditing) {
-                self.toggleCellEditing({cell : self.state.selectedCell});
-              }
+          function () {
+            console.log("Enter Table cellEditing, event: ", event);
+            if (self.state.selectedCell && !self.state.selectedCellEditing) {
+              self.toggleCellEditing({cell : self.state.selectedCell});
             }
+          }
         );
       },
       escape : function (event) {
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
-            function () {
-              if (self.state.selectedCell && self.state.selectedCellEditing) {
-                self.toggleCellEditing({editing : false});
-              }
+          function () {
+            if (self.state.selectedCell && self.state.selectedCellEditing) {
+              self.toggleCellEditing({editing : false});
             }
+          }
         );
       },
       text : function (event) {
         if (self.state.selectedCell && !self.state.selectedCellEditing
-            && (self.state.selectedCell.kind === "text" || self.state.selectedCell.kind === "shorttext" || self.state.selectedCell.kind === "numeric")) {
+          && (self.state.selectedCell.kind === "text" || self.state.selectedCell.kind === "shorttext" || self.state.selectedCell.kind === "numeric")) {
           self.toggleCellEditing({cell : self.state.selectedCell});
         }
       }
@@ -468,8 +497,11 @@ var Table = React.createClass({
   },
 
   handleClickOutside : function (event) {
-    //Prevent to render when clicking on already selected cell
-    if (this.state.selectedCell) {
+    /*
+     Prevent to render when clicking on already selected cell and don't clear when some cell is editing. This way cells
+     like shorttext will be saved on the first click outside and on the second click it gets deselected.
+     */
+    if (this.state.selectedCell && !this.state.selectedCellEditing) {
       this.setState({
         selectedCell : null
       });
@@ -502,9 +534,16 @@ var Table = React.createClass({
     return (this.state.windowHeight - this.state.offsetTableData);
   },
 
+  onClickedTableElement : function (e) {
+    console.log("Clicked on Target inside Table: ", e.target);
+    //Check if clicked element is NOT a cell, then disableCellFocus to focus the selected row
+    this.disableShouldCellFocus();
+  },
+
   render : function () {
     return (
-      <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}>
+      <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}
+               onClick={this.onClickedTableElement}>
         <div className="tableaux-table" ref="tableInner">
           <Columns ref="columns" columns={this.props.table.columns}/>
           <Rows ref="tableRows"
@@ -516,6 +555,7 @@ var Table = React.createClass({
                 expandedRowIds={this.state.expandedRowIds}
                 selectedCellExpandedRow={this.state.selectedCellExpandedRow}
                 table={this.props.table}
+                shouldCellFocus={this.state.shouldCellFocus}
           />
         </div>
       </section>

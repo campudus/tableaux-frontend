@@ -16,16 +16,26 @@ var NumericEditCell = React.createClass({
   getKeyboardShortcuts : function () {
     var self = this;
     return {
-      tab : function (event) {
+      up : function (event) {
+        event.preventDefault();
         self.doneEditing(event);
-        Dispatcher.trigger('selectNextCell', 'right');
+      },
+      down : function (event) {
+        event.preventDefault();
+        self.doneEditing(event);
+      },
+      left : function (event) {
+        event.stopPropagation();
+      },
+      right : function (event) {
+        event.stopPropagation();
       },
       enter : function (event) {
-        console.log("numeric Enter");
-        //stop handling the Table events
-        event.stopPropagation();
         self.doneEditing(event);
         Dispatcher.trigger('selectNextCell', 'down');
+      },
+      navigation : function (event) {
+        self.doneEditing(event);
       }
     };
   },
@@ -54,19 +64,10 @@ var NumericEditCell = React.createClass({
   },
 
   doneEditing : function (event) {
-    if (event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
     this.props.onSave(this.formatNumberCell(this.refs.input));
   },
 
   componentDidMount : function () {
-    /*
-     * important: last parameter 'useCapture' must be true. This starts event handling at the beginning and allows to
-     * stop propagation to the table key listener
-     */
-    document.addEventListener('keydown', this.onKeyboardShortcut, true);
     var node = this.refs.input;
     // Sets cursor to end of input field
     node.value = node.value;
@@ -77,10 +78,6 @@ var NumericEditCell = React.createClass({
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
   },
 
-  componentWillUnmount : function () {
-    //parameter useCapture must be true or added listener doesn't get removed
-    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-  },
 
   getValue : function () {
     var cell = this.props.cell;
@@ -102,14 +99,10 @@ var NumericEditCell = React.createClass({
   },
 
   render : function () {
-    var self = this;
-
-    var cell = this.props.cell;
-
     return (
       <div className={'cell-content editing'}>
         <input autoFocus type="number" className="input" name={this.inputName} defaultValue={this.getValue()}
-               ref="input"/>
+               onKeyDown={this.onKeyboardShortcut} ref="input"/>
       </div>
     );
   }
