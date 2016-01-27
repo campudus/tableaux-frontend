@@ -10,8 +10,12 @@ var DateTimeCell = React.createClass({
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    editing : React.PropTypes.bool.isRequired
+    editing : React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts : React.PropTypes.func
   },
+
+  //To check if there's any date change at all
+  touched : false,
 
   getInitialState : function () {
     var self = this;
@@ -48,6 +52,7 @@ var DateTimeCell = React.createClass({
     this.setState({
       currentDateTimeValue : newDateTimeValue
     });
+    this.touched = true;
   },
 
   handleEditDone : function (event) {
@@ -57,13 +62,13 @@ var DateTimeCell = React.createClass({
     }
     var currentDateTimeValue = this.state.currentDateTimeValue;
     //only when date selected
-    if (currentDateTimeValue) {
+    if (this.touched) {
       var formattedDateValue;
       if (this.props.cell.isMultiLanguage) {
         formattedDateValue = _.clone(this.props.cell.value);
-        formattedDateValue[this.props.langtag] = currentDateTimeValue;
+        formattedDateValue[this.props.langtag] = (currentDateTimeValue === null) ? null : currentDateTimeValue;
       } else {
-        formattedDateValue = String(currentDateTimeValue);
+        formattedDateValue = (currentDateTimeValue === null) ? null : String(currentDateTimeValue);
       }
       //Save to db
       Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : formattedDateValue});
@@ -74,20 +79,21 @@ var DateTimeCell = React.createClass({
     var content;
 
     if (!this.props.editing) {
-      content = this.state.currentDateTimeValue ? this.state.currentDateTimeValue.format(App.dateTimeFormats.formatForUser) : this.noDateTimeText;
+      content = (this.state.currentDateTimeValue === null) ? this.noDateTimeText : this.state.currentDateTimeValue.format(App.dateTimeFormats.formatForUser);
     } else {
       content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
                                   noDateTimeText={this.noDateTimeText}
                                   onDateTimeUpdate={this.onDateTimeUpdate}
                                   formatForUser={App.dateTimeFormats.formatForUser}
                                   formatForServer={App.dateTimeFormats.formatForServer}
-                                  handleEditDone={this.handleEditDone}/>;
+                                  handleEditDone={this.handleEditDone}
+                                  setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }
 
     return (
-        <div className="cell-content">
-          {content}
-        </div>
+      <div className="cell-content">
+        {content}
+      </div>
     );
 
 

@@ -22,6 +22,10 @@ var BooleanCell = React.createClass({
     });
   },
 
+  componentWillUnmount : function () {
+    this.props.setCellKeyboardShortcuts({});
+  },
+
   checkboxClick : function (event) {
     event.preventDefault();
     this.props.onSave();

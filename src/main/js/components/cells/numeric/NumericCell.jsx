@@ -9,7 +9,8 @@ var NumericCell = React.createClass({
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    editing : React.PropTypes.bool.isRequired
+    editing : React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: React.PropTypes.func
   },
 
   getInitialState : function () {
@@ -73,7 +74,7 @@ var NumericCell = React.createClass({
         return this.renderSingleLanguage();
       }
     } else {
-      return <NumericEditCell cell={cell} langtag={langtag} onSave={this.handleEditDone}/>;
+      return <NumericEditCell cell={cell} langtag={langtag} onSave={this.handleEditDone} setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }
   }
 });

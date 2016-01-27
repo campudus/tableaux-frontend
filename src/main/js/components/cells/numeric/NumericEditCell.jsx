@@ -2,15 +2,35 @@ var React = require('react');
 var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
+var _ = require('lodash');
 
 var NumericEditCell = React.createClass({
 
-  mixins : [KeyboardShortcutsMixin, OutsideClick],
+  mixins : [OutsideClick],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    onSave : React.PropTypes.func.isRequired
+    onSave : React.PropTypes.func.isRequired,
+    setCellKeyboardShortcuts : React.PropTypes.func
+  },
+
+  MAX_DIGIT_LENGTH : 15,
+
+  componentDidMount : function () {
+    this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
+    var node = this.refs.input;
+    // Sets cursor to end of input field
+    node.value = node.value;
+  },
+
+  componentWillMount : function () {
+    // TODO Move this into a mixin
+    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
+  },
+
+  componentWillUnmount : function () {
+    this.props.setCellKeyboardShortcuts({});
   },
 
   getKeyboardShortcuts : function () {
@@ -40,6 +60,7 @@ var NumericEditCell = React.createClass({
     };
   },
 
+
   handleClickOutside : function (event) {
     this.doneEditing(event);
   },
@@ -52,8 +73,13 @@ var NumericEditCell = React.createClass({
   formatNumberCell : function (input) {
     var result = null;
     var curr = input.value;
-    if (curr.trim().length !== 0) {
-      var formattedNumber = curr.replace(/,/g, ".");
+    var currLength = curr.trim().length;
+
+    if (currLength > this.MAX_DIGIT_LENGTH) {
+      throw "MAX_DIGIT_LENGTH reached: " + this.MAX_DIGIT_LENGTH;
+    }
+    else if (currLength >= 0) {
+      var formattedNumber = this.correctNumberFormat(curr);
       var realNumber = parseFloat(formattedNumber);
       if (!isNaN(realNumber)) {
         result = realNumber;
@@ -66,18 +92,6 @@ var NumericEditCell = React.createClass({
   doneEditing : function (event) {
     this.props.onSave(this.formatNumberCell(this.refs.input));
   },
-
-  componentDidMount : function () {
-    var node = this.refs.input;
-    // Sets cursor to end of input field
-    node.value = node.value;
-  },
-
-  componentWillMount : function () {
-    // TODO Move this into a mixin
-    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
-  },
-
 
   getValue : function () {
     var cell = this.props.cell;
@@ -98,11 +112,27 @@ var NumericEditCell = React.createClass({
     return value;
   },
 
+  correctNumberFormat : function (value) {
+    return String(value).replace(/,/g, ".");
+  },
+
+  onChangeHandler : function (e) {
+    var curr = e.target.value;
+    var formattedNumber = this.correctNumberFormat(curr);
+    var realNumber;
+
+    if (formattedNumber.length > this.MAX_DIGIT_LENGTH) {
+      alert("Numbers can't be greater than 15 decimal values.");
+      e.target.value = formattedNumber.substring(0, this.MAX_DIGIT_LENGTH);
+    }
+    realNumber = parseFloat(formattedNumber);
+  },
+
   render : function () {
     return (
       <div className={'cell-content editing'}>
         <input autoFocus type="number" className="input" name={this.inputName} defaultValue={this.getValue()}
-               onKeyDown={this.onKeyboardShortcut} ref="input"/>
+               onChange={this.onChangeHandler} ref="input"/>
       </div>
     );
   }

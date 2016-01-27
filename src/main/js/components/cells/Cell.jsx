@@ -54,8 +54,9 @@ var Cell = React.createClass({
   checkFocus : function () {
     if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
       var thisDOMNode = ReactDOM.findDOMNode(this);
-      //Is current focus inside of cell don't change the focus. This way child components can force their focus. (e.g. Links Component)
-      if (!thisDOMNode.contains(document.activeElement)) {
+      var focusedElement = document.activeElement;
+      //Is current focus this cell or inside of cell don't change the focus. This way child components can force their focus. (e.g. Links Component)
+      if (focusedElement.isEqualNode(thisDOMNode) || !thisDOMNode.contains(focusedElement)) {
         console.log("Cell will force focus");
         thisDOMNode.focus();
       }
@@ -63,7 +64,7 @@ var Cell = React.createClass({
   },
 
   cellClicked : function (e) {
-    console.log("cell clicked: ", this.props.cell);
+    console.log("cell clicked: ", this.props.cell, "value: ", this.props.cell.value);
 
     if (this.props.selected === true) {
       Dispatcher.trigger('toggleCellEditing', {
@@ -107,7 +108,8 @@ var Cell = React.createClass({
         break;
 
       case "numeric":
-        cellKind = <NumericCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        cellKind = <NumericCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
+                                setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case "boolean":
@@ -116,7 +118,8 @@ var Cell = React.createClass({
         break;
 
       case "datetime":
-        cellKind = <DateTimeCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        cellKind = <DateTimeCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
+                                 setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case "shorttext":

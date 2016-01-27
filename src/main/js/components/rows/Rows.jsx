@@ -19,7 +19,8 @@ var Rows = React.createClass({
     expandedRowIds : React.PropTypes.array,
     selectedCellExpandedRow : React.PropTypes.string,
     rowsHeight : React.PropTypes.number,
-    shouldCellFocus : React.PropTypes.bool
+    shouldCellFocus : React.PropTypes.bool,
+    onClick : React.PropTypes.func
   },
 
   isRowExpanded : function (rowId) {

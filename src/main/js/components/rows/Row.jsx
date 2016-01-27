@@ -75,27 +75,13 @@ var Row = React.createClass({
     }
   },
 
-  componentDidMount : function () {
-    this.checkFocus();
-  },
-
-  componentDidUpdate : function () {
-    this.checkFocus();
-  },
-
-  checkFocus : function () {
-    if (this.props.isRowSelected && !this.props.shouldCellFocus) {
-      console.log("Row will force focus");
-      ReactDOM.findDOMNode(this).focus();
-    }
-  },
-
   toggleExpand : function () {
+    Dispatcher.trigger('disableShouldCellFocus');
     Dispatcher.trigger('toggleRowExpand', this.props.row);
   },
 
-  onClickDelete : function () {
-    console.log("i clicked Delete Button");
+  onClickDelete : function (e) {
+    Dispatcher.trigger('disableShouldCellFocus');
     var question = <p>Do you really want to delete that row?</p>;
     var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
 
@@ -181,7 +167,9 @@ var Row = React.createClass({
     if ((langtag === App.defaultLangtag || !this.props.isRowExpanded) && this.props.isRowSelected) {
       deleteButton = (
         <div className="delete-row">
-          <button className="button" onClick={this.onClickDelete}><i className="fa fa-trash"></i></button>
+          <button className="button" onClick={this.onClickDelete}>
+            <i className="fa fa-trash"></i>
+          </button>
         </div>
       )
     }

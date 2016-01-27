@@ -39,6 +39,10 @@ var KeyboardShortcutsMixin = {
       throw "Return type of getKeyboardShortcuts must be an object.";
     }
 
+    if (_.isEmpty(shortcuts)) {
+      return;
+    }
+
     _.forEach(shortcuts, function (handler, key) {
       var keyCode = KEYS[key] || key;
 
@@ -81,5 +85,18 @@ function isText(k) {
   return ((k >= 32 && k <= 126) || k === 225 || k === 132 || k === 148 || k === 129 || k === 142 || k === 153
   || k === 154 || k === 188 || k === 190 || k === 186);
 }
+
+/*  For use later
+isKeyCodeCommaOrDot : function (keyEvent) {
+ var keyCode = keyEvent.keyCode;
+ var shift = keyEvent.shiftKey;
+ return (!shift && (keyCode === 188 || keyCode === 110 || keyCode === 190));
+ },
+
+ isKeyCodeNumber : function (keyEvent) {
+ var keyCode = keyEvent.keyCode;
+ var shift = keyEvent.shiftKey;
+ return (!shift && ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105)));
+ },*/
 
 module.exports = KeyboardShortcutsMixin;

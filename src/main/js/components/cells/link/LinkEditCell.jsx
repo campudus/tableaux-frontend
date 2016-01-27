@@ -21,13 +21,17 @@ var LinkEditCell = React.createClass({
       var self = this;
       this.props.setCellKeyboardShortcuts({
         enter : function (event) {
-          console.log("LINK EDIT CELL ENTER. event:", event);
           //stop handling the Table events
           event.stopPropagation();
           event.preventDefault();
           self.openOverlay();
         }
       });
+    },
+
+    componentWillUnmount : function () {
+      //Important to clean up the keyboard shortcuts
+      this.props.setCellKeyboardShortcuts({});
     },
 
     removeLink : function (idx) {

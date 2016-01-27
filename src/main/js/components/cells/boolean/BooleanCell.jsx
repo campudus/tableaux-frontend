@@ -1,11 +1,8 @@
 var React = require('react');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var BooleanEditCell = require('./BooleanEditCell.jsx');
 
 var BooleanCell = React.createClass({
-
-  mixins : [KeyboardShortcutsMixin],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,

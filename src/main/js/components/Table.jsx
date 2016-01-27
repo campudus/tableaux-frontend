@@ -43,14 +43,14 @@ var Table = React.createClass({
     }
   },
 
-  shouldComponentUpdate : function (nextProps, nextState) {
-    if (_.isEqual(nextProps, this.props) && _.isEqual(nextState, this.state)) {
-      console.log("###### Table Props are equal. dont update.");
-      return false;
-    } else {
-      return true;
-    }
-  },
+  /*shouldComponentUpdate : function (nextProps, nextState) {
+   if (_.isEqual(nextProps, this.props) && _.isEqual(nextState, this.state)) {
+   console.log("###### Table Props are equal. dont update.");
+   return false;
+   } else {
+   return true;
+   }
+   },*/
 
   componentWillMount : function () {
     var table = this.props.table;
@@ -82,6 +82,7 @@ var Table = React.createClass({
   },
 
   componentDidUpdate : function () {
+    console.log("Table did update.");
     //Just update when used with keyboard or when clicking explicitly on a cell
     if (this.state.shouldCellFocus) {
       this.updateScrollViewToSelectedCell();
@@ -534,16 +535,19 @@ var Table = React.createClass({
     return (this.state.windowHeight - this.state.offsetTableData);
   },
 
-  onClickedTableElement : function (e) {
-    console.log("Clicked on Target inside Table: ", e.target);
-    //Check if clicked element is NOT a cell, then disableCellFocus to focus the selected row
-    this.disableShouldCellFocus();
+  onMouseDownHandler : function (e) {
+    /*
+     Important: prevents loosing the focus of a cell when clicking something.
+     When a child component inside of the Table needs focus attach a "onMouseDown" event to it and
+     call "event.stopPropagation()". This prevents calling this function and enables the standard browser behaviour
+     */
+    e.preventDefault();
   },
 
   render : function () {
     return (
       <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}
-               onClick={this.onClickedTableElement}>
+               onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
           <Columns ref="columns" columns={this.props.table.columns}/>
           <Rows ref="tableRows"
@@ -556,6 +560,7 @@ var Table = React.createClass({
                 selectedCellExpandedRow={this.state.selectedCellExpandedRow}
                 table={this.props.table}
                 shouldCellFocus={this.state.shouldCellFocus}
+                onClick={this.onClickedTableElement}
           />
         </div>
       </section>
