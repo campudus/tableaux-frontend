@@ -77,6 +77,11 @@
 
   .column-head {
     border-right: 1px solid $color-border-grey;
+
+    i {
+      margin-right: 10px;
+    }
+
   }
 
   .heading, .row {
