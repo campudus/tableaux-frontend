@@ -106,6 +106,8 @@ var LinkOverlay = React.createClass({
                     return link.id === row.id;
                     });
 
+              console.log("rowIdValue is:", rowIdValue, "row:", row.values[0]);
+
                 //Link Value is empty find default language or don't display
                 if((self.props.langtag != App.defaultLangtag) && (!rowIdValue || rowIdValue === "")){
                     rowIdValue = RowIdentifier.getRowIdentifierByRow(row, App.defaultLangtag);

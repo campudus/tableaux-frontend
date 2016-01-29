@@ -1,10 +1,5 @@
 var React = require('react');
-var RowIdentifier = require('../../helper/RowIdentifier');
 var AmpersandMixin = require('ampersand-react-mixin');
-
-/**
- * TODO: Watch for changes of identification columns to update the text!
- */
 
 var IdentifierCell = React.createClass({
 
@@ -18,15 +13,14 @@ var IdentifierCell = React.createClass({
   },
 
   cellClicked : function () {
-    console.log("clicked ID Column cell:", this.props.cell);
-    console.log("final concatCellValue:", RowIdentifier.getRowIdentifierByCell(this.props.cell, this.props.langtag));
-    console.log("column: ", this.props.cell.column.concats);
+    //console.log("clicked ID Column cell:", this.props.cell);
   },
 
   render : function () {
+    //console.log("IdentifierCell is rendering.");
     return (
       <div className='cell-content' onClick={this.cellClicked}>
-        {RowIdentifier.getRowIdentifierByCell(this.props.cell, this.props.langtag)}
+        {this.props.cell.rowConcatString(this.props.langtag)}
       </div>
     );
   }

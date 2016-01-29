@@ -29,7 +29,7 @@ var private = {
     var currentTableId = cell.tableId;
     var currentTable = cell.tables.get(currentTableId);
     var currentRow = currentTable.rows.get(cell.rowId);
-    var idCell = currentRow.cells[0];
+    var idCell = currentRow.cells.at(0);
 
     console.log("--------------------------------");
     console.log("currentTable:", currentTable);
@@ -138,7 +138,7 @@ var RowIdentifier = {
   //getRowIdentifierByRow
   getRowIdentifierByRow : function (row, langtag) {
     if (row) {
-      return this.getRowIdentifierByCell(row.cells[0], langtag);
+      return this.getRowIdentifierByCell(row.cells.at(0), langtag);
     } else {
       console.log("RowIdentifier.getRowIdentifierByRow: row is null.");
     }
@@ -149,7 +149,7 @@ var RowIdentifier = {
     var currentTableId = cell.tableId;
     var currentTable = cell.tables.get(currentTableId);
     var currentRow = currentTable.rows.get(cell.rowId);
-    var idCell = currentRow.cells[0];
+    var idCell = currentRow.cells.at(0);
     return this.getRowIdentifierByCell(idCell, langtag);
   },
 

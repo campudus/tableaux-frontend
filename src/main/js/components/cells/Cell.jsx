@@ -41,7 +41,6 @@ var Cell = React.createClass({
   },
 
   getKeyboardShortcuts : function (event) {
-    console.log("Cell.getKeyboardShortcuts()");
     return this.state.keyboardShortcuts;
   },
 
@@ -88,6 +87,11 @@ var Cell = React.createClass({
       Dispatcher.trigger('enableShouldCellFocus');
     }
 
+  },
+
+  onMouseDownHandler : function (e) {
+    //Prevents table mousedown handler, so we can select
+    e.stopPropagation();
   },
 
   render : function () {
@@ -142,7 +146,8 @@ var Cell = React.createClass({
     //onKeyDown event just for selected components
     if (this.props.selected) {
       return (
-        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1" onKeyDown={this.onKeyboardShortcut}>
+        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1" onKeyDown={this.onKeyboardShortcut}
+             onMouseDown={this.onMouseDownHandler}>
           {cellKind}
         </div>
       )

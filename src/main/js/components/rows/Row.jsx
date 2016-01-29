@@ -185,7 +185,6 @@ var Row = React.createClass({
 
   render : function () {
     var self = this;
-    console.log("----> Render Row <----");
     if (this.props.isRowExpanded) {
       // render all language-rows for this row
       var rows = App.langtags.map(function (langtag) {

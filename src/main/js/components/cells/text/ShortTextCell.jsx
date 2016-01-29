@@ -33,6 +33,7 @@ var ShortTextCell = React.createClass({
       newValue = value;
     }
 
+    console.log('triggering event ', cell.changeCellEvent, {newValue : newValue});
     Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
     Dispatcher.trigger('toggleCellEditing', {
       cell : this.props.cell,

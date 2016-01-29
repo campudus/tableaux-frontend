@@ -19,6 +19,9 @@ var LinkLabelCell = React.createClass({
   },
 
   componentWillMount : function () {
+    console.log("LinkLabelCell linkElement:", this.props.linkElement);
+    console.log("LinkLabelCell column:", this.props.cell.column);
+
     this.getRows();
   },
 
@@ -35,7 +38,7 @@ var LinkLabelCell = React.createClass({
             var toRow = toTable.rows.get(self.props.linkElement.id);
             var rowIdValue = RowIdentifier.getRowIdentifierByRow(toRow, self.props.langtag);
 
-            if(!rowIdValue || rowIdValue === ""){
+            if (!rowIdValue || rowIdValue === "") {
               rowIdValue = "#NO TRANSLATION#";
             }
             self.setState({linkName : rowIdValue});

@@ -52,6 +52,11 @@ var Table = React.createClass({
    }
    },*/
 
+  componentWillUpdate : function (nextProps, nextState) {
+    console.log("this.state.selectedCell", this.state.selectedCell);
+    console.log("nextState.selectedCell", nextState.selectedCell);
+  },
+
   componentWillMount : function () {
     var table = this.props.table;
     //We need to fetch columns first, since rows has Cells that depend on the column model
@@ -215,7 +220,6 @@ var Table = React.createClass({
     if (selectedCell) {
       var noEditingModeNeeded = (selectedCell.kind === "boolean" || selectedCell.kind === "link");
       if (!noEditingModeNeeded) {
-        console.log("i will edit this cell:", selectedCell);
         this.setState({
           selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
         });
@@ -266,7 +270,7 @@ var Table = React.createClass({
     row = self.props.table.rows.get(rowCell.id);
     nextCellId = 'cell-' + self.props.table.getId() + '-' + columnCell.id + '-' + rowCell.id;
     if (row) {
-      var nextCell = _.find(row.cells, 'id', nextCellId);
+      var nextCell = row.cells.get(nextCellId);
       if (nextCell) {
         this.toggleCellSelection({
           cell : nextCell,
@@ -389,7 +393,6 @@ var Table = React.createClass({
 
   getKeyboardShortcuts : function () {
     var self = this;
-    console.log("Table getKeyboardShortcuts");
 
     //Force the next selected cell to be focused
     if (!this.state.shouldCellFocus) {
@@ -545,6 +548,7 @@ var Table = React.createClass({
   },
 
   render : function () {
+    console.log(">>>>> Rendering Table <<<<<<");
     return (
       <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}
                onMouseDown={this.onMouseDownHandler}>

@@ -64,6 +64,7 @@ var Rows = React.createClass({
   },
 
   render : function () {
+    console.log("RENDERING ROWS");
     return (
       <Infinite className="data-wrapper"
                 containerHeight={this.props.rowsHeight}
