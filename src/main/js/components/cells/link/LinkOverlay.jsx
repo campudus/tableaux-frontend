@@ -3,7 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
-var RowIdentifier = require('../../helper/RowIdentifier');
+var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 var App = require('ampersand-app');
 
 var LinkOverlay = React.createClass({
@@ -12,7 +12,8 @@ var LinkOverlay = React.createClass({
   getInitialState : function () {
     return {
       search : "",
-      rowResults : {}
+      rowResults : {},
+      loading : true
     };
   },
 
@@ -35,8 +36,10 @@ var LinkOverlay = React.createClass({
       success : function () {
         toTable.rows.fetch({
           success : function () {
-            console.log("success fetching table rows: ", toTable.rows);
-            self.setState({rowResults : toTable.rows});
+            self.setState({
+              rowResults : toTable.rows,
+              loading : false
+            });
           },
           error : function (err) {
             console.error('error fetching rows', err);
@@ -57,15 +60,15 @@ var LinkOverlay = React.createClass({
     });
   },
 
-  addLinkValue : function (isLinked, row) {
+  addLinkValue : function (isLinked, row, rowCellIdValue) {
     var cell = this.props.cell;
+
     var link = {
       id : row.id,
-      value : "FIXME" // row.values[0] //TODO: API needs to give us the first column when linking to another table
+      value : rowCellIdValue
     };
 
     return function () {
-      console.log("addLinkValue click. cell:", cell, "row:", row);
       var links = _.clone(cell.value);
 
       if (isLinked) {
@@ -85,69 +88,76 @@ var LinkOverlay = React.createClass({
     Dispatcher.trigger('close-overlay');
   },
 
+  stringHasValue : function (stringToCheck) {
+    return (stringToCheck && stringToCheck.trim() !== "");
+  },
+
   renderOverlay : function () {
     var self = this;
     var listItems = null;
     var cell = this.props.cell;
+    var toColumn = self.props.cell.column.toColumn;
+    var currentCellValue = cell ? cell.value : null;
+    var toTableId = this.props.cell.column.toTable;
+    var toTable = this.props.cell.tables.get(toTableId);
+    var toTableColumns = toTable.columns;
+    var toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
 
     //check for empty obj or map fails
     if (!_.isEmpty(this.state.rowResults)) {
 
-      console.log("RowResults:", this.state.rowResults);
-
       listItems = (
-          <ul>
-            {this.state.rowResults.map(function (row) {
+        <ul>
+          {this.state.rowResults.map(function (row) {
 
-                //Get identifier string of row
-                var rowIdValue = RowIdentifier.getRowIdentifierByRow(row, self.props.langtag);
-                var currentCellValue = cell ? cell.value : null;
-                var isLinked = !!_.find(currentCellValue, function (link) {
-                    return link.id === row.id;
-                    });
+            var rowConcatString;
+            var isLinked = !!_.find(currentCellValue, function (link) {
+              return link.id === row.id;
+              });
+            var rowCellIdValue = row.values[toIdColumnIndex];
+            rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
 
-              console.log("rowIdValue is:", rowIdValue, "row:", row.values[0]);
+            //Search filter
+            if (_.isString(rowConcatString) && self.state.search !== null && rowConcatString.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
+              if(rowConcatString && rowConcatString !== ""){
+                return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                           onClick={self.addLinkValue(isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
+                }else{
+                return null;
+                }
+              }
 
-                //Link Value is empty find default language or don't display
-                if((self.props.langtag != App.defaultLangtag) && (!rowIdValue || rowIdValue === "")){
-                    rowIdValue = RowIdentifier.getRowIdentifierByRow(row, App.defaultLangtag);
+            })}
 
-                    if(rowIdValue && rowIdValue != ""){
-                        rowIdValue += " (" + App.defaultLangtag  + ")";
-                        }
-                    }
-
-                if (_.isString(rowIdValue) && self.state.search !== null && rowIdValue.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
-                    if(rowIdValue && rowIdValue !== ""){
-                        return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                                   onClick={self.addLinkValue(isLinked, row)}>{rowIdValue}</li>;
-                        }else{
-                        return null;
-                        }
-                    }
-
-                })}
-          </ul>
+        </ul>
       );
 
     } else {
       listItems = "No data in table '" + self.props.cell.column.name + "'";
     }
 
-    return (
-        <div>
-          <div className="search-input-wrapper">
-            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                   defaultValue={this.state.search} ref="search" autoFocus/>
-            <i className="fa fa-search"></i>
-          </div>
-          {listItems}
-        </div>
-    );
+    return listItems;
   },
 
   render : function () {
-    return this.renderOverlay();
+    var listDisplay;
+
+    if (this.state.loading) {
+      listDisplay = "Loading...";
+    } else {
+      listDisplay = this.renderOverlay();
+    }
+
+    return (
+      <div>
+        <div className="search-input-wrapper">
+          <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                 defaultValue={this.state.search} ref="search" autoFocus/>
+          <i className="fa fa-search"></i>
+        </div>
+        {listDisplay}
+      </div>
+    );
   }
 
 });

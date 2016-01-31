@@ -2,8 +2,8 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var _ = require('lodash');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
-var LinkLabelDeleteCell = require('./LinkLabelDeleteCell.jsx');
 var LinkOverlay = require('./LinkOverlay.jsx');
+var LinkLabelCell = require('./LinkLabelCell.jsx');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 
 var LinkEditCell = React.createClass({
@@ -38,13 +38,12 @@ var LinkEditCell = React.createClass({
       var cell = this.props.cell;
       var newValue = _.filter(cell.value, function (element, arrayIndex) {
         return element.id !== idx;
-      });
+        });
       Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
         {newValue : newValue});
     },
 
     openOverlay : function () {
-      console.log("link open overlay");
       Dispatcher.trigger(
         'open-overlay', {
           head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
@@ -56,8 +55,8 @@ var LinkEditCell = React.createClass({
     render : function () {
       var self = this;
       var links = self.props.cell.value.map(function (element, arrayIndex) {
-        return <LinkLabelDeleteCell key={arrayIndex} id={element.id} linkElement={element} cell={self.props.cell}
-                                    langtag={self.props.langtag} onDelete={self.removeLink}/>;
+        return <LinkLabelCell key={arrayIndex} id={element.id} deletable={true} linkElement={element}
+                              cell={self.props.cell} langtag={self.props.langtag} onDelete={self.removeLink}/>;
       });
 
       links.push(<button key={"add-btn"} className="add" onClick={self.openOverlay}>+</button>);

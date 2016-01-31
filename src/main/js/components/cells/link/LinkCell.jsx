@@ -33,7 +33,8 @@ var LinkCell = React.createClass({
 
         //Limit to maximum 3 Links
         if (id <= 2) {
-          return <LinkLabelCell key={id} linkElement={element} cell={self.props.cell} langtag={self.props.langtag}/>;
+          return <LinkLabelCell key={id} linkElement={element} cell={self.props.cell} langtag={self.props.langtag}
+                                deletable={false}/>;
         } else {
           tooManyLinks = true;
           return null;
@@ -46,9 +47,9 @@ var LinkCell = React.createClass({
         links.push(<span key={"more"} className="more">&hellip;</span>);
       }
       return (
-        <div className={'cell-content'}>
-          {links}
-        </div>
+          <div className={'cell-content'}>
+            {links}
+          </div>
       );
 
     }

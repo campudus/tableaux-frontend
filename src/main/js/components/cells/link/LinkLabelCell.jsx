@@ -1,62 +1,57 @@
 var React = require('react');
-var RowIdentifier = require('../../helper/RowIdentifier.js');
+var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 
-/**
- * FIXME: This can't go into production. Backend needs proper link values! Just for dev purpose
- */
 var LinkLabelCell = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     linkElement : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired
+    langtag : React.PropTypes.string.isRequired,
+
+    //optional for delete label
+    deletable : React.PropTypes.bool.isRequired,
+    id : React.PropTypes.number,
+    onDelete : React.PropTypes.func
   },
 
   getInitialState : function () {
     return {
-      linkName : "loading..."
+      linkName : ""
     }
   },
 
   componentWillMount : function () {
-    console.log("LinkLabelCell linkElement:", this.props.linkElement);
-    console.log("LinkLabelCell column:", this.props.cell.column);
+    //Build the linkname once at the beginning
+    this.setState({
+      linkName : this.getLinkName()
+    });
 
-    this.getRows();
   },
 
-  getRows : function () {
+  getLinkName : function () {
+    var toColumn = this.props.cell.column.toColumn;
+    var linkElementVal = this.props.linkElement.value;
+    var linkName = RowConcatHelper.getRowConcatStringWithFallback(linkElementVal, toColumn, this.props.langtag);
+    return linkName;
+  },
 
-    var self = this;
-    var toTable = this.props.cell.tables.get(this.props.cell.column.toTable);
-
-
-    toTable.columns.fetch({
-      success : function () {
-        toTable.rows.fetch({
-          success : function () {
-            var toRow = toTable.rows.get(self.props.linkElement.id);
-            var rowIdValue = RowIdentifier.getRowIdentifierByRow(toRow, self.props.langtag);
-
-            if (!rowIdValue || rowIdValue === "") {
-              rowIdValue = "#NO TRANSLATION#";
-            }
-            self.setState({linkName : rowIdValue});
-          },
-          error : function (err) {
-            console.error('error fetching rows', err);
-          }
-        });
-      },
-      error : function (err) {
-        console.error("error fetching columns", err);
-      }
-    });
+  removeLinkHandler : function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.props.onDelete(this.props.id);
   },
 
   render : function () {
+    var theClassName = "link-label";
+    var hasDeleteButton = this.props.deletable;
+    var deleteButton = <i onClick={this.removeLinkHandler} className="fa fa-times"></i>;
+
+    if (hasDeleteButton) {
+      theClassName += " delete";
+    }
+
     return (
-        <span className="link-label">{this.state.linkName}</span>
+      <span className={theClassName}>{this.state.linkName}{hasDeleteButton ? deleteButton : ""}</span>
     );
 
   }
