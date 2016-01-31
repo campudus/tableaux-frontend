@@ -64,14 +64,19 @@ var DateTimeCell = React.createClass({
     //only when date selected
     if (this.touched) {
       var formattedDateValue;
-      if (this.props.cell.isMultiLanguage) {
-        formattedDateValue = _.clone(this.props.cell.value);
+      var cell = this.props.cell;
+
+      if (cell.isMultiLanguage) {
+        formattedDateValue = {};
         formattedDateValue[this.props.langtag] = (currentDateTimeValue === null) ? null : currentDateTimeValue;
+
       } else {
         formattedDateValue = (currentDateTimeValue === null) ? null : String(currentDateTimeValue);
       }
+
       //Save to db
       Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : formattedDateValue});
+
     }
   },
 

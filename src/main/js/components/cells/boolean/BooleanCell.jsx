@@ -8,15 +8,35 @@ var BooleanCell = React.createClass({
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
     selected : React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
+    setCellKeyboardShortcuts : React.PropTypes.func
   },
 
   handleEditDone : function (newValue) {
-    Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : newValue});
+
+    var cell = this.props.cell;
+    var valueToSave;
+
+    if (cell.isMultiLanguage) {
+      valueToSave = {};
+      valueToSave[this.props.langtag] = newValue;
+    } else {
+      valueToSave = newValue;
+    }
+
+    Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : valueToSave});
   },
 
   getCheckboxValue : function () {
-    return !!this.props.cell.value;
+    var cell = this.props.cell;
+    var booleanValue;
+
+    if (cell.isMultiLanguage) {
+      booleanValue = cell.value[this.props.langtag];
+    } else {
+      booleanValue = cell.value;
+    }
+
+    return !!booleanValue;
   },
 
   /**
@@ -33,7 +53,7 @@ var BooleanCell = React.createClass({
     //We split this simple boolean into two components to get the keydown listener just once when selected!
     if (!this.props.selected) {
       booleanCellNode =
-          <input className="checkbox" type="checkbox" readOnly="readonly" checked={this.getCheckboxValue()}/>;
+        <input className="checkbox" type="checkbox" readOnly="readonly" checked={this.getCheckboxValue()}/>;
     } else {
       booleanCellNode = <BooleanEditCell checked={this.getCheckboxValue()}
                                          langtag={this.props.langtag}
@@ -42,9 +62,9 @@ var BooleanCell = React.createClass({
     }
 
     return (
-        <div className={'cell-content'}>
-          {booleanCellNode}
-        </div>
+      <div className={'cell-content'}>
+        {booleanCellNode}
+      </div>
     );
 
   }

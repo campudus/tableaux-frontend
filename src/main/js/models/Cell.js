@@ -105,21 +105,41 @@ var Cell = AmpersandModel.extend({
     var changeCellListener = function (event) {
       var self = this;
       var oldValue = this.value;
-      if (oldValue !== event.newValue) {
-        this.value = event.newValue;
+      var newValue = event.newValue;
+      var mergedValue;
+      var updateNecessary = false;
 
-        this.save(this, {
-          parse : false,
+      if (self.isLink) {
+        updateNecessary = !_.isEqual(oldValue, newValue);
+        mergedValue = newValue;
+      } else if (self.isMultiLanguage) {
+        mergedValue = _.assign({}, oldValue, newValue);
+        updateNecessary = !_.isEqual(oldValue, mergedValue);
+      } else {
+        console.log("im single language:", newValue);
+        updateNecessary = !_.isEqual(oldValue, newValue);
+        mergedValue = newValue;
+      }
+      //debugger;
+
+      if (updateNecessary) {
+        this.value = mergedValue;
+        console.log("Cell Model: saving cell with value:", newValue);
+        this.save(newValue, {
+          //parse : false, Why???
+          patch : true, // save only the changed language fragment of the object
           success : function () {
             console.log('changed cell trigger', self.changedCellEvent);
+            self.value = mergedValue;
             Dispatcher.trigger(self.changedCellEvent, self);
+
+            //FIXME: When multiple users are working at the same time its probably better to fetch always.
             if (event.fetch) {
               self.fetch();
             }
           },
           error : function () {
             console.error('save unsuccessful!', arguments);
-
             if (event.fetch) {
               self.fetch();
             } else {
@@ -128,14 +148,18 @@ var Cell = AmpersandModel.extend({
           }
         });
       }
+
+
     };
+
+
     if (options && options.row && !options.noListeners) {
 
       var name = this.changeCellEvent;
       var handler = changeCellListener.bind(this);
       App.on(name, handler);
       this.allEvents.push({name : name, handler : handler});
-      options.row.on('remove', this.close.bind(this));
+      //options.row.on('remove', this.close.bind(this));
 
       //This cell is a concat cell and listens to its identifier cells
       if (this.isConcatCell) {
@@ -176,15 +200,20 @@ var Cell = AmpersandModel.extend({
     return attrs;
   },
 
-  parse : function (resp, options) {
-    if (!(options && options.parse)) {
-      return this;
-    } else if (resp.rows) {
-      return resp.rows[0];
-    } else {
-      return resp;
-    }
-  }
+  //Discuss with team or delete
+
+  /*parse : function (resp, options) {
+   console.log("###### parse of cell. resp:", resp);
+   if (!(options && options.parse)) {
+   return this;
+   } else if (resp.rows) {
+   return resp.rows[0];
+   } else {
+   return resp;
+   }
+   }*/
+
+
 });
 
 module.exports = Cell;

@@ -26,15 +26,17 @@ var ShortTextCell = React.createClass({
 
   handleEditDone : function (newValue) {
     var cell = this.props.cell;
+    var valueToSave;
 
     if (cell.isMultiLanguage) {
-      var value = _.clone(cell.value);
-      value[this.props.langtag] = newValue;
-      newValue = value;
+      valueToSave = {};
+      valueToSave[this.props.langtag] = newValue;
+    } else {
+      valueToSave = newValue;
     }
 
-    console.log('triggering event ', cell.changeCellEvent, {newValue : newValue});
-    Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
+    console.log('triggering event ', cell.changeCellEvent, {newValue : valueToSave});
+    Dispatcher.trigger(cell.changeCellEvent, {newValue : valueToSave});
     Dispatcher.trigger('toggleCellEditing', {
       cell : this.props.cell,
       editing : false
@@ -57,8 +59,8 @@ var ShortTextCell = React.createClass({
   renderTextCell : function (cell, value) {
     return (
       <div className='cell-content' onClick={this.handleClick}>
-          {value === null ? "" : value}
-        </div>
+        {value === null ? "" : value}
+      </div>
     );
   },
 

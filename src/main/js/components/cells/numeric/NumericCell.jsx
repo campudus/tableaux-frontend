@@ -28,14 +28,16 @@ var NumericCell = React.createClass({
 
   handleEditDone : function (newValue) {
     var cell = this.props.cell;
+    var valueToSave;
 
     if (cell.isMultiLanguage) {
-      var value = _.clone(cell.value);
-      value[this.props.langtag] = newValue;
-      newValue = value;
+      valueToSave = {};
+      valueToSave[this.props.langtag] = newValue;
+    } else {
+      valueToSave = newValue;
     }
 
-    Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
+    Dispatcher.trigger(cell.changeCellEvent, {newValue : valueToSave});
     Dispatcher.trigger('toggleCellEditing', {
       cell : this.props.cell,
       editing : false
