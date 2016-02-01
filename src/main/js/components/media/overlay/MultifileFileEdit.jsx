@@ -8,7 +8,10 @@ var MultifileFileEdit = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     originalLangtag : React.PropTypes.string.isRequired,
     fileData : React.PropTypes.object.isRequired,
-    onChange : React.PropTypes.func.isRequired
+    onTitleChange : React.PropTypes.func.isRequired,
+    onDescriptionChange : React.PropTypes.func.isRequired,
+    onExternalnameChange : React.PropTypes.func.isRequired,
+    onLangChange : React.PropTypes.func.isRequired
   },
 
   componentWillMount : function () {
@@ -25,25 +28,20 @@ var MultifileFileEdit = React.createClass({
       nextProps.langtag !== this.props.langtag;
   },
 
-  onChange : function (event, key) {
-    var changedVal = event.target.value;
-    this.props.onChange(this.props.originalLangtag, key, changedVal);
-  },
-
   onTitleChange : function (event) {
-    this.onChange(event, 'title');
+    this.props.onTitleChange(event.target.value, this.props.originalLangtag);
   },
 
   onDescriptionChange : function (event) {
-    this.onChange(event, 'description');
+    this.props.onDescriptionChange(event.target.value, this.props.originalLangtag);
   },
 
   onExternalNameChange : function (event) {
-    this.onChange(event, 'externalName');
+    this.props.onExternalnameChange(event.target.value, this.props.originalLangtag);
   },
 
   onLangChange : function (lang) {
-    this.props.onChange(this.props.originalLangtag, 'language', lang);
+    this.props.onLangChange(lang, this.props.originalLangtag);
   },
 
   render : function () {

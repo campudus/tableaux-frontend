@@ -18,7 +18,14 @@ var SingleFileEdit = React.createClass({
   propTypes : {
     file : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    onClose : React.PropTypes.func.isRequired
+    onClose : React.PropTypes.func.isRequired,
+    editedTitleValue : React.PropTypes.object.isRequired,
+    editedDescValue : React.PropTypes.object.isRequired,
+    editedExternalnameValue : React.PropTypes.object.isRequired,
+    hasChanged: React.PropTypes.bool.isRequired,
+    onTitleChange : React.PropTypes.func.isRequired,
+    onDescriptionChange : React.PropTypes.func.isRequired,
+    onExternalnameChange : React.PropTypes.func.isRequired
   },
 
   getInitialState : function () {
@@ -26,10 +33,6 @@ var SingleFileEdit = React.createClass({
       isTitleOpen : false,
       isDescriptionOpen : false,
       isExternalnameOpen : false,
-      editedTitleValue : {},
-      editedDescValue : {},
-      editedExternalnameValue : {},
-      hasChanged : false,
       multifileLanguage : App.langtags[1]
     }
   },
@@ -45,11 +48,11 @@ var SingleFileEdit = React.createClass({
   },
 
   onSave : function () {
-    if (this.state.hasChanged) {
+    if (this.props.hasChanged) {
       var file = this.props.file;
-      file.title = this.state.editedTitleValue;
-      file.description = this.state.editedDescValue;
-      file.externalName = this.state.editedExternalnameValue;
+      file.title = this.props.editedTitleValue;
+      file.description = this.props.editedDescValue;
+      file.externalName = this.props.editedExternalnameValue;
 
       Dispatcher.trigger('change-file', file.toJSON());
     }
@@ -57,7 +60,7 @@ var SingleFileEdit = React.createClass({
   },
 
   onClose : function (event) {
-    if (this.state.hasChanged) {
+    if (this.props.hasChanged) {
       if (confirm('Sind Sie sicher? Ungespeicherte Daten gehen verloren.')) {
         this.props.onClose(event)
       }
@@ -67,12 +70,7 @@ var SingleFileEdit = React.createClass({
   },
 
   onTitleChange : function (titleValue, langtag) {
-    var editedValue = this.state.editedTitleValue;
-    editedValue[langtag] = titleValue;
-    this.setState({
-      editedTitleValue : editedValue,
-      hasChanged : true
-    });
+    this.props.onTitleChange(titleValue, langtag);
   },
 
   toggleTitle : function () {
@@ -82,12 +80,7 @@ var SingleFileEdit = React.createClass({
   },
 
   onDescChange : function (descValue, langtag) {
-    var editedValue = this.state.editedDescValue;
-    editedValue[langtag] = descValue;
-    this.setState({
-      editedDescValue : editedValue,
-      hasChanged : true
-    });
+    this.props.onDescriptionChange(descValue, langtag);
   },
 
   toggleDesc : function () {
@@ -97,12 +90,7 @@ var SingleFileEdit = React.createClass({
   },
 
   onExternalnameChange : function (externalnameValue, langtag) {
-    var editedValue = this.state.editedExternalnameValue;
-    editedValue[langtag] = externalnameValue;
-    this.setState({
-      editedExternalnameValue : editedValue,
-      hasChanged : true
-    });
+    this.props.onExternalnameChange(externalnameValue, langtag);
   },
 
   toggleExternalname : function () {
@@ -123,7 +111,6 @@ var SingleFileEdit = React.createClass({
 
     files.forEach(function (file) {
       // upload each file for it's own
-
       var uuid = self.props.file.uuid;
 
       var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
@@ -201,7 +188,7 @@ var SingleFileEdit = React.createClass({
           <SingleFileTextInput name="fileTitle"
                                labelText="Titel"
                                originalValue={this.props.file.title}
-                               editedValue={this.state.editedTitleValue}
+                               editedValue={this.props.editedTitleValue}
                                langtag={this.props.langtag}
                                isOpen={this.state.isTitleOpen}
                                onToggle={this.toggleTitle}
@@ -210,7 +197,7 @@ var SingleFileEdit = React.createClass({
           <SingleFileTextInput name="fileDescription"
                                labelText="Beschreibung"
                                originalValue={this.props.file.description}
-                               editedValue={this.state.editedDescValue}
+                               editedValue={this.props.editedDescValue}
                                langtag={this.props.langtag}
                                isOpen={this.state.isDescriptionOpen}
                                onToggle={this.toggleDesc}
@@ -219,7 +206,7 @@ var SingleFileEdit = React.createClass({
           <SingleFileTextInput name="fileLinkName"
                                labelText="Linkname"
                                originalValue={this.props.file.externalName}
-                               editedValue={this.state.editedExternalnameValue}
+                               editedValue={this.props.editedExternalnameValue}
                                langtag={this.props.langtag}
                                isOpen={this.state.isExternalnameOpen}
                                onToggle={this.toggleExternalname}

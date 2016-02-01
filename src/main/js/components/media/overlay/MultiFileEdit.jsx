@@ -12,36 +12,34 @@ var MultiFileEdit = React.createClass({
   propTypes : {
     file : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    onClose : React.PropTypes.func.isRequired
+    onClose : React.PropTypes.func.isRequired,
+    editedTitleValue : React.PropTypes.object.isRequired,
+    editedDescValue : React.PropTypes.object.isRequired,
+    editedExternalnameValue : React.PropTypes.object.isRequired,
+    editedLanguage : React.PropTypes.object.isRequired,
+    onTitleChange : React.PropTypes.func.isRequired,
+    onDescriptionChange : React.PropTypes.func.isRequired,
+    onExternalnameChange : React.PropTypes.func.isRequired,
+    hasChanged : React.PropTypes.bool.isRequired
   },
 
   componentWillMount : function () {
-    this.hasChanged = false;
     Dispatcher.on("on-media-overlay-save", this.onSave);
     Dispatcher.on("on-media-overlay-cancel", this.onClose);
   },
 
-  componentWillUnmount: function() {
+  componentWillUnmount : function () {
     Dispatcher.off("on-media-overlay-save", this.onSave);
     Dispatcher.off("on-media-overlay-cancel", this.onClose);
   },
 
-  getInitialState : function () {
-    return {
-      edited_title : {},
-      edited_description : {},
-      edited_externalName : {},
-      edited_language : {}
-    };
-  },
-
   onSave : function () {
     var self = this;
-    if (this.hasChanged) {
+    if (this.props.hasChanged) {
       var foundLangs = [];
       var langDuplicates = [];
       App.langtags.forEach(function (langtag) {
-        var lang = self.state.edited_language[langtag] ? self.state.edited_language[langtag] : langtag;
+        var lang = self.props.editedLanguage[langtag] ? self.props.editedLanguage[langtag] : langtag;
         if (_.includes(foundLangs, lang)) {
           langDuplicates.push(lang);
         } else {
@@ -54,9 +52,9 @@ var MultiFileEdit = React.createClass({
         return;
       } else {
         var file = this.props.file;
-        _.merge(file.title, this.state.edited_title);
-        _.merge(file.description, this.state.edited_description);
-        _.merge(file.externalName, this.state.edited_externalName);
+        _.merge(file.title, this.props.editedTitleValue);
+        _.merge(file.description, this.props.editedDescValue);
+        _.merge(file.externalName, this.props.editedExternalnameValue);
 
         var changedFile = {
           title : {},
@@ -65,9 +63,9 @@ var MultiFileEdit = React.createClass({
           internalName : {},
           mimeType : {}
         };
-        for (var langToSwap  in this.state.edited_language) {
-          if (this.state.edited_language.hasOwnProperty(langToSwap)) {
-            var langToSwapTo = this.state.edited_language[langToSwap];
+        for (var langToSwap  in this.props.editedLanguage) {
+          if (this.props.editedLanguage.hasOwnProperty(langToSwap)) {
+            var langToSwapTo = this.props.editedLanguage[langToSwap];
             changedFile.title[langToSwapTo] = file.title[langToSwap] || null;
             changedFile.description[langToSwapTo] = file.description[langToSwap] || null;
             changedFile.externalName[langToSwapTo] = file.externalName[langToSwap] || null;
@@ -89,7 +87,7 @@ var MultiFileEdit = React.createClass({
   },
 
   onClose : function () {
-    if (this.hasChanged) {
+    if (this.props.hasChanged) {
       if (confirm('Sind Sie sicher? Ungespeicherte Daten gehen verloren.')) {
         this.props.onClose();
       }
@@ -98,42 +96,42 @@ var MultiFileEdit = React.createClass({
     }
   },
 
-  onChange : function (langtag, key, value) {
-    if (key == 'language') {
-      var editedValue = this.state['edited_language'];
-      editedValue[langtag] = value;
-      this.setState({
-        edited_language : editedValue
-      });
-      this.hasChanged = true;
-    } else {
-      var internalKey = 'edited_' + key;
-      var editedValue = this.state[internalKey];
-      editedValue[langtag] = value;
-      var stateObj = {};
-      stateObj[internalKey] = editedValue;
-      this.setState(stateObj);
-      this.hasChanged = true;
-    }
+  onTitleChange : function (newValue, langtag) {
+    this.props.onTitleChange(newValue, langtag);
+  },
+
+  onDescriptionChange : function (newValue, langtag) {
+    this.props.onDescriptionChange(newValue, langtag);
+  },
+
+  onExternalnameChange : function (newValue, langtag) {
+    this.props.onExternalnameChange(newValue, langtag);
+  },
+
+  onLangChange : function (newValue, langtag) {
+    this.props.onLangChange(newValue, langtag);
   },
 
   render : function () {
     var self = this;
     var files = App.langtags.map(function (langtag) {
       var fileData = {
-        title : self.state.edited_title[langtag] ? self.state.edited_title[langtag] : self.props.file.title[langtag],
-        description : self.state.edited_description[langtag] ? self.state.edited_description[langtag] : self.props.file.description[langtag],
-        externalName : self.state.edited_externalName[langtag] ? self.state.edited_externalName[langtag] : self.props.file.externalName[langtag],
+        title : self.props.editedTitleValue[langtag] ? self.props.editedTitleValue[langtag] : self.props.file.title[langtag],
+        description : self.props.editedDescValue[langtag] ? self.props.editedDescValue[langtag] : self.props.file.description[langtag],
+        externalName : self.props.editedExternalnameValue[langtag] ? self.props.editedExternalnameValue[langtag] : self.props.file.externalName[langtag],
         internalName : self.props.file.internalName[langtag],
         uuid : self.props.file.uuid
       };
-      var language = self.state.edited_language[langtag] ? self.state.edited_language[langtag] : langtag;
+      var language = self.props.editedLanguage[langtag] ? self.props.editedLanguage[langtag] : langtag;
       return (
         <MultifileFileEdit key={langtag}
                            originalLangtag={langtag}
                            langtag={language}
                            fileData={fileData}
-                           onChange={self.onChange}/>
+                           onTitleChange={self.onTitleChange}
+                           onDescriptionChange={self.onDescriptionChange}
+                           onExternalnameChange={self.onExternalnameChange}
+                           onLangChange={self.onLangChange}/>
       );
     });
 
