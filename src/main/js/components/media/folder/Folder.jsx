@@ -102,6 +102,7 @@ var Folder = React.createClass({
       return (<GenericOverlay key="genericoverlay"
                               head={overlay.head}
                               body={overlay.body}
+                              footer={overlay.footer}
                               type={overlay.type}
                               closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
       />);

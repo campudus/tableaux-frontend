@@ -8,6 +8,7 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 
 var FileEdit = require('../overlay/FileEdit.jsx');
 var FileEditHead = require('../overlay/FileEditHead.jsx');
+var FileEditFooter = require('../overlay/FileEditFooter.jsx');
 
 var File = React.createClass({
   mixins : [AmpersandMixin],
@@ -37,10 +38,19 @@ var File = React.createClass({
     }
   },
 
+  onSave : function() {
+    Dispatcher.trigger('on-media-overlay-save');
+  },
+
+  onCancel : function() {
+    Dispatcher.trigger('on-media-overlay-cancel');
+  },
+
   onEdit : function () {
     Dispatcher.trigger('open-overlay', {
       head : <FileEditHead file={this.props.file} langtag={this.props.langtag}/>,
       body : <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose}/>,
+      footer : <FileEditFooter onSave={this.onSave} onCancel={this.onCancel}/>,
       type : 'full-flex',
       closeOnBackgroundClicked : false
     });

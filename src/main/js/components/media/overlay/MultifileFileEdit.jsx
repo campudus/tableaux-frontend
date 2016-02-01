@@ -49,44 +49,42 @@ var MultifileFileEdit = React.createClass({
   render : function () {
     return (
       <div className="multifile-file-edit">
-        <div className="input-wrapper">
-          <div className="cover-wrapper">
-            <div className="cover">
-              <FileChangeUpload
-                langtag={this.props.langtag}
-                internalFileName={this.props.fileData.internalName}
-                uuid={this.props.fileData.uuid}/>
+        <div className="cover-wrapper">
+          <div className="cover">
+            <FileChangeUpload
+              langtag={this.props.langtag}
+              internalFileName={this.props.fileData.internalName}
+              uuid={this.props.fileData.uuid}/>
+          </div>
+        </div>
+        <div className="properties-wrapper">
+          <div className='field-item'>
+            <label htmlFor={this.titleId} className="field-label">Titel</label>
+            <div className="field-input">
+              <input type="text" className="field-text-input" id={this.titleId} value={this.props.fileData.title}
+                     onChange={this.onTitleChange}/>
             </div>
           </div>
-          <div className="properties-wrapper">
-            <div className='field-item'>
-              <label htmlFor={this.titleId} className="field-label">Titel</label>
-              <div className="field-input">
-                <input type="text" className="field-text-input" id={this.titleId} value={this.props.fileData.title}
-                       onChange={this.onTitleChange}/>
-              </div>
+          <div className='field-item'>
+            <label htmlFor={this.descId} className="field-label">Beschreibung</label>
+            <div className="field-input">
+              <input type="text" className="field-text-input" id={this.descId}
+                     value={this.props.fileData.description}
+                     onChange={this.onDescriptionChange}/>
             </div>
-            <div className='field-item'>
-              <label htmlFor={this.descId} className="field-label">Beschreibung</label>
-              <div className="field-input">
-                <input type="text" className="field-text-input" id={this.descId}
-                       value={this.props.fileData.description}
-                       onChange={this.onDescriptionChange}/>
-              </div>
-            </div>
-            <div className='field-item'>
-              <label htmlFor={this.externalNameId} className="field-label">Linkname</label>
-              <div className="field-input">
-                <input type="text" className="field-text-input" id={this.externalNameId}
-                       value={this.props.fileData.externalName}
-                       onChange={this.onExternalNameChange}/>
-              </div>
-            </div>
-            <LanguageSwitcher
-                    langtag={this.props.langtag}
-                    onChange={this.onLangChange}
-            />
           </div>
+          <div className='field-item'>
+            <label htmlFor={this.externalNameId} className="field-label">Linkname</label>
+            <div className="field-input">
+              <input type="text" className="field-text-input" id={this.externalNameId}
+                     value={this.props.fileData.externalName}
+                     onChange={this.onExternalNameChange}/>
+            </div>
+          </div>
+          <LanguageSwitcher
+            langtag={this.props.langtag}
+            onChange={this.onLangChange}
+          />
         </div>
       </div>
     );

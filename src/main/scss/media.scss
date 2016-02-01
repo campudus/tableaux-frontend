@@ -134,134 +134,116 @@
 #overlay {
   &.full-flex {
     #overlay-wrapper {
+
+      .button-wrapper {
+        text-align: center;
+      }
+
       #overlay-content {
-
-        div.multifile-edit {
-          height: 100%;
-          overflow-y: auto;
-          width: 1320px;
-          .multifile-file-edit-wrapper {
-            height: 90%;
-            overflow-y: auto;
-            .multifile-file-edit {
-              float: left;
-              margin: 0 15px 20px 0;
-
-              .field-item {
-                .field-label {
-                  padding-left: 0;
-                }
-
-                .field-input {
-                  input {
-                    margin-left: 0;
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        .singlefile-edit {
-          width: 960px;
-          margin: 0 auto;
-        }
 
         .singlefile-edit, .multifile-file-edit {
 
-          .input-wrapper {
-            height: 90%;
-            overflow-y: auto;
-            .cover-wrapper {
-              float: left;
-              width: 260px;
-              height: 100%;
-              text-align: center;
-
-              img, span.empty-icon {
-                position: relative;
-                top: 50%;
-                @include transform(translateY(-50%));
-              }
-
-              span.empty-icon {
-                font-size: 50px;
-                .fa-plus {
-                  font-size: 40px;
-                  width: 50px;
-                  height: 50px;
-                  border-radius: 50%;
-                  color: #fff;
-                  background-color: $color-success;
-                  bottom: -15px;
-                  z-index: 2;
-                  left: 130px;
-                  line-height: 55px;
-                }
-              }
+          .field-item {
+            .field-label {
+              font-family: $font-sec;
+              display: inline-block;
+              margin-bottom: 5px;
+              padding-left: 30px;
             }
 
-            .properties-wrapper {
-              height: 100%;
-              float: left;
-              margin-left: 15px;
-
-              .field-item {
-                .field-label {
-                  font-family: $font-sec;
-                  display: inline-block;
-                  margin-bottom: 5px;
-                  padding-left: 30px;
-                }
-
-                .field-input {
-                  input {
-                    font-size: $font-size-standard;
-                    height: 30px;
-                    width: 360px;
-                    padding: 2px;
-                    margin-left: 10px;
-                    box-sizing: border-box;
-                  }
-                  margin-bottom: 15px;
-
-                  .langtag {
-                    width: 20px;
-                    float: left;
-                    text-align: center;
-                  }
-                }
-              }
-            }
-
-            .multifile-wrapper {
-              box-sizing: border-box;
-              float: right;
-              width: 260px;
-              height: 100%;
-              .dropzone {
+            .field-input {
+              input {
+                font-size: $font-size-standard;
+                height: 30px;
+                width: 360px;
+                padding: 2px;
+                margin-left: 10px;
                 box-sizing: border-box;
-                cursor: pointer;
-                font-family: $font-main;
-                height: 320px;
-                text-align: center;
-                border: 2px dashed $color-button-grey;
-                margin: 0;
-                background-color: transparent;
-                padding: 10px;
               }
+              margin-bottom: 15px;
 
-              #language-switcher {
-                margin-top: 5px;
+              .langtag {
+                width: 20px;
+                float: left;
+                text-align: center;
               }
             }
           }
+
+          .cover-wrapper, .properties-wrapper, .multifile-wrapper {
+            display: inline-block;
+            margin-bottom: 40px;
+            vertical-align: top;
+          }
+
+          .cover-wrapper {
+            width: 260px;
+            text-align: center;
+            margin-right: 40px;
+
+            img, span.empty-icon {
+              position: relative;
+              top: 50%;
+              @include transform(translateY(-50%));
+            }
+
+            span.empty-icon {
+              font-size: 50px;
+              .fa-plus {
+                font-size: 40px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                color: #fff;
+                background-color: $color-success;
+                bottom: -15px;
+                z-index: 2;
+                left: 130px;
+                line-height: 55px;
+              }
+            }
+          }
+
+          .properties-wrapper {
+            margin-right: 40px;
+          }
+
+          .multifile-wrapper {
+            box-sizing: border-box;
+            width: 260px;
+            .dropzone {
+              box-sizing: border-box;
+              cursor: pointer;
+              font-family: $font-main;
+              height: 320px;
+              text-align: center;
+              border: 2px dashed $color-button-grey;
+              margin: 0;
+              background-color: transparent;
+              padding: 10px;
+            }
+
+            #language-switcher {
+              margin-top: 5px;
+            }
+          }
+
         }
 
-        .button-wrapper {
-          clear: both;
-          text-align: center;
-          height: 10%;
+        .multifile-file-edit {
+          display: inline-block;
+
+          .field-item {
+            .field-label {
+              padding-left: 0;
+            }
+
+            .field-input {
+              input {
+                margin-left: 0;
+              }
+            }
+          }
         }
 
         .cover {

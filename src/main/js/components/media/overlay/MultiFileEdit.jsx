@@ -17,6 +17,13 @@ var MultiFileEdit = React.createClass({
 
   componentWillMount : function () {
     this.hasChanged = false;
+    Dispatcher.on("on-media-overlay-save", this.onSave);
+    Dispatcher.on("on-media-overlay-cancel", this.onClose);
+  },
+
+  componentWillUnmount: function() {
+    Dispatcher.off("on-media-overlay-save", this.onSave);
+    Dispatcher.off("on-media-overlay-cancel", this.onClose);
   },
 
   getInitialState : function () {
@@ -28,8 +35,7 @@ var MultiFileEdit = React.createClass({
     };
   },
 
-  onSave : function (event) {
-    event.preventDefault();
+  onSave : function () {
     var self = this;
     if (this.hasChanged) {
       var foundLangs = [];
@@ -82,13 +88,13 @@ var MultiFileEdit = React.createClass({
     this.props.onClose(event);
   },
 
-  onClose : function (event) {
+  onClose : function () {
     if (this.hasChanged) {
       if (confirm('Sind Sie sicher? Ungespeicherte Daten gehen verloren.')) {
-        this.props.onClose(event)
+        this.props.onClose();
       }
     } else {
-      this.props.onClose(event)
+      this.props.onClose();
     }
   },
 
@@ -132,15 +138,8 @@ var MultiFileEdit = React.createClass({
     });
 
     return (
-      <div className="multifile-edit">
-        <div className="multifile-file-edit-wrapper">
-          {files}
-          <div className="clearfix"></div>
-        </div>
-        <div className="button-wrapper">
-          <button className="button" onClick={this.onSave}>Save</button>
-          <button className="button" onClick={this.onClose}>Cancel</button>
-        </div>
+      <div className="multifile-file-edit-wrapper">
+        {files}
       </div>
     );
   }

@@ -34,8 +34,17 @@ var SingleFileEdit = React.createClass({
     }
   },
 
-  onSave : function (event) {
-    event.preventDefault();
+  componentWillMount : function () {
+    Dispatcher.on("on-media-overlay-save", this.onSave);
+    Dispatcher.on("on-media-overlay-cancel", this.onClose);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off("on-media-overlay-save", this.onSave);
+    Dispatcher.off("on-media-overlay-cancel", this.onClose);
+  },
+
+  onSave : function () {
     if (this.state.hasChanged) {
       var file = this.props.file;
       file.title = this.state.editedTitleValue;
@@ -180,68 +189,63 @@ var SingleFileEdit = React.createClass({
 
     return (
       <div className="singlefile-edit">
-        <div className="input-wrapper">
-          <div className="cover-wrapper">
-            <div className="cover">
-              <FileChangeUpload
-                langtag={fileLangtag}
-                internalFileName={fileInternalName}
-                uuid={this.props.file.uuid}/>
-            </div>
+        <div className="cover-wrapper">
+          <div className="cover">
+            <FileChangeUpload
+              langtag={fileLangtag}
+              internalFileName={fileInternalName}
+              uuid={this.props.file.uuid}/>
           </div>
-          <div className="properties-wrapper">
-            <SingleFileTextInput name="fileTitle"
-                                 labelText="Titel"
-                                 originalValue={this.props.file.title}
-                                 editedValue={this.state.editedTitleValue}
-                                 langtag={this.props.langtag}
-                                 isOpen={this.state.isTitleOpen}
-                                 onToggle={this.toggleTitle}
-                                 onChange={this.onTitleChange}/>
+        </div>
+        <div className="properties-wrapper">
+          <SingleFileTextInput name="fileTitle"
+                               labelText="Titel"
+                               originalValue={this.props.file.title}
+                               editedValue={this.state.editedTitleValue}
+                               langtag={this.props.langtag}
+                               isOpen={this.state.isTitleOpen}
+                               onToggle={this.toggleTitle}
+                               onChange={this.onTitleChange}/>
 
-            <SingleFileTextInput name="fileDescription"
-                                 labelText="Beschreibung"
-                                 originalValue={this.props.file.description}
-                                 editedValue={this.state.editedDescValue}
-                                 langtag={this.props.langtag}
-                                 isOpen={this.state.isDescriptionOpen}
-                                 onToggle={this.toggleDesc}
-                                 onChange={this.onDescChange}/>
+          <SingleFileTextInput name="fileDescription"
+                               labelText="Beschreibung"
+                               originalValue={this.props.file.description}
+                               editedValue={this.state.editedDescValue}
+                               langtag={this.props.langtag}
+                               isOpen={this.state.isDescriptionOpen}
+                               onToggle={this.toggleDesc}
+                               onChange={this.onDescChange}/>
 
-            <SingleFileTextInput name="fileLinkName"
-                                 labelText="Linkname"
-                                 originalValue={this.props.file.externalName}
-                                 editedValue={this.state.editedExternalnameValue}
-                                 langtag={this.props.langtag}
-                                 isOpen={this.state.isExternalnameOpen}
-                                 onToggle={this.toggleExternalname}
-                                 onChange={this.onExternalnameChange}/>
-          </div>
+          <SingleFileTextInput name="fileLinkName"
+                               labelText="Linkname"
+                               originalValue={this.props.file.externalName}
+                               editedValue={this.state.editedExternalnameValue}
+                               langtag={this.props.langtag}
+                               isOpen={this.state.isExternalnameOpen}
+                               onToggle={this.toggleExternalname}
+                               onChange={this.onExternalnameChange}/>
+        </div>
 
-          <div className="multifile-wrapper">
-            <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
+        <div className="multifile-wrapper">
+          <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
               <span>Falls es für diese Datei Übersetzungen in anderen Sprachen gibt, kann hier eine übersetzte Version hochgeladen werden.
                 Die Datei wird dann automatisch in eine mehrsprachige Datei umgewandelt.
                 Dies bedeutet, dass, neben den übersetzten Attributen, für jede Sprache eine Übersetzung der Datei hochgeladen werden kann.
                 <br />
                 <br />
                 Die bereits vorhandene Datei wird automatisch als <img src={"/img/flags/" + icon}
-                                                                       alt={country}/> {language.toUpperCase()} markiert. Dies kann später wieder verändert werden.
+                                                                       alt={country}/> {language.toUpperCase() }
+                &nbsp;markiert. Dies kann später wieder verändert werden.
                 <br />
                 <br />
                 Übersetzte Datei hierher ziehen oder hier klicken, um übersetzte Datei hochzuladen.
               </span>
-            </Dropzone>
-            <LanguageSwitcher
-              options={langOptions}
-              openOnTop
-              onChange={this.onMultifileLanguageChange}
-              langtag={this.state.multifileLanguage}/>
-          </div>
-        </div>
-        <div className="button-wrapper">
-          <button className="button" onClick={this.onSave}>Save</button>
-          <button className="button" onClick={this.onClose}>Cancel</button>
+          </Dropzone>
+          <LanguageSwitcher
+            options={langOptions}
+            openOnTop
+            onChange={this.onMultifileLanguageChange}
+            langtag={this.state.multifileLanguage}/>
         </div>
       </div>
     );

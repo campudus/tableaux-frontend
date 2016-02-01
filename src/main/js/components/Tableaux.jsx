@@ -82,6 +82,7 @@ var Tableaux = React.createClass({
       return (<GenericOverlay key="genericoverlay"
                               head={overlay.head}
                               body={overlay.body}
+                              footer={overlay.footer}
                               type={overlay.type}
                               closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
       />);
@@ -114,19 +115,19 @@ var Tableaux = React.createClass({
     }
 
     return (
-        <div>
-          <header>
-            <NavigationList langtag={this.props.langtag}/>
-            <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
-                        tables={tables}/>
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
-            <PageTitle title="Tables"/>
-          </header>
-          <div className="wrapper">
-            {table}
-          </div>
-          {this.renderActiveOverlay()}
+      <div>
+        <header>
+          <NavigationList langtag={this.props.langtag}/>
+          <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
+                      tables={tables}/>
+          <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
+          <PageTitle title="Tables"/>
+        </header>
+        <div className="wrapper">
+          {table}
         </div>
+        {this.renderActiveOverlay()}
+      </div>
     );
   }
 });
