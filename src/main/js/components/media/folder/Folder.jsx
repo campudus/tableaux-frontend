@@ -1,14 +1,15 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../dispatcher/Dispatcher');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 var Subfolder = require('./Subfolder.jsx');
 var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
 var NewFolderAction = require('./NewFolderAction.jsx');
-var LanguageSwitcher = require('../header/LanguageSwitcher.jsx');
-var NavigationList = require('../header/NavigationList.jsx');
-var PageTitle = require('../header/PageTitle.jsx');
-var GenericOverlay = require('../overlay/GenericOverlay.jsx');
+var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
+var NavigationList = require('../../header/NavigationList.jsx');
+var PageTitle = require('../../header/PageTitle.jsx');
+var GenericOverlay = require('../../overlay/GenericOverlay.jsx');
+var App = require('ampersand-app');
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
@@ -141,6 +142,16 @@ var Folder = React.createClass({
     );
   },
 
+  onLanguageSwitch : function (newLangtag) {
+    var his = App.router.history;
+
+    var path = his.getPath();
+
+    var newPath = path.replace(this.props.langtag, newLangtag);
+
+    his.navigate(newPath, {trigger : true});
+  },
+
   //<Header key="header" title={this.props.folder.name} subtitle="Sie arbeiten im Ordner" langtag={this.props.langtag}/>
 
   render : function () {
@@ -148,7 +159,7 @@ var Folder = React.createClass({
       <div>
         <header>
           <NavigationList langtag={this.props.langtag}/>
-          <LanguageSwitcher langtag={this.props.langtag}/>
+          <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
           <PageTitle title="Media Management"/>
         </header>
         {this.renderMediaManagement()}

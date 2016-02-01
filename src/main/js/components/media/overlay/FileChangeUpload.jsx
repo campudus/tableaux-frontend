@@ -2,14 +2,14 @@ var React = require('react');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 
-var apiUrl = require('../../helpers/apiUrl');
-var Dispatcher = require('../../dispatcher/Dispatcher');
+var apiUrl = require('../../../helpers/apiUrl');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 
 var FileChangeUpload = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    internalFileName : React.PropTypes.string.isRequired,
+    internalFileName : React.PropTypes.string,
     uuid : React.PropTypes.string.isRequired
   },
 
@@ -46,10 +46,20 @@ var FileChangeUpload = React.createClass({
   },
 
   render : function () {
-    var fileExtension = this.props.internalFileName.split('.').pop();
+    var fileExtension = this.props.internalFileName ? this.props.internalFileName.split('.').pop() : false;
+    var fileImg;
+    if (fileExtension) {
+      fileImg = <img src={"/img/filetypes/" + fileExtension +"-icon-128x128.png"} alt={fileExtension}/>;
+    } else {
+      fileImg = <span className="fa-stack empty-icon">
+                  <i className="fa fa-file-o fa-stack-2x"></i>
+                  <i className="fa fa-plus fa-stack-1x"></i>
+                </span>;
+    }
+
     return (
       <Dropzone onDrop={this.onDrop} className="dropzone" multiple={false}>
-        <img src={"/img/filetypes/" + fileExtension +"-icon-128x128.png"} alt={fileExtension}/>
+        {fileImg}
         <span>Um Datei auszutauschen hier klicken oder Datei hierher ziehen</span>
       </Dropzone>
     );

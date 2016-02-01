@@ -26,10 +26,19 @@ $overlay-headline-height: 50px;
     }
   }
 
-  &.full {
+  &.full-flex {
+    display: block;
     #overlay-wrapper {
+      min-width: 600px;
       max-width: 90%;
-      height: 80%;
+      min-height: 520px;
+      max-height: 80%;
+      width: auto;
+      height: auto;
+
+      .content-scroll {
+        position: static;
+      }
     }
   }
 

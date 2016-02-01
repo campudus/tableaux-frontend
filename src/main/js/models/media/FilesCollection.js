@@ -17,7 +17,6 @@ var FilesCollection = AmpersandCollection.extend({
       }
 
       var file = new File(attrs);
-      console.log('File added/merged in collection', file);
       self.add(file, {merge : true});
     }
 

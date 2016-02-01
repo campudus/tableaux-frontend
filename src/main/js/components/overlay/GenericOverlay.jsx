@@ -20,7 +20,7 @@ var GenericOverlay = React.createClass({
     };
   },
 
-  allowedTypes : ["full", "flexible", "normal"],
+  allowedTypes : ["full-flex", "flexible", "normal"],
   focusedElementBeforeOverlayOpens : null,
 
   componentWillMount : function () {

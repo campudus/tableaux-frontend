@@ -7,3 +7,15 @@ body {
   background-color: $color-body-background;
   @include user-select(none)
 }
+
+//open react-select submenu on top when class is set
+.open-on-top {
+  .Select-menu-outer {
+    top: auto;
+    bottom: 100%;
+  }
+}
+
+.clearfix {
+  clear: both;
+}

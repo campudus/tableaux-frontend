@@ -132,82 +132,158 @@
 }
 
 #overlay {
-  &.full {
-    .singlefile-edit {
+  &.full-flex {
+    #overlay-wrapper {
+      #overlay-content {
 
-      .input-wrapper {
-        height: 90%;
-        overflow-y: auto;
-        .left {
-          float: left;
-          width: 300px;
+        div.multifile-edit {
           height: 100%;
-          text-align: center;
+          overflow-y: auto;
+          width: 1320px;
+          .multifile-file-edit-wrapper {
+            height: 90%;
+            overflow-y: auto;
+            .multifile-file-edit {
+              float: left;
+              margin: 0 15px 20px 0;
 
-          img {
-            position: relative;
-            top: 50%;
-            @include transform(translateY(-50%));
+              .field-item {
+                .field-label {
+                  padding-left: 0;
+                }
+
+                .field-input {
+                  input {
+                    margin-left: 0;
+                  }
+                }
+              }
+            }
           }
         }
 
-        .right {
-          margin-left: 310px;
-          .field-item {
-            .field-label {
-              display: inline-block;
-              margin-bottom: 5px;
-              padding-left: 30px;
+        .singlefile-edit {
+          width: 960px;
+          margin: 0 auto;
+        }
+
+        .singlefile-edit, .multifile-file-edit {
+
+          .input-wrapper {
+            height: 90%;
+            overflow-y: auto;
+            .cover-wrapper {
+              float: left;
+              width: 260px;
+              height: 100%;
+              text-align: center;
+
+              img, span.empty-icon {
+                position: relative;
+                top: 50%;
+                @include transform(translateY(-50%));
+              }
+
+              span.empty-icon {
+                font-size: 50px;
+                .fa-plus {
+                  font-size: 40px;
+                  width: 50px;
+                  height: 50px;
+                  border-radius: 50%;
+                  color: #fff;
+                  background-color: $color-success;
+                  bottom: -15px;
+                  z-index: 2;
+                  left: 130px;
+                  line-height: 55px;
+                }
+              }
             }
 
-            .field-input {
-              input {
-                font-size: $font-size-standard;
-                height: 30px;
-                width: 300px;
-                padding: 2px;
-                margin-left: 10px;
+            .properties-wrapper {
+              height: 100%;
+              float: left;
+              margin-left: 15px;
+
+              .field-item {
+                .field-label {
+                  font-family: $font-sec;
+                  display: inline-block;
+                  margin-bottom: 5px;
+                  padding-left: 30px;
+                }
+
+                .field-input {
+                  input {
+                    font-size: $font-size-standard;
+                    height: 30px;
+                    width: 360px;
+                    padding: 2px;
+                    margin-left: 10px;
+                    box-sizing: border-box;
+                  }
+                  margin-bottom: 15px;
+
+                  .langtag {
+                    width: 20px;
+                    float: left;
+                    text-align: center;
+                  }
+                }
+              }
+            }
+
+            .multifile-wrapper {
+              box-sizing: border-box;
+              float: right;
+              width: 260px;
+              height: 100%;
+              .dropzone {
                 box-sizing: border-box;
-              }
-              margin-bottom: 15px;
-
-              .langtag {
-                width: 20px;
-                float: left;
+                cursor: pointer;
+                font-family: $font-main;
+                height: 320px;
                 text-align: center;
+                border: 2px dashed $color-button-grey;
+                margin: 0;
+                background-color: transparent;
+                padding: 10px;
+              }
+
+              #language-switcher {
+                margin-top: 5px;
               }
             }
           }
         }
-      }
 
-      .button-wrapper {
-        clear: both;
-        text-align: center;
-        height: 10%;
-      }
-    }
-
-    .cover {
-      height: 360px;
-      .dropzone {
-        cursor: pointer;
-        box-sizing: border-box;
-        background-color: transparent;
-        margin: 0;
-        height: 100%;
-        position: relative;
-
-        &:hover {
-          border: 2px dashed $color-button-grey;;
+        .button-wrapper {
+          clear: both;
+          text-align: center;
+          height: 10%;
         }
 
-        span {
-          padding: 0;
-          display: block;
-          position: absolute;
-          width: 95%;
-          bottom: 10px;
+        .cover {
+          height: 320px;
+          .dropzone {
+            font-family: $font-main;
+            cursor: pointer;
+            box-sizing: border-box;
+            background-color: transparent;
+            margin: 0;
+            height: 100%;
+            position: relative;
+            border: 2px dashed $color-button-grey;;
+
+            span {
+              padding: 0;
+              display: block;
+              position: absolute;
+              width: 95%;
+              bottom: 10px;
+            }
+          }
         }
       }
     }

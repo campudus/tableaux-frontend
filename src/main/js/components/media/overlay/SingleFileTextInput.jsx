@@ -1,6 +1,6 @@
 var React = require('react');
 var App = require('ampersand-app');
-var multiLanguage = require('../../helpers/multiLanguage');
+var multiLanguage = require('../../../helpers/multiLanguage');
 var _ = require('lodash');
 
 var SingleFileTextInput = React.createClass({
@@ -24,7 +24,8 @@ var SingleFileTextInput = React.createClass({
   renderInput : function (name, valueObj, langtag) {
     var self = this;
     var inputs;
-    var retrieveTranslation = multiLanguage.retrieveTranslation('zxx_ZXX');
+    var fallbackLang = App.langtags[0];
+    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     if (this.props.isOpen) {
       inputs = App.langtags.map(function (langtag) {
         var value = retrieveTranslation(valueObj, langtag);

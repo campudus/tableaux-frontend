@@ -1,9 +1,9 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../dispatcher/Dispatcher');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 var NewFolderActionView = require('./NewFolderActionView.jsx');
 var SubfolderEdit = require('./SubfolderEdit.jsx');
-var SimpleFolder = require('../../models/media/SimpleFolder');
+var SimpleFolder = require('../../../models/media/SimpleFolder');
 
 var NewFolderAction = React.createClass({
 

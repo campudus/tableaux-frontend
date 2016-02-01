@@ -3,8 +3,8 @@ var App = require('ampersand-app');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 
-var apiUrl = require('../../helpers/apiUrl');
-var Dispatcher = require('../../dispatcher/Dispatcher');
+var apiUrl = require('../../../helpers/apiUrl');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 
 var FileUpload = React.createClass({
 
@@ -14,8 +14,8 @@ var FileUpload = React.createClass({
 
   onDrop : function (files) {
     var self = this;
-    //create language neutral file (zxx is ISO639-2 code for "No linguistic content; Not applicable")
-    var langtag = "zxx_ZXX";
+    //upload with default language
+    var langtag = App.langtags[0];
 
     files.forEach(function (file) {
       // upload each file for it's own

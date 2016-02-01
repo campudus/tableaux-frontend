@@ -1,10 +1,16 @@
 var React = require('react');
 var App = require('ampersand-app');
-var multiLanguage = require('../../helpers/multiLanguage');
+var ampersandMixin = require('ampersand-react-mixin');
+var Dropzone = require('react-dropzone');
+var request = require('superagent');
+
+var multiLanguage = require('../../../helpers/multiLanguage');
 var SingleFileTextInput = require('./SingleFileTextInput.jsx');
 var FileChangeUpload = require('./FileChangeUpload.jsx');
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var ampersandMixin = require('ampersand-react-mixin');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var apiUrl = require('../../../helpers/apiUrl');
+var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
+
 var SingleFileEdit = React.createClass({
 
   mixins : [ampersandMixin],
@@ -23,7 +29,8 @@ var SingleFileEdit = React.createClass({
       editedTitleValue : {},
       editedDescValue : {},
       editedExternalnameValue : {},
-      hasChanged : false
+      hasChanged : false,
+      multifileLanguage : App.langtags[1]
     }
   },
 
@@ -95,6 +102,44 @@ var SingleFileEdit = React.createClass({
     });
   },
 
+  onMultifileLanguageChange : function (lang) {
+    this.setState({
+      multifileLanguage : lang
+    });
+  },
+
+  onMultilangDrop : function (files) {
+    var self = this;
+    var langtag = this.state.multifileLanguage;
+
+    files.forEach(function (file) {
+      // upload each file for it's own
+
+      var uuid = self.props.file.uuid;
+
+      var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
+
+      request.put(uploadUrl)
+        .attach("file", file, file.name)
+        .end(self.multilangUploadCallback);
+    });
+  },
+
+  multilangUploadCallback : function (err, uploadRes) {
+    if (err) {
+      console.error("FileDelete.uploadCallback", err);
+      return;
+    }
+
+    if (uploadRes) {
+      var result = uploadRes.body;
+      result.fileUrl = result.url;
+      delete result.url;
+
+      Dispatcher.trigger('changed-file-data', result);
+    }
+  },
+
   renderTextInput : function (id, label, valueObj, langtag, isOpen) {
     var self = this;
     var retrieveTranslation = multiLanguage.retrieveTranslation(App.langtags[0]);
@@ -116,16 +161,35 @@ var SingleFileEdit = React.createClass({
   },
 
   render : function () {
+    var langOptions = App.langtags.reduce(function (res, langtag) {
+      if (App.langtags[0] !== langtag) {
+        res.push({
+          value : langtag,
+          label : langtag
+        });
+      }
+      return res;
+    }, []);
+
+    var fileLangtag = Object.keys(this.props.file.internalName)[0];
+    var fileInternalName = this.props.file.internalName[fileLangtag];
+
+    var language = App.langtags[0].split(/-|_/)[0];
+    var country = App.langtags[0].split(/-|_/)[1];
+    var icon = country.toLowerCase() + ".png";
+
     return (
       <div className="singlefile-edit">
         <div className="input-wrapper">
-          <div className="left">
+          <div className="cover-wrapper">
             <div className="cover">
-              <FileChangeUpload langtag="zxx_ZXX" internalFileName={this.props.file.internalName.zxx_ZXX}
-                                uuid={this.props.file.uuid}/>
+              <FileChangeUpload
+                langtag={fileLangtag}
+                internalFileName={fileInternalName}
+                uuid={this.props.file.uuid}/>
             </div>
           </div>
-          <div className="right">
+          <div className="properties-wrapper">
             <SingleFileTextInput name="fileTitle"
                                  labelText="Titel"
                                  originalValue={this.props.file.title}
@@ -152,7 +216,27 @@ var SingleFileEdit = React.createClass({
                                  isOpen={this.state.isExternalnameOpen}
                                  onToggle={this.toggleExternalname}
                                  onChange={this.onExternalnameChange}/>
+          </div>
 
+          <div className="multifile-wrapper">
+            <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
+              <span>Falls es für diese Datei Übersetzungen in anderen Sprachen gibt, kann hier eine übersetzte Version hochgeladen werden.
+                Die Datei wird dann automatisch in eine mehrsprachige Datei umgewandelt.
+                Dies bedeutet, dass, neben den übersetzten Attributen, für jede Sprache eine Übersetzung der Datei hochgeladen werden kann.
+                <br />
+                <br />
+                Die bereits vorhandene Datei wird automatisch als <img src={"/img/flags/" + icon}
+                                                                       alt={country}/> {language.toUpperCase()} markiert. Dies kann später wieder verändert werden.
+                <br />
+                <br />
+                Übersetzte Datei hierher ziehen oder hier klicken, um übersetzte Datei hochzuladen.
+              </span>
+            </Dropzone>
+            <LanguageSwitcher
+              options={langOptions}
+              openOnTop
+              onChange={this.onMultifileLanguageChange}
+              langtag={this.state.multifileLanguage}/>
           </div>
         </div>
         <div className="button-wrapper">

@@ -2,12 +2,12 @@ var React = require('react');
 var App = require('ampersand-app');
 var AmpersandMixin = require('ampersand-react-mixin');
 
-var apiUrl = require('../../helpers/apiUrl');
-var multiLanguage = require('../../helpers/multiLanguage');
-var Dispatcher = require('../../dispatcher/Dispatcher');
+var apiUrl = require('../../../helpers/apiUrl');
+var multiLanguage = require('../../../helpers/multiLanguage');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 
-var SingleFileEdit = require('./SingleFileEdit.jsx');
-var FileEditHead = require('./FileEditHead.jsx');
+var FileEdit = require('../overlay/FileEdit.jsx');
+var FileEditHead = require('../overlay/FileEditHead.jsx');
 
 var File = React.createClass({
   mixins : [AmpersandMixin],
@@ -20,32 +20,28 @@ var File = React.createClass({
   },
 
   onRemove : function () {
-    console.log('File.onRemove', this.props.file.uuid);
+    var fallbackLang = App.langtags[0];
+    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
-    this.props.file.destroy({
-      success : function () {
-        console.log('File was deleted.');
-      },
-      error : function () {
-        console.log('There was an error deleting the file.');
-      }
-    });
+    if (confirm("Soll die Datei '" + retrieveTranslation(this.props.file.title, this.props.langtag) + "' wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden!")) {
+      console.log('File.onRemove', this.props.file.uuid);
+
+      this.props.file.destroy({
+        success : function () {
+          console.log('File was deleted.');
+        },
+        error : function () {
+          console.log('There was an error deleting the file.');
+        }
+      });
+    }
   },
 
   onEdit : function () {
-    var self = this;
-    var file = this.props.file;
-    var overlayBody;
-    if(file.internalName && file.internalName.length > 1) {
-      overlayBody = <div>mf</div>;
-    } else {
-      overlayBody = <SingleFileEdit file={this.props.file} langtag={this.props.langtag} onClose={self.onEditClose}/>;
-    }
-
     Dispatcher.trigger('open-overlay', {
       head : <FileEditHead file={this.props.file} langtag={this.props.langtag}/>,
-      body : overlayBody,
-      type : 'full',
+      body : <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose}/>,
+      type : 'full-flex',
       closeOnBackgroundClicked : false
     });
   },
@@ -57,9 +53,6 @@ var File = React.createClass({
   render : function () {
     // default language (for fallback)
     var fallbackLang = App.langtags[0];
-    if (this.props.file.title.zxx_ZXX) {
-      fallbackLang = "zxx_ZXX";
-    }
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     // current language

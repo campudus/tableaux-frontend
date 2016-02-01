@@ -4,7 +4,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./Table.jsx');
 var LinkOverlay = require('./cells/link/LinkOverlay.jsx');
-var MediaOverlay = require('./media/MediaOverlay.jsx');
+var MediaOverlay = require('./media/overlay/MediaOverlay.jsx');
 var GenericOverlay = require('./overlay/GenericOverlay.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
 var NavigationList = require('./header/NavigationList.jsx');
@@ -88,6 +88,16 @@ var Tableaux = React.createClass({
     }
   },
 
+  onLanguageSwitch : function (newLangtag) {
+    var his = app.router.history;
+
+    var path = his.getPath();
+
+    var newPath = path.replace(this.props.langtag, newLangtag);
+
+    his.navigate(newPath, {trigger : true});
+  },
+
   //TODO: Add overlays only when they are needed: Maybe with a state for each overlay
   render : function () {
     var self = this;
@@ -109,7 +119,7 @@ var Tableaux = React.createClass({
             <NavigationList langtag={this.props.langtag}/>
             <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
                         tables={tables}/>
-            <LanguageSwitcher langtag={this.props.langtag}/>
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle title="Tables"/>
           </header>
           <div className="wrapper">
