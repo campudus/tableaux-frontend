@@ -19,7 +19,7 @@ var infiniteHelpers = require('./utils/infiniteHelpers');
 var _isFinite = require('lodash/isfinite');
 
 var preloadType = require('./utils/types').preloadType;
-var checkProps = checkProps = require('./utils/checkProps');
+var checkProps = require('./utils/checkProps');
 
 var Infinite = React.createClass({
   displayName : 'Infinite',
