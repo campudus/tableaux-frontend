@@ -3,6 +3,7 @@ var _ = require('lodash');
 
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var ShortTextEditCell = require('./ShortTextEditCell.jsx');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var ShortTextCell = React.createClass({
 
@@ -36,11 +37,12 @@ var ShortTextCell = React.createClass({
     }
 
     console.log('triggering event ', cell.changeCellEvent, {newValue : valueToSave});
-    Dispatcher.trigger(cell.changeCellEvent, {newValue : valueToSave});
+    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, valueToSave);
     Dispatcher.trigger('toggleCellEditing', {
       cell : this.props.cell,
       editing : false
     });
+
   },
 
   getValue : function () {

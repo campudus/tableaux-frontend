@@ -1,6 +1,7 @@
 var React = require('react');
 var TableSwitcher = require('./TableSwitcher.jsx');
 var Dispatcher = require('../../dispatcher/Dispatcher.js');
+var ActionTypes = require('../../constants/TableauxConstants.js').ActionTypes;
 
 var TableTools = React.createClass({
 
@@ -27,11 +28,11 @@ var TableTools = React.createClass({
   },
 
   componentWillMount : function () {
-    Dispatcher.on('switch-table', this.onTableSwitched);
+    Dispatcher.on(ActionTypes.SWITCH_TABLE, this.onTableSwitched);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('switch-table', this.onTableSwitched);
+    Dispatcher.off(ActionTypes.SWITCH_TABLE, this.onTableSwitched);
   },
 
   tableSwitchButton : function (e) {

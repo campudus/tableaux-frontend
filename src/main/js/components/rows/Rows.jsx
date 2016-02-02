@@ -22,6 +22,14 @@ var Rows = React.createClass({
     onClick : React.PropTypes.func
   },
 
+  componentWillMount : function () {
+
+  },
+
+  componentDidMount : function () {
+
+  },
+
   isRowExpanded : function (rowId) {
     return (this.props.expandedRowIds && this.props.expandedRowIds.indexOf(rowId) > -1) || false;
   },
@@ -70,7 +78,7 @@ var Rows = React.createClass({
                 preloadBatchSize={Infinite.containerHeightScaleFactor(0.1)}
                 preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
                 handleScroll={undefined}
-                timeScrollStateLastsForAfterUserScrolls={500}
+                timeScrollStateLastsForAfterUserScrolls={10}
                 scrollDelayTime={100}>
         {this.getRows()}
       </Infinite>

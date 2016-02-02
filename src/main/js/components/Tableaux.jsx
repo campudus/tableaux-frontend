@@ -10,6 +10,7 @@ var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
 var NavigationList = require('./header/NavigationList.jsx');
 var TableTools = require('./header/TableTools.jsx');
 var PageTitle = require('./header/PageTitle.jsx');
+var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -28,6 +29,18 @@ var Tableaux = React.createClass({
     }
   },
 
+  componentWillMount : function () {
+    Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTable);
+    Dispatcher.on('open-overlay', this.openOverlay);
+    Dispatcher.on('close-overlay', this.closeOverlay);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off(ActionTypes.SWITCH_TABLE, this.switchTable);
+    Dispatcher.off('open-overlay', this.openOverlay);
+    Dispatcher.off('close-overlay', this.closeOverlay);
+  },
+
   switchTable : function (event) {
     var self = this;
     console.log('Tableaux.switchTable', event);
@@ -44,18 +57,6 @@ var Tableaux = React.createClass({
         }
       });
     }
-  },
-
-  componentWillMount : function () {
-    Dispatcher.on('switch-table', this.switchTable);
-    Dispatcher.on('open-overlay', this.openOverlay);
-    Dispatcher.on('close-overlay', this.closeOverlay);
-  },
-
-  componentWillUnmount : function () {
-    Dispatcher.off('switch-table', this.switchTable);
-    Dispatcher.off('open-overlay', this.openOverlay);
-    Dispatcher.off('close-overlay', this.closeOverlay);
   },
 
   openOverlay : function (content) {

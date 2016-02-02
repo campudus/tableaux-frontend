@@ -3,10 +3,9 @@ var AmpersandModel = require('ampersand-model');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Tables = require('./Tables');
 var Column = require('./Column');
+var Sync = require('ampersand-sync');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 var _ = require('lodash');
-
-//FIXME: Change to use fewer events and cleanup after table switches
 
 var Cell = AmpersandModel.extend({
   modelType : 'Cell',
@@ -22,7 +21,10 @@ var Cell = AmpersandModel.extend({
     },
     tableId : 'number',
     column : 'object',
-    rowId : 'number'
+    rowId : 'number',
+    row : 'object',
+    changeHandler : 'any',
+    changedHandler : 'array'
   },
 
   derived : {
@@ -89,7 +91,13 @@ var Cell = AmpersandModel.extend({
   },
 
   initialize : function (attrs, options) {
+  },
+
+  initEvents : function () {
+    //console.log("Cell init Events. this.row", this.row);
     var self = this;
+    var name = this.changeCellEvent;
+    //var handler = this.changeCellListener.bind(this);
 
     var changedCellListener = function (data) {
       //find the index value of the concat obj to update
@@ -102,84 +110,50 @@ var Cell = AmpersandModel.extend({
       console.log("#### Synchronized the concat cell with data:", data.value, " ####");
     };
 
-    var changeCellListener = function (event) {
-      var self = this;
-      var oldValue = this.value;
-      var newValue = event.newValue;
-      var mergedValue;
-      var updateNecessary = false;
+    this.changeHandler = changeCellListener.bind(self); //save reference
+    //App.on(name, changeCellListener.bind(self));
+    this.row.on('remove', this.cleanup.bind(this));
 
-      if (self.isLink) {
-        updateNecessary = !_.isEqual(oldValue, newValue);
-        mergedValue = newValue;
-      } else if (self.isMultiLanguage) {
-        mergedValue = _.assign({}, oldValue, newValue);
-        updateNecessary = !_.isEqual(oldValue, mergedValue);
-      } else {
-        console.log("im single language:", newValue);
-        updateNecessary = !_.isEqual(oldValue, newValue);
-        mergedValue = newValue;
-      }
-      //debugger;
+    //This cell is a concat cell and listens to its identifier cells
+    if (this.isConcatCell) {
+      this.column.concats.forEach(function (columnObj) {
+        var changedEvent = 'changed-cell:' + self.tableId + ':' + columnObj.id + ':' + self.rowId;
+        //console.log("add changedEvent", changedEvent);
+        var handler = changedCellListener.bind(self);
+        App.on(changedEvent, handler);
+        if (!self.changedHandler) {
+          self.changedHandler = [];
+        }
+        self.changedHandler.push({
+          name : changedEvent,
+          handler : handler
+        }); //save reference
 
-      if (updateNecessary) {
-        this.value = mergedValue;
-        console.log("Cell Model: saving cell with value:", newValue);
-        this.save(newValue, {
-          //parse : false, Why???
-          patch : true, // save only the changed language fragment of the object
-          success : function () {
-            console.log('changed cell trigger', self.changedCellEvent);
-            self.value = mergedValue;
-            Dispatcher.trigger(self.changedCellEvent, self);
-
-            //FIXME: When multiple users are working at the same time its probably better to fetch always.
-            if (event.fetch) {
-              self.fetch();
-            }
-          },
-          error : function () {
-            console.error('save unsuccessful!', arguments);
-            if (event.fetch) {
-              self.fetch();
-            } else {
-              self.value = oldValue;
-            }
-          }
-        });
-      }
-
-
-    };
-
-
-    if (options && options.row && !options.noListeners) {
-
-      var name = this.changeCellEvent;
-      var handler = changeCellListener.bind(this);
-      App.on(name, handler);
-      this.allEvents.push({name : name, handler : handler});
-      //options.row.on('remove', this.close.bind(this));
-
-      //This cell is a concat cell and listens to its identifier cells
-      if (this.isConcatCell) {
-        this.column.concats.forEach(function (columnObj) {
-          var changedEvent = 'changed-cell:' + self.tableId + ':' + columnObj.id + ':' + self.rowId;
-          var handler = changedCellListener.bind(self);
-          App.on(changedEvent, handler);
-          self.allEvents.push({name : changedEvent, handler : handler});
-        });
-      }
+      });
     }
 
   },
 
-  allEvents : [],
+  //Delete all cell attrs and event listeners
+  cleanup : function () {
 
-  close : function () {
-    this.allEvents.forEach(function (eventStuff) {
-      App.off(eventStuff.name, eventStuff.handler);
-    });
+    // Remove the changeCell event
+    App.off(this.changeCellEvent, this.changeHandler);
+
+    //Remove the row remove event
+    this.row.off('remove', this.cleanup);
+
+    // We need to remove multiple dependant changed id cell events
+    if (this.isConcatCell) {
+      if (this.changedHandler && this.changedHandler.length > 0) {
+        this.changedHandler.forEach(function (changedHandler) {
+          App.off(changedHandler.name, changedHandler.handler);
+        });
+      }
+    }
+    console.log("##### Cleaned up Cell:", this.getId());
+    //this.clear();
+
   },
 
   url : function () {
@@ -199,20 +173,6 @@ var Cell = AmpersandModel.extend({
     }
     return attrs;
   },
-
-  //Discuss with team or delete
-
-  /*parse : function (resp, options) {
-   console.log("###### parse of cell. resp:", resp);
-   if (!(options && options.parse)) {
-   return this;
-   } else if (resp.rows) {
-   return resp.rows[0];
-   } else {
-   return resp;
-   }
-   }*/
-
 
 });
 

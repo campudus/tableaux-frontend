@@ -36,8 +36,16 @@ var Cell = React.createClass({
     this.checkFocus();
   },
 
+  componentWillMount : function () {
+
+  },
+
   componentDidUpdate : function () {
     this.checkFocus();
+  },
+
+  componentWillUnmount : function () {
+
   },
 
   getKeyboardShortcuts : function (event) {

@@ -11,6 +11,7 @@ var FolderView = require('./components/media/Folder.jsx');
 var Tableaux = require('./components/Tableaux.jsx');
 
 var Dispatcher = require('./dispatcher/Dispatcher');
+var ActionTypes = require('./constants/TableauxConstants').ActionTypes;
 
 var TableauxRouter = Router.extend({
   routes : {
@@ -23,6 +24,16 @@ var TableauxRouter = Router.extend({
 
     ':langtag/media' : 'mediaBrowser',
     ':langtag/media/:folderid' : 'mediaBrowser'
+  },
+
+  initialize : function (options) {
+    Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTableHandler);
+    //TODO Switch language
+  },
+
+  switchTableHandler : function (payload) {
+    var langtag = payload.langtag;
+    App.router.history.navigate(langtag + '/table/' + payload.id, {trigger : true});
   },
 
   home : function () {

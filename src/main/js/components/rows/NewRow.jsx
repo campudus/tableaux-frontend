@@ -1,19 +1,18 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-
-var Dispatcher = require('../../dispatcher/Dispatcher');
-
 var Row = require('../../models/Row');
+var ActionCreator = require('../../actions/ActionCreator');
 
 var NewRow = React.createClass({
   mixins : [AmpersandMixin],
 
+  propTypes : {
+    table : React.PropTypes.object.isRequired
+  },
+
   addRow : function () {
-    Dispatcher.trigger('add-row:' + this.props.table.getId(), function (error) {
-      if (error) {
-        console.error("callback from add-row with error", error);
-      }
-    });
+    var tableId = this.props.table.getId();
+    ActionCreator.addRow(tableId);
   },
 
   render : function () {

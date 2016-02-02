@@ -5,6 +5,7 @@ var App = require('ampersand-app');
 var _ = require('lodash');
 
 var Dispatcher = require('../../dispatcher/Dispatcher');
+var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
 
 var Ask = React.createClass({
@@ -93,7 +94,9 @@ var Row = React.createClass({
   },
 
   onYesOverlay : function (event) {
-    this.props.row.destroy();
+    var row = this.props.row;
+    console.log("row:", row);
+    ActionCreator.removeRow(row.tableId, row.id);
     this.onCancelOverlay(event);
   },
 

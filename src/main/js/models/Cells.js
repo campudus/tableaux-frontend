@@ -14,10 +14,11 @@ var Cells = Collection.extend({
       tableId : tableId,
       column : getColumn(rows, attrs.index),
       rowId : attrs.rowId,
-      value : attrs.value
+      value : attrs.value,
+      row : row
     };
 
-    options.row = row;
+    //console.log("creating Cell:", json);
     return new Cell(json, options);
   },
 

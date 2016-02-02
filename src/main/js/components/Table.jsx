@@ -8,6 +8,8 @@ var Columns = require('./columns/Columns.jsx');
 var Rows = require('./rows/Rows.jsx');
 var KeyboardShortcutsMixin = require('./mixins/KeyboardShortcutsMixin');
 var OutsideClick = require('react-onclickoutside');
+var ActionCreator = require('../actions/ActionCreator');
+var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 
 var Table = React.createClass({
   mixins : [AmpersandMixin, KeyboardShortcutsMixin, OutsideClick],
@@ -25,6 +27,7 @@ var Table = React.createClass({
    */
   headerDOMElement : null,
   scrolledXBefore : 0,
+  selectNewCreatedRow : false,
 
   //Internal state values
   keyboardRecentlyUsedTimer : null,
@@ -53,11 +56,12 @@ var Table = React.createClass({
    },*/
 
   componentWillUpdate : function (nextProps, nextState) {
-    console.log("this.state.selectedCell", this.state.selectedCell);
-    console.log("nextState.selectedCell", nextState.selectedCell);
+    //console.log("this.state.selectedCell", this.state.selectedCell);
+    //console.log("nextState.selectedCell", nextState.selectedCell);
   },
 
   componentWillMount : function () {
+    var self = this;
     var table = this.props.table;
     //We need to fetch columns first, since rows has Cells that depend on the column model
     table.columns.fetch({
@@ -69,6 +73,8 @@ var Table = React.createClass({
         });
       }
     });
+
+    table.rows.on("add", self.rowDidAdd);
   },
 
   componentDidMount : function () {
@@ -80,10 +86,17 @@ var Table = React.createClass({
     Dispatcher.on('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.on('selectNextCell', this.setNextSelectedCell);
     Dispatcher.on('toggleRowExpand', this.toggleRowExpand);
-    Dispatcher.on('createRowOrSelectNext', this.createRowOrSelectNext);
-    Dispatcher.on('allowScrollViewUpdate', this.allowScrollViewUpdate);
+    Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
     Dispatcher.on('disableShouldCellFocus', this.disableShouldCellFocus);
     Dispatcher.on('enableShouldCellFocus', this.enableShouldCellFocus);
+  },
+
+  rowDidAdd : function () {
+    if (this.selectNewCreatedRow) {
+      console.log("select last one");
+      this.selectNewCreatedRow = false;
+      this.setNextSelectedCell("down");
+    }
   },
 
   componentDidUpdate : function () {
@@ -100,10 +113,10 @@ var Table = React.createClass({
     Dispatcher.off('toggleCellEditing', this.toggleCellEditing);
     Dispatcher.off('selectNextCell', this.setNextSelectedCell);
     Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
-    Dispatcher.off('createRowOrSelectNext', this.createRowOrSelectNext);
-    Dispatcher.off('allowScrollViewUpdate', this.allowScrollViewUpdate);
+    Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
     Dispatcher.off('disableShouldCellFocus', this.disableShouldCellFocus);
     Dispatcher.off('enableShouldCellFocus', this.enableShouldCellFocus);
+    this.props.table.rows.off("add", this.rowDidAdd);
   },
 
   disableShouldCellFocus : function () {
@@ -166,17 +179,11 @@ var Table = React.createClass({
   },
 
   createRowOrSelectNext : function () {
-    var self = this;
-    if (self.isLastRow()) {
-      Dispatcher.trigger('add-row:' + self.props.table.id, function (error) {
-        if (!error) {
-          self.setNextSelectedCell("down");
-        } else {
-          console.error("Error adding row: ", error);
-        }
-      });
+    if (this.isLastRow()) {
+      this.selectNewCreatedRow = true;
+      ActionCreator.addRow(this.props.table.id);
     } else {
-      self.setNextSelectedCell("down");
+      this.setNextSelectedCell("down");
     }
   },
 
@@ -211,7 +218,6 @@ var Table = React.createClass({
       selectedCellEditing : false,
       selectedCellExpandedRow : params.langtag || null
     });
-    this.allowScrollViewUpdate();
   },
 
   toggleCellEditing : function (params) {
@@ -228,6 +234,7 @@ var Table = React.createClass({
   },
 
   setNextSelectedCell : function (direction) {
+
     if (!this.state.selectedCell) {
       return;
     }
@@ -270,7 +277,13 @@ var Table = React.createClass({
     row = self.props.table.rows.get(rowCell.id);
     nextCellId = 'cell-' + self.props.table.getId() + '-' + columnCell.id + '-' + rowCell.id;
     if (row) {
+      /*console.log("JSON.stringify(row.cells)", JSON.stringify(row.cells));
+       console.log("JSON.stringify(row.collection.models)", JSON.stringify(row.collection.models));
+       console.log("row.collection.models", row.collection.models);
+       console.log("Row.cells", row.cells);*/
+      //var nextCell = _.find(row.models, 'id', nextCellId); //row.cells.get(nextCellId);
       var nextCell = row.cells.get(nextCellId);
+      console.log("nextCell:", JSON.stringify(nextCell));
       if (nextCell) {
         this.toggleCellSelection({
           cell : nextCell,
@@ -278,6 +291,8 @@ var Table = React.createClass({
         });
       }
     }
+
+    //debugger;
 
   },
 
@@ -403,16 +418,15 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.allowScrollViewUpdate();
             self.setNextSelectedCell("left");
           }
         );
       },
       right : function (event) {
+        console.log("Table.jsx right", event);
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.allowScrollViewUpdate();
             self.setNextSelectedCell("right");
           }
         );
@@ -421,7 +435,6 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.allowScrollViewUpdate();
             self.setNextSelectedCell("right");
           }
         );
@@ -430,7 +443,6 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.allowScrollViewUpdate();
             self.setNextSelectedCell("up");
           }
         );
@@ -439,7 +451,6 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.allowScrollViewUpdate();
             self.setNextSelectedCell("down");
           }
         );
@@ -486,10 +497,6 @@ var Table = React.createClass({
       }, 100);
       cb();
     }
-  },
-
-  allowScrollViewUpdate : function () {
-    this.canUpdateScrollView = true;
   },
 
   getCurrentSelectedRowId : function () {

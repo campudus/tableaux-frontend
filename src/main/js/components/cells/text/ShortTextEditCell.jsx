@@ -3,6 +3,7 @@ var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var ShortTextEditCell = React.createClass({
 
@@ -40,7 +41,7 @@ var ShortTextEditCell = React.createClass({
         event.stopPropagation();
         self.doneEditing(event);
         //An event just for ShortTextEditCell to create a new Row when last is editing
-        Dispatcher.trigger('createRowOrSelectNext');
+        ActionCreator.addRowOrSelectNextCell();
       },
       navigation : function (event) {
         self.doneEditing(event);

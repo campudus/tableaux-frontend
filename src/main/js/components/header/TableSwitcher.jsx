@@ -1,7 +1,8 @@
 var App = require('ampersand-app');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Dispatcher = require('../../dispatcher/Dispatcher.js');
+var ActionCreator = require('../../actions/ActionCreator.js');
+
 var _ = require('lodash');
 
 var TableSwitcher = React.createClass({
@@ -43,8 +44,7 @@ var TableSwitcher = React.createClass({
   },
 
   handleClick : function (entry) {
-    var langtag = this.props.langtag;
-    App.router.history.navigate(langtag + '/table/' + entry.id, {trigger : true});
+    ActionCreator.switchTable(entry.id, this.props.langtag);
   },
 
   onSearch : function () {
