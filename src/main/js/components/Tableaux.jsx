@@ -30,33 +30,42 @@ var Tableaux = React.createClass({
   },
 
   componentWillMount : function () {
-    Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTable);
+    Dispatcher.on(ActionTypes.SWITCHED_TABLE, this.switchTable);
     Dispatcher.on('open-overlay', this.openOverlay);
     Dispatcher.on('close-overlay', this.closeOverlay);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off(ActionTypes.SWITCH_TABLE, this.switchTable);
+    Dispatcher.off(ActionTypes.SWITCHED_TABLE, this.switchTable);
     Dispatcher.off('open-overlay', this.openOverlay);
     Dispatcher.off('close-overlay', this.closeOverlay);
   },
 
-  switchTable : function (event) {
+  switchTable : function (payload) {
     var self = this;
-    console.log('Tableaux.switchTable', event);
-    if (this.props.tables) {
-      self.setState({currentTableId : event.id});
-    } else {
+    console.log('Tableaux.switchTable', payload);
+    //if (this.props.tables) {
+
+    //Clear current/old collections
+    var oldTable = this.props.tables.get(this.state.currentTableId);
+    oldTable.rows.reset();
+    oldTable.columns.reset();
+    self.setState({currentTableId : payload.tableId});
+
+    /*} else {
       // refresh Tables collection
       this.props.tables.fetch({
         success : function (collection, response, options) {
-          self.setState({currentTableId : event.id});
+     console.log("Tableaux switchTable fetch");
+     self.setState({currentTableId : payload.tableId});
         },
         error : function (collection, response, options) {
           console.error("Error fetching Table in switchTable");
         }
       });
-    }
+     }*/
+
+
   },
 
   openOverlay : function (content) {

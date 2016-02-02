@@ -12,6 +12,7 @@ var Tableaux = require('./components/Tableaux.jsx');
 
 var Dispatcher = require('./dispatcher/Dispatcher');
 var ActionTypes = require('./constants/TableauxConstants').ActionTypes;
+var ActionCreator = require('./actions/ActionCreator');
 
 var TableauxRouter = Router.extend({
   routes : {
@@ -72,7 +73,7 @@ var TableauxRouter = Router.extend({
 
     var self = this;
 
-    var id = parseInt(tableid);
+    var tableId = parseInt(tableid);
 
     // router is called even if we switch through
     // tables with TableSwitcher but we only want to
@@ -83,7 +84,9 @@ var TableauxRouter = Router.extend({
       // Tableaux.jsx is listening on this
       // state will be changed which triggers
       // a React render
-      Dispatcher.trigger('switch-table', {id : id});
+      //Dispatcher.trigger(ActionTypes., {id : id});
+      ActionCreator.switchedTable(tableId);
+
     } else {
       this.alreadyCalled = {
         langtag : langtag
@@ -96,11 +99,11 @@ var TableauxRouter = Router.extend({
         this.tables = new Tables();
         this.tables.fetch({
           success : function () {
-            self.renderPage(<Tableaux tables={self.tables} initialTableId={id} langtag={langtag}/>);
+            self.renderPage(<Tableaux tables={self.tables} initialTableId={tableId} langtag={langtag}/>);
           }
         });
       } else {
-        self.renderPage(<Tableaux tables={self.tables} initialTableId={id} langtag={langtag}/>);
+        self.renderPage(<Tableaux tables={self.tables} initialTableId={tableId} langtag={langtag}/>);
       }
     }
   },

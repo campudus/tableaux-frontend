@@ -10,6 +10,7 @@ module.exports = {
     ADD_ROW : null,
 
     SWITCH_TABLE : null,
+    SWITCHED_TABLE : null,
     SWITCH_LANGUAGE : null,
 
     OPEN_OVERLAY : null,

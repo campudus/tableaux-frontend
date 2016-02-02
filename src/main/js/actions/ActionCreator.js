@@ -43,6 +43,12 @@ module.exports = {
     });
   },
 
+  switchedTable : function (tableId) {
+    Dispatcher.trigger(ActionTypes.SWITCHED_TABLE, {
+      tableId : tableId
+    });
+  },
+
   switchLanguage : function (langtag) {
 
     Dispatcher.trigger(ActionTypes.SWITCH_LANGUAGE, {

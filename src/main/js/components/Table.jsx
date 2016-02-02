@@ -277,13 +277,7 @@ var Table = React.createClass({
     row = self.props.table.rows.get(rowCell.id);
     nextCellId = 'cell-' + self.props.table.getId() + '-' + columnCell.id + '-' + rowCell.id;
     if (row) {
-      /*console.log("JSON.stringify(row.cells)", JSON.stringify(row.cells));
-       console.log("JSON.stringify(row.collection.models)", JSON.stringify(row.collection.models));
-       console.log("row.collection.models", row.collection.models);
-       console.log("Row.cells", row.cells);*/
-      //var nextCell = _.find(row.models, 'id', nextCellId); //row.cells.get(nextCellId);
       var nextCell = row.cells.get(nextCellId);
-      console.log("nextCell:", JSON.stringify(nextCell));
       if (nextCell) {
         this.toggleCellSelection({
           cell : nextCell,
@@ -291,9 +285,6 @@ var Table = React.createClass({
         });
       }
     }
-
-    //debugger;
-
   },
 
   isLastRow : function () {

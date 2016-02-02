@@ -21,6 +21,7 @@ var Tables = Collection.extend({
     console.log("changeCellHandler:", payload);
     console.log("Rows this", this);
 
+    //debugger;
     var self = this;
 
     var tableId = payload.tableId;
@@ -58,6 +59,7 @@ var Tables = Collection.extend({
         success : function () {
           console.log('Cell model saved successfully.');
           //FIXME: Discuss with Backend: Status Code + latest value object from database
+          cell.value = mergedValue;
         },
         error : function () {
           console.error('Cell model saved unsuccessfully!', arguments);
