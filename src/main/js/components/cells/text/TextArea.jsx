@@ -1,14 +1,9 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
-var TinyMCE = require('react-tinymce');
 
 var TextArea = React.createClass({
 
-  displayName : 'TextArea',
-
   propTypes : {
     initialContent : React.PropTypes.string,
-
     onClose : React.PropTypes.func.isRequired,
     onSave : React.PropTypes.func.isRequired,
     onChange : React.PropTypes.func
@@ -29,7 +24,7 @@ var TextArea = React.createClass({
   },
 
   getContent : function (event) {
-    return this.state.richEditor ? event.target.getContent() : this.refs.inputArea.value
+    return this.refs.inputArea.value;
   },
 
   _onClose : function (event) {
@@ -50,51 +45,21 @@ var TextArea = React.createClass({
     this.props.onSave(this.content, event);
   },
 
-  toggleRichEditor : function () {
-    this.setState({richEditor : !this.state.richEditor})
-  },
-
-  renderRichEditor : function (content) {
-    var config = {
-      plugins : 'autolink link image lists print code insertdatetime',
-      toolbar : 'undo redo | bold | alignleft aligncenter alignright',
-      resize : false,
-      height : '100%'
-    };
-
-    return (
-      <TinyMCE
-        content={content}
-        config={config}
-        onChange={this._onChange}
-      />
-    );
-  },
-
   render : function () {
-    var editor = "";
+    var editor;
 
     if (typeof this.content === 'undefined') {
       this.content = this.props.initialContent;
     }
 
-    if (this.state.richEditor) {
-      editor = this.renderRichEditor(this.content);
-    } else {
-      editor = (
-        <textarea autoFocus className="input" type="text" defaultValue={this.content} ref="inputArea"
-                  onChange={this._onChange}></textarea>
-      )
-    }
+    editor = <textarea autoFocus className="input" type="text" defaultValue={this.content} ref="inputArea"
+                       onChange={this._onChange}></textarea>;
 
     return (
       <div>
         {editor}
-
         <button onClick={this._onSave} className="button">Save &amp; Close</button>
         <button onClick={this._onClose} className="button">Cancel &amp; Close</button>
-        <button onClick={this.toggleRichEditor}
-                className="button">{this.state.richEditor ? "Disable editor" : "Enable editor"}</button>
       </div>
     );
   }

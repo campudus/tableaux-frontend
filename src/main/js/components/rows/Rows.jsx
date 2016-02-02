@@ -1,8 +1,7 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Infinite = require('react-infinite');
+var Infinite = require('../../thirdparty/react-infinite/react-infinite.js');
 var NewRow = require('./NewRow.jsx');
-
 
 var Row = require('./Row.jsx');
 
@@ -64,7 +63,6 @@ var Rows = React.createClass({
   },
 
   render : function () {
-    console.log("RENDERING ROWS");
     return (
       <Infinite className="data-wrapper"
                 containerHeight={this.props.rowsHeight}
@@ -72,7 +70,8 @@ var Rows = React.createClass({
                 preloadBatchSize={Infinite.containerHeightScaleFactor(0.1)}
                 preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
                 handleScroll={undefined}
-                timeScrollStateLastsForAfterUserScrolls={500}>
+                timeScrollStateLastsForAfterUserScrolls={500}
+                scrollDelayTime={100}>
         {this.getRows()}
       </Infinite>
     );
