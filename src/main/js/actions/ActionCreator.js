@@ -94,5 +94,73 @@ module.exports = {
     );
   }
 
+  addFolder : function (name, description, parentId) {
+    Dispatcher.trigger(ActionTypes.ADD_FOLDER, {
+      name : name,
+      description : description,
+      parentId : parentId
+    });
+  },
+
+  changeFolder : function (folderId, name, description, parentId) {
+    Dispatcher.trigger(ActionTypes.CHANGE_FOLDER, {
+      folderId : folderId,
+      name : name,
+      description : description,
+      parentId : parentId
+    });
+  },
+
+  removeFolder : function (folderId) {
+    Dispatcher.trigger(ActionTypes.REMOVE_FOLDER, {
+      folderId : folderId
+    });
+  },
+
+  addFile : function (uuid, title, description, externalName, internalName, mimeType, folderId, fileUrl) {
+    Dispatcher.trigger(ActionTypes.ADD_FILE, {
+      uuid : uuid,
+      title : title,
+      description : description,
+      externalName : externalName,
+      internalName : internalName,
+      mimeType : mimeType,
+      folderId : folderId,
+      fileUrl : fileUrl
+    });
+  },
+
+  changeFile : function (uuid, title, description, externalName, internalName, mimeType, folderId, fileUrl) {
+    Dispatcher.trigger(ActionTypes.CHANGE_FILE, {
+      uuid : uuid,
+      title : title,
+      description : description,
+      externalName : externalName,
+      internalName : internalName,
+      mimeType : mimeType,
+      folderId : folderId,
+      fileUrl : fileUrl
+    });
+  },
+
+  changedFileData : function (uuid, title, description, externalName, internalName, mimeType, folderId, fileUrl) {
+    Dispatcher.trigger(ActionTypes.CHANGED_FILE_DATA, {
+      uuid : uuid,
+      title : title,
+      description : description,
+      externalName : externalName,
+      internalName : internalName,
+      mimeType : mimeType,
+      folderId : folderId,
+      fileUrl : fileUrl
+    });
+  },
+
+  removeFile : function (fileId) {
+    Dispatcher.trigger(ActionTypes.REMOVE_FILE, {
+      fileId : fileId
+    });
+  }
+
 
 };

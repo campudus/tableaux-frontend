@@ -5,6 +5,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var apiUrl = require('../../../helpers/apiUrl');
 var multiLanguage = require('../../../helpers/multiLanguage');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var FileEdit = require('../overlay/FileEdit.jsx');
 var FileEditHead = require('../overlay/FileEditHead.jsx');
@@ -26,23 +27,15 @@ var File = React.createClass({
 
     if (confirm("Soll die Datei '" + retrieveTranslation(this.props.file.title, this.props.langtag) + "' wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden!")) {
       console.log('File.onRemove', this.props.file.uuid);
-
-      this.props.file.destroy({
-        success : function () {
-          console.log('File was deleted.');
-        },
-        error : function () {
-          console.log('There was an error deleting the file.');
-        }
-      });
+      ActionCreator.removeFile(this.props.file.uuid);
     }
   },
 
-  onSave : function() {
+  onSave : function () {
     Dispatcher.trigger('on-media-overlay-save');
   },
 
-  onCancel : function() {
+  onCancel : function () {
     Dispatcher.trigger('on-media-overlay-cancel');
   },
 
@@ -78,7 +71,7 @@ var File = React.createClass({
 
     return (
       <div key={'file' + this.props.file.uuid} className="file">
-        <a href={link}><i className="icon fa fa-file"></i><span>{title}</span></a>
+        <a href={link} target="_blank"><i className="icon fa fa-file"></i><span>{title}</span></a>
         {deleteButton}
         {editButton}
       </div>

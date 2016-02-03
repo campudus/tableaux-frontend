@@ -1,6 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
+var ActionCreator = require('../../../actions/ActionCreator');
 var SubfolderView = require('./SubfolderView.jsx');
 var SubfolderEdit = require('./SubfolderEdit.jsx');
 
@@ -26,33 +26,23 @@ var Subfolder = React.createClass({
     });
   },
 
-  onSave : function (folder) {
+  onSave : function (folderId, folderName, folderDescription, folderParent) {
     this.onEdit();
-    if (folder) {
-      console.log("Folder.changed", folder.toJSON());
-      Dispatcher.trigger('change-folder', folder.toJSON());
-    }
+    console.log("Folder.changed", folderId, folderName, folderDescription, folderParent);
+    ActionCreator.changeFolder(folderId, folderName, folderDescription, folderParent);
   },
 
   onRemove : function () {
     if (confirm("Soll der Ordner '" + this.props.folder.name + "' wirklich gelöscht werden? Es werden auch alle Unterordner und enthaltene Dateien gelöscht. Dies kann nicht rückgängig gemacht werden!")) {
       console.log('Folder.onRemove', this.props.folder.getId());
-
-      this.props.folder.destroy({
-        success : function () {
-          console.log('Folder was deleted.');
-        },
-        error : function () {
-          console.log('There was an error deleting the folder.');
-        }
-      });
+      ActionCreator.removeFolder(this.props.folder.id);
     }
   },
 
   render : function () {
     var subfolder;
     if (this.state.edit) {
-      subfolder = <SubfolderEdit folder={this.props.folder} callback={this.onSave}/>;
+      subfolder = <SubfolderEdit folder={this.props.folder} onSave={this.onSave} onCancel={this.onEdit}/>;
     } else {
       subfolder = <SubfolderView folder={this.props.folder}
                                  langtag={this.props.langtag}
