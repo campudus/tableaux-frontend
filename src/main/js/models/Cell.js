@@ -99,6 +99,9 @@ var Cell = AmpersandModel.extend({
         return column.id === changedCell.column.id;
       });
       this.value[concatIndexToUpdate] = changedCell.value;
+      //Important, because react doesn't rerender due to async event. Signal react this cell has changed.
+      this.trigger("change");
+
     };
 
     //debugger;
