@@ -1,0 +1,240 @@
+var React = require('react');
+var App = require('ampersand-app');
+var ampersandMixin = require('ampersand-react-mixin');
+var Dropzone = require('react-dropzone');
+var request = require('superagent');
+var ActionCreator = require('../../../actions/ActionCreator');
+
+var multiLanguage = require('../../../helpers/multiLanguage');
+var SingleFileTextInput = require('./SingleFileTextInput.jsx');
+var FileChangeUpload = require('./FileChangeUpload.jsx');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var apiUrl = require('../../../helpers/apiUrl');
+var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
+
+var SingleFileEdit = React.createClass({
+
+  mixins : [ampersandMixin],
+
+  propTypes : {
+    file : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired,
+    onClose : React.PropTypes.func.isRequired,
+    editedTitleValue : React.PropTypes.object.isRequired,
+    editedDescValue : React.PropTypes.object.isRequired,
+    editedExternalnameValue : React.PropTypes.object.isRequired,
+    hasChanged : React.PropTypes.bool.isRequired,
+    onTitleChange : React.PropTypes.func.isRequired,
+    onDescriptionChange : React.PropTypes.func.isRequired,
+    onExternalnameChange : React.PropTypes.func.isRequired
+  },
+
+  getInitialState : function () {
+    return {
+      isTitleOpen : false,
+      isDescriptionOpen : false,
+      isExternalnameOpen : false,
+      multifileLanguage : App.langtags[1]
+    }
+  },
+
+  componentWillMount : function () {
+    Dispatcher.on("on-media-overlay-save", this.onSave);
+    Dispatcher.on("on-media-overlay-cancel", this.onClose);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off("on-media-overlay-save", this.onSave);
+    Dispatcher.off("on-media-overlay-cancel", this.onClose);
+  },
+
+  onSave : function () {
+    if (this.props.hasChanged) {
+      var file = this.props.file;
+      var newTitle = this.props.editedTitleValue;
+      var newDescription = this.props.editedDescValue;
+      var newExternalName = this.props.editedExternalnameValue;
+
+      ActionCreator.changeFile(file.uuid, newTitle, newDescription, newExternalName, file.internalName, file.mimeType, file.folder, file.fileUrl);
+    }
+    this.props.onClose(event)
+  },
+
+  onClose : function (event) {
+    if (this.props.hasChanged) {
+      if (confirm('Sind Sie sicher? Ungespeicherte Daten gehen verloren.')) {
+        this.props.onClose(event)
+      }
+    } else {
+      this.props.onClose(event)
+    }
+  },
+
+  onTitleChange : function (titleValue, langtag) {
+    this.props.onTitleChange(titleValue, langtag);
+  },
+
+  toggleTitle : function () {
+    this.setState({
+      isTitleOpen : !this.state.isTitleOpen
+    });
+  },
+
+  onDescChange : function (descValue, langtag) {
+    this.props.onDescriptionChange(descValue, langtag);
+  },
+
+  toggleDesc : function () {
+    this.setState({
+      isDescriptionOpen : !this.state.isDescriptionOpen
+    });
+  },
+
+  onExternalnameChange : function (externalnameValue, langtag) {
+    this.props.onExternalnameChange(externalnameValue, langtag);
+  },
+
+  toggleExternalname : function () {
+    this.setState({
+      isExternalnameOpen : !this.state.isExternalnameOpen
+    });
+  },
+
+  onMultifileLanguageChange : function (lang) {
+    this.setState({
+      multifileLanguage : lang
+    });
+  },
+
+  onMultilangDrop : function (files) {
+    var self = this;
+    var langtag = this.state.multifileLanguage;
+
+    files.forEach(function (file) {
+      // upload each file for it's own
+      var uuid = self.props.file.uuid;
+
+      var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
+
+      request.put(uploadUrl)
+        .attach("file", file, file.name)
+        .end(self.multilangUploadCallback);
+    });
+  },
+
+  multilangUploadCallback : function (err, uploadRes) {
+    if (err) {
+      console.error("FileDelete.uploadCallback", err);
+      return;
+    }
+
+    if (uploadRes) {
+      var file = uploadRes.body;
+      ActionCreator.changedFileData(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
+    }
+  },
+
+  renderTextInput : function (id, label, valueObj, langtag, isOpen) {
+    var self = this;
+    var retrieveTranslation = multiLanguage.retrieveTranslation(App.langtags[0]);
+
+    if (isOpen) {
+      return (App.langtags.map(function (langtag) {
+        var value = retrieveTranslation(valueObj, langtag);
+        return self.renderField(id, value, langtag);
+      }));
+    } else {
+      var value = retrieveTranslation(valueObj, langtag);
+      return (
+        <div className='field-item'>
+          <label htmlFor={id} className="field-label">{label}</label>
+          {this.renderField(id, value, langtag)}
+        </div>
+      );
+    }
+  },
+
+  render : function () {
+    var langOptions = App.langtags.reduce(function (res, langtag) {
+      if (App.langtags[0] !== langtag) {
+        res.push({
+          value : langtag,
+          label : langtag
+        });
+      }
+      return res;
+    }, []);
+
+    var fileLangtag = Object.keys(this.props.file.internalName)[0];
+    var fileInternalName = this.props.file.internalName[fileLangtag];
+
+    var language = App.langtags[0].split(/-|_/)[0];
+    var country = App.langtags[0].split(/-|_/)[1];
+    var icon = country.toLowerCase() + ".png";
+
+    return (
+      <div className="singlefile-edit">
+        <div className="cover-wrapper">
+          <div className="cover">
+            <FileChangeUpload
+              langtag={fileLangtag}
+              internalFileName={fileInternalName}
+              uuid={this.props.file.uuid}/>
+          </div>
+        </div>
+        <div className="properties-wrapper">
+          <SingleFileTextInput name="fileTitle"
+                               labelText="Titel"
+                               originalValue={this.props.file.title}
+                               editedValue={this.props.editedTitleValue}
+                               langtag={this.props.langtag}
+                               isOpen={this.state.isTitleOpen}
+                               onToggle={this.toggleTitle}
+                               onChange={this.onTitleChange}/>
+
+          <SingleFileTextInput name="fileDescription"
+                               labelText="Beschreibung"
+                               originalValue={this.props.file.description}
+                               editedValue={this.props.editedDescValue}
+                               langtag={this.props.langtag}
+                               isOpen={this.state.isDescriptionOpen}
+                               onToggle={this.toggleDesc}
+                               onChange={this.onDescChange}/>
+
+          <SingleFileTextInput name="fileLinkName"
+                               labelText="Linkname"
+                               originalValue={this.props.file.externalName}
+                               editedValue={this.props.editedExternalnameValue}
+                               langtag={this.props.langtag}
+                               isOpen={this.state.isExternalnameOpen}
+                               onToggle={this.toggleExternalname}
+                               onChange={this.onExternalnameChange}/>
+        </div>
+
+        <div className="multifile-wrapper">
+          <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
+              <span>Falls es für diese Datei Übersetzungen in anderen Sprachen gibt, kann hier eine übersetzte Version hochgeladen werden.
+                Die Datei wird dann automatisch in eine mehrsprachige Datei umgewandelt.
+                Dies bedeutet, dass, neben den übersetzten Attributen, für jede Sprache eine Übersetzung der Datei hochgeladen werden kann.
+                <br />
+                <br />
+                Die bereits vorhandene Datei wird automatisch als <img src={"/img/flags/" + icon}
+                                                                       alt={country}/> {language.toUpperCase() }
+                &nbsp;markiert. Dies kann später wieder verändert werden.
+                <br />
+                <br />
+                Übersetzte Datei hierher ziehen oder hier klicken, um übersetzte Datei hochzuladen.
+              </span>
+          </Dropzone>
+          <LanguageSwitcher
+            options={langOptions}
+            openOnTop
+            onChange={this.onMultifileLanguageChange}
+            langtag={this.state.multifileLanguage}/>
+        </div>
+      </div>
+    );
+  }
+});
+
+module.exports = SingleFileEdit;

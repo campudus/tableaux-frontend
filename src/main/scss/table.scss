@@ -30,12 +30,17 @@
   }
 
   .data-wrapper {
-    overflow: auto;
+    overflow-x: auto !important;
     position: absolute;
     width: 100%;
     height: 85%;
     @include box-sizing(border-box);
     top: $space-height-table-header;
+
+    > div {
+      background: transparent url("../img/row-grid.gif") repeat;
+    }
+
   }
 
 }
@@ -70,212 +75,13 @@
     }
   }
 
-  .cell, .column-head {
+  .column-head {
     border-right: 1px solid $color-border-grey;
-  }
 
-  .row {
-    border-bottom: 1px solid $color-border-grey;
-  }
-
-  .row-group.expanded {
-    border-bottom: 2px solid $color-border-grey;
-    background-color: #f9f9f9;
-    display: table;
-  }
-
-  .cell {
-    position: relative;
-    vertical-align: top;
-    white-space: nowrap;
-    display: inline-block;
-    overflow: visible;
-    text-overflow: ellipsis;
-    border: 1px solid transparent;
-    border-right: 1px solid #efefef;
-
-    &.link {
-      white-space: normal;
+    i {
+      margin-right: 10px;
     }
-  }
 
-  .cell .input {
-    font: inherit;
-    width: 85%;
-    max-width: 85%;
-  }
-
-  .cell span {
-    overflow-y: hidden;
-    max-height: 200px;
-    display: block;
-
-    &.link {
-      color: $color-primary-contrast-text;
-      background-color: $color-primary;
-      display: inline-block;
-      padding: 4px;
-      margin: 1px;
-      border-radius: 4px;
-
-      text-decoration: none;
-      border: 1px solid white;
-
-      &:hover {
-        background-color: $color-primary-contrast-text;
-        color: $color-primary;
-        border: 1px solid $color-primary;
-      }
-    }
-  }
-
-  .cell .cell-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    position: relative;
-
-    max-height: 150px;
-    min-height: 100%;
-
-    white-space: pre;
-  }
-
-  .cell .add {
-    width: 30px;
-    height: 30px;
-    border-radius: 30px;
-    vertical-align: bottom;
-    display: block;
-    background-color: white;
-    border: 1px solid $color-border-grey;
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-
-    &:hover {
-      color: $color-primary-contrast-text;
-      background-color: $color-primary;
-      border-color: $color-primary;
-    }
-  }
-
-  .cell {
-    &.attachment {
-      a {
-        overflow-y: hidden;
-        max-height: 200px;
-
-        color: $color-primary-contrast-text;
-        background-color: $color-primary;
-        display: inline-block;
-        padding: 4px;
-        margin: 1px;
-        border-radius: 4px;
-
-        text-decoration: none;
-        border: 1px solid white;
-
-        &:hover {
-          background-color: $color-primary-contrast-text;
-          color: $color-primary;
-          border: 1px solid $color-primary;
-        }
-      }
-    }
-  }
-
-  .cell.holds-checkbox {
-    vertical-align: middle;
-    text-align: center;
-
-    .checkbox {
-      vertical-align: middle;
-      margin: 0 auto;
-      padding: 0;
-      width: 16px;
-      height: 16px;
-      display: inline-block;
-    }
-  }
-
-  .delete-row {
-    position: absolute;
-    z-index: 9;
-    left: 2px;
-    padding: 0;
-    margin-top: 10px;
-
-    .button {
-      width: 35px;
-      height: 35px;
-
-      font-size: 1em;
-
-      border-radius: 35px;
-
-      display: block;
-
-      background-color: white;
-      border: 1px solid $color-border-grey;
-
-      &:hover {
-        color: $color-primary-contrast-text;
-        background-color: $color-primary;
-        border-color: $color-primary;
-      }
-    }
-  }
-
-  .cell {
-    &.editing {
-      display: inline-block;
-      position: relative;
-      @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
-      border: 1px solid $color-primary;
-
-      .input {
-        position: relative;
-
-        width: 100%;
-        height: 100%;
-
-        max-width: none;
-
-        resize: none;
-        border: none;
-        outline: none;
-
-        background-color: transparent;
-        box-sizing: border-box;
-      }
-    }
-  }
-
-  .link {
-    &.editing {
-      .delete-link {
-        font-size: 1em;
-
-        border-radius: 4px;
-
-        display: inline-block;
-
-        vertical-align: top;
-
-        margin: 1px;
-
-        background-color: white;
-        color: lightcoral;
-        border: 1px solid lightcoral;
-
-        &:hover {
-          color: $color-primary-contrast-text;
-          background-color: lightcoral;
-          border-color: lightcoral;
-        }
-      }
-    }
   }
 
   .heading, .row {
@@ -287,7 +93,7 @@
       width: $space-standard-cell-width;
       min-width: $space-standard-cell-width;
       max-width: $space-standard-cell-width;
-      padding: 10px;
+      padding: 9px;
       @include box-sizing(border-box);
 
       &.language {
@@ -306,34 +112,4 @@
     }
   }
 
-  .new-row {
-    padding: 10px 20px;
-    color: white;
-    font-weight: bold;
-    background-color: $color-primary;
-    cursor: pointer;
-    display: inline-block;
-    margin: 20px;
-    @include border-radius(3px);
-    @include transition(all 250ms ease-out);
-
-    &.loading {
-      background-color: $color-button-grey;
-    }
-
-    i, span {
-      vertical-align: middle;
-    }
-
-    &:hover {
-      background-color: desaturate(darken($color-primary, 10%), 10%);
-    }
-
-    i {
-      margin-right: 15px;
-      font-size: 20px;
-
-    }
-
-  }
 }

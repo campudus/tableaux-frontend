@@ -171,20 +171,6 @@ header {
   TODO: Greater Styling
   **/
 
-  #switch-view {
-    position: relative;
-    margin-top: 10px;
-    float: right;
-    @include header-button-look();
-
-    select {
-      border: 0;
-      display: inline-block;
-      outline: none;
-    }
-
-  }
-
   #header-pagename {
     float: right;
     margin-right: 20px;

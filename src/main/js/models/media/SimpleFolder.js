@@ -12,6 +12,20 @@ var SimpleFolder = AmpersandModel.extend({
       default : null,
       allowNull : true
     }
+  },
+
+  url : function () {
+    var base = this.urlRoot();
+
+    if (this.isNew() || isNaN(this.getId())) {
+      return base;
+    } else {
+      return base + '/' + this.getId();
+    }
+  },
+
+  urlRoot : function () {
+    return apiUrl('/folders');
   }
 });
 

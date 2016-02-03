@@ -1,0 +1,68 @@
+var React = require('react');
+
+var TextArea = React.createClass({
+
+  propTypes : {
+    initialContent : React.PropTypes.string,
+    onClose : React.PropTypes.func.isRequired,
+    onSave : React.PropTypes.func.isRequired,
+    onChange : React.PropTypes.func
+  },
+
+  getInitialState : function (event) {
+    return {
+      richEditor : false
+    }
+  },
+
+  componentDidMount : function () {
+    var inputArea = this.refs.inputArea;
+    var text = inputArea.value;
+    // Sets cursor to end of input field
+    inputArea.value = ""; //textarea must be empty first to jump to end of text
+    inputArea.value = text;
+  },
+
+  getContent : function (event) {
+    return this.refs.inputArea.value;
+  },
+
+  _onClose : function (event) {
+    this.props.onClose(event)
+  },
+
+  _onChange : function (event) {
+    var newContent = this.getContent(event);
+
+    this.content = newContent;
+
+    if (typeof this.props.onChange === "function") {
+      this.props.onChange(newContent, event)
+    }
+  },
+
+  _onSave : function (event) {
+    this.props.onSave(this.content, event);
+  },
+
+  render : function () {
+    var editor;
+
+    if (typeof this.content === 'undefined') {
+      this.content = this.props.initialContent;
+    }
+
+    editor = <textarea autoFocus className="input" type="text" defaultValue={this.content} ref="inputArea"
+                       onChange={this._onChange}></textarea>;
+
+    return (
+      <div>
+        {editor}
+        <button onClick={this._onSave} className="button">Save &amp; Close</button>
+        <button onClick={this._onClose} className="button">Cancel &amp; Close</button>
+      </div>
+    );
+  }
+});
+
+module.exports = TextArea;

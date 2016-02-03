@@ -1,40 +1,54 @@
 var React = require('react');
 var App = require('ampersand-app');
+var Select = require('react-select');
 
 var LanguageSwitcher = React.createClass({
 
   propTypes : {
-    langtag : React.PropTypes.string.isRequired
+    langtag : React.PropTypes.string.isRequired,
+    onChange : React.PropTypes.func,
+    openOnTop : React.PropTypes.bool,
+    options : React.PropTypes.array
   },
 
-  onChange : function (event) {
-    event.preventDefault();
+  onChange : function (langObj) {
+    var langtag = langObj.value;
+    if (this.props.onChange) {
+      this.props.onChange(langtag);
+    }
+  },
 
-    var langtag = this.refs.langSwitcher.value;
-
-    var his = App.router.history;
-
-    var path = his.getPath();
-
-    var newPath = path.replace(this.props.langtag, langtag);
-
-    console.log('LanguageSwitcher.onChange', path, newPath);
-
-    his.navigate(newPath, {trigger : true});
-
-    console.log(langtag);
+  renderOption : function (option) {
+    var langtag = option.value;
+    var language = langtag.split(/-|_/)[0];
+    var country = langtag.split(/-|_/)[1];
+    var icon = country.toLowerCase() + ".png";
+    return <span className="langtag">
+      <img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}
+    </span>;
   },
 
   render : function () {
-    var options = App.langtags.map(function (langtag) {
-      return <option key={langtag} value={langtag}>{langtag}</option>;
-    });
+    var options = this.props.options || App.langtags.reduce(function (res, langtag) {
+      res.push({
+        value : langtag,
+        label : langtag
+      });
+      return res;
+    }, []);
 
     return (
-      <div id="switch-view">
-        <select onChange={this.onChange} ref="langSwitcher" defaultValue={this.props.langtag}>
-          {options}
-        </select>
+      <div id="language-switcher">
+        <Select className={this.props.openOnTop?"open-on-top":""}
+                options={options}
+                searchable
+                clearable={false}
+                value={this.props.langtag}
+                onChange={this.onChange}
+                optionRenderer={this.renderOption}
+                valueRenderer={this.renderOption}
+
+        />
       </div>
     )
   }

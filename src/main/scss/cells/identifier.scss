@@ -1,0 +1,11 @@
+.cell {
+
+  &.cell-concat {
+    background-color: #f9f9f9;
+    color: $color-text-light-grey;
+    //Overwrite editing styling because concat cells are not editable
+    &.editing {
+      @include box-shadow(none);
+    }
+  }
+}

@@ -1,43 +1,39 @@
 var AmpersandModel = require('ampersand-model');
-
 var apiUrl = require('../helpers/apiUrl');
-
 var Columns = require('./Columns');
 var Cell = require('./Cell');
+var Cells = require('./Cells');
 
 var Row = AmpersandModel.extend({
   props : {
-    id : 'number'
+    id : 'number',
+    values : 'array'
   },
 
   session : {
     tableId : 'number',
-    columns : 'object',
-    values : 'array'
+    columns : 'object'
   },
 
-  derived : {
-    cells : {
-      deps : ['values'],
-      fn : function () {
-        var self = this;
-        return this.values.map(function (value, idx) {
+  collections : {
+    cells : Cells
+  },
 
-          var json = {
-            tables : self.collection.parent.collection,
-            tableId : self.collection.parent.getId(),
-            column : getColumn(idx),
-            rowId : self.getId(),
-            value : value
-          };
+  parse : function (attrs, options) {
+    if (attrs.values) {
+      attrs.cells = attrs.values.map(function (value, idx) {
+        return {
+          index : idx,
+          value : value,
+          rowId : attrs.id
+        };
+      });
+      return attrs;
+    }
 
-          return new Cell(json, {row : self});
-        });
-
-        function getColumn(idx) {
-          return self.collection.parent.columns.at(idx);
-        }
-      }
+    //When adding a new row attrs has correct values
+    else {
+      return attrs;
     }
   },
 

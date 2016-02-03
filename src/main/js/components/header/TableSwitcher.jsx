@@ -1,9 +1,11 @@
 var App = require('ampersand-app');
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Dispatcher = require('../../dispatcher/Dispatcher.js');
+var ActionCreator = require('../../actions/ActionCreator.js');
+
 var _ = require('lodash');
 
+//TODO: Refactor this component with outside click mixin. Rethink TableSwitcher and TableTools composition!
 var TableSwitcher = React.createClass({
 
   propTypes : {
@@ -20,8 +22,6 @@ var TableSwitcher = React.createClass({
   },
 
   clickedOutside : function (e) {
-    e.preventDefault();
-    e.stopPropagation();
     //fixes IE Bug: Invariant Violation: findDOMNode was called on an unmounted component.
     if (this.isMounted()) {
       if (!ReactDOM.findDOMNode(this).contains(e.target)) {
@@ -39,12 +39,11 @@ var TableSwitcher = React.createClass({
   },
 
   componentDidMount : function () {
-    ReactDOM.findDOMNode(this.refs.search).focus();
+
   },
 
   handleClick : function (entry) {
-    var langtag = this.props.langtag;
-    App.router.history.navigate(langtag + '/table/' + entry.id, {trigger : true});
+    ActionCreator.switchTable(entry.id, this.props.langtag);
   },
 
   onSearch : function () {
@@ -78,7 +77,7 @@ var TableSwitcher = React.createClass({
     return (
       <div id="table-list-wrapper">
         <div className="search-input-wrapper">
-          <input type="text" className="search-input" placeholder="Search Table..."
+          <input autoFocus type="text" className="search-input" placeholder="Search Table..."
                  onChange={this.onSearch} defaultValue={this.state.search} ref="search"/>
           <i className="fa fa-search"></i>
         </div>

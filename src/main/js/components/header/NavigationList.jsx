@@ -1,7 +1,10 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var OutsideClick = require('react-onclickoutside');
 
 var NavigationList = React.createClass({
+
+  mixins : [OutsideClick],
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired
@@ -13,17 +16,8 @@ var NavigationList = React.createClass({
     };
   },
 
-  clickedOutside : function (e) {
-    //clicked outside
-    if (!ReactDOM.findDOMNode(this).contains(e.target)) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.setState({navigationOpen : false});
-    }
-  },
-
-  componentWillUnmount : function () {
-    document.removeEventListener('click', this.clickedOutside, false);
+  handleClickOutside : function (event) {
+    this.setState({navigationOpen : false});
   },
 
   mainNavButtonClicked : function (e) {
@@ -31,19 +25,9 @@ var NavigationList = React.createClass({
     this.setState({navigationOpen : !this.state.navigationOpen});
   },
 
-  toggleEvents : function () {
-    if (this.state.navigationOpen) {
-      document.addEventListener('click', this.clickedOutside, false);
-    } else {
-      document.removeEventListener('click', this.clickedOutside, false);
-    }
-  },
-
-
   //TODO: active class for current page
   render : function () {
     var mainNavigation;
-    this.toggleEvents();
     if (this.state.navigationOpen) {
       mainNavigation = <div id="main-navigation">
         <div id="logo">

@@ -2,6 +2,7 @@ var AmpersandCollection = require('ampersand-collection');
 
 var apiUrl = require('../../helpers/apiUrl');
 var Dispatcher = require('../../dispatcher/Dispatcher');
+var ActionTypes = require('../../constants/TableauxConstants').ActionTypes;
 
 var File = require('./File');
 
@@ -9,33 +10,66 @@ var FilesCollection = AmpersandCollection.extend({
   model : File,
 
   initialize : function () {
-    var self = this;
+    Dispatcher.on(ActionTypes.ADD_FILE, this.mergeFileHandler, this);
+    Dispatcher.on(ActionTypes.CHANGE_FILE, this.changeFileHandler, this);
+    Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.mergeFileHandler, this);
+    Dispatcher.on(ActionTypes.REMOVE_FILE, this.removeFileHandler, this);
+  },
 
-    Dispatcher.on('add-file', function (attrs) {
-      console.log("Add new file.", attrs);
+  mergeFileHandler : function (payload) {
+    if (payload.uuid === "undefined") {
+      throw "file must already exist"
+    }
 
-      if (attrs.uuid === "undefined") {
-        throw "file must already exist"
-      }
-
-      var newFile = new File(attrs);
-      console.log('File added to collection', newFile);
-      self.add(newFile, {merge : true});
+    var file = new File({
+      uuid : payload.uuid,
+      title : payload.title,
+      description : payload.description,
+      externalName : payload.externalName,
+      internalName : payload.internalName,
+      mimeType : payload.mimeType,
+      folder : payload.folderId,
+      fileUrl : payload.fileUrl
     });
 
-    Dispatcher.on('change-file', function (attrs) {
-      console.log("Change file.", attrs);
+    this.add(file, {merge : true});
+  },
 
-      if (attrs.uuid === "undefined") {
-        throw "file must already exist"
+  changeFileHandler : function (payload) {
+    console.log("Change file.", payload);
+    var self = this;
+
+    if (payload.uuid === "undefined") {
+      throw "file must already exist"
+    }
+
+    var file = this.get(payload.uuid);
+
+    file.save({
+      title : payload.title,
+      description : payload.description,
+      externalName : payload.externalName,
+      internalName : payload.internalName,
+      mimeType : payload.mimeType,
+      folder : payload.folderId,
+      fileUrl : payload.fileUrl
+    });
+    file.once('sync', function (a, b) {
+      console.log('File saved', a, b);
+      self.add(a, {merge : true});
+    });
+  },
+
+  removeFileHandler : function (payload) {
+    var file = this.get(payload.fileId);
+
+    file.destroy({
+      success : function () {
+        console.log('File was deleted.');
+      },
+      error : function () {
+        console.log('There was an error deleting the file.');
       }
-
-      var file = new File(attrs);
-      file.save();
-      file.once('sync', function (a, b) {
-        console.log('File saved', a, b);
-        self.add(a, {merge : true});
-      });
     });
   },
 

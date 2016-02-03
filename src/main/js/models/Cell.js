@@ -1,9 +1,12 @@
 var App = require('ampersand-app');
 var AmpersandModel = require('ampersand-model');
-
+var Dispatcher = require('../dispatcher/Dispatcher');
 var Tables = require('./Tables');
 var Column = require('./Column');
+var RowConcatHelper = require('../helpers/RowConcatHelper');
+var _ = require('lodash');
 
+//FIXME: Handle Concat synch more elegant the Ampersand way
 var Cell = AmpersandModel.extend({
   modelType : 'Cell',
 
@@ -18,7 +21,9 @@ var Cell = AmpersandModel.extend({
     },
     tableId : 'number',
     column : 'object',
-    rowId : 'number'
+    rowId : 'number',
+    row : 'object',
+    changedHandler : 'array'
   },
 
   derived : {
@@ -28,10 +33,10 @@ var Cell = AmpersandModel.extend({
         return 'cell-' + this.tableId + '-' + this.column.getId() + '-' + this.rowId;
       }
     },
-    changeCellEvent : {
+    changedCellEvent : {
       deps : ['tableId', 'column', 'rowId'],
       fn : function () {
-        return 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
+        return 'changed-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
       }
     },
     isLink : {
@@ -46,55 +51,88 @@ var Cell = AmpersandModel.extend({
         return this.column.multilanguage;
       }
     },
+    isIdentifier : {
+      deps : ['column'],
+      fn : function () {
+        return this.column.identifier;
+      }
+    },
     kind : {
       deps : ['column'],
       fn : function () {
         return this.column.kind;
       }
+    },
+    isConcatCell : {
+      deps : ['kind'],
+      fn : function () {
+        return this.kind === 'concat';
+      }
+    },
+    rowConcatString : {
+      deps : ['value'],
+      cache : false,
+      fn : function () {
+        return function (langtag) {
+          if (this.isConcatCell) {
+            return RowConcatHelper.getRowConcatString(this.value, this.column, langtag);
+          } else {
+            //this cell is not of kind concat. so we return empty string.
+            return "";
+          }
+
+        }
+      }
     }
   },
 
   initialize : function (attrs, options) {
-    App.registerModel(this);
+    this.initConcatEvents();
+  },
 
-    var event = this.changeCellEvent;
+  initConcatEvents : function () {
+    var self = this;
 
-    if (options && options.row && !options.noListeners) {
-      // Cell could be initialized multiple times, so go and fuck off!
-      App.off(event);
-      App.on(event, this.changeCell.bind(this));
+    var changedCellListener = function (changedCell) {
+      //find the index value of the concat obj to update
+      var concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
+        return column.id === changedCell.column.id;
+      });
+      this.value[concatIndexToUpdate] = changedCell.value;
+    };
 
-      options.row.on('remove', function () {
-        // Remove changeCell listener
-        App.off(event);
+    //debugger;
+    //This cell is a concat cell and listens to its identifier cells
+    if (this.isConcatCell) {
+      this.column.concats.forEach(function (columnObj) {
+
+        var changedEvent = 'changed-cell:' + self.tableId + ':' + columnObj.id + ':' + self.rowId;
+        var handler = changedCellListener.bind(self);
+
+        Dispatcher.on(changedEvent, handler);
+
+        if (!self.changedHandler) {
+          self.changedHandler = [];
+        }
+        self.changedHandler.push({
+          name : changedEvent,
+          handler : handler
+        }); //save reference
+
       });
     }
   },
 
-  changeCell : function (event) {
-    var self = this;
-    var oldValue = this.value;
-
-    if (oldValue !== event.newValue) {
-      this.value = event.newValue;
-
-      this.save(this, {
-        parse : false,
-        success : function () {
-          if (event.fetch) {
-            self.fetch();
-          }
-        },
-        error : function () {
-          console.error('save unsuccessful!', arguments);
-
-          if (event.fetch) {
-            self.fetch();
-          } else {
-            self.value = oldValue;
-          }
-        }
-      });
+  //Delete all cell attrs and event listeners
+  cleanupCell : function () {
+    // We need to remove multiple dependant changed id cell events
+    if (this.isConcatCell) {
+      if (this.changedHandler && this.changedHandler.length > 0) {
+        this.changedHandler.forEach(function (event) {
+          //removes all callbacks
+          Dispatcher.off(event.name, event.handler);
+        });
+      }
     }
   },
 
@@ -116,15 +154,6 @@ var Cell = AmpersandModel.extend({
     return attrs;
   },
 
-  parse : function (resp, options) {
-    if (!(options && options.parse)) {
-      return this;
-    } else if (resp.rows) {
-      return resp.rows[0];
-    } else {
-      return resp;
-    }
-  }
 });
 
 module.exports = Cell;

@@ -7,10 +7,12 @@ var locale = require('browser-locale')();
 var Folder = require('./models/media/Folder');
 var Tables = require('./models/Tables');
 
-var FolderView = require('./components/media/Folder.jsx');
+var FolderView = require('./components/media/folder/Folder.jsx');
 var Tableaux = require('./components/Tableaux.jsx');
 
 var Dispatcher = require('./dispatcher/Dispatcher');
+var ActionTypes = require('./constants/TableauxConstants').ActionTypes;
+var ActionCreator = require('./actions/ActionCreator');
 
 var TableauxRouter = Router.extend({
   routes : {
@@ -23,6 +25,16 @@ var TableauxRouter = Router.extend({
 
     ':langtag/media' : 'mediaBrowser',
     ':langtag/media/:folderid' : 'mediaBrowser'
+  },
+
+  initialize : function (options) {
+    Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTableHandler);
+    //TODO Switch language
+  },
+
+  switchTableHandler : function (payload) {
+    var langtag = payload.langtag;
+    App.router.history.navigate(langtag + '/table/' + payload.id, {trigger : true});
   },
 
   home : function () {
@@ -61,7 +73,7 @@ var TableauxRouter = Router.extend({
 
     var self = this;
 
-    var id = parseInt(tableid);
+    var tableId = parseInt(tableid);
 
     // router is called even if we switch through
     // tables with TableSwitcher but we only want to
@@ -72,7 +84,9 @@ var TableauxRouter = Router.extend({
       // Tableaux.jsx is listening on this
       // state will be changed which triggers
       // a React render
-      Dispatcher.trigger('switch-table', {id : id});
+      //Dispatcher.trigger(ActionTypes., {id : id});
+      ActionCreator.switchedTable(tableId);
+
     } else {
       this.alreadyCalled = {
         langtag : langtag
@@ -85,11 +99,11 @@ var TableauxRouter = Router.extend({
         this.tables = new Tables();
         this.tables.fetch({
           success : function () {
-            self.renderPage(<Tableaux tables={self.tables} initialTableId={id} langtag={langtag}/>);
+            self.renderPage(<Tableaux tables={self.tables} initialTableId={tableId} langtag={langtag}/>);
           }
         });
       } else {
-        self.renderPage(<Tableaux tables={self.tables} initialTableId={id} langtag={langtag}/>);
+        self.renderPage(<Tableaux tables={self.tables} initialTableId={tableId} langtag={langtag}/>);
       }
     }
   },
@@ -111,6 +125,7 @@ var TableauxRouter = Router.extend({
     }
 
     this.folder.fetch({
+      data: { langtag: langtag },
       success : function () {
         self.renderPage(<FolderView folder={self.folder} langtag={langtag}/>);
       }

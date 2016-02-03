@@ -1,12 +1,27 @@
 var Collection = require('ampersand-rest-collection');
 var _ = require('lodash');
-
 var apiUrl = require('../helpers/apiUrl');
-
 var Row = require('./Row');
 
+
 var Rows = Collection.extend({
-  model : Row,
+
+  model : function (attrs, options) {
+    var tableId = options.collection.parent.getId();
+    var json = {
+      id : attrs.id,
+      tableId : tableId,
+      values : attrs.values
+    };
+
+    return new Row(json, options);
+  },
+
+  isModel : function (model) {
+    return model instanceof Row;
+  },
+
+  comparator : false,
 
   currentPage : {
     offset : 0,
