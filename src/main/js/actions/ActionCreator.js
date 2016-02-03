@@ -92,7 +92,7 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.SELECT_NEXT_CELL,
       direction
     );
-  }
+  },
 
   addFolder : function (name, description, parentId) {
     Dispatcher.trigger(ActionTypes.ADD_FOLDER, {
