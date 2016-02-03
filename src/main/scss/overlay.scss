@@ -49,173 +49,214 @@ $overlay-headline-height: 50px;
     overflow: hidden;
     @include transform(translate(-50%, -50%));
     @include border-radius(5px);
+  }
 
-    .content-scroll {
-      overflow-y: auto;
-      top: $overlay-headline-height;
-      bottom: 0px;
-      position: absolute;
-      left: 0px;
-      width: 100%;
-      z-index: 0;
-    }
+  .content-scroll {
+    overflow-y: auto;
+    top: $overlay-headline-height;
+    bottom: 0px;
+    position: absolute;
+    left: 0px;
+    width: 100%;
+    z-index: 0;
+  }
 
-    #overlay-content {
-      padding: 3.5rem;
-      overflow-y: auto;
-      box-sizing: border-box;
-      height: 100%;
+  #overlay-content {
+    padding: 3.5rem;
+    overflow-y: auto;
+    box-sizing: border-box;
+    //height: 100%;
+    position: relative;
+
+    .search-input-wrapper {
       position: relative;
-
-      > div {
-        height: 100%;
-      }
-
-      .search-input-wrapper {
-        position: relative;
-        height: auto;
-        margin-bottom: 30px;
-
-        i {
-          position: absolute;
-          right: 1.5em;
-          top: 50%;
-          margin-top: -0.5em;
-        }
-
-      }
-
-      .search-input {
-        font: inherit;
-        width: 100%;
-        padding: 0.8em 1.5em;
-        margin: 0;
-        border-radius: 2em;
-        cursor: pointer;
-        background-color: #EFEFEF;
-
-        border: 1px solid $color-grey-dark;
-
-        box-sizing: border-box;
-        outline: none;
-        position: relative;
-
-        &:focus {
-          background-color: #fff;
-        }
-      }
-
-      .input {
-        box-sizing: border-box;
-        padding: 10px;
-        font: inherit;
-        height: 90%;
-        width: 100%;
-        max-width: 100%;
-        display: block;
-        resize: none;
-
-        outline: none;
-        background-color: white;
-
-        border: 1px solid #999;
-
-        &:focus {
-          border: 1px solid $color-primary;
-          @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
-        }
-      }
-
-      .button {
-        font-size: 1em;
-
-        border-radius: 4px;
-
-        display: inline-block;
-
-        vertical-align: top;
-
-        margin-top: 10px;
-        margin-right: 10px;
-
-        padding: 5px 10px 5px 10px;
-
-        background-color: white;
-        border: 1px solid #999;
-
-        &:hover {
-          color: $color-primary-contrast-text;
-          background-color: $color-primary;
-          border-color: $color-primary;
-        }
-      }
-    }
-
-    h2 {
-      text-align: center;
-      background-color: $color-light-link-color;
-      border-bottom: 2px solid $color-darker-link-color;
-      color: $color-text-link-color;
-      font-size: 1.4rem;
-      font-weight: normal;
-      height: $overlay-headline-height;
-      line-height: $overlay-headline-height;
-      white-space: nowrap;
-      position: relative;
-      z-index: 2;
-    }
-
-    .column-name.with-link {
-      cursor: pointer;
-      padding: 2px 8px;
-      @include border-radius(3px);
-      margin-right: 10px;
-      border: 2px solid $color-darker-link-color;
-
-      &:hover {
-        //color: white;
-        background-color: $color-darker-link-color;
-      }
+      height: auto;
+      margin-bottom: 30px;
 
       i {
-        margin-right: 5px;
+        position: absolute;
+        right: 1.5em;
+        top: 50%;
+        margin-top: -0.5em;
+      }
+
+    }
+
+    .search-input {
+      font: inherit;
+      width: 100%;
+      padding: 0.8em 1.5em;
+      margin: 0;
+      border-radius: 2em;
+      cursor: pointer;
+      background-color: #EFEFEF;
+
+      border: 1px solid $color-grey-dark;
+
+      box-sizing: border-box;
+      outline: none;
+      position: relative;
+
+      &:focus {
+        background-color: #fff;
       }
     }
 
-    li {
-      padding: 0.8em;
+    .input {
+      box-sizing: border-box;
+      padding: 10px;
+      font: inherit;
+      height: 90%;
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      resize: none;
+
+      outline: none;
       background-color: white;
-      margin-bottom: 10px;
-      @include border-radius(3px);
-      cursor: pointer;
-      border: 1px solid $color-grey-dark;
-      border-bottom: 3px solid $color-grey-dark;
+
+      border: 1px solid #999;
+
+      &:focus {
+        border: 1px solid $color-primary;
+        @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
+      }
+    }
+  }
+
+  .button {
+    font-size: 1em;
+
+    border-radius: 4px;
+
+    display: inline-block;
+
+    vertical-align: top;
+
+    margin-top: 10px;
+    margin-right: 10px;
+
+    padding: 5px 10px 5px 10px;
+
+    background-color: white;
+    border: 1px solid #999;
+
+    &:hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+  }
+
+  h2 {
+    text-align: center;
+    background-color: $color-light-link-color;
+    border-bottom: 2px solid $color-darker-link-color;
+    color: $color-text-link-color;
+    font-size: 1.4rem;
+    font-weight: normal;
+    height: $overlay-headline-height;
+    line-height: $overlay-headline-height;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
+  }
+
+  .column-name.with-link {
+    cursor: pointer;
+    padding: 2px 8px;
+    @include border-radius(3px);
+    margin-right: 10px;
+    border: 2px solid $color-darker-link-color;
+
+    &:hover {
+      //color: white;
+      background-color: $color-darker-link-color;
+    }
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  li {
+    padding: 0.8em;
+    background-color: white;
+    margin-bottom: 10px;
+    @include border-radius(3px);
+    cursor: pointer;
+    border: 1px solid $color-grey-dark;
+    border-bottom: 3px solid $color-grey-dark;
+
+    &:hover {
+      border-color: $color-darker-link-color;
+      background-color: white;
+    }
+
+    &.isLinked {
+
+      border-color: $color-darker-link-color;
+      background-color: $color-light-link-color;
 
       &:hover {
-        border-color: $color-darker-link-color;
+        display: block;
+
+        border-color: lightcoral;
         background-color: white;
-      }
 
-      &.isLinked {
-
-        border-color: $color-darker-link-color;
-        background-color: $color-light-link-color;
-
-        &:hover {
-          display: block;
-
-          border-color: lightcoral;
-          background-color: white;
-
-          &::after {
-            color: lightcoral;
-            font-weight: bold;
-            content: "X";
-            float: right;
-            text-align: right;
-          }
+        &::after {
+          color: lightcoral;
+          font-weight: bold;
+          content: "X";
+          float: right;
+          text-align: right;
         }
       }
     }
   }
+
+  &.full-flex {
+    display: block;
+
+    #overlay-wrapper {
+      min-width: 600px;
+      width: 90%;
+      max-width: none;
+      min-height: 520px;
+      height: 80%;
+      max-height: none;
+    }
+
+    .content-scroll {
+      text-align: center;
+
+      &:before {
+        display: inline-block;
+        content: " ";
+        height: 100%;
+        vertical-align: middle;
+      }
+
+      #overlay-content {
+        display: inline-block;
+        text-align: left;
+        vertical-align: middle
+      }
+    }
+
+  }
+
+  &.has-footer {
+    footer {
+      height: 50px;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+    }
+
+    .content-scroll {
+      bottom: 50px;
+    }
+  }
+
 }

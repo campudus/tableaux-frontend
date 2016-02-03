@@ -1,12 +1,15 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-
+var Dispatcher = require('../../../dispatcher/Dispatcher');
 var Subfolder = require('./Subfolder.jsx');
 var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
-var LanguageSwitcher = require('../header/LanguageSwitcher.jsx');
-var NavigationList = require('../header/NavigationList.jsx');
-var PageTitle = require('../header/PageTitle.jsx');
+var NewFolderAction = require('./NewFolderAction.jsx');
+var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
+var NavigationList = require('../../header/NavigationList.jsx');
+var PageTitle = require('../../header/PageTitle.jsx');
+var GenericOverlay = require('../../overlay/GenericOverlay.jsx');
+var App = require('ampersand-app');
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
@@ -18,9 +21,25 @@ var Folder = React.createClass({
     langtag : React.PropTypes.string.isRequired
   },
 
+  getInitialState : function () {
+    return {
+      activeOverlay : null //holds null or { head:{}, body:{}, type:""}
+    }
+  },
+
   componentDidMount : function () {
     this.watch(this.props.folder.files, {reRender : false});
     this.watch(this.props.folder.subfolders, {reRender : false});
+  },
+
+  componentWillMount : function () {
+    Dispatcher.on('open-overlay', this.openOverlay);
+    Dispatcher.on('close-overlay', this.closeOverlay);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off('open-overlay', this.openOverlay);
+    Dispatcher.off('close-overlay', this.closeOverlay);
   },
 
   renderCurrentFolder : function () {
@@ -55,8 +74,9 @@ var Folder = React.createClass({
   },
 
   renderSubfolders : function () {
+    var self = this;
     var subfolder = this.props.folder.subfolders.map(function (folder, idx) {
-      return <li key={idx}><i className="icon fa fa-folder-open"></i><Subfolder key={idx} folder={folder}/></li>
+      return <li key={idx}><Subfolder key={idx} folder={folder} langtag={self.props.langtag}/></li>
     });
 
     return (
@@ -68,12 +88,33 @@ var Folder = React.createClass({
     );
   },
 
+  openOverlay : function (content) {
+    this.setState({activeOverlay : content});
+  },
+
+  closeOverlay : function () {
+    this.setState({activeOverlay : null});
+  },
+
+  renderActiveOverlay : function () {
+    var overlay = this.state.activeOverlay;
+    if (overlay) {
+      return (<GenericOverlay key="genericoverlay"
+                              head={overlay.head}
+                              body={overlay.body}
+                              footer={overlay.footer}
+                              type={overlay.type}
+                              closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
+      />);
+    }
+  },
+
   renderFiles : function () {
     var self = this;
 
     var files = this.props.folder.files.map(function (file) {
-      return <li key={file.uuid}><i className="icon fa fa-file"></i><File key={file.uuid} file={file}
-                                                                          langtag={self.props.langtag}/></li>;
+      return <li key={file.uuid}><File key={file.uuid} file={file}
+                                       langtag={self.props.langtag}/></li>;
     });
 
     return (
@@ -91,13 +132,25 @@ var Folder = React.createClass({
 
         {this.renderCurrentFolder()}
 
+        <NewFolderAction parentFolder={this.props.folder}/>
+
         {this.renderSubfolders()}
 
         {this.renderFiles()}
 
-        <FileUpload folder={this.props.folder} langtag={this.props.langtag}/>
+        <FileUpload folder={this.props.folder} />
       </div>
     );
+  },
+
+  onLanguageSwitch : function (newLangtag) {
+    var his = App.router.history;
+
+    var path = his.getPath();
+
+    var newPath = path.replace(this.props.langtag, newLangtag);
+
+    his.navigate(newPath, {trigger : true});
   },
 
   //<Header key="header" title={this.props.folder.name} subtitle="Sie arbeiten im Ordner" langtag={this.props.langtag}/>
@@ -107,10 +160,11 @@ var Folder = React.createClass({
       <div>
         <header>
           <NavigationList langtag={this.props.langtag}/>
-          <LanguageSwitcher langtag={this.props.langtag}/>
+          <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
           <PageTitle title="Media Management"/>
         </header>
         {this.renderMediaManagement()}
+        {this.renderActiveOverlay()}
       </div>
     );
   }

@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var compass = require('gulp-compass');
+var importCss = require('gulp-import-css');
 var plumber = require('gulp-plumber');
 var minifyCss = require('gulp-minify-css');
 var del = require('del');
@@ -48,6 +49,7 @@ function sassCompile() {
       sass : 'src/main/scss',
       image : 'src/main/img'
     }))
+    .pipe(importCss())
     //for speed now disabled
     //.pipe(minifyCss())
     .pipe(gulp.dest('out/css'))

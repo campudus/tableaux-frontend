@@ -1,8 +1,8 @@
 var React = require('react');
 var _ = require('lodash');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var Folder = require('../../models/media/Folder');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var Folder = require('../../../models/media/Folder');
 
 var MediaOverlay = React.createClass({
   mixins : [AmpersandMixin],
@@ -99,8 +99,8 @@ var MediaOverlay = React.createClass({
             {backButton}
 
             {this.state.folder.subfolders.map(function (subfolder) {
-              return <li key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}><i
-                className="icon fa fa-folder-open"></i> {subfolder.name}</li>
+              return <li key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}>
+                <i className="icon fa fa-folder-open"></i> {subfolder.name}</li>
             })}
           </ul>
           <ul>
@@ -115,8 +115,8 @@ var MediaOverlay = React.createClass({
               var isLinked = linked ? true : false;
 
               return <li key={file.uuid} className={isLinked ? 'isLinked' : ''}
-                         onClick={self.toggleAttachments(isLinked, file)}><i
-                className="icon fa fa-file"></i> {file.name}</li>
+                         onClick={self.toggleAttachments(isLinked, file)}>
+                <i className="icon fa fa-file"></i> {file.name}</li>
             })}
           </ul>
         </div>

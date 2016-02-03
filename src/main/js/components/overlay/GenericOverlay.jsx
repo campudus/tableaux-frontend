@@ -1,5 +1,4 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 
@@ -10,6 +9,7 @@ var GenericOverlay = React.createClass({
   propTypes : {
     body : React.PropTypes.element.isRequired,
     head : React.PropTypes.element,
+    footer : React.PropTypes.element,
     type : React.PropTypes.string,
     closeOnBackgroundClicked : React.PropTypes.bool
   },
@@ -20,7 +20,7 @@ var GenericOverlay = React.createClass({
     };
   },
 
-  allowedTypes : ["flexible", "normal"],
+  allowedTypes : ["full-flex", "flexible", "normal"],
   focusedElementBeforeOverlayOpens : null,
 
   componentWillMount : function () {
@@ -64,7 +64,13 @@ var GenericOverlay = React.createClass({
 
   render : function () {
     var overlayType = this.props.type || "normal"; //default to normal
-    var overlayWrapperClass = "ignore-react-onclickoutside open " + overlayType;
+    var footer = this.props.footer;
+    var hasFooterClass = "";
+    if (footer) {
+      footer = <footer>{footer}</footer>;
+      hasFooterClass = " has-footer";
+    }
+    var overlayWrapperClass = "ignore-react-onclickoutside open " + overlayType + hasFooterClass;
 
     if (this.allowedTypes.indexOf(overlayType) === -1) {
       console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");
@@ -80,6 +86,7 @@ var GenericOverlay = React.createClass({
               {this.props.body}
             </div>
           </div>
+          {footer}
         </div>
         <div ref="overlayBackground" onClick={this.closeOverlay} className="background"></div>
       </div>

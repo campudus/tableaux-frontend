@@ -7,7 +7,7 @@ var locale = require('browser-locale')();
 var Folder = require('./models/media/Folder');
 var Tables = require('./models/Tables');
 
-var FolderView = require('./components/media/Folder.jsx');
+var FolderView = require('./components/media/folder/Folder.jsx');
 var Tableaux = require('./components/Tableaux.jsx');
 
 var Dispatcher = require('./dispatcher/Dispatcher');
@@ -125,6 +125,7 @@ var TableauxRouter = Router.extend({
     }
 
     this.folder.fetch({
+      data: { langtag: langtag },
       success : function () {
         self.renderPage(<FolderView folder={self.folder} langtag={langtag}/>);
       }

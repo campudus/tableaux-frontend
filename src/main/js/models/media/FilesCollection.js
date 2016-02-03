@@ -11,16 +11,23 @@ var FilesCollection = AmpersandCollection.extend({
   initialize : function () {
     var self = this;
 
-    Dispatcher.on('add-file', function (attrs) {
-      console.log("Add new file.", attrs);
-
+    function updateFileInCollection(attrs) {
       if (attrs.uuid === "undefined") {
         throw "file must already exist"
       }
 
-      var newFile = new File(attrs);
-      console.log('File added to collection', newFile);
-      self.add(newFile, {merge : true});
+      var file = new File(attrs);
+      self.add(file, {merge : true});
+    }
+
+    Dispatcher.on('add-file', function (attrs) {
+      console.log("Add new file.", attrs);
+      updateFileInCollection(attrs);
+    });
+
+    Dispatcher.on('changed-file-data', function (attrs) {
+      console.log("File data changed.", attrs);
+      updateFileInCollection(attrs);
     });
 
     Dispatcher.on('change-file', function (attrs) {
@@ -37,6 +44,7 @@ var FilesCollection = AmpersandCollection.extend({
         self.add(a, {merge : true});
       });
     });
+
   },
 
   comparator : "name"
