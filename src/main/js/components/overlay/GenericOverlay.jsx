@@ -1,7 +1,9 @@
 var React = require('react');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
+var ActionCreator = require('../../actions/ActionCreator');
 
+//TODO: Callback before closing overlay
 var GenericOverlay = React.createClass({
 
   mixins : [KeyboardShortcutsMixin],
@@ -30,35 +32,35 @@ var GenericOverlay = React.createClass({
 
   componentDidMount : function () {
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
-    document.addEventListener('keydown', this.onKeyboardShortcut, true);
-    document.addEventListener('mousedown', this.onMouseClick, true);
   },
 
   componentWillUnmount : function () {
     //Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    document.removeEventListener('keydown', this.onKeyboardShortcut, true);
-    document.removeEventListener('mousedown', this.onMouseClick, true);
+
     //Reset active element before overlay opened
     if (this.focusedElementBeforeOverlayOpens) {
       this.focusedElementBeforeOverlayOpens.focus();
     }
   },
 
-  onMouseClick : function (event) {
-    console.log("overlay click");
-    if (this.props.closeOnBackgroundClicked && (event.target === this.refs.overlayBackground)) {
-      Dispatcher.trigger("close-overlay");
+  closeOverlay : function (event) {
+    if (this.props.closeOnBackgroundClicked) {
+      ActionCreator.closeOverlay();
     }
   },
 
-
+  //FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts : function (event) {
-    var self = this;
     return {
       escape : function (event) {
-        event.preventDefault();
-        Dispatcher.trigger("close-overlay");
+        if (this.props.closeOnBackgroundClicked) {
+          event.preventDefault();
+          ActionCreator.closeOverlay();
+        }
+      },
+      always : function (event) {
+        event.stopPropagation();
       }
     };
   },
@@ -79,7 +81,7 @@ var GenericOverlay = React.createClass({
     }
 
     return (
-      <div id="overlay" className={overlayWrapperClass} tabIndex="1">
+      <div id="overlay" className={overlayWrapperClass} tabIndex="1" onKeyDown={this.onKeyboardShortcut}>
         <div id="overlay-wrapper">
           <h2>{this.props.head}</h2>
           <div className="content-scroll">

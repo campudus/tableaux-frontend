@@ -10,6 +10,7 @@ var NavigationList = require('../../header/NavigationList.jsx');
 var PageTitle = require('../../header/PageTitle.jsx');
 var GenericOverlay = require('../../overlay/GenericOverlay.jsx');
 var App = require('ampersand-app');
+var ActionTypes = require('../../../constants/TableauxConstants').ActionTypes;
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
@@ -32,14 +33,15 @@ var Folder = React.createClass({
     this.watch(this.props.folder.subfolders, {reRender : false});
   },
 
+  //FIXME: Combine media and tableaux for overlay and more
   componentWillMount : function () {
-    Dispatcher.on('open-overlay', this.openOverlay);
-    Dispatcher.on('close-overlay', this.closeOverlay);
+    Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay);
+    Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off('open-overlay', this.openOverlay);
-    Dispatcher.off('close-overlay', this.closeOverlay);
+    Dispatcher.off(ActionTypes.OPEN_OVERLAY, this.openOverlay);
+    Dispatcher.off(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
   },
 
   renderCurrentFolder : function () {

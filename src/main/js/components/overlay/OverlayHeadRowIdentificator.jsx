@@ -1,7 +1,8 @@
 var React = require('react');
 var RowConcatHelper = require('../../helpers/RowConcatHelper');
 var App = require('ampersand-app');
-var Dispatcher = require('../../dispatcher/Dispatcher.js');
+var ActionCreator = require('../../actions/ActionCreator');
+
 
 var OverlayHeadRowIdentificator = React.createClass({
 
@@ -13,14 +14,11 @@ var OverlayHeadRowIdentificator = React.createClass({
   rowIdentifierString : "",
 
   handleTableSwitchClicked : function () {
-    Dispatcher.trigger("close-overlay");
-
-    //FIXME Do this with a global event to cleanup models and listeners!
-    App.router.history.navigate(this.props.langtag + '/table/' + this.props.cell.column.toTable, {trigger : true});
+    ActionCreator.closeOverlay();
+    ActionCreator.switchTable(this.props.cell.column.toTable, this.props.langtag);
   },
 
   componentWillMount : function () {
-
     var cell = this.props.cell;
     var tableId = cell.tableId;
     var table = cell.tables.get(tableId);
@@ -30,7 +28,6 @@ var OverlayHeadRowIdentificator = React.createClass({
     var idColumn = tableColumns.at(0);
     var idCellValue = currentRow.values[0];
     this.rowIdentifierString = RowConcatHelper.getRowConcatStringWithFallback(idCellValue, idColumn, this.props.langtag);
-
   },
 
   render : function () {

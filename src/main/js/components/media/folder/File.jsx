@@ -40,7 +40,7 @@ var File = React.createClass({
   },
 
   onEdit : function () {
-    Dispatcher.trigger('open-overlay', {
+    ActionCreator.openOverlay({
       head : <FileEditHead file={this.props.file} langtag={this.props.langtag}/>,
       body : <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose}/>,
       footer : <FileEditFooter onSave={this.onSave} onCancel={this.onCancel}/>,
@@ -50,7 +50,7 @@ var File = React.createClass({
   },
 
   onEditClose : function (event) {
-    Dispatcher.trigger('close-overlay');
+    ActionCreator.closeOverlay();
   },
 
   render : function () {
