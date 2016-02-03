@@ -17,8 +17,8 @@ var NewRow = React.createClass({
 
   render : function () {
     return (
-        <div className="new-row" onClick={this.addRow}>
-          <div className="new-row-inner">
+      <div className="new-row">
+        <div className="new-row-inner" onClick={this.addRow}>
             <i className="fa fa-plus-circle">
             </i>
             <span>Add new row</span>
