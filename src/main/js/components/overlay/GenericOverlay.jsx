@@ -46,6 +46,7 @@ var GenericOverlay = React.createClass({
   },
 
   onMouseClick : function (event) {
+    console.log("overlay click");
     if (this.props.closeOnBackgroundClicked && (event.target === this.refs.overlayBackground)) {
       Dispatcher.trigger("close-overlay");
     }

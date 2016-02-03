@@ -189,7 +189,8 @@ var Table = React.createClass({
     }
   },
 
-  toggleRowExpand : function (row) {
+  toggleRowExpand : function (payload) {
+    var row = payload.row;
     var toggleRowId = row.id;
     var newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
     var rowIdExists = false;
@@ -222,13 +223,13 @@ var Table = React.createClass({
   },
 
   toggleCellEditing : function (params) {
-    var editVal = params.editing;
+    var editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
     var selectedCell = this.state.selectedCell;
     if (selectedCell) {
       var noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);
       if (!noEditingModeNeeded) {
         this.setState({
-          selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
+          selectedCellEditing : editVal
         });
       }
     }
@@ -243,6 +244,7 @@ var Table = React.createClass({
     var self = this;
     var row;
     var nextCellId;
+
     var rowCell = {
       id : self.getCurrentSelectedRowId(),
       selectedCellExpandedRow : this.props.langtag
@@ -452,7 +454,7 @@ var Table = React.createClass({
         self.preventSleepingOnTheKeyboard(
           function () {
             if (self.state.selectedCell && !self.state.selectedCellEditing) {
-              self.toggleCellEditing({cell : self.state.selectedCell});
+              self.toggleCellEditing();
             }
           }
         );
@@ -472,7 +474,7 @@ var Table = React.createClass({
           && (self.state.selectedCell.kind === ColumnKinds.text
           || self.state.selectedCell.kind === ColumnKinds.shorttext
           || self.state.selectedCell.kind === ColumnKinds.numeric)) {
-          self.toggleCellEditing({cell : self.state.selectedCell});
+          self.toggleCellEditing();
         }
       }
     };

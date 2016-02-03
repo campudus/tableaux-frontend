@@ -1,6 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
+var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
+var ActionCreator = require('../../actions/ActionCreator');
+var ColumnKinds = require('../../constants/TableauxConstants').ColumnKinds;
 
 var TextCell = require('./text/TextCell.jsx');
 var ShortTextCell = require('./text/ShortTextCell.jsx');
@@ -10,13 +13,10 @@ var AttachmentCell = require('./attachment/AttachmentCell.jsx');
 var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
+
 
 var Cell = React.createClass({
   mixins : [AmpersandMixin, KeyboardShortcutsMixin],
-
-  displayName : "Cell",
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -72,18 +72,10 @@ var Cell = React.createClass({
 
   cellClicked : function (e) {
     console.log("cell clicked: ", this.props.cell, "value: ", this.props.cell.value);
-
     if (this.props.selected === true) {
-      Dispatcher.trigger('toggleCellEditing', {
-        cell : this.props.cell
-      });
-
+      ActionCreator.toggleCellEditing();
     } else {
-      Dispatcher.trigger('toggleCellSelection', {
-        cell : this.props.cell,
-        selected : this.props.selected,
-        langtag : this.props.langtag
-      });
+      ActionCreator.toggleCellSelection(this.props.cell, this.props.selected, this.props.langtag);
     }
 
     /*
@@ -92,7 +84,7 @@ var Cell = React.createClass({
      */
     e.stopPropagation();
     if (!this.props.shouldFocus) {
-      Dispatcher.trigger('enableShouldCellFocus');
+      ActionCreator.enableShouldCellFocus();
     }
 
   },
@@ -108,37 +100,36 @@ var Cell = React.createClass({
 
     switch (this.props.cell.kind) {
 
-      //todo: switch language to langtag!!! Important LANGTAG
-      case "link":
+      case ColumnKinds.link:
         cellKind = <LinkCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
                              editing={this.props.editing}
                              setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
-      case "attachment":
+      case ColumnKinds.attachment:
         cellKind = <AttachmentCell cell={this.props.cell} langtag={this.props.langtag}/>;
         break;
 
-      case "numeric":
+      case ColumnKinds.numeric:
         cellKind = <NumericCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
                                 setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
-      case "boolean":
+      case ColumnKinds.boolean:
         cellKind = <BooleanCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
                                 setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
-      case "datetime":
+      case ColumnKinds.datetime:
         cellKind = <DateTimeCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
                                  setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
-      case "shorttext":
+      case ColumnKinds.shorttext:
         cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
         break;
 
-      case "concat":
+      case ColumnKinds.concat:
         cellKind = <IdentifierCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
                                    editing={this.props.editing}/>;
         break;

@@ -2,9 +2,8 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var _ = require('lodash');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
-var App = require('ampersand-app');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
@@ -79,13 +78,12 @@ var LinkOverlay = React.createClass({
         links.push(link);
       }
 
-      console.log("trigger", cell.changeCellEvent);
-      Dispatcher.trigger(cell.changeCellEvent, {newValue : links});
+      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, links);
     };
   },
 
   closeOverlay : function () {
-    Dispatcher.trigger('close-overlay');
+    ActionCreator.closeOverlay();
   },
 
   stringHasValue : function (stringToCheck) {

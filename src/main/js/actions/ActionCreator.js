@@ -71,5 +71,28 @@ module.exports = {
     });
   },
 
+  toggleCellEditing : function (editing) {
+    if (editing === undefined) {
+      editing = true;
+    }
+    Dispatcher.trigger(ActionTypes.TOGGLE_CELL_EDITING, {
+      editing : editing
+    });
+  },
+
+  toggleCellSelection : function (cell, selected, langtag) {
+    Dispatcher.trigger(ActionTypes.TOGGLE_CELL_SELECTION, {
+      cell : cell,
+      selected : selected,
+      langtag : langtag
+    });
+  },
+
+  selectNextCell : function (direction) {
+    Dispatcher.trigger(ActionTypes.SELECT_NEXT_CELL,
+      direction
+    );
+  }
+
 
 };

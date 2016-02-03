@@ -1,9 +1,8 @@
 var React = require('react');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var DateTimeEditCell = require('./DateTimeEditCell.jsx');
 var Moment = require('moment');
-var _ = require('lodash');
 var App = require('ampersand-app');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var DateTimeCell = React.createClass({
 
@@ -69,14 +68,11 @@ var DateTimeCell = React.createClass({
       if (cell.isMultiLanguage) {
         formattedDateValue = {};
         formattedDateValue[this.props.langtag] = (currentDateTimeValue === null) ? null : currentDateTimeValue;
-
       } else {
         formattedDateValue = (currentDateTimeValue === null) ? null : String(currentDateTimeValue);
       }
-
       //Save to db
-      Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : formattedDateValue});
-
+      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, formattedDateValue);
     }
   },
 

@@ -5,6 +5,7 @@ var ActionCreator = require('../../actions/ActionCreator.js');
 
 var _ = require('lodash');
 
+//TODO: Refactor this component with outside click mixin. Rethink TableSwitcher and TableTools composition!
 var TableSwitcher = React.createClass({
 
   propTypes : {
@@ -21,8 +22,6 @@ var TableSwitcher = React.createClass({
   },
 
   clickedOutside : function (e) {
-    e.preventDefault();
-    e.stopPropagation();
     //fixes IE Bug: Invariant Violation: findDOMNode was called on an unmounted component.
     if (this.isMounted()) {
       if (!ReactDOM.findDOMNode(this).contains(e.target)) {

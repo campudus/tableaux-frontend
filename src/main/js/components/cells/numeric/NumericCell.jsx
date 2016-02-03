@@ -3,6 +3,7 @@ var _ = require('lodash');
 
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var NumericEditCell = require('./NumericEditCell.jsx');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var NumericCell = React.createClass({
 
@@ -20,10 +21,7 @@ var NumericCell = React.createClass({
   handleLabelClick : function (event) {
     console.log("Numeric.handleLabelClick");
     event.preventDefault();
-
-    Dispatcher.trigger('toggleCellEditing', {
-      cell : this.props.cell
-    });
+    ActionCreator.toggleCellEditing();
   },
 
   handleEditDone : function (newValue) {
@@ -37,11 +35,8 @@ var NumericCell = React.createClass({
       valueToSave = newValue;
     }
 
-    Dispatcher.trigger(cell.changeCellEvent, {newValue : valueToSave});
-    Dispatcher.trigger('toggleCellEditing', {
-      cell : this.props.cell,
-      editing : false
-    });
+    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
+    ActionCreator.toggleCellEditing(false);
   },
 
   renderSingleLanguage : function () {

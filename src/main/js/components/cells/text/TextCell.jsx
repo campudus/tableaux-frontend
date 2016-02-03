@@ -6,10 +6,9 @@ var TextEditCell = require('./TextEditCell.jsx');
 var TextArea = require('./TextArea.jsx');
 var ExpandButton = require('./ExpandButton.jsx');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var TextCell = React.createClass({
-
-  displayName : 'TextCell',
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -19,9 +18,7 @@ var TextCell = React.createClass({
   },
 
   handleClick : function (event) {
-    Dispatcher.trigger('toggleCellEditing', {
-      cell : this.props.cell
-    });
+    ActionCreator.toggleCellEditing();
   },
 
   handleEditDone : function (newValue) {
@@ -33,11 +30,8 @@ var TextCell = React.createClass({
       newValue = value;
     }
 
-    Dispatcher.trigger(cell.changeCellEvent, {newValue : newValue});
-    Dispatcher.trigger('toggleCellEditing', {
-      cell : this.props.cell,
-      editing : false
-    });
+    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.rowId, newValue);
+    ActionCreator.toggleCellEditing(false);
   },
 
   openOverlay : function (event, withContent) {
@@ -46,8 +40,7 @@ var TextCell = React.createClass({
     event.stopPropagation();
     event.preventDefault();
 
-    console.log("trigger overlay");
-    Dispatcher.trigger("open-overlay", {
+    ActionCreator.openOverlay({
       head : <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
       body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
       type : "normal",
@@ -59,7 +52,7 @@ var TextCell = React.createClass({
   closeOverlay : function (event) {
     event.preventDefault();
     event.stopPropagation();
-    Dispatcher.trigger("close-overlay");
+    ActionCreator.closeOverlay(event);
   },
 
   saveOverlay : function (content, event) {

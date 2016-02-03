@@ -1,6 +1,8 @@
 var React = require('react');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var BooleanEditCell = require('./BooleanEditCell.jsx');
+var ActionCreator = require('../../../actions/ActionCreator');
+var Directions = require('../../../constants/TableauxConstants').Directions;
+
 
 var BooleanCell = React.createClass({
 
@@ -12,7 +14,6 @@ var BooleanCell = React.createClass({
   },
 
   handleEditDone : function (newValue) {
-
     var cell = this.props.cell;
     var valueToSave;
 
@@ -23,7 +24,7 @@ var BooleanCell = React.createClass({
       valueToSave = newValue;
     }
 
-    Dispatcher.trigger(this.props.cell.changeCellEvent, {newValue : valueToSave});
+    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, valueToSave);
   },
 
   getCheckboxValue : function () {

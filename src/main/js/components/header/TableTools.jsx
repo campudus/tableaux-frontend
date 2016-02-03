@@ -2,6 +2,7 @@ var React = require('react');
 var TableSwitcher = require('./TableSwitcher.jsx');
 var Dispatcher = require('../../dispatcher/Dispatcher.js');
 var ActionTypes = require('../../constants/TableauxConstants.js').ActionTypes;
+var ActionCreator = require('../../actions/ActionCreator');
 
 var TableTools = React.createClass({
 
@@ -24,15 +25,16 @@ var TableTools = React.createClass({
   },
 
   closeTableSwitch : function () {
+    console.log("should close table switcher");
     this.setState({switcherOpen : false});
   },
 
   componentWillMount : function () {
-    Dispatcher.on(ActionTypes.SWITCH_TABLE, this.onTableSwitched);
+    Dispatcher.on(ActionTypes.SWITCHED_TABLE, this.onTableSwitched);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off(ActionTypes.SWITCH_TABLE, this.onTableSwitched);
+    Dispatcher.off(ActionTypes.SWITCHED_TABLE, this.onTableSwitched);
   },
 
   tableSwitchButton : function (e) {

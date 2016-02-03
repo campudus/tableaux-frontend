@@ -1,6 +1,5 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var tableHeaderDefaultCoordinates;
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],

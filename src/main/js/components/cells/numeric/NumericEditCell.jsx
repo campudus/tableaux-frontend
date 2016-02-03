@@ -1,8 +1,9 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var _ = require('lodash');
+var ActionCreator = require('../../../actions/ActionCreator');
+var Directions = require('../../../constants/TableauxConstants').Directions;
 
 var NumericEditCell = React.createClass({
 
@@ -52,7 +53,7 @@ var NumericEditCell = React.createClass({
       },
       enter : function (event) {
         self.doneEditing(event);
-        Dispatcher.trigger('selectNextCell', 'down');
+        ActionCreator.selectNextCell(Directions.DOWN);
       },
       navigation : function (event) {
         self.doneEditing(event);
@@ -119,13 +120,11 @@ var NumericEditCell = React.createClass({
   onChangeHandler : function (e) {
     var curr = e.target.value;
     var formattedNumber = this.correctNumberFormat(curr);
-    var realNumber;
 
     if (formattedNumber.length > this.MAX_DIGIT_LENGTH) {
       alert("Numbers can't be greater than 15 decimal values.");
       e.target.value = formattedNumber.substring(0, this.MAX_DIGIT_LENGTH);
     }
-    realNumber = parseFloat(formattedNumber);
   },
 
   render : function () {

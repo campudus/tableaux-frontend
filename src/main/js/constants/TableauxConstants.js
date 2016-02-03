@@ -46,7 +46,9 @@ var TableauxConstant = {
     link : null,
     numeric : null,
     boolean : null,
-    concat : null
+    concat : null,
+    attachment : null,
+    datetime : null
   }),
 
   Langtags : languagetag,

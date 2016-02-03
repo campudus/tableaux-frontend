@@ -1,10 +1,9 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var _ = require('lodash');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var LinkOverlay = require('./LinkOverlay.jsx');
 var LinkLabelCell = require('./LinkLabelCell.jsx');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var LinkEditCell = React.createClass({
 
@@ -39,17 +38,15 @@ var LinkEditCell = React.createClass({
       var newValue = _.filter(cell.value, function (element, arrayIndex) {
         return element.id !== idx;
         });
-      Dispatcher.trigger('change-cell:' + cell.tableId + ':' + cell.column.getId() + ':' + cell.rowId,
-        {newValue : newValue});
+      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
     },
 
     openOverlay : function () {
-      Dispatcher.trigger(
-        'open-overlay', {
-          head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
-          body : <LinkOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
-          type : "normal"
-        });
+      ActionCreator.openOverlay({
+        head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
+        body : <LinkOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
+        type : "normal"
+      });
     },
 
     render : function () {

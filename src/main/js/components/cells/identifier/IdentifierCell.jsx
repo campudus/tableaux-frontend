@@ -12,14 +12,9 @@ var IdentifierCell = React.createClass({
     selected : React.PropTypes.bool.isRequired
   },
 
-  cellClicked : function () {
-    //console.log("clicked ID Column cell:", this.props.cell);
-  },
-
   render : function () {
-    //console.log("IdentifierCell is rendering.");
     return (
-      <div className='cell-content' onClick={this.cellClicked}>
+      <div className='cell-content'>
         {this.props.cell.rowConcatString(this.props.langtag)}
       </div>
     );

@@ -20,9 +20,7 @@ var ShortTextCell = React.createClass({
   },
 
   handleClick : function (event) {
-    Dispatcher.trigger('toggleCellEditing', {
-      cell : this.props.cell
-    });
+    ActionCreator.toggleCellEditing();
   },
 
   handleEditDone : function (newValue) {
@@ -36,13 +34,8 @@ var ShortTextCell = React.createClass({
       valueToSave = newValue;
     }
 
-    console.log('triggering event ', cell.changeCellEvent, {newValue : valueToSave});
     ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, valueToSave);
-    Dispatcher.trigger('toggleCellEditing', {
-      cell : this.props.cell,
-      editing : false
-    });
-
+    ActionCreator.toggleCellEditing(false);
   },
 
   getValue : function () {

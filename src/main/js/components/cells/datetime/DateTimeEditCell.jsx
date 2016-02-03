@@ -1,7 +1,8 @@
 var React = require('react');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var OutsideClick = require('react-onclickoutside');
 var Datetime = require('react-datetime');
+var ActionCreator = require('../../../actions/ActionCreator');
+var Directions = require('../../../constants/TableauxConstants').Directions;
 
 var DateTimeEditCell = React.createClass({
 
@@ -30,15 +31,15 @@ var DateTimeEditCell = React.createClass({
     getKeyboardShortcuts : function () {
       return {
         tab : function () {
-          Dispatcher.trigger('toggleCellEditing', {editing : false});
-          Dispatcher.trigger('selectNextCell', 'right');
+          ActionCreator.toggleCellEditing(false);
+          ActionCreator.selectNextCell(Directions.RIGHT);
         },
         enter : function () {
-          Dispatcher.trigger('toggleCellEditing', {editing : false});
-          Dispatcher.trigger('selectNextCell', 'down');
+          ActionCreator.toggleCellEditing(false);
+          ActionCreator.selectNextCell(Directions.DOWN);
         },
         escape : function () {
-          Dispatcher.trigger('toggleCellEditing', {editing : false});
+          ActionCreator.toggleCellEditing(false);
         },
         always : function (event) {
           event.preventDefault();
@@ -48,15 +49,14 @@ var DateTimeEditCell = React.createClass({
     },
 
     handleClickClearDate : function (event) {
-      console.log("clicked handleClickClearDate");
       event.preventDefault();
       event.stopPropagation();
       this.props.onDateTimeUpdate(null);
-      Dispatcher.trigger('toggleCellEditing', {editing : false});
+      ActionCreator.toggleCellEditing(false);
     },
 
     handleClickOutside : function (event) {
-      Dispatcher.trigger('toggleCellEditing', {editing : false});
+      ActionCreator.toggleCellEditing(false);
     },
 
     showDateTimeValue : function () {

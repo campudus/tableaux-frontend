@@ -4,6 +4,8 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
 var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var ExpandButton = require('./ExpandButton.jsx');
+var ActionCreator = require('../../../actions/ActionCreator');
+var Directions = require('../../../constants/TableauxConstants').Directions;
 
 var TextEditCell = React.createClass({
 
@@ -31,10 +33,9 @@ var TextEditCell = React.createClass({
       },
       tab : function (event) {
         self.doneEditing(event);
-        Dispatcher.trigger('selectNextCell', 'right');
+        ActionCreator.selectNextCell(Directions.RIGHT);
       },
       enter : function (event) {
-        console.log("enter texteditcell");
         //stop handling the Table events
         event.stopPropagation();
       },
