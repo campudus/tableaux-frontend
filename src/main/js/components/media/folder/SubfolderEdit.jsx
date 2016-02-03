@@ -13,7 +13,7 @@ var SubfolderEdit = React.createClass({
     onCancel : React.PropTypes.func.isRequired
   },
 
-  componentDidMount(){
+  componentDidMount: function(){
     var domNode = ReactDOM.findDOMNode(this.refs.nameInput);
     domNode.focus();
     domNode.select();

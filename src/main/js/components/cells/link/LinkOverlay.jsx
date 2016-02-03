@@ -8,6 +8,9 @@ var ActionCreator = require('../../../actions/ActionCreator');
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin],
 
+  //We want to abort async server requests
+  xhrObjects : [],
+
   getInitialState : function () {
     return {
       search : "",
@@ -31,9 +34,9 @@ var LinkOverlay = React.createClass({
      * TODO: Combine both api calls. There's a api route available: http://localhost:8080/completetable/1
      * TBD: Ampersand Table Models
      */
-    toTable.columns.fetch({
+    self.xhrObjects.push(toTable.columns.fetch({
       success : function () {
-        toTable.rows.fetch({
+        self.xhrObjects.push(toTable.rows.fetch({
           success : function () {
             self.setState({
               rowResults : toTable.rows,
@@ -41,15 +44,20 @@ var LinkOverlay = React.createClass({
             });
           },
           error : function (err) {
-            console.error('error fetching rows', err);
+            console.log('error fetching rows', err);
           }
-        });
+        }));
       },
       error : function (err) {
-        console.error("error fetching columns", err);
+        console.log("error fetching columns", err);
       }
-    });
+    }));
+  },
 
+  componentWillUnmount : function () {
+    this.xhrObjects.forEach(function (xhr) {
+      xhr.abort();
+    });
   },
 
   onSearch : function (event) {

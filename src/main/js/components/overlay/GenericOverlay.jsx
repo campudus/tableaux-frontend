@@ -27,7 +27,6 @@ var GenericOverlay = React.createClass({
 
   componentWillMount : function () {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
-    document.activeElement.blur();
   },
 
   componentDidMount : function () {
@@ -52,9 +51,10 @@ var GenericOverlay = React.createClass({
 
   //FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts : function (event) {
+    var self = this;
     return {
       escape : function (event) {
-        if (this.props.closeOnBackgroundClicked) {
+        if (self.props.closeOnBackgroundClicked) {
           event.preventDefault();
           ActionCreator.closeOverlay();
         }

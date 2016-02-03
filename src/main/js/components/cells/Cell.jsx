@@ -63,7 +63,7 @@ var Cell = React.createClass({
       var thisDOMNode = ReactDOM.findDOMNode(this);
       var focusedElement = document.activeElement;
       //Is current focus this cell or inside of cell don't change the focus. This way child components can force their focus. (e.g. Links Component)
-      if (focusedElement.isEqualNode(thisDOMNode) || !thisDOMNode.contains(focusedElement)) {
+      if (!focusedElement || !thisDOMNode.contains(focusedElement) || focusedElement.isEqualNode(thisDOMNode)) {
         console.log("Cell will force focus");
         thisDOMNode.focus();
       }
