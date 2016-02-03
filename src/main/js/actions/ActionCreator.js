@@ -4,31 +4,25 @@ var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 module.exports = {
 
   changeCell : function (tableId, rowId, cellId, newValue) {
-
     Dispatcher.trigger(ActionTypes.CHANGE_CELL, {
       tableId : tableId,
       rowId : rowId,
       cellId : cellId,
       value : newValue
     });
-
   },
 
   removeRow : function (tableId, rowId) {
-
     Dispatcher.trigger(ActionTypes.REMOVE_ROW, {
       tableId : tableId,
       rowId : rowId
     });
-
   },
 
   addRow : function (tableId) {
-
-    Dispatcher.trigger(ActionTypes.ADD_ROW, {
+    Dispatcher.trigger(ActionTypes.CREATE_ROW, {
       tableId : tableId
     });
-
   },
 
   //An event just for ShortTextEditCell to create a new Row when last is editing
@@ -50,11 +44,32 @@ module.exports = {
   },
 
   switchLanguage : function (langtag) {
-
     Dispatcher.trigger(ActionTypes.SWITCH_LANGUAGE, {
       langtag : langtag
     });
+  },
 
-  }
+  openOverlay : function (overlayContent) {
+    Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
+  },
+
+  closeOverlay : function () {
+    Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY);
+  },
+
+  enableShouldCellFocus : function () {
+    Dispatcher.trigger(ActionTypes.ENABLE_SHOULD_CELL_FOCUS);
+  },
+
+  disableShouldCellFocus : function () {
+    Dispatcher.trigger(ActionTypes.DISABLE_SHOULD_CELL_FOCUS);
+  },
+
+  toggleRowExpand : function (row) {
+    Dispatcher.trigger(ActionTypes.TOGGLE_ROW_EXPAND, {
+      row : row
+    });
+  },
+
 
 };

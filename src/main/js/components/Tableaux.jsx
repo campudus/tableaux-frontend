@@ -14,7 +14,6 @@ var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
-  displayName : 'Tableaux',
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -24,48 +23,31 @@ var Tableaux = React.createClass({
 
   getInitialState : function () {
     return {
-      activeOverlay : null, //holds null or { head:{}, body:{}, type:""}
+      activeOverlay : null, //holds null or { head:{}, body:{}, type:"", footer:[}}
       currentTableId : this.props.initialTableId
     }
   },
 
   componentWillMount : function () {
     Dispatcher.on(ActionTypes.SWITCHED_TABLE, this.switchTable);
-    Dispatcher.on('open-overlay', this.openOverlay);
-    Dispatcher.on('close-overlay', this.closeOverlay);
+    Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay);
+    Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
   },
 
   componentWillUnmount : function () {
     Dispatcher.off(ActionTypes.SWITCHED_TABLE, this.switchTable);
-    Dispatcher.off('open-overlay', this.openOverlay);
-    Dispatcher.off('close-overlay', this.closeOverlay);
+    Dispatcher.off(ActionTypes.OPEN_OVERLAY, this.openOverlay);
+    Dispatcher.off(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
   },
 
   switchTable : function (payload) {
     var self = this;
-    console.log('Tableaux.switchTable', payload);
-    //if (this.props.tables) {
-
-    //Clear current/old collections
     var oldTable = this.props.tables.get(this.state.currentTableId);
+
+    //Clear current/old collections to prevent reinitializing bugs and free memory
     oldTable.rows.reset();
     oldTable.columns.reset();
     self.setState({currentTableId : payload.tableId});
-
-    /*} else {
-      // refresh Tables collection
-      this.props.tables.fetch({
-        success : function (collection, response, options) {
-     console.log("Tableaux switchTable fetch");
-     self.setState({currentTableId : payload.tableId});
-        },
-        error : function (collection, response, options) {
-          console.error("Error fetching Table in switchTable");
-        }
-      });
-     }*/
-
-
   },
 
   openOverlay : function (content) {

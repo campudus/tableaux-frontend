@@ -3,28 +3,32 @@ var Router = require('./router');
 var Dispatcher = require('./dispatcher/Dispatcher');
 var apiUrl = require('./helpers/apiUrl');
 var multiLanguage = require('./helpers/multiLanguage');
+var TableauxConstants = require('./constants/TableauxConstants');
+var _ = require('lodash');
 
 App.extend({
+
+  // TODO we should request that from tableaux backend
+  langtags : [],
+
+  setLangtags : function () {
+    var self = this;
+    _.forEach(TableauxConstants.Langtags, function (lang) {
+      self.langtags.push(lang);
+    });
+  },
+
   init : function () {
+    this.setLangtags();
     this.router = new Router();
     this.router.history.start();
   },
 
   apiUrl : apiUrl,
 
-  // TODO we should request that from tableaux backend
-  langtags : [
-    "de-DE",
-    "en-GB",
-    "fr-FR"
-  ],
-
-  defaultLangtag : "de-DE",
-
-  dateTimeFormats : {
-    formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
-    formatForUser : "DD.MM.YYYY - HH:mm",
-  },
+  // TODO Remove this and replace all references with TableauxConstants
+  defaultLangtag : TableauxConstants.DefaultLangtag,
+  dateTimeFormats : TableauxConstants.DateTimeFormats,
 
   mapLocaleToLangtag : function (locale) {
     return multiLanguage.mapLocaleToLangtag(this.langtags)(locale)

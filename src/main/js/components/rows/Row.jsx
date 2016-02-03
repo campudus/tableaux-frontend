@@ -3,6 +3,7 @@ var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
 var App = require('ampersand-app');
 var _ = require('lodash');
+var TableauxConstants = require('../../constants/TableauxConstants');
 
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
@@ -77,16 +78,15 @@ var Row = React.createClass({
   },
 
   toggleExpand : function () {
-    Dispatcher.trigger('disableShouldCellFocus');
-    Dispatcher.trigger('toggleRowExpand', this.props.row);
+    ActionCreator.disableShouldCellFocus();
+    ActionCreator.toggleRowExpand(this.props.row);
   },
 
   onClickDelete : function (e) {
-    Dispatcher.trigger('disableShouldCellFocus');
+    ActionCreator.disableShouldCellFocus();
     var question = <p>Do you really want to delete that row?</p>;
     var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
-
-    Dispatcher.trigger('open-overlay', {
+    ActionCreator.openOverlay({
       head : <span>Delete?</span>,
       body : ask,
       type : "flexible"
@@ -95,13 +95,12 @@ var Row = React.createClass({
 
   onYesOverlay : function (event) {
     var row = this.props.row;
-    console.log("row:", row);
     ActionCreator.removeRow(row.tableId, row.id);
     this.onCancelOverlay(event);
   },
 
   onCancelOverlay : function (event) {
-    Dispatcher.trigger("close-overlay");
+    ActionCreator.closeOverlay();
   },
 
   renderLangtag : function (langtag) {
@@ -167,7 +166,7 @@ var Row = React.createClass({
 
     // Add delete button to default-language row
     // or to every not expanded row
-    if ((langtag === App.defaultLangtag || !this.props.isRowExpanded) && this.props.isRowSelected) {
+    if ((langtag === TableauxConstants.DefaultLangtag || !this.props.isRowExpanded) && this.props.isRowSelected) {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>

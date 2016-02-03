@@ -9,12 +9,13 @@ var Rows = require('./rows/Rows.jsx');
 var KeyboardShortcutsMixin = require('./mixins/KeyboardShortcutsMixin');
 var OutsideClick = require('react-onclickoutside');
 var ActionCreator = require('../actions/ActionCreator');
-var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
+var TableauxConstants = require('../constants/TableauxConstants');
+var ActionTypes = TableauxConstants.ActionTypes;
+var Directions = TableauxConstants.Directions;
+var ColumnKinds = TableauxConstants.ColumnKinds;
 
 var Table = React.createClass({
   mixins : [AmpersandMixin, KeyboardShortcutsMixin, OutsideClick],
-
-  displayName : 'Table',
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -28,9 +29,8 @@ var Table = React.createClass({
   headerDOMElement : null,
   scrolledXBefore : 0,
   selectNewCreatedRow : false,
-
-  //Internal state values
   keyboardRecentlyUsedTimer : null,
+  tableHeaderId : "tableHeader",
 
   getInitialState : function () {
     return {
@@ -74,29 +74,22 @@ var Table = React.createClass({
       }
     });
 
-    table.rows.on("add", self.rowDidAdd);
+    Dispatcher.on(ActionTypes.TOGGLE_CELL_SELECTION, this.toggleCellSelection);
+    Dispatcher.on(ActionTypes.TOGGLE_CELL_EDITING, this.toggleCellEditing);
+    Dispatcher.on(ActionTypes.SELECT_NEXT_CELL, this.setNextSelectedCell);
+    Dispatcher.on(ActionTypes.TOGGLE_ROW_EXPAND, this.toggleRowExpand);
+    Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
+    Dispatcher.on(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, this.disableShouldCellFocus);
+    Dispatcher.on(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
+
+    window.addEventListener("resize", this.windowResize);
+    table.rows.on("add", self.rowAdded);
   },
 
   componentDidMount : function () {
     this.setState({offsetTableData : ReactDOM.findDOMNode(this.refs.tableRows).getBoundingClientRect().top});
     //Don't change this to state, its more performant during scroll
-    this.headerDOMElement = document.getElementById("tableHeader");
-    window.addEventListener("resize", this.windowResize);
-    Dispatcher.on('toggleCellSelection', this.toggleCellSelection);
-    Dispatcher.on('toggleCellEditing', this.toggleCellEditing);
-    Dispatcher.on('selectNextCell', this.setNextSelectedCell);
-    Dispatcher.on('toggleRowExpand', this.toggleRowExpand);
-    Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
-    Dispatcher.on('disableShouldCellFocus', this.disableShouldCellFocus);
-    Dispatcher.on('enableShouldCellFocus', this.enableShouldCellFocus);
-  },
-
-  rowDidAdd : function () {
-    if (this.selectNewCreatedRow) {
-      console.log("select last one");
-      this.selectNewCreatedRow = false;
-      this.setNextSelectedCell("down");
-    }
+    this.headerDOMElement = document.getElementById(this.tableHeaderId);
   },
 
   componentDidUpdate : function () {
@@ -108,15 +101,24 @@ var Table = React.createClass({
   },
 
   componentWillUnmount : function () {
-    window.removeEventListener("resize", this.windowResize);
-    Dispatcher.off('toggleCellSelection', this.toggleCellSelection);
-    Dispatcher.off('toggleCellEditing', this.toggleCellEditing);
-    Dispatcher.off('selectNextCell', this.setNextSelectedCell);
-    Dispatcher.off('toggleRowExpand', this.toggleRowExpand);
+
+    Dispatcher.off(ActionTypes.TOGGLE_CELL_SELECTION, this.toggleCellSelection);
+    Dispatcher.off(ActionTypes.TOGGLE_CELL_EDITING, this.toggleCellEditing);
+    Dispatcher.off(ActionTypes.SELECT_NEXT_CELL, this.setNextSelectedCell);
+    Dispatcher.off(ActionTypes.TOGGLE_ROW_EXPAND, this.toggleRowExpand);
     Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
-    Dispatcher.off('disableShouldCellFocus', this.disableShouldCellFocus);
-    Dispatcher.off('enableShouldCellFocus', this.enableShouldCellFocus);
-    this.props.table.rows.off("add", this.rowDidAdd);
+    Dispatcher.off(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, this.disableShouldCellFocus);
+    Dispatcher.off(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
+
+    window.removeEventListener("resize", this.windowResize);
+    this.props.table.rows.off("add", this.rowAdded);
+  },
+
+  rowAdded : function () {
+    if (this.selectNewCreatedRow) {
+      this.selectNewCreatedRow = false;
+      this.setNextSelectedCell(Directions.DOWN);
+    }
   },
 
   disableShouldCellFocus : function () {
@@ -179,11 +181,11 @@ var Table = React.createClass({
   },
 
   createRowOrSelectNext : function () {
-    if (this.isLastRow()) {
+    if (this.isLastRowSelected()) {
       this.selectNewCreatedRow = true;
       ActionCreator.addRow(this.props.table.id);
     } else {
-      this.setNextSelectedCell("down");
+      this.setNextSelectedCell(Directions.DOWN);
     }
   },
 
@@ -212,7 +214,6 @@ var Table = React.createClass({
   },
 
   toggleCellSelection : function (params) {
-    console.log("Table.toggleCellSelection: selecting:", params);
     this.setState({
       selectedCell : params.cell,
       selectedCellEditing : false,
@@ -224,7 +225,7 @@ var Table = React.createClass({
     var editVal = params.editing;
     var selectedCell = this.state.selectedCell;
     if (selectedCell) {
-      var noEditingModeNeeded = (selectedCell.kind === "boolean" || selectedCell.kind === "link");
+      var noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);
       if (!noEditingModeNeeded) {
         this.setState({
           selectedCellEditing : !_.isUndefined(editVal) ? editVal : true
@@ -253,22 +254,22 @@ var Table = React.createClass({
     var newSelectedCellExpandedRow; //Either row or column switch changes the selected language
 
     switch (direction) {
-      case "left":
+      case Directions.LEFT:
         columnCell = self.getPreviousColumn(self.getCurrentSelectedColumnId());
         newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
         break;
 
-      case "right":
+      case Directions.RIGHT:
         columnCell = self.getNextColumnCell(self.getCurrentSelectedColumnId());
         newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
         break;
 
-      case "up":
+      case Directions.UP:
         rowCell = self.getPreviousRow(self.getCurrentSelectedRowId());
         newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
         break;
 
-      case "down":
+      case Directions.DOWN:
         rowCell = self.getNextRowCell(self.getCurrentSelectedRowId());
         newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
         break;
@@ -287,7 +288,7 @@ var Table = React.createClass({
     }
   },
 
-  isLastRow : function () {
+  isLastRowSelected : function () {
     var numberOfRows = this.props.table.rows.length;
     var currentRowId = this.getCurrentSelectedRowId();
     var lastRowId;
@@ -392,8 +393,8 @@ var Table = React.createClass({
   }
   ,
 
-  getPreviousColumn : function (currenColumnId) {
-    return this.getNextColumnCell(currenColumnId, true);
+  getPreviousColumn : function (currentColumnId) {
+    return this.getNextColumnCell(currentColumnId, true);
   }
   ,
 
@@ -409,7 +410,7 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.setNextSelectedCell("left");
+            self.setNextSelectedCell(Directions.LEFT);
           }
         );
       },
@@ -418,7 +419,7 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.setNextSelectedCell("right");
+            self.setNextSelectedCell(Directions.RIGHT);
           }
         );
       },
@@ -426,7 +427,7 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.setNextSelectedCell("right");
+            self.setNextSelectedCell(Directions.RIGHT);
           }
         );
       },
@@ -434,7 +435,7 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.setNextSelectedCell("up");
+            self.setNextSelectedCell(Directions.UP);
           }
         );
       },
@@ -442,7 +443,7 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            self.setNextSelectedCell("down");
+            self.setNextSelectedCell(Directions.DOWN);
           }
         );
       },
@@ -450,7 +451,6 @@ var Table = React.createClass({
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
-            console.log("Enter Table cellEditing, event: ", event);
             if (self.state.selectedCell && !self.state.selectedCellEditing) {
               self.toggleCellEditing({cell : self.state.selectedCell});
             }
@@ -469,7 +469,9 @@ var Table = React.createClass({
       },
       text : function (event) {
         if (self.state.selectedCell && !self.state.selectedCellEditing
-          && (self.state.selectedCell.kind === "text" || self.state.selectedCell.kind === "shorttext" || self.state.selectedCell.kind === "numeric")) {
+          && (self.state.selectedCell.kind === ColumnKinds.text
+          || self.state.selectedCell.kind === ColumnKinds.shorttext
+          || self.state.selectedCell.kind === ColumnKinds.numeric)) {
           self.toggleCellEditing({cell : self.state.selectedCell});
         }
       }
@@ -546,7 +548,7 @@ var Table = React.createClass({
   },
 
   render : function () {
-    console.log(">>>>> Rendering Table <<<<<<");
+    console.log("Rendering table");
     return (
       <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}
                onMouseDown={this.onMouseDownHandler}>
@@ -562,7 +564,6 @@ var Table = React.createClass({
                 selectedCellExpandedRow={this.state.selectedCellExpandedRow}
                 table={this.props.table}
                 shouldCellFocus={this.state.shouldCellFocus}
-                onClick={this.onClickedTableElement}
           />
         </div>
       </section>

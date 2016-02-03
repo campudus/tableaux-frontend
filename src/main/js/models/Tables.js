@@ -14,7 +14,7 @@ var Tables = Collection.extend({
     console.log("Rows.initialize:", arguments);
     Dispatcher.on(ActionTypes.CHANGE_CELL, this.changeCellHandler, this);
     Dispatcher.on(ActionTypes.REMOVE_ROW, this.removeRowHandler, this);
-    Dispatcher.on(ActionTypes.ADD_ROW, this.addRowHandler, this);
+    Dispatcher.on(ActionTypes.CREATE_ROW, this.addRowHandler, this);
   },
 
   changeCellHandler : function (payload) {
