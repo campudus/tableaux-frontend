@@ -37,7 +37,9 @@ var TableauxConstant = {
     ADD_FILE : null,
     CHANGE_FILE : null,
     CHANGED_FILE_DATA : null,
-    REMOVE_FILE : null
+    REMOVE_FILE : null,
+
+    CLEANUP_TABLE : null
   }),
 
   Directions : keyMirror({

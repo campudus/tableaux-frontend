@@ -3,6 +3,7 @@ var apiUrl = require('../helpers/apiUrl');
 var Table = require('./Table');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
+var ColumnKinds = require('../constants/TableauxConstants').ColumnKinds;
 var Row = require('./Row');
 var Cells = require('./Cells');
 var Cell = require('./Cell');
@@ -15,6 +16,25 @@ var Tables = Collection.extend({
     Dispatcher.on(ActionTypes.CHANGE_CELL, this.changeCellHandler, this);
     Dispatcher.on(ActionTypes.REMOVE_ROW, this.removeRowHandler, this);
     Dispatcher.on(ActionTypes.CREATE_ROW, this.addRowHandler, this);
+    Dispatcher.on(ActionTypes.CLEANUP_TABLE, this.cleanupTable, this);
+  },
+
+  //Clear current/old collections to prevent reinitializing bugs and free memory
+  cleanupTable : function (payload) {
+    var tableId = payload.tableId;
+    var tableToCleanUp = this.get(tableId);
+    var rowsToCleanup = tableToCleanUp.rows;
+    var columnsToCleanup = tableToCleanUp.columns;
+
+    rowsToCleanup.forEach(function (row) {
+      var cellsToCleanUp = row.cells;
+      cellsToCleanUp.forEach(function (cell) {
+        cell.cleanupCell();
+      });
+    });
+
+    rowsToCleanup.reset();
+    columnsToCleanup.reset();
   },
 
   changeCellHandler : function (payload) {
@@ -60,6 +80,7 @@ var Tables = Collection.extend({
           console.log('Cell model saved successfully.');
           //FIXME: Discuss with Backend: Status Code + latest value object from database
           cell.value = mergedValue;
+          self.updateConcatCells(cell);
         },
         error : function () {
           console.error('Cell model saved unsuccessfully!', arguments);
@@ -68,6 +89,13 @@ var Tables = Collection.extend({
       });
     }
 
+  },
+
+  //We just trigger a changed event for concat cells when we are a identifier cell
+  updateConcatCells : function (changedCell) {
+    if (changedCell.isIdentifier) {
+      Dispatcher.trigger(changedCell.changedCellEvent, changedCell);
+    }
   },
 
   removeRowHandler : function (payload) {

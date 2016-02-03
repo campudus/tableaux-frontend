@@ -11,6 +11,7 @@ var NavigationList = require('./header/NavigationList.jsx');
 var TableTools = require('./header/TableTools.jsx');
 var PageTitle = require('./header/PageTitle.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
+var ActionCreator = require('../actions/ActionCreator');
 
 var Tableaux = React.createClass({
   mixins : [AmpersandMixin],
@@ -43,10 +44,7 @@ var Tableaux = React.createClass({
   switchTable : function (payload) {
     var self = this;
     var oldTable = this.props.tables.get(this.state.currentTableId);
-
-    //Clear current/old collections to prevent reinitializing bugs and free memory
-    oldTable.rows.reset();
-    oldTable.columns.reset();
+    ActionCreator.cleanupTable(oldTable);
     self.setState({currentTableId : payload.tableId});
   },
 

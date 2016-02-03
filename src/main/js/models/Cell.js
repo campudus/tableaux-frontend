@@ -3,10 +3,10 @@ var AmpersandModel = require('ampersand-model');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Tables = require('./Tables');
 var Column = require('./Column');
-var Sync = require('ampersand-sync');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 var _ = require('lodash');
 
+//FIXME: Handle Concat synch more elegant the Ampersand way
 var Cell = AmpersandModel.extend({
   modelType : 'Cell',
 
@@ -23,7 +23,6 @@ var Cell = AmpersandModel.extend({
     column : 'object',
     rowId : 'number',
     row : 'object',
-    changeHandler : 'any',
     changedHandler : 'array'
   },
 
@@ -32,12 +31,6 @@ var Cell = AmpersandModel.extend({
       deps : ['tableId', 'column', 'rowId'],
       fn : function () {
         return 'cell-' + this.tableId + '-' + this.column.getId() + '-' + this.rowId;
-      }
-    },
-    changeCellEvent : {
-      deps : ['tableId', 'column', 'rowId'],
-      fn : function () {
-        return 'change-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
       }
     },
     changedCellEvent : {
@@ -58,20 +51,24 @@ var Cell = AmpersandModel.extend({
         return this.column.multilanguage;
       }
     },
+    isIdentifier : {
+      deps : ['column'],
+      fn : function () {
+        return this.column.identifier;
+      }
+    },
     kind : {
       deps : ['column'],
       fn : function () {
         return this.column.kind;
       }
     },
-
     isConcatCell : {
       deps : ['kind'],
       fn : function () {
         return this.kind === 'concat';
       }
     },
-
     rowConcatString : {
       deps : ['value'],
       cache : false,
@@ -87,40 +84,33 @@ var Cell = AmpersandModel.extend({
         }
       }
     }
-
   },
 
   initialize : function (attrs, options) {
+    this.initConcatEvents();
   },
 
-  initEvents : function () {
-    //console.log("Cell init Events. this.row", this.row);
+  initConcatEvents : function () {
     var self = this;
-    var name = this.changeCellEvent;
-    //var handler = this.changeCellListener.bind(this);
 
-    var changedCellListener = function (data) {
+    var changedCellListener = function (changedCell) {
       //find the index value of the concat obj to update
-      var concatIndexToUpdate = _.findIndex(this.column.concats, function (column) {
-        return column.id === data.column.id;
+      var concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
+        return column.id === changedCell.column.id;
       });
-      this.value[concatIndexToUpdate] = data.value;
-      //Signal react this cell has changed
-      this.trigger("change");
-      console.log("#### Synchronized the concat cell with data:", data.value, " ####");
+      this.value[concatIndexToUpdate] = changedCell.value;
     };
 
-    this.changeHandler = changeCellListener.bind(self); //save reference
-    //App.on(name, changeCellListener.bind(self));
-    this.row.on('remove', this.cleanup.bind(this));
-
+    //debugger;
     //This cell is a concat cell and listens to its identifier cells
     if (this.isConcatCell) {
       this.column.concats.forEach(function (columnObj) {
+
         var changedEvent = 'changed-cell:' + self.tableId + ':' + columnObj.id + ':' + self.rowId;
-        //console.log("add changedEvent", changedEvent);
         var handler = changedCellListener.bind(self);
-        App.on(changedEvent, handler);
+
+        Dispatcher.on(changedEvent, handler);
+
         if (!self.changedHandler) {
           self.changedHandler = [];
         }
@@ -131,29 +121,19 @@ var Cell = AmpersandModel.extend({
 
       });
     }
-
   },
 
   //Delete all cell attrs and event listeners
-  cleanup : function () {
-
-    // Remove the changeCell event
-    App.off(this.changeCellEvent, this.changeHandler);
-
-    //Remove the row remove event
-    this.row.off('remove', this.cleanup);
-
+  cleanupCell : function () {
     // We need to remove multiple dependant changed id cell events
     if (this.isConcatCell) {
       if (this.changedHandler && this.changedHandler.length > 0) {
-        this.changedHandler.forEach(function (changedHandler) {
-          App.off(changedHandler.name, changedHandler.handler);
+        this.changedHandler.forEach(function (event) {
+          //removes all callbacks
+          Dispatcher.off(event.name, event.handler);
         });
       }
     }
-    console.log("##### Cleaned up Cell:", this.getId());
-    //this.clear();
-
   },
 
   url : function () {

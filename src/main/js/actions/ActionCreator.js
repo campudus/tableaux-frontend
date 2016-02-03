@@ -94,6 +94,12 @@ module.exports = {
     );
   },
 
+  cleanupTable : function (tableId) {
+    Dispatcher.trigger(ActionTypes.CLEANUP_TABLE, {
+      tableId : tableId
+    })
+  },
+
   addFolder : function (name, description, parentId) {
     Dispatcher.trigger(ActionTypes.ADD_FOLDER, {
       name : name,
