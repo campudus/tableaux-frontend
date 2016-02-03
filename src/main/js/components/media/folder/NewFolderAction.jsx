@@ -1,9 +1,9 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var NewFolderActionView = require('./NewFolderActionView.jsx');
 var SubfolderEdit = require('./SubfolderEdit.jsx');
 var SimpleFolder = require('../../../models/media/SimpleFolder');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var NewFolderAction = React.createClass({
 
@@ -27,12 +27,10 @@ var NewFolderAction = React.createClass({
     });
   },
 
-  onSave : function (folder) {
+  onSave : function (folderId, folderName, folderDescription, folderParent) {
     this.onEdit();
-    if (folder) {
-      console.log("Folder.added", folder.toJSON());
-      Dispatcher.trigger('add-folder', folder.toJSON());
-    }
+    console.log("Folder.added", folderId, folderName, folderDescription, folderParent);
+    ActionCreator.addFolder(folderName, folderDescription, folderParent);
   },
 
   render : function () {
@@ -43,7 +41,7 @@ var NewFolderAction = React.createClass({
         description : "",
         parent : this.props.parentFolder.getId()
       });
-      newFolderAction = <SubfolderEdit folder={folder} callback={this.onSave}/>;
+      newFolderAction = <SubfolderEdit folder={folder} onSave={this.onSave} onCancel={this.onEdit}/>;
     } else {
       newFolderAction = <NewFolderActionView callback={this.onEdit}/>;
     }

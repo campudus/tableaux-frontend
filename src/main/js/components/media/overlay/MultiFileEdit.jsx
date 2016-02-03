@@ -3,6 +3,7 @@ var App = require('ampersand-app');
 var MultifileFileEdit = require('./MultifileFileEdit.jsx');
 var ampersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
+var ActionCreator = require('../../../actions/ActionCreator');
 var _ = require('lodash');
 
 var MultiFileEdit = React.createClass({
@@ -80,7 +81,7 @@ var MultiFileEdit = React.createClass({
         _.merge(file.internalName, changedFile.internalName);
         _.merge(file.mimeType, changedFile.mimeType);
 
-        Dispatcher.trigger('change-file', file.toJSON());
+        ActionCreator.changeFile(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.fileUrl);
       }
     }
     this.props.onClose(event);

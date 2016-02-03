@@ -4,7 +4,7 @@ var Dropzone = require('react-dropzone');
 var request = require('superagent');
 
 var apiUrl = require('../../../helpers/apiUrl');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var FileUpload = React.createClass({
 
@@ -51,11 +51,8 @@ var FileUpload = React.createClass({
     }
 
     if (res) {
-      var result = res.body;
-      result.fileUrl = result.url;
-      delete result.url;
-
-      Dispatcher.trigger('add-file', result);
+      var file = res.body;
+      ActionCreator.addFile(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
     }
   },
 

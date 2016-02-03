@@ -3,6 +3,7 @@ var App = require('ampersand-app');
 var ampersandMixin = require('ampersand-react-mixin');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var multiLanguage = require('../../../helpers/multiLanguage');
 var SingleFileTextInput = require('./SingleFileTextInput.jsx');
@@ -22,7 +23,7 @@ var SingleFileEdit = React.createClass({
     editedTitleValue : React.PropTypes.object.isRequired,
     editedDescValue : React.PropTypes.object.isRequired,
     editedExternalnameValue : React.PropTypes.object.isRequired,
-    hasChanged: React.PropTypes.bool.isRequired,
+    hasChanged : React.PropTypes.bool.isRequired,
     onTitleChange : React.PropTypes.func.isRequired,
     onDescriptionChange : React.PropTypes.func.isRequired,
     onExternalnameChange : React.PropTypes.func.isRequired
@@ -50,11 +51,11 @@ var SingleFileEdit = React.createClass({
   onSave : function () {
     if (this.props.hasChanged) {
       var file = this.props.file;
-      file.title = this.props.editedTitleValue;
-      file.description = this.props.editedDescValue;
-      file.externalName = this.props.editedExternalnameValue;
+      var newTitle = this.props.editedTitleValue;
+      var newDescription = this.props.editedDescValue;
+      var newExternalName = this.props.editedExternalnameValue;
 
-      Dispatcher.trigger('change-file', file.toJSON());
+      ActionCreator.changeFile(file.uuid, newTitle, newDescription, newExternalName, file.internalName, file.mimeType, file.folder, file.fileUrl);
     }
     this.props.onClose(event)
   },
@@ -128,11 +129,8 @@ var SingleFileEdit = React.createClass({
     }
 
     if (uploadRes) {
-      var result = uploadRes.body;
-      result.fileUrl = result.url;
-      delete result.url;
-
-      Dispatcher.trigger('changed-file-data', result);
+      var file = uploadRes.body;
+      ActionCreator.changedFileData(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
     }
   },
 

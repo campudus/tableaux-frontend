@@ -9,7 +9,8 @@ var SubfolderEdit = React.createClass({
 
   propTypes : {
     folder : React.PropTypes.object.isRequired,
-    callback : React.PropTypes.func.isRequired
+    onSave : React.PropTypes.func.isRequired,
+    onCancel : React.PropTypes.func.isRequired
   },
 
   componentDidMount(){
@@ -23,16 +24,13 @@ var SubfolderEdit = React.createClass({
     if (event.keyCode == 13) {
       var newName = event.target.value;
       if (newName == "") {
-        this.props.callback(false);
+        this.props.onCancel();
         return;
       }
 
-      var folder = this.props.folder;
-      folder.name = newName;
-
-      this.props.callback(folder);
+      this.props.onSave(this.props.folder.id, newName, this.props.folder.description, this.props.folder.parent);
     } else if (event.keyCode == 27) {
-      this.props.callback(false);
+      this.props.onCancel();
     }
   },
 

@@ -28,7 +28,16 @@ var TableauxConstant = {
     SELECT_NEXT_CELL : null,
 
     DISABLE_SHOULD_CELL_FOCUS : null,
-    ENABLE_SHOULD_CELL_FOCUS : null
+    ENABLE_SHOULD_CELL_FOCUS : null,
+
+    ADD_FOLDER : null,
+    CHANGE_FOLDER : null,
+    REMOVE_FOLDER : null,
+
+    ADD_FILE : null,
+    CHANGE_FILE : null,
+    CHANGED_FILE_DATA : null,
+    REMOVE_FILE : null
   }),
 
   Directions : keyMirror({
