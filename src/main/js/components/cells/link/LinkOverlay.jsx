@@ -75,19 +75,18 @@ var LinkOverlay = React.createClass({
       value : rowCellIdValue
     };
 
-    return function () {
-      var links = _.clone(cell.value);
+    var links = _.clone(cell.value);
 
-      if (isLinked) {
-        _.remove(links, function (linked) {
-          return row.id === linked.id;
-        });
-      } else {
-        links.push(link);
-      }
+    if (isLinked) {
+      _.remove(links, function (linked) {
+        return row.id === linked.id;
+      });
+    } else {
+      links.push(link);
+    }
 
-      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, links);
-    };
+    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, links);
+
   },
 
   closeOverlay : function () {
@@ -127,7 +126,7 @@ var LinkOverlay = React.createClass({
             if (_.isString(rowConcatString) && self.state.search !== null && rowConcatString.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
               if(rowConcatString && rowConcatString !== ""){
                 return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                           onClick={self.addLinkValue(isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
+                           onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
                 }else{
                 return null;
                 }
