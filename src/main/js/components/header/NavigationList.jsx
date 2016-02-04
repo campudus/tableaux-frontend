@@ -31,13 +31,11 @@ var NavigationList = React.createClass({
     if (this.state.navigationOpen) {
       mainNavigation = <div id="main-navigation">
         <div id="logo">
-          <img src="/img/logo.png" alt=""/>
+          <h1>DataCenter</h1>
         </div>
         <ul id="main-navigation-list">
           <li><a href={ "/" + this.props.langtag + "/table" }><i className="fa fa-columns"></i>Tables</a></li>
           <li><a href={ "/" + this.props.langtag + "/media" }><i className="fa fa-file"></i>Media</a></li>
-          <li><a href="#"><i className="fa fa-cog"></i>Settings</a></li>
-          <li><a href="#"><i className="fa fa-life-ring"></i>Help</a></li>
         </ul>
       </div>;
     }
