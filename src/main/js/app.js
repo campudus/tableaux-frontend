@@ -9,7 +9,7 @@ var _ = require('lodash');
 App.extend({
 
   // TODO we should request that from tableaux backend
-  langtags : []
+  langtags : [],
 
   setLangtags : function () {
     var self = this;
