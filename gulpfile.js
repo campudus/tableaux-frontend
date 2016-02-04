@@ -35,14 +35,18 @@ gulp.task('dev', ['build'], server);
 
 gulp.task('default', ['build']);
 
+var errorHandler = function (err) {
+  console.log('[error] ', err);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  } else {
+    this.emit('end');
+  }
+};
+
 function sassCompile() {
   return gulp.src('src/main/scss/main.scss')
-    .pipe(plumber({
-      errorHandler : function (error) {
-        console.log(error.message);
-        this.emit('end');
-      }
-    }))
+    .pipe(plumber({errorHandler : errorHandler}))
     .pipe(compass({
       project : Path.join(__dirname),
       css : 'out/css',
@@ -61,10 +65,7 @@ function scriptCompileApp() {
     .transform(reactify)
     .add('./src/main/js/app.js')
     .bundle()
-    .on('error', function (err) {
-      console.log('error', err);
-      this.emit('end');
-    })
+    .on('error', errorHandler)
     .pipe(source('app.js'))
     .pipe(gulp.dest('out/js/'));
 }
