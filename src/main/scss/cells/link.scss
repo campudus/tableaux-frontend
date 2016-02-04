@@ -57,7 +57,7 @@
   }
 
   &.selected .link-label {
-    max-width: 210px;
+    max-width: 200px;
     padding-right: 30px;
   }
 
@@ -70,7 +70,7 @@
     background-color: white;
     border: 1px solid $color-border-grey;
     position: absolute;
-    bottom: 5px;
+    top: 5px;
     right: 5px;
     z-index: 1;
 

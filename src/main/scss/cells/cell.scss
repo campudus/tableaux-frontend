@@ -10,6 +10,10 @@
   border-right: 1px solid #efefef;
   outline: none;
 
+  button {
+    outline: none;
+  }
+
   .more {
     top: 5px;
     display: inline-block;
@@ -46,8 +50,6 @@
       margin: 0;
     }
   }
-
-
 
   &.selected {
     border: 1px solid $color-primary;

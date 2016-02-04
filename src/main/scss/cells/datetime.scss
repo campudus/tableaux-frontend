@@ -1,0 +1,19 @@
+.cell {
+
+  &.cell-datetime {
+    i {
+      position: absolute;
+      text-align: right;
+      right: 5px;
+      top: 0;
+      width: $space-height-cell-content;
+      height: $space-height-cell-content;
+      line-height: $space-height-cell-content;
+      cursor: pointer;
+
+      &:hover {
+        color: $color-primary;
+      }
+    }
+  }
+}
