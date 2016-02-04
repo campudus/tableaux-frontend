@@ -5,7 +5,7 @@
 'use strict';
 
 var React = global.React || require('react');
-var _isFinite = require('lodash.isfinite');
+var _isFinite = require('lodash/isFinite');
 
 module.exports = function (props) {
   var rie = 'Invariant Violation: ';

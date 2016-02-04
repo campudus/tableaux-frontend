@@ -16,7 +16,7 @@ var ReactDOM = require('react-dom');
 require('./utils/establish-polyfills');
 var scaleEnum = require('./utils/scaleEnum');
 var infiniteHelpers = require('./utils/infiniteHelpers');
-var _isFinite = require('lodash.isfinite');
+var _isFinite = require('lodash/isFinite');
 
 var preloadType = require('./utils/types').preloadType;
 var checkProps = require('./utils/checkProps');
