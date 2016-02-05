@@ -2,10 +2,13 @@ var React = require('react');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 
+var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 var apiUrl = require('../../../helpers/apiUrl');
 var ActionCreator = require('../../../actions/ActionCreator');
 
 var FileChangeUpload = React.createClass({
+
+  mixins: [XhrPoolMixin],
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -23,10 +26,11 @@ var FileChangeUpload = React.createClass({
       var uuid = self.props.uuid;
 
       var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
-
-      request.put(uploadUrl)
+      var req = request.put(uploadUrl)
         .attach("file", file, file.name)
         .end(self.uploadCallback);
+
+      self.addAbortableXhrRequest(req.xhr);
     });
   },
 

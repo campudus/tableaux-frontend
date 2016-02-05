@@ -4,12 +4,10 @@ var _ = require('lodash');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 var ActionCreator = require('../../../actions/ActionCreator');
+var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 
 var LinkOverlay = React.createClass({
-  mixins : [AmpersandMixin],
-
-  //We want to abort async server requests
-  xhrObjects : [],
+  mixins : [AmpersandMixin, XhrPoolMixin],
 
   getInitialState : function () {
     return {
@@ -34,9 +32,11 @@ var LinkOverlay = React.createClass({
      * TODO: Combine both api calls. There's a api route available: http://localhost:8080/completetable/1
      * TBD: Ampersand Table Models
      */
-    self.xhrObjects.push(toTable.columns.fetch({
+
+    var rowXhr, colXhr;
+    colXhr = toTable.columns.fetch({
       success : function () {
-        self.xhrObjects.push(toTable.rows.fetch({
+        rowXhr = toTable.rows.fetch({
           success : function () {
             self.setState({
               rowResults : toTable.rows,
@@ -46,18 +46,14 @@ var LinkOverlay = React.createClass({
           error : function (err) {
             console.log('error fetching rows', err);
           }
-        }));
+        });
+        self.addAbortableXhrRequest(rowXhr);
       },
       error : function (err) {
         console.log("error fetching columns", err);
       }
-    }));
-  },
-
-  componentWillUnmount : function () {
-    this.xhrObjects.forEach(function (xhr) {
-      xhr.abort();
     });
+    self.addAbortableXhrRequest(colXhr);
   },
 
   onSearch : function (event) {
@@ -118,21 +114,21 @@ var LinkOverlay = React.createClass({
             var rowConcatString;
             var isLinked = !!_.find(currentCellValue, function (link) {
               return link.id === row.id;
-              });
+            });
             var rowCellIdValue = row.values[toIdColumnIndex];
             rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
 
             //Search filter
             if (_.isString(rowConcatString) && self.state.search !== null && rowConcatString.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
-              if(rowConcatString && rowConcatString !== ""){
+              if (rowConcatString && rowConcatString !== "") {
                 return <li key={row.id} className={isLinked ? 'isLinked' : ''}
                            onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
-                }else{
+              } else {
                 return null;
-                }
               }
+            }
 
-            })}
+          })}
 
         </ul>
       );
