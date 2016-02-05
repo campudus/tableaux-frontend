@@ -12,5 +12,5 @@ if (!Object.assign) {
 }
 
 if (!Array.isArray) {
-  Array.isArray = require('lodash.isarray');
+  Array.isArray = require('lodash/isArray');
 }
