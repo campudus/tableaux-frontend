@@ -1,6 +1,7 @@
 var React = require('react');
 var App = require('ampersand-app');
 var ampersandMixin = require('ampersand-react-mixin');
+var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 var ActionCreator = require('../../../actions/ActionCreator');
@@ -14,7 +15,7 @@ var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
 
 var SingleFileEdit = React.createClass({
 
-  mixins : [ampersandMixin],
+  mixins : [ampersandMixin, XhrPoolMixin],
 
   propTypes : {
     file : React.PropTypes.object.isRequired,
@@ -116,9 +117,11 @@ var SingleFileEdit = React.createClass({
 
       var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
 
-      request.put(uploadUrl)
+      var req = request.put(uploadUrl)
         .attach("file", file, file.name)
         .end(self.multilangUploadCallback);
+
+      self.addAbortableXhrRequest(req.xhr);
     });
   },
 
