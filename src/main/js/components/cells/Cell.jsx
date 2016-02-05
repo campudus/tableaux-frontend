@@ -26,6 +26,8 @@ var Cell = React.createClass({
     shouldFocus : React.PropTypes.bool
   },
 
+  cellDOMNode : null,
+
   getInitialState : function () {
     return {
       keyboardShortcuts : {}
@@ -33,6 +35,7 @@ var Cell = React.createClass({
   },
 
   componentDidMount : function () {
+    this.cellDOMNode = ReactDOM.findDOMNode(this);
     this.checkFocus();
   },
 
@@ -60,12 +63,12 @@ var Cell = React.createClass({
 
   checkFocus : function () {
     if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
-      var thisDOMNode = ReactDOM.findDOMNode(this);
+      var cellDOMNode = this.cellDOMNode;
       var focusedElement = document.activeElement;
       //Is current focus this cell or inside of cell don't change the focus. This way child components can force their focus. (e.g. Links Component)
-      if (!focusedElement || !thisDOMNode.contains(focusedElement) || focusedElement.isEqualNode(thisDOMNode)) {
+      if (!focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
         console.log("Cell will force focus");
-        thisDOMNode.focus();
+        cellDOMNode.focus();
       }
     }
   },

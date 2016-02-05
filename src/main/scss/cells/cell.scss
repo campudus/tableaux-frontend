@@ -51,6 +51,12 @@
     }
   }
 
+  &.cell-shorttext, &.cell-text, &.cell-richtext {
+    .cell-content {
+      white-space: pre; // let the user see white space issues in preview mode
+    }
+  }
+
   &.selected {
     border: 1px solid $color-primary;
 

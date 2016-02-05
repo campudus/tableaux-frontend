@@ -31,6 +31,7 @@ var Table = React.createClass({
   selectNewCreatedRow : false,
   keyboardRecentlyUsedTimer : null,
   tableHeaderId : "tableHeader",
+  tableDOMNode : null,
 
   getInitialState : function () {
     return {
@@ -54,11 +55,6 @@ var Table = React.createClass({
    return true;
    }
    },*/
-
-  componentWillUpdate : function (nextProps, nextState) {
-    //console.log("this.state.selectedCell", this.state.selectedCell);
-    //console.log("nextState.selectedCell", nextState.selectedCell);
-  },
 
   componentWillMount : function () {
     var self = this;
@@ -92,14 +88,16 @@ var Table = React.createClass({
     this.setState({offsetTableData : ReactDOM.findDOMNode(this.refs.tableRows).getBoundingClientRect().top});
     //Don't change this to state, its more performant during scroll
     this.headerDOMElement = document.getElementById(this.tableHeaderId);
+    this.tableDOMNode = ReactDOM.findDOMNode(this);
   },
 
   componentDidUpdate : function () {
     console.log("Table did update.");
     //Just update when used with keyboard or when clicking explicitly on a cell
-    if (this.state.shouldCellFocus) {
+    if (this.shouldCellFocus()) {
       this.updateScrollViewToSelectedCell();
     }
+    this.checkFocusInsideTable();
   },
 
   componentWillUnmount : function () {
@@ -134,6 +132,24 @@ var Table = React.createClass({
     if (!this.state.shouldCellFocus) {
       console.log("Table.enableShouldCellFocus");
       this.setState({shouldCellFocus : true});
+    }
+  },
+
+  shouldCellFocus : function () {
+    return this.state.shouldCellFocus;
+  },
+
+  //Takes care that we never loose focus of the table to guarantee keyboard events are triggered
+  checkFocusInsideTable : function () {
+    //Is a cell selected?
+    if (this.state.selectedCell !== null) {
+      var tableDOMNode = this.tableDOMNode;
+      var focusedElement = document.activeElement;
+      //Is the focus outside the table or is body selected
+      if (focusedElement && !tableDOMNode.contains(focusedElement)) {
+        //force table to be focused to get keyboard events
+        tableDOMNode.focus();
+      }
     }
   },
 
@@ -406,7 +422,7 @@ var Table = React.createClass({
     var self = this;
 
     //Force the next selected cell to be focused
-    if (!this.state.shouldCellFocus) {
+    if (!this.shouldCellFocus()) {
       this.enableShouldCellFocus();
     }
     return {
@@ -554,7 +570,8 @@ var Table = React.createClass({
   render : function () {
     console.log("Rendering table");
     return (
-      <section id="table-wrapper" ref="tableWrapper" onScroll={this.handleScroll} onKeyDown={this.onKeyboardShortcut}
+      <section id="table-wrapper" ref="tableWrapper" tabIndex="-1" onScroll={this.handleScroll}
+               onKeyDown={this.onKeyboardShortcut}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
           <Columns ref="columns" columns={this.props.table.columns}/>
@@ -567,7 +584,7 @@ var Table = React.createClass({
                 expandedRowIds={this.state.expandedRowIds}
                 selectedCellExpandedRow={this.state.selectedCellExpandedRow}
                 table={this.props.table}
-                shouldCellFocus={this.state.shouldCellFocus}
+                shouldCellFocus={this.shouldCellFocus()}
           />
         </div>
       </section>
