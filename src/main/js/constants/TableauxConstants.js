@@ -12,6 +12,7 @@ var TableauxConstant = {
     SWITCHED_TABLE : null,
     SWITCH_LANGUAGE : null,
 
+    //Generic Overlay events
     OPEN_OVERLAY : null,
     CLOSE_OVERLAY : null,
 
@@ -39,7 +40,12 @@ var TableauxConstant = {
     CHANGED_FILE_DATA : null,
     REMOVE_FILE : null,
 
-    CLEANUP_TABLE : null
+    CLEANUP_TABLE : null,
+
+    //Overlay Text Type
+    OVERLAY_TYPE_TEXT_CLOSE: null,
+    OVERLAY_TYPE_TEXT_SAVE: null,
+
   }),
 
   Directions : keyMirror({

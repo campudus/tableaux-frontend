@@ -1,19 +1,17 @@
 var React = require('react');
+var Dispatcher = require('../../../dispatcher/Dispatcher');
+var ActionTypes = require('../../../constants/TableauxConstants').ActionTypes;
 
 var TextArea = React.createClass({
 
   propTypes : {
     initialContent : React.PropTypes.string,
     onClose : React.PropTypes.func.isRequired,
-    onSave : React.PropTypes.func.isRequired,
-    onChange : React.PropTypes.func
+    onSave : React.PropTypes.func.isRequired
   },
 
-  getInitialState : function (event) {
-    return {
-      richEditor : false
-    }
-  },
+  //We save the current text value
+  content: null,
 
   componentDidMount : function () {
     var inputArea = this.refs.inputArea;
@@ -23,43 +21,39 @@ var TextArea = React.createClass({
     inputArea.value = text;
   },
 
+  closeOverlayHander : function (event) {
+    this.props.onClose(event);
+  },
+
+  saveOverlayHander : function (event) {
+    this.props.onSave(this.content, event);
+  },
+
+  componentWillMount : function () {
+    Dispatcher.on(ActionTypes.OVERLAY_TYPE_TEXT_CLOSE, this.closeOverlayHander);
+    Dispatcher.on(ActionTypes.OVERLAY_TYPE_TEXT_SAVE, this.saveOverlayHander);
+  },
+
+  componentWillUnmount : function () {
+    Dispatcher.off(ActionTypes.OVERLAY_TYPE_TEXT_CLOSE, this.closeOverlayHander);
+    Dispatcher.off(ActionTypes.OVERLAY_TYPE_TEXT_SAVE, this.saveOverlayHander);
+  },
+
   getContent : function (event) {
     return this.refs.inputArea.value;
   },
 
-  _onClose : function (event) {
-    this.props.onClose(event)
-  },
-
-  _onChange : function (event) {
-    var newContent = this.getContent(event);
-
-    this.content = newContent;
-
-    if (typeof this.props.onChange === "function") {
-      this.props.onChange(newContent, event)
-    }
-  },
-
-  _onSave : function (event) {
-    this.props.onSave(this.content, event);
+  onChangeHandler : function (event) {
+    this.content = this.getContent(event);
   },
 
   render : function () {
-    var editor;
-
-    if (typeof this.content === 'undefined') {
+    if (_.isNil(this.content)) {
       this.content = this.props.initialContent;
     }
-
-    editor = <textarea autoFocus className="input" type="text" defaultValue={this.content} ref="inputArea"
-                       onChange={this._onChange}></textarea>;
-
     return (
       <div>
-        {editor}
-        <button onClick={this._onSave} className="button">Save &amp; Close</button>
-        <button onClick={this._onClose} className="button">Cancel &amp; Close</button>
+        <textarea autoFocus className="input text-editor" type="text" defaultValue={this.content} onChange={this.onChangeHandler} ref="inputArea"></textarea>
       </div>
     );
   }

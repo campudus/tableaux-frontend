@@ -83,7 +83,7 @@ var GenericOverlay = React.createClass({
     return (
       <div id="overlay" className={overlayWrapperClass} tabIndex="1" onKeyDown={this.onKeyboardShortcut}>
         <div id="overlay-wrapper">
-          <h2>{this.props.head}</h2>
+          <h2 className="overlay-header">{this.props.head}</h2>
           <div className="content-scroll">
             <div id="overlay-content">
               {this.props.body}

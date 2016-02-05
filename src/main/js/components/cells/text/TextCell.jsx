@@ -5,6 +5,7 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextEditCell = require('./TextEditCell.jsx');
 var TextArea = require('./TextArea.jsx');
 var ExpandButton = require('./ExpandButton.jsx');
+var TextOverlayFooter = require('./TextOverlayFooter.jsx');
 var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
 
@@ -21,7 +22,7 @@ var TextCell = React.createClass({
     ActionCreator.toggleCellEditing();
   },
 
-  handleEditDone : function (newValue) {
+  saveCell : function (newValue) {
     var cell = this.props.cell;
 
     if (cell.isMultiLanguage) {
@@ -31,7 +32,6 @@ var TextCell = React.createClass({
     }
 
     ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
-    ActionCreator.toggleCellEditing(false);
   },
 
   openOverlay : function (event, withContent) {
@@ -43,6 +43,7 @@ var TextCell = React.createClass({
     ActionCreator.openOverlay({
       head : <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
       body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
+      footer : <TextOverlayFooter/>,
       type : "normal",
       closeOnBackgroundClicked : false
     });
@@ -50,14 +51,13 @@ var TextCell = React.createClass({
   },
 
   closeOverlay : function (event) {
-    event.preventDefault();
-    event.stopPropagation();
     ActionCreator.closeOverlay(event);
   },
 
   saveOverlay : function (content, event) {
-    this.handleEditDone(content);
+    this.saveCell(content);
     this.closeOverlay(event);
+    ActionCreator.toggleCellEditing(false);
   },
 
   getValue : function () {
@@ -98,7 +98,7 @@ var TextCell = React.createClass({
       return this.renderTextCell(cell, this.getValue());
     } else {
       return <TextEditCell cell={cell} defaultText={this.getValue()} langtag={this.props.langtag}
-                           onBlur={this.handleEditDone}
+                           onBlur={this.saveCell}
                            openOverlay={this.openOverlay} closeOverlay={this.closeOverlay}
                            saveOverlay={this.saveOverlay}/>;
     }

@@ -402,6 +402,7 @@ var Table = React.createClass({
 
   getKeyboardShortcuts : function () {
     var self = this;
+    debugger;
 
     //Force the next selected cell to be focused
     if (!this.state.shouldCellFocus) {
@@ -417,7 +418,6 @@ var Table = React.createClass({
         );
       },
       right : function (event) {
-        console.log("Table.jsx right", event);
         event.preventDefault();
         self.preventSleepingOnTheKeyboard(
           function () {
@@ -541,6 +541,7 @@ var Table = React.createClass({
   },
 
   onMouseDownHandler : function (e) {
+    console.log("onMouseDown", e.target);
     /*
      Important: prevents loosing the focus of a cell when clicking something.
      When a child component inside of the Table needs focus attach a "onMouseDown" event to it and

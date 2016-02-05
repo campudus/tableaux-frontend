@@ -27,3 +27,10 @@
   max-height: 400px;
   overflow: hidden;
 }
+
+@mixin setBgColorAndHover($baseColor) {
+  background-color: $baseColor;
+  &:hover {
+    background-color: darken($baseColor, 5%)
+  }
+}

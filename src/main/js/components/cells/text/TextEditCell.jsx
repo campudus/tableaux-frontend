@@ -30,6 +30,7 @@ var TextEditCell = React.createClass({
     return {
       escape : function (event) {
         self.doneEditing(event);
+        ActionCreator.toggleCellEditing(false);
       },
       tab : function (event) {
         self.doneEditing(event);
@@ -39,7 +40,6 @@ var TextEditCell = React.createClass({
         //stop handling the Table events
         event.stopPropagation();
       },
-
       always : function (event, shortcutFound) {
         if (!shortcutFound) {
           //When typing text we don't want any table events

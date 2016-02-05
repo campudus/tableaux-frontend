@@ -26,6 +26,12 @@ $overlay-headline-height: 50px;
     }
   }
 
+  .overlay-header {
+    padding: 0 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .background {
     z-index: 1;
     background-color: black;
@@ -67,6 +73,7 @@ $overlay-headline-height: 50px;
     box-sizing: border-box;
     //height: 100%;
     position: relative;
+    min-height: 100%;
 
     .search-input-wrapper {
       position: relative;
@@ -111,6 +118,7 @@ $overlay-headline-height: 50px;
       max-width: 100%;
       display: block;
       resize: none;
+      line-height: 1.5em;
 
       outline: none;
       background-color: white;
@@ -126,26 +134,36 @@ $overlay-headline-height: 50px;
 
   .button {
     font-size: 1em;
-
+    font-weight: bold;
     border-radius: 4px;
-
     display: inline-block;
-
     vertical-align: top;
-
     margin-top: 10px;
     margin-right: 10px;
+    padding: 7px 15px;
+    color: #fff;
+    border: 0;
+    cursor: pointer;
 
-    padding: 5px 10px 5px 10px;
+    @include setBgColorAndHover($color-primary);
 
-    background-color: white;
-    border: 1px solid #999;
-
-    &:hover {
-      color: $color-primary-contrast-text;
-      background-color: $color-primary;
-      border-color: $color-primary;
+    &.neutral {
+      @include setBgColorAndHover($color-button-grey);
     }
+
+    &.positive {
+      @include setBgColorAndHover($color-green);
+    }
+
+    &.negative {
+      @include setBgColorAndHover($color-red);
+    }
+
+    &.white {
+      color: $color-very-dark;
+      @include setBgColorAndHover(#fff);
+    }
+
   }
 
   h2 {
@@ -252,10 +270,35 @@ $overlay-headline-height: 50px;
       width: 100%;
       position: absolute;
       bottom: 0;
+      border-top: 1px solid $color-grey-dark;
+      background-color: darken($color-background-very-light-grey, 2);
     }
 
     .content-scroll {
       bottom: 50px;
+    }
+
+    .button-wrapper {
+      text-align: center;
+    }
+
+  }
+
+  //Overlay for kind text
+  #overlay-content textarea.text-editor {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    padding: 20px;
+    left: 0px;
+    bottom: 0px;
+    height: 100%;
+    border: 0;
+    overflow-y: auto;
+
+    &:focus {
+      border: 0;
+      border-bottom: 1px solid $color-grey-dark;
     }
   }
 

@@ -12,8 +12,8 @@ var FileEditFooter = React.createClass({
   render : function () {
     return (
       <div className="button-wrapper">
-        <button className="button" onClick={this.props.onSave}>Speichern</button>
-        <button className="button" onClick={this.props.onCancel}>Abbrechen</button>
+        <button className="button positive" onClick={this.props.onSave}>Speichern</button>
+        <button className="button neutral" onClick={this.props.onCancel}>Abbrechen</button>
       </div>
     );
   }

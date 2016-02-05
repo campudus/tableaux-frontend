@@ -166,6 +166,14 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.REMOVE_FILE, {
       fileId : fileId
     });
+  },
+
+  closeOverlayTypeText:function(){
+    Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_CLOSE);
+  },
+
+  saveOverlayTypeText:function(){
+    Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
   }
 
 
