@@ -41,10 +41,11 @@ var TableauxConstant = {
     REMOVE_FILE : null,
 
     CLEANUP_TABLE : null,
+    CLEANUP_TABLE_DONE : null,
 
     //Overlay Text Type
-    OVERLAY_TYPE_TEXT_CLOSE: null,
-    OVERLAY_TYPE_TEXT_SAVE: null,
+    OVERLAY_TYPE_TEXT_CLOSE : null,
+    OVERLAY_TYPE_TEXT_SAVE : null
 
   }),
 

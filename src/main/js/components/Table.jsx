@@ -65,8 +65,10 @@ var Table = React.createClass({
     var table = this.props.table;
     //We need to fetch columns first, since rows has Cells that depend on the column model
     table.columns.fetch({
+      reset : true,
       success : function () {
         table.rows.fetch({
+          reset : true,
           success : function () {
             console.log("table columns & rows fetched successfully.");
           }
@@ -402,7 +404,6 @@ var Table = React.createClass({
 
   getKeyboardShortcuts : function () {
     var self = this;
-    debugger;
 
     //Force the next selected cell to be focused
     if (!this.state.shouldCellFocus) {

@@ -22,6 +22,8 @@ var Tableaux = React.createClass({
     initialTableId : React.PropTypes.number.isRequired
   },
 
+  nextTableId : null,
+
   getInitialState : function () {
     return {
       activeOverlay : null, //holds null or { head:{}, body:{}, type:"", footer:[}}
@@ -30,22 +32,29 @@ var Tableaux = React.createClass({
   },
 
   componentWillMount : function () {
-    Dispatcher.on(ActionTypes.SWITCHED_TABLE, this.switchTable);
+    Dispatcher.on(ActionTypes.SWITCHED_TABLE, this.beginSwitchTable);
+    Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay);
     Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
   },
 
   componentWillUnmount : function () {
-    Dispatcher.off(ActionTypes.SWITCHED_TABLE, this.switchTable);
+    Dispatcher.off(ActionTypes.SWITCHED_TABLE, this.beginSwitchTable);
+    Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.OPEN_OVERLAY, this.openOverlay);
     Dispatcher.off(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
   },
 
-  switchTable : function (payload) {
-    var self = this;
+  beginSwitchTable : function (payload) {
     var oldTable = this.props.tables.get(this.state.currentTableId);
+    this.nextTableId = payload.tableId;
     ActionCreator.cleanupTable(oldTable);
-    self.setState({currentTableId : payload.tableId});
+  },
+
+  doSwitchTable : function () {
+    if (this.nextTableId) {
+      this.setState({currentTableId : this.nextTableId});
+    }
   },
 
   openOverlay : function (content) {

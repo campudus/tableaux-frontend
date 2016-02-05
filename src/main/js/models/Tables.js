@@ -3,7 +3,7 @@ var apiUrl = require('../helpers/apiUrl');
 var Table = require('./Table');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
-var ColumnKinds = require('../constants/TableauxConstants').ColumnKinds;
+var ActionCreator = require('../actions/ActionCreator');
 var Row = require('./Row');
 var Cells = require('./Cells');
 var Cell = require('./Cell');
@@ -35,13 +35,12 @@ var Tables = Collection.extend({
 
     rowsToCleanup.reset();
     columnsToCleanup.reset();
+    ActionCreator.cleanupTableDone();
   },
 
   changeCellHandler : function (payload) {
     console.log("changeCellHandler:", payload);
     console.log("Rows this", this);
-
-    //debugger;
     var self = this;
 
     var tableId = payload.tableId;

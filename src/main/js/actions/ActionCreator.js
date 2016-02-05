@@ -100,6 +100,12 @@ module.exports = {
     })
   },
 
+  cleanupTableDone : function (tableId) {
+    Dispatcher.trigger(ActionTypes.CLEANUP_TABLE_DONE, {
+      tableId : tableId
+    })
+  },
+
   addFolder : function (name, description, parentId) {
     Dispatcher.trigger(ActionTypes.ADD_FOLDER, {
       name : name,
