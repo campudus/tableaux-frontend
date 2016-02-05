@@ -145,8 +145,11 @@ var Table = React.createClass({
     if (this.state.selectedCell !== null) {
       var tableDOMNode = this.tableDOMNode;
       var focusedElement = document.activeElement;
-      //Is the focus outside the table or is body selected
-      if (focusedElement && !tableDOMNode.contains(focusedElement)) {
+      //happens in IE
+      if (focusedElement === null) {
+        tableDOMNode.focus();
+      } else if (!tableDOMNode.contains(focusedElement)) {
+        //Is the focus outside the table or is body selected
         //force table to be focused to get keyboard events
         tableDOMNode.focus();
       }
