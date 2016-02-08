@@ -40,7 +40,6 @@ var Tables = Collection.extend({
 
   changeCellHandler : function (payload) {
     console.log("changeCellHandler:", payload);
-    console.log("Rows this", this);
     var self = this;
 
     var tableId = payload.tableId;
@@ -71,19 +70,24 @@ var Tables = Collection.extend({
     }
 
     if (updateNecessary) {
+      //we give direct feedback for user
       cell.value = mergedValue;
+      self.updateConcatCells(cell);
       console.log("Cell Model: saving cell with value:", newValue);
       cell.save(newValue, {
         patch : isPatch,
-        success : function () {
-          console.log('Cell model saved successfully.');
-          //FIXME: Discuss with Backend: Status Code + latest value object from database
-          cell.value = mergedValue;
-          self.updateConcatCells(cell);
+        success : function (model, data, options) {
+          //is there new data from the server?
+          if (!_.isEqual(data.value, mergedValue)) {
+            console.log('Cell model saved successfully. Server data changed meanwhile:', data.value, mergedValue);
+            cell.value = data.value;
+            self.updateConcatCells(cell);
+          }
         },
         error : function () {
           console.error('Cell model saved unsuccessfully!', arguments);
           cell.value = oldValue;
+          self.updateConcatCells(cell);
         }
       });
     }
