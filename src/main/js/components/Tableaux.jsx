@@ -4,7 +4,6 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./Table.jsx');
 var LinkOverlay = require('./cells/link/LinkOverlay.jsx');
-var MediaOverlay = require('./media/overlay/MediaOverlay.jsx');
 var GenericOverlay = require('./overlay/GenericOverlay.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
 var NavigationList = require('./header/NavigationList.jsx');

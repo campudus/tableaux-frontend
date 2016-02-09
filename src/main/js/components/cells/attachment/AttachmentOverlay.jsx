@@ -1,0 +1,131 @@
+var React = require('react');
+var _ = require('lodash');
+var AmpersandMixin = require('ampersand-react-mixin');
+var App = require('ampersand-app');
+var ActionCreator = require('../../../actions/ActionCreator');
+var Folder = require('../../../models/media/Folder');
+var multiLanguage = require('../../../helpers/multiLanguage');
+
+var AttachmentOverlay = React.createClass({
+  mixins : [AmpersandMixin],
+
+  propTypes : {
+    cell : React.PropTypes.object.isRequired,
+    langtag : React.PropTypes.string.isRequired
+  },
+
+  getInitialState : function () {
+    return {
+      folder : null
+    };
+  },
+
+  componentWillMount : function () {
+    if (this.props.cell.column.kind !== "attachment") {
+      console.error("Couldn't open AttachmentOverlay for this column type.");
+      return;
+    }
+
+    this.navigateFolder(null)();
+  },
+
+  componentWillUnmount : function () {
+    this.props.cell.fetch();
+  },
+
+  navigateFolder : function (folderId) {
+    var self = this;
+
+    return function () {
+      // TODO View creates Model instance
+      if (self.state.folder) {
+        self.setState({folder : null});
+      }
+      var folder = new Folder({id : folderId});
+
+      folder.fetch({
+        data : {langtag : self.props.langtag},
+        success : function (err, result) {
+          self.setState({folder : result});
+        }
+      });
+    };
+  },
+
+  toggleAttachments : function (isLinked, file) {
+    var cell = this.props.cell;
+
+    return function () {
+      var attachments = _.clone(cell.value);
+
+      if (isLinked) {
+        _.remove(attachments, function (attachment) {
+          return file.uuid === attachment.uuid;
+        });
+      } else {
+        attachments.push(file);
+      }
+
+      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, attachments);
+    };
+  },
+
+  render : function () {
+    var self = this;
+    var fallbackLang = App.defaultLangtag;
+    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
+    var listDisplay = "Loading...";
+
+    //check for empty obj or map fails
+    if (this.state.folder) {
+      // render back button
+      var backButton = null;
+      if (this.state.folder && this.state.folder.name !== "root") {
+        backButton = (
+          <div className="back active" key={this.state.folder.id}
+               onClick={self.navigateFolder(this.state.folder.parent)}><a>
+            <i className="fa fa-chevron-left"></i> zurück </a><span>{this.state.folder.name}</span></div>);
+      } else {
+        backButton = (<div className="back" key={this.state.folder.id}>Hauptordner</div>);
+      }
+
+      listDisplay = (
+        <div>
+          <div className="folders">
+            {backButton}
+            {this.state.folder.subfolders.map(function (subfolder) {
+              return <span key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}><a>
+                <i className="icon fa fa-folder-open"></i> {subfolder.name}</a></span>
+            })}
+          </div>
+          <ul>
+            {this.state.folder.files.map(function (file) {
+
+              var currentCellValue = self.props.cell.value;
+
+              var linked = _.find(currentCellValue, function (linkedFile) {
+                return file.uuid === linkedFile.uuid;
+              });
+
+              var isLinked = linked ? true : false;
+              var fileTitle = retrieveTranslation(file.title, self.props.langtag);
+
+              return <li key={file.uuid} className={isLinked ? 'isLinked' : ''}
+                         onClick={self.toggleAttachments(isLinked, file)}>
+                <i className="icon fa fa-file"></i><span>{fileTitle}</span></li>
+            })}
+          </ul>
+        </div>
+      );
+    }
+
+    return (
+      <div className="attachment-overlay-wrapper">
+        {listDisplay}
+      </div>
+    );
+  }
+
+});
+
+module.exports = AttachmentOverlay;

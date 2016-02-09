@@ -1,8 +1,11 @@
 var React = require('react');
 var _ = require('lodash');
 
-var Dispatcher = require('../../../dispatcher/Dispatcher');
 var apiUrl = require('../../../helpers/apiUrl');
+var ActionCreator = require('../../../actions/ActionCreator');
+
+var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
+var AttachmentOverlay = require('./AttachmentOverlay.jsx');
 
 var AttachmentCell = React.createClass({
 
@@ -12,7 +15,11 @@ var AttachmentCell = React.createClass({
   },
 
   openOverlay : function () {
-    Dispatcher.trigger('openMediaOverlay', this.props.cell);
+    ActionCreator.openOverlay({
+      head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
+      body : <AttachmentOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
+      type : "normal"
+    });
   },
 
   render : function () {
