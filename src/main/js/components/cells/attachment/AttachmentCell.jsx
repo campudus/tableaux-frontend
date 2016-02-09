@@ -1,40 +1,57 @@
 var React = require('react');
-var _ = require('lodash');
-
-var apiUrl = require('../../../helpers/apiUrl');
-var ActionCreator = require('../../../actions/ActionCreator');
-
-var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-var AttachmentOverlay = require('./AttachmentOverlay.jsx');
+var AttachmentLabelCell = require('./AttachmentLabelCell.jsx');
+var AttachmentEditCell = require('./AttachmentEditCell.jsx');
 
 var AttachmentCell = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired
+    langtag : React.PropTypes.string.isRequired,
+    selected : React.PropTypes.bool.isRequired,
+    editing : React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts : React.PropTypes.func
   },
 
-  openOverlay : function () {
-    ActionCreator.openOverlay({
-      head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
-      body : <AttachmentOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
-      type : "normal"
-    });
+
+  getInitialState : function () {
+    return null;
   },
 
   render : function () {
     var self = this;
 
-    var cell = this.props.cell;
+    if (self.props.selected) {
+      return <AttachmentEditCell cell={self.props.cell} langtag={self.props.langtag}
+                                 editing={self.props.editing}
+                                 setCellKeyboardShortcuts={self.props.setCellKeyboardShortcuts}></AttachmentEditCell>
+    } else {
+      //Show a attachment preview for performance
+      var tooManyAttachments = false;
+      var attachments = self.props.cell.value.map(function (element, id) {
 
-    return (
-      <div className={'cell-content attachment'}>
-        {_.map(cell.value, function (attachment) {
-          return <div key={attachment.uuid}><a href={apiUrl(attachment.url)} target="_blank">{attachment.name}</a></div>
-        })}
-        <button className="add" onClick={self.openOverlay}>+</button>
-      </div>
-    );
+        //Limit to maximum 3 Links
+        if (id <= 2) {
+          return <AttachmentLabelCell key={id} attachmentElement={element} cell={self.props.cell}
+                                      langtag={self.props.langtag}
+                                      deletable={false}/>;
+        } else {
+          tooManyLinks = true;
+          return null;
+        }
+
+      }).filter(Boolean); //remove null and empty array values: http://stackoverflow.com/a/13798078
+
+      //More note ...
+      if (tooManyAttachments) {
+        attachments.push(<span key={"more"} className="more">&hellip;</span>);
+      }
+      return (
+        <div className={'cell-content'}>
+          {attachments}
+        </div>
+      );
+
+    }
   }
 
 });

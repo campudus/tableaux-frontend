@@ -110,7 +110,9 @@ var Cell = React.createClass({
         break;
 
       case ColumnKinds.attachment:
-        cellKind = <AttachmentCell cell={this.props.cell} langtag={this.props.langtag}/>;
+        cellKind = <AttachmentCell cell={this.props.cell} langtag={this.props.langtag} selected={this.props.selected}
+                                   editing={this.props.editing}
+                                   setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case ColumnKinds.numeric:
