@@ -1,94 +1,58 @@
-var App = require('ampersand-app');
 var React = require('react');
-var ReactDOM = require('react-dom');
+var Select = require('react-select');
 var ActionCreator = require('../../actions/ActionCreator.js');
 
-var _ = require('lodash');
-
-//TODO: Refactor this component with outside click mixin. Rethink TableSwitcher and TableTools composition!
-var TableSwitcher = React.createClass({
+var LanguageSwitcher = React.createClass({
 
   propTypes : {
-    tables : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    currentId : React.PropTypes.number.isRequired,
-    onClickOutside : React.PropTypes.func
+    tableName : React.PropTypes.string.isRequired,
+    currentTableId : React.PropTypes.number.isRequired,
+    tables : React.PropTypes.object.isRequired
   },
 
-  getInitialState : function () {
-    return {
-      search : ""
-    };
+  onChange : function (option) {
+    ActionCreator.switchTable(option.value, this.props.langtag);
   },
 
-  clickedOutside : function (e) {
-    //fixes IE Bug: Invariant Violation: findDOMNode was called on an unmounted component.
-    if (this.isMounted()) {
-      if (!ReactDOM.findDOMNode(this).contains(e.target)) {
-        this.props.onClickOutside();
-      }
-    }
+  renderOption : function (option) {
+    var tableName = option.label;
+    return <div><i className="fa fa-columns"></i>
+      <span>{tableName}</span>
+    </div>;
   },
 
-  componentWillMount : function () {
-    document.addEventListener('click', this.clickedOutside);
-  },
-
-  componentWillUnmount : function () {
-    document.removeEventListener('click', this.clickedOutside);
-  },
-
-  componentDidMount : function () {
-
-  },
-
-  handleClick : function (entry) {
-    ActionCreator.switchTable(entry.id, this.props.langtag);
-  },
-
-  onSearch : function () {
-    var search = this.refs.search.value;
-    this.setState({
-      search : search
-    });
+  renderValue : function (option) {
+    var tableName = option.label;
+    return <div className="table-option">
+      <span>{tableName}</span>
+    </div>;
   },
 
   render : function () {
-    var self = this;
-
-    var tableObj = this.props.tables.map(function (entry, index) {
-      return {name : entry.get('name'), id : entry.get('id'), index : index};
-    });
-
-    // Filter + Map = reduce! Awesome! http://elijahmanor.com/reducing-filter-and-map-down-to-reduce/
-    var tableNameListItems = _.reduce(tableObj, function (array, entry) {
-      var isCurrentTable = (entry.id === self.props.currentId);
-      var className = isCurrentTable ? 'active' : 'inactive';
-      var onClickHandler = isCurrentTable ? null : self.handleClick.bind(self, entry);
-      var trimmedSearchVal = self.state.search.trim().toLowerCase();
-      var trimmedTableName = entry.name.trim().toLowerCase();
-      //return items through search
-      if (trimmedSearchVal === "" || trimmedTableName.indexOf(trimmedSearchVal) !== -1) {
-        array.push(<li key={entry.id} onClick={onClickHandler} className={className}>{entry.name}</li>);
-      }
-      return array;
+    var options = this.props.tables.reduce(function (res, table) {
+      res.push({
+        label : table.name,
+        value : table.id
+      });
+      return res;
     }, []);
 
     return (
-      <div id="table-list-wrapper">
-        <div className="search-input-wrapper">
-          <input autoFocus type="text" className="search-input" placeholder="Search Table..."
-                 onChange={this.onSearch} defaultValue={this.state.search} ref="search"/>
-          <i className="fa fa-search"></i>
-        </div>
-        <div id="table-list">
-          <ul>
-            {(tableNameListItems.length > 0) ? tableNameListItems : <li className="empty">No Tables with that name</li>}
-          </ul>
-        </div>
+      <div id="table-switcher">
+        <Select options={options}
+                searchable
+                clearable={false}
+                value={this.props.currentTableId}
+                onChange={this.onChange}
+                optionRenderer={this.renderValue}
+                valueRenderer={this.renderOption}
+                noResultsText="Keine Tabelle mit diesem Namen vorhanden"
+
+        />
       </div>
-    );
+    )
   }
 });
 
-module.exports = TableSwitcher;
+module.exports = LanguageSwitcher;

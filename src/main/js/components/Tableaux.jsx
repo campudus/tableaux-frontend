@@ -7,7 +7,7 @@ var LinkOverlay = require('./cells/link/LinkOverlay.jsx');
 var GenericOverlay = require('./overlay/GenericOverlay.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
 var NavigationList = require('./header/NavigationList.jsx');
-var TableTools = require('./header/TableTools.jsx');
+var TableSwitcher = require('./header/TableSwitcher.jsx');
 var PageTitle = require('./header/PageTitle.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
@@ -106,7 +106,7 @@ var Tableaux = React.createClass({
       <div>
         <header>
           <NavigationList langtag={this.props.langtag}/>
-          <TableTools langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
+          <TableSwitcher langtag={this.props.langtag} tableName={tableName} currentTableId={self.state.currentTableId}
                       tables={tables}/>
           <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
           <PageTitle title="Tables"/>

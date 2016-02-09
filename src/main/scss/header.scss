@@ -66,109 +66,37 @@ header {
 
   }
 
-  #table-tools {
+  #table-switcher {
     float: left;
     vertical-align: top;
-    margin-top: 10px;
+    margin-top: 8px;
 
-    #table-switcher {
+    width: 300px;
 
-      #current-table {
-        @include header-button-look();
-        span {
-          padding: 0 1em;
-          display: inline-block;
-          max-width: 300px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+    .Select-value-label span {
+      padding: 0 1em;
+      line-height: 29px;
+    }
 
-        * {
-          vertical-align: top;
-          display: inline-block;
-          line-height: 29px;
-        }
+    .Select-option {
+      color: $color-very-dark;
+      padding: 1em 38px;
+
+      &.is-focused {
+        background-color: $color-background-very-light-grey;
       }
 
-      #table-list-wrapper {
-        @include header-panel-look();
-        padding: 0;
-        display: none;
-        left: auto;
-        width: 300px;
-        line-height: 1.2em;
-        height: 400px;
-
-        li {
-          padding: 1em 30px;
-          cursor: default;
-          display: block;
-
-          &.active {
-            background-color: $color-grey-dark;
-          }
-
-          &.inactive {
-            cursor: pointer;
-
-            &:hover {
-              background-color: $color-background-very-light-grey;
-            }
-          }
-
-        }
-
-        #table-list {
-          overflow-y: auto;
-          overflow-x: hidden;
-          position: absolute;
-          width: 100%;
-          height: 90%;
-          top: 10%;
-          white-space: normal;
-
-          li.empty {
-            color: $color-text-light-grey;
-          }
-        }
-
-        .search-input-wrapper {
-          width: 100%;
-          position: absolute;
-          top: 0px;
-          height: 10%;
-
-          input {
-            border: 0;
-            border-bottom: 1px solid $color-grey-dark;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            padding: 0 40px 0 20px;
-            outline: none;
-            @include box-sizing(border-box);
-            font-size: 1.4rem;
-          }
-
-          i {
-            position: absolute;
-            right: 13px;
-            top: 12px;
-          }
-
-        }
-
+      &.is-selected {
+        background-color: $color-grey-dark;
       }
+    }
 
-      &.active {
-        #current-table {
-          @include header-button-active();
-        }
-        #table-list-wrapper {
-          display: block;
-        }
+    .Select-menu-outer {
+      max-height: 300px;
+
+      .Select-menu {
+        max-height: 298px;
       }
-
     }
   }
 
