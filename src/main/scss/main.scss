@@ -1,8 +1,10 @@
 @import "compass/css3",
 "compass/reset",
 "fontAwesome/font-awesome",
+"../../node_modules/react-select/dist/react-select.css",
 "helper",
 "variables",
+"reactSwitcher",
 "datetimepicker",
 "languageSwitcher",
 "layout",
@@ -15,6 +17,5 @@
 "cells/link",
 "cells/identifier",
 "cells/datetime",
-"overlay",
 "progressBar",
-"../../node_modules/react-select/dist/react-select.css";
+"overlay";

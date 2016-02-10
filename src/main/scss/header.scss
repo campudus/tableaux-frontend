@@ -9,6 +9,58 @@ header {
   z-index: 9;
   overflow: visible;
 
+  .Select {
+    .Select-value-label span {
+      line-height: 29px;
+    }
+
+    .Select-option {
+      color: $color-very-dark;
+    }
+
+    .Select-noresults {
+      padding: 20px;
+      font-family: $font-main;
+      text-align: center;
+    }
+
+    .Select-control {
+      height: $space-height-header-buttons - 4;
+      line-height: $space-height-header-buttons - 4;
+      border: 1px solid $color-grey-dark;
+    }
+
+    .Select-value, .Select-input, .Select-value-label {
+      height: $space-height-header-buttons - 2;
+      line-height: $space-height-header-buttons - 2;
+    }
+
+    .Select-input > input {
+      height: $space-height-header-buttons - 2;
+      line-height: $space-height-header-buttons - 2;
+    }
+
+    .Select-menu-outer {
+      max-height: 300px;
+      @include box-shadow(0px 0px 50px 0px rgba(black, 0.3));
+
+      .Select-menu {
+        max-height: 298px;
+      }
+    }
+
+    .Select-value-label {
+      vertical-align: top;
+      display: inline-block;
+    }
+
+    &.is-open {
+      .Select-control {
+        z-index: 2;
+      }
+    }
+  }
+
   #main-navigation-wrapper {
     float: left;
     vertical-align: top;
@@ -66,115 +118,23 @@ header {
 
   }
 
-  #table-tools {
+  #table-switcher {
     float: left;
     vertical-align: top;
     margin-top: 10px;
+    width: 300px;
 
-    #table-switcher {
-
-      #current-table {
-        @include header-button-look();
-        span {
-          padding: 0 1em;
-          display: inline-block;
-          max-width: 300px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        * {
-          vertical-align: top;
-          display: inline-block;
-          line-height: 29px;
-        }
+    .Select {
+      .Select-value-label span {
+        padding: 0 1em;
       }
 
-      #table-list-wrapper {
-        @include header-panel-look();
-        padding: 0;
-        display: none;
-        left: auto;
-        width: 300px;
-        line-height: 1.2em;
-        height: 400px;
-
-        li {
-          padding: 1em 30px;
-          cursor: default;
-          display: block;
-
-          &.active {
-            background-color: $color-grey-dark;
-          }
-
-          &.inactive {
-            cursor: pointer;
-
-            &:hover {
-              background-color: $color-background-very-light-grey;
-            }
-          }
-
-        }
-
-        #table-list {
-          overflow-y: auto;
-          overflow-x: hidden;
-          position: absolute;
-          width: 100%;
-          height: 90%;
-          top: 10%;
-          white-space: normal;
-
-          li.empty {
-            color: $color-text-light-grey;
-          }
-        }
-
-        .search-input-wrapper {
-          width: 100%;
-          position: absolute;
-          top: 0px;
-          height: 10%;
-
-          input {
-            border: 0;
-            border-bottom: 1px solid $color-grey-dark;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            padding: 0 40px 0 20px;
-            outline: none;
-            @include box-sizing(border-box);
-            font-size: 1.4rem;
-          }
-
-          i {
-            position: absolute;
-            right: 13px;
-            top: 12px;
-          }
-
-        }
-
+      .Select-option {
+        padding: 0.75em 38px;
       }
-
-      &.active {
-        #current-table {
-          @include header-button-active();
-        }
-        #table-list-wrapper {
-          display: block;
-        }
-      }
-
     }
-  }
 
-  /**
-  TODO: Greater Styling
-  **/
+  }
 
   #header-pagename {
     float: right;
@@ -183,6 +143,7 @@ header {
     text-transform: uppercase;
     line-height: $space-height-header;
     color: $color-text-light-grey;
+    font-family: $font-sec;
 
     //hide on small devices
     @media (max-width: 800px) {
