@@ -1,8 +1,8 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Row = require('../../models/Row');
 var ActionCreator = require('../../actions/ActionCreator');
 
+//TODO: Ajax spinner when adding row
 var NewRow = React.createClass({
   mixins : [AmpersandMixin],
 

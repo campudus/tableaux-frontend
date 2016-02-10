@@ -37,27 +37,6 @@ var Row = AmpersandModel.extend({
     }
   },
 
-  serialize : function () {
-    var ser = null;
-
-    if (this.columns && this.values) {
-      ser = {columns : this.columns, rows : [{values : this.values}]};
-    }
-
-    return ser;
-  },
-
-  toJSON : function () {
-    var attrs = this.serialize();
-
-    // check for a new and empty row
-    if (attrs !== null) {
-      return attrs;
-    } else {
-      return null;
-    }
-  },
-
   url : function () {
     var base = this.urlRoot();
 

@@ -8,10 +8,12 @@ var Rows = Collection.extend({
 
   model : function (attrs, options) {
     var tableId = options.collection.parent.getId();
+    var columns = options.collection.parent.columns;
     var json = {
       id : attrs.id,
       tableId : tableId,
-      values : attrs.values
+      values : attrs.values,
+      columns : columns
     };
 
     return new Row(json, options);

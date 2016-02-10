@@ -25,17 +25,23 @@ var Tables = Collection.extend({
     var tableToCleanUp = this.get(tableId);
     var rowsToCleanup = tableToCleanUp.rows;
     var columnsToCleanup = tableToCleanUp.columns;
-
-    rowsToCleanup.forEach(function (row) {
-      var cellsToCleanUp = row.cells;
-      cellsToCleanUp.forEach(function (cell) {
-        cell.cleanupCell();
-      });
-    });
-
-    rowsToCleanup.reset();
+    this.cleanUpRows(rowsToCleanup);
     columnsToCleanup.reset();
     ActionCreator.cleanupTableDone();
+  },
+
+  cleanUpRows : function (rowsToCleanup) {
+    rowsToCleanup.forEach(function (row) {
+      this.cleanUpRow(row);
+    }, this);
+    rowsToCleanup.reset();
+  },
+
+  cleanUpRow : function (rowToCleanup) {
+    var cellsToCleanUp = rowToCleanup.cells;
+    cellsToCleanUp.forEach(function (cell) {
+      cell.cleanupCell();
+    });
   },
 
   changeCellHandler : function (payload) {
@@ -113,21 +119,21 @@ var Tables = Collection.extend({
     var self = this;
     var tableId = payload.tableId;
     var table = this.get(tableId);
+    var rows = table.rows;
 
-    var newRow = new Row({tableId : tableId});
+    var newRow = new Row({tableId : tableId, columns : table.columns}, {collection : rows});
+
     newRow.save({}, {
-      success : function (savedRow) {
-        //FIXME: Team Backend should return the empty row completly instead of just "Ok"
-        table.rows.getOrFetch(savedRow.id, function (error) {
-          if (error) {
-            console.error("Error getOrFetch Rows: ", error);
-          }
-        });
+      success : function (row) {
+        rows.add(row);
       },
       error : function (err) {
+        self.cleanUpRow(newRow);
+        rows.remove(newRow);
         console.error('could not add new row!', err, arguments);
       }
     });
+
   },
 
   url : function () {
