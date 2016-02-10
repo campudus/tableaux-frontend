@@ -1,6 +1,7 @@
 var React = require('react');
 var App = require('ampersand-app');
 var Select = require('react-select');
+var _ = require('lodash');
 
 var LanguageSwitcher = React.createClass({
 
@@ -12,9 +13,12 @@ var LanguageSwitcher = React.createClass({
   },
 
   onChange : function (langObj) {
-    var langtag = langObj.value;
-    if (this.props.onChange) {
-      this.props.onChange(langtag);
+    //prevents undefined language tag: we just want to switch the language when there is actually something selected
+    if (!_.isEmpty(langObj)) {
+      var langtag = langObj.value;
+      if (this.props.onChange) {
+        this.props.onChange(langtag);
+      }
     }
   },
 

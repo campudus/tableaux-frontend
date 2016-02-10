@@ -1,6 +1,7 @@
 var React = require('react');
 var Select = require('react-select');
 var ActionCreator = require('../../actions/ActionCreator.js');
+var _ = require('lodash');
 
 var LanguageSwitcher = React.createClass({
 
@@ -11,8 +12,11 @@ var LanguageSwitcher = React.createClass({
     tables : React.PropTypes.object.isRequired
   },
 
-  onChange : function (option) {
-    ActionCreator.switchTable(option.value, this.props.langtag);
+  onChange : function (selection) {
+    //prevents undefined tableId: we just want to switch the table when there is actually something selected
+    if (!_.isEmpty(selection)) {
+      ActionCreator.switchTable(selection.value, this.props.langtag);
+    }
   },
 
   renderOption : function (option) {
