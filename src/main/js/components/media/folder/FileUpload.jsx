@@ -6,10 +6,18 @@ var request = require('superagent');
 var apiUrl = require('../../../helpers/apiUrl');
 var ActionCreator = require('../../../actions/ActionCreator');
 
+var ProgressBar = require('../ProgressBar.jsx');
+
 var FileUpload = React.createClass({
 
   propTypes : {
     folder : React.PropTypes.object.isRequired
+  },
+
+  getInitialState : function () {
+    return {
+      runningUploads : {}
+    };
   },
 
   onDrop : function (files) {
@@ -38,13 +46,31 @@ var FileUpload = React.createClass({
           var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
 
           request.put(uploadUrl)
+            .on('progress', function (e) {
+              var runningUploads = self.state.runningUploads;
+              runningUploads[uuid] = {
+                progress : parseInt(e.percent),
+                name : file.name
+              };
+              self.setState({
+                runningUploads : runningUploads
+              });
+            })
             .attach("file", file, file.name)
-            .end(self.uploadCallback);
+            .end(function (err, res) {
+              self.uploadCallback(err, res, uuid);
+            });
         });
     });
   },
 
-  uploadCallback : function (err, res) {
+  uploadCallback : function (err, res, uuid) {
+    var runningUploads = this.state.runningUploads;
+    delete runningUploads[uuid];
+    this.setState({
+      runningUploads : runningUploads
+    });
+
     if (err) {
       console.error("FileUpload.uploadCallback", err);
       return;
@@ -57,10 +83,33 @@ var FileUpload = React.createClass({
   },
 
   render : function () {
+    var uploads = [];
+    var runningUploads = this.state.runningUploads;
+    for (var uploadUuid in runningUploads) {
+      if (runningUploads.hasOwnProperty(uploadUuid))
+        uploads.push(<div className="file-upload" key={uploadUuid}>
+            <span>{runningUploads[uploadUuid].name}</span><ProgressBar progress={runningUploads[uploadUuid].progress}/>
+          </div>
+        );
+    }
+
+    var runningUploadsPanel = null;
+    if (uploads.length > 0) {
+      runningUploadsPanel = (
+        <div className="running-uploads">
+          <span className="uploads-text">Laufende Uploads:</span>
+          {uploads}
+        </div>
+      );
+    }
+
     return (
-      <Dropzone onDrop={this.onDrop} className="dropzone">
-        <a>Drop or click to upload.</a>
-      </Dropzone>
+      <div className="file-uploads">
+        {runningUploadsPanel}
+        <Dropzone onDrop={this.onDrop} className="dropzone">
+          <a>Drop or click to upload.</a>
+        </Dropzone>
+      </div>
     );
   }
 });

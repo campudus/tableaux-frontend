@@ -107,27 +107,62 @@
   }
 }
 
-.dropzone {
+.file-uploads {
+  margin-top: 50px;
   color: $color-primary-text;
   font-family: $font-sec;
-  width: inherit;
-  text-align: center;
-  margin-top: 50px;
-  background-color: white;
 
-  a {
-    padding: 2em;
-    display: block;
+  .running-uploads {
+    width: inherit;
+    background-color: white;
+    padding: 1em;
+    margin-bottom: 5px;
 
-    &:hover {
-      color: $color-primary-contrast-text;
-      background-color: $color-primary;
+    .uploads-text {
+      font-weight: bold;
+    }
+
+    span {
+      display: inline-block;
+      width: 300px;
+      max-width: 300px;
+      overflow: hidden;
+      height: 20px;
+      line-height: 20px;
+      text-overflow: ellipsis;
+      position: relative;
+      vertical-align: middle;
+    }
+
+    .progressbar-container {
+      position: relative;
+      display: inline-block;
+      width: 300px;
+      left: 0;
+      margin-left: 10px;
+      @include transform(translateX(0));
     }
   }
 
-  &.active {
-    color: $color-primary-contrast-text;
-    background-color: $color-primary;
+  .dropzone {
+    width: inherit;
+    text-align: center;
+    background-color: white;
+
+    a {
+      padding: 2em;
+      display: block;
+
+      &:hover {
+        color: $color-primary-contrast-text;
+        background-color: $color-primary;
+      }
+    }
+
+    &.active {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+    }
   }
 }
 
