@@ -267,3 +267,45 @@
     }
   }
 }
+
+.attachment-overlay-wrapper {
+
+  div.folders {
+    font-family: $font-sec;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    margin-left: 10px;
+
+    & > span {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    a {
+      cursor: pointer;
+
+      &:hover {
+        color: $color-primary;
+      }
+    }
+  }
+
+  div.back {
+    position: relative;
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid $color-border-grey;
+
+    a {
+      position: absolute;
+      left: 0;
+    }
+  }
+
+  li {
+    span {
+      margin-left: 5px;
+    }
+  }
+}

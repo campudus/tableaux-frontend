@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 var ActionCreator = require('../../actions/ActionCreator');
@@ -31,6 +32,13 @@ var GenericOverlay = React.createClass({
 
   componentDidMount : function () {
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
+
+    var overlayDOMNode = ReactDOM.findDOMNode(this);
+    var focusedElement = document.activeElement;
+    //Is current focus is this overlay or inside of overlay don't change the focus.
+    if (!focusedElement || !overlayDOMNode.contains(focusedElement) || focusedElement.isEqualNode(overlayDOMNode)) {
+      overlayDOMNode.focus();
+    }
   },
 
   componentWillUnmount : function () {
