@@ -35,7 +35,7 @@ var NumericCell = React.createClass({
       valueToSave = newValue;
     }
 
-    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
+    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, valueToSave);
     ActionCreator.toggleCellEditing(false);
   },
 
