@@ -143,18 +143,19 @@ var Cell = AmpersandModel.extend({
     return App.apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
   },
 
-  toJSON : function () {
-    var attrs = this.serialize();
+  serialize : function (options) {
     if (this.isLink) {
-      var values = attrs.value.map(function (to) {
+      var serializedObj = {};
+      var linkValues = this.value.map(function (to) {
         return to.id;
       });
-      delete attrs.value;
-      attrs.value = {
-        values : values
+      serializedObj.value = {
+        values : linkValues
       };
+      return serializedObj;
+    } else {
+      return AmpersandModel.prototype.serialize.call(this);
     }
-    return attrs;
   },
 
 });

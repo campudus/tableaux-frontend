@@ -76,12 +76,24 @@ var Tables = Collection.extend({
     }
 
     if (updateNecessary) {
+      console.log("Cell Model: saving cell with value:", newValue);
+
       //we give direct feedback for user
       cell.value = mergedValue;
       self.updateConcatCells(cell);
-      console.log("Cell Model: saving cell with value:", newValue);
+
+      //we need to clear the newValue, otherwise ampersand save method is merging a strange object
+      if (!isPatch) {
+        newValue = null;
+      }
+
+      /*
+       We want to wait to prevent flashes. We set the value explicitly before saving.
+       Without wait:true save overrides the model for a short time with just one multilanguage value
+       */
       cell.save(newValue, {
         patch : isPatch,
+        wait : true,
         success : function (model, data, options) {
           //is there new data from the server?
           if (!_.isEqual(data.value, mergedValue)) {
