@@ -32,6 +32,7 @@ var TextCell = React.createClass({
     }
 
     ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
+    ActionCreator.toggleCellEditing(false);
   },
 
   openOverlay : function (event, withContent) {
