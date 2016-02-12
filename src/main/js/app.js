@@ -1,10 +1,10 @@
-var App = require('ampersand-app');
-var Router = require('./router');
-var Dispatcher = require('./dispatcher/Dispatcher');
-var apiUrl = require('./helpers/apiUrl');
-var multiLanguage = require('./helpers/multiLanguage');
-var TableauxConstants = require('./constants/TableauxConstants');
-var _ = require('lodash');
+import App from 'ampersand-app';
+import Router from './router';
+import Dispatcher from './dispatcher/Dispatcher';
+import apiUrl from './helpers/apiUrl';
+import multiLanguage from './helpers/multiLanguage';
+import TableauxConstants from './constants/TableauxConstants';
+import _ from 'lodash';
 
 App.extend({
 
