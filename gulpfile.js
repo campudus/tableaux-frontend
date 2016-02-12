@@ -6,7 +6,7 @@ var minifyCss = require('gulp-minify-css');
 var del = require('del');
 var url = require('url');
 var Path = require('path');
-var reactify = require('reactify');
+var babelify = require('babelify');
 var spa = require("browser-sync-spa");
 var browserify = require('browserify');
 var proxy = require('proxy-middleware');
@@ -62,7 +62,7 @@ function sassCompile() {
 
 function scriptCompileApp() {
   return browserify()
-    .transform(reactify)
+    .transform(babelify, {presets: ['es2015', 'react', 'stage-2']})
     .add('./src/main/js/app.js')
     .bundle()
     .on('error', errorHandler)
