@@ -188,7 +188,12 @@ module.exports = {
 
   saveOverlayTypeText : function () {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
-  }
+  },
 
+  changeFilter : function (newFilterValue) {
+    Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {
+      filterValue : newFilterValue
+    });
+  }
 
 };

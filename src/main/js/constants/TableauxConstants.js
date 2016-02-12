@@ -48,7 +48,10 @@ var TableauxConstant = {
 
     //Overlay Text Type
     OVERLAY_TYPE_TEXT_CLOSE : null,
-    OVERLAY_TYPE_TEXT_SAVE : null
+    OVERLAY_TYPE_TEXT_SAVE : null,
+
+    //Filter
+    CHANGE_FILTER : null
 
   }),
 
