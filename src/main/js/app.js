@@ -6,6 +6,9 @@ import multiLanguage from './helpers/multiLanguage';
 import TableauxConstants from './constants/TableauxConstants';
 import _ from 'lodash';
 
+import '../index.html';
+import '../scss/main.scss';
+
 App.extend({
 
   // TODO we should request that from tableaux backend
