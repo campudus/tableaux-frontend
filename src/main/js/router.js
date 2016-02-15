@@ -1,5 +1,6 @@
 var App = require('ampersand-app');
 var Router = require('ampersand-router');
+
 var React = require('react');
 var ReactDOM = require('react-dom');
 var locale = require('browser-locale')();
@@ -10,6 +11,9 @@ var Dispatcher = require('./dispatcher/Dispatcher');
 var TableauxConstants = require('./constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
 var ActionCreator = require('./actions/ActionCreator');
+
+var i18n = require('./i18n');
+var I18nextProvider = require('react-i18next/lib').I18nextProvider;
 
 var TableauxRouter = Router.extend({
   routes : {
@@ -32,8 +36,12 @@ var TableauxRouter = Router.extend({
       ActionCreator.switchView(viewName, params);
     } else {
       this.alreadyRendered = true;
-      ReactDOM.render(<Tableaux initialViewName={viewName}
-                                initialParams={params}/>, document.getElementById('tableaux'));
+      ReactDOM.render(
+        <I18nextProvider i18n={i18n}>
+          <Tableaux initialViewName={viewName}
+                    initialParams={params}/>
+        </I18nextProvider>, document.getElementById('tableaux')
+      );
     }
   },
 

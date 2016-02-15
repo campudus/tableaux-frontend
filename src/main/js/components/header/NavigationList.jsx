@@ -1,6 +1,6 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var OutsideClick = require('react-onclickoutside');
+var translate = require('react-i18next/lib').translate;
 
 var NavigationList = React.createClass({
 
@@ -28,14 +28,15 @@ var NavigationList = React.createClass({
   //TODO: active class for current page
   render : function () {
     var mainNavigation;
+    var t = this.props.t;
     if (this.state.navigationOpen) {
       mainNavigation = <div id="main-navigation">
         <div id="logo">
           <h1>DataCenter</h1>
         </div>
         <ul id="main-navigation-list">
-          <li><a href={ "/" + this.props.langtag + "/table" }><i className="fa fa-columns"></i>Tables</a></li>
-          <li><a href={ "/" + this.props.langtag + "/media" }><i className="fa fa-file"></i>Media</a></li>
+          <li><a href={ "/" + this.props.langtag + "/table" }><i className="fa fa-columns"></i>{t('header:menu.tables')}</a></li>
+          <li><a href={ "/" + this.props.langtag + "/media" }><i className="fa fa-file"></i>{t('header:menu.media')}</a></li>
         </ul>
       </div>;
     }
@@ -50,4 +51,4 @@ var NavigationList = React.createClass({
   }
 });
 
-module.exports = NavigationList;
+module.exports = translate(['header'])(NavigationList);
