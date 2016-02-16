@@ -3,6 +3,7 @@ var AmpersandModel = require('ampersand-model');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Tables = require('./Tables');
 var Column = require('./Column');
+var TableauxConstants = require('./../constants/TableauxConstants');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 var _ = require('lodash');
 
@@ -69,18 +70,25 @@ var Cell = AmpersandModel.extend({
         return this.kind === 'concat';
       }
     },
-    rowConcatString : {
+    rowConcatLanguages : {
       deps : ['value'],
-      cache : false,
+      fn : function () {
+        if (!this.isConcatCell) {
+          return null;
+        }
+        var rowConcatAllLangs = {};
+        var self = this;
+        _.forEach(TableauxConstants.Langtags, function (langtag, idx) {
+          rowConcatAllLangs[langtag] = RowConcatHelper.getRowConcatString(self.value, self.column, langtag);
+        });
+        return rowConcatAllLangs;
+      }
+    },
+    rowConcatString : {
+      deps : ['rowConcatLanguages'],
       fn : function () {
         return function (langtag) {
-          if (this.isConcatCell) {
-            return RowConcatHelper.getRowConcatString(this.value, this.column, langtag);
-          } else {
-            //this cell is not of kind concat. so we return empty string.
-            return "";
-          }
-
+          return this.rowConcatLanguages[langtag] || "";
         }
       }
     }
@@ -98,10 +106,10 @@ var Cell = AmpersandModel.extend({
       var concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
         return column.id === changedCell.column.id;
       });
-      this.value[concatIndexToUpdate] = changedCell.value;
-      //Important, because react doesn't rerender due to async event. Signal react this cell has changed.
-      this.trigger("change");
-
+      //we update the value with a new object to force derived attributes to be refreshed
+      var tmpValue = _.cloneDeep(this.value);
+      tmpValue[concatIndexToUpdate] = changedCell.value;
+      this.value = tmpValue;
     };
 
     //debugger;
