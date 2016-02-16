@@ -1,4 +1,8 @@
 {
+  "pageTitle": {
+    "tables": "Tables",
+    "media": "Media Management"
+  },
   "menu": {
     "tables": "Tables",
     "media": "Media"

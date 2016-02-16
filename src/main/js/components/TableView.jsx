@@ -1,12 +1,11 @@
-var app = require('ampersand-app');
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
-var NavigationList = require('./header/NavigationList.jsx');
+import NavigationList from './header/NavigationList.jsx';
+import PageTitle from './header/PageTitle.jsx';
 var TableSwitcher = require('./header/TableSwitcher.jsx');
-var PageTitle = require('./header/PageTitle.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
@@ -114,7 +113,7 @@ var TableView = React.createClass({
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
-            <PageTitle title="Tables"/>
+            <PageTitle titleKey="pageTitle.tables"/>
           </header>
           <div className="wrapper">
             {table}
