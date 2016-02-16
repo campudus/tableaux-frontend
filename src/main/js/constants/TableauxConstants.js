@@ -8,6 +8,9 @@ var languagetag = {
 
 var TableauxConstant = {
   ActionTypes : keyMirror({
+    SWITCH_VIEW : null,
+    SWITCH_FOLDER : null,
+
     SWITCH_TABLE : null,
     SWITCHED_TABLE : null,
     SWITCH_LANGUAGE : null,
@@ -67,6 +70,11 @@ var TableauxConstant = {
     concat : null,
     attachment : null,
     datetime : null
+  }),
+
+  ViewNames : keyMirror({
+    'TABLE_VIEW' : null,
+    'MEDIA_VIEW' : null
   }),
 
   Langtags : languagetag,

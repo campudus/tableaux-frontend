@@ -62,7 +62,7 @@ function sassCompile() {
 
 function scriptCompileApp() {
   return browserify()
-    .transform(babelify, {presets: ['es2015', 'react', 'stage-2']})
+    .transform(babelify, {presets: ['es2015', 'react', 'stage-0']})
     .add('./src/main/js/app.js')
     .bundle()
     .on('error', errorHandler)

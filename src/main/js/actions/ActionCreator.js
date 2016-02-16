@@ -30,16 +30,24 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL);
   },
 
-  switchTable : function (tableId, langtag) {
-    Dispatcher.trigger(ActionTypes.SWITCH_TABLE, {
-      id : tableId,
+  switchView : function (viewName, params) {
+    Dispatcher.trigger(ActionTypes.SWITCH_VIEW, {
+      viewName : viewName,
+      params : params
+    });
+  },
+
+  switchFolder : function (folderId, langtag) {
+    Dispatcher.trigger(ActionTypes.SWITCH_FOLDER, {
+      id : folderId,
       langtag : langtag
     });
   },
 
-  switchedTable : function (tableId) {
-    Dispatcher.trigger(ActionTypes.SWITCHED_TABLE, {
-      tableId : tableId
+  switchTable : function (tableId, langtag) {
+    Dispatcher.trigger(ActionTypes.SWITCH_TABLE, {
+      id : tableId,
+      langtag : langtag
     });
   },
 
@@ -176,11 +184,11 @@ module.exports = {
     });
   },
 
-  closeOverlayTypeText:function(){
+  closeOverlayTypeText : function () {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_CLOSE);
   },
 
-  saveOverlayTypeText:function(){
+  saveOverlayTypeText : function () {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
   }
 

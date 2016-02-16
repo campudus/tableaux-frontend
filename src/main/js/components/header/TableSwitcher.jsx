@@ -3,7 +3,7 @@ var Select = require('react-select');
 var ActionCreator = require('../../actions/ActionCreator.js');
 var _ = require('lodash');
 
-var LanguageSwitcher = React.createClass({
+var TableSwitcher = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -59,4 +59,4 @@ var LanguageSwitcher = React.createClass({
   }
 });
 
-module.exports = LanguageSwitcher;
+module.exports = TableSwitcher;

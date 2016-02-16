@@ -1,5 +1,6 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
+var ActionCreator = require('../../../actions/ActionCreator');
 
 var SubfolderView = React.createClass({
   mixins : [AmpersandMixin],
@@ -13,13 +14,17 @@ var SubfolderView = React.createClass({
     onEdit : React.PropTypes.func.isRequired
   },
 
+  folderClickHandler : function (event) {
+    event.preventDefault();
+    ActionCreator.switchFolder(this.props.folder.id, this.props.langtag);
+  },
+
   render : function () {
     var name = this.props.folder.name + '/';
-    var link = '/' + this.props.langtag + '/media/' + this.props.folder.id;
 
     return (
       <div>
-        <a href={link}>
+        <a onClick={this.folderClickHandler}>
           <i className="icon fa fa-folder-open"></i><span>{name}</span>
         </a>
         <span className="button" onClick={this.props.onRemove} alt="delete">
