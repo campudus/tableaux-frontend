@@ -66,7 +66,7 @@ export default class MediaView extends React.Component {
           <header>
             <NavigationList langtag={this.props.langtag}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
-            <PageTitle title="Media Management"/>
+            <PageTitle titleKey="pageTitle.media"/>
           </header>
           <Folder folder={this.state.currentFolder} langtag={this.props.langtag}/>
         </div>

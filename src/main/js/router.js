@@ -12,9 +12,6 @@ var TableauxConstants = require('./constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
 var ActionCreator = require('./actions/ActionCreator');
 
-var i18n = require('./i18n');
-var I18nextProvider = require('react-i18next/lib').I18nextProvider;
-
 var TableauxRouter = Router.extend({
   routes : {
     '' : 'noTableAndLangtag',
@@ -37,10 +34,8 @@ var TableauxRouter = Router.extend({
     } else {
       this.alreadyRendered = true;
       ReactDOM.render(
-        <I18nextProvider i18n={i18n}>
-          <Tableaux initialViewName={viewName}
-                    initialParams={params}/>
-        </I18nextProvider>, document.getElementById('tableaux')
+        <Tableaux initialViewName={viewName}
+                  initialParams={params}/>, document.getElementById('tableaux')
       );
     }
   },
