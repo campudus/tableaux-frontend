@@ -321,13 +321,14 @@ var Table = React.createClass({
   },
 
   isLastRowSelected : function () {
-    var numberOfRows = this.props.table.rows.length;
+    var rows = this.state.rowsCollection;
+    var numberOfRows = rows.length;
     var currentRowId = this.getCurrentSelectedRowId();
     var lastRowId;
     if (numberOfRows <= 0) {
       return true;
     }
-    lastRowId = this.props.table.rows.at(numberOfRows - 1).getId();
+    lastRowId = rows.at(numberOfRows - 1).getId();
     return (currentRowId === lastRowId);
   },
 
