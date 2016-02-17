@@ -1,17 +1,17 @@
-var React = require('react');
+import React from 'react';
+import {translate} from 'react-i18next/lib';
 
-var PageTitle = React.createClass({
+@translate(['header'])
+export default class PageTitle extends React.Component {
 
-  propTypes : {
-    title : React.PropTypes.string.isRequired
-  },
+  static propTypes = {
+    titleKey : React.PropTypes.string.isRequired
+  };
 
-  render : function () {
+  render() {
+    let {t} = this.props;
     return (
-      <div id="header-pagename">{this.props.title}</div>
+      <div id="header-pagename">{t(this.props.titleKey)}</div>
     )
   }
-
-});
-
-module.exports = PageTitle;
+}
