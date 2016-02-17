@@ -24,11 +24,11 @@ export default class ViewRenderer extends React.Component {
 
     this.views = {};
     this.views[ViewNames.TABLE_VIEW] = () => {
-      return <TableView langtag={this.props.params.langtag} tableId={this.props.params.tableId}/>;
+      return <TableView langtag={this.props.params.langtag} tableId={this.props.params.tableId} overlayOpen={!!this.props.params.overlayOpen}/>;
     };
 
     this.views[ViewNames.MEDIA_VIEW] = () => {
-      return <MediaView langtag={this.props.params.langtag} folderId={this.props.params.folderId}/>;
+      return <MediaView langtag={this.props.params.langtag} folderId={this.props.params.folderId} overlayOpen={!!this.props.params.overlayOpen}/>;
     };
   }
 

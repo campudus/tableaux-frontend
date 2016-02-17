@@ -58,12 +58,10 @@ module.exports = {
   },
 
   openOverlay : function (overlayContent) {
-    this.disableShouldCellFocus();
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
   },
 
   closeOverlay : function () {
-    this.enableShouldCellFocus();
     Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY);
   },
 

@@ -19,7 +19,8 @@ var Table = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    table : React.PropTypes.object.isRequired
+    table : React.PropTypes.object.isRequired,
+    overlayOpen : React.PropTypes.bool.isRequired
   },
 
   /**
@@ -93,11 +94,14 @@ var Table = React.createClass({
 
   componentDidUpdate : function () {
     console.log("Table did update.");
-    //Just update when used with keyboard or when clicking explicitly on a cell
-    if (this.shouldCellFocus()) {
-      this.updateScrollViewToSelectedCell();
+    //When overlay is open we don't want anything to force focus inside the table
+    if (!this.props.overlayOpen) {
+      //Just update when used with keyboard or when clicking explicitly on a cell
+      if (this.shouldCellFocus()) {
+        this.updateScrollViewToSelectedCell();
+      }
+      this.checkFocusInsideTable();
     }
-    this.checkFocusInsideTable();
   },
 
   componentWillUnmount : function () {
@@ -136,7 +140,8 @@ var Table = React.createClass({
   },
 
   shouldCellFocus : function () {
-    return this.state.shouldCellFocus;
+    //we dont want to force cell focus when overlay is open
+    return this.state.shouldCellFocus && !this.props.overlayOpen;
   },
 
   //Takes care that we never loose focus of the table to guarantee keyboard events are triggered

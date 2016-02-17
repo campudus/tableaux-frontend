@@ -22,7 +22,6 @@ export default class Tableaux extends React.Component {
 
   constructor(props) {
     super(props);
-    //register listeners
     Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay, this);
     Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay, this);
     Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
@@ -43,11 +42,21 @@ export default class Tableaux extends React.Component {
   }
 
   openOverlay(content) {
-    this.setState({activeOverlay : content});
+    var newViewParams = Object.assign({}, this.state.currentViewParams);
+    newViewParams.overlayOpen = true;
+    this.setState({
+      activeOverlay : content,
+      currentViewParams : newViewParams
+    });
   }
 
   closeOverlay() {
-    this.setState({activeOverlay : null});
+    var newViewParams = Object.assign({}, this.state.currentViewParams);
+    newViewParams.overlayOpen = false;
+    this.setState({
+      activeOverlay : null,
+      currentViewParams : newViewParams
+    });
   }
 
   renderActiveOverlay() {

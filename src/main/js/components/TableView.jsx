@@ -16,7 +16,8 @@ var TableView = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    tableId : React.PropTypes.number
+    overlayOpen : React.PropTypes.bool.isRequired,
+    tableId : React.PropTypes.number,
   },
 
   nextTableId : null,
@@ -66,7 +67,7 @@ var TableView = React.createClass({
   },
 
   shouldComponentUpdate : function (nextProps, nextState) {
-    var shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag;
+    var shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag || nextProps.overlayOpen !== this.props.overlayOpen;
     var shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading || nextState.currentTableId !== this.state.currentTableId;
     return shouldRenderPropUpdate || shouldRenderStateUpdate;
   },
@@ -97,7 +98,7 @@ var TableView = React.createClass({
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}
-                         langtag={this.props.langtag}/>;
+                         langtag={this.props.langtag} overlayOpen={this.props.overlayOpen}/>;
           tableName = tables.get(this.state.currentTableId).name;
         } else {
           //TODO show error to user
