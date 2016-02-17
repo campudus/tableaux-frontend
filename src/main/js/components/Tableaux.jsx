@@ -1,5 +1,4 @@
 import React from 'react';
-import App from 'ampersand-app';
 import Dispatcher from '../dispatcher/Dispatcher';
 import TableauxConstants from '../constants/TableauxConstants';
 
@@ -37,14 +36,14 @@ export default class Tableaux extends React.Component {
     i18n
       .use(XHR)
       .init({
-        fallbackLng : App.defaultLangtag,
+        fallbackLng : TableauxConstants.DefaultLangtag,
         lng : this.props.initialParams.langtag,
 
         // have a common namespace used around the full app
         ns : ['common', 'header'],
         defaultNS : 'common',
 
-        debug : true,
+        debug : false,
 
         interpolation : {
           escapeValue : false // not needed for react!!

@@ -12,6 +12,30 @@ var TableSwitcher = React.createClass({
     tables : React.PropTypes.object.isRequired
   },
 
+  selectOptions : null,
+
+  componentDidMount : function () {
+    this.buildSelectOptions();
+  },
+
+  getSelectOptions : function () {
+    return this.selectOptions || this.buildSelectOptions();
+  },
+
+  //TODO: In the future rebuild select options when the table model changed
+  buildSelectOptions : function () {
+    var options = this.props.tables.reduce(function (res, table) {
+      res.push({
+        label : table.name,
+        value : table.id
+      });
+      return res;
+    }, []);
+
+    this.selectOptions = options;
+    return options;
+  },
+
   onChange : function (selection) {
     //prevents undefined tableId: we just want to switch the table when there is actually something selected
     if (!_.isEmpty(selection)) {
@@ -34,17 +58,9 @@ var TableSwitcher = React.createClass({
   },
 
   render : function () {
-    var options = this.props.tables.reduce(function (res, table) {
-      res.push({
-        label : table.name,
-        value : table.id
-      });
-      return res;
-    }, []);
-
     return (
       <div id="table-switcher">
-        <Select options={options}
+        <Select options={this.getSelectOptions()}
                 searchable
                 clearable={false}
                 value={this.props.currentTableId}
