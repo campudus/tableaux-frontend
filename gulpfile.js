@@ -65,7 +65,10 @@ function runWebpackServer(callback) {
 
     proxy : [{
       path : '/api/*',
-      target : config.tableauxUrl
+      target : config.tableauxUrl,
+      rewrite : function (req) {
+        req.url = req.url.replace(/^\/api/, '');
+      }
     }],
 
     stats : {colors : true}
