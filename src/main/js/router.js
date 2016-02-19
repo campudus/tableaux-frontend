@@ -41,6 +41,7 @@ var TableauxRouter = Router.extend({
   },
 
   initialize : function (options) {
+    console.log("init router");
     Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTableHandler);
     Dispatcher.on(ActionTypes.SWITCH_FOLDER, this.switchFolderHandler);
     Dispatcher.on(ActionTypes.SWITCH_LANGUAGE, this.switchLanguageHandler, this);

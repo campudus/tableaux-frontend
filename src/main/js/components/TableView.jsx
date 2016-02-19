@@ -3,13 +3,15 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
-import NavigationList from './header/NavigationList.jsx';
-import PageTitle from './header/PageTitle.jsx';
 var TableSwitcher = require('./header/TableSwitcher.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
 var RowFilter = require('./header/RowFilter.jsx');
+
+import NavigationList from './header/NavigationList.jsx';
+import PageTitle from './header/PageTitle.jsx';
+import Spinner from './header/Spinner.jsx';
 
 var TableView = React.createClass({
   mixins : [AmpersandMixin],
@@ -115,6 +117,7 @@ var TableView = React.createClass({
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
             <RowFilter />
+            <Spinner />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
           </header>
