@@ -8,6 +8,7 @@ import ViewRenderer from './ViewRenderer.jsx';
 import i18n from 'i18next/lib';
 import XHR from 'i18next-xhr-backend/lib';
 import { I18nextProvider } from 'react-i18next/lib';
+import ActionCreator from '../actions/ActionCreator';
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -65,7 +66,9 @@ export default class Tableaux extends React.Component {
     console.log('switchViewHandler', payload);
     //check if language has changed
     if (this.currentLangtag !== payload.params.langtag) {
+      ActionCreator.spinnerOn();
       i18n.changeLanguage(payload.params.langtag, () => {
+        ActionCreator.spinnerOff();
         this.currentLangtag = payload.params.langtag;
         this.changeView(payload);
       });

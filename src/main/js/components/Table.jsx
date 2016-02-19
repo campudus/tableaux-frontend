@@ -62,6 +62,8 @@ var Table = React.createClass({
   componentWillMount : function () {
     var self = this;
     var table = this.props.table;
+
+    ActionCreator.spinnerOn();
     //We need to fetch columns first, since rows has Cells that depend on the column model
     table.columns.fetch({
       reset : true,
@@ -70,6 +72,7 @@ var Table = React.createClass({
           reset : true,
           success : function () {
             console.log("table columns & rows fetched successfully.");
+            ActionCreator.spinnerOff();
           }
         });
       }

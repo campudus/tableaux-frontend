@@ -194,6 +194,14 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {
       filterValue : newFilterValue
     });
+  },
+
+  spinnerOn : function () {
+    Dispatcher.trigger(ActionTypes.SPINNER_ON);
+  },
+
+  spinnerOff : function () {
+    Dispatcher.trigger(ActionTypes.SPINNER_OFF);
   }
 
 };

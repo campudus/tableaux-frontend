@@ -51,7 +51,11 @@ var TableauxConstant = {
     OVERLAY_TYPE_TEXT_SAVE : null,
 
     //Filter
-    CHANGE_FILTER : null
+    CHANGE_FILTER : null,
+
+    //Spinner
+    SPINNER_ON : null,
+    SPINNER_OFF : null
 
   }),
 

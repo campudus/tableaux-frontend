@@ -68,5 +68,8 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.12.13",
     "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "react-addons-css-transition-group": "^0.14.7"
   }
 }

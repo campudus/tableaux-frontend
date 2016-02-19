@@ -134,15 +134,18 @@ var Tables = Collection.extend({
     var rows = table.rows;
 
     var newRow = new Row({tableId : tableId, columns : table.columns}, {collection : rows});
+    ActionCreator.spinnerOn();
 
     newRow.save({}, {
       success : function (row) {
         rows.add(row);
+        ActionCreator.spinnerOff();
       },
       error : function (err) {
         self.cleanUpRow(newRow);
         rows.remove(newRow);
         console.error('could not add new row!', err, arguments);
+        ActionCreator.spinnerOff();
       }
     });
 

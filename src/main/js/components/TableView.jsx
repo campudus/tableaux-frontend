@@ -26,7 +26,7 @@ var TableView = React.createClass({
 
   getInitialState : function () {
     return {
-      isLoading : true,
+      initialLoading : true,
       currentTableId : this.props.tableId
     }
   },
@@ -44,7 +44,7 @@ var TableView = React.createClass({
             ActionCreator.switchTable(collection.at(0).getId(), self.props.langtag);
           } else {
             self.setState({
-              isLoading : false
+              initialLoading : false
             });
           }
         }
@@ -70,14 +70,14 @@ var TableView = React.createClass({
 
   shouldComponentUpdate : function (nextProps, nextState) {
     var shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag || nextProps.overlayOpen !== this.props.overlayOpen;
-    var shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading || nextState.currentTableId !== this.state.currentTableId;
+    var shouldRenderStateUpdate = nextState.initialLoading !== this.state.initialLoading || nextState.currentTableId !== this.state.currentTableId;
     return shouldRenderPropUpdate || shouldRenderStateUpdate;
   },
 
   doSwitchTable : function () {
     if (this.nextTableId) {
       this.setState({
-        isLoading : false,
+        initialLoading : false,
         currentTableId : this.nextTableId
       });
     }
@@ -88,7 +88,7 @@ var TableView = React.createClass({
   },
 
   render : function () {
-    if (this.state.isLoading) {
+    if (this.state.initialLoading) {
       return <div className="spinner">Loading</div>;
     } else {
 
@@ -117,9 +117,9 @@ var TableView = React.createClass({
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
             <RowFilter />
-            <Spinner />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
+            <Spinner />
           </header>
           <div className="wrapper">
             {table}
