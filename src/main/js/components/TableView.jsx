@@ -9,6 +9,7 @@ var TableSwitcher = require('./header/TableSwitcher.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
+var RowFilter = require('./header/RowFilter.jsx');
 
 var TableView = React.createClass({
   mixins : [AmpersandMixin],
@@ -113,6 +114,7 @@ var TableView = React.createClass({
                            tableName={tableName}
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
+            <RowFilter />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
           </header>
