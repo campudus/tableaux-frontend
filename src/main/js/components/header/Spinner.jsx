@@ -40,11 +40,10 @@ export default class Spinner extends React.Component {
     this.spinnerElement = null;
   }
 
-  /*shouldComponentUpdate(nextProps, nextState) {
-   var shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag || nextProps.overlayOpen !== this.props.overlayOpen;
-   var shouldRenderStateUpdate = nextState.initialLoading !== this.state.initialLoading || nextState.currentTableId !== this.state.currentTableId;
-   return shouldRenderPropUpdate || shouldRenderStateUpdate;
-   }*/
+  shouldComponentUpdate(nextProps, nextState) {
+    var shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading;
+    return shouldRenderStateUpdate;
+  }
 
   componentWillUnmount() {
     Dispatcher.on(ActionTypes.SPINNER_ON, this.spinnerOn, this);
