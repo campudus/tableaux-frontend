@@ -190,9 +190,12 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
   },
 
-  changeFilter : function (newFilterValue) {
+  changeFilter : function (newFilterColumnId, newFilterValue, newSortColumnId, newSortValue) {
     Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {
-      filterValue : newFilterValue
+      filterColumnId : newFilterColumnId,
+      filterValue : newFilterValue,
+      sortColumnId : newSortColumnId,
+      sortValue : newSortValue
     });
   },
 

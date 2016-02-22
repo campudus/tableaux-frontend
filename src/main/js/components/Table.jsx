@@ -46,7 +46,8 @@ var Table = React.createClass({
       expandedRowIds : null, //Array
       selectedCellExpandedRow : null,
       shouldCellFocus : true,
-      rowsCollection : this.props.table.rows
+      rowsCollection : this.props.table.rows,
+      rowsFilter : null,
     }
   },
 
@@ -575,19 +576,34 @@ var Table = React.createClass({
   },
 
   onMouseDownHandler : function (e) {
-    console.log("onMouseDown", e.target);
-    /*
-     Important: prevents loosing the focus of a cell when clicking something.
-     When a child component inside of the Table needs focus attach a "onMouseDown" event to it and
-     call "event.stopPropagation()". This prevents calling this function and enables the standard browser behaviour
-     */
-    e.preventDefault();
+    //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes in the header
+    if (this.tableDOMNode.contains(document.activeElement)) {
+      console.log("onMouseDown", e.target);
+      /*
+       Important: prevents loosing the focus of a cell when clicking something.
+       When a child component inside of the Table needs focus attach a "onMouseDown" event to it and
+       call "event.stopPropagation()". This prevents calling this function and enables the standard browser behaviour
+       */
+      e.preventDefault();
+    }
   },
 
-  changeFilter : function (filter) {
-    console.log("Table gets new filter value:", filter.filterValue);
+  changeFilter : function (rowsFilter) {
+    var filterValue = rowsFilter.filterValue;
+    var filterColumn = rowsFilter.filterColumnId;
+    var rowsCollection;
+    console.log("Table gets new filter:", rowsFilter);
+
+    if (_.isEmpty(filterValue)) {
+      rowsCollection = this.props.table.rows;
+      rowsFilter = null;
+    } else {
+      rowsCollection = this.getFilteredRows(rowsFilter.filterValue);
+    }
+
     this.setState({
-      rowsCollection : this.getFilteredRows(filter.filterValue)
+      rowsCollection : rowsCollection,
+      rowsFilter : rowsFilter
     });
   },
 

@@ -43,16 +43,9 @@ var TableSwitcher = React.createClass({
     }
   },
 
-  renderOption : function (option) {
+  valueRenderer : function (option) {
     var tableName = option.label;
     return <div><i className="fa fa-columns"></i>
-      <span>{tableName}</span>
-    </div>;
-  },
-
-  renderValue : function (option) {
-    var tableName = option.label;
-    return <div className="table-option">
       <span>{tableName}</span>
     </div>;
   },
@@ -65,8 +58,7 @@ var TableSwitcher = React.createClass({
                 clearable={false}
                 value={this.props.currentTableId}
                 onChange={this.onChange}
-                optionRenderer={this.renderValue}
-                valueRenderer={this.renderOption}
+                valueRenderer={this.valueRenderer}
                 noResultsText="Keine Tabelle mit diesem Namen vorhanden"
 
         />

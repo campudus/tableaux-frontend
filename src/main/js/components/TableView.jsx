@@ -7,8 +7,8 @@ var TableSwitcher = require('./header/TableSwitcher.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
-var RowFilter = require('./header/RowFilter.jsx');
 
+import FilterButton from './header/filter/FilterButton.jsx';
 import NavigationList from './header/NavigationList.jsx';
 import PageTitle from './header/PageTitle.jsx';
 import Spinner from './header/Spinner.jsx';
@@ -94,14 +94,15 @@ var TableView = React.createClass({
 
       var self = this;
       var tables = this.tables;
+      var currentTable = tables.get(this.state.currentTableId);
 
       var table = '';
       var tableName = '';
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
-          table = <Table key={this.state.currentTableId} table={tables.get(this.state.currentTableId)}
+          table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} overlayOpen={this.props.overlayOpen}/>;
-          tableName = tables.get(this.state.currentTableId).name;
+          tableName = currentTable.name;
         } else {
           //TODO show error to user
           console.error("No table found with id " + this.state.currentTableId);
@@ -116,7 +117,7 @@ var TableView = React.createClass({
                            tableName={tableName}
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
-            <RowFilter />
+            <FilterButton langtag={this.props.langtag} table={currentTable} currentFilter={null}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
             <Spinner />

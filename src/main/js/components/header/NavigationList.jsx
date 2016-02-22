@@ -25,6 +25,7 @@ class NavigationList extends React.Component {
 
   //TODO: active class for current page
   render() {
+    console.log("render navigationlist");
     let mainNavigation;
     let {t} = this.props;
     if (this.state.navigationOpen) {

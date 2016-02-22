@@ -16,8 +16,8 @@ var LanguageSwitcher = React.createClass({
     //prevents undefined language tag: we just want to switch the language when there is actually something selected
     if (!_.isEmpty(langObj)) {
       var langtag = langObj.value;
-      if (this.props.onChange) {
-        this.props.onChange(langtag);
+      if (this.props.onChangeSelectFilter) {
+        this.props.onChangeSelectFilter(langtag);
       }
     }
   },

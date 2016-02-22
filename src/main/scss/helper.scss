@@ -28,6 +28,27 @@
   overflow: hidden;
 }
 
+@mixin button-look() {
+  height: 30px;
+  font-family: $font-main;
+  line-height: 28px;
+  padding: 0 15px;
+  color: white;
+  font-weight: bold;
+  background-color: $color-primary;
+  cursor: pointer;
+  display: inline-block;
+  border: 0;
+  outline-style: none;
+  font-size: 1em;
+  @include border-radius(3px);
+  @include transition(all 250ms ease-out);
+
+  &:hover {
+    background-color: desaturate(darken($color-primary, 10%), 10%);
+  }
+}
+
 @mixin setBgColorAndHover($baseColor) {
   background-color: $baseColor;
   &:hover {

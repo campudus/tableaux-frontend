@@ -1,0 +1,68 @@
+#filter-wrapper {
+  float: left;
+  margin-left: 20px;
+  margin-top: 10px;
+
+  .button {
+    @include header-button-look();
+
+    i {
+      margin-right: 10px;
+    }
+  }
+
+  &.active {
+    .button {
+      @include header-button-active();
+    }
+  }
+
+  #filter-popup {
+    @include header-panel-look();
+    max-width: 600px;
+    overflow: visible;
+  }
+
+  .filter-row, .sort-row {
+    overflow: visible;
+    width: 100%;
+    clear: both;
+    margin-bottom: 20px;
+
+    .filter-select {
+      width: 200px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .seperator {
+      display: inline-block;
+      vertical-align: middle;
+      color: $color-text-light-grey;
+      min-width: 90px;
+      text-align: center;
+      line-height: 1;
+    }
+
+  }
+
+  .info {
+    color: $color-text-light-grey;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 2px solid $color-border-grey;
+    line-height: 1.5em;
+    width: 100%;
+
+    .text {
+      width: 60%;
+      float: left;
+    }
+  }
+
+  button {
+    @include button-look();
+    float: right;
+  }
+
+}
