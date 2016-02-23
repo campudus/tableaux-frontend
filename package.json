@@ -61,15 +61,16 @@
     "react-loader": "^2.0.0",
     "react-onclickoutside": "^4.5.0",
     "react-proxy": "^1.1.2",
-    "react-select": "^1.0.0-beta8",
+    "react-select": "^1.0.0-beta9",
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
     "superagent": "^1.4.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.13",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+    "ampersand-filtered-subcollection": "^2.0.5",
+    "react-addons-css-transition-group": "^0.14.7"
   },
   "dependencies": {
-    "react-addons-css-transition-group": "^0.14.7"
   }
 }
