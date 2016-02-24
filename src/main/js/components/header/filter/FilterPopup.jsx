@@ -72,11 +72,13 @@ class FilterPopup extends React.Component {
   }
 
   filterUpdate(event) {
-    ActionCreator.changeFilter(this.state.selectedFilterColumn.value, this.filterValue,
-      this.state.selectedSortColumn.value, this.sortValue);
+    var selectedFilterColumn = this.state.selectedFilterColumn ? this.state.selectedFilterColumn.value : null;
+    var selectedSortColumn = this.state.selectedSortColumn ? this.state.selectedSortColumn.value : null;
+    ActionCreator.changeFilter(selectedFilterColumn, this.filterValue, selectedSortColumn, this.sortValue);
   }
 
   onOpenSelect = () => {
+    console.log("onOpenSelect");
     this.preventOutsideClick = true;
   };
 

@@ -12,7 +12,7 @@ var Rows = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    rows : React.PropTypes.object.isRequired,
+    rows : React.PropTypes.object,
     selectedCell : React.PropTypes.object,
     selectedCellEditing : React.PropTypes.bool,
     expandedRowIds : React.PropTypes.array,
@@ -46,28 +46,30 @@ var Rows = React.createClass({
 
   getRows : function () {
     var self = this;
-    var rows = this.props.rows.map(function (row, idx) {
-      var isRowSelected = self.isRowSelected(row);
-      var isRowExpanded = self.isRowExpanded(row.id);
-      var selectedCellVal = isRowSelected ? self.props.selectedCell : null;
-      var selectedCellEditingVal = isRowSelected ? self.props.selectedCellEditing : null;
-      var selectedCellExpandedRowVal = isRowSelected ? self.props.selectedCellExpandedRow : null;
-      var shouldCellFocusVal = isRowSelected ? self.props.shouldCellFocus : false;
+    if (this.props.rows) {
+      var rows = this.props.rows.map(function (row, idx) {
+        var isRowSelected = self.isRowSelected(row);
+        var isRowExpanded = self.isRowExpanded(row.id);
+        var selectedCellVal = isRowSelected ? self.props.selectedCell : null;
+        var selectedCellEditingVal = isRowSelected ? self.props.selectedCellEditing : null;
+        var selectedCellExpandedRowVal = isRowSelected ? self.props.selectedCellExpandedRow : null;
+        var shouldCellFocusVal = isRowSelected ? self.props.shouldCellFocus : false;
 
-      return <Row key={idx} row={row} selectedCell={selectedCellVal}
-                  selectedCellEditing={selectedCellEditingVal}
-                  selectedCellExpandedRow={selectedCellExpandedRowVal}
-                  langtag={self.props.langtag}
-                  isRowExpanded={isRowExpanded}
-                  isRowSelected={isRowSelected}
-                  shouldCellFocus={shouldCellFocusVal}
-      />
+        return <Row key={idx} row={row} selectedCell={selectedCellVal}
+                    selectedCellEditing={selectedCellEditingVal}
+                    selectedCellExpandedRow={selectedCellExpandedRowVal}
+                    langtag={self.props.langtag}
+                    isRowExpanded={isRowExpanded}
+                    isRowSelected={isRowSelected}
+                    shouldCellFocus={shouldCellFocusVal}
+        />
 
-    });
+      });
+      rows.push(<NewRow key="new-row" table={this.props.table} langtag={this.props.langtag}/>);
 
-    rows.push(<NewRow key="new-row" table={this.props.table} langtag={this.props.langtag}/>);
+      return rows;
+    } else return null;
 
-    return rows;
   },
 
   render : function () {

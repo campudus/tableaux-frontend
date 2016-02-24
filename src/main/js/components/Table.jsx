@@ -6,7 +6,6 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Columns = require('./columns/Columns.jsx');
 var Rows = require('./rows/Rows.jsx');
-var FilteredSubcollection = require('ampersand-filtered-subcollection');
 var KeyboardShortcutsMixin = require('./mixins/KeyboardShortcutsMixin');
 var OutsideClick = require('react-onclickoutside');
 var ActionCreator = require('../actions/ActionCreator');
@@ -21,7 +20,8 @@ var Table = React.createClass({
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
     table : React.PropTypes.object.isRequired,
-    overlayOpen : React.PropTypes.bool.isRequired
+    overlayOpen : React.PropTypes.bool.isRequired,
+    rows : React.PropTypes.object,
   },
 
   /**
@@ -45,9 +45,7 @@ var Table = React.createClass({
       //needed for multilanguage cell selection
       expandedRowIds : null, //Array
       selectedCellExpandedRow : null,
-      shouldCellFocus : true,
-      rowsCollection : this.props.table.rows,
-      rowsFilter : null,
+      shouldCellFocus : true
     }
   },
 
@@ -62,23 +60,6 @@ var Table = React.createClass({
 
   componentWillMount : function () {
     var self = this;
-    var table = this.props.table;
-
-    ActionCreator.spinnerOn();
-    //We need to fetch columns first, since rows has Cells that depend on the column model
-    table.columns.fetch({
-      reset : true,
-      success : function () {
-        table.rows.fetch({
-          reset : true,
-          success : function () {
-            console.log("table columns & rows fetched successfully.");
-            ActionCreator.spinnerOff();
-          }
-        });
-      }
-    });
-
     Dispatcher.on(ActionTypes.TOGGLE_CELL_SELECTION, this.toggleCellSelection);
     Dispatcher.on(ActionTypes.TOGGLE_CELL_EDITING, this.toggleCellEditing);
     Dispatcher.on(ActionTypes.SELECT_NEXT_CELL, this.setNextSelectedCell);
@@ -86,10 +67,9 @@ var Table = React.createClass({
     Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
     Dispatcher.on(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, this.disableShouldCellFocus);
     Dispatcher.on(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
-    Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
 
     window.addEventListener("resize", this.windowResize);
-    table.rows.on("add", self.rowAdded);
+    this.props.rows.on("add", self.rowAdded);
   },
 
   componentDidMount : function () {
@@ -120,7 +100,7 @@ var Table = React.createClass({
     Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
     Dispatcher.off(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, this.disableShouldCellFocus);
     Dispatcher.off(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
-    Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
+
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", this.rowAdded);
@@ -325,7 +305,7 @@ var Table = React.createClass({
   },
 
   isLastRowSelected : function () {
-    var rows = this.state.rowsCollection;
+    var rows = this.props.rows;
     var numberOfRows = rows.length;
     var currentRowId = this.getCurrentSelectedRowId();
     var lastRowId;
@@ -338,7 +318,7 @@ var Table = React.createClass({
 
   //returns the next row and the next language cell when expanded
   getNextRowCell : function (currentRowId, getPrev) {
-    var rows = this.state.rowsCollection; //this.props.table.rows;
+    var rows = this.props.rows;
     var currentRow = rows.get(currentRowId);
     var indexCurrentRow = rows.indexOf(currentRow);
     var numberOfRows = rows.length;
@@ -588,56 +568,6 @@ var Table = React.createClass({
     }
   },
 
-  changeFilter : function (rowsFilter) {
-    var filterValue = rowsFilter.filterValue;
-    var filterColumn = rowsFilter.filterColumnId;
-    var rowsCollection;
-    console.log("Table gets new filter:", rowsFilter);
-
-    if (_.isEmpty(filterValue)) {
-      rowsCollection = this.props.table.rows;
-      rowsFilter = null;
-    } else {
-      rowsCollection = this.getFilteredRows(rowsFilter.filterValue);
-    }
-
-    this.setState({
-      rowsCollection : rowsCollection,
-      rowsFilter : rowsFilter
-    });
-  },
-
-  getFilteredRows : function (filterValue) {
-    var allRows = this.props.table.rows;
-    var toFilterValue = filterValue.toLowerCase().trim();
-    var self = this;
-
-    if (_.isEmpty(toFilterValue)) {
-      return allRows;
-    }
-
-    var filteredRows = new FilteredSubcollection(allRows, {
-      filter : function (model) {
-        var firstCell = model.cells.at(0);
-        if (firstCell.kind === "concat") {
-          var concatValue = firstCell.rowConcatString(self.props.langtag).toLowerCase().trim();
-          //Always return empty rows
-          if (_.isEmpty(concatValue)) {
-            return true;
-          }
-          return (concatValue.indexOf(toFilterValue) > -1);
-        } else return true;
-      },
-
-      comparator : function (model) {
-        return model.id;
-      }
-
-    });
-
-    return filteredRows;
-  },
-
   render : function () {
     console.log("Rendering table");
     return (
@@ -648,7 +578,7 @@ var Table = React.createClass({
           <Columns ref="columns" columns={this.props.table.columns}/>
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
-                rows={this.state.rowsCollection}
+                rows={this.props.rows}
                 langtag={this.props.langtag}
                 selectedCell={this.state.selectedCell}
                 selectedCellEditing={this.state.selectedCellEditing}
