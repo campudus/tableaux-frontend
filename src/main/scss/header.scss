@@ -67,44 +67,6 @@ header {
     margin-right: 20px;
     margin-top: 10px;
 
-    #burger {
-      @include header-button-look();
-    }
-
-    #main-navigation {
-      @include header-panel-look();
-      display: none;
-      left: 0;
-      max-width: 600px;
-
-      #logo {
-        margin-bottom: 20px;
-
-        img {
-          display: inline-block;
-          max-height: 100px;
-          width: auto;
-        }
-
-        h1 {
-          font-size: 24px;
-          font-weight: bold;
-          letter-spacing: -2px;
-          color: $color-text-light-grey;
-        }
-      }
-
-      #main-navigation-list {
-        line-height: 3em;
-        a {
-          display: block;
-        }
-        i {
-          margin-right: 1em;
-        }
-      }
-    }
-
     &.active {
       #burger {
         @include header-button-active();
@@ -116,6 +78,44 @@ header {
 
     }
 
+  }
+
+  #burger {
+    @include header-button-look();
+  }
+
+  #main-navigation {
+    @include header-panel-look();
+    display: none;
+    left: 0;
+    max-width: 600px;
+
+    #logo {
+      margin-bottom: 20px;
+
+      img {
+        display: inline-block;
+        max-height: 100px;
+        width: auto;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        letter-spacing: -2px;
+        color: $color-text-light-grey;
+      }
+    }
+
+    #main-navigation-list {
+      line-height: 3em;
+      a {
+        display: block;
+      }
+      i {
+        margin-right: 1em;
+      }
+    }
   }
 
   #table-switcher {
@@ -152,4 +152,12 @@ header {
 
   }
 
+  #main-navigation-wrapper:not(.active) #burger,
+  #filter-wrapper:not(.active) a.button,
+  a.button {
+    &:focus {
+      outline: none;
+      border-color: $color-primary-lighter;
+    }
+  }
 }

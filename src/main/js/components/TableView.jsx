@@ -43,6 +43,7 @@ var TableView = React.createClass({
 
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
+    Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
 
     ActionCreator.spinnerOn();
 
@@ -89,6 +90,7 @@ var TableView = React.createClass({
   componentWillUnmount : function () {
     Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
+    Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
   },
 
   componentWillReceiveProps : function (nextProps) {
@@ -113,6 +115,13 @@ var TableView = React.createClass({
     return shouldRenderPropUpdate || shouldRenderStateUpdate;
   },
 
+  clearFilter : function () {
+    this.setState({
+      rowsCollection : this.getCurrentTable().rows,
+      rowsFilter : null
+    });
+  },
+
   changeFilter : function (rowsFilter) {
     var filterValue = rowsFilter.filterValue;
     var filterColumnId = rowsFilter.filterColumnId;
@@ -120,7 +129,8 @@ var TableView = React.createClass({
     var sortValue = rowsFilter.sortValue;
     var currentTable = this.getCurrentTable();
     var rowsCollection;
-    var allEmpty = _.isEmpty(filterValue) && _.isEmpty(filterColumnId) && _.isEmpty(sortColumnId) && _.isEmpty(sortValue);
+    var allEmpty = _.isEmpty(filterValue) && filterColumnId && sortColumnId && _.isEmpty(sortValue);
+
 
     if (allEmpty) {
       rowsCollection = currentTable.rows;
@@ -129,6 +139,7 @@ var TableView = React.createClass({
       rowsCollection = this.getFilteredRows(rowsFilter);
     }
 
+    console.log("setting rowsFilter to state:", rowsFilter);
     this.setState({
       rowsCollection : rowsCollection,
       rowsFilter : rowsFilter
@@ -143,11 +154,10 @@ var TableView = React.createClass({
     var filterValue = rowsFilter.filterValue;
     var filterColumnId = rowsFilter.filterColumnId;
     var sortColumnId = rowsFilter.sortColumnId;
-    var sortValue = rowsFilter.sortValue;
     var currentTable = this.getCurrentTable();
     var columnsOfTable = currentTable.columns;
-    var filterColumnIndex = filterColumnId ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : null;
-    var sortColumnIndex = sortColumnId ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : null;
+    var filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : null;
+    var sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : null;
     var allRows = currentTable.rows;
     var toFilterValue = filterValue.toLowerCase().trim();
     var self = this;
@@ -166,13 +176,13 @@ var TableView = React.createClass({
       return value ? value.toString() : "";
     };
 
-    if (_.isEmpty(toFilterValue)) {
+    if (_.isEmpty(toFilterValue) && !sortColumnId) {
       return allRows;
     }
 
     var filteredRows = new FilteredSubcollection(allRows, {
       filter : function (model) {
-        if (!filterColumnIndex || _.isEmpty(filterValue)) {
+        if (!_.isFinite(filterColumnIndex) || _.isEmpty(filterValue)) {
           return true;
         }
         var targetCell = model.cells.at(filterColumnIndex);
@@ -182,6 +192,12 @@ var TableView = React.createClass({
           var concatValue = firstCell.rowConcatString(self.props.langtag).toLowerCase().trim();
           //Always return empty concat rows. allows to add new rows while filtered
           if (_.isEmpty(concatValue)) {
+            return true;
+          }
+        } else {
+          //First cell is not concat but probably text, shorttext, etc.
+          var firstCellValue = getCellValueAsString(firstCell);
+          if (_.isEmpty(firstCellValue)) {
             return true;
           }
         }
@@ -199,7 +215,7 @@ var TableView = React.createClass({
 
       comparator : function (model) {
         //default
-        if (!sortColumnIndex) {
+        if (!_.isFinite(sortColumnIndex)) {
           return model.id;
         } else {
           return getCellValueAsString(model.cells.at(sortColumnIndex));
@@ -252,7 +268,7 @@ var TableView = React.createClass({
                            tableName={tableName}
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
-            <FilterButton langtag={this.props.langtag} table={currentTable} currentFilter={null}/>
+            <FilterButton langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
             <Spinner />

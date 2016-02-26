@@ -20,11 +20,11 @@ var NewRow = React.createClass({
     var t = this.props.t;
     return (
       <div className="new-row">
-        <div className="new-row-inner" onClick={this.addRow}>
+        <a href="#" className="button new-row-inner" onClick={this.addRow}>
           <i className="fa fa-plus-circle">
           </i>
           <span>{t('add_new_row')}</span>
-        </div>
+        </a>
       </div>
     );
   }

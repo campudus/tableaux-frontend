@@ -8,6 +8,8 @@ import Select from 'react-select';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
+
+//FIXME: select value buggy of Select.js !
 //@KeyboardShortcutsMixin()
 @listensToClickOutside()
 class FilterPopup extends React.Component {
@@ -19,19 +21,20 @@ class FilterPopup extends React.Component {
     currentFilter : React.PropTypes.object
   };
 
-  //TODO Set currentFilter values
-  state = {
-    selectedFilterColumn : null,
-    selectedSortColumn : null
-  };
-
-  filterValue = "";
-  sortValue = "";
   selectColumnOptions = null;
   preventOutsideClick = false;
 
   constructor(props) {
     super(props);
+    var currFilter = props.currentFilter;
+    console.log("props currFilter incoming:", currFilter);
+
+    this.state = {
+      selectedFilterColumn : currFilter && currFilter.filterColumnId ? currFilter.filterColumnId : null,
+      selectedSortColumn : currFilter && currFilter.sortColumnId ? currFilter.sortColumnId : null,
+      filterValue : currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : ""
+    };
+
     this.buildColumnOptions();
   }
 
@@ -62,20 +65,23 @@ class FilterPopup extends React.Component {
   }
 
   filterInputChange = (event) => {
-    this.filterValue = event.target.value;
-    console.log("filterChange:", this.filterValue);
-  }
+    this.setState({filterValue : event.target.value});
+  };
 
-  sortInputChange = (event) => {
-    this.sortValue = event.target.value;
-    console.log("filterChange:", this.sortValue);
-  }
-
-  filterUpdate(event) {
+  filterUpdate = (event) => {
     var selectedFilterColumn = this.state.selectedFilterColumn ? this.state.selectedFilterColumn.value : null;
     var selectedSortColumn = this.state.selectedSortColumn ? this.state.selectedSortColumn.value : null;
-    ActionCreator.changeFilter(selectedFilterColumn, this.filterValue, selectedSortColumn, this.sortValue);
-  }
+    debugger;
+    //TODO: For now we don't have any sort options
+    console.log("filter update:", selectedSortColumn);
+    console.log("filter update this.state:", this.state);
+    ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, null);
+  };
+
+  clearFilter = (event) => {
+    ActionCreator.clearFilter();
+    this.props.onClickedOutside(event);
+  };
 
   onOpenSelect = () => {
     console.log("onOpenSelect");
@@ -112,7 +118,6 @@ class FilterPopup extends React.Component {
     };
   }
 
-
   render() {
     return (
       <div id="filter-popup">
@@ -127,9 +132,11 @@ class FilterPopup extends React.Component {
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText="Keine Spalte mit diesem Namen vorhanden"
             onOpen={this.onOpenSelect}
+            placeholder="Filter..."
           />
           <span className="seperator">enthält</span>
-          <input type="text" className="filter-input" ref="filterInput" onChange={this.filterInputChange}
+          <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
+                 onChange={this.filterInputChange}
                  onKeyDown={this.onKeyboardShortcut}/>
         </div>
         <div className="sort-row">
@@ -143,16 +150,16 @@ class FilterPopup extends React.Component {
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText="Keine Spalte mit diesem Namen vorhanden"
             onOpen={this.onOpenSelect}
+            placeholder="Sort..."
           />
-          <span className="seperator">sortiert</span>
-          <input type="text" className="filter-input" ref="filterInput" onChange={this.sortInputChange}
-                 onKeyDown={this.onKeyboardShortcut}/>
+          <span className="seperator">sortiert aufsteigend<br/>(A-Z bzw. 0-9)</span>
         </div>
         <div className="description-row">
           <p className="info">
             <span className="text">Filtern und suchen Sie nach Nummern- oder Text-feldern. Links werden derzeit noch nicht
             unterstützt.</span></p>
-          <button onClick={this.filterUpdate.bind(this)}>Filter anwenden</button>
+          <button tabIndex="1" className="neutral" onClick={this.clearFilter}>Filter löschen</button>
+          <button tabIndex="0" className="filter-go" onClick={this.filterUpdate}>Filter anwenden</button>
         </div>
       </div>
     )

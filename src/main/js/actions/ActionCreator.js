@@ -199,6 +199,10 @@ module.exports = {
     });
   },
 
+  clearFilter : function () {
+    Dispatcher.trigger(ActionTypes.CLEAR_FILTER);
+  },
+
   spinnerOn : function () {
     Dispatcher.trigger(ActionTypes.SPINNER_ON);
   },

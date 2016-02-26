@@ -28,30 +28,56 @@
   overflow: hidden;
 }
 
-@mixin button-look() {
-  height: 30px;
-  font-family: $font-main;
-  line-height: 28px;
-  padding: 0 15px;
-  color: white;
-  font-weight: bold;
-  background-color: $color-primary;
-  cursor: pointer;
-  display: inline-block;
-  border: 0;
-  outline-style: none;
-  font-size: 1em;
-  @include border-radius(3px);
-  @include transition(all 250ms ease-out);
-
-  &:hover {
-    background-color: desaturate(darken($color-primary, 10%), 10%);
-  }
-}
-
 @mixin setBgColorAndHover($baseColor) {
   background-color: $baseColor;
   &:hover {
     background-color: darken($baseColor, 5%)
   }
+}
+
+@mixin button-look() {
+  height: 30px;
+  font-size: 1em;
+  line-height: 1.2em;
+  font-family: $font-main;
+  padding: 7px 15px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+  border: 0;
+  outline-style: none;
+  @include box-sizing(border-box);
+
+  @include border-radius(3px);
+  @include transition(all 250ms ease-out);
+
+  //default
+  @include setBgColorAndHover($color-primary);
+
+  &.standard {
+    @include setBgColorAndHover($color-very-dark);
+  }
+
+  &.neutral, &.cancel {
+    @include setBgColorAndHover($color-button-grey);
+  }
+
+  &.positive {
+    @include setBgColorAndHover($color-green);
+  }
+
+  &.negative {
+    @include setBgColorAndHover($color-red);
+  }
+
+  &.white {
+    color: $color-very-dark;
+    @include setBgColorAndHover(#fff);
+  }
+
+  &:active, &:focus {
+    box-shadow: 0px 5px 10px rgba(black, 0.4);
+  }
+
 }

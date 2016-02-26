@@ -133,37 +133,9 @@ $overlay-headline-height: 50px;
   }
 
   .button {
-    font-size: 1em;
-    font-weight: bold;
-    border-radius: 4px;
-    display: inline-block;
-    vertical-align: top;
+    @include button-look();
     margin-top: 10px;
     margin-right: 10px;
-    padding: 7px 15px;
-    color: #fff;
-    border: 0;
-    cursor: pointer;
-
-    @include setBgColorAndHover($color-primary);
-
-    &.neutral {
-      @include setBgColorAndHover($color-button-grey);
-    }
-
-    &.positive {
-      @include setBgColorAndHover($color-green);
-    }
-
-    &.negative {
-      @include setBgColorAndHover($color-red);
-    }
-
-    &.white {
-      color: $color-very-dark;
-      @include setBgColorAndHover(#fff);
-    }
-
   }
 
   h2 {

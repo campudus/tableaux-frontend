@@ -52,6 +52,7 @@ var TableauxConstant = {
 
     //Filter
     CHANGE_FILTER : null,
+    CLEAR_FILTER: null,
 
     //Spinner
     SPINNER_ON : null,
