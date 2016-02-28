@@ -79,7 +79,8 @@ var TableView = React.createClass({
             self.setState({
               initialLoading : false,
               rowsCollection : currentTable.rows,
-              currentTableId : tableId
+              currentTableId : tableId,
+              rowsFilter : null
             });
           }
         });
@@ -129,7 +130,7 @@ var TableView = React.createClass({
     var sortValue = rowsFilter.sortValue;
     var currentTable = this.getCurrentTable();
     var rowsCollection;
-    var allEmpty = _.isEmpty(filterValue) && filterColumnId && sortColumnId && _.isEmpty(sortValue);
+    var allEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(sortValue);
 
 
     if (allEmpty) {
@@ -166,14 +167,25 @@ var TableView = React.createClass({
       return (cellValue.trim().toLowerCase().indexOf(filterValue) > -1);
     };
 
-    var getCellValueAsString = function (cell) {
+    var getCellValue = function (cell) {
       var value;
       if (cell.isMultiLanguage) {
         value = cell.value[self.props.langtag];
       } else {
         value = cell.value;
       }
-      return value ? value.toString() : "";
+
+      if (value) {
+        if (cell.kind === ColumnKinds.numeric) {
+          value = parseInt(value);
+        } else {
+          value = value.toString();
+        }
+      } else {
+        value = "";
+      }
+
+      return value;
     };
 
     if (_.isEmpty(toFilterValue) && !sortColumnId) {
@@ -196,7 +208,7 @@ var TableView = React.createClass({
           }
         } else {
           //First cell is not concat but probably text, shorttext, etc.
-          var firstCellValue = getCellValueAsString(firstCell);
+          var firstCellValue = getCellValue(firstCell);
           if (_.isEmpty(firstCellValue)) {
             return true;
           }
@@ -208,7 +220,7 @@ var TableView = React.createClass({
         } else if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
           || targetCell.kind === ColumnKinds.numeric) {
-          return containsValue(getCellValueAsString(targetCell), toFilterValue);
+          return containsValue(getCellValue(targetCell), toFilterValue);
         }
         else return false;
       },
@@ -218,7 +230,7 @@ var TableView = React.createClass({
         if (!_.isFinite(sortColumnIndex)) {
           return model.id;
         } else {
-          return getCellValueAsString(model.cells.at(sortColumnIndex));
+          return getCellValue(model.cells.at(sortColumnIndex));
         }
       }
 

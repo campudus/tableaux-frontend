@@ -69,9 +69,9 @@ class FilterPopup extends React.Component {
   };
 
   filterUpdate = (event) => {
-    var selectedFilterColumn = this.state.selectedFilterColumn ? this.state.selectedFilterColumn.value : null;
-    var selectedSortColumn = this.state.selectedSortColumn ? this.state.selectedSortColumn.value : null;
-    debugger;
+    var selectedFilterColumn = this.state.selectedFilterColumn || null;
+    var selectedSortColumn = this.state.selectedSortColumn || null;
+    //debugger;
     //TODO: For now we don't have any sort options
     console.log("filter update:", selectedSortColumn);
     console.log("filter update this.state:", this.state);
@@ -102,11 +102,12 @@ class FilterPopup extends React.Component {
   }
 
   onChangeSelectFilter = (selection) => {
-    this.setState({selectedFilterColumn : selection});
+    console.log("selection: ", selection);
+    this.setState({selectedFilterColumn : selection.value});
   };
 
   onChangeSelectSort = (selection) => {
-    this.setState({selectedSortColumn : selection});
+    this.setState({selectedSortColumn : selection.value});
   };
 
   getKeyboardShortcuts(event) {
