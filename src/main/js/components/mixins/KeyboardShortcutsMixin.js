@@ -28,6 +28,8 @@ var KEYS = {
 
 var KeyboardShortcutsMixin = {
   onKeyboardShortcut : function (event) {
+    console.warn("Use of KeyboardShortcutsMixin is deprecated. Stop using it! Instead use the ES6 KeyboardShortcutsHelper.");
+
     if (typeof this.getKeyboardShortcuts !== "function") {
       throw "Define function getKeyboardShortcuts in order to use KeyboardShortcutsMixin.";
     }
@@ -87,7 +89,7 @@ function isText(k) {
 }
 
 /*  For use later
-isKeyCodeCommaOrDot : function (keyEvent) {
+ isKeyCodeCommaOrDot : function (keyEvent) {
  var keyCode = keyEvent.keyCode;
  var shift = keyEvent.shiftKey;
  return (!shift && (keyCode === 188 || keyCode === 110 || keyCode === 190));

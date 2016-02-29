@@ -2,15 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ActionCreator from '../../../actions/ActionCreator';
 import listensToClickOutside from '../../../../../../node_modules/react-onclickoutside/decorator';
-import KeyboardShortcutsMixin from '../../mixins/KeyboardShortcutsMixin';
+import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import Select from 'react-select';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
-
-//FIXME: select value buggy of Select.js !
-//@KeyboardShortcutsMixin()
 @listensToClickOutside()
 class FilterPopup extends React.Component {
 
@@ -110,14 +107,15 @@ class FilterPopup extends React.Component {
     this.setState({selectedSortColumn : selection.value});
   };
 
-  getKeyboardShortcuts(event) {
+  getKeyboardShortcuts = (event) => {
     var self = this;
     return {
       enter : function (event) {
+        console.log("pressing enter in filterpopup");
         self.filterUpdate(event);
       }
     };
-  }
+  };
 
   render() {
     return (
@@ -138,7 +136,7 @@ class FilterPopup extends React.Component {
           <span className="seperator">enthält</span>
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
-                 onKeyDown={this.onKeyboardShortcut}/>
+                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
         </div>
         <div className="sort-row">
           <Select
