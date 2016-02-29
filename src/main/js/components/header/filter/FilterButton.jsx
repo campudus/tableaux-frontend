@@ -1,5 +1,6 @@
 import React from 'react';
 import FilterPopup from './FilterPopup.jsx';
+import {translate} from 'react-i18next/lib';
 
 class FilterButton extends React.Component {
 
@@ -18,9 +19,8 @@ class FilterButton extends React.Component {
   }
 
   handleClickedOutside = (event) => {
-    console.log("clicked outside of filter: ", event.target);
     this.setState({open : false});
-  }
+  };
 
   renderFilterPopup() {
     if (this.state.open) {
@@ -36,20 +36,20 @@ class FilterButton extends React.Component {
   toggleFilter = (event) => {
     event.preventDefault();
     this.setState({open : !this.state.open});
-  }
+  };
 
   render() {
-    console.log("render filter button");
+    let {t} = this.props;
+    let buttonClass = "button";
 
-    var buttonClassName = "button";
     if (this.state.open) {
-      buttonClassName += " ignore-react-onclickoutside";
+      buttonClass += " ignore-react-onclickoutside";
     }
 
     return (
       <div id="filter-wrapper" className={this.state.open ? "active": ""}>
-        <a href="#" className={buttonClassName} onClick={this.toggleFilter}>
-          <i className="fa fa-filter"></i>Filtern & Sortieren</a>
+        <a href="#" className={buttonClass} onClick={this.toggleFilter}>
+          <i className="fa fa-filter"></i>{t('button.title')}</a>
         {this.renderFilterPopup()}
       </div>
     )
@@ -57,4 +57,4 @@ class FilterButton extends React.Component {
 
 }
 
-export default FilterButton;
+export default translate(['filter'])(FilterButton);

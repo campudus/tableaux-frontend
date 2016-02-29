@@ -1,0 +1,17 @@
+{
+  "button": {
+    "title": "Filter & Sort",
+    "doFilter": "Apply Filter",
+    "clearFilter": "Clear Filter"
+  },
+  "input": {
+    "filter": "Filter for...",
+    "sort": "Sort by...",
+    "noResult": "No columns with this name"
+  },
+  "help": {
+    "contains": "contains",
+    "sort": "sort ascending {{linebreak}} (A-Z or 0-9)",
+    "note": "Filter and search for numeric and text fields. Links are not yet supported."
+  }
+}

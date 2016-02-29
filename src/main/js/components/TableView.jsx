@@ -225,12 +225,13 @@ var TableView = React.createClass({
         else return false;
       },
 
+      //TODO: There's a ugly situation when sorted by year and new rows are getting added. In the future we probably need to implement our own comparator
       comparator : function (model) {
         //default
         if (!_.isFinite(sortColumnIndex)) {
           return model.id;
         } else {
-          return getCellValue(model.cells.at(sortColumnIndex));
+          return getCellValue(model.cells.at(sortColumnIndex)) || null; //null forces empty fields to the bottom
         }
       }
 
@@ -252,7 +253,7 @@ var TableView = React.createClass({
 
   render : function () {
     if (this.state.initialLoading) {
-      return <div className="spinner">Loading</div>;
+      return <div className="initial-loader"><Spinner isLoading={true}/></div>;
     } else {
       var self = this;
       var tables = this.tables;

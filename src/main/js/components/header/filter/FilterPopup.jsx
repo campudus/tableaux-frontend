@@ -5,9 +5,11 @@ import listensToClickOutside from '../../../../../../node_modules/react-onclicko
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import Select from 'react-select';
+import {translate, Interpolate} from 'react-i18next/lib';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
+@translate(['filter'])
 @listensToClickOutside()
 class FilterPopup extends React.Component {
 
@@ -23,8 +25,7 @@ class FilterPopup extends React.Component {
 
   constructor(props) {
     super(props);
-    var currFilter = props.currentFilter;
-    console.log("props currFilter incoming:", currFilter);
+    let currFilter = props.currentFilter;
 
     this.state = {
       selectedFilterColumn : currFilter && currFilter.filterColumnId ? currFilter.filterColumnId : null,
@@ -40,9 +41,9 @@ class FilterPopup extends React.Component {
   }
 
   buildColumnOptions() {
-    var options = this.props.columns.reduce(function (res, column) {
+    let options = this.props.columns.reduce(function (res, column) {
 
-      var allowedKinds = column.kind === ColumnKinds.text
+      let allowedKinds = column.kind === ColumnKinds.text
         || column.kind === ColumnKinds.shorttext
         || column.kind === ColumnKinds.richtext
         || column.kind === ColumnKinds.numeric
@@ -66,8 +67,8 @@ class FilterPopup extends React.Component {
   };
 
   filterUpdate = (event) => {
-    var selectedFilterColumn = this.state.selectedFilterColumn || null;
-    var selectedSortColumn = this.state.selectedSortColumn || null;
+    let selectedFilterColumn = this.state.selectedFilterColumn || null;
+    let selectedSortColumn = this.state.selectedSortColumn || null;
     //debugger;
     //TODO: For now we don't have any sort options
     console.log("filter update:", selectedSortColumn);
@@ -108,7 +109,7 @@ class FilterPopup extends React.Component {
   };
 
   getKeyboardShortcuts = (event) => {
-    var self = this;
+    let self = this;
     return {
       enter : function (event) {
         console.log("pressing enter in filterpopup");
@@ -118,6 +119,8 @@ class FilterPopup extends React.Component {
   };
 
   render() {
+    let {t} = this.props;
+
     return (
       <div id="filter-popup">
         <div className="filter-row">
@@ -129,11 +132,11 @@ class FilterPopup extends React.Component {
             value={this.state.selectedFilterColumn}
             onChange={this.onChangeSelectFilter}
             valueRenderer={this.selectFilterValueRenderer}
-            noResultsText="Keine Spalte mit diesem Namen vorhanden"
+            noResultsText={t('input.noResult')}
             onOpen={this.onOpenSelect}
-            placeholder="Filter..."
+            placeholder={t('input.filter')}
           />
-          <span className="seperator">enthält</span>
+          <span className="seperator">{t('help.contains')}</span>
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
@@ -147,18 +150,21 @@ class FilterPopup extends React.Component {
             value={this.state.selectedSortColumn}
             onChange={this.onChangeSelectSort}
             valueRenderer={this.selectFilterValueRenderer}
-            noResultsText="Keine Spalte mit diesem Namen vorhanden"
+            noResultsText={t('input.noResult')}
             onOpen={this.onOpenSelect}
-            placeholder="Sort..."
+            placeholder={t('input.sort')}
           />
-          <span className="seperator">sortiert aufsteigend<br/>(A-Z bzw. 0-9)</span>
+          <span className="seperator">
+             <Interpolate i18nKey="help.sort" linebreak={<br/>}/>
+          </span>
         </div>
         <div className="description-row">
           <p className="info">
-            <span className="text">Filtern und suchen Sie nach Nummern- oder Text-feldern. Links werden derzeit noch nicht
-            unterstützt.</span></p>
-          <button tabIndex="1" className="neutral" onClick={this.clearFilter}>Filter löschen</button>
-          <button tabIndex="0" className="filter-go" onClick={this.filterUpdate}>Filter anwenden</button>
+            <span className="text">{t('help.note')}</span></p>
+          <button tabIndex="1" className="neutral"
+                  onClick={this.clearFilter}>{t('button.clearFilter')}</button>
+          <button tabIndex="0" className="filter-go"
+                  onClick={this.filterUpdate}>{t('button.doFilter')}</button>
         </div>
       </div>
     )

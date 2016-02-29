@@ -9,6 +9,7 @@ import i18n from 'i18next/lib';
 import XHR from 'i18next-xhr-backend/lib';
 import { I18nextProvider } from 'react-i18next/lib';
 import ActionCreator from '../actions/ActionCreator';
+import Spinner from './header/Spinner.jsx';
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -115,9 +116,13 @@ export default class Tableaux extends React.Component {
     }
   }
 
+
+  /*  */
+
+
   render() {
     if (this.state.isLoading) {
-      return <div className="spinner">Loading</div>
+      return <div className="initial-loader"><Spinner isLoading={true}/></div>
     } else {
       return <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">

@@ -10,8 +10,13 @@ header {
   overflow: visible;
 
   .Select {
+
+    .Select-placeholder, :not(.Select--multi) > .Select-control .Select-value {
+      line-height: $space-height-header-buttons - 2;
+    }
+
     .Select-value-label span {
-      line-height: 28px;
+      line-height: $space-height-header-buttons;
     }
 
     .Select-option {
@@ -25,8 +30,7 @@ header {
     }
 
     .Select-control {
-      height: $space-height-header-buttons - 4;
-      line-height: $space-height-header-buttons - 4;
+      height: $space-height-header-buttons - 2;
       border: 1px solid $color-grey-dark;
     }
 

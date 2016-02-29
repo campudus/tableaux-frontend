@@ -36,7 +36,7 @@ export default class Spinner extends React.Component {
     super(props);
     Dispatcher.on(ActionTypes.SPINNER_ON, this.spinnerOn, this);
     Dispatcher.on(ActionTypes.SPINNER_OFF, this.spinnerOff, this);
-    this.state = {isLoading : false};
+    this.state = {isLoading : props.isLoading};
     this.spinnerElement = null;
   }
 
@@ -46,8 +46,8 @@ export default class Spinner extends React.Component {
   }
 
   componentWillUnmount() {
-    Dispatcher.on(ActionTypes.SPINNER_ON, this.spinnerOn, this);
-    Dispatcher.on(ActionTypes.SPINNER_OFF, this.spinnerOff, this);
+    Dispatcher.off(ActionTypes.SPINNER_ON, this.spinnerOn, this);
+    Dispatcher.off(ActionTypes.SPINNER_OFF, this.spinnerOff, this);
   }
 
   spinnerOn() {
@@ -83,3 +83,6 @@ export default class Spinner extends React.Component {
     )
   }
 }
+
+Spinner.propTypes = {isLoading : React.PropTypes.bool};
+Spinner.defaultProps = {isLoading : false};

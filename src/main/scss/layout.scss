@@ -11,6 +11,15 @@ header {
   @include user-select(none);
 }
 
+.initial-loader {
+  background-color: $color-background-very-light-grey;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+
 //open react-select submenu on top when class is set
 .open-on-top {
   .Select-menu-outer {

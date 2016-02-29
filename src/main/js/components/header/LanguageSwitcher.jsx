@@ -9,15 +9,16 @@ var LanguageSwitcher = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     onChange : React.PropTypes.func,
     openOnTop : React.PropTypes.bool,
-    options : React.PropTypes.array
+    options : React.PropTypes.array,
+    onChange : React.PropTypes.func
   },
 
   onChange : function (langObj) {
     //prevents undefined language tag: we just want to switch the language when there is actually something selected
     if (!_.isEmpty(langObj)) {
       var langtag = langObj.value;
-      if (this.props.onChangeSelectFilter) {
-        this.props.onChangeSelectFilter(langtag);
+      if (this.props.onChange) {
+        this.props.onChange(langtag);
       }
     }
   },
@@ -34,12 +35,12 @@ var LanguageSwitcher = React.createClass({
 
   render : function () {
     var options = this.props.options || App.langtags.reduce(function (res, langtag) {
-      res.push({
-        value : langtag,
-        label : langtag
-      });
-      return res;
-    }, []);
+        res.push({
+          value : langtag,
+          label : langtag
+        });
+        return res;
+      }, []);
 
     return (
       <div id="language-switcher">
