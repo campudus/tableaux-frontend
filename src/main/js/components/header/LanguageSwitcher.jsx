@@ -9,8 +9,7 @@ var LanguageSwitcher = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     onChange : React.PropTypes.func,
     openOnTop : React.PropTypes.bool,
-    options : React.PropTypes.array,
-    onChange : React.PropTypes.func
+    options : React.PropTypes.array
   },
 
   onChange : function (langObj) {
