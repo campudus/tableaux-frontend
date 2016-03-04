@@ -42,7 +42,7 @@ var SingleFileTextInput = React.createClass({
 
   onChange : function (langtag, event) {
     var changedVal = event.target.value;
-    this.props.onChangeSelectFilter(changedVal, langtag);
+    this.props.onChange(changedVal, langtag);
   },
 
   renderField : function (id, value, langtag) {

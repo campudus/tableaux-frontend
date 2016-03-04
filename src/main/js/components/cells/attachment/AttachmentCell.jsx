@@ -35,7 +35,7 @@ var AttachmentCell = React.createClass({
                                       langtag={self.props.langtag}
                                       deletable={false}/>;
         } else {
-          tooManyLinks = true;
+          tooManyAttachments = true;
           return null;
         }
 
