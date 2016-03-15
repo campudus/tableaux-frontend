@@ -1,7 +1,7 @@
 import React from 'react';
 import AmpersandMixin from'ampersand-react-mixin';
 import ActionCreator from'../../actions/ActionCreator';
-import {translate} from 'react-i18next/lib';
+import {translate} from 'react-i18next';
 
 //TODO: Ajax spinner when adding row
 var NewRow = React.createClass({

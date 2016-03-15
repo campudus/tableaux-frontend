@@ -1,5 +1,5 @@
 import React from 'react';
-import {translate} from 'react-i18next/lib';
+import {translate} from 'react-i18next';
 
 @translate(['header'])
 export default class PageTitle extends React.Component {

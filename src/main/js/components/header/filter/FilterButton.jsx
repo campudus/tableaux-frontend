@@ -1,6 +1,6 @@
 import React from 'react';
 import FilterPopup from './FilterPopup.jsx';
-import {translate} from 'react-i18next/lib';
+import {translate} from 'react-i18next';
 
 class FilterButton extends React.Component {
 
