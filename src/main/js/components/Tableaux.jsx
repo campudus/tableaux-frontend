@@ -5,9 +5,9 @@ import TableauxConstants from '../constants/TableauxConstants';
 import GenericOverlay from './overlay/GenericOverlay.jsx';
 import ViewRenderer from './ViewRenderer.jsx';
 
-import i18n from 'i18next/lib';
-import XHR from 'i18next-xhr-backend/lib';
-import { I18nextProvider } from 'react-i18next/lib';
+import i18n from 'i18next';
+import XHR from 'i18next-xhr-backend';
+import { I18nextProvider } from 'react-i18next';
 import ActionCreator from '../actions/ActionCreator';
 import Spinner from './header/Spinner.jsx';
 

@@ -5,7 +5,7 @@ import listensToClickOutside from '../../../../../../node_modules/react-onclicko
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import Select from 'react-select';
-import {translate, Interpolate} from 'react-i18next/lib';
+import {translate, Interpolate} from 'react-i18next';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 

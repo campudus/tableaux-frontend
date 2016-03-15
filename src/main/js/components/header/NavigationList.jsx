@@ -1,6 +1,6 @@
 import React from 'react';
 import listensToClickOutside from 'react-onclickoutside/decorator';
-import {translate} from 'react-i18next/lib';
+import {translate} from 'react-i18next';
 
 @translate(['header'])
 @listensToClickOutside()
