@@ -106,4 +106,4 @@ function isText(k) {
  return (!shift && ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105)));
  },*/
 
-module.exports = KeyboardShortcutsHelper;
+export default KeyboardShortcutsHelper;

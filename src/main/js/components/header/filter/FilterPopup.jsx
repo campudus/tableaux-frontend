@@ -69,10 +69,7 @@ class FilterPopup extends React.Component {
   filterUpdate = (event) => {
     let selectedFilterColumn = this.state.selectedFilterColumn || null;
     let selectedSortColumn = this.state.selectedSortColumn || null;
-    //debugger;
     //TODO: For now we don't have any sort options
-    console.log("filter update:", selectedSortColumn);
-    console.log("filter update this.state:", this.state);
     ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, null);
   };
 
@@ -82,12 +79,10 @@ class FilterPopup extends React.Component {
   };
 
   onOpenSelect = () => {
-    console.log("onOpenSelect");
     this.preventOutsideClick = true;
   };
 
   handleClickOutside = (event) => {
-    console.log("handleClickOutside Popup");
     if (!this.preventOutsideClick) {
       this.props.onClickedOutside(event);
     } else {
@@ -109,11 +104,9 @@ class FilterPopup extends React.Component {
   };
 
   getKeyboardShortcuts = (event) => {
-    let self = this;
     return {
-      enter : function (event) {
-        console.log("pressing enter in filterpopup");
-        self.filterUpdate(event);
+      enter : (event) => {
+        this.filterUpdate(event);
       }
     };
   };

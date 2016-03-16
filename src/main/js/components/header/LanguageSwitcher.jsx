@@ -33,6 +33,7 @@ var LanguageSwitcher = React.createClass({
   },
 
   render : function () {
+    console.log("render LanguageSwitcher");
     var options = this.props.options || App.langtags.reduce(function (res, langtag) {
         res.push({
           value : langtag,

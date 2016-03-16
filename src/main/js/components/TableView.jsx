@@ -10,8 +10,8 @@ var Tables = require('../models/Tables');
 var FilteredSubcollection = require('ampersand-filtered-subcollection');
 
 import TableauxConstants from '../constants/TableauxConstants';
-import FilterButton from './header/filter/FilterButton.jsx';
-import NavigationList from './header/NavigationList.jsx';
+import Filter from './header/filter/Filter.jsx';
+import Navigation from './header/Navigation.jsx';
 import PageTitle from './header/PageTitle.jsx';
 import Spinner from './header/Spinner.jsx';
 
@@ -164,7 +164,7 @@ var TableView = React.createClass({
     var self = this;
 
     var containsValue = function (cellValue, filterValue) {
-      return (cellValue.trim().toLowerCase().indexOf(filterValue) > -1);
+      return (cellValue.toString().trim().toLowerCase().indexOf(filterValue) > -1);
     };
 
     var getCellValue = function (cell) {
@@ -276,12 +276,12 @@ var TableView = React.createClass({
       return (
         <div>
           <header>
-            <NavigationList langtag={this.props.langtag}/>
+            <Navigation langtag={this.props.langtag}/>
             <TableSwitcher langtag={this.props.langtag}
                            tableName={tableName}
                            currentTableId={self.state.currentTableId}
                            tables={tables}/>
-            <FilterButton langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
+            <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
             <Spinner />

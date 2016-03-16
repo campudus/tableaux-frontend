@@ -3,7 +3,7 @@ import App from 'ampersand-app';
 import Dispatcher from '../../dispatcher/Dispatcher';
 import ActionCreator from '../../actions/ActionCreator';
 
-import NavigationList from '../../components/header/NavigationList.jsx';
+import Navigation from '../../components/header/Navigation.jsx';
 import PageTitle from '../../components/header/PageTitle.jsx';
 import LanguageSwitcher from '../../components/header/LanguageSwitcher.jsx';
 
@@ -64,7 +64,7 @@ export default class MediaView extends React.Component {
       return (
         <div>
           <header>
-            <NavigationList langtag={this.props.langtag}/>
+            <Navigation langtag={this.props.langtag}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.media"/>
           </header>

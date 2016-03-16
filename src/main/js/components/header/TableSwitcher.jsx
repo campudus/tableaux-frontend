@@ -51,6 +51,7 @@ var TableSwitcher = React.createClass({
   },
 
   render : function () {
+    console.log("render TableSwitcher");
     return (
       <div id="table-switcher">
         <Select options={this.getSelectOptions()}

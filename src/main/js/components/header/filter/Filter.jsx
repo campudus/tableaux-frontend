@@ -1,8 +1,9 @@
 import React from 'react';
 import FilterPopup from './FilterPopup.jsx';
 import {translate} from 'react-i18next';
+import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 
-class FilterButton extends React.Component {
+class Filter extends React.Component {
 
   static propTypes = {
     langtag : React.PropTypes.string.isRequired,
@@ -33,6 +34,14 @@ class FilterButton extends React.Component {
     }
   }
 
+  getKeyboardShortcuts = (event) => {
+    return {
+      escape : (event) => {
+        this.handleClickedOutside(event);
+      }
+    };
+  };
+
   toggleFilter = (event) => {
     event.preventDefault();
     this.setState({open : !this.state.open});
@@ -47,7 +56,8 @@ class FilterButton extends React.Component {
     }
 
     return (
-      <div id="filter-wrapper" className={this.state.open ? "active": ""}>
+      <div id="filter-wrapper" className={this.state.open ? "active": ""} tabIndex="-1"
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
           <i className="fa fa-filter"></i>{t('button.title')}</a>
         {this.renderFilterPopup()}
@@ -57,4 +67,4 @@ class FilterButton extends React.Component {
 
 }
 
-export default translate(['filter'])(FilterButton);
+export default translate(['filter'])(Filter);
