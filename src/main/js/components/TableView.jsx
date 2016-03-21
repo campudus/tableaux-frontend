@@ -219,7 +219,8 @@ var TableView = React.createClass({
           return containsValue(concatValue, toFilterValue);
         } else if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
-          || targetCell.kind === ColumnKinds.numeric) {
+          || targetCell.kind === ColumnKinds.numeric
+          || targetCell.kind === ColumnKinds.text) {
           return containsValue(getCellValue(targetCell), toFilterValue);
         }
         else return false;
