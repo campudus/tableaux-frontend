@@ -21,6 +21,16 @@ var Folder = AmpersandModel.extend({
     files : FilesCollection
   },
 
+  initialize : function () {
+    this.get('subfolders').on('add remove change', function () {
+      this.trigger('change');
+    }, this);
+
+    this.get('files').on('add remove change', function () {
+      this.trigger('change');
+    }, this);
+  },
+
   url : function () {
     var base = this.urlRoot();
 

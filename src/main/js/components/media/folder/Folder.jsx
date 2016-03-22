@@ -16,11 +16,6 @@ var Folder = React.createClass({
     langtag : React.PropTypes.string.isRequired
   },
 
-  componentDidMount : function () {
-    this.watch(this.props.folder.files, {reRender : false});
-    this.watch(this.props.folder.subfolders, {reRender : false});
-  },
-
   backFolderHandler : function (event) {
     event.preventDefault();
     ActionCreator.switchFolder(this.props.folder.parent, this.props.langtag);
