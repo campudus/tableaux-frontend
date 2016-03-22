@@ -9,7 +9,6 @@ export default class PageTitle extends React.Component {
   };
 
   render() {
-    console.log("render PageTitle");
     let {t} = this.props;
     return (
       <div id="header-pagename">{t(this.props.titleKey)}</div>

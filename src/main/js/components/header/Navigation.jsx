@@ -14,7 +14,6 @@ class Navigation extends React.Component {
   };
 
   handleClickOutside = (event) => {
-    console.log("handleClickOutside");
     this.setState({navigationOpen : false});
   };
 
@@ -24,7 +23,6 @@ class Navigation extends React.Component {
   };
 
   render = () => {
-    console.log("render navigationlist");
     const {navigationOpen} = this.state;
     const {langtag} = this.props;
 
