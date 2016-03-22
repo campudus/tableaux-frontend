@@ -16,6 +16,13 @@ var FilesCollection = AmpersandCollection.extend({
     Dispatcher.on(ActionTypes.REMOVE_FILE, this.removeFileHandler, this);
   },
 
+  destructor : function () {
+    Dispatcher.off(ActionTypes.ADD_FILE, this.mergeFileHandler, this);
+    Dispatcher.off(ActionTypes.CHANGE_FILE, this.changeFileHandler, this);
+    Dispatcher.off(ActionTypes.CHANGED_FILE_DATA, this.mergeFileHandler, this);
+    Dispatcher.off(ActionTypes.REMOVE_FILE, this.removeFileHandler, this);
+  },
+
   mergeFileHandler : function (payload) {
     if (payload.uuid === "undefined") {
       throw "file must already exist"
@@ -36,7 +43,6 @@ var FilesCollection = AmpersandCollection.extend({
   },
 
   changeFileHandler : function (payload) {
-    console.log("Change file.", payload);
     var self = this;
 
     if (payload.uuid === "undefined") {

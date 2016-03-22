@@ -47,12 +47,27 @@ export default class MediaView extends React.Component {
     folder.fetch({
       data : {langtag : this.props.langtag},
       success : () => {
+        let oldFolder = this.state.currentFolder;
+
         this.setState({
           currentFolder : folder,
           isLoading : false
         });
+
+        //Reset old folder
+        if (oldFolder) {
+          this.cleanUpFolder(oldFolder);
+        }
       }
     });
+  }
+
+  cleanUpFolder(folderToCleanUp) {
+    folderToCleanUp.files.destructor();
+    folderToCleanUp.subfolders.desctructor();
+    folderToCleanUp.files.reset();
+    folderToCleanUp.subfolders.reset();
+    folderToCleanUp = null;
   }
 
   onLanguageSwitch(newLangtag) {

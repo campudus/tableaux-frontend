@@ -13,6 +13,12 @@ var FoldersCollection = AmpersandCollection.extend({
     Dispatcher.on(ActionTypes.REMOVE_FOLDER, this.removeFolderHandler, this);
   },
 
+  desctructor: function(){
+    Dispatcher.off(ActionTypes.ADD_FOLDER, this.addFolderHandler, this);
+    Dispatcher.off(ActionTypes.CHANGE_FOLDER, this.changeFolderHandler, this);
+    Dispatcher.off(ActionTypes.REMOVE_FOLDER, this.removeFolderHandler, this);
+  },
+
   addFolderHandler : function (payload) {
     console.log("Add new folder.", payload);
     var self = this;
