@@ -67,8 +67,8 @@ class FilterPopup extends React.Component {
   };
 
   filterUpdate = (event) => {
-    let selectedFilterColumn = this.state.selectedFilterColumn || null;
-    let selectedSortColumn = this.state.selectedSortColumn || null;
+    let selectedFilterColumn = this.state.selectedFilterColumn;
+    let selectedSortColumn = this.state.selectedSortColumn;
     //TODO: For now we don't have any sort options
     ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, null);
   };
