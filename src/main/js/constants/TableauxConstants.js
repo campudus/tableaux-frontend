@@ -52,11 +52,15 @@ var TableauxConstant = {
 
     //Filter
     CHANGE_FILTER : null,
-    CLEAR_FILTER: null,
+    CLEAR_FILTER : null,
 
     //Spinner
     SPINNER_ON : null,
-    SPINNER_OFF : null
+    SPINNER_OFF : null,
+
+    //Context Menu
+    SHOW_ROW_CONTEXT_MENU : null,
+    CLOSE_ROW_CONTEXT_MENU : null
 
   }),
 

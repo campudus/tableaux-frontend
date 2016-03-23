@@ -30,7 +30,7 @@ var Columns = React.createClass({
     return (
       <div id="tableHeader" ref="tableHeader" className="heading">
         <div className="tableHeader-inner">
-          <div className="column-head language" key="-1"></div>
+          <div className="column-head meta-cell" key="-1">#</div>
           {
             this.props.columns.map((column, index) => {
               return self.renderColumn(self.props.langtag, column, index);

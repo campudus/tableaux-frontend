@@ -73,23 +73,33 @@ var Cell = React.createClass({
     }
   },
 
-  cellClicked : function (e) {
+  cellClicked : function (event, reactId, nativeEvent, withRightClick) {
     console.log("cell clicked: ", this.props.cell, "value: ", this.props.cell.value);
-    if (this.props.selected === true) {
+
+    if (withRightClick) {
+      console.log("cell clicked with rightclick.", arguments);
+      ActionCreator.toggleCellSelection(this.props.cell, this.props.selected, this.props.langtag);
+    } else if (this.props.selected === true) {
       ActionCreator.toggleCellEditing();
     } else {
       ActionCreator.toggleCellSelection(this.props.cell, this.props.selected, this.props.langtag);
     }
 
-    /*
-     Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
-     the table view when clicking on an element other than the cell.
-     */
-    e.stopPropagation();
+    if (!withRightClick) {
+      /*
+       Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
+       the table view when clicking on an element other than the cell.
+       */
+      event.stopPropagation();
+    }
     if (!this.props.shouldFocus) {
       ActionCreator.enableShouldCellFocus();
     }
 
+  },
+
+  rightClicked : function (e) {
+    this.cellClicked(...arguments, true);
   },
 
   onMouseDownHandler : function (e) {
@@ -150,14 +160,16 @@ var Cell = React.createClass({
     //onKeyDown event just for selected components
     if (this.props.selected) {
       return (
-        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1" onKeyDown={this.onKeyboardShortcut}
+        <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+             tabIndex="-1" onKeyDown={this.onKeyboardShortcut}
              onMouseDown={this.onMouseDownHandler}>
           {cellKind}
         </div>
       )
     } else {
       return (
-        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1">
+        <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+             tabIndex="-1">
           {cellKind}
         </div>
       )

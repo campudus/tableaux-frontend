@@ -13,6 +13,9 @@ var TableauxConstants = require('../constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
 var Directions = TableauxConstants.Directions;
 var ColumnKinds = TableauxConstants.ColumnKinds;
+import RowContextMenu from './contextMenu/RowContextMenu';
+import listensToClickOutside from 'react-onclickoutside/decorator';
+const RowContextMenuWithClickOutside = listensToClickOutside(RowContextMenu);
 
 var Table = React.createClass({
   mixins : [AmpersandMixin, KeyboardShortcutsMixin, OutsideClick],
@@ -34,6 +37,7 @@ var Table = React.createClass({
   keyboardRecentlyUsedTimer : null,
   tableHeaderId : "tableHeader",
   tableDOMNode : null,
+  tableDOMOffsetY : 0,
 
   getInitialState : function () {
     return {
@@ -45,7 +49,8 @@ var Table = React.createClass({
       //needed for multilanguage cell selection
       expandedRowIds : null, //Array
       selectedCellExpandedRow : null,
-      shouldCellFocus : true
+      shouldCellFocus : true,
+      rowContextMenu : null
     }
   },
 
@@ -67,6 +72,8 @@ var Table = React.createClass({
     Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
     Dispatcher.on(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, this.disableShouldCellFocus);
     Dispatcher.on(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
+    Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, this.showRowContextMenu);
+    Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, this.closeRowContextMenu);
 
     window.addEventListener("resize", this.windowResize);
     this.props.rows.on("add", self.rowAdded);
@@ -77,6 +84,7 @@ var Table = React.createClass({
     //Don't change this to state, its more performant during scroll
     this.headerDOMElement = document.getElementById(this.tableHeaderId);
     this.tableDOMNode = ReactDOM.findDOMNode(this);
+    this.tableDOMOffsetY = this.tableDOMNode.getBoundingClientRect().top;
   },
 
   componentDidUpdate : function () {
@@ -92,7 +100,6 @@ var Table = React.createClass({
   },
 
   componentWillUnmount : function () {
-
     Dispatcher.off(ActionTypes.TOGGLE_CELL_SELECTION, this.toggleCellSelection);
     Dispatcher.off(ActionTypes.TOGGLE_CELL_EDITING, this.toggleCellEditing);
     Dispatcher.off(ActionTypes.SELECT_NEXT_CELL, this.setNextSelectedCell);
@@ -100,10 +107,35 @@ var Table = React.createClass({
     Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, this.createRowOrSelectNext);
     Dispatcher.off(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, this.disableShouldCellFocus);
     Dispatcher.off(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
-
+    Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, this.showRowContextMenu);
+    Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, this.closeRowContextMenu);
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", this.rowAdded);
+  },
+
+  showRowContextMenu : function (payload) {
+    this.setState({
+      rowContextMenu : payload
+    });
+  },
+
+  closeRowContextMenu : function (payload) {
+    this.setState({
+      rowContextMenu : null
+    });
+  },
+
+  getRowContextMenu : function () {
+    const {rowContextMenu} = this.state;
+    if (rowContextMenu !== null) {
+      return <RowContextMenuWithClickOutside
+        {...rowContextMenu}
+        onClickOutside={()=>{this.setState({rowContextMenu : null})}}
+        offsetY={this.tableDOMOffsetY}/>
+    } else {
+      return null;
+    }
   },
 
   rowAdded : function () {
@@ -204,8 +236,7 @@ var Table = React.createClass({
   },
 
   toggleRowExpand : function (payload) {
-    var row = payload.row;
-    var toggleRowId = row.id;
+    var toggleRowId = payload.rowId;
     var newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
     var rowIdExists = false;
 
@@ -588,6 +619,7 @@ var Table = React.createClass({
                 shouldCellFocus={this.shouldCellFocus()}
           />
         </div>
+        {this.getRowContextMenu()}
       </section>
     );
   }

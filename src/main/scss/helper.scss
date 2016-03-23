@@ -15,17 +15,22 @@
   background-color: $color-very-dark;
 }
 
-@mixin header-panel-look() {
+@mixin context-menu-look() {
   display: block;
-  position: absolute;
-  top: 50px;
   background-color: white;
-  padding: 30px;
   min-width: 200px;
-  border-top: 5px solid $color-very-dark;
   @include box-shadow(0px 0px 50px 0px rgba(black, 0.3));
   max-height: 400px;
   overflow: hidden;
+}
+
+@mixin header-panel-look() {
+  @include context-menu-look;
+  position: absolute;
+  padding: 30px;
+  top: 50px;
+  border-top: 5px solid $color-very-dark;
+  max-height: 400px;
 }
 
 @mixin setBgColorAndHover($baseColor) {

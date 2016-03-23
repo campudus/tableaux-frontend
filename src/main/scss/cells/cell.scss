@@ -128,21 +128,6 @@
     }
   }
 
-  &.language {
-    .cell-content {
-      overflow: visible;
-      white-space: normal;
-      position: absolute;
-      top: 0;
-      right: 10px;
-
-      span {
-        display: block;
-        line-height: 1;
-      }
-    }
-  }
-
   &.repeat {
     height: $space-height-cell;
   }

@@ -6,6 +6,10 @@
     &.selected {
       background-color: $color-selected-row;
     }
+
+    &:focus, &:active {
+      outline-style: none;
+    }
   }
 
   .row-group.expanded {

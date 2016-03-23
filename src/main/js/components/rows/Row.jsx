@@ -8,32 +8,9 @@ var TableauxConstants = require('../../constants/TableauxConstants');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
+import MetaCell from '../cells/MetaCell';
+import ConfirmationOverlay from '../overlay/ConfirmationOverlay';
 
-var Ask = React.createClass({
-  propTypes : {
-    onYes : React.PropTypes.func.isRequired,
-    onCancel : React.PropTypes.func.isRequired,
-    content : React.PropTypes.element.isRequired
-  },
-
-  _onYes : function (event) {
-    this.props.onYes(event);
-  },
-
-  _onCancel : function (event) {
-    this.props.onCancel(event);
-  },
-
-  render : function () {
-    return (
-      <div className="ask">
-        {this.props.content}
-        <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
-        <button onClick={this._onCancel} className="button cancel">Cancel</button>
-      </div>
-    )
-  }
-});
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -79,16 +56,17 @@ var Row = React.createClass({
 
   toggleExpand : function () {
     ActionCreator.disableShouldCellFocus();
-    ActionCreator.toggleRowExpand(this.props.row);
+    ActionCreator.toggleRowExpand(this.props.row.id);
   },
 
   onClickDelete : function (e) {
     ActionCreator.disableShouldCellFocus();
     var question = <p>Do you really want to delete that row?</p>;
-    var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
+    var confirmationOverlay = <ConfirmationOverlay content={question} onYes={this.onYesOverlay}
+                                                   onCancel={this.onCancelOverlay}/>;
     ActionCreator.openOverlay({
       head : <span>Delete?</span>,
-      body : ask,
+      body : confirmationOverlay,
       type : "flexible"
     });
   },
@@ -101,19 +79,6 @@ var Row = React.createClass({
 
   onCancelOverlay : function (event) {
     ActionCreator.closeOverlay();
-  },
-
-  renderLangtag : function (langtag) {
-    var language = langtag.split(/-|_/)[0];
-    var country = langtag.split(/-|_/)[1];
-
-    var icon = country.toLowerCase() + ".png";
-
-    return (
-      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-        <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
-      </div>
-    );
   },
 
   renderSingleLanguageCell : function (cell, idx) {
@@ -157,6 +122,11 @@ var Row = React.createClass({
     })
   },
 
+  contextMenuHandler : function (e) {
+    e.preventDefault();
+    ActionCreator.showRowContextMenu(this.props.row.tableId, this.props.row.getId(), e.pageX, e.pageY);
+  },
+
   renderLanguageRow : function (langtag) {
     //Is this (multilanguage) row selected
     var selected = (this.props.isRowSelected && (langtag === this.props.selectedCellExpandedRow));
@@ -177,9 +147,11 @@ var Row = React.createClass({
     }
 
     return (
-      <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1">
+      <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1"
+           onContextMenu={this.contextMenuHandler}>
         {deleteButton}
-        {this.renderLangtag(langtag)}
+        <MetaCell langtag={langtag} rowId={this.props.row.getId()}
+                  onClick={this.toggleExpand} rowExpanded={this.props.isRowExpanded}/>
         {this.renderCells(langtag, selected)}
       </div>
     );
