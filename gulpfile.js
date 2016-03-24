@@ -31,12 +31,12 @@ try {
 }
 
 function copyAssets() {
-  return gulp.src(['src/main/@(img|fonts|locales)/**'])
+  return gulp.src(['src/main/@(img|locales)/**'])
     .pipe(gulp.dest(config.outDir));
 }
 
 function watchAssets() {
-  gulp.watch(['src/main/@(img|fonts|locales)/**'], {}, ['build:assets']);
+  gulp.watch(['src/main/@(img|locales)/**'], {}, ['build:assets']);
 }
 
 function runWebpack(callback) {
