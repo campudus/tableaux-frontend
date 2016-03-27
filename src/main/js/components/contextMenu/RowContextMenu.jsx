@@ -49,7 +49,7 @@ let RowContextMenu = (props) => {
   };
 
   const duplicateRow = (event) => {
-    console.log("duplicate the row!");
+    ActionCreator.duplicateRow(tableId, rowId);
   };
 
   return (

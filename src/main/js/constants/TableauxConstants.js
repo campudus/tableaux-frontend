@@ -24,6 +24,7 @@ var TableauxConstant = {
     REMOVE_ROW : null,
     CREATE_ROW : null,
     TOGGLE_ROW_EXPAND : null,
+    DUPLICATE_ROW : null,
 
     CREATE_ROW_OR_SELECT_NEXT_CELL : null,
 
@@ -61,6 +62,7 @@ var TableauxConstant = {
     //Context Menu
     SHOW_ROW_CONTEXT_MENU : null,
     CLOSE_ROW_CONTEXT_MENU : null
+
 
   }),
 

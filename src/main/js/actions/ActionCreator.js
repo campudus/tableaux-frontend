@@ -217,6 +217,10 @@ module.exports = {
 
   closeRowContextMenu : function (rowId, x, y) {
     Dispatcher.trigger(ActionTypes.CLOSE_ROW_CONTEXT_MENU);
+  },
+
+  duplicateRow : function (tableId, rowId) {
+    Dispatcher.trigger(ActionTypes.DUPLICATE_ROW, {tableId, rowId});
   }
 
 };

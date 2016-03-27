@@ -74,6 +74,8 @@ var Table = React.createClass({
     Dispatcher.on(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
     Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, this.showRowContextMenu);
     Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, this.closeRowContextMenu);
+    Dispatcher.on(ActionTypes.DUPLICATE_ROW, this.duplicateRow);
+
 
     window.addEventListener("resize", this.windowResize);
     this.props.rows.on("add", self.rowAdded);
@@ -109,6 +111,7 @@ var Table = React.createClass({
     Dispatcher.off(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
     Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, this.showRowContextMenu);
     Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, this.closeRowContextMenu);
+    Dispatcher.off(ActionTypes.DUPLICATE_ROW, this.duplicateRow);
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", this.rowAdded);
@@ -136,6 +139,13 @@ var Table = React.createClass({
     } else {
       return null;
     }
+  },
+
+  duplicateRow : function (payload) {
+    const {rows} = this.props;
+    const {tableId, rowId} = payload;
+    const rowToCopy = rows.get(rowId);
+    rowToCopy.duplicate();
   },
 
   rowAdded : function () {

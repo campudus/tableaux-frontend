@@ -3,6 +3,7 @@ var apiUrl = require('../helpers/apiUrl');
 var Columns = require('./Columns');
 var Cell = require('./Cell');
 var Cells = require('./Cells');
+var _ = require('lodash');
 
 var Row = AmpersandModel.extend({
   props : {
@@ -17,6 +18,24 @@ var Row = AmpersandModel.extend({
 
   collections : {
     cells : Cells
+  },
+
+  duplicate : function () {
+    //We need to create a new row, or the current is getting changed
+    let copiedRow = new Row(_.extend({}, this.attributes), {collection : this.collection, parent : this.parent});
+
+    copiedRow.save(null, {
+      url : this.url() + "/duplicate",
+      method : 'POST',
+      success : (row) => {
+        console.log("success duplicating row. rowId:", this.id, " of tableId:", this.tableId, " data:", row);
+        this.collection.add(row);
+      },
+      error : () => {
+        console.log("error duplicating row.");
+      }
+
+    });
   },
 
   parse : function (attrs, options) {
