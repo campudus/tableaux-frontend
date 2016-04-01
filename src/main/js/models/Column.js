@@ -16,6 +16,14 @@ var Column = AmpersandModel.extend({
     concats : {
       type : 'object',
       default : null
+    },
+    displayName : {
+      type : 'object',
+      default : null
+    },
+    description : {
+      type : 'object',
+      default : null
     }
   },
 

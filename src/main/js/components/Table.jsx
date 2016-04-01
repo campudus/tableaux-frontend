@@ -575,7 +575,7 @@ var Table = React.createClass({
                onKeyDown={this.onKeyboardShortcut}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <Columns ref="columns" columns={this.props.table.columns}/>
+          <Columns ref="columns" langtag={this.props.langtag} columns={this.props.table.columns}/>
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
                 rows={this.props.rows}
