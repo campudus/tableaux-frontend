@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
 import ActionCreator from './../../actions/ActionCreator';
 import ConfirmationOverlay from '../overlay/ConfirmationOverlay';
@@ -6,36 +7,76 @@ import ConfirmationOverlay from '../overlay/ConfirmationOverlay';
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
 
-let RowContextMenu = (props) => {
-  const {x,y,t,rowId,tableId,offsetY} = props;
-  console.log("RowContextMenu:", props);
+class RowContextMenu extends React.Component {
 
-  const cssStyle = {
-    left : x + CLICK_OFFSET,
-    top : y - offsetY + CLICK_OFFSET
+  constructor(props) {
+    super(props);
+    this.state = {
+      yOffset : this.getCursorPositionY(),
+      xOffset : this.getCursorPositionX()
+    };
+  }
+
+  componentDidMount = () => {
+    const DOMNode = ReactDOM.findDOMNode(this);
+    const bottomYPosition = DOMNode.getBoundingClientRect().bottom;
+    const rightXPosition = DOMNode.getBoundingClientRect().right;
+    const viewportHeight = document.documentElement.clientHeight;
+    const viewportWidth = document.documentElement.clientWidth;
+    const {yOffset, xOffset} = this.state;
+    let newYOffset, newXOffset;
+
+    if (bottomYPosition > viewportHeight) {
+      const heightOfContextMenu = DOMNode.offsetHeight;
+      newYOffset = this.getCursorPositionY() - heightOfContextMenu - CLICK_OFFSET;
+    }
+
+    if (rightXPosition > viewportWidth) {
+      const widthOfContextMenu = DOMNode.offsetWidth;
+      newXOffset = this.getCursorPositionX() - widthOfContextMenu - CLICK_OFFSET;
+    }
+
+    if (newYOffset || newXOffset) {
+      this.setState({
+        yOffset : newYOffset || yOffset,
+        xOffset : newXOffset || xOffset
+      });
+    }
+
   };
 
-  const closeRowContextMenu = () => {
+  //we add a little offset, so the first list element is not selected
+  getCursorPositionY = () => {
+    const {y, offsetY} = this.props;
+    return y - offsetY + CLICK_OFFSET;
+  };
+
+  getCursorPositionX = () => {
+    const {x} = this.props;
+    return x + CLICK_OFFSET;
+  };
+
+  closeRowContextMenu = () => {
     ActionCreator.closeRowContextMenu();
   };
 
-  const onYesOverlay = (event) => {
+  onYesOverlay = (event) => {
     //TODO: Table gets rendered 3 times
+    const {tableId, rowId} = this.props;
     ActionCreator.removeRow(tableId, rowId);
-    onCancelOverlay(event);
-    closeRowContextMenu();
+    this.onCancelOverlay(event);
+    this.closeRowContextMenu();
   };
 
-  const onCancelOverlay = (event) => {
+  onCancelOverlay = (event) => {
     ActionCreator.closeOverlay();
   };
 
-  const deleteRow = (event) => {
-
+  deleteRow = (event) => {
     //ActionCreator.disableShouldCellFocus();
     var question = <p>Do you really want to delete that row?</p>;
-    var confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYesOverlay}
-                                                   onCancel={onCancelOverlay}/>;
+    var confirmationOverlay = <ConfirmationOverlay content={question} onYes={this.onYesOverlay}
+                                                   onCancel={this.onCancelOverlay}/>;
     ActionCreator.openOverlay({
       head : <span>Delete?</span>,
       body : confirmationOverlay,
@@ -43,23 +84,34 @@ let RowContextMenu = (props) => {
     });
   };
 
-  const showTranslations = (event) => {
+  showTranslations = (event) => {
+    const {props:{rowId}, closeRowContextMenu} = this;
     ActionCreator.toggleRowExpand(rowId);
     closeRowContextMenu();
   };
 
-  const duplicateRow = (event) => {
+  duplicateRow = (event) => {
+    const {tableId, rowId} = this.props;
     ActionCreator.duplicateRow(tableId, rowId);
   };
 
-  return (
-    <div className="context-menu row-context-menu" style={cssStyle}>
-      <a href="#" onClick={duplicateRow}>Zeile duplizieren</a>
-      <a href="#" onClick={showTranslations}>Übersetzungen zeigen</a>
-      <a href="#" onClick={deleteRow}>Zeile löschen</a>
-    </div>
-  );
-};
+  render = () => {
+    const {duplicateRow, showTranslations, deleteRow} = this;
+    const cssStyle = {
+      left : this.state.xOffset,
+      top : this.state.yOffset
+    };
+
+    return (
+      <div className="context-menu row-context-menu" style={cssStyle}>
+        <a href="#" onClick={duplicateRow}>Zeile duplizieren</a>
+        <a href="#" onClick={showTranslations}>Übersetzungen zeigen</a>
+        <a href="#" onClick={deleteRow}>Zeile löschen</a>
+      </div>
+    );
+  }
+
+}
 
 RowContextMenu.propTypes = {
   x : React.PropTypes.number.isRequired,
