@@ -98,7 +98,10 @@ var TableauxConstant = {
   DateTimeFormats : {
     formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
     formatForUser : "DD.MM.YYYY - HH:mm"
-  }
+  },
+
+  //Fixed pixel height of a single row including border
+  RowHeight : 46
 
 };
 

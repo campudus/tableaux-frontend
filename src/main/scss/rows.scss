@@ -7,6 +7,10 @@
       background-color: $color-selected-row;
     }
 
+    &.duplicated {
+      background-color: #FFF8ED;
+    }
+
     &:focus, &:active {
       outline-style: none;
     }

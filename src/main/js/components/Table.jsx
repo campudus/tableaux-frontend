@@ -9,10 +9,7 @@ var Rows = require('./rows/Rows.jsx');
 var KeyboardShortcutsMixin = require('./mixins/KeyboardShortcutsMixin');
 var OutsideClick = require('react-onclickoutside');
 var ActionCreator = require('../actions/ActionCreator');
-var TableauxConstants = require('../constants/TableauxConstants');
-var ActionTypes = TableauxConstants.ActionTypes;
-var Directions = TableauxConstants.Directions;
-var ColumnKinds = TableauxConstants.ColumnKinds;
+import {ActionTypes,Directions,ColumnKinds,RowHeight} from '../constants/TableauxConstants';
 import RowContextMenu from './contextMenu/RowContextMenu';
 import listensToClickOutside from 'react-onclickoutside/decorator';
 const RowContextMenuWithClickOutside = listensToClickOutside(RowContextMenu);
@@ -38,8 +35,9 @@ var Table = React.createClass({
   tableHeaderId : "tableHeader",
   tableDOMNode : null,
   tableDOMOffsetY : 0,
+  tableRowsDom : null, //scrolling rows container
 
-  getInitialState : function () {
+  getInitialState() {
     return {
       offsetTableData : 0,
       windowHeight : window.innerHeight,
@@ -54,7 +52,7 @@ var Table = React.createClass({
     }
   },
 
-  /*shouldComponentUpdate : function (nextProps, nextState) {
+  /*shouldComponentUpdate  (nextProps, nextState) {
    if (_.isEqual(nextProps, this.props) && _.isEqual(nextState, this.state)) {
    console.log("###### Table Props are equal. dont update.");
    return false;
@@ -63,7 +61,7 @@ var Table = React.createClass({
    }
    },*/
 
-  componentWillMount : function () {
+  componentWillMount() {
     var self = this;
     Dispatcher.on(ActionTypes.TOGGLE_CELL_SELECTION, this.toggleCellSelection);
     Dispatcher.on(ActionTypes.TOGGLE_CELL_EDITING, this.toggleCellEditing);
@@ -81,15 +79,16 @@ var Table = React.createClass({
     this.props.rows.on("add", self.rowAdded);
   },
 
-  componentDidMount : function () {
-    this.setState({offsetTableData : ReactDOM.findDOMNode(this.refs.tableRows).getBoundingClientRect().top});
+  componentDidMount() {
+    this.tableRowsDom = ReactDOM.findDOMNode(this.refs.tableRows);
+    this.setState({offsetTableData : this.tableRowsDom.getBoundingClientRect().top});
     //Don't change this to state, its more performant during scroll
     this.headerDOMElement = document.getElementById(this.tableHeaderId);
     this.tableDOMNode = ReactDOM.findDOMNode(this);
     this.tableDOMOffsetY = this.tableDOMNode.getBoundingClientRect().top;
   },
 
-  componentDidUpdate : function () {
+  componentDidUpdate() {
     console.log("Table did update.");
     //When overlay is open we don't want anything to force focus inside the table
     if (!this.props.overlayOpen) {
@@ -101,7 +100,7 @@ var Table = React.createClass({
     }
   },
 
-  componentWillUnmount : function () {
+  componentWillUnmount() {
     Dispatcher.off(ActionTypes.TOGGLE_CELL_SELECTION, this.toggleCellSelection);
     Dispatcher.off(ActionTypes.TOGGLE_CELL_EDITING, this.toggleCellEditing);
     Dispatcher.off(ActionTypes.SELECT_NEXT_CELL, this.setNextSelectedCell);
@@ -117,19 +116,19 @@ var Table = React.createClass({
     this.props.table.rows.off("add", this.rowAdded);
   },
 
-  showRowContextMenu : function (payload) {
+  showRowContextMenu  (payload) {
     this.setState({
       rowContextMenu : payload
     });
   },
 
-  closeRowContextMenu : function (payload) {
+  closeRowContextMenu  (payload) {
     this.setState({
       rowContextMenu : null
     });
   },
 
-  getRowContextMenu : function () {
+  getRowContextMenu() {
     const {rowContextMenu} = this.state;
     if (rowContextMenu !== null) {
       return <RowContextMenuWithClickOutside
@@ -141,41 +140,62 @@ var Table = React.createClass({
     }
   },
 
-  duplicateRow : function (payload) {
+  duplicateRow(payload) {
     const {rows} = this.props;
-    const {tableId, rowId} = payload;
+    const {rowId} = payload;
     const rowToCopy = rows.get(rowId);
-    rowToCopy.duplicate();
+
+    rowToCopy.duplicate((row) => {
+      this.scrollToRow(row);
+    });
   },
 
-  rowAdded : function () {
+  //TODO: Move all this to rows component, with props/actions. Problem is, this executes faster, than the row added to dom, so we get old height.
+  scrollToRow(row){
+    const {tableRowsDom} = this;
+    const {rows} = this.props;
+    const indexOfRow = rows.indexOf(row);
+    const yPositionRow = RowHeight * indexOfRow;
+    const rowsDomHeight = tableRowsDom.scrollHeight;
+    const rowsDomScrollTop = tableRowsDom.scrollTop;
+    const rowsViewportHeight = tableRowsDom.clientHeight;
+    console.log("row added at index:", indexOfRow, ". jump to bottom at y:", yPositionRow + RowHeight - rowsViewportHeight, ", new row:", row, " is duplicated", row.recentlyDuplicated);
+
+    //check if scroll is necessary
+    //if ((rowsDomScrollTop > yPositionRow) || (yPositionRow > rowsDomScrollTop + rowsViewportHeight)) {
+    this.disableShouldCellFocus();
+    tableRowsDom.scrollTop = rowsDomHeight - rowsViewportHeight; //yPositionRow + RowHeight - rowsViewportHeight;
+    //}
+  },
+
+  rowAdded() {
     if (this.selectNewCreatedRow) {
       this.selectNewCreatedRow = false;
       this.setNextSelectedCell(Directions.DOWN);
     }
   },
 
-  disableShouldCellFocus : function () {
+  disableShouldCellFocus() {
     if (this.state.shouldCellFocus) {
       console.log("Table.disableShouldCellFocus");
       this.setState({shouldCellFocus : false});
     }
   },
 
-  enableShouldCellFocus : function () {
+  enableShouldCellFocus() {
     if (!this.state.shouldCellFocus) {
       console.log("Table.enableShouldCellFocus");
       this.setState({shouldCellFocus : true});
     }
   },
 
-  shouldCellFocus : function () {
+  shouldCellFocus() {
     //we dont want to force cell focus when overlay is open
     return this.state.shouldCellFocus && !this.props.overlayOpen;
   },
 
   //Takes care that we never loose focus of the table to guarantee keyboard events are triggered
-  checkFocusInsideTable : function () {
+  checkFocusInsideTable() {
     //Is a cell selected?
     if (this.state.selectedCell !== null) {
       var tableDOMNode = this.tableDOMNode;
@@ -195,10 +215,10 @@ var Table = React.createClass({
    * Checks if selected cell is overflowing and adjusts the scroll position
    * This enhances the default browser behaviour because it checks if the selected cell is completely visible.
    */
-  updateScrollViewToSelectedCell : function () {
+  updateScrollViewToSelectedCell() {
     console.log("Scroll View Update happens.");
     //Scrolling container
-    var tableRowsDom = ReactDOM.findDOMNode(this.refs.tableRows);
+    var tableRowsDom = this.tableRowsDom;
     //Are there any selected cells?
     var cellsDom = tableRowsDom.getElementsByClassName("cell selected");
     if (cellsDom.length > 0) {
@@ -236,7 +256,7 @@ var Table = React.createClass({
     }
   },
 
-  createRowOrSelectNext : function () {
+  createRowOrSelectNext() {
     if (this.isLastRowSelected()) {
       this.selectNewCreatedRow = true;
       ActionCreator.addRow(this.props.table.id);
@@ -245,12 +265,12 @@ var Table = React.createClass({
     }
   },
 
-  toggleRowExpand : function (payload) {
+  toggleRowExpand  (payload) {
     var toggleRowId = payload.rowId;
     var newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
     var rowIdExists = false;
 
-    newExpandedRowIds.forEach(function (rowId, index) {
+    newExpandedRowIds.forEach((rowId, index)=> {
       if (rowId === toggleRowId) {
         //already expanded: remove to close expanding row
         newExpandedRowIds.splice(index, 1);
@@ -269,7 +289,7 @@ var Table = React.createClass({
 
   },
 
-  toggleCellSelection : function (params) {
+  toggleCellSelection  (params) {
     this.setState({
       selectedCell : params.cell,
       selectedCellEditing : false,
@@ -277,7 +297,7 @@ var Table = React.createClass({
     });
   },
 
-  toggleCellEditing : function (params) {
+  toggleCellEditing  (params) {
     var editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
     var selectedCell = this.state.selectedCell;
     if (selectedCell) {
@@ -290,7 +310,7 @@ var Table = React.createClass({
     }
   },
 
-  setNextSelectedCell : function (direction) {
+  setNextSelectedCell  (direction) {
 
     if (!this.state.selectedCell) {
       return;
@@ -345,7 +365,7 @@ var Table = React.createClass({
     }
   },
 
-  isLastRowSelected : function () {
+  isLastRowSelected() {
     var rows = this.props.rows;
     var numberOfRows = rows.length;
     var currentRowId = this.getCurrentSelectedRowId();
@@ -358,7 +378,7 @@ var Table = React.createClass({
   },
 
   //returns the next row and the next language cell when expanded
-  getNextRowCell : function (currentRowId, getPrev) {
+  getNextRowCell  (currentRowId, getPrev) {
     var rows = this.props.rows;
     var currentRow = rows.get(currentRowId);
     var indexCurrentRow = rows.indexOf(currentRow);
@@ -421,12 +441,12 @@ var Table = React.createClass({
 
   },
 
-  getPreviousRow : function (currentRowId) {
+  getPreviousRow  (currentRowId) {
     return this.getNextRowCell(currentRowId, true);
   }
   ,
 
-  getNextColumnCell : function (currenColumnId, getPrev) {
+  getNextColumnCell  (currenColumnId, getPrev) {
     var self = this;
     var currentColumn = this.props.table.columns.get(currenColumnId);
     var indexCurrentColumn = this.props.table.columns.indexOf(currentColumn);
@@ -452,12 +472,12 @@ var Table = React.createClass({
   }
   ,
 
-  getPreviousColumn : function (currentColumnId) {
+  getPreviousColumn(currentColumnId) {
     return this.getNextColumnCell(currentColumnId, true);
   }
   ,
 
-  getKeyboardShortcuts : function () {
+  getKeyboardShortcuts() {
     var self = this;
 
     //Force the next selected cell to be focused
@@ -465,67 +485,60 @@ var Table = React.createClass({
       this.enableShouldCellFocus();
     }
     return {
-      left : function (event) {
+      left(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             self.setNextSelectedCell(Directions.LEFT);
           }
         );
       },
-      right : function (event) {
+      right(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             self.setNextSelectedCell(Directions.RIGHT);
           }
         );
       },
-      tab : function (event) {
+      tab(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             self.setNextSelectedCell(Directions.RIGHT);
           }
         );
       },
-      up : function (event) {
+      up(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             self.setNextSelectedCell(Directions.UP);
           }
         );
       },
-      down : function (event) {
+      down(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             self.setNextSelectedCell(Directions.DOWN);
           }
         );
       },
-      enter : function (event) {
+      enter(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             if (self.state.selectedCell && !self.state.selectedCellEditing) {
               self.toggleCellEditing();
             }
           }
         );
       },
-      escape : function (event) {
+      escape(event) {
         event.preventDefault();
-        self.preventSleepingOnTheKeyboard(
-          function () {
+        self.preventSleepingOnTheKeyboard(() => {
             if (self.state.selectedCell && self.state.selectedCellEditing) {
               self.toggleCellEditing({editing : false});
             }
           }
         );
       },
-      text : function (event) {
+      text(event) {
         if (self.state.selectedCell && !self.state.selectedCellEditing
           && (self.state.selectedCell.kind === ColumnKinds.text
           || self.state.selectedCell.kind === ColumnKinds.shorttext
@@ -540,25 +553,25 @@ var Table = React.createClass({
    * Helper to prevent massive events on pressing navigation keys for changing cell selections
    * @param cb
    */
-  preventSleepingOnTheKeyboard : function (cb) {
+  preventSleepingOnTheKeyboard(cb) {
     var self = this;
     if (this.keyboardRecentlyUsedTimer === null) {
-      this.keyboardRecentlyUsedTimer = setTimeout(function () {
+      this.keyboardRecentlyUsedTimer = setTimeout(()=> {
         self.keyboardRecentlyUsedTimer = null;
       }, 100);
       cb();
     }
   },
 
-  getCurrentSelectedRowId : function () {
+  getCurrentSelectedRowId() {
     return this.state.selectedCell ? this.state.selectedCell.rowId : 0;
   },
 
-  getCurrentSelectedColumnId : function () {
+  getCurrentSelectedColumnId() {
     return this.state.selectedCell ? this.state.selectedCell.column.getId() : 0;
   },
 
-  handleClickOutside : function (event) {
+  handleClickOutside(event) {
     /*
      Prevent to render when clicking on already selected cell and don't clear when some cell is editing. This way cells
      like shorttext will be saved on the first click outside and on the second click it gets deselected.
@@ -570,7 +583,7 @@ var Table = React.createClass({
     }
   },
 
-  handleScroll : function (e) {
+  handleScroll(e) {
     //only when horizontal scroll changed
     if (e.target.scrollLeft != this.scrolledXBefore) {
       var scrolledX = e.target.scrollLeft;
@@ -583,20 +596,20 @@ var Table = React.createClass({
   /**
    * The cleaner function but costs more performance when scrolling on IE or Mac with Retina
    */
-  /*handleScrollReact : function (e) {
+  /*handleScrollReact  (e) {
    var scrolledX = e.target.scrollLeft;
    this.setState({scrolledHorizontal : scrolledX});
    },*/
 
-  windowResize : function () {
+  windowResize() {
     this.setState({windowHeight : window.innerHeight});
   },
 
-  tableDataHeight : function () {
+  tableDataHeight() {
     return (this.state.windowHeight - this.state.offsetTableData);
   },
 
-  onMouseDownHandler : function (e) {
+  onMouseDownHandler(e) {
     //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes in the header
     if (this.tableDOMNode.contains(document.activeElement)) {
       console.log("onMouseDown", e.target);
@@ -609,7 +622,7 @@ var Table = React.createClass({
     }
   },
 
-  render : function () {
+  render() {
     console.log("Rendering table");
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1" onScroll={this.handleScroll}

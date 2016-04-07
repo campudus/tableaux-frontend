@@ -128,15 +128,21 @@ var Row = React.createClass({
   },
 
   renderLanguageRow : function (langtag) {
-    //Is this (multilanguage) row selected
-    var selected = (this.props.isRowSelected && (langtag === this.props.selectedCellExpandedRow));
-    //Set row class optional with selected class
-    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
+    let {isRowSelected, selectedCellExpandedRow, row, isRowExpanded} = this.props;
     var deleteButton = null;
+    //Is this (multilanguage) row selected
+    var selected = (isRowSelected && (langtag === selectedCellExpandedRow));
+    if (selected && row.recentlyDuplicated) {
+      //Todo: TBD: isn't it overkill to throw a action for this?
+      //We want to visually clear the highlighting of a recently duplicated row
+      row.recentlyDuplicated = false;
+    }
+    //Set row class optional with selected class
+    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated ? " duplicated" : "");
 
     // Add delete button to default-language row
     // or to every not expanded row
-    if ((langtag === TableauxConstants.DefaultLangtag || !this.props.isRowExpanded) && this.props.isRowSelected) {
+    if ((langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>

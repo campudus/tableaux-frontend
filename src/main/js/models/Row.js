@@ -13,14 +13,18 @@ var Row = AmpersandModel.extend({
 
   session : {
     tableId : 'number',
-    columns : 'object'
+    columns : 'object',
+    recentlyDuplicated : {
+      type : 'boolean',
+      default : false
+    }
   },
 
   collections : {
     cells : Cells
   },
 
-  duplicate : function () {
+  duplicate : function (cb) {
     //We need to create a new row, or the current is getting changed
     let copiedRow = new Row(_.extend({}, this.attributes), {collection : this.collection, parent : this.parent});
 
@@ -29,7 +33,9 @@ var Row = AmpersandModel.extend({
       method : 'POST',
       success : (row) => {
         console.log("success duplicating row. rowId:", this.id, " of tableId:", this.tableId, " data:", row);
+        row.recentlyDuplicated = true;
         this.collection.add(row);
+        cb(row);
       },
       error : () => {
         console.log("error duplicating row.");
