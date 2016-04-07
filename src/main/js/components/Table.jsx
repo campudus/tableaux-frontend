@@ -36,6 +36,7 @@ var Table = React.createClass({
   tableDOMNode : null,
   tableDOMOffsetY : 0,
   tableRowsDom : null, //scrolling rows container
+  columnsDom : null,
 
   getInitialState() {
     return {
@@ -81,6 +82,7 @@ var Table = React.createClass({
 
   componentDidMount() {
     this.tableRowsDom = ReactDOM.findDOMNode(this.refs.tableRows);
+    this.columnsDom = ReactDOM.findDOMNode(this.refs.columns);
     this.setState({offsetTableData : this.tableRowsDom.getBoundingClientRect().top});
     //Don't change this to state, its more performant during scroll
     this.headerDOMElement = document.getElementById(this.tableHeaderId);
@@ -146,6 +148,7 @@ var Table = React.createClass({
     const rowToCopy = rows.get(rowId);
 
     rowToCopy.duplicate((row) => {
+      Dispatcher.trigger(ActionTypes.SHOW_TOAST, 'Row duplicated.');
       this.scrollToRow(row);
     });
   },
@@ -613,6 +616,11 @@ var Table = React.createClass({
     //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes in the header
     if (this.tableDOMNode.contains(document.activeElement)) {
       console.log("onMouseDown", e.target);
+      //deselect a cell when clicking in white area of table or the column
+      if (e.target === this.tableRowsDom || this.columnsDom.contains(e.target)) {
+        this.handleClickOutside(e);
+      }
+
       /*
        Important: prevents loosing the focus of a cell when clicking something.
        When a child component inside of the Table needs focus attach a "onMouseDown" event to it and

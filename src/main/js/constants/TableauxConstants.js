@@ -61,7 +61,10 @@ var TableauxConstant = {
 
     //Context Menu
     SHOW_ROW_CONTEXT_MENU : null,
-    CLOSE_ROW_CONTEXT_MENU : null
+    CLOSE_ROW_CONTEXT_MENU : null,
+
+    //Toast
+    SHOW_TOAST : null
 
 
   }),

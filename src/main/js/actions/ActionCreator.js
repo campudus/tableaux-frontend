@@ -221,6 +221,10 @@ module.exports = {
 
   duplicateRow : function (tableId, rowId) {
     Dispatcher.trigger(ActionTypes.DUPLICATE_ROW, {tableId, rowId});
+  },
+
+  showToast : function (content) {
+    Dispatcher.trigger(ActionTypes.SHOW_TOAST, content);
   }
 
 };
