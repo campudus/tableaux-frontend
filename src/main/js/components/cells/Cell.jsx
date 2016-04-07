@@ -74,25 +74,25 @@ var Cell = React.createClass({
   },
 
   cellClicked : function (event, reactId, nativeEvent, withRightClick) {
-    console.log("cell clicked: ", this.props.cell, "value: ", this.props.cell.value);
+    let {cell, editing, selected, langtag, shouldFocus} = this.props;
+    console.log("cell clicked: ", cell, "value: ", cell.value);
 
-    if (withRightClick) {
-      console.log("cell clicked with rightclick.", arguments);
-      ActionCreator.toggleCellSelection(this.props.cell, this.props.selected, this.props.langtag);
-    } else if (this.props.selected === true) {
-      ActionCreator.toggleCellEditing();
+    //we select the cell when clicking or right clicking
+    if (!selected) {
+      console.log("toggle with rightclick");
+      ActionCreator.toggleCellSelection(cell, selected, langtag);
     } else {
-      ActionCreator.toggleCellSelection(this.props.cell, this.props.selected, this.props.langtag);
+      ActionCreator.toggleCellEditing();
     }
 
-    if (!withRightClick) {
+    if (!withRightClick || editing) {
       /*
        Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
        the table view when clicking on an element other than the cell.
        */
       event.stopPropagation();
     }
-    if (!this.props.shouldFocus) {
+    if (!shouldFocus) {
       ActionCreator.enableShouldCellFocus();
     }
 
