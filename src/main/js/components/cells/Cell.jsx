@@ -77,11 +77,10 @@ var Cell = React.createClass({
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
     console.log("cell clicked: ", cell, "value: ", cell.value);
 
-    //we select the cell when clicking or right clicking
+    //we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
-      console.log("toggle with rightclick");
       ActionCreator.toggleCellSelection(cell, selected, langtag);
-    } else {
+    } else if (!withRightClick) {
       ActionCreator.toggleCellEditing();
     }
 
