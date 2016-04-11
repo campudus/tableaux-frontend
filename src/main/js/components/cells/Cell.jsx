@@ -1,7 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
-var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 var ActionCreator = require('../../actions/ActionCreator');
 var ColumnKinds = require('../../constants/TableauxConstants').ColumnKinds;
 
@@ -14,9 +13,11 @@ var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 
+import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
+
 
 var Cell = React.createClass({
-  mixins : [AmpersandMixin, KeyboardShortcutsMixin],
+  mixins : [AmpersandMixin],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -140,7 +141,8 @@ var Cell = React.createClass({
         break;
 
       case ColumnKinds.shorttext:
-        cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
+                                  setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case ColumnKinds.concat:
@@ -160,7 +162,7 @@ var Cell = React.createClass({
     if (this.props.selected) {
       return (
         <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
-             tabIndex="-1" onKeyDown={this.onKeyboardShortcut}
+             tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
           {cellKind}
         </div>

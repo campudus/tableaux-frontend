@@ -1,6 +1,5 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var _ = require('lodash');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
@@ -130,7 +129,10 @@ var NumericEditCell = React.createClass({
   render : function () {
     return (
       <div className={'cell-content editing'}>
-        <input autoFocus type="number" className="input" name={this.inputName} defaultValue={this.getValue()}
+        <input autoFocus type="number"
+               className="input"
+               name={this.inputName}
+               defaultValue={this.getValue()}
                onChange={this.onChangeHandler} ref="input"/>
       </div>
     );

@@ -12,7 +12,8 @@ var ShortTextCell = React.createClass({
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
     cell : React.PropTypes.object.isRequired,
-    editing : React.PropTypes.bool.isRequired
+    editing : React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: React.PropTypes.func
   },
 
   getInitialState : function () {
@@ -65,7 +66,8 @@ var ShortTextCell = React.createClass({
     if (!this.props.editing) {
       return this.renderTextCell(cell, this.getValue());
     } else {
-      return <ShortTextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}/>;
+      return <ShortTextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}
+                                setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }
   }
 });

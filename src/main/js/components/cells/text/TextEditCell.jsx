@@ -2,14 +2,15 @@ var React = require('react');
 var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var ExpandButton = require('./ExpandButton.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
 
+import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
+
 var TextEditCell = React.createClass({
 
-  mixins : [KeyboardShortcutsMixin, OutsideClick],
+  mixins : [OutsideClick],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -78,7 +79,7 @@ var TextEditCell = React.createClass({
     return (
       <div className={'cell-content editing'}>
         <textarea autoFocus className="input" name={this.getInputName()} defaultValue={this.props.defaultText}
-                  ref="input" rows="4" onKeyDown={this.onKeyboardShortcut}></textarea>
+                  ref="input" rows="4" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}></textarea>
         <ExpandButton onTrigger={this.openOverlay}/>
       </div>
     );
