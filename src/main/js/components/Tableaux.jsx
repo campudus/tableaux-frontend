@@ -130,8 +130,10 @@ export default class Tableaux extends React.Component {
     }
   }
 
-  showToast(content) {
-    content = "Row duplicated";
+  showToast(payload) {
+    //default 1000ms
+    const {content, milliseconds = 1000} = payload;
+
     this.setState({
       toast : content
     });
@@ -139,7 +141,8 @@ export default class Tableaux extends React.Component {
     if (this.toastTimer) {
       clearInterval(this.toastTimer);
     }
-    this.toastTimer = setTimeout(this.hideToast, 1000);
+
+    this.toastTimer = setTimeout(this.hideToast, milliseconds);
   }
 
   hideToast = () => {

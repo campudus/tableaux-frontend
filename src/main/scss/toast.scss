@@ -15,7 +15,7 @@
   z-index: 98; //behind overlay (99)
   overflow: hidden;
   cursor: default;
-  pointer-events: none;
+  //pointer-events: none;
 
   @include box-shadow(0px 0px 50px 0px rgba(black, 0.3));
   @include border-radius(5px);

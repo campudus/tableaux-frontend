@@ -91,6 +91,7 @@ class RowContextMenu extends React.Component {
   };
 
   duplicateRow = (event) => {
+    console.log("duplicateRow triggered");
     const {tableId, rowId} = this.props;
     ActionCreator.duplicateRow(tableId, rowId);
   };

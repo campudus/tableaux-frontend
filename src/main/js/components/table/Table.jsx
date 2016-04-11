@@ -3,19 +3,23 @@ var ReactDOM = require('react-dom');
 var _ = require('lodash');
 var App = require('ampersand-app');
 var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../dispatcher/Dispatcher');
-var Columns = require('./columns/Columns.jsx');
-var Rows = require('./rows/Rows.jsx');
-var KeyboardShortcutsMixin = require('./mixins/KeyboardShortcutsMixin');
+var Dispatcher = require('../../dispatcher/Dispatcher');
+var Columns = require('./../columns/Columns.jsx');
+var Rows = require('./../rows/Rows.jsx');
 var OutsideClick = require('react-onclickoutside');
-var ActionCreator = require('../actions/ActionCreator');
-import {ActionTypes,Directions,ColumnKinds,RowHeight} from '../constants/TableauxConstants';
-import RowContextMenu from './contextMenu/RowContextMenu';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+var ActionCreator = require('../../actions/ActionCreator');
+import {ActionTypes,Directions,ColumnKinds,RowHeight} from '../../constants/TableauxConstants';
+import RowContextMenu from './../contextMenu/RowContextMenu';
+import listensToClickOutside from '../../../../../node_modules/react-onclickoutside/decorator';
+import {duplicateRow} from './tableRowsWorker';
+import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
 const RowContextMenuWithClickOutside = listensToClickOutside(RowContextMenu);
 
+
 var Table = React.createClass({
-  mixins : [AmpersandMixin, KeyboardShortcutsMixin, OutsideClick],
+  mixins : [AmpersandMixin, OutsideClick],
+
+  displayName : "Table",
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -73,13 +77,11 @@ var Table = React.createClass({
     Dispatcher.on(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
     Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, this.showRowContextMenu);
     Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, this.closeRowContextMenu);
-    Dispatcher.on(ActionTypes.DUPLICATE_ROW, this.duplicateRow);
-
+    Dispatcher.on(ActionTypes.DUPLICATE_ROW, this._duplicateRow);
 
     window.addEventListener("resize", this.windowResize);
     this.props.rows.on("add", self.rowAdded);
   },
-
   componentDidMount() {
     this.tableRowsDom = ReactDOM.findDOMNode(this.refs.tableRows);
     this.columnsDom = ReactDOM.findDOMNode(this.refs.columns);
@@ -112,19 +114,20 @@ var Table = React.createClass({
     Dispatcher.off(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, this.enableShouldCellFocus);
     Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, this.showRowContextMenu);
     Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, this.closeRowContextMenu);
-    Dispatcher.off(ActionTypes.DUPLICATE_ROW, this.duplicateRow);
+    Dispatcher.off(ActionTypes.DUPLICATE_ROW, this._duplicateRow);
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", this.rowAdded);
   },
 
-  showRowContextMenu  (payload) {
+  showRowContextMenu(payload) {
     this.setState({
       rowContextMenu : payload
     });
   },
 
-  closeRowContextMenu  (payload) {
+  closeRowContextMenu(payload) {
+    console.log("closeRowContextMenu", payload);
     this.setState({
       rowContextMenu : null
     });
@@ -139,42 +142,6 @@ var Table = React.createClass({
         offsetY={this.tableDOMOffsetY}/>
     } else {
       return null;
-    }
-  },
-
-  duplicateRow(payload) {
-    const {rows} = this.props;
-    const {rowId} = payload;
-    const rowToCopy = rows.get(rowId);
-
-    rowToCopy.duplicate((row) => {
-      Dispatcher.trigger(ActionTypes.SHOW_TOAST, 'Row duplicated.');
-      this.scrollToRow(row);
-    });
-  },
-
-  //TODO: Move all this to rows component, with props/actions. Problem is, this executes faster, than the row added to dom, so we get old height.
-  scrollToRow(row){
-    const {tableRowsDom} = this;
-    const {rows} = this.props;
-    const indexOfRow = rows.indexOf(row);
-    const yPositionRow = RowHeight * indexOfRow;
-    const rowsDomHeight = tableRowsDom.scrollHeight;
-    const rowsDomScrollTop = tableRowsDom.scrollTop;
-    const rowsViewportHeight = tableRowsDom.clientHeight;
-    console.log("row added at index:", indexOfRow, ". jump to bottom at y:", yPositionRow + RowHeight - rowsViewportHeight, ", new row:", row, " is duplicated", row.recentlyDuplicated);
-
-    //check if scroll is necessary
-    //if ((rowsDomScrollTop > yPositionRow) || (yPositionRow > rowsDomScrollTop + rowsViewportHeight)) {
-    this.disableShouldCellFocus();
-    tableRowsDom.scrollTop = rowsDomHeight - rowsViewportHeight; //yPositionRow + RowHeight - rowsViewportHeight;
-    //}
-  },
-
-  rowAdded() {
-    if (this.selectNewCreatedRow) {
-      this.selectNewCreatedRow = false;
-      this.setNextSelectedCell(Directions.DOWN);
     }
   },
 
@@ -257,6 +224,29 @@ var Table = React.createClass({
         tableRowsDom.scrollTop = targetY - (containerHeight - cellHeight);
       }
     }
+  },
+
+  rowAdded() {
+    if (this.selectNewCreatedRow) {
+      this.selectNewCreatedRow = false;
+      this.setNextSelectedCell(Directions.DOWN);
+    }
+  },
+
+  _duplicateRow(payload){
+    duplicateRow.call(this, payload);
+  },
+
+  isLastRowSelected() {
+    var rows = this.props.rows;
+    var numberOfRows = rows.length;
+    var currentRowId = this.getCurrentSelectedRowId();
+    var lastRowId;
+    if (numberOfRows <= 0) {
+      return true;
+    }
+    lastRowId = rows.at(numberOfRows - 1).getId();
+    return (currentRowId === lastRowId);
   },
 
   createRowOrSelectNext() {
@@ -366,18 +356,6 @@ var Table = React.createClass({
         });
       }
     }
-  },
-
-  isLastRowSelected() {
-    var rows = this.props.rows;
-    var numberOfRows = rows.length;
-    var currentRowId = this.getCurrentSelectedRowId();
-    var lastRowId;
-    if (numberOfRows <= 0) {
-      return true;
-    }
-    lastRowId = rows.at(numberOfRows - 1).getId();
-    return (currentRowId === lastRowId);
   },
 
   //returns the next row and the next language cell when expanded
@@ -634,7 +612,7 @@ var Table = React.createClass({
     console.log("Rendering table");
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1" onScroll={this.handleScroll}
-               onKeyDown={this.onKeyboardShortcut}
+               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
           <Columns ref="columns" langtag={this.props.langtag} columns={this.props.table.columns}/>
