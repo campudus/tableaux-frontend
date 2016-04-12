@@ -11,18 +11,10 @@ import '../scss/main.scss';
 
 App.extend({
 
-  // TODO we should request that from tableaux backend
-  langtags : [],
-
-  setLangtags : function () {
-    var self = this;
-    _.forEach(TableauxConstants.Langtags, function (lang) {
-      self.langtags.push(lang);
-    });
-  },
+  //Deprecated! Use TableauxConstants.Langtags instead
+  langtags : TableauxConstants.Langtags,
 
   init : function () {
-    this.setLangtags();
     this.router = new Router();
     this.router.history.start();
   },

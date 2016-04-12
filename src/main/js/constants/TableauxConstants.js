@@ -1,10 +1,15 @@
 var keyMirror = require('keymirror');
 
-var languagetag = {
-  DE_DE : "de-DE",
-  EN_GB : "en-GB",
-  FR_FR : "fr-FR"
-};
+/*
+* Order is important.
+* First language is default language.
+* Also, this is the order a expanded row shows the languages
+* */
+var languagetag = [
+  "de-DE",
+  "en-GB",
+  "fr-FR"
+];
 
 var TableauxConstant = {
   ActionTypes : keyMirror({
@@ -96,7 +101,7 @@ var TableauxConstant = {
 
   Langtags : languagetag,
 
-  DefaultLangtag : languagetag.DE_DE,
+  DefaultLangtag : languagetag[0],
 
   DateTimeFormats : {
     formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
