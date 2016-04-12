@@ -220,7 +220,6 @@ module.exports = {
   },
 
   duplicateRow : function (tableId, rowId) {
-    console.log("actioncreator: duplicateRow");
     Dispatcher.trigger(ActionTypes.DUPLICATE_ROW, {tableId, rowId});
   },
 
