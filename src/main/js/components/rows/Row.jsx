@@ -1,16 +1,13 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
 var App = require('ampersand-app');
-var _ = require('lodash');
 var TableauxConstants = require('../../constants/TableauxConstants');
 
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
 import MetaCell from '../cells/MetaCell';
-import ConfirmationOverlay from '../overlay/ConfirmationOverlay';
-
+import {confirmDelete} from '../overlay/ConfirmationOverlay';
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -61,14 +58,7 @@ var Row = React.createClass({
 
   onClickDelete : function (e) {
     ActionCreator.disableShouldCellFocus();
-    var question = <p>Do you really want to delete that row?</p>;
-    var confirmationOverlay = <ConfirmationOverlay content={question} onYes={this.onYesOverlay}
-                                                   onCancel={this.onCancelOverlay}/>;
-    ActionCreator.openOverlay({
-      head : <span>Delete?</span>,
-      body : confirmationOverlay,
-      type : "flexible"
-    });
+    confirmDelete(this.onYesOverlay, this.onCancelOverlay);
   },
 
   onYesOverlay : function (event) {

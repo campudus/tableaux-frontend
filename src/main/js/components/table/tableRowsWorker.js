@@ -3,30 +3,33 @@ import React  from 'react';
 import {RowHeight} from '../../constants/TableauxConstants';
 import {disableShouldCellFocus, setNextSelectedCell,isLastRowSelected} from './tableNavigationWorker';
 import {Directions} from '../../constants/TableauxConstants';
+import {translate} from 'react-i18next';
+
+const DuplicatedMessage = (props) => {
+  const {row,t,onJumpToRow} = props;
+  const onClickHandler = (e) => {
+    onJumpToRow(row);
+  };
+  return (
+    <div>
+      <p>{t('row_duplicated')}</p>
+      <a href="#" onClick={onClickHandler}>{t('jump_to_row')} <i className="fa fa-angle-right"/></a>
+    </div>
+  );
+};
+const TranslatedDuplicatedMessage = translate(['table'])(DuplicatedMessage);
 
 export function duplicateRow(payload) {
   const {rows} = this.props;
   const {rowId} = payload;
   const rowToCopy = rows.get(rowId);
-
-  const jumpToRow = (row) => {
-    return (event) => {
-      scrollToRow.call(this, row);
-    };
-  };
-
   rowToCopy.duplicate((row) => {
-    const duplicatedMessage = (
-      <div>
-        <p>Row duplicated!</p>
-        <a href="#" onClick={jumpToRow(row)}>Jump to row</a>
-      </div>
-    );
-    ActionCreator.showToast(duplicatedMessage, 5000, true);
+    ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={scrollToRow.bind(this)}/>, 3000, true);
   });
 }
 
 //TODO: Move all this to rows component, with props/actions. Problem is, this executes faster, than the row added to dom, so we get old height.
+//TODO: Scroll to row, not just to the bottom
 export function scrollToRow(row) {
   const {tableRowsDom} = this;
   const {rows} = this.props;

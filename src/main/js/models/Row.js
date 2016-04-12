@@ -24,6 +24,7 @@ var Row = AmpersandModel.extend({
     cells : Cells
   },
 
+  //Todo: Don't send the payload of row to server
   duplicate : function (cb) {
     //We need to create a new row, or the current is getting changed
     let copiedRow = new Row(_.extend({}, this.attributes), {collection : this.collection, parent : this.parent});

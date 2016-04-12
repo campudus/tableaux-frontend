@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
 import ActionCreator from './../../actions/ActionCreator';
-import ConfirmationOverlay from '../overlay/ConfirmationOverlay';
+import {confirmDelete} from '../overlay/ConfirmationOverlay';
 
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -73,15 +73,7 @@ class RowContextMenu extends React.Component {
   };
 
   deleteRow = (event) => {
-    //ActionCreator.disableShouldCellFocus();
-    var question = <p>Do you really want to delete that row?</p>;
-    var confirmationOverlay = <ConfirmationOverlay content={question} onYes={this.onYesOverlay}
-                                                   onCancel={this.onCancelOverlay}/>;
-    ActionCreator.openOverlay({
-      head : <span>Delete?</span>,
-      body : confirmationOverlay,
-      type : "flexible"
-    });
+    confirmDelete(this.onYesOverlay, this.onCancelOverlay);
   };
 
   showTranslations = (event) => {
@@ -96,7 +88,7 @@ class RowContextMenu extends React.Component {
   };
 
   render = () => {
-    const {duplicateRow, showTranslations, deleteRow} = this;
+    const {duplicateRow, showTranslations, deleteRow, props:{t}} = this;
     const cssStyle = {
       left : this.state.xOffset,
       top : this.state.yOffset
@@ -104,9 +96,9 @@ class RowContextMenu extends React.Component {
 
     return (
       <div className="context-menu row-context-menu" style={cssStyle}>
-        <a href="#" onClick={duplicateRow}>Zeile duplizieren</a>
-        <a href="#" onClick={showTranslations}>Übersetzungen zeigen</a>
-        <a href="#" onClick={deleteRow}>Zeile löschen</a>
+        <a href="#" onClick={duplicateRow}>{t('duplicate_row')}</a>
+        <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
+        <a href="#" onClick={deleteRow}>{t('delete_row')}</a>
       </div>
     );
   }

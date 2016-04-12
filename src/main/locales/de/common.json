@@ -1,3 +1,6 @@
 {
-  "save": "Speichern"
+  "save": "Speichern",
+  "yes": "Ja",
+  "no": "Nein",
+  "cancel": "Abbrechen"
 }
