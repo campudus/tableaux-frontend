@@ -83,12 +83,10 @@ var TextCell = React.createClass({
     }
 
     return (
-      <div onClick={this.handleClick}>
-        <span className='cell-content'>
+        <div className='cell-content' onClick={this.handleClick}>
           {value === null ? "" : value}
           {expandButton}
-        </span>
-      </div>
+        </div>
     );
   },
 
