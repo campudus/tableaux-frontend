@@ -130,6 +130,7 @@ export default class Tableaux extends React.Component {
     }
   }
 
+  //TODO: Stop hiding toast when user hovers over the toast message
   showToast(payload) {
     //default 1000ms
     const {content, milliseconds = 1000} = payload;
@@ -150,7 +151,6 @@ export default class Tableaux extends React.Component {
     this.setState({
       toast : null
     });
-    console.log("hide toast");
   };
 
 
