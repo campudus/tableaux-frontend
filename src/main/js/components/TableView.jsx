@@ -9,6 +9,7 @@ var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
 var FilteredSubcollection = require('ampersand-filtered-subcollection');
 
+import _ from 'lodash';
 import TableauxConstants from '../constants/TableauxConstants';
 import Filter from './header/filter/Filter.jsx';
 import Navigation from './header/Navigation.jsx';
@@ -222,6 +223,22 @@ var TableView = React.createClass({
           || targetCell.kind === ColumnKinds.numeric
           || targetCell.kind === ColumnKinds.text) {
           return containsValue(getCellValue(targetCell), toFilterValue);
+        } else if (targetCell.kind === ColumnKinds.link) {
+          //Filter for links
+
+          //TODO: Implement nicer
+          const links = targetCell.value;
+          let linksToString = "";
+
+          _.forEach(links, (link)=> {
+            const linkValue = link.value;
+            const flattened = _.flattenDeep(linkValue);
+            const linkToString = JSON.stringify(flattened, ['value']);
+            linksToString += linkToString + " ";
+          });
+
+          console.log("total linksToString: ", linksToString);
+          return containsValue(linksToString, toFilterValue);
         }
         else return false;
       },

@@ -9,7 +9,7 @@ import {translate, Interpolate} from 'react-i18next';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
-@translate(['filter'])
+@translate(['filter', 'table'])
 @listensToClickOutside()
 class FilterPopup extends React.Component {
 
@@ -41,17 +41,22 @@ class FilterPopup extends React.Component {
   }
 
   buildColumnOptions() {
+    const {t} = this.props;
     let options = this.props.columns.reduce(function (res, column) {
 
       let allowedKinds = column.kind === ColumnKinds.text
         || column.kind === ColumnKinds.shorttext
         || column.kind === ColumnKinds.richtext
         || column.kind === ColumnKinds.numeric
-        || column.kind === ColumnKinds.concat;
+        || column.kind === ColumnKinds.concat
+        || column.kind === ColumnKinds.link;
 
       if (allowedKinds) {
+        //ID Column gets translated name
+        const labelName = column.id === 0 ? t('concat_column_name') : column.name;
+
         res.push({
-          label : column.name,
+          label : labelName,
           value : column.id
         });
       }
