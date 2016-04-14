@@ -37,7 +37,7 @@ var LinkEditCell = React.createClass({
       var cell = this.props.cell;
       var newValue = _.filter(cell.value, function (element, arrayIndex) {
         return element.id !== idx;
-        });
+      });
       ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
     },
 
@@ -52,7 +52,7 @@ var LinkEditCell = React.createClass({
     render : function () {
       var self = this;
       var links = self.props.cell.value.map(function (element, arrayIndex) {
-        return <LinkLabelCell key={arrayIndex} id={element.id} deletable={true} linkElement={element}
+        return <LinkLabelCell key={element.id} id={element.id} deletable={true} linkElement={element}
                               cell={self.props.cell} langtag={self.props.langtag} onDelete={self.removeLink}/>;
       });
 
