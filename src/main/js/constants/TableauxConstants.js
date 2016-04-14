@@ -1,10 +1,15 @@
 var keyMirror = require('keymirror');
 
-var languagetag = {
-  DE_DE : "de-DE",
-  EN_GB : "en-GB",
-  FR_FR : "fr-FR"
-};
+/*
+* Order is important.
+* First language is default language.
+* Also, this is the order a expanded row shows the languages
+* */
+var languagetag = [
+  "de-DE",
+  "en-GB",
+  "fr-FR"
+];
 
 var TableauxConstant = {
   ActionTypes : keyMirror({
@@ -24,6 +29,7 @@ var TableauxConstant = {
     REMOVE_ROW : null,
     CREATE_ROW : null,
     TOGGLE_ROW_EXPAND : null,
+    DUPLICATE_ROW : null,
 
     CREATE_ROW_OR_SELECT_NEXT_CELL : null,
 
@@ -52,11 +58,19 @@ var TableauxConstant = {
 
     //Filter
     CHANGE_FILTER : null,
-    CLEAR_FILTER: null,
+    CLEAR_FILTER : null,
 
     //Spinner
     SPINNER_ON : null,
-    SPINNER_OFF : null
+    SPINNER_OFF : null,
+
+    //Context Menu
+    SHOW_ROW_CONTEXT_MENU : null,
+    CLOSE_ROW_CONTEXT_MENU : null,
+
+    //Toast
+    SHOW_TOAST : null
+
 
   }),
 
@@ -87,12 +101,15 @@ var TableauxConstant = {
 
   Langtags : languagetag,
 
-  DefaultLangtag : languagetag.DE_DE,
+  DefaultLangtag : languagetag[0],
 
   DateTimeFormats : {
     formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
     formatForUser : "DD.MM.YYYY - HH:mm"
-  }
+  },
+
+  //Fixed pixel height of a single row including border
+  RowHeight : 46
 
 };
 

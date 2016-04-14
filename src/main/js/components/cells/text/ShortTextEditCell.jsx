@@ -2,20 +2,21 @@ var React = require('react');
 var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var ActionCreator = require('../../../actions/ActionCreator');
 
 var ShortTextEditCell = React.createClass({
 
-  mixins : [KeyboardShortcutsMixin, OutsideClick],
+  mixins : [OutsideClick],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    onBlur : React.PropTypes.func.isRequired
+    onBlur : React.PropTypes.func.isRequired,
+    setCellKeyboardShortcuts : React.PropTypes.func
   },
 
   componentDidMount : function () {
+    this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
     // Sets cursor to end of input field
     var node = this.refs.input;
     node.value = node.value;
@@ -23,6 +24,10 @@ var ShortTextEditCell = React.createClass({
 
   componentWillMount : function () {
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
+  },
+
+  componentWillUnmount : function () {
+    this.props.setCellKeyboardShortcuts({});
   },
 
   getKeyboardShortcuts : function (event) {

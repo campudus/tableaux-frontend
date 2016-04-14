@@ -1,6 +1,5 @@
 var React = require('react');
 var OutsideClick = require('react-onclickoutside');
-var KeyboardShortcutsMixin = require('../../mixins/KeyboardShortcutsMixin');
 var _ = require('lodash');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
@@ -99,7 +98,11 @@ var NumericEditCell = React.createClass({
 
     var value = null;
     if (cell.isMultiLanguage) {
-      if (cell.value[this.props.langtag]) {
+      var multiLangValue = cell.value[this.props.langtag];
+      //allow zero as value
+      if (multiLangValue === 0) {
+        value = multiLangValue;
+      } else if (multiLangValue) {
         value = cell.value[this.props.langtag];
       } else {
         // in this case we don't
@@ -107,7 +110,12 @@ var NumericEditCell = React.createClass({
         value = "";
       }
     } else {
-      value = cell.value || "";
+      //allow zero as value
+      if (cell.value === 0) {
+        value = cell.value;
+      } else {
+        value = cell.value || "";
+      }
     }
 
     return value;
@@ -130,7 +138,10 @@ var NumericEditCell = React.createClass({
   render : function () {
     return (
       <div className={'cell-content editing'}>
-        <input autoFocus type="number" className="input" name={this.inputName} defaultValue={this.getValue()}
+        <input autoFocus type="number"
+               className="input"
+               name={this.inputName}
+               defaultValue={this.getValue()}
                onChange={this.onChangeHandler} ref="input"/>
       </div>
     );

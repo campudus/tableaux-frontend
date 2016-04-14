@@ -1,3 +1,10 @@
 {
-  "add_new_row" : "Add new row"
+  "add_new_row": "Add new row",
+  "duplicate_row": "Duplicate row",
+  "show_translation": "Show translation",
+  "delete_row": "Delete row",
+  "jump_to_row": "Jump to row",
+  "row_duplicated": "Row has been duplicated",
+  "confirm_delete_row": "Do you really want to delete that row?",
+  "concat_column_name": "ID-Name"
 }

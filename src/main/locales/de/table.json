@@ -1,3 +1,10 @@
 {
-  "add_new_row" : "Neue Zeile hinzufügen"
+  "add_new_row": "Neue Zeile hinzufügen",
+  "duplicate_row": "Zeile duplizieren",
+  "show_translation": "Übersetzungen zeigen",
+  "delete_row": "Zeile löschen",
+  "jump_to_row": "Zur Zeile springen",
+  "row_duplicated": "Zeile wurde dupliziert",
+  "confirm_delete_row": "Wollen Sie diese Zeile wirklich löschen?",
+  "concat_column_name": "Identifikationsname"
 }

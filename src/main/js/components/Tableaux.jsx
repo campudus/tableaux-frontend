@@ -10,6 +10,7 @@ import XHR from 'i18next-xhr-backend';
 import { I18nextProvider } from 'react-i18next';
 import ActionCreator from '../actions/ActionCreator';
 import Spinner from './header/Spinner.jsx';
+import Toast from './overlay/Toast.jsx';
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -19,8 +20,11 @@ export default class Tableaux extends React.Component {
     currentView : this.props.initialViewName,
     currentViewParams : this.props.initialParams,
     activeOverlay : null,
-    isLoading : true
+    isLoading : true,
+    toast : null
   };
+
+  toastTimer = null;
 
   static propTypes = {
     initialViewName : React.PropTypes.string.isRequired,
@@ -34,6 +38,8 @@ export default class Tableaux extends React.Component {
     Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay, this);
     Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay, this);
     Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
+    Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
+
 
     i18n
       .use(XHR)
@@ -42,7 +48,7 @@ export default class Tableaux extends React.Component {
         lng : this.props.initialParams.langtag,
 
         // have a common namespace used around the full app
-        ns : ['common', 'header'],
+        ns : ['common', 'header', 'table'],
         defaultNS : 'common',
 
         debug : false,
@@ -116,8 +122,36 @@ export default class Tableaux extends React.Component {
     }
   }
 
+  renderToast() {
+    const {toast} = this.state;
+    if (toast) {
+      console.log("render toast");
+      return (<Toast content={toast}/>);
+    }
+  }
 
-  /*  */
+  //TODO: Stop hiding toast when user hovers over the toast message
+  showToast(payload) {
+    //default 1000ms
+    const {content, milliseconds = 1000} = payload;
+
+    this.setState({
+      toast : content
+    });
+
+    if (this.toastTimer) {
+      clearInterval(this.toastTimer);
+    }
+
+    this.toastTimer = setTimeout(this.hideToast, milliseconds);
+  }
+
+  hideToast = () => {
+    this.toastTimer = null;
+    this.setState({
+      toast : null
+    });
+  };
 
 
   render() {
@@ -128,6 +162,7 @@ export default class Tableaux extends React.Component {
         <div id="tableaux-view">
           <ViewRenderer viewName={this.state.currentView} params={this.state.currentViewParams}/>
           {this.renderActiveOverlay()}
+          {this.renderToast()}
         </div>
       </I18nextProvider>;
     }

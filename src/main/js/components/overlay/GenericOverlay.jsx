@@ -1,13 +1,12 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
-var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 var ActionCreator = require('../../actions/ActionCreator');
+
+import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
 
 //TODO: Callback before closing overlay
 var GenericOverlay = React.createClass({
-
-  mixins : [KeyboardShortcutsMixin],
 
   propTypes : {
     body : React.PropTypes.element.isRequired,
@@ -89,7 +88,8 @@ var GenericOverlay = React.createClass({
     }
 
     return (
-      <div id="overlay" className={overlayWrapperClass} tabIndex="1" onKeyDown={this.onKeyboardShortcut}>
+      <div id="overlay" className={overlayWrapperClass} tabIndex="1"
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
         <div id="overlay-wrapper">
           <h2 className="overlay-header">{this.props.head}</h2>
           <div className="content-scroll">

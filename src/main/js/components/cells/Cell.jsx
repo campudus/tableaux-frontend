@@ -1,7 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
-var KeyboardShortcutsMixin = require('../mixins/KeyboardShortcutsMixin');
 var ActionCreator = require('../../actions/ActionCreator');
 var ColumnKinds = require('../../constants/TableauxConstants').ColumnKinds;
 
@@ -14,9 +13,11 @@ var BooleanCell = require('./boolean/BooleanCell.jsx');
 var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 
+import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
+
 
 var Cell = React.createClass({
-  mixins : [AmpersandMixin, KeyboardShortcutsMixin],
+  mixins : [AmpersandMixin],
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -73,23 +74,32 @@ var Cell = React.createClass({
     }
   },
 
-  cellClicked : function (e) {
-    console.log("cell clicked: ", this.props.cell, "value: ", this.props.cell.value);
-    if (this.props.selected === true) {
+  cellClicked : function (event, reactId, nativeEvent, withRightClick) {
+    let {cell, editing, selected, langtag, shouldFocus} = this.props;
+    console.log("cell clicked: ", cell, "value: ", cell.value);
+
+    //we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
+    if (!selected) {
+      ActionCreator.toggleCellSelection(cell, selected, langtag);
+    } else if (!withRightClick) {
       ActionCreator.toggleCellEditing();
-    } else {
-      ActionCreator.toggleCellSelection(this.props.cell, this.props.selected, this.props.langtag);
     }
 
-    /*
-     Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
-     the table view when clicking on an element other than the cell.
-     */
-    e.stopPropagation();
-    if (!this.props.shouldFocus) {
+    if (!withRightClick || editing) {
+      /*
+       Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
+       the table view when clicking on an element other than the cell.
+       */
+      event.stopPropagation();
+    }
+    if (!shouldFocus) {
       ActionCreator.enableShouldCellFocus();
     }
 
+  },
+
+  rightClicked : function (e) {
+    this.cellClicked(...arguments, true);
   },
 
   onMouseDownHandler : function (e) {
@@ -131,7 +141,8 @@ var Cell = React.createClass({
         break;
 
       case ColumnKinds.shorttext:
-        cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}/>;
+        cellKind = <ShortTextCell cell={this.props.cell} langtag={this.props.langtag} editing={this.props.editing}
+                                  setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
       case ColumnKinds.concat:
@@ -150,14 +161,16 @@ var Cell = React.createClass({
     //onKeyDown event just for selected components
     if (this.props.selected) {
       return (
-        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1" onKeyDown={this.onKeyboardShortcut}
+        <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+             tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
           {cellKind}
         </div>
       )
     } else {
       return (
-        <div className={cellClass} onClick={this.cellClicked} tabIndex="-1">
+        <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+             tabIndex="-1">
           {cellKind}
         </div>
       )

@@ -1,39 +1,13 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var AmpersandMixin = require('ampersand-react-mixin');
 var App = require('ampersand-app');
-var _ = require('lodash');
 var TableauxConstants = require('../../constants/TableauxConstants');
 
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
-
-var Ask = React.createClass({
-  propTypes : {
-    onYes : React.PropTypes.func.isRequired,
-    onCancel : React.PropTypes.func.isRequired,
-    content : React.PropTypes.element.isRequired
-  },
-
-  _onYes : function (event) {
-    this.props.onYes(event);
-  },
-
-  _onCancel : function (event) {
-    this.props.onCancel(event);
-  },
-
-  render : function () {
-    return (
-      <div className="ask">
-        {this.props.content}
-        <button autoFocus onClick={this._onYes} className="button yes">Yes</button>
-        <button onClick={this._onCancel} className="button cancel">Cancel</button>
-      </div>
-    )
-  }
-});
+import MetaCell from '../cells/MetaCell';
+import {confirmDelete} from '../overlay/ConfirmationOverlay';
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -79,18 +53,12 @@ var Row = React.createClass({
 
   toggleExpand : function () {
     ActionCreator.disableShouldCellFocus();
-    ActionCreator.toggleRowExpand(this.props.row);
+    ActionCreator.toggleRowExpand(this.props.row.id);
   },
 
   onClickDelete : function (e) {
     ActionCreator.disableShouldCellFocus();
-    var question = <p>Do you really want to delete that row?</p>;
-    var ask = <Ask content={question} onYes={this.onYesOverlay} onCancel={this.onCancelOverlay}/>;
-    ActionCreator.openOverlay({
-      head : <span>Delete?</span>,
-      body : ask,
-      type : "flexible"
-    });
+    confirmDelete(this.onYesOverlay, this.onCancelOverlay);
   },
 
   onYesOverlay : function (event) {
@@ -101,19 +69,6 @@ var Row = React.createClass({
 
   onCancelOverlay : function (event) {
     ActionCreator.closeOverlay();
-  },
-
-  renderLangtag : function (langtag) {
-    var language = langtag.split(/-|_/)[0];
-    var country = langtag.split(/-|_/)[1];
-
-    var icon = country.toLowerCase() + ".png";
-
-    return (
-      <div className={'cell cell-0-' + this.props.row.getId() + ' language'} onClick={this.toggleExpand}>
-        <div className="cell-content"><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
-      </div>
-    );
   },
 
   renderSingleLanguageCell : function (cell, idx) {
@@ -157,16 +112,27 @@ var Row = React.createClass({
     })
   },
 
+  contextMenuHandler : function (e) {
+    e.preventDefault();
+    ActionCreator.showRowContextMenu(this.props.row.tableId, this.props.row.getId(), e.pageX, e.pageY);
+  },
+
   renderLanguageRow : function (langtag) {
-    //Is this (multilanguage) row selected
-    var selected = (this.props.isRowSelected && (langtag === this.props.selectedCellExpandedRow));
-    //Set row class optional with selected class
-    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "");
+    let {isRowSelected, selectedCellExpandedRow, row, isRowExpanded} = this.props;
     var deleteButton = null;
+    //Is this (multilanguage) row selected
+    var selected = (isRowSelected && (langtag === selectedCellExpandedRow));
+    if (selected && row.recentlyDuplicated) {
+      //Todo: TBD: isn't it overkill to throw a action for this?
+      //We want to visually clear the highlighting of a recently duplicated row
+      row.recentlyDuplicated = false;
+    }
+    //Set row class optional with selected class
+    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated ? " duplicated" : "");
 
     // Add delete button to default-language row
     // or to every not expanded row
-    if ((langtag === TableauxConstants.DefaultLangtag || !this.props.isRowExpanded) && this.props.isRowSelected) {
+    if ((langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
@@ -177,9 +143,11 @@ var Row = React.createClass({
     }
 
     return (
-      <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1">
+      <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1"
+           onContextMenu={this.contextMenuHandler}>
         {deleteButton}
-        {this.renderLangtag(langtag)}
+        <MetaCell langtag={langtag} rowId={this.props.row.getId()}
+                  onClick={this.toggleExpand} rowExpanded={this.props.isRowExpanded}/>
         {this.renderCells(langtag, selected)}
       </div>
     );

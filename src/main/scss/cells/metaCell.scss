@@ -1,0 +1,37 @@
+.meta-cell {
+  text-align: right;
+
+  .row-number {
+    color: $color-text-light-grey;
+    font-size: 12px;
+  }
+
+  .row-expand {
+    display: none;
+  }
+
+  &:hover {
+    .row-number {
+      display: none;
+    }
+
+    .row-expand {
+      display: block;
+    }
+  }
+
+  &.row-expanded {
+    .cell-content {
+      overflow: visible;
+      white-space: normal;
+      position: absolute;
+      top: 0;
+      right: 10px;
+
+      span {
+        display: block;
+        line-height: 1;
+      }
+    }
+  }
+}

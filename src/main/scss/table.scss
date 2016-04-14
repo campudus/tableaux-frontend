@@ -97,11 +97,10 @@
       padding: 9px;
       @include box-sizing(border-box);
 
-      &.language {
+      &.meta-cell {
         width: 80px;
         min-width: 80px;
         max-width: 80px;
-        text-align: right;
       }
 
       &.repeat {

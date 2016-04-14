@@ -73,9 +73,9 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.DISABLE_SHOULD_CELL_FOCUS);
   },
 
-  toggleRowExpand : function (row) {
+  toggleRowExpand : function (rowId) {
     Dispatcher.trigger(ActionTypes.TOGGLE_ROW_EXPAND, {
-      row : row
+      rowId
     });
   },
 
@@ -209,6 +209,22 @@ module.exports = {
 
   spinnerOff : function () {
     Dispatcher.trigger(ActionTypes.SPINNER_OFF);
+  },
+
+  showRowContextMenu : function (tableId, rowId, x, y) {
+    Dispatcher.trigger(ActionTypes.SHOW_ROW_CONTEXT_MENU, {x, y, rowId, tableId});
+  },
+
+  closeRowContextMenu : function (rowId, x, y) {
+    Dispatcher.trigger(ActionTypes.CLOSE_ROW_CONTEXT_MENU);
+  },
+
+  duplicateRow : function (tableId, rowId) {
+    Dispatcher.trigger(ActionTypes.DUPLICATE_ROW, {tableId, rowId});
+  },
+
+  showToast : function (content, milliseconds) {
+    Dispatcher.trigger(ActionTypes.SHOW_TOAST, {content, milliseconds});
   }
 
 };

@@ -3,6 +3,7 @@ var apiUrl = require('../helpers/apiUrl');
 var Columns = require('./Columns');
 var Cell = require('./Cell');
 var Cells = require('./Cells');
+var _ = require('lodash');
 
 var Row = AmpersandModel.extend({
   props : {
@@ -12,11 +13,36 @@ var Row = AmpersandModel.extend({
 
   session : {
     tableId : 'number',
-    columns : 'object'
+    columns : 'object',
+    recentlyDuplicated : {
+      type : 'boolean',
+      default : false
+    }
   },
 
   collections : {
     cells : Cells
+  },
+
+  //Todo: Don't send the payload of row to server
+  duplicate : function (cb) {
+    //We need to create a new row, or the current is getting changed
+    let copiedRow = new Row({id : this.id, tableId : this.tableId},
+      {collection : this.collection, parent : this.parent});
+
+    copiedRow.save(null, {
+      url : this.url() + "/duplicate",
+      method : 'POST',
+      data : "", //we don't want so send any data to the server
+      success : (row) => {
+        row.recentlyDuplicated = true;
+        this.collection.add(row);
+        cb(row);
+      },
+      error : (error) => {
+        console.log("error duplicating row.", error);
+      }
+    });
   },
 
   parse : function (attrs, options) {

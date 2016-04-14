@@ -2,6 +2,7 @@ var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var Infinite = require('../../thirdparty/react-infinite/react-infinite.js');
 var NewRow = require('./NewRow.jsx');
+import {RowHeight} from '../../constants/TableauxConstants';
 
 var Row = require('./Row.jsx');
 
@@ -76,7 +77,7 @@ var Rows = React.createClass({
     return (
       <Infinite className="data-wrapper"
                 containerHeight={this.props.rowsHeight}
-                elementHeight={46}
+                elementHeight={RowHeight}
                 preloadBatchSize={Infinite.containerHeightScaleFactor(0.1)}
                 preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
                 handleScroll={undefined}
