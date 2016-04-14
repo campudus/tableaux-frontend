@@ -5,5 +5,6 @@
   "delete_row": "Delete row",
   "jump_to_row": "Jump to row",
   "row_duplicated": "Row has been duplicated",
-  "confirm_delete_row": "Do you really want to delete that row?"
+  "confirm_delete_row": "Do you really want to delete that row?",
+  "concat_column_name": "ID-Name"
 }

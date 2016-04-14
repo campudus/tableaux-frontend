@@ -9,7 +9,9 @@ let MetaCell = (props) => {
   let cellContent = "";
 
   if (rowExpanded) {
-    cellContent = <div><img src={"/img/flags/" + icon} alt={country}/>{language.toUpperCase()}</div>
+    cellContent =
+      <div><img src={"/img/flags/" + icon} alt={country}/><span className="language">{language.toUpperCase()}</span>
+      </div>
   } else {
     cellContent =
       <div className="meta-info-collapsed">
