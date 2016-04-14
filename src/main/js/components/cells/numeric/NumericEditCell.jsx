@@ -98,7 +98,11 @@ var NumericEditCell = React.createClass({
 
     var value = null;
     if (cell.isMultiLanguage) {
-      if (cell.value[this.props.langtag]) {
+      var multiLangValue = cell.value[this.props.langtag];
+      //allow zero as value
+      if (multiLangValue === 0) {
+        value = multiLangValue;
+      } else if (multiLangValue) {
         value = cell.value[this.props.langtag];
       } else {
         // in this case we don't
@@ -106,7 +110,12 @@ var NumericEditCell = React.createClass({
         value = "";
       }
     } else {
-      value = cell.value || "";
+      //allow zero as value
+      if (cell.value === 0) {
+        value = cell.value;
+      } else {
+        value = cell.value || "";
+      }
     }
 
     return value;
