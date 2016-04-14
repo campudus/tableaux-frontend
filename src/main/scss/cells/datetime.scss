@@ -15,5 +15,11 @@
         color: $color-primary;
       }
     }
+
+    &.editing {
+      .cell-content {
+        @include user-select(none);
+      }
+    }
   }
 }
