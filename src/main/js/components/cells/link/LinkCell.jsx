@@ -29,11 +29,11 @@ var LinkCell = React.createClass({
     } else {
       //Show a link preview for performance
       var tooManyLinks = false;
-      var links = self.props.cell.value.map(function (element, id) {
-
+      var links = self.props.cell.value.map(function (element, index) {
         //Limit to maximum 3 Links
-        if (id <= 2) {
-          return <LinkLabelCell key={id} linkElement={element} cell={self.props.cell} langtag={self.props.langtag}
+        if (index <= 2) {
+          return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={self.props.cell}
+                                langtag={self.props.langtag}
                                 deletable={false}/>;
         } else {
           tooManyLinks = true;

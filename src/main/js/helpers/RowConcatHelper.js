@@ -182,7 +182,7 @@ var RowConcatHelper = {
 
   }
 
-}
+};
 
 module.exports = RowConcatHelper;
 

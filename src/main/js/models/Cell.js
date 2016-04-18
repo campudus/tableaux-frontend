@@ -70,6 +70,41 @@ var Cell = AmpersandModel.extend({
         return this.kind === 'concat';
       }
     },
+
+    linkString : {
+      deps : ['linkStringLanguages'],
+      fn : function () {
+        return function (linkIndexAt, langtag) {
+          var linkElemValue = this.linkStringLanguages[linkIndexAt];
+          if (linkElemValue) {
+            return linkElemValue[langtag] || "";
+          } else {
+            return null;
+          }
+        }
+      }
+    },
+
+    linkStringLanguages : {
+      deps : ['value'],
+      fn : function () {
+        if (!this.isLink) {
+          return null;
+        }
+        var linksWithLangtags = [];
+        var linkValues = this.value;
+        var linkToColumn = this.column.toColumn;
+        _.forEach(linkValues, function (linkElement) {
+          var linkWithLangtag = {};
+          _.forEach(TableauxConstants.Langtags, (langtag, idx)=> {
+            linkWithLangtag[langtag] = RowConcatHelper.getRowConcatStringWithFallback(linkElement.value, linkToColumn, langtag);
+          });
+          linksWithLangtags.push(linkWithLangtag);
+        });
+
+        return linksWithLangtags;
+      }
+    },
     rowConcatLanguages : {
       deps : ['value'],
       fn : function () {

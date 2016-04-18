@@ -51,9 +51,10 @@ var LinkEditCell = React.createClass({
 
     render : function () {
       var self = this;
-      var links = self.props.cell.value.map(function (element, arrayIndex) {
-        return <LinkLabelCell key={element.id} id={element.id} deletable={true} linkElement={element}
-                              cell={self.props.cell} langtag={self.props.langtag} onDelete={self.removeLink}/>;
+      var links = self.props.cell.value.map(function (element, index) {
+        return <LinkLabelCell key={element.id} deletable={true} linkElement={element}
+                              cell={self.props.cell} langtag={self.props.langtag} onDelete={self.removeLink}
+                              linkIndexAt={index}/>;
       });
 
       links.push(<button key={"add-btn"} className="add" onClick={self.openOverlay}>+</button>);
