@@ -9,6 +9,39 @@ try {
   // ignore
 }
 
+var plugins = [
+  new webpack.HotModuleReplacementPlugin()
+];
+
+if (process.env.NODE_ENV === 'production') {
+  plugins = [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      'process.env' : {
+        NODE_ENV : JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      mangle : {
+        except : ['require', 'export', '$super']
+      },
+      compress : {
+        warnings : false,
+        sequences : true,
+        dead_code : true,
+        conditionals : true,
+        booleans : true,
+        unused : true,
+        if_return : true,
+        join_vars : true,
+        drop_console : false
+      }
+    })
+  ];
+}
+
+
 module.exports = {
   entry : {
     app : [path.resolve(__dirname, 'src/main/js/app.js')]
@@ -63,9 +96,7 @@ module.exports = {
   sassLoader : {
     includePaths : [path.resolve(__dirname, "./node_modules/compass-mixins/lib")]
   },
-  plugins : [
-    new webpack.HotModuleReplacementPlugin()
-  ],
+  plugins : plugins,
   resolve : {
     extensions : ['', '.js', '.jsx']
   }
