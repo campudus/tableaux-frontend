@@ -119,15 +119,20 @@ var LinkOverlay = React.createClass({
             rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
 
             //Search filter
-            if (_.isString(rowConcatString) && self.state.search !== null && rowConcatString.toLowerCase().indexOf(self.state.search.trim().toLocaleLowerCase()) > -1) {
-              if (rowConcatString && rowConcatString !== "") {
-                return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                           onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
-              } else {
-                return null;
+            if (_.isString(rowConcatString) && self.state.search !== null) {
+              var found = _.every(_.words(self.state.search), function (word) {
+                return rowConcatString.toLowerCase().indexOf(word) > -1;
+              });
+
+              if (found) {
+                if (rowConcatString && rowConcatString !== "") {
+                  return <li key={row.id} className={isLinked ? 'isLinked' : ''}
+                             onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
+                } else {
+                  return null;
+                }
               }
             }
-
           })}
 
         </ul>

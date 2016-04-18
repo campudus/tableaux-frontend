@@ -166,7 +166,9 @@ var TableView = React.createClass({
     var langtag = this.props.langtag;
 
     var containsValue = function (cellValue, filterValue) {
-      return (cellValue.toString().trim().toLowerCase().indexOf(filterValue) > -1);
+      return _.every(_.words(filterValue), function (word) {
+        return cellValue.toLowerCase().indexOf(word) > -1;
+      });
     };
 
     var getCellValue = function (cell) {
