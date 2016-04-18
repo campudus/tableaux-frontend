@@ -9,7 +9,7 @@ import {translate, Interpolate} from 'react-i18next';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
-@translate(['filter'])
+@translate(['filter', 'table'])
 @listensToClickOutside()
 class FilterPopup extends React.Component {
 
@@ -21,7 +21,6 @@ class FilterPopup extends React.Component {
   };
 
   selectColumnOptions = null;
-  preventOutsideClick = false;
 
   constructor(props) {
     super(props);
@@ -41,17 +40,22 @@ class FilterPopup extends React.Component {
   }
 
   buildColumnOptions() {
+    const {t} = this.props;
     let options = this.props.columns.reduce(function (res, column) {
 
       let allowedKinds = column.kind === ColumnKinds.text
         || column.kind === ColumnKinds.shorttext
         || column.kind === ColumnKinds.richtext
         || column.kind === ColumnKinds.numeric
-        || column.kind === ColumnKinds.concat;
+        || column.kind === ColumnKinds.concat
+        || column.kind === ColumnKinds.link;
 
       if (allowedKinds) {
+        //ID Column gets translated name
+        const labelName = column.id === 0 ? t('concat_column_name') : column.name;
+
         res.push({
-          label : column.name,
+          label : labelName,
           value : column.id
         });
       }
@@ -71,23 +75,16 @@ class FilterPopup extends React.Component {
     let selectedSortColumn = this.state.selectedSortColumn;
     //TODO: For now we don't have any sort options
     ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, null);
+    this.handleClickOutside(event);
   };
 
   clearFilter = (event) => {
     ActionCreator.clearFilter();
-    this.props.onClickedOutside(event);
-  };
-
-  onOpenSelect = () => {
-    this.preventOutsideClick = true;
+    this.handleClickOutside(event);
   };
 
   handleClickOutside = (event) => {
-    if (!this.preventOutsideClick) {
-      this.props.onClickedOutside(event);
-    } else {
-      this.preventOutsideClick = false;
-    }
+    this.props.onClickedOutside(event);
   };
 
   selectFilterValueRenderer(option) {
@@ -126,7 +123,6 @@ class FilterPopup extends React.Component {
             onChange={this.onChangeSelectFilter}
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText={t('input.noResult')}
-            onOpen={this.onOpenSelect}
             placeholder={t('input.filter')}
           />
           <span className="seperator">{t('help.contains')}</span>
@@ -144,7 +140,6 @@ class FilterPopup extends React.Component {
             onChange={this.onChangeSelectSort}
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText={t('input.noResult')}
-            onOpen={this.onOpenSelect}
             placeholder={t('input.sort')}
           />
           <span className="seperator">

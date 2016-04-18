@@ -40,16 +40,21 @@ var Cell = React.createClass({
     this.checkFocus();
   },
 
-  componentWillMount : function () {
-
-  },
-
   componentDidUpdate : function () {
     this.checkFocus();
   },
 
-  componentWillUnmount : function () {
-
+  //Dont update when cell is not editing or selected
+  shouldComponentUpdate : function (nextProps, nextState) {
+    const {selected, editing, langtag,shouldFocus} = this.props;
+    if (editing === nextProps.editing
+      && selected === nextProps.selected
+      && langtag === nextProps.langtag
+      && shouldFocus === nextProps.shouldFocus) {
+      return false;
+    } else {
+      return true;
+    }
   },
 
   getKeyboardShortcuts : function (event) {

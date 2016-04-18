@@ -87,18 +87,20 @@ var Row = React.createClass({
       var selected = self.props.selectedCell ? (cell.getId() === self.props.selectedCell.getId()) && selectedRow : false;
       //Is this cell in edit mode
       var editing = selected ? self.props.selectedCellEditing : false;
+      //we want to pass shouldFocus just when the cell is selected or in editing mode to prevent spamming all cells with props changes
+      var shouldFocus = selected || editing ? self.props.shouldCellFocus : false;
 
       // We want to see single-language value even if not expanded
       if (!cell.isMultiLanguage && !self.props.isRowExpanded) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={self.props.shouldCellFocus}/>;
+                     shouldFocus={shouldFocus}/>;
       }
 
       // We don't want to repeat our self if expanded
       if (!cell.isMultiLanguage && self.props.isRowExpanded) {
         if (langtag === App.langtags[0]) {
           return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                       shouldFocus={self.props.shouldCellFocus}/>;
+                       shouldFocus={shouldFocus}/>;
         } else {
           return self.renderSingleLanguageCell(cell, idx);
         }
@@ -107,7 +109,7 @@ var Row = React.createClass({
       // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={self.props.shouldCellFocus}/>;
+                     shouldFocus={shouldFocus}/>;
       }
     })
   },
