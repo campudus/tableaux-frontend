@@ -132,8 +132,8 @@ var Table = React.createClass({
   onMouseDownHandler(e) {
     //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes in the header
     if (this.tableDOMNode.contains(document.activeElement)) {
-      //deselect a cell when clicking in white area of table or the column
-      if (e.target === this.tableRowsDom || this.columnsDom.contains(e.target)) {
+      //deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we can't differentiate between clicking the scrollbar or content
+      if (this.columnsDom.contains(e.target)) {
         this.handleClickOutside(e);
       }
 
