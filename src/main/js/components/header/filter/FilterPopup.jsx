@@ -21,7 +21,6 @@ class FilterPopup extends React.Component {
   };
 
   selectColumnOptions = null;
-  preventOutsideClick = false;
 
   constructor(props) {
     super(props);
@@ -76,23 +75,16 @@ class FilterPopup extends React.Component {
     let selectedSortColumn = this.state.selectedSortColumn;
     //TODO: For now we don't have any sort options
     ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, null);
+    this.handleClickOutside(event);
   };
 
   clearFilter = (event) => {
     ActionCreator.clearFilter();
-    this.props.onClickedOutside(event);
-  };
-
-  onOpenSelect = () => {
-    this.preventOutsideClick = true;
+    this.handleClickOutside(event);
   };
 
   handleClickOutside = (event) => {
-    if (!this.preventOutsideClick) {
-      this.props.onClickedOutside(event);
-    } else {
-      this.preventOutsideClick = false;
-    }
+    this.props.onClickedOutside(event);
   };
 
   selectFilterValueRenderer(option) {
@@ -131,7 +123,6 @@ class FilterPopup extends React.Component {
             onChange={this.onChangeSelectFilter}
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText={t('input.noResult')}
-            onOpen={this.onOpenSelect}
             placeholder={t('input.filter')}
           />
           <span className="seperator">{t('help.contains')}</span>
@@ -149,7 +140,6 @@ class FilterPopup extends React.Component {
             onChange={this.onChangeSelectSort}
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText={t('input.noResult')}
-            onOpen={this.onOpenSelect}
             placeholder={t('input.sort')}
           />
           <span className="seperator">

@@ -163,6 +163,7 @@ var TableView = React.createClass({
     var allRows = currentTable.rows;
     var toFilterValue = filterValue.toLowerCase().trim();
     var self = this;
+    var langtag = this.props.langtag;
 
     var containsValue = function (cellValue, filterValue) {
       return (cellValue.toString().trim().toLowerCase().indexOf(filterValue) > -1);
@@ -170,7 +171,12 @@ var TableView = React.createClass({
 
     var getCellValue = function (cell) {
       var value;
-      if (cell.isMultiLanguage) {
+
+      if (cell.isLink) {
+        _.forEach(cell.linkStringLanguages, (linkElement)=> {
+          value += linkElement[langtag] + " ";
+        });
+      } else if (cell.isMultiLanguage) {
         value = cell.value[self.props.langtag];
       } else {
         value = cell.value;
@@ -180,7 +186,7 @@ var TableView = React.createClass({
         if (cell.kind === ColumnKinds.numeric) {
           value = parseInt(value);
         } else {
-          value = value.toString();
+          value = value.toString().trim();
         }
       } else {
         value = "";
@@ -202,7 +208,7 @@ var TableView = React.createClass({
         var firstCell = model.cells.at(0);
 
         if (firstCell.kind === ColumnKinds.concat) {
-          var concatValue = firstCell.rowConcatString(self.props.langtag).toLowerCase().trim();
+          var concatValue = firstCell.rowConcatString(langtag).toLowerCase().trim();
           //Always return empty concat rows. allows to add new rows while filtered
           if (_.isEmpty(concatValue)) {
             return true;
@@ -216,31 +222,15 @@ var TableView = React.createClass({
         }
 
         if (targetCell.kind === ColumnKinds.concat) {
-          var concatValue = targetCell.rowConcatString(self.props.langtag).toLowerCase().trim();
+          var concatValue = targetCell.rowConcatString(langtag).toLowerCase().trim();
           return containsValue(concatValue, toFilterValue);
         } else if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
           || targetCell.kind === ColumnKinds.numeric
-          || targetCell.kind === ColumnKinds.text) {
+          || targetCell.kind === ColumnKinds.text
+          || targetCell.kind === ColumnKinds.link) {
           return containsValue(getCellValue(targetCell), toFilterValue);
-        } else if (targetCell.kind === ColumnKinds.link) {
-          //Filter for links
-
-          //TODO: Implement nicer
-          const links = targetCell.value;
-          let linksToString = "";
-
-          _.forEach(links, (link)=> {
-            const linkValue = link.value;
-            const flattened = _.flattenDeep(linkValue);
-            const linkToString = JSON.stringify(flattened, ['value']);
-            linksToString += linkToString + " ";
-          });
-
-          console.log("total linksToString: ", linksToString);
-          return containsValue(linksToString, toFilterValue);
-        }
-        else return false;
+        } else return false;
       },
 
       //TODO: There's a ugly situation when sorted by year and new rows are getting added. In the future we probably need to implement our own comparator
@@ -249,7 +239,13 @@ var TableView = React.createClass({
         if (!_.isFinite(sortColumnIndex)) {
           return model.id;
         } else {
-          return getCellValue(model.cells.at(sortColumnIndex)) || null; //null forces empty fields to the bottom
+          let cellValue = getCellValue(model.cells.at(sortColumnIndex));
+          if (_.isNumber(cellValue)) {
+            return cellValue;
+          } else {
+            //we want the cell value to be lowercase to prevent a is behind Z
+            return _.isString(cellValue) && cellValue !== "" ? cellValue.toLowerCase() : null; //null forces empty fields to the bottom
+          }
         }
       }
 
