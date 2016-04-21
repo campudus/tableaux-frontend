@@ -120,7 +120,7 @@ var LinkOverlay = React.createClass({
 
             //Search filter
             if (_.isString(rowConcatString) && self.state.search !== null) {
-              var found = _.every(_.words(self.state.search), function (word) {
+              var found = _.every(_.words(self.state.search.toString().toLowerCase().trim()), function (word) {
                 return rowConcatString.toLowerCase().indexOf(word) > -1;
               });
 
