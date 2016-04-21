@@ -112,4 +112,32 @@
     }
   }
 
+  //scroll to left start button
+
+  $scrollToLeftButtonSize: 30px;
+
+  #scrollToLeftStart {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: $scrollToLeftButtonSize;
+    height: $scrollToLeftButtonSize;
+    line-height: $scrollToLeftButtonSize;
+    background-color: #fff;
+    color: $color-dark;
+    @include border-radius(3px);
+    border: 1px solid $color-grey-dark;
+    text-align: center;
+    z-index: 2;
+
+    &:hover {
+      cursor: pointer;
+      background-color: $color-grey-dark;
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+
 }

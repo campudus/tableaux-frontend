@@ -362,3 +362,27 @@ export function getCurrentSelectedColumnId() {
   const {selectedCell} = this.state;
   return selectedCell ? selectedCell.column.getId() : 0;
 }
+
+export function scrollToLeftStart(e) {
+  scrollToLeftLinear(this.tableRowsDom, 250);
+};
+
+/** Helper function to scroll to the left.
+ * TODO: Improve with ease out function. Great article about it:
+ * https://www.kirupa.com/html5/animating_with_easing_functions_in_javascript.htm *
+ * **/
+
+function scrollToLeftLinear(element, scrollDuration) {
+  var scrollStep = element.scrollLeft / (scrollDuration / 15);
+  if (requestAnimationFrame !== "undefined") {
+    requestAnimationFrame(step);
+    function step() {
+      if (element.scrollLeft > 0) {
+        requestAnimationFrame(step);
+        element.scrollLeft -= scrollStep;
+      }
+    }
+  } else {
+    element.scrollLeft = 0;
+  }
+}

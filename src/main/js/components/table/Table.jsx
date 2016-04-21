@@ -50,7 +50,8 @@ var Table = React.createClass({
       expandedRowIds : null, //Array
       selectedCellExpandedRow : null,
       shouldCellFocus : true,
-      rowContextMenu : null
+      rowContextMenu : null,
+      showScrollToLeftButton : false
     }
   },
 
@@ -153,6 +154,17 @@ var Table = React.createClass({
       //Don't change this to state, its more performant during scroll
       this.headerDOMElement.style.left = -scrolledX + "px";
       this.scrolledXBefore = scrolledX;
+
+      //update the scroll to left button when necessary
+      if (scrolledX != 0 && !this.state.showScrollToLeftButton) {
+        this.setState({
+          showScrollToLeftButton : true
+        });
+      } else if (scrolledX === 0 && this.state.showScrollToLeftButton) {
+        this.setState({
+          showScrollToLeftButton : false
+        });
+      }
     }
   },
 
@@ -165,24 +177,30 @@ var Table = React.createClass({
   },
 
   render() {
+    const {langtag, table:{columns}, rows, table} = this.props;
+    const {selectedCell, selectedCellEditing,expandedRowIds,selectedCellExpandedRow,showScrollToLeftButton } = this.state;
+
     console.log("Rendering table");
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1" onScroll={this.handleScroll}
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <Columns ref="columns" langtag={this.props.langtag} columns={this.props.table.columns}/>
+          <Columns ref="columns" langtag={langtag} columns={columns}/>
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
-                rows={this.props.rows}
-                langtag={this.props.langtag}
-                selectedCell={this.state.selectedCell}
-                selectedCellEditing={this.state.selectedCellEditing}
-                expandedRowIds={this.state.expandedRowIds}
-                selectedCellExpandedRow={this.state.selectedCellExpandedRow}
-                table={this.props.table}
+                rows={rows}
+                langtag={langtag}
+                selectedCell={selectedCell}
+                selectedCellEditing={selectedCellEditing}
+                expandedRowIds={expandedRowIds}
+                selectedCellExpandedRow={selectedCellExpandedRow}
+                table={table}
                 shouldCellFocus={tableNavigationWorker.shouldCellFocus.call(this)}
           />
+          <span id="scrollToLeftStart" className={!showScrollToLeftButton ? 'hide' : null}
+                title="scroll to the beginning of table."
+                onClick={tableNavigationWorker.scrollToLeftStart.bind(this)}><i className="fa fa-chevron-left"/></span>
         </div>
         {tableContextMenu.getRowContextMenu.call(this)}
       </section>
