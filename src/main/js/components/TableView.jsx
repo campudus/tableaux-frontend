@@ -167,7 +167,7 @@ var TableView = React.createClass({
 
     var containsValue = function (cellValue, filterValue) {
       return _.every(_.words(filterValue), function (word) {
-        return cellValue.toLowerCase().indexOf(word) > -1;
+        return cellValue.toString().trim().toLowerCase().indexOf(word) > -1;
       });
     };
 
