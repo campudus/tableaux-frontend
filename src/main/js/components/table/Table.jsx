@@ -158,11 +158,13 @@ var Table = React.createClass({
       //update the scroll to left button when necessary
       if (scrolledX != 0 && !this.state.showScrollToLeftButton) {
         this.setState({
-          showScrollToLeftButton : true
+          showScrollToLeftButton : true,
+          shouldCellFocus : false
         });
       } else if (scrolledX === 0 && this.state.showScrollToLeftButton) {
         this.setState({
-          showScrollToLeftButton : false
+          showScrollToLeftButton : false,
+          shouldCellFocus : false
         });
       }
     }
