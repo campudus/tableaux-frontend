@@ -13,9 +13,14 @@ var OverlayHeadRowIdentificator = React.createClass({
 
   rowIdentifierString : "",
 
-  handleTableSwitchClicked : function () {
-    ActionCreator.closeOverlay();
-    ActionCreator.switchTable(this.props.cell.column.toTable, this.props.langtag);
+  handleTableSwitchClicked : function (e) {
+    //allow ctrl click to follow the link just in new window
+    if (!e.ctrlKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      ActionCreator.closeOverlay();
+      ActionCreator.switchTable(this.props.cell.column.toTable, this.props.langtag);
+    }
   },
 
   componentWillMount : function () {
@@ -39,10 +44,13 @@ var OverlayHeadRowIdentificator = React.createClass({
 
     if (this.props.cell != null) {
       if (this.props.cell.isLink) {
+        const {toTable} = this.props.cell.column;
+        const {langtag} = this.props;
+        const linkToTable = `/${langtag}/table/${toTable}`;
         return (
           <span>
-            <span onClick={this.handleTableSwitchClicked} className="column-name with-link">
-              <i className="fa fa-columns"></i>{this.props.cell.column.name}</span>{rowIdentification}
+            <a href={linkToTable} onClick={this.handleTableSwitchClicked} className="column-name with-link">
+              <i className="fa fa-columns"></i>{this.props.cell.column.name}</a>{rowIdentification}
           </span>
         );
 
