@@ -60,6 +60,7 @@
     "react-dropzone": "3.4.0",
     "react-hot-loader": "1.3.0",
     "react-i18next": "1.3.0",
+    "react-input-autosize": "0.6.13",
     "react-loader": "2.4.0",
     "react-onclickoutside": "4.9.0",
     "react-proxy": "1.1.8",
