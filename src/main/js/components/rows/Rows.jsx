@@ -19,16 +19,24 @@ var Rows = React.createClass({
     expandedRowIds : React.PropTypes.array,
     selectedCellExpandedRow : React.PropTypes.string,
     rowsHeight : React.PropTypes.number,
-    shouldCellFocus : React.PropTypes.bool,
-    onClick : React.PropTypes.func
+    shouldCellFocus : React.PropTypes.bool
   },
 
-  componentWillMount : function () {
-
-  },
-
-  componentDidMount : function () {
-
+  shouldComponentUpdate(nP) {
+    const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
+    if (selectedCell !== nP.selectedCell
+      || selectedCellEditing !== nP.selectedCellEditing
+      || langtag !== nP.langtag
+      || shouldCellFocus !== nP.shouldCellFocus
+      || rows !== nP.rows
+      || expandedRowIds !== nP.expandedRowIds
+      || selectedCellExpandedRow !== nP.selectedCellExpandedRow
+      || rowsHeight !== nP.rowsHeight
+    ) {
+      return true;
+    }
+    console.log("! Rows skipped update");
+    return false;
   },
 
   isRowExpanded : function (rowId) {

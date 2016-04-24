@@ -6,6 +6,10 @@ import multiLanguage from './helpers/multiLanguage';
 import TableauxConstants from './constants/TableauxConstants';
 import _ from 'lodash';
 
+if (process.env.NODE_ENV != 'production') {
+  window.Perf = require('react-addons-perf');
+}
+
 import '../index.html';
 import '../scss/main.scss';
 
