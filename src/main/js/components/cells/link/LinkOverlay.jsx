@@ -5,6 +5,10 @@ var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentific
 var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 var ActionCreator = require('../../../actions/ActionCreator');
 var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
+import shallowCompare from 'react-addons-shallow-compare'
+import 'react-virtualized/styles.css';
+import { VirtualScroll } from 'react-virtualized';
+
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin, XhrPoolMixin],
@@ -38,10 +42,13 @@ var LinkOverlay = React.createClass({
       success : function () {
         rowXhr = toTable.rows.fetch({
           success : function () {
+            console.log("set rowResults to:", toTable.rows);
             self.setState({
               rowResults : toTable.rows,
               loading : false
             });
+
+
           },
           error : function (err) {
             console.log('error fetching rows', err);
@@ -63,7 +70,9 @@ var LinkOverlay = React.createClass({
     });
   },
 
-  addLinkValue : function (isLinked, row, rowCellIdValue) {
+  addLinkValue : function (isLinked, row, rowCellIdValue, event) {
+    event.preventDefault();
+
     var cell = this.props.cell;
 
     var link = {
@@ -80,9 +89,10 @@ var LinkOverlay = React.createClass({
     } else {
       links.push(link);
     }
-
     ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, links);
 
+    //tell the virtual scroller to redraw
+    this.refs.OverlayScroll.forceUpdate();
   },
 
   closeOverlay : function () {
@@ -93,9 +103,10 @@ var LinkOverlay = React.createClass({
     return (stringToCheck && stringToCheck.trim() !== "");
   },
 
-  renderOverlay : function () {
+  getOverlayItem : function (index) {
+    console.log("get overlay item at index:", index);
     var self = this;
-    var listItems = null;
+    var {rowResults} = this.state;
     var cell = this.props.cell;
     var toColumn = self.props.cell.column.toColumn;
     var currentCellValue = cell ? cell.value : null;
@@ -103,55 +114,65 @@ var LinkOverlay = React.createClass({
     var toTable = this.props.cell.tables.get(toTableId);
     var toTableColumns = toTable.columns;
     var toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
+    var row = rowResults.at(index);
 
     //check for empty obj or map fails
-    if (!_.isEmpty(this.state.rowResults)) {
+    if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
+      var rowConcatString;
+      var isLinked = !!_.find(currentCellValue, function (link) {
+        return link.id === row.id;
+      });
+      var rowCellIdValue = row.values[toIdColumnIndex];
+      rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
 
-      listItems = (
-        <ul>
-          {this.state.rowResults.map(function (row) {
+      //Search filter
+      if (_.isString(rowConcatString) && self.state.search !== null) {
+        var found = _.every(_.words(self.state.search.toString().toLowerCase().trim()), function (word) {
+          return rowConcatString.toLowerCase().indexOf(word) > -1;
+        });
 
-            var rowConcatString;
-            var isLinked = !!_.find(currentCellValue, function (link) {
-              return link.id === row.id;
-            });
-            var rowCellIdValue = row.values[toIdColumnIndex];
-            rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
-
-            //Search filter
-            if (_.isString(rowConcatString) && self.state.search !== null) {
-              var found = _.every(_.words(self.state.search.toString().toLowerCase().trim()), function (word) {
-                return rowConcatString.toLowerCase().indexOf(word) > -1;
-              });
-
-              if (found) {
-                if (rowConcatString && rowConcatString !== "") {
-                  return <li key={row.id} className={isLinked ? 'isLinked' : ''}
-                             onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</li>;
-                } else {
-                  return null;
-                }
-              }
-            }
-          })}
-
-        </ul>
-      );
-
-    } else {
-      listItems = "No data in table '" + self.props.cell.column.name + "'";
+        if (found) {
+          if (rowConcatString && rowConcatString !== "") {
+            return <a href="#" key={row.id} className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
+                      onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</a>;
+          } else {
+            return null;
+          }
+        }
+      }
     }
+    return null;
+  },
 
-    return listItems;
+  noRowsRenderer : function () {
+    console.log("no rows a rendered");
   },
 
   render : function () {
     var listDisplay;
+    let {rowResults, loading} = this.state;
 
-    if (this.state.loading) {
+    if (loading) {
       listDisplay = "Loading...";
     } else {
-      listDisplay = this.renderOverlay();
+      console.log("render virtualscroll");
+      listDisplay = (
+      /**
+       * Issues:
+       * tabindex -1 to skip focusing
+       * right padding of 100% elements
+       * after clicking an element, all visible rows are updated!!
+       */
+        <VirtualScroll
+          ref="OverlayScroll"
+          width={400}
+          height={300}
+          rowsCount={rowResults.length}
+          rowHeight={50}
+          rowRenderer={this.getOverlayItem}
+          noRowsRenderer={this.noRowsRenderer}
+        />
+      );
     }
 
     return (

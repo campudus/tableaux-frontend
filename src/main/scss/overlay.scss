@@ -169,7 +169,9 @@ $overlay-headline-height: 50px;
     }
   }
 
-  li {
+  .overlay-table-row {
+    margin-right: 25px;
+    display: block;
     padding: 0.8em;
     background-color: white;
     margin-bottom: 10px;
