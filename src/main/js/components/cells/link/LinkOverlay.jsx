@@ -5,6 +5,7 @@ var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentific
 var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 var ActionCreator = require('../../../actions/ActionCreator');
 var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
+var apiUrl = require('../../../helpers/apiUrl');
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin, XhrPoolMixin],
@@ -37,6 +38,7 @@ var LinkOverlay = React.createClass({
     colXhr = toTable.columns.fetch({
       success : function () {
         rowXhr = toTable.rows.fetch({
+          url : apiUrl('/tables/' + toTableId + '/columns/first/rows'),
           success : function () {
             self.setState({
               rowResults : toTable.rows,
