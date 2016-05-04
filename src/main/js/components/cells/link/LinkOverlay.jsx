@@ -8,6 +8,7 @@ import shallowCompare from 'react-addons-shallow-compare';
 import 'react-virtualized/styles.css';
 import { VirtualScroll } from 'react-virtualized';
 import {translate} from 'react-i18next';
+var apiUrl = require('../../../helpers/apiUrl');
 
 //we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
@@ -47,6 +48,7 @@ const LinkOverlay = React.createClass({
     colXhr = toTable.columns.fetch({
       success : function () {
         rowXhr = toTable.rows.fetch({
+          url : apiUrl('/tables/' + toTableId + '/columns/first/rows'),
           success : function () {
             self.setRowResult(toTable.rows, true);
           },
