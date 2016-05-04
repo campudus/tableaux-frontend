@@ -2,6 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
+var LinkOverlay = require('../../components/cells/link/LinkOverlay');
 
 import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
 
@@ -9,11 +10,18 @@ import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
 var GenericOverlay = React.createClass({
 
   propTypes : {
-    body : React.PropTypes.element.isRequired,
+    //body : React.PropTypes.element.isRequired,
     head : React.PropTypes.element,
     footer : React.PropTypes.element,
     type : React.PropTypes.string,
     closeOnBackgroundClicked : React.PropTypes.bool
+  },
+
+  getInitialState : function () {
+    return {
+      contentHeight : 0,
+      contentWidth : 0
+    };
   },
 
   getDefaultProps : function () {
@@ -22,32 +30,54 @@ var GenericOverlay = React.createClass({
     };
   },
 
-  allowedTypes : ["full-flex", "flexible", "normal"],
+  allowedTypes : ["full-flex", "flexible", "normal", "no-scroll"],
   focusedElementBeforeOverlayOpens : null,
 
   componentWillMount : function () {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
   },
 
+  recalculateContentDimensions : function () {
+    console.log("recalculate");
+    const overlayContent = ReactDOM.findDOMNode(this.refs.overlayContent);
+    const style = window.getComputedStyle(overlayContent, null);
+    const innerWidth = overlayContent.clientWidth - parseInt(style.getPropertyValue("padding-left")) - parseInt(style.getPropertyValue("padding-right"));
+    const innerHeight = overlayContent.clientHeight - parseInt(style.getPropertyValue("padding-top")) - parseInt(style.getPropertyValue("padding-bottom"));
+
+    this.setState({
+      contentHeight : innerHeight,
+      contentWidth : innerWidth
+    });
+  },
+
   componentDidMount : function () {
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
-    var overlayDOMNode = ReactDOM.findDOMNode(this);
-    var focusedElement = document.activeElement;
+    const overlayDOMNode = ReactDOM.findDOMNode(this);
+    const focusedElement = document.activeElement;
+
     //Is current focus is this overlay or inside of overlay don't change the focus.
     if (!focusedElement || !overlayDOMNode.contains(focusedElement) || focusedElement.isEqualNode(overlayDOMNode)) {
       overlayDOMNode.focus();
     }
+
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
   },
 
   componentWillUnmount : function () {
     //Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
+    window.removeEventListener('resize', this.handleResize);
 
     //Reset active element before overlay opened
     if (this.focusedElementBeforeOverlayOpens) {
       this.focusedElementBeforeOverlayOpens.focus();
     }
+  },
+
+  handleResize : function (event) {
+    this.recalculateContentDimensions();
   },
 
   closeOverlay : function (event) {
@@ -72,6 +102,16 @@ var GenericOverlay = React.createClass({
     };
   },
 
+  renderChildren(props){
+    let {contentHeight, contentWidth} = this.state;
+    return React.Children.map(props.children, child => {
+      if (child.type === LinkOverlay) {
+        return React.cloneElement(child, {contentHeight, contentWidth});
+      } else
+        return child
+    });
+  },
+
   render : function () {
     var overlayType = this.props.type || "normal"; //default to normal
     var footer = this.props.footer;
@@ -93,8 +133,8 @@ var GenericOverlay = React.createClass({
         <div id="overlay-wrapper">
           <h2 className="overlay-header">{this.props.head}</h2>
           <div className="content-scroll">
-            <div id="overlay-content">
-              {this.props.body}
+            <div id="overlay-content" ref="overlayContent">
+              {this.renderChildren(this.props)}
             </div>
           </div>
           {footer}

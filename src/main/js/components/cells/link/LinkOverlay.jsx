@@ -9,6 +9,8 @@ import shallowCompare from 'react-addons-shallow-compare'
 import 'react-virtualized/styles.css';
 import { VirtualScroll } from 'react-virtualized';
 
+//we use this value to get the exact offset for the link list
+const CSS_SEARCH_HEIGHT = 70;
 
 var LinkOverlay = React.createClass({
   mixins : [AmpersandMixin, XhrPoolMixin],
@@ -24,8 +26,13 @@ var LinkOverlay = React.createClass({
   propTypes : {
     cell : React.PropTypes.object,
     langtag : React.PropTypes.string.isRequired,
-    tableId : React.PropTypes.number
+    tableId : React.PropTypes.number,
+    contentHeight : React.PropTypes.number,
+    contentWidth : React.PropTypes.number
   },
+
+  //saves all the results from server
+  allRowResults : {},
 
   componentWillMount : function () {
     var self = this;
@@ -42,13 +49,14 @@ var LinkOverlay = React.createClass({
       success : function () {
         rowXhr = toTable.rows.fetch({
           success : function () {
-            console.log("set rowResults to:", toTable.rows);
+            //we just want the models, because we filter it later which returns the models
+            self.allRowResults = toTable.rows.models;
+            self.buildRowConcatString();
             self.setState({
-              rowResults : toTable.rows,
+              //we show all the rows
+              rowResults : self.allRowResults,
               loading : false
             });
-
-
           },
           error : function (err) {
             console.log('error fetching rows', err);
@@ -64,9 +72,45 @@ var LinkOverlay = React.createClass({
   },
 
   onSearch : function (event) {
-    var search = this.refs.search.value;
+    this.filterRowsBySearch(this.refs.search.value);
+  },
+
+  //TODO: Implement to prebuild concat strings
+  //Extends the model by a cached concat string
+  buildRowConcatString : function () {
+
+  },
+
+  filterRowsBySearch : function (searchVal) {
+    let newRowResults = {};
+    var self = this;
+    var {allRowResults} = this;
+    var toColumn = self.props.cell.column.toColumn;
+    var toTableId = this.props.cell.column.toTable;
+    var toTable = this.props.cell.tables.get(toTableId);
+    var toTableColumns = toTable.columns;
+    var toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
+    searchVal = searchVal.toString().toLowerCase().trim();
+
+    //check for empty obj or map fails
+    if (searchVal !== "" && allRowResults.length > 0) {
+      newRowResults = allRowResults.filter((row)=> {
+        var rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(row.values[toIdColumnIndex], toColumn, self.props.langtag).toLowerCase();
+        var found = _.every(_.words(searchVal), function (word) {
+          return rowConcatString.indexOf(word) > -1;
+        });
+        return found;
+      });
+    }
+
+    //empty search value
+    else if (searchVal === "") {
+      newRowResults = allRowResults;
+    }
+
     this.setState({
-      search : search
+      search : searchVal,
+      rowResults : newRowResults
     });
   },
 
@@ -104,7 +148,6 @@ var LinkOverlay = React.createClass({
   },
 
   getOverlayItem : function (index) {
-    console.log("get overlay item at index:", index);
     var self = this;
     var {rowResults} = this.state;
     var cell = this.props.cell;
@@ -114,48 +157,39 @@ var LinkOverlay = React.createClass({
     var toTable = this.props.cell.tables.get(toTableId);
     var toTableColumns = toTable.columns;
     var toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
-    var row = rowResults.at(index);
+    var row = rowResults[index];
 
     //check for empty obj or map fails
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
-      var rowConcatString;
       var isLinked = !!_.find(currentCellValue, function (link) {
         return link.id === row.id;
       });
       var rowCellIdValue = row.values[toIdColumnIndex];
-      rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
-
-      //Search filter
-      if (_.isString(rowConcatString) && self.state.search !== null) {
-        var found = _.every(_.words(self.state.search.toString().toLowerCase().trim()), function (word) {
-          return rowConcatString.toLowerCase().indexOf(word) > -1;
-        });
-
-        if (found) {
-          if (rowConcatString && rowConcatString !== "") {
-            return <a href="#" key={row.id} className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
-                      onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</a>;
-          } else {
-            return null;
-          }
-        }
-      }
+      var rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
+      return <a href="#" key={row.id} className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
+                onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</a>;
     }
-    return null;
   },
 
   noRowsRenderer : function () {
-    console.log("no rows a rendered");
+    const {search} = this.state;
+
+    if (search.length > 0) {
+      return <div>no result with your search.</div>
+    } else {
+      return <div>Table has no rows.</div>;
+    }
   },
 
   render : function () {
-    var listDisplay;
-    let {rowResults, loading} = this.state;
+    let listDisplay;
+    const {rowResults, loading} = this.state;
+    const {contentHeight, contentWidth} = this.props;
+    const rowsCount = rowResults.length || 0;
 
     if (loading) {
       listDisplay = "Loading...";
     } else {
-      console.log("render virtualscroll");
       listDisplay = (
       /**
        * Issues:
@@ -165,9 +199,9 @@ var LinkOverlay = React.createClass({
        */
         <VirtualScroll
           ref="OverlayScroll"
-          width={400}
-          height={300}
-          rowsCount={rowResults.length}
+          width={contentWidth}
+          height={contentHeight - CSS_SEARCH_HEIGHT}
+          rowsCount={rowsCount}
           rowHeight={50}
           rowRenderer={this.getOverlayItem}
           noRowsRenderer={this.noRowsRenderer}
@@ -177,10 +211,12 @@ var LinkOverlay = React.createClass({
 
     return (
       <div>
-        <div className="search-input-wrapper">
-          <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                 defaultValue={this.state.search} ref="search" autoFocus/>
-          <i className="fa fa-search"></i>
+        <div className="search-input-wrapper2" style={{height:CSS_SEARCH_HEIGHT}}>
+          <div className="search-input-wrapper">
+            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
+                   defaultValue={this.state.search} ref="search" autoFocus/>
+            <i className="fa fa-search"></i>
+          </div>
         </div>
         {listDisplay}
       </div>

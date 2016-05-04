@@ -112,13 +112,16 @@ export default class Tableaux extends React.Component {
   renderActiveOverlay() {
     let overlay = this.state.activeOverlay;
     if (overlay) {
-      return (<GenericOverlay key="genericoverlay"
-                              head={overlay.head}
-                              body={overlay.body}
-                              footer={overlay.footer}
-                              type={overlay.type}
-                              closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
-      />);
+      return (
+        <GenericOverlay
+          key="genericoverlay"
+          head={overlay.head}
+          footer={overlay.footer}
+          type={overlay.type}
+          closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}>
+          {overlay.body}
+        </GenericOverlay>
+      );
     }
   }
 
