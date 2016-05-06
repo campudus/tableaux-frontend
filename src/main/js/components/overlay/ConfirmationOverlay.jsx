@@ -5,27 +5,56 @@ import i18n from 'i18next';
 
 let ConfirmationOverlay = (props) => {
   const {onYes, onCancel, content} = props;
+  const cancelButton = onCancel ?
+    <button onClick={onCancel} className="button cancel">{i18n.t('common:no')}</button> : null;
+
   return (
     <div className="ask confirmation-overlay">
       {content}
       <button autoFocus onClick={onYes} className="button yes">{i18n.t('common:yes')}</button>
-      <button onClick={onCancel} className="button cancel">{i18n.t('common:no')}</button>
+      {cancelButton}
     </div>
   )
 };
 
 ConfirmationOverlay.propTypes = {
   onYes : React.PropTypes.func.isRequired,
-  onCancel : React.PropTypes.func.isRequired,
+  onCancel : React.PropTypes.func,
   content : React.PropTypes.element.isRequired
 };
 
 export function confirmDelete(onYes, onNo) {
-  var question = <p>{i18n.t('table:confirm_delete_row')}</p>;
-  var confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
+  const question = <p>{i18n.t('table:confirm_delete_row')}</p>;
+  const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
                                                  onCancel={onNo}/>;
   openOverlay({
     head : <span>{i18n.t('table:delete_row')}</span>,
+    body : confirmationOverlay,
+    type : "flexible"
+  });
+
+}
+
+export function cellModelSavingError(errorFromServer) {
+  console.error('Cell model saved unsuccessfully!', errorFromServer, "error text:", errorFromServer.body);
+
+  let totalError,
+    confirmationOverlay,
+    techError = "Unspecified error",
+    userError = i18n.t('table:error_saving_cell'),
+    onYes = ()=> {
+      location.reload(true);
+    };
+
+  if (errorFromServer && errorFromServer.body) {
+    techError = errorFromServer.body;
+  }
+
+  totalError = <div><p>{userError}</p><p><strong>Server error:</strong> {techError}</p></div>;
+  confirmationOverlay = <ConfirmationOverlay content={totalError} onYes={onYes}/>;
+
+  openOverlay({
+    head : <span>{i18n.t('table:error_occured_hl')}</span>,
     body : confirmationOverlay,
     type : "flexible"
   });

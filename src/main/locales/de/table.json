@@ -8,5 +8,7 @@
   "confirm_delete_row": "Wollen Sie diese Zeile wirklich löschen?",
   "concat_column_name": "Identifikationsname",
   "search_no_results": "Ihre Suche ergab keine Treffer.",
-  "overlay_no_rows_in_table": "Diese Tabelle ist leer."
+  "overlay_no_rows_in_table": "Diese Tabelle ist leer.",
+  "error_occured_hl": "Es ist ein Fehler aufgetreten",
+  "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?"
 }

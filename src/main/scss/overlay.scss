@@ -78,6 +78,18 @@ $overlay-headline-height: 50px;
     height: 100%;
     position: relative;
 
+    p {
+      line-height: 1.3em;
+    }
+
+    p + p {
+      margin: 1em 0;
+    }
+
+    strong {
+      font-weight: bold;
+    }
+
     .search-input-wrapper2 {
       height: 70px;
       overflow: hidden;
