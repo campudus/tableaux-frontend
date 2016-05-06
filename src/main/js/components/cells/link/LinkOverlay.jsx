@@ -17,7 +17,6 @@ var LinkOverlay = React.createClass({
 
   getInitialState : function () {
     return {
-      search : "",
       rowResults : {},
       loading : true
     };
@@ -39,6 +38,14 @@ var LinkOverlay = React.createClass({
     var toTableId = this.props.cell.column.toTable;
     var toTable = this.props.cell.tables.get(toTableId);
 
+    console.log("toTable before xhr request:", JSON.stringify(toTable));
+
+    //TODO: Discuss with team: Assign a link, thats not existing any more.
+    if (toTable.rows.length > 0) {
+      console.log("rows already fetched. show instantly!");
+      self.setRowResult(toTable.rows);
+    }
+
     /*
      * TODO: Combine both api calls. There's a api route available: http://localhost:8080/completetable/1
      * TBD: Ampersand Table Models
@@ -49,14 +56,7 @@ var LinkOverlay = React.createClass({
       success : function () {
         rowXhr = toTable.rows.fetch({
           success : function () {
-            //we just want the models, because we filter it later which returns the models
-            self.allRowResults = toTable.rows.models;
-            self.buildRowConcatString();
-            self.setState({
-              //we show all the rows
-              rowResults : self.allRowResults,
-              loading : false
-            });
+            self.setRowResult(toTable.rows, true);
           },
           error : function (err) {
             console.log('error fetching rows', err);
@@ -71,28 +71,65 @@ var LinkOverlay = React.createClass({
     self.addAbortableXhrRequest(colXhr);
   },
 
+  getCurrentSearchValue : function () {
+    const searchRef = this.refs.search;
+    if (searchRef) {
+      let searchVal = this.refs.search.value;
+      return searchVal.toString().toLowerCase().trim();
+    } else {
+      return "";
+    }
+  },
+
   onSearch : function (event) {
-    this.filterRowsBySearch(this.refs.search.value);
+    this.setState({
+      rowResults : this.filterRowsBySearch(this.getCurrentSearchValue())
+    });
+  },
+
+  //we set the row result depending if a search value is set
+  setRowResult : function (rowResult, fromServer) {
+    console.log("setting row results");
+    //just set the models, because we filter it later which also returns the models.
+    this.allRowResults = rowResult.models;
+
+    //data comes from server, so we rebuild the row names
+    if (fromServer) {
+      this.buildRowConcatString();
+    }
+
+    this.setState({
+      //we show all the rows
+      rowResults : this.filterRowsBySearch(this.getCurrentSearchValue()),
+      loading : false
+    });
   },
 
   //TODO: Implement to prebuild concat strings
   //Extends the model by a cached concat string
   buildRowConcatString : function () {
-
+    let {allRowResults} = this;
+    const {toColumn, toTable} = this.props.cell.column;
+    const toTableObj = this.props.cell.tables.get(toTable);
+    const toTableColumns = toTableObj.columns;
+    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column 
+    _.forEach(allRowResults, (row)=> {
+      row["cachedRowName"] = RowConcatHelper.getRowConcatStringWithFallback(row.values[toIdColumnIndex], toColumn, self.props.langtag).toLowerCase();
+    });
+    console.log(this.allRowResults);
   },
 
+  //searchval is already trimmed and to lowercase
   filterRowsBySearch : function (searchVal) {
     let newRowResults = {};
-    var self = this;
-    var {allRowResults} = this;
-    var toColumn = self.props.cell.column.toColumn;
-    var toTableId = this.props.cell.column.toTable;
-    var toTable = this.props.cell.tables.get(toTableId);
-    var toTableColumns = toTable.columns;
-    var toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
-    searchVal = searchVal.toString().toLowerCase().trim();
+    let self = this;
+    let {allRowResults} = this;
+    let toColumn = self.props.cell.column.toColumn;
+    let toTableId = this.props.cell.column.toTable;
+    let toTable = this.props.cell.tables.get(toTableId);
+    let toTableColumns = toTable.columns;
+    let toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
 
-    //check for empty obj or map fails
     if (searchVal !== "" && allRowResults.length > 0) {
       newRowResults = allRowResults.filter((row)=> {
         var rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(row.values[toIdColumnIndex], toColumn, self.props.langtag).toLowerCase();
@@ -102,16 +139,11 @@ var LinkOverlay = React.createClass({
         return found;
       });
     }
-
-    //empty search value
-    else if (searchVal === "") {
+    else {
       newRowResults = allRowResults;
     }
 
-    this.setState({
-      search : searchVal,
-      rowResults : newRowResults
-    });
+    return newRowResults;
   },
 
   addLinkValue : function (isLinked, row, rowCellIdValue, event) {
@@ -172,7 +204,7 @@ var LinkOverlay = React.createClass({
   },
 
   noRowsRenderer : function () {
-    const {search} = this.state;
+    const search = this.getCurrentSearchValue();
 
     if (search.length > 0) {
       return <div>no result with your search.</div>
@@ -213,8 +245,8 @@ var LinkOverlay = React.createClass({
       <div>
         <div className="search-input-wrapper2" style={{height:CSS_SEARCH_HEIGHT}}>
           <div className="search-input-wrapper">
-            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch}
-                   defaultValue={this.state.search} ref="search" autoFocus/>
+            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch} ref="search"
+                   autoFocus/>
             <i className="fa fa-search"></i>
           </div>
         </div>
