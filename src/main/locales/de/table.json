@@ -6,5 +6,7 @@
   "jump_to_row": "Zur Zeile springen",
   "row_duplicated": "Zeile wurde dupliziert",
   "confirm_delete_row": "Wollen Sie diese Zeile wirklich löschen?",
-  "concat_column_name": "Identifikationsname"
+  "concat_column_name": "Identifikationsname",
+  "search_no_results": "Ihre Suche ergab keine Treffer.",
+  "overlay_no_rows_in_table": "Diese Tabelle ist leer."
 }

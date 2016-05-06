@@ -103,6 +103,7 @@ var Tables = Collection.extend({
           }
         },
         error : function () {
+          //TODO: Make a gui error with refresh the whole tableaux
           console.error('Cell model saved unsuccessfully!', arguments);
           cell.value = oldValue;
           self.updateConcatCells(cell);

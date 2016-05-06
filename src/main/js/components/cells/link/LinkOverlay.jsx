@@ -1,19 +1,19 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var _ = require('lodash');
-var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
-var ActionCreator = require('../../../actions/ActionCreator');
-var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
-import shallowCompare from 'react-addons-shallow-compare'
+const React = require('react');
+const _ = require('lodash');
+const OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
+const RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
+const ActionCreator = require('../../../actions/ActionCreator');
+const XhrPoolMixin = require('../../mixins/XhrPoolMixin');
+import shallowCompare from 'react-addons-shallow-compare';
 import 'react-virtualized/styles.css';
 import { VirtualScroll } from 'react-virtualized';
+import {translate} from 'react-i18next';
 
 //we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
 
-var LinkOverlay = React.createClass({
-  mixins : [AmpersandMixin, XhrPoolMixin],
+const LinkOverlay = React.createClass({
+  mixins : [XhrPoolMixin],
 
   getInitialState : function () {
     return {
@@ -34,24 +34,16 @@ var LinkOverlay = React.createClass({
   allRowResults : {},
 
   componentWillMount : function () {
-    var self = this;
-    var toTableId = this.props.cell.column.toTable;
-    var toTable = this.props.cell.tables.get(toTableId);
+    let self = this;
+    let toTableId = this.props.cell.column.toTable;
+    let toTable = this.props.cell.tables.get(toTableId);
+    let rowXhr, colXhr;
 
-    console.log("toTable before xhr request:", JSON.stringify(toTable));
-
-    //TODO: Discuss with team: Assign a link, thats not existing any more.
+    //Data already fetched, show it instantly and update it in the background
     if (toTable.rows.length > 0) {
-      console.log("rows already fetched. show instantly!");
       self.setRowResult(toTable.rows);
     }
 
-    /*
-     * TODO: Combine both api calls. There's a api route available: http://localhost:8080/completetable/1
-     * TBD: Ampersand Table Models
-     */
-
-    var rowXhr, colXhr;
     colXhr = toTable.columns.fetch({
       success : function () {
         rowXhr = toTable.rows.fetch({
@@ -71,6 +63,10 @@ var LinkOverlay = React.createClass({
     self.addAbortableXhrRequest(colXhr);
   },
 
+  /**
+   * Get the input string of the search field
+   * @returns {String} Search value lowercased and trimmed
+   */
   getCurrentSearchValue : function () {
     const searchRef = this.refs.search;
     if (searchRef) {
@@ -89,15 +85,12 @@ var LinkOverlay = React.createClass({
 
   //we set the row result depending if a search value is set
   setRowResult : function (rowResult, fromServer) {
-    console.log("setting row results");
     //just set the models, because we filter it later which also returns the models.
     this.allRowResults = rowResult.models;
-
     //data comes from server, so we rebuild the row names
     if (fromServer) {
       this.buildRowConcatString();
     }
-
     this.setState({
       //we show all the rows
       rowResults : this.filterRowsBySearch(this.getCurrentSearchValue()),
@@ -105,58 +98,51 @@ var LinkOverlay = React.createClass({
     });
   },
 
-  //TODO: Implement to prebuild concat strings
-  //Extends the model by a cached concat string
+  //Extends the model by a cached row name string
   buildRowConcatString : function () {
-    let {allRowResults} = this;
+    const {allRowResults, props:{cell:{column:{toColumn}}}} = this;
+    _.forEach(allRowResults, (row)=> {
+      row["cachedRowName"] = RowConcatHelper.getRowConcatStringWithFallback(this.getRowValues(row), toColumn, this.props.langtag);
+    });
+  },
+
+  getRowValues : function (row) {
     const {toColumn, toTable} = this.props.cell.column;
     const toTableObj = this.props.cell.tables.get(toTable);
     const toTableColumns = toTableObj.columns;
     const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column 
-    _.forEach(allRowResults, (row)=> {
-      row["cachedRowName"] = RowConcatHelper.getRowConcatStringWithFallback(row.values[toIdColumnIndex], toColumn, self.props.langtag).toLowerCase();
-    });
-    console.log(this.allRowResults);
+    return row.values[toIdColumnIndex];
   },
 
   //searchval is already trimmed and to lowercase
   filterRowsBySearch : function (searchVal) {
     let newRowResults = {};
-    let self = this;
     let {allRowResults} = this;
-    let toColumn = self.props.cell.column.toColumn;
-    let toTableId = this.props.cell.column.toTable;
-    let toTable = this.props.cell.tables.get(toTableId);
-    let toTableColumns = toTable.columns;
-    let toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
 
     if (searchVal !== "" && allRowResults.length > 0) {
       newRowResults = allRowResults.filter((row)=> {
-        var rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(row.values[toIdColumnIndex], toColumn, self.props.langtag).toLowerCase();
-        var found = _.every(_.words(searchVal), function (word) {
-          return rowConcatString.indexOf(word) > -1;
+        let rowName = row["cachedRowName"].toLowerCase();
+        return _.every(_.words(searchVal), function (word) {
+          return rowName.indexOf(word) > -1;
         });
-        return found;
       });
     }
     else {
       newRowResults = allRowResults;
     }
-
     return newRowResults;
   },
 
-  addLinkValue : function (isLinked, row, rowCellIdValue, event) {
+  addLinkValue : function (isLinked, row, event) {
     event.preventDefault();
+    const cell = this.props.cell;
+    const rowCellIdValue = this.getRowValues(row);
 
-    var cell = this.props.cell;
-
-    var link = {
+    const link = {
       id : row.id,
       value : rowCellIdValue
     };
-
-    var links = _.clone(cell.value);
+    let links = _.clone(cell.value);
 
     if (isLinked) {
       _.remove(links, function (linked) {
@@ -180,37 +166,27 @@ var LinkOverlay = React.createClass({
   },
 
   getOverlayItem : function (index) {
-    var self = this;
-    var {rowResults} = this.state;
-    var cell = this.props.cell;
-    var toColumn = self.props.cell.column.toColumn;
-    var currentCellValue = cell ? cell.value : null;
-    var toTableId = this.props.cell.column.toTable;
-    var toTable = this.props.cell.tables.get(toTableId);
-    var toTableColumns = toTable.columns;
-    var toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column
-    var row = rowResults[index];
+    let {rowResults} = this.state;
+    let cell = this.props.cell;
+    let currentCellValue = cell ? cell.value : null;
+    let row = rowResults[index];
 
-    //check for empty obj or map fails
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
-      var isLinked = !!_.find(currentCellValue, function (link) {
+      let isLinked = !!_.find(currentCellValue, (link) => {
         return link.id === row.id;
       });
-      var rowCellIdValue = row.values[toIdColumnIndex];
-      var rowConcatString = RowConcatHelper.getRowConcatStringWithFallback(rowCellIdValue, toColumn, self.props.langtag);
+      let rowName = row["cachedRowName"];
       return <a href="#" key={row.id} className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
-                onClick={self.addLinkValue.bind(self, isLinked, row, rowCellIdValue)}>{rowConcatString}</a>;
+                onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>;
     }
   },
 
   noRowsRenderer : function () {
-    const search = this.getCurrentSearchValue();
-
-    if (search.length > 0) {
-      return <div>no result with your search.</div>
-    } else {
-      return <div>Table has no rows.</div>;
-    }
+    const {t} = this.props;
+    return (
+      <div className="error">
+        {this.getCurrentSearchValue().length > 0 ? t('search_no_results') : t('overlay_no_rows_in_table')}
+      </div>);
   },
 
   render : function () {
@@ -223,12 +199,6 @@ var LinkOverlay = React.createClass({
       listDisplay = "Loading...";
     } else {
       listDisplay = (
-      /**
-       * Issues:
-       * tabindex -1 to skip focusing
-       * right padding of 100% elements
-       * after clicking an element, all visible rows are updated!!
-       */
         <VirtualScroll
           ref="OverlayScroll"
           width={contentWidth}
@@ -257,4 +227,4 @@ var LinkOverlay = React.createClass({
 
 });
 
-module.exports = LinkOverlay;
+module.exports = translate(['table'])(LinkOverlay);
