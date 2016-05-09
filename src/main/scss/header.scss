@@ -40,8 +40,7 @@ header {
     }
 
     .Select-input > input {
-      height: $space-height-header-buttons - 2;
-      line-height: $space-height-header-buttons - 2;
+      padding: 0;
     }
 
     .Select-menu-outer {
