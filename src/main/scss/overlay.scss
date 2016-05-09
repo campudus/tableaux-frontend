@@ -48,7 +48,7 @@ $overlay-headline-height: 50px;
   }
 
   #overlay-wrapper {
-    max-width: 600px;
+    max-width: 800px;
     width: 100%;
     background-color: $color-background-very-light-grey;
     z-index: 2;
@@ -191,13 +191,19 @@ $overlay-headline-height: 50px;
   .overlay-table-row {
     margin-right: 25px;
     display: block;
-    padding: 0.8em;
+    padding: 0 0.8em;
     background-color: white;
     margin-bottom: 10px;
     @include border-radius(3px);
     cursor: pointer;
     border: 1px solid $color-grey-dark;
     border-bottom: 3px solid $color-grey-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 40px;
+    line-height: 40px;
+    @include box-sizing(border-box);
 
     &:hover {
       border-color: $color-darker-link-color;
