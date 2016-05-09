@@ -67,22 +67,46 @@ var TableView = React.createClass({
   fetchTable : function (tableId) {
     var self = this;
     var currentTable = self.tables.get(tableId);
+    //spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
+    //in the middle, and gets displayed only on the first startup
     ActionCreator.spinnerOn();
     //We need to fetch columns first, since rows has Cells that depend on the column model
     currentTable.columns.fetch({
       reset : true,
+
+      //success for initial rows request
       success : function () {
-        currentTable.rows.fetch({
+        currentTable.rows.fetchInitial({
           reset : true,
           success : function () {
-            console.log("table columns & rows fetched successfully.");
-            ActionCreator.spinnerOff();
+            console.log("table columns & rows initial fetched successfully.");
             self.setState({
               initialLoading : false,
               rowsCollection : currentTable.rows,
               currentTableId : tableId,
               rowsFilter : null
             });
+            //Spinner for the second (tail fetch) call
+            ActionCreator.spinnerOn();
+            currentTable.rows.fetchTail({
+
+              //success for rest rows request (without initial limit)
+              success : function () {
+                console.log("rows fetched the rest");
+                ActionCreator.spinnerOff();
+              },
+
+              //error for rows tail request
+              error : function (error) {
+                console.error("Error fetching rows after initial request. Error from server:", error);
+              }
+
+            });
+          },
+
+          //error for initial rows request
+          error : function (error) {
+            console.error("Error fetching initial rows. Error from server:", error);
           }
         });
       }

@@ -47,14 +47,10 @@ var Cell = React.createClass({
   //Dont update when cell is not editing or selected
   shouldComponentUpdate : function (nextProps, nextState) {
     const {selected, editing, langtag,shouldFocus} = this.props;
-    if (editing === nextProps.editing
-      && selected === nextProps.selected
-      && langtag === nextProps.langtag
-      && shouldFocus === nextProps.shouldFocus) {
-      return false;
-    } else {
-      return true;
-    }
+    return (editing !== nextProps.editing
+    || selected !== nextProps.selected
+    || langtag !== nextProps.langtag
+    || shouldFocus !== nextProps.shouldFocus)
   },
 
   getKeyboardShortcuts : function (event) {

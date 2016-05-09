@@ -10,7 +10,12 @@ var Columns = React.createClass({
     columns : React.PropTypes.object.isRequired
   },
 
-  renderColumn : function (langtag, column, index) {
+  shouldComponentUpdate(nextProps, nextState) {
+    const {langtag, columns} = this.props;
+    return (langtag !== nextProps.langtag || columns !== nextProps.columns)
+  },
+
+  renderColumn(langtag, column, index) {
     var columnContent = [];
     let {t} = this.props;
     if (column.kind === "concat") {
@@ -33,7 +38,7 @@ var Columns = React.createClass({
     return <div className="column-head" key={index}>{columnContent}</div>
   },
 
-  render : function () {
+  render() {
     var self = this;
     return (
       <div id="tableHeader" ref="tableHeader" className="heading">

@@ -6,5 +6,9 @@
   "jump_to_row": "Jump to row",
   "row_duplicated": "Row has been duplicated",
   "confirm_delete_row": "Do you really want to delete that row?",
-  "concat_column_name": "ID-Name"
+  "concat_column_name": "ID-Name",
+  "search_no_results": "Your search delivered no results.",
+  "overlay_no_rows_in_table": "This table is empty.",
+  "error_occured_hl": "There was an error",
+  "error_saving_cell": "The cell could not be saved. Refresh your browser now?"
 }

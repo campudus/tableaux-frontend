@@ -45,7 +45,7 @@ var LinkEditCell = React.createClass({
       ActionCreator.openOverlay({
         head : <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
         body : <LinkOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
-        type : "normal"
+        type : "no-scroll"
       });
     },
 

@@ -7,6 +7,7 @@ var ActionCreator = require('../actions/ActionCreator');
 var Row = require('./Row');
 var Cells = require('./Cells');
 var Cell = require('./Cell');
+import {cellModelSavingError} from '../components/overlay/ConfirmationOverlay.jsx';
 
 var Tables = Collection.extend({
   model : Table,
@@ -102,8 +103,8 @@ var Tables = Collection.extend({
             self.updateConcatCells(cell);
           }
         },
-        error : function () {
-          console.error('Cell model saved unsuccessfully!', arguments);
+        error : function (error) {
+          cellModelSavingError(error);
           cell.value = oldValue;
           self.updateConcatCells(cell);
         }

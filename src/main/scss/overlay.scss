@@ -26,6 +26,10 @@ $overlay-headline-height: 50px;
     }
   }
 
+  &.crop {
+
+  }
+
   .overlay-header {
     padding: 0 20px;
     overflow: hidden;
@@ -71,14 +75,29 @@ $overlay-headline-height: 50px;
     padding: 3.5rem;
     overflow-y: auto;
     box-sizing: border-box;
-    //height: 100%;
+    height: 100%;
     position: relative;
-    min-height: 100%;
 
-    .search-input-wrapper {
-      position: relative;
-      height: auto;
-      margin-bottom: 30px;
+    p {
+      line-height: 1.3em;
+    }
+
+    p + p {
+      margin: 1em 0;
+    }
+
+    strong {
+      font-weight: bold;
+    }
+
+    .search-input-wrapper2 {
+      height: 70px;
+      overflow: hidden;
+
+      .search-input-wrapper {
+        position: relative;
+        height: auto;
+      }
 
       i {
         position: absolute;
@@ -169,7 +188,9 @@ $overlay-headline-height: 50px;
     }
   }
 
-  li {
+  .overlay-table-row {
+    margin-right: 25px;
+    display: block;
     padding: 0.8em;
     background-color: white;
     margin-bottom: 10px;
@@ -236,6 +257,12 @@ $overlay-headline-height: 50px;
 
   }
 
+  &.no-scroll {
+    #overlay-content, .content-scroll {
+      overflow: hidden;
+    }
+  }
+
   &.has-footer {
     footer {
       height: 50px;
@@ -272,6 +299,10 @@ $overlay-headline-height: 50px;
       border: 0;
       border-bottom: 1px solid $color-grey-dark;
     }
+  }
+
+  .VirtualScroll {
+    outline-style: none;
   }
 
 }

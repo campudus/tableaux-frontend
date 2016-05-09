@@ -3,6 +3,7 @@ var _ = require('lodash');
 var apiUrl = require('../helpers/apiUrl');
 var Row = require('./Row');
 
+var INITIAL_LIMIT = 30;
 
 var Rows = Collection.extend({
 
@@ -25,11 +26,6 @@ var Rows = Collection.extend({
 
   comparator : false,
 
-  currentPage : {
-    offset : 0,
-    limit : 20
-  },
-
   url : function () {
     return apiUrl('/tables/' + this.parent.getId() + '/rows');
   },
@@ -38,15 +34,18 @@ var Rows = Collection.extend({
     return resp.rows;
   },
 
-  fetchPage : function (options) {
-    // Defaults so the requested collections stays unchanged
-    options = options || {remove : false, merge : false, add : true};
-    options.data = options.data || this.currentPage;
-
+  fetchInitial : function (options) {
+    options.data = _.assign(options.data, {limit : INITIAL_LIMIT});
     this.fetch(options);
+  },
 
-    this.currentPage.offset += options.data.limit;
+  fetchTail : function (options) {
+    //dont merge, or models are broken when duplicating while fetching the tail
+    options = _.assign(options, {merge : false, add : true, remove : false});
+    options.data = _.assign(options.data, {offset : INITIAL_LIMIT});
+    this.fetch(options);
   }
+
 });
 
 module.exports = Rows;
