@@ -85,6 +85,7 @@ var Table = React.createClass({
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", tableRowsWorker.rowAdded.bind(this));
+    window.GLOBAL_TABLEAUX.tableRowsDom = null;
   },
 
   componentDidMount() {
@@ -98,12 +99,13 @@ var Table = React.createClass({
     headerDOMElement = document.getElementById(tableHeaderId);
     tableDOMNode = ReactDOM.findDOMNode(this);
     tableDOMOffsetY = tableDOMNode.getBoundingClientRect().top;
-
-    this.tableRowsDom = tableRowsDom;
     this.columnsDom = columnsDom;
     this.headerDOMElement = headerDOMElement;
     this.tableDOMNode = tableDOMNode;
     this.tableDOMOffsetY = tableDOMOffsetY;
+
+    //save a reference globally for children. Cells use this.
+    window.GLOBAL_TABLEAUX.tableRowsDom = this.tableRowsDom = tableRowsDom;
   },
 
   componentDidUpdate() {

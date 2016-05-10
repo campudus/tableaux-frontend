@@ -134,3 +134,81 @@
   }
 
 }
+
+.row-display-label {
+  & {
+    position: absolute;
+    background: #f0f0f0;
+    border-bottom: 2px solid #e1e1e1;
+    top: -40px;
+    width: 285px;
+    padding: 0 10px;
+    left: 5px;
+    box-sizing: border-box;
+    height: 30px;
+    line-height: 30px;
+    color: #888;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0.95;
+    border-radius: 5px;
+    z-index: 2;
+  }
+
+  &:after, &:before {
+    top: 100%;
+    left: 10px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &:after {
+    border-color: rgba(240, 240, 240, 0);
+    border-top-color: #f0f0f0;
+    border-width: 6px;
+  }
+
+  &:before {
+    border-color: rgba(225, 225, 225, 0);
+    border-top-color: #e1e1e1;
+    border-width: 8px;
+  }
+
+  .content {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &.below {
+    bottom: -40px;
+    top: auto;
+    border-top: 2px solid #e1e1e1;
+    border-bottom: 0;
+
+    &:after, &:before {
+      top: auto;
+      bottom: 100%;
+    }
+
+    &:after {
+      border-bottom-color: #f0f0f0;
+      border-top: 0px transparent;
+    }
+
+    &:before {
+      border-bottom-color: #e1e1e1;
+      border-top: 0px transparent;
+    }
+
+  }
+}
+
+.cell.editing .row-display-label.below {
+  display: none;
+}

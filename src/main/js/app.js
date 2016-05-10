@@ -19,6 +19,8 @@ App.extend({
   langtags : TableauxConstants.Langtags,
 
   init : function () {
+    //Global tableaux variable. Used for some DOM References
+    window.GLOBAL_TABLEAUX = {};
     this.router = new Router();
     this.router.history.start();
   },
