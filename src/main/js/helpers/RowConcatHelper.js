@@ -6,7 +6,7 @@ var NOVALUE = "– NO VALUE –";
 
 var internal = {
   stringHasValue : function (stringToCheck) {
-    return (stringToCheck && stringToCheck.trim() !== "");
+    return (stringToCheck && stringToCheck.toString().trim() !== "");
   },
 
   addDefaultLangtagPostfix : function (string) {
