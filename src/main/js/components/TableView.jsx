@@ -240,9 +240,10 @@ var TableView = React.createClass({
             return true;
           }
         } else {
-          //First cell is not concat but probably text, shorttext, etc.
+          //First cell is not concat but probably text, shorttext, number, etc.
           var firstCellValue = getCellValue(firstCell);
-          if (_.isEmpty(firstCellValue)) {
+          //_.isEmpty(123) returns TRUE, so we check for number (int & float)
+          if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
             return true;
           }
         }
