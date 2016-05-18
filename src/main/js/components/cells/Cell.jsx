@@ -79,7 +79,7 @@ var Cell = React.createClass({
     }
   },
 
-  cellClicked : function (event, reactId, nativeEvent, withRightClick) {
+  cellClickedWorker : function (event, withRightClick) {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
     console.log("cell clicked: ", cell, "value: ", cell.value);
 
@@ -100,11 +100,14 @@ var Cell = React.createClass({
     if (!shouldFocus) {
       ActionCreator.enableShouldCellFocus();
     }
-
   },
 
-  rightClicked : function (e) {
-    this.cellClicked(...arguments, true);
+  rightClicked : function (event) {
+    this.cellClickedWorker(event, true);
+  },
+
+  cellClicked : function (event) {
+    this.cellClickedWorker(event);
   },
 
   onMouseDownHandler : function (e) {
