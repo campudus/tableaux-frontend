@@ -40,7 +40,7 @@ class FilterPopup extends React.Component {
   }
 
   buildColumnOptions() {
-    const {t} = this.props;
+    const {t, langtag} = this.props;
     let options = this.props.columns.reduce(function (res, column) {
 
       let allowedKinds = column.kind === ColumnKinds.text
@@ -51,8 +51,10 @@ class FilterPopup extends React.Component {
         || column.kind === ColumnKinds.link;
 
       if (allowedKinds) {
+        //Show display name with fallback to machine name
+        const columnDisplayName = column.displayName[langtag] || column.name;
         //ID Column gets translated name
-        const labelName = column.id === 0 ? t('concat_column_name') : column.name;
+        const labelName = column.id === 0 ? t('concat_column_name') : columnDisplayName;
 
         res.push({
           label : labelName,
