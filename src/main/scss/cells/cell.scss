@@ -138,8 +138,7 @@
 .row-display-label {
   & {
     position: absolute;
-    background: #f0f0f0;
-    border-bottom: 2px solid #e1e1e1;
+    background: $dark-blue-grey-background;
     top: -40px;
     width: 285px;
     padding: 0 10px;
@@ -147,34 +146,23 @@
     box-sizing: border-box;
     height: 30px;
     line-height: 30px;
-    color: #888;
+    color: $color-text-light-grey;
     font-size: 12px;
     pointer-events: none;
     border-radius: 5px;
     z-index: 2;
   }
 
-  &:after, &:before {
+  &:after {
     top: 100%;
     left: 10px;
-    border: solid transparent;
     content: " ";
     height: 0;
     width: 0;
     position: absolute;
     pointer-events: none;
-  }
-
-  &:after {
-    border-color: rgba(240, 240, 240, 0);
-    border-top-color: #f0f0f0;
-    border-width: 6px;
-  }
-
-  &:before {
-    border-color: rgba(225, 225, 225, 0);
-    border-top-color: #e1e1e1;
-    border-width: 8px;
+    border: 6px solid transparent;
+    border-top-color: $dark-blue-grey-background;
   }
 
   .content {
@@ -184,27 +172,20 @@
     text-overflow: ellipsis;
   }
 
-  &.below {
-    bottom: -40px;
-    top: auto;
-    border-top: 2px solid #e1e1e1;
-    border-bottom: 0;
-
-    &:after, &:before {
-      top: auto;
-      bottom: 100%;
-    }
+  //left of cell, right arrow
+  &.flip {
+    left: -295px;
+    bottom: auto;
+    top: 50%;
+    margin-top: -15px;
 
     &:after {
-      border-bottom-color: #f0f0f0;
-      border-top: 0px transparent;
+      top: 50%;
+      left: 100%;
+      border-top-color: transparent;
+      border-left-color: $dark-blue-grey-background;
+      margin-top: -6px;
     }
-
-    &:before {
-      border-bottom-color: #e1e1e1;
-      border-top: 0px transparent;
-    }
-
   }
 }
 

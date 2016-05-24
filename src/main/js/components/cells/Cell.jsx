@@ -169,7 +169,7 @@ var Cell = React.createClass({
     //onKeyDown event just for selected components
     if (selected) {
       const firstCell = cell.collection.at(0);
-      const firstCellId = firstCell.id;
+      const indexOfCell = cell.collection.indexOf(cell);
       const rowDisplayLabel = RowConcatHelper.getRowConcatStringWithFallback(firstCell.value, firstCell.column, langtag);
       //get global so not every single cell needs to look fo the table rows dom element
       const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
@@ -177,10 +177,11 @@ var Cell = React.createClass({
       let rowDisplayLabelClass = "row-display-label";
 
       if (-CELL_HINT_PADDING < difference && difference < CELL_HINT_PADDING) {
-        rowDisplayLabelClass += " below";
+        rowDisplayLabelClass += " flip";
       }
 
-      const rowDisplayLabelElement = cell.id !== firstCellId ? (
+      //We just show the info starting at the fourth column
+      const rowDisplayLabelElement = indexOfCell >= 3 ? (
         <div className={rowDisplayLabelClass}><span className="content">{rowDisplayLabel}</span></div>) : null;
 
       return (
