@@ -43,21 +43,24 @@ var OverlayHeadRowIdentificator = React.createClass({
     }
 
     if (this.props.cell != null) {
+      const {column} = this.props.cell;
+      const {langtag} = this.props;
+      const columnDisplayName = typeof column.displayName[langtag] === "undefined" ? column.name : column.displayName[langtag];
+
       if (this.props.cell.isLink) {
         const {toTable} = this.props.cell.column;
-        const {langtag} = this.props;
         const linkToTable = `/${langtag}/table/${toTable}`;
         return (
           <span>
             <a href={linkToTable} onClick={this.handleTableSwitchClicked} className="column-name with-link">
-              <i className="fa fa-columns"></i>{this.props.cell.column.name}</a>{rowIdentification}
+              <i className="fa fa-columns"></i>{columnDisplayName}</a>{rowIdentification}
           </span>
         );
 
       } else {
         return (
           <span>
-            <span className="column-name">{this.props.cell.column.name}: </span>{rowIdentification}
+            <span className="column-name">{columnDisplayName}: </span>{rowIdentification}
           </span>
         );
 

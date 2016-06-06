@@ -97,7 +97,7 @@ var RowConcatHelper = {
           break;
 
         case "boolean":
-          var boolValue = (concatElem ? concatElementColumn.name : "");
+          var boolValue = (concatElem && concatElem.displayName ? concatElementColumn.displayName[langtag] : "");
           appendString(boolValue);
           break;
 
