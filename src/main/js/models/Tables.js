@@ -1,18 +1,16 @@
-var Collection = require('ampersand-rest-collection');
-var apiUrl = require('../helpers/apiUrl');
-var Table = require('./Table');
-var Dispatcher = require('../dispatcher/Dispatcher');
-var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
-var ActionCreator = require('../actions/ActionCreator');
-var Row = require('./Row');
-var Cells = require('./Cells');
-var Cell = require('./Cell');
-import {cellModelSavingError} from '../components/overlay/ConfirmationOverlay.jsx';
+import Collection from 'ampersand-rest-collection';
+import apiUrl from '../helpers/apiUrl';
+import Table from './Table';
+import Dispatcher from '../dispatcher/Dispatcher';
+import { ActionTypes } from '../constants/TableauxConstants';
+import ActionCreator from '../actions/ActionCreator';
+import Row from './Row';
+import { cellModelSavingError } from '../components/overlay/ConfirmationOverlay.jsx';
 
 var Tables = Collection.extend({
   model : Table,
 
-  initialize : function () {
+  initialize() {
     console.log("Rows.initialize:", arguments);
     Dispatcher.on(ActionTypes.CHANGE_CELL, this.changeCellHandler, this);
     Dispatcher.on(ActionTypes.REMOVE_ROW, this.removeRowHandler, this);
@@ -21,46 +19,42 @@ var Tables = Collection.extend({
   },
 
   //Clear current/old collections to prevent reinitializing bugs and free memory
-  cleanupTable : function (payload) {
-    var tableId = payload.tableId;
-    var tableToCleanUp = this.get(tableId);
-    var rowsToCleanup = tableToCleanUp.rows;
-    var columnsToCleanup = tableToCleanUp.columns;
+  cleanupTable(payload) {
+    const tableId = payload.tableId;
+    const tableToCleanUp = this.get(tableId);
+    const rowsToCleanup = tableToCleanUp.rows;
+    const columnsToCleanup = tableToCleanUp.columns;
     this.cleanUpRows(rowsToCleanup);
     columnsToCleanup.reset();
     ActionCreator.cleanupTableDone();
   },
 
-  cleanUpRows : function (rowsToCleanup) {
-    rowsToCleanup.forEach(function (row) {
-      this.cleanUpRow(row);
-    }, this);
+  cleanUpRows(rowsToCleanup) {
+    rowsToCleanup.forEach(row => this.cleanUpRow(row));
     rowsToCleanup.reset();
   },
 
-  cleanUpRow : function (rowToCleanup) {
-    var cellsToCleanUp = rowToCleanup.cells;
-    cellsToCleanUp.forEach(function (cell) {
-      cell.cleanupCell();
-    });
+  cleanUpRow(rowToCleanup) {
+    const cellsToCleanUp = rowToCleanup.cells;
+    cellsToCleanUp.forEach(cell => cell.cleanupCell());
   },
 
-  changeCellHandler : function (payload) {
+  changeCellHandler(payload) {
     console.log("changeCellHandler:", payload);
-    var self = this;
+    const self = this;
 
-    var tableId = payload.tableId;
-    var cellId = payload.cellId;
-    var rowId = payload.rowId;
+    const tableId = payload.tableId;
+    const cellId = payload.cellId;
+    const rowId = payload.rowId;
 
-    var table = this.get(tableId);
-    var row = table.rows.get(rowId);
-    var cell = row.cells.get(cellId);
-    var oldValue = cell.value;
-    var newValue = payload.value; //value we send to the server
-    var mergedValue; //The value we display for the user
-    var updateNecessary = false;
-    var isPatch = false;
+    const table = this.get(tableId);
+    const row = table.rows.get(rowId);
+    const cell = row.cells.get(cellId);
+    const oldValue = cell.value;
+    let newValue = payload.value; //value we send to the server
+    let mergedValue; //The value we display for the user
+    let updateNecessary = false;
+    let isPatch = false;
 
     if (cell.isLink) {
       updateNecessary = !_.isEqual(oldValue, newValue);
@@ -95,7 +89,7 @@ var Tables = Collection.extend({
       cell.save(newValue, {
         patch : isPatch,
         wait : true,
-        success : function (model, data, options) {
+        success(model, data, options) {
           //is there new data from the server?
           if (!_.isEqual(data.value, mergedValue)) {
             console.log('Cell model saved successfully. Server data changed meanwhile:', data.value, mergedValue);
@@ -103,7 +97,7 @@ var Tables = Collection.extend({
             self.updateConcatCells(cell);
           }
         },
-        error : function (error) {
+        error(error) {
           cellModelSavingError(error);
           cell.value = oldValue;
           self.updateConcatCells(cell);
@@ -114,35 +108,35 @@ var Tables = Collection.extend({
   },
 
   //We just trigger a changed event for concat cells when we are a identifier cell
-  updateConcatCells : function (changedCell) {
+  updateConcatCells(changedCell) {
     if (changedCell.isIdentifier) {
       Dispatcher.trigger(changedCell.changedCellEvent, changedCell);
     }
   },
 
-  removeRowHandler : function (payload) {
-    var tableId = payload.tableId;
-    var rowId = payload.rowId;
-    var table = this.get(tableId);
-    var row = table.rows.get(rowId);
+  removeRowHandler(payload) {
+    const tableId = payload.tableId;
+    const rowId = payload.rowId;
+    const table = this.get(tableId);
+    const row = table.rows.get(rowId);
     row.destroy();
   },
 
-  addRowHandler : function (payload) {
-    var self = this;
-    var tableId = payload.tableId;
-    var table = this.get(tableId);
-    var rows = table.rows;
+  addRowHandler(payload) {
+    const self = this;
+    const tableId = payload.tableId;
+    const table = this.get(tableId);
+    const rows = table.rows;
 
-    var newRow = new Row({tableId : tableId, columns : table.columns}, {collection : rows});
+    const newRow = new Row({tableId : tableId, columns : table.columns}, {collection : rows});
     ActionCreator.spinnerOn();
 
     newRow.save({}, {
-      success : function (row) {
+      success(row) {
         rows.add(row);
         ActionCreator.spinnerOff();
       },
-      error : function (err) {
+      error(err) {
         self.cleanUpRow(newRow);
         rows.remove(newRow);
         console.error('could not add new row!', err, arguments);
@@ -152,11 +146,11 @@ var Tables = Collection.extend({
 
   },
 
-  url : function () {
+  url() {
     return apiUrl('/tables');
   },
 
-  parse : function (response) {
+  parse(response) {
     return response.tables;
   }
 

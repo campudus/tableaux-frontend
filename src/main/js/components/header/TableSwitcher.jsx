@@ -1,9 +1,9 @@
-var React = require('react');
-var Select = require('react-select');
-var ActionCreator = require('../../actions/ActionCreator.js');
-var _ = require('lodash');
+import React from 'react';
+import Select from 'react-select';
+import ActionCreator from '../../actions/ActionCreator.js';
+import _ from 'lodash';
 
-var TableSwitcher = React.createClass({
+const TableSwitcher = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -14,19 +14,20 @@ var TableSwitcher = React.createClass({
 
   selectOptions : null,
 
-  componentDidMount : function () {
+  componentDidMount() {
     this.buildSelectOptions();
   },
 
-  getSelectOptions : function () {
+  getSelectOptions() {
     return this.selectOptions || this.buildSelectOptions();
   },
 
   //TODO: In the future rebuild select options when the table model changed
-  buildSelectOptions : function () {
-    var options = this.props.tables.reduce(function (res, table) {
+  buildSelectOptions() {
+    const {langtag} = this.props;
+    const options = this.props.tables.reduce(function (res, table) {
       res.push({
-        label : table.name,
+        label : typeof table.displayName[langtag] === "undefined" ? table.name : table.displayName[langtag],
         value : table.id
       });
       return res;
@@ -36,21 +37,23 @@ var TableSwitcher = React.createClass({
     return options;
   },
 
-  onChange : function (selection) {
+  onChange(selection) {
     //prevents undefined tableId: we just want to switch the table when there is actually something selected
     if (!_.isEmpty(selection)) {
       ActionCreator.switchTable(selection.value, this.props.langtag);
     }
   },
 
-  valueRenderer : function (option) {
-    var tableName = option.label;
-    return <div><i className="fa fa-columns"></i>
-      <span>{tableName}</span>
-    </div>;
+  valueRenderer(option) {
+    const tableName = option.label;
+    return (
+      <div><i className="fa fa-columns"></i>
+        <span>{tableName}</span>
+      </div>
+    );
   },
 
-  render : function () {
+  render() {
     return (
       <div id="table-switcher">
         <Select options={this.getSelectOptions()}
@@ -60,7 +63,6 @@ var TableSwitcher = React.createClass({
                 onChange={this.onChange}
                 valueRenderer={this.valueRenderer}
                 noResultsText="Keine Tabelle mit diesem Namen vorhanden"
-
         />
       </div>
     )

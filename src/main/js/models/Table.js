@@ -1,14 +1,13 @@
-var Model = require('ampersand-model');
-var Dispatcher = require('../dispatcher/Dispatcher');
+import Model from 'ampersand-model';
+import Columns from './Columns';
+import Rows from './Rows';
 
-var Columns = require('./Columns');
-var Rows = require('./Rows');
-var Row = require('./Row');
-
-var Table = Model.extend({
+const Table = Model.extend({
   props : {
     id : 'number',
-    name : 'string'
+    name : 'string',
+    displayName : 'object',
+    description : 'object'
   },
 
   collections : {
@@ -16,8 +15,7 @@ var Table = Model.extend({
     rows : Rows
   },
 
-  initialize : function () {
-
+  initialize() {
   }
 
 });
