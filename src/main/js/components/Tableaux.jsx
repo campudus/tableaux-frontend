@@ -44,7 +44,9 @@ export default class Tableaux extends React.Component {
     i18n
       .use(XHR)
       .init({
-        fallbackLng : TableauxConstants.DefaultLangtag,
+        // we need to define just 'en' otherwise fallback doesn't work correctly since i18next tries to load the
+        // json only once with the exact fallbackLng Key. So 'en-GB' doesn't work because all
+        fallbackLng : 'en',
         lng : this.props.initialParams.langtag,
 
         // have a common namespace used around the full app

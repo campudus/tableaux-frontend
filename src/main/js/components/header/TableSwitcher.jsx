@@ -18,6 +18,12 @@ const TableSwitcher = React.createClass({
     this.buildSelectOptions();
   },
 
+  componentWillReceiveProps(nextProps){
+    if (nextProps.langtag != this.props.langtag) {
+      this.selectOptions = null;
+    }
+  },
+
   getSelectOptions() {
     return this.selectOptions || this.buildSelectOptions();
   },
