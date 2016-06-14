@@ -43,7 +43,7 @@ var AttachmentEditCell = React.createClass({
         return file.uuid === attachment.uuid;
       });
 
-      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, attachments);
+      ActionCreator.changeCell(cell, attachments);
     };
   },
 

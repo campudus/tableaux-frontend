@@ -69,7 +69,10 @@ var TableauxConstant = {
     CLOSE_ROW_CONTEXT_MENU : null,
 
     //Toast
-    SHOW_TOAST : null
+    SHOW_TOAST : null,
+
+    //Access Rights
+    NO_PERMISSION_SAVE_LANGUAGE : null
 
 
   }),

@@ -66,7 +66,7 @@ var AttachmentOverlay = React.createClass({
         attachments.push(file);
       }
 
-      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, attachments);
+      ActionCreator.changeCell(cell, attachments);
     };
   },
 

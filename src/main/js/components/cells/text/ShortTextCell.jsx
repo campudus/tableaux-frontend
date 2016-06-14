@@ -35,7 +35,7 @@ var ShortTextCell = React.createClass({
       valueToSave = newValue;
     }
 
-    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, valueToSave);
+    ActionCreator.changeCell(cell, valueToSave);
     ActionCreator.toggleCellEditing(false);
   },
 

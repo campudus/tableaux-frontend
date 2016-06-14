@@ -8,6 +8,7 @@ var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
 import MetaCell from '../cells/MetaCell';
 import {confirmDelete} from '../overlay/ConfirmationOverlay';
+import {getUserLanguageAccess,hasUserAccessToLanguage} from '../../helpers/accessHelper';
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -121,7 +122,7 @@ var Row = React.createClass({
 
   renderLanguageRow : function (langtag) {
     let {isRowSelected, selectedCellExpandedRow, row, isRowExpanded} = this.props;
-    var deleteButton = null;
+    var deleteButton, rowLockedIcon = null;
     //Is this (multilanguage) row selected
     var selected = (isRowSelected && (langtag === selectedCellExpandedRow));
     if (selected && row.recentlyDuplicated) {
@@ -132,9 +133,14 @@ var Row = React.createClass({
     //Set row class optional with selected class
     var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated ? " duplicated" : "");
 
+    //show locked language icon
+    if ((isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
+      rowLockedIcon = (<i className="fa fa-lock access-denied-icon"/>);
+    }
     // Add delete button to default-language row
     // or to every not expanded row
-    if ((langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
+    // will not show when no access
+    else if ((langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
@@ -147,6 +153,7 @@ var Row = React.createClass({
     return (
       <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1"
            onContextMenu={this.contextMenuHandler}>
+        {rowLockedIcon}
         {deleteButton}
         <MetaCell langtag={langtag} rowId={this.props.row.getId()}
                   onClick={this.toggleExpand} rowExpanded={this.props.isRowExpanded}/>

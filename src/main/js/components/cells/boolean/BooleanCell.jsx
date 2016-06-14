@@ -24,7 +24,7 @@ var BooleanCell = React.createClass({
       valueToSave = newValue;
     }
 
-    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, valueToSave);
+    ActionCreator.changeCell(cell, valueToSave);
   },
 
   getCheckboxValue : function () {

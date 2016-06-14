@@ -38,7 +38,7 @@ var LinkEditCell = React.createClass({
       var newValue = _.filter(cell.value, function (element, arrayIndex) {
         return element.id !== idx;
       });
-      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
+      ActionCreator.changeCell(cell, newValue);
     },
 
     openOverlay : function () {

@@ -72,7 +72,7 @@ var DateTimeCell = React.createClass({
         formattedDateValue = (currentDateTimeValue === null) ? null : String(currentDateTimeValue);
       }
       //Save to db
-      ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, formattedDateValue);
+      ActionCreator.changeCell(cell, formattedDateValue);
     }
   },
 

@@ -153,7 +153,7 @@ const LinkOverlay = React.createClass({
     } else {
       links.push(link);
     }
-    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, links);
+    ActionCreator.changeCell(cell, links);
 
     //tell the virtual scroller to redraw
     this.refs.OverlayScroll.forceUpdate();

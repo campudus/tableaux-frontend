@@ -31,7 +31,7 @@ var TextCell = React.createClass({
       newValue = value;
     }
 
-    ActionCreator.changeCell(cell.tableId, cell.rowId, cell.id, newValue);
+    ActionCreator.changeCell(cell, newValue);
     ActionCreator.toggleCellEditing(false);
   },
 

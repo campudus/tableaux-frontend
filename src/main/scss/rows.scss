@@ -14,16 +14,18 @@
     &:focus, &:active {
       outline-style: none;
     }
+
+    .access-denied-icon {
+      position: absolute;
+      margin-top: 15px;
+      margin-left: 10px;
+      color:$color-button-grey;
+    }
   }
 
   .row-group.expanded {
-    //border-bottom: 2px solid $color-border-grey;
     background-color: #f9f9f9;
     display: table;
-  }
-
-  .row, .row-group {
-    //outline: none;
   }
 
   .delete-row {

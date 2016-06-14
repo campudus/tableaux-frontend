@@ -3,11 +3,9 @@ var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 
 module.exports = {
 
-  changeCell : function (tableId, rowId, cellId, newValue) {
+  changeCell : function (cell, newValue) {
     Dispatcher.trigger(ActionTypes.CHANGE_CELL, {
-      tableId : tableId,
-      rowId : rowId,
-      cellId : cellId,
+      cell : cell,
       value : newValue
     });
   },
@@ -58,10 +56,12 @@ module.exports = {
   },
 
   openOverlay : function (overlayContent) {
+    console.log("+ calling openOverlay");
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
   },
 
   closeOverlay : function () {
+    console.log("- calling closeOverlay");
     Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY);
   },
 

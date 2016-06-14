@@ -6,6 +6,8 @@ import { ActionTypes } from '../constants/TableauxConstants';
 import ActionCreator from '../actions/ActionCreator';
 import Row from './Row';
 import { cellModelSavingError } from '../components/overlay/ConfirmationOverlay.jsx';
+import { hasUserAccessToLanguage, getUserLanguageAccess, canUserChangeCellWithValue, limitValueToAllowedLanguages } from '../helpers/accessHelper';
+import { noPermissionSaveLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
 
 var Tables = Collection.extend({
   model : Table,
@@ -42,20 +44,14 @@ var Tables = Collection.extend({
   changeCellHandler(payload) {
     console.log("changeCellHandler:", payload);
     const self = this;
-
-    const tableId = payload.tableId;
-    const cellId = payload.cellId;
-    const rowId = payload.rowId;
-
-    const table = this.get(tableId);
-    const row = table.rows.get(rowId);
-    const cell = row.cells.get(cellId);
+    const {cell} = payload;
     const oldValue = cell.value;
     let newValue = payload.value; //value we send to the server
     let mergedValue; //The value we display for the user
     let updateNecessary = false;
     let isPatch = false;
 
+    //Setup for saving the cell
     if (cell.isLink) {
       updateNecessary = !_.isEqual(oldValue, newValue);
       mergedValue = newValue;
@@ -71,6 +67,15 @@ var Tables = Collection.extend({
     }
 
     if (updateNecessary) {
+      //Check access rights to languages
+      if (!canUserChangeCellWithValue(cell, newValue)) {
+        noPermissionSaveLanguage(getUserLanguageAccess());
+        return;
+      } else {
+        //reduce values to send just authorized language values to server
+        newValue = limitValueToAllowedLanguages(newValue);
+      }
+
       console.log("Cell Model: saving cell with value:", newValue);
 
       //we give direct feedback for user
