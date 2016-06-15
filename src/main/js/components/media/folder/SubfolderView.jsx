@@ -24,15 +24,17 @@ var SubfolderView = React.createClass({
 
     return (
       <div>
-        <a onClick={this.folderClickHandler}>
+        <a className="folder-link" onClick={this.folderClickHandler}>
           <i className="icon fa fa-folder-open"></i><span>{name}</span>
         </a>
+        <div className="media-options">
+          <span className="button" onClick={this.props.onEdit} alt="edit">
+          <i className="icon fa fa-pencil-square-o"></i> umbenennen
+        </span>
         <span className="button" onClick={this.props.onRemove} alt="delete">
-          <i className="fa fa-remove"></i>
+          <i className="fa fa-trash"></i>
         </span>
-        <span className="button" onClick={this.props.onEdit} alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i>
-        </span>
+        </div>
       </div>
     );
   }

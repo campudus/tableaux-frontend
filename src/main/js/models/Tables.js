@@ -79,7 +79,6 @@ var Tables = Collection.extend({
           console.log("reduced newValue after limitValueToAllowedLanguages():", newValue);
           if (_.isEmpty(newValue.value)) {
             //The user tried to change a multilanguage cell without language permission
-            console.warn("Saving this cell value denied. User can not edit this language");
             noPermissionAlertWithLanguage(getUserLanguageAccess());
             return;
           }

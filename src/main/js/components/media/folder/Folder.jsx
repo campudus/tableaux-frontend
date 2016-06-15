@@ -22,13 +22,8 @@ var Folder = React.createClass({
   },
 
   renderCurrentFolder : function () {
-    var parent = null;
-    if (this.props.folder.name !== "root") {
-      parent =
-        <span className="back"><a onClick={this.backFolderHandler}><i className="fa fa-chevron-left"></i></a></span>;
-    }
-
     var currentFolder = '';
+    var currentFolderClass = ['current-folder'];
     if (this.props.folder.name === "root") {
       currentFolder = "Hauptordner";
     } else if (this.props.folder.name && this.props.folder.description) {
@@ -39,9 +34,17 @@ var Folder = React.createClass({
       currentFolder = "Folder " + this.props.folder.id;
     }
 
+    if (this.props.folder.name !== "root") {
+      currentFolder = <a href="#" onClick={this.backFolderHandler}>
+        <span className="back"><i className="fa fa-chevron-left"/>{currentFolder}</span>
+      </a>;
+    } else {
+      currentFolderClass.push("is-root");
+    }
+
     return (
-      <div className="current-folder">
-        <div>{parent} {currentFolder}</div>
+      <div className={currentFolderClass.join(" ")}>
+        {currentFolder}
       </div>
     );
   },

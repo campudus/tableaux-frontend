@@ -11,53 +11,66 @@
   width: inherit;
   background-color: white;
   border-top: 3px solid $color-border-grey;
-  font-family: $font-sec;
-  text-transform: uppercase;
   font-weight: bold;
   display: block;
-  padding: 1em;
+  font-family: $font-sec;
+  text-transform: uppercase;
 
-  div {
-    margin: 0.5em;
-  }
-
-  .back {
-    cursor: pointer;
+  i {
     margin-right: 1em;
   }
 
   a {
-    padding-left: 10px;
-
+    cursor: pointer;
     text-decoration: none;
     color: $color-primary-text;
+    display: block;
 
     &:hover {
       color: $color-primary;
     }
   }
+
+  a, &.is-root {
+    padding: 1em;
+  }
 }
 
 .media-switcher {
-  width: 100%;
   background-color: white;
   border-top: 3px solid $color-border-grey;
-  font-family: $font-sec;
-  text-transform: uppercase;
   font-weight: bold;
   display: block;
+  padding: 1em;
 
-  &:nth-child(3) {
-    border-top: none;
-  }
+  //Settings container
+  .media-options {
+    display: inline-block;
+    border: 1px solid #dfdfdf;
+    margin-left: 2em;
+    border-radius: 3px;
 
-  .media-switcher-menu {
+    i {
+      margin-right: 5px;
+    }
+
+    .button {
+      margin: 0 0.5em;
+      display: inline-block;
+      border-right: 1px solid #dfdfdf;
+      padding-right: 0.5em;
+      padding-top:3px;
+      padding-bottom:3px;
+
+      &:last-child {
+        padding-right: 0em;
+        border-right: 0;
+      }
+    }
 
   }
 
   li {
-    padding: 1em;
-    min-height: 19px;
 
     &.active {
       background-color: $color-primary;
@@ -81,7 +94,7 @@
     text-align: center;
   }
 
-  .new_folder {
+  .new-folder {
     cursor: pointer;
 
     &:hover {
@@ -89,16 +102,10 @@
     }
   }
 
-  .subfolder {
-
-  }
-
   .file, .subfolder {
     display: inline;
 
     .button {
-      margin-left: 1em;
-      margin-right: 0;
       cursor: pointer;
 
       &.active {
@@ -111,7 +118,6 @@
 .file-uploads {
   margin-top: 50px;
   color: $color-primary-text;
-  font-family: $font-sec;
 
   .running-uploads {
     width: inherit;
@@ -177,7 +183,6 @@
 
           .field-item {
             .field-label {
-              font-family: $font-sec;
               display: inline-block;
               margin-bottom: 5px;
               padding-left: 30px;
@@ -246,7 +251,6 @@
             .dropzone {
               box-sizing: border-box;
               cursor: pointer;
-              font-family: $font-main;
               height: 320px;
               text-align: center;
               border: 2px dashed $color-button-grey;
@@ -281,7 +285,6 @@
         .cover {
           height: 320px;
           .dropzone {
-            font-family: $font-main;
             cursor: pointer;
             box-sizing: border-box;
             background-color: transparent;
@@ -307,7 +310,6 @@
 .attachment-overlay-wrapper {
 
   div.folders {
-    font-family: $font-sec;
     text-transform: uppercase;
     margin-bottom: 20px;
     margin-left: 10px;

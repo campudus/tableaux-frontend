@@ -4,7 +4,7 @@ import {openOverlay, closeOverlay} from '../../actions/ActionCreator';
 import i18n from 'i18next';
 
 let ConfirmationOverlay = (props) => {
-  const {onYes, onOk, onCancel, content, noAutoFocus} = props;
+  const {onYes, onOk, onCancel, content, autoFocus} = props;
   const onYesOrOk = onOk ? onOk : onYes;
   const cancelButton = onCancel ?
     <button onClick={onCancel} className="button cancel">{i18n.t('common:no')}</button> : null;
@@ -22,7 +22,7 @@ let ConfirmationOverlay = (props) => {
   return (
     <div className="ask confirmation-overlay">
       {content}
-      <button autoFocus={noAutoFocus === false ? false : true} onClick={onYesOrOk}
+      <button autoFocus={autoFocus === false ? false : true} onClick={onYesOrOk}
               className="button yes">{onOk ? 'Ok' : i18n.t('common:yes')}</button>
       {cancelButton}
     </div>
@@ -34,7 +34,7 @@ ConfirmationOverlay.propTypes = {
   onOk : React.PropTypes.func,
   onCancel : React.PropTypes.func,
   content : React.PropTypes.element.isRequired,
-  noAutoFocus : React.PropTypes.bool
+  autoFocus : React.PropTypes.bool
 };
 
 export function confirmDelete(onYes, onNo) {
@@ -43,6 +43,17 @@ export function confirmDelete(onYes, onNo) {
                                                    onCancel={onNo}/>;
   openOverlay({
     head : <span>{i18n.t('table:delete_row')}</span>,
+    body : confirmationOverlay,
+    type : "flexible"
+  });
+}
+
+export function confirmDeleteFile(fileName, onYes, onNo) {
+  const question = <p>{i18n.t('media:confirm_delete_file', {fileName})}</p>;
+  const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
+                                                   onCancel={onNo} autoFocus={false}/>;
+  openOverlay({
+    head : <span>{i18n.t('media:delete_file_headline')}</span>,
     body : confirmationOverlay,
     type : "flexible"
   });
@@ -87,11 +98,13 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
 
   totalError =
     <div><p>{userError}</p><p><strong className="allowed-languages">{allowedLangtagsMarkup}</strong></p></div>;
-  confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk} noAutoFocus={false}/>;
+  confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk} autoFocus={false}/>;
 
   openOverlay({
     head : <span>{i18n.t('common:access_management.permission_denied_headline')}</span>,
     body : confirmationOverlay,
     type : "flexible"
   });
+
+  console.warn("Access denied. User can not edit this language.");
 }

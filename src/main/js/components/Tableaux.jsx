@@ -50,7 +50,7 @@ export default class Tableaux extends React.Component {
         lng : this.props.initialParams.langtag,
 
         // have a common namespace used around the full app
-        ns : ['common', 'header', 'table'],
+        ns : ['common', 'header', 'table', 'media'],
         defaultNS : 'common',
 
         debug : false,

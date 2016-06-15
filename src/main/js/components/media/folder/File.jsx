@@ -5,11 +5,16 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var apiUrl = require('../../../helpers/apiUrl');
 var multiLanguage = require('../../../helpers/multiLanguage');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
-var ActionCreator = require('../../../actions/ActionCreator');
+//var ActionCreator = require('../../../actions/ActionCreator');
 
 var FileEdit = require('../overlay/FileEdit.jsx');
 var FileEditHead = require('../overlay/FileEditHead.jsx');
 var FileEditFooter = require('../overlay/FileEditFooter.jsx');
+
+import ActionCreator from '../../../actions/ActionCreator';
+import {isUserAdmin,getUserLanguageAccess} from '../../../helpers/accessManagementHelper';
+import {noPermissionAlertWithLanguage, confirmDeleteFile} from '../../../components/overlay/ConfirmationOverlay';
+
 
 var File = React.createClass({
   mixins : [AmpersandMixin],
@@ -25,9 +30,20 @@ var File = React.createClass({
     var fallbackLang = App.langtags[0];
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
-    if (confirm("Soll die Datei '" + retrieveTranslation(this.props.file.title, this.props.langtag) + "' wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden!")) {
-      console.log('File.onRemove', this.props.file.uuid);
-      ActionCreator.removeFile(this.props.file.uuid);
+    if (isUserAdmin()) {
+      confirmDeleteFile(
+        retrieveTranslation(this.props.file.title, this.props.langtag),
+        ()=> {
+          console.log('File.onRemove', this.props.file.uuid);
+          ActionCreator.removeFile(this.props.file.uuid);
+          ActionCreator.closeOverlay();
+        },
+        ()=> {
+          ActionCreator.closeOverlay();
+        });
+
+    } else {
+      noPermissionAlertWithLanguage(getUserLanguageAccess());
     }
   },
 
@@ -64,16 +80,17 @@ var File = React.createClass({
     var title = retrieveTranslation(this.props.file.title, langtag);
     var link = apiUrl(retrieveTranslation(this.props.file.fileUrl, langtag));
 
-    var deleteButton = <span className="button fa fa-remove" onClick={this.onRemove} alt="delete"></span>;
-
-    var classNames = "button fa fa-pencil-square-o";
-    var editButton = <span className={classNames} onClick={this.onEdit} alt="edit"></span>;
-
     return (
       <div key={'file' + this.props.file.uuid} className="file">
-        <a href={link} target="_blank"><i className="icon fa fa-file"></i><span>{title}</span></a>
-        {deleteButton}
-        {editButton}
+        <a className="file-link" href={link} target="_blank"><i className="icon fa fa-file"></i><span>{title}</span></a>
+        <div className="media-options">
+          <span className="button" onClick={this.onEdit} alt="edit">
+          <i className="icon fa fa-pencil-square-o"></i> bearbeiten
+        </span>
+        <span className="button" onClick={this.onRemove} alt="delete">
+          <i className="fa fa-trash"></i>
+        </span>
+        </div>
       </div>
     );
   }

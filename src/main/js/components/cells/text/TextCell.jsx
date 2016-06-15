@@ -24,14 +24,16 @@ var TextCell = React.createClass({
 
   saveCell : function (newValue) {
     var cell = this.props.cell;
+    var valueToSave;
 
     if (cell.isMultiLanguage) {
-      var value = _.clone(cell.value);
-      value[this.props.langtag] = newValue;
-      newValue = value;
+      valueToSave = {};
+      valueToSave[this.props.langtag] = newValue;
+    } else {
+      valueToSave = newValue;
     }
 
-    ActionCreator.changeCell(cell, newValue);
+    ActionCreator.changeCell(cell, valueToSave);
     ActionCreator.toggleCellEditing(false);
   },
 
@@ -56,8 +58,8 @@ var TextCell = React.createClass({
   },
 
   saveOverlay : function (content, event) {
-    this.saveCell(content);
     this.closeOverlay(event);
+    this.saveCell(content);
     ActionCreator.toggleCellEditing(false);
   },
 
@@ -83,10 +85,10 @@ var TextCell = React.createClass({
     }
 
     return (
-        <div className='cell-content' onClick={this.handleClick}>
-          {value === null ? "" : value}
-          {expandButton}
-        </div>
+      <div className='cell-content' onClick={this.handleClick}>
+        {value === null ? "" : value}
+        {expandButton}
+      </div>
     );
   },
 

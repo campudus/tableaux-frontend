@@ -53,6 +53,8 @@ export function canUserChangeCell(cell) {
 
 //Reduce the value object before sending to server, so that just allowed languages gets sent
 export function reduceValuesToAllowedLanguages(valueToChange) {
+
+  console.log("valueToChange:", valueToChange);
   if (isUserAdmin()) {
     return valueToChange;
   } else {

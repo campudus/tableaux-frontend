@@ -8,9 +8,6 @@ var ActionCreator = require('../../../actions/ActionCreator');
 var NewFolderAction = React.createClass({
 
   mixins : [AmpersandMixin],
-
-  displayName : 'NewFolderAction',
-
   propTypes : {
     parentFolder : React.PropTypes.object.isRequired
   },
@@ -47,12 +44,8 @@ var NewFolderAction = React.createClass({
     }
 
     return (
-      <div className="media-switcher">
-        <ul>
-          <li>
+      <div className="media-switcher new-folder-action">
             {newFolderAction}
-          </li>
-        </ul>
       </div>
     );
   }
