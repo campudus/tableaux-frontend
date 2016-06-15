@@ -4,7 +4,7 @@ import {openOverlay, closeOverlay} from '../../actions/ActionCreator';
 import i18n from 'i18next';
 
 let ConfirmationOverlay = (props) => {
-  const {onYes, onOk, onCancel, content} = props;
+  const {onYes, onOk, onCancel, content, noAutoFocus} = props;
   const onYesOrOk = onOk ? onOk : onYes;
   const cancelButton = onCancel ?
     <button onClick={onCancel} className="button cancel">{i18n.t('common:no')}</button> : null;
@@ -22,7 +22,7 @@ let ConfirmationOverlay = (props) => {
   return (
     <div className="ask confirmation-overlay">
       {content}
-      <button autoFocus={false} onClick={onYesOrOk}
+      <button autoFocus={noAutoFocus === false ? false : true} onClick={onYesOrOk}
               className="button yes">{onOk ? 'Ok' : i18n.t('common:yes')}</button>
       {cancelButton}
     </div>
@@ -33,7 +33,8 @@ ConfirmationOverlay.propTypes = {
   onYes : React.PropTypes.func,
   onOk : React.PropTypes.func,
   onCancel : React.PropTypes.func,
-  content : React.PropTypes.element.isRequired
+  content : React.PropTypes.element.isRequired,
+  noAutoFocus : React.PropTypes.bool
 };
 
 export function confirmDelete(onYes, onNo) {
@@ -86,7 +87,7 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
 
   totalError =
     <div><p>{userError}</p><p><strong className="allowed-languages">{allowedLangtagsMarkup}</strong></p></div>;
-  confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk}/>;
+  confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk} noAutoFocus={false}/>;
 
   openOverlay({
     head : <span>{i18n.t('common:access_management.permission_denied_headline')}</span>,

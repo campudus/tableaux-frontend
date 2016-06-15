@@ -3,7 +3,7 @@ import {ColumnKinds} from '../constants/TableauxConstants';
 
 //TODO: Read from local storage
 export function getUserLanguageAccess() {
-  return ['fr-FR', 'de-DE', 'it-IT'];
+  return ['fr-FR'];
 }
 
 //TODO: Read from local storage
