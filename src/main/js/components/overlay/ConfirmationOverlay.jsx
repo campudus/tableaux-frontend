@@ -74,23 +74,22 @@ export function cellModelSavingError(errorFromServer) {
 
 }
 
-export function noPermissionSaveLanguage(allowedLangtags) {
-  console.warn('noPermissionSaveLanguage');
-
+export function noPermissionAlertWithLanguage(allowedLangtags) {
   let totalError,
     confirmationOverlay,
     onOk = () => {
       closeOverlay();
     },
-    userError = "Sie haben keine Berechtigung Daten dieser Sprache zu verändern. Folgende Sprachen dürfen Sie bearbeiten:"; //i18n.t('table:error_saving_cell'),
+    userError = `${i18n.t('common:access_management.no_permission_saving_language_description')}:`;
 
   const allowedLangtagsMarkup = allowedLangtags.map((langtag, idx)=> <span key={idx}>{langtag}</span>);
 
-  totalError = <div><p>{userError}</p><p><strong>{allowedLangtagsMarkup}</strong></p></div>;
+  totalError =
+    <div><p>{userError}</p><p><strong className="allowed-languages">{allowedLangtagsMarkup}</strong></p></div>;
   confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk}/>;
 
   openOverlay({
-    head : <span>Zugriff verweigert!</span>,
+    head : <span>{i18n.t('common:access_management.permission_denied_headline')}</span>,
     body : confirmationOverlay,
     type : "flexible"
   });

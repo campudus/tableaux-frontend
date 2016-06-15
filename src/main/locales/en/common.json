@@ -2,5 +2,9 @@
   "save": "Save",
   "yes": "Yes",
   "no": "No",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "access_management": {
+    "permission_denied_headline": "Access permission denied",
+    "no_permission_saving_language_description": "You have no permission to change this data. Only administrating users can add or remove data. You can edit content of the following languages"
+  }
 }

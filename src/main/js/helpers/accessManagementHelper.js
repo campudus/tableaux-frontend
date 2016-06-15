@@ -3,7 +3,7 @@ import {ColumnKinds} from '../constants/TableauxConstants';
 
 //TODO: Read from local storage
 export function getUserLanguageAccess() {
-  return ['fr-FR'];
+  return ['fr-FR', 'de-DE', 'it-IT'];
 }
 
 //TODO: Read from local storage
@@ -11,30 +11,19 @@ export function isUserAdmin() {
   return false;
 }
 
+//Can a user edit the given langtag
 export function hasUserAccessToLanguage(langtag) {
-  let isString = _.isString(langtag);
-  let isArray = _.isArray(langtag);
-
-  //convert 1 size array element to string
-  if (isArray && langtag.length === 1) {
-    langtag = langtag[0];
-    isString = true;
-    isArray = false;
-  }
-
-  if (isString) {
+  if (_.isString(langtag)) {
     return (getUserLanguageAccess() && getUserLanguageAccess().length > 0) ?
     getUserLanguageAccess().indexOf(langtag) > -1 : false;
-  } else if (isArray) {
-    return _.every(getUserLanguageAccess(), (o)=> langtag.indexOf(o) >= 0);
   } else {
     console.error("hasUserAccessToLanguage() has been called with unknown parameter langtag:", langtag);
     return false;
   }
 }
 
-export function canUserChangeCellWithValue(cell, valueToChange) {
-  //const {column} = cell;
+//Is the user allowed to change this cell in general? Is it multilanguage and no link or attachment?
+export function canUserChangeCell(cell) {
 
   if (!cell) {
     console.warn("hasUserAccesToCell() called with invalid parameter cell:", cell);
@@ -56,17 +45,17 @@ export function canUserChangeCellWithValue(cell, valueToChange) {
       cell.kind === ColumnKinds.boolean ||
       cell.kind === ColumnKinds.datetime
     )) {
-
-
-    console.log("canUserChangeCellWithValue() can be true, check value:", valueToChange);
     return true;
   } else {
     return false;
   }
 }
 
-export function limitValueToAllowedLanguages(valueToChange) {
-
-  return valueToChange;
-
+//Reduce the value object before sending to server, so that just allowed languages gets sent
+export function reduceValuesToAllowedLanguages(valueToChange) {
+  if (isUserAdmin()) {
+    return valueToChange;
+  } else {
+    return {value : _.pick(valueToChange.value, getUserLanguageAccess())};
+  }
 }

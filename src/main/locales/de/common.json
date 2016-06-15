@@ -2,5 +2,9 @@
   "save": "Speichern",
   "yes": "Ja",
   "no": "Nein",
-  "cancel": "Abbrechen"
+  "cancel": "Abbrechen",
+  "access_management": {
+    "permission_denied_headline": "Zugriff verweigert",
+    "no_permission_saving_language_description": "Sie haben keine Berechtigung diesen Datensatz zu verändern. Nur Administratoren können Daten hinzufügen und löschen. Folgende Sprachinhalte dürfen Sie bearbeiten"
+  }
 }

@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
 import ActionCreator from './../../actions/ActionCreator';
-import {confirmDelete} from '../overlay/ConfirmationOverlay';
+import {confirmDelete,noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
+import {getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
 
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -73,7 +74,11 @@ class RowContextMenu extends React.Component {
   };
 
   deleteRow = (event) => {
-    confirmDelete(this.onYesOverlay, this.onCancelOverlay);
+    if (isUserAdmin()) {
+      confirmDelete(this.onYesOverlay, this.onCancelOverlay);
+    } else {
+      noPermissionAlertWithLanguage(getUserLanguageAccess());
+    }
   };
 
   showTranslations = (event) => {
@@ -84,7 +89,11 @@ class RowContextMenu extends React.Component {
 
   duplicateRow = (event) => {
     const {tableId, rowId} = this.props;
-    ActionCreator.duplicateRow(tableId, rowId);
+    if (isUserAdmin()) {
+      ActionCreator.duplicateRow(tableId, rowId);
+    } else {
+      noPermissionAlertWithLanguage(getUserLanguageAccess());
+    }
   };
 
   render = () => {

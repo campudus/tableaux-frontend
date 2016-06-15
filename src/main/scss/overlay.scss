@@ -79,11 +79,12 @@ $overlay-headline-height: 50px;
     position: relative;
 
     p {
-      line-height: 1.3em;
+      line-height: 1.5em;
     }
 
     p + p {
-      margin: 1em 0;
+      margin-top: 1em;
+      margin-bottom: 1em;
     }
 
     strong {
@@ -153,8 +154,7 @@ $overlay-headline-height: 50px;
 
   .button {
     @include button-look();
-    margin-top: 10px;
-    margin-right: 10px;
+    margin: 20px 10px 0 10px;
   }
 
   h2 {
@@ -304,6 +304,31 @@ $overlay-headline-height: 50px;
     &:focus {
       border: 0;
       border-bottom: 1px solid $color-grey-dark;
+    }
+  }
+
+  //Overlay for smaller confirmation popups
+
+  .confirmation-overlay {
+    text-align: center;
+    p {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 450px;
+    }
+  }
+
+  .allowed-languages {
+    span {
+      font-weight: bold;
+      display: inline-block;
+      margin: 0 0.2em;
+      &:after {
+        content: ",";
+      }
+      &:last-child:after {
+        content: "";
+      }
     }
   }
 

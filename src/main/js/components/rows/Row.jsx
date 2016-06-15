@@ -7,8 +7,8 @@ var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
 import MetaCell from '../cells/MetaCell';
-import {confirmDelete} from '../overlay/ConfirmationOverlay';
-import {getUserLanguageAccess,hasUserAccessToLanguage} from '../../helpers/accessHelper';
+import {confirmDelete, noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
+import {hasUserAccessToLanguage, getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -59,7 +59,11 @@ var Row = React.createClass({
 
   onClickDelete : function (e) {
     ActionCreator.disableShouldCellFocus();
-    confirmDelete(this.onYesOverlay, this.onCancelOverlay);
+    if (isUserAdmin()) {
+      confirmDelete(this.onYesOverlay, this.onCancelOverlay);
+    } else {
+      noPermissionAlertWithLanguage(getUserLanguageAccess());
+    }
   },
 
   onYesOverlay : function (event) {
@@ -134,7 +138,7 @@ var Row = React.createClass({
     var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated ? " duplicated" : "");
 
     //show locked language icon
-    if ((isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
+    if (!isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
       rowLockedIcon = (<i className="fa fa-lock access-denied-icon"/>);
     }
     // Add delete button to default-language row

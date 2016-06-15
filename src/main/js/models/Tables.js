@@ -6,8 +6,8 @@ import { ActionTypes } from '../constants/TableauxConstants';
 import ActionCreator from '../actions/ActionCreator';
 import Row from './Row';
 import { cellModelSavingError } from '../components/overlay/ConfirmationOverlay.jsx';
-import { hasUserAccessToLanguage, getUserLanguageAccess, canUserChangeCellWithValue, limitValueToAllowedLanguages } from '../helpers/accessHelper';
-import { noPermissionSaveLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
+import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from '../helpers/accessManagementHelper';
+import { noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
 
 var Tables = Collection.extend({
   model : Table,
@@ -67,17 +67,30 @@ var Tables = Collection.extend({
     }
 
     if (updateNecessary) {
-      //Check access rights to languages
-      if (!canUserChangeCellWithValue(cell, newValue)) {
-        noPermissionSaveLanguage(getUserLanguageAccess());
-        return;
-      } else {
-        //reduce values to send just authorized language values to server
-        newValue = limitValueToAllowedLanguages(newValue);
+      /**
+       * Basic language access management
+       */
+      if (!isUserAdmin()) {
+        if (!canUserChangeCell(cell)) {
+          noPermissionAlertWithLanguage(getUserLanguageAccess());
+          return;
+        } else {
+          //reduce values to send just authorized language values to server
+          newValue = reduceValuesToAllowedLanguages(newValue);
+          console.log("reduced newValue after limitValueToAllowedLanguages():", newValue);
+          if (_.isEmpty(newValue.value)) {
+            //The user tried to change a multilanguage cell without language permission
+            console.warn("Saving this cell value denied. User can not edit this language");
+            noPermissionAlertWithLanguage(getUserLanguageAccess());
+            return;
+          }
+        }
       }
+      /**
+       * End basic language access management
+       */
 
       console.log("Cell Model: saving cell with value:", newValue);
-
       //we give direct feedback for user
       cell.value = mergedValue;
       self.updateConcatCells(cell);
@@ -124,6 +137,14 @@ var Tables = Collection.extend({
     const rowId = payload.rowId;
     const table = this.get(tableId);
     const row = table.rows.get(rowId);
+
+    /**
+     * Basic language access management
+     */
+    if (!isUserAdmin()) {
+      return;
+    }
+
     row.destroy();
   },
 
@@ -132,6 +153,14 @@ var Tables = Collection.extend({
     const tableId = payload.tableId;
     const table = this.get(tableId);
     const rows = table.rows;
+
+    /**
+     * Basic language access management
+     */
+    if (!isUserAdmin()) {
+      noPermissionAlertWithLanguage(getUserLanguageAccess());
+      return;
+    }
 
     const newRow = new Row({tableId : tableId, columns : table.columns}, {collection : rows});
     ActionCreator.spinnerOn();
