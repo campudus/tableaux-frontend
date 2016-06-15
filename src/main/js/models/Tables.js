@@ -5,9 +5,8 @@ import Dispatcher from '../dispatcher/Dispatcher';
 import { ActionTypes } from '../constants/TableauxConstants';
 import ActionCreator from '../actions/ActionCreator';
 import Row from './Row';
-import { cellModelSavingError } from '../components/overlay/ConfirmationOverlay.jsx';
+import { cellModelSavingError,noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
 import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from '../helpers/accessManagementHelper';
-import { noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
 
 var Tables = Collection.extend({
   model : Table,

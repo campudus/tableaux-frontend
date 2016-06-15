@@ -5,6 +5,9 @@ var Cell = require('./Cell');
 var Cells = require('./Cells');
 var _ = require('lodash');
 
+import { noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
+import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from '../helpers/accessManagementHelper';
+
 var Row = AmpersandModel.extend({
   props : {
     id : 'number',
@@ -26,6 +29,15 @@ var Row = AmpersandModel.extend({
 
   //Todo: Don't send the payload of row to server
   duplicate : function (cb) {
+
+    /**
+     * Basic language access management
+     */
+    if (!isUserAdmin()) {
+      noPermissionAlertWithLanguage(getUserLanguageAccess());
+      return;
+    }
+
     //We need to create a new row, or the current is getting changed
     let copiedRow = new Row({id : this.id, tableId : this.tableId},
       {collection : this.collection, parent : this.parent});
