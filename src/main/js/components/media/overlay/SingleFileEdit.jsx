@@ -5,6 +5,7 @@ var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 var ActionCreator = require('../../../actions/ActionCreator');
+import _ from 'lodash';
 
 var multiLanguage = require('../../../helpers/multiLanguage');
 var SingleFileTextInput = require('./SingleFileTextInput.jsx');
@@ -12,6 +13,9 @@ var FileChangeUpload = require('./FileChangeUpload.jsx');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var apiUrl = require('../../../helpers/apiUrl');
 var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
+
+import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess, reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
+import {DefaultLangtag} from '../../../constants/TableauxConstants';
 
 var SingleFileEdit = React.createClass({
 
@@ -55,8 +59,9 @@ var SingleFileEdit = React.createClass({
       var newTitle = this.props.editedTitleValue;
       var newDescription = this.props.editedDescValue;
       var newExternalName = this.props.editedExternalnameValue;
-
-      ActionCreator.changeFile(file.uuid, newTitle, newDescription, newExternalName, file.internalName, file.mimeType, file.folder, file.fileUrl);
+      const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, newTitle, newDescription, newExternalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
+      console.log("got obj after reduceMediaValuesToAllowedLanguages: ", changeFileParams);
+      ActionCreator.changeFile(...changeFileParams);
     }
     this.props.onClose(event)
   },
@@ -158,8 +163,10 @@ var SingleFileEdit = React.createClass({
   },
 
   render : function () {
+    const {internalName, fileUrl, uuid} = this.props.file;
+
     var langOptions = App.langtags.reduce(function (res, langtag) {
-      if (App.langtags[0] !== langtag) {
+      if (DefaultLangtag !== langtag && hasUserAccessToLanguage(langtag)) {
         res.push({
           value : langtag,
           label : langtag
@@ -168,22 +175,18 @@ var SingleFileEdit = React.createClass({
       return res;
     }, []);
 
-    var fileLangtag = Object.keys(this.props.file.internalName)[0];
-    var fileInternalName = this.props.file.internalName[fileLangtag];
-
-    var language = App.langtags[0].split(/-|_/)[0];
-    var country = App.langtags[0].split(/-|_/)[1];
-    var icon = country.toLowerCase() + ".png";
+    var fileLangtag = Object.keys(internalName)[0];
+    var fileInternalName = internalName[fileLangtag];
+    const fileUrlOfThisLanguage = apiUrl(fileUrl[App.defaultLangtag]);
 
     return (
       <div className="singlefile-edit">
         <div className="cover-wrapper">
           <div className="cover">
-            <FileChangeUpload
-              langtag={fileLangtag}
-              internalFileName={fileInternalName}
-              uuid={this.props.file.uuid}/>
+            <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
+                              uuid={uuid}/>
           </div>
+          <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>Datei ansehen</a></span>
         </div>
         <div className="properties-wrapper">
           <SingleFileTextInput name="fileTitle"
@@ -216,18 +219,11 @@ var SingleFileEdit = React.createClass({
 
         <div className="multifile-wrapper">
           <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
-              <span>Falls es für diese Datei Übersetzungen in anderen Sprachen gibt, kann hier eine übersetzte Version hochgeladen werden.
-                Die Datei wird dann automatisch in eine mehrsprachige Datei umgewandelt.
-                Dies bedeutet, dass, neben den übersetzten Attributen, für jede Sprache eine Übersetzung der Datei hochgeladen werden kann.
-                <br />
-                <br />
-                Die bereits vorhandene Datei wird automatisch als <img src={"/img/flags/" + icon}
-                                                                       alt={country}/> {language.toUpperCase() }
-                &nbsp;markiert. Dies kann später wieder verändert werden.
-                <br />
-                <br />
-                Übersetzte Datei hierher ziehen oder hier klicken, um übersetzte Datei hochzuladen.
-              </span>
+            <div className="convert-multilanguage-note">
+              <h4>Datei übersetzen</h4>
+              <p>Sie können eine Datei in einer anderen Sprache hinzufügen. So können z.B. Bilder oder PDFs in mehreren
+                Sprachen angezeigt werden.</p>
+            </div>
           </Dropzone>
           <LanguageSwitcher
             options={langOptions}
@@ -239,5 +235,20 @@ var SingleFileEdit = React.createClass({
     );
   }
 });
+
+/**
+ * <span>Falls es für diese Datei Übersetzungen in anderen Sprachen gibt, kann hier eine übersetzte Version hochgeladen werden.
+ Die Datei wird dann automatisch in eine mehrsprachige Datei umgewandelt.
+ Dies bedeutet, dass, neben den übersetzten Attributen, für jede Sprache eine Übersetzung der Datei hochgeladen werden kann.
+ <br />
+ <br />
+ Die bereits vorhandene Datei wird automatisch als <img src={"/img/flags/" + icon}
+ alt={country}/> {language.toUpperCase() }
+ &nbsp;markiert. Dies kann später wieder verändert werden.
+ <br />
+ <br />
+ Übersetzte Datei hierher ziehen oder hier klicken, um übersetzte Datei hochzuladen.
+ </span>
+ */
 
 module.exports = SingleFileEdit;

@@ -1,6 +1,8 @@
 var React = require('react');
 var FileChangeUpload = require('./FileChangeUpload.jsx');
 var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
+var apiUrl = require('../../../helpers/apiUrl');
+import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess} from '../../../helpers/accessManagementHelper';
 
 var MultifileFileEdit = React.createClass({
 
@@ -45,43 +47,54 @@ var MultifileFileEdit = React.createClass({
   },
 
   render : function () {
+    const {langtag, fileData} = this.props;
+    const {internalName, uuid, description, externalName, title, fileUrl} = fileData;
+    const permissionToChange = hasUserAccessToLanguage(langtag);
+
+    const openFileLink = internalName && fileUrl ?
+      <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>Datei ansehen</a></span> : null;
+
     return (
       <div className="multifile-file-edit">
         <div className="cover-wrapper">
           <div className="cover">
             <FileChangeUpload
-              langtag={this.props.langtag}
-              internalFileName={this.props.fileData.internalName}
-              uuid={this.props.fileData.uuid}/>
+              langtag={langtag}
+              internalFileName={internalName}
+              uuid={uuid}/>
           </div>
+          {openFileLink}
         </div>
         <div className="properties-wrapper">
           <div className='field-item'>
             <label htmlFor={this.titleId} className="field-label">Titel</label>
             <div className="field-input">
-              <input type="text" className="field-text-input" id={this.titleId} value={this.props.fileData.title}
+              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.titleId}
+                     value={title}
                      onChange={this.onTitleChange}/>
             </div>
           </div>
           <div className='field-item'>
             <label htmlFor={this.descId} className="field-label">Beschreibung</label>
             <div className="field-input">
-              <input type="text" className="field-text-input" id={this.descId}
-                     value={this.props.fileData.description}
+              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.descId}
+                     value={description}
                      onChange={this.onDescriptionChange}/>
             </div>
           </div>
           <div className='field-item'>
             <label htmlFor={this.externalNameId} className="field-label">Linkname</label>
             <div className="field-input">
-              <input type="text" className="field-text-input" id={this.externalNameId}
-                     value={this.props.fileData.externalName}
+              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.externalNameId}
+                     value={externalName}
                      onChange={this.onExternalNameChange}/>
             </div>
           </div>
           <LanguageSwitcher
-            langtag={this.props.langtag}
+            langtag={langtag}
             onChange={this.onLangChange}
+            disabled={!permissionToChange}
+            limitLanguages={getUserLanguageAccess()}
           />
         </div>
       </div>

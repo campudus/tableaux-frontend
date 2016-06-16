@@ -53,7 +53,7 @@
 
 .rdtPicker td.rdtOld,
 .rdtPicker td.rdtNew {
-  color: #999999;
+  color: $color-text-medium-grey;
 }
 
 .rdtPicker td.rdtToday {
@@ -85,18 +85,18 @@
 .rdtPicker td.rdtDisabled,
 .rdtPicker td.rdtDisabled:hover {
   background: none;
-  color: #999999;
+  color: $color-text-medium-grey;
   cursor: not-allowed;
 }
 
 .rdtPicker td span.rdtOld {
-  color: #999999;
+  color: $color-text-medium-grey;
 }
 
 .rdtPicker td span.rdtDisabled,
 .rdtPicker td span.rdtDisabled:hover {
   background: none;
-  color: #999999;
+  color: $color-text-medium-grey;
   cursor: not-allowed;
 }
 
@@ -122,7 +122,7 @@
 .rdtPicker th.rdtDisabled,
 .rdtPicker th.rdtDisabled:hover {
   background: none;
-  color: #999999;
+  color: $color-text-medium-grey;
   cursor: not-allowed;
 }
 

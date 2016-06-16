@@ -71,26 +71,33 @@ var File = React.createClass({
 
   render : function () {
     // default language (for fallback)
-    var fallbackLang = App.langtags[0];
-    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
+    const fallbackLang = App.langtags[0];
+    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     // current language
-    var langtag = this.props.langtag;
+    const langtag = this.props.langtag;
+    const title = retrieveTranslation(this.props.file.title, langtag);
+    const imageUrl = apiUrl(retrieveTranslation(this.props.file.fileUrl, langtag));
 
-    var title = retrieveTranslation(this.props.file.title, langtag);
-    var link = apiUrl(retrieveTranslation(this.props.file.fileUrl, langtag));
+    //delete and edit file
+    let mediaOptions = (
+      <div className="media-options">
+          <span onClick={this.onEdit} className="button" alt="edit">
+          <i className="icon fa fa-pencil-square-o"></i>Bearbeiten
+        </span>
+        <a href={imageUrl} target="_blank" className="button">
+          <i className="icon fa fa-external-link"></i>Anzeigen
+        </a>
+        {isUserAdmin() ? (
+          <span className="button" onClick={this.onRemove} alt="delete"><i className="fa fa-trash"></i></span>
+        ) : null}
+      </div> );
 
     return (
       <div key={'file' + this.props.file.uuid} className="file">
-        <a className="file-link" href={link} target="_blank"><i className="icon fa fa-file"></i><span>{title}</span></a>
-        <div className="media-options">
-          <span className="button" onClick={this.onEdit} alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i> bearbeiten
-        </span>
-        <span className="button" onClick={this.onRemove} alt="delete">
-          <i className="fa fa-trash"></i>
-        </span>
-        </div>
+        <a className="file-link" onClick={this.onEdit} target="_blank">
+          <i className="icon fa fa-file"></i><span>{title}</span></a>
+        {mediaOptions}
       </div>
     );
   }

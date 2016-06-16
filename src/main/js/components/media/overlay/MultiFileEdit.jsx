@@ -4,6 +4,7 @@ var MultifileFileEdit = require('./MultifileFileEdit.jsx');
 var ampersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var ActionCreator = require('../../../actions/ActionCreator');
+import {reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
 var _ = require('lodash');
 
 var MultiFileEdit = React.createClass({
@@ -81,7 +82,8 @@ var MultiFileEdit = React.createClass({
         _.merge(file.internalName, changedFile.internalName);
         _.merge(file.mimeType, changedFile.mimeType);
 
-        ActionCreator.changeFile(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.fileUrl);
+        const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
+        ActionCreator.changeFile(...changeFileParams);
       }
     }
     this.props.onClose(event);
@@ -116,14 +118,19 @@ var MultiFileEdit = React.createClass({
   render : function () {
     var self = this;
     var files = App.langtags.map(function (langtag) {
+
+      const {file, editedTitleValue, editedDescValue, editedExternalnameValue, editedLanguage} = self.props;
+      const {title,internalName, externalName, description, uuid, fileUrl} = file;
+
       var fileData = {
-        title : self.props.editedTitleValue[langtag] ? self.props.editedTitleValue[langtag] : self.props.file.title[langtag],
-        description : self.props.editedDescValue[langtag] ? self.props.editedDescValue[langtag] : self.props.file.description[langtag],
-        externalName : self.props.editedExternalnameValue[langtag] ? self.props.editedExternalnameValue[langtag] : self.props.file.externalName[langtag],
-        internalName : self.props.file.internalName[langtag],
-        uuid : self.props.file.uuid
+        title : editedTitleValue[langtag] ? editedTitleValue[langtag] : title[langtag],
+        description : editedDescValue[langtag] ? editedDescValue[langtag] : description[langtag],
+        externalName : editedExternalnameValue[langtag] ? editedExternalnameValue[langtag] : externalName[langtag],
+        internalName : internalName[langtag],
+        fileUrl : fileUrl[langtag],
+        uuid
       };
-      var language = self.props.editedLanguage[langtag] ? self.props.editedLanguage[langtag] : langtag;
+      var language = editedLanguage[langtag] ? editedLanguage[langtag] : langtag;
       return (
         <MultifileFileEdit key={langtag}
                            originalLangtag={langtag}

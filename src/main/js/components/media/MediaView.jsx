@@ -87,7 +87,8 @@ export default class MediaView extends React.Component {
         </div>
       );
     } else {
-      return <div className="spinner">loading</div>
+      //show spinner
+      return null;
     }
   }
 }

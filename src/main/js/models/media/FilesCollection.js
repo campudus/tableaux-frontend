@@ -51,6 +51,8 @@ var FilesCollection = AmpersandCollection.extend({
 
     var file = this.get(payload.uuid);
 
+    console.log("saving file:", file, " payload:", payload);
+
     file.save({
       title : payload.title,
       description : payload.description,

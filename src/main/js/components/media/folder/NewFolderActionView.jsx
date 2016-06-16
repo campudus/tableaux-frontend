@@ -11,10 +11,9 @@ var NewFolderActionView = React.createClass({
   },
 
   render : function () {
-
     return (
-      <div>
-        <i className="icon fa fa-plus"></i><span className="new-folder" onClick={this.props.callback}>Neuen Ordner erstellen</span>
+      <div className="new-folder-button" onClick={this.props.callback}>
+        <i className="icon fa fa-plus"></i><span>Neuen Ordner erstellen</span>
       </div>
     );
   }

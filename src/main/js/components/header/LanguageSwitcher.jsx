@@ -9,7 +9,9 @@ var LanguageSwitcher = React.createClass({
     langtag : React.PropTypes.string.isRequired,
     onChange : React.PropTypes.func,
     openOnTop : React.PropTypes.bool,
-    options : React.PropTypes.array
+    options : React.PropTypes.array,
+    disabled : React.PropTypes.bool,
+    limitLanguages : React.PropTypes.array
   },
 
   onChange : function (langObj) {
@@ -33,7 +35,11 @@ var LanguageSwitcher = React.createClass({
   },
 
   render : function () {
-    var options = this.props.options || App.langtags.reduce(function (res, langtag) {
+    const {limitLanguages, disabled} = this.props;
+    //Inside select box show user just the languages he has access to
+    const languagesToDisplay = !disabled && limitLanguages ? limitLanguages : App.langtags;
+
+    var options = this.props.options || languagesToDisplay.reduce(function (res, langtag) {
         res.push({
           value : langtag,
           label : langtag
@@ -51,7 +57,7 @@ var LanguageSwitcher = React.createClass({
                 onChange={this.onChange}
                 optionRenderer={this.renderOption}
                 valueRenderer={this.renderOption}
-
+                disabled={this.props.disabled}
         />
       </div>
     )

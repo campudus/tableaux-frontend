@@ -2,6 +2,7 @@ var React = require('react');
 var App = require('ampersand-app');
 var multiLanguage = require('../../../helpers/multiLanguage');
 var _ = require('lodash');
+import {isUserAdmin, getUserLanguageAccess, hasUserAccessToLanguage} from '../../../helpers/accessManagementHelper';
 
 var SingleFileTextInput = React.createClass({
   displayName : 'SingleFileTextInput',
@@ -46,9 +47,12 @@ var SingleFileTextInput = React.createClass({
   },
 
   renderField : function (id, value, langtag) {
+    //disable input for users without access to that language
+    const disabled = hasUserAccessToLanguage(langtag) ? false : true;
+
     return (
       <div className="field-input" key={id}>
-        <input type="text" className="field-text-input" ref={id} id={id} value={value}
+        <input disabled={disabled} type="text" className="field-text-input" ref={id} id={id} value={value}
                onChange={this.onChange.bind(this, langtag)}/>
         {this.renderLangtag(langtag)}
       </div>);

@@ -5,6 +5,7 @@ var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
 var NewFolderAction = require('./NewFolderAction.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
+import {isUserAdmin} from '../../../helpers/accessManagementHelper';
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
@@ -50,49 +51,53 @@ var Folder = React.createClass({
   },
 
   renderSubfolders : function () {
-    var self = this;
-    var subfolder = this.props.folder.subfolders.map(function (folder, idx) {
-      return <li key={idx}><Subfolder key={idx} folder={folder} langtag={self.props.langtag}/></li>
-    });
-
-    return (
-      <div className="media-switcher">
-        <ol className="media-switcher-menu">
-          {subfolder}
-        </ol>
-      </div>
-    );
+    const self = this;
+    const subFolders = this.props.folder.subfolders;
+    if (subFolders && subFolders.length > 0) {
+      var subfolder = subFolders.map(function (folder, idx) {
+        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={self.props.langtag}/></li>
+      });
+      return (
+        <div className="media-switcher">
+          <ol className="media-switcher-menu">
+            {subfolder}
+          </ol>
+        </div>
+      );
+    } else {
+      return null;
+    }
   },
 
   renderFiles : function () {
-    var self = this;
+    const self = this;
+    const files = this.props.folder.files;
 
-    var files = this.props.folder.files.map(function (file) {
-      return <li key={file.uuid}><File key={file.uuid} file={file}
-                                       langtag={self.props.langtag}/></li>;
-    });
-
-    return (
-      <div className="media-switcher">
-        <ol className="media-switcher-menu">
-          {files}
-        </ol>
-      </div>
-    );
+    if (files && files.length > 0) {
+      const filesMarkup = files.map(function (file) {
+        return <li key={file.uuid}><File key={file.uuid} file={file}
+                                         langtag={self.props.langtag}/></li>;
+      });
+      return (
+        <div className="media-switcher">
+          <ol className="media-switcher-menu">
+            {filesMarkup}
+          </ol>
+        </div>
+      );
+    } else {
+      return null;
+    }
   },
 
   render : function () {
+    const newFolderAction = isUserAdmin() ? <NewFolderAction parentFolder={this.props.folder}/> : null;
     return (
       <div id="media-wrapper">
-
         {this.renderCurrentFolder()}
-
-        <NewFolderAction parentFolder={this.props.folder}/>
-
+        {newFolderAction}
         {this.renderSubfolders()}
-
         {this.renderFiles()}
-
         <FileUpload folder={this.props.folder}/>
       </div>
     );

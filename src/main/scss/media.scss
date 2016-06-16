@@ -1,10 +1,12 @@
 #media-wrapper {
-  padding: 50px;
-
-  top: $space-height-header;
+  padding: 0px;
+  top: $space-height-header + 50px;
   position: relative;
-  background-color: $color-body-background;
+  background-color: #fff;
+  margin: 0 auto;
+  max-width: 1200px;
   z-index: 1;
+  border: 3px solid $color-border-grey;
 }
 
 .current-folder {
@@ -39,16 +41,27 @@
 .media-switcher {
   background-color: white;
   border-top: 3px solid $color-border-grey;
-  font-weight: bold;
   display: block;
   padding: 1em;
 
+  .folder-link, .file-link {
+    padding: 0.75em;
+    font-size: 16px;
+    display: block;
+  }
+
   //Settings container
   .media-options {
-    display: inline-block;
+    @include transition(opacity 0.3s ease-out);
+    opacity: 0.1;
     border: 1px solid #dfdfdf;
     margin-left: 2em;
     border-radius: 3px;
+    position: absolute;
+    right: 10px;
+    top: 9px;
+    z-index: 1;
+    background-color: #fff;
 
     i {
       margin-right: 5px;
@@ -59,15 +72,18 @@
       display: inline-block;
       border-right: 1px solid #dfdfdf;
       padding-right: 0.5em;
-      padding-top:3px;
-      padding-bottom:3px;
+      padding-top: 3px;
+      padding-bottom: 3px;
 
       &:last-child {
         padding-right: 0em;
         border-right: 0;
       }
     }
+  }
 
+  .file:hover .media-options {
+    opacity: 1;
   }
 
   li {
@@ -89,13 +105,17 @@
   }
 
   .icon {
-    margin-right: 1em;
+    margin-right: 0.5em;
     width: 15px;
     text-align: center;
   }
 
-  .new-folder {
+  .new-folder-button {
     cursor: pointer;
+    border: 1px solid #dfdfdf;
+    border-radius: 3px;
+    display: inline-block;
+    padding: 5px 10px;
 
     &:hover {
       color: $color-primary;
@@ -103,7 +123,12 @@
   }
 
   .file, .subfolder {
-    display: inline;
+    display: block;
+    position: relative;
+
+    &:hover {
+      background-color: #f7f7f7;
+    }
 
     .button {
       cursor: pointer;
@@ -154,21 +179,19 @@
   .dropzone {
     width: inherit;
     text-align: center;
-    background-color: white;
+    color: $color-primary-contrast-text;
+    background-color: $color-primary;
+    cursor: pointer;
+    font-weight: bold;
 
     a {
       padding: 2em;
       display: block;
-
-      &:hover {
-        color: $color-primary-contrast-text;
-        background-color: $color-primary;
-      }
     }
 
-    &.active {
+    &.active, &:hover {
       color: $color-primary-contrast-text;
-      background-color: $color-primary;
+      background-color: $color-dark;
     }
   }
 }
@@ -203,6 +226,7 @@
                 width: 20px;
                 float: left;
                 text-align: center;
+                cursor: pointer;
               }
             }
           }
@@ -218,8 +242,31 @@
             text-align: center;
             margin-right: 40px;
 
-            img, span.empty-icon {
+            .open-file {
+              display: block;
+              margin-top: 5px;
+
+              a {
+                display: block;
+                background-color: #f0f0f0;
+                border: 1px solid #dfdfdf;
+                padding: 1em;
+
+                &:hover {
+                  background-color: #fff;
+                }
+              }
+            }
+
+            .no-permission-upload-file {
               position: relative;
+              height: 100%;
+            }
+
+            .file-icon {
+              width: 100%;
+              display: block;
+              position: absolute;
               top: 50%;
               @include transform(translateY(-50%));
             }
@@ -241,6 +288,22 @@
             }
           }
 
+          .no-permission-upload-file, .dropzone {
+            border: 1px dashed $color-button-grey;
+          }
+
+          .no-permission-upload-file {
+            border: 1px solid #dfdfdf;
+
+            .note {
+              text-align: center;
+              position: absolute;
+              bottom: 10px;
+              width: 80%;
+              left: 10%;
+            }
+          }
+
           .properties-wrapper {
             margin-right: 40px;
           }
@@ -248,12 +311,12 @@
           .multifile-wrapper {
             box-sizing: border-box;
             width: 260px;
+
             .dropzone {
               box-sizing: border-box;
               cursor: pointer;
               height: 320px;
               text-align: center;
-              border: 2px dashed $color-button-grey;
               margin: 0;
               background-color: transparent;
               padding: 10px;
@@ -261,6 +324,21 @@
 
             #language-switcher {
               margin-top: 5px;
+            }
+
+            .convert-multilanguage-note {
+              padding: 10px;
+
+              h4 {
+                margin: 20px;
+                font-family: $font-main;
+                font-weight: bold;
+                font-size: 16px;
+              }
+
+              p {
+                color: $color-text-medium-grey;
+              }
             }
           }
 
@@ -284,6 +362,8 @@
 
         .cover {
           height: 320px;
+          position: relative;
+
           .dropzone {
             cursor: pointer;
             box-sizing: border-box;
@@ -291,7 +371,6 @@
             margin: 0;
             height: 100%;
             position: relative;
-            border: 2px dashed $color-button-grey;;
 
             span {
               padding: 0;

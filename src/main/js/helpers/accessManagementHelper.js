@@ -1,9 +1,13 @@
 import _ from 'lodash';
-import {ColumnKinds} from '../constants/TableauxConstants';
+import {ColumnKinds, Langtags} from '../constants/TableauxConstants';
 
 //TODO: Read from local storage
 export function getUserLanguageAccess() {
-  return ['fr-FR'];
+  if (isUserAdmin()) {
+    return Langtags;
+  } else {
+    return ['fr-FR'];
+  }
 }
 
 //TODO: Read from local storage
@@ -13,6 +17,11 @@ export function isUserAdmin() {
 
 //Can a user edit the given langtag
 export function hasUserAccessToLanguage(langtag) {
+
+  if (isUserAdmin()) {
+    return true;
+  }
+
   if (_.isString(langtag)) {
     return (getUserLanguageAccess() && getUserLanguageAccess().length > 0) ?
     getUserLanguageAccess().indexOf(langtag) > -1 : false;
@@ -61,3 +70,33 @@ export function reduceValuesToAllowedLanguages(valueToChange) {
     return {value : _.pick(valueToChange.value, getUserLanguageAccess())};
   }
 }
+
+/*
+ export function reduceMediaValuesToAllowedLanguages(fileInfos){
+ console.log("fileInfos:", copiedInfos);
+ let reducedInfos = {};
+ _.forEach(fileInfos, (fileInfo, key) => {
+ if (_.isObject(fileInfo)) {
+ console.log("is object, fileInfo:", fileInfo);
+ reducedInfos[key] = _.pick(fileInfo, getUserLanguageAccess())
+ } else {
+ reducedInfos[key] = fileInfo;
+ }
+ });
+ console.log("reducedInfos:", reducedInfos);
+ return reducedInfos;
+ };*/
+
+export function reduceMediaValuesToAllowedLanguages(fileInfos) {
+  if (isUserAdmin()) {
+    return fileInfos;
+  }
+  console.log("fileInfos:", fileInfos);
+  return _.map(fileInfos, (fileInfo, key) => {
+    if (_.isObject(fileInfo)) {
+      return _.pick(fileInfo, getUserLanguageAccess())
+    } else {
+      return fileInfo;
+    }
+  });
+};

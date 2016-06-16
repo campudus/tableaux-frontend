@@ -1,6 +1,7 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 var ActionCreator = require('../../../actions/ActionCreator');
+import {isUserAdmin} from '../../../helpers/accessManagementHelper';
 
 var SubfolderView = React.createClass({
   mixins : [AmpersandMixin],
@@ -20,21 +21,24 @@ var SubfolderView = React.createClass({
   },
 
   render : function () {
-    var name = this.props.folder.name + '/';
-
-    return (
-      <div>
-        <a className="folder-link" onClick={this.folderClickHandler}>
-          <i className="icon fa fa-folder-open"></i><span>{name}</span>
-        </a>
-        <div className="media-options">
+    const name = this.props.folder.name;
+    const mediaOptions = isUserAdmin() ? (
+      <div className="media-options">
           <span className="button" onClick={this.props.onEdit} alt="edit">
           <i className="icon fa fa-pencil-square-o"></i> umbenennen
         </span>
         <span className="button" onClick={this.props.onRemove} alt="delete">
           <i className="fa fa-trash"></i>
         </span>
-        </div>
+      </div>
+    ) : null;
+
+    return (
+      <div>
+        <a className="folder-link" onClick={this.folderClickHandler}>
+          <i className="icon fa fa-folder-open"></i><span>{name}</span>
+        </a>
+        {mediaOptions}
       </div>
     );
   }
