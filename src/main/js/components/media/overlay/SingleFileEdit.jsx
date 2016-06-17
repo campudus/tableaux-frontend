@@ -66,8 +66,9 @@ var SingleFileEdit = React.createClass({
   },
 
   onClose : function (event) {
+    const {t} = this.props;
     if (this.props.hasChanged) {
-      if (confirm('Sind Sie sicher? Ungespeicherte Daten gehen verloren.')) {
+      if (confirm(t('file_close_without_saving'))) {
         this.props.onClose(event)
       }
     } else {
@@ -162,6 +163,7 @@ var SingleFileEdit = React.createClass({
   },
 
   render : function () {
+    const {t} = this.props;
     const {internalName, fileUrl, uuid} = this.props.file;
 
     var langOptions = App.langtags.reduce(function (res, langtag) {
@@ -185,11 +187,11 @@ var SingleFileEdit = React.createClass({
             <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
                               uuid={uuid}/>
           </div>
-          <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>Datei ansehen</a></span>
+          <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>{t('open_file')}</a></span>
         </div>
         <div className="properties-wrapper">
           <SingleFileTextInput name="fileTitle"
-                               labelText="Titel"
+                               labelText={t('file_title_label')}
                                originalValue={this.props.file.title}
                                editedValue={this.props.editedTitleValue}
                                langtag={this.props.langtag}
@@ -198,7 +200,7 @@ var SingleFileEdit = React.createClass({
                                onChange={this.onTitleChange}/>
 
           <SingleFileTextInput name="fileDescription"
-                               labelText="Beschreibung"
+                               labelText={t('file_description_label')}
                                originalValue={this.props.file.description}
                                editedValue={this.props.editedDescValue}
                                langtag={this.props.langtag}
@@ -207,7 +209,7 @@ var SingleFileEdit = React.createClass({
                                onChange={this.onDescChange}/>
 
           <SingleFileTextInput name="fileLinkName"
-                               labelText="Linkname"
+                               labelText={t('file_link_name_label')}
                                originalValue={this.props.file.externalName}
                                editedValue={this.props.editedExternalnameValue}
                                langtag={this.props.langtag}
@@ -219,9 +221,8 @@ var SingleFileEdit = React.createClass({
         <div className="multifile-wrapper">
           <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
             <div className="convert-multilanguage-note">
-              <h4>Datei übersetzen</h4>
-              <p>Sie können eine Datei in einer anderen Sprache hinzufügen. So können z.B. Bilder oder PDFs in mehreren
-                Sprachen angezeigt werden.</p>
+              <h4>{t('convert_multilanguage_hl')}</h4>
+              <p>{t('convert_multilanguage_description')}</p>
             </div>
           </Dropzone>
           <LanguageSwitcher
@@ -234,20 +235,5 @@ var SingleFileEdit = React.createClass({
     );
   }
 });
-
-/**
- * <span>Falls es für diese Datei Übersetzungen in anderen Sprachen gibt, kann hier eine übersetzte Version hochgeladen werden.
- Die Datei wird dann automatisch in eine mehrsprachige Datei umgewandelt.
- Dies bedeutet, dass, neben den übersetzten Attributen, für jede Sprache eine Übersetzung der Datei hochgeladen werden kann.
- <br />
- <br />
- Die bereits vorhandene Datei wird automatisch als <img src={"/img/flags/" + icon}
- alt={country}/> {language.toUpperCase() }
- &nbsp;markiert. Dies kann später wieder verändert werden.
- <br />
- <br />
- Übersetzte Datei hierher ziehen oder hier klicken, um übersetzte Datei hochzuladen.
- </span>
- */
 
 module.exports = translate(['media'])(SingleFileEdit);

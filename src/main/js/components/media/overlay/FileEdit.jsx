@@ -7,8 +7,6 @@ import {translate} from 'react-i18next';
 var FileEdit = React.createClass({
   mixins : [AmpersandMixin],
 
-  displayName : 'FileEdit',
-
   propTypes : {
     file : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,

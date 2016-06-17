@@ -73,6 +73,7 @@ var FileChangeUpload = React.createClass({
   render : function () {
     const {langtag, internalFileName, isSingleFile} = this.props;
     const {uploadProgress} = this.state;
+    const {t} = this.props;
 
     console.log("DefaultLangtag:", DefaultLangtag, "isSingleFile: ", isSingleFile, "hasUserAccessToLanguage(DefaultLangtag):", hasUserAccessToLanguage(DefaultLangtag));
 
@@ -85,7 +86,7 @@ var FileChangeUpload = React.createClass({
         <Dropzone onDrop={this.onDrop} className="dropzone" multiple={false}>
           {progressBar}
           <FileIcon internalFileName={internalFileName}></FileIcon>
-          <span>Um Datei auszutauschen hier klicken oder Datei hierher ziehen</span>
+          <span>{t('replace_existing_file')}</span>
         </Dropzone>
       );
     }

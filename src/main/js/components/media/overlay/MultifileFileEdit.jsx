@@ -48,12 +48,12 @@ var MultifileFileEdit = React.createClass({
   },
 
   render : function () {
-    const {langtag, fileData} = this.props;
+    const {langtag, fileData, t} = this.props;
     const {internalName, uuid, description, externalName, title, fileUrl} = fileData;
     const permissionToChange = hasUserAccessToLanguage(langtag);
 
     const openFileLink = internalName && fileUrl ?
-      <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>Datei ansehen</a></span> : null;
+      <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>{t('open_file')}</a></span> : null;
 
     return (
       <div className="multifile-file-edit">
@@ -68,7 +68,7 @@ var MultifileFileEdit = React.createClass({
         </div>
         <div className="properties-wrapper">
           <div className='field-item'>
-            <label htmlFor={this.titleId} className="field-label">Titel</label>
+            <label htmlFor={this.titleId} className="field-label">{t('file_title_label')}</label>
             <div className="field-input">
               <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.titleId}
                      value={title}
@@ -76,7 +76,7 @@ var MultifileFileEdit = React.createClass({
             </div>
           </div>
           <div className='field-item'>
-            <label htmlFor={this.descId} className="field-label">Beschreibung</label>
+            <label htmlFor={this.descId} className="field-label">{t('file_description_label')}</label>
             <div className="field-input">
               <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.descId}
                      value={description}
@@ -84,7 +84,7 @@ var MultifileFileEdit = React.createClass({
             </div>
           </div>
           <div className='field-item'>
-            <label htmlFor={this.externalNameId} className="field-label">Linkname</label>
+            <label htmlFor={this.externalNameId} className="field-label">{t('file_link_name_label')}</label>
             <div className="field-input">
               <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.externalNameId}
                      value={externalName}

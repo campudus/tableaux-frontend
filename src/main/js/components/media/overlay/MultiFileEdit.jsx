@@ -38,6 +38,7 @@ var MultiFileEdit = React.createClass({
 
   onSave : function () {
     var self = this;
+    const {t} = this.props;
     if (this.props.hasChanged) {
       var foundLangs = [];
       var langDuplicates = [];
@@ -51,7 +52,8 @@ var MultiFileEdit = React.createClass({
       });
 
       if (langDuplicates.length > 0) {
-        alert("Jede Sprache darf nur einmal vorkommen. Sprache(n): " + langDuplicates.join(',') + " sind mehrfach gesetzt. Bitte prüfen und jede Sprache nur einmal setzen.");
+        const multiLanguageError = t('error_multifile_multiple_languages', {langtags : langDuplicates.join(',')});
+        alert(multiLanguageError);
         return;
       } else {
         var file = this.props.file;
@@ -91,8 +93,9 @@ var MultiFileEdit = React.createClass({
   },
 
   onClose : function () {
+    const {t} = this.props;
     if (this.props.hasChanged) {
-      if (confirm('Sind Sie sicher? Ungespeicherte Daten gehen verloren.')) {
+      if (confirm(t('file_close_without_saving'))) {
         this.props.onClose();
       }
     } else {

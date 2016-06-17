@@ -1,5 +1,6 @@
 'use strict';
 
+//TODO: Change to HOC
 var XhrPoolMixin = {
   addAbortableXhrRequest : function (xhr) {
     if (xhr instanceof window.XMLHttpRequest) {
