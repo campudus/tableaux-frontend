@@ -3,11 +3,10 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var ActionCreator = require('../../../actions/ActionCreator');
 var SubfolderView = require('./SubfolderView.jsx');
 var SubfolderEdit = require('./SubfolderEdit.jsx');
+import {translate} from 'react-i18next';
 
 var Subfolder = React.createClass({
   mixins : [AmpersandMixin],
-
-  displayName : 'Subfolder',
 
   propTypes : {
     folder : React.PropTypes.object.isRequired,
@@ -33,7 +32,8 @@ var Subfolder = React.createClass({
   },
 
   onRemove : function () {
-    if (confirm("Soll der Ordner '" + this.props.folder.name + "' wirklich gelöscht werden? Es werden auch alle Unterordner und enthaltene Dateien gelöscht. Dies kann nicht rückgängig gemacht werden!")) {
+    const {t} = this.props;
+    if (confirm(t('confirm_delete_folder_question', {folderName : this.props.folder.name}))) {
       console.log('Folder.onRemove', this.props.folder.getId());
       ActionCreator.removeFolder(this.props.folder.id);
     }
@@ -58,4 +58,4 @@ var Subfolder = React.createClass({
   }
 });
 
-module.exports = Subfolder;
+module.exports = translate(['media'])(Subfolder);

@@ -6,6 +6,7 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var ActionCreator = require('../../../actions/ActionCreator');
 import {reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
 var _ = require('lodash');
+import {translate} from 'react-i18next';
 
 var MultiFileEdit = React.createClass({
 
@@ -151,4 +152,4 @@ var MultiFileEdit = React.createClass({
   }
 });
 
-module.exports = MultiFileEdit;
+module.exports = translate(['media'])(MultiFileEdit);

@@ -3,8 +3,6 @@ var App = require('ampersand-app');
 var multiLanguage = require('../../../helpers/multiLanguage');
 
 var FileEditHead = React.createClass({
-  displayName : 'FileEditHead',
-
   propTypes : {
     file : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired

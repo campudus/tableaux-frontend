@@ -3,9 +3,9 @@ var App = require('ampersand-app');
 var multiLanguage = require('../../../helpers/multiLanguage');
 var _ = require('lodash');
 import {isUserAdmin, getUserLanguageAccess, hasUserAccessToLanguage} from '../../../helpers/accessManagementHelper';
+import {translate} from 'react-i18next';
 
 var SingleFileTextInput = React.createClass({
-  displayName : 'SingleFileTextInput',
 
   propTypes : {
     name : React.PropTypes.string.isRequired,
@@ -100,4 +100,4 @@ var SingleFileTextInput = React.createClass({
   }
 });
 
-module.exports = SingleFileTextInput;
+module.exports = translate(['media'])(SingleFileTextInput);

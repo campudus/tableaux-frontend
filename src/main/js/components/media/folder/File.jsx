@@ -14,12 +14,10 @@ var FileEditFooter = require('../overlay/FileEditFooter.jsx');
 import ActionCreator from '../../../actions/ActionCreator';
 import {isUserAdmin,getUserLanguageAccess} from '../../../helpers/accessManagementHelper';
 import {noPermissionAlertWithLanguage, confirmDeleteFile} from '../../../components/overlay/ConfirmationOverlay';
-
+import {translate} from 'react-i18next';
 
 var File = React.createClass({
   mixins : [AmpersandMixin],
-
-  displayName : 'File',
 
   propTypes : {
     file : React.PropTypes.object.isRequired,
@@ -41,7 +39,6 @@ var File = React.createClass({
         ()=> {
           ActionCreator.closeOverlay();
         });
-
     } else {
       noPermissionAlertWithLanguage(getUserLanguageAccess());
     }
@@ -79,17 +76,19 @@ var File = React.createClass({
     const title = retrieveTranslation(this.props.file.title, langtag);
     const imageUrl = apiUrl(retrieveTranslation(this.props.file.fileUrl, langtag));
 
+    const {t} = this.props;
+
     //delete and edit file
     let mediaOptions = (
       <div className="media-options">
           <span onClick={this.onEdit} className="button" alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i>Bearbeiten
+          <i className="icon fa fa-pencil-square-o"></i>{t('change_file')}
         </span>
         <a href={imageUrl} target="_blank" className="button">
-          <i className="icon fa fa-external-link"></i>Anzeigen
+          <i className="icon fa fa-external-link"></i>{t('show_file')}
         </a>
         {isUserAdmin() ? (
-          <span className="button" onClick={this.onRemove} alt="delete"><i className="fa fa-trash"></i></span>
+          <span className="button" onClick={this.onRemove} alt={t('delete_file')}><i className="fa fa-trash"></i></span>
         ) : null}
       </div> );
 
@@ -103,4 +102,4 @@ var File = React.createClass({
   }
 });
 
-module.exports = File;
+module.exports = translate(['media'])(File);

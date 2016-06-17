@@ -1,8 +1,8 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
-
 var SingleFileEdit = require('./SingleFileEdit.jsx');
 var MultiFileEdit = require('./MultiFileEdit.jsx');
+import {translate} from 'react-i18next';
 
 var FileEdit = React.createClass({
   mixins : [AmpersandMixin],
@@ -94,4 +94,4 @@ var FileEdit = React.createClass({
   }
 });
 
-module.exports = FileEdit;
+module.exports = translate(['media'])(FileEdit);

@@ -2,11 +2,10 @@ var React = require('react');
 var App = require('ampersand-app');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
-
 var apiUrl = require('../../../helpers/apiUrl');
 var ActionCreator = require('../../../actions/ActionCreator');
-
 var ProgressBar = require('../ProgressBar.jsx');
+import {translate} from 'react-i18next';
 
 var FileUpload = React.createClass({
 
@@ -83,6 +82,7 @@ var FileUpload = React.createClass({
   },
 
   render : function () {
+    const {t} = this.props;
     var uploads = [];
     var runningUploads = this.state.runningUploads;
     for (var uploadUuid in runningUploads) {
@@ -97,7 +97,7 @@ var FileUpload = React.createClass({
     if (uploads.length > 0) {
       runningUploadsPanel = (
         <div className="running-uploads">
-          <span className="uploads-text">Laufende Uploads:</span>
+          <span className="uploads-text">{t('current_uploads')}:</span>
           {uploads}
         </div>
       );
@@ -107,11 +107,11 @@ var FileUpload = React.createClass({
       <div className="file-uploads">
         {runningUploadsPanel}
         <Dropzone onDrop={this.onDrop} className="dropzone">
-          <a>Drop or click to upload.</a>
+          <a>{t('upload_click_or_drop')}</a>
         </Dropzone>
       </div>
     );
   }
 });
 
-module.exports = FileUpload;
+module.exports = translate(['media'])(FileUpload);

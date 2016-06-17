@@ -1,0 +1,5 @@
+{
+  "confirm_delete_file": "Soll die Datei {{fileName}} wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden!",
+  "delete_file_headline": "Datei wirklich löschen?",
+  "root_folder_name": "Root"
+}

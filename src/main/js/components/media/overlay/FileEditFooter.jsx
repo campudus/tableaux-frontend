@@ -1,5 +1,6 @@
 var React = require('react');
 var App = require('ampersand-app');
+import {translate} from 'react-i18next';
 
 var FileEditFooter = React.createClass({
   displayName : 'FileEditFooter',
@@ -19,4 +20,4 @@ var FileEditFooter = React.createClass({
   }
 });
 
-module.exports = FileEditFooter;
+module.exports = translate(['media'])(FileEditFooter);

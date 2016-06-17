@@ -3,6 +3,7 @@ var FileChangeUpload = require('./FileChangeUpload.jsx');
 var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
 var apiUrl = require('../../../helpers/apiUrl');
 import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess} from '../../../helpers/accessManagementHelper';
+import {translate} from 'react-i18next';
 
 var MultifileFileEdit = React.createClass({
 
@@ -102,4 +103,4 @@ var MultifileFileEdit = React.createClass({
   }
 });
 
-module.exports = MultifileFileEdit;
+module.exports = translate(['media'])(MultifileFileEdit);

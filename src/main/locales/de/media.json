@@ -1,4 +1,15 @@
 {
   "confirm_delete_file": "Soll die Datei {{fileName}} wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden!",
-  "delete_file_headline": "Datei wirklich löschen?"
+  "delete_file_headline": "Datei wirklich löschen?",
+  "root_folder_name": "Hauptordner",
+  "change_file": "Bearbeiten",
+  "show_file": "Anzeigen",
+  "delete_file": "Löschen",
+  "current_uploads": "Laufende Uploads",
+  "upload_click_or_drop": "Datei auswählen oder hierherziehen",
+  "new_folder": "Neuer Ordner",
+  "create_new_folder": "Neuen Ordner erstellen",
+  "confirm_delete_folder_question": "Soll der Ordner {{folderName}} wirklich gelöscht werden? Es werden auch alle Unterordner und enthaltene Dateien gelöscht. Dies kann nicht rückgängig gemacht werden!"
+  "rename_folder": "Umbenennen",
+  "delete_folder": "Löschen"
 }

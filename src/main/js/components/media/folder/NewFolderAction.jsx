@@ -4,6 +4,7 @@ var NewFolderActionView = require('./NewFolderActionView.jsx');
 var SubfolderEdit = require('./SubfolderEdit.jsx');
 var SimpleFolder = require('../../../models/media/SimpleFolder');
 var ActionCreator = require('../../../actions/ActionCreator');
+import {translate} from 'react-i18next';
 
 var NewFolderAction = React.createClass({
 
@@ -32,9 +33,12 @@ var NewFolderAction = React.createClass({
 
   render : function () {
     var newFolderAction;
+
+    const {t} = this.props;
+
     if (this.state.edit) {
       var folder = new SimpleFolder({
-        name : "Neuer Ordner",
+        name : t('new_folder'),
         description : "",
         parent : this.props.parentFolder.getId()
       });
@@ -51,4 +55,4 @@ var NewFolderAction = React.createClass({
   }
 });
 
-module.exports = NewFolderAction;
+module.exports = translate(['media'])(NewFolderAction);

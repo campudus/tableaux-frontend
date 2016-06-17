@@ -5,17 +5,16 @@ var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 var ActionCreator = require('../../../actions/ActionCreator');
-import _ from 'lodash';
-
 var multiLanguage = require('../../../helpers/multiLanguage');
 var SingleFileTextInput = require('./SingleFileTextInput.jsx');
 var FileChangeUpload = require('./FileChangeUpload.jsx');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var apiUrl = require('../../../helpers/apiUrl');
 var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
-
 import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess, reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
 import {DefaultLangtag} from '../../../constants/TableauxConstants';
+import {translate} from 'react-i18next';
+import _ from 'lodash';
 
 var SingleFileEdit = React.createClass({
 
@@ -251,4 +250,4 @@ var SingleFileEdit = React.createClass({
  </span>
  */
 
-module.exports = SingleFileEdit;
+module.exports = translate(['media'])(SingleFileEdit);

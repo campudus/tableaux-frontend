@@ -6,11 +6,10 @@ var FileUpload = require('./FileUpload.jsx');
 var NewFolderAction = require('./NewFolderAction.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
 import {isUserAdmin} from '../../../helpers/accessManagementHelper';
+import {translate} from 'react-i18next';
 
 var Folder = React.createClass({
   mixins : [AmpersandMixin],
-
-  displayName : 'Folder',
 
   propTypes : {
     folder : React.PropTypes.object.isRequired,
@@ -26,7 +25,7 @@ var Folder = React.createClass({
     var currentFolder = '';
     var currentFolderClass = ['current-folder'];
     if (this.props.folder.name === "root") {
-      currentFolder = "Hauptordner";
+      currentFolder = this.props.t('root_folder_name');
     } else if (this.props.folder.name && this.props.folder.description) {
       currentFolder = this.props.folder.name + " – " + this.props.folder.description;
     } else if (this.props.folder.name) {
@@ -105,4 +104,4 @@ var Folder = React.createClass({
 
 });
 
-module.exports = Folder;
+module.exports = translate(['media'])(Folder);

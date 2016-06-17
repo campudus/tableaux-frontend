@@ -12,7 +12,7 @@ export function getUserLanguageAccess() {
 
 //TODO: Read from local storage
 export function isUserAdmin() {
-  return false;
+  return true;
 }
 
 //Can a user edit the given langtag

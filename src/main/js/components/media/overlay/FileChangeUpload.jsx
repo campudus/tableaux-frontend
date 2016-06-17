@@ -1,7 +1,6 @@
 var React = require('react');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
-
 var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 var apiUrl = require('../../../helpers/apiUrl');
 var ActionCreator = require('../../../actions/ActionCreator');
@@ -9,6 +8,7 @@ var ProgressBar = require('../ProgressBar.jsx');
 import FileIcon from '../folder/FileIcon.jsx';
 import {hasUserAccessToLanguage} from '../../../helpers/accessManagementHelper';
 import {DefaultLangtag} from '../../../constants/TableauxConstants';
+import {translate} from 'react-i18next';
 
 
 var FileChangeUpload = React.createClass({
@@ -98,4 +98,4 @@ var FileChangeUpload = React.createClass({
   }
 });
 
-module.exports = FileChangeUpload;
+module.exports = translate(['media'])(FileChangeUpload);

@@ -82,8 +82,10 @@
     }
   }
 
-  .file:hover .media-options {
-    opacity: 1;
+  .file, .subfolder {
+    &:hover .media-options {
+      opacity: 1;
+    }
   }
 
   li {
