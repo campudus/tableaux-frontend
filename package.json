@@ -48,6 +48,7 @@
     "gulp": "3.9.1",
     "i18next": "2.5.1",
     "i18next-xhr-backend": "0.5.3",
+    "js-cookie": "^2.1.2",
     "keymirror": "0.1.1",
     "lodash": "4.11.1",
     "moment": "2.12.0",

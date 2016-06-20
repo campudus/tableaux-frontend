@@ -1,10 +1,11 @@
 {
-  "save": "Save",
-  "yes": "Yes",
-  "no": "No",
-  "cancel": "Cancel",
   "access_management": {
-    "permission_denied_headline": "Access permission denied",
-    "no_permission_saving_language_description": "You have no permission to change this data. Only administrating users can add or remove data. You can edit content of the following languages"
-  }
+    "language_array_empty": "Read-only access: You can not change any data.",
+    "no_permission_saving_language_description": "You have no permission to change this data. Only administrating users can add or remove data. You can edit content of the following languages",
+    "permission_denied_headline": "Access permission denied"
+  },
+  "cancel": "Cancel",
+  "no": "No",
+  "save": "Save",
+  "yes": "Yes"
 }

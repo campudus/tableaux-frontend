@@ -1,14 +1,14 @@
 {
   "add_new_row": "Neue Zeile hinzufügen",
-  "duplicate_row": "Zeile duplizieren",
-  "show_translation": "Übersetzungen zeigen",
-  "delete_row": "Zeile löschen",
-  "jump_to_row": "Zur Zeile springen",
-  "row_duplicated": "Zeile wurde dupliziert",
-  "confirm_delete_row": "Wollen Sie diese Zeile wirklich löschen?",
   "concat_column_name": "Identifikationsname",
-  "search_no_results": "Ihre Suche ergab keine Treffer.",
-  "overlay_no_rows_in_table": "Diese Tabelle ist leer.",
+  "confirm_delete_row": "Wollen Sie diese Zeile wirklich löschen?",
+  "delete_row": "Zeile löschen",
+  "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
-  "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?"
+  "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?",
+  "jump_to_row": "Zur Zeile springen",
+  "overlay_no_rows_in_table": "Diese Tabelle ist leer.",
+  "row_duplicated": "Zeile wurde dupliziert",
+  "search_no_results": "Ihre Suche ergab keine Treffer.",
+  "show_translation": "Übersetzungen zeigen"
 }

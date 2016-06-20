@@ -48,7 +48,7 @@ var LanguageSwitcher = React.createClass({
       }, []);
 
     return (
-      <div id="language-switcher">
+      <div className="language-switcher">
         <Select className={this.props.openOnTop?"open-on-top":""}
                 options={options}
                 searchable

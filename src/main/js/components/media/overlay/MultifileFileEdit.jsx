@@ -67,6 +67,12 @@ var MultifileFileEdit = React.createClass({
           {openFileLink}
         </div>
         <div className="properties-wrapper">
+          <LanguageSwitcher
+            langtag={langtag}
+            onChange={this.onLangChange}
+            disabled={!permissionToChange}
+            limitLanguages={getUserLanguageAccess()}
+          />
           <div className='field-item'>
             <label htmlFor={this.titleId} className="field-label">{t('file_title_label')}</label>
             <div className="field-input">
@@ -91,12 +97,6 @@ var MultifileFileEdit = React.createClass({
                      onChange={this.onExternalNameChange}/>
             </div>
           </div>
-          <LanguageSwitcher
-            langtag={langtag}
-            onChange={this.onLangChange}
-            disabled={!permissionToChange}
-            limitLanguages={getUserLanguageAccess()}
-          />
         </div>
       </div>
     );

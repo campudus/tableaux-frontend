@@ -1,17 +1,17 @@
 {
   "button": {
-    "title": "Filtern & Sortieren",
+    "clearFilter": "Filter löschen",
     "doFilter": "Filter anwenden",
-    "clearFilter": "Filter löschen"
-  },
-  "input": {
-    "filter": "Filtern nach...",
-    "sort": "Sortieren nach...",
-    "noResult": "Keine Spalte mit diesem Namen vorhanden"
+    "title": "Filtern & Sortieren"
   },
   "help": {
     "contains": "enthält",
-    "sort": "sortiert aufsteigend {{linebreak}} (A-Z bzw. 0-9)",
-    "note": "Filtern und suchen Sie nach Nummern- oder Textfeldern. Links werden derzeit noch nicht unterstützt."
+    "note": "Filtern und suchen Sie nach Nummern- oder Textfeldern. Links werden derzeit noch nicht unterstützt.",
+    "sort": "sortiert aufsteigend {{linebreak}} (A-Z bzw. 0-9)"
+  },
+  "input": {
+    "filter": "Filtern nach...",
+    "noResult": "Keine Spalte mit diesem Namen vorhanden",
+    "sort": "Sortieren nach..."
   }
 }

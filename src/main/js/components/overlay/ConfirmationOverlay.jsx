@@ -104,7 +104,13 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
     },
     userError = `${i18n.t('common:access_management.no_permission_saving_language_description')}:`;
 
-  const allowedLangtagsMarkup = allowedLangtags.map((langtag, idx)=> <span key={idx}>{langtag}</span>);
+  let allowedLangtagsMarkup;
+
+  if (allowedLangtags && allowedLangtags.length > 0) {
+    allowedLangtagsMarkup = allowedLangtags.map((langtag, idx)=> <span key={idx}>{langtag}</span>);
+  } else {
+    allowedLangtagsMarkup = i18n.t('common:access_management.language_array_empty');
+  }
 
   totalError =
     <div><p>{userError}</p><p><strong className="allowed-languages">{allowedLangtagsMarkup}</strong></p></div>;

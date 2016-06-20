@@ -1,18 +1,29 @@
 import _ from 'lodash';
 import {ColumnKinds, Langtags} from '../constants/TableauxConstants';
+import Cookies from 'js-cookie';
 
 //TODO: Read from local storage
 export function getUserLanguageAccess() {
+  const allowedLangsFromCookie = Cookies.get('userLangtagsAccess');
   if (isUserAdmin()) {
-    return Langtags;
+    //TODO: Get all available languages from tableaux server
+    return allowedLangsFromCookie || Langtags;
   } else {
-    return ['fr-FR'];
+    return [];
   }
 }
 
-//TODO: Read from local storage
 export function isUserAdmin() {
-  return true;
+
+  //Just for development
+  if (process.env.NODE_ENV != 'production') {
+    return true;
+  }
+
+  const isAdminFromCookie = Cookies.get('userAdmin');
+  if (isAdminFromCookie) {
+    return isAdminFromCookie;
+  } else return false;
 }
 
 //Can a user edit the given langtag
@@ -70,22 +81,6 @@ export function reduceValuesToAllowedLanguages(valueToChange) {
     return {value : _.pick(valueToChange.value, getUserLanguageAccess())};
   }
 }
-
-/*
- export function reduceMediaValuesToAllowedLanguages(fileInfos){
- console.log("fileInfos:", copiedInfos);
- let reducedInfos = {};
- _.forEach(fileInfos, (fileInfo, key) => {
- if (_.isObject(fileInfo)) {
- console.log("is object, fileInfo:", fileInfo);
- reducedInfos[key] = _.pick(fileInfo, getUserLanguageAccess())
- } else {
- reducedInfos[key] = fileInfo;
- }
- });
- console.log("reducedInfos:", reducedInfos);
- return reducedInfos;
- };*/
 
 export function reduceMediaValuesToAllowedLanguages(fileInfos) {
   if (isUserAdmin()) {

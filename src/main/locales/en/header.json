@@ -1,10 +1,10 @@
 {
-  "pageTitle": {
-    "tables": "Tables",
-    "media": "Media Management"
-  },
   "menu": {
-    "tables": "Tables",
-    "media": "Media"
+    "media": "Media",
+    "tables": "Tables"
+  },
+  "pageTitle": {
+    "media": "Media Management",
+    "tables": "Tables"
   }
 }

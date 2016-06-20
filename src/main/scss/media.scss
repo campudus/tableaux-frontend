@@ -77,7 +77,6 @@
       }
 
       &:last-child {
-        padding-right: 0em;
         border-right: 0;
       }
     }
@@ -336,7 +335,7 @@
               padding: 10px;
             }
 
-            #language-switcher {
+            .language-switcher {
               margin-top: 5px;
             }
 
@@ -371,6 +370,10 @@
                 margin-left: 0;
               }
             }
+          }
+
+          .language-switcher {
+            margin-bottom: 15px;
           }
         }
 
