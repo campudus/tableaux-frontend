@@ -3,7 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var ActionCreator = require('../../../actions/ActionCreator');
 var SubfolderView = require('./SubfolderView.jsx');
 var SubfolderEdit = require('./SubfolderEdit.jsx');
-import {translate} from 'react-i18next';
+import {confirmDeleteFolder} from '../../../components/overlay/ConfirmationOverlay';
 
 var Subfolder = React.createClass({
   mixins : [AmpersandMixin],
@@ -32,11 +32,17 @@ var Subfolder = React.createClass({
   },
 
   onRemove : function () {
-    const {t} = this.props;
-    if (confirm(t('confirm_delete_folder_question', {folderName : this.props.folder.name}))) {
-      console.log('Folder.onRemove', this.props.folder.getId());
-      ActionCreator.removeFolder(this.props.folder.id);
-    }
+    confirmDeleteFolder(
+      this.props.folder.name,
+      () => {
+        console.log('Folder.onRemove', this.props.folder.getId());
+        ActionCreator.removeFolder(this.props.folder.id);
+        ActionCreator.closeOverlay();
+      },
+      () => {
+        ActionCreator.closeOverlay();
+      }
+    );
   },
 
   render : function () {
@@ -58,4 +64,4 @@ var Subfolder = React.createClass({
   }
 });
 
-module.exports = translate(['media'])(Subfolder);
+module.exports = Subfolder;

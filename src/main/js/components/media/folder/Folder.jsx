@@ -3,8 +3,8 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Subfolder = require('./Subfolder.jsx');
 var File = require('./File.jsx');
 var FileUpload = require('./FileUpload.jsx');
-var NewFolderAction = require('./NewFolderAction.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
+import NewFolderAction from './NewFolderAction.jsx';
 import {isUserAdmin} from '../../../helpers/accessManagementHelper';
 import {translate} from 'react-i18next';
 

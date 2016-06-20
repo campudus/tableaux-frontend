@@ -1,49 +1,66 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var AmpersandMixin = require('ampersand-react-mixin');
+import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
+import listensToClickOutside from 'react-onclickoutside/decorator';
 
-var SubfolderEdit = React.createClass({
-  mixins : [AmpersandMixin],
 
-  displayName : 'SubfolderEdit',
-
-  propTypes : {
+@listensToClickOutside()
+class SubfolderEdit extends React.Component {
+  static propTypes = {
     folder : React.PropTypes.object.isRequired,
     onSave : React.PropTypes.func.isRequired,
     onCancel : React.PropTypes.func.isRequired
-  },
+  };
 
-  componentDidMount: function(){
+  handleClickOutside = (event) => {
+    this.onSave();
+  };
+
+  getKeyboardShortcuts = () => {
+    const {onCancel} = this.props;
+    return {
+      escape : (event) => {
+        event.preventDefault();
+        onCancel();
+      },
+      tab : (event) => {
+        event.preventDefault();
+        this.onSave();
+      },
+      enter : (event) => {
+        event.preventDefault();
+        this.onSave();
+      }
+    };
+  };
+
+  componentDidMount() {
     var domNode = ReactDOM.findDOMNode(this.refs.nameInput);
     domNode.focus();
     domNode.select();
-  },
+  }
 
-  onSave : function (event) {
-    //if key was enter
-    if (event.keyCode == 13) {
-      var newName = event.target.value;
-      if (newName == "") {
-        this.props.onCancel();
-        return;
-      }
-
-      this.props.onSave(this.props.folder.id, newName, this.props.folder.description, this.props.folder.parent);
-    } else if (event.keyCode == 27) {
+  onSave = () => {
+    const currentName = this.refs.nameInput.value.toString().trim();
+    const placeHolderName = this.props.folder.name;
+    if (currentName === "" || currentName === placeHolderName) {
       this.props.onCancel();
+    } else {
+      this.props.onSave(this.props.folder.id, currentName, this.props.folder.description, this.props.folder.parent);
     }
-  },
+  };
 
-  render : function () {
-    var name = this.props.folder.name;
+  render() {
+    const placeHolderName = this.props.folder.name;
 
     return (
-      <div>
-        <i className="icon fa fa-folder-open"></i><input ref="nameInput" type="text" defaultValue={name}
-                                                         onKeyDown={this.onSave}/>
+      <div className="create-new-folder">
+        <i className="icon fa fa-folder-open"></i>
+        <input ref="nameInput" type="text" defaultValue={placeHolderName}
+               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
       </div>
     );
   }
-});
+}
 
-module.exports = SubfolderEdit;
+export default SubfolderEdit;

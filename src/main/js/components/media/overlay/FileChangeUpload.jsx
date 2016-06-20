@@ -86,7 +86,7 @@ var FileChangeUpload = React.createClass({
         <Dropzone onDrop={this.onDrop} className="dropzone" multiple={false}>
           {progressBar}
           <FileIcon internalFileName={internalFileName}></FileIcon>
-          <span>{t('replace_existing_file')}</span>
+          <span className="replace-note">{t('replace_existing_file')}</span>
         </Dropzone>
       );
     }

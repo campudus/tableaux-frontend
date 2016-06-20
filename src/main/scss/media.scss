@@ -54,7 +54,7 @@
   .media-options {
     @include transition(opacity 0.3s ease-out);
     opacity: 0.1;
-    border: 1px solid #dfdfdf;
+    border: 1px solid $color-subtle-grey;
     margin-left: 2em;
     border-radius: 3px;
     position: absolute;
@@ -68,12 +68,13 @@
     }
 
     .button {
-      margin: 0 0.5em;
       display: inline-block;
-      border-right: 1px solid #dfdfdf;
-      padding-right: 0.5em;
-      padding-top: 3px;
-      padding-bottom: 3px;
+      border-right: 1px solid $color-subtle-grey;
+      padding: 3px 0.5em;
+
+      &:hover {
+        color: $color-primary;
+      }
 
       &:last-child {
         padding-right: 0em;
@@ -112,15 +113,24 @@
     text-align: center;
   }
 
-  .new-folder-button {
-    cursor: pointer;
-    border: 1px solid #dfdfdf;
+  .new-folder-button, .create-new-folder input {
+    border: 1px solid $color-subtle-grey;
     border-radius: 3px;
     display: inline-block;
     padding: 5px 10px;
+  }
 
+  .new-folder-button {
+    cursor: pointer;
     &:hover {
       color: $color-primary;
+    }
+  }
+
+  .create-new-folder {
+    display: inline-block;
+    input {
+
     }
   }
 
@@ -217,10 +227,11 @@
               input {
                 font-size: $font-size-standard;
                 height: 30px;
-                width: 360px;
-                padding: 2px;
+                width: 310px;
                 margin-left: 10px;
                 box-sizing: border-box;
+                border: 1px solid $color-subtle-grey;
+                padding: 3px 8px;
               }
               margin-bottom: 15px;
 
@@ -251,7 +262,7 @@
               a {
                 display: block;
                 background-color: #f0f0f0;
-                border: 1px solid #dfdfdf;
+                border: 1px solid $color-subtle-grey;
                 padding: 1em;
 
                 &:hover {
@@ -284,8 +295,9 @@
                 background-color: $color-success;
                 bottom: -15px;
                 z-index: 2;
-                left: 130px;
                 line-height: 55px;
+                right: 0px;
+                left: auto;
               }
             }
           }
@@ -295,7 +307,7 @@
           }
 
           .no-permission-upload-file {
-            border: 1px solid #dfdfdf;
+            border: 1px solid $color-subtle-grey;
 
             .note {
               text-align: center;
@@ -332,7 +344,7 @@
               padding: 10px;
 
               h4 {
-                margin: 20px;
+                margin: 20px 0;
                 font-family: $font-main;
                 font-weight: bold;
                 font-size: 16px;
@@ -374,12 +386,13 @@
             height: 100%;
             position: relative;
 
-            span {
+            .replace-note {
               padding: 0;
               display: block;
               position: absolute;
-              width: 95%;
+              width: 100%;
               bottom: 10px;
+              text-align: center;
             }
           }
         }

@@ -1,39 +1,43 @@
 var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
 var NewFolderActionView = require('./NewFolderActionView.jsx');
-var SubfolderEdit = require('./SubfolderEdit.jsx');
 var SimpleFolder = require('../../../models/media/SimpleFolder');
 var ActionCreator = require('../../../actions/ActionCreator');
+import SubfolderEdit from './SubfolderEdit';
 import {translate} from 'react-i18next';
+import listensToClickOutside from 'react-onclickoutside/decorator';
 
-var NewFolderAction = React.createClass({
 
-  mixins : [AmpersandMixin],
-  propTypes : {
+@translate(['media'])
+@listensToClickOutside()
+class NewFolderAction extends React.Component {
+
+  static propTypes = {
     parentFolder : React.PropTypes.object.isRequired
-  },
+  };
 
-  getInitialState : function () {
-    return {
+  constructor(props) {
+    console.log("constructor of newfolder action");
+    super(props);
+    this.state = {
       edit : false
     }
-  },
+  }
 
-  onEdit : function () {
+  onEdit = () => {
+    console.log("onEdit");
     this.setState({
       edit : !this.state.edit
     });
-  },
+  }
 
-  onSave : function (folderId, folderName, folderDescription, folderParent) {
+  onSave = (folderId, folderName, folderDescription, folderParent) => {
     this.onEdit();
     console.log("Folder.added", folderId, folderName, folderDescription, folderParent);
     ActionCreator.addFolder(folderName, folderDescription, folderParent);
-  },
+  }
 
-  render : function () {
+  render() {
     var newFolderAction;
-
     const {t} = this.props;
 
     if (this.state.edit) {
@@ -49,10 +53,10 @@ var NewFolderAction = React.createClass({
 
     return (
       <div className="media-switcher new-folder-action">
-            {newFolderAction}
+        {newFolderAction}
       </div>
     );
   }
-});
+}
 
-module.exports = translate(['media'])(NewFolderAction);
+export default NewFolderAction;

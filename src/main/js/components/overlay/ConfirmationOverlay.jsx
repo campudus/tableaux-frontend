@@ -57,7 +57,17 @@ export function confirmDeleteFile(fileName, onYes, onNo) {
     body : confirmationOverlay,
     type : "flexible"
   });
+}
 
+export function confirmDeleteFolder(folderName, onYes, onNo) {
+  const question = <p>{i18n.t('media:confirm_delete_folder_question', {folderName})}</p>;
+  const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
+                                                   onCancel={onNo} autoFocus={false}/>;
+  openOverlay({
+    head : <span>{i18n.t('media:confirm_delete_folder_headline')}</span>,
+    body : confirmationOverlay,
+    type : "flexible"
+  });
 }
 
 export function cellModelSavingError(errorFromServer) {

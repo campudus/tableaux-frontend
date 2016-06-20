@@ -1,6 +1,6 @@
 import React from 'react';
 import RowContextMenu from './../contextMenu/RowContextMenu';
-import listensToClickOutside from '../../../../../node_modules/react-onclickoutside/decorator';
+import listensToClickOutside from 'react-onclickoutside/decorator';
 
 const RowContextMenuWithClickOutside = listensToClickOutside(RowContextMenu);
 
