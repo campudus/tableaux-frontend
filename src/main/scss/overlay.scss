@@ -247,17 +247,8 @@ $overlay-headline-height: 50px;
     .content-scroll {
       text-align: center;
 
-      &:before {
-        display: inline-block;
-        content: " ";
-        height: 100%;
-        vertical-align: middle;
-      }
-
       #overlay-content {
-        display: inline-block;
-        text-align: left;
-        vertical-align: middle
+        height: auto;
       }
     }
 

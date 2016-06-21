@@ -215,6 +215,10 @@
 
         .singlefile-edit, .multifile-file-edit {
 
+          > div {
+            text-align: left;
+          }
+
           .field-item {
             .field-label {
               display: inline-block;

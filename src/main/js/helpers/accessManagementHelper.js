@@ -6,7 +6,7 @@ import TableauxConstants from '../constants/TableauxConstants';
 //Just for development
 export function initDevelopmentAccessCookies() {
   if (process.env.NODE_ENV != 'production') {
-    Cookies.set('userAdmin', false);
+    Cookies.set('userAdmin', true);
     Cookies.set('userLangtagsAccess', ['en']);
   }
 }
