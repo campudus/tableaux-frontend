@@ -1,8 +1,8 @@
 var React = require('react');
 var DateTimeEditCell = require('./DateTimeEditCell.jsx');
 var Moment = require('moment');
-var App = require('ampersand-app');
 var ActionCreator = require('../../../actions/ActionCreator');
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var DateTimeCell = React.createClass({
 
@@ -28,7 +28,7 @@ var DateTimeCell = React.createClass({
   getDateTimeValue : function () {
     var cellValue = this.getCellValue();
     if (cellValue) {
-      var formattedVal = Moment(cellValue, App.dateTimeFormats.formatForServer);
+      var formattedVal = Moment(cellValue, TableauxConstants.DateTimeFormats.formatForServer);
       return formattedVal;
     } else {
       return null;
@@ -80,13 +80,13 @@ var DateTimeCell = React.createClass({
     var content;
 
     if (!this.props.editing) {
-      content = (this.state.currentDateTimeValue === null) ? this.noDateTimeText : this.state.currentDateTimeValue.format(App.dateTimeFormats.formatForUser);
+      content = (this.state.currentDateTimeValue === null) ? this.noDateTimeText : this.state.currentDateTimeValue.format(TableauxConstants.DateTimeFormats.formatForUser);
     } else {
       content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
                                   noDateTimeText={this.noDateTimeText}
                                   onDateTimeUpdate={this.onDateTimeUpdate}
-                                  formatForUser={App.dateTimeFormats.formatForUser}
-                                  formatForServer={App.dateTimeFormats.formatForServer}
+                                  formatForUser={TableauxConstants.DateTimeFormats.formatForUser}
+                                  formatForServer={TableauxConstants.DateTimeFormats.formatForServer}
                                   handleEditDone={this.handleEditDone}
                                   setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }

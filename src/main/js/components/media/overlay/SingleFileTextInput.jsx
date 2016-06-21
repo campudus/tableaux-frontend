@@ -3,7 +3,9 @@ var App = require('ampersand-app');
 var multiLanguage = require('../../../helpers/multiLanguage');
 var _ = require('lodash');
 import {isUserAdmin, getUserLanguageAccess, hasUserAccessToLanguage} from '../../../helpers/accessManagementHelper';
+import {getLanguageOrCountryIcon} from '../../../helpers/multiLanguage';
 import {translate} from 'react-i18next';
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var SingleFileTextInput = React.createClass({
 
@@ -25,10 +27,10 @@ var SingleFileTextInput = React.createClass({
   renderInput : function (name, valueObj, langtag) {
     var self = this;
     var inputs;
-    var fallbackLang = App.langtags[0];
+    var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     if (this.props.isOpen) {
-      inputs = App.langtags.map(function (langtag) {
+      inputs = TableauxConstants.Langtags.map(function (langtag) {
         var value = retrieveTranslation(valueObj, langtag);
         var id = self.generateId(name, langtag);
         return self.renderField(id, value, langtag);
@@ -54,26 +56,18 @@ var SingleFileTextInput = React.createClass({
       <div className="field-input" key={id}>
         <input disabled={disabled} type="text" className="field-text-input" ref={id} id={id} value={value}
                onChange={this.onChange.bind(this, langtag)}/>
-        {this.renderLangtag(langtag)}
+        <span onClick={this.onToggle}>{this.renderLangtag(langtag)}</span>
       </div>);
   },
 
   renderLangtag : function (langtag) {
-    var language = langtag.split(/-|_/)[0];
-    var country = langtag.split(/-|_/)[1];
-
-    var icon = country.toLowerCase() + ".png";
-
-    return (
-      <div className="langtag" onClick={this.onToggle}><img src={"/img/flags/" + icon}
-                                                            alt={country}/>{language.toUpperCase()}</div>
-    );
+    return getLanguageOrCountryIcon(langtag);
   },
 
   onToggle : function () {
     var valueObj = {};
     var self = this;
-    App.langtags.map(function (langtag) {
+    TableauxConstants.Langtags.map(function (langtag) {
       var id = self.generateId(self.props.name, langtag);
       if (self.refs[id]) {
         valueObj[langtag] = self.refs[id].value;

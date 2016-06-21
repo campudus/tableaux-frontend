@@ -1,11 +1,11 @@
 var React = require('react');
-var App = require('ampersand-app');
 var Dropzone = require('react-dropzone');
 var request = require('superagent');
 var apiUrl = require('../../../helpers/apiUrl');
 var ActionCreator = require('../../../actions/ActionCreator');
 var ProgressBar = require('../ProgressBar.jsx');
 import {translate} from 'react-i18next';
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var FileUpload = React.createClass({
 
@@ -22,7 +22,7 @@ var FileUpload = React.createClass({
   onDrop : function (files) {
     var self = this;
     //upload with default language
-    var langtag = App.langtags[0];
+    var langtag = TableauxConstants.DefaultLangtag;
 
     files.forEach(function (file) {
       // upload each file for it's own

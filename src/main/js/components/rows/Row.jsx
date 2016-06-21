@@ -103,7 +103,7 @@ var Row = React.createClass({
 
       // We don't want to repeat our self if expanded
       if (!cell.isMultiLanguage && self.props.isRowExpanded) {
-        if (langtag === App.langtags[0]) {
+        if (langtag === TableauxConstants.DefaultLangtag) {
           return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
                        shouldFocus={shouldFocus}/>;
         } else {
@@ -170,7 +170,7 @@ var Row = React.createClass({
     var self = this;
     if (this.props.isRowExpanded) {
       // render all language-rows for this row
-      var rows = App.langtags.map(function (langtag) {
+      var rows = TableauxConstants.Langtags.map(function (langtag) {
         return self.renderLanguageRow(langtag);
       });
       return <div className="row-group expanded" tabIndex="-1">{rows}</div>;

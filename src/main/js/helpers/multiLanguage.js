@@ -1,4 +1,6 @@
-var _ = require('lodash');
+import TableauxConstants from '../constants/TableauxConstants';
+import React from 'react';
+import _  from 'lodash';
 
 /**
  * Parses json for translation value.
@@ -14,7 +16,7 @@ function retrieveTranslation(json, language, defaultLanguage) {
     throw "json is not a plain object"
   }
 
-  var content = json[language];
+  let content = json[language];
 
   if (typeof defaultLanguage !== "undefined" && defaultLanguage !== language) {
     // fallback to default language if no or empty translation found
@@ -26,49 +28,41 @@ function retrieveTranslation(json, language, defaultLanguage) {
   return content;
 }
 
-/**
- * Maps 'de' to 'de-DE' or 'en-us' to 'en-GB'.
- * If map is not possible than return first of langtags
- * @param locale
- * @param langtags
- */
-function mapLocaleToLangtag(locale, langtags) {
-  if (typeof langtags === "undefined") {
-    throw "you need to define langtags"
+function getLanguageOrCountryIcon(langtag) {
+  //we try to split on "-" (dash) character
+  const langtagSplitted = langtag.split(/-|_/);
+  let icon, countryOrLanguage, country, language = langtagSplitted[0];
+
+  //hey, we got a full langtag, e.g. de-CH
+  if (langtagSplitted.length > 1) {
+    country = langtagSplitted[1];
   }
+  countryOrLanguage = country ? country.toLowerCase() : language.toLowerCase();
+  icon = countryOrLanguage + ".png";
 
-  var find = function (_locale) {
-    return function (tag) {
-      return tag.indexOf(_locale) !== -1;
-    }
-  };
+  return (
+    <span className="langtag">
+      <img src={"/img/flags/" + icon} alt={countryOrLanguage}/><span
+      className="langtag-label">{countryOrLanguage}</span>
+    </span>
+  );
+}
 
-  var langtag = _.find(langtags, find(locale));
-  if (!langtag) {
-    if (locale.indexOf("-") !== -1) {
-      locale = locale.split("-")[0];
-      langtag = _.find(langtags, find(locale));
-    }
-
-    if (!langtag) {
-      langtag = langtags[0];
-    }
-  }
-
-  return langtag;
+function getLanguageOfLangtag(langtag) {
+  return langtag.split(/-|_/)[0];
 }
 
 /**
  * example usage:
- * var multiLanguage = require('./multiLanguage.js')
+ * let multiLanguage = require('./multiLanguage.js')
  * // define default language
- * var retrieveTranslation = multilanguage.retrieveTranslation('de_DE')
+ * let retrieveTranslation = multilanguage.retrieveTranslation('de_DE')
  *
- * var json = {
+ * let json = {
  *  "de_DE" : "Deutscher Inhalt",
  *  "en_GB" : null // no english value
  * }
- * var translation = retrieveTranslation(json, "en_GB")
+ * let translation = retrieveTranslation(json, "en_GB")
  * // will print "Deutscher Inhalt" b/c of default language
  * Console.println(translation);
  */
@@ -78,10 +72,6 @@ module.exports = {
       return retrieveTranslation(json, language, defaultLanguage)
     }
   },
-
-  mapLocaleToLangtag : function (langtags) {
-    return function (locale) {
-      return mapLocaleToLangtag(locale, langtags)
-    }
-  }
+  getLanguageOrCountryIcon,
+  getLanguageOfLangtag
 };

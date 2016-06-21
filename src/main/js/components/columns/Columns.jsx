@@ -1,6 +1,8 @@
 var React = require('react');
 var AmpersandMixin = require('ampersand-react-mixin');
 import {translate} from 'react-i18next';
+import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
+import TableauxConstants from '../../constants/TableauxConstants';
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
@@ -16,25 +18,27 @@ var Columns = React.createClass({
   },
 
   renderColumn(langtag, column, index) {
-    var columnContent = [];
-    let {t} = this.props;
+    let name, columnContent = [];
+    const {t} = this.props;
+    const description = column.description[langtag];
+    const language = getLanguageOfLangtag(langtag);
+    const columnDisplayName = column.displayName[language];
+    const fallbackColumnDisplayName = column.displayName[TableauxConstants.FallbackLanguage] || column.name;
+
     if (column.kind === "concat") {
       columnContent.push(<i key="column-icon" className="fa fa-bookmark"/>);
     } else if (column.identifier) {
       columnContent.push(<i key="column-icon" className="fa fa-bookmark-o"/>);
     }
 
-    const description = column.description[langtag];
-    let name;
     //This is the ID/Concat Column
     if (column.id === 0) {
       name = t('concat_column_name');
     } else {
-      name = typeof column.displayName[langtag] === "undefined" ? column.name : column.displayName[langtag];
+      name = typeof columnDisplayName === "undefined" ? fallbackColumnDisplayName : columnDisplayName;
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
-
     return <div className="column-head" key={index}>{columnContent}</div>
   },
 

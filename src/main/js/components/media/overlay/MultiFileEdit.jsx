@@ -7,6 +7,7 @@ var ActionCreator = require('../../../actions/ActionCreator');
 import {reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
 var _ = require('lodash');
 import {translate} from 'react-i18next';
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var MultiFileEdit = React.createClass({
 
@@ -42,7 +43,7 @@ var MultiFileEdit = React.createClass({
     if (this.props.hasChanged) {
       var foundLangs = [];
       var langDuplicates = [];
-      App.langtags.forEach(function (langtag) {
+      TableauxConstants.Langtags.forEach(function (langtag) {
         var lang = self.props.editedLanguage[langtag] ? self.props.editedLanguage[langtag] : langtag;
         if (_.includes(foundLangs, lang)) {
           langDuplicates.push(lang);
@@ -121,7 +122,7 @@ var MultiFileEdit = React.createClass({
 
   render : function () {
     var self = this;
-    var files = App.langtags.map(function (langtag) {
+    var files = TableauxConstants.Langtags.map(function (langtag) {
 
       const {file, editedTitleValue, editedDescValue, editedExternalnameValue, editedLanguage} = self.props;
       const {title,internalName, externalName, description, uuid, fileUrl} = file;

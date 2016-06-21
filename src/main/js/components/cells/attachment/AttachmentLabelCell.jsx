@@ -1,6 +1,6 @@
 var React = require('react');
-var App = require('ampersand-app');
 var multiLanguage = require('../../../helpers/multiLanguage');
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var AttachmentLabelCell = React.createClass({
 
@@ -21,7 +21,7 @@ var AttachmentLabelCell = React.createClass({
   },
 
   render : function () {
-    var fallbackLang = App.defaultLangtag;
+    var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     var attachmentTitle = retrieveTranslation(this.props.attachmentElement.title, this.props.langtag);
 

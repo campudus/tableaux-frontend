@@ -1,15 +1,11 @@
 var keyMirror = require('keymirror');
 
 /*
-* Order is important.
-* First language is default language.
-* Also, this is the order a expanded row shows the languages
-* */
-var languagetag = [
-  "de-DE",
-  "en-GB",
-  "fr-FR"
-];
+ * Order is important.
+ * First language is default language.
+ * Also, this is the order a expanded row shows the languages
+ * */
+var languagetags;
 
 var TableauxConstant = {
   ActionTypes : keyMirror({
@@ -102,17 +98,29 @@ var TableauxConstant = {
     'MEDIA_VIEW' : null
   }),
 
-  Langtags : languagetag,
-
-  DefaultLangtag : languagetag[0],
-
   DateTimeFormats : {
     formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
     formatForUser : "DD.MM.YYYY - HH:mm"
   },
 
   //Fixed pixel height of a single row including border
-  RowHeight : 46
+  RowHeight : 46,
+
+  get Langtags() {
+    return languagetags || null;
+  },
+
+  get DefaultLangtag() {
+    return languagetags ? languagetags[0] : null;
+  },
+
+  //we hardcode this because english is the world language
+  FallbackLanguage : 'en',
+
+  initLangtags : (langtags) => {
+    console.log("setting langtags from server:", langtags);
+    languagetags = langtags;
+  }
 
 };
 

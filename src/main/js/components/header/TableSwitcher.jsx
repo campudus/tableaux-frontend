@@ -2,6 +2,8 @@ import React from 'react';
 import Select from 'react-select';
 import ActionCreator from '../../actions/ActionCreator.js';
 import _ from 'lodash';
+import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
+import TableauxConstants from '../../constants/TableauxConstants';
 
 const TableSwitcher = React.createClass({
 
@@ -31,9 +33,13 @@ const TableSwitcher = React.createClass({
   //TODO: In the future rebuild select options when the table model changed
   buildSelectOptions() {
     const {langtag} = this.props;
+    const language = getLanguageOfLangtag(langtag);
     const options = this.props.tables.reduce(function (res, table) {
+      const tableDisplayName = table.displayName[language];
+      const fallbackTableDisplayName = table.displayName[TableauxConstants.FallbackLanguage] || table.name;
+
       res.push({
-        label : typeof table.displayName[langtag] === "undefined" ? table.name : table.displayName[langtag],
+        label : _.isNil(tableDisplayName) ? fallbackTableDisplayName : tableDisplayName,
         value : table.id
       });
       return res;

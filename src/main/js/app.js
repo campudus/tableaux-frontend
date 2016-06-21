@@ -4,6 +4,8 @@ import Dispatcher from './dispatcher/Dispatcher';
 import apiUrl from './helpers/apiUrl';
 import multiLanguage from './helpers/multiLanguage';
 import TableauxConstants from './constants/TableauxConstants';
+import {getAllLangtagsFromServer} from './helpers/serverSettingsHelper';
+import {initDevelopmentAccessCookies} from './helpers/accessManagementHelper';
 import _ from 'lodash';
 
 if (process.env.NODE_ENV != 'production') {
@@ -15,25 +17,24 @@ import '../scss/main.scss';
 
 App.extend({
 
-  //Deprecated! Use TableauxConstants.Langtags instead
-  langtags : TableauxConstants.Langtags,
-
   init : function () {
+
+    //gets called just in development
+    initDevelopmentAccessCookies();
+
     //Global tableaux variable. Used for some DOM References
     window.GLOBAL_TABLEAUX = {};
-    this.router = new Router();
-    this.router.history.start();
-  },
 
-  apiUrl : apiUrl,
-
-  // TODO Remove this and replace all references with TableauxConstants
-  defaultLangtag : TableauxConstants.DefaultLangtag,
-  dateTimeFormats : TableauxConstants.DateTimeFormats,
-
-  mapLocaleToLangtag : function (locale) {
-    return multiLanguage.mapLocaleToLangtag(this.langtags)(locale)
+    //init all available langtags from server before continuing
+    getAllLangtagsFromServer((err)=> {
+      console.warn("error:", err);
+    }, (languages)=> {
+      TableauxConstants.initLangtags(languages);
+      this.router = new Router();
+      this.router.history.start();
+    });
   }
+
 });
 
 App.init();

@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var Moment = require('moment');
 var App = require('ampersand-app');
+import TableauxConstants from '../constants/TableauxConstants';
 
 var NOVALUE = "– NO VALUE –";
 
@@ -10,7 +11,7 @@ var internal = {
   },
 
   addDefaultLangtagPostfix : function (string) {
-    return string.concat(" (" + App.defaultLangtag + ")");
+    return string.concat(" (" + TableauxConstants.DefaultLangtag + ")");
   }
 };
 
@@ -108,7 +109,7 @@ var RowConcatHelper = {
         case "datetime":
           var dateTimeValue = getCellValueFromLanguage(concatElem);
           if (!_.isEmpty(dateTimeValue)) {
-            var formattedDateTimeValue = Moment(dateTimeValue, App.dateTimeFormats.formatForServer).format(App.dateTimeFormats.formatForUser);
+            var formattedDateTimeValue = Moment(dateTimeValue, TableauxConstants.DateTimeFormats.formatForServer).format(TableauxConstants.DateTimeFormats.formatForUser);
             appendString(formattedDateTimeValue);
           }
           break;
@@ -124,7 +125,7 @@ var RowConcatHelper = {
   },
 
   getRowConcatStringWithFallback : function (rowCellIdValue, toColumn, langtag) {
-    var defaultLangtag = App.defaultLangtag;
+    var defaultLangtag = TableauxConstants.DefaultLangtag;
     var rowConcatString;
 
     if (toColumn.kind === "concat") {

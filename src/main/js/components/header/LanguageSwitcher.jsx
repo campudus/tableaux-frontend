@@ -2,6 +2,8 @@ var React = require('react');
 var App = require('ampersand-app');
 var Select = require('react-select');
 var _ = require('lodash');
+import TableauxConstants from './../../constants/TableauxConstants';
+import {getLanguageOrCountryIcon} from '../../helpers/multiLanguage';
 
 var LanguageSwitcher = React.createClass({
 
@@ -25,19 +27,13 @@ var LanguageSwitcher = React.createClass({
   },
 
   renderOption : function (option) {
-    var langtag = option.value;
-    var language = langtag.split(/-|_/)[0];
-    var country = langtag.split(/-|_/)[1];
-    var icon = country.toLowerCase() + ".png";
-    return <span className="langtag">
-      <img src={"/img/flags/" + icon} alt={country}/> {language.toUpperCase()}
-    </span>;
+    return getLanguageOrCountryIcon(option.value);
   },
 
   render : function () {
     const {limitLanguages, disabled} = this.props;
     //Inside select box show user just the languages he has access to
-    const languagesToDisplay = !disabled && limitLanguages ? limitLanguages : App.langtags;
+    const languagesToDisplay = !disabled && limitLanguages ? limitLanguages : TableauxConstants.Langtags;
 
     var options = this.props.options || languagesToDisplay.reduce(function (res, langtag) {
         res.push({

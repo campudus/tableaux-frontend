@@ -5,6 +5,7 @@ var App = require('ampersand-app');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Folder = require('../../../models/media/Folder');
 var multiLanguage = require('../../../helpers/multiLanguage');
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var AttachmentOverlay = React.createClass({
   mixins : [AmpersandMixin],
@@ -72,7 +73,7 @@ var AttachmentOverlay = React.createClass({
 
   render : function () {
     var self = this;
-    var fallbackLang = App.defaultLangtag;
+    var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     var listDisplay = "Loading...";
 

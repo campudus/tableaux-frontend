@@ -1,4 +1,3 @@
-var App = require('ampersand-app');
 var AmpersandModel = require('ampersand-model');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Tables = require('./Tables');
@@ -6,6 +5,7 @@ var Column = require('./Column');
 var TableauxConstants = require('./../constants/TableauxConstants');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 var _ = require('lodash');
+import apiUrl from '../helpers/apiUrl';
 
 //FIXME: Handle Concat synch more elegant the Ampersand way
 var Cell = AmpersandModel.extend({
@@ -183,7 +183,7 @@ var Cell = AmpersandModel.extend({
   },
 
   url : function () {
-    return App.apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
+    return apiUrl('/tables/' + this.tableId + '/columns/' + this.column.getId() + '/rows/' + this.rowId);
   },
 
   serialize : function (options) {

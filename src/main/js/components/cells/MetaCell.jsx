@@ -1,4 +1,5 @@
 import React from 'react';
+import {getLanguageOrCountryIcon} from '../../helpers/multiLanguage';
 
 class MetaCell extends React.Component {
 
@@ -22,18 +23,11 @@ class MetaCell extends React.Component {
   }
 
   render = () => {
-
     const {langtag, rowId, onClick, rowExpanded} = this.props;
-    const language = langtag.split(/-|_/)[0];
-    const country = langtag.split(/-|_/)[1];
-    const icon = country.toLowerCase() + ".png";
-
-    let cellContent = "";
+    let cellContent = null;
 
     if (rowExpanded) {
-      cellContent =
-        <div><img src={"/img/flags/" + icon} alt={country}/><span className="language">{language.toUpperCase()}</span>
-        </div>
+      cellContent = getLanguageOrCountryIcon(langtag);
     } else {
       cellContent =
         <div className="meta-info-collapsed">

@@ -1,5 +1,4 @@
 var React = require('react');
-var App = require('ampersand-app');
 var ampersandMixin = require('ampersand-react-mixin');
 var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 var Dropzone = require('react-dropzone');
@@ -15,6 +14,7 @@ import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess, reduceMedia
 import {DefaultLangtag} from '../../../constants/TableauxConstants';
 import {translate} from 'react-i18next';
 import _ from 'lodash';
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var SingleFileEdit = React.createClass({
 
@@ -38,7 +38,7 @@ var SingleFileEdit = React.createClass({
       isTitleOpen : false,
       isDescriptionOpen : false,
       isExternalnameOpen : false,
-      multifileLanguage : App.langtags[1]
+      multifileLanguage : TableauxConstants.Langtags.length > 0 ? TableauxConstants.Langtags[1] : TableauxConstants.DefaultLangtag
     }
   },
 
@@ -144,10 +144,10 @@ var SingleFileEdit = React.createClass({
 
   renderTextInput : function (id, label, valueObj, langtag, isOpen) {
     var self = this;
-    var retrieveTranslation = multiLanguage.retrieveTranslation(App.langtags[0]);
+    var retrieveTranslation = multiLanguage.retrieveTranslation(TableauxConstants.DefaultLangtag);
 
     if (isOpen) {
-      return (App.langtags.map(function (langtag) {
+      return (TableauxConstants.Langtags.map(function (langtag) {
         var value = retrieveTranslation(valueObj, langtag);
         return self.renderField(id, value, langtag);
       }));
@@ -166,7 +166,7 @@ var SingleFileEdit = React.createClass({
     const {t} = this.props;
     const {internalName, fileUrl, uuid} = this.props.file;
 
-    var langOptions = App.langtags.reduce(function (res, langtag) {
+    var langOptions = TableauxConstants.Langtags.reduce(function (res, langtag) {
       if (DefaultLangtag !== langtag && hasUserAccessToLanguage(langtag)) {
         res.push({
           value : langtag,
@@ -178,7 +178,7 @@ var SingleFileEdit = React.createClass({
 
     var fileLangtag = Object.keys(internalName)[0];
     var fileInternalName = internalName[fileLangtag];
-    const fileUrlOfThisLanguage = apiUrl(fileUrl[App.defaultLangtag]);
+    const fileUrlOfThisLanguage = apiUrl(fileUrl[TableauxConstants.DefaultLangtag]);
 
     return (
       <div className="singlefile-edit">

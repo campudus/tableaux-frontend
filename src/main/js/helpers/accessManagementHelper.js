@@ -1,27 +1,28 @@
 import _ from 'lodash';
 import {ColumnKinds, Langtags} from '../constants/TableauxConstants';
 import Cookies from 'js-cookie';
+import TableauxConstants from '../constants/TableauxConstants';
+
+//Just for development
+export function initDevelopmentAccessCookies() {
+  if (process.env.NODE_ENV != 'production') {
+    Cookies.set('userAdmin', false);
+    Cookies.set('userLangtagsAccess', ['en']);
+  }
+}
 
 //TODO: Read from local storage
 export function getUserLanguageAccess() {
-  const allowedLangsFromCookie = Cookies.get('userLangtagsAccess');
   if (isUserAdmin()) {
-    //TODO: Get all available languages from tableaux server
-    return allowedLangsFromCookie || Langtags;
+    return TableauxConstants.Langtags;
   } else {
-    return [];
+    return Cookies.getJSON('userLangtagsAccess') || [];
   }
 }
 
 export function isUserAdmin() {
-
-  //Just for development
-  if (process.env.NODE_ENV != 'production') {
-    return true;
-  }
-
-  const isAdminFromCookie = Cookies.get('userAdmin');
-  if (isAdminFromCookie) {
+  const isAdminFromCookie = Cookies.getJSON('userAdmin');
+  if (!_.isNil(isAdminFromCookie)) {
     return isAdminFromCookie;
   } else return false;
 }

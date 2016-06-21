@@ -11,6 +11,7 @@ var FileEdit = require('../overlay/FileEdit.jsx');
 var FileEditHead = require('../overlay/FileEditHead.jsx');
 var FileEditFooter = require('../overlay/FileEditFooter.jsx');
 
+import TableauxConstants from '../../../constants/TableauxConstants';
 import ActionCreator from '../../../actions/ActionCreator';
 import {isUserAdmin,getUserLanguageAccess} from '../../../helpers/accessManagementHelper';
 import {noPermissionAlertWithLanguage, confirmDeleteFile} from '../../../components/overlay/ConfirmationOverlay';
@@ -25,7 +26,7 @@ var File = React.createClass({
   },
 
   onRemove : function () {
-    var fallbackLang = App.langtags[0];
+    var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     if (isUserAdmin()) {
@@ -68,7 +69,7 @@ var File = React.createClass({
 
   render : function () {
     // default language (for fallback)
-    const fallbackLang = App.langtags[0];
+    const fallbackLang = TableauxConstants.DefaultLangtag;
     const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     // current language

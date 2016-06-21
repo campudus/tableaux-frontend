@@ -1,12 +1,9 @@
 var App = require('ampersand-app');
 var Router = require('ampersand-router');
-
 var React = require('react');
 var ReactDOM = require('react-dom');
 var locale = require('browser-locale')();
-
 import Tableaux from './components/Tableaux.jsx';
-
 var Dispatcher = require('./dispatcher/Dispatcher');
 var TableauxConstants = require('./constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
@@ -71,7 +68,7 @@ var TableauxRouter = Router.extend({
 
   noTableAndLangtag : function () {
     console.log("TableauxRouter.noTableAndLangtag");
-    var langtag = App.mapLocaleToLangtag(locale);
+    var langtag = TableauxConstants.DefaultLangtag;
     this.redirectTo(langtag + '/table');
   },
 
@@ -79,7 +76,7 @@ var TableauxRouter = Router.extend({
     console.log("TableauxRouter.noTable");
     this.currentLangtag = langtag;
     //TODO show error to user and refactor in function (DRY) see 'tableBrowser'
-    if (typeof langtag === 'undefined' || App.langtags.indexOf(langtag) === -1) {
+    if (typeof langtag === 'undefined' || TableauxConstants.Langtags.indexOf(langtag) === -1) {
       console.error("path param 'langtag' is not valid");
       return;
     }
@@ -97,7 +94,7 @@ var TableauxRouter = Router.extend({
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
       console.error("path param 'tableid' is not valid");
       return;
-    } else if (typeof langtag === 'undefined' || App.langtags.indexOf(langtag) === -1) {
+    } else if (typeof langtag === 'undefined' || TableauxConstants.Langtags.indexOf(langtag) === -1) {
       console.error("path param 'langtag' is not valid");
       return;
     }
@@ -114,7 +111,7 @@ var TableauxRouter = Router.extend({
     console.log("TableauxRouter.mediaBrowser", langtag, folderid);
     this.currentLangtag = langtag;
     //TODO show error to user
-    if (typeof langtag === 'undefined' || App.langtags.indexOf(langtag) === -1) {
+    if (typeof langtag === 'undefined' || TableauxConstants.Langtags.indexOf(langtag) === -1) {
       console.error("path param 'langtag' is not valid");
       return;
     }

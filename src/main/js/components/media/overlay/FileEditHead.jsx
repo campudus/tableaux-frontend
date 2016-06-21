@@ -1,6 +1,6 @@
 var React = require('react');
-var App = require('ampersand-app');
 var multiLanguage = require('../../../helpers/multiLanguage');
+import TableauxConstants from '../../../constants/TableauxConstants';
 
 var FileEditHead = React.createClass({
   propTypes : {
@@ -10,7 +10,7 @@ var FileEditHead = React.createClass({
 
   render : function () {
     // default language (for fallback)
-    var fallbackLang = App.langtags[0];
+    var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     // current language

@@ -1,6 +1,10 @@
 .meta-cell {
   text-align: right;
 
+  &:hover {
+    cursor: pointer;
+  }
+
   .row-number {
     color: $color-text-light-grey;
     font-size: 12px;
@@ -23,14 +27,15 @@
   &.row-expanded {
     .cell-content {
       overflow: visible;
-      white-space: normal;
-      position: absolute;
-      top: 0;
-      right: 10px;
 
-      span {
-        display: block;
+      .langtag {
+        text-align: center;
+        display: inline-block;
         line-height: 1;
+      }
+
+      .langtag span {
+        display: block;
       }
     }
   }
