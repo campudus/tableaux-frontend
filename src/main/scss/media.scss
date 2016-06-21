@@ -128,8 +128,12 @@
 
   .create-new-folder {
     display: inline-block;
-    input {
+  }
 
+  .subfolder .create-new-folder {
+    padding: 0.75em;
+    i {
+      font-size: 16px;
     }
   }
 

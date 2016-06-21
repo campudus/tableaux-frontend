@@ -114,20 +114,22 @@ module.exports = {
     })
   },
 
-  addFolder : function (name, description, parentId) {
+  addFolder : function (name, description, parentId, onError) {
     Dispatcher.trigger(ActionTypes.ADD_FOLDER, {
       name : name,
       description : description,
-      parentId : parentId
+      parentId : parentId,
+      onError: onError
     });
   },
 
-  changeFolder : function (folderId, name, description, parentId) {
+  changeFolder : function (folderId, name, description, parentId, onError) {
     Dispatcher.trigger(ActionTypes.CHANGE_FOLDER, {
       folderId : folderId,
       name : name,
       description : description,
-      parentId : parentId
+      parentId : parentId,
+      onError: onError
     });
   },
 

@@ -124,3 +124,15 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
 
   console.warn("Access denied. User can not edit this language.");
 }
+
+
+export function simpleError(errorMsg, errorHead) {
+  const completeErrorMsg = <p>{errorMsg}</p>;
+  const confirmationOverlay = <ConfirmationOverlay content={completeErrorMsg} onOk={()=> closeOverlay()}/>;
+
+  openOverlay({
+    head : <span>{errorHead ? errorHead : i18n.t('common:error')}</span>,
+    body : confirmationOverlay,
+    type : "flexible"
+  });
+}

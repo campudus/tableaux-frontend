@@ -5,6 +5,7 @@ var ActionCreator = require('../../../actions/ActionCreator');
 import SubfolderEdit from './SubfolderEdit';
 import {translate} from 'react-i18next';
 import listensToClickOutside from 'react-onclickoutside/decorator';
+import {simpleError} from '../../../components/overlay/ConfirmationOverlay';
 
 
 @translate(['media'])
@@ -28,13 +29,15 @@ class NewFolderAction extends React.Component {
     this.setState({
       edit : !this.state.edit
     });
-  }
+  };
 
   onSave = (folderId, folderName, folderDescription, folderParent) => {
+    const {t} = this.props;
     this.onEdit();
     console.log("Folder.added", folderId, folderName, folderDescription, folderParent);
-    ActionCreator.addFolder(folderName, folderDescription, folderParent);
-  }
+    ActionCreator.addFolder(folderName, folderDescription, folderParent,
+      () => simpleError(t('error_folder_exists_already')));
+  };
 
   render() {
     var newFolderAction;

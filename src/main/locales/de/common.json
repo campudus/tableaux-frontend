@@ -5,6 +5,7 @@
     "permission_denied_headline" : "Zugriff verweigert"
   },
   "cancel" : "Abbrechen",
+  "error": "Fehler",
   "no" : "Nein",
   "save" : "Speichern",
   "yes" : "Ja"

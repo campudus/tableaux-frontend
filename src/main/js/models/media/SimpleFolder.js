@@ -1,6 +1,6 @@
 var AmpersandModel = require('ampersand-model');
-
 var apiUrl = require('../../helpers/apiUrl');
+import {currentLangtag}from '../../router';
 
 var SimpleFolder = AmpersandModel.extend({
   props : {
@@ -20,7 +20,7 @@ var SimpleFolder = AmpersandModel.extend({
     if (this.isNew() || isNaN(this.getId())) {
       return base;
     } else {
-      return base + '/' + this.getId();
+      return base + '/' + this.getId() + '?langtag=' + currentLangtag;
     }
   },
 

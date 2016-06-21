@@ -13,7 +13,7 @@ var FoldersCollection = AmpersandCollection.extend({
     Dispatcher.on(ActionTypes.REMOVE_FOLDER, this.removeFolderHandler, this);
   },
 
-  desctructor: function(){
+  desctructor : function () {
     Dispatcher.off(ActionTypes.ADD_FOLDER, this.addFolderHandler, this);
     Dispatcher.off(ActionTypes.CHANGE_FOLDER, this.changeFolderHandler, this);
     Dispatcher.off(ActionTypes.REMOVE_FOLDER, this.removeFolderHandler, this);
@@ -28,7 +28,13 @@ var FoldersCollection = AmpersandCollection.extend({
       description : payload.description,
       parent : payload.parentId
     });
-    newFolder.save();
+    newFolder.save(null, {
+      error(error){
+        console.warn("error creating folder: ", error);
+        payload.onError(error);
+      }
+    });
+
     newFolder.once('sync', function (a, b) {
       console.log('Folder saved', a, b);
       self.add(a, {merge : true});
@@ -38,12 +44,17 @@ var FoldersCollection = AmpersandCollection.extend({
   changeFolderHandler : function (payload) {
     console.log("Change folder.", payload);
     var self = this;
-
     var folder = this.get(payload.folderId);
     folder.save({
       name : payload.name,
       description : payload.description,
       parent : payload.parentId
+    }, {
+      error(error) {
+        console.warn("error changing folder: ", error);
+        folder.fetch({method : "GET"});
+        payload.onError(error);
+      }
     });
     folder.once('sync', function (a, b) {
       console.log('Folder saved', a, b);

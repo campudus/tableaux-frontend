@@ -10,6 +10,7 @@
   "delete_file": "Delete",
   "delete_file_headline": "Really delete this file?",
   "delete_folder": "Delete",
+  "error_folder_exists_already": "A folder with this name already exists.",
   "error_multifile_multiple_languages": "Each language can only exist once. Languages: {{langtags}} are assigned multiple times.",
   "file_close_without_saving": "Are you sure? Unsaved changes will be lost.",
   "file_description_label": "Description",

@@ -9,6 +9,8 @@ var TableauxConstants = require('./constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
 var ActionCreator = require('./actions/ActionCreator');
 
+export let currentLangtag = null;
+
 var TableauxRouter = Router.extend({
   routes : {
     '' : 'noTableAndLangtag',
@@ -23,7 +25,6 @@ var TableauxRouter = Router.extend({
   },
 
   alreadyRendered : false,
-  currentLangtag : null,
 
   renderOrSwitchView : function (viewName, params) {
     if (this.alreadyRendered) {
@@ -47,7 +48,7 @@ var TableauxRouter = Router.extend({
   switchLanguageHandler : function (newLangtagObj) {
     var his = this.history;
     var path = his.getPath();
-    var newPath = path.replace(this.currentLangtag, newLangtagObj.langtag);
+    var newPath = path.replace(currentLangtag, newLangtagObj.langtag);
 
     his.navigate(newPath, {trigger : true});
   },
@@ -74,7 +75,7 @@ var TableauxRouter = Router.extend({
 
   noTable : function (langtag) {
     console.log("TableauxRouter.noTable");
-    this.currentLangtag = langtag;
+    currentLangtag = langtag;
     //TODO show error to user and refactor in function (DRY) see 'tableBrowser'
     if (typeof langtag === 'undefined' || TableauxConstants.Langtags.indexOf(langtag) === -1) {
       console.error("path param 'langtag' is not valid");
@@ -89,7 +90,7 @@ var TableauxRouter = Router.extend({
 
   tableBrowser : function (langtag, tableid) {
     console.log("TableauxRouter.tableBrowser", langtag, tableid);
-    this.currentLangtag = langtag;
+    currentLangtag = langtag;
     //TODO show error to user
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
       console.error("path param 'tableid' is not valid");
@@ -109,7 +110,7 @@ var TableauxRouter = Router.extend({
 
   mediaBrowser : function (langtag, folderid) {
     console.log("TableauxRouter.mediaBrowser", langtag, folderid);
-    this.currentLangtag = langtag;
+    currentLangtag = langtag;
     //TODO show error to user
     if (typeof langtag === 'undefined' || TableauxConstants.Langtags.indexOf(langtag) === -1) {
       console.error("path param 'langtag' is not valid");

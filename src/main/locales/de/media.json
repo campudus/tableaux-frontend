@@ -10,6 +10,7 @@
   "delete_file": "Löschen",
   "delete_file_headline": "Datei wirklich löschen?",
   "delete_folder": "Löschen",
+  "error_folder_exists_already": "Ein Ordner mit diesem Namen exitiert bereits.",
   "error_multifile_multiple_languages": "Jede Sprache darf nur einmal zugewiesen werden. Sprachen: {{langtags}} sind mehrfach gesetzt.",
   "file_close_without_saving": "Sind sie sicher? Ungespeicherte Daten gehen verloren.",
   "file_description_label": "Beschreibung",
