@@ -4,6 +4,7 @@ import {translate} from 'react-i18next';
 import ActionCreator from './../../actions/ActionCreator';
 import {confirmDelete,noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
 import {getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
+import {initiateDeleteRow} from '../../helpers/rowHelper';
 
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -61,36 +62,24 @@ class RowContextMenu extends React.Component {
     ActionCreator.closeRowContextMenu();
   };
 
-  onYesOverlay = (event) => {
-    //TODO: Table gets rendered 3 times
-    const {tableId, rowId} = this.props;
-    ActionCreator.removeRow(tableId, rowId);
-    this.onCancelOverlay(event);
+  afterConfirmDeleteRowOverlay = (event) => {
     this.closeRowContextMenu();
   };
 
-  onCancelOverlay = (event) => {
-    ActionCreator.closeOverlay();
-  };
-
   deleteRow = (event) => {
-    if (isUserAdmin()) {
-      confirmDelete(this.onYesOverlay, this.onCancelOverlay);
-    } else {
-      noPermissionAlertWithLanguage(getUserLanguageAccess());
-    }
+    initiateDeleteRow(this.props.row, this.afterConfirmDeleteRowOverlay, this.afterConfirmDeleteRowOverlay);
   };
 
   showTranslations = (event) => {
-    const {props:{rowId}, closeRowContextMenu} = this;
-    ActionCreator.toggleRowExpand(rowId);
+    const {props:{row}, closeRowContextMenu} = this;
+    ActionCreator.toggleRowExpand(row.getId());
     closeRowContextMenu();
   };
 
   duplicateRow = (event) => {
-    const {tableId, rowId} = this.props;
+    const {row} = this.props;
     if (isUserAdmin()) {
-      ActionCreator.duplicateRow(tableId, rowId);
+      ActionCreator.duplicateRow(row.tableId, row.getId());
     } else {
       noPermissionAlertWithLanguage(getUserLanguageAccess());
     }
@@ -117,8 +106,7 @@ class RowContextMenu extends React.Component {
 RowContextMenu.propTypes = {
   x : React.PropTypes.number.isRequired,
   y : React.PropTypes.number.isRequired,
-  rowId : React.PropTypes.number.isRequired,
-  tableId : React.PropTypes.number.isRequired,
+  row : React.PropTypes.object.isRequired,
   offsetY : React.PropTypes.number.isRequired
 };
 

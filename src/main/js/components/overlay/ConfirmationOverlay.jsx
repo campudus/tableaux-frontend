@@ -1,6 +1,6 @@
 import React from 'react';
 import {translate} from 'react-i18next';
-import {openOverlay, closeOverlay} from '../../actions/ActionCreator';
+import {openOverlay, closeOverlay, rowDependent} from '../../actions/ActionCreator';
 import i18n from 'i18next';
 
 let ConfirmationOverlay = (props) => {
@@ -41,11 +41,19 @@ export function confirmDelete(onYes, onNo) {
   const question = <p>{i18n.t('table:confirm_delete_row')}</p>;
   const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
                                                    onCancel={onNo}/>;
+
+
+  //check dependent rows
+
+  //rowDependent
+
+
   openOverlay({
     head : <span>{i18n.t('table:delete_row')}</span>,
     body : confirmationOverlay,
     type : "flexible"
   });
+
 }
 
 export function confirmDeleteFile(fileName, onYes, onNo) {

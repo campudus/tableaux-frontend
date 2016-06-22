@@ -9,6 +9,7 @@ var Cell = require('../cells/Cell.jsx');
 import MetaCell from '../cells/MetaCell';
 import {confirmDelete, noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
 import {hasUserAccessToLanguage, getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
+import {initiateDeleteRow} from '../../helpers/rowHelper';
 
 var Row = React.createClass({
   mixins : [AmpersandMixin],
@@ -59,21 +60,7 @@ var Row = React.createClass({
 
   onClickDelete : function (e) {
     ActionCreator.disableShouldCellFocus();
-    if (isUserAdmin()) {
-      confirmDelete(this.onYesOverlay, this.onCancelOverlay);
-    } else {
-      noPermissionAlertWithLanguage(getUserLanguageAccess());
-    }
-  },
-
-  onYesOverlay : function (event) {
-    var row = this.props.row;
-    ActionCreator.removeRow(row.tableId, row.id);
-    this.onCancelOverlay(event);
-  },
-
-  onCancelOverlay : function (event) {
-    ActionCreator.closeOverlay();
+    initiateDeleteRow(this.props.row);
   },
 
   renderSingleLanguageCell : function (cell, idx) {
@@ -121,7 +108,7 @@ var Row = React.createClass({
 
   contextMenuHandler : function (e) {
     e.preventDefault();
-    ActionCreator.showRowContextMenu(this.props.row.tableId, this.props.row.getId(), e.pageX, e.pageY);
+    ActionCreator.showRowContextMenu(this.props.row, e.pageX, e.pageY);
   },
 
   renderLanguageRow : function (langtag) {

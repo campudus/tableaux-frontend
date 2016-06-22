@@ -213,11 +213,11 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.SPINNER_OFF);
   },
 
-  showRowContextMenu : function (tableId, rowId, x, y) {
-    Dispatcher.trigger(ActionTypes.SHOW_ROW_CONTEXT_MENU, {x, y, rowId, tableId});
+  showRowContextMenu : function (row, x, y) {
+    Dispatcher.trigger(ActionTypes.SHOW_ROW_CONTEXT_MENU, {x, y, row});
   },
 
-  closeRowContextMenu : function (rowId, x, y) {
+  closeRowContextMenu : function () {
     Dispatcher.trigger(ActionTypes.CLOSE_ROW_CONTEXT_MENU);
   },
 

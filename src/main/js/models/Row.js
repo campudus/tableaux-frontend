@@ -4,7 +4,7 @@ var Columns = require('./Columns');
 var Cell = require('./Cell');
 var Cells = require('./Cells');
 var _ = require('lodash');
-
+import request from 'superagent';
 import { noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
 import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from '../helpers/accessManagementHelper';
 
@@ -27,9 +27,7 @@ var Row = AmpersandModel.extend({
     cells : Cells
   },
 
-  //Todo: Don't send the payload of row to server
   duplicate : function (cb) {
-
     /**
      * Basic language access management
      */
@@ -55,6 +53,21 @@ var Row = AmpersandModel.extend({
         console.log("error duplicating row.", error);
       }
     });
+  },
+
+  dependent : (onError, onSuccess) => {
+    console.log("url is:", this.url() + "/dependent");
+    request.get(this.url() + "/dependent")
+      .end((error, result) => {
+          if (error) {
+            console.warn("error getting row dependent from server:", error);
+            onError(error);
+          } else {
+            console.log("row dependent response:", result);
+            onSuccess(result.body.value);
+          }
+        }
+      );
   },
 
   parse : function (attrs, options) {
