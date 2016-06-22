@@ -7,7 +7,7 @@ var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var Cell = require('../cells/Cell.jsx');
 import MetaCell from '../cells/MetaCell';
-import {confirmDelete, noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
+import {noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
 import {hasUserAccessToLanguage, getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
 import {initiateDeleteRow} from '../../helpers/rowHelper';
 
@@ -60,7 +60,8 @@ var Row = React.createClass({
 
   onClickDelete : function (e) {
     ActionCreator.disableShouldCellFocus();
-    initiateDeleteRow(this.props.row);
+    const {row, langtag} = this.props;
+    initiateDeleteRow(row, langtag);
   },
 
   renderSingleLanguageCell : function (cell, idx) {
@@ -108,7 +109,7 @@ var Row = React.createClass({
 
   contextMenuHandler : function (e) {
     e.preventDefault();
-    ActionCreator.showRowContextMenu(this.props.row, e.pageX, e.pageY);
+    ActionCreator.showRowContextMenu(this.props.row, this.props.langtag, e.pageX, e.pageY);
   },
 
   renderLanguageRow : function (langtag) {

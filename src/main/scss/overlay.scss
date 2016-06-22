@@ -284,6 +284,11 @@ $overlay-headline-height: 50px;
 
   }
 
+  #overlay-content h1 {
+    font-family: $font-main;
+    font-size: 20px;
+  }
+
   //Overlay for kind text
   #overlay-content textarea.text-editor {
     position: absolute;

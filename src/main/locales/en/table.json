@@ -1,8 +1,10 @@
 {
   "add_new_row": "Add new row",
   "concat_column_name": "ID-Name",
-  "confirm_delete_row": "Do you really want to delete that row?",
+  "confirm_delete_row": "Really delete row „{{rowName}}”?",
   "delete_row": "Delete row",
+  "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed.",
+  "delete_row_no_dependent_rows": "Data record is not linked anyway. You can savely delete it.",
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
   "error_saving_cell": "The cell could not be saved. Refresh your browser now?",

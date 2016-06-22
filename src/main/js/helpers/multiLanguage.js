@@ -52,6 +52,16 @@ function getLanguageOfLangtag(langtag) {
   return langtag.split(/-|_/)[0];
 }
 
+function getTableDisplayName(table, langtag) {
+  if (!table || !table.name || !langtag) {
+    console.warn("getTableDisplayName called with invalid parameters:", table, langtag);
+  } else {
+    const tableDisplayName = table.displayName[langtag];
+    const fallbackTableDisplayName = table.displayName[TableauxConstants.FallbackLanguage] || table.name;
+    return _.isNil(tableDisplayName) ? fallbackTableDisplayName : tableDisplayName;
+  }
+}
+
 /**
  * example usage:
  * let multiLanguage = require('./multiLanguage.js')
@@ -73,5 +83,6 @@ module.exports = {
     }
   },
   getLanguageOrCountryIcon,
-  getLanguageOfLangtag
+  getLanguageOfLangtag,
+  getTableDisplayName
 };

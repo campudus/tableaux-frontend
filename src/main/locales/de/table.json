@@ -1,8 +1,10 @@
 {
   "add_new_row": "Neue Zeile hinzufügen",
   "concat_column_name": "Identifikationsname",
-  "confirm_delete_row": "Wollen Sie diese Zeile wirklich löschen?",
+  "confirm_delete_row": "Zeile „{{rowName}}” wirklich löschen?",
   "delete_row": "Zeile löschen",
+  "delete_row_dependent_text": "Dieser Datensatz ist bereits in folgenden Tabellen verknüpft. Die Verknüpfung wird automatisch gelöscht.",
+  "delete_row_no_dependent_rows": "Dieser Datensatz ist bisher nicht verknüpft. Sie können Ihn ohne Auswirkungen löschen.",
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
   "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?",

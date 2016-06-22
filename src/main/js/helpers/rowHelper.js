@@ -1,26 +1,26 @@
-import apiUrl from './apiUrl';
-import request from 'superagent';
-import { noPermissionAlertWithLanguage,confirmDelete } from '../components/overlay/ConfirmationOverlay.jsx';
+import { noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
+import { confirmDeleteRow } from '../components/overlay/ConfirmDependentOverlay.jsx';
 import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from './accessManagementHelper';
-import ActionCreator from '../actions/ActionCreator';
+import {removeRow, closeOverlay} from '../actions/ActionCreator';
 
-
-export function initiateDeleteRow(row, onYes, onCancel) {
+export function initiateDeleteRow(row, langtag, onYes, onCancel) {
   console.log("inside helper initiateDeleteRow");
 
   if (isUserAdmin()) {
 
-    confirmDelete(
+    confirmDeleteRow(
+      row,
+      langtag,
       //onYes
       ()=> {
         typeof onYes == 'function' ? onYes() : null;
-        ActionCreator.removeRow(row.tableId, row.id);
-        ActionCreator.closeOverlay();
+        removeRow(row.tableId, row.id);
+        closeOverlay();
       },
       //onCancel
       () => {
         typeof onCancel == 'function' ? onCancel() : null;
-        ActionCreator.closeOverlay();
+        closeOverlay();
       });
 
   } else {
@@ -28,4 +28,8 @@ export function initiateDeleteRow(row, onYes, onCancel) {
   }
 
 }
+
+
+
+
 

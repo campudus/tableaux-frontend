@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
 import ActionCreator from './../../actions/ActionCreator';
-import {confirmDelete,noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
+import {confirmDeleteRow,noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
 import {getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
 import {initiateDeleteRow} from '../../helpers/rowHelper';
 
@@ -62,12 +62,10 @@ class RowContextMenu extends React.Component {
     ActionCreator.closeRowContextMenu();
   };
 
-  afterConfirmDeleteRowOverlay = (event) => {
-    this.closeRowContextMenu();
-  };
-
   deleteRow = (event) => {
-    initiateDeleteRow(this.props.row, this.afterConfirmDeleteRowOverlay, this.afterConfirmDeleteRowOverlay);
+    const {row, langtag} = this.props;
+    this.closeRowContextMenu();
+    initiateDeleteRow(row, langtag);
   };
 
   showTranslations = (event) => {
@@ -107,7 +105,8 @@ RowContextMenu.propTypes = {
   x : React.PropTypes.number.isRequired,
   y : React.PropTypes.number.isRequired,
   row : React.PropTypes.object.isRequired,
-  offsetY : React.PropTypes.number.isRequired
+  offsetY : React.PropTypes.number.isRequired,
+  langtag : React.PropTypes.string.isRequired
 };
 
 export default translate(['table'])(RowContextMenu);

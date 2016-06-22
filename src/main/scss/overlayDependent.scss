@@ -1,0 +1,59 @@
+.delete-row-question {
+  h1 {
+    margin-bottom: 1em;
+  }
+
+  p {
+
+  }
+}
+
+.dependent-wrapper {
+
+  .dependent-table {
+    padding-bottom: 40px;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &:first-child {
+      padding-top: 40px;
+    }
+
+    .table-link {
+      display: inline-block;
+      padding: 5px 5px;
+      border: 1px solid $color-darker-link-color;
+      background-color: $color-light-link-color;
+      @include border-radius(3px);
+      font-weight: bold;
+
+      &:hover {
+        background-color: #fff;
+      }
+
+      i {
+        padding: 0 5px;
+      }
+
+    }
+  }
+
+  .dependent-rows {
+    padding-top: 10px;
+
+    .dependent-row {
+      padding: 5px 30px 5px 0;
+
+      .dependent-row-id {
+        color: $color-text-medium-grey;
+        min-width: 40px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+    }
+  }
+}

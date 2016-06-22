@@ -5,6 +5,7 @@
     "permission_denied_headline" : "Zugriff verweigert"
   },
   "cancel" : "Abbrechen",
+  "delete_yes_explicit": "Ja, löschen",
   "error": "Fehler",
   "no" : "Nein",
   "save" : "Speichern",

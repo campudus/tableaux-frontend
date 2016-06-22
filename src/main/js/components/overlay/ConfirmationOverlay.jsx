@@ -1,6 +1,6 @@
 import React from 'react';
 import {translate} from 'react-i18next';
-import {openOverlay, closeOverlay, rowDependent} from '../../actions/ActionCreator';
+import {openOverlay, closeOverlay} from '../../actions/ActionCreator';
 import i18n from 'i18next';
 
 let ConfirmationOverlay = (props) => {
@@ -37,25 +37,6 @@ ConfirmationOverlay.propTypes = {
   autoFocus : React.PropTypes.bool
 };
 
-export function confirmDelete(onYes, onNo) {
-  const question = <p>{i18n.t('table:confirm_delete_row')}</p>;
-  const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
-                                                   onCancel={onNo}/>;
-
-
-  //check dependent rows
-
-  //rowDependent
-
-
-  openOverlay({
-    head : <span>{i18n.t('table:delete_row')}</span>,
-    body : confirmationOverlay,
-    type : "flexible"
-  });
-
-}
-
 export function confirmDeleteFile(fileName, onYes, onNo) {
   const question = <p>{i18n.t('media:confirm_delete_file', {fileName})}</p>;
   const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
@@ -76,32 +57,6 @@ export function confirmDeleteFolder(folderName, onYes, onNo) {
     body : confirmationOverlay,
     type : "flexible"
   });
-}
-
-export function cellModelSavingError(errorFromServer) {
-  console.error('Cell model saved unsuccessfully!', errorFromServer, "error text:", errorFromServer.body);
-
-  let totalError,
-    confirmationOverlay,
-    techError = "Unspecified error",
-    userError = i18n.t('table:error_saving_cell'),
-    onYes = ()=> {
-      location.reload(true);
-    };
-
-  if (errorFromServer && errorFromServer.body) {
-    techError = errorFromServer.body;
-  }
-
-  totalError = <div><p>{userError}</p><p><strong>Server error:</strong> {techError}</p></div>;
-  confirmationOverlay = <ConfirmationOverlay content={totalError} onYes={onYes}/>;
-
-  openOverlay({
-    head : <span>{i18n.t('table:error_occured_hl')}</span>,
-    body : confirmationOverlay,
-    type : "flexible"
-  });
-
 }
 
 export function noPermissionAlertWithLanguage(allowedLangtags) {
@@ -133,6 +88,31 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
   console.warn("Access denied. User can not edit this language.");
 }
 
+export function cellModelSavingError(errorFromServer) {
+  console.error('Cell model saved unsuccessfully!', errorFromServer, "error text:", errorFromServer.body);
+
+  let totalError,
+    confirmationOverlay,
+    techError = "Unspecified error",
+    userError = i18n.t('table:error_saving_cell'),
+    onYes = ()=> {
+      location.reload(true);
+    };
+
+  if (errorFromServer && errorFromServer.body) {
+    techError = errorFromServer.body;
+  }
+
+  totalError = <div><p>{userError}</p><p><strong>Server error:</strong> {techError}</p></div>;
+  confirmationOverlay = <ConfirmationOverlay content={totalError} onYes={onYes}/>;
+
+  openOverlay({
+    head : <span>{i18n.t('table:error_occured_hl')}</span>,
+    body : confirmationOverlay,
+    type : "flexible"
+  });
+
+}
 
 export function simpleError(errorMsg, errorHead) {
   const completeErrorMsg = <p>{errorMsg}</p>;

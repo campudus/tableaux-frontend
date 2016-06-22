@@ -55,7 +55,10 @@ var Row = AmpersandModel.extend({
     });
   },
 
-  dependent : (onError, onSuccess) => {
+  dependent : function (onError, onSuccess) {
+
+    console.log("this row id:", this.getId(), " this: ", this);
+
     console.log("url is:", this.url() + "/dependent");
     request.get(this.url() + "/dependent")
       .end((error, result) => {
@@ -64,7 +67,7 @@ var Row = AmpersandModel.extend({
             onError(error);
           } else {
             console.log("row dependent response:", result);
-            onSuccess(result.body.value);
+            onSuccess(result.body.dependentRows);
           }
         }
       );
