@@ -15,6 +15,7 @@ var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 var RowConcatHelper = require('../../helpers/RowConcatHelper');
 
 import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
+import CurrencyCell from './currency/CurrencyCell.jsx';
 
 //used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first visible row)
 const CELL_HINT_PADDING = 40;
@@ -157,6 +158,12 @@ var Cell = React.createClass({
         cellKind = <IdentifierCell cell={this.props.cell} langtag={langtag} selected={selected}
                                    editing={editing}/>;
         break;
+
+      case ColumnKinds.currency:
+        cellKind = <CurrencyCell cell={this.props.cell} langtag={langtag} selected={selected}
+                                 editing={editing}/>;
+        break;
+
 
       default:
         cellKind = <TextCell cell={this.props.cell} langtag={langtag} editing={editing}

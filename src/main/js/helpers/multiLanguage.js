@@ -48,6 +48,27 @@ function getLanguageOrCountryIcon(langtag) {
   );
 }
 
+function getCurrencyCode(country) {
+  const currencyCodeMap = {
+    DE : "EUR",
+    FR : "EUR",
+    US : "USD",
+    GB : "GBP",
+    IT : "EUR",
+    PL : "EUR",
+    NL : "EUR",
+    ES : "EUR"
+  };
+  return currencyCodeMap[country] || null;
+}
+
+//converts en-US to US or en to EN
+//TODO Map EN to GB or
+function getCountryOfLangtag(langtag) {
+  const splittedLangtag = langtag.split(/-|_/);
+  return splittedLangtag.length > 1 ? splittedLangtag[1] : String(splittedLangtag[0]).toUpperCase();
+}
+
 function getLanguageOfLangtag(langtag) {
   return langtag.split(/-|_/)[0];
 }
@@ -84,5 +105,7 @@ module.exports = {
   },
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
-  getTableDisplayName
+  getTableDisplayName,
+  getCountryOfLangtag,
+  getCurrencyCode
 };

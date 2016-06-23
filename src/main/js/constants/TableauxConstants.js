@@ -90,7 +90,8 @@ var TableauxConstant = {
     boolean : null,
     concat : null,
     attachment : null,
-    datetime : null
+    datetime : null,
+    currency : null
   }),
 
   ViewNames : keyMirror({
