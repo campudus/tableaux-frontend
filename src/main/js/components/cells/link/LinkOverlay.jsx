@@ -89,10 +89,8 @@ const LinkOverlay = React.createClass({
   setRowResult : function (rowResult, fromServer) {
     //just set the models, because we filter it later which also returns the models.
     this.allRowResults = rowResult.models;
-    //data comes from server, so we rebuild the row names
-    if (fromServer) {
-      this.buildRowConcatString();
-    }
+    //we always rebuild the row names, also to prevent wrong display names when switching languages
+    this.buildRowConcatString();
     this.setState({
       //we show all the rows
       rowResults : this.filterRowsBySearch(this.getCurrentSearchValue()),
@@ -169,7 +167,7 @@ const LinkOverlay = React.createClass({
 
   getOverlayItem : function (index) {
     let {rowResults} = this.state;
-    let cell = this.props.cell;
+    let {cell} = this.props;
     let currentCellValue = cell ? cell.value : null;
     let row = rowResults[index];
 
