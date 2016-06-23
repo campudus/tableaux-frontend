@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
 import ActionCreator from './../../actions/ActionCreator';
-import {confirmDeleteRow,noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
+import {noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
 import {getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
-import {initiateDeleteRow} from '../../helpers/rowHelper';
+import {initiateDeleteRow, initiateRowDependency} from '../../helpers/rowHelper';
 
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -83,8 +83,14 @@ class RowContextMenu extends React.Component {
     }
   };
 
+  showDependency = (event) => {
+    const {row, langtag} = this.props;
+    initiateRowDependency(row, langtag);
+    this.closeRowContextMenu();
+  };
+
   render = () => {
-    const {duplicateRow, showTranslations, deleteRow, props:{t}} = this;
+    const {duplicateRow, showTranslations, deleteRow, showDependency, props:{t}} = this;
     const cssStyle = {
       left : this.state.xOffset,
       top : this.state.yOffset
@@ -94,6 +100,7 @@ class RowContextMenu extends React.Component {
       <div className="context-menu row-context-menu" style={cssStyle}>
         <a href="#" onClick={duplicateRow}>{t('duplicate_row')}</a>
         <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
+        <a href="#" onClick={showDependency}>{t('show_dependency')}</a>
         <a href="#" onClick={deleteRow}>{t('delete_row')}</a>
       </div>
     );

@@ -4,7 +4,7 @@
   "confirm_delete_row": "Zeile „{{rowName}}” wirklich löschen?",
   "delete_row": "Zeile löschen",
   "delete_row_dependent_text": "Dieser Datensatz ist bereits in folgenden Tabellen verknüpft. Die Verknüpfung wird automatisch gelöscht.",
-  "delete_row_no_dependent_rows": "Dieser Datensatz ist bisher nicht verknüpft. Sie können Ihn ohne Auswirkungen löschen.",
+  "no_dependent_text": "Dieser Datensatz ist bisher nicht verknüpft.",
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
   "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?",
@@ -13,5 +13,8 @@
   "overlay_no_rows_in_table": "Diese Tabelle ist leer.",
   "row_duplicated": "Zeile wurde dupliziert",
   "search_no_results": "Ihre Suche ergab keine Treffer.",
-  "show_translation": "Übersetzungen zeigen"
+  "show_translation": "Übersetzungen zeigen",
+  "show_dependency": "Zeige Verknüpfungen",
+  "dependencies": "Verknüpfungen",
+  "show_dependency_text": "Dieser Datensatz ist in folgenden Tabllen verknüpft."
 }

@@ -9,5 +9,7 @@
   "error": "Error",
   "no": "No",
   "save": "Save",
-  "yes": "Yes"
+  "yes": "Yes",
+  "ok": "Ok",
+  "close": "Close"
 }

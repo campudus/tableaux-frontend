@@ -4,7 +4,7 @@
   "confirm_delete_row": "Really delete row „{{rowName}}”?",
   "delete_row": "Delete row",
   "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed.",
-  "delete_row_no_dependent_rows": "Data record is not linked anyway. You can savely delete it.",
+  "no_dependent_text": "Data record is not linked anywhere.",
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
   "error_saving_cell": "The cell could not be saved. Refresh your browser now?",
@@ -13,5 +13,8 @@
   "overlay_no_rows_in_table": "This table is empty.",
   "row_duplicated": "Row has been duplicated",
   "search_no_results": "Your search delivered no results.",
-  "show_translation": "Show translation"
+  "show_translation": "Show translation",
+  "show_dependency": "Show dependencies",
+  "dependencies": "Dependencies",
+  "show_dependency_text": "This data record is linked in the following tables."
 }

@@ -1,32 +1,19 @@
 import { noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
-import { confirmDeleteRow } from '../components/overlay/ConfirmDependentOverlay.jsx';
+import { confirmDeleteRow,openShowDependency } from '../components/overlay/ConfirmDependentOverlay.jsx';
 import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from './accessManagementHelper';
 import {removeRow, closeOverlay} from '../actions/ActionCreator';
 
-export function initiateDeleteRow(row, langtag, onYes, onCancel) {
+export function initiateDeleteRow(row, langtag) {
   console.log("inside helper initiateDeleteRow");
-
   if (isUserAdmin()) {
-
-    confirmDeleteRow(
-      row,
-      langtag,
-      //onYes
-      ()=> {
-        typeof onYes == 'function' ? onYes() : null;
-        removeRow(row.tableId, row.id);
-        closeOverlay();
-      },
-      //onCancel
-      () => {
-        typeof onCancel == 'function' ? onCancel() : null;
-        closeOverlay();
-      });
-
+    confirmDeleteRow(row, langtag);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
   }
+}
 
+export function initiateRowDependency(row, langtag) {
+  openShowDependency(row, langtag);
 }
 
 
