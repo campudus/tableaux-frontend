@@ -3,6 +3,7 @@ var Dispatcher = require('../dispatcher/Dispatcher');
 var Tables = require('./Tables');
 var Column = require('./Column');
 var TableauxConstants = require('./../constants/TableauxConstants');
+const {ColumnKinds} = TableauxConstants;
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 var _ = require('lodash');
 import apiUrl from '../helpers/apiUrl';
@@ -67,7 +68,7 @@ var Cell = AmpersandModel.extend({
     isConcatCell : {
       deps : ['kind'],
       fn : function () {
-        return this.kind === 'concat';
+        return this.kind === ColumnKinds.concat;
       }
     },
 

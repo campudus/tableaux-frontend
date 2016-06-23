@@ -3,6 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 import {translate} from 'react-i18next';
 import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
 import TableauxConstants from '../../constants/TableauxConstants';
+const {ColumnKinds} = TableauxConstants;
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
@@ -25,7 +26,7 @@ var Columns = React.createClass({
     const columnDisplayName = column.displayName[language];
     const fallbackColumnDisplayName = column.displayName[TableauxConstants.FallbackLanguage] || column.name;
 
-    if (column.kind === "concat") {
+    if (column.kind === ColumnKinds.concat) {
       columnContent.push(<i key="column-icon" className="fa fa-bookmark"/>);
     } else if (column.identifier) {
       columnContent.push(<i key="column-icon" className="fa fa-bookmark-o"/>);

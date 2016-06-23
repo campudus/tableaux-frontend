@@ -1,6 +1,7 @@
 var AmpersandModel = require('ampersand-model');
-
 var apiUrl = require('../helpers/apiUrl');
+import TableauxConstants from '../constants/TableauxConstants';
+const {ColumnKinds} = TableauxConstants;
 
 var Column = AmpersandModel.extend({
   props : {
@@ -40,7 +41,7 @@ var Column = AmpersandModel.extend({
     isLink : {
       deps : ['kind'],
       fn : function () {
-        return this.kind === 'link';
+        return this.kind === ColumnKinds.link;
       }
     }
   },

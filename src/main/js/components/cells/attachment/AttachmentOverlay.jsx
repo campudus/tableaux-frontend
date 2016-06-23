@@ -6,6 +6,7 @@ var ActionCreator = require('../../../actions/ActionCreator');
 var Folder = require('../../../models/media/Folder');
 var multiLanguage = require('../../../helpers/multiLanguage');
 import TableauxConstants from '../../../constants/TableauxConstants';
+const {ColumnKinds} = TableauxConstants;
 
 var AttachmentOverlay = React.createClass({
   mixins : [AmpersandMixin],
@@ -22,7 +23,7 @@ var AttachmentOverlay = React.createClass({
   },
 
   componentWillMount : function () {
-    if (this.props.cell.column.kind !== "attachment") {
+    if (this.props.cell.column.kind !== ColumnKinds.attachment) {
       console.error("Couldn't open AttachmentOverlay for this column type.");
       return;
     }

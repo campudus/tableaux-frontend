@@ -2,6 +2,7 @@ var _ = require('lodash');
 var Moment = require('moment');
 var App = require('ampersand-app');
 import TableauxConstants from '../constants/TableauxConstants';
+const {ColumnKinds} = TableauxConstants;
 
 var NOVALUE = "– NO VALUE –";
 
@@ -40,7 +41,7 @@ var RowConcatHelper = {
       return concatColumn.concats[concatIndex];
     };
 
-    if (concatColumn.kind !== "concat") {
+    if (concatColumn.kind !== ColumnKinds.concat) {
       console.error("getRowConcatString was passed no concat column:", concatColumn);
     }
 
@@ -63,30 +64,28 @@ var RowConcatHelper = {
 
       switch (concatElementColumn.kind) {
 
-        case "shorttext":
+        case ColumnKinds.shorttext:
           appendString(getCellValueFromLanguage(concatElem));
           break;
 
-        case "text":
+        case ColumnKinds.text:
           appendString(getCellValueFromLanguage(concatElem));
           break;
 
-        case "link":
+        case ColumnKinds.link:
           var toColumn = concatElementColumn.toColumn;
           _.forEach(concatElem, function (linkElem, linkIndex) {
 
             //Check the column kind linked to
             switch (toColumn.kind) {
-              case "shorttext":
-              case "text":
+              case ColumnKinds.shorttext:
+              case ColumnKinds.text:
                 appendString(getCellValueFromLanguage(linkElem.value, toColumn));
                 break;
 
-              case "concat":
-                console.log("getRowConcatString link is kind concat:", linkElem);
-                //Recursive: when Concat column has a link as identifier which also links to another concat column
-                //var linkedTable = passedCell.tables.get(concatElementColumn.toTable);
-                //passedCell.getRowConcatString(linkedTable, toColumn, linkElem.value, langtag);
+              case ColumnKinds.concat:
+                console.warn("Todo: link is kind concat:", linkElem);
+                //TODO: Recursive: when Concat column has a link as identifier which also links to another concat column
                 break;
 
               default:
@@ -97,16 +96,16 @@ var RowConcatHelper = {
 
           break;
 
-        case "boolean":
+        case ColumnKinds.boolean:
           var boolValue = (concatElem && concatElem.displayName ? concatElementColumn.displayName[langtag] : "");
           appendString(boolValue);
           break;
 
-        case "numeric":
+        case ColumnKinds.numeric:
           appendString(getCellValueFromLanguage(concatElem));
           break;
 
-        case "datetime":
+        case ColumnKinds.datetime:
           var dateTimeValue = getCellValueFromLanguage(concatElem);
           if (!_.isEmpty(dateTimeValue)) {
             var formattedDateTimeValue = Moment(dateTimeValue, TableauxConstants.DateTimeFormats.formatForServer).format(TableauxConstants.DateTimeFormats.formatForUser);
@@ -128,7 +127,7 @@ var RowConcatHelper = {
     var defaultLangtag = TableauxConstants.DefaultLangtag;
     var rowConcatString;
 
-    if (toColumn.kind === "concat") {
+    if (toColumn.kind === ColumnKinds.concat) {
       rowConcatString = this.getRowConcatString(rowCellIdValue, toColumn, langtag);
 
       if (!internal.stringHasValue(rowConcatString)) {
