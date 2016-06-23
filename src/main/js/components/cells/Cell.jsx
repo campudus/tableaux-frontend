@@ -182,7 +182,8 @@ var Cell = React.createClass({
 
       //We just show the info starting at the fourth column
       const rowDisplayLabelElement = indexOfCell >= 3 ? (
-        <div className={rowDisplayLabelClass}><span className="content">{rowDisplayLabel}</span></div>) : null;
+        <div className={rowDisplayLabelClass}><span className="content">{langtag} | {rowDisplayLabel}</span>
+        </div>) : null;
 
       return (
         <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
