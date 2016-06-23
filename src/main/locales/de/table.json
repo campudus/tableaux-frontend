@@ -8,6 +8,7 @@
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
   "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?",
+  "fetching_dependent_rows": "Verknüpfte Datensätze werden abgefragt.",
   "jump_to_row": "Zur Zeile springen",
   "overlay_no_rows_in_table": "Diese Tabelle ist leer.",
   "row_duplicated": "Zeile wurde dupliziert",

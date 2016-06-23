@@ -74,7 +74,7 @@ export default class Spinner extends React.Component {
 
   render() {
     return (
-      <div id="Tableaux-Spinner">
+      <div className="Tableaux-Spinner">
         <ReactCSSTransitionGroup transitionName="spinner" transitionEnterTimeout={750} transitionLeaveTimeout={300}>
           {this.renderSpinner()}
         </ReactCSSTransitionGroup>

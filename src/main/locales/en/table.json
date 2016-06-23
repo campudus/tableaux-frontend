@@ -8,6 +8,7 @@
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
   "error_saving_cell": "The cell could not be saved. Refresh your browser now?",
+  "fetching_dependent_rows": "Fetching where data is linked.",
   "jump_to_row": "Jump to row",
   "overlay_no_rows_in_table": "This table is empty.",
   "row_duplicated": "Row has been duplicated",

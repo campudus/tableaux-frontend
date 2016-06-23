@@ -60,7 +60,7 @@ var Row = AmpersandModel.extend({
     console.log("this row id:", this.getId(), " this: ", this);
 
     console.log("url is:", this.url() + "/dependent");
-    request.get(this.url() + "/dependent")
+    const req = request.get(this.url() + "/dependent")
       .end((error, result) => {
           if (error) {
             console.warn("error getting row dependent from server:", error);
@@ -71,6 +71,8 @@ var Row = AmpersandModel.extend({
           }
         }
       );
+
+    return req;
   },
 
   parse : function (attrs, options) {
