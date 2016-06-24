@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Dispatcher from '../../../dispatcher/Dispatcher';
 import {getCountryOfLangtag, getCurrencyCode} from '../../../helpers/multiLanguage';
+import CurrencyEditCell from './CurrencyCell';
 
 
 export default class CurrencyCell extends React.Component {
@@ -68,13 +69,14 @@ export default class CurrencyCell extends React.Component {
   }
 
   render() {
-    const {selected, langtag, editing, cell, seltCellKeyboardShortcuts} = this.props;
+    const {selected, langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
     const currencyObj = cell.value;
     const country = this.convertLangToCountry(langtag);
     let currencyCellMarkup;
 
     if (selected) {
-      currencyCellMarkup = "Selected";
+      currencyCellMarkup =
+        <CurrencyEditCell currencies={currencyObj} setCellKeyboardShortcuts={setCellKeyboardShortcuts}/>;
 
 
       /*return <LinkEditCell cell={self.props.cell} langtag={self.props.langtag}
