@@ -1,25 +1,38 @@
-var React = require('react');
-var _ = require('lodash');
-var LinkOverlay = require('./LinkOverlay.jsx');
-var LinkLabelCell = require('./LinkLabelCell.jsx');
-var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+import React from 'react';
+import _ from  'lodash';
+import OverlayHeadRowIdentificator from '../../overlay/OverlayHeadRowIdentificator.jsx';
+import ActionCreator from'../../../actions/ActionCreator';
+import CurrencyRow from './CurrencyRow';
+import listensToClickOutside from 'react-onclickoutside/decorator';
+import {getCurrencyWithCountry} from './currencyHelper';
 
+@listensToClickOutside()
 export default class CurrencyEditCell extends React.Component {
 
   static propTypes = {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    editing : React.PropTypes.bool.isRequired,
+    currencies : React.PropTypes.object.isRequired,
     setCellKeyboardShortcuts : React.PropTypes.func
   };
 
   componentDidMount() {
     this.props.setCellKeyboardShortcuts({
+
+      always : (event) => {
+        event.stopPropagation();
+      },
+
       enter : (event) => {
         //stop handling the Table events
-        event.stopPropagation();
+        //event.stopPropagation();
         event.preventDefault();
+      },
+      tab : (event) => {
+        //event.stopPropagation();
+      },
+      escape : (event) => {
+        this.saveAndExit();
       }
     });
   }
@@ -31,22 +44,31 @@ export default class CurrencyEditCell extends React.Component {
     this.props.setCellKeyboardShortcuts({});
   }
 
+  saveAndExit() {
+    ActionCreator.toggleCellEditing(false);
+  }
+
+  handleClickOutside = (event) => {
+    this.saveAndExit();
+  };
+
 
   render() {
-    var self = this;
-    var links = self.props.cell.value.map(function (element, index) {
+    const {cell,currencies,langtag} = this.props;
+    const {column} = cell;
+    const {countryCodes} = column;
 
+    console.log("currencyEditcell currencies: ", currencies, "countryCodes:", countryCodes);
 
-      return <LinkLabelCell key={element.id} deletable={true} linkElement={element}
-                            cell={self.props.cell} langtag={self.props.langtag} onDelete={self.removeLink}
-                            linkIndexAt={index}/>;
+    const currencyRows = countryCodes.map((countryCode, index) => {
+      const currencyValue = getCurrencyWithCountry(currencies, countryCode);
+      //console.log("currencyValue:", currencyValue, "countryCode:", countryCode);
+      return <CurrencyRow key={index} country={countryCode} countryCurrencyValue={currencyValue}/>;
     });
 
-    links.push(<button key={"add-btn"} className="add" onClick={self.openOverlay}>+</button>);
-
     return (
-      <div className={'cell-content'}>
-        {links}
+      <div className="cell-currency-rows">
+        {currencyRows}
       </div>
     );
   }

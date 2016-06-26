@@ -2,7 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import Dispatcher from '../../../dispatcher/Dispatcher';
 import {getCountryOfLangtag, getCurrencyCode} from '../../../helpers/multiLanguage';
-import CurrencyEditCell from './CurrencyCell';
+import CurrencyEditCell from './CurrencyEditCell';
+import {getCurrencyWithCountry, splitPriceDecimals} from './currencyHelper';
 
 
 export default class CurrencyCell extends React.Component {
@@ -19,29 +20,14 @@ export default class CurrencyCell extends React.Component {
     super(props);
   }
 
-  convertLangToCountry(langtag) {
-    const country = getCountryOfLangtag(langtag);
-    console.log("country is:", country, "langtag was:", langtag);
-    return country;
+  scrollHandler(event) {
+    //prevents the table scroll event
+    event.stopPropagation();
   }
-
-  getCurrencyWithCountry(currencyObj, country) {
-    console.log("inside getCurrency:", currencyObj, country);
-    return currencyObj[country] || null;
-  }
-
-  splitPriceDecimals(priceValue) {
-    if (!_.isFinite(priceValue)) {
-      return ["0", "00"];
-    }
-    let priceValueAsArray = String(priceValue).split(".");
-    priceValueAsArray.length === 1 ? priceValueAsArray.push("00") : null;
-    return priceValueAsArray;
-  };
 
   renderPrice(currencyObj, country) {
-    const currencyValue = this.getCurrencyWithCountry(currencyObj, country);
-    const splittedValueAsString = this.splitPriceDecimals(currencyValue);
+    const currencyValue = getCurrencyWithCountry(currencyObj, country);
+    const splittedValueAsString = splitPriceDecimals(currencyValue);
     const currencyCode = getCurrencyCode(country);
 
     if (!currencyCode) {
@@ -71,26 +57,18 @@ export default class CurrencyCell extends React.Component {
   render() {
     const {selected, langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
     const currencyObj = cell.value;
-    const country = this.convertLangToCountry(langtag);
+    const country = getCountryOfLangtag(langtag);
     let currencyCellMarkup;
 
-    if (selected) {
-      currencyCellMarkup =
-        <CurrencyEditCell currencies={currencyObj} setCellKeyboardShortcuts={setCellKeyboardShortcuts}/>;
-
-
-      /*return <LinkEditCell cell={self.props.cell} langtag={self.props.langtag}
-       editing={self.props.editing}
-       setCellKeyboardShortcuts={self.props.setCellKeyboardShortcuts}></LinkEditCell>*/
-
+    if (editing) {
+      currencyCellMarkup = <CurrencyEditCell currencies={currencyObj} cell={cell} langtag={langtag}
+                                             setCellKeyboardShortcuts={setCellKeyboardShortcuts}/>;
     } else {
-      //Try to convert current language to country
-      this.convertLangToCountry(langtag);
       currencyCellMarkup = this.renderPrice(currencyObj, country);
     }
 
     return (
-      <div className={'cell-content'}>
+      <div className="cell-content" onScroll={this.scrollHandler}>
         {currencyCellMarkup}
       </div>
     );

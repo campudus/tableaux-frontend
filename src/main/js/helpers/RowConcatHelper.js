@@ -84,7 +84,7 @@ var RowConcatHelper = {
                 break;
 
               case ColumnKinds.concat:
-                console.warn("Todo: link is kind concat:", linkElem);
+                //console.warn("Todo: link is kind concat:", linkElem);
                 //TODO: Recursive: when Concat column has a link as identifier which also links to another concat column
                 break;
 

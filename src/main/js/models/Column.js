@@ -25,6 +25,14 @@ var Column = AmpersandModel.extend({
     description : {
       type : 'object',
       default : null
+    },
+    languageType : {
+      type : 'string',
+      default : null
+    },
+    countryCodes : {
+      type : 'array',
+      default : null
     }
   },
 

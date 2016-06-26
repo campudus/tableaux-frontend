@@ -119,7 +119,6 @@ var TableauxConstant = {
   FallbackLanguage : 'en',
 
   initLangtags : (langtags) => {
-    console.log("setting langtags from server:", langtags);
     languagetags = langtags;
   }
 

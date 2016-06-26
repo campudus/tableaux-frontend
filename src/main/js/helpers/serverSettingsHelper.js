@@ -8,7 +8,6 @@ export function getAllLangtagsFromServer(onError, onOk) {
           console.warn("error fetching langtags from server:", error);
           onError(error);
         } else {
-          console.log("server settings response:", result);
           onOk(result.body.value);
         }
       }

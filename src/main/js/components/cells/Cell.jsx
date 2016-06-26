@@ -161,7 +161,7 @@ var Cell = React.createClass({
 
       case ColumnKinds.currency:
         cellKind = <CurrencyCell cell={this.props.cell} langtag={langtag} selected={selected}
-                                 editing={editing}/>;
+                                 editing={editing} setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
 

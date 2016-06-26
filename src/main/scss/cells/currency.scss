@@ -1,0 +1,79 @@
+$countryWidth: 50px;
+$currencyWidth: 50px;
+
+.cell-currency {
+
+  &.editing .cell-content {
+    padding: 0 !important;
+  }
+
+  .currency-row {
+    position: relative;
+    height: $space-height-cell;
+    border-bottom: 1px solid $color-border-grey;
+    line-height: $space-height-cell;
+
+    .country-code,
+    .currency-value,
+    .currency-code {
+      position: absolute;
+      top: 0;
+      height: 100%;
+    }
+
+    .country-code {
+      width: $countryWidth;
+      text-align: center;
+
+      .langtag {
+        line-height: 1;
+        vertical-align: middle;
+        display: inline-block;
+      }
+
+      .langtag-label {
+        display: block;
+      }
+    }
+
+    .currency-value {
+      padding: 0 20px;
+      left: $countryWidth;
+      right: $currencyWidth;
+      border-left: 1px solid $color-border-grey;
+      border-right: 1px solid $color-border-grey;
+      white-space: nowrap;
+    }
+
+    .currency-code {
+      width: $currencyWidth;
+      right: 0;
+      text-align: center;
+    }
+
+    .currency-input {
+      display: inline-block;
+      width: 70px;
+      font-size: $font-size-standard;
+
+      &:focus {
+        border-bottom: 1px solid $color-primary;
+      }
+
+      &.integer {
+        text-align: right;
+      }
+
+      &.decimals {
+        color: $color-text-medium-grey
+      }
+    }
+
+    .delimiter {
+      display: inline;
+      color: $color-text-medium-grey;
+    }
+
+  }
+
+}

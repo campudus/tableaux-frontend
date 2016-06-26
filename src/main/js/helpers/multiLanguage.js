@@ -57,7 +57,9 @@ function getCurrencyCode(country) {
     IT : "EUR",
     PL : "EUR",
     NL : "EUR",
-    ES : "EUR"
+    ES : "EUR",
+    AT : "EUR",
+    CH : "SFR"
   };
   return currencyCodeMap[country] || null;
 }
@@ -68,6 +70,7 @@ function getCountryOfLangtag(langtag) {
   const splittedLangtag = langtag.split(/-|_/);
   return splittedLangtag.length > 1 ? splittedLangtag[1] : String(splittedLangtag[0]).toUpperCase();
 }
+
 
 function getLanguageOfLangtag(langtag) {
   return langtag.split(/-|_/)[0];
