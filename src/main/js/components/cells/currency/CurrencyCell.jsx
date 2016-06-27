@@ -1,11 +1,17 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import Dispatcher from '../../../dispatcher/Dispatcher';
 import {getCountryOfLangtag, getCurrencyCode} from '../../../helpers/multiLanguage';
 import CurrencyEditCell from './CurrencyEditCell';
+import ActionCreator from'../../../actions/ActionCreator';
 import {getCurrencyWithCountry, splitPriceDecimals} from './currencyHelper';
+import listensToClickOutside from 'react-onclickoutside/decorator';
+import {translate} from 'react-i18next';
 
+const CurrencyEditCellWithClickOutside = listensToClickOutside(CurrencyEditCell);
 
+@translate(['table'])
 export default class CurrencyCell extends React.Component {
 
   static propTypes = {
@@ -16,6 +22,12 @@ export default class CurrencyCell extends React.Component {
     setCellKeyboardShortcuts : React.PropTypes.func
   };
 
+  CurrencyCellDOMNode = null;
+
+  componentDidMount() {
+    this.CurrencyCellDOMNode = ReactDOM.findDOMNode(this);
+  }
+
   constructor(props) {
     super(props);
   }
@@ -25,16 +37,32 @@ export default class CurrencyCell extends React.Component {
     event.stopPropagation();
   }
 
-  renderPrice(currencyObj, country) {
-    const currencyValue = getCurrencyWithCountry(currencyObj, country);
+  saveCurrencyCell = (valuesToSave) => {
+    console.log("----> i want to save currency values: ", valuesToSave);
+    ActionCreator.changeCell(this.props.cell, valuesToSave);
+  }
+
+  exitCurrencyCell = () => {
+    console.log("exiting cell");
+    ActionCreator.toggleCellEditing(false);
+  }
+
+  handleClickOutside = (event) => {
+    //prevents from closing editCell when clicking on the scrollbar on windows
+    if (!this.CurrencyCellDOMNode.contains(event.target)) {
+      this.exitCurrencyCell();
+    }
+  };
+
+  renderPrice(currencyValues, country) {
+    const currencyValue = getCurrencyWithCountry(currencyValues, country);
     const splittedValueAsString = splitPriceDecimals(currencyValue);
     const currencyCode = getCurrencyCode(country);
-
+    const {langtag, t} = this.props;
     if (!currencyCode) {
-      console.log("currencyCode is not country:", currencyCode);
       return (
         <div className="currency-wrapper">
-          <span className="currency-no-country">unknown</span>
+          <span className="currency-no-country">{t('error_language_is_no_country', {langtag : langtag})}</span>
         </div>
       );
     }
@@ -56,15 +84,20 @@ export default class CurrencyCell extends React.Component {
 
   render() {
     const {selected, langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
-    const currencyObj = cell.value;
+    const currencyValues = cell.value;
     const country = getCountryOfLangtag(langtag);
     let currencyCellMarkup;
 
     if (editing) {
-      currencyCellMarkup = <CurrencyEditCell currencies={currencyObj} cell={cell} langtag={langtag}
-                                             setCellKeyboardShortcuts={setCellKeyboardShortcuts}/>;
+      currencyCellMarkup = <CurrencyEditCellWithClickOutside
+        currencies={currencyValues} cell={cell}
+        setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+        onClickOutside={this.handleClickOutside}
+        saveCell={this.saveCurrencyCell}
+        exitCell={this.exitCurrencyCell}
+      />;
     } else {
-      currencyCellMarkup = this.renderPrice(currencyObj, country);
+      currencyCellMarkup = this.renderPrice(currencyValues, country);
     }
 
     return (

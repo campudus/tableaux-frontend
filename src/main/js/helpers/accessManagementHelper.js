@@ -6,18 +6,42 @@ import TableauxConstants from '../constants/TableauxConstants';
 //Just for development
 export function initDevelopmentAccessCookies() {
   if (process.env.NODE_ENV != 'production') {
-    Cookies.set('userAdmin', true);
-    Cookies.set('userLangtagsAccess', ['en']);
+    Cookies.set('userAdmin', false);
+    Cookies.set('userLangtagsAccess', ['en', 'fr']);
+    Cookies.set('userCountryCodesAccess', ['GB', 'FR']);
   }
 }
 
-//TODO: Read from local storage
 export function getUserLanguageAccess() {
   if (isUserAdmin()) {
     return TableauxConstants.Langtags;
   } else {
     return Cookies.getJSON('userLangtagsAccess') || [];
   }
+}
+
+export function getUserCountryCodesAccess() {
+  if (isUserAdmin()) {
+    return []; // there's no "all available country codes" because it's bound to a column
+  } else {
+    return Cookies.getJSON('userCountryCodesAccess') || [];
+  }
+}
+
+export function hasUserAccessToCountryCode(countryCode) {
+  if (isUserAdmin()) {
+    return true;
+  }
+
+  if (_.isString(countryCode)) {
+    const userCountryCodes = getUserCountryCodesAccess();
+    return (userCountryCodes && userCountryCodes.length > 0) ?
+    userCountryCodes.indexOf(countryCode) > -1 : false;
+  } else {
+    console.error("hasUserAccessToCountryCode() has been called with unknown parameter countryCode:", countryCode);
+    return false;
+  }
+
 }
 
 export function isUserAdmin() {
@@ -35,8 +59,9 @@ export function hasUserAccessToLanguage(langtag) {
   }
 
   if (_.isString(langtag)) {
-    return (getUserLanguageAccess() && getUserLanguageAccess().length > 0) ?
-    getUserLanguageAccess().indexOf(langtag) > -1 : false;
+    const userLanguages = getUserLanguageAccess();
+    return (userLanguages && userLanguages.length > 0) ?
+    userLanguages.indexOf(langtag) > -1 : false;
   } else {
     console.error("hasUserAccessToLanguage() has been called with unknown parameter langtag:", langtag);
     return false;
@@ -64,7 +89,8 @@ export function canUserChangeCell(cell) {
       cell.kind === ColumnKinds.richtext ||
       cell.kind === ColumnKinds.numeric ||
       cell.kind === ColumnKinds.boolean ||
-      cell.kind === ColumnKinds.datetime
+      cell.kind === ColumnKinds.datetime ||
+      cell.kind === ColumnKinds.currency
     )) {
     return true;
   } else {
@@ -74,12 +100,20 @@ export function canUserChangeCell(cell) {
 
 //Reduce the value object before sending to server, so that just allowed languages gets sent
 export function reduceValuesToAllowedLanguages(valueToChange) {
-
   console.log("valueToChange:", valueToChange);
   if (isUserAdmin()) {
     return valueToChange;
   } else {
     return {value : _.pick(valueToChange.value, getUserLanguageAccess())};
+  }
+}
+
+//Reduce the value object before sending to server, so that just allowed countries gets sent
+export function reduceValuesToAllowedCountries(valueToChange) {
+  if (isUserAdmin()) {
+    return valueToChange;
+  } else {
+    return {value : _.pick(valueToChange.value, getUserCountryCodesAccess())};
   }
 }
 

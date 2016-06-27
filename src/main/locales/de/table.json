@@ -8,6 +8,7 @@
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
   "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?",
+  "error_language_is_no_country": "„{{langtag}}” ist kein Land.",
   "fetching_dependent_rows": "Verknüpfte Datensätze werden abgefragt.",
   "jump_to_row": "Zur Zeile springen",
   "overlay_no_rows_in_table": "Diese Tabelle ist leer.",
@@ -16,5 +17,6 @@
   "show_translation": "Übersetzungen zeigen",
   "show_dependency": "Zeige Verknüpfungen",
   "dependencies": "Verknüpfungen",
-  "show_dependency_text": "Dieser Datensatz ist in folgenden Tabllen verknüpft."
+  "show_dependency_text": "Dieser Datensatz ist in folgenden Tabllen verknüpft.",
+  "country": "Land"
 }

@@ -94,6 +94,10 @@ var TableauxConstant = {
     currency : null
   }),
 
+  LanguageType : keyMirror({
+    country : null,
+  }),
+
   ViewNames : keyMirror({
     'TABLE_VIEW' : null,
     'MEDIA_VIEW' : null

@@ -59,7 +59,7 @@ export function confirmDeleteFolder(folderName, onYes, onNo) {
   });
 }
 
-export function noPermissionAlertWithLanguage(allowedLangtags) {
+export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries) {
   let totalError,
     confirmationOverlay,
     onOk = () => {
@@ -67,7 +67,15 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
     },
     userError = `${i18n.t('common:access_management.no_permission_saving_language_description')}:`;
 
-  let allowedLangtagsMarkup;
+  let allowedLangtagsMarkup, allowedCountriesMarkup;
+  const allowedLanguagesLabel = <span>{i18n.t('common:access_management.languages')}:</span>;
+  const allowedCountriesLabel = <span>{i18n.t('common:access_management.countries')}:</span>;
+
+  if (allowedCountries && allowedCountries.length > 0) {
+    allowedCountriesMarkup = allowedCountries.map((country, idx)=> <span key={idx}>{country}</span>);
+  } else {
+    allowedCountriesMarkup = i18n.t('common:access_management.language_array_empty');
+  }
 
   if (allowedLangtags && allowedLangtags.length > 0) {
     allowedLangtagsMarkup = allowedLangtags.map((langtag, idx)=> <span key={idx}>{langtag}</span>);
@@ -76,7 +84,14 @@ export function noPermissionAlertWithLanguage(allowedLangtags) {
   }
 
   totalError =
-    <div><p>{userError}</p><p><strong className="allowed-languages">{allowedLangtagsMarkup}</strong></p></div>;
+    <div><p>{userError}</p><p>
+      <strong
+        className="allowed-languages">{allowedLangtagsMarkup ? allowedLanguagesLabel : null}<span
+        className="allowedValues">{allowedLangtagsMarkup}</span> </strong>
+      <strong
+        className="allowed-countries">{allowedLangtagsMarkup ? allowedCountriesLabel : null}<span
+        className="allowedValues">{allowedCountriesMarkup}</span></strong>
+    </p></div>;
   confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk} autoFocus={false}/>;
 
   openOverlay({

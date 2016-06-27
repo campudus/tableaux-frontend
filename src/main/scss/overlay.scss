@@ -318,16 +318,28 @@ $overlay-headline-height: 50px;
     }
   }
 
-  .allowed-languages {
-    span {
-      font-weight: bold;
+  .allowed-languages, .allowed-countries {
+    display: block;
+
+    .allowedValues {
       display: inline-block;
-      margin: 0 0.2em;
-      &:after {
-        content: ",";
-      }
-      &:last-child:after {
-        content: "";
+      margin-left: 5px;
+
+      span {
+        font-weight: bold;
+        display: inline-block;
+        margin: 0 0.2em;
+
+        &:first-child {
+          margin-left: 0;
+        }
+
+        &:after {
+          content: ",";
+        }
+        &:last-child:after {
+          content: "";
+        }
       }
     }
   }

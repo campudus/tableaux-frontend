@@ -1,10 +1,21 @@
 $countryWidth: 50px;
 $currencyWidth: 50px;
 
-.cell-currency {
+.cell.cell-currency {
+
+  .currency-code {
+    display: inline-block;
+    margin-left: 5px;
+  }
+
+  .currency-no-country {
+    color: $color-text-medium-grey;
+  }
 
   &.editing .cell-content {
-    padding: 0 !important;
+    padding: 0;
+    background-color: white;
+    box-shadow: none;
   }
 
   .currency-row {
@@ -49,6 +60,7 @@ $currencyWidth: 50px;
       width: $currencyWidth;
       right: 0;
       text-align: center;
+      background-color: $color-background-very-light-grey;
     }
 
     .currency-input {

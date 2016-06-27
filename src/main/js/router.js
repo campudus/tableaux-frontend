@@ -14,7 +14,8 @@ export let currentLangtag = null;
 var TableauxRouter = Router.extend({
   routes : {
     '' : 'noTableAndLangtag',
-
+    ':langtag/' : 'noTableAndLangtag',
+    ':langtag' : 'noTableAndLangtag',
     'table' : 'noTableAndLangtag',
     ':langtag/table' : 'noTable',
 
@@ -94,9 +95,11 @@ var TableauxRouter = Router.extend({
     //TODO show error to user
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
       console.error("path param 'tableid' is not valid");
+      this.noTableAndLangtag();
       return;
     } else if (typeof langtag === 'undefined' || TableauxConstants.Langtags.indexOf(langtag) === -1) {
       console.error("path param 'langtag' is not valid");
+      this.noTableAndLangtag();
       return;
     }
 

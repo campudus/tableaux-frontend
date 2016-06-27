@@ -25,6 +25,7 @@ var Columns = React.createClass({
     const language = getLanguageOfLangtag(langtag);
     const columnDisplayName = column.displayName[language];
     const fallbackColumnDisplayName = column.displayName[TableauxConstants.FallbackLanguage] || column.name;
+    let columnIcon = null;
 
     if (column.kind === ColumnKinds.concat) {
       columnContent.push(<i key="column-icon" className="fa fa-bookmark"/>);
@@ -40,7 +41,13 @@ var Columns = React.createClass({
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
-    return <div className="column-head" key={index}>{columnContent}</div>
+
+    if (column.languageType && column.languageType === TableauxConstants.LanguageType.country) {
+      columnIcon = <span className="column-kind-icon"><i className="fa fa-globe"/><span
+        className="label">{t('country')}</span></span>;
+    }
+
+    return <div className="column-head" key={index}>{columnContent}{columnIcon}</div>
   },
 
   render() {

@@ -1,60 +1,77 @@
 import React from 'react';
 import _ from  'lodash';
 import OverlayHeadRowIdentificator from '../../overlay/OverlayHeadRowIdentificator.jsx';
-import ActionCreator from'../../../actions/ActionCreator';
 import CurrencyRow from './CurrencyRow';
-import listensToClickOutside from 'react-onclickoutside/decorator';
 import {getCurrencyWithCountry} from './currencyHelper';
 
-@listensToClickOutside()
+
 export default class CurrencyEditCell extends React.Component {
+
+  //holds all the ref names of the currency row children
+  currencyRowNames = null;
 
   static propTypes = {
     cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
     currencies : React.PropTypes.object.isRequired,
-    setCellKeyboardShortcuts : React.PropTypes.func
+    saveCell : React.PropTypes.func.isRequired,
+    exitCell : React.PropTypes.func.isRequired,
+    onClickOutside : React.PropTypes.func.isRequired,
+    setCellKeyboardShortcuts : React.PropTypes.func.isRequired
   };
 
   componentDidMount() {
+    this.buildCurrencyRowRefNames();
     this.props.setCellKeyboardShortcuts({
-
       always : (event) => {
         event.stopPropagation();
       },
-
       enter : (event) => {
-        //stop handling the Table events
-        //event.stopPropagation();
         event.preventDefault();
-      },
-      tab : (event) => {
-        //event.stopPropagation();
+        console.log("hitting enter");
+        this.props.exitCell();
       },
       escape : (event) => {
-        this.saveAndExit();
+        event.preventDefault();
+        this.props.exitCell();
       }
     });
   }
 
-  componentWillUnmount() {
-    console.log("CurrencyCell will unmount, save changes");
+  saveCell = () => {
+    let valuesToSave = {};
+    _.forEach(this.currencyRowNames, (refName) => {
+      const currencyRowValue = this.refs[refName].saveThisCurrency();
+      if (currencyRowValue !== null) {
+        _.assign(valuesToSave, currencyRowValue);
+      }
+    });
 
+    if (!_.isEmpty(valuesToSave)) {
+      this.props.saveCell(valuesToSave);
+    }
+  }
+
+  componentWillUnmount() {
     //Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
+    //call every save method of childs
+    this.saveCell();
   }
 
-  saveAndExit() {
-    ActionCreator.toggleCellEditing(false);
+  buildCurrencyRowRefNames() {
+    const countryCodes = this.props.cell.column.countryCodes;
+    this.currencyRowNames = [];
+    _.forEach(countryCodes, (countryCode, index)=> {
+      this.currencyRowNames.push(this.getCurrencyRowName(countryCode));
+    });
   }
 
-  handleClickOutside = (event) => {
-    this.saveAndExit();
-  };
-
+  getCurrencyRowName(countryCode) {
+    return "currency-" + countryCode;
+  }
 
   render() {
-    const {cell,currencies,langtag} = this.props;
+    const {cell,currencies} = this.props;
     const {column} = cell;
     const {countryCodes} = column;
 
@@ -62,8 +79,8 @@ export default class CurrencyEditCell extends React.Component {
 
     const currencyRows = countryCodes.map((countryCode, index) => {
       const currencyValue = getCurrencyWithCountry(currencies, countryCode);
-      //console.log("currencyValue:", currencyValue, "countryCode:", countryCode);
-      return <CurrencyRow key={index} country={countryCode} countryCurrencyValue={currencyValue}/>;
+      return <CurrencyRow ref={this.getCurrencyRowName(countryCode)} key={index} country={countryCode}
+                          countryCurrencyValue={currencyValue}/>;
     });
 
     return (

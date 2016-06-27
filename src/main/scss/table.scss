@@ -83,6 +83,18 @@
       margin-right: 10px;
     }
 
+    .column-kind-icon {
+      i {
+        margin-right: 5px;
+      }
+      float: right;
+      color: $color-text-medium-grey;
+      .label {
+        font-size: 10px;
+        vertical-align: top;
+      }
+    }
+
   }
 
   .heading, .row {

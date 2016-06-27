@@ -59,6 +59,12 @@ var Cell = AmpersandModel.extend({
         return this.column.identifier;
       }
     },
+    isMultiCountry : {
+      deps : ['column'],
+      fn : function () {
+        return this.column.languageType === "country";
+      }
+    },
     kind : {
       deps : ['column'],
       fn : function () {

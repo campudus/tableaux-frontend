@@ -8,6 +8,7 @@
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
   "error_saving_cell": "The cell could not be saved. Refresh your browser now?",
+  "error_language_is_no_country": "„{{langtag}}” is no country",
   "fetching_dependent_rows": "Fetching where data is linked.",
   "jump_to_row": "Jump to row",
   "overlay_no_rows_in_table": "This table is empty.",
@@ -16,5 +17,6 @@
   "show_translation": "Show translation",
   "show_dependency": "Show dependencies",
   "dependencies": "Dependencies",
-  "show_dependency_text": "This data record is linked in the following tables."
+  "show_dependency_text": "This data record is linked in the following tables.",
+  "country": "Country"
 }

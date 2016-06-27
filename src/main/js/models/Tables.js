@@ -6,7 +6,8 @@ import { ActionTypes } from '../constants/TableauxConstants';
 import ActionCreator from '../actions/ActionCreator';
 import Row from './Row';
 import { cellModelSavingError,noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
-import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from '../helpers/accessManagementHelper';
+import { getUserLanguageAccess, getUserCountryCodesAccess, canUserChangeCell, reduceValuesToAllowedLanguages,
+  reduceValuesToAllowedCountries, isUserAdmin } from '../helpers/accessManagementHelper';
 
 var Tables = Collection.extend({
   model : Table,
@@ -74,13 +75,21 @@ var Tables = Collection.extend({
           noPermissionAlertWithLanguage(getUserLanguageAccess());
           return;
         } else {
-          //reduce values to send just authorized language values to server
-          newValue = reduceValuesToAllowedLanguages(newValue);
-          console.log("reduced newValue after limitValueToAllowedLanguages():", newValue);
-          if (_.isEmpty(newValue.value)) {
-            //The user tried to change a multilanguage cell without language permission
-            noPermissionAlertWithLanguage(getUserLanguageAccess());
-            return;
+          if (cell.isMultiCountry) {
+            newValue = reduceValuesToAllowedCountries(newValue);
+            if (_.isEmpty(newValue.value)) {
+              //The user tried to change a multilanguage cell without language permission
+              noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
+              return;
+            }
+          } else {
+            //reduce values to send just authorized language values to server
+            newValue = reduceValuesToAllowedLanguages(newValue);
+            if (_.isEmpty(newValue.value)) {
+              //The user tried to change a multilanguage cell without language permission
+              noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
+              return;
+            }
           }
         }
       }

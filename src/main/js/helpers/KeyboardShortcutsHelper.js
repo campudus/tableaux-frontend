@@ -76,11 +76,11 @@ function _onKeyboardShortcut(event, keyboardShortcutsFn) {
   }
 }
 
-function isNavigation(k) {
+export function isNavigation(k) {
   return (k === KEYS.left || k === KEYS.right || k === KEYS.down || k === KEYS.up || k === KEYS.escape || k === KEYS.tab);
 }
 
-function isText(k) {
+export function isText(k) {
   /**
    * Cheat Sheet for most important letters in german
    * 32 - 126 key "!" - "~"
@@ -92,6 +92,32 @@ function isText(k) {
   return ((k >= 32 && k <= 126) || k === 225 || k === 132 || k === 148 || k === 129 || k === 142 || k === 153
   || k === 154 || k === 188 || k === 190 || k === 186);
 }
+
+export function isNumber(k) {
+  return (48 <= k && k <= 57) || (96 <= k && k <= 105);
+}
+
+export function isUsefulInputControls(event) {
+  const k = event.keyCode;
+  const ctrlKey = event.ctrlKey;
+  return (
+    //backspace
+    k === 8 ||
+      //entf
+    k === 46 ||
+      //ctrl + a
+    (k === 65 && ctrlKey) ||
+      //ctrl +c
+    (k === 67 && ctrlKey) ||
+      //ctrl + x
+    (k === 88 && ctrlKey)
+  );
+}
+
+export function isAllowedForNumberInput(event) {
+  return isNumber(event.keyCode) || isNavigation(event.keyCode) || isUsefulInputControls(event);
+}
+
 
 /*  For use later
  isKeyCodeCommaOrDot : function (keyEvent) {
