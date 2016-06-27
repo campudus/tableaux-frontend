@@ -40,6 +40,11 @@ var Columns = React.createClass({
       name = typeof columnDisplayName === "undefined" ? fallbackColumnDisplayName : columnDisplayName;
     }
 
+    if (column.kind === ColumnKinds.link) {
+      name =
+        <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name} <i className="fa fa-external-link"/></a>;
+    }
+
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
 
     if (column.languageType && column.languageType === TableauxConstants.LanguageType.country) {

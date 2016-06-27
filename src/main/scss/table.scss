@@ -78,9 +78,27 @@
 
   .column-head {
     border-right: 1px solid $color-border-grey;
+    overflow: hidden;
+    white-space: nowrap;
+
+    a {
+      border: 1px solid #dfdfdf;
+      border-radius: 3px;
+      padding: 3px 10px;
+      vertical-align: middle;
+
+      i {
+        margin-left: 5px;
+        padding: 0;
+        margin-right: 0;
+        color: $color-text-light-grey;
+      }
+
+    }
 
     i {
       margin-right: 10px;
+      vertical-align: middle;
     }
 
     .column-kind-icon {
