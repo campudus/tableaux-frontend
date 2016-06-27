@@ -99,6 +99,7 @@ export function isNumber(k) {
 
 export function isUsefulInputControls(event) {
   const k = event.keyCode;
+  console.log("key:", k);
   const ctrlKey = event.ctrlKey;
   return (
     //backspace
@@ -110,7 +111,9 @@ export function isUsefulInputControls(event) {
       //ctrl +c
     (k === 67 && ctrlKey) ||
       //ctrl + x
-    (k === 88 && ctrlKey)
+    (k === 88 && ctrlKey) ||
+      //ctrl + v
+    (k === 86 && ctrlKey)
   );
 }
 
