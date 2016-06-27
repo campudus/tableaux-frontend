@@ -3,6 +3,11 @@ $currencyWidth: 50px;
 
 .cell.cell-currency {
 
+  .open-country {
+    margin-left: 10px;
+    display: inline-block;
+  }
+
   .currency-code {
     display: inline-block;
     margin-left: 5px;

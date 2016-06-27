@@ -62,7 +62,8 @@ export default class CurrencyCell extends React.Component {
     if (!currencyCode) {
       return (
         <div className="currency-wrapper">
-          <span className="currency-no-country">{t('error_language_is_no_country', {langtag : langtag})}</span>
+          <span className="currency-no-country">{t('error_language_is_no_country')} <i
+            className="open-country fa fa-angle-down"/></span>
         </div>
       );
     }
@@ -77,7 +78,9 @@ export default class CurrencyCell extends React.Component {
         </span>
       <span
         className="currency-code">{currencyCode}</span>
+        <i className="open-country fa fa-angle-down"/>
       </div>
+
     );
 
   }
