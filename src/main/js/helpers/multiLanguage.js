@@ -38,7 +38,7 @@ function getLanguageOrCountryIcon(langtag) {
     country = langtagSplitted[1];
   }
   countryOrLanguage = country ? country : language;
-  icon = countryOrLanguage + ".png";
+  icon = countryOrLanguage.toLowerCase() + ".png";
 
   return (
     <span className="langtag">
