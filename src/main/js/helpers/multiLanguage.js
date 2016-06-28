@@ -59,7 +59,8 @@ function getCurrencyCode(country) {
     NL : "EUR",
     ES : "EUR",
     AT : "EUR",
-    CH : "SFR"
+    CH : "SFR",
+    CZ : "CZK"
   };
   return currencyCodeMap[country] || null;
 }
