@@ -18,7 +18,8 @@ var internal = {
 
 var RowConcatHelper = {
 
-  getRowConcatString : function (concatArray, concatColumn, langtag) {
+  //can be called with optional defaultLangtag to get fallback value
+  getRowConcatString : function (concatArray, concatColumn, langtag, defaultLangtag) {
     var concatStringArray = [];
     var finalString;
 
@@ -56,7 +57,7 @@ var RowConcatHelper = {
           explicitColumn = concatElementColumn;
         }
         if (explicitColumn.multilanguage) {
-          return cellValue[langtag] || ""; // maps undefined to empty string
+          return cellValue[langtag] || defaultLangtag ? cellValue[defaultLangtag] : ""; // maps undefined to empty string
         } else {
           return cellValue || "";
         }
@@ -128,7 +129,7 @@ var RowConcatHelper = {
     var rowConcatString;
 
     if (toColumn.kind === ColumnKinds.concat) {
-      rowConcatString = this.getRowConcatString(rowCellIdValue, toColumn, langtag);
+      rowConcatString = this.getRowConcatString(rowCellIdValue, toColumn, langtag, defaultLangtag);
 
       if (!internal.stringHasValue(rowConcatString)) {
         if (defaultLangtag !== langtag) {
