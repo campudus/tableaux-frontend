@@ -1,6 +1,5 @@
 var React = require('react');
 var RowConcatHelper = require('../../helpers/RowConcatHelper');
-var App = require('ampersand-app');
 var ActionCreator = require('../../actions/ActionCreator');
 
 
@@ -12,16 +11,6 @@ var OverlayHeadRowIdentificator = React.createClass({
   },
 
   rowIdentifierString : "",
-
-  handleTableSwitchClicked : function (e) {
-    //allow ctrl click to follow the link just in new window
-    if (!e.ctrlKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      ActionCreator.closeOverlay();
-      ActionCreator.switchTable(this.props.cell.column.toTable, this.props.langtag);
-    }
-  },
 
   componentWillMount : function () {
     var cell = this.props.cell;
@@ -52,7 +41,7 @@ var OverlayHeadRowIdentificator = React.createClass({
         const linkToTable = `/${langtag}/table/${toTable}`;
         return (
           <span>
-            <a href={linkToTable} onClick={this.handleTableSwitchClicked} className="column-name with-link">
+            <a href={linkToTable} target="_blank" className="column-name with-link">
               <i className="fa fa-columns"></i>{columnDisplayName}</a>{rowIdentification}
           </span>
         );
