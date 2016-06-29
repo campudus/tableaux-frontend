@@ -414,35 +414,51 @@
 
 .attachment-overlay-wrapper {
 
-  div.folders {
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    margin-left: 10px;
+  .folder-name {
+    font-size: 16px;
+    font-weight: bold;
+  }
 
-    & > span {
-      display: block;
-      margin-bottom: 10px;
-    }
-
+  .folder-list {
     a {
       cursor: pointer;
-
+      border-radius: 3px;
+      padding: 10px;
+      display: block;
       &:hover {
         color: $color-primary;
+        background-color: #dfdfdf;
       }
     }
   }
 
-  div.back {
+  .back {
     position: relative;
     text-align: center;
     margin-bottom: 15px;
-    padding-bottom: 5px;
     border-bottom: 2px solid $color-border-grey;
+    min-height: 30px;
 
     a {
       position: absolute;
       left: 0;
+      display: inline-block;
+      padding-top: 5px;
+      padding-bottom: 10px;
+      cursor: pointer;
+      vertical-align: middle;
+
+      &:hover {
+        color: $color-primary;
+      }
+
+      i {
+        margin-right: 5px;
+      }
+
+      * {
+        vertical-align: middle;
+      }
     }
   }
 

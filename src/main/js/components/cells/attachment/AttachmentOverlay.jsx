@@ -86,21 +86,25 @@ var AttachmentOverlay = React.createClass({
         backButton = (
           <div className="back active" key={this.state.folder.id}
                onClick={self.navigateFolder(this.state.folder.parent)}><a>
-            <i className="fa fa-chevron-left"></i> zurück </a><span>{this.state.folder.name}</span></div>);
+            <i className="fa fa-chevron-left"></i> zurück </a><span
+            className="folder-name">{this.state.folder.name}</span></div>);
       } else {
-        backButton = (<div className="back" key={this.state.folder.id}>Hauptordner</div>);
+        backButton = (<div className="back" key={this.state.folder.id}><span className="folder-name">Root</span></div>);
       }
 
       listDisplay = (
-        <div>
-          <div className="folders">
+        <div className="folder-file-list">
+          <div className="folder-navigation">
             {backButton}
-            {this.state.folder.subfolders.map(function (subfolder) {
-              return <span key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}><a>
-                <i className="icon fa fa-folder-open"></i> {subfolder.name}</a></span>
-            })}
+            <ul className="folder-list">
+              {this.state.folder.subfolders.map(function (subfolder) {
+                return <li key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}>
+                  <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
+                </li>
+              })}
+            </ul>
           </div>
-          <ul>
+          <ul className="file-list">
             {this.state.folder.files.map(function (file) {
 
               var currentCellValue = self.props.cell.value;
@@ -112,9 +116,10 @@ var AttachmentOverlay = React.createClass({
               var isLinked = linked ? true : false;
               var fileTitle = retrieveTranslation(file.title, self.props.langtag);
 
-              return <li key={file.uuid} className={isLinked ? 'isLinked' : ''}
-                         onClick={self.toggleAttachments(isLinked, file)}>
-                <i className="icon fa fa-file"></i><span>{fileTitle}</span></li>
+              return <li key={file.uuid} onClick={self.toggleAttachments(isLinked, file)}>
+                <a className={isLinked ? 'overlay-table-row isLinked' : 'overlay-table-row'}>
+                  <i className="icon fa fa-file"></i><span>{fileTitle}</span>
+                </a></li>
             })}
           </ul>
         </div>
