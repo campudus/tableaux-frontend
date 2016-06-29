@@ -80,28 +80,31 @@ var TableView = React.createClass({
           reset : true,
           success : function () {
             console.log("table columns & rows initial fetched successfully.");
+
             self.setState({
               initialLoading : false,
               rowsCollection : currentTable.rows,
               currentTableId : tableId,
               rowsFilter : null
             });
+
             //Spinner for the second (tail fetch) call
             ActionCreator.spinnerOn();
-            currentTable.rows.fetchTail({
 
+            currentTable.rows.fetchTail({
               //success for rest rows request (without initial limit)
               success : function () {
                 console.log("rows fetched the rest");
                 ActionCreator.spinnerOff();
               },
-
               //error for rows tail request
               error : function (error) {
                 console.error("Error fetching rows after initial request. Error from server:", error);
               }
-
             });
+
+            self.setDocumentTitleToTableName();
+
           },
 
           //error for initial rows request
@@ -131,14 +134,16 @@ var TableView = React.createClass({
     }
   },
 
-  shouldComponentUpdate : function (nextProps, nextState) {
+  setDocumentTitleToTableName : function () {
+    const tableDisplayNameObj = this.tables.get(this.state.currentTableId).displayName;
+    const tableDisplayName = tableDisplayNameObj[this.props.langtag] || tableDisplayNameObj[TableauxConstants.FallbackLanguage];
+    document.title = tableDisplayName ? tableDisplayName + " | " + TableauxConstants.PageTitle : TableauxConstants.PageTitle;
+  },
 
-    //FIXME: PureRenderer!
-    return true;
-
-    var shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag || nextProps.overlayOpen !== this.props.overlayOpen;
-    var shouldRenderStateUpdate = nextState.initialLoading !== this.state.initialLoading || nextState.currentTableId !== this.state.currentTableId;
-    return shouldRenderPropUpdate || shouldRenderStateUpdate;
+  componentDidUpdate : function (prevProps) {
+    if (prevProps.langtag !== this.props.langtag) {
+      this.setDocumentTitleToTableName();
+    }
   },
 
   clearFilter : function () {
