@@ -27,8 +27,8 @@ class FilterPopup extends React.Component {
     let currFilter = props.currentFilter;
 
     this.state = {
-      selectedFilterColumn : currFilter && currFilter.filterColumnId ? currFilter.filterColumnId : null,
-      selectedSortColumn : currFilter && currFilter.sortColumnId ? currFilter.sortColumnId : null,
+      selectedFilterColumn : currFilter && _.isFinite(currFilter.filterColumnId) ? currFilter.filterColumnId : null,
+      selectedSortColumn : currFilter && _.isFinite(currFilter.sortColumnId) ? currFilter.sortColumnId : null,
       filterValue : currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : ""
     };
 
@@ -55,6 +55,8 @@ class FilterPopup extends React.Component {
         const columnDisplayName = column.displayName[langtag] || column.name;
         //ID Column gets translated name
         const labelName = column.id === 0 ? t('concat_column_name') : columnDisplayName;
+
+        console.log("pushing label:", labelName, "value: ", column.id);
 
         res.push({
           label : labelName,
