@@ -21,7 +21,7 @@ var OverlayHeadRowIdentificator = React.createClass({
     var currentRow = tableRows.get(cell.rowId);
     var idColumn = tableColumns.at(0);
     var idCellValue = currentRow.values[0];
-    this.rowIdentifierString = RowConcatHelper.getRowConcatStringWithFallback(idCellValue, idColumn, this.props.langtag);
+    this.rowIdentifierString = RowConcatHelper.getCellAsStringWithFallback(idCellValue, idColumn, this.props.langtag);
   },
 
   render : function () {

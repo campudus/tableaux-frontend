@@ -76,7 +76,7 @@ export default class DependentRowsList extends React.Component {
 
         //Builds dependent rows inside dependent tables
         const rowsDisplay = rows.map((row, idx)=> {
-          const dependentRowDisplayLabel = RowConcatHelper.getRowConcatStringWithFallback(row.value, column, langtag);
+          const dependentRowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag);
           return (
             <div key={idx} className="dependent-row">
               <span className="dependent-row-id">#{row.id}</span>

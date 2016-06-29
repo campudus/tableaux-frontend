@@ -177,7 +177,7 @@ var Cell = React.createClass({
     if (selected) {
       const firstCell = cell.collection.at(0);
       const indexOfCell = cell.collection.indexOf(cell);
-      const rowDisplayLabel = RowConcatHelper.getRowConcatStringWithFallback(firstCell.value, firstCell.column, langtag);
+      const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
       //get global so not every single cell needs to look fo the table rows dom element
       const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
       const difference = this.cellOffset - tableRowsDom.scrollTop;

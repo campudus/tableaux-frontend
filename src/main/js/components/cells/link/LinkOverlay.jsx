@@ -102,7 +102,7 @@ const LinkOverlay = React.createClass({
   buildRowConcatString : function () {
     const {allRowResults, props:{cell:{column:{toColumn}}}} = this;
     _.forEach(allRowResults, (row)=> {
-      row["cachedRowName"] = RowConcatHelper.getRowConcatStringWithFallback(this.getRowValues(row), toColumn, this.props.langtag);
+      row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row), toColumn, this.props.langtag);
     });
   },
 

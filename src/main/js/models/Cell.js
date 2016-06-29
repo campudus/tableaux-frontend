@@ -104,7 +104,7 @@ var Cell = AmpersandModel.extend({
         _.forEach(linkValues, function (linkElement) {
           var linkWithLangtag = {};
           _.forEach(TableauxConstants.Langtags, (langtag, idx)=> {
-            linkWithLangtag[langtag] = RowConcatHelper.getRowConcatStringWithFallback(linkElement.value, linkToColumn, langtag);
+            linkWithLangtag[langtag] = RowConcatHelper.getCellAsStringWithFallback(linkElement.value, linkToColumn, langtag);
           });
           linksWithLangtags.push(linkWithLangtag);
         });
@@ -121,7 +121,7 @@ var Cell = AmpersandModel.extend({
         var rowConcatAllLangs = {};
         var self = this;
         _.forEach(TableauxConstants.Langtags, function (langtag, idx) {
-          rowConcatAllLangs[langtag] = RowConcatHelper.getRowConcatString(self.value, self.column, langtag);
+          rowConcatAllLangs[langtag] = RowConcatHelper.getCellAsStringWithFallback(self.value, self.column, langtag);
         });
         return rowConcatAllLangs;
       }

@@ -1,17 +1,16 @@
 var _ = require('lodash');
 var Moment = require('moment');
-var App = require('ampersand-app');
 import TableauxConstants from '../constants/TableauxConstants';
 const {ColumnKinds} = TableauxConstants;
 
 var NOVALUE = "– NO VALUE –";
 
 var internal = {
-  stringHasValue : function (stringToCheck) {
+  stringHasValue : (stringToCheck) => {
     return (stringToCheck && stringToCheck.toString().trim() !== "");
   },
 
-  addDefaultLangtagPostfix : function (string) {
+  addDefaultLangtagPostfix : (string) => {
     return string.concat(" (" + TableauxConstants.DefaultLangtag + ")");
   }
 };
@@ -23,7 +22,7 @@ var RowConcatHelper = {
     var concatStringArray = [];
     var finalString;
 
-    var appendString = function (appendVal) {
+    var appendString = (appendVal) => {
       if (_.isFinite(appendVal)) {
         appendVal = String(appendVal);
       }
@@ -38,7 +37,7 @@ var RowConcatHelper = {
     };
 
     //Returns the appropriate column object for the concat element
-    var getColumnByConcatIndex = function (concatIndex) {
+    var getColumnByConcatIndex = (concatIndex) => {
       return concatColumn.concats[concatIndex];
     };
 
@@ -46,13 +45,13 @@ var RowConcatHelper = {
       console.error("getRowConcatString was passed no concat column:", concatColumn);
     }
 
-    _.forEach(concatArray, function (concatElem, index) {
+    _.forEach(concatArray, (concatElem, index) => {
       //This is the related column for a specific concat element
       var concatElementColumn = getColumnByConcatIndex(index);
 
       //Helper Function to get the value in the correct language. Works with single language and multilanguage objects
       //ExplicitColumn (optional) can be used for getting the value of a linked column. Default is this cells column
-      var getCellValueFromLanguage = function (cellValue, explicitColumn) {
+      var getCellValueFromLanguage = (cellValue, explicitColumn) => {
         if (explicitColumn === undefined) {
           explicitColumn = concatElementColumn;
         }
@@ -75,7 +74,7 @@ var RowConcatHelper = {
 
         case ColumnKinds.link:
           var toColumn = concatElementColumn.toColumn;
-          _.forEach(concatElem, function (linkElem, linkIndex) {
+          _.forEach(concatElem, (linkElem, linkIndex) => {
 
             //Check the column kind linked to
             switch (toColumn.kind) {
@@ -85,8 +84,8 @@ var RowConcatHelper = {
                 break;
 
               case ColumnKinds.concat:
-                //console.warn("Todo: link is kind concat:", linkElem);
-                //TODO: Recursive: when Concat column has a link as identifier which also links to another concat column
+                //Concat column has a link as identifier which also links to another concat column
+                appendString(this.getRowConcatString(linkElem.value, toColumn, langtag, defaultLangtag));
                 break;
 
               default:
@@ -124,22 +123,13 @@ var RowConcatHelper = {
 
   },
 
-  getRowConcatStringWithFallback : function (rowCellIdValue, toColumn, langtag) {
+  getCellAsStringWithFallback : function (cellValue, column, langtag) {
     var defaultLangtag = TableauxConstants.DefaultLangtag;
     var rowConcatString;
 
-    if (toColumn.kind === ColumnKinds.concat) {
-      rowConcatString = this.getRowConcatString(rowCellIdValue, toColumn, langtag, defaultLangtag);
-
-      if (!internal.stringHasValue(rowConcatString)) {
-        if (defaultLangtag !== langtag) {
-          rowConcatString = this.getRowConcatString(rowCellIdValue, toColumn, defaultLangtag);
-
-          if (internal.stringHasValue(rowConcatString)) {
-            rowConcatString = internal.addDefaultLangtagPostfix(rowConcatString);
-          }
-        }
-      }
+    if (column.kind === ColumnKinds.concat) {
+      //each value can fallback to default language
+      rowConcatString = this.getRowConcatString(cellValue, column, langtag, defaultLangtag);
 
       if (!internal.stringHasValue(rowConcatString)) {
         rowConcatString = NOVALUE;
@@ -149,15 +139,15 @@ var RowConcatHelper = {
     //Text, Shorttext, etc.
     else {
 
-      if (toColumn.multilanguage) {
-        rowConcatString = rowCellIdValue[langtag];
+      if (column.multilanguage) {
+        rowConcatString = cellValue[langtag];
 
         //Link ID value is empty
         if (!internal.stringHasValue(rowConcatString)) {
 
           //Get default language fallback
           if (langtag != defaultLangtag) {
-            rowConcatString = rowCellIdValue[defaultLangtag];
+            rowConcatString = cellValue[defaultLangtag];
 
             //Default language fallback is not empty. Postfix the langtag
             if (internal.stringHasValue(rowConcatString)) {
@@ -174,7 +164,7 @@ var RowConcatHelper = {
       } else {
 
         // Single language value
-        rowConcatString = internal.stringHasValue(rowCellIdValue) ? rowCellIdValue : NOVALUE;
+        rowConcatString = internal.stringHasValue(cellValue) ? cellValue : NOVALUE;
       }
 
     }
