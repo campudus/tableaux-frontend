@@ -24,5 +24,6 @@
   "replace_existing_file": "Neue Datei hochladen",
   "root_folder_name": "Hauptordner",
   "show_file": "Anzeigen",
-  "upload_click_or_drop": "Datei auswählen oder hierherziehen"
+  "upload_click_or_drop": "Datei auswählen oder hierherziehen",
+  "folder_back": "Zurück"
 }

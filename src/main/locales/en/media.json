@@ -24,5 +24,6 @@
   "replace_existing_file": "Upload new file",
   "root_folder_name": "Root folder",
   "show_file": "Open",
-  "upload_click_or_drop": "Select or drop file here."
+  "upload_click_or_drop": "Select or drop file here.",
+  "folder_back": "Back"
 }

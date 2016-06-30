@@ -1,5 +1,4 @@
 var React = require('react');
-var App = require('ampersand-app');
 var AmpersandMixin = require('ampersand-react-mixin');
 
 var apiUrl = require('../../../helpers/apiUrl');

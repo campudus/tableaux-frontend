@@ -142,7 +142,7 @@
     position: relative;
 
     &:hover {
-      background-color: #f7f7f7;
+      background-color: $color-background-very-light-grey;
     }
 
     .button {
@@ -414,9 +414,53 @@
 
 .attachment-overlay-wrapper {
 
+  .overlay-table-row {
+    width: 70%;
+    margin-right: 0;
+  }
+
+  .media-options {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 30%;
+    overflow: hidden;
+    height: 100%;
+    white-space: nowrap;
+    opacity: 0.1;
+    @include transition(opacity 0.3s ease-out);
+    text-align: center;
+
+    i {
+      margin-right: 3px;
+    }
+
+    a {
+      display: inline-block;
+      padding: 12px 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100px;
+
+      &:hover {
+        color: $color-primary;
+      }
+    }
+  }
+
   .folder-name {
     font-size: 16px;
     font-weight: bold;
+  }
+
+  .file-list {
+    li {
+      position: relative;
+
+      &:hover .media-options {
+        opacity: 1;
+      }
+    }
   }
 
   .folder-list {
@@ -427,7 +471,7 @@
       display: block;
       &:hover {
         color: $color-primary;
-        background-color: #dfdfdf;
+        background-color: $color-border-grey;
       }
     }
   }
