@@ -126,8 +126,9 @@ var AttachmentOverlay = React.createClass({
               var isLinked = linked ? true : false;
               var fileTitle = retrieveTranslation(file.title, self.props.langtag);
 
-              return <li key={file.uuid} onClick={self.toggleAttachments(isLinked, file)}>
-                <a className={isLinked ? 'overlay-table-row isLinked' : 'overlay-table-row'}>
+              return <li key={file.uuid}>
+                <a onClick={self.toggleAttachments(isLinked, file)}
+                   className={isLinked ? 'overlay-table-row isLinked' : 'overlay-table-row'}>
                   <i className="icon fa fa-file"></i><span>{fileTitle}</span>
                 </a>
                 <div className="media-options">
