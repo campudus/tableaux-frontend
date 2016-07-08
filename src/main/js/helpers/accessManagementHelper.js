@@ -1,14 +1,37 @@
 import _ from 'lodash';
-import {ColumnKinds, Langtags} from '../constants/TableauxConstants';
-import Cookies from 'js-cookie';
-import TableauxConstants from '../constants/TableauxConstants';
+import TableauxConstants, {ColumnKinds, Langtags} from '../constants/TableauxConstants';
+import Keks from 'js-cookie';
+
+// overwrite converter so we can parse express-cookies
+const Cookies = Keks.withConverter({
+  'read' : function (rawValue, name) {
+    const value = decodeURIComponent(rawValue);
+    if (typeof value === 'string' && _.startsWith(value, 'j:')) {
+      var result = value;
+
+      try {
+        // remove j:
+        result = JSON.parse(value.substring(2));
+      } catch (ex) {
+        console.error("Keks couldn't be parsed!", ex);
+      }
+
+      return result;
+    } else {
+      return value;
+    }
+  },
+  'write' : function (value, name) {
+    return encodeURIComponent(value);
+  }
+});
 
 //Just for development
 export function initDevelopmentAccessCookies() {
   if (process.env.NODE_ENV != 'production') {
     Cookies.set('userAdmin', true);
-    Cookies.set('userLangtagsAccess', ['en', 'fr']);
-    Cookies.set('userCountryCodesAccess', ['GB', 'FR']);
+    Cookies.set('userLangtagsAccess', 'j:["en"]');
+    Cookies.set('userCountryCodesAccess', 'j:["GB"]');
   }
 }
 
