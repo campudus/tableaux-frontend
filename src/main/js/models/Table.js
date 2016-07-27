@@ -7,7 +7,26 @@ const Table = Model.extend({
     id : 'number',
     name : 'string',
     displayName : 'object',
-    description : 'object'
+    description : 'object',
+    type : {
+      type : 'string',
+      required : true,
+      default : 'generic',
+      values : ['generic', 'settings'],
+      allowNull : false
+    },
+    group : {
+      type : 'object',
+      required : false,
+      default : () => {
+        return {
+          id : 0,
+          displayName : {},
+          description : {}
+        }
+      },
+      allowNull : true
+    }
   },
 
   collections : {

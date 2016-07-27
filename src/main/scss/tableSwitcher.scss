@@ -1,0 +1,149 @@
+@import "helper";
+@import "variables";
+
+#tableswitcher-wrapper {
+  float: left;
+  margin-left: 20px;
+  margin-top: 10px;
+  outline-style: none;
+
+  .button {
+    @include header-button-look();
+
+    i {
+      margin-right: 10px;
+    }
+  }
+
+  &.active {
+    .button {
+      @include header-button-active();
+    }
+  }
+
+  #tableswitcher-popup {
+    @include header-panel-look();
+    padding: 0;
+    width: 600px;
+    overflow: visible;
+    height: 40vh;
+    max-height: 400px;
+
+    #tableswitcher-popup-internal-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    button {
+      @include button-look();
+      float: right;
+    }
+
+    .tableswitcher-label {
+      color: $color-dark;
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+  }
+
+  .tableswitcher-groups, .tableswitcher-tables {
+    vertical-align: top;
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 20px;
+    overflow: visible;
+    width: 50%;
+    height: 100%;
+    position: relative;
+
+    .tableswitcher-input-wrapper2 {
+      overflow: hidden;
+
+      .tableswitcher-input-wrapper {
+        position: relative;
+        height: auto;
+      }
+
+      i {
+        position: absolute;
+        right: 1.5em;
+        top: 50%;
+        margin-top: -0.5em;
+      }
+    }
+
+    .tableswitcher-input {
+      font: inherit;
+      width: 100%;
+      padding: 0.8em 1.5em;
+      margin: 0;
+      border-radius: 2em;
+      cursor: pointer;
+      background-color: #EFEFEF;
+
+      border: 1px solid $color-grey-dark;
+
+      box-sizing: border-box;
+      outline: none;
+      position: relative;
+
+      &:focus {
+        background-color: #fff;
+      }
+    }
+
+    li {
+      position: relative;
+      height: auto;
+      font-size: 1.1em;
+      padding: 5px;
+      margin-bottom: 3px;
+      border: 1px solid transparent;
+
+      i {
+        position: absolute;
+        right: 0.3em;
+        top: 50%;
+        margin-top: -0.5em;
+      }
+    }
+
+    li.active {
+      border: 1px solid #91C8FF;
+      border-radius: 0.3em;
+    }
+
+    li:focus, li:hover {
+      border: 1px solid #91C8FF;
+      background-color: #ECF7FF;
+      border-radius: 0.3em;
+      outline:none;
+    }
+  }
+
+  .tableswitcher-tables {
+    background-color: #F9F9F9;
+    border-left: 5px solid #E5E5E5;
+
+    .tableswitcher-tables-list {
+      margin: 0;
+      box-sizing: border-box;
+      overflow-y: scroll;
+      position: absolute;
+      top: 35%;
+      bottom: 20px;
+      height: auto;
+      width: 100%;
+      padding: 10px 10px 10px 20px;
+      left: 0;
+    }
+
+    .tableswitcher-tables-search {
+      height: 20%;
+    }
+  }
+}
