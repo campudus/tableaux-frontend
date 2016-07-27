@@ -27,6 +27,7 @@
     width: 600px;
     overflow: visible;
     height: 40vh;
+    min-height: 350px;
     max-height: 400px;
 
     #tableswitcher-popup-internal-wrapper {
@@ -121,7 +122,7 @@
       border: 1px solid #91C8FF;
       background-color: #ECF7FF;
       border-radius: 0.3em;
-      outline:none;
+      outline: none;
     }
   }
 
@@ -134,7 +135,7 @@
       box-sizing: border-box;
       overflow-y: scroll;
       position: absolute;
-      top: 35%;
+      top: 30%;
       bottom: 20px;
       height: auto;
       width: 100%;

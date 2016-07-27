@@ -24,11 +24,18 @@ class SwitcherPopup extends React.Component {
 
     this.state = {
       filterGroupId : props.currentGroupId && _.isFinite(props.currentGroupId) ? props.currentGroupId : null,
-      filterTableName : ""
+      filterTableName : "",
+      focusTableId : props.currentTable ? props.currentTable.id : null
     };
   }
 
   componentDidMount() {
+    // scroll to current focus table (initially its the current table)
+    if (this.state.focusTableId !== null && this.refs['table' + this.state.focusTableId]) {
+      ReactDOM.findDOMNode(this.refs['table' + this.state.focusTableId]).focus();
+    }
+
+    // focus on filter input
     ReactDOM.findDOMNode(this.refs.filterInput).focus();
   }
 
@@ -100,12 +107,18 @@ class SwitcherPopup extends React.Component {
     const renderedGroups = _.map(groups, function (group, index) {
       const groupDisplayName = group.displayName[self.props.langtag] || group.displayName[TableauxConstants.FallbackLanguage];
 
-      const className = self.state.filterGroupId === group.id ? "active" : "";
-      const closeButton = self.state.filterGroupId === group.id ? <i className="fa fa-times-circle"></i> : "";
+      const isActive = self.state.filterGroupId === group.id;
 
-      return (<li key={"group" + index} onClick={() => {
+      const onClickFn = () => {
         self.onClickGroup(group);
-      }} className={className}>{groupDisplayName}{closeButton}</li>);
+      };
+
+      return (
+        <li key={"group" + index} onClick={onClickFn} className={isActive ? "active" : ""}>
+          {groupDisplayName}
+          {isActive ? <i className="fa fa-times-circle"></i> : ""}
+        </li>
+      );
     });
 
     if (groups.length === 0) {
@@ -113,7 +126,7 @@ class SwitcherPopup extends React.Component {
     } else {
       return (
         <div className="tableswitcher-groups">
-          <div className="tableswitcher-label">Gruppen</div>
+          <div className="tableswitcher-label"><i className="fa fa-filter"></i> Gruppen</div>
 
           <ul>
             {renderedGroups}
@@ -129,15 +142,23 @@ class SwitcherPopup extends React.Component {
     const renderedTables = _.map(tables, (table, index) => {
       const tableDisplayName = table.displayName[self.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
 
-      return (<li key={"table" + index} onClick={() => {
+      const isActive = self.state.focusTableId !== null && self.state.focusTableId === table.id;
+
+      const onClickFn = () => {
         self.onClickTable(table);
-      }} onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(() => {
+      };
+
+      const onKeyDownFn = () => {
         return {
-          enter : (event) => {
+          enter : () => {
             self.onClickTable(table);
           }
         }
-      })} tabIndex="0">{tableDisplayName}</li>);
+      };
+
+      return (<li key={"table" + index} className={isActive ? 'active' : ''} onClick={onClickFn}
+                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)} tabIndex="0"
+                  ref={"table" + table.id}>{tableDisplayName}</li>);
     });
 
     const style = groups.length === 0 ? {width : "100%"} : {};
@@ -145,7 +166,7 @@ class SwitcherPopup extends React.Component {
     return (
       <div className="tableswitcher-tables" style={style}>
         <div className="tableswitcher-tables-search">
-          <div className="tableswitcher-label">Tabellen</div>
+          <div className="tableswitcher-label"><i className="fa fa-columns"></i> Tabellen</div>
 
           <div className="tableswitcher-input-wrapper2">
             <div className="tableswitcher-input-wrapper">
