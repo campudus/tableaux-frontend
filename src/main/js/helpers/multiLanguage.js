@@ -55,7 +55,7 @@ function getCurrencyCode(country) {
     US : "USD",
     GB : "GBP",
     IT : "EUR",
-    PL : "EUR",
+    PL : "PLN",
     NL : "EUR",
     ES : "EUR",
     AT : "EUR",
