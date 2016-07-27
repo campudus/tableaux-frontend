@@ -5,7 +5,9 @@ import TableauxConstants from '../../../constants/TableauxConstants';
 import _ from 'lodash';
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import ReactDOM from 'react-dom';
+import {translate} from 'react-i18next';
 
+@translate(['header'])
 @listensToClickOutside()
 class SwitcherPopup extends React.Component {
 
@@ -38,6 +40,10 @@ class SwitcherPopup extends React.Component {
     // focus on filter input
     ReactDOM.findDOMNode(this.refs.filterInput).focus();
   }
+
+  handleClickOutside = (event) => {
+    this.props.onClickedOutside(event);
+  };
 
   onClickGroup = (group) => {
     this.setState({
@@ -103,6 +109,7 @@ class SwitcherPopup extends React.Component {
 
   renderGroups = (groups) => {
     const self = this;
+    const {t} = this.props;
 
     const renderedGroups = _.map(groups, function (group, index) {
       const groupDisplayName = group.displayName[self.props.langtag] || group.displayName[TableauxConstants.FallbackLanguage];
@@ -126,7 +133,7 @@ class SwitcherPopup extends React.Component {
     } else {
       return (
         <div className="tableswitcher-groups">
-          <div className="tableswitcher-label"><i className="fa fa-filter"></i> Gruppen</div>
+          <div className="tableswitcher-label"><i className="fa fa-filter"></i> {t('tableSwitcher.groups')}</div>
 
           <ul>
             {renderedGroups}
@@ -138,6 +145,7 @@ class SwitcherPopup extends React.Component {
 
   renderTables = (groups, tables) => {
     const self = this;
+    const {t} = this.props;
 
     const renderedTables = _.map(tables, (table, index) => {
       const tableDisplayName = table.displayName[self.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
@@ -166,11 +174,11 @@ class SwitcherPopup extends React.Component {
     return (
       <div className="tableswitcher-tables" style={style}>
         <div className="tableswitcher-tables-search">
-          <div className="tableswitcher-label"><i className="fa fa-columns"></i> Tabellen</div>
+          <div className="tableswitcher-label"><i className="fa fa-columns"></i> {t('tableSwitcher.tables')}</div>
 
           <div className="tableswitcher-input-wrapper2">
             <div className="tableswitcher-input-wrapper">
-              <input value={this.state.filterTableName} placeholder="Search..." type="text"
+              <input value={this.state.filterTableName} placeholder={t('tableSwitcher.search')} type="text"
                      className="tableswitcher-input"
                      ref="filterInput" onChange={this.filterInputChange}
                      onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcutsFilterTable)}
