@@ -6,5 +6,10 @@
   "pageTitle": {
     "media": "Medien Management",
     "tables": "Tabellen"
+  },
+  "tableSwitcher": {
+    "groups": "Gruppen",
+    "tables": "Tabellen",
+    "search": "Nach Tabelle suchen..."
   }
 }

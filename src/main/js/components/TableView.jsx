@@ -3,7 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./table/Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
-var TableSwitcher = require('./header/TableSwitcher.jsx');
+var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
 var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
@@ -324,8 +324,7 @@ var TableView = React.createClass({
           <header>
             <Navigation langtag={this.props.langtag}/>
             <TableSwitcher langtag={this.props.langtag}
-                           tableName={tableName}
-                           currentTableId={self.state.currentTableId}
+                           currentTable={currentTable}
                            tables={tables}/>
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
