@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import TableSwitcherPopup from './TableSwitcherPopup';
+import ActionCreator from '../../../actions/ActionCreator';
 
 class TableSwitcherButton extends React.Component {
 
@@ -13,15 +14,25 @@ class TableSwitcherButton extends React.Component {
 
   state = {
     isOpen : false,
-    filterGroup : null
+    currentGroupId : null
   };
 
   constructor(props) {
     super(props);
   }
 
-  handleClickedOutside = (event) => {
+  onClickedOutside = (event) => {
     this.setState({isOpen : false});
+  };
+
+  onClickedTable = (table) => {
+    console.log("onClickedTable", table);
+    this.onClickedOutside({});
+    ActionCreator.switchTable(table.id, this.props.langtag);
+  };
+
+  onClickedGroup = (group) => {
+    this.setState({currentGroupId : group.id});
   };
 
   renderPopup = () => {
@@ -38,9 +49,10 @@ class TableSwitcherButton extends React.Component {
 
     return <TableSwitcherPopup langtag={this.props.langtag} groups={groups}
                                tables={this.props.tables} currentTable={this.props.currentTable}
-                               onClickedOutside={this.handleClickedOutside}
-                               onClickedTable={this.handleClickedOutside}
-                               currentGroupId={null}/>;
+                               onClickedOutside={this.onClickedOutside}
+                               onClickedTable={this.onClickedTable}
+                               onClickedGroup={this.onClickedGroup}
+                               currentGroupId={this.state.currentGroupId}/>;
   };
 
   togglePopup = (event) => {

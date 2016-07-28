@@ -1,8 +1,7 @@
 import React from 'react';
 import listensToClickOutside from 'react-onclickoutside/decorator';
-import ActionCreator from '../../../actions/ActionCreator';
 import TableauxConstants from '../../../constants/TableauxConstants';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
@@ -14,6 +13,7 @@ class SwitcherPopup extends React.Component {
   static propTypes = {
     onClickedOutside : React.PropTypes.func.isRequired,
     onClickedTable : React.PropTypes.func.isRequired,
+    onClickedGroup : React.PropTypes.func.isRequired,
     langtag : React.PropTypes.string.isRequired,
     tables : React.PropTypes.object.isRequired,
     groups : React.PropTypes.array.isRequired,
@@ -31,64 +31,128 @@ class SwitcherPopup extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     // scroll to current focus table (initially its the current table)
     if (this.state.focusTableId !== null && this.refs['table' + this.state.focusTableId]) {
       ReactDOM.findDOMNode(this.refs['table' + this.state.focusTableId]).focus();
     }
 
     // focus on filter input
-    ReactDOM.findDOMNode(this.refs.filterInput).focus();
-  }
+    const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
+    filterInput.focus();
+  };
+
+  componentDidUpdate = (prevProps, prevState) => {
+
+    // scroll to current focus table (initially its the current table)
+    if (this.state.focusTableId !== null && this.refs['table' + this.state.focusTableId]) {
+      ReactDOM.findDOMNode(this.refs['table' + this.state.focusTableId]).focus();
+    }
+
+    // focus on filter input
+    const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
+    filterInput.focus();
+  };
 
   handleClickOutside = (event) => {
     this.props.onClickedOutside(event);
   };
 
   onClickGroup = (group) => {
+    this.props.onClickedGroup(group);
     this.setState({
       filterGroupId : this.state.filterGroupId === group.id ? null : group.id,
       filterTableName : ""
-    })
+    });
+
+    // focus on filter input
+    const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
+    filterInput.focus();
   };
 
   onClickTable = (table) => {
-    //prevents undefined tableId: we just want to switch the table when there is actually something selected
-    if (!_.isEmpty(table)) {
-      this.props.onClickedTable(null);
-      ActionCreator.switchTable(table.id, this.props.langtag);
-    }
+    this.props.onClickedTable(table);
+    this.setState({
+      focusTableId : table.id
+    });
   };
 
   filterInputChange = (event) => {
-    this.setState({filterTableName : event.target.value});
+    const filteredTables = this.getFilteredTables(this.state.filterGroupId, event.target.value);
+    const focusTableId = (filteredTables.length > 0) ? filteredTables[0].id : this.props.currentTable.id;
+
+    this.setState({
+      focusTableId : focusTableId,
+      filterTableName : event.target.value
+    });
   };
 
-  filterUpdate = (event) => {
-    if (this.getFilteredTables().length === 1) {
-      this.onClickTable(this.getFilteredTables()[0]);
+  onUpDownNavigation = (nextFocusTableIndexFn) => {
+    const filteredTables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
+    const focusTableIndex = _.findIndex(filteredTables, (table) => {
+      return table.id === this.state.focusTableId;
+    });
+
+    var nextFocusTableIndex = nextFocusTableIndexFn(focusTableIndex);
+
+    if (nextFocusTableIndex >= filteredTables.length) {
+      // overflow
+      nextFocusTableIndex = 0;
+    } else if (nextFocusTableIndex < 0) {
+      // underflow
+      nextFocusTableIndex = filteredTables.length - 1;
+    }
+
+    if (filteredTables.length > nextFocusTableIndex) {
+      this.setState({
+        focusTableId : filteredTables[nextFocusTableIndex].id
+      });
     }
   };
 
   getKeyboardShortcutsFilterTable = (event) => {
     return {
+      // enter on input
       enter : (event) => {
-        this.filterUpdate(event);
+        const filteredTables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
+        if (filteredTables.length > 0) {
+          this.onClickTable({id : this.state.focusTableId})
+        }
       },
+      // clear input
       escape : (event) => {
-        this.filterInputChange({target : {value : ""}})
+        this.setState({
+          filterTableName : "",
+          focusTableId : this.props.currentTable.id
+        });
+      },
+      up : (event) => {
+        // Cursor jumps around. Silly cursor stop doing that!
+        event.preventDefault();
+
+        this.onUpDownNavigation((focusTableIndex) => {
+          return focusTableIndex - 1;
+        });
+      },
+      down : (event) => {
+        // Cursor jumps around. Silly cursor stop doing that!
+        event.preventDefault();
+
+        this.onUpDownNavigation((focusTableIndex) => {
+          return focusTableIndex + 1;
+        });
       }
     };
   };
 
-  getFilteredTables = () => {
+  getFilteredTables = (filterGroupId, filterTableName) => {
     const self = this;
     const tables = this.props.tables.models;
 
     // filter tables step 1: only tables in selected group
     const filteredTablesByGroup = _.filter(tables, (table) => {
-      if (this.state.filterGroupId) {
-        return table.group.id === self.state.filterGroupId
+      if (filterGroupId) {
+        return table.group.id === filterGroupId
       } else {
         return true;
       }
@@ -98,8 +162,8 @@ class SwitcherPopup extends React.Component {
     const filteredTablesByName = _.filter(filteredTablesByGroup, (table) => {
       const tableDisplayName = table.displayName[self.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
 
-      let filterTableName = self.state.filterTableName ? self.state.filterTableName.toLowerCase() : null;
-      return _.every(_.words(filterTableName), function (word) {
+      const filter = filterTableName ? filterTableName.toLowerCase() : null;
+      return _.every(_.words(filter), function (word) {
         return tableDisplayName.toLowerCase().indexOf(word) > -1 || table.name.toLowerCase().indexOf(word) > -1;
       });
     });
@@ -145,7 +209,7 @@ class SwitcherPopup extends React.Component {
 
   renderTables = (groups, tables) => {
     const self = this;
-    const {t} = this.props;
+    const {t, langtag} = this.props;
 
     const renderedTables = _.map(tables, (table, index) => {
       const tableDisplayName = table.displayName[self.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
@@ -164,9 +228,14 @@ class SwitcherPopup extends React.Component {
         }
       };
 
-      return (<li key={"table" + index} className={isActive ? 'active' : ''} onClick={onClickFn}
-                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)} tabIndex="0"
-                  ref={"table" + table.id}>{tableDisplayName}</li>);
+      return (
+        <li key={"table" + index} className={isActive ? 'active' : ''}
+            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)} tabIndex="0"
+            ref={"table" + table.id}>
+          <div onClick={onClickFn}>{tableDisplayName}</div>
+          <a target="_blank" href={`/${langtag}/table/${table.id}`}><i className="fa fa-external-link"></i></a>
+        </li>
+      );
     });
 
     const style = groups.length === 0 ? {width : "100%"} : {};
@@ -199,7 +268,7 @@ class SwitcherPopup extends React.Component {
 
   render() {
     const groups = this.props.groups;
-    const tables = this.getFilteredTables();
+    const tables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
 
     return (
       <div id="tableswitcher-popup">
