@@ -141,6 +141,7 @@
     }
 
     li:focus, li:hover {
+      cursor: pointer;
       background-color: #ECF7FF;
       outline: none;
     }
