@@ -46,8 +46,9 @@
     .tableswitcher-label {
       color: $color-dark;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 1em;
       margin-bottom: 10px;
+      margin-left: 10px;
     }
   }
 
@@ -55,7 +56,7 @@
     vertical-align: top;
     display: inline-block;
     box-sizing: border-box;
-    padding: 20px;
+    padding: 10px;
     overflow: visible;
     width: 50%;
     height: 100%;
@@ -65,8 +66,18 @@
       overflow: hidden;
 
       .tableswitcher-input-wrapper {
-        position: relative;
+        position: absolute;
         height: auto;
+        width: 100%;
+        left: 0;
+
+        padding: 10px 0 10px 0;
+
+        background-color: $color-background-very-light-grey;
+
+        border: 1px solid $color-grey-dark;
+        border-left: 0;
+        border-right: 0;
       }
 
       i {
@@ -75,34 +86,45 @@
         top: 50%;
         margin-top: -0.5em;
       }
-    }
 
-    .tableswitcher-input {
-      font: inherit;
-      width: 100%;
-      padding: 0.8em 1.5em;
-      margin: 0;
-      border-radius: 2em;
-      cursor: pointer;
-      background-color: #EFEFEF;
+      .tableswitcher-input {
+        font: inherit;
 
-      border: 1px solid $color-grey-dark;
+        box-sizing: border-box;
 
-      box-sizing: border-box;
-      outline: none;
-      position: relative;
+        position: relative;
+        width: 90%;
+        height: 30px;
+        left: 5%;
+        right: 5%;
 
-      &:focus {
-        background-color: #fff;
+        padding: 0 10px;
+        margin: 0;
+
+        cursor: pointer;
+
+        outline: none;
+
+        line-height: 30px;
+        border: 1px solid $color-grey-dark;
+        @include border-radius(3px);
+
+        &:focus, &:active {
+          border-color: $color-primary-lighter;
+        }
+      }
+
+      .tableswitcher-input::-ms-clear {
+        display: none;
       }
     }
 
     li {
       position: relative;
       height: auto;
-      font-size: 1.1em;
-      padding: 5px;
-      margin-bottom: 3px;
+      font-size: 1em;
+      line-height: 1.5;
+      padding: 3px 5px 3px 20px;
       border: 1px solid transparent;
 
       i {
@@ -110,41 +132,49 @@
         right: 0.3em;
         top: 50%;
         margin-top: -0.5em;
+        opacity: 0.6;
       }
     }
 
     li.active {
-      border: 1px solid #91C8FF;
-      border-radius: 0.3em;
+      background-color: #EBEBEB;
     }
 
     li:focus, li:hover {
-      border: 1px solid #91C8FF;
       background-color: #ECF7FF;
-      border-radius: 0.3em;
       outline: none;
     }
   }
 
   .tableswitcher-tables {
-    background-color: #F9F9F9;
-    border-left: 5px solid #E5E5E5;
+    border-left: 1px solid $color-grey-dark;
 
     .tableswitcher-tables-list {
       margin: 0;
       box-sizing: border-box;
       overflow-y: scroll;
       position: absolute;
-      top: 30%;
-      bottom: 20px;
+      top: 86px;
+      bottom: 0;
       height: auto;
       width: 100%;
-      padding: 10px 10px 10px 20px;
       left: 0;
     }
 
     .tableswitcher-tables-search {
-      height: 20%;
+      height: 86px;
+    }
+  }
+
+  .tableswitcher-groups {
+    background-color: $color-background-very-light-grey;
+
+    ul {
+      position: absolute;
+      left: 0;
+      right: 0;
+
+      border-top: 1px solid $color-grey-dark;
     }
   }
 }
