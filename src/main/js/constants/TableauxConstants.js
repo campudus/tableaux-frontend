@@ -126,8 +126,12 @@ var TableauxConstant = {
 
   initLangtags : (langtags) => {
     languagetags = langtags;
-  }
+  },
 
+  SortValues : keyMirror({
+    ASC : null,
+    DESC : null
+  })
 };
 
 module.exports = TableauxConstant;

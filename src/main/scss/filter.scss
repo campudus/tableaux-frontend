@@ -50,12 +50,12 @@
     }
 
     .filter-select {
-      width: 200px;
+      width: 220px;
       display: inline-block;
       vertical-align: middle;
     }
 
-    .seperator {
+    .separator {
       display: inline-block;
       vertical-align: middle;
       color: $color-text-light-grey;
@@ -63,6 +63,7 @@
       padding: 0 20px;
       text-align: left;
       line-height: 1.2;
+      width: 55px;
     }
 
   }

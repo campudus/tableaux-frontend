@@ -1,11 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as _ from 'lodash';
 import ActionCreator from '../../../actions/ActionCreator';
 import listensToClickOutside from 'react-onclickoutside/decorator';
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import Select from 'react-select';
-import {translate, Interpolate} from 'react-i18next';
+import {translate} from 'react-i18next';
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -29,7 +29,8 @@ class FilterPopup extends React.Component {
     this.state = {
       selectedFilterColumn : currFilter && _.isFinite(currFilter.filterColumnId) ? currFilter.filterColumnId : null,
       selectedSortColumn : currFilter && _.isFinite(currFilter.sortColumnId) ? currFilter.sortColumnId : null,
-      filterValue : currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : ""
+      filterValue : currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : "",
+      sortValue : currFilter && !_.isEmpty(currFilter.sortValue) ? currFilter.sortValue : TableauxConstants.SortValues.ASC
     };
 
     this.buildColumnOptions();
@@ -70,15 +71,29 @@ class FilterPopup extends React.Component {
     return options;
   }
 
+  getSortOptions() {
+    const {t} = this.props;
+
+    return [
+      {
+        label : t("help.sortasc"),
+        value : TableauxConstants.SortValues.ASC
+      },
+      {
+        label : t("help.sortdesc"),
+        value : TableauxConstants.SortValues.DESC
+      }
+    ]
+  }
+
   filterInputChange = (event) => {
     this.setState({filterValue : event.target.value});
   };
 
   filterUpdate = (event) => {
-    let selectedFilterColumn = this.state.selectedFilterColumn;
-    let selectedSortColumn = this.state.selectedSortColumn;
-    //TODO: For now we don't have any sort options
-    ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, null);
+    const {selectedFilterColumn, selectedSortColumn} = this.state;
+
+    ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, this.state.sortValue);
     this.handleClickOutside(event);
   };
 
@@ -95,13 +110,25 @@ class FilterPopup extends React.Component {
     return <div><span>{option.label}</span></div>;
   }
 
+  selectSortValueRenderer(option) {
+    if (option.value === TableauxConstants.SortValues.ASC) {
+      return <div><i className="fa fa-sort-alpha-asc"></i> {option.label}</div>
+    } else {
+      return <div><i className="fa fa-sort-alpha-desc"></i> {option.label}</div>
+    }
+  }
+
   onChangeSelectFilter = (selection) => {
     console.log("selection: ", selection);
     this.setState({selectedFilterColumn : selection.value});
   };
 
-  onChangeSelectSort = (selection) => {
+  onChangeSelectSortColumn = (selection) => {
     this.setState({selectedSortColumn : selection.value});
+  };
+
+  onChangeSelectSortValue = (selection) => {
+    this.setState({sortValue : selection.value});
   };
 
   getKeyboardShortcuts = (event) => {
@@ -121,7 +148,7 @@ class FilterPopup extends React.Component {
           <Select
             className="filter-select"
             options={this.getColumnOptions()}
-            searchable
+            searchable={true}
             clearable={false}
             value={this.state.selectedFilterColumn}
             onChange={this.onChangeSelectFilter}
@@ -129,7 +156,7 @@ class FilterPopup extends React.Component {
             noResultsText={t('input.noResult')}
             placeholder={t('input.filter')}
           />
-          <span className="seperator">{t('help.contains')}</span>
+          <span className="separator">{t('help.contains')}</span>
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
@@ -138,17 +165,26 @@ class FilterPopup extends React.Component {
           <Select
             className="filter-select"
             options={this.getColumnOptions()}
-            searchable
+            searchable={true}
             clearable={false}
             value={this.state.selectedSortColumn}
-            onChange={this.onChangeSelectSort}
+            onChange={this.onChangeSelectSortColumn}
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText={t('input.noResult')}
             placeholder={t('input.sort')}
           />
-          <span className="seperator">
-             <Interpolate i18nKey="help.sort" linebreak={<br/>}/>
-          </span>
+          <span className="separator">{t('help.sort')}</span>
+          <Select
+            className="filter-select"
+            options={this.getSortOptions()}
+            searchable={true}
+            clearable={false}
+            value={this.state.sortValue}
+            onChange={this.onChangeSelectSortValue}
+            valueRenderer={this.selectSortValueRenderer}
+            optionRenderer={this.selectSortValueRenderer}
+            noResultsText={t('input.noResult')}
+          />
         </div>
         <div className="description-row">
           <p className="info">

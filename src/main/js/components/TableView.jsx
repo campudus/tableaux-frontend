@@ -4,13 +4,12 @@ var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./table/Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
 var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
-var ActionTypes = require('../constants/TableauxConstants').ActionTypes;
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
 var FilteredSubcollection = require('ampersand-filtered-subcollection');
 
-import _ from 'lodash';
-import TableauxConstants from '../constants/TableauxConstants';
+import * as _ from 'lodash';
+import TableauxConstants, {SortValues, ActionTypes} from '../constants/TableauxConstants';
 import Filter from './header/filter/Filter.jsx';
 import Navigation from './header/Navigation.jsx';
 import PageTitle from './header/PageTitle.jsx';
@@ -154,18 +153,14 @@ var TableView = React.createClass({
   },
 
   changeFilter : function (rowsFilter) {
-    var filterValue = rowsFilter.filterValue;
-    var filterColumnId = rowsFilter.filterColumnId;
-    var sortColumnId = rowsFilter.sortColumnId;
-    var sortValue = rowsFilter.sortValue;
-    var currentTable = this.getCurrentTable();
-    var rowsCollection;
-    var allEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(sortValue);
+    const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
 
+    const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(sortValue);
 
-    if (allEmpty) {
-      rowsCollection = currentTable.rows;
+    let rowsCollection;
+    if (isFilterEmpty) {
       rowsFilter = null;
+      rowsCollection = this.getCurrentTable().rows;
     } else {
       rowsCollection = this.getFilteredRows(rowsFilter);
     }
@@ -182,71 +177,79 @@ var TableView = React.createClass({
   },
 
   getFilteredRows : function (rowsFilter) {
-    var filterValue = rowsFilter.filterValue;
-    var filterColumnId = rowsFilter.filterColumnId;
-    var sortColumnId = rowsFilter.sortColumnId;
-    var currentTable = this.getCurrentTable();
-    var columnsOfTable = currentTable.columns;
-    var filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : null;
-    var sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : null;
-    var allRows = currentTable.rows;
-    var toFilterValue = filterValue.toLowerCase().trim();
-    var self = this;
-    var langtag = this.props.langtag;
+    const filterValue = rowsFilter.filterValue;
+    const filterColumnId = rowsFilter.filterColumnId;
+    const sortColumnId = rowsFilter.sortColumnId;
+    const sortValue = rowsFilter.sortValue;
 
-    var containsValue = function (cellValue, filterValue) {
+    const currentTable = this.getCurrentTable();
+    const columnsOfTable = currentTable.columns;
+    const filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : null;
+    const sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : null;
+
+    const allRows = currentTable.rows;
+    const toFilterValue = filterValue.toLowerCase().trim();
+
+    const langtag = this.props.langtag;
+
+    const containsValue = function (cellValue, filterValue) {
       return _.every(_.words(filterValue), function (word) {
         return cellValue.toString().trim().toLowerCase().indexOf(word) > -1;
       });
     };
 
-    var getCellValue = function (cell) {
-      var value;
+    const getSortableCellValue = function (cell) {
+      let sortableValue;
 
       if (cell.isLink) {
-        _.forEach(cell.linkStringLanguages, (linkElement)=> {
-          value += linkElement[langtag] + " ";
+        const linkValues = _.map(cell.linkStringLanguages, (linkElement) => {
+          return linkElement[langtag] ? linkElement[langtag] : "";
         });
+
+        sortableValue = _.join(linkValues, ":");
+      } else if (cell.kind === ColumnKinds.concat) {
+        sortableValue = cell.rowConcatString(langtag);
       } else if (cell.isMultiLanguage) {
-        value = cell.value[self.props.langtag];
+        sortableValue = cell.value[langtag];
       } else {
-        value = cell.value;
+        sortableValue = cell.value;
       }
 
-      if (value) {
+      if (sortableValue) {
         if (cell.kind === ColumnKinds.numeric) {
-          value = parseInt(value);
+          sortableValue = _.toNumber(sortableValue);
         } else {
-          value = value.toString().trim();
+          sortableValue = sortableValue.toString().trim().toLowerCase();
         }
       } else {
-        value = "";
+        sortableValue = "";
       }
 
-      return value;
+      return sortableValue;
     };
 
-    if (_.isEmpty(toFilterValue) && !sortColumnId) {
+    if (_.isEmpty(toFilterValue) && typeof sortColumnId === 'undefined') {
       return allRows;
     }
 
-    var filteredRows = new FilteredSubcollection(allRows, {
-      filter : function (model) {
+    return new FilteredSubcollection(allRows, {
+      filter : function (row) {
         if (!_.isFinite(filterColumnIndex) || _.isEmpty(filterValue)) {
           return true;
         }
-        var targetCell = model.cells.at(filterColumnIndex);
-        var firstCell = model.cells.at(0);
+
+        const targetCell = row.cells.at(filterColumnIndex);
+        const firstCell = row.cells.at(0);
 
         if (firstCell.kind === ColumnKinds.concat) {
-          var concatValue = firstCell.rowConcatString(langtag).toLowerCase().trim();
+          const concatValue = firstCell.rowConcatString(langtag).toLowerCase().trim();
           //Always return empty concat rows. allows to add new rows while filtered
           if (_.isEmpty(concatValue)) {
             return true;
           }
         } else {
           //First cell is not concat but probably text, shorttext, number, etc.
-          var firstCellValue = getCellValue(firstCell);
+          const firstCellValue = getSortableCellValue(firstCell);
           //_.isEmpty(123) returns TRUE, so we check for number (int & float)
           if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
             return true;
@@ -254,36 +257,55 @@ var TableView = React.createClass({
         }
 
         if (targetCell.kind === ColumnKinds.concat) {
-          var concatValue = targetCell.rowConcatString(langtag).toLowerCase().trim();
+          const concatValue = targetCell.rowConcatString(langtag).toLowerCase().trim();
           return containsValue(concatValue, toFilterValue);
         } else if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
           || targetCell.kind === ColumnKinds.numeric
           || targetCell.kind === ColumnKinds.text
           || targetCell.kind === ColumnKinds.link) {
-          return containsValue(getCellValue(targetCell), toFilterValue);
-        } else return false;
+          return containsValue(getSortableCellValue(targetCell), toFilterValue);
+        } else {
+          return false;
+        }
       },
 
-      //TODO: There's a ugly situation when sorted by year and new rows are getting added. In the future we probably need to implement our own comparator
-      comparator : function (model) {
-        //default
-        if (!_.isFinite(sortColumnIndex)) {
-          return model.id;
+      comparator : function (rowOne, rowTwo) {
+        // swap gt and lt to support ASC and DESC
+        // gt = in case rowOne > rowTwo
+        // lt = in case rowOne < rowTwo
+        const gt = sortValue === SortValues.ASC ? +1 : -1;
+        const lt = sortValue === SortValues.ASC ? -1 : +1;
+
+        const compareRowIds = () => {
+          return rowOne.id === rowTwo.id ? 0 : (rowOne.id > rowTwo.id ? gt : lt);
+        };
+
+        if (sortColumnIndex <= -1) {
+          // Default sort by row id
+          return compareRowIds();
         } else {
-          let cellValue = getCellValue(model.cells.at(sortColumnIndex));
-          if (_.isNumber(cellValue)) {
-            return cellValue;
+          const cellValueOne = rowOne && rowOne.cells ? getSortableCellValue(rowOne.cells.at(sortColumnIndex)) : null;
+          const cellValueTwo = rowTwo && rowTwo.cells ? getSortableCellValue(rowTwo.cells.at(sortColumnIndex)) : null;
+
+          const isEmptyOne = cellValueOne === null || (typeof cellValueOne === 'string' && _.isEmpty(cellValueOne));
+          const isEmptyTwo = cellValueTwo === null || (typeof cellValueTwo === 'string' && _.isEmpty(cellValueTwo));
+
+          if (isEmptyOne && isEmptyTwo) {
+            return 0;
+          } else if (isEmptyOne) {
+            // ensure than in both sorting cases null/emptys are last!
+            return sortValue === SortValues.ASC ? gt : lt;
+          } else if (isEmptyTwo) {
+            // ensure than in both sorting cases null/emptys are last!
+            return sortValue === SortValues.ASC ? lt : gt;
           } else {
-            //we want the cell value to be lowercase to prevent a is behind Z
-            return _.isString(cellValue) && cellValue !== "" ? cellValue.toLowerCase() : null; //null forces empty fields to the bottom
+            // first compare values and if equal than sort by row id
+            return _.eq(cellValueOne, cellValueTwo) ? compareRowIds() : (_.gt(cellValueOne, cellValueTwo) ? gt : lt)
           }
         }
       }
-
     });
-
-    return filteredRows;
   },
 
   doSwitchTable : function () {

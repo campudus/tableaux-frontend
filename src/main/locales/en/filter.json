@@ -7,7 +7,9 @@
   "help": {
     "contains": "contains",
     "note": "Filter and search for numeric and text fields. Links are not yet supported.",
-    "sort": "sort ascending {{linebreak}} (A-Z or 0-9)"
+    "sort": "sorted",
+    "sortasc": "ascending (A-Z or 0-9)",
+    "sortdesc": "descending (Z-A or 9-0)"
   },
   "input": {
     "filter": "Filter for...",
