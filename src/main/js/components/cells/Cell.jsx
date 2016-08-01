@@ -14,6 +14,7 @@ var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 var RowConcatHelper = require('../../helpers/RowConcatHelper');
 
+import DisabledCell from './disabled/DisabledCell.jsx';
 import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
 import CurrencyCell from './currency/CurrencyCell.jsx';
 
@@ -51,7 +52,7 @@ var Cell = React.createClass({
 
   //Dont update when cell is not editing or selected
   shouldComponentUpdate : function (nextProps, nextState) {
-    const {selected, editing, langtag,shouldFocus} = this.props;
+    const {selected, editing, langtag, shouldFocus} = this.props;
     return (editing !== nextProps.editing
     || selected !== nextProps.selected
     || langtag !== nextProps.langtag
@@ -120,7 +121,9 @@ var Cell = React.createClass({
     let cellKind = null;
     const {cell, langtag, selected, editing} = this.props;
 
-    switch (this.props.cell.kind) {
+    const kind = cell.isEditable ? this.props.cell.kind : 'disabled';
+
+    switch (kind) {
 
       case ColumnKinds.link:
         cellKind = <LinkCell cell={this.props.cell} langtag={langtag} selected={selected}
@@ -164,6 +167,9 @@ var Cell = React.createClass({
                                  editing={editing} setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
         break;
 
+      case 'disabled':
+        cellKind = <DisabledCell cell={this.props.cell} langtag={langtag} selected={selected}/>;
+        break;
 
       default:
         cellKind = <TextCell cell={this.props.cell} langtag={langtag} editing={editing}
@@ -171,7 +177,15 @@ var Cell = React.createClass({
         break;
     }
 
-    var cellClass = "cell" + " cell-" + cell.kind + " cell-" + cell.column.getId() + "-" + cell.rowId + (selected ? " selected" : "") + (editing ? " editing" : "");
+    let cellClass = "cell" + " cell-" + kind + " cell-" + cell.column.getId() + "-" + cell.rowId;
+
+    if (selected) {
+      cellClass += " selected";
+    }
+
+    if (editing && cell.isEditable) {
+      cellClass += " editing";
+    }
 
     //onKeyDown event just for selected components
     if (selected) {

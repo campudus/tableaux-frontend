@@ -35,42 +35,49 @@ var Cell = AmpersandModel.extend({
         return 'cell-' + this.tableId + '-' + this.column.getId() + '-' + this.rowId;
       }
     },
+
     changedCellEvent : {
       deps : ['tableId', 'column', 'rowId'],
       fn : function () {
         return 'changed-cell:' + this.tableId + ':' + this.column.getId() + ':' + this.rowId;
       }
     },
+
     isLink : {
       deps : ['column'],
       fn : function () {
         return this.column.isLink;
       }
     },
+
     isMultiLanguage : {
       deps : ['column'],
       fn : function () {
         return this.column.multilanguage;
       }
     },
+
     isIdentifier : {
       deps : ['column'],
       fn : function () {
         return this.column.identifier;
       }
     },
+
     isMultiCountry : {
       deps : ['column'],
       fn : function () {
         return this.column.languageType === "country";
       }
     },
+
     kind : {
       deps : ['column'],
       fn : function () {
         return this.column.kind;
       }
     },
+
     isConcatCell : {
       deps : ['kind'],
       fn : function () {
@@ -112,6 +119,7 @@ var Cell = AmpersandModel.extend({
         return linksWithLangtags;
       }
     },
+
     rowConcatLanguages : {
       deps : ['value'],
       fn : function () {
@@ -126,12 +134,26 @@ var Cell = AmpersandModel.extend({
         return rowConcatAllLangs;
       }
     },
+
     rowConcatString : {
       deps : ['rowConcatLanguages'],
       fn : function () {
         return function (langtag) {
           return this.rowConcatLanguages[langtag] || "";
         }
+      }
+    },
+
+    isEditable : {
+      deps : ['tables', 'tableId', 'column'],
+      fn : function () {
+        const column = this.column;
+        const table = this.tables.get(this.tableId);
+
+        // if it's the cell
+        // - is of the first or second column of a table with type 'settings'
+        // the cell is not editable.
+        return !(table.type === 'settings' && (column.id === 1 || column.id === 2));
       }
     }
   },

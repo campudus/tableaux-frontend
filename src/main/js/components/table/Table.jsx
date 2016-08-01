@@ -7,13 +7,13 @@ var Rows = require('./../rows/Rows.jsx');
 var OutsideClick = require('react-onclickoutside');
 var ActionCreator = require('../../actions/ActionCreator');
 
-import {ActionTypes,Directions,ColumnKinds,RowHeight} from '../../constants/TableauxConstants';
+import {ActionTypes, Directions, ColumnKinds, RowHeight} from '../../constants/TableauxConstants';
 import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
-
-//Worker
 import * as tableRowsWorker from './tableRowsWorker';
 import * as tableNavigationWorker from './tableNavigationWorker';
 import * as tableContextMenu from './tableContextMenu';
+
+//Worker
 
 var Table = React.createClass({
   mixins : [AmpersandMixin, OutsideClick],
@@ -182,7 +182,7 @@ var Table = React.createClass({
 
   render() {
     const {langtag, table:{columns}, rows, table} = this.props;
-    const {selectedCell, selectedCellEditing,expandedRowIds,selectedCellExpandedRow,showScrollToLeftButton } = this.state;
+    const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
     console.log("Rendering table");
     return (
@@ -190,7 +190,7 @@ var Table = React.createClass({
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <Columns ref="columns" langtag={langtag} columns={columns}/>
+          <Columns ref="columns" table={table} langtag={langtag} columns={columns}/>
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
                 rows={rows}

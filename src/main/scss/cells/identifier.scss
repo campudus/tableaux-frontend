@@ -1,6 +1,6 @@
 .cell {
 
-  &.cell-concat {
+  &.cell-concat, &.cell-disabled {
     background-color: #f9f9f9;
     color: $color-text-light-grey;
     //Overwrite editing styling because concat cells are not editable

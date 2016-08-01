@@ -1,10 +1,11 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var Infinite = require('../../thirdparty/react-infinite/react-infinite.js');
-var NewRow = require('./NewRow.jsx');
-import {RowHeight} from '../../constants/TableauxConstants';
+const React = require('react');
+const AmpersandMixin = require('ampersand-react-mixin');
 
-var Row = require('./Row.jsx');
+const Infinite = require('../../thirdparty/react-infinite/react-infinite.js');
+const Row = require('./Row.jsx');
+const NewRow = require('./NewRow.jsx');
+
+import {RowHeight} from '../../constants/TableauxConstants';
 
 var Rows = React.createClass({
   mixins : [AmpersandMixin],
@@ -13,13 +14,14 @@ var Rows = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    rows : React.PropTypes.object,
+    rows : React.PropTypes.object.isRequired,
     selectedCell : React.PropTypes.object,
     selectedCellEditing : React.PropTypes.bool,
     expandedRowIds : React.PropTypes.array,
     selectedCellExpandedRow : React.PropTypes.string,
     rowsHeight : React.PropTypes.number,
-    shouldCellFocus : React.PropTypes.bool
+    shouldCellFocus : React.PropTypes.bool,
+    table : React.PropTypes.object.isRequired
   },
 
   shouldComponentUpdate(nP) {
@@ -40,45 +42,54 @@ var Rows = React.createClass({
   },
 
   isRowExpanded : function (rowId) {
-    return (this.props.expandedRowIds && this.props.expandedRowIds.indexOf(rowId) > -1) || false;
+    const {expandedRowIds} = this.props;
+    return (expandedRowIds && expandedRowIds.indexOf(rowId) > -1) || false;
   },
 
   //Is this row, including all associated multilanguage rows selected?
   isRowSelected : function (row) {
-    var currentSelectedCell = this.props.selectedCell;
-    if (currentSelectedCell) {
-      return (row.getId() === currentSelectedCell.rowId);
+    const {selectedCell} = this.props;
+    if (selectedCell) {
+      return (row.getId() === selectedCell.rowId);
     } else {
       return false;
     }
   },
 
   getRows : function () {
-    var self = this;
-    if (this.props.rows) {
-      var rows = this.props.rows.map(function (row, idx) {
-        var isRowSelected = self.isRowSelected(row);
-        var isRowExpanded = self.isRowExpanded(row.id);
-        var selectedCellVal = isRowSelected ? self.props.selectedCell : null;
-        var selectedCellEditingVal = isRowSelected ? self.props.selectedCellEditing : null;
-        var selectedCellExpandedRowVal = isRowSelected ? self.props.selectedCellExpandedRow : null;
-        var shouldCellFocusVal = isRowSelected ? self.props.shouldCellFocus : false;
+    const self = this;
+    const {table, rows, langtag} = this.props;
+
+    if (rows) {
+      const renderedRows = rows.map(function (row, idx) {
+        const isRowSelected = self.isRowSelected(row);
+        const isRowExpanded = self.isRowExpanded(row.id);
+
+        const selectedCellVal = isRowSelected ? self.props.selectedCell : null;
+        const selectedCellEditingVal = isRowSelected ? self.props.selectedCellEditing : null;
+        const selectedCellExpandedRowVal = isRowSelected ? self.props.selectedCellExpandedRow : null;
+        const shouldCellFocusVal = isRowSelected ? self.props.shouldCellFocus : false;
 
         return <Row key={idx} row={row} selectedCell={selectedCellVal}
                     selectedCellEditing={selectedCellEditingVal}
                     selectedCellExpandedRow={selectedCellExpandedRowVal}
-                    langtag={self.props.langtag}
+                    langtag={langtag}
+                    table={table}
                     isRowExpanded={isRowExpanded}
                     isRowSelected={isRowSelected}
                     shouldCellFocus={shouldCellFocusVal}
         />
-
       });
-      rows.push(<NewRow key="new-row" table={this.props.table} langtag={this.props.langtag}/>);
 
-      return rows;
-    } else return null;
+      if (table.type !== 'settings') {
+        renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag}/>);
+      }
 
+      return renderedRows;
+    } else {
+
+      return null;
+    }
   },
 
   render : function () {

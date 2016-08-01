@@ -1,16 +1,17 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
+import React from 'react';
+import AmpersandMixin from 'ampersand-react-mixin';
 import {translate} from 'react-i18next';
 import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
-import TableauxConstants from '../../constants/TableauxConstants';
-const {ColumnKinds} = TableauxConstants;
+import {ColumnKinds, FallbackLanguage, LanguageType} from '../../constants/TableauxConstants';
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
-    columns : React.PropTypes.object.isRequired
+    columns : React.PropTypes.object.isRequired,
+    table : React.PropTypes.object.isRequired,
+    t : React.PropTypes.func.isRequired,
   },
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -20,11 +21,12 @@ var Columns = React.createClass({
 
   renderColumn(langtag, column, index) {
     let name, columnContent = [];
-    const {t} = this.props;
+    const {t, table} = this.props;
     const description = column.description[langtag];
+
     const language = getLanguageOfLangtag(langtag);
     const columnDisplayName = column.displayName[language];
-    const fallbackColumnDisplayName = column.displayName[TableauxConstants.FallbackLanguage] || column.name;
+    const fallbackColumnDisplayName = column.displayName[FallbackLanguage] || column.name;
     let columnIcon = null;
 
     if (column.kind === ColumnKinds.concat) {
@@ -35,6 +37,8 @@ var Columns = React.createClass({
 
     //This is the ID/Concat Column
     if (column.id === 0) {
+      name = t('concat_column_name');
+    } else if (table.type === 'settings' && column.id === 1) {
       name = t('concat_column_name');
     } else {
       name = typeof columnDisplayName === "undefined" ? fallbackColumnDisplayName : columnDisplayName;
@@ -47,7 +51,7 @@ var Columns = React.createClass({
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
 
-    if (column.languageType && column.languageType === TableauxConstants.LanguageType.country) {
+    if (column.languageType && column.languageType === LanguageType.country) {
       columnIcon = <span className="column-kind-icon"><i className="fa fa-globe"/><span
         className="label">{t('country')}</span></span>;
     }

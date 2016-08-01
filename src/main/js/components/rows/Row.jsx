@@ -1,14 +1,12 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var App = require('ampersand-app');
-var TableauxConstants = require('../../constants/TableauxConstants');
+const React = require('react');
+const AmpersandMixin = require('ampersand-react-mixin');
+const TableauxConstants = require('../../constants/TableauxConstants');
+const Dispatcher = require('../../dispatcher/Dispatcher');
+const ActionCreator = require('../../actions/ActionCreator');
+const Cell = require('../cells/Cell.jsx');
 
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var ActionCreator = require('../../actions/ActionCreator');
-var Cell = require('../cells/Cell.jsx');
 import MetaCell from '../cells/MetaCell';
-import {noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
-import {hasUserAccessToLanguage, getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
+import {hasUserAccessToLanguage, isUserAdmin} from '../../helpers/accessManagementHelper';
 import {initiateDeleteRow} from '../../helpers/rowHelper';
 
 var Row = React.createClass({
@@ -18,6 +16,7 @@ var Row = React.createClass({
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
+    table : React.PropTypes.object.isRequired,
     row : React.PropTypes.object.isRequired,
     selectedCell : React.PropTypes.object,
     selectedCellEditing : React.PropTypes.bool,
@@ -113,17 +112,20 @@ var Row = React.createClass({
   },
 
   renderLanguageRow : function (langtag) {
-    let {isRowSelected, selectedCellExpandedRow, row, isRowExpanded} = this.props;
-    var deleteButton, rowLockedIcon = null;
+    const {isRowSelected, selectedCellExpandedRow, row, isRowExpanded, table} = this.props;
+
+    let deleteButton, rowLockedIcon = "";
+
     //Is this (multilanguage) row selected
-    var selected = (isRowSelected && (langtag === selectedCellExpandedRow));
+    const selected = (isRowSelected && (langtag === selectedCellExpandedRow));
     if (selected && row.recentlyDuplicated) {
       //Todo: TBD: isn't it overkill to throw a action for this?
       //We want to visually clear the highlighting of a recently duplicated row
       row.recentlyDuplicated = false;
     }
+
     //Set row class optional with selected class
-    var className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated ? " duplicated" : "");
+    const className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated ? " duplicated" : "");
 
     //show locked language icon
     if (!isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
@@ -132,7 +134,7 @@ var Row = React.createClass({
     // Add delete button to default-language row
     // or to every not expanded row
     // will not show when no access
-    else if ((langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
+    else if (table.type !== 'settings' && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
@@ -155,10 +157,10 @@ var Row = React.createClass({
   },
 
   render : function () {
-    var self = this;
+    const self = this;
     if (this.props.isRowExpanded) {
       // render all language-rows for this row
-      var rows = TableauxConstants.Langtags.map(function (langtag) {
+      const rows = TableauxConstants.Langtags.map(function (langtag) {
         return self.renderLanguageRow(langtag);
       });
       return <div className="row-group expanded" tabIndex="-1">{rows}</div>;

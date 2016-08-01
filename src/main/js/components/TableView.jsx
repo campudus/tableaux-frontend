@@ -301,18 +301,15 @@ var TableView = React.createClass({
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true}/></div>;
     } else {
-      var self = this;
       var tables = this.tables;
       var rowsCollection = this.state.rowsCollection;
       var currentTable = this.getCurrentTable();
 
       var table = '';
-      var tableName = '';
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}/>;
-          tableName = currentTable.name;
         } else {
           //TODO show error to user
           console.error("No table found with id " + this.state.currentTableId);
