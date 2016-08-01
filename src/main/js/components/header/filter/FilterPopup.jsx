@@ -20,10 +20,31 @@ class FilterPopup extends React.Component {
     currentFilter : React.PropTypes.object
   };
 
-  selectColumnOptions = null;
+  static isSortableColumn = (column) => {
+    return column.kind === ColumnKinds.text
+      || column.kind === ColumnKinds.shorttext
+      || column.kind === ColumnKinds.richtext
+      || column.kind === ColumnKinds.numeric
+      || column.kind === ColumnKinds.concat
+      || column.kind === ColumnKinds.link
+      || column.kind === ColumnKinds.boolean;
+  };
+
+  static isSearchableColumn = (column) => {
+    return column.kind === ColumnKinds.text
+      || column.kind === ColumnKinds.shorttext
+      || column.kind === ColumnKinds.richtext
+      || column.kind === ColumnKinds.numeric
+      || column.kind === ColumnKinds.concat
+      || column.kind === ColumnKinds.link;
+  };
+
+  sortableColumns = null;
+  searchableColumns = null;
 
   constructor(props) {
     super(props);
+
     let currFilter = props.currentFilter;
 
     this.state = {
@@ -33,42 +54,32 @@ class FilterPopup extends React.Component {
       sortValue : currFilter && !_.isEmpty(currFilter.sortValue) ? currFilter.sortValue : TableauxConstants.SortValues.ASC
     };
 
-    this.buildColumnOptions();
+    this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn);
+    this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn);
   }
 
-  getColumnOptions() {
-    return this.selectColumnOptions || this.buildColumnOptions();
+  getSortableColumns() {
+    return this.sortableColumns || (this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn()));
   }
 
-  buildColumnOptions() {
-    const {t, langtag} = this.props;
-    let options = this.props.columns.reduce(function (res, column) {
+  getSearchableColumns() {
+    return this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
+  }
 
-      let allowedKinds = column.kind === ColumnKinds.text
-        || column.kind === ColumnKinds.shorttext
-        || column.kind === ColumnKinds.richtext
-        || column.kind === ColumnKinds.numeric
-        || column.kind === ColumnKinds.concat
-        || column.kind === ColumnKinds.link;
+  buildColumnOptions(filterFn) {
+    const {t, columns, langtag} = this.props;
 
-      if (allowedKinds) {
-        //Show display name with fallback to machine name
-        const columnDisplayName = column.displayName[langtag] || column.name;
-        //ID Column gets translated name
-        const labelName = column.id === 0 ? t('concat_column_name') : columnDisplayName;
+    return _.map(_.filter(columns.models, filterFn), (column) => {
+      // Show display name with fallback to machine name
+      const columnDisplayName = column.displayName[langtag] || column.name;
+      // ID Column gets translated name
+      const labelName = column.id === 0 ? t('concat_column_name') : columnDisplayName;
 
-        console.log("pushing label:", labelName, "value: ", column.id);
-
-        res.push({
-          label : labelName,
-          value : column.id
-        });
-      }
-      return res;
-
-    }, []);
-    this.selectColumnOptions = options;
-    return options;
+      return {
+        label : labelName,
+        value : column.id
+      };
+    });
   }
 
   getSortOptions() {
@@ -106,17 +117,17 @@ class FilterPopup extends React.Component {
     this.props.onClickedOutside(event);
   };
 
-  selectFilterValueRenderer(option) {
+  selectFilterValueRenderer = (option) => {
     return <div><span>{option.label}</span></div>;
-  }
+  };
 
-  selectSortValueRenderer(option) {
+  selectSortValueRenderer = (option) => {
     if (option.value === TableauxConstants.SortValues.ASC) {
       return <div><i className="fa fa-sort-alpha-asc"></i> {option.label}</div>
     } else {
       return <div><i className="fa fa-sort-alpha-desc"></i> {option.label}</div>
     }
-  }
+  };
 
   onChangeSelectFilter = (selection) => {
     console.log("selection: ", selection);
@@ -147,7 +158,7 @@ class FilterPopup extends React.Component {
         <div className="filter-row">
           <Select
             className="filter-select"
-            options={this.getColumnOptions()}
+            options={this.getSearchableColumns()}
             searchable={true}
             clearable={false}
             value={this.state.selectedFilterColumn}
@@ -164,7 +175,7 @@ class FilterPopup extends React.Component {
         <div className="sort-row">
           <Select
             className="filter-select"
-            options={this.getColumnOptions()}
+            options={this.getSortableColumns()}
             searchable={true}
             clearable={false}
             value={this.state.selectedSortColumn}

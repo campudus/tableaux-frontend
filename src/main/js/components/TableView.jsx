@@ -177,15 +177,17 @@ var TableView = React.createClass({
   },
 
   getFilteredRows : function (rowsFilter) {
-    const filterValue = rowsFilter.filterValue;
     const filterColumnId = rowsFilter.filterColumnId;
+    const filterValue = rowsFilter.filterValue;
+
     const sortColumnId = rowsFilter.sortColumnId;
     const sortValue = rowsFilter.sortValue;
 
     const currentTable = this.getCurrentTable();
     const columnsOfTable = currentTable.columns;
+
     const filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : null;
-    const sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : null;
+    const sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : -1;
 
     const allRows = currentTable.rows;
     const toFilterValue = filterValue.toLowerCase().trim();
@@ -218,11 +220,17 @@ var TableView = React.createClass({
       if (sortableValue) {
         if (cell.kind === ColumnKinds.numeric) {
           sortableValue = _.toNumber(sortableValue);
+        } else if (cell.kind === ColumnKinds.boolean) {
+          sortableValue = !!sortableValue;
         } else {
           sortableValue = sortableValue.toString().trim().toLowerCase();
         }
       } else {
-        sortableValue = "";
+        if (cell.kind === ColumnKinds.boolean) {
+          sortableValue = false;
+        } else {
+          sortableValue = "";
+        }
       }
 
       return sortableValue;
