@@ -129,6 +129,9 @@ var Cell = AmpersandModel.extend({
         var rowConcatAllLangs = {};
         var self = this;
         _.forEach(TableauxConstants.Langtags, function (langtag, idx) {
+          // not really nice I think the Cell should replace
+          // an empty concat value with "- NO VALUE -" and not
+          // the model itself!
           rowConcatAllLangs[langtag] = RowConcatHelper.getCellAsStringWithFallback(self.value, self.column, langtag);
         });
         return rowConcatAllLangs;

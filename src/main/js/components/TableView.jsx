@@ -7,6 +7,7 @@ var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
 var FilteredSubcollection = require('ampersand-filtered-subcollection');
+var RowConcatHelper = require('../helpers/RowConcatHelper');
 
 import * as _ from 'lodash';
 import TableauxConstants, {SortValues, ActionTypes} from '../constants/TableauxConstants';
@@ -186,7 +187,7 @@ var TableView = React.createClass({
     const currentTable = this.getCurrentTable();
     const columnsOfTable = currentTable.columns;
 
-    const filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : null;
+    const filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : -1;
     const sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : -1;
 
     const allRows = currentTable.rows;
@@ -210,7 +211,11 @@ var TableView = React.createClass({
 
         sortableValue = _.join(linkValues, ":");
       } else if (cell.kind === ColumnKinds.concat) {
-        sortableValue = cell.rowConcatString(langtag);
+        // not really nice I think the Cell should replace
+        // an empty concat value with "- NO VALUE -" and not
+        // the model itself!
+        const temp = cell.rowConcatString(langtag);
+        sortableValue = temp === RowConcatHelper.NOVALUE ? "" : temp;
       } else if (cell.isMultiLanguage) {
         sortableValue = cell.value[langtag];
       } else {
@@ -242,38 +247,32 @@ var TableView = React.createClass({
 
     return new FilteredSubcollection(allRows, {
       filter : function (row) {
-        if (!_.isFinite(filterColumnIndex) || _.isEmpty(filterValue)) {
+        if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
+          // no or invalid column found OR no filter value
+          return true;
+        }
+
+        const firstCell = row.cells.at(0);
+        const firstCellValue = getSortableCellValue(firstCell);
+
+        // Always return true for rows with empty first value.
+        // This should allow to add new rows while filtered.
+        // _.isEmpty(123) returns TRUE, so we check for number (int & float)
+        if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
           return true;
         }
 
         const targetCell = row.cells.at(filterColumnIndex);
-        const firstCell = row.cells.at(0);
 
-        if (firstCell.kind === ColumnKinds.concat) {
-          const concatValue = firstCell.rowConcatString(langtag).toLowerCase().trim();
-          //Always return empty concat rows. allows to add new rows while filtered
-          if (_.isEmpty(concatValue)) {
-            return true;
-          }
-        } else {
-          //First cell is not concat but probably text, shorttext, number, etc.
-          const firstCellValue = getSortableCellValue(firstCell);
-          //_.isEmpty(123) returns TRUE, so we check for number (int & float)
-          if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
-            return true;
-          }
-        }
-
-        if (targetCell.kind === ColumnKinds.concat) {
-          const concatValue = targetCell.rowConcatString(langtag).toLowerCase().trim();
-          return containsValue(concatValue, toFilterValue);
-        } else if (targetCell.kind === ColumnKinds.shorttext
+        if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
           || targetCell.kind === ColumnKinds.numeric
           || targetCell.kind === ColumnKinds.text
-          || targetCell.kind === ColumnKinds.link) {
+          || targetCell.kind === ColumnKinds.link
+          || targetCell.kind === ColumnKinds.concat) {
           return containsValue(getSortableCellValue(targetCell), toFilterValue);
         } else {
+          // column type not support for filtering
           return false;
         }
       },
@@ -290,6 +289,11 @@ var TableView = React.createClass({
         };
 
         if (sortColumnIndex <= -1) {
+          if (typeof rowTwo === 'undefined') {
+            // strange special case if row was added
+            return rowOne.id;
+          }
+
           // Default sort by row id
           return compareRowIds();
         } else {

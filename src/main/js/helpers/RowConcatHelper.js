@@ -1,23 +1,17 @@
-var _ = require('lodash');
-var Moment = require('moment');
-import TableauxConstants from '../constants/TableauxConstants';
-const {ColumnKinds} = TableauxConstants;
+import * as _ from 'lodash';
+import Moment from 'moment';
 
-var NOVALUE = "– NO VALUE –";
+const TableauxConstants = require('../constants/TableauxConstants');
+const ColumnKinds = TableauxConstants.ColumnKinds;
+
+const NOVALUE = "– NO VALUE –";
 
 var internal = {
   stringHasValue : (stringToCheck) => {
     return (stringToCheck && stringToCheck.toString().trim() !== "");
   },
 
-  addDefaultLangtagPostfix : (string) => {
-    return string.concat(" (" + TableauxConstants.DefaultLangtag + ")");
-  }
-};
-
-var RowConcatHelper = {
-
-  //can be called with optional defaultLangtag to get fallback value
+  // can be called with optional defaultLangtag to get fallback value
   getRowConcatString : function (concatArray, concatColumn, langtag, defaultLangtag) {
     var concatStringArray = [];
     var finalString;
@@ -122,58 +116,51 @@ var RowConcatHelper = {
     return finalString;
 
   },
+};
 
-  getCellAsStringWithFallback : function (cellValue, column, langtag) {
-    var defaultLangtag = TableauxConstants.DefaultLangtag;
-    var rowConcatString;
+const RowConcatHelper = {
+  NOVALUE : NOVALUE,
+
+  getCellAsString : function (cellValue, column, langtag) {
+    let rowConcatString;
 
     if (column.kind === ColumnKinds.concat) {
-      //each value can fallback to default language
-      rowConcatString = this.getRowConcatString(cellValue, column, langtag, defaultLangtag);
-
-      if (!internal.stringHasValue(rowConcatString)) {
-        rowConcatString = NOVALUE;
-      }
-    }
-
-    //Text, Shorttext, etc.
-    else {
-
+      // each value can fallback to default language
+      rowConcatString = internal.getRowConcatString(cellValue, column, langtag, TableauxConstants.DefaultLangtag);
+    } else {
+      // Text, Shorttext, etc.
       if (column.multilanguage) {
         rowConcatString = cellValue[langtag];
 
-        //Link ID value is empty
+        // Link ID value is empty
         if (!internal.stringHasValue(rowConcatString)) {
 
           //Get default language fallback
-          if (langtag != defaultLangtag) {
-            rowConcatString = cellValue[defaultLangtag];
+          if (langtag != TableauxConstants.DefaultLangtag) {
+            rowConcatString = cellValue[TableauxConstants.DefaultLangtag];
 
-            //Default language fallback is not empty. Postfix the langtag
+            // Default language fallback is not empty. Postfix the langtag
             if (internal.stringHasValue(rowConcatString)) {
-              rowConcatString = internal.addDefaultLangtagPostfix(rowConcatString);
+              rowConcatString = rowConcatString.concat(" (" + TableauxConstants.DefaultLangtag + ")");
             }
           }
-
-          //There's no fallback value
-          if (!internal.stringHasValue(rowConcatString)) {
-            rowConcatString = NOVALUE;
-          }
-
         }
       } else {
-
         // Single language value
-        rowConcatString = internal.stringHasValue(cellValue) ? cellValue : NOVALUE;
+        rowConcatString = cellValue;
       }
-
     }
 
     return rowConcatString;
+  },
 
+  getCellAsStringWithFallback : function (cellValue, column, langtag) {
+    // not really nice I think the Cell should replace
+    // an empty concat value with "- NO VALUE -" and not
+    // the model itself!
+    const rowConcatString = this.getCellAsString(cellValue, column, langtag);
+    return internal.stringHasValue(rowConcatString) ? rowConcatString : NOVALUE;
   }
-
 };
 
 module.exports = RowConcatHelper;
-
