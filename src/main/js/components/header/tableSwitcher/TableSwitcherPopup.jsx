@@ -25,7 +25,7 @@ class SwitcherPopup extends React.Component {
     super(props);
 
     this.state = {
-      filterGroupId : props.currentGroupId && _.isFinite(props.currentGroupId) ? props.currentGroupId : null,
+      filterGroupId : props.currentGroupId !== null && _.isFinite(props.currentGroupId) ? props.currentGroupId : null,
       filterTableName : "",
       focusTableId : props.currentTable ? props.currentTable.id : null
     };
@@ -43,15 +43,7 @@ class SwitcherPopup extends React.Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-
-    // scroll to current focus table (initially its the current table)
-    if (this.state.focusTableId !== null && this.refs['table' + this.state.focusTableId]) {
-      ReactDOM.findDOMNode(this.refs['table' + this.state.focusTableId]).focus();
-    }
-
-    // focus on filter input
-    const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
-    filterInput.focus();
+    this.componentDidMount();
   };
 
   handleClickOutside = (event) => {
@@ -151,7 +143,7 @@ class SwitcherPopup extends React.Component {
 
     // filter tables step 1: only tables in selected group
     const filteredTablesByGroup = _.filter(tables, (table) => {
-      if (filterGroupId) {
+      if (filterGroupId !== null) {
         return table.group.id === filterGroupId
       } else {
         return true;
@@ -173,26 +165,31 @@ class SwitcherPopup extends React.Component {
 
   renderGroups = (groups) => {
     const self = this;
-    const {t} = this.props;
+    const {t, langtag} = this.props;
 
     const renderedGroups = _.map(groups, function (group, index) {
-      const groupDisplayName = group.displayName[self.props.langtag] || group.displayName[TableauxConstants.FallbackLanguage];
+      const groupDisplayName = group.displayName[langtag] || group.displayName[TableauxConstants.FallbackLanguage];
 
+      const isNoGroupGroup = group.id === 0;
       const isActive = self.state.filterGroupId === group.id;
 
       const onClickFn = () => {
         self.onClickGroup(group);
       };
 
+      let className = "";
+      className += isNoGroupGroup ? " nogroup" : "";
+      className += isActive ? " active" : "";
+
       return (
-        <li key={"group" + index} onClick={onClickFn} className={isActive ? "active" : ""}>
+        <li key={"group" + index} onClick={onClickFn} className={className}>
           {groupDisplayName}
           {isActive ? <i className="fa fa-times-circle"></i> : ""}
         </li>
       );
     });
 
-    if (groups.length === 0) {
+    if (groups.length <= 1) {
       return "";
     } else {
       return (

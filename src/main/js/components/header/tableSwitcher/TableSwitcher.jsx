@@ -3,7 +3,9 @@ import _ from 'lodash';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import TableSwitcherPopup from './TableSwitcherPopup';
 import ActionCreator from '../../../actions/ActionCreator';
+import {translate} from 'react-i18next';
 
+@translate(['header'])
 class TableSwitcherButton extends React.Component {
 
   static propTypes = {
@@ -36,6 +38,8 @@ class TableSwitcherButton extends React.Component {
   };
 
   renderPopup = () => {
+    const {t} = this.props;
+
     const groups = _.uniqBy(_.filter(this.props.tables.map((table) => {
       // map ampersand model to plain group object
       return table && table.group ? table.group : {id : 0}
@@ -47,7 +51,18 @@ class TableSwitcherButton extends React.Component {
       return group.id;
     });
 
-    return <TableSwitcherPopup langtag={this.props.langtag} groups={groups}
+    const noGroupDisplayName = {};
+    noGroupDisplayName[this.props.langtag] = t('tableSwitcher.nogroup');
+    const noGroup = {
+      id : 0,
+      displayName : noGroupDisplayName
+    };
+
+    const sortedGroups = _.sortBy(groups, (group) => {
+      return group.displayName[this.props.langtag] || group.displayName[TableauxConstants.FallbackLanguage];
+    });
+
+    return <TableSwitcherPopup langtag={this.props.langtag} groups={[...sortedGroups, noGroup]}
                                tables={this.props.tables} currentTable={this.props.currentTable}
                                onClickedOutside={this.onClickedOutside}
                                onClickedTable={this.onClickedTable}

@@ -176,6 +176,10 @@
       right: 0;
 
       border-top: 1px solid $color-grey-dark;
+
+      li.nogroup {
+        font-style: italic;
+      }
     }
   }
 }

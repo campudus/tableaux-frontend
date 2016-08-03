@@ -8,6 +8,7 @@
     "tables": "Tabellen"
   },
   "tableSwitcher": {
+    "nogroup": "ohne Gruppe...",
     "groups": "Gruppen",
     "tables": "Tabellen",
     "search": "Nach Tabelle suchen..."
