@@ -53,7 +53,13 @@ var Cell = AmpersandModel.extend({
     isMultiLanguage : {
       deps : ['column'],
       fn : function () {
-        return this.column.multilanguage;
+        if (this.column.concats) {
+          return _.some(this.column.concats, (c) => {
+            return c.multilanguage;
+          });
+        } else {
+          return this.column.multilanguage;
+        }
       }
     },
 

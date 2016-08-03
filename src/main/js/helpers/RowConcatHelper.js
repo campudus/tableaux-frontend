@@ -12,14 +12,23 @@ var internal = {
   },
 
   // can be called with optional defaultLangtag to get fallback value
-  getRowConcatString : function (concatArray, concatColumn, langtag, defaultLangtag) {
-    var concatStringArray = [];
-    var finalString;
+  getRowConcatString : (concatValueArray, concatColumn, langtag, defaultLangtag) => {
+    if (concatColumn.kind !== ColumnKinds.concat) {
+      console.error("getRowConcatString was passed no concat column:", concatColumn);
+    }
 
-    var appendString = (appendVal) => {
+    const concatColumnArray = concatColumn.concats;
+    let concatStringArray = [];
+
+    /**
+     * Appends value to concatStringArray
+     * Expects numbers or strings!
+     */
+    const appendString = (appendVal) => {
       if (_.isFinite(appendVal)) {
         appendVal = String(appendVal);
       }
+
       if (_.isString(appendVal)) {
         var trimmed = appendVal.trim();
         if (trimmed !== "") {
@@ -30,46 +39,38 @@ var internal = {
       }
     };
 
-    //Returns the appropriate column object for the concat element
-    var getColumnByConcatIndex = (concatIndex) => {
-      return concatColumn.concats[concatIndex];
+    /**
+     * Helper Function to get the value in the correct language.
+     * Works with single language and multilanguage objects.
+     * Maps undefined to empty string.
+     */
+    const getCellValueFromLanguage = (cellValue, column) => {
+      if (column.multilanguage) {
+        let value = (typeof cellValue[langtag] !== 'undefined') ? cellValue[langtag] : ((typeof defaultLangtag !== 'undefined') ? cellValue[defaultLangtag] : "");
+        return value || "";
+      } else {
+        return cellValue || "";
+      }
     };
 
-    if (concatColumn.kind !== ColumnKinds.concat) {
-      console.error("getRowConcatString was passed no concat column:", concatColumn);
-    }
-
-    _.forEach(concatArray, (concatElem, index) => {
+    _.forEach(concatValueArray, (concatValue, index) => {
       //This is the related column for a specific concat element
-      var concatElementColumn = getColumnByConcatIndex(index);
+      const concatColumn = concatColumnArray[index];
 
-      //Helper Function to get the value in the correct language. Works with single language and multilanguage objects
-      //ExplicitColumn (optional) can be used for getting the value of a linked column. Default is this cells column
-      var getCellValueFromLanguage = (cellValue, explicitColumn) => {
-        if (explicitColumn === undefined) {
-          explicitColumn = concatElementColumn;
-        }
-        if (explicitColumn.multilanguage) {
-          return cellValue[langtag] || defaultLangtag ? cellValue[defaultLangtag] : ""; // maps undefined to empty string
-        } else {
-          return cellValue || "";
-        }
-      };
-
-      switch (concatElementColumn.kind) {
+      switch (concatColumn.kind) {
 
         case ColumnKinds.shorttext:
-          appendString(getCellValueFromLanguage(concatElem));
+          appendString(getCellValueFromLanguage(concatValue, concatColumn));
           break;
 
         case ColumnKinds.text:
-          appendString(getCellValueFromLanguage(concatElem));
+          appendString(getCellValueFromLanguage(concatValue, concatColumn));
           break;
 
         case ColumnKinds.link:
-          var toColumn = concatElementColumn.toColumn;
-          _.forEach(concatElem, (linkElem, linkIndex) => {
+          let toColumn = concatColumn.toColumn;
 
+          _.forEach(concatValue, (linkElem, linkIndex) => {
             //Check the column kind linked to
             switch (toColumn.kind) {
               case ColumnKinds.shorttext:
@@ -79,42 +80,39 @@ var internal = {
 
               case ColumnKinds.concat:
                 //Concat column has a link as identifier which also links to another concat column
-                appendString(this.getRowConcatString(linkElem.value, toColumn, langtag, defaultLangtag));
+                appendString(internal.getRowConcatString(linkElem.value, toColumn, langtag, defaultLangtag));
                 break;
 
               default:
                 console.error("undefined kind of linked column. kind:", toColumn.kind, "toColumn:", toColumn);
             }
-
           });
 
           break;
 
         case ColumnKinds.boolean:
-          var boolValue = (concatElem ? concatElementColumn.displayName[langtag] : "");
+          const boolValue = (concatValue ? concatColumn.displayName[langtag] : "");
           appendString(boolValue);
           break;
 
         case ColumnKinds.numeric:
-          appendString(getCellValueFromLanguage(concatElem));
+          appendString(getCellValueFromLanguage(concatValue, concatColumn));
           break;
 
         case ColumnKinds.datetime:
-          var dateTimeValue = getCellValueFromLanguage(concatElem);
+          const dateTimeValue = getCellValueFromLanguage(concatValue, concatColumn);
           if (!_.isEmpty(dateTimeValue)) {
-            var formattedDateTimeValue = Moment(dateTimeValue, TableauxConstants.DateTimeFormats.formatForServer).format(TableauxConstants.DateTimeFormats.formatForUser);
+            const formattedDateTimeValue = Moment(dateTimeValue, TableauxConstants.DateTimeFormats.formatForServer).format(TableauxConstants.DateTimeFormats.formatForUser);
             appendString(formattedDateTimeValue);
           }
           break;
 
         default:
-          console.warn("undefined concatElement of kind:", concatElementColumn.kind, ":", concatElem);
+          console.warn("undefined concatElement of kind:", concatColumn.kind, ":", concatValue);
       }
     });
 
-    finalString = concatStringArray.join(" ");
-    return finalString;
-
+    return concatStringArray.join(" ");
   },
 };
 
