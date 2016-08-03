@@ -235,7 +235,7 @@ class SwitcherPopup extends React.Component {
       );
     });
 
-    const style = groups.length === 0 ? {width : "100%"} : {};
+    const style = groups.length <= 1 ? {width : "100%"} : {};
 
     return (
       <div className="tableswitcher-tables" style={style}>
