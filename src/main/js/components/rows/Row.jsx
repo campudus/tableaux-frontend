@@ -108,7 +108,7 @@ var Row = React.createClass({
 
   contextMenuHandler : function (e) {
     e.preventDefault();
-    ActionCreator.showRowContextMenu(this.props.row, this.props.langtag, e.pageX, e.pageY);
+    ActionCreator.showRowContextMenu(this.props.row, this.props.langtag, e.pageX, e.pageY, this.props.table);
   },
 
   renderLanguageRow : function (langtag) {

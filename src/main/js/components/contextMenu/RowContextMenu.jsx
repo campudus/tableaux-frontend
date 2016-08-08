@@ -98,10 +98,10 @@ class RowContextMenu extends React.Component {
 
     return (
       <div className="context-menu row-context-menu" style={cssStyle}>
-        <a href="#" onClick={duplicateRow}>{t('duplicate_row')}</a>
+        {this.props.table.type === 'settings' ? '' : <a href="#" onClick={duplicateRow}>{t('duplicate_row')}</a>}
         <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
         <a href="#" onClick={showDependency}>{t('show_dependency')}</a>
-        <a href="#" onClick={deleteRow}>{t('delete_row')}</a>
+        {this.props.table.type === 'settings' ? '' : <a href="#" onClick={deleteRow}>{t('delete_row')}</a>}
       </div>
     );
   }
@@ -113,7 +113,8 @@ RowContextMenu.propTypes = {
   y : React.PropTypes.number.isRequired,
   row : React.PropTypes.object.isRequired,
   offsetY : React.PropTypes.number.isRequired,
-  langtag : React.PropTypes.string.isRequired
+  langtag : React.PropTypes.string.isRequired,
+  table : React.PropTypes.object.isRequired
 };
 
 export default translate(['table'])(RowContextMenu);

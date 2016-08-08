@@ -213,8 +213,8 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.SPINNER_OFF);
   },
 
-  showRowContextMenu : function (row, langtag, x, y) {
-    Dispatcher.trigger(ActionTypes.SHOW_ROW_CONTEXT_MENU, {x, y, row, langtag});
+  showRowContextMenu : function (row, langtag, x, y, table) {
+    Dispatcher.trigger(ActionTypes.SHOW_ROW_CONTEXT_MENU, {x, y, row, langtag, table});
   },
 
   closeRowContextMenu : function () {
