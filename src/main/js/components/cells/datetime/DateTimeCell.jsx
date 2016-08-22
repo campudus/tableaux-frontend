@@ -28,8 +28,7 @@ var DateTimeCell = React.createClass({
   getDateTimeValue : function () {
     var cellValue = this.getCellValue();
     if (cellValue) {
-      var formattedVal = Moment(cellValue, TableauxConstants.DateTimeFormats.formatForServer);
-      return formattedVal;
+      return Moment(cellValue, TableauxConstants.DateTimeFormats.formatForServer);
     } else {
       return null;
     }
@@ -59,20 +58,23 @@ var DateTimeCell = React.createClass({
       event.preventDefault();
       event.stopPropagation();
     }
-    var currentDateTimeValue = this.state.currentDateTimeValue;
-    //only when date selected
-    if (this.touched) {
-      var formattedDateValue;
-      var cell = this.props.cell;
+    const currentDateTimeValue = this.state.currentDateTimeValue;
 
+    // only when date selected
+    if (this.touched) {
+      const cell = this.props.cell;
+
+      let newCellValue;
       if (cell.isMultiLanguage) {
-        formattedDateValue = {};
-        formattedDateValue[this.props.langtag] = (currentDateTimeValue === null) ? null : currentDateTimeValue;
+        newCellValue = {
+          [this.props.langtag]: currentDateTimeValue
+        };
       } else {
-        formattedDateValue = (currentDateTimeValue === null) ? null : String(currentDateTimeValue);
+        newCellValue = currentDateTimeValue;
       }
-      //Save to db
-      ActionCreator.changeCell(cell, formattedDateValue);
+
+      // Save to db
+      ActionCreator.changeCell(cell, newCellValue);
     }
   },
 
