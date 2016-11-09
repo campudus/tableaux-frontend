@@ -25,7 +25,7 @@ var Columns = React.createClass({
     const description = column.description[langtag];
 
     const language = getLanguageOfLangtag(langtag);
-    const columnDisplayName = column.displayName[language];
+    const columnDisplayName = column.displayName[langtag] || column.displayName[language];
     const fallbackColumnDisplayName = column.displayName[FallbackLanguage] || column.name;
     let columnIcon = null;
 
