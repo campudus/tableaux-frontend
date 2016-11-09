@@ -34,7 +34,7 @@ var internal = {
         if (trimmed !== "") {
           concatStringArray.push(trimmed);
         }
-      } else if (appendVal !== null && appendVal !== undefined) {
+      } else if (appendVal === null || appendVal === undefined) {
         console.warn("Cell.getRowConcatString: No String was passed to appendString Method. Passed value is:", appendVal);
       }
     };
@@ -47,9 +47,9 @@ var internal = {
     const getCellValueFromLanguage = (cellValue, column) => {
       if (column.multilanguage) {
         let value = (typeof cellValue[langtag] !== 'undefined') ? cellValue[langtag] : ((typeof defaultLangtag !== 'undefined') ? cellValue[defaultLangtag] : "");
-        return value || "";
+        return (value === null || value === undefined) ? "" : value;
       } else {
-        return cellValue || "";
+        return (cellValue === null || cellValue === undefined) ? "" : cellValue;
       }
     };
 
