@@ -63,13 +63,12 @@ function runWebpackServer(callback) {
     hot : true,
     historyApiFallback : true,
 
-    proxy : [{
-      path : '/api/*',
-      target : config.tableauxUrl,
-      rewrite : function (req) {
-        req.url = req.url.replace(/^\/api/, '');
+    proxy : {
+      '/api/*' : {
+        target : config.tableauxUrl,
+        pathRewrite : {'^/api' : ''}
       }
-    }],
+    },
 
     stats : {colors : true}
   });
