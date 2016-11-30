@@ -51,9 +51,12 @@ class SwitcherPopup extends React.Component {
   };
 
   onClickGroup = (group) => {
-    this.props.onClickedGroup(group);
+    const groupId = group && group.id ? group.id : null;
+
+    this.props.onClickedGroup(groupId);
+
     this.setState({
-      filterGroupId : this.state.filterGroupId === group.id ? null : group.id,
+      filterGroupId : this.state.filterGroupId === groupId ? null : groupId,
       filterTableName : ""
     });
 
@@ -264,6 +267,8 @@ class SwitcherPopup extends React.Component {
   };
 
   render() {
+    console.log("TableSwitcherPopup.render()");
+
     const groups = this.props.groups;
     const tables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
 

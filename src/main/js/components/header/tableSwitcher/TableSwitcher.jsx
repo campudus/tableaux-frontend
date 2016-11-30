@@ -33,8 +33,12 @@ class TableSwitcherButton extends React.Component {
     ActionCreator.switchTable(table.id, this.props.langtag);
   };
 
-  onClickedGroup = (group) => {
-    this.setState({currentGroupId : group.id});
+  onClickedGroup = (groupId) => {
+    const newGroupId = (groupId === this.state.currentGroupId)
+      ? null // clicked again so toggle off
+      : groupId; // set new group
+
+    this.setState({currentGroupId : newGroupId});
   };
 
   renderPopup = () => {
