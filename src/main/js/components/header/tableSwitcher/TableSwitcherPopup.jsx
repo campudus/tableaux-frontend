@@ -199,9 +199,11 @@ class SwitcherPopup extends React.Component {
         <div className="tableswitcher-groups">
           <div className="tableswitcher-label"><i className="fa fa-filter"></i> {t('tableSwitcher.groups')}</div>
 
-          <ul>
-            {renderedGroups}
-          </ul>
+          <div className="tableswitcher-groups-list">
+            <ul>
+              {renderedGroups}
+            </ul>
+          </div>
         </div>
       );
     }
