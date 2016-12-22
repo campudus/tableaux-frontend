@@ -1,0 +1,119 @@
+.entityView {
+  display: table;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+  position: relative;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
+
+  .view {
+    display: table-row;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $color-grey-dark;
+    }
+
+    .row-headline {
+      display: table-cell;
+      text-transform: uppercase;
+      font-weight: bold;
+      vertical-align: middle;
+      white-space: nowrap;
+      padding-right: 20px;
+
+      a {
+        border: 1px solid $color-subtle-grey;
+        border-radius: 3px;
+        padding: 3px 10px;
+        vertical-align: middle;
+
+        .fa {
+          color: $color-text-medium-grey;
+          margin-left: 5px;
+        }
+      }
+
+      span {
+        padding-left: 11px;
+      }
+
+      > .fa {
+        color: $color-text-medium-grey;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .view-column {
+    display: table-cell;
+    padding-top: 12px;
+    min-width: 200px;
+  }
+
+  .view-content {
+    min-height: 1em;
+
+    &:empty {
+      padding: 12px 0;
+    }
+  }
+
+  .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime {
+    .view-content {
+      background-color: white;
+      border: 1px solid $color-grey-dark;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .view-link, .view-attachment {
+    .view-content {
+
+      .link-label {
+        display: inline-block;
+        background-color: white;
+        padding: 6px;
+        -ms-border-radius: 3px;
+        -o-border-radius: 3px;
+        border-radius: 3px;
+        -webkit-box-shadow: 0 2px 1px $color-text-medium-grey;
+        -moz-box-shadow: 0 2px 1px $color-text-medium-grey;
+        box-shadow: 0 2px 1px $color-text-medium-grey;
+        margin: 0 12px 12px 0;
+      }
+    }
+  }
+
+  .view-currency {
+    .currency-item {
+      display: inline-block;
+      background-color: white;
+      padding: 8px;
+      -ms-border-radius: 3px;
+      -o-border-radius: 3px;
+      border-radius: 3px;
+      -webkit-box-shadow: 0 2px 1px $color-text-medium-grey;
+      -moz-box-shadow: 0 2px 1px $color-text-medium-grey;
+      box-shadow: 0 2px 1px $color-text-medium-grey;
+      margin: 0 12px 12px 0;
+    }
+
+    .langtag {
+      vertical-align: middle;
+      display: inline-block;
+      text-align: center;
+      margin-right: 5px;
+
+      .langtag-label {
+        display: block;
+      }
+    }
+  }
+
+}

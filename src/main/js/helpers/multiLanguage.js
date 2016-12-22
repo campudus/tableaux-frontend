@@ -73,7 +73,6 @@ function getCountryOfLangtag(langtag) {
   return splittedLangtag.length > 1 ? splittedLangtag[1] : String(splittedLangtag[0]).toUpperCase();
 }
 
-
 function getLanguageOfLangtag(langtag) {
   return langtag.split(/-|_/)[0];
 }
