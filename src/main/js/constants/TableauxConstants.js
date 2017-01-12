@@ -68,9 +68,10 @@ var TableauxConstant = {
     SHOW_TOAST : null,
 
     //Access Rights
-    NO_PERMISSION_SAVE_LANGUAGE : null
+    NO_PERMISSION_SAVE_LANGUAGE : null,
 
-
+    //Column modification
+    DONE_EDIT_HEADER : null
   }),
 
   Directions : keyMirror({

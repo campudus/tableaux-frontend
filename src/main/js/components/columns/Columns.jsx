@@ -5,10 +5,21 @@ import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
 import {ColumnKinds, FallbackLanguage, LanguageType} from '../../constants/TableauxConstants';
 import * as _ from 'lodash'
 import ColumnEntry from './ColumnEntry.jsx'
+import TableauxConstants from "../../constants/TableauxConstants"
+import Dispatcher from "../../dispatcher/Dispatcher"
 
+const ActionTypes = TableauxConstants.ActionTypes
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
+
+  componentWillMount() {
+    Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this)
+  },
+
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this)
+  },
 
   propTypes : {
     langtag : React.PropTypes.string.isRequired,
@@ -19,9 +30,11 @@ var Columns = React.createClass({
 
   shouldComponentUpdate(nextProps, nextState) {
     const {langtag, columns} = this.props;
-    return (!_.eq(this.state, nextState) ||
-    langtag !== nextProps.langtag ||
-    columns !== nextProps.columns)
+    return (
+        !_.eq(this.state, nextState) ||
+        langtag !== nextProps.langtag ||
+        columns !== nextProps.columns
+    )
   },
 
   getInitialState() {
@@ -83,9 +96,25 @@ var Columns = React.createClass({
     )
   },
 
+  stopEditing(payload) {
+    console.log("Columns.stopEditing", payload)
+    if (payload.value) {
+      console.log("Saving edits...")
+      saveEdits(payload)
+    }
+    this.setState({ edit: null })
+  },
+
+  saveEdits(payload) {
+    const {tableId,colId,langtag,value} = payload
+    console.log("TODO: Tell server: please save", value, "in table", tableId, "at column", colId, "for language", langtag)
+  },
+
   clickHandler(id) {
+    //TODO: disable editing if not admin; short-circuiting click-handler will suffice
     if (id < 1) return // don't edit "ID" header
-    const {selected,edit} = this.state
+
+    const {selected} = this.state
     this.setState({
       selected: id,
       edit: (selected === id) ? id : null

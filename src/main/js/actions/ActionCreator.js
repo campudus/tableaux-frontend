@@ -227,6 +227,10 @@ module.exports = {
 
   showToast : function (content, milliseconds) {
     Dispatcher.trigger(ActionTypes.SHOW_TOAST, {content, milliseconds});
+  },
+
+  editColumnHeaderDone: (tableId, colId, langtag, newName) => {
+    Dispatcher.trigger(ActionTypes.DONE_EDIT_HEADER, {tableId, colId, langtag, newName})
   }
 
 };

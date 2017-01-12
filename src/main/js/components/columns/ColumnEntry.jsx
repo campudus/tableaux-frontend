@@ -1,6 +1,10 @@
 import React from 'react'
 import AmpersandMixin from 'ampersand-react-mixin'
 import EditColumnEntry from './EditColumnEntry'
+import TableauxConstants from '../../constants/TableauxConstants'
+import ActionCreator from '../../actions/ActionCreator'
+
+const ActionTypes = TableauxConstants.ActionTypes
 
 const ColumnEntry = React.createClass({
   mixins: [AmpersandMixin],
@@ -13,6 +17,12 @@ const ColumnEntry = React.createClass({
     clickHandler: React.PropTypes.func.isRequired,
     langtag: React.PropTypes.string.isRequired,
     name: React.PropTypes.string.isRequired
+  },
+
+  blurHandler(evt) {
+    const {index,langtag} = this.props
+    ActionCreator.editColumnHeaderDone(null, index, langtag, null)
+    console.log("Done editing column", this.props.name)
   },
 
   render() {
@@ -30,7 +40,8 @@ const ColumnEntry = React.createClass({
       return (
           <EditColumnEntry name={name}
                            index={index}
-                           langtag={langtag} />
+                           langtag={langtag}
+                           blurHandler={this.blurHandler} />
       )
     }
   }
