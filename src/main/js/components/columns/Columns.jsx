@@ -3,6 +3,9 @@ import AmpersandMixin from 'ampersand-react-mixin';
 import {translate} from 'react-i18next';
 import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
 import {ColumnKinds, FallbackLanguage, LanguageType} from '../../constants/TableauxConstants';
+import * as _ from 'lodash'
+import ColumnEntry from './ColumnEntry.jsx'
+
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
@@ -16,7 +19,16 @@ var Columns = React.createClass({
 
   shouldComponentUpdate(nextProps, nextState) {
     const {langtag, columns} = this.props;
-    return (langtag !== nextProps.langtag || columns !== nextProps.columns)
+    return (!_.eq(this.state, nextState) ||
+    langtag !== nextProps.langtag ||
+    columns !== nextProps.columns)
+  },
+
+  getInitialState() {
+    return {
+      selected: null,
+      edit: null
+    }
   },
 
   renderColumn(langtag, column, index) {
@@ -46,32 +58,53 @@ var Columns = React.createClass({
 
     if (column.kind === ColumnKinds.link) {
       name =
-        <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name} <i className="fa fa-external-link"/></a>;
+          <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name} <i className="fa fa-external-link"/></a>;
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
 
     if (column.languageType && column.languageType === LanguageType.country) {
       columnIcon = <span className="column-kind-icon"><i className="fa fa-globe"/><span
-        className="label">{t('country')}</span></span>;
+          className="label">{t('country')}</span></span>;
     }
 
-    return <div className="column-head" key={index}>{columnContent}{columnIcon}</div>
+//    return <div className="column-head" key={index} onClick={() => this.clickHandler(column.id)}>{columnContent}{columnIcon}</div>
+
+    return (
+        <ColumnEntry key={index}
+                     clickHandler={() => this.clickHandler(column.id)}
+                     columnContent={columnContent}
+                     columnIcon={columnIcon}
+                     index={column.id}
+                     selected={this.state.selected}
+                     edit={this.state.edit}
+                     name={name}
+                     langtag={langtag} />
+    )
+  },
+
+  clickHandler(id) {
+    if (id < 1) return // don't edit "ID" header
+    const {selected,edit} = this.state
+    this.setState({
+      selected: id,
+      edit: (selected === id) ? id : null
+    })
   },
 
   render() {
     var self = this;
     return (
-      <div id="tableHeader" ref="tableHeader" className="heading">
-        <div className="tableHeader-inner">
-          <div className="column-head meta-cell" key="-1">ID</div>
-          {
-            this.props.columns.map((column, index) => {
-              return self.renderColumn(self.props.langtag, column, index);
-            })
-          }
+        <div id="tableHeader" ref="tableHeader" className="heading">
+          <div className="tableHeader-inner">
+            <div className="column-head meta-cell" key="-1">ID</div>
+            {
+              this.props.columns.map((column, index) => {
+                return self.renderColumn(self.props.langtag, column, index);
+              })
+            }
+          </div>
         </div>
-      </div>
     );
   }
 });
