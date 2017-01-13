@@ -45,6 +45,7 @@ var TableView = React.createClass({
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.on(ActionTypes.REFRESH_HEADERS, this.refreshTable)
 
     ActionCreator.spinnerOn();
 
@@ -61,8 +62,13 @@ var TableView = React.createClass({
         }
       });
     }
-
   },
+
+  refreshTable(payload) {
+    const {tableId} = payload //maybe a way to jsut
+    this.fetchTable(tableId)
+  },
+
 
   fetchTable : function (tableId) {
     var self = this;
@@ -120,6 +126,7 @@ var TableView = React.createClass({
     Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.off(ActionTypes.REFRESH_HEADERS, this.refreshTable)
   },
 
   componentWillReceiveProps : function (nextProps) {

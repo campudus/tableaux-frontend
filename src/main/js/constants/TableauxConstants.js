@@ -71,7 +71,8 @@ var TableauxConstant = {
     NO_PERMISSION_SAVE_LANGUAGE : null,
 
     //Column modification
-    DONE_EDIT_HEADER : null
+    DONE_EDIT_HEADER : null,
+    REFRESH_HEADERS : null
   }),
 
   Directions : keyMirror({

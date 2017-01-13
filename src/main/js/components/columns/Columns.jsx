@@ -8,6 +8,7 @@ import ColumnEntry from './ColumnEntry.jsx'
 import TableauxConstants from "../../constants/TableauxConstants"
 import Dispatcher from "../../dispatcher/Dispatcher"
 import * as ColHelper from '../../helpers/ColumnHelper'
+import ActionCreator from '../../actions/ActionCreator'
 
 const ActionTypes = TableauxConstants.ActionTypes
 
@@ -82,11 +83,10 @@ var Columns = React.createClass({
           className="label">{t('country')}</span></span>;
     }
 
-//    return <div className="column-head" key={index} onClick={() => this.clickHandler(column.id)}>{columnContent}{columnIcon}</div>
-
     return (
         <ColumnEntry key={index}
-                     clickHandler={() => this.clickHandler(column.id)}
+                     clickHandler={() => this.clickHandler(index)}
+                     onBlur={() => this.clickHandler(null)}
                      columnContent={columnContent}
                      columnIcon={columnIcon}
                      index={column.id}
@@ -98,9 +98,7 @@ var Columns = React.createClass({
   },
 
   stopEditing(payload) {
-    console.log("Columns.stopEditing", payload)
     if (payload.newName) {
-      console.log("Saving edits...")
       this.saveEdits(payload)
     }
     this.setState({ edit: null })
@@ -109,13 +107,13 @@ var Columns = React.createClass({
   saveEdits(payload) {
     const {colId,langtag,newName} = payload
     const tableId = this.props.table._values.id
-    console.log("TODO: Tell server: please save", newName, "in table", tableId, "at column", colId, "for language", langtag)
     ColHelper.changeDisplayName(langtag, tableId, colId, newName)
+        .then(ActionCreator.refreshHeaders(tableId))
   },
 
   clickHandler(id) {
     //TODO: disable editing if not admin; short-circuiting click-handler will suffice
-    if (id < 1) return // don't edit "ID" header
+    if (id === 0) return // don't edit "ID" header
 
     const {selected} = this.state
     this.setState({

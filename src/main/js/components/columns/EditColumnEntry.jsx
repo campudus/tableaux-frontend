@@ -21,7 +21,7 @@ const EditColumnEntry = React.createClass({
   },
 
   handleClickOutside(evt) {
-    this.props.saveEdit()(this.state.value)
+    this.props.cancelEdit()(this.state.value)
   },
 
   getKeyboardShortcuts() {
@@ -31,7 +31,7 @@ const EditColumnEntry = React.createClass({
         event.stopPropagation()
       },
       enter: (event) => {
-        this.saveEdit()(this.state.value)
+        this.props.saveEdit()(this.state.value)
         event.stopPropagation()
       },
       left: (event) => {
@@ -53,14 +53,12 @@ const EditColumnEntry = React.createClass({
   },
 
   render() {
-    const {name,index,langtag,cancelEdit,saveEdit} = this.props
+    const {index,cancelEdit} = this.props
     const {value} = this.state
-    console.log(value)
     return (
         <div className="column-head column-head-edit">
           <input type="text" autoFocus className="input"
                  name={"col-"+index}
-                 onBlur={saveEdit(value)}
                  value={value}
                  onKeyDown={KeyboardShortcutHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
                  onChange={this.handleChange} />

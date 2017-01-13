@@ -3,11 +3,12 @@ import AmpersandMixin from 'ampersand-react-mixin'
 import EditColumnEntry from './EditColumnEntry'
 import TableauxConstants from '../../constants/TableauxConstants'
 import ActionCreator from '../../actions/ActionCreator'
+import OutsideClick from 'react-onclickoutside'
 
 const ActionTypes = TableauxConstants.ActionTypes
 
 const ColumnEntry = React.createClass({
-  mixins: [AmpersandMixin],
+  mixins: [AmpersandMixin, OutsideClick],
 
   PropTypes: {
     columnContent: React.PropTypes.array.isRequired,
@@ -21,20 +22,22 @@ const ColumnEntry = React.createClass({
 
   cancelEdit() {
     const {index,langtag} = this.props
-    console.log("ColumnEntry.cancelEdit")
     ActionCreator.editColumnHeaderDone(null, index, langtag, null)
-    console.log("Canceled editing column", this.props.name)
   },
 
   //curried, so child can pass value
   saveEdit() {
     const self = this
     return newVal => {
-      console.log("ColumnEntry.saveEdit.closure", newVal)
+      console.log("ColumnEntry.saveEdit.closure", name, "->", newVal)
       const {index, langtag} = self.props
-      ActionCreator.editColumnHeaderDone(null, index, langtag, newVal)
-      console.log("Finished editing column", self.props.name)
+      ActionCreator.editColumnHeaderDone(index, langtag, newVal)
     }
+  },
+
+  handleClickOutside(evt) { // de-select this column header
+    console.log("ColumnEntry.handleClickOutside", this.props.index)
+    this.props.onBlur()
   },
 
   render() {
@@ -42,7 +45,9 @@ const ColumnEntry = React.createClass({
     if (index !== edit) {
       const css_class = (index === selected) ? "column-head column-selected" : "column-head"
       return (
-          <div className={css_class} key={index} onClick={clickHandler}>
+          <div className={css_class}
+               key={index}
+               onClick={clickHandler} >
             {columnContent}
             {columnIcon}
           </div>

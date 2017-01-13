@@ -5,7 +5,7 @@ const requestChanges = (tableId, colId, data) => {
       JSON.stringify(tableId) + "/columns/" +
       JSON.stringify(colId)
   )
-  console.log("sending", data, "to", url)
+  console.log("ColumnHelper.requestChanges: sending", data, "\nto   ", url)
   return new Promise( (resolve, reject) => {
         let request = new XMLHttpRequest()
         request.open('POST', url)

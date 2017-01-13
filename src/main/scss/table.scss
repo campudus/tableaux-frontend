@@ -115,6 +115,11 @@
 
   }
 
+  .column-selected {
+    border: 1px solid $color-primary;
+    background: $color-selected-row;
+  }
+
   .heading, .row {
     display: table;
     table-layout: fixed;
