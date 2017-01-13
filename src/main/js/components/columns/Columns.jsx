@@ -86,7 +86,6 @@ var Columns = React.createClass({
     return (
         <ColumnEntry key={index}
                      clickHandler={() => this.clickHandler(index)}
-                     onBlur={() => this.clickHandler(null)}
                      columnContent={columnContent}
                      columnIcon={columnIcon}
                      index={column.id}

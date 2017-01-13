@@ -21,7 +21,9 @@ const EditColumnEntry = React.createClass({
   },
 
   handleClickOutside(evt) {
-    this.props.cancelEdit()(this.state.value)
+    if (this.state.value != this.props.name) {
+      this.props.saveEdit()(this.state.value)
+    }
   },
 
   getKeyboardShortcuts() {

@@ -1,14 +1,10 @@
 import React from 'react'
 import AmpersandMixin from 'ampersand-react-mixin'
 import EditColumnEntry from './EditColumnEntry'
-import TableauxConstants from '../../constants/TableauxConstants'
 import ActionCreator from '../../actions/ActionCreator'
-import OutsideClick from 'react-onclickoutside'
-
-const ActionTypes = TableauxConstants.ActionTypes
 
 const ColumnEntry = React.createClass({
-  mixins: [AmpersandMixin, OutsideClick],
+  mixins: [AmpersandMixin],
 
   PropTypes: {
     columnContent: React.PropTypes.array.isRequired,
@@ -33,11 +29,6 @@ const ColumnEntry = React.createClass({
       const {index, langtag} = self.props
       ActionCreator.editColumnHeaderDone(index, langtag, newVal)
     }
-  },
-
-  handleClickOutside(evt) { // de-select this column header
-    console.log("ColumnEntry.handleClickOutside", this.props.index)
-    this.props.onBlur()
   },
 
   render() {
