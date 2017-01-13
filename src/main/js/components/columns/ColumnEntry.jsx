@@ -21,16 +21,19 @@ const ColumnEntry = React.createClass({
 
   cancelEdit() {
     const {index,langtag} = this.props
+    console.log("ColumnEntry.cancelEdit")
     ActionCreator.editColumnHeaderDone(null, index, langtag, null)
     console.log("Canceled editing column", this.props.name)
   },
 
   //curried, so child can pass value
   saveEdit() {
+    const self = this
     return newVal => {
-      const {index, langtag} = this.props
+      console.log("ColumnEntry.saveEdit.closure", newVal)
+      const {index, langtag} = self.props
       ActionCreator.editColumnHeaderDone(null, index, langtag, newVal)
-      console.log("Finished editing column", this.propsname)
+      console.log("Finished editing column", self.props.name)
     }
   },
 

@@ -1,6 +1,5 @@
 import React from 'react'
 import AmpersandMixin from 'ampersand-react-mixin'
-import ActionCreator from '../../actions/ActionCreator'
 import OutsideClick from 'react-onclickoutside'
 import KeyboardShortcutHelper from '../../helpers/KeyboardShortcutsHelper'
 
@@ -18,20 +17,29 @@ const EditColumnEntry = React.createClass({
     name: React.PropTypes.string.isRequired,
     index: React.PropTypes.number.isRequired,
     langtag: React.PropTypes.string.isRequired,
-    cancelEdit: React.PropTypes.func.isRequired
+    cancelEdit: React.PropTypes.func.isRequired,
+    saveEdit: React.PropTypes.func.isRequired
   },
 
   handleClickOutside(evt) {
-    this.props.cancelEdit(evt)
+    this.props.saveEdit()(this.state.value)
   },
 
   getKeyboardShortcuts() {
     return {
       escape: (event) => {
-        this.cancelEdit(event)
+        this.cancelEdit()
+        event.stopPropagation()
       },
       enter: (event) => {
-        this.cancelEdit(event)
+        this.saveEdit()(this.state.value)
+        event.stopPropagation()
+      },
+      left: (event) => {
+        event.stopPropagation()
+      },
+      right: (event) => {
+        event.stopPropagation()
       },
       always: (event) => {
         event.stopPropagation()
@@ -46,16 +54,17 @@ const EditColumnEntry = React.createClass({
   },
 
   render() {
-    const {name,index,langtag,cancelEdit} = this.props
+    const {name,index,langtag,cancelEdit,saveEdit} = this.props
+    const {value} = this.state
+    console.log(value)
     return (
         <div className="column-head column-head-edit">
           <input type="text" autoFocus className="input"
                  name={"col-"+index}
-                 defaultValue={name}
-                 onBlur={cancelEdit}
-                 value={this.state.value}
-                 //onKeyDown={KeyboardShortcutHelper.onKeyboardShortcut(this.getKeyboardShortcuts())}
-                 onChange={this.handleChange(this.state.value)} />
+                 onBlur={saveEdit(value)}
+                 value={value}
+                 onKeyDown={KeyboardShortcutHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+                 onChange={this.handleChange} />
         </div>
     )
   }
