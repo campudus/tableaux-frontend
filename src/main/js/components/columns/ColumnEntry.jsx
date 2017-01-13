@@ -19,10 +19,19 @@ const ColumnEntry = React.createClass({
     name: React.PropTypes.string.isRequired
   },
 
-  blurHandler(evt) {
+  cancelEdit() {
     const {index,langtag} = this.props
     ActionCreator.editColumnHeaderDone(null, index, langtag, null)
-    console.log("Done editing column", this.props.name)
+    console.log("Canceled editing column", this.props.name)
+  },
+
+  //curried, so child can pass value
+  saveEdit() {
+    return newVal => {
+      const {index, langtag} = this.props
+      ActionCreator.editColumnHeaderDone(null, index, langtag, newVal)
+      console.log("Finished editing column", this.propsname)
+    }
   },
 
   render() {
@@ -41,7 +50,8 @@ const ColumnEntry = React.createClass({
           <EditColumnEntry name={name}
                            index={index}
                            langtag={langtag}
-                           blurHandler={this.blurHandler} />
+                           cancelEdit={this.cancelEdit}
+                           saveEdit={this.saveEdit} />
       )
     }
   }
