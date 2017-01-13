@@ -3,7 +3,6 @@ import AmpersandMixin from 'ampersand-react-mixin'
 import OutsideClick from 'react-onclickoutside'
 import KeyboardShortcutHelper from '../../helpers/KeyboardShortcutsHelper'
 
-
 const EditColumnEntry = React.createClass({
   mixins: [AmpersandMixin, OutsideClick],
 

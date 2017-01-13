@@ -7,6 +7,7 @@ import * as _ from 'lodash'
 import ColumnEntry from './ColumnEntry.jsx'
 import TableauxConstants from "../../constants/TableauxConstants"
 import Dispatcher from "../../dispatcher/Dispatcher"
+import * as ColHelper from '../../helpers/ColumnHelper'
 
 const ActionTypes = TableauxConstants.ActionTypes
 
@@ -98,16 +99,18 @@ var Columns = React.createClass({
 
   stopEditing(payload) {
     console.log("Columns.stopEditing", payload)
-    if (payload.value) {
+    if (payload.newName) {
       console.log("Saving edits...")
-      saveEdits(payload)
+      this.saveEdits(payload)
     }
     this.setState({ edit: null })
   },
 
   saveEdits(payload) {
-    const {tableId,colId,langtag,value} = payload
-    console.log("TODO: Tell server: please save", value, "in table", tableId, "at column", colId, "for language", langtag)
+    const {colId,langtag,newName} = payload
+    const tableId = this.props.table._values.id
+    console.log("TODO: Tell server: please save", newName, "in table", tableId, "at column", colId, "for language", langtag)
+    ColHelper.changeDisplayName(langtag, tableId, colId, newName)
   },
 
   clickHandler(id) {
@@ -123,6 +126,7 @@ var Columns = React.createClass({
 
   render() {
     var self = this;
+
     return (
         <div id="tableHeader" ref="tableHeader" className="heading">
           <div className="tableHeader-inner">
