@@ -2,9 +2,10 @@ import React from 'react'
 import AmpersandMixin from 'ampersand-react-mixin'
 import EditColumnEntry from './EditColumnEntry'
 import ActionCreator from '../../actions/ActionCreator'
+import OutsideClick from 'react-onclickoutside'
 
 const ColumnEntry = React.createClass({
-  mixins: [AmpersandMixin],
+  mixins: [AmpersandMixin, OutsideClick],
 
   PropTypes: {
     columnContent: React.PropTypes.array.isRequired,
@@ -14,6 +15,10 @@ const ColumnEntry = React.createClass({
     clickHandler: React.PropTypes.func.isRequired,
     langtag: React.PropTypes.string.isRequired,
     name: React.PropTypes.string.isRequired
+  },
+
+  handleClickOutside(evt) {
+    this.props.blurHandler()
   },
 
   cancelEdit() {

@@ -86,6 +86,7 @@ var Columns = React.createClass({
     return (
         <ColumnEntry key={index}
                      clickHandler={() => this.clickHandler(index)}
+                     blurHandler={() => this.deselect(index)}
                      columnContent={columnContent}
                      columnIcon={columnIcon}
                      index={column.id}
@@ -97,7 +98,7 @@ var Columns = React.createClass({
   },
 
   stopEditing(payload) {
-    if (payload.newName) {
+    if (payload && payload.newName) {
       this.saveEdits(payload)
     }
     this.setState({ edit: null })
@@ -119,6 +120,13 @@ var Columns = React.createClass({
       selected: id,
       edit: (selected === id) ? id : null
     })
+  },
+
+  deselect(id) {
+    const self = this, {selected} = this.state
+    if (id === selected) {
+      this.setState({ selected: null })
+    }
   },
 
   render() {
