@@ -229,12 +229,11 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.SHOW_TOAST, {content, milliseconds});
   },
 
-  editColumnHeaderDone: (colId, langtag, newName) => {
-    Dispatcher.trigger(ActionTypes.DONE_EDIT_HEADER, {colId, langtag, newName})
+  editColumnHeaderDone: (colId, langtag, newName, newDescription) => {
+    Dispatcher.trigger(
+        ActionTypes.DONE_EDIT_HEADER,
+        {colId, langtag, newName, newDescription}
+    )
   },
-
-  refreshHeaders: (tableId) => {
-    Dispatcher.trigger(ActionTypes.REFRESH_HEADERS, {tableId})
-  }
 
 };

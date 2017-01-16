@@ -7,10 +7,12 @@ import * as _ from 'lodash'
 import ColumnEntry from './ColumnEntry.jsx'
 import TableauxConstants from "../../constants/TableauxConstants"
 import Dispatcher from "../../dispatcher/Dispatcher"
-import * as ColHelper from '../../helpers/ColumnHelper'
-import ActionCreator from '../../actions/ActionCreator'
+import ActionCreator from "../../actions/ActionCreator"
+import * as R from 'ramda'
 
 const ActionTypes = TableauxConstants.ActionTypes
+
+//TODO: Refactor function passing, then adapt ColumnEntry and EditColumnEntry
 
 var Columns = React.createClass({
   mixins : [AmpersandMixin],
@@ -40,10 +42,7 @@ var Columns = React.createClass({
   },
 
   getInitialState() {
-    return {
-      selected: null,
-      edit: null
-    }
+    return { selected: null }
   },
 
   renderColumn(langtag, column, index) {
@@ -93,28 +92,34 @@ var Columns = React.createClass({
                      selected={this.state.selected}
                      edit={this.state.edit}
                      name={name}
+                     description={description}
                      langtag={langtag} />
     )
   },
 
   stopEditing(payload) {
-    if (payload && payload.newName) {
+    if (payload &&
+        (payload.newName || payload.newDescription)) {
       this.saveEdits(payload)
     }
-    this.setState({ edit: null })
   },
 
   saveEdits(payload) {
-    const {colId,langtag,newName} = payload
-    const tableId = this.props.table._values.id
-    ColHelper.changeDisplayName(langtag, tableId, colId, newName)
-        .then(ActionCreator.refreshHeaders(tableId))
+    const {langtag, colId, newName, newDescription} = payload
+    const {columns} = this.props
+    const modifications =
+        R.compose(
+            mod => (newName) ? R.assocPath(["displayName", langtag], newName)(mod) : mod,
+            mod => (newDescription) ? R.assocPath(["description", langtag], newDescription)(mod) : mod
+        )({})
+    columns
+        .filter(c => c.id === colId)
+        .map(c => c.save(modifications, { patch: true }))
   },
 
   clickHandler(id) {
     //TODO: disable editing if not admin; short-circuiting click-handler will suffice
     if (id === 0) return // don't edit "ID" header
-
     const {selected} = this.state
     this.setState({
       selected: id,
@@ -123,9 +128,9 @@ var Columns = React.createClass({
   },
 
   deselect(id) {
-    const self = this, {selected} = this.state
+    const {selected,edit} = this.state
     if (id === selected) {
-      this.setState({ selected: null })
+      this.setState({ selected: null, wait: true })
     }
   },
 

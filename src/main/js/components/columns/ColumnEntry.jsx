@@ -1,18 +1,19 @@
 import React from 'react'
 import AmpersandMixin from 'ampersand-react-mixin'
-import EditColumnEntry from './EditColumnEntry'
 import ActionCreator from '../../actions/ActionCreator'
 import OutsideClick from 'react-onclickoutside'
+import ColumnEditorOverlay from '../overlay/ColumnEditorOverlay'
 
 const ColumnEntry = React.createClass({
   mixins: [AmpersandMixin, OutsideClick],
 
   PropTypes: {
+    description: React.PropTypes.string.isRequired,
     columnContent: React.PropTypes.array.isRequired,
     index: React.PropTypes.number.isRequired,
-    edit: React.PropTypes.number.isRequired,
     selected: React.PropTypes.number.isRequired,
     clickHandler: React.PropTypes.func.isRequired,
+    cancelEdit: React.PropTypes.func.isRequired,
     langtag: React.PropTypes.string.isRequired,
     name: React.PropTypes.string.isRequired
   },
@@ -21,43 +22,73 @@ const ColumnEntry = React.createClass({
     this.props.blurHandler()
   },
 
-  cancelEdit() {
-    const {index,langtag} = this.props
-    ActionCreator.editColumnHeaderDone(null, index, langtag, null)
+  getInitialState() {
+    return {
+      name: this.props.name,
+      description: this.props.description
+    }
   },
 
-  //curried, so child can pass value
-  saveEdit() {
-    const self = this
-    return newVal => {
-      console.log("ColumnEntry.saveEdit.closure", name, "->", newVal)
-      const {index, langtag} = self.props
-      ActionCreator.editColumnHeaderDone(index, langtag, newVal)
+  handleClick() {
+    const {index,edit,selected} = this.props
+    const letParentHandleClick = this.props.clickHandler
+    if (index === selected) {
+      this.editColumn()
+    } else {
+      letParentHandleClick()
     }
+  },
+
+  handleInput(inputState) {
+    const self = this
+    return (inputState) => {
+      self.setState(inputState)
+    }
+  },
+
+  cancelEdit() {
+    ActionCreator.closeOverlay()
+  },
+
+  saveEdit() {
+    const {langtag, index} = this.props
+    const {name,description} = this.state
+    const new_name = (name != this.props.name) ? name : null
+    const new_desc = (description != this.props.description) ? description : null
+    ActionCreator.editColumnHeaderDone(index, langtag, new_name, new_desc)
+    ActionCreator.closeOverlay()
+  },
+
+  editColumn() {
+    const {name,description,index} = this.props
+    this.setState(this.getInitialState())
+    ActionCreator.openOverlay({
+      head: <text>Edit Column</text>,
+      body: <ColumnEditorOverlay name={name}
+                                 handleInput={() => this.handleInput()}
+                                 description={description}
+                                 index={index} />,
+      footer:
+          <div>
+            <a href="#" className="button" onClick={this.cancelEdit}>Cancel</a>
+            <a href="#" className="button" onClick={this.saveEdit}>Save</a>
+          </div>,
+      closeOnBackgoundClicked: true,
+      type: "flexible"
+    })
   },
 
   render() {
-    const {edit,index,columnContent,columnIcon,clickHandler,selected} = this.props
-    if (index !== edit) {
-      const css_class = (index === selected) ? "column-head column-selected" : "column-head"
-      return (
-          <div className={css_class}
-               key={index}
-               onClick={clickHandler} >
-            {columnContent}
-            {columnIcon}
-          </div>
-      )
-    } else {
-      const {name,langtag} = this.props
-      return (
-          <EditColumnEntry name={name}
-                           index={index}
-                           langtag={langtag}
-                           cancelEdit={this.cancelEdit}
-                           saveEdit={this.saveEdit} />
-      )
-    }
+    const {index,columnContent,columnIcon,selected} = this.props
+    const css_class = (index === selected) ? "column-head column-selected" : "column-head"
+    return (
+        <div className={css_class}
+             key={index}
+             onClick={this.handleClick} >
+          {columnContent}
+          {columnIcon}
+        </div>
+    )
   }
 })
 

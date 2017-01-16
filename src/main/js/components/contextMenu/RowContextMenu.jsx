@@ -112,7 +112,6 @@ class RowContextMenu extends React.Component {
       </div>
     );
   }
-
 }
 
 RowContextMenu.propTypes = {
