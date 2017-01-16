@@ -34,8 +34,6 @@ var internal = {
         if (trimmed !== "") {
           concatStringArray.push(trimmed);
         }
-      } else if (appendVal === null || appendVal === undefined) {
-        console.warn("Cell.getRowConcatString: No String was passed to appendString Method. Passed value is:", appendVal);
       }
     };
 
