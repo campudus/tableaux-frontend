@@ -3,6 +3,7 @@ import AmpersandMixin from 'ampersand-react-mixin'
 import ActionCreator from '../../actions/ActionCreator'
 import OutsideClick from 'react-onclickoutside'
 import ColumnEditorOverlay from '../overlay/ColumnEditorOverlay'
+import i18n from 'i18next'
 
 const ColumnEntry = React.createClass({
   mixins: [AmpersandMixin, OutsideClick],
@@ -15,7 +16,8 @@ const ColumnEntry = React.createClass({
     clickHandler: React.PropTypes.func.isRequired,
     cancelEdit: React.PropTypes.func.isRequired,
     langtag: React.PropTypes.string.isRequired,
-    name: React.PropTypes.string.isRequired
+    name: React.PropTypes.string.isRequired,
+    readOnly: React.PropTypes.bool
   },
 
   handleClickOutside(evt) {
@@ -60,18 +62,23 @@ const ColumnEntry = React.createClass({
   },
 
   editColumn() {
+    if (this.props.readOnly) return // guardian for links and ID-Name
     const {name,description,index} = this.props
     this.setState(this.getInitialState())
     ActionCreator.openOverlay({
-      head: <text>Edit Column</text>,
+      head: <text>{i18n.t('common:edit')}</text>,
       body: <ColumnEditorOverlay name={name}
                                  handleInput={() => this.handleInput()}
                                  description={description}
                                  index={index} />,
       footer:
           <div>
-            <a href="#" className="button" onClick={this.cancelEdit}>Cancel</a>
-            <a href="#" className="button" onClick={this.saveEdit}>Save</a>
+            <a href="#" className="button" onClick={this.cancelEdit}>
+              {i18n.t('common:cancel')}
+            </a>
+            <a href="#" className="button" onClick={this.saveEdit}>
+              {i18n.t('common:save')}
+            </a>
           </div>,
       closeOnBackgoundClicked: true,
       type: "flexible"

@@ -7,10 +7,11 @@ import * as _ from 'lodash'
 import ColumnEntry from './ColumnEntry.jsx'
 import TableauxConstants from "../../constants/TableauxConstants"
 import Dispatcher from "../../dispatcher/Dispatcher"
-import ActionCreator from "../../actions/ActionCreator"
 import * as R from 'ramda'
 
 const ActionTypes = TableauxConstants.ActionTypes
+
+const PROTECTED_CELL_KINDS = ['concat', 'link']
 
 //TODO: Refactor function passing, then adapt ColumnEntry and EditColumnEntry
 
@@ -90,8 +91,8 @@ var Columns = React.createClass({
                      columnIcon={columnIcon}
                      index={column.id}
                      selected={this.state.selected}
-                     edit={this.state.edit}
                      name={name}
+                     readOnly={R.contains(column.kind, PROTECTED_CELL_KINDS)}
                      description={description}
                      langtag={langtag} />
     )
