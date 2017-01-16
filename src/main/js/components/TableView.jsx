@@ -41,23 +41,23 @@ var TableView = React.createClass({
   },
 
   componentWillMount : function () {
-    var self = this;
-
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
+  },
 
+  componentDidMount : function () {
     ActionCreator.spinnerOn();
 
-    //fetch all tables
-    if (!self.tables) {
-      self.tables = new Tables();
-      self.tables.fetch({
-        success : function (collection) {
-          if (self.props.tableId === null) {
-            ActionCreator.switchTable(collection.at(0).getId(), self.props.langtag);
+    // fetch all tables
+    if (!this.tables) {
+      this.tables = new Tables();
+      this.tables.fetch({
+        success : (collection) => {
+          if (this.props.tableId === null) {
+            ActionCreator.switchTable(collection.at(0).getId(), this.props.langtag);
           } else {
-            self.fetchTable(self.props.tableId);
+            this.fetchTable(this.props.tableId);
           }
         }
       });
@@ -65,50 +65,62 @@ var TableView = React.createClass({
   },
 
   fetchTable : function (tableId) {
-    var self = this;
-    var currentTable = self.tables.get(tableId);
+    const currentTable = this.tables.get(tableId);
+
     //spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
     //in the middle, and gets displayed only on the first startup
     ActionCreator.spinnerOn();
+
     //We need to fetch columns first, since rows has Cells that depend on the column model
     currentTable.columns.fetch({
       reset : true,
 
       //success for initial rows request
-      success : function () {
-        currentTable.rows.fetchInitial({
+      success : () => {
+        currentTable.rows.fetchPage(0, {
           reset : true,
-          success : function () {
-            console.log("table columns & rows initial fetched successfully.");
+          success : () => {
+            const pageCount = currentTable.rows.pageCount();
 
-            self.setState({
+            console.log("table columns & initial rows successfully fetched");
+            console.log("table page count is " + pageCount);
+
+            this.setState({
               initialLoading : false,
               rowsCollection : currentTable.rows,
               currentTableId : tableId,
               rowsFilter : null
             });
 
-            //Spinner for the second (tail fetch) call
-            ActionCreator.spinnerOn();
+            if (pageCount > 0) {
+              // Spinner for the next calls
+              ActionCreator.spinnerOn();
 
-            currentTable.rows.fetchTail({
-              //success for rest rows request (without initial limit)
-              success : function () {
-                console.log("rows fetched the rest");
-                ActionCreator.spinnerOff();
-              },
-              //error for rows tail request
-              error : function (error) {
-                console.error("Error fetching rows after initial request. Error from server:", error);
-              }
-            });
+              // start fetching pages at page 1
+              fetchPage(1);
+            } else {
+              ActionCreator.spinnerOff();
+            }
 
-            self.setDocumentTitleToTableName();
+            function fetchPage(pageNumber) {
+              currentTable.rows.fetchPage(pageNumber, {
+                success : () => {
+                  console.log("table page " + pageNumber + " fetched successfully");
 
+                  if (pageNumber >= pageCount) {
+                    ActionCreator.spinnerOff();
+                  } else {
+                    // fetch next page
+                    fetchPage(pageNumber + 1);
+                  }
+                },
+                error : (error) => {
+                  console.error("Error fetching initial rows. Error from server:", error);
+                }
+              });
+            }
           },
-
-          //error for initial rows request
-          error : function (error) {
+          error : (error) => {
             console.error("Error fetching initial rows. Error from server:", error);
           }
         });
@@ -140,10 +152,8 @@ var TableView = React.createClass({
     document.title = tableDisplayName ? tableDisplayName + " | " + TableauxConstants.PageTitle : TableauxConstants.PageTitle;
   },
 
-  componentDidUpdate : function (prevProps) {
-    if (prevProps.langtag !== this.props.langtag) {
-      this.setDocumentTitleToTableName();
-    }
+  componentDidUpdate : function () {
+    this.setDocumentTitleToTableName();
   },
 
   clearFilter : function () {

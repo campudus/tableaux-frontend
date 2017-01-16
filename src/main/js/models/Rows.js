@@ -1,16 +1,18 @@
-var Collection = require('ampersand-rest-collection');
-var _ = require('lodash');
-var apiUrl = require('../helpers/apiUrl');
-var Row = require('./Row');
+const Collection = require('ampersand-rest-collection');
+const _ = require('lodash');
+const apiUrl = require('../helpers/apiUrl');
+const Row = require('./Row');
 
-var INITIAL_LIMIT = 30;
+const PAGE_SIZE = 500;
 
-var Rows = Collection.extend({
+const Rows = Collection.extend({
+
+  totalSize : 0,
 
   model : function (attrs, options) {
-    var tableId = options.collection.parent.getId();
-    var columns = options.collection.parent.columns;
-    var json = {
+    const tableId = options.collection.parent.getId();
+    const columns = options.collection.parent.columns;
+    const json = {
       id : attrs.id,
       tableId : tableId,
       values : attrs.values,
@@ -31,21 +33,48 @@ var Rows = Collection.extend({
   },
 
   parse : function (resp) {
+    // set totalSize for calculating pagination
+    this.totalSize = _.get(resp, ['page', 'totalSize'], 0);
+
+    // do real parsing
     return resp.rows;
   },
 
-  fetchInitial : function (options) {
-    options.data = _.assign(options.data, {limit : INITIAL_LIMIT});
-    this.fetch(options);
+  pageCount : function () {
+    const totalSize = this.totalSize;
+    return totalSize > 0 ? _.ceil(totalSize / PAGE_SIZE) : 0;
   },
 
-  fetchTail : function (options) {
+  calculatePage : function (pageNumber) {
+    const pageCount = this.pageCount();
+
+    if (pageNumber < 0 && pageNumber > pageCount) {
+      throw new Error('invalid pageNumber, should greater than -1 and smaller or equal to ', pageCount);
+    }
+
+    if (pageNumber === 0) {
+      return {
+        offset : 0,
+        limit : 0
+      }
+    }
+
+    const totalSize = this.totalSize;
+
+    return {
+      offset : PAGE_SIZE * (pageNumber - 1),
+      limit : pageNumber === pageCount ? totalSize % PAGE_SIZE : PAGE_SIZE
+    }
+  },
+
+  fetchPage(pageNumber, options) {
+    const page = this.calculatePage(pageNumber);
+
     //dont merge, or models are broken when duplicating while fetching the tail
     options = _.assign(options, {merge : false, add : true, remove : false});
-    options.data = _.assign(options.data, {offset : INITIAL_LIMIT});
+    options.data = _.assign({}, options.data, page);
     this.fetch(options);
   }
-
 });
 
 module.exports = Rows;
