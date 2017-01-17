@@ -20,5 +20,11 @@
   "show_dependency": "Show dependencies",
   "dependencies": "Dependencies",
   "show_dependency_text": "This data record is linked in the following tables.",
-  "country": "Country"
+  "country": "Country",
+  "editor": {
+    "colname": "Title",
+    "description": "Description",
+    "edit_column": "Edit column",
+    "rename_table": "Rename table"
+  }
 }

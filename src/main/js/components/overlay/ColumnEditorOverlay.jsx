@@ -1,4 +1,5 @@
 import React from 'react'
+import i18n from 'i18next'
 
 class ColumnEditorOverlay extends React.Component {
   constructor(props) {
@@ -28,10 +29,12 @@ class ColumnEditorOverlay extends React.Component {
   render = () => {
     return (
         <span >
+          <text>{i18n.t("table:editor.colname")}</text>
           <textarea type="text" autoFocus className="input"
                     rows="2"
                     onChange={this.modifyName}
                     value={this.state.name} />
+          <text>{i18n.t("table:editor.description")}</text>
           <textarea type="text" autoFocus className="input"
                     rows="6"
                     onChange={this.modifyDescription}

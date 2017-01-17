@@ -3,11 +3,13 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./table/Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
+import NameEditor from './header/tableRenamer/NameEditor'
 var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
 var FilteredSubcollection = require('ampersand-filtered-subcollection');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
+import * as AccessControl from '../helpers/accessManagementHelper'
 
 import * as _ from 'lodash';
 import TableauxConstants, {SortValues, ActionTypes} from '../constants/TableauxConstants';
@@ -365,6 +367,9 @@ var TableView = React.createClass({
                            currentTable={currentTable}
                            tables={tables}/>
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
+            {(AccessControl.isUserAdmin()) ?
+                <NameEditor langtag={this.props.langtag} table={currentTable} /> :
+                null}
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
             <Spinner />

@@ -4,6 +4,7 @@ import ActionCreator from '../../actions/ActionCreator'
 import OutsideClick from 'react-onclickoutside'
 import ColumnEditorOverlay from '../overlay/ColumnEditorOverlay'
 import i18n from 'i18next'
+import * as AccessControl from '../../helpers/accessManagementHelper'
 
 const ColumnEntry = React.createClass({
   mixins: [AmpersandMixin, OutsideClick],
@@ -32,7 +33,10 @@ const ColumnEntry = React.createClass({
   },
 
   handleClick() {
-    const {index,edit,selected} = this.props
+    //only admin may modify columns
+    if (!AccessControl.isUserAdmin()) return
+
+    const {index,selected} = this.props
     const letParentHandleClick = this.props.clickHandler
     if (index === selected) {
       this.editColumn()
@@ -66,7 +70,7 @@ const ColumnEntry = React.createClass({
     const {name,description,index} = this.props
     this.setState(this.getInitialState())
     ActionCreator.openOverlay({
-      head: <text>{i18n.t('common:edit')}</text>,
+      head: <text>{i18n.t('table:editor.edit_column')}</text>,
       body: <ColumnEditorOverlay name={name}
                                  handleInput={() => this.handleInput()}
                                  description={description}
