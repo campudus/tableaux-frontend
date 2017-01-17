@@ -70,18 +70,17 @@ class NameEditor extends React.Component {
 
   render = () => {
     const {active} = this.state
-    if (active) {
-      return this.renderOpenInput()
-    } else {
-      return (
-          <div id="table-rename" className={active ? "active" : ""}
-               onClick={this.startEditing} >
-            {i18n.t("table:editor.rename_table")}
-            {(active) ? this.renderInput() : null}
-          </div>
-      )
-    }
-
+    return (
+        <div id="table-rename-wrapper" className={active ? "active" : ""} >
+          {(active) ?
+              this.renderOpenInput() :
+              <a className="button" href="#"
+                   onClick={this.startEditing} >
+                {i18n.t("table:editor.rename_table")}
+              </a>
+          }
+        </div>
+    )
   }
 }
 
