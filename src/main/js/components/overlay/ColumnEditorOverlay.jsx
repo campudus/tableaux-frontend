@@ -3,22 +3,22 @@ import i18n from "i18next";
 
 class ColumnEditorOverlay extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       name: this.props.name,
       description: this.props.description
-    }
+    };
   }
 
   modify = key => evt => {
-    console.log("ColumnEditorOverlay.modify, key =", key, "evt =", evt)
+    console.log("ColumnEditorOverlay.modify, key =", key, "evt =", evt);
     if (evt && evt.target) {
-      const new_state = { [key]: evt.target.value }
-      console.log("-- new_state:", new_state)
-      this.setState(new_state)
-      this.props.handleInput(new_state)
+      const new_state = {[key]: evt.target.value};
+      console.log("-- new_state:", new_state);
+      this.setState(new_state);
+      this.props.handleInput(new_state);
     }
-  }
+  };
 
   render = () => {
     return (
@@ -28,8 +28,8 @@ class ColumnEditorOverlay extends React.Component {
           <br />
           <text>({i18n.t("table:editor.sanity_info")})</text>
           <input type="text" autoFocus className="input"
-                    onChange={this.modify("name")}
-                    value={this.state.name} />
+                 onChange={this.modify("name")}
+                 value={this.state.name} />
         </p>
         <p>
           <text className="editor-big-text">{i18n.t("table:editor.description")}</text>
@@ -39,8 +39,8 @@ class ColumnEditorOverlay extends React.Component {
                     value={this.state.description} />
         </p>
         </span>
-    )
-  }
+    );
+  };
 }
 
 ColumnEditorOverlay.propTypes = {
@@ -48,6 +48,6 @@ ColumnEditorOverlay.propTypes = {
   description: React.PropTypes.string,
   index: React.PropTypes.number.isRequired,
   handleInput: React.PropTypes.func.isRequired
-}
+};
 
-module.exports = ColumnEditorOverlay
+module.exports = ColumnEditorOverlay;
