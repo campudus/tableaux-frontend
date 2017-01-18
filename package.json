@@ -70,7 +70,7 @@
     "react-onclickoutside": "4.9.0",
     "react-proxy": "1.1.8",
     "react-select": "1.0.0-rc.2",
-    "react-virtualized": "6.3.2",
+    "react-virtualized": "^8.11.0",
     "sass-loader": "4.1.1",
     "style-loader": "0.13.1",
     "superagent": "1.8.3",

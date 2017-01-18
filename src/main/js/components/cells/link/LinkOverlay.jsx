@@ -6,7 +6,7 @@ const ActionCreator = require('../../../actions/ActionCreator');
 const XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 import shallowCompare from 'react-addons-shallow-compare';
 import 'react-virtualized/styles.css';
-import { VirtualScroll } from 'react-virtualized';
+import { List } from 'react-virtualized';
 import {translate} from 'react-i18next';
 var apiUrl = require('../../../helpers/apiUrl');
 
@@ -154,7 +154,7 @@ const LinkOverlay = React.createClass({
     ActionCreator.changeCell(cell, links);
 
     //tell the virtual scroller to redraw
-    this.refs.OverlayScroll.forceUpdate();
+    this.refs.OverlayScroll.forceUpdateGrid();
   },
 
   closeOverlay : function () {
@@ -165,19 +165,31 @@ const LinkOverlay = React.createClass({
     return (stringToCheck && stringToCheck.trim() !== "");
   },
 
-  getOverlayItem : function (index) {
-    let {rowResults} = this.state;
-    let {cell} = this.props;
-    let currentCellValue = cell ? cell.value : null;
-    let row = rowResults[index];
+  getOverlayItem : function ({
+    key,         // Unique key within array of rows
+    index,       // Index of row within collection
+    isScrolling, // The List is currently being scrolled
+    isVisible,   // This row is visible within the List (eg it is not an overscanned row)
+    style        // Style object to be applied to row (to position it)
+  }) {
+    const {rowResults} = this.state;
+    const {cell} = this.props;
+
+    const currentCellValue = cell ? cell.value : null;
+    const row = rowResults[index];
 
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
-      let isLinked = !!_.find(currentCellValue, (link) => {
+      const isLinked = !!_.find(currentCellValue, (link) => {
         return link.id === row.id;
       });
-      let rowName = row["cachedRowName"];
-      return <a href="#" key={row.id} className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
-                onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>;
+
+      const rowName = row["cachedRowName"];
+
+      return <div style={style}>
+        <a href="#" key={key}
+                className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
+                onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>
+      </div>;
     }
   },
 
@@ -199,11 +211,11 @@ const LinkOverlay = React.createClass({
       listDisplay = "Loading...";
     } else {
       listDisplay = (
-        <VirtualScroll
+        <List
           ref="OverlayScroll"
           width={contentWidth}
           height={contentHeight - CSS_SEARCH_HEIGHT}
-          rowsCount={rowsCount}
+          rowCount={rowsCount}
           rowHeight={50}
           rowRenderer={this.getOverlayItem}
           noRowsRenderer={this.noRowsRenderer}
