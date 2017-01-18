@@ -1,9 +1,18 @@
-#column-editor-footer {
-  div {
+@import "helper";
+@import "variables";
+
+#overlay{
+  .column-editor-footer {
     text-align: center;
+
+    a.button {
+      margin-top: 10px;
+    }
   }
 
-  a {
-    margin-top: 10px;
+  .column-editor {
+    textarea.input {
+      margin-bottom: 30px;
+    }
   }
 }

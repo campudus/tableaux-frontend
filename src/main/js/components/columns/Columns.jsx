@@ -1,12 +1,11 @@
-import React from 'react';
-import AmpersandMixin from 'ampersand-react-mixin';
-import {translate} from 'react-i18next';
-import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
-import {ColumnKinds, FallbackLanguage, LanguageType} from '../../constants/TableauxConstants';
-import ColumnEntry from './ColumnEntry.jsx'
-import TableauxConstants from "../../constants/TableauxConstants"
-import Dispatcher from "../../dispatcher/Dispatcher"
-import * as _ from 'lodash/fp'
+import React from "react";
+import AmpersandMixin from "ampersand-react-mixin";
+import {translate} from "react-i18next";
+import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
+import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType} from "../../constants/TableauxConstants";
+import ColumnEntry from "./ColumnEntry.jsx";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import * as _ from "lodash/fp";
 
 const ActionTypes = TableauxConstants.ActionTypes
 
@@ -15,34 +14,34 @@ const PROTECTED_CELL_KINDS = ['concat', 'link']
 //TODO: Refactor function passing, then adapt ColumnEntry and EditColumnEntry
 
 var Columns = React.createClass({
-  mixins : [AmpersandMixin],
+  mixins: [AmpersandMixin],
 
   componentWillMount() {
-    Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this)
+    Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
   },
 
   componentWillUnmount() {
-    Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this)
+    Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
   },
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    columns : React.PropTypes.object.isRequired,
-    table : React.PropTypes.object.isRequired,
-    t : React.PropTypes.func.isRequired,
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    columns: React.PropTypes.object.isRequired,
+    table: React.PropTypes.object.isRequired,
+    t: React.PropTypes.func.isRequired,
   },
 
   shouldComponentUpdate(nextProps, nextState) {
     const {langtag, columns} = this.props;
     return (
-        !_.eq(this.state, nextState) ||
-        langtag !== nextProps.langtag ||
-        columns !== nextProps.columns
-    )
+      !_.eq(this.state, nextState) ||
+      langtag !== nextProps.langtag ||
+      columns !== nextProps.columns
+    );
   },
 
   getInitialState() {
-    return { selected: null }
+    return {selected: null};
   },
 
   renderColumn(langtag, column, index) {
@@ -56,9 +55,9 @@ var Columns = React.createClass({
     let columnIcon = null;
 
     if (column.kind === ColumnKinds.concat) {
-      columnContent.push(<i key="column-icon" className="fa fa-bookmark"/>);
+      columnContent.push(<i key="column-icon" className="fa fa-bookmark" />);
     } else if (column.identifier) {
-      columnContent.push(<i key="column-icon" className="fa fa-bookmark-o"/>);
+      columnContent.push(<i key="column-icon" className="fa fa-bookmark-o" />);
     }
 
     //This is the ID/Concat Column
@@ -72,65 +71,71 @@ var Columns = React.createClass({
 
     if (column.kind === ColumnKinds.link) {
       name =
-          <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name} <i className="fa fa-external-link"/></a>;
+        <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name}
+          <i className="fa fa-external-link" /></a>;
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
 
     if (column.languageType && column.languageType === LanguageType.country) {
-      columnIcon = <span className="column-kind-icon"><i className="fa fa-globe"/><span
-          className="label">{t('country')}</span></span>;
+      columnIcon = <span className="column-kind-icon"><i className="fa fa-globe" /><span
+        className="label">{t('country')}</span></span>;
     }
 
     return (
-        <ColumnEntry key={index}
-                     clickHandler={() => this.clickHandler(index)}
-                     blurHandler={() => this.deselect(index)}
-                     columnContent={columnContent}
-                     columnIcon={columnIcon}
-                     index={column.id}
-                     selected={this.state.selected}
-                     name={name}
-                     readOnly={_.contains(column.kind, PROTECTED_CELL_KINDS)}
-                     description={description}
-                     langtag={langtag} />
+      <ColumnEntry key={index}
+                   clickHandler={() => this.clickHandler(index)}
+                   blurHandler={() => this.deselect(index)}
+                   columnContent={columnContent}
+                   columnIcon={columnIcon}
+                   index={column.id}
+                   selected={this.state.selected}
+                   name={name}
+                   readOnly={_.contains(column.kind, PROTECTED_CELL_KINDS)}
+                   description={description}
+                   langtag={langtag} />
     )
   },
 
   stopEditing(payload) {
     if (payload &&
-        (payload.newName || payload.newDescription)) {
-      this.saveEdits(payload)
+      (payload.newName || payload.newDescription)) {
+      this.saveEdits(payload);
     }
-    this.forceUpdate()
+    this.forceUpdate();
   },
 
   saveEdits(payload) {
-    const {langtag, colId, newName, newDescription} = payload
-    const {columns} = this.props
+    const {langtag, colId, newName, newDescription} = payload;
+    const {columns} = this.props;
     const modifications =
-        _.compose(
-            m => (newName) ?
-              _.assign({"displayName": {[langtag]: newName}}, m) :
-              m,
-            m => (newDescription) ?
-              _.assign({"description": {[langtag]: newDescription}}, m) :
-              m
-        )({})
+      _.compose(
+        m => (newName) ?
+          _.assign({"displayName": {[langtag]: newName}}, m) :
+          m,
+        m => (newDescription) ?
+          _.assign({"description": {[langtag]: newDescription}}, m) :
+          m
+      )({});
     columns
-        .filter(c => c.id === colId)
-        .map(c => c.save(modifications, { patch: true }))
+      .filter(c => c.id === colId)
+      .map(c => c.save(modifications, {patch: true}));
   },
 
   clickHandler(id) {
-    if (id === 0) return // don't edit "ID" header
-    this.setState({ selected: id })
+    if (id === 0) {
+      return;
+    } // don't edit "ID" header
+    this.setState({selected: id});
   },
 
   deselect(id) {
-    const {selected} = this.state
+    const {selected} = this.state;
     if (id === selected) {
-      this.setState({ selected: null, wait: true })
+      this.setState({
+        selected: null,
+        wait: true
+      });
     }
   },
 
@@ -138,16 +143,17 @@ var Columns = React.createClass({
     var self = this;
 
     return (
-        <div id="tableHeader" ref="tableHeader" className="heading">
-          <div className="tableHeader-inner">
-            <div className="column-head meta-cell" key="-1">ID</div>
-            {
-              this.props.columns.map((column, index) => {
-                return self.renderColumn(self.props.langtag, column, index);
-              })
-            }
-          </div>
+
+      <div id="tableHeader" ref="tableHeader" className="heading">
+        <div className="tableHeader-inner">
+          <div className="column-head meta-cell" key="-1">ID</div>
+          {
+            this.props.columns.map((column, index) => {
+              return self.renderColumn(self.props.langtag, column, index);
+            })
+          }
         </div>
+      </div>
     );
   }
 });
