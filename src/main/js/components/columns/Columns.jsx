@@ -3,11 +3,10 @@ import AmpersandMixin from 'ampersand-react-mixin';
 import {translate} from 'react-i18next';
 import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
 import {ColumnKinds, FallbackLanguage, LanguageType} from '../../constants/TableauxConstants';
-import * as _ from 'lodash'
 import ColumnEntry from './ColumnEntry.jsx'
 import TableauxConstants from "../../constants/TableauxConstants"
 import Dispatcher from "../../dispatcher/Dispatcher"
-import * as R from 'ramda'
+import * as _ from 'lodash/fp'
 
 const ActionTypes = TableauxConstants.ActionTypes
 
@@ -92,7 +91,7 @@ var Columns = React.createClass({
                      index={column.id}
                      selected={this.state.selected}
                      name={name}
-                     readOnly={R.contains(column.kind, PROTECTED_CELL_KINDS)}
+                     readOnly={_.contains(column.kind, PROTECTED_CELL_KINDS)}
                      description={description}
                      langtag={langtag} />
     )
@@ -103,15 +102,20 @@ var Columns = React.createClass({
         (payload.newName || payload.newDescription)) {
       this.saveEdits(payload)
     }
+    this.forceUpdate()
   },
 
   saveEdits(payload) {
     const {langtag, colId, newName, newDescription} = payload
     const {columns} = this.props
     const modifications =
-        R.compose(
-            mod => (newName) ? R.assocPath(["displayName", langtag], newName)(mod) : mod,
-            mod => (newDescription) ? R.assocPath(["description", langtag], newDescription)(mod) : mod
+        _.compose(
+            m => (newName) ?
+              _.assign({"displayName": {[langtag]: newName}}, m) :
+              m,
+            m => (newDescription) ?
+              _.assign({"description": {[langtag]: newDescription}}, m) :
+              m
         )({})
     columns
         .filter(c => c.id === colId)
@@ -119,17 +123,12 @@ var Columns = React.createClass({
   },
 
   clickHandler(id) {
-    //TODO: disable editing if not admin; short-circuiting click-handler will suffice
     if (id === 0) return // don't edit "ID" header
-    const {selected} = this.state
-    this.setState({
-      selected: id,
-      edit: (selected === id) ? id : null
-    })
+    this.setState({ selected: id })
   },
 
   deselect(id) {
-    const {selected,edit} = this.state
+    const {selected} = this.state
     if (id === selected) {
       this.setState({ selected: null, wait: true })
     }

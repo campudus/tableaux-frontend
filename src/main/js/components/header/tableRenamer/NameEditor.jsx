@@ -2,11 +2,12 @@ import React from 'react'
 import i18n from 'i18next'
 import AmpersAndMixin from 'ampersand-react-mixin'
 import TableauxConstants from '../../../constants/TableauxConstants'
-import * as R from 'ramda'
+import * as _ from 'lodash/fp'
 
 class NameEditor extends React.Component {
   constructor(props) {
     super(props)
+    this.saveAndClose = _.compose(this.saveTableName, this.stopEditing)
     this.state = { active: false, name: null }
   }
 
@@ -19,14 +20,15 @@ class NameEditor extends React.Component {
 
   handleInput = (evt) => {
     if (evt && evt.key) {
-      const saveAndClose = R.compose(this.saveTableName, this.stopEditing)
-      R.cond([
-          [R.equals('Enter'), saveAndClose],
-          [R.equals('Escape'), this.stopEditing],
-          [R.T, x => null]
+      _.cond([
+          [_.eq('Enter'), this.saveAndClose],
+          [_.eq('Escape'), this.stopEditing],
+          [_.stubTrue, x => null]
       ])(evt.key)
     }
   }
+
+  saveAndClose = function() {} // composed by constructor
 
   getTableDisplayName = () => {
     const {table:{displayName,name},langtag} = this.props
@@ -48,7 +50,7 @@ class NameEditor extends React.Component {
     if (this.getTableDisplayName() === name) return //guardian
 
     const {table, langtag} = this.props
-    const patchObj = R.assocPath(["displayName", langtag], name, {})
+    const patchObj = {"displayName": {[langtag]: name}}
     table.save(patchObj, { patch: true })
   }
 
@@ -58,14 +60,14 @@ class NameEditor extends React.Component {
                onChange={this.handleTextChange}
                onKeyDown={this.handleInput}
                value={this.state.name}
-               onBlur={R.compose(this.saveTableName, this.stopEditing)}
+               onBlur={this.saveAndClose}
         />
     )
   }
 
   handleClickOutside = () => {
     console.log("NameEditor.handleClickOutside")
-    R.compose(this.saveTableName, this.stopEditing)()
+    this.saveAndClose()
   }
 
   render = () => {

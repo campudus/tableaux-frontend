@@ -1,5 +1,5 @@
-import React from 'react'
-import i18n from 'i18next'
+import React from "react";
+import i18n from "i18next";
 
 class ColumnEditorOverlay extends React.Component {
   constructor(props) {
@@ -10,34 +10,28 @@ class ColumnEditorOverlay extends React.Component {
     }
   }
 
-  modifyName = (evt) => {
+  modify = key => evt => {
+    console.log("ColumnEditorOverlay.modify, key =", key, "evt =", evt)
     if (evt && evt.target) {
-      const new_state = { name: evt.target.value }
+      const new_state = { [key]: evt.target.value }
+      console.log("-- new_state:", new_state)
       this.setState(new_state)
-      this.props.handleInput()(new_state)
-    }
-  }
-
-  modifyDescription = (evt) => {
-    if (evt && evt.target) {
-      const new_state = { description: evt.target.value }
-      this.setState(new_state)
-      this.props.handleInput()(new_state)
+      this.props.handleInput(new_state)
     }
   }
 
   render = () => {
     return (
-        <span >
+      <span >
           <text>{i18n.t("table:editor.colname")}</text>
           <textarea type="text" autoFocus className="input"
-                    rows="2"
-                    onChange={this.modifyName}
+                    rows="1"
+                    onChange={this.modify("name")}
                     value={this.state.name} />
           <text>{i18n.t("table:editor.description")}</text>
-          <textarea type="text" autoFocus className="input"
+          <textarea type="text" className="input"
                     rows="6"
-                    onChange={this.modifyDescription}
+                    onChange={this.modify("description")}
                     value={this.state.description} />
         </span>
     )
