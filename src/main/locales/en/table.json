@@ -23,6 +23,7 @@
   "country": "Country",
   "editor": {
     "colname": "Title",
+    "sanity_info": "Please make sure the title describes the purpose properly",
     "description": "Description",
     "edit_column": "Edit column",
     "rename_table": "Rename table"

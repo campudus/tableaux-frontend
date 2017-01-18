@@ -47,7 +47,6 @@ const ColumnEntry = React.createClass({
     }
   },
 
-  // implicit currying so ColumnEditorOverlay events may pass values easily
   handleInput(inputState) {
     this.setState(inputState);
   },

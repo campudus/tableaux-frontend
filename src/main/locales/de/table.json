@@ -23,6 +23,7 @@
   "country": "Land",
   "editor": {
     "colname": "Bezeichnung",
+    "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",
     "description": "Beschreibung",
     "edit_column": "Spalte bearbeiten",
     "rename_table": "Tabelle umbenennen"
