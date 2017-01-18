@@ -1,6 +1,7 @@
 import React from 'react';
 import FilterPopup from './FilterPopup.jsx';
 import {translate} from 'react-i18next';
+import * as _ from "lodash/fp"
 
 class FilterButton extends React.Component {
 
@@ -46,8 +47,15 @@ class FilterButton extends React.Component {
       buttonClass += " ignore-react-onclickoutside";
     }
 
+    const css_class = _.compose(
+      _.first,
+      _.first,
+      _.filter(x => x[1]),
+      _.zip(["active", "has-filter", ""])
+    )([this.state.open, this.props.currentFilter, true])
+
     return (
-      <div id="filter-wrapper" className={this.state.open ? "active": ""}>
+      <div id="filter-wrapper" className={css_class}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
           <i className="fa fa-filter"></i>{t('button.title')}</a>
         {this.renderFilterPopup()}
