@@ -49,8 +49,7 @@ class FilterButton extends React.Component {
 
     const css_class = _.compose(
       _.first,
-      _.first,
-      _.filter(x => x[1]),
+      _.find(x => x[1]),
       _.zip(["active", "has-filter", ""])
     )([this.state.open, this.props.currentFilter, true])
 

@@ -3,7 +3,7 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./table/Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
-import NameEditor from './header/tableRenamer/NameEditor'
+import NameEditor from './header/tableSettings/NameEditor'
 var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
@@ -17,6 +17,7 @@ import Filter from './header/filter/Filter.jsx';
 import Navigation from './header/Navigation.jsx';
 import PageTitle from './header/PageTitle.jsx';
 import Spinner from './header/Spinner.jsx';
+import TableSettings from "./header/tableSettings/TableSettings"
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -359,10 +360,10 @@ var TableView = React.createClass({
                            currentTable={currentTable}
                            tables={tables}/>
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             {(AccessControl.isUserAdmin()) ?
-                <NameEditor langtag={this.props.langtag} table={currentTable} /> :
+                <TableSettings langtag={this.props.langtag} table={currentTable}/> :
                 null}
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
             <PageTitle titleKey="pageTitle.tables"/>
             <Spinner />
           </header>

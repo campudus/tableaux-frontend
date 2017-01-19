@@ -1,3 +1,10 @@
+/*
+ * Menu entry for the TableSettingsPopup
+ * Displays a menu entry with localized text, turns into input when clicked.
+ * Input value gets saved as current locale display name when input loses focus or recieves "Enter" key.
+ * Aborts input on "Escape" key.
+ */
+
 import React from 'react'
 import i18n from 'i18next'
 import AmpersAndMixin from 'ampersand-react-mixin'
@@ -82,15 +89,14 @@ class NameEditor extends React.Component {
   render = () => {
     const {active} = this.state;
     return (
-      <div id="table-rename-wrapper" className={active ? "active" : ""}>
+      <a href="#" id="table-rename-wrapper"
+           className={active ? "active" : ""}
+           onClick={this.startEditing}>
         {(active) ?
           this.renderOpenInput() :
-          <a className="button" href="#"
-             onClick={this.startEditing}>
-            {i18n.t("table:editor.rename_table")}
-          </a>
+          <span> {i18n.t("table:editor.rename_table")} </span>
         }
-      </div>
+      </a>
     )
   };
 }

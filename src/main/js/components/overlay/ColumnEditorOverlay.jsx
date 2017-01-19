@@ -1,3 +1,9 @@
+/*
+ * Overlay class that allows to edit an editable column's title and description. Saving data is managed by a
+ * handler passed from the current table's Columns instance, which created the ColumnEntry which in turn opened
+ * the overlay.
+ */
+
 import React from "react";
 import i18n from "i18next";
 

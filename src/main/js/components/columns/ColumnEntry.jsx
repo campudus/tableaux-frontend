@@ -1,3 +1,9 @@
+/*
+ * Entries for the table header.
+ * In non-admin mode displays the header text/icon representation. If user has admin rights, rows may be selected
+ * on click, second click sends Action event to open overlay to edit current header's title and description.
+ */
+
 import React from "react";
 import AmpersandMixin from "ampersand-react-mixin";
 import ActionCreator from "../../actions/ActionCreator";
