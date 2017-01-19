@@ -83,11 +83,11 @@ const ColumnEntry = React.createClass({
                                  description={description}
                                  index={index} />,
       footer: <div className="column-editor-footer">
-        <a href="#" className="button" onClick={this.cancelEdit}>
-          {i18n.t('common:cancel')}
-        </a>
         <a href="#" className="button" onClick={this.saveEdit}>
           {i18n.t('common:save')}
+        </a>
+        <a href="#" className="button" onClick={this.cancelEdit}>
+          {i18n.t('common:cancel')}
         </a>
       </div>,
       closeOnBackgoundClicked: true,
