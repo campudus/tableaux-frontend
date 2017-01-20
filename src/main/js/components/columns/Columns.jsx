@@ -9,8 +9,6 @@ import * as _ from "lodash/fp";
 
 const ActionTypes = TableauxConstants.ActionTypes
 
-const PROTECTED_CELL_KINDS = ['concat', 'link']
-
 //TODO: Refactor function passing, then adapt ColumnEntry and EditColumnEntry
 
 var Columns = React.createClass({
@@ -84,14 +82,12 @@ var Columns = React.createClass({
 
     return (
       <ColumnEntry key={index}
-                   clickHandler={() => this.clickHandler(index)}
-                   blurHandler={() => this.deselect(index)}
                    columnContent={columnContent}
                    columnIcon={columnIcon}
                    index={column.id}
                    selected={this.state.selected}
                    name={name}
-                   readOnly={_.contains(column.kind, PROTECTED_CELL_KINDS)}
+                   column={column}
                    description={description}
                    langtag={langtag} />
     )
