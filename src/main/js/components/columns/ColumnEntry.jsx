@@ -3,7 +3,6 @@
  * In non-admin mode displays the header text/icon representation. If user has admin rights, rows may be selected
  * on click, second click sends Action event to open overlay to edit current header's title and description.
  */
-
 import React from "react";
 import AmpersandMixin from "ampersand-react-mixin";
 import ActionCreator from "../../actions/ActionCreator";
@@ -11,6 +10,7 @@ import OutsideClick from "react-onclickoutside";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
 import * as AccessControl from "../../helpers/accessManagementHelper";
+import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 
 const ColumnEntry = React.createClass({
   mixins: [AmpersandMixin, OutsideClick],
@@ -34,7 +34,8 @@ const ColumnEntry = React.createClass({
   getInitialState() {
     return {
       name: this.props.name,
-      description: this.props.description
+      description: this.props.description,
+      contextMenu: null
     };
   },
 
@@ -95,19 +96,49 @@ const ColumnEntry = React.createClass({
     });
   },
 
+  openContextMenu(evt) {
+    const column = evt.target.parentNode
+    const rect = column.getBoundingClientRect()
+    this.setState({
+      ctxCoords: {
+        x: rect.right,
+        y: rect.bottom
+      }
+    })
+  },
+
+  closeContextMenu(evt) {
+    this.setState({ctxCoords: null})
+  },
+
+  renderContextMenu() {
+    const {x, y} = this.state.ctxCoords;
+    return (
+      <ColumnContextMenu x={x} y={y} menuItems={
+        <div>
+          <a href="#">item</a>
+        </div>
+      }
+      />
+    )
+  },
+
   render() {
     const {index, columnContent, columnIcon, selected} = this.props;
 
     const css_class = (index === selected) ? "column-head column-selected" : "column-head";
     return (
       <div className={css_class}
-           key={index}
-           onClick={this.handleClick}>
+           key={index}>
         {columnContent}
         {columnIcon}
+        <a href="#" className="fa fa-caret-down" style={{float: "right"}}
+           onClick={this.openContextMenu}>
+        </a>
+        {(this.state.ctxCoords) ? this.renderContextMenu() : null}
       </div>
     );
   }
-})
+});
 
 module.exports = ColumnEntry;

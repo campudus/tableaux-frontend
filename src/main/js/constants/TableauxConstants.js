@@ -8,112 +8,119 @@ var keyMirror = require('keymirror');
 var languagetags;
 
 var TableauxConstant = {
-  ActionTypes : keyMirror({
-    SWITCH_VIEW : null,
-    SWITCH_FOLDER : null,
+  ActionTypes: keyMirror({
+    SWITCH_VIEW: null,
+    SWITCH_FOLDER: null,
 
-    SWITCH_TABLE : null,
-    SWITCHED_TABLE : null,
-    SWITCH_LANGUAGE : null,
+    SWITCH_TABLE: null,
+    SWITCHED_TABLE: null,
+    SWITCH_LANGUAGE: null,
 
     //Generic Overlay events
-    OPEN_OVERLAY : null,
-    CLOSE_OVERLAY : null,
+    OPEN_OVERLAY: null,
+    CLOSE_OVERLAY: null,
 
-    CHANGE_CELL : null,
+    CHANGE_CELL: null,
 
-    REMOVE_ROW : null,
-    CREATE_ROW : null,
-    TOGGLE_ROW_EXPAND : null,
-    DUPLICATE_ROW : null,
+    REMOVE_ROW: null,
+    CREATE_ROW: null,
+    TOGGLE_ROW_EXPAND: null,
+    DUPLICATE_ROW: null,
 
-    CREATE_ROW_OR_SELECT_NEXT_CELL : null,
+    CREATE_ROW_OR_SELECT_NEXT_CELL: null,
 
-    TOGGLE_CELL_SELECTION : null,
-    TOGGLE_CELL_EDITING : null,
-    SELECT_NEXT_CELL : null,
+    TOGGLE_CELL_SELECTION: null,
+    TOGGLE_CELL_EDITING: null,
+    SELECT_NEXT_CELL: null,
 
-    DISABLE_SHOULD_CELL_FOCUS : null,
-    ENABLE_SHOULD_CELL_FOCUS : null,
+    DISABLE_SHOULD_CELL_FOCUS: null,
+    ENABLE_SHOULD_CELL_FOCUS: null,
 
-    ADD_FOLDER : null,
-    CHANGE_FOLDER : null,
-    REMOVE_FOLDER : null,
+    ADD_FOLDER: null,
+    CHANGE_FOLDER: null,
+    REMOVE_FOLDER: null,
 
-    ADD_FILE : null,
-    CHANGE_FILE : null,
-    CHANGED_FILE_DATA : null,
-    REMOVE_FILE : null,
+    ADD_FILE: null,
+    CHANGE_FILE: null,
+    CHANGED_FILE_DATA: null,
+    REMOVE_FILE: null,
 
-    CLEANUP_TABLE : null,
-    CLEANUP_TABLE_DONE : null,
+    CLEANUP_TABLE: null,
+    CLEANUP_TABLE_DONE: null,
 
     //Overlay Text Type
-    OVERLAY_TYPE_TEXT_CLOSE : null,
-    OVERLAY_TYPE_TEXT_SAVE : null,
+    OVERLAY_TYPE_TEXT_CLOSE: null,
+    OVERLAY_TYPE_TEXT_SAVE: null,
 
     //Filter
-    CHANGE_FILTER : null,
-    CLEAR_FILTER : null,
+    CHANGE_FILTER: null,
+    CLEAR_FILTER: null,
 
     //Spinner
-    SPINNER_ON : null,
-    SPINNER_OFF : null,
+    SPINNER_ON: null,
+    SPINNER_OFF: null,
 
     //Context Menu
-    SHOW_ROW_CONTEXT_MENU : null,
-    CLOSE_ROW_CONTEXT_MENU : null,
+    SHOW_ROW_CONTEXT_MENU: null,
+    CLOSE_ROW_CONTEXT_MENU: null,
 
     //Toast
-    SHOW_TOAST : null,
+    SHOW_TOAST: null,
 
     //Access Rights
-    NO_PERMISSION_SAVE_LANGUAGE : null,
+    NO_PERMISSION_SAVE_LANGUAGE: null,
 
     //Column modification
-    DONE_EDIT_HEADER : null,
-    REFRESH_HEADERS : null
+    DONE_EDIT_HEADER: null,
+    REFRESH_HEADERS: null
   }),
 
-  Directions : keyMirror({
-    DOWN : null,
-    RIGHT : null,
-    LEFT : null,
-    UP : null
+  Directions: keyMirror({
+    DOWN: null,
+    RIGHT: null,
+    LEFT: null,
+    UP: null
   }),
 
   //Lowercase on purpose. Reflects exact API naming
-  ColumnKinds : keyMirror({
-    shorttext : null,
-    richtext : null,
-    text : null,
-    link : null,
-    numeric : null,
-    boolean : null,
-    concat : null,
-    attachment : null,
-    datetime : null,
-    currency : null
+  ColumnKinds: keyMirror({
+    shorttext: null,
+    richtext: null,
+    text: null,
+    link: null,
+    numeric: null,
+    boolean: null,
+    concat: null,
+    attachment: null,
+    datetime: null,
+    currency: null
   }),
 
-  LanguageType : keyMirror({
-    country : null,
+  LanguageType: keyMirror({
+    country: null,
   }),
 
-  ViewNames : keyMirror({
-    'TABLE_VIEW' : null,
-    'MEDIA_VIEW' : null
+  ViewNames: keyMirror({
+    'TABLE_VIEW': null,
+    'MEDIA_VIEW': null
   }),
 
-  DateTimeFormats : {
-    formatForServer : "YYYY-MM-DDTHH:mm:SS.SSSZ",
-    formatForUser : "DD.MM.YYYY - HH:mm"
+  Alignments: keyMirror({
+    'UPPER_LEFT': null,
+    'UPPER_RIGHT': null,
+    'LOWER_LEFT': null,
+    'LOWER_RIGHT': null
+  }),
+
+  DateTimeFormats: {
+    formatForServer: "YYYY-MM-DDTHH:mm:SS.SSSZ",
+    formatForUser: "DD.MM.YYYY - HH:mm"
   },
 
   //Fixed pixel height of a single row including border
-  RowHeight : 46,
+  RowHeight: 46,
 
-  PageTitle : "DataCenter",
+  PageTitle: "DataCenter",
 
   get Langtags() {
     return languagetags || null;
@@ -124,15 +131,15 @@ var TableauxConstant = {
   },
 
   //we hardcode this because english is the world language
-  FallbackLanguage : 'en',
+  FallbackLanguage: 'en',
 
-  initLangtags : (langtags) => {
+  initLangtags: (langtags) => {
     languagetags = langtags;
   },
 
-  SortValues : keyMirror({
-    ASC : null,
-    DESC : null
+  SortValues: keyMirror({
+    ASC: null,
+    DESC: null
   })
 };
 
