@@ -77,9 +77,7 @@ const ColumnEntry = React.createClass({
 
   openContextMenu(evt) {
     const colHeaderCell = evt.target.parentNode;
-    console.log("Arrow parent:", colHeaderCell);
     const rect = colHeaderCell.getBoundingClientRect();
-    console.log(colHeaderCell.getBoundingClientRect());
     this.setState({
       ctxCoords: {
         x: rect.right,
@@ -119,6 +117,7 @@ const ColumnEntry = React.createClass({
              () => ActionCreator.switchTable(column.toTable, this.props.langtag))}
         >
           {i18n.t("table:switch_table")}
+          <i className="fa fa-angle-right" style={{float: "right"}}></i>
         </a>
       </div> :
       null;

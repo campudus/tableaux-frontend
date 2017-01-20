@@ -93,7 +93,6 @@ class TableSwitcherButton extends React.Component {
     const open_class = (this.state.isOpen) ? "active" : "";
     const admin_class = (AccessControl.isUserAdmin()) ? " admin-mode" : "";
     const css_class = open_class + admin_class;
-    console.log(css_class);
     return (
       <div id="tableswitcher-wrapper" className={open_class + admin_class}>
         <a href="#" className={buttonClass} onClick={this.togglePopup}>
