@@ -97,8 +97,10 @@ const ColumnEntry = React.createClass({
   },
 
   openContextMenu(evt) {
-    const column = evt.target.parentNode
-    const rect = column.getBoundingClientRect()
+    const colHeaderCell = evt.target.parentNode
+    console.log("Arrow parent:", colHeaderCell)
+    const rect = colHeaderCell.getBoundingClientRect()
+    console.log(colHeaderCell.getBoundingClientRect())
     this.setState({
       ctxCoords: {
         x: rect.right,
@@ -126,9 +128,8 @@ const ColumnEntry = React.createClass({
   render() {
     const {index, columnContent, columnIcon, selected} = this.props;
 
-    const css_class = (index === selected) ? "column-head column-selected" : "column-head";
     return (
-      <div className={css_class}
+      <div className="column-head"
            key={index}>
         {columnContent}
         {columnIcon}
