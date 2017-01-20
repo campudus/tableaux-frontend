@@ -8,11 +8,9 @@ import AmpersandMixin from "ampersand-react-mixin";
 import ActionCreator from "../../actions/ActionCreator";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
-import * as AccessControl from "../../helpers/accessManagementHelper";
 import {compose, contains} from 'lodash/fp';
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 
-const PROTECTED_CELL_KINDS = ['concat', 'link']
 
 const ColumnEntry = React.createClass({
   mixins: [AmpersandMixin],
@@ -94,43 +92,12 @@ const ColumnEntry = React.createClass({
     const {x, y} = this.state.ctxCoords;
     const {column} = this.props;
 
-    if (column.kind === "link") {
-      console.log(column)
-    }
-
-    const canEdit =
-      AccessControl.isUserAdmin() &&
-      !contains(column.kind, PROTECTED_CELL_KINDS);
-    const editor_item = (canEdit) ?
-      <div>
-        <a href="#" onClick={compose(this.closeContextMenu, this.editColumn)}>
-          {i18n.t("table:editor.edit_column")}
-        </a>
-      </div> :
-      null;
-
-    const follow_link_item = (column.isLink) ?
-      <div>
-        <a href="#"
-           onClick={compose(
-             this.closeContextMenu,
-             () => ActionCreator.switchTable(column.toTable, this.props.langtag))}
-        >
-          {i18n.t("table:switch_table")}
-          <i className="fa fa-angle-right" style={{float: "right"}}></i>
-        </a>
-      </div> :
-      null;
-
     return (
       <ColumnContextMenu x={x} y={y}
-                         clickOutsideHandler={this.closeContextMenu}
-                         menuItems={
-                           <div>
-                             {editor_item}
-                             {follow_link_item}
-                           </div>
-                         }
+                         closeHandler={this.closeContextMenu}
+                         editHandler={this.editColumn}
+                         column={column}
+                         langtag={this.props.langtag}
       />
     );
   },
