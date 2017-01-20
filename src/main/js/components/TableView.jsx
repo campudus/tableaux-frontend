@@ -359,11 +359,11 @@ var TableView = React.createClass({
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
                            tables={tables}/>
+            {(AccessControl.isUserAdmin()) ?
+              <TableSettings langtag={this.props.langtag} table={currentTable}/> :
+              null}
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
-            {(AccessControl.isUserAdmin()) ?
-                <TableSettings langtag={this.props.langtag} table={currentTable}/> :
-                null}
             <PageTitle titleKey="pageTitle.tables"/>
             <Spinner />
           </header>

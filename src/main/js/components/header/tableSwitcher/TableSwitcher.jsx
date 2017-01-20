@@ -4,6 +4,7 @@ import TableauxConstants from '../../../constants/TableauxConstants';
 import TableSwitcherPopup from './TableSwitcherPopup';
 import ActionCreator from '../../../actions/ActionCreator';
 import {translate} from 'react-i18next';
+import * as AccessControl from "../../../helpers/accessManagementHelper"
 
 @translate(['header'])
 class TableSwitcherButton extends React.Component {
@@ -89,9 +90,12 @@ class TableSwitcherButton extends React.Component {
     //Show display name with fallback to machine name
     const table = this.props.currentTable;
     const tableDisplayName = table.displayName[this.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
-
+    const open_class = (this.state.isOpen) ? "active" : "";
+    const admin_class = (AccessControl.isUserAdmin()) ? " admin-mode" : "";
+    const css_class = open_class + admin_class;
+    console.log(css_class);
     return (
-      <div id="tableswitcher-wrapper" className={this.state.isOpen ? "active" : ""}>
+      <div id="tableswitcher-wrapper" className={open_class + admin_class}>
         <a href="#" className={buttonClass} onClick={this.togglePopup}>
           <i className="fa fa-columns"></i>{tableDisplayName}</a>
         {this.state.isOpen ? this.renderPopup() : null}

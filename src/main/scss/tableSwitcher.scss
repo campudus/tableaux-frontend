@@ -21,6 +21,14 @@
     }
   }
 
+  &.admin-mode {
+    .button {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+
   #tableswitcher-popup {
     @include header-panel-look();
     padding: 0;
