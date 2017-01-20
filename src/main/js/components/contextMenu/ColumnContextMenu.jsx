@@ -1,9 +1,10 @@
 import React from "react";
 import GenericContextMenu from "./GenericContextMenu";
 import TableauxConstants from "../../constants/TableauxConstants";
+import listensToClickOutside from 'react-onclickoutside/decorator';
 const Alignments = TableauxConstants.Alignments;
-const ARROW_WIDTH = 32;
 
+@listensToClickOutside
 class ColumnContextMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -12,6 +13,10 @@ class ColumnContextMenu extends React.Component {
       x: x,
       y: y
     }
+  }
+
+  handleClickOutside() {
+    this.props.clickOutsideHandler();
   }
 
   render() {
@@ -29,7 +34,7 @@ ColumnContextMenu.propTypes = {
   x: React.PropTypes.number.isRequired,
   y: React.PropTypes.number.isRequired,
   menuItems: React.PropTypes.element.isRequired,
-//  column: React.PropTypes.object.isRequired,
+  clickOutsideHandler: React.PropTypes.func.isRequired,
   offset: React.PropTypes.number
 };
 

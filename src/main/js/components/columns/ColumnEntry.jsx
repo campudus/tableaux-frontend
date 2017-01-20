@@ -84,10 +84,10 @@ const ColumnEntry = React.createClass({
                                  description={description}
                                  index={index} />,
       footer: <div className="column-editor-footer">
-        <a href="#" className="button" onClick={this.saveEdit}>
+        <a href="#" className="button positive" onClick={this.saveEdit}>
           {i18n.t('common:save')}
         </a>
-        <a href="#" className="button" onClick={this.cancelEdit}>
+        <a href="#" className="button neutral" onClick={this.cancelEdit}>
           {i18n.t('common:cancel')}
         </a>
       </div>,
@@ -109,20 +109,24 @@ const ColumnEntry = React.createClass({
     })
   },
 
-  closeContextMenu(evt) {
-    this.setState({ctxCoords: null})
+  closeContextMenu() {
+    this.setState({ctxCoords: null});
   },
 
   renderContextMenu() {
     const {x, y} = this.state.ctxCoords;
     return (
-      <ColumnContextMenu x={x} y={y} menuItems={
+      <ColumnContextMenu x={x} y={y}
+                         clickOutsideHandler={this.closeContextMenu}
+                         menuItems={
         <div>
-          <a href="#">item</a>
+          <a href="#" onClick={this.editColumn}>
+            {i18n.t("table:editor.edit_column")}
+          </a>
         </div>
       }
       />
-    )
+    );
   },
 
   render() {
