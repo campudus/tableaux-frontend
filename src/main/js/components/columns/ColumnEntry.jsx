@@ -10,6 +10,7 @@ import OutsideClick from "react-onclickoutside";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
 import * as AccessControl from "../../helpers/accessManagementHelper";
+import {compose} from 'lodash/fp'
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 
 const ColumnEntry = React.createClass({
@@ -120,7 +121,7 @@ const ColumnEntry = React.createClass({
                          clickOutsideHandler={this.closeContextMenu}
                          menuItems={
         <div>
-          <a href="#" onClick={this.editColumn}>
+          <a href="#" onClick={compose(this.closeContextMenu, this.editColumn)}>
             {i18n.t("table:editor.edit_column")}
           </a>
         </div>
@@ -137,9 +138,11 @@ const ColumnEntry = React.createClass({
            key={index}>
         {columnContent}
         {columnIcon}
-        <a href="#" className="fa fa-caret-down" style={{float: "right"}}
+        {(index > 0) ?
+          <a href="#" className="fa fa-caret-down" style={{float: "right"}}
            onClick={this.openContextMenu}>
-        </a>
+          </a> :
+          null}
         {(this.state.ctxCoords) ? this.renderContextMenu() : null}
       </div>
     );
