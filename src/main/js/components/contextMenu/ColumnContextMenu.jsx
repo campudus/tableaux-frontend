@@ -1,5 +1,5 @@
 /*
- *
+ * Context menu for column options. Opened by ColumnEntry.
  */
 
 import React from "react";
@@ -75,7 +75,7 @@ ColumnContextMenu.propTypes = {
   column: React.PropTypes.object.isRequired,
   closeHandler: React.PropTypes.func.isRequired,
   editHandler: React.PropTypes.func.isRequired,
-  langtag: React.PropTypes.func.isRequired,
+  langtag: React.PropTypes.string.isRequired,
 
   offset: React.PropTypes.number
 };
