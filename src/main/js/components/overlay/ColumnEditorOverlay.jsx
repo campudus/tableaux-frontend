@@ -3,7 +3,6 @@
  * handler passed from the current table's Columns instance, which created the ColumnEntry which in turn opened
  * the overlay.
  */
-
 import React from "react";
 import i18n from "i18next";
 
@@ -17,10 +16,8 @@ class ColumnEditorOverlay extends React.Component {
   }
 
   modify = key => evt => {
-    console.log("ColumnEditorOverlay.modify, key =", key, "evt =", evt);
     if (evt && evt.target) {
       const new_state = {[key]: evt.target.value};
-      console.log("-- new_state:", new_state);
       this.setState(new_state);
       this.props.handleInput(new_state);
     }
