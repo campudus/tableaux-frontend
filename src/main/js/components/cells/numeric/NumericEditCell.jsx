@@ -3,74 +3,69 @@ var OutsideClick = require('react-onclickoutside');
 var _ = require('lodash');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
+import listensToClickOutside from 'react-onclickoutside/decorator'
 
-var NumericEditCell = React.createClass({
+@listensToClickOutside
+class NumericEditCell extends React.Component {
 
-  mixins : [OutsideClick],
+  constructor(props) {
+    super(props);
+      this.MAX_DIGIT_LENGTH  = 15
+  }
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    onSave : React.PropTypes.func.isRequired,
-    setCellKeyboardShortcuts : React.PropTypes.func
-  },
-
-  MAX_DIGIT_LENGTH : 15,
-
-  componentDidMount : function () {
+  componentDidMount = () => {
     this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
     var node = this.refs.input;
     // Sets cursor to end of input field
     node.value = node.value;
-  },
+  };
 
-  componentWillMount : function () {
+  componentWillMount = () => {
     // TODO Move this into a mixin
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
-  },
+  };
 
-  componentWillUnmount : function () {
+  componentWillUnmount = () => {
     this.props.setCellKeyboardShortcuts({});
-  },
+  };
 
-  getKeyboardShortcuts : function () {
+  getKeyboardShortcuts = () => {
     var self = this;
     return {
-      up : function (event) {
+      up: function (event) {
         event.preventDefault();
         self.doneEditing(event);
       },
-      down : function (event) {
+      down: function (event) {
         event.preventDefault();
         self.doneEditing(event);
       },
-      left : function (event) {
+      left: function (event) {
         event.stopPropagation();
       },
-      right : function (event) {
+      right: function (event) {
         event.stopPropagation();
       },
-      enter : function (event) {
+      enter: function (event) {
         self.doneEditing(event);
         ActionCreator.selectNextCell(Directions.DOWN);
       },
-      navigation : function (event) {
+      navigation: function (event) {
         self.doneEditing(event);
       }
     };
-  },
+  };
 
-
-  handleClickOutside : function (event) {
+  handleClickOutside = (event) => {
     this.doneEditing(event);
-  },
+  };
 
   /**
    * Returns a clean Number and displays the correct value to the input field
    * @param input
    * @returns {float|null} result
    */
-  formatNumberCell : function (input) {
+  formatNumberCell = (input) => {
     var result = null;
     var curr = input.value;
     var currLength = curr.trim().length;
@@ -87,13 +82,13 @@ var NumericEditCell = React.createClass({
     }
     input.value = (result === null) ? "" : result;
     return result;
-  },
+  }
 
-  doneEditing : function (event) {
+  doneEditing = (event) => {
     this.props.onSave(this.formatNumberCell(this.refs.input));
-  },
+  }
 
-  getValue : function () {
+  getValue = () => {
     var cell = this.props.cell;
 
     var value = null;
@@ -119,13 +114,13 @@ var NumericEditCell = React.createClass({
     }
 
     return value;
-  },
+  }
 
-  correctNumberFormat : function (value) {
+  correctNumberFormat = (value) => {
     return String(value).replace(/,/g, ".");
-  },
+  }
 
-  onChangeHandler : function (e) {
+  onChangeHandler = (e) => {
     var curr = e.target.value;
     var formattedNumber = this.correctNumberFormat(curr);
 
@@ -133,9 +128,9 @@ var NumericEditCell = React.createClass({
       alert("Numbers can't be greater than 15 decimal values.");
       e.target.value = formattedNumber.substring(0, this.MAX_DIGIT_LENGTH);
     }
-  },
+  };
 
-  render : function () {
+  render = () => {
     return (
       <div className={'cell-content editing'}>
         <input autoFocus type="number"
@@ -146,6 +141,13 @@ var NumericEditCell = React.createClass({
       </div>
     );
   }
-});
+};
+
+NumericEditCell.propTypes = {
+  cell: React.PropTypes.object.isRequired,
+  langtag: React.PropTypes.string.isRequired,
+  onSave: React.PropTypes.func.isRequired,
+  setCellKeyboardShortcuts: React.PropTypes.func
+};
 
 module.exports = NumericEditCell;

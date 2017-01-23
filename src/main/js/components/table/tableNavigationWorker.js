@@ -62,7 +62,7 @@ export function getKeyboardShortcuts() {
     tab : (event)=> {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.RIGHT);
+        setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
         }
       );
     },

@@ -4,65 +4,59 @@ var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
 
-var ShortTextEditCell = React.createClass({
+import listensToClickOutside from "react-onclickoutside/decorator";
 
-  mixins : [OutsideClick],
+@listensToClickOutside
+class ShortTextEditCell extends React.Component {
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    onBlur : React.PropTypes.func.isRequired,
-    setCellKeyboardShortcuts : React.PropTypes.func
-  },
-
-  componentDidMount : function () {
+  componentDidMount = () => {
     this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
     // Sets cursor to end of input field
     var node = this.refs.input;
     node.value = node.value;
-  },
+  };
 
-  componentWillMount : function () {
+  componentWillMount = () => {
     this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
-  },
+  };
 
-  componentWillUnmount : function () {
+  componentWillUnmount = () => {
     this.props.setCellKeyboardShortcuts({});
-  },
+  };
 
-  getKeyboardShortcuts : function (event) {
+  getKeyboardShortcuts = (event) => {
     var self = this;
     return {
       //allow left arrow key inside input
-      left : function (event) {
+      left: function (event) {
         event.stopPropagation();
       },
       //allow left arrow key inside input
-      right : function (event) {
+      right: function (event) {
         event.stopPropagation();
       },
-      enter : function (event) {
+      enter: function (event) {
         //stop handling the Table events
         event.stopPropagation();
         self.doneEditing(event);
         //An event just for ShortTextEditCell to create a new Row when last is editing
         ActionCreator.addRowOrSelectNextCell();
       },
-      navigation : function (event) {
+      navigation: function (event) {
         self.doneEditing(event);
       }
     };
-  },
+  };
 
-  handleClickOutside : function (event) {
+  handleClickOutside = (event) => {
     this.doneEditing(event);
-  },
+  };
 
-  doneEditing : function (event) {
+  doneEditing = (event) => {
     this.props.onBlur(this.refs.input.value);
-  },
+  };
 
-  getValue : function () {
+  getValue = () => {
     var cell = this.props.cell;
 
     var value = null;
@@ -79,16 +73,24 @@ var ShortTextEditCell = React.createClass({
     }
 
     return value;
-  },
+  };
 
-  render : function () {
+  render = () => {
     return (
       <div className={'cell-content editing'} onKeyDown={this.onKeyboardShortcut}>
         <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
                ref="input"></input>
       </div>
     );
-  }
-});
+  };
+}
+;
+
+ShortTextEditCell.propTypes = {
+  cell: React.PropTypes.object.isRequired,
+  langtag: React.PropTypes.string.isRequired,
+  onBlur: React.PropTypes.func.isRequired,
+  setCellKeyboardShortcuts: React.PropTypes.func
+};
 
 module.exports = ShortTextEditCell;

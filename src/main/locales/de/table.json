@@ -20,5 +20,13 @@
   "show_dependency": "Zeige Verknüpfungen",
   "dependencies": "Verknüpfungen",
   "show_dependency_text": "Dieser Datensatz ist in folgenden Tabllen verknüpft.",
-  "country": "Land"
+  "country": "Land",
+  "switch_table": "Zu Tabelle wechseln",
+  "editor": {
+    "colname": "Bezeichnung",
+    "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",
+    "description": "Beschreibung",
+    "edit_column": "Spalte bearbeiten",
+    "rename_table": "Tabelle umbenennen"
+  }
 }

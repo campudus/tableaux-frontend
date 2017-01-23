@@ -12,3 +12,20 @@
     }
   }
 }
+
+.column-head .context-menu {
+  @include context-menu-look();
+  position: fixed;
+  font-weight: normal;
+  z-index: 2;
+
+  a {
+    border: none;
+    display: block;
+    padding: 10px 10px;
+
+    &.hover {
+      background-color: $color-select-list-selected;
+    }
+  }
+}

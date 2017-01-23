@@ -1,0 +1,46 @@
+@import "helper";
+@import "variables";
+
+#table-rename-wrapper {
+  input {
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid $color-grey-dark;
+    @include border-radius(3px);
+    outline: none;
+    width: 200px;
+    padding: 0 10px;
+
+    &:focus, &:active {
+      border-color: $color-primary-lighter;
+    }
+  }
+}
+
+#table-settings-wrapper {
+  float:left;
+  margin-left: 0px;
+  margin-right: 10px;
+  margin-top: 10px;
+
+  .button {
+    @include header-button-look();
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &.active {
+      @include header-button-active();
+    }
+  }
+
+  #table-settings-popup {
+    @include header-panel-look();
+    padding: 10px 0;
+  }
+
+  a {
+    padding: 20px 10px;
+  }
+
+}
