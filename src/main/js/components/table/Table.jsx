@@ -11,7 +11,7 @@ import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
 import * as tableRowsWorker from './tableRowsWorker';
 import * as tableNavigationWorker from './tableNavigationWorker';
 import * as tableContextMenu from './tableContextMenu';
-import listensToClickOutside from "react-onclickoutside/decorator";
+import listensToClickOutside from "react-onclickoutside";
 
 
 //Worker

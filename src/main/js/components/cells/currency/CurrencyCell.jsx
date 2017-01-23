@@ -6,10 +6,10 @@ import {getCountryOfLangtag, getCurrencyCode} from '../../../helpers/multiLangua
 import CurrencyEditCell from './CurrencyEditCell';
 import ActionCreator from'../../../actions/ActionCreator';
 import {getCurrencyWithCountry, splitPriceDecimals} from './currencyHelper';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+import onClickOutside from 'react-onclickoutside';
 import {translate} from 'react-i18next';
 
-const CurrencyEditCellWithClickOutside = listensToClickOutside(CurrencyEditCell);
+const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
 @translate(['table'])
 export default class CurrencyCell extends React.Component {

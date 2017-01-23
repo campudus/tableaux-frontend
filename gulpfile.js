@@ -1,11 +1,9 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var del = require('del');
-var url = require('url');
-var Path = require('path');
-var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
-var webpackConfig = require('./webpack.config');
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const del = require('del');
+const webpack = require('webpack');
+const WebpackDevServer = require('webpack-dev-server');
+const webpackConfig = require('./webpack.config');
 
 gulp.task('clean', clean);
 
@@ -19,11 +17,11 @@ gulp.task('serve:webpack', runWebpackServer);
 
 gulp.task('default', ['build']);
 
-var isProd = process.env.NODE_ENV === 'production';
 var config = {
   "outDir" : "out",
   "tableauxUrl" : "http://localhost:8080/"
 };
+
 try {
   config = require('./config.json');
 } catch (e) {
@@ -40,7 +38,7 @@ function watchAssets() {
 }
 
 function runWebpack(callback) {
-  var compiler = webpack(webpackConfig);
+  const compiler = webpack(webpackConfig);
   compiler.run(function (err, stats) {
     if (err) throw new gutil.PluginError("webpack", err);
     gutil.log("[webpack]", stats.toString({
@@ -51,17 +49,21 @@ function runWebpack(callback) {
 }
 
 function runWebpackServer(callback) {
-  var conf = webpackConfig;
+  const conf = webpackConfig;
+
   conf.devtool = 'source-maps';
   // enable development mode
   conf.entry.app.unshift('webpack/hot/only-dev-server');
   conf.entry.app.unshift('webpack-dev-server/client?http://localhost:3000');
-  var compiler = webpack(conf);
-  var server = new WebpackDevServer(compiler, {
+
+  const compiler = webpack(conf);
+
+  const server = new WebpackDevServer(compiler, {
     contentBase : config.outDir,
     publicPath : webpackConfig.output.publicPath,
     hot : true,
     historyApiFallback : true,
+    compress : true,
 
     proxy : {
       '/api/*' : {

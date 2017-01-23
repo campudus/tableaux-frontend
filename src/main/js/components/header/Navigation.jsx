@@ -1,7 +1,7 @@
 import React from 'react';
 import NavigationPopup from './NavigationPopup';
-import listensToClickOutside from 'react-onclickoutside/decorator';
-const NavigationPopupWithClickOutside = listensToClickOutside(NavigationPopup);
+import onClickOutside from 'react-onclickoutside';
+const NavigationPopupWithClickOutside = onClickOutside(NavigationPopup);
 
 class Navigation extends React.Component {
 
@@ -34,7 +34,7 @@ class Navigation extends React.Component {
         {navigationOpen ?
           <NavigationPopupWithClickOutside
             langtag={langtag}
-            onClickOutside={this.handleClickOutside}/> : null}
+            handleClickOutside={this.handleClickOutside}/> : null}
       </nav>
     )
   }

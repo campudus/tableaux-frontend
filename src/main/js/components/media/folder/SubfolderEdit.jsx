@@ -1,10 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+import listensToClickOutside from 'react-onclickoutside';
 
-
-@listensToClickOutside()
+@listensToClickOutside
 class SubfolderEdit extends React.Component {
   static propTypes = {
     folder : React.PropTypes.object.isRequired,

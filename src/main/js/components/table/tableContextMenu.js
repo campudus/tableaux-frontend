@@ -1,8 +1,8 @@
 import React from 'react';
 import RowContextMenu from './../contextMenu/RowContextMenu';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+import onClickOutside from 'react-onclickoutside';
 
-const RowContextMenuWithClickOutside = listensToClickOutside(RowContextMenu);
+const RowContextMenuWithClickOutside = onClickOutside(RowContextMenu);
 
 export function showRowContextMenu(payload) {
   this.setState({
@@ -21,7 +21,7 @@ export function getRowContextMenu() {
   if (rowContextMenu !== null) {
     return <RowContextMenuWithClickOutside
       {...rowContextMenu}
-      onClickOutside={()=>{this.setState({rowContextMenu : null})}}
+      handleClickOutside={()=>{this.setState({rowContextMenu : null})}}
       offsetY={this.tableDOMOffsetY}/>
   } else {
     return null;
