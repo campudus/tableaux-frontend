@@ -12,7 +12,7 @@ const Alignments = TableauxConstants.Alignments;
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
 
-const PROTECTED_CELL_KINDS = ['concat', 'link']
+const PROTECTED_CELL_KINDS = ['concat']; //cell kinds that should not be editable
 
 @listensToClickOutside
 class ColumnContextMenu extends React.Component {
@@ -25,11 +25,16 @@ class ColumnContextMenu extends React.Component {
     }
   }
 
-  handleClickOutside() {
-    this.props.closeHandler();
-  }
+  handleClickOutside = evt => {
+    const buttnEl = document.getElementById(this.props.colId)
+    const target = evt.target
+    console.log("hCo button:", buttnEl, "evt.targte:", target, "equal?", buttnEl === target)
+    if (buttnEl !== target) {
+      this.props.closeHandler();
+    }
+  };
 
-  render() {
+  render = () => {
     const {x, y, column, closeHandler, editHandler, langtag} = this.props;
 
     const canEdit =
@@ -56,7 +61,7 @@ class ColumnContextMenu extends React.Component {
       null;
 
     return (
-      <GenericContextMenu x={x} y={y}
+      <GenericContextMenu x={x-1} y={y+3}
                           clickOutsideHandler={this.closeContextMenu}
                           menuItems={
                             <div>
@@ -76,7 +81,7 @@ ColumnContextMenu.propTypes = {
   closeHandler: React.PropTypes.func.isRequired,
   editHandler: React.PropTypes.func.isRequired,
   langtag: React.PropTypes.string.isRequired,
-
+  colId: React.PropTypes.string.isRequired,
   offset: React.PropTypes.number
 };
 

@@ -3,7 +3,6 @@ var AmpersandMixin = require('ampersand-react-mixin');
 var Dispatcher = require('../dispatcher/Dispatcher');
 var Table = require('./table/Table.jsx');
 var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
-import NameEditor from './header/tableSettings/NameEditor'
 var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
 var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');

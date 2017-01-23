@@ -69,7 +69,7 @@ var Columns = React.createClass({
 
     if (column.kind === ColumnKinds.link) {
       name =
-        <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name}
+        <a className="column-table-link" target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name}
           <i className="fa fa-external-link" /></a>;
     }
 

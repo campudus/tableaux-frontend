@@ -10,19 +10,26 @@ class TableSettings extends React.Component {
   }
 
   setOpenState = open => {
+    console.log("setOpenState:", open);
     this.setState({open: open})
   };
 
-  toggleSettingsPopup = () => {
-    this.setOpenState(!this.state.open)
+  toggleSettingsPopup = (evt) => {
+    this.setOpenState(!this.state.open);
+    evt.stopPropagation();
   };
 
-  onClickOutside = () => {
-    this.setOpenState(false)
+  onClickOutside = evt => {
+    const target = evt.target;
+    const el = document.getElementById("table-settings")
+    console.log("TableSettings.onClickOutside", target, el, target === el)
+    if (target !== el) {
+      this.setOpenState(false)
+    }
   };
 
   render = () => {
-    const {open} = this.state
+    const {open} = this.state;
     const css_class = (open) ? "button active" : "button";
     return (
       <div id="table-settings-wrapper"

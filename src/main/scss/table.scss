@@ -56,7 +56,7 @@
   display: block;
 
   .heading {
-    border-bottom: 3px solid $color-border-grey;
+    border-bottom: $space-border-size-table-header solid $color-border-grey;
     @include box-sizing(border-box);
     font-weight: bold;
     background-color: #F9F9F9;
@@ -74,15 +74,43 @@
       top: 0px;
       left: 50px;
     }
+
+    .tableHeader-inner {
+      height: $space-inner-height-table-header;
+    }
   }
 
   .column-head {
     border-right: 1px solid $color-border-grey;
     overflow: hidden;
     white-space: nowrap;
+    position: relative;
+    height:$space-inner-height-table-header;
 
-    a {
-      border: 1px solid #dfdfdf;
+    a{
+      outline:none;
+    }
+
+    .column-name-wrapper {
+      width: 85%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+
+    .column-contextmenu-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 10%;
+      text-align: right;
+      padding-right: 5%;
+      line-height: $space-inner-height-table-header;
+    }
+
+    .column-table-link {
+      border: 1px solid #DFDFDF;
       border-radius: 3px;
       padding: 3px 10px;
       vertical-align: middle;
@@ -158,7 +186,7 @@
     width: $scrollToLeftButtonSize;
     height: $scrollToLeftButtonSize;
     line-height: $scrollToLeftButtonSize;
-    background-color: #fff;
+    background-color: #FFFFFF;
     color: $color-dark;
     @include border-radius(3px);
     border: 1px solid $color-grey-dark;
