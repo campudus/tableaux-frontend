@@ -1,9 +1,8 @@
 var React = require('react');
-var OutsideClick = require('react-onclickoutside');
 var _ = require('lodash');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
-import listensToClickOutside from 'react-onclickoutside/decorator'
+import listensToClickOutside from 'react-onclickoutside'
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {

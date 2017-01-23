@@ -1,7 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
 import ActionCreator from '../../../actions/ActionCreator';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+import listensToClickOutside from 'react-onclickoutside';
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import Select from 'react-select';
@@ -10,7 +10,7 @@ import {translate} from 'react-i18next';
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
 @translate(['filter', 'table'])
-@listensToClickOutside()
+@listensToClickOutside
 class FilterPopup extends React.Component {
 
   static propTypes = {

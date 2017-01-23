@@ -4,12 +4,9 @@ var SimpleFolder = require('../../../models/media/SimpleFolder');
 var ActionCreator = require('../../../actions/ActionCreator');
 import SubfolderEdit from './SubfolderEdit';
 import {translate} from 'react-i18next';
-import listensToClickOutside from 'react-onclickoutside/decorator';
 import {simpleError} from '../../../components/overlay/ConfirmationOverlay';
 
-
 @translate(['media'])
-@listensToClickOutside()
 class NewFolderAction extends React.Component {
 
   static propTypes = {

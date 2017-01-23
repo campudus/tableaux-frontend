@@ -4,7 +4,7 @@ var TextArea = require('./TextArea.jsx');
 var ExpandButton = require('./ExpandButton.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
-import listensToClickOutside from 'react-onclickoutside/decorator'
+import listensToClickOutside from 'react-onclickoutside'
 
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import listensToClickOutside from 'react-onclickoutside/decorator';
+import listensToClickOutside from 'react-onclickoutside';
 import TableauxConstants from '../../../constants/TableauxConstants';
 import * as _ from 'lodash';
 import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import {translate} from 'react-i18next';
 
 @translate(['header'])
-@listensToClickOutside()
+@listensToClickOutside
 class SwitcherPopup extends React.Component {
 
   static propTypes = {

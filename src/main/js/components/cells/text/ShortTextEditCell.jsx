@@ -1,10 +1,9 @@
 var React = require('react');
-var OutsideClick = require('react-onclickoutside');
 var Dispatcher = require('../../../dispatcher/Dispatcher');
 var TextArea = require('./TextArea.jsx');
 var ActionCreator = require('../../../actions/ActionCreator');
 
-import listensToClickOutside from "react-onclickoutside/decorator";
+import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
 class ShortTextEditCell extends React.Component {

@@ -2,7 +2,7 @@ var React = require('react');
 var Datetime = require('react-datetime');
 var ActionCreator = require('../../../actions/ActionCreator');
 var Directions = require('../../../constants/TableauxConstants').Directions;
-import listensToClickOutside from 'react-onclickoutside/decorator'
+import listensToClickOutside from 'react-onclickoutside'
 
 @listensToClickOutside
 class DateTimeEditCell extends React.Component {
