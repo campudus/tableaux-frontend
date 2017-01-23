@@ -9,7 +9,7 @@ import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
 import {compose, contains} from "lodash/fp";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
-import classNames from "classname";
+import classNames from "classnames";
 
 class ColumnEntry extends React.Component {
 

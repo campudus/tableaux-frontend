@@ -42,7 +42,7 @@
     "babel-preset-react": "6.22.0",
     "babel-preset-stage-0": "6.22.0",
     "browser-locale": "1.0.0",
-    "classname": "0.0.0",
+    "classnames": "2.2.5",
     "compass-mixins": "0.12.10",
     "css-loader": "0.26.1",
     "del": "2.2.2",
