@@ -147,9 +147,13 @@ var TableView = React.createClass({
   },
 
   setDocumentTitleToTableName : function () {
-    const tableDisplayNameObj = this.tables.get(this.state.currentTableId).displayName;
-    const tableDisplayName = tableDisplayNameObj[this.props.langtag] || tableDisplayNameObj[TableauxConstants.FallbackLanguage];
-    document.title = tableDisplayName ? tableDisplayName + " | " + TableauxConstants.PageTitle : TableauxConstants.PageTitle;
+    const currentTable = this.tables.get(this.state.currentTableId);
+
+    if (currentTable) {
+      const tableDisplayNameObj = this.tables.get(this.state.currentTableId).displayName;
+      const tableDisplayName = tableDisplayNameObj[this.props.langtag] || tableDisplayNameObj[TableauxConstants.FallbackLanguage];
+      document.title = tableDisplayName ? tableDisplayName + " | " + TableauxConstants.PageTitle : TableauxConstants.PageTitle;
+    }
   },
 
   componentDidUpdate : function () {
