@@ -4,7 +4,7 @@
 import React from "react";
 import GenericContextMenu from "./GenericContextMenu";
 import TableauxConstants from "../../constants/TableauxConstants";
-import listensToClickOutside from "react-onclickoutside/decorator";
+import listensToClickOutside from "react-onclickoutside";
 import * as AccessControl from "../../helpers/accessManagementHelper";
 import {compose, contains} from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
