@@ -72,7 +72,7 @@ var TableauxConstant = {
 
     //Column modification
     DONE_EDIT_HEADER: null,
-    REFRESH_HEADERS: null
+    REFRESH_TABLE_NAMES: null
   }),
 
   Directions: keyMirror({

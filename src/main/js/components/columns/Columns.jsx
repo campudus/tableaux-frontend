@@ -9,8 +9,6 @@ import * as _ from "lodash/fp";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
-//TODO: Refactor function passing, then adapt ColumnEntry and EditColumnEntry
-
 const Columns = React.createClass({
   mixins: [AmpersandMixin],
 
@@ -100,7 +98,6 @@ const Columns = React.createClass({
       (payload.newName || payload.newDescription)) {
       this.saveEdits(payload);
     }
-    this.forceUpdate();
   },
 
   saveEdits(payload) {
@@ -108,16 +105,21 @@ const Columns = React.createClass({
     const {columns} = this.props;
     const modifications =
       _.compose(
-        m => (newName) ?
-          _.assign({"displayName": {[langtag]: newName}}, m) :
-          m,
-        m => (newDescription) ?
-          _.assign({"description": {[langtag]: newDescription}}, m) :
-          m
+        m => (newName)
+          ? _.assign({"displayName": {[langtag]: newName}}, m)
+          : m,
+        m => (newDescription)
+          ? _.assign({"description": {[langtag]: newDescription}}, m)
+          : m
       )({});
+
     columns
-      .filter(c => c.id === colId)
-      .map(c => c.save(modifications, {patch: true}));
+      .get(colId)
+      .save(modifications, {
+        patch: true,
+        wait: true,
+        success: () => this.forceUpdate()
+      });
   },
 
   clickHandler(id) {

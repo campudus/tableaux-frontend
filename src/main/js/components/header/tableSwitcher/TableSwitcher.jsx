@@ -1,10 +1,11 @@
-import React from 'react';
-import _ from 'lodash';
-import TableauxConstants from '../../../constants/TableauxConstants';
-import TableSwitcherPopup from './TableSwitcherPopup';
-import ActionCreator from '../../../actions/ActionCreator';
-import {translate} from 'react-i18next';
-import * as AccessControl from "../../../helpers/accessManagementHelper"
+import React from "react";
+import _ from "lodash";
+import TableauxConstants from "../../../constants/TableauxConstants";
+import TableSwitcherPopup from "./TableSwitcherPopup";
+import ActionCreator from "../../../actions/ActionCreator";
+import {translate} from "react-i18next";
+import * as AccessControl from "../../../helpers/accessManagementHelper";
+import Dispatcher from "../../../dispatcher/Dispatcher";
 
 @translate(['header'])
 class TableSwitcherButton extends React.Component {
@@ -18,6 +19,18 @@ class TableSwitcherButton extends React.Component {
   state = {
     isOpen : false,
     currentGroupId : null
+  };
+
+  refresh = () => {
+    this.forceUpdate();
+  };
+
+  componentWillMount = () => {
+    Dispatcher.on(TableauxConstants.ActionTypes.REFRESH_TABLE_NAMES, this.refresh)
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(TableauxConstants.ActionTypes.REFRESH_TABLE_NAMES, this.refresh)
   };
 
   constructor(props) {

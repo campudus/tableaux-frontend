@@ -8,15 +8,14 @@ var ActionCreator = require('../actions/ActionCreator');
 var Tables = require('../models/Tables');
 var FilteredSubcollection = require('ampersand-filtered-subcollection');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
-import * as AccessControl from '../helpers/accessManagementHelper'
-
-import * as _ from 'lodash';
-import TableauxConstants, {SortValues, ActionTypes} from '../constants/TableauxConstants';
-import Filter from './header/filter/Filter.jsx';
-import Navigation from './header/Navigation.jsx';
-import PageTitle from './header/PageTitle.jsx';
-import Spinner from './header/Spinner.jsx';
-import TableSettings from "./header/tableSettings/TableSettings"
+import * as AccessControl from "../helpers/accessManagementHelper";
+import * as _ from "lodash";
+import TableauxConstants, {SortValues, ActionTypes} from "../constants/TableauxConstants";
+import Filter from "./header/filter/Filter.jsx";
+import Navigation from "./header/Navigation.jsx";
+import PageTitle from "./header/PageTitle.jsx";
+import Spinner from "./header/Spinner.jsx";
+import TableSettings from "./header/tableSettings/TableSettings";
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -358,9 +357,9 @@ var TableView = React.createClass({
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
                            tables={tables}/>
-            {(AccessControl.isUserAdmin()) ?
-              <TableSettings langtag={this.props.langtag} table={currentTable}/> :
-              null}
+            {(AccessControl.isUserAdmin())
+              ? <TableSettings langtag={this.props.langtag} table={currentTable} />
+              : null}
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables"/>

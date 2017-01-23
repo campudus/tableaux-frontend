@@ -4,12 +4,11 @@
  * Input value gets saved as current locale display name when input loses focus or recieves "Enter" key.
  * Aborts input on "Escape" key.
  */
-
-import React from 'react'
-import i18n from 'i18next'
-import AmpersAndMixin from 'ampersand-react-mixin'
-import TableauxConstants from '../../../constants/TableauxConstants'
-import * as _ from 'lodash/fp'
+import React from "react";
+import i18n from "i18next";
+import TableauxConstants from "../../../constants/TableauxConstants";
+import * as _ from "lodash/fp";
+import ActionCreator from "../../../actions/ActionCreator";
 
 class NameEditor extends React.Component {
   constructor(props) {
@@ -20,8 +19,6 @@ class NameEditor extends React.Component {
       name: null
     };
   }
-
-  mixins = [AmpersAndMixin];
 
   startEditing = (evt) => {
     this.setState({
@@ -67,7 +64,13 @@ class NameEditor extends React.Component {
 
     const {table, langtag} = this.props;
     const patchObj = {"displayName": {[langtag]: name}};
-    table.save(patchObj, {patch: true});
+    table
+      .save(patchObj,
+        {
+          patch: true,
+          wait: true,
+          success: () => ActionCreator.refreshTableNames()
+        });
   };
 
   renderOpenInput = () => {
@@ -81,20 +84,15 @@ class NameEditor extends React.Component {
     );
   };
 
-  handleClickOutside = () => {
-    console.log("NameEditor.handleClickOutside");
-    this.saveAndClose();
-  };
-
   render = () => {
     const {active} = this.state;
     return (
       <a href="#" id="table-rename-wrapper"
-           className={active ? "active" : ""}
-           onClick={this.startEditing}>
-        {(active) ?
-          this.renderOpenInput() :
-          <span> {i18n.t("table:editor.rename_table")} </span>
+         className={active ? "active" : ""}
+         onClick={this.startEditing}>
+        {(active)
+          ? this.renderOpenInput()
+          : <span> {i18n.t("table:editor.rename_table")} </span>
         }
       </a>
     )

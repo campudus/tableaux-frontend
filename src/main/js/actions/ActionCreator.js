@@ -256,4 +256,11 @@ module.exports = {
     )
   },
 
+  refreshTableNames: () => {
+    Dispatcher.trigger(
+      ActionTypes.REFRESH_TABLE_NAMES,
+      {}
+    );
+  }
+
 };

@@ -7,9 +7,9 @@ import React from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
-import {compose, contains} from 'lodash/fp';
+import {compose, contains} from "lodash/fp";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
-
+import classNames from "classname";
 
 class ColumnEntry extends React.Component {
 
@@ -95,7 +95,7 @@ class ColumnEntry extends React.Component {
                          editHandler={this.editColumn}
                          column={column}
                          langtag={this.props.langtag}
-                         colId={this.calcId()}
+                         popupToggleButtonId={this.calcId()}
       />
     );
   };
@@ -103,23 +103,24 @@ class ColumnEntry extends React.Component {
   render = () => {
     const {column:{kind}, index, columnContent, columnIcon} = this.props;
     const menu_open = this.state.ctxCoords;
-    const header_css_class = "column-head" +
-      ((menu_open) ? " contextmenu-open" : "");
-    const contextmenu_css_class = "column-contextmenu-button fa " +
-      ((menu_open) ? " fa-angle-up" : "fa-angle-down");
-
+    const contextmenu_css_class = classNames(
+      "column-contextmenu-button fa ", {
+        "fa-angle-up": menu_open,
+        "fa-angle-down": !menu_open
+      });
+    classNames("column-head", {"context-menu-open": menu_open});
     return (
-      <div className={header_css_class}
+      <div className={classNames("column-head", {"context-menu-open": menu_open})}
            key={index}>
-        <div className={"column-name-wrapper" + ((kind === "link") ? " column-link-wrapper" : "")}>
+        <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}>
           {columnContent}
           {columnIcon}
         </div>
-        {(index > 0) ?
-          <a href="#" className={contextmenu_css_class} id={this.calcId()}
+        {(index > 0)
+          ? <a href="#" className={contextmenu_css_class} id={this.calcId()}
              onClick={this.toggleContextMenu}>
-          </a> :
-          null}
+          </a>
+          : null}
         {(menu_open) ? this.renderContextMenu() : null}
       </div>
     );

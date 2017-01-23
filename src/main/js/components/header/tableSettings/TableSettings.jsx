@@ -1,8 +1,7 @@
 /** Displays a cogwheel icon that, when clicked, displays an instance of TableSettingsPopup */
-
 import React from "react";
 import TableSettingsPopup from "./TableSettingsPopup";
-import {contains} from "lodash/fp"
+import {contains} from "lodash/fp";
 
 class TableSettings extends React.Component {
   constructor(props) {
@@ -11,7 +10,6 @@ class TableSettings extends React.Component {
   }
 
   setOpenState = open => {
-    console.log("setOpenState:", open);
     this.setState({open: open})
   };
 
@@ -21,7 +19,7 @@ class TableSettings extends React.Component {
 
   onClickOutside = evt => {
     const target = evt.target;
-    const el = document.getElementById("table-settings");
+    const el = this.tableSettings;
     if (!contains(target, [el, el.firstChild])) {
       this.setOpenState(false)
     }
@@ -33,15 +31,20 @@ class TableSettings extends React.Component {
     return (
       <div id="table-settings-wrapper"
            onClick={this.toggleSettingsPopup}>
-        <a id="table-settings" className={css_class} href="#">
+        <a id="table-settings"
+           className={css_class}
+           ref={tableSettings => {
+             this.tableSettings = tableSettings;
+           }}
+           href="#">
           <i className="fa fa-cogs aria-button">
           </i>
         </a>
-        {(open) ?
-          <TableSettingsPopup table={this.props.table}
-                         langtag={this.props.langtag}
-                         outsideClickHandler={this.onClickOutside} /> :
-          null
+        {(open)
+          ? <TableSettingsPopup table={this.props.table}
+                                langtag={this.props.langtag}
+                                outsideClickHandler={this.onClickOutside} />
+          : null
         }
       </div>
     );
