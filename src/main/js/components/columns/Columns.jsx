@@ -7,11 +7,11 @@ import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as _ from "lodash/fp";
 
-const ActionTypes = TableauxConstants.ActionTypes
+const ActionTypes = TableauxConstants.ActionTypes;
 
 //TODO: Refactor function passing, then adapt ColumnEntry and EditColumnEntry
 
-var Columns = React.createClass({
+const Columns = React.createClass({
   mixins: [AmpersandMixin],
 
   componentWillMount() {
@@ -69,8 +69,10 @@ var Columns = React.createClass({
 
     if (column.kind === ColumnKinds.link) {
       name =
-        <a className="column-table-link" target="_blank" href={`/${langtag}/table/${column.toTable}`}>{name}
-          <i className="fa fa-external-link" /></a>;
+        <a className="column-table-link" target="_blank" href={`/${langtag}/table/${column.toTable}`}>
+          <i className="fa fa-columns" />
+          {name}
+          </a>;
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
@@ -136,7 +138,7 @@ var Columns = React.createClass({
   },
 
   render() {
-    var self = this;
+    const self = this;
 
     return (
 

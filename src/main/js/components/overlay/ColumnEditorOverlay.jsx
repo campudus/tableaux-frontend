@@ -28,22 +28,21 @@ class ColumnEditorOverlay extends React.Component {
 
   render = () => {
     return (
-      <span className="column-editor">
-        <p>
-          <text className="editor-big-text">{i18n.t("table:editor.colname")}</text>
-          <br />
+      <span id="column-editor">
+        <div className="column-editor-item">
+          <h1 className="editor-big-text">{i18n.t("table:editor.colname")}</h1>
           <text>({i18n.t("table:editor.sanity_info")})</text>
           <input type="text" autoFocus className="input"
                  onChange={this.modify("name")}
                  value={this.state.name} />
-        </p>
-        <p>
-          <text className="editor-big-text">{i18n.t("table:editor.description")}</text>
+        </div>
+        <div className="column-editor-item">
+          <h1 className="editor-big-text">{i18n.t("table:editor.description")}</h1>
           <textarea type="text" className="input"
                     rows="6"
                     onChange={this.modify("description")}
                     value={this.state.description} />
-        </p>
+        </div>
         </span>
     );
   };

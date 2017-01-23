@@ -87,7 +87,7 @@
     position: relative;
     height:$space-inner-height-table-header;
 
-    a{
+    a {
       outline:none;
     }
 
@@ -95,6 +95,17 @@
       width: 85%;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .column-link-wrapper {
+      overflow: visible;
+
+      a {
+        max-width: 90%;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
 
@@ -116,9 +127,8 @@
       vertical-align: middle;
 
       i {
-        margin-left: 5px;
+        margin-right: 5px;
         padding: 0;
-        margin-right: 0;
         color: $color-text-light-grey;
       }
 

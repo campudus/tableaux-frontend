@@ -2,6 +2,7 @@
 
 import React from "react";
 import TableSettingsPopup from "./TableSettingsPopup";
+import {contains} from "lodash/fp"
 
 class TableSettings extends React.Component {
   constructor(props) {
@@ -14,16 +15,14 @@ class TableSettings extends React.Component {
     this.setState({open: open})
   };
 
-  toggleSettingsPopup = (evt) => {
+  toggleSettingsPopup = () => {
     this.setOpenState(!this.state.open);
-    evt.stopPropagation();
   };
 
   onClickOutside = evt => {
     const target = evt.target;
-    const el = document.getElementById("table-settings")
-    console.log("TableSettings.onClickOutside", target, el, target === el)
-    if (target !== el) {
+    const el = document.getElementById("table-settings");
+    if (!contains(target, [el, el.firstChild])) {
       this.setOpenState(false)
     }
   };

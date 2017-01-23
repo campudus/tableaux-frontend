@@ -10,14 +10,27 @@
     }
   }
 
-  .column-editor {
-    textarea.input {
-      margin-bottom: 30px;
+  #column-editor {
+    .column-editor-item {
+//      text-align: center;
+      padding: 0 30px;
+      margin-bottom: 35px;
+
+      h1 {
+        margin-bottom: 25px;
+      }
+
+      .input {
+        margin-top: 15px;
+      }
+
+      text {
+        margin-bottom: 25px;
+      }
     }
 
-    text.editor-big-text {
-      font-weight: bold;
-      margin-bottom: 5px;
+    .column-editor-item:last-of-type {
+      margin-bottom: 70px;
     }
   }
 }

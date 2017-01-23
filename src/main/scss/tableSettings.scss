@@ -2,6 +2,19 @@
 @import "variables";
 
 #table-rename-wrapper {
+  input {
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid $color-grey-dark;
+    @include border-radius(3px);
+    outline: none;
+    width: 200px;
+    padding: 0 10px;
+
+    &:focus, &:active {
+      border-color: $color-primary-lighter;
+    }
+  }
 }
 
 #table-settings-wrapper {
@@ -28,7 +41,6 @@
 
   a {
     padding: 20px 10px;
-    padding-left: 30px;
   }
 
 }

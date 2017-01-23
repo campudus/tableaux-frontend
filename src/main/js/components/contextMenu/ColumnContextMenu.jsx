@@ -26,10 +26,9 @@ class ColumnContextMenu extends React.Component {
   }
 
   handleClickOutside = evt => {
-    const buttnEl = document.getElementById(this.props.colId)
-    const target = evt.target
-    console.log("hCo button:", buttnEl, "evt.targte:", target, "equal?", buttnEl === target)
-    if (buttnEl !== target) {
+    const el = document.getElementById(this.props.colId);
+    const target = evt.target;
+    if (el !== target) {
       this.props.closeHandler();
     }
   };
@@ -61,7 +60,7 @@ class ColumnContextMenu extends React.Component {
       null;
 
     return (
-      <GenericContextMenu x={x-1} y={y+3}
+      <GenericContextMenu x={x-1} y={y-1}
                           clickOutsideHandler={this.closeContextMenu}
                           menuItems={
                             <div>

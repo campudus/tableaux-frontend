@@ -22,7 +22,7 @@ class ColumnEntry extends React.Component {
     };
   }
 
-  calcId = () => "column-context-menu-" + JSON.stringify(this.props.column.id)
+  calcId = () => "column-context-menu-" + JSON.stringify(this.props.column.id);
 
   handleInput = (inputState) => {
     this.setState(inputState);
@@ -101,16 +101,17 @@ class ColumnEntry extends React.Component {
   };
 
   render = () => {
-    const {index, columnContent, columnIcon} = this.props;
+    const {column:{kind}, index, columnContent, columnIcon} = this.props;
     const menu_open = this.state.ctxCoords;
-    const header_css_class = "column-head" + ((menu_open) ? " contextmenu-open" : "");
+    const header_css_class = "column-head" +
+      ((menu_open) ? " contextmenu-open" : "");
     const contextmenu_css_class = "column-contextmenu-button fa " +
-      ((menu_open) ? " fa-angle-up" : "fa-angle-down")
+      ((menu_open) ? " fa-angle-up" : "fa-angle-down");
 
     return (
       <div className={header_css_class}
            key={index}>
-        <div className="column-name-wrapper">
+        <div className={"column-name-wrapper" + ((kind === "link") ? " column-link-wrapper" : "")}>
           {columnContent}
           {columnIcon}
         </div>
@@ -123,7 +124,7 @@ class ColumnEntry extends React.Component {
       </div>
     );
   }
-};
+}
 
 ColumnEntry.PropTypes = {
   description: React.PropTypes.string.isRequired,
