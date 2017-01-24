@@ -14,9 +14,10 @@ var DateTimeCell = require('./datetime/DateTimeCell.jsx');
 var IdentifierCell = require('./identifier/IdentifierCell.jsx');
 var RowConcatHelper = require('../../helpers/RowConcatHelper');
 
-import DisabledCell from './disabled/DisabledCell.jsx';
-import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
-import CurrencyCell from './currency/CurrencyCell.jsx';
+import DisabledCell from "./disabled/DisabledCell.jsx";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import CurrencyCell from "./currency/CurrencyCell.jsx";
+import DateCell from "./date/DateCell";
 
 //used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first visible row)
 const CELL_HINT_PADDING = 40;
@@ -150,6 +151,11 @@ var Cell = React.createClass({
       case ColumnKinds.datetime:
         cellKind = <DateTimeCell cell={this.props.cell} langtag={langtag} editing={editing}
                                  setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
+        break;
+
+      case ColumnKinds.date:
+        cellKind = <DateCell cell={this.props.cell} langtag={langtag} editing={editing}
+                             setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren} />;
         break;
 
       case ColumnKinds.shorttext:

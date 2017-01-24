@@ -1,8 +1,8 @@
-var React = require('react');
-var DateTimeEditCell = require('./DateTimeEditCell.jsx');
-var Moment = require('moment');
-var ActionCreator = require('../../../actions/ActionCreator');
-import TableauxConstants from '../../../constants/TableauxConstants';
+import React from "react";
+import DateTimeEditCell from "./DateTimeEditCell.jsx";
+import Moment from "moment";
+import ActionCreator from "../../../actions/ActionCreator";
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 var DateTimeCell = React.createClass({
 

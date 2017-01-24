@@ -107,7 +107,7 @@
     }
 
     //Important for datepicker
-    &.cell-datetime {
+    &.cell-datetime, &.cell-date {
       .cell-content {
         overflow: visible;
       }
