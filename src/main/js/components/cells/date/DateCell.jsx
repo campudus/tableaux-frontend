@@ -35,12 +35,11 @@ class DateCell extends React.Component {
         ActionCreator.changeCell(cell, inputDate.format(DateFormats.formatForServer));
       }
     } else { // no saving => reset display value
-      this.setState({value: this.getSavedMoment()})
+      this.setState({value: this.getSavedMoment()});
     }
   };
 
   handleDateUpdate = moment => {
-    console.log("DateCell.handleDateUpdate", moment);
     this.setState({value: moment})
   };
 

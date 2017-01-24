@@ -38,7 +38,7 @@ class DateEditCell extends React.Component {
 
   handleChange = moment => {
     if (moment) {
-      this.setState({moment: moment});
+      this.setState({moment});
       this.props.handleDateUpdate(moment);
     }
   };
@@ -92,8 +92,7 @@ DateEditCell.propTypes = {
   toDisplayValue: React.PropTypes.func.isRequired,
   handleEditFinished: React.PropTypes.func.isRequired,
   cell: React.PropTypes.object.isRequired,
-  value: React.PropTypes.object.isRequired,
-  langtag: React.PropTypes.string,
+  value: React.PropTypes.object.isRequired
 };
 
 module.exports = DateEditCell;

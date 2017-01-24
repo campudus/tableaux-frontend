@@ -111,7 +111,7 @@ var internal = {
             const moment = Moment(dateValue, TableauxConstants.DateFormats.formatForServer);
             const formattedDateValue = moment.isValid()
               ? moment.format(TableauxConstants.DateFormats.formatForUser)
-              : ""
+              : "";
             appendString(formattedDateValue);
             break;
           }
