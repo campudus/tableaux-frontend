@@ -20,40 +20,40 @@ import TableSettings from "./header/tableSettings/TableSettings";
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
 var TableView = React.createClass({
-  mixins : [AmpersandMixin],
+  mixins: [AmpersandMixin],
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    overlayOpen : React.PropTypes.bool.isRequired,
-    tableId : React.PropTypes.number
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    overlayOpen: React.PropTypes.bool.isRequired,
+    tableId: React.PropTypes.number
   },
 
-  nextTableId : null,
-  tables : null,
+  nextTableId: null,
+  tables: null,
 
-  getInitialState : function () {
+  getInitialState: function () {
     return {
-      initialLoading : true,
-      currentTableId : this.props.tableId,
-      rowsCollection : null,
-      rowsFilter : null
+      initialLoading: true,
+      currentTableId: this.props.tableId,
+      rowsCollection: null,
+      rowsFilter: null
     }
   },
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
   },
 
-  componentDidMount : function () {
+  componentDidMount: function () {
     ActionCreator.spinnerOn();
 
     // fetch all tables
     if (!this.tables) {
       this.tables = new Tables();
       this.tables.fetch({
-        success : (collection) => {
+        success: (collection) => {
           if (this.props.tableId === null) {
             ActionCreator.switchTable(collection.at(0).getId(), this.props.langtag);
           } else {
@@ -64,7 +64,7 @@ var TableView = React.createClass({
     }
   },
 
-  fetchTable : function (tableId) {
+  fetchTable: function (tableId) {
     const currentTable = this.tables.get(tableId);
 
     //spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
@@ -73,23 +73,23 @@ var TableView = React.createClass({
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
     currentTable.columns.fetch({
-      reset : true,
+      reset: true,
 
       //success for initial rows request
-      success : () => {
+      success: () => {
         currentTable.rows.fetchPage(0, {
-          reset : true,
-          success : () => {
+          reset: true,
+          success: () => {
             const pageCount = currentTable.rows.pageCount();
 
             console.log("table columns & initial rows successfully fetched");
             console.log("table page count is " + pageCount);
 
             this.setState({
-              initialLoading : false,
-              rowsCollection : currentTable.rows,
-              currentTableId : tableId,
-              rowsFilter : null
+              initialLoading: false,
+              rowsCollection: currentTable.rows,
+              currentTableId: tableId,
+              rowsFilter: null
             });
 
             if (pageCount > 0) {
@@ -104,7 +104,7 @@ var TableView = React.createClass({
 
             function fetchPage(pageNumber) {
               currentTable.rows.fetchPage(pageNumber, {
-                success : () => {
+                success: () => {
                   console.log("table page " + pageNumber + " fetched successfully");
 
                   if (pageNumber >= pageCount) {
@@ -114,13 +114,13 @@ var TableView = React.createClass({
                     fetchPage(pageNumber + 1);
                   }
                 },
-                error : (error) => {
+                error: (error) => {
                   console.error("Error fetching initial rows. Error from server:", error);
                 }
               });
             }
           },
-          error : (error) => {
+          error: (error) => {
             console.error("Error fetching initial rows. Error from server:", error);
           }
         });
@@ -128,13 +128,13 @@ var TableView = React.createClass({
     });
   },
 
-  componentWillUnmount : function () {
+  componentWillUnmount: function () {
     Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
   },
 
-  componentWillReceiveProps : function (nextProps) {
+  componentWillReceiveProps: function (nextProps) {
     if (nextProps.tableId !== this.props.tableId) {
       var oldTable = this.tables.get(this.state.currentTableId);
       this.nextTableId = nextProps.tableId;
@@ -146,31 +146,34 @@ var TableView = React.createClass({
     }
   },
 
-  setDocumentTitleToTableName : function () {
+  setDocumentTitleToTableName: function () {
     const currentTable = this.tables.get(this.state.currentTableId);
 
     if (currentTable) {
       const tableDisplayNameObj = this.tables.get(this.state.currentTableId).displayName;
       const tableDisplayName = tableDisplayNameObj[this.props.langtag] || tableDisplayNameObj[TableauxConstants.FallbackLanguage];
-      document.title = tableDisplayName ? tableDisplayName + " | " + TableauxConstants.PageTitle : TableauxConstants.PageTitle;
+      document.title = tableDisplayName
+        ? tableDisplayName + " | " + TableauxConstants.PageTitle
+        : TableauxConstants.PageTitle;
     }
   },
 
-  componentDidUpdate : function () {
+  componentDidUpdate: function () {
     this.setDocumentTitleToTableName();
   },
 
-  clearFilter : function () {
+  clearFilter: function () {
     this.setState({
-      rowsCollection : this.getCurrentTable().rows,
-      rowsFilter : null
+      rowsCollection: this.getCurrentTable().rows,
+      rowsFilter: null
     });
   },
 
-  changeFilter : function (rowsFilter) {
+  changeFilter: function (rowsFilter) {
     const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
 
-    const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(sortValue);
+    const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(
+        sortValue);
 
     let rowsCollection;
     if (isFilterEmpty) {
@@ -182,16 +185,16 @@ var TableView = React.createClass({
 
     console.log("setting rowsFilter to state:", rowsFilter);
     this.setState({
-      rowsCollection : rowsCollection,
-      rowsFilter : rowsFilter
+      rowsCollection: rowsCollection,
+      rowsFilter: rowsFilter
     });
   },
 
-  getCurrentTable : function () {
+  getCurrentTable: function () {
     return this.tables.get(this.state.currentTableId);
   },
 
-  getFilteredRows : function (rowsFilter) {
+  getFilteredRows: function (rowsFilter) {
     const filterColumnId = rowsFilter.filterColumnId;
     const filterValue = rowsFilter.filterValue;
 
@@ -201,7 +204,9 @@ var TableView = React.createClass({
     const currentTable = this.getCurrentTable();
     const columnsOfTable = currentTable.columns;
 
-    const filterColumnIndex = _.isFinite(filterColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId)) : -1;
+    const filterColumnIndex = _.isFinite(filterColumnId)
+      ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId))
+      : -1;
     const sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : -1;
 
     const allRows = currentTable.rows;
@@ -260,7 +265,7 @@ var TableView = React.createClass({
     }
 
     return new FilteredSubcollection(allRows, {
-      filter : function (row) {
+      filter: function (row) {
         if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
           // no or invalid column found OR no filter value
           return true;
@@ -291,7 +296,7 @@ var TableView = React.createClass({
         }
       },
 
-      comparator : function (rowOne, rowTwo) {
+      comparator: function (rowOne, rowTwo) {
         // swap gt and lt to support ASC and DESC
         // gt = in case rowOne > rowTwo
         // lt = in case rowOne < rowTwo
@@ -334,20 +339,20 @@ var TableView = React.createClass({
     });
   },
 
-  doSwitchTable : function () {
+  doSwitchTable: function () {
     if (this.nextTableId) {
       console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
     }
   },
 
-  onLanguageSwitch : function (newLangtag) {
+  onLanguageSwitch: function (newLangtag) {
     ActionCreator.switchLanguage(newLangtag);
   },
 
-  render : function () {
+  render: function () {
     if (this.state.initialLoading) {
-      return <div className="initial-loader"><Spinner isLoading={true}/></div>;
+      return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       var tables = this.tables;
       var rowsCollection = this.state.rowsCollection;
@@ -357,7 +362,7 @@ var TableView = React.createClass({
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
-                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}/>;
+                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen} />;
         } else {
           //TODO show error to user
           console.error("No table found with id " + this.state.currentTableId);
@@ -367,16 +372,16 @@ var TableView = React.createClass({
       return (
         <div>
           <header>
-            <Navigation langtag={this.props.langtag}/>
+            <Navigation langtag={this.props.langtag} />
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
-                           tables={tables}/>
+                           tables={tables} />
             {(AccessControl.isUserAdmin())
               ? <TableSettings langtag={this.props.langtag} table={currentTable} />
               : null}
-            <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter}/>
+            <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
-            <PageTitle titleKey="pageTitle.tables"/>
+            <PageTitle titleKey="pageTitle.tables" />
             <Spinner />
           </header>
           <div className="wrapper">

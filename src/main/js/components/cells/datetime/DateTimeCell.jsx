@@ -23,7 +23,7 @@ var DateTimeCell = React.createClass({
     }
   },
 
-  noDateTimeText : "No date selected",
+  noDateTimeText: "",
 
   getDateTimeValue : function () {
     var cellValue = this.getCellValue();

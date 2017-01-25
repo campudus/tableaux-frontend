@@ -7,7 +7,14 @@ import DateEditCell from "./DateEditCell";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
+import keyMirror from "keymirror";
 const DateFormats = TableauxConstants.DateFormats;
+
+const OPTIONS = keyMirror({
+  "SAVE": null,
+  "CANCEL": null,
+  "CLEAR": null
+});
 
 class DateCell extends React.Component {
 
@@ -21,26 +28,31 @@ class DateCell extends React.Component {
   };
 
   momentToString = moment => {
-    return moment.isValid()
+    return (moment && moment.isValid())
       ? moment.format(DateFormats.formatForUser)
-      : "-";
+      : "";
   };
 
-  finishedEditing = save => {
-    if (save) {
-      const savedDateString = this.momentToString(this.getSavedMoment());
-      const inputDate = this.state.value;
-      const {cell} = this.props;
-      if (savedDateString !== this.momentToString(inputDate)) {
-        ActionCreator.changeCell(cell, inputDate.format(DateFormats.formatForServer));
-      }
-    } else { // no saving => reset display value
-      this.setState({value: this.getSavedMoment()});
+  finishedEditing = option => {
+    const {cell} = this.props;
+    switch (option) {
+      case OPTIONS.SAVE:
+        const inputDate = this.state.value;
+        const savedDateString = this.momentToString(this.getSavedMoment());
+        if (savedDateString !== this.momentToString(inputDate)) {
+          ActionCreator.changeCell(cell, inputDate.format(DateFormats.formatForServer));
+        }
+        break;
+      case OPTIONS.CLEAR:
+        ActionCreator.changeCell(cell, null);
+        break;
+      default:
+        this.setState({value: this.getSavedMoment()});
     }
   };
 
   handleDateUpdate = moment => {
-    this.setState({value: moment})
+    this.setState({value: moment});
   };
 
   render = () => {
@@ -59,6 +71,7 @@ class DateCell extends React.Component {
                       handleDateUpdate={this.handleDateUpdate}
                       handleEditFinished={this.finishedEditing}
                       value={value}
+                      OPTIONS={OPTIONS}
                       cell={cell} />
       )
     }

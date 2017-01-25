@@ -25,41 +25,41 @@ class DateEditCell extends React.Component {
   };
 
   handleClickOutside = () => {
-    this.props.handleEditFinished(true);
+    this.props.handleEditFinished(this.props.OPTIONS.SAVE);
     ActionCreator.toggleCellEditing(false);
   };
 
   handleClickClearDate = event => {
+    this.handleChange(null);
+    this.props.handleEditFinished(this.props.OPTIONS.CLEAR);
+    ActionCreator.toggleCellEditing("CLEAR");
     event.preventDefault();
     event.stopPropagation();
-    this.props.handleEditFinished(false);
-    ActionCreator.toggleCellEditing(false);
   };
 
   handleChange = moment => {
-    if (moment) {
-      this.setState({moment});
-      this.props.handleDateUpdate(moment);
-    }
+    this.setState({moment});
+    this.props.handleDateUpdate(moment);
   };
 
   getKeyboardShortcuts = () => {
+    const OPTIONS = this.props.OPTIONS;
     const editFinished = this.props.handleEditFinished;
     return {
       tab: function () {
-        editFinished(true);
+        editFinished(OPTIONS.SAVE);
         ActionCreator.toggleCellEditing(true);
         ActionCreator.selectNextCell(Directions.RIGHT);
       },
       enter: function () {
-        editFinished(true);
+        editFinished(OPTIONS.SAVE);
         ActionCreator.toggleCellEditing(false);
         ActionCreator.selectNextCell(Directions.DOWN);
       },
       escape: function (event) {
         event.preventDefault();
         event.stopPropagation();
-        editFinished(false);
+        editFinished(OPTIONS.SAVE);
         ActionCreator.toggleCellEditing(false);
       },
       always: function (event) {
@@ -74,7 +74,7 @@ class DateEditCell extends React.Component {
     return (
       <div className="cell-content">
         {this.props.toDisplayValue(moment)}
-        <i className="fa fa-ban" style={{float: "right"}}
+        <i className="fa fa-ban cell-content" style={{float: "right"}}
            onClick={this.handleClickClearDate} />
         <Datetime onChange={this.handleChange}
                   open={true}
