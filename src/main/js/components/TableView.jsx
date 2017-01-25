@@ -10,7 +10,8 @@ var FilteredSubcollection = require('ampersand-filtered-subcollection');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
-import TableauxConstants, {SortValues, ActionTypes} from "../constants/TableauxConstants";
+import * as f from "lodash/fp";
+import TableauxConstants, {SortValues, ActionTypes, FilterModes} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
 import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
@@ -197,7 +198,7 @@ var TableView = React.createClass({
   getFilteredRows: function (rowsFilter) {
     const filterColumnId = rowsFilter.filterColumnId;
     const filterValue = rowsFilter.filterValue;
-
+    const filterMode = rowsFilter.filterMode;
     const sortColumnId = rowsFilter.sortColumnId;
     const sortValue = rowsFilter.sortValue;
 
@@ -214,10 +215,11 @@ var TableView = React.createClass({
 
     const langtag = this.props.langtag;
 
-    const containsValue = function (cellValue, filterValue) {
-      return _.every(_.words(filterValue), function (word) {
-        return cellValue.toString().trim().toLowerCase().indexOf(word) > -1;
-      });
+    const containsAllSubstrings = (str, stringOfFilters) => {
+      const fcontains = a => b => f.contains(b)(a);
+      return f.every(
+        fcontains(f.toLower(str)),
+        f.words(stringOfFilters))
     };
 
     const getSortableCellValue = function (cell) {
@@ -264,6 +266,71 @@ var TableView = React.createClass({
       return allRows;
     }
 
+    const _getSortableCellValue = function (cell) {
+      const aIfNotBElseC = (a, b, c) => (a !== b) ? a : c;
+      const getval = x => {
+        if (x.isMultiLanguage) {
+          console.log("geteting multivalue of\n", x)
+          console.log(x.value)
+          console.log(x.value[0])
+          return x.value[0]
+        }
+        return x.value
+      }
+      const spy = x => {
+        console.warn("I spy", x);
+        return x
+      }
+
+      const extractValue = cell => f.cond([
+        [
+          f.prop("isLink"),
+          c => f.join(":", f.map(f.get(langtag)))
+        ],
+        [
+          f.propEq("kind", ColumnKinds.concat),
+          c => aIfNotBElseC(c.rowConcatString[langtag], RowConcatHelper.NOVALUE, "")
+        ],
+        [
+          f.prop("isMultiLanguage"),
+          getval
+        ],
+        [
+          f.stubTrue,
+          f.prop("value")
+        ]
+      ])(spy(cell));
+
+      console.log("Extracted:", extractValue(cell), getval(cell));
+      console.log(cell)
+
+      const formatValue = val => cell => {
+        console.log("formatValue", val, "\n->", cell)
+        return f.cond([
+          [cell.kind === ColumnKinds.numeric, f.toNumber],
+          [cell.kind === ColumnKinds.boolean, x => !!x],
+          [f.stubTrue, f.compose(f.trim, f.toLower, f.toString)]
+        ])(val);
+      };
+
+      const formatEmptyValue = val => cell => {
+        console.log("formatEmptyValue", val, "\n->", cell)
+        return (cell.kind === ColumnKinds.boolean)
+          ? false
+          : "";
+      };
+
+      return f.cond([
+        [f.identity, formatValue(cell)],
+        [f.stubTrue, formatEmptyValue(cell)]
+      ])(spy(extractValue(cell)));
+    };
+
+
+    if (_.isEmpty(toFilterValue) && typeof sortColumnId === 'undefined') {
+      return allRows;
+    }
+
     return new FilteredSubcollection(allRows, {
       filter: function (row) {
         if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
@@ -289,7 +356,9 @@ var TableView = React.createClass({
           || targetCell.kind === ColumnKinds.text
           || targetCell.kind === ColumnKinds.link
           || targetCell.kind === ColumnKinds.concat) {
-          return containsValue(getSortableCellValue(targetCell), toFilterValue);
+          return (filterMode === FilterModes.CONTAINS)
+            ? containsAllSubstrings(getSortableCellValue(targetCell), toFilterValue)
+            : f.startsWith(toFilterValue, getSortableCellValue(targetCell));
         } else {
           // column type not support for filtering
           return false;
