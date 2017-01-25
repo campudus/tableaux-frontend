@@ -77,7 +77,7 @@ var TableView = React.createClass({
 
       //success for initial rows request
       success: () => {
-        currentTable.rows.fetchPage(0, {
+        currentTable.rows.fetchPage(1, {
           reset: true,
           success: () => {
             const pageCount = currentTable.rows.pageCount();
@@ -92,17 +92,18 @@ var TableView = React.createClass({
               rowsFilter: null
             });
 
-            if (pageCount > 0) {
-              // Spinner for the next calls
-              ActionCreator.spinnerOn();
-
-              // start fetching pages at page 1
-              fetchPage(1);
+            if (pageCount > 1) {
+              // start fetching pages at page 2
+              // page 1 was already fetched
+              fetchPage(2);
             } else {
               ActionCreator.spinnerOff();
             }
 
             function fetchPage(pageNumber) {
+              // Spinner for the next call
+              ActionCreator.spinnerOn();
+
               currentTable.rows.fetchPage(pageNumber, {
                 success: () => {
                   console.log("table page " + pageNumber + " fetched successfully");

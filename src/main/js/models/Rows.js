@@ -3,11 +3,12 @@ const _ = require('lodash');
 const apiUrl = require('../helpers/apiUrl');
 const Row = require('./Row');
 
+const INITIAL_PAGE_SIZE = 30;
 const PAGE_SIZE = 500;
 
 const Rows = Collection.extend({
 
-  totalSize : 0,
+  totalSize : INITIAL_PAGE_SIZE,
 
   model : function (attrs, options) {
     const tableId = options.collection.parent.getId();
@@ -41,36 +42,41 @@ const Rows = Collection.extend({
   },
 
   pageCount : function () {
-    const totalSize = this.totalSize;
-    return totalSize > 0 ? _.ceil(totalSize / PAGE_SIZE) : 0;
+    return this.totalSize > 0
+      ? 1 + _.ceil((this.totalSize - INITIAL_PAGE_SIZE) / PAGE_SIZE)
+      : 0;
   },
 
   calculatePage : function (pageNumber) {
     const pageCount = this.pageCount();
 
-    if (pageNumber < 0 && pageNumber > pageCount) {
-      throw new Error('invalid pageNumber, should greater than -1 and smaller or equal to ', pageCount);
-    }
-
-    if (pageNumber === 0) {
-      return {
-        offset : 0,
-        limit : 0
-      }
+    if (pageNumber <= 0 && pageNumber > pageCount) {
+      throw new Error('invalid pageNumber, should be greater than 0 and smaller or equal to ' + pageCount);
     }
 
     const totalSize = this.totalSize;
 
-    return {
-      offset : PAGE_SIZE * (pageNumber - 1),
-      limit : pageNumber === pageCount ? totalSize % PAGE_SIZE : PAGE_SIZE
+    if (pageNumber === 1) {
+      return {
+        offset : 0,
+        limit : totalSize >= INITIAL_PAGE_SIZE
+          ? INITIAL_PAGE_SIZE
+          : totalSize % INITIAL_PAGE_SIZE
+      }
+    } else {
+      return {
+        offset : INITIAL_PAGE_SIZE + PAGE_SIZE * (pageNumber - 2),
+        limit : pageNumber === pageCount
+          ? (totalSize - INITIAL_PAGE_SIZE) % PAGE_SIZE || PAGE_SIZE
+          : PAGE_SIZE
+      }
     }
   },
 
   fetchPage(pageNumber, options) {
     const page = this.calculatePage(pageNumber);
 
-    //dont merge, or models are broken when duplicating while fetching the tail
+    // don't merge, or models are broken when duplicating while fetching the tail
     options = _.assign(options, {merge : false, add : true, remove : false});
     options.data = _.assign({}, options.data, page);
     this.fetch(options);
