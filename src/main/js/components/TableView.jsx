@@ -17,6 +17,7 @@ import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
+import searchFunctions from "../helpers/searchFunctions";
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -184,7 +185,6 @@ var TableView = React.createClass({
       rowsCollection = this.getFilteredRows(rowsFilter);
     }
 
-    console.log("setting rowsFilter to state:", rowsFilter);
     this.setState({
       rowsCollection: rowsCollection,
       rowsFilter: rowsFilter
@@ -266,67 +266,6 @@ var TableView = React.createClass({
       return allRows;
     }
 
-    const _getSortableCellValue = function (cell) {
-      const aIfNotBElseC = (a, b, c) => (a !== b) ? a : c;
-      const getval = x => {
-        if (x.isMultiLanguage) {
-          console.log("geteting multivalue of\n", x)
-          console.log(x.value)
-          console.log(x.value[0])
-          return x.value[0]
-        }
-        return x.value
-      }
-      const spy = x => {
-        console.warn("I spy", x);
-        return x
-      }
-
-      const extractValue = cell => f.cond([
-        [
-          f.prop("isLink"),
-          c => f.join(":", f.map(f.get(langtag)))
-        ],
-        [
-          f.propEq("kind", ColumnKinds.concat),
-          c => aIfNotBElseC(c.rowConcatString[langtag], RowConcatHelper.NOVALUE, "")
-        ],
-        [
-          f.prop("isMultiLanguage"),
-          getval
-        ],
-        [
-          f.stubTrue,
-          f.prop("value")
-        ]
-      ])(spy(cell));
-
-      console.log("Extracted:", extractValue(cell), getval(cell));
-      console.log(cell)
-
-      const formatValue = val => cell => {
-        console.log("formatValue", val, "\n->", cell)
-        return f.cond([
-          [cell.kind === ColumnKinds.numeric, f.toNumber],
-          [cell.kind === ColumnKinds.boolean, x => !!x],
-          [f.stubTrue, f.compose(f.trim, f.toLower, f.toString)]
-        ])(val);
-      };
-
-      const formatEmptyValue = val => cell => {
-        console.log("formatEmptyValue", val, "\n->", cell)
-        return (cell.kind === ColumnKinds.boolean)
-          ? false
-          : "";
-      };
-
-      return f.cond([
-        [f.identity, formatValue(cell)],
-        [f.stubTrue, formatEmptyValue(cell)]
-      ])(spy(extractValue(cell)));
-    };
-
-
     if (_.isEmpty(toFilterValue) && typeof sortColumnId === 'undefined') {
       return allRows;
     }
@@ -349,6 +288,7 @@ var TableView = React.createClass({
         }
 
         const targetCell = row.cells.at(filterColumnIndex);
+        const searchFunction = searchFunctions[filterMode];
 
         if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
@@ -356,9 +296,7 @@ var TableView = React.createClass({
           || targetCell.kind === ColumnKinds.text
           || targetCell.kind === ColumnKinds.link
           || targetCell.kind === ColumnKinds.concat) {
-          return (filterMode === FilterModes.CONTAINS)
-            ? containsAllSubstrings(getSortableCellValue(targetCell), toFilterValue)
-            : f.startsWith(toFilterValue, getSortableCellValue(targetCell));
+          return searchFunction(toFilterValue, getSortableCellValue())
         } else {
           // column type not support for filtering
           return false;
