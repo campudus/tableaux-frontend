@@ -4,8 +4,8 @@
   "confirm_delete_row": "Really delete row „{{rowName}}”?",
   "delete_row": "Delete row",
   "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed.",
-  "show_entity_view" : "Show preview",
-  "entity_view" : "Preview",
+  "show_entity_view": "Show preview",
+  "entity_view": "Preview",
   "no_dependent_text": "Data record is not linked anywhere.",
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
@@ -28,5 +28,9 @@
     "description": "Description",
     "edit_column": "Edit column",
     "rename_table": "Rename table"
+  },
+  "filter": {
+    "contains": "contains",
+    "starts_with": "starts with"
   }
 }

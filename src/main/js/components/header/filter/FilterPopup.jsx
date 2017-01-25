@@ -173,6 +173,9 @@ class FilterPopup extends React.Component {
 
   render() {
     let {t} = this.props;
+    const filterInfoString = (this.state.filterMode === FilterModes.CONTAINS)
+      ? "table:filter.contains"
+      : "table:filter.starts_with";
 
     return (
       <div id="filter-popup">
@@ -188,7 +191,7 @@ class FilterPopup extends React.Component {
             noResultsText={t('input.noResult')}
             placeholder={t('input.filter')}
           />
-          <span className="separator">{t('help.contains')}</span>
+          <span className="separator">{t(filterInfoString)}</span>
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} />
