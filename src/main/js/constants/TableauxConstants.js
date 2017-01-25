@@ -93,7 +93,8 @@ var TableauxConstant = {
     concat: null,
     attachment: null,
     datetime: null,
-    currency: null
+    currency: null,
+    date: null
   }),
 
   LanguageType: keyMirror({
@@ -115,6 +116,11 @@ var TableauxConstant = {
   DateTimeFormats: {
     formatForServer: "YYYY-MM-DDTHH:mm:SS.SSSZ",
     formatForUser: "DD.MM.YYYY - HH:mm"
+  },
+
+  DateFormats: {
+    formatForServer: "YYYY-MM-DD",
+    formatForUser: "DD.MM.YYYY"
   },
 
   //Fixed pixel height of a single row including border

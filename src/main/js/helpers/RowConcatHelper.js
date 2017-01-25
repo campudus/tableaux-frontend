@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
-import Moment from 'moment';
+import * as _ from "lodash";
+import Moment from "moment";
 
 const TableauxConstants = require('../constants/TableauxConstants');
 const ColumnKinds = TableauxConstants.ColumnKinds;
@@ -104,6 +104,17 @@ var internal = {
             appendString(formattedDateTimeValue);
           }
           break;
+
+        case ColumnKinds.date:
+          const dateValue = getCellValueFromLanguage(concatValue, concatColumn);
+          if (!_.isEmpty(dateValue)) {
+            const moment = Moment(dateValue, TableauxConstants.DateFormats.formatForServer);
+            const formattedDateValue = moment.isValid()
+              ? moment.format(TableauxConstants.DateFormats.formatForUser)
+              : "";
+            appendString(formattedDateValue);
+            break;
+          }
 
         default:
           console.warn("undefined concatElement of kind:", concatColumn.kind, ":", concatValue);
