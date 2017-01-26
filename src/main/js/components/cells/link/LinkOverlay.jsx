@@ -211,8 +211,8 @@ const LinkOverlay = React.createClass({
 
       const rowName = row["cachedRowName"];
 
-      return <div style={style}>
-        <a href="#" key={key}
+      return <div style={style} key={key}>
+        <a href="#"
            className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
            onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>
       </div>;
