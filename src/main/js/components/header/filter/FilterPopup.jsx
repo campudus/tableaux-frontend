@@ -26,7 +26,9 @@ class FilterPopup extends React.Component {
       || column.kind === ColumnKinds.numeric
       || column.kind === ColumnKinds.concat
       || column.kind === ColumnKinds.link
-      || column.kind === ColumnKinds.boolean;
+      || column.kind === ColumnKinds.boolean
+      || column.kind === ColumnKinds.date
+      || column.kind === ColumnKinds.datetime;
   };
 
   static isSearchableColumn = (column) => {

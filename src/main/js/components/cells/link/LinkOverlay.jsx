@@ -7,6 +7,7 @@ const XhrPoolMixin = require('../../mixins/XhrPoolMixin');
 import "react-virtualized/styles.css";
 import {List} from "react-virtualized";
 import {translate} from "react-i18next";
+import i18n from "i18next";
 import {FilterModes} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/monads";
 import * as f from "lodash/fp";
@@ -126,15 +127,15 @@ const LinkOverlay = React.createClass({
     return row.values[toIdColumnIndex];
   },
 
-  toggleFilterModesPopup: function() {
+  toggleFilterModesPopup: function () {
     this.setState({filterModePopupOpen: !this.state.filterModePopupOpen});
   },
 
   setFilterMode: function (modeString) {
-    this.setState({filterMode: modeString});
+    this.setState({filterMode: modeString}, this.onSearch);
   },
 
-  renderFilterModePopup: function() {
+  renderFilterModePopup: function () {
     return (
       <FilterModePopup x={0} y={0}
                        setFilterMode={this.setFilterMode}
@@ -147,7 +148,6 @@ const LinkOverlay = React.createClass({
     const {searchVal, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
-
 
     if (searchVal !== "" && allRowResults.length > 0) {
       const byCachedRowName = f.compose(searchFunction(searchVal), f.prop("cachedRowName"));
@@ -249,11 +249,14 @@ const LinkOverlay = React.createClass({
       );
     }
 
+    const placeholder = (this.state.filterMode === FilterModes.CONTAINS)
+      ? "table:filter.contains"
+      : "table:filter.starts_with"
     return (
       <div>
         <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}}>
           <div className="search-input-wrapper">
-            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch} ref="search"
+            <input type="text" className="search-input" placeholder={i18n.t(placeholder)+ "..."} onChange={this.onSearch} ref="search"
                    autoFocus />
             <a href="#" className="ignore-react-onclickoutside"
                onClick={this.toggleFilterModesPopup}>
