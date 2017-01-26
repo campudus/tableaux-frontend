@@ -7,6 +7,7 @@ import Select from "react-select";
 import FilterModePopup from "./FilterModePopup";
 import {translate} from "react-i18next";
 import TableauxConstants, {FilterModes, ColumnKinds} from "../../../constants/TableauxConstants";
+import classNames from "classnames";
 
 @translate(['filter', 'table'])
 @listensToClickOutside
@@ -164,7 +165,8 @@ class FilterPopup extends React.Component {
   };
 
   renderFilterModePopup = () => {
-    return <FilterModePopup x={0} y={0}
+    const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
+    return <FilterModePopup active={active}
                             close={this.toggleFilterModePopup}
                             setFilterMode={this.setFilterMode} />
   };
@@ -194,13 +196,15 @@ class FilterPopup extends React.Component {
             placeholder={t('input.filter')}
           />
           <span className="separator">{t(filterInfoString)}</span>
+
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} />
-          <span style={{position: "relative"}}>
+          <span style={{position: "relative"}}
+                className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
             <a href="#"
                className="ignore-react-clickoutside"
-               onClick={this.toggleFilterModePopup}>
+               onMouseDown={this.toggleFilterModePopup}>
               <i className="fa fa-search-plus" />
             </a>
             {(this.state.filterModesOpen)

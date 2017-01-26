@@ -1,9 +1,13 @@
+/*
+ * Filter/search mode selection. When search modes from searchFunctions.js are used, adding choices to the
+ * menu will make more options available immediately.
+ */
+
 import React from "react";
 import GenericContextMenu from "../../contextMenu/GenericContextMenu";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import {FilterModes, Alignments} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
-const FilterModes = TableauxConstants.FilterModes;
 
 @listensToClickOutside
 class FilterModePopup extends React.Component {
@@ -18,17 +22,17 @@ class FilterModePopup extends React.Component {
   };
 
   render() {
-    const {x, y} = this.props;
+    const {x, y, active} = this.props;
     return (
-      <GenericContextMenu x={x} y={y} align={TableauxConstants.Alignments.UPPER_LEFT}
+      <GenericContextMenu x={x} y={y} align={Alignments.UPPER_RIGHT} noClampX={true}
                           menuItems={
                             <div className="filter-mode-popup">
-                              <div>
+                              <div className={(active === 0) ? "active" : ""} >
                                 <a href="#" onClick={this.setFilterMode(FilterModes.CONTAINS)}>
                                   {i18n.t("table:filter.contains")}
                                 </a>
                               </div>
-                              <div>
+                              <div className={(active === 1) ? "active" : ""}>
                                 <a href="#" onClick={this.setFilterMode(FilterModes.STARTS_WITH)}>
                                   {i18n.t("table:filter.starts_with")}
                                 </a>
@@ -42,6 +46,7 @@ class FilterModePopup extends React.Component {
 FilterModePopup.propTypes = {
   x: React.PropTypes.number.isRequired,
   y: React.PropTypes.number.isRequired,
+  active: React.PropTypes.number.isRequired,
   setFilterMode: React.PropTypes.func.isRequired,
   close: React.PropTypes.func.isRequired
 };

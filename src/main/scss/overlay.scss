@@ -91,6 +91,16 @@ $overlay-headline-height: 50px;
       font-weight: bold;
     }
 
+
+    .context-menu {
+      right: 3.5rem;
+      top: 77px;
+
+      .active {
+        background-color: $color-border-grey;
+      }
+    }
+
     .search-input-wrapper2 {
       height: 70px;
       overflow: hidden;
@@ -106,7 +116,6 @@ $overlay-headline-height: 50px;
         top: 50%;
         margin-top: -0.5em;
       }
-
     }
 
     .search-input {

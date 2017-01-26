@@ -136,8 +136,10 @@ const LinkOverlay = React.createClass({
   },
 
   renderFilterModePopup: function () {
+    const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
     return (
       <FilterModePopup x={0} y={0}
+                       active={active}
                        setFilterMode={this.setFilterMode}
                        close={this.toggleFilterModesPopup}
       />)
@@ -252,19 +254,21 @@ const LinkOverlay = React.createClass({
     const placeholder = (this.state.filterMode === FilterModes.CONTAINS)
       ? "table:filter.contains"
       : "table:filter.starts_with"
+
+    const popupOpen = this.state.filterModePopupOpen;
     return (
       <div>
+        {(popupOpen)
+          ? this.renderFilterModePopup()
+          : null
+        }
         <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}}>
           <div className="search-input-wrapper">
             <input type="text" className="search-input" placeholder={i18n.t(placeholder)+ "..."} onChange={this.onSearch} ref="search"
                    autoFocus />
-            <a href="#" className="ignore-react-onclickoutside"
+            <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
                onClick={this.toggleFilterModesPopup}>
               <i className="fa fa-search"></i>
-              {(this.state.filterModePopupOpen)
-                ? this.renderFilterModePopup()
-                : null
-              }
             </a>
           </div>
         </div>

@@ -37,6 +37,36 @@
       @include button-look();
       float: right;
     }
+
+    .filter-mode-button {
+      border-radius: 3px;
+      padding: 7px;
+      padding-top: 6px;
+      right: 36px;
+
+      a {
+        padding: 8px;
+      }
+
+      i {
+        color: darkgrey;
+      }
+    }
+
+    .context-menu {
+      right: 7px;
+      width: 220px;
+      color: black;
+      border: 1px solid lightgrey;
+      border-top: none;
+      border-bottom-left-radius: 3px;
+      border-bottom-right-radius: 3px;
+      @include box-shadow(0px 0px 50px rgba(black, 0.2))
+
+      .active {
+        background-color: $color-border-grey;
+      }
+    }
   }
 
   .filter-row, .sort-row {
