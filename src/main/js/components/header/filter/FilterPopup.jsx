@@ -57,7 +57,6 @@ class FilterPopup extends React.Component {
         ? currFilter.sortValue
         : TableauxConstants.SortValues.ASC,
       filterModesOpen: false,
-      filterMode: FilterModes.CONTAINS
     };
 
     this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn);
@@ -112,7 +111,7 @@ class FilterPopup extends React.Component {
 
     ActionCreator.changeFilter(selectedFilterColumn,
       this.state.filterValue,
-      this.state.filterMode,
+      this.props.filterMode,
       selectedSortColumn,
       this.state.sortValue);
     this.handleClickOutside(event);
@@ -165,19 +164,15 @@ class FilterPopup extends React.Component {
   };
 
   renderFilterModePopup = () => {
-    const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
+    const active = (this.props.filterMode === FilterModes.CONTAINS) ? 0 : 1;
     return <FilterModePopup active={active}
                             close={this.toggleFilterModePopup}
-                            setFilterMode={this.setFilterMode} />
-  };
-
-  setFilterMode = mode_string => {
-    this.setState({filterMode: mode_string});
+                            setFilterMode={this.props.setFilterMode} />
   };
 
   render() {
     let {t} = this.props;
-    const filterInfoString = (this.state.filterMode === FilterModes.CONTAINS)
+    const filterInfoString = (this.props.filterMode === FilterModes.CONTAINS)
       ? "table:filter.contains"
       : "table:filter.starts_with";
 
@@ -200,12 +195,12 @@ class FilterPopup extends React.Component {
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} />
-          <span style={{position: "relative"}}
-                className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
+          <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
             <a href="#"
                className="ignore-react-clickoutside"
                onMouseDown={this.toggleFilterModePopup}>
-              <i className="fa fa-search-plus" />
+              <i className="fa fa-search" />
+              <i className="fa fa-caret-down" />
             </a>
             {(this.state.filterModesOpen)
               ? this.renderFilterModePopup()

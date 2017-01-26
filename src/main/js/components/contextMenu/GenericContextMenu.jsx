@@ -50,7 +50,6 @@ class GenericContextMenu extends React.Component{
         (y) ? {top: y} : null
       ]
     );
-    console.log(cssStyle)
     return (
       <div className="context-menu row-context-menu" style={cssStyle}>
         {this.props.menuItems}

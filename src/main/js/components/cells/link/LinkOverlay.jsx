@@ -269,6 +269,7 @@ const LinkOverlay = React.createClass({
             <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
                onClick={this.toggleFilterModesPopup}>
               <i className="fa fa-search"></i>
+              <i className="fa fa-angle-down"></i>
             </a>
           </div>
         </div>

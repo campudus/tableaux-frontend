@@ -44,8 +44,8 @@ class FilterModePopup extends React.Component {
 }
 
 FilterModePopup.propTypes = {
-  x: React.PropTypes.number.isRequired,
-  y: React.PropTypes.number.isRequired,
+  x: React.PropTypes.number,
+  y: React.PropTypes.number,
   active: React.PropTypes.number.isRequired,
   setFilterMode: React.PropTypes.func.isRequired,
   close: React.PropTypes.func.isRequired
