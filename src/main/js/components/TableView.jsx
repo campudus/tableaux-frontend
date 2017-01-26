@@ -296,7 +296,7 @@ var TableView = React.createClass({
           || targetCell.kind === ColumnKinds.text
           || targetCell.kind === ColumnKinds.link
           || targetCell.kind === ColumnKinds.concat) {
-          return searchFunction(toFilterValue, getSortableCellValue())
+          return searchFunction(toFilterValue, getSortableCellValue(targetCell))
         } else {
           // column type not support for filtering
           return false;

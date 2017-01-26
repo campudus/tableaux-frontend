@@ -11,6 +11,7 @@ import {FilterModes} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
+import FilterModePopup from "../../header/filter/FilterModePopup";
 var apiUrl = require('../../../helpers/apiUrl');
 
 //we use this value to get the exact offset for the link list
@@ -125,11 +126,20 @@ const LinkOverlay = React.createClass({
     return row.values[toIdColumnIndex];
   },
 
-  toggleFilterModesPopup: () => {
+  toggleFilterModesPopup: function() {
     this.setState({filterModePopupOpen: !this.state.filterModePopupOpen});
   },
-  setFilterMode: mode_string => {
-    this.state.set({filterMode: mode_string});
+
+  setFilterMode: function (modeString) {
+    this.setState({filterMode: modeString});
+  },
+
+  renderFilterModePopup: function() {
+    return (
+      <FilterModePopup x={0} y={0}
+                       setFilterMode={this.setFilterMode}
+                       close={this.toggleFilterModesPopup}
+      />)
   },
 
   //searchval is already trimmed and to lowercase
@@ -138,8 +148,10 @@ const LinkOverlay = React.createClass({
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
 
+
     if (searchVal !== "" && allRowResults.length > 0) {
-      return allRowResults.filter(f.compose(searchFunction(searchVal), f.prop("cachedRowName")));
+      const byCachedRowName = f.compose(searchFunction(searchVal), f.prop("cachedRowName"));
+      return allRowResults.filter(byCachedRowName);
     } else {
       return allRowResults;
     }
@@ -243,7 +255,14 @@ const LinkOverlay = React.createClass({
           <div className="search-input-wrapper">
             <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch} ref="search"
                    autoFocus />
-            <i className="fa fa-search"></i>
+            <a href="#" className="ignore-react-onclickoutside"
+               onClick={this.toggleFilterModesPopup}>
+              <i className="fa fa-search"></i>
+              {(this.state.filterModePopupOpen)
+                ? this.renderFilterModePopup()
+                : null
+              }
+            </a>
           </div>
         </div>
         {listDisplay}
