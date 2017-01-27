@@ -134,8 +134,8 @@ class Left extends Either {
     throw new TypeError('Can\'t extract value of Left.');
   }
 
-  orElse(other) {
-    return Either.fromNullable(other);
+  orElse(f) {
+    return Either.fromNullable(f(this._value));
   }
 
   getOrElse(other) {
@@ -162,7 +162,10 @@ class Left extends Either {
 class Right extends Either {
   map(f) {
     try {
-      return Either.fromNullable(f(this.value));
+        const result = f(this.value)
+        return (result)
+            ? Either.right(result)
+            : Either.left(this.value);
     } catch (e) {
       return Either.left(e);
     }
