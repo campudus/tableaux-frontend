@@ -23,7 +23,8 @@ var Row = React.createClass({
     selectedCellExpandedRow : React.PropTypes.string,
     isRowExpanded : React.PropTypes.bool.isRequired,
     isRowSelected : React.PropTypes.bool,
-    shouldCellFocus : React.PropTypes.bool
+    shouldCellFocus : React.PropTypes.bool,
+    colVisible: React.PropTypes.array.isRequired
   },
 
   //Allows a good performance when editing large tables
@@ -72,6 +73,10 @@ var Row = React.createClass({
     var self = this;
 
     return this.props.row.cells.map(function (cell, idx) {
+      //Skip cells in hidden columns
+      if (!self.props.colVisible[idx]) {
+        return null;
+      }
 
       //Check selected row for expanded multilanguage rows
       var selectedRow = !!isRowSelected;

@@ -25,6 +25,7 @@ const Columns = React.createClass({
     columns: React.PropTypes.object.isRequired,
     table: React.PropTypes.object.isRequired,
     t: React.PropTypes.func.isRequired,
+    colVisible: React.PropTypes.array.isRequired
   },
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -41,6 +42,11 @@ const Columns = React.createClass({
   },
 
   renderColumn(langtag, column, index) {
+    //Skip header of hidden columns
+    if (!this.props.colVisible[index]) {
+      return null;
+    }
+
     let name, columnContent = [];
     const {t, table} = this.props;
     const description = column.description[langtag];

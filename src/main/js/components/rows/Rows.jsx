@@ -21,7 +21,8 @@ var Rows = React.createClass({
     selectedCellExpandedRow : React.PropTypes.string,
     rowsHeight : React.PropTypes.number,
     shouldCellFocus : React.PropTypes.bool,
-    table : React.PropTypes.object.isRequired
+    table : React.PropTypes.object.isRequired,
+    colVisible: React.PropTypes.array.isRequired
   },
 
   shouldComponentUpdate(nP) {
@@ -78,6 +79,7 @@ var Rows = React.createClass({
                     isRowExpanded={isRowExpanded}
                     isRowSelected={isRowSelected}
                     shouldCellFocus={shouldCellFocusVal}
+                    colVisible={self.props.colVisible}
         />
       });
 
