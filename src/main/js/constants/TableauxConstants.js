@@ -146,7 +146,14 @@ var TableauxConstant = {
   SortValues: keyMirror({
     ASC: null,
     DESC: null
-  })
+  }),
+
+  FilterModes: keyMirror(
+    {
+      CONTAINS: null,
+      STARTS_WITH: null
+    }
+  )
 };
 
 module.exports = TableauxConstant;

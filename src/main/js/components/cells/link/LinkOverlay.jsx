@@ -4,37 +4,44 @@ const OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentif
 const RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 const ActionCreator = require('../../../actions/ActionCreator');
 const XhrPoolMixin = require('../../mixins/XhrPoolMixin');
-import shallowCompare from 'react-addons-shallow-compare';
-import 'react-virtualized/styles.css';
-import { List } from 'react-virtualized';
-import {translate} from 'react-i18next';
+import "react-virtualized/styles.css";
+import {List} from "react-virtualized";
+import {translate} from "react-i18next";
+import i18n from "i18next";
+import {FilterModes} from "../../../constants/TableauxConstants";
+import {either} from "../../../helpers/monads";
+import * as f from "lodash/fp";
+import SearchFunctions from "../../../helpers/searchFunctions";
+import FilterModePopup from "../../header/filter/FilterModePopup";
 var apiUrl = require('../../../helpers/apiUrl');
 
 //we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
 
 const LinkOverlay = React.createClass({
-  mixins : [XhrPoolMixin],
+  mixins: [XhrPoolMixin],
 
-  getInitialState : function () {
+  getInitialState: function () {
     return {
-      rowResults : {},
-      loading : true
+      rowResults: {},
+      loading: true,
+      filterMode: FilterModes.CONTAINS,
+      filterModePopupOpen: false
     };
   },
 
-  propTypes : {
-    cell : React.PropTypes.object,
-    langtag : React.PropTypes.string.isRequired,
-    tableId : React.PropTypes.number,
-    contentHeight : React.PropTypes.number,
-    contentWidth : React.PropTypes.number
+  propTypes: {
+    cell: React.PropTypes.object,
+    langtag: React.PropTypes.string.isRequired,
+    tableId: React.PropTypes.number,
+    contentHeight: React.PropTypes.number,
+    contentWidth: React.PropTypes.number
   },
 
   //saves all the results from server
-  allRowResults : {},
+  allRowResults: {},
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     let self = this;
     let toTableId = this.props.cell.column.toTable;
     let toTable = this.props.cell.tables.get(toTableId);
@@ -46,19 +53,19 @@ const LinkOverlay = React.createClass({
     }
 
     colXhr = toTable.columns.fetch({
-      success : function () {
+      success: function () {
         rowXhr = toTable.rows.fetch({
-          url : apiUrl('/tables/' + toTableId + '/columns/first/rows'),
-          success : function () {
+          url: apiUrl('/tables/' + toTableId + '/columns/first/rows'),
+          success: function () {
             self.setRowResult(toTable.rows, true);
           },
-          error : function (err) {
+          error: function (err) {
             console.log('error fetching rows', err);
           }
         });
         self.addAbortableXhrRequest(rowXhr);
       },
-      error : function (err) {
+      error: function (err) {
         console.log("error fetching columns", err);
       }
     });
@@ -67,80 +74,99 @@ const LinkOverlay = React.createClass({
 
   /**
    * Get the input string of the search field
-   * @returns {String} Search value lowercased and trimmed
+   * @returns {Object} Search value lowercased and trimmed, current filter mode
    */
-  getCurrentSearchValue : function () {
-    const searchRef = this.refs.search;
-    if (searchRef) {
-      let searchVal = this.refs.search.value;
-      return searchVal.toString().toLowerCase().trim();
-    } else {
-      return "";
+  getCurrentSearchValue: function () {
+    const searchVal = either(this.refs)
+      .map(f.prop(["search", "value"]))
+      .map(f.trim)
+      .map(f.toLower)
+      .map(f.toString)
+      .getOrElse("");
+    return {
+      searchVal: searchVal,
+      filterMode: this.state.filterMode
     }
   },
 
-  onSearch : function (event) {
+  onSearch: function (event) {
     this.setState({
-      rowResults : this.filterRowsBySearch(this.getCurrentSearchValue())
+      rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
     });
   },
 
   //we set the row result depending if a search value is set
-  setRowResult : function (rowResult, fromServer) {
+  setRowResult: function (rowResult, fromServer) {
     //just set the models, because we filter it later which also returns the models.
     this.allRowResults = rowResult.models;
     //we always rebuild the row names, also to prevent wrong display names when switching languages
     this.buildRowConcatString();
     this.setState({
       //we show all the rows
-      rowResults : this.filterRowsBySearch(this.getCurrentSearchValue()),
-      loading : false
+      rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
+      loading: false
     });
   },
 
   //Extends the model by a cached row name string
-  buildRowConcatString : function () {
+  buildRowConcatString: function () {
     const {allRowResults, props:{cell:{column:{toColumn}}}} = this;
-    _.forEach(allRowResults, (row)=> {
-      row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row), toColumn, this.props.langtag);
+    _.forEach(allRowResults, (row) => {
+      row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row),
+        toColumn,
+        this.props.langtag);
     });
   },
 
-  getRowValues : function (row) {
+  getRowValues: function (row) {
     const {toColumn, toTable} = this.props.cell.column;
     const toTableObj = this.props.cell.tables.get(toTable);
     const toTableColumns = toTableObj.columns;
-    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the identifier / concat column 
+    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the
+                                                                                     // identifier / concat column 
     return row.values[toIdColumnIndex];
   },
 
-  //searchval is already trimmed and to lowercase
-  filterRowsBySearch : function (searchVal) {
-    let newRowResults = {};
-    let {allRowResults} = this;
-
-    if (searchVal !== "" && allRowResults.length > 0) {
-      newRowResults = allRowResults.filter((row)=> {
-        let rowName = row["cachedRowName"].toLowerCase();
-        return _.every(_.words(searchVal), function (word) {
-          return rowName.indexOf(word) > -1;
-        });
-      });
-    }
-    else {
-      newRowResults = allRowResults;
-    }
-    return newRowResults;
+  toggleFilterModesPopup: function () {
+    this.setState({filterModePopupOpen: !this.state.filterModePopupOpen});
   },
 
-  addLinkValue : function (isLinked, row, event) {
+  setFilterMode: function (modeString) {
+    this.setState({filterMode: modeString}, this.onSearch);
+  },
+
+  renderFilterModePopup: function () {
+    const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
+    return (
+      <FilterModePopup x={0} y={0}
+                       active={active}
+                       setFilterMode={this.setFilterMode}
+                       close={this.toggleFilterModesPopup}
+      />)
+  },
+
+  //searchval is already trimmed and to lowercase
+  filterRowsBySearch: function (searchParams) {
+    const {searchVal, filterMode} = searchParams;
+    const searchFunction = SearchFunctions[filterMode];
+    const {allRowResults} = this;
+
+    if (searchVal !== "" && allRowResults.length > 0) {
+      const byCachedRowName = f.compose(searchFunction(searchVal), f.prop("cachedRowName"));
+      return allRowResults.filter(byCachedRowName);
+    } else {
+      return allRowResults;
+    }
+  },
+
+  addLinkValue: function (isLinked, row, event) {
     event.preventDefault();
     const cell = this.props.cell;
     const rowCellIdValue = this.getRowValues(row);
 
     const link = {
-      id : row.id,
-      value : rowCellIdValue
+      id: row.id,
+      value: rowCellIdValue
     };
     let links = _.clone(cell.value);
 
@@ -157,21 +183,23 @@ const LinkOverlay = React.createClass({
     this.refs.OverlayScroll.forceUpdateGrid();
   },
 
-  closeOverlay : function () {
+  closeOverlay: function () {
     ActionCreator.closeOverlay();
   },
 
-  stringHasValue : function (stringToCheck) {
+  stringHasValue: function (stringToCheck) {
     return (stringToCheck && stringToCheck.trim() !== "");
   },
 
-  getOverlayItem : function ({
-    key,         // Unique key within array of rows
-    index,       // Index of row within collection
-    isScrolling, // The List is currently being scrolled
-    isVisible,   // This row is visible within the List (eg it is not an overscanned row)
-    style        // Style object to be applied to row (to position it)
-  }) {
+  getOverlayItem: function (
+    {
+      key,         // Unique key within array of rows
+      index,       // Index of row within collection
+      isScrolling, // The List is currently being scrolled
+      isVisible,   // This row is visible within the List (eg it is not an overscanned row)
+      style        // Style object to be applied to row (to position it)
+    }
+  ) {
     const {rowResults} = this.state;
     const {cell} = this.props;
 
@@ -185,15 +213,15 @@ const LinkOverlay = React.createClass({
 
       const rowName = row["cachedRowName"];
 
-      return <div style={style}>
-        <a href="#" key={key}
-                className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
-                onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>
+      return <div style={style} key={key}>
+        <a href="#"
+           className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
+           onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>
       </div>;
     }
   },
 
-  noRowsRenderer : function () {
+  noRowsRenderer: function () {
     const {t} = this.props;
     return (
       <div className="error">
@@ -201,7 +229,7 @@ const LinkOverlay = React.createClass({
       </div>);
   },
 
-  render : function () {
+  render: function () {
     let listDisplay;
     const {rowResults, loading} = this.state;
     const {contentHeight, contentWidth} = this.props;
@@ -223,13 +251,26 @@ const LinkOverlay = React.createClass({
       );
     }
 
+    const placeholder = (this.state.filterMode === FilterModes.CONTAINS)
+      ? "table:filter.contains"
+      : "table:filter.starts_with"
+
+    const popupOpen = this.state.filterModePopupOpen;
     return (
       <div>
-        <div className="search-input-wrapper2" style={{height:CSS_SEARCH_HEIGHT}}>
+        {(popupOpen)
+          ? this.renderFilterModePopup()
+          : null
+        }
+        <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}}>
           <div className="search-input-wrapper">
-            <input type="text" className="search-input" placeholder="Search..." onChange={this.onSearch} ref="search"
-                   autoFocus/>
-            <i className="fa fa-search"></i>
+            <input type="text" className="search-input" placeholder={i18n.t(placeholder)+ "..."} onChange={this.onSearch} ref="search"
+                   autoFocus />
+            <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
+               onClick={this.toggleFilterModesPopup}>
+              <i className="fa fa-search"></i>
+              <i className="fa fa-angle-down"></i>
+            </a>
           </div>
         </div>
         {listDisplay}

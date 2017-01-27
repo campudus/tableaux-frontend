@@ -113,8 +113,10 @@ var internal = {
               ? moment.format(TableauxConstants.DateFormats.formatForUser)
               : "";
             appendString(formattedDateValue);
-            break;
+          } else {
+            appendString("");
           }
+          break;
 
         default:
           console.warn("undefined concatElement of kind:", concatColumn.kind, ":", concatValue);

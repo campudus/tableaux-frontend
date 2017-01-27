@@ -192,10 +192,11 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
   },
 
-  changeFilter: function (newFilterColumnId, newFilterValue, newSortColumnId, newSortValue) {
+  changeFilter: function (newFilterColumnId, newFilterValue, newFilterMode, newSortColumnId, newSortValue) {
     Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {
       filterColumnId: newFilterColumnId,
       filterValue: newFilterValue,
+      filterMode: newFilterMode,
       sortColumnId: newSortColumnId,
       sortValue: newSortValue
     });

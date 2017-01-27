@@ -20,29 +20,36 @@ class GenericContextMenu extends React.Component{
   }
 
   componentDidMount() {
-    const {align} = this.props;
+    const {align,noClampX,noClampY,x,y} = this.props;
     const offset = this.props.offset || 0;
     const el = ReactDom.findDOMNode(this);
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
-    const xShift = ((_.endsWith('RIGHT', align)) ? w : 0); // shift to align corner at (x,y)
-    const yShift = ((_.startsWith('LOWER', align)) ? h : 0);
-    const x = this.props.x - xShift;
-    const y = this.props.y - yShift;
 
-    this.setState({
-      x: _.clamp(0, window.innerWidth - w, x + offset),
-      y: _.clamp(0, window.innerHeight - h, y + offset)
-    });
+    if (x) {
+      const w = el.offsetWidth;
+      const xShift = ((_.endsWith('RIGHT', align)) ? w : 0); // shift to align corner at (x,y)
+      const xPos = (noClampX) ? x + offset - xShift : _.clamp(0, window.innerWidth - w, x + offset - xShift);
+      this.setState({x: xPos});
+      console.log("set x to", xPos)
+    }
+
+    if (y) {
+      const h = el.offsetHeight;
+      const yShift = ((_.startsWith('LOWER', align)) ? h : 0);
+      const yPos = (noClampY) ? y + offset - yShift : _.clamp(0, window.innerHeight - h, y + offset - yShift);
+      this.setState({y: yPos});
+      console.log("set y to", yPos)
+    }
   }
 
   render() {
     const {x, y} = this.state;
-    const cssStyle = {
-      left: x,
-      top: y
-    };
-
+    const cssStyle = _.reduce(
+      _.assign, {},
+      [
+        (x) ? {left: x} : null,
+        (y) ? {top: y} : null
+      ]
+    );
     return (
       <div className="context-menu row-context-menu" style={cssStyle}>
         {this.props.menuItems}
@@ -52,8 +59,8 @@ class GenericContextMenu extends React.Component{
 }
 
 GenericContextMenu.propTypes = {
-  x: React.PropTypes.number.isRequired,
-  y: React.PropTypes.number.isRequired,
+  x: React.PropTypes.number,
+  y: React.PropTypes.number,
   menuItems: React.PropTypes.element.isRequired,
   offset: React.PropTypes.number,
   alignment: React.PropTypes.string

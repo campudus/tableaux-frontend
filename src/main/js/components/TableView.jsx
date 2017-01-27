@@ -10,12 +10,14 @@ var FilteredSubcollection = require('ampersand-filtered-subcollection');
 var RowConcatHelper = require('../helpers/RowConcatHelper');
 import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
-import TableauxConstants, {SortValues, ActionTypes} from "../constants/TableauxConstants";
+import * as f from "lodash/fp";
+import TableauxConstants, {SortValues, ActionTypes, FilterModes} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
 import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
+import searchFunctions from "../helpers/searchFunctions";
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -184,7 +186,6 @@ var TableView = React.createClass({
       rowsCollection = this.getFilteredRows(rowsFilter);
     }
 
-    console.log("setting rowsFilter to state:", rowsFilter);
     this.setState({
       rowsCollection: rowsCollection,
       rowsFilter: rowsFilter
@@ -198,7 +199,7 @@ var TableView = React.createClass({
   getFilteredRows: function (rowsFilter) {
     const filterColumnId = rowsFilter.filterColumnId;
     const filterValue = rowsFilter.filterValue;
-
+    const filterMode = rowsFilter.filterMode;
     const sortColumnId = rowsFilter.sortColumnId;
     const sortValue = rowsFilter.sortValue;
 
@@ -215,10 +216,11 @@ var TableView = React.createClass({
 
     const langtag = this.props.langtag;
 
-    const containsValue = function (cellValue, filterValue) {
-      return _.every(_.words(filterValue), function (word) {
-        return cellValue.toString().trim().toLowerCase().indexOf(word) > -1;
-      });
+    const containsAllSubstrings = (str, stringOfFilters) => {
+      const fcontains = a => b => f.contains(b)(a);
+      return f.every(
+        fcontains(f.toLower(str)),
+        f.words(stringOfFilters))
     };
 
     const getSortableCellValue = function (cell) {
@@ -265,6 +267,10 @@ var TableView = React.createClass({
       return allRows;
     }
 
+    if (_.isEmpty(toFilterValue) && typeof sortColumnId === 'undefined') {
+      return allRows;
+    }
+
     return new FilteredSubcollection(allRows, {
       filter: function (row) {
         if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
@@ -283,6 +289,7 @@ var TableView = React.createClass({
         }
 
         const targetCell = row.cells.at(filterColumnIndex);
+        const searchFunction = searchFunctions[filterMode];
 
         if (targetCell.kind === ColumnKinds.shorttext
           || targetCell.kind === ColumnKinds.richtext
@@ -290,7 +297,7 @@ var TableView = React.createClass({
           || targetCell.kind === ColumnKinds.text
           || targetCell.kind === ColumnKinds.link
           || targetCell.kind === ColumnKinds.concat) {
-          return containsValue(getSortableCellValue(targetCell), toFilterValue);
+          return searchFunction(toFilterValue, getSortableCellValue(targetCell))
         } else {
           // column type not support for filtering
           return false;

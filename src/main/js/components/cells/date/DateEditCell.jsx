@@ -25,41 +25,39 @@ class DateEditCell extends React.Component {
   };
 
   handleClickOutside = () => {
-    this.props.handleEditFinished(this.props.OPTIONS.SAVE);
+    this.props.handleEditFinished(true);
     ActionCreator.toggleCellEditing(false);
   };
 
   handleClickClearDate = event => {
-    this.handleChange(null);
-    this.props.handleEditFinished(this.props.OPTIONS.CLEAR);
-    ActionCreator.toggleCellEditing("CLEAR");
+    this.handleChange(null, () => this.props.handleEditFinished(true));
+    ActionCreator.toggleCellEditing(false);
     event.preventDefault();
     event.stopPropagation();
   };
 
-  handleChange = moment => {
+  handleChange = (moment, cb) => {
     this.setState({moment});
-    this.props.handleDateUpdate(moment);
+    this.props.handleDateUpdate(moment, cb);
   };
 
   getKeyboardShortcuts = () => {
-    const OPTIONS = this.props.OPTIONS;
     const editFinished = this.props.handleEditFinished;
     return {
       tab: function () {
-        editFinished(OPTIONS.SAVE);
+        editFinished(true);
         ActionCreator.toggleCellEditing(true);
         ActionCreator.selectNextCell(Directions.RIGHT);
       },
       enter: function () {
-        editFinished(OPTIONS.SAVE);
+        editFinished(true);
         ActionCreator.toggleCellEditing(false);
         ActionCreator.selectNextCell(Directions.DOWN);
       },
       escape: function (event) {
         event.preventDefault();
         event.stopPropagation();
-        editFinished(OPTIONS.SAVE);
+        editFinished(true);
         ActionCreator.toggleCellEditing(false);
       },
       always: function (event) {

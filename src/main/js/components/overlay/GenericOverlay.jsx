@@ -4,7 +4,7 @@ var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var LinkOverlay = require('../../components/cells/link/LinkOverlay');
 
-import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
 //TODO: Callback before closing overlay
 var GenericOverlay = React.createClass({

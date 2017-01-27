@@ -4,8 +4,8 @@
   "confirm_delete_row": "Zeile „{{rowName}}” wirklich löschen?",
   "delete_row": "Zeile löschen",
   "delete_row_dependent_text": "Dieser Datensatz ist bereits in folgenden Tabellen verknüpft. Die Verknüpfung wird automatisch gelöscht.",
-  "show_entity_view" : "Zeige Vorschau",
-  "entity_view" : "Vorschau",
+  "show_entity_view": "Zeige Vorschau",
+  "entity_view": "Vorschau",
   "no_dependent_text": "Dieser Datensatz ist bisher nicht verknüpft.",
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
@@ -28,5 +28,9 @@
     "description": "Beschreibung",
     "edit_column": "Spalte bearbeiten",
     "rename_table": "Tabelle umbenennen"
+  },
+  "filter": {
+    "contains": "enthält",
+    "starts_with": "beginnt mit"
   }
 }

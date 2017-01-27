@@ -4,17 +4,11 @@
  */
 import React from "react";
 import DateEditCell from "./DateEditCell";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import {DateFormats} from "../../../constants/TableauxConstants";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
 import keyMirror from "keymirror";
-const DateFormats = TableauxConstants.DateFormats;
-
-const OPTIONS = keyMirror({
-  "SAVE": null,
-  "CANCEL": null,
-  "CLEAR": null
-});
+import {either} from "../../../helpers/monads";
 
 class DateCell extends React.Component {
 
@@ -33,26 +27,26 @@ class DateCell extends React.Component {
       : "";
   };
 
-  finishedEditing = option => {
-    const {cell} = this.props;
-    switch (option) {
-      case OPTIONS.SAVE:
-        const inputDate = this.state.value;
-        const savedDateString = this.momentToString(this.getSavedMoment());
-        if (savedDateString !== this.momentToString(inputDate)) {
-          ActionCreator.changeCell(cell, inputDate.format(DateFormats.formatForServer));
-        }
-        break;
-      case OPTIONS.CLEAR:
-        ActionCreator.changeCell(cell, null);
-        break;
-      default:
+  finishedEditing = save => {
+    if (save) {
+      const {cell} = this.props;
+      const inputDate = this.state.value;
+      const savedDateString = this.momentToString(this.getSavedMoment());
+      if (savedDateString !== this.momentToString(inputDate)) {
+        const newValue = either(inputDate)
+          .map( m => m.format(DateFormats.formatForServer))
+          .getOrElse(null);
+        ActionCreator.changeCell(cell, newValue);
+      }
+    } else {
         this.setState({value: this.getSavedMoment()});
     }
   };
 
-  handleDateUpdate = moment => {
-    this.setState({value: moment});
+  handleDateUpdate = (moment, cb) => {
+    (cb)
+      ? this.setState({value: moment}, cb)
+      : this.setState({value: moment});
   };
 
   render = () => {
@@ -70,8 +64,7 @@ class DateCell extends React.Component {
                       toDisplayValue={this.momentToString}
                       handleDateUpdate={this.handleDateUpdate}
                       handleEditFinished={this.finishedEditing}
-                      value={value}
-                      OPTIONS={OPTIONS}
+                      value={value || new Moment()}
                       cell={cell} />
       )
     }

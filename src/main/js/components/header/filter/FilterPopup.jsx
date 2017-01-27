@@ -1,23 +1,23 @@
-import React from 'react';
-import * as _ from 'lodash';
-import ActionCreator from '../../../actions/ActionCreator';
-import listensToClickOutside from 'react-onclickoutside';
-import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
-import TableauxConstants from '../../../constants/TableauxConstants';
-import Select from 'react-select';
-import {translate} from 'react-i18next';
-
-var ColumnKinds = TableauxConstants.ColumnKinds;
+import React from "react";
+import * as _ from "lodash";
+import ActionCreator from "../../../actions/ActionCreator";
+import listensToClickOutside from "react-onclickoutside";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import Select from "react-select";
+import FilterModePopup from "./FilterModePopup";
+import {translate} from "react-i18next";
+import TableauxConstants, {FilterModes, ColumnKinds} from "../../../constants/TableauxConstants";
+import classNames from "classnames";
 
 @translate(['filter', 'table'])
 @listensToClickOutside
 class FilterPopup extends React.Component {
 
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired,
-    onClickedOutside : React.PropTypes.func.isRequired,
-    columns : React.PropTypes.object,
-    currentFilter : React.PropTypes.object
+    langtag: React.PropTypes.string.isRequired,
+    onClickedOutside: React.PropTypes.func.isRequired,
+    columns: React.PropTypes.object,
+    currentFilter: React.PropTypes.object
   };
 
   static isSortableColumn = (column) => {
@@ -27,7 +27,9 @@ class FilterPopup extends React.Component {
       || column.kind === ColumnKinds.numeric
       || column.kind === ColumnKinds.concat
       || column.kind === ColumnKinds.link
-      || column.kind === ColumnKinds.boolean;
+      || column.kind === ColumnKinds.boolean
+      || column.kind === ColumnKinds.date
+      || column.kind === ColumnKinds.datetime;
   };
 
   static isSearchableColumn = (column) => {
@@ -48,10 +50,13 @@ class FilterPopup extends React.Component {
     let currFilter = props.currentFilter;
 
     this.state = {
-      selectedFilterColumn : currFilter && _.isFinite(currFilter.filterColumnId) ? currFilter.filterColumnId : null,
-      selectedSortColumn : currFilter && _.isFinite(currFilter.sortColumnId) ? currFilter.sortColumnId : null,
-      filterValue : currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : "",
-      sortValue : currFilter && !_.isEmpty(currFilter.sortValue) ? currFilter.sortValue : TableauxConstants.SortValues.ASC
+      selectedFilterColumn: currFilter && _.isFinite(currFilter.filterColumnId) ? currFilter.filterColumnId : null,
+      selectedSortColumn: currFilter && _.isFinite(currFilter.sortColumnId) ? currFilter.sortColumnId : null,
+      filterValue: currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : "",
+      sortValue: currFilter && !_.isEmpty(currFilter.sortValue)
+        ? currFilter.sortValue
+        : TableauxConstants.SortValues.ASC,
+      filterModesOpen: false,
     };
 
     this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn);
@@ -76,8 +81,8 @@ class FilterPopup extends React.Component {
       const labelName = column.id === 0 ? t('concat_column_name') : columnDisplayName;
 
       return {
-        label : labelName,
-        value : column.id
+        label: labelName,
+        value: column.id
       };
     });
   }
@@ -87,24 +92,28 @@ class FilterPopup extends React.Component {
 
     return [
       {
-        label : t("help.sortasc"),
-        value : TableauxConstants.SortValues.ASC
+        label: t("help.sortasc"),
+        value: TableauxConstants.SortValues.ASC
       },
       {
-        label : t("help.sortdesc"),
-        value : TableauxConstants.SortValues.DESC
+        label: t("help.sortdesc"),
+        value: TableauxConstants.SortValues.DESC
       }
     ]
   }
 
   filterInputChange = (event) => {
-    this.setState({filterValue : event.target.value});
+    this.setState({filterValue: event.target.value});
   };
 
   filterUpdate = (event) => {
     const {selectedFilterColumn, selectedSortColumn} = this.state;
 
-    ActionCreator.changeFilter(selectedFilterColumn, this.state.filterValue, selectedSortColumn, this.state.sortValue);
+    ActionCreator.changeFilter(selectedFilterColumn,
+      this.state.filterValue,
+      this.props.filterMode,
+      selectedSortColumn,
+      this.state.sortValue);
     this.handleClickOutside(event);
   };
 
@@ -131,27 +140,41 @@ class FilterPopup extends React.Component {
 
   onChangeSelectFilter = (selection) => {
     console.log("selection: ", selection);
-    this.setState({selectedFilterColumn : selection.value});
+    this.setState({selectedFilterColumn: selection.value});
   };
 
   onChangeSelectSortColumn = (selection) => {
-    this.setState({selectedSortColumn : selection.value});
+    this.setState({selectedSortColumn: selection.value});
   };
 
   onChangeSelectSortValue = (selection) => {
-    this.setState({sortValue : selection.value});
+    this.setState({sortValue: selection.value});
   };
 
   getKeyboardShortcuts = (event) => {
     return {
-      enter : (event) => {
+      enter: (event) => {
         this.filterUpdate(event);
       }
     };
   };
 
+  toggleFilterModePopup = () => {
+    this.setState({filterModesOpen: !this.state.filterModesOpen});
+  };
+
+  renderFilterModePopup = () => {
+    const active = (this.props.filterMode === FilterModes.CONTAINS) ? 0 : 1;
+    return <FilterModePopup active={active}
+                            close={this.toggleFilterModePopup}
+                            setFilterMode={this.props.setFilterMode} />
+  };
+
   render() {
     let {t} = this.props;
+    const filterInfoString = (this.props.filterMode === FilterModes.CONTAINS)
+      ? "table:filter.contains"
+      : "table:filter.starts_with";
 
     return (
       <div id="filter-popup">
@@ -167,10 +190,23 @@ class FilterPopup extends React.Component {
             noResultsText={t('input.noResult')}
             placeholder={t('input.filter')}
           />
-          <span className="separator">{t('help.contains')}</span>
+          <span className="separator">{t(filterInfoString)}</span>
+
           <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
                  onChange={this.filterInputChange}
-                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
+                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} />
+          <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
+            <a href="#"
+               className="ignore-react-clickoutside"
+               onMouseDown={this.toggleFilterModePopup}>
+              <i className="fa fa-search" />
+              <i className="fa fa-caret-down" />
+            </a>
+            {(this.state.filterModesOpen)
+              ? this.renderFilterModePopup()
+              : null
+            }
+          </span>
         </div>
         <div className="sort-row">
           <Select

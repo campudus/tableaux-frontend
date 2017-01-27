@@ -1,18 +1,20 @@
 import React from 'react';
 import FilterPopup from './FilterPopup.jsx';
 import {translate} from 'react-i18next';
-import * as _ from "lodash/fp"
+import * as _ from "lodash/fp";
+import {FilterModes} from "../../../constants/TableauxConstants";
 
 class FilterButton extends React.Component {
 
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired,
-    table : React.PropTypes.object.isRequired,
-    currentFilter : React.PropTypes.object
+    langtag: React.PropTypes.string.isRequired,
+    table: React.PropTypes.object.isRequired,
+    currentFilter: React.PropTypes.object
   };
 
   state = {
-    open : false
+    open: false,
+    filterMode: FilterModes.CONTAINS
   };
 
   constructor(props) {
@@ -20,14 +22,20 @@ class FilterButton extends React.Component {
   }
 
   handleClickedOutside = (event) => {
-    this.setState({open : false});
+    this.setState({open: false});
+  };
+
+  setFilterMode = mode_string => {
+    this.setState({filterMode: mode_string});
   };
 
   renderFilterPopup() {
     if (this.state.open) {
       return (
-        <FilterPopup langtag={this.props.langtag} onClickedOutside={this.handleClickedOutside}
-                     columns={this.props.table.columns} currentFilter={this.props.currentFilter}/>
+        <FilterPopup filterMode={this.state.filterMode}
+                     setFilterMode={this.setFilterMode}
+                     langtag={this.props.langtag} onClickedOutside={this.handleClickedOutside}
+                     columns={this.props.table.columns} currentFilter={this.props.currentFilter} />
       );
     } else {
       return null;
@@ -36,7 +44,7 @@ class FilterButton extends React.Component {
 
   toggleFilter = (event) => {
     event.preventDefault();
-    this.setState({open : !this.state.open});
+    this.setState({open: !this.state.open});
   };
 
   render() {
