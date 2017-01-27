@@ -19,6 +19,7 @@ import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import searchFunctions from "../helpers/searchFunctions";
 import ColumnFilter from "./header/ColumnFilter";
+import {either} from "../helpers/monads";
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -35,12 +36,17 @@ var TableView = React.createClass({
   tables: null,
 
   getInitialState: function () {
+    const columnViews = either(localStorage)
+      .map(f.prop(["tableViews"]))
+      .map(x => {JSON.parse})
+      .getOrElse({});
     return {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
       rowsFilter: null,
-      colVisible: []
+      colVisible: [],
+      columnViews: columnViews
     }
   },
 
@@ -74,13 +80,14 @@ var TableView = React.createClass({
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
-      return new Promise( (resolve, reject) => {
+      return new Promise((resolve, reject) => {
         table.columns.fetch({
           reset: true,
           success: () => {
-            this.setState({
-              colVisible: f.map(n => n < 10, f.range(0, table.columns.models.length))
-            });
+            const defaultView = either(this.state.columnViews)
+              .map(f.prop([tableId, "default"]))
+              .getOrElse(f.map(n => n < 10, f.range(0, table.columns.models.length)));
+            this.setState({ colVisible: defaultView });
             resolve({ // return information about first/total page to be fetched
               table: table,
               page: 1,
@@ -101,9 +108,10 @@ var TableView = React.createClass({
         ActionCreator.spinnerOff();
         return;
       }
-      new Promise( (resolve, reject) => {
+      new Promise((resolve, reject) => {
         table.rows.fetchPage(page,
-          {reset: true,
+          {
+            reset: true,
             success: () => {
               console.log("Table page number", page, "of", total, "successfully fetched");
 
@@ -157,12 +165,16 @@ var TableView = React.createClass({
 
   //Set visibility of all columns in <coll> to <val>
   setColumnsVisibility: function ({val, coll}) {
-    console.log("setColumnsVisibility", val, coll)
     const {colVisible} = this.state;
-    console.log("colVisible:", colVisible)
-    const visible = f.reduce( (list, n) => f.set(n, val, list), colVisible, coll);
-    console.log("visible:", visible)
-    this.setState({colVisible: visible}, this.forceUpdate);
+    const visible = f.reduce((list, n) => f.set(n, val, list), colVisible, coll);
+    const columnViews = f.set([this.state.currentTableId, "default"], visible, this.state.ColumnViews)
+    if (localStorage) {
+      localStorage.tableViews = JSON.stringify(columnViews);
+    }
+    this.setState({
+      colVisible: visible,
+      columnViews: columnViews
+    });
   },
 
   setDocumentTitleToTableName: function () {
@@ -231,13 +243,6 @@ var TableView = React.createClass({
     const toFilterValue = filterValue.toLowerCase().trim();
 
     const langtag = this.props.langtag;
-
-    const containsAllSubstrings = (str, stringOfFilters) => {
-      const fcontains = a => b => f.contains(b)(a);
-      return f.every(
-        fcontains(f.toLower(str)),
-        f.words(stringOfFilters))
-    };
 
     const getSortableCellValue = function (cell) {
       let sortableValue;

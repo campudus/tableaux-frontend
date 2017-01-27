@@ -20,7 +20,6 @@ class ColumnFilter extends React.Component {
     const {langtag, colVisible} = this.props;
     const {open} = this.state;
     const n_hidden = _.filter(x => !x, colVisible).length;
-    console.log("--- ColumnFilter COLUMNS ---", this.props.columns)
     const css_class = _.compose(
       _.nth(1),                                                         // choose the string
       _.find(_.first)                                                   // check the bool, return first true

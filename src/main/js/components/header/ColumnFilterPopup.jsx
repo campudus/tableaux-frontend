@@ -14,7 +14,6 @@ class ColumnFilterPopup extends React.Component {
   };
 
   unhide = what => {
-    console.log("unhide", what)
     const coll = (_.isArray(what))
       ? what.map(_.props(["value"]))
       : [what.value];
@@ -51,16 +50,12 @@ class ColumnFilterPopup extends React.Component {
           <text>{n_hidden + " " + i18n.t("table.hidden_items")}</text>
         </div>
         <div className="row">
-          <a href="#" className="button"
+          <a href="#" className="button neutral"
              onClick={this.setAll(true)}
-          >Alle anzeigen</a>
-          <a href="#" className="button"
+          >{i18n.t("table.show_all_columns")}</a>
+          <a href="#" className="button neutral"
              onClick={this.setAll(false)}
-          >Alle verstecken</a>
-        </div>
-        <div className="row">
-          <a href="#" className="button">Ansicht speichern</a>
-          <a href="#" className="button">Ansicht laden</a>
+          >{i18n.t("table.hide_all_columns")}</a>
         </div>
         <div className="row">
           <div className="Select-input">
@@ -69,6 +64,7 @@ class ColumnFilterPopup extends React.Component {
                     clearable={false}
                     options={options}
                     onChange={this.unhide}
+                    placeholder={i18n.t("table.unhide_placeholder")}
             />
           </div>
         </div>
