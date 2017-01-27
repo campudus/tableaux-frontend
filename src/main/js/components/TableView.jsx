@@ -71,67 +71,68 @@ var TableView = React.createClass({
   fetchTable: function (tableId) {
     const currentTable = this.tables.get(tableId);
 
+    //We need to fetch columns first, since rows has Cells that depend on the column model
+    const fetchColumns = table => {
+      return new Promise( (resolve, reject) => {
+        table.columns.fetch({
+          reset: true,
+          success: () => {
+            this.setState({
+              colVisible: f.map(n => n < 10, f.range(0, table.columns.models.length))
+            });
+            resolve({
+              table: table,
+              page: 1,
+              total: table.rows.pageCount()
+            });
+          },
+          error: () => {
+            ActionCreator.spinnerOff();
+            reject("Error fetching table columns");
+          }
+        });
+      });
+    };
+
+    const fetchPages = ({table, page, total}) => {
+      if (page > total) { // we're done
+        ActionCreator.spinnerOff();
+        return;
+      }
+      new Promise( (resolve, reject) => {
+        table.rows.fetchPage(
+          page,
+          {reset: true,
+            success: () => {
+              console.log("Table page number", page, "of", total, "successfully fetched");
+
+              if (page === 1) {
+                this.setState({
+                  initialLoading: false,
+                  rowsCollection: table.rows,
+                  currentTableId: tableId,
+                  rowsFilter: null
+                });
+              }
+
+              resolve({
+                table: table,
+                page: page + 1,
+                total: total
+              });
+            },
+            error: () => {
+              ActionCreator.spinnerOff();
+              reject("Error fetching page number", page);
+            }
+          });
+      }).then(fetchPages);
+    };
+
     //spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
     //in the middle, and gets displayed only on the first startup
     ActionCreator.spinnerOn();
-
-    //We need to fetch columns first, since rows has Cells that depend on the column model
-    currentTable.columns.fetch({
-      reset: true,
-
-      //success for initial rows request
-      success: () => {
-        currentTable.rows.fetchPage(1, {
-          reset: true,
-          success: () => {
-            const pageCount = currentTable.rows.pageCount();
-
-            console.log("table columns & initial rows successfully fetched");
-            console.log("table page count is " + pageCount);
-
-            this.setState({
-              initialLoading: false,
-              rowsCollection: currentTable.rows,
-              currentTableId: tableId,
-              rowsFilter: null,
-              colVisible: f.map(n => n < 10, f.range(0, currentTable.columns.models.length))
-            });
-
-            if (pageCount > 1) {
-              // start fetching pages at page 2
-              // page 1 was already fetched
-              fetchPage(2);
-            } else {
-              ActionCreator.spinnerOff();
-            }
-
-            function fetchPage(pageNumber) {
-              // Spinner for the next call
-              ActionCreator.spinnerOn();
-
-              currentTable.rows.fetchPage(pageNumber, {
-                success: () => {
-                  console.log("table page " + pageNumber + " fetched successfully");
-
-                  if (pageNumber >= pageCount) {
-                    ActionCreator.spinnerOff();
-                  } else {
-                    // fetch next page
-                    fetchPage(pageNumber + 1);
-                  }
-                },
-                error: (error) => {
-                  console.error("Error fetching initial rows. Error from server:", error);
-                }
-              });
-            }
-          },
-          error: (error) => {
-            console.error("Error fetching initial rows. Error from server:", error);
-          }
-        });
-      }
-    });
+    fetchColumns(currentTable).then(fetchPages);
   },
 
   componentWillUnmount: function () {
