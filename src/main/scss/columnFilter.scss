@@ -4,6 +4,8 @@
   margin-left: 20px;
   margin-top: 10px;
   outline-style: none;
+  float: left;
+  display: block;
 
   .button {
     @include header-button-look();
@@ -11,9 +13,9 @@
   }
 
   .infotext {
-    //box-sizing: border-box;
-    left: 0;
-    top: 0;
+    box-sizing: border-box;
+    font-size: x-small;
+    padding-left: 7px;
   }
 
   &.active {
@@ -33,7 +35,7 @@
   #column-filter-popup-wrapper {
     @include header-panel-look();
     overflow: visible;
-    left: 0;
+    display: block;
 
     .button {
       @include button-look();
@@ -42,11 +44,10 @@
 
     input {
       width: calc(100% - 40px);
-      margin: 10px 20px;
+      margin: 6px 20px;
     }
 
     .row {
-      width: 100%;
       text-align: center;
       margin: 10px 20px;
 

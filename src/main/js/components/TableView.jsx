@@ -38,7 +38,7 @@ var TableView = React.createClass({
   getInitialState: function () {
     const columnViews = either(localStorage)
       .map(f.prop(["tableViews"]))
-      .map(x => {JSON.parse})
+      .map(JSON.parse)
       .getOrElse({});
     return {
       initialLoading: true,

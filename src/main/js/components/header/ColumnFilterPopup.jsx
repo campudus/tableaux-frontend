@@ -50,10 +50,10 @@ class ColumnFilterPopup extends React.Component {
           <text>{n_hidden + " " + i18n.t("table:hidden_items")}</text>
         </div>
         <div className="row">
-          <a href="#" className="button neutral"
+          <a href="#" className="button positive"
              onClick={this.setAll(true)}
           >{i18n.t("table:show_all_columns")}</a>
-          <a href="#" className="button neutral"
+          <a href="#" className="button negative"
              onClick={this.setAll(false)}
           >{i18n.t("table:hide_all_columns")}</a>
         </div>
@@ -65,6 +65,7 @@ class ColumnFilterPopup extends React.Component {
                     options={options}
                     onChange={this.unhide}
                     placeholder={i18n.t("table:unhide_placeholder")}
+                    noResultsText={i18n.t("table:no_results_found")}
             />
           </div>
         </div>

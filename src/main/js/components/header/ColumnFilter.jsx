@@ -27,13 +27,11 @@ class ColumnFilter extends React.Component {
     return (
       <div id="column-filter-wrapper" className={css_class}>
         <a href="#" className="button" onMouseDown={this.togglePopup}>
-          <text className="infotext">
-            {(n_hidden > 0)
-              ? n_hidden
-              : null
-            }
-          </text>
           <i className="fa fa-eye" />
+          {(n_hidden > 0)
+            ? <text className="infotext">{n_hidden}</text>
+            : null
+          }
         </a>
         {(open)
           ? <ColumnFilterPopup langtag={langtag}
