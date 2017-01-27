@@ -18,6 +18,7 @@ import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import searchFunctions from "../helpers/searchFunctions";
+import ColumnFilter from "./header/ColumnFilter";
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
@@ -38,7 +39,8 @@ var TableView = React.createClass({
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
-      rowsFilter: null
+      rowsFilter: null,
+      colVisible: []
     }
   },
 
@@ -91,7 +93,8 @@ var TableView = React.createClass({
               initialLoading: false,
               rowsCollection: currentTable.rows,
               currentTableId: tableId,
-              rowsFilter: null
+              rowsFilter: null,
+              colVisible: f.map(n => n < 10, f.range(0, currentTable.columns.models.length))
             });
 
             if (pageCount > 1) {
@@ -370,7 +373,9 @@ var TableView = React.createClass({
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
-                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen} />;
+                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
+                         colVisible={this.state.colVisible}
+          />;
         } else {
           //TODO show error to user
           console.error("No table found with id " + this.state.currentTableId);
@@ -388,6 +393,9 @@ var TableView = React.createClass({
               ? <TableSettings langtag={this.props.langtag} table={currentTable} />
               : null}
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
+            <ColumnFilter langtag={this.props.langtag}
+                          colVisible={this.state.colVisible}
+            />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables" />
             <Spinner />

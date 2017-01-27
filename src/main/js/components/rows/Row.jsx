@@ -74,7 +74,7 @@ var Row = React.createClass({
 
     return this.props.row.cells.map(function (cell, idx) {
       //Skip cells in hidden columns
-      if (!self.props.colVisible[idx]) {
+      if (idx > 0 && !self.props.colVisible[idx]) { // keep first column always visible
         return null;
       }
 

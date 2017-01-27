@@ -43,7 +43,7 @@ const Columns = React.createClass({
 
   renderColumn(langtag, column, index) {
     //Skip header of hidden columns
-    if (!this.props.colVisible[index]) {
+    if (index > 0 && !this.props.colVisible[index]) { // keep first column always visible
       return null;
     }
 

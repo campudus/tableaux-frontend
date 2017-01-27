@@ -34,7 +34,6 @@ class Table extends React.Component {
     this.tableRowsDom = null; //scrolling rows container
     this.columnsDom = null;
 
-    const n = this.props.table.columns.models.length;
     this.state = {
       offsetTableData: 0,
       windowHeight: window.innerHeight,
@@ -46,10 +45,8 @@ class Table extends React.Component {
       selectedCellExpandedRow: null,
       shouldCellFocus: true,
       rowContextMenu: null,
-      showScrollToLeftButton: false,
-      colVisible: _.map( n => (n < 10) ? true : false, _.range(0, n))
+      showScrollToLeftButton: false
     }
-    console.log("--- TABLE STATE ---", this.state.colVisible)
   }
 
   componentWillMount() {
@@ -180,8 +177,8 @@ class Table extends React.Component {
   }
 
   render() {
-    const {langtag, table:{columns}, rows, table} = this.props;
-    const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton, colVisible} = this.state;
+    const {langtag, table:{columns}, rows, table, colVisible} = this.props;
+    const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
     console.log("Rendering table");
     return (
@@ -222,6 +219,7 @@ Table.propTypes = {
   table: React.PropTypes.object.isRequired,
   overlayOpen: React.PropTypes.bool.isRequired,
   rows: React.PropTypes.object,
+  colVisible: React.PropTypes.array.isRequired,
 };
 
 module.exports = Table;
