@@ -48,6 +48,7 @@ var TableView = React.createClass({
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
   },
 
   componentDidMount: function () {
@@ -96,6 +97,7 @@ var TableView = React.createClass({
 
     const fetchPages = ({table, page, total}) => {
       if (page > total) { // we're done
+        console.log("Done fetching", total, "pages");
         ActionCreator.spinnerOff();
         return;
       }
@@ -126,7 +128,7 @@ var TableView = React.createClass({
               reject("Error fetching page number", page);
             }
           });
-      }).then(fetchPages);
+      }).then(fetchPages); // recur with page number increased
     };
 
     //spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
@@ -139,6 +141,7 @@ var TableView = React.createClass({
     Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -151,6 +154,16 @@ var TableView = React.createClass({
         this.doSwitchTable();
       }
     }
+  },
+
+  //Set visibility of all columns in <coll> to <val>
+  setColumnsVisibility: function ({val, coll}) {
+    console.log("setColumnsVisibility", val, coll)
+    const {colVisible} = this.state;
+    console.log("colVisible:", colVisible)
+    const visible = f.reduce( (list, n) => f.set(n, val, list), colVisible, coll);
+    console.log("visible:", visible)
+    this.setState({colVisible: visible}, this.forceUpdate);
   },
 
   setDocumentTitleToTableName: function () {

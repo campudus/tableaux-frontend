@@ -26,7 +26,7 @@ var Rows = React.createClass({
   },
 
   shouldComponentUpdate(nP) {
-    const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
+    const {colVisible, selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
     if (selectedCell !== nP.selectedCell
       || selectedCellEditing !== nP.selectedCellEditing
       || langtag !== nP.langtag
@@ -35,6 +35,7 @@ var Rows = React.createClass({
       || expandedRowIds !== nP.expandedRowIds
       || selectedCellExpandedRow !== nP.selectedCellExpandedRow
       || rowsHeight !== nP.rowsHeight
+      || colVisible !== nP.colVisible
     ) {
       return true;
     }

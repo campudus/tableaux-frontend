@@ -72,7 +72,10 @@ var TableauxConstant = {
 
     //Column modification
     DONE_EDIT_HEADER: null,
-    REFRESH_TABLE_NAMES: null
+    REFRESH_TABLE_NAMES: null,
+
+    //Column visibility filtering
+    SET_COLUMNS_VISIBILITY: null
   }),
 
   Directions: keyMirror({

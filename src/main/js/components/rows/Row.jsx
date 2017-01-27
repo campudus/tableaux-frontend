@@ -33,6 +33,7 @@ var Row = React.createClass({
     if (this.props.langtag != nextProps.langtag
       || this.props.row != nextProps.row
       || this.props.isRowExpanded != nextProps.isRowExpanded
+      || this.props.colVisible !== nextProps.colVisible
     ) {
       return true;
     }

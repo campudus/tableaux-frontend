@@ -29,11 +29,12 @@ const Columns = React.createClass({
   },
 
   shouldComponentUpdate(nextProps, nextState) {
-    const {langtag, columns} = this.props;
+    const {langtag, columns, colVisible} = this.props;
     return (
-      !_.eq(this.state, nextState) ||
-      langtag !== nextProps.langtag ||
-      columns !== nextProps.columns
+      !_.eq(this.state, nextState)
+      || langtag !== nextProps.langtag
+      || columns !== nextProps.columns
+      || colVisible !== nextProps.colVisible
     );
   },
 

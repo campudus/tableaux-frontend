@@ -29,7 +29,6 @@ class GenericContextMenu extends React.Component{
       const xShift = ((_.endsWith('RIGHT', align)) ? w : 0); // shift to align corner at (x,y)
       const xPos = (noClampX) ? x + offset - xShift : _.clamp(0, window.innerWidth - w, x + offset - xShift);
       this.setState({x: xPos});
-      console.log("set x to", xPos)
     }
 
     if (y) {
@@ -37,7 +36,6 @@ class GenericContextMenu extends React.Component{
       const yShift = ((_.startsWith('LOWER', align)) ? h : 0);
       const yPos = (noClampY) ? y + offset - yShift : _.clamp(0, window.innerHeight - h, y + offset - yShift);
       this.setState({y: yPos});
-      console.log("set y to", yPos)
     }
   }
 
