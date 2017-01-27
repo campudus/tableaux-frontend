@@ -22,6 +22,8 @@
   "show_dependency_text": "Dieser Datensatz ist in folgenden Tabllen verknüpft.",
   "country": "Land",
   "switch_table": "Zu Tabelle wechseln",
+  "hide_column": "Spalte ausblenden",
+  "hidden_items": "ausgeblendete Spalten",
   "editor": {
     "colname": "Bezeichnung",
     "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",

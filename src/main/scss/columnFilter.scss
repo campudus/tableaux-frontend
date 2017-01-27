@@ -1,0 +1,59 @@
+@import "variables";
+
+#column-filter-wrapper {
+  margin-left: 20px;
+  margin-top: 10px;
+  outline-style: none;
+
+  .button {
+    @include header-button-look();
+
+  }
+
+  .infotext {
+    //box-sizing: border-box;
+    left: 0;
+    top: 0;
+  }
+
+  &.active {
+    .button {
+      @include header-button-active();
+    }
+  }
+
+  &.has-filter {
+    .button {
+      @include header-button-active();
+      background-color: $color-primary;
+      color: $color-primary-contrast-text;
+    }
+  }
+
+  #column-filter-popup-wrapper {
+    @include header-panel-look();
+    overflow: visible;
+    left: 0;
+
+    .button {
+      @include button-look();
+      margin: 10px 20px;
+      width: 150px;
+    }
+
+    input {
+      width: calc(100% - 40px);
+      margin: 10px 20px;
+    }
+
+    .row {
+      width: 100%;
+      text-align: center;
+      margin: 10px 20px;
+
+      .button:last-of-type {
+        right: 0;
+      }
+    }
+  }
+}

@@ -81,7 +81,7 @@ var TableView = React.createClass({
             this.setState({
               colVisible: f.map(n => n < 10, f.range(0, table.columns.models.length))
             });
-            resolve({
+            resolve({ // return information about first/total page to be fetched
               table: table,
               page: 1,
               total: table.rows.pageCount()
@@ -102,8 +102,7 @@ var TableView = React.createClass({
         return;
       }
       new Promise( (resolve, reject) => {
-        table.rows.fetchPage(
-          page,
+        table.rows.fetchPage(page,
           {reset: true,
             success: () => {
               console.log("Table page number", page, "of", total, "successfully fetched");
@@ -117,7 +116,7 @@ var TableView = React.createClass({
                 });
               }
 
-              resolve({
+              resolve({ // return information about next/total pages to be fetched
                 table: table,
                 page: page + 1,
                 total: total
@@ -409,6 +408,7 @@ var TableView = React.createClass({
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
             <ColumnFilter langtag={this.props.langtag}
                           colVisible={this.state.colVisible}
+                          columns={currentTable.columns}
             />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables" />

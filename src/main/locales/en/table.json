@@ -22,6 +22,8 @@
   "show_dependency_text": "This data record is linked in the following tables.",
   "country": "Country",
   "switch_table": "Switch to table",
+  "hide_column": "Hide column",
+  "hidden_items": "hidden columns",
   "editor": {
     "colname": "Title",
     "sanity_info": "Please make sure the title describes the purpose properly",
