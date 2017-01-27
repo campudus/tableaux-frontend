@@ -24,6 +24,9 @@
   "switch_table": "Zu Tabelle wechseln",
   "hide_column": "Spalte ausblenden",
   "hidden_items": "ausgeblendete Spalten",
+  "show_all_columns": "Alle Spalten zeigen",
+  "hide_all_columns": "Alle Spalten verbergen",
+  "unhide_placeholder": "Einzelne Spalte zeigen...",
   "editor": {
     "colname": "Bezeichnung",
     "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",

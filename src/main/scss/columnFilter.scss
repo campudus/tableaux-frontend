@@ -38,7 +38,6 @@
     .button {
       @include button-look();
       margin: 10px 20px;
-      width: 150px;
     }
 
     input {

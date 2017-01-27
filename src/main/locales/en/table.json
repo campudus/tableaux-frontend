@@ -24,6 +24,9 @@
   "switch_table": "Switch to table",
   "hide_column": "Hide column",
   "hidden_items": "hidden columns",
+  "show_all_columns": "show all columns",
+  "hide_all_columns": "hide all columns",
+  "unhide_placeholder": "Restore individual column...",
   "editor": {
     "colname": "Title",
     "sanity_info": "Please make sure the title describes the purpose properly",
