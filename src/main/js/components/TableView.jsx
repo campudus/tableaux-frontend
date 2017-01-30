@@ -143,7 +143,7 @@ var TableView = React.createClass({
                 });
               }
 
-              resolve({ // return information about next/total pages to be fetched
+              resolve({ // return information about next page to be fetched
                 table: table,
                 page: page + 1
               });

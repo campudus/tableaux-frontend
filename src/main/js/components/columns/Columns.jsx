@@ -129,13 +129,6 @@ const Columns = React.createClass({
       });
   },
 
-  clickHandler(id) {
-    if (id === 0) {
-      return;
-    } // don't edit "ID" header
-    this.setState({selected: id});
-  },
-
   deselect(id) {
     const {selected} = this.state;
     if (id === selected) {

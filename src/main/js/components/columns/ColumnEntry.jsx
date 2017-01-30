@@ -116,7 +116,7 @@ class ColumnEntry extends React.Component {
           {columnContent}
           {columnIcon}
         </div>
-        {(index > 0)
+        {(kind != "concat")
           ? <a href="#" className={contextmenu_css_class} id={this.calcId()}
              onClick={this.toggleContextMenu}>
           </a>
