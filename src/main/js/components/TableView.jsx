@@ -50,6 +50,28 @@ var TableView = React.createClass({
     }
   },
 
+  // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
+  loadView(tableId, name = "default") {
+    const table = this.tables.get(tableId);
+    if (!table) {
+      console.log("Could not load views for table ID", tableId, "of", this.tables);
+      return;
+    }
+    const defaultView = either(this.state.columnViews)
+      .map(f.prop([tableId, "default"]))
+      .getOrElse(f.map(n => n < 10, f.range(0, table.columns.models.length)));
+    this.setState({ colVisible: defaultView });
+  },
+
+  // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
+  saveViews() {
+    const {columnViews} = this.state;
+    console.log("Writing", columnViews)
+    if (localStorage) {
+      localStorage.tableViews = JSON.stringify(columnViews);
+    }
+  },
+
   componentWillMount: function () {
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
@@ -84,19 +106,17 @@ var TableView = React.createClass({
         table.columns.fetch({
           reset: true,
           success: () => {
-            const defaultView = either(this.state.columnViews)
-              .map(f.prop([tableId, "default"]))
-              .getOrElse(f.map(n => n < 10, f.range(0, table.columns.models.length)));
-            this.setState({ colVisible: defaultView });
+            console.log("Column headers fetched, now requesting", table.rows.pageCount(), "pages")
+            this.loadView(table.id);
             resolve({ // return information about first/total page to be fetched
               table: table,
               page: 1,
               total: table.rows.pageCount()
             });
           },
-          error: () => {
+          error: e => {
             ActionCreator.spinnerOff();
-            reject("Error fetching table columns");
+            reject("Error fetching table columns:" + JSON.stringify(e));
           }
         });
       });
@@ -130,9 +150,9 @@ var TableView = React.createClass({
                 total: total
               });
             },
-            error: () => {
+            error: e => {
               ActionCreator.spinnerOff();
-              reject("Error fetching page number", page);
+              reject("Error fetching page number " + page + ":" + JSON.stringify(e));
             }
           });
       }).then(fetchPages); // recur with page number increased
@@ -167,14 +187,12 @@ var TableView = React.createClass({
   setColumnsVisibility: function ({val, coll}) {
     const {colVisible} = this.state;
     const visible = f.reduce((list, n) => f.set(n, val, list), colVisible, coll);
-    const columnViews = f.set([this.state.currentTableId, "default"], visible, this.state.ColumnViews)
-    if (localStorage) {
-      localStorage.tableViews = JSON.stringify(columnViews);
-    }
+    const oldViews = this.state.columnViews;
+    let columnViews = f.set([this.state.currentTableId, "default"], visible, oldViews)
     this.setState({
       colVisible: visible,
       columnViews: columnViews
-    });
+    }, this.saveViews);
   },
 
   setDocumentTitleToTableName: function () {
@@ -372,6 +390,7 @@ var TableView = React.createClass({
     if (this.nextTableId) {
       console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
+      this.loadView(this.nextTableId);
     }
   },
 
