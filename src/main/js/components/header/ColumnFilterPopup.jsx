@@ -34,16 +34,16 @@ class ColumnFilterPopup extends React.Component {
         .map(_.prop(["displayName", langtag]))
         .orElse(_.prop(["name"]))
         .getOrElseThrow("Could not extract displayName or name from" + x);
-    }
-    const names = _.map(getName, columns.models);
-    const options = names
-      .map((label, idx) => {
+    };
+
+    const options = columns.models
+      .map(col => {
         return {
-          value: idx,
-          label: label
+          value: col.id,
+          label: getName(col)
         }
       })
-      .filter( (col, idx) => !colVisible[idx])
+      .filter(col => !colVisible[col.value])
     return (
       <div id="column-filter-popup-wrapper">
         <div className="row">
