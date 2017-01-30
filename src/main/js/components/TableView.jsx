@@ -106,12 +106,10 @@ var TableView = React.createClass({
         table.columns.fetch({
           reset: true,
           success: () => {
-            console.log("Column headers fetched, now requesting", table.rows.pageCount(), "pages")
             this.loadView(table.id);
-            resolve({ // return information about first/total page to be fetched
+            resolve({ // return information about first page to be fetched
               table: table,
-              page: 1,
-              total: table.rows.pageCount()
+              page: 1
             });
           },
           error: e => {
@@ -122,8 +120,9 @@ var TableView = React.createClass({
       });
     };
 
-    const fetchPages = ({table, page, total}) => {
-      if (page > total) { // we're done
+    const fetchPages = ({table, page}) => {
+      const total = table.rows.pageCount();
+      if (page > table.rows.pageCount()) { // we're done
         console.log("Done fetching", total, "pages");
         ActionCreator.spinnerOff();
         return;
@@ -131,9 +130,9 @@ var TableView = React.createClass({
       new Promise((resolve, reject) => {
         table.rows.fetchPage(page,
           {
-            reset: true,
+            reset: page === 1,
             success: () => {
-              console.log("Table page number", page, "of", total, "successfully fetched");
+              console.log("Table page number", page ,((page > 1) ? "of " + total + " " : "") + "successfully fetched");
 
               if (page === 1) {
                 this.setState({
@@ -146,8 +145,7 @@ var TableView = React.createClass({
 
               resolve({ // return information about next/total pages to be fetched
                 table: table,
-                page: page + 1,
-                total: total
+                page: page + 1
               });
             },
             error: e => {
