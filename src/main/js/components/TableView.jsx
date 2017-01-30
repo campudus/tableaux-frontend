@@ -53,13 +53,14 @@ var TableView = React.createClass({
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
   loadView(tableId, name = "default") {
     const table = this.tables.get(tableId);
+    const DEFAULT_VISIBLE_COLUMS = 10;
     if (!table) {
       console.log("Could not load views for table ID", tableId, "of", this.tables);
       return;
     }
     const defaultView = either(this.state.columnViews)
       .map(f.prop([tableId, "default"]))
-      .getOrElse(f.map(n => n < 10, f.range(0, table.columns.models.length)));
+      .getOrElse(f.map(n => n < DEFAULT_VISIBLE_COLUMS, f.range(0, table.columns.models.length)));
     this.setState({ colVisible: defaultView });
   },
 
