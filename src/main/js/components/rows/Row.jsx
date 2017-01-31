@@ -1,34 +1,21 @@
-const React = require('react');
-const AmpersandMixin = require('ampersand-react-mixin');
-const TableauxConstants = require('../../constants/TableauxConstants');
-const Dispatcher = require('../../dispatcher/Dispatcher');
-const ActionCreator = require('../../actions/ActionCreator');
-const Cell = require('../cells/Cell.jsx');
+import React from "react";
+import AmpersandMixin from "ampersand-react-mixin";
+import TableauxConstants from "../../constants/TableauxConstants";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import ActionCreator from "../../actions/ActionCreator";
+import Cell from "../cells/Cell.jsx";
 
 import MetaCell from '../cells/MetaCell';
 import {hasUserAccessToLanguage, isUserAdmin} from '../../helpers/accessManagementHelper';
 import {initiateDeleteRow} from '../../helpers/rowHelper';
 
-var Row = React.createClass({
-  mixins : [AmpersandMixin],
+class Row extends React.Component {
+//  mixins : [AmpersandMixin],
 
-  displayName : 'Row',
-
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    table : React.PropTypes.object.isRequired,
-    row : React.PropTypes.object.isRequired,
-    selectedCell : React.PropTypes.object,
-    selectedCellEditing : React.PropTypes.bool,
-    selectedCellExpandedRow : React.PropTypes.string,
-    isRowExpanded : React.PropTypes.bool.isRequired,
-    isRowSelected : React.PropTypes.bool,
-    shouldCellFocus : React.PropTypes.bool,
-    colVisible: React.PropTypes.array.isRequired
-  },
+  displayName = 'Row';
 
   //Allows a good performance when editing large tables
-  shouldComponentUpdate : function (nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     //Update on every available prop change
     if (this.props.langtag != nextProps.langtag
       || this.props.row != nextProps.row
@@ -52,25 +39,25 @@ var Row = React.createClass({
     else {
       return true;
     }
-  },
+  };
 
-  toggleExpand : function () {
+  toggleExpand = () => {
     ActionCreator.disableShouldCellFocus();
     ActionCreator.toggleRowExpand(this.props.row.id);
-  },
+  };
 
-  onClickDelete : function (e) {
+  onClickDelete = e => {
     ActionCreator.disableShouldCellFocus();
     const {row, langtag} = this.props;
     initiateDeleteRow(row, langtag);
-  },
+  };
 
-  renderSingleLanguageCell : function (cell, idx) {
+  renderSingleLanguageCell = (cell, idx) => {
     var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
     return <div key={idx} className={className}>—.—</div>;
-  },
+  };
 
-  renderCells : function (langtag, isRowSelected) {
+  renderCells = (langtag, isRowSelected) => {
     var self = this;
 
     return this.props.row.cells.map(function (cell, idx) {
@@ -110,14 +97,14 @@ var Row = React.createClass({
                      shouldFocus={shouldFocus}/>;
       }
     })
-  },
+  };
 
-  contextMenuHandler : function (e) {
+  contextMenuHandler = e => {
     e.preventDefault();
     ActionCreator.showRowContextMenu(this.props.row, this.props.langtag, e.pageX, e.pageY, this.props.table);
-  },
+  };
 
-  renderLanguageRow : function (langtag) {
+  renderLanguageRow = langtag => {
     const {isRowSelected, selectedCellExpandedRow, row, isRowExpanded, table} = this.props;
 
     let deleteButton, rowLockedIcon = "";
@@ -160,9 +147,9 @@ var Row = React.createClass({
         {this.renderCells(langtag, selected)}
       </div>
     );
-  },
+  };
 
-  render : function () {
+  render = () => {
     const self = this;
     if (this.props.isRowExpanded) {
       // render all language-rows for this row
@@ -174,6 +161,19 @@ var Row = React.createClass({
       return this.renderLanguageRow(this.props.langtag);
     }
   }
-});
+};
 
-module.exports = Row;
+Row.propTypes = {
+  langtag : React.PropTypes.string.isRequired,
+  table : React.PropTypes.object.isRequired,
+  row : React.PropTypes.object.isRequired,
+  selectedCell : React.PropTypes.object,
+  selectedCellEditing : React.PropTypes.bool,
+  selectedCellExpandedRow : React.PropTypes.string,
+  isRowExpanded : React.PropTypes.bool.isRequired,
+  isRowSelected : React.PropTypes.bool,
+  shouldCellFocus : React.PropTypes.bool,
+  colVisible: React.PropTypes.array.isRequired
+};
+
+export default Row;
