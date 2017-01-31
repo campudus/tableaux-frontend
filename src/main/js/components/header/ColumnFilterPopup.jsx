@@ -107,6 +107,23 @@ class ColumnFilterPopup extends React.Component {
 
     return (
       <div id="column-filter-popup-wrapper">
+        <List className="column-checkbox-list"
+              ref={list => this.list = list}
+              width={440}
+              height={300}
+              rowCount={models.length}
+              rowHeight={30}
+              rowRenderer={this.renderCheckboxItems}
+        />
+
+        <div>
+          <input type="text"
+                 className="input"
+                 placeholder={i18n.t("table:filter_columns")}
+                 onChange={this.handleFilterChange}
+          />
+        </div>
+
         <div className="row">
           <text>{n_hidden + " " + i18n.t("table:hidden_items")}</text>
         </div>
@@ -119,20 +136,6 @@ class ColumnFilterPopup extends React.Component {
           >{i18n.t("table:hide_all_columns")}</a>
         </div>
 
-        <List className="column-checkbox-list"
-              ref={list => this.list = list}
-              width={300}
-              height={300}
-              rowCount={models.length}
-              rowHeight={30}
-              rowRenderer={this.renderCheckboxItems}
-        />
-
-        <div>
-          <input type="text"
-                 onChange={this.handleFilterChange}
-          />
-        </div>
       </div>
     )
   }

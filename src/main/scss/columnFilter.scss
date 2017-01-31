@@ -36,24 +36,43 @@
     @include header-panel-look();
     overflow: visible;
     display: block;
+    margin: 0;
+    max-height: none;
+
+    div {
+      outline: none;
+    }
 
     .button {
       @include button-look();
       margin: 10px 20px;
     }
 
-    input {
-      width: calc(100% - 40px);
-      margin: 6px 20px;
+    .input {
+      box-sizing: border-box;
+      padding: 10px;
+      font: inherit;
+      height: 90%;
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      resize: none;
+      line-height: 1.5em;
+
+      outline: none;
+      background-color: white;
+
+      border: 1px solid $color-text-medium-grey;
+      border-radius: 3px;
+
+      &:focus {
+        border: 1px solid $color-primary;
+        @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
+      }
     }
 
     .row {
-      text-align: center;
-      margin: 10px 20px;
-
-      .button:last-of-type {
-        right: 0;
-      }
+      padding: 15px 0;
     }
 
     .column-filter-checkbox-wrapper {
@@ -64,12 +83,16 @@
       }
 
       &.even {
-        background-color: #eee;
+        background-color: $color-border-grey;
       }
     }
 
     .column-checkbox-list {
-      border: 1px solid blue;
+      width: 100%;
+
+      div {
+        width: 100%;
+      }
     }
   }
 }
