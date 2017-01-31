@@ -23,10 +23,10 @@
   "country": "Land",
   "switch_table": "Zu Tabelle wechseln",
   "hide_column": "Spalte ausblenden",
-  "hidden_items": "ausgeblendete Spalten",
+  "hidden_items": "verborgene Spalten",
   "show_all_columns": "Alle Spalten zeigen",
   "hide_all_columns": "Alle Spalten verbergen",
-  "unhide_placeholder": "Einzelne Spalte zeigen...",
+  "filter_columns": "Spalten filtern...",
   "no_results_found": "Keine entsprechenden Spalten gefunden",
   "editor": {
     "colname": "Bezeichnung",

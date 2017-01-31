@@ -131,7 +131,7 @@ class ColumnFilterPopup extends React.Component {
           <a href="#" className="button positive"
              onClick={this.setAll(true)}
           >{i18n.t("table:show_all_columns")}</a>
-          <a href="#" className="button negative"
+          <a href="#" className="button neutral"
              onClick={this.setAll(false)}
           >{i18n.t("table:hide_all_columns")}</a>
         </div>
