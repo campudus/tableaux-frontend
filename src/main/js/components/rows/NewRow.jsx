@@ -4,19 +4,15 @@ import ActionCreator from'../../actions/ActionCreator';
 import {translate} from 'react-i18next';
 
 //TODO: Ajax spinner when adding row
-var NewRow = React.createClass({
-  mixins : [AmpersandMixin],
+class NewRow extends React.Component {
+//  mixins : [AmpersandMixin],
 
-  propTypes : {
-    table : React.PropTypes.object.isRequired
-  },
-
-  addRow : function () {
+  addRow() {
     var tableId = this.props.table.getId();
     ActionCreator.addRow(tableId);
-  },
+  };
 
-  render : function () {
+  render() {
     var t = this.props.t;
     return (
       <div className="new-row">
@@ -28,6 +24,10 @@ var NewRow = React.createClass({
       </div>
     );
   }
-});
+};
+
+NewRow.propTypes = {
+  table: React.PropTypes.object.isRequired
+};
 
 module.exports = translate(['table'])(NewRow);
