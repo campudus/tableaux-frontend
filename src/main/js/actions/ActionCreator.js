@@ -261,8 +261,7 @@ module.exports = {
     );
   },
 
-  setColumnsVisibility: (to, cols) => {
-
-    Dispatcher.trigger(ActionTypes.SET_COLUMNS_VISIBILITY, {coll: cols, val: to});
+  setColumnsVisibility: (to, cols, cb) => {
+    Dispatcher.trigger(ActionTypes.SET_COLUMNS_VISIBILITY, {coll: cols, val: to, cb: cb});
   }
 };

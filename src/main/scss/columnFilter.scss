@@ -55,5 +55,21 @@
         right: 0;
       }
     }
+
+    .column-filter-checkbox-wrapper {
+      input {
+        width: 30px;
+        overflow: hidden;
+        overflow-text: ellipses;
+      }
+
+      &.even {
+        background-color: #eee;
+      }
+    }
+
+    .column-checkbox-list {
+      border: 1px solid blue;
+    }
   }
 }
