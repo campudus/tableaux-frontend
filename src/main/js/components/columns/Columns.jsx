@@ -2,33 +2,28 @@ import React from "react";
 import AmpersandMixin from "ampersand-react-mixin";
 import {translate} from "react-i18next";
 import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
-import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType} from "../../constants/TableauxConstants";
+import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as _ from "lodash/fp";
 
-const ActionTypes = TableauxConstants.ActionTypes;
+class Columns extends React.Component {
+//  mixins: [AmpersandMixin],
 
-const Columns = React.createClass({
-  mixins: [AmpersandMixin],
+  constructor(props) {
+    super(props);
+    this.state = {selected: null};
+  };
 
-  componentWillMount() {
+  componentWillMount = () => {
     Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  },
+  };
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  },
+  };
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    columns: React.PropTypes.object.isRequired,
-    table: React.PropTypes.object.isRequired,
-    t: React.PropTypes.func.isRequired,
-    colVisible: React.PropTypes.array.isRequired
-  },
-
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate = (nextProps, nextState) => {
     const {langtag, columns, colVisible} = this.props;
     return (
       !_.eq(this.state, nextState)
@@ -36,13 +31,9 @@ const Columns = React.createClass({
       || columns !== nextProps.columns
       || colVisible !== nextProps.colVisible
     );
-  },
+  };
 
-  getInitialState() {
-    return {selected: null};
-  },
-
-  renderColumn(langtag, column, index) {
+  renderColumn = (langtag, column, index) => {
     //Skip header of hidden columns
     if (index > 0 && !this.props.colVisible[index]) { // keep first column always visible
       return null;
@@ -98,16 +89,16 @@ const Columns = React.createClass({
                    description={description}
                    langtag={langtag} />
     )
-  },
+  };
 
-  stopEditing(payload) {
+  stopEditing = (payload) => {
     if (payload &&
       (payload.newName || payload.newDescription)) {
       this.saveEdits(payload);
     }
-  },
+  };
 
-  saveEdits(payload) {
+  saveEdits = (payload) => {
     const {langtag, colId, newName, newDescription} = payload;
     const {columns} = this.props;
     const modifications =
@@ -127,9 +118,9 @@ const Columns = React.createClass({
         wait: true,
         success: () => this.forceUpdate()
       });
-  },
+  };
 
-  deselect(id) {
+  deselect = (id) => {
     const {selected} = this.state;
     if (id === selected) {
       this.setState({
@@ -137,9 +128,9 @@ const Columns = React.createClass({
         wait: true
       });
     }
-  },
+  };
 
-  render() {
+  render = () => {
     const self = this;
 
     return (
@@ -156,6 +147,14 @@ const Columns = React.createClass({
       </div>
     );
   }
-});
+};
+
+Columns.propTypes = {
+  langtag: React.PropTypes.string.isRequired,
+  columns: React.PropTypes.object.isRequired,
+  table: React.PropTypes.object.isRequired,
+  t: React.PropTypes.func.isRequired,
+  colVisible: React.PropTypes.array.isRequired
+};
 
 module.exports = translate(['table'])(Columns);
