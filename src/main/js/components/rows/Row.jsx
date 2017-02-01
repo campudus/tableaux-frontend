@@ -62,7 +62,8 @@ class Row extends React.Component {
 
     return this.props.row.cells.map(function (cell, idx) {
       //Skip cells in hidden columns
-      if (idx > 0 && !self.props.colVisible[idx]) { // keep first column always visible
+      const colId = self.props.table.columns.models[idx].id
+      if (idx > 0 && !self.props.colVisible[colId]) { // keep first column always visible
         return null;
       }
 

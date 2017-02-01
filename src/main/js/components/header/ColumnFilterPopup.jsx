@@ -48,8 +48,10 @@ class ColumnFilterPopup extends React.Component {
   };
 
   setAll = val => () => {
-    const n_columns = this.props.columns.models.length;
-    this.setVisibilityAndUpdateGrid(val, _.range(1, n_columns));
+    const models = this.props.columns.models;
+    const n_columns = models.reduce( (a,b) => (a.id > b.id) ? a : b, {id: 0}).id;
+    const living_ids = _.intersection(_.range(1, n_columns + 1), models.map(x => x.id));
+    this.setVisibilityAndUpdateGrid(val, living_ids);
   };
 
   toggleCol = index => event => {

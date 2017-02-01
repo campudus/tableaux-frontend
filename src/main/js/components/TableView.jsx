@@ -58,9 +58,14 @@ var TableView = React.createClass({
       console.log("Could not load views for table ID", tableId, "of", this.tables);
       return;
     }
+    const highest_tableId = table.columns.models.reduce((a,b) => (a.id > b.id) ? a : b, {id: 0}).id;
+    const first_ten_cols = f.take(
+      DEFAULT_VISIBLE_COLUMS,
+      f.intersection(table.columns.models.map(x => x.id), f.range(0, highest_tableId + 1)));
+    console.log("HIGHEST TABLE ID:", highest_tableId, "first ten", first_ten_cols)
     const defaultView = either(this.state.columnViews)
       .map(f.prop([tableId, "default"]))
-      .getOrElse(f.map(n => n < DEFAULT_VISIBLE_COLUMS, f.range(0, table.columns.models.length)));
+      .getOrElse(f.map(_.includes(first_ten_cols), f.range(0, highest_tableId + 1)));
     this.setState({ colVisible: defaultView });
   },
 
@@ -183,6 +188,7 @@ var TableView = React.createClass({
 
   //Set visibility of all columns in <coll> to <val>
   setColumnsVisibility: function ({val, coll, cb}) {
+    console.log("setting", coll, "to", val)
     const callback = (cb)
       ? f.compose(cb, this.saveViews)
       : this.saveViews;
