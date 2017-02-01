@@ -189,7 +189,7 @@ class Table extends React.Component {
         <div className="tableaux-table" ref="tableInner">
           <Columns ref="columns" table={table} langtag={langtag}
                    columns={columns}
-                   colVisible={colVisible}
+                   visibility={this.props.visibility}
           />
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
@@ -201,7 +201,7 @@ class Table extends React.Component {
                 selectedCellExpandedRow={selectedCellExpandedRow}
                 table={table}
                 shouldCellFocus={tableNavigationWorker.shouldCellFocus.call(this)}
-                colVisible={colVisible}
+                visibility={this.props.visibility}
           />
           <span id="scrollToLeftStart" className={!showScrollToLeftButton ? 'hide' : null}
                 title="scroll to the beginning of table."
@@ -218,8 +218,7 @@ Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   table: React.PropTypes.object.isRequired,
   overlayOpen: React.PropTypes.bool.isRequired,
-  rows: React.PropTypes.object,
-  colVisible: React.PropTypes.array.isRequired,
+  rows: React.PropTypes.object
 };
 
 module.exports = Table;

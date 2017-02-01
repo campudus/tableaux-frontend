@@ -24,19 +24,19 @@ class Columns extends React.Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const {langtag, columns, colVisible} = this.props;
+    const {langtag, columns, visibility} = this.props;
     return (
       !_.eq(this.state, nextState)
       || langtag !== nextProps.langtag
       || columns !== nextProps.columns
-      || colVisible !== nextProps.colVisible
+      || visibility !== nextProps.visibility
     );
   };
 
   renderColumn = (langtag, column, index) => {
     //Skip header of hidden columns
-    if (index > 0 && !this.props.colVisible[column.id]) { // keep first column always visible
-      return null;
+    if (column !== _.first(this.props.columns.models) && !column.visible) {
+      return;
     }
 
     let name, columnContent = [];
@@ -87,7 +87,9 @@ class Columns extends React.Component {
                    name={name}
                    column={column}
                    description={description}
-                   langtag={langtag} />
+                   langtag={langtag}
+                   isId={column === _.first(this.props.columns.models)}
+      />
     )
   };
 
@@ -154,7 +156,7 @@ Columns.propTypes = {
   columns: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
   t: React.PropTypes.func.isRequired,
-  colVisible: React.PropTypes.array.isRequired
+  visibility: React.PropTypes.object.isRequired
 };
 
 module.exports = translate(['table'])(Columns);

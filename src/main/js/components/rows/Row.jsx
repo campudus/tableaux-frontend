@@ -20,7 +20,7 @@ class Row extends React.Component {
     if (this.props.langtag != nextProps.langtag
       || this.props.row != nextProps.row
       || this.props.isRowExpanded != nextProps.isRowExpanded
-      || this.props.colVisible !== nextProps.colVisible
+      || this.props.visibility !== nextProps.visibility
     ) {
       return true;
     }
@@ -62,8 +62,8 @@ class Row extends React.Component {
 
     return this.props.row.cells.map(function (cell, idx) {
       //Skip cells in hidden columns
-      const colId = self.props.table.columns.models[idx].id
-      if (idx > 0 && !self.props.colVisible[colId]) { // keep first column always visible
+      const cols = self.props.table.columns.models
+      if (cols[idx] !== _.first(cols)  && !cols[idx].visible) { // keep first column always visible
         return null;
       }
 
@@ -174,7 +174,7 @@ Row.propTypes = {
   isRowExpanded : React.PropTypes.bool.isRequired,
   isRowSelected : React.PropTypes.bool,
   shouldCellFocus : React.PropTypes.bool,
-  colVisible: React.PropTypes.array.isRequired
+  visibility: React.PropTypes.object.isRequired
 };
 
 export default Row;

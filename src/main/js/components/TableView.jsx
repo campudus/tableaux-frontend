@@ -23,68 +23,73 @@ import {either} from "../helpers/monads";
 
 var ColumnKinds = TableauxConstants.ColumnKinds;
 
-var TableView = React.createClass({
-  mixins: [AmpersandMixin],
+class TableView extends React.Component {
+//  mixins: [AmpersandMixin],
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    overlayOpen: React.PropTypes.bool.isRequired,
-    tableId: React.PropTypes.number
-  },
-
-  nextTableId: null,
-  tables: null,
-
-  getInitialState: function () {
-    const columnViews = either(localStorage)
-      .map(f.prop(["tableViews"]))
-      .map(JSON.parse)
-      .getOrElse({});
-    return {
+  constructor(props) {
+    super(props);
+    this.nextTableId = null;
+    this.state = {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
-      rowsFilter: null,
-      colVisible: [],
-      columnViews: columnViews
+      rowsFilter: null
     }
-  },
+  };
 
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
-  loadView(tableId, name = "default") {
+  loadView = (tableId, name = "default") => {
     const table = this.tables.get(tableId);
     const DEFAULT_VISIBLE_COLUMS = 10;
     if (!table) {
-      console.log("Could not load views for table ID", tableId, "of", this.tables);
+      console.log("Could not access table ID", tableId, "of", this.tables);
       return;
     }
-    const highest_tableId = table.columns.models.reduce((a,b) => (a.id > b.id) ? a : b, {id: 0}).id;
-    const first_ten_cols = f.take(
-      DEFAULT_VISIBLE_COLUMS,
-      f.intersection(table.columns.models.map(x => x.id), f.range(0, highest_tableId + 1)));
-    console.log("HIGHEST TABLE ID:", highest_tableId, "first ten", first_ten_cols)
-    const defaultView = either(this.state.columnViews)
-      .map(f.prop([tableId, "default"]))
-      .getOrElse(f.map(_.includes(first_ten_cols), f.range(0, highest_tableId + 1)));
-    this.setState({ colVisible: defaultView });
-  },
+
+    const cols = table.columns.models;
+
+    const savedView = either(localStorage)
+      .map(f.prop(["tableViews", tableId, name]))
+      .map(JSON.parse)
+      .getOrElse(null);
+    if (savedView) {
+      f.map(col => col.visibility = savedView[col.id]);
+    } else {
+      cols.map(x => x.visible = false);
+      f.map(x => x.visible = true, f.take(DEFAULT_VISIBLE_COLUMS, cols));
+    }
+  };
+
+  calcVisibilityArray = () =>  {
+    const table = this.getCurrentTable();
+    const cols = table.columns.models;
+    return cols.reduce((a,b) => f.merge({[b.id]: b.visible}, a), {});
+  };
 
   // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
-  saveViews() {
-    const {columnViews} = this.state;
-    if (localStorage) {
-      localStorage.tableViews = JSON.stringify(columnViews);
+  saveView = (name = "default") => {
+    if (!localStorage) {
+      return;
     }
-  },
 
-  componentWillMount: function () {
+    const {currentTableId} = this.state;
+    const cols = this.tables.get(currentTableId).columns.models;
+    const view = this.calcVisibilityArray();
+    const savedViews = either(localStorage)
+      .map(f.prop(["tableViews"]))
+      .map(JSON.parse)
+      .getOrElse({});
+    _.set([currentTableId,name], view, savedViews)
+  };
+
+  componentWillMount = () => {
     Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-  },
+  };
 
-  componentDidMount: function () {
+  componentDidMount = () => {
     ActionCreator.spinnerOn();
 
     // fetch all tables
@@ -100,9 +105,9 @@ var TableView = React.createClass({
         }
       });
     }
-  },
+  };
 
-  fetchTable: function (tableId) {
+  fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
@@ -165,16 +170,16 @@ var TableView = React.createClass({
     //in the middle, and gets displayed only on the first startup
     ActionCreator.spinnerOn();
     fetchColumns(currentTable).then(fetchPages);
-  },
+  };
 
-  componentWillUnmount: function () {
+  componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-  },
+  };
 
-  componentWillReceiveProps: function (nextProps) {
+  componentWillReceiveProps = (nextProps) => {
     if (nextProps.tableId !== this.props.tableId) {
       var oldTable = this.tables.get(this.state.currentTableId);
       this.nextTableId = nextProps.tableId;
@@ -184,25 +189,22 @@ var TableView = React.createClass({
         this.doSwitchTable();
       }
     }
-  },
+  };
 
   //Set visibility of all columns in <coll> to <val>
-  setColumnsVisibility: function ({val, coll, cb}) {
-    console.log("setting", coll, "to", val)
-    const callback = (cb)
-      ? f.compose(cb, this.saveViews)
-      : this.saveViews;
-    const {colVisible} = this.state;
-    const visible = f.reduce((list, n) => f.set(n, val, list), colVisible, coll);
-    const oldViews = this.state.columnViews;
-    let columnViews = f.set([this.state.currentTableId, "default"], visible, oldViews)
-    this.setState({
-      colVisible: visible,
-      columnViews: columnViews
-    }, callback);
-  },
+  setColumnsVisibility = ({val, coll, cb}) => {
+    const columns = this.tables.get(this.state.currentTableId).columns.models;
+    columns
+      .filter(x => f.contains(x.id, coll))
+      .map(x => x.visible = val)
+    this.forceUpdate();
+    this.saveView();
+    if (cb) {
+      cb();
+    }
+  };
 
-  setDocumentTitleToTableName: function () {
+  setDocumentTitleToTableName = () => {
     const currentTable = this.tables.get(this.state.currentTableId);
 
     if (currentTable) {
@@ -212,20 +214,20 @@ var TableView = React.createClass({
         ? tableDisplayName + " | " + TableauxConstants.PageTitle
         : TableauxConstants.PageTitle;
     }
-  },
+  };
 
-  componentDidUpdate: function () {
+  componentDidUpdate = () => {
     this.setDocumentTitleToTableName();
-  },
+  };
 
-  clearFilter: function () {
+  clearFilter = () => {
     this.setState({
       rowsCollection: this.getCurrentTable().rows,
       rowsFilter: null
     });
-  },
+  };
 
-  changeFilter: function (rowsFilter) {
+  changeFilter = (rowsFilter) => {
     const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
 
     const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(
@@ -243,13 +245,13 @@ var TableView = React.createClass({
       rowsCollection: rowsCollection,
       rowsFilter: rowsFilter
     });
-  },
+  };
 
-  getCurrentTable: function () {
+  getCurrentTable = () => {
     return this.tables.get(this.state.currentTableId);
-  },
+  };
 
-  getFilteredRows: function (rowsFilter) {
+  getFilteredRows = (rowsFilter) => {
     const filterColumnId = rowsFilter.filterColumnId;
     const filterValue = rowsFilter.filterValue;
     const filterMode = rowsFilter.filterMode;
@@ -318,7 +320,7 @@ var TableView = React.createClass({
     }
 
     return new FilteredSubcollection(allRows, {
-      filter: function (row) {
+      filter: (row) => {
         if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
           // no or invalid column found OR no filter value
           return true;
@@ -350,7 +352,7 @@ var TableView = React.createClass({
         }
       },
 
-      comparator: function (rowOne, rowTwo) {
+      comparator: (rowOne, rowTwo) => {
         // swap gt and lt to support ASC and DESC
         // gt = in case rowOne > rowTwo
         // lt = in case rowOne < rowTwo
@@ -391,24 +393,25 @@ var TableView = React.createClass({
         }
       }
     });
-  },
+  };
 
-  doSwitchTable: function () {
+  doSwitchTable = () => {
     if (this.nextTableId) {
       console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
       this.loadView(this.nextTableId);
     }
-  },
+  };
 
-  onLanguageSwitch: function (newLangtag) {
+  onLanguageSwitch = (newLangtag) => {
     ActionCreator.switchLanguage(newLangtag);
-  },
+  };
 
-  render: function () {
+  render = () => {
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
+      const visibility = this.calcVisibilityArray();
       var tables = this.tables;
       var rowsCollection = this.state.rowsCollection;
       var currentTable = this.getCurrentTable();
@@ -418,7 +421,7 @@ var TableView = React.createClass({
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
-                         colVisible={this.state.colVisible}
+                         visibility={visibility}
           />;
         } else {
           //TODO show error to user
@@ -438,7 +441,6 @@ var TableView = React.createClass({
               : null}
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
             <ColumnFilter langtag={this.props.langtag}
-                          colVisible={this.state.colVisible}
                           columns={currentTable.columns}
             />
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
@@ -452,6 +454,12 @@ var TableView = React.createClass({
       );
     }
   }
-});
+};
 
-module.exports = TableView;
+TableView.propTypes = {
+  langtag: React.PropTypes.string.isRequired,
+  overlayOpen: React.PropTypes.bool.isRequired,
+  tableId: React.PropTypes.number
+};
+
+export default TableView;

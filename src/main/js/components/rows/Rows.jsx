@@ -6,14 +6,15 @@ import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 
 import {RowHeight} from '../../constants/TableauxConstants';
+import * as _ from "lodash/fp";
 
 class Rows extends React.Component{
-//  mixins : [AmpersandMixin],
+  mixins = [AmpersandMixin];
 
   displayName = 'Rows';
 
   shouldComponentUpdate(nP) {
-    const {colVisible, selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
+    const {visibility, selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
     if (selectedCell !== nP.selectedCell
       || selectedCellEditing !== nP.selectedCellEditing
       || langtag !== nP.langtag
@@ -22,7 +23,7 @@ class Rows extends React.Component{
       || expandedRowIds !== nP.expandedRowIds
       || selectedCellExpandedRow !== nP.selectedCellExpandedRow
       || rowsHeight !== nP.rowsHeight
-      || colVisible !== nP.colVisible
+      || visibility !== nP.visibility
     ) {
       return true;
     }
@@ -67,7 +68,7 @@ class Rows extends React.Component{
                     isRowExpanded={isRowExpanded}
                     isRowSelected={isRowSelected}
                     shouldCellFocus={shouldCellFocusVal}
-                    colVisible={self.props.colVisible}
+                    visibility={self.props.visibility}
         />
       });
 
@@ -108,7 +109,7 @@ Rows.propTypes = {
   rowsHeight: React.PropTypes.number,
   shouldCellFocus: React.PropTypes.bool,
   table: React.PropTypes.object.isRequired,
-  colVisible: React.PropTypes.array.isRequired
+  visibility: React.PropTypes.object.isRequired
 };
 
 module.exports = Rows;

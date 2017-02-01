@@ -18,9 +18,9 @@ class ColumnFilter extends React.Component {
   };
 
   render = () => {
-    const {langtag, colVisible} = this.props;
+    const {langtag, columns} = this.props;
     const {open} = this.state;
-    const n_hidden = _.filter(x => !x, colVisible).length;
+    const n_hidden = columns.filter(x => !x.visible).length;
     const message = n_hidden + " " + i18n.t("table:hidden_items");
     const css_class = _.compose(
       _.nth(1),                                                         // choose the string
@@ -37,7 +37,6 @@ class ColumnFilter extends React.Component {
         </a>
         {(open)
           ? <ColumnFilterPopup langtag={langtag}
-                               colVisible={colVisible}
                                close={this.togglePopup}
                                columns={this.props.columns}
           />
@@ -50,9 +49,8 @@ class ColumnFilter extends React.Component {
 ;
 
 ColumnFilter.propTypes = {
-  colVisible: React.PropTypes.array.isRequired,
   langtag: React.PropTypes.string.isRequired,
-  columns: React.PropTypes.object.isRequired
+  columns: React.PropTypes.object.isRequired,
 };
 
 export default ColumnFilter;

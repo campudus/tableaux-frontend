@@ -32,7 +32,7 @@ class ColumnFilterPopup extends React.Component {
   // returns a true/false filter function accepting one argument
   buildFilter = filter => {
     const {columns:{models}} = this.props;
-    const lvl1 = col => col.id > 0; // ignore ID column
+    const lvl1 = col => col != _.first(models); // ignore ID column
     const lvl2 = (filter)
       ? _.compose( SearchFunctions[filter.type](filter.value), this.getColName )
       : _.stubTrue;                                // ...or pass all
@@ -49,15 +49,15 @@ class ColumnFilterPopup extends React.Component {
 
   setAll = val => () => {
     const models = this.props.columns.models;
-    const n_columns = models.reduce( (a,b) => (a.id > b.id) ? a : b, {id: 0}).id;
-    const living_ids = _.intersection(_.range(1, n_columns + 1), models.map(x => x.id));
-    this.setVisibilityAndUpdateGrid(val, living_ids);
+    const toggle_ids = _.drop(1, models).map(x => x.id); // get ids of all but first column
+    this.setVisibilityAndUpdateGrid(val, toggle_ids);
   };
 
   toggleCol = index => event => {
     event.stopPropagation();
-    const {colVisible} = this.props;
-    this.setVisibilityAndUpdateGrid(!colVisible[index], [index]);
+    const {columns:{models}} = this.props;
+    const the_column = _.first(_.filter(x => x.id === index, models));
+    this.setVisibilityAndUpdateGrid(!the_column.visible, [index]);
   };
 
   getColName = col => either(col)
@@ -78,8 +78,8 @@ class ColumnFilterPopup extends React.Component {
            style={style}
            onClick={this.toggleCol(col.id)}>
         <input type="checkbox"
-               checked={colVisible[col.id]}
-               onChange={this.toggleCol(col.id)}
+               checked={col.visible}
+               onChange={() => {}}
         />
         {name}
       </div>
@@ -94,8 +94,8 @@ class ColumnFilterPopup extends React.Component {
   };
 
   render = () => {
-    const {colVisible, langtag} = this.props;
-    const n_hidden = _.filter(x => !x, colVisible).length;
+    const {columns, langtag} = this.props;
+    const n_hidden = columns.filter(x => !x.visible).length;
     const {models} = this.state;
 
     const getName = x => {
@@ -144,8 +144,7 @@ class ColumnFilterPopup extends React.Component {
 ColumnFilterPopup.propTypes = {
   close: React.PropTypes.func.isRequired,
   langtag: React.PropTypes.string.isRequired,
-  colVisible: React.PropTypes.array.isRequired,
-  columns: React.PropTypes.object.isRequired
+  columns: React.PropTypes.object.isRequired,
 };
 
 export default ColumnFilterPopup;

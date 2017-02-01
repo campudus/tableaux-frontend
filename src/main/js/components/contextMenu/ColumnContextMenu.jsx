@@ -59,18 +59,20 @@ class ColumnContextMenu extends React.Component {
       </div>
       : null;
 
-    const hide_column_item = (
-      <div>
-        <a href="#"
-           onClick={compose(
-             closeHandler,
-             () => ActionCreator.setColumnsVisibility(false, [column.id])
-           )}
-         >
-          {i18n.t("table:hide_column")}
-        </a>
-      </div>
-    );
+    const hide_column_item = (this.props.isId)
+      ? null
+      : (
+        <div>
+          <a href="#"
+             onClick={compose(
+               closeHandler,
+               () => ActionCreator.setColumnsVisibility(false, [column.id])
+             )}
+          >
+            {i18n.t("table:hide_column")}
+          </a>
+        </div>
+      );
 
     return (
       <GenericContextMenu x={x-1} y={y-1}
