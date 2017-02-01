@@ -49,11 +49,13 @@ class TableView extends React.Component {
     const cols = table.columns.models;
 
     const savedView = either(localStorage)
-      .map(f.prop(["tableViews", tableId, name]))
+      .map(f.prop(["tableViews"]))
       .map(JSON.parse)
+      .map(f.prop([tableId,name]))
       .getOrElse(null);
+
     if (savedView) {
-      f.map(col => col.visibility = savedView[col.id]);
+      cols.map(col => col.visible = savedView[col.id]);
     } else {
       cols.map(x => x.visible = false);
       f.map(x => x.visible = true, f.take(DEFAULT_VISIBLE_COLUMS, cols));
@@ -79,7 +81,8 @@ class TableView extends React.Component {
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
       .getOrElse({});
-    _.set([currentTableId,name], view, savedViews)
+    const spy = x => {console.log("I spy", x); return x}
+    localStorage["tableViews"] = spy(JSON.stringify(f.set([currentTableId,name], view, savedViews)))
   };
 
   componentWillMount = () => {
