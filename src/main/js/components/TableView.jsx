@@ -66,7 +66,6 @@ var TableView = React.createClass({
 
   // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
   saveViews() {
-    console.log("Saving view changes")
     const {columnViews} = this.state;
     if (localStorage) {
       localStorage.tableViews = JSON.stringify(columnViews);
@@ -187,7 +186,6 @@ var TableView = React.createClass({
     const callback = (cb)
       ? f.compose(cb, this.saveViews)
       : this.saveViews;
-    console.log("Setting visibility of", coll, "to", val)
     const {colVisible} = this.state;
     const visible = f.reduce((list, n) => f.set(n, val, list), colVisible, coll);
     const oldViews = this.state.columnViews;

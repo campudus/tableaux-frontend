@@ -22,7 +22,6 @@ class ColumnFilterPopup extends React.Component {
 
   setFilter = (str, type = FilterModes.CONTAINS) => {
     const filter = {value: str, type: type};
-    console.log(filter)
     const {columns:{models}} = this.props;
     this.setState({
       filter: filter,
@@ -32,7 +31,6 @@ class ColumnFilterPopup extends React.Component {
 
   // returns a true/false filter function accepting one argument
   buildFilter = filter => {
-    console.log("buildFilter:", filter)
     const {columns:{models}} = this.props;
     const lvl1 = col => col.id > 0; // ignore ID column
     const lvl2 = (filter)
