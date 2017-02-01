@@ -81,8 +81,7 @@ class TableView extends React.Component {
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
       .getOrElse({});
-    const spy = x => {console.log("I spy", x); return x}
-    localStorage["tableViews"] = spy(JSON.stringify(f.set([currentTableId,name], view, savedViews)))
+    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId,name], view, savedViews))
   };
 
   componentWillMount = () => {
