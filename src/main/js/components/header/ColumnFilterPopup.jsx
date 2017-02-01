@@ -107,6 +107,20 @@ class ColumnFilterPopup extends React.Component {
 
     return (
       <div id="column-filter-popup-wrapper">
+        <div className="row infotext header-text">
+          {i18n.t("table:hide_unhide")}
+          <i className="fa fa-eye" />
+        </div>
+        <div className="wrap-me-grey">
+
+          <div className="filter-input row">
+            <input type="text"
+                   className="input"
+                   placeholder={i18n.t("table:filter_columns")}
+                   onChange={this.handleFilterChange}
+            />
+          </div>
+        </div>
         <List className="column-checkbox-list"
               ref={list => this.list = list}
               width={440}
@@ -116,26 +130,19 @@ class ColumnFilterPopup extends React.Component {
               rowRenderer={this.renderCheckboxItems}
         />
 
-        <div>
-          <input type="text"
-                 className="input"
-                 placeholder={i18n.t("table:filter_columns")}
-                 onChange={this.handleFilterChange}
-          />
-        </div>
-
-        <div className="row">
+        <div className="row infotext">
           <text>{n_hidden + " " + i18n.t("table:hidden_items")}</text>
         </div>
-        <div className="row">
-          <a href="#" className="button positive"
-             onClick={this.setAll(true)}
-          >{i18n.t("table:show_all_columns")}</a>
-          <a href="#" className="button neutral"
-             onClick={this.setAll(false)}
-          >{i18n.t("table:hide_all_columns")}</a>
+        <div className="wrap-me-grey">
+          <div className="row">
+            <a href="#" className="button positive"
+               onClick={this.setAll(true)}
+            >{i18n.t("table:show_all_columns")}</a>
+            <a href="#" className="button neutral"
+               onClick={this.setAll(false)}
+            >{i18n.t("table:hide_all_columns")}</a>
+          </div>
         </div>
-
       </div>
     )
   }

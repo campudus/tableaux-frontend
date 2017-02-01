@@ -37,10 +37,20 @@
     overflow: visible;
     display: block;
     margin: 0;
+    padding: 0;
     max-height: none;
 
     div {
       outline: none;
+    }
+
+    .wrap-me-grey {
+      box-sizing: border-box;
+      padding: 0 15px;
+      width: 100%;
+      background-color: $color-background-very-light-grey;
+      border-top: 1px solid $color-border-grey;
+      border-bottom: 1px solid $color-border-grey;
     }
 
     .button {
@@ -73,22 +83,41 @@
 
     .row {
       padding: 15px 0;
+
+      &.infotext {
+        padding: 15px 20px;
+        font-size: $font-size-standard;
+      }
+
+      &.header-text {
+        width: 100%;
+        font-weight: bold;
+        color: $color-dark;
+
+        i {
+          float: right;
+        }
+      }
     }
 
     .column-filter-checkbox-wrapper {
+      padding: 0 10px;
       input {
         width: 30px;
-        overflow: hidden;
-        overflow-text: ellipses;
       }
 
       &.even {
-        background-color: $color-border-grey;
+        background-color: $color-background-very-light-grey;
+      }
+
+      &:hover {
+        background-color: $color-light-link-color;
       }
     }
 
     .column-checkbox-list {
       width: 100%;
+      line-height: 30px;
 
       div {
         width: 100%;

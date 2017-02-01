@@ -413,7 +413,7 @@ class TableView extends React.Component {
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
-      const visibility = this.calcVisibilityArray();
+      const visibility = this.calcVisibilityArray(); // pass visibility list as workaround for componentShouldUpdate
       var tables = this.tables;
       var rowsCollection = this.state.rowsCollection;
       var currentTable = this.getCurrentTable();
