@@ -23,8 +23,8 @@ class ColumnFilter extends React.Component {
     const n_hidden = columns.filter(x => !x.visible).length;
     const message = n_hidden + " " + i18n.t("table:hidden_items");
     const css_class = f.compose(
-      f.nth(1),                                                         // choose the string
-      f.find(f.first)                                                   // check the bool, return first true
+      f.nth(1),                                                         // pick the string from tuple
+      f.find(f.first)                                                   // pick the bool from tuple, return first true tuple
     )(f.zip([open, n_hidden > 0, true], ["active", "has-filter", ""])); // [[bool, str], ...]
     return (
       <div id="column-filter-wrapper" className={css_class}>
