@@ -6,7 +6,6 @@ import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 
 import {RowHeight} from '../../constants/TableauxConstants';
-import * as _ from "lodash/fp";
 
 class Rows extends React.Component{
   mixins = [AmpersandMixin];
@@ -23,7 +22,6 @@ class Rows extends React.Component{
       || expandedRowIds !== nP.expandedRowIds
       || selectedCellExpandedRow !== nP.selectedCellExpandedRow
       || rowsHeight !== nP.rowsHeight
-      || visibility !== nP.visibility
     ) {
       return true;
     }
@@ -68,7 +66,6 @@ class Rows extends React.Component{
                     isRowExpanded={isRowExpanded}
                     isRowSelected={isRowSelected}
                     shouldCellFocus={shouldCellFocusVal}
-                    visibility={self.props.visibility}
         />
       });
 
@@ -108,8 +105,7 @@ Rows.propTypes = {
   selectedCellExpandedRow: React.PropTypes.string,
   rowsHeight: React.PropTypes.number,
   shouldCellFocus: React.PropTypes.bool,
-  table: React.PropTypes.object.isRequired,
-  visibility: React.PropTypes.object.isRequired
+  table: React.PropTypes.object.isRequired
 };
 
 module.exports = Rows;

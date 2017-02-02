@@ -1,6 +1,6 @@
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
-import * as _ from "lodash/fp";
+import * as f from "lodash/fp";
 import i18n from "i18next";
 import Select from "react-select";
 import {either} from "../../helpers/monads";
@@ -32,11 +32,11 @@ class ColumnFilterPopup extends React.Component {
   // returns a true/false filter function accepting one argument
   buildFilter = filter => {
     const {columns:{models}} = this.props;
-    const lvl1 = col => col != _.first(models); // ignore ID column
+    const lvl1 = col => col != f.first(models); // ignore ID column
     const lvl2 = (filter)
-      ? _.compose( SearchFunctions[filter.type](filter.value), this.getColName )
-      : _.stubTrue;                                // ...or pass all
-    return _.allPass([lvl1, lvl2])
+      ? f.compose( SearchFunctions[filter.type](filter.value), this.getColName )
+      : f.stubTrue;                                // ...or pass all
+    return f.allPass([lvl1, lvl2])
   };
 
   handleClickOutside = () => {
@@ -49,20 +49,20 @@ class ColumnFilterPopup extends React.Component {
 
   setAll = val => () => {
     const models = this.props.columns.models;
-    const toggle_ids = _.drop(1, models).map(x => x.id); // get ids of all but first column
+    const toggle_ids = f.drop(1, models).map(x => x.id); // get ids of all but first column
     this.setVisibilityAndUpdateGrid(val, toggle_ids);
   };
 
   toggleCol = index => event => {
     event.stopPropagation();
     const {columns:{models}} = this.props;
-    const the_column = _.first(_.filter(x => x.id === index, models));
+    const the_column = f.first(f.filter(x => x.id === index, models));
     this.setVisibilityAndUpdateGrid(!the_column.visible, [index]);
   };
 
   getColName = col => either(col)
-      .map(_.prop(["displayName", this.props.langtag]))
-      .orElse(_.prop(["name"]))
+      .map(f.prop(["displayName", this.props.langtag]))
+      .orElse(f.prop(["name"]))
       .getOrElseThrow("Could not extract displayName or name from" + col);
 
 
@@ -100,8 +100,8 @@ class ColumnFilterPopup extends React.Component {
 
     const getName = x => {
       return either(x)
-        .map(_.prop(["displayName", langtag]))
-        .orElse(_.prop(["name"]))
+        .map(f.prop(["displayName", langtag]))
+        .orElse(f.prop(["name"]))
         .getOrElseThrow("Could not extract displayName or name from" + x);
     };
 

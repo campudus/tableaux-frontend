@@ -19,7 +19,7 @@ import * as _ from "lodash/fp";
 class Table extends React.Component {
 
   /**
-   * This is an anti-patter on purpose
+   * This is an anti-pattern on purpose
    * Don't change this, its more performant than using this.state !
    */
   constructor(props) {
@@ -177,7 +177,7 @@ class Table extends React.Component {
   }
 
   render() {
-    const {langtag, table:{columns}, rows, table, colVisible} = this.props;
+    const {langtag, table:{columns}, rows, table} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
     console.log("Rendering table");
@@ -189,7 +189,6 @@ class Table extends React.Component {
         <div className="tableaux-table" ref="tableInner">
           <Columns ref="columns" table={table} langtag={langtag}
                    columns={columns}
-                   visibility={this.props.visibility}
           />
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
@@ -201,7 +200,6 @@ class Table extends React.Component {
                 selectedCellExpandedRow={selectedCellExpandedRow}
                 table={table}
                 shouldCellFocus={tableNavigationWorker.shouldCellFocus.call(this)}
-                visibility={this.props.visibility}
           />
           <span id="scrollToLeftStart" className={!showScrollToLeftButton ? 'hide' : null}
                 title="scroll to the beginning of table."
@@ -211,8 +209,7 @@ class Table extends React.Component {
       </section>
     );
   }
-}
-;
+};
 
 Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,

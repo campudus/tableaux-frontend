@@ -5,14 +5,16 @@ import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
 import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
-import * as _ from "lodash/fp";
+import * as f from "lodash/fp";
+import connectToAmpersand from "../../helpers/connectToAmpersand";
 
 class Columns extends React.Component {
-//  mixins: [AmpersandMixin],
 
   constructor(props) {
     super(props);
-    this.state = {selected: null};
+    this.props.columns.forEach((column) => {
+      this.props.watch(column, {event: "change", force: true});
+    });
   };
 
   componentWillMount = () => {
@@ -24,18 +26,17 @@ class Columns extends React.Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const {langtag, columns, visibility} = this.props;
-    return (
-      !_.eq(this.state, nextState)
-      || langtag !== nextProps.langtag
-      || columns !== nextProps.columns
-      || visibility !== nextProps.visibility
-    );
+    const {langtag, columns} = this.props;
+    const shouldUpdate =
+      !f.isEqual(this.state, nextState)
+      || langtag !== nextProps.langtag;
+
+    return shouldUpdate
   };
 
   renderColumn = (langtag, column, index) => {
     //Skip header of hidden columns
-    if (column !== _.first(this.props.columns.models) && !column.visible) {
+    if (column !== f.first(this.props.columns.models) && !column.visible) {
       return;
     }
 
@@ -68,7 +69,7 @@ class Columns extends React.Component {
         <a className="column-table-link" target="_blank" href={`/${langtag}/table/${column.toTable}`}>
           <i className="fa fa-columns" />
           {name}
-          </a>;
+        </a>;
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
@@ -83,12 +84,11 @@ class Columns extends React.Component {
                    columnContent={columnContent}
                    columnIcon={columnIcon}
                    index={column.id}
-                   selected={this.state.selected}
                    name={name}
                    column={column}
                    description={description}
                    langtag={langtag}
-                   isId={column === _.first(this.props.columns.models)}
+                   isId={column === f.first(this.props.columns.models)}
       />
     )
   };
@@ -104,12 +104,12 @@ class Columns extends React.Component {
     const {langtag, colId, newName, newDescription} = payload;
     const {columns} = this.props;
     const modifications =
-      _.compose(
+      f.compose(
         m => (newName)
-          ? _.assign({"displayName": {[langtag]: newName}}, m)
+          ? f.assign({"displayName": {[langtag]: newName}}, m)
           : m,
         m => (newDescription)
-          ? _.assign({"description": {[langtag]: newDescription}}, m)
+          ? f.assign({"description": {[langtag]: newDescription}}, m)
           : m
       )({});
 
@@ -122,18 +122,10 @@ class Columns extends React.Component {
       });
   };
 
-  deselect = (id) => {
-    const {selected} = this.state;
-    if (id === selected) {
-      this.setState({
-        selected: null,
-        wait: true
-      });
-    }
-  };
-
   render = () => {
     const self = this;
+
+    console.log("Columns.render");
 
     return (
 
@@ -149,14 +141,14 @@ class Columns extends React.Component {
       </div>
     );
   }
-};
+}
+;
 
 Columns.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   columns: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
-  t: React.PropTypes.func.isRequired,
-  visibility: React.PropTypes.object.isRequired
+  t: React.PropTypes.func.isRequired
 };
 
-module.exports = translate(['table'])(Columns);
+module.exports = translate(['table'])(connectToAmpersand(Columns));

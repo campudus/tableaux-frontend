@@ -26,8 +26,9 @@
   "hidden_items": "hidden columns",
   "show_all_columns": "unhide all columns",
   "hide_all_columns": "hide all columns",
-  "filter_columns": "Filter columns...",
+  "filter_columns": "Search columns...",
   "no_results_found": "No matching columns found",
+  "hide_unhide": "Hide/unhide columns",
   "editor": {
     "colname": "Title",
     "sanity_info": "Please make sure the title describes the purpose properly",
