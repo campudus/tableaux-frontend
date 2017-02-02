@@ -1,19 +1,18 @@
 import React from "react";
 import AmpersandMixin from "ampersand-react-mixin";
-
 import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
+import {RowHeight} from "../../constants/TableauxConstants";
+import connectToAmpersand from "../../helpers/connectToAmpersand";
 
-import {RowHeight} from '../../constants/TableauxConstants';
-
-class Rows extends React.Component{
-  mixins = [AmpersandMixin];
+@connectToAmpersand
+class Rows extends React.Component {
 
   displayName = 'Rows';
 
   shouldComponentUpdate(nP) {
-    const {visibility, selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
+    const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
     if (selectedCell !== nP.selectedCell
       || selectedCellEditing !== nP.selectedCellEditing
       || langtag !== nP.langtag
@@ -70,7 +69,7 @@ class Rows extends React.Component{
       });
 
       if (table.type !== 'settings') {
-        renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag}/>);
+        renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag} />);
       }
 
       return renderedRows;
@@ -94,7 +93,8 @@ class Rows extends React.Component{
       </Infinite>
     );
   }
-};
+}
+;
 
 Rows.propTypes = {
   langtag: React.PropTypes.string.isRequired,
@@ -108,4 +108,4 @@ Rows.propTypes = {
   table: React.PropTypes.object.isRequired
 };
 
-module.exports = Rows;
+export default Rows;

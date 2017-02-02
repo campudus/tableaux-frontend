@@ -1,8 +1,8 @@
 import React from "react";
-import * as f from "lodash/fp";
 import ColumnFilterPopup from "./ColumnFilterPopup";
 import listensToClickOutside from "react-onclickoutside";
 import i18n from "i18next";
+import classNames from "classnames";
 
 @listensToClickOutside
 class ColumnFilter extends React.Component {
@@ -20,17 +20,17 @@ class ColumnFilter extends React.Component {
   render = () => {
     const {langtag, columns} = this.props;
     const {open} = this.state;
-    const n_hidden = columns.filter(x => !x.visible).length;
-    const message = n_hidden + " " + i18n.t("table:hidden_items");
-    const css_class = f.compose(
-      f.nth(1),                                                         // pick the string from tuple
-      f.find(f.first)                                                   // pick the bool from tuple, return first true tuple
-    )(f.zip([open, n_hidden > 0, true], ["active", "has-filter", ""])); // [[bool, str], ...]
+    const nHidden = columns.filter(x => !x.visible).length;
+    const message = nHidden + " " + i18n.t("table:hidden_items");
+    const cssClass = classNames({
+      "active": open,
+      "has-filter": !open && nHidden > 0,
+    })
     return (
-      <div id="column-filter-wrapper" className={css_class}>
+      <div id="column-filter-wrapper" className={cssClass}>
         <a href="#" className="button" onMouseDown={this.togglePopup}>
           <i className="fa fa-eye" />
-          {(n_hidden > 0)
+          {(nHidden > 0)
             ? <text className="infotext">{message}</text>
             : null
           }

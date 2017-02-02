@@ -8,6 +8,8 @@ import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
 import connectToAmpersand from "../../helpers/connectToAmpersand";
 
+@translate(["table"])
+@connectToAmpersand
 class Columns extends React.Component {
 
   constructor(props) {
@@ -26,7 +28,7 @@ class Columns extends React.Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const {langtag, columns} = this.props;
+    const {langtag} = this.props;
     const shouldUpdate =
       !f.isEqual(this.state, nextState)
       || langtag !== nextProps.langtag;
@@ -123,11 +125,7 @@ class Columns extends React.Component {
 
   render = () => {
     const self = this;
-
-    console.log("Columns.render");
-
     return (
-
       <div id="tableHeader" ref="tableHeader" className="heading">
         <div className="tableHeader-inner">
           <div className="column-head meta-cell" key="-1">ID</div>
@@ -147,7 +145,7 @@ Columns.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   columns: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
-  t: React.PropTypes.func.isRequired
+  t: React.PropTypes.func
 };
 
-module.exports = translate(['table'])(connectToAmpersand(Columns));
+export default Columns;

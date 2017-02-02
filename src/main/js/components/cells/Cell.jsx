@@ -21,7 +21,6 @@ import DateCell from "./date/DateCell";
 const CELL_HINT_PADDING = 40;
 
 class Cell extends React.Component {
-//  mixins : [AmpersandMixin],
 
   cellDOMNode = null;
 
@@ -73,7 +72,7 @@ class Cell extends React.Component {
     }
   };
 
-  cellClickedWorker =(event, withRightClick) => {
+  cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
     console.log("cell clicked: ", cell, "value: ", cell.value);
 

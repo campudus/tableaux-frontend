@@ -5,7 +5,6 @@ import {translate} from 'react-i18next';
 
 //TODO: Ajax spinner when adding row
 class NewRow extends React.Component {
-//  mixins : [AmpersandMixin],
 
   addRow() {
     var tableId = this.props.table.getId();

@@ -179,7 +179,6 @@ class Table extends React.Component {
     const {langtag, table:{columns}, rows, table} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
-    console.log("Rendering table");
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1" onScroll={this.handleScroll}
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(

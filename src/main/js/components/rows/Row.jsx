@@ -17,7 +17,6 @@ class Row extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log(props.table.columns.models)
     props.table.columns.models.map(
       col => props.watch(col,
         {

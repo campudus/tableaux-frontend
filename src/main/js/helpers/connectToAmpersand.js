@@ -18,8 +18,6 @@ const connectToAmpersand = (Component) => class extends React.Component {
   }
 
   watch = (model, {events, force} = {}) => {
-    console.log("model:", (model) ? (model.isCollection || model.isState || model.isModel) : "null", events);
-
     if (!model || !(model.isCollection || model.isState || model.isModel)) {
       // if it isn't a ampersand state/model or collection
       // ... don't watch for changes
@@ -46,7 +44,6 @@ const connectToAmpersand = (Component) => class extends React.Component {
   }
 
   render() {
-    console.log("connectToAmpersand.render");
     return <Component ref={comp => this._Component = comp} {...this.props} watch={this.watch} />;
   }
 };
