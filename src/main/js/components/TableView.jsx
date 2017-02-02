@@ -1,17 +1,17 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../dispatcher/Dispatcher');
-var Table = require('./table/Table.jsx');
-var LanguageSwitcher = require('./header/LanguageSwitcher.jsx');
-var TableSwitcher = require('./header/tableSwitcher/TableSwitcher.jsx');
-var ActionCreator = require('../actions/ActionCreator');
-var Tables = require('../models/Tables');
-var FilteredSubcollection = require('ampersand-filtered-subcollection');
-var RowConcatHelper = require('../helpers/RowConcatHelper');
+import React from "react";
+import AmpersandMixin from "ampersand-react-mixin";
+import Dispatcher from "../dispatcher/Dispatcher";
+import Table from "./table/Table.jsx";
+import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
+import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
+import ActionCreator from "../actions/ActionCreator";
+import Tables from "../models/Tables";
+import FilteredSubcollection from "ampersand-filtered-subcollection";
+import RowConcatHelper from "../helpers/RowConcatHelper";
 import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
-import TableauxConstants, {SortValues, ActionTypes, FilterModes} from "../constants/TableauxConstants";
+import TableauxConstants, {SortValues, ActionTypes, FilterModes, ColumnKinds} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
 import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
@@ -20,15 +20,14 @@ import TableSettings from "./header/tableSettings/TableSettings";
 import searchFunctions from "../helpers/searchFunctions";
 import ColumnFilter from "./header/ColumnFilter";
 import {either} from "../helpers/monads";
-
-var ColumnKinds = TableauxConstants.ColumnKinds;
+import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 
 class TableView extends React.Component {
-//  mixins: [AmpersandMixin],
 
   constructor(props) {
     super(props);
     this.nextTableId = null;
+    this.pendingCellGoto = null;
     this.state = {
       initialLoading: true,
       currentTableId: this.props.tableId,
@@ -51,21 +50,15 @@ class TableView extends React.Component {
     const savedView = either(localStorage)
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
-      .map(f.prop([tableId,name]))
+      .map(f.prop([tableId, name]))
       .getOrElse(null);
 
     if (savedView) {
       cols.map(col => col.visible = savedView[col.id]);
     } else {
-      cols.map(x => x.visible = false);
+      cols.forEach(x => x.visible = false);
       f.map(x => x.visible = true, f.take(DEFAULT_VISIBLE_COLUMS, cols));
     }
-  };
-
-  calcVisibilityArray = () =>  {
-    const table = this.getCurrentTable();
-    const cols = table.columns.models;
-    return cols.reduce((a,b) => f.merge({[b.id]: b.visible}, a), {});
   };
 
   // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
@@ -76,12 +69,49 @@ class TableView extends React.Component {
 
     const {currentTableId} = this.state;
     const cols = this.tables.get(currentTableId).columns.models;
-    const view = this.calcVisibilityArray();
+    const view = cols.reduce((a, b) => f.merge({[b.id]: b.visible}, a), {});
     const savedViews = either(localStorage)
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
       .getOrElse({});
-    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId,name], view, savedViews))
+    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name], view, savedViews))
+  };
+
+  checkGotoCellRequest = (loaded, total) => {
+   if (!this.pendingCellGoto) {
+      return;
+    }
+    const {row, column, page} = this.pendingCellGoto;
+    if (page > total) {
+      console.log("Row", row, "would be on page", page, "but table has only", total, "pages");
+      this.pendingCellGoto = null;
+      return;
+    }
+    if (loaded >= page) {
+      this.gotoCell(this.pendingCellGoto, loaded);
+    }
+   };
+
+  gotoCell = ({row, column}, nPagesLoaded = 0) => {
+    console.log("Trying to go to cell", row, column)
+    const page = 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
+    const focusCell = cell => {
+      console.log("focussing", cell)
+      ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
+      return true;
+    }
+    const spy = x => {console.log("I spy", x); return x}
+    if (nPagesLoaded >= page) {
+      const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
+      either(this.getCurrentTable().rows)
+        .map(rows => spy(rows.get(row).cells))
+        .map(cells => spy(cells.get(cellId)))
+        .map(focusCell)
+        .getOrElse(console.log(`No cell at row ${row}, column ${column}`));
+      this.pendingCellGoto = 0;
+    } else {
+      this.pendingCellGoto = {page: page, row: row, column: column};
+    }
   };
 
   componentWillMount = () => {
@@ -111,6 +141,8 @@ class TableView extends React.Component {
 
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
+
+    this.gotoCell({row: 35, column: 4})
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
@@ -144,7 +176,7 @@ class TableView extends React.Component {
           {
             reset: page === 1,
             success: () => {
-              console.log("Table page number", page ,((page > 1) ? "of " + total + " " : "") + "successfully fetched");
+              console.log("Table page number", page, ((page > 1) ? "of " + total + " " : "") + "successfully fetched");
 
               if (page === 1) {
                 this.setState({
@@ -154,6 +186,8 @@ class TableView extends React.Component {
                   rowsFilter: null
                 });
               }
+
+              this.checkGotoCellRequest(page, table.rows.pageCount());
 
               resolve({ // return information about next page to be fetched
                 table: table,
@@ -198,7 +232,7 @@ class TableView extends React.Component {
     const columns = this.tables.get(this.state.currentTableId).columns.models;
     columns
       .filter(x => f.contains(x.id, coll))
-      .map(x => x.visible = val)
+      .forEach(x => x.visible = val)
     this.forceUpdate();
     this.saveView();
     if (cb) {
@@ -399,6 +433,7 @@ class TableView extends React.Component {
 
   doSwitchTable = () => {
     if (this.nextTableId) {
+      this.pendingCellGoto = null;
       console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
       this.loadView(this.nextTableId);
@@ -454,7 +489,8 @@ class TableView extends React.Component {
       );
     }
   }
-};
+}
+;
 
 TableView.propTypes = {
   langtag: React.PropTypes.string.isRequired,

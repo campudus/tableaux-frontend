@@ -3,8 +3,8 @@ const _ = require('lodash');
 const apiUrl = require('../helpers/apiUrl');
 const Row = require('./Row');
 
-const INITIAL_PAGE_SIZE = 30;
-const PAGE_SIZE = 500;
+export const INITIAL_PAGE_SIZE = 30;
+export const PAGE_SIZE = 500;
 
 const Rows = Collection.extend({
 
@@ -83,4 +83,4 @@ const Rows = Collection.extend({
   }
 });
 
-module.exports = Rows;
+export default Rows;
