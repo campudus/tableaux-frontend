@@ -83,7 +83,6 @@ class Columns extends React.Component {
       <ColumnEntry key={index}
                    columnContent={columnContent}
                    columnIcon={columnIcon}
-                   index={column.id}
                    name={name}
                    column={column}
                    description={description}
