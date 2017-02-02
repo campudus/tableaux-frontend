@@ -65,7 +65,6 @@ class ColumnFilterPopup extends React.Component {
       .orElse(f.prop(["name"]))
       .getOrElseThrow("Could not extract displayName or name from" + col);
 
-
   renderCheckboxItems = ({key, index, style}) => {
     const {colVisible, langtag} = this.props;
     const {models} = this.state;
@@ -151,7 +150,7 @@ class ColumnFilterPopup extends React.Component {
 ColumnFilterPopup.propTypes = {
   close: React.PropTypes.func.isRequired,
   langtag: React.PropTypes.string.isRequired,
-  columns: React.PropTypes.object.isRequired,
+  columns: React.PropTypes.object.isRequired
 };
 
 export default ColumnFilterPopup;

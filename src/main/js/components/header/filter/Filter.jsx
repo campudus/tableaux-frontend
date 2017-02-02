@@ -1,7 +1,7 @@
 import React from 'react';
 import FilterPopup from './FilterPopup.jsx';
 import {translate} from 'react-i18next';
-import * as _ from "lodash/fp";
+import * as f from "lodash/fp";
 import {FilterModes} from "../../../constants/TableauxConstants";
 
 class FilterButton extends React.Component {
@@ -55,10 +55,10 @@ class FilterButton extends React.Component {
       buttonClass += " ignore-react-onclickoutside";
     }
 
-    const css_class = _.compose(
-      _.first,
-      _.find(x => x[1]),
-      _.zip(["active", "has-filter", ""])
+    const css_class = f.compose(
+      f.first,
+      f.find(x => x[1]),
+      f.zip(["active", "has-filter", ""])
     )([this.state.open, this.props.currentFilter, true])
 
     return (

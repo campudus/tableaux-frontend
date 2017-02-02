@@ -9,7 +9,7 @@
 
 import React from 'react';
 import Events from 'ampersand-events';
-import * as _ from "lodash/fp";
+import * as fp from "lodash/fp";
 
 const connectToAmpersand = (Component) => class extends React.Component {
   constructor(props) {
@@ -38,7 +38,7 @@ const connectToAmpersand = (Component) => class extends React.Component {
   }
 
   componentDidMount = () => {
-    _.values(this.props).forEach(model => this.watch(model));
+    fp.values(this.props).forEach(model => this.watch(model));
   }
 
   componentWillUnmount = () => {

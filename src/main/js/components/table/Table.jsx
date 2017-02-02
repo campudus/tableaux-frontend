@@ -1,10 +1,10 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var AmpersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var Columns = require('./../columns/Columns.jsx');
-var Rows = require('./../rows/Rows.jsx');
-var ActionCreator = require('../../actions/ActionCreator');
+import React from "react";
+import ReactDOM from "react-dom";
+import AmpersandMixin from "ampersand-react-mixin";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import Columns from "./../columns/Columns.jsx";
+import Rows from "./../rows/Rows.jsx";
+import ActionCreator from "../../actions/ActionCreator";
 
 import {ActionTypes, Directions, ColumnKinds, RowHeight} from '../../constants/TableauxConstants';
 import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
@@ -12,7 +12,6 @@ import * as tableRowsWorker from './tableRowsWorker';
 import * as tableNavigationWorker from './tableNavigationWorker';
 import * as tableContextMenu from './tableContextMenu';
 import listensToClickOutside from "react-onclickoutside";
-import * as _ from "lodash/fp";
 
 //Worker
 @listensToClickOutside
