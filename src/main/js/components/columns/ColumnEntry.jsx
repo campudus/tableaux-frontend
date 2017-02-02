@@ -7,7 +7,7 @@ import React from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
-import {compose, contains} from "lodash/fp";
+import {compose, contains, trim} from "lodash/fp";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 import classNames from "classnames";
 
@@ -33,16 +33,16 @@ class ColumnEntry extends React.Component {
   };
 
   saveEdit = () => {
-    const {langtag, index} = this.props;
+    const {langtag, column:{id}} = this.props;
     const {name, description} = this.state;
-    const new_name = (name != this.props.name) ? name : null;
-    const new_desc = (description != this.props.description) ? description : null;
-    ActionCreator.editColumnHeaderDone(index, langtag, new_name, new_desc);
+    const new_name = (name != this.props.name) ? trim(name) : null;
+    const new_desc = (description != this.props.description) ? trim(description) : null;
+    ActionCreator.editColumnHeaderDone(id, langtag, new_name, new_desc);
     ActionCreator.closeOverlay();
   };
 
   editColumn = () => {
-    const {description, index, column, langtag} = this.props;
+    const {description, column:{id}, column, langtag} = this.props;
     const name = column.displayName[langtag] || column.name;
 
     ActionCreator.openOverlay({
@@ -50,7 +50,7 @@ class ColumnEntry extends React.Component {
       body: <ColumnEditorOverlay name={name}
                                  handleInput={this.handleInput}
                                  description={description}
-                                 index={index} />,
+                                 index={id} />,
       footer: <div className="column-editor-footer">
         <a href="#" className="button positive" onClick={this.saveEdit}>
           {i18n.t('common:save')}
@@ -96,12 +96,13 @@ class ColumnEntry extends React.Component {
                          column={column}
                          langtag={this.props.langtag}
                          popupToggleButtonId={this.calcId()}
+                         isId={this.props.isId}
       />
     );
   };
 
   render = () => {
-    const {column:{kind}, index, columnContent, columnIcon} = this.props;
+    const {column:{kind,id}, columnContent, columnIcon} = this.props;
     const menu_open = this.state.ctxCoords;
     const contextmenu_css_class = classNames(
       "column-contextmenu-button fa ", {
@@ -111,12 +112,12 @@ class ColumnEntry extends React.Component {
     classNames("column-head", {"context-menu-open": menu_open});
     return (
       <div className={classNames("column-head", {"context-menu-open": menu_open})}
-           key={index}>
+           key={id}>
         <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}>
           {columnContent}
           {columnIcon}
         </div>
-        {(index > 0)
+        {(kind != "concat")
           ? <a href="#" className={contextmenu_css_class} id={this.calcId()}
              onClick={this.toggleContextMenu}>
           </a>
@@ -130,12 +131,12 @@ class ColumnEntry extends React.Component {
 ColumnEntry.PropTypes = {
   description: React.PropTypes.string.isRequired,
   columnContent: React.PropTypes.array.isRequired,
-  index: React.PropTypes.number.isRequired,
   selected: React.PropTypes.number.isRequired,
   cancelEdit: React.PropTypes.func.isRequired,
   langtag: React.PropTypes.string.isRequired,
   column: React.PropTypes.object.isRequired,
   name: React.PropTypes.string.isRequired,
+  isId: React.PropTypes.bool.isRequired
 };
 
 module.exports = ColumnEntry;

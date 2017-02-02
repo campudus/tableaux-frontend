@@ -1,28 +1,15 @@
-const React = require('react');
-const AmpersandMixin = require('ampersand-react-mixin');
+import React from "react";
+import AmpersandMixin from "ampersand-react-mixin";
+import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
+import Row from "./Row.jsx";
+import NewRow from "./NewRow.jsx";
+import {RowHeight} from "../../constants/TableauxConstants";
+import connectToAmpersand from "../../helpers/connectToAmpersand";
 
-const Infinite = require('../../thirdparty/react-infinite/react-infinite.js');
-const Row = require('./Row.jsx');
-const NewRow = require('./NewRow.jsx');
+@connectToAmpersand
+class Rows extends React.Component {
 
-import {RowHeight} from '../../constants/TableauxConstants';
-
-var Rows = React.createClass({
-  mixins : [AmpersandMixin],
-
-  displayName : 'Rows',
-
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    rows : React.PropTypes.object.isRequired,
-    selectedCell : React.PropTypes.object,
-    selectedCellEditing : React.PropTypes.bool,
-    expandedRowIds : React.PropTypes.array,
-    selectedCellExpandedRow : React.PropTypes.string,
-    rowsHeight : React.PropTypes.number,
-    shouldCellFocus : React.PropTypes.bool,
-    table : React.PropTypes.object.isRequired
-  },
+  displayName = 'Rows';
 
   shouldComponentUpdate(nP) {
     const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
@@ -39,24 +26,24 @@ var Rows = React.createClass({
     }
     console.log("! Rows skipped update");
     return false;
-  },
+  };
 
-  isRowExpanded : function (rowId) {
+  isRowExpanded(rowId) {
     const {expandedRowIds} = this.props;
     return (expandedRowIds && expandedRowIds.indexOf(rowId) > -1) || false;
-  },
+  };
 
   //Is this row, including all associated multilanguage rows selected?
-  isRowSelected : function (row) {
+  isRowSelected(row) {
     const {selectedCell} = this.props;
     if (selectedCell) {
       return (row.getId() === selectedCell.rowId);
     } else {
       return false;
     }
-  },
+  };
 
-  getRows : function () {
+  getRows() {
     const self = this;
     const {table, rows, langtag} = this.props;
 
@@ -82,7 +69,7 @@ var Rows = React.createClass({
       });
 
       if (table.type !== 'settings') {
-        renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag}/>);
+        renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag} />);
       }
 
       return renderedRows;
@@ -90,9 +77,9 @@ var Rows = React.createClass({
 
       return null;
     }
-  },
+  };
 
-  render : function () {
+  render() {
     return (
       <Infinite className="data-wrapper"
                 containerHeight={this.props.rowsHeight}
@@ -106,6 +93,19 @@ var Rows = React.createClass({
       </Infinite>
     );
   }
-});
+}
+;
 
-module.exports = Rows;
+Rows.propTypes = {
+  langtag: React.PropTypes.string.isRequired,
+  rows: React.PropTypes.object.isRequired,
+  selectedCell: React.PropTypes.object,
+  selectedCellEditing: React.PropTypes.bool,
+  expandedRowIds: React.PropTypes.array,
+  selectedCellExpandedRow: React.PropTypes.string,
+  rowsHeight: React.PropTypes.number,
+  shouldCellFocus: React.PropTypes.bool,
+  table: React.PropTypes.object.isRequired
+};
+
+export default Rows;

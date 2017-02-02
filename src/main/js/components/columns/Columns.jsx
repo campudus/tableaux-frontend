@@ -2,45 +2,46 @@ import React from "react";
 import AmpersandMixin from "ampersand-react-mixin";
 import {translate} from "react-i18next";
 import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
-import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType} from "../../constants/TableauxConstants";
+import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
-import * as _ from "lodash/fp";
+import * as f from "lodash/fp";
+import connectToAmpersand from "../../helpers/connectToAmpersand";
 
-const ActionTypes = TableauxConstants.ActionTypes;
+@translate(["table"])
+@connectToAmpersand
+class Columns extends React.Component {
 
-const Columns = React.createClass({
-  mixins: [AmpersandMixin],
+  constructor(props) {
+    super(props);
+    this.props.columns.forEach((column) => {
+      this.props.watch(column, {event: "change", force: true});
+    });
+  };
 
-  componentWillMount() {
+  componentWillMount = () => {
     Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  },
+  };
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  },
+  };
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    columns: React.PropTypes.object.isRequired,
-    table: React.PropTypes.object.isRequired,
-    t: React.PropTypes.func.isRequired,
-  },
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const {langtag} = this.props;
+    const shouldUpdate =
+      !f.isEqual(this.state, nextState)
+      || langtag !== nextProps.langtag;
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const {langtag, columns} = this.props;
-    return (
-      !_.eq(this.state, nextState) ||
-      langtag !== nextProps.langtag ||
-      columns !== nextProps.columns
-    );
-  },
+    return shouldUpdate
+  };
 
-  getInitialState() {
-    return {selected: null};
-  },
+  renderColumn = (langtag, column, index) => {
+    //Skip header of hidden columns
+    if (column !== f.first(this.props.columns.models) && !column.visible) {
+      return;
+    }
 
-  renderColumn(langtag, column, index) {
     let name, columnContent = [];
     const {t, table} = this.props;
     const description = column.description[langtag];
@@ -70,7 +71,7 @@ const Columns = React.createClass({
         <a className="column-table-link" target="_blank" href={`/${langtag}/table/${column.toTable}`}>
           <i className="fa fa-columns" />
           {name}
-          </a>;
+        </a>;
     }
 
     columnContent.push(<span key="column-name" title={description}>{name}</span>);
@@ -84,32 +85,32 @@ const Columns = React.createClass({
       <ColumnEntry key={index}
                    columnContent={columnContent}
                    columnIcon={columnIcon}
-                   index={column.id}
-                   selected={this.state.selected}
                    name={name}
                    column={column}
                    description={description}
-                   langtag={langtag} />
+                   langtag={langtag}
+                   isId={column === f.first(this.props.columns.models)}
+      />
     )
-  },
+  };
 
-  stopEditing(payload) {
+  stopEditing = (payload) => {
     if (payload &&
       (payload.newName || payload.newDescription)) {
       this.saveEdits(payload);
     }
-  },
+  };
 
-  saveEdits(payload) {
+  saveEdits = (payload) => {
     const {langtag, colId, newName, newDescription} = payload;
     const {columns} = this.props;
     const modifications =
-      _.compose(
+      f.compose(
         m => (newName)
-          ? _.assign({"displayName": {[langtag]: newName}}, m)
+          ? f.assign({"displayName": {[langtag]: newName}}, m)
           : m,
         m => (newDescription)
-          ? _.assign({"description": {[langtag]: newDescription}}, m)
+          ? f.assign({"description": {[langtag]: newDescription}}, m)
           : m
       )({});
 
@@ -120,30 +121,11 @@ const Columns = React.createClass({
         wait: true,
         success: () => this.forceUpdate()
       });
-  },
+  };
 
-  clickHandler(id) {
-    if (id === 0) {
-      return;
-    } // don't edit "ID" header
-    this.setState({selected: id});
-  },
-
-  deselect(id) {
-    const {selected} = this.state;
-    if (id === selected) {
-      this.setState({
-        selected: null,
-        wait: true
-      });
-    }
-  },
-
-  render() {
+  render = () => {
     const self = this;
-
     return (
-
       <div id="tableHeader" ref="tableHeader" className="heading">
         <div className="tableHeader-inner">
           <div className="column-head meta-cell" key="-1">ID</div>
@@ -156,6 +138,14 @@ const Columns = React.createClass({
       </div>
     );
   }
-});
+}
+;
 
-module.exports = translate(['table'])(Columns);
+Columns.propTypes = {
+  langtag: React.PropTypes.string.isRequired,
+  columns: React.PropTypes.object.isRequired,
+  table: React.PropTypes.object.isRequired,
+  t: React.PropTypes.func
+};
+
+export default Columns;

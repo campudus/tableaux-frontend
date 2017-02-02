@@ -7,13 +7,13 @@
 import React from "react";
 import i18n from "i18next";
 import TableauxConstants from "../../../constants/TableauxConstants";
-import * as _ from "lodash/fp";
+import * as f from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
 
 class NameEditor extends React.Component {
   constructor(props) {
     super(props);
-    this.saveAndClose = _.compose(this.saveTableName, this.stopEditing);
+    this.saveAndClose = f.compose(this.saveTableName, this.stopEditing);
     this.state = {
       active: false,
       name: null
@@ -30,10 +30,10 @@ class NameEditor extends React.Component {
 
   handleInput = (evt) => {
     if (evt && evt.key) {
-      _.cond([
-        [_.eq('Enter'), this.saveAndClose],
-        [_.eq('Escape'), this.stopEditing],
-        [_.stubTrue, x => null]
+      f.cond([
+        [f.eq('Enter'), this.saveAndClose],
+        [f.eq('Escape'), this.stopEditing],
+        [f.stubTrue, x => null]
       ])(evt.key);
     }
   };

@@ -8,7 +8,7 @@
 
 import React from "react";
 import ReactDom from "react-dom";
-import * as _ from "lodash/fp"
+import * as f from "lodash/fp"
 
 class GenericContextMenu extends React.Component{
   constructor(props) {
@@ -26,25 +26,23 @@ class GenericContextMenu extends React.Component{
 
     if (x) {
       const w = el.offsetWidth;
-      const xShift = ((_.endsWith('RIGHT', align)) ? w : 0); // shift to align corner at (x,y)
-      const xPos = (noClampX) ? x + offset - xShift : _.clamp(0, window.innerWidth - w, x + offset - xShift);
+      const xShift = ((f.endsWith('RIGHT', align)) ? w : 0); // shift to align corner at (x,y)
+      const xPos = (noClampX) ? x + offset - xShift : f.clamp(0, window.innerWidth - w, x + offset - xShift);
       this.setState({x: xPos});
-      console.log("set x to", xPos)
     }
 
     if (y) {
       const h = el.offsetHeight;
-      const yShift = ((_.startsWith('LOWER', align)) ? h : 0);
-      const yPos = (noClampY) ? y + offset - yShift : _.clamp(0, window.innerHeight - h, y + offset - yShift);
+      const yShift = ((f.startsWith('LOWER', align)) ? h : 0);
+      const yPos = (noClampY) ? y + offset - yShift : f.clamp(0, window.innerHeight - h, y + offset - yShift);
       this.setState({y: yPos});
-      console.log("set y to", yPos)
     }
   }
 
   render() {
     const {x, y} = this.state;
-    const cssStyle = _.reduce(
-      _.assign, {},
+    const cssStyle = f.reduce(
+      f.assign, {},
       [
         (x) ? {left: x} : null,
         (y) ? {top: y} : null

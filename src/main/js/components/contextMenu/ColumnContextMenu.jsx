@@ -59,6 +59,21 @@ class ColumnContextMenu extends React.Component {
       </div>
       : null;
 
+    const hide_column_item = (this.props.isId)
+      ? null
+      : (
+        <div>
+          <a href="#"
+             onClick={compose(
+               closeHandler,
+               () => ActionCreator.setColumnsVisibility(false, [column.id])
+             )}
+          >
+            {i18n.t("table:hide_column")}
+          </a>
+        </div>
+      );
+
     return (
       <GenericContextMenu x={x-1} y={y-1}
                           clickOutsideHandler={this.closeContextMenu}
@@ -66,6 +81,7 @@ class ColumnContextMenu extends React.Component {
                             <div>
                               {editor_item}
                               {follow_link_item}
+                              {hide_column_item}
                             </div>
                           }
                           align={Alignments.UPPER_RIGHT} />

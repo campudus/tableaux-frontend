@@ -41,7 +41,10 @@ var Column = AmpersandModel.extend({
       type : 'number'
     },
     toColumn : {
-      type : 'object'
+      type: 'object'
+    },
+    visible: {
+      type: "boolean"
     }
   },
 

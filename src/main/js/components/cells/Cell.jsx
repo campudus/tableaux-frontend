@@ -1,19 +1,17 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var AmpersandMixin = require('ampersand-react-mixin');
-var ActionCreator = require('../../actions/ActionCreator');
-var ColumnKinds = require('../../constants/TableauxConstants').ColumnKinds;
-
-var TextCell = require('./text/TextCell.jsx');
-var ShortTextCell = require('./text/ShortTextCell.jsx');
-var NumericCell = require('./numeric/NumericCell.jsx');
-var LinkCell = require('./link/LinkCell.jsx');
-var AttachmentCell = require('./attachment/AttachmentCell.jsx');
-var BooleanCell = require('./boolean/BooleanCell.jsx');
-var DateTimeCell = require('./datetime/DateTimeCell.jsx');
-var IdentifierCell = require('./identifier/IdentifierCell.jsx');
-var RowConcatHelper = require('../../helpers/RowConcatHelper');
-
+import React from "react";
+import ReactDOM from "react-dom";
+import AmpersandMixin from "ampersand-react-mixin";
+import ActionCreator from "../../actions/ActionCreator";
+import {ColumnKinds} from "../../constants/TableauxConstants";
+import TextCell from "./text/TextCell.jsx";
+import ShortTextCell from "./text/ShortTextCell.jsx";
+import NumericCell from "./numeric/NumericCell.jsx";
+import LinkCell from "./link/LinkCell.jsx";
+import AttachmentCell from "./attachment/AttachmentCell.jsx";
+import BooleanCell from "./boolean/BooleanCell.jsx";
+import DateTimeCell from "./datetime/DateTimeCell.jsx";
+import IdentifierCell from "./identifier/IdentifierCell.jsx";
+import RowConcatHelper from "../../helpers/RowConcatHelper";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -22,55 +20,47 @@ import DateCell from "./date/DateCell";
 //used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first visible row)
 const CELL_HINT_PADDING = 40;
 
-var Cell = React.createClass({
-  mixins : [AmpersandMixin],
+class Cell extends React.Component {
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    selected : React.PropTypes.bool,
-    editing : React.PropTypes.bool,
-    shouldFocus : React.PropTypes.bool
-  },
+  cellDOMNode = null;
 
-  cellDOMNode : null,
-
-  getInitialState : function () {
-    return {
+  constructor(props) {
+    super(props);
+    this.state = {
       keyboardShortcuts : {}
     };
-  },
+  };
 
-  componentDidMount : function () {
+  componentDidMount = () => {
     this.cellDOMNode = ReactDOM.findDOMNode(this);
     this.cellOffset = this.cellDOMNode.offsetTop;
     this.checkFocus();
-  },
+  };
 
-  componentDidUpdate : function () {
+  componentDidUpdate = () => {
     this.checkFocus();
-  },
+  };
 
   //Dont update when cell is not editing or selected
-  shouldComponentUpdate : function (nextProps, nextState) {
+  shouldComponentUpdate = (nextProps, nextState) => {
     const {selected, editing, langtag, shouldFocus} = this.props;
     return (editing !== nextProps.editing
     || selected !== nextProps.selected
     || langtag !== nextProps.langtag
     || shouldFocus !== nextProps.shouldFocus)
-  },
+  };
 
-  getKeyboardShortcuts : function (event) {
+  getKeyboardShortcuts = (event) => {
     return this.state.keyboardShortcuts;
-  },
+  };
 
-  setKeyboardShortcutsForChildren : function (childrenEvents) {
+  setKeyboardShortcutsForChildren = (childrenEvents) => {
     this.setState({
       keyboardShortcuts : childrenEvents
     });
-  },
+  };
 
-  checkFocus : function () {
+  checkFocus = () => {
     if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
       var cellDOMNode = this.cellDOMNode;
       var focusedElement = document.activeElement;
@@ -80,9 +70,9 @@ var Cell = React.createClass({
         cellDOMNode.focus();
       }
     }
-  },
+  };
 
-  cellClickedWorker : function (event, withRightClick) {
+  cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
     console.log("cell clicked: ", cell, "value: ", cell.value);
 
@@ -103,22 +93,22 @@ var Cell = React.createClass({
     if (!shouldFocus) {
       ActionCreator.enableShouldCellFocus();
     }
-  },
+  };
 
-  rightClicked : function (event) {
+  rightClicked = (event) => {
     this.cellClickedWorker(event, true);
-  },
+  };
 
-  cellClicked : function (event) {
+  cellClicked = (event) => {
     this.cellClickedWorker(event);
-  },
+  };
 
-  onMouseDownHandler : function (e) {
+  onMouseDownHandler = (e) => {
     //Prevents table mousedown handler, so we can select
     e.stopPropagation();
-  },
+  };
 
-  render : function () {
+  render = () => {
     let cellKind = null;
     const {cell, langtag, selected, editing} = this.props;
 
@@ -231,6 +221,14 @@ var Cell = React.createClass({
 
 
   }
-});
+};
 
-module.exports = Cell;
+Cell.propTypes = {
+  cell: React.PropTypes.object.isRequired,
+  langtag: React.PropTypes.string.isRequired,
+  selected: React.PropTypes.bool,
+  editing: React.PropTypes.bool,
+  shouldFocus: React.PropTypes.bool
+};
+
+export default Cell;

@@ -22,6 +22,13 @@
   "show_dependency_text": "Dieser Datensatz ist in folgenden Tabllen verknüpft.",
   "country": "Land",
   "switch_table": "Zu Tabelle wechseln",
+  "hide_column": "Spalte ausblenden",
+  "hidden_items": "verborgene Spalten",
+  "show_all_columns": "Alle Spalten zeigen",
+  "hide_all_columns": "Alle Spalten verbergen",
+  "filter_columns": "Spalten suchen...",
+  "no_results_found": "Keine entsprechenden Spalten gefunden",
+  "hide_unhide": "Spalten zeigen/verbergen",
   "editor": {
     "colname": "Bezeichnung",
     "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",
