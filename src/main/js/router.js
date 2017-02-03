@@ -16,13 +16,16 @@ var TableauxRouter = Router.extend({
     '' : 'noTableAndLangtag',
     ':langtag/' : 'noTableAndLangtag',
     ':langtag' : 'noTableAndLangtag',
-    'table' : 'noTableAndLangtag',
-    ':langtag/table' : 'noTable',
+    'tables' : 'noTableAndLangtag',
+    'tables/' : 'noTableAndLangrag',
+    ':langtag/tables' : 'noTable',
+    ':langtag/tables/' : 'noTable',
+    ':langtag/tables/:tableid/columns/:columnid/rows/:rowid' : 'tableBrowser',
 
-    ':langtag/table/:tableid' : 'tableBrowser',
+    ':langtag/tables/:tableid' : 'tableBrowser',
 
     ':langtag/media' : 'mediaBrowser',
-    ':langtag/media/:folderid' : 'mediaBrowser'
+    ':langtag/media/:folderid' : 'mediaBrowser',
   },
 
   alreadyRendered : false,
@@ -56,7 +59,7 @@ var TableauxRouter = Router.extend({
 
   switchTableHandler : function (payload) {
     var langtag = payload.langtag;
-    App.router.history.navigate(langtag + '/table/' + payload.id, {trigger : true});
+    App.router.history.navigate(langtag + '/tables/' + payload.id, {trigger : true});
   },
 
   switchFolderHandler : function (payload) {
@@ -71,7 +74,7 @@ var TableauxRouter = Router.extend({
   noTableAndLangtag : function () {
     console.log("TableauxRouter.noTableAndLangtag");
     var langtag = TableauxConstants.DefaultLangtag;
-    this.redirectTo(langtag + '/table');
+    this.redirectTo(langtag + '/tables');
   },
 
   noTable : function (langtag) {
