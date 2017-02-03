@@ -61,7 +61,7 @@ module.exports = {
       exclude : /node_modules/,
       loader : 'babel',
       query : {
-        plugins : ['transform-decorators-legacy'],
+        plugins : ['transform-decorators-legacy', 'es6-promise'],
         presets : ['es2015', 'react', 'stage-0']
       }
     }, {
