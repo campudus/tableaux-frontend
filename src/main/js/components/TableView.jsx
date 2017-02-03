@@ -41,6 +41,15 @@ class TableView extends React.Component {
       rowsCollection: null,
       rowsFilter: null
     }
+
+    const {columnId,rowId} = this.props;
+    if (columnId && rowId) {
+      this.pendingCellGoto = {
+        page: this.estimateCellPage(rowId),
+        row: rowId,
+        column: columnId
+      }
+    }
   };
 
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
@@ -95,9 +104,10 @@ class TableView extends React.Component {
     }
   };
 
-  gotoCell = ({row, column}, nPagesLoaded = 0) => {
+  estimateCellPage = row => 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
+
+  gotoCell = ({row, column, page}, nPagesLoaded = 0) => {
     console.log("Trying to go to cell", row, column)
-    const page = 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
     const cellClass = `cell-${column}-${row}`;
     console.log("cell-id", cellId, "cell-class", cellClass) //TODO: Remove logging

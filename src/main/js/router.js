@@ -92,8 +92,8 @@ var TableauxRouter = Router.extend({
     });
   },
 
-  tableBrowser : function (langtag, tableid) {
-    console.log("TableauxRouter.tableBrowser", langtag, tableid);
+  tableBrowser : function (langtag, tableid, columnid, rowid) {
+    console.log("TableauxRouter.tableBrowser", langtag, tableid, columnid, rowid);
     currentLangtag = langtag;
     //TODO show error to user
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
@@ -110,7 +110,9 @@ var TableauxRouter = Router.extend({
 
     this.renderOrSwitchView(TableauxConstants.ViewNames.TABLE_VIEW, {
       tableId : tableId,
-      langtag : langtag
+      langtag : langtag,
+      columnId: (columnid) ? parseInt(columnid) : null,
+      rowId: (rowid) ? parseInt(rowid) : null
     });
   },
 
