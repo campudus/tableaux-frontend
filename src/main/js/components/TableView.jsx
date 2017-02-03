@@ -1,5 +1,5 @@
 import React from "react";
-import AmpersandMixin from "ampersand-react-mixin";
+import connectToAmpersand from "../helpers/connectToAmpersand";
 import Dispatcher from "../dispatcher/Dispatcher";
 import Table from "./table/Table.jsx";
 import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
@@ -25,8 +25,9 @@ import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
 const CELL_W = 300;
-const CELL_H = 45;
+const CELL_H = 46;
 
+@connectToAmpersand
 class TableView extends React.Component {
 
   constructor(props) {
@@ -105,10 +106,10 @@ class TableView extends React.Component {
     console.log("cell-id", cellId, "cell-class", cellClass)
     const focusCell = cell => {
       const realRow = either(this.getCurrentTable().rows.models)
-        .map(rows => spy( f.findIndex(f.matchesProperty('id', row), rows)) )
+        .map(rows => spy(f.findIndex(f.matchesProperty('id', row), rows)))
         .value
       const realCol = either(this.getCurrentTable().columns.models)
-        .map(cols => spy( f.findIndex(f.matchesProperty('id', column), cols)) )
+        .map(cols => spy(f.findIndex(f.matchesProperty('id', column), cols)))
         .value
       ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
@@ -161,10 +162,11 @@ class TableView extends React.Component {
 
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
+  //  this.props.watch(currentTable.rows, {event: "add"});
 
     this.gotoCell({
-      row: 35,
-      column: 4
+      row: 8030,
+      column: 8
     })
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
