@@ -34,6 +34,7 @@ class TableView extends React.Component {
     super(props);
     this.nextTableId = null;
     this.pendingCellGoto = null;
+    this.tableFullyLoaded = false;
     this.state = {
       initialLoading: true,
       currentTableId: this.props.tableId,
@@ -88,11 +89,7 @@ class TableView extends React.Component {
       return;
     }
     const {row, column, page} = this.pendingCellGoto;
-    if (page > total) {
-      console.log(`Row ${row} would be on page #${page}, but table has only ${total} pages`);
-      this.pendingCellGoto = null;
-      return;
-    }
+
     if (loaded >= page) {
       this.gotoCell(this.pendingCellGoto, loaded);
     }
@@ -103,28 +100,32 @@ class TableView extends React.Component {
     const page = 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
     const cellClass = `cell-${column}-${row}`;
-    console.log("cell-id", cellId, "cell-class", cellClass)
+    console.log("cell-id", cellId, "cell-class", cellClass) //TODO: Remove logging
+
+    // Helper closure
     const focusCell = cell => {
-      const realRow = either(this.getCurrentTable().rows.models)
-        .map(rows => spy(f.findIndex(f.matchesProperty('id', row), rows)))
-        .value
-      const realCol = either(this.getCurrentTable().columns.models)
-        .map(cols => spy(f.findIndex(f.matchesProperty('id', column), cols)))
-        .value
+      console.log(cell)
+      const rowIndex = either(this.getCurrentTable().rows.models)
+        .map(rows => f.findIndex(f.matchesProperty('id', row), rows))
+        .getOrElse(() => console.log(`No row with id ${row} found in table.`))
+      const colIndex = either(this.getCurrentTable().columns.models)
+        .map(cols => f.findIndex(f.matchesProperty('id', column), cols))
+        .getOrElse(() => console.log(`No column with id ${column} found in table`))
       ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
-      const xOffs = ID_CELL_W + (realCol) * CELL_W - (window.innerWidth - CELL_W) / 2;
-      const yOffs = CELL_H * realRow - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
+      const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
+      const yOffs = CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
       scrollContainer.scrollLeft = xOffs;
       scrollContainer.scrollTop = yOffs;
       return cell;
     }
-    if (nPagesLoaded >= page) {
-      const cell = either(this.getCurrentTable().rows)
+
+    if (nPagesLoaded >= page || this.tableFullyLoaded) {
+      either(this.getCurrentTable().rows)
         .map(rows => rows.get(row).cells)
         .map(cells => cells.get(cellId))
         .map(focusCell)
-        .getOrElse(console.log(`No cell at row ${row}, column ${column}`));
+        .getOrElse(() => console.log(`No cell at row ${row}, column ${column} found in table.`))
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
@@ -162,12 +163,7 @@ class TableView extends React.Component {
 
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
-  //  this.props.watch(currentTable.rows, {event: "add"});
-
-    this.gotoCell({
-      row: 8030,
-      column: 8
-    })
+    this.tableFullyLoaded = false;
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
@@ -193,6 +189,8 @@ class TableView extends React.Component {
       const total = table.rows.pageCount();
       if (page > table.rows.pageCount()) { // we're done
         console.log("Done fetching", total, "pages");
+        this.tableFullyLoaded = true;
+        this.checkGotoCellRequest(page, table.rows.pageCount());
         ActionCreator.spinnerOff();
         return;
       }
