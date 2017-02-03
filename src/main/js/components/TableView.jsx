@@ -98,8 +98,14 @@ class TableView extends React.Component {
       return;
     }
     const {row, column, page} = this.pendingCellGoto;
+    const columns = this.getCurrentTable().columns.models;
+    if (f.findIndex(f.matchesProperty("id", column), columns) < 0) {
+      console.warn(`This table has no column ${column}. Columns are: [${columns.map(f.prop(["id"]))}]`);
+      this.pendingCellGoto = null;
+      return;
+    }
 
-    if (loaded >= page) {
+    if (loaded >= page || this.tableFullyLoaded) {
       this.gotoCell(this.pendingCellGoto, loaded);
     }
   };
@@ -110,17 +116,17 @@ class TableView extends React.Component {
     console.log("Trying to go to cell", row, column)
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
     const cellClass = `cell-${column}-${row}`;
-    console.log("cell-id", cellId, "cell-class", cellClass) //TODO: Remove logging
 
     // Helper closure
     const focusCell = cell => {
       console.log(cell)
-      const rowIndex = either(this.getCurrentTable().rows.models)
-        .map(rows => f.findIndex(f.matchesProperty('id', row), rows))
-        .getOrElse(() => console.log(`No row with id ${row} found in table.`))
-      const colIndex = either(this.getCurrentTable().columns.models)
-        .map(cols => f.findIndex(f.matchesProperty('id', column), cols))
-        .getOrElse(() => console.log(`No column with id ${column} found in table`))
+      const rows = this.getCurrentTable().rows.models; console.log(rows)
+      const rowIndex = f.findIndex(f.matchesProperty('id', row), rows); console.log("rowIndex", rowIndex)
+      const columns = this.getCurrentTable().columns.models; console.log(columns)
+      const colIndex = f.findIndex(f.matchesProperty("id", column), columns); console.log("columnIndex", colIndex)
+      if (rowIndex < 0 || colIndex < 0) {
+        return null;
+      }
       ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
@@ -135,7 +141,7 @@ class TableView extends React.Component {
         .map(rows => rows.get(row).cells)
         .map(cells => cells.get(cellId))
         .map(focusCell)
-        .getOrElse(() => console.log(`No cell at row ${row}, column ${column} found in table.`))
+        .getOrElse(() => console.warn(`No cell at row ${row}, column ${column} found in table.`))
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
