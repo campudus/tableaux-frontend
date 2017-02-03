@@ -58,7 +58,7 @@ class Just extends Maybe {
   }
 
   toString() {
-    return 'Maybe.Just(${this.value})';
+    return `Maybe.Just(${this.value})`;
   }
 }
 
@@ -155,7 +155,7 @@ class Left extends Either {
   }
 
   toString() {
-    return 'Either.Left(${this.value})';
+    return `Either.Left(${this.value})`;
   }
 }
 
@@ -200,11 +200,15 @@ class Right extends Either {
   }
 
   toString() {
-    return 'Either.Right(${this.value})';
+    return `Either.Right(${this.value})`;
   }
 }
 
 const maybe = x => Maybe.fromNullable(x);
 const either = x => Either.fromNullable(x);
+const spy = x => {
+  console.log("I spy", x);
+  return x;
+}
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either}
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy}

@@ -19,8 +19,13 @@ import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import searchFunctions from "../helpers/searchFunctions";
 import ColumnFilter from "./header/ColumnFilter";
-import {either} from "../helpers/monads";
+import {either, spy} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
+
+//hardcode all the stuffs!
+const ID_CELL_W = 80;
+const CELL_W = 300;
+const CELL_H = 45;
 
 class TableView extends React.Component {
 
@@ -78,39 +83,54 @@ class TableView extends React.Component {
   };
 
   checkGotoCellRequest = (loaded, total) => {
-   if (!this.pendingCellGoto) {
+    if (!this.pendingCellGoto) {
       return;
     }
     const {row, column, page} = this.pendingCellGoto;
     if (page > total) {
-      console.log("Row", row, "would be on page", page, "but table has only", total, "pages");
+      console.log(`Row ${row} would be on page #${page}, but table has only ${total} pages`);
       this.pendingCellGoto = null;
       return;
     }
     if (loaded >= page) {
       this.gotoCell(this.pendingCellGoto, loaded);
     }
-   };
+  };
 
   gotoCell = ({row, column}, nPagesLoaded = 0) => {
     console.log("Trying to go to cell", row, column)
     const page = 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
+    const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
+    const cellClass = `cell-${column}-${row}`;
+    console.log("cell-id", cellId, "cell-class", cellClass)
     const focusCell = cell => {
-      console.log("focussing", cell)
+      const realRow = either(this.getCurrentTable().rows.models)
+        .map(rows => spy( f.findIndex(f.matchesProperty('id', row), rows)) )
+        .value
+      const realCol = either(this.getCurrentTable().columns.models)
+        .map(cols => spy( f.findIndex(f.matchesProperty('id', column), cols)) )
+        .value
       ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
-      return true;
+      const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
+      const xOffs = ID_CELL_W + (realCol) * CELL_W - (window.innerWidth - CELL_W) / 2;
+      const yOffs = CELL_H * realRow - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
+      scrollContainer.scrollLeft = xOffs;
+      scrollContainer.scrollTop = yOffs;
+      return cell;
     }
-    const spy = x => {console.log("I spy", x); return x}
     if (nPagesLoaded >= page) {
-      const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
-      either(this.getCurrentTable().rows)
-        .map(rows => spy(rows.get(row).cells))
-        .map(cells => spy(cells.get(cellId)))
+      const cell = either(this.getCurrentTable().rows)
+        .map(rows => rows.get(row).cells)
+        .map(cells => cells.get(cellId))
         .map(focusCell)
         .getOrElse(console.log(`No cell at row ${row}, column ${column}`));
-      this.pendingCellGoto = 0;
+      this.pendingCellGoto = null;
     } else {
-      this.pendingCellGoto = {page: page, row: row, column: column};
+      this.pendingCellGoto = {
+        page: page,
+        row: row,
+        column: column
+      };
     }
   };
 
@@ -142,7 +162,10 @@ class TableView extends React.Component {
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
 
-    this.gotoCell({row: 35, column: 4})
+    this.gotoCell({
+      row: 35,
+      column: 4
+    })
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
