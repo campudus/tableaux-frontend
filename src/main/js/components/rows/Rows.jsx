@@ -11,13 +11,21 @@ class Rows extends React.Component {
 
   displayName = 'Rows';
 
+  constructor(props) {
+    super(props);
+    this.numberOfRows = 0;
+  }
+
   shouldComponentUpdate(nP) {
     const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
+    if (nP.rows.length != this.numberOfRows) { // forcing update on rows.onAdd leads to exponential render calls
+      this.numberOfRows = nP.rows.length;
+      return true;
+    }
     if (selectedCell !== nP.selectedCell
       || selectedCellEditing !== nP.selectedCellEditing
       || langtag !== nP.langtag
       || shouldCellFocus !== nP.shouldCellFocus
-      || rows !== nP.rows
       || expandedRowIds !== nP.expandedRowIds
       || selectedCellExpandedRow !== nP.selectedCellExpandedRow
       || rowsHeight !== nP.rowsHeight
