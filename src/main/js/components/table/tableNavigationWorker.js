@@ -1,5 +1,9 @@
 import _ from 'lodash';
 import {Directions, ColumnKinds, Langtags,DefaultLangtag} from '../../constants/TableauxConstants';
+import LocationBar from "location-bar";
+
+const locationBar = new LocationBar();
+locationBar.start({pushState: true});
 
 export function shouldCellFocus() {
   //we dont want to force cell focus when overlay is open
@@ -166,11 +170,18 @@ export function isLastRowSelected() {
   return (currentRowId === lastRowId);
 }
 
-export function toggleCellSelection(params) {
+export function toggleCellSelection({selected, cell, langtag}) {
+  console.log("NavigationWorker:", selected, langtag, cell)
+  const tableId = cell.tableId;
+  const columnId = cell.column.id;
+  const rowId = cell.row.id;
+  const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
+  console.log("NavigationWorker:", cellURL)
+  locationBar.update(cellURL, {trigger: false});
   this.setState({
-    selectedCell : params.cell,
+    selectedCell : cell,
     selectedCellEditing : false,
-    selectedCellExpandedRow : params.langtag || null
+    selectedCellExpandedRow : langtag || null
   });
 }
 
