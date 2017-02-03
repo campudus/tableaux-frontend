@@ -93,7 +93,7 @@ class TableView extends React.Component {
     localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name], view, savedViews))
   };
 
-  checkGotoCellRequest = (loaded, total) => {
+  checkGotoCellRequest = (loaded) => {
     if (!this.pendingCellGoto) {
       return;
     }
@@ -113,20 +113,19 @@ class TableView extends React.Component {
   estimateCellPage = row => 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
   gotoCell = ({row, column, page}, nPagesLoaded = 0) => {
-    console.log("Trying to go to cell", row, column)
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
     const cellClass = `cell-${column}-${row}`;
 
     // Helper closure
     const focusCell = cell => {
       console.log(cell)
-      const rows = this.getCurrentTable().rows.models; console.log(rows)
-      const rowIndex = f.findIndex(f.matchesProperty('id', row), rows); console.log("rowIndex", rowIndex)
-      const columns = this.getCurrentTable().columns.models; console.log(columns)
-      const colIndex = f.findIndex(f.matchesProperty("id", column), columns); console.log("columnIndex", colIndex)
-      if (rowIndex < 0 || colIndex < 0) {
-        return null;
-      }
+      this.setColumnsVisibility({val: true, coll: [column]});
+      const rows = this.getCurrentTable().rows.models;
+      const rowIndex = f.findIndex(f.matchesProperty('id', row), rows);
+      const columns = this.getCurrentTable().columns.models;
+      const visibleColumns = columns.filter(x => x.visible);
+      const colIndex = f.findIndex(f.matchesProperty("id", column), visibleColumns);
+
       ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
@@ -139,9 +138,9 @@ class TableView extends React.Component {
     if (nPagesLoaded >= page || this.tableFullyLoaded) {
       either(this.getCurrentTable().rows)
         .map(rows => rows.get(row).cells)
-        .map(cells => cells.get(cellId))
+        .map(cells => spy( cells.get(cellId)) )
         .map(focusCell)
-        .getOrElse(() => console.warn(`No cell at row ${row}, column ${column} found in table.`))
+        .orElse(() => console.warn(`There is no row ${row} in this table!`))
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
@@ -226,7 +225,7 @@ class TableView extends React.Component {
                 });
               }
 
-              this.checkGotoCellRequest(page, table.rows.pageCount());
+              this.checkGotoCellRequest(page);
 
               resolve({ // return information about next page to be fetched
                 table: table,
@@ -272,7 +271,6 @@ class TableView extends React.Component {
     columns
       .filter(x => f.contains(x.id, coll))
       .forEach(x => x.visible = val)
-    this.forceUpdate();
     this.saveView();
     if (cb) {
       cb();
