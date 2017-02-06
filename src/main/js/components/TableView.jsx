@@ -21,6 +21,7 @@ import searchFunctions from "../helpers/searchFunctions";
 import ColumnFilter from "./header/ColumnFilter";
 import {either, spy} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
+import LocationBar from "location-bar";
 
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -42,7 +43,7 @@ class TableView extends React.Component {
       rowsFilter: null
     }
 
-    const {columnId,rowId} = this.props;
+    const {columnId, rowId} = this.props;
     if (columnId && rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -50,7 +51,30 @@ class TableView extends React.Component {
         column: columnId
       }
     }
+
+    this.locationBar = new LocationBar();
+    this.locationBar.onChange(this.handleUrlChange);
+    this.locationBar.start({
+      pushState: true,
+     // silent: true
+    });
   };
+
+  handleUrlChange = url => {
+    console.log("handleUrlChange", url)
+    const urlExtractor = /([\w]{2}-?[\w]*)\/tables\/([0-9]+)\/columns\/([0-9+])\/rows\/([0-9]+)(\?filter)?/;
+    const matchMap = urlExtractor.exec(url);
+    if (!matchMap || matchMap.length !== 6) {
+      return null;
+    }
+    const [_, langtag, table, column, row, filter] = matchMap;
+    this.gotoCell({
+      row: row,
+      column: column,
+      page: this.estimateCellPage(row),
+      ignore: "NO_HISTORY_PUSH"
+    });
+  }
 
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
   loadView = (tableId, name = "default") => {
@@ -93,6 +117,13 @@ class TableView extends React.Component {
     localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name], view, savedViews))
   };
 
+  cellJumpError = msg => {
+    ActionCreator.showToast(
+      <div id="cell-jump-toast">{msg}</div>,
+      7000
+    )
+  }
+
   checkGotoCellRequest = (loaded) => {
     if (!this.pendingCellGoto) {
       return;
@@ -100,7 +131,7 @@ class TableView extends React.Component {
     const {row, column, page} = this.pendingCellGoto;
     const columns = this.getCurrentTable().columns.models;
     if (f.findIndex(f.matchesProperty("id", column), columns) < 0) {
-      console.warn(`This table has no column ${column}. Columns are: [${columns.map(f.prop(["id"]))}]`);
+      this.cellJumpError(`This table has no column ${column}.`);
       this.pendingCellGoto = null;
       return;
     }
@@ -112,35 +143,37 @@ class TableView extends React.Component {
 
   estimateCellPage = row => 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({row, column, page}, nPagesLoaded = 0) => {
+  gotoCell = ({row, column, page, ignore = false}, nPagesLoaded = 0) => {
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
     const cellClass = `cell-${column}-${row}`;
 
     // Helper closure
     const focusCell = cell => {
-      console.log(cell)
-      this.setColumnsVisibility({val: true, coll: [column]});
+      this.setColumnsVisibility({
+        val: true,
+        coll: [column]
+      });
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty('id', row), rows);
       const columns = this.getCurrentTable().columns.models;
       const visibleColumns = columns.filter(x => x.visible);
       const colIndex = f.findIndex(f.matchesProperty("id", column), visibleColumns);
-
-      ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
       const yOffs = CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
       scrollContainer.scrollLeft = xOffs;
       scrollContainer.scrollTop = yOffs;
+
+      ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
       return cell;
     }
 
     if (nPagesLoaded >= page || this.tableFullyLoaded) {
       either(this.getCurrentTable().rows)
         .map(rows => rows.get(row).cells)
-        .map(cells => spy( cells.get(cellId)) )
+        .map(cells => cells.get(cellId))
         .map(focusCell)
-        .orElse(() => console.warn(`There is no row ${row} in this table!`))
+        .orElse(() => this.cellJumpError(`There is no row ${row} in this table!`))
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
@@ -493,7 +526,9 @@ class TableView extends React.Component {
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
-                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
+                         langtag={this.props.langtag} rows={rowsCollection}
+                         overlayOpen={this.props.overlayOpen}
+                         locationBar={this.locationBar}
           />;
         } else {
           //TODO show error to user

@@ -171,13 +171,13 @@ export function isLastRowSelected() {
 }
 
 export function toggleCellSelection({selected, cell, langtag}) {
-  console.log("NavigationWorker:", selected, langtag, cell)
   const tableId = cell.tableId;
   const columnId = cell.column.id;
   const rowId = cell.row.id;
-  const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
-  console.log("NavigationWorker:", cellURL)
-  locationBar.update(cellURL, {trigger: false});
+  if (selected !== "NO_HISTORY_PUSH") {
+    const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
+    window.history.pushState({}, {}, cellURL);
+  }
   this.setState({
     selectedCell : cell,
     selectedCellEditing : false,
