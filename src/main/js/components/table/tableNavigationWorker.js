@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import f from "lodash/fp";
 import {Directions, ColumnKinds, Langtags,DefaultLangtag} from '../../constants/TableauxConstants';
 import LocationBar from "location-bar";
 
@@ -320,16 +321,15 @@ export function getPreviousRow(currentRowId) {
   return getNextRowCell.call(this, currentRowId, true);
 }
 
-export function getNextColumnCell(currenColumnId, getPrev) {
-  const {columns} = this.props.table;
+export function getNextColumnCell(currentColumnId, getPrev) {
+  const columns = this.props.table.columns.filter(col => col.visible);
   const {selectedCell,expandedRowIds,selectedCellExpandedRow} = this.state;
-  const currentColumn = columns.get(currenColumnId);
-  const indexCurrentColumn = columns.indexOf(currentColumn);
+  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns)
   const numberOfColumns = columns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
-  const nextColumnIndex = Math.max(0, Math.min(nextIndex, numberOfColumns - 1));
-  const nextColumn = columns.at(nextColumnIndex);
-  const nextColumnId = nextColumn.getId();
+  const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
+  const nextColumn = f.nth(nextColumnIndex, columns);
+  const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
 
