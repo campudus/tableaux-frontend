@@ -21,10 +21,7 @@ var TableauxRouter = Router.extend({
     ':langtag/tables' : 'noTable',
     ':langtag/tables/' : 'noTable',
 
-    ':langtag/tables/:tableid/columns/:columnid/rows/:rowid?:filterString' : 'tableBrowser',
-    ':langtag/tables/:tableid/columns/:columnid/rows/:rowid' : 'tableBrowser',
-
-    ':langtag/tables/:tableid' : 'tableBrowser',
+    ':langtag/tables/:tableid(/columns/:columnid/rows/:rowid(?:filterString))' : 'tableBrowser',
 
     ':langtag/media' : 'mediaBrowser',
     ':langtag/media/:folderid' : 'mediaBrowser',
