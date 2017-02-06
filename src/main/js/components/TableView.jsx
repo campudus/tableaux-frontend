@@ -43,12 +43,13 @@ class TableView extends React.Component {
       rowsFilter: null
     }
 
-    const {columnId, rowId} = this.props;
+    const {columnId, rowId, filter} = this.props;
     if (columnId && rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
         row: rowId,
-        column: columnId
+        column: columnId,
+        filter: filter
       }
     }
 
@@ -61,6 +62,9 @@ class TableView extends React.Component {
   };
 
   handleUrlChange = url => {
+    if (!this.tables) {
+      return;
+    }
     console.log("handleUrlChange", url)
     const urlExtractor = /([\w]{2}-?[\w]*)\/tables\/([0-9]+)\/columns\/([0-9+])\/rows\/([0-9]+)(\?filter)?/;
     const matchMap = urlExtractor.exec(url);
@@ -137,7 +141,7 @@ class TableView extends React.Component {
 
   estimateCellPage = row => 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({row, column, page, ignore = false}, nPagesLoaded = 0) => {
+  gotoCell = ({row, column, page, filter, ignore = false}, nPagesLoaded = 0) => {
     const columns = this.getCurrentTable().columns.models;
     if (f.findIndex(f.matchesProperty("id", column), columns) < 0) {
       this.cellJumpError(`This table has no column ${column}.`);
@@ -154,6 +158,14 @@ class TableView extends React.Component {
         val: true,
         coll: [column]
       });
+      if (filter) {
+        this.changeFilter({
+          filterMode: FilterModes.ID_ONLY,
+          filterValue: row,
+          filterColumnId: "noop",
+          sortColumnId: 0
+        })
+      }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty('id', row), rows);
       const columns = this.getCurrentTable().columns.models;
@@ -161,7 +173,9 @@ class TableView extends React.Component {
       const colIndex = f.findIndex(f.matchesProperty("id", column), visibleColumns);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
-      const yOffs = CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
+      const yOffs = (filter)
+        ? CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2
+        : 0;
       scrollContainer.scrollLeft = xOffs;
       scrollContainer.scrollTop = yOffs;
 

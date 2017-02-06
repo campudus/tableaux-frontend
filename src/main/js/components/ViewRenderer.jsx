@@ -29,6 +29,7 @@ export default class ViewRenderer extends React.Component {
                    tableId={this.props.params.tableId}
                    columnId={this.props.params.columnId}
                    rowId={this.props.params.rowId}
+                   filter={this.props.params.filter}
                    overlayOpen={!!this.props.params.overlayOpen}
         />
       );

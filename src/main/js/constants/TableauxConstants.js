@@ -154,7 +154,8 @@ var TableauxConstant = {
   FilterModes: keyMirror(
     {
       CONTAINS: null,
-      STARTS_WITH: null
+      STARTS_WITH: null,
+      ID_ONLY: null
     }
   )
 };

@@ -20,6 +20,8 @@ var TableauxRouter = Router.extend({
     'tables/' : 'noTableAndLangrag',
     ':langtag/tables' : 'noTable',
     ':langtag/tables/' : 'noTable',
+
+    ':langtag/tables/:tableid/columns/:columnid/rows/:rowid?:filterString' : 'tableBrowser',
     ':langtag/tables/:tableid/columns/:columnid/rows/:rowid' : 'tableBrowser',
 
     ':langtag/tables/:tableid' : 'tableBrowser',
@@ -92,8 +94,8 @@ var TableauxRouter = Router.extend({
     });
   },
 
-  tableBrowser : function (langtag, tableid, columnid, rowid) {
-    console.log("TableauxRouter.tableBrowser", langtag, tableid, columnid, rowid);
+  tableBrowser : function (langtag, tableid, columnid, rowid, filterString) {
+    console.log("TableauxRouter.tableBrowser", langtag, tableid, columnid, rowid, (filterString) ? "rowFilter" : "");
     currentLangtag = langtag;
     //TODO show error to user
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
@@ -112,7 +114,8 @@ var TableauxRouter = Router.extend({
       tableId : tableId,
       langtag : langtag,
       columnId: (columnid) ? parseInt(columnid) : null,
-      rowId: (rowid) ? parseInt(rowid) : null
+      rowId: (rowid) ? parseInt(rowid) : null,
+      filter: (filterString) ? filterString : null
     });
   },
 
