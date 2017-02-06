@@ -14,13 +14,18 @@ export let currentLangtag = null;
 var TableauxRouter = Router.extend({
   routes : {
     '' : 'noTableAndLangtag',
-    ':langtag(/)' : 'noTableAndLangtag',
-    'tables(/)' : 'noTableAndLangrag',
-    ':langtag/tables(/)' : 'noTable',
+    ':langtag/' : 'noTableAndLangtag',
+    ':langtag' : 'noTableAndLangtag',
+    'tables' : 'noTableAndLangtag',
+    'tables/' : 'noTableAndLangrag',
+    ':langtag/tables' : 'noTable',
+    ':langtag/tables/' : 'noTable',
 
-    ':langtag/tables/:tableid(/columns/:columnid/rows/:rowid(?:filterString))' : 'tableBrowser',
+    ':langtag/tables/:tableid/columns/:columnid/rows/:rowid?:filterString' : 'tableBrowser',
+    ':langtag/tables/:tableid/columns/:columnid/rows/:rowid' : 'tableBrowser',
+    ':langtag/tables/:tableid' : 'tableBrowser',
 
-    ':langtag/media(/)' : 'mediaBrowser',
+    ':langtag/media' : 'mediaBrowser',
     ':langtag/media/:folderid' : 'mediaBrowser',
   },
 
