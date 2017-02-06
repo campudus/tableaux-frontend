@@ -58,7 +58,7 @@ class TableView extends React.Component {
     this.locationBar.onChange(this.handleUrlChange);
     this.locationBar.start({
       pushState: true,
-      // silent: true
+      silent: true
     });
   };
 
@@ -66,7 +66,6 @@ class TableView extends React.Component {
     if (!this.tables) {
       return;
     }
-    console.log("handleUrlChange", url)
     const urlExtractor = /([\w]{2}-?[\w]*)\/tables\/([0-9]+)\/columns\/([0-9+])\/rows\/([0-9]+)(\?filter)?/;
     const matchMap = urlExtractor.exec(url);
     if (!matchMap || matchMap.length !== 6) {
@@ -74,8 +73,8 @@ class TableView extends React.Component {
     }
     const [_, langtag, table, column, row, filter] = matchMap;
     this.gotoCell({
-      row: row,
-      column: column,
+      row: parseInt(row),
+      column: parseInt(column),
       page: this.estimateCellPage(row),
       ignore: "NO_HISTORY_PUSH"
     });
@@ -119,7 +118,7 @@ class TableView extends React.Component {
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
       .getOrElse({});
-    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name], view, savedViews))
+    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name], view, savedViews));
   };
 
   cellJumpError = msg => {
@@ -133,8 +132,8 @@ class TableView extends React.Component {
     if (!this.pendingCellGoto) {
       return;
     }
-    const {page} = this.pendingCellGoto;
 
+    const {page} = this.pendingCellGoto;
     if (loaded >= page || this.tableFullyLoaded) {
       this.gotoCell(this.pendingCellGoto, loaded);
     }
@@ -151,7 +150,6 @@ class TableView extends React.Component {
     }
 
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
-    const cellClass = `cell-${column}-${row}`;
 
     // Helper closure
     const focusCell = cell => {
@@ -165,7 +163,7 @@ class TableView extends React.Component {
           filterValue: row,
           filterColumnId: "noop",
           sortColumnId: 0
-        })
+        });
       }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty('id', row), rows);
@@ -175,8 +173,8 @@ class TableView extends React.Component {
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
       const yOffs = (filter)
-        ? CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2
-        : 0;
+        ? 0
+        : CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
       scrollContainer.scrollLeft = xOffs;
       scrollContainer.scrollTop = yOffs;
 
@@ -195,7 +193,8 @@ class TableView extends React.Component {
       this.pendingCellGoto = {
         page: page,
         row: row,
-        column: column
+        column: column,
+        page: this.estimateCellPage(row)
       };
     }
   };
@@ -302,6 +301,7 @@ class TableView extends React.Component {
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    this.locationBar.stop();
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -321,7 +321,7 @@ class TableView extends React.Component {
     const columns = this.tables.get(this.state.currentTableId).columns.models;
     columns
       .filter(x => f.contains(x.id, coll))
-      .forEach(x => x.visible = val)
+      .forEach(x => x.visible = val);
     this.saveView();
     if (cb) {
       cb();
@@ -400,9 +400,7 @@ class TableView extends React.Component {
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
-                         langtag={this.props.langtag} rows={rowsCollection}
-                         overlayOpen={this.props.overlayOpen}
-                         locationBar={this.locationBar}
+                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
           />;
         } else {
           //TODO show error to user

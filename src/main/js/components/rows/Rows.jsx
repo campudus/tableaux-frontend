@@ -32,7 +32,7 @@ class Rows extends React.Component {
     ) {
       return true;
     }
-   console.log("! Rows skipped update");
+    console.log("! Rows skipped update");
     return false;
   };
 

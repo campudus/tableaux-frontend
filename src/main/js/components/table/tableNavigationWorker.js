@@ -176,7 +176,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
   const rowId = cell.row.id;
   if (selected !== "NO_HISTORY_PUSH") {
     const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
-    window.history.pushState({}, {}, cellURL);
+    locationBar.update(cellURL);
   }
   this.setState({
     selectedCell : cell,

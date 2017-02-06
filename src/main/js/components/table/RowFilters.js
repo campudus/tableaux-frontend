@@ -88,79 +88,79 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
   }
 
   return new FilteredSubcollection(allRows, {
-      filter: (row) => {
+    filter: (row) => {
       if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
-    // no or invalid column found OR no filter value
-    return true;
-  }
-
-  const firstCell = row.cells.at(0);
-  const firstCellValue = getSortableCellValue(firstCell);
-
-  // Always return true for rows with empty first value.
-  // This should allow to add new rows while filtered.
-  // _.isEmpty(123) returns TRUE, so we check for number (int & float)
-  if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
-    return true;
-  }
-
-  const targetCell = row.cells.at(filterColumnIndex);
-  const searchFunction = searchFunctions[filterMode];
-
-  if (targetCell.kind === ColumnKinds.shorttext
-    || targetCell.kind === ColumnKinds.richtext
-    || targetCell.kind === ColumnKinds.numeric
-    || targetCell.kind === ColumnKinds.text
-    || targetCell.kind === ColumnKinds.link
-    || targetCell.kind === ColumnKinds.concat) {
-    return searchFunction(toFilterValue, getSortableCellValue(targetCell))
-  } else {
-    // column type not support for filtering
-    return false;
-  }
-},
-
-  comparator: (rowOne, rowTwo) => {
-    // swap gt and lt to support ASC and DESC
-    // gt = in case rowOne > rowTwo
-    // lt = in case rowOne < rowTwo
-    const gt = sortValue === SortValues.ASC ? +1 : -1;
-    const lt = sortValue === SortValues.ASC ? -1 : +1;
-
-    const compareRowIds = () => {
-      return rowOne.id === rowTwo.id ? 0 : (rowOne.id > rowTwo.id ? gt : lt);
-    };
-
-    if (sortColumnIndex <= -1) {
-      if (typeof rowTwo === 'undefined') {
-        // strange special case if row was added
-        return rowOne.id;
+  // no or invalid column found OR no filter value
+        return true;
       }
 
-      // Default sort by row id
-      return compareRowIds();
-    } else {
-      const cellValueOne = rowOne && rowOne.cells ? getSortableCellValue(rowOne.cells.at(sortColumnIndex)) : null;
-      const cellValueTwo = rowTwo && rowTwo.cells ? getSortableCellValue(rowTwo.cells.at(sortColumnIndex)) : null;
+      const firstCell = row.cells.at(0);
+      const firstCellValue = getSortableCellValue(firstCell);
 
-      const isEmptyOne = cellValueOne === null || (typeof cellValueOne === 'string' && _.isEmpty(cellValueOne));
-      const isEmptyTwo = cellValueTwo === null || (typeof cellValueTwo === 'string' && _.isEmpty(cellValueTwo));
+      // Always return true for rows with empty first value.
+      // This should allow to add new rows while filtered.
+      // _.isEmpty(123) returns TRUE, so we check for number (int & float)
+      if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
+        return true;
+      }
 
-      if (isEmptyOne && isEmptyTwo) {
-        return 0;
-      } else if (isEmptyOne) {
-        // ensure than in both sorting cases null/emptys are last!
-        return sortValue === SortValues.ASC ? gt : lt;
-      } else if (isEmptyTwo) {
-        // ensure than in both sorting cases null/emptys are last!
-        return sortValue === SortValues.ASC ? lt : gt;
+      const targetCell = row.cells.at(filterColumnIndex);
+      const searchFunction = searchFunctions[filterMode];
+
+      if (targetCell.kind === ColumnKinds.shorttext
+        || targetCell.kind === ColumnKinds.richtext
+        || targetCell.kind === ColumnKinds.numeric
+        || targetCell.kind === ColumnKinds.text
+        || targetCell.kind === ColumnKinds.link
+        || targetCell.kind === ColumnKinds.concat) {
+        return searchFunction(toFilterValue, getSortableCellValue(targetCell))
       } else {
-        // first compare values and if equal than sort by row id
-        return _.eq(cellValueOne, cellValueTwo) ? compareRowIds() : (_.gt(cellValueOne, cellValueTwo) ? gt : lt)
+        // column type not support for filtering
+        return false;
+      }
+    },
+
+    comparator: (rowOne, rowTwo) => {
+      // swap gt and lt to support ASC and DESC
+      // gt = in case rowOne > rowTwo
+      // lt = in case rowOne < rowTwo
+      const gt = sortValue === SortValues.ASC ? +1 : -1;
+      const lt = sortValue === SortValues.ASC ? -1 : +1;
+
+      const compareRowIds = () => {
+        return rowOne.id === rowTwo.id ? 0 : (rowOne.id > rowTwo.id ? gt : lt);
+      };
+
+      if (sortColumnIndex <= -1) {
+        if (typeof rowTwo === 'undefined') {
+          // strange special case if row was added
+          return rowOne.id;
+        }
+
+        // Default sort by row id
+        return compareRowIds();
+      } else {
+        const cellValueOne = rowOne && rowOne.cells ? getSortableCellValue(rowOne.cells.at(sortColumnIndex)) : null;
+        const cellValueTwo = rowTwo && rowTwo.cells ? getSortableCellValue(rowTwo.cells.at(sortColumnIndex)) : null;
+
+        const isEmptyOne = cellValueOne === null || (typeof cellValueOne === 'string' && _.isEmpty(cellValueOne));
+        const isEmptyTwo = cellValueTwo === null || (typeof cellValueTwo === 'string' && _.isEmpty(cellValueTwo));
+
+        if (isEmptyOne && isEmptyTwo) {
+          return 0;
+        } else if (isEmptyOne) {
+          // ensure than in both sorting cases null/emptys are last!
+          return sortValue === SortValues.ASC ? gt : lt;
+        } else if (isEmptyTwo) {
+          // ensure than in both sorting cases null/emptys are last!
+          return sortValue === SortValues.ASC ? lt : gt;
+        } else {
+          // first compare values and if equal than sort by row id
+          return _.eq(cellValueOne, cellValueTwo) ? compareRowIds() : (_.gt(cellValueOne, cellValueTwo) ? gt : lt)
+        }
       }
     }
-  }
-});
+  });
 };
 
 export default getFilteredRows;
