@@ -29,6 +29,10 @@
   "filter_columns": "Spalten suchen...",
   "no_results_found": "Keine entsprechenden Spalten gefunden",
   "hide_unhide": "Spalten zeigen/verbergen",
+  "jump": {
+    "no_such_row": "Diese Tabelle enthält keine Zeile mit ID {{row}}",
+    "no_such_column": "Diese Tabelle enthält keine Spalte mit ID {{col}}"
+  },
   "editor": {
     "colname": "Bezeichnung",
     "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",

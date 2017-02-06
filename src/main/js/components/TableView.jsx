@@ -22,6 +22,7 @@ import {either, spy} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import LocationBar from "location-bar";
 import getFilteredRows from "./table/RowFilters";
+import i18n from "i18next";
 
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -144,7 +145,7 @@ class TableView extends React.Component {
   gotoCell = ({row, column, page, filter, ignore = false}, nPagesLoaded = 0) => {
     const columns = this.getCurrentTable().columns.models;
     if (f.findIndex(f.matchesProperty("id", column), columns) < 0) {
-      this.cellJumpError(`This table has no column ${column}.`);
+      this.cellJumpError(i18n.t("table:jump.no_such_column", {col: column}));
       this.pendingCellGoto = null;
       return;
     }
@@ -188,7 +189,7 @@ class TableView extends React.Component {
         .map(rows => rows.get(row).cells)
         .map(cells => cells.get(cellId))
         .map(focusCell)
-        .orElse(() => this.cellJumpError(`There is no row ${row} in this table!`))
+        .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: row})))
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
