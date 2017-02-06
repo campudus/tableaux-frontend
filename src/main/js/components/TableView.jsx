@@ -212,6 +212,7 @@ class TableView extends React.Component {
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
     this.tableFullyLoaded = false;
+    ActionCreator.spinnerOn();
 
     //We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
@@ -234,6 +235,7 @@ class TableView extends React.Component {
     };
 
     const fetchPages = ({table, page}) => {
+      ActionCreator.spinnerOn();
       const total = table.rows.pageCount();
       if (page > table.rows.pageCount()) { // we're done
         console.log("Done fetching", total, "pages");
