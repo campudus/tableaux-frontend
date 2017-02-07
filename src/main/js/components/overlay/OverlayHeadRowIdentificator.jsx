@@ -38,7 +38,7 @@ var OverlayHeadRowIdentificator = React.createClass({
 
       if (this.props.cell.isLink) {
         const {toTable} = this.props.cell.column;
-        const linkToTable = `/${langtag}/table/${toTable}`;
+        const linkToTable = `/${langtag}/tables/${toTable}`;
         return (
           <span>
             <a href={linkToTable} target="_blank" className="column-name with-link">

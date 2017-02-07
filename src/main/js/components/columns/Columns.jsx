@@ -1,8 +1,7 @@
 import React from "react";
-import AmpersandMixin from "ampersand-react-mixin";
 import {translate} from "react-i18next";
 import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
-import TableauxConstants, {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
+import {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
@@ -68,7 +67,7 @@ class Columns extends React.Component {
 
     if (column.kind === ColumnKinds.link) {
       name =
-        <a className="column-table-link" target="_blank" href={`/${langtag}/table/${column.toTable}`}>
+        <a className="column-table-link" target="_blank" href={`/${langtag}/tables/${column.toTable}`}>
           <i className="fa fa-columns" />
           {name}
         </a>;
