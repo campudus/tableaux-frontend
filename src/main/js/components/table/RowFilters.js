@@ -43,7 +43,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
 
     if (cell.isLink) {
       const linkValues = _.map(cell.linkStringLanguages, (linkElement) => {
-          return linkElement[langtag] ? linkElement[langtag] : "";
+        return linkElement[langtag] ? linkElement[langtag] : "";
       });
 
       sortableValue = _.join(linkValues, ":");
@@ -89,7 +89,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
   return new FilteredSubcollection(allRows, {
     filter: (row) => {
       if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
-  // no or invalid column found OR no filter value
+        // no or invalid column found OR no filter value
         return true;
       }
 

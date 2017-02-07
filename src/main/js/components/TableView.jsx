@@ -131,22 +131,33 @@ class TableView extends React.Component {
       return;
     }
 
+    const column = this.pendingCellGoto.column;
+    const columns = this.getCurrentTable().columns.models;
+    if (!this.checkIfColExists(columns, column)) {
+      return;
+    }
     const {page} = this.pendingCellGoto;
     if (loaded >= page || this.tableFullyLoaded) {
       this.gotoCell(this.pendingCellGoto, loaded);
     }
   };
 
+  checkIfColExists = (columns, colId) => {
+    if (f.findIndex(f.matchesProperty("id", colId), columns) < 0) {
+      this.cellJumpError(i18n.t("table:jump.no_such_column", {col: colId}));
+      this.pendingCellGoto = null;
+      false;
+    } else {
+      return true;
+    }
+  };
+
   estimateCellPage = row => 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
   gotoCell = ({row, column, page, filter, ignore = false}, nPagesLoaded = 0) => {
-    const columns = this.getCurrentTable().columns.models;
-    if (f.findIndex(f.matchesProperty("id", column), columns) < 0) {
-      this.cellJumpError(i18n.t("table:jump.no_such_column", {col: column}));
-      this.pendingCellGoto = null;
+    if (! this.checkIfColExists(this.getCurrentTable().columns.models, column)) {
       return;
     }
-
     const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
 
     // Helper closure
