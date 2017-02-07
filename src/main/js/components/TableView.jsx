@@ -6,8 +6,6 @@ import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
 import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
-import FilteredSubcollection from "ampersand-filtered-subcollection";
-import RowConcatHelper from "../helpers/RowConcatHelper";
 import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
@@ -18,7 +16,7 @@ import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import ColumnFilter from "./header/ColumnFilter";
-import {either, spy} from "../helpers/monads";
+import {either} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import LocationBar from "location-bar";
 import getFilteredRows from "./table/RowFilters";
@@ -42,7 +40,7 @@ class TableView extends React.Component {
       currentTableId: this.props.tableId,
       rowsCollection: null,
       rowsFilter: null
-    }
+    };
 
     const {columnId, rowId, filter} = this.props;
     if (columnId && rowId) {
@@ -71,14 +69,14 @@ class TableView extends React.Component {
     if (!matchMap || matchMap.length !== 6) {
       return null;
     }
-    const [_, langtag, table, column, row, filter] = matchMap;
+    const [fullMatch, langtag, table, column, row, filter] = matchMap;
     this.gotoCell({
       row: parseInt(row),
       column: parseInt(column),
       page: this.estimateCellPage(row),
       ignore: "NO_HISTORY_PUSH"
     });
-  }
+  };
 
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
   loadView = (tableId, name = "default") => {
@@ -126,7 +124,7 @@ class TableView extends React.Component {
       <div id="cell-jump-toast">{msg}</div>,
       7000
     )
-  }
+  };
 
   checkGotoCellRequest = (loaded) => {
     if (!this.pendingCellGoto) {
@@ -180,18 +178,17 @@ class TableView extends React.Component {
 
       ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
       return cell;
-    }
+    };
 
     if (nPagesLoaded >= page || this.tableFullyLoaded) {
       either(this.getCurrentTable().rows)
         .map(rows => rows.get(row).cells)
         .map(cells => cells.get(cellId))
         .map(focusCell)
-        .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: row})))
+        .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: row})));
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
-        page: page,
         row: row,
         column: column,
         page: this.estimateCellPage(row)
@@ -306,7 +303,7 @@ class TableView extends React.Component {
 
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.tableId !== this.props.tableId) {
-      var oldTable = this.tables.get(this.state.currentTableId);
+      let oldTable = this.tables.get(this.state.currentTableId);
       this.nextTableId = nextProps.tableId;
       if (oldTable) {
         ActionCreator.cleanupTable(oldTable);
@@ -353,7 +350,6 @@ class TableView extends React.Component {
 
   changeFilter = (rowsFilter) => {
     const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
-
     const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(
         sortValue);
 
@@ -392,11 +388,11 @@ class TableView extends React.Component {
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
-      var tables = this.tables;
-      var rowsCollection = this.state.rowsCollection;
-      var currentTable = this.getCurrentTable();
+      let tables = this.tables;
+      let rowsCollection = this.state.rowsCollection;
+      let currentTable = this.getCurrentTable();
 
-      var table = '';
+      let table = '';
       if (this.state.currentTableId) {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
@@ -433,8 +429,7 @@ class TableView extends React.Component {
       );
     }
   }
-}
-;
+};
 
 TableView.propTypes = {
   langtag: React.PropTypes.string.isRequired,

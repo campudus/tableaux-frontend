@@ -7,16 +7,15 @@ import * as _ from "lodash";
 
 const getFilteredRows = (currentTable, langtag, rowsFilter) => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
-  const {filterMode} = rowsFilter;
   const filterFunction = _.cond([
     [f.equals(FilterModes.ID_ONLY), f.always(getRowsFilteredById)],
     [mode => f.contains(mode, valueFilters), f.always(getRowsFilteredByColumnValues)]
-  ])(rowsFilter.filterMode)
+  ])(rowsFilter.filterMode);
   return filterFunction(currentTable, langtag, rowsFilter);
 };
 
 const getRowsFilteredById = (table, langtag, rowsFilter) => {
-  const reqId = rowsFilter.filterValue
+  const reqId = rowsFilter.filterValue;
   return new FilteredSubcollection(table.rows, {
     where: {id: reqId}
   });

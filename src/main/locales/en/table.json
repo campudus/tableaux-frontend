@@ -42,6 +42,7 @@
   },
   "filter": {
     "contains": "contains",
-    "starts_with": "starts with"
+    "starts_with": "starts with",
+    "rows_hidden": "Hiding all except row {{rowId}}"
   }
 }

@@ -42,6 +42,7 @@
   },
   "filter": {
     "contains": "enthält",
-    "starts_with": "beginnt mit"
+    "starts_with": "beginnt mit",
+    "rows_hidden": "Es wird nur Zeile {{rowId}} angezeigt"
   }
 }

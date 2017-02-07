@@ -63,12 +63,21 @@
       border-top: none;
       border-bottom-left-radius: 3px;
       border-bottom-right-radius: 3px;
-      @include box-shadow(0px 0px 50px rgba(black, 0.2))
+      @include box-shadow(0px 0px 50px rgba(black, 0.2));
 
       .active {
         background-color: $color-border-grey;
       }
     }
+  }
+
+  .wip-filter-message {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    background-color: $color-background-very-light-grey;
   }
 
   .filter-row, .sort-row {
