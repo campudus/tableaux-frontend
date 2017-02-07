@@ -1,9 +1,10 @@
-import React from 'react';
-import {translate} from 'react-i18next';
-import {openOverlay, closeOverlay, removeRow} from '../../actions/ActionCreator';
-import RowConcatHelper from '../../helpers/RowConcatHelper';
-import i18n from 'i18next';
-import DependentRowsList from '../../components/rows/DependentRowsList';
+import React from "react";
+import {translate} from "react-i18next";
+import {openOverlay, closeOverlay, removeRow} from "../../actions/ActionCreator";
+import RowConcatHelper from "../../helpers/RowConcatHelper";
+import i18n from "i18next";
+import DependentRowsList from "../../components/rows/DependentRowsList";
+import {aaRouter} from "../../components/table/tableNavigationWorker";
 
 let DeleteRowOverlayFooter = (props) => {
   return (
@@ -43,6 +44,7 @@ DeleteRowOverlayBody.propTypes = {
 export function confirmDeleteRow(row, langtag) {
   const onYesRowDelete = () => {
     removeRow(row.tableId, row.getId());
+    aaRouter.navigate("", {trigger: false});
     closeOverlay();
   };
 

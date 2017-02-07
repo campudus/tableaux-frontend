@@ -2,7 +2,6 @@ import React from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import {translate} from "react-i18next";
 
-//TODO: Ajax spinner when adding row
 class NewRow extends React.Component {
 
   addRow = () => {

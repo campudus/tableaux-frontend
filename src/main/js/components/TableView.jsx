@@ -20,6 +20,7 @@ import {either} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
+import {aaRouter} from "./table/tableNavigationWorker";
 
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -45,8 +46,8 @@ class TableView extends React.Component {
     if (columnId && rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
-        row: rowId,
-        column: columnId,
+        rowId: rowId,
+        columnId: columnId,
         filter: filter
       }
     }
@@ -61,7 +62,7 @@ class TableView extends React.Component {
       return;
     }
 
-    const cols = table.columns.models;
+    const cols = table.columns;
 
     const savedView = either(localStorage)
       .map(f.prop(["tableViews"]))
@@ -84,7 +85,7 @@ class TableView extends React.Component {
     }
 
     const {currentTableId} = this.state;
-    const cols = this.tables.get(currentTableId).columns.models;
+    const cols = this.tables.get(currentTableId).columns;
     const view = cols.reduce((a, b) => f.merge({[b.id]: b.visible}, a), {});
     const savedViews = either(localStorage)
       .map(f.prop(["tableViews"]))
@@ -105,9 +106,9 @@ class TableView extends React.Component {
       return;
     }
 
-    const column = this.pendingCellGoto.column;
+    const columnId = this.pendingCellGoto.columnId;
     const columns = this.getCurrentTable().columns.models;
-    if (!this.checkIfColExists(columns, column)) {
+    if (!this.checkIfColExists(columns, columnId)) {
       return;
     }
     const {page} = this.pendingCellGoto;
@@ -116,43 +117,44 @@ class TableView extends React.Component {
     }
   };
 
+  // needs the columns.models as argument, else won't find correct column
   checkIfColExists = (columns, colId) => {
     if (f.findIndex(f.matchesProperty("id", colId), columns) < 0) {
       this.cellJumpError(i18n.t("table:jump.no_such_column", {col: colId}));
       this.pendingCellGoto = null;
-      false;
+      return false;
     } else {
       return true;
     }
   };
 
-  estimateCellPage = row => 1 + Math.ceil((row - INITIAL_PAGE_SIZE) / PAGE_SIZE);
+  estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({row, column, page, filter, ignore = false}, nPagesLoaded = 0) => {
-    if (! this.checkIfColExists(this.getCurrentTable().columns.models, column)) {
+  gotoCell = ({rowId, columnId, page, filter, ignore = false}, nPagesLoaded = 0) => {
+    if (!this.checkIfColExists(this.getCurrentTable().columns.models, columnId)) {
       return;
     }
-    const cellId = `cell-${this.state.currentTableId}-${column}-${row}`;
+    const cellId = `cell-${this.state.currentTableId}-${columnId}-${rowId}`;
 
     // Helper closure
     const focusCell = cell => {
       this.setColumnsVisibility({
         val: true,
-        coll: [column]
+        coll: [columnId]
       });
       if (filter) {
         this.changeFilter({
           filterMode: FilterModes.ID_ONLY,
-          filterValue: row,
+          filterValue: rowId,
           filterColumnId: "noop",
           sortColumnId: 0
         });
       }
       const rows = this.getCurrentTable().rows.models;
-      const rowIndex = f.findIndex(f.matchesProperty('id', row), rows);
+      const rowIndex = f.findIndex(f.matchesProperty('id', rowId), rows);
       const columns = this.getCurrentTable().columns.models;
       const visibleColumns = columns.filter(x => x.visible);
-      const colIndex = f.findIndex(f.matchesProperty("id", column), visibleColumns);
+      const colIndex = f.findIndex(f.matchesProperty("id", columnId), visibleColumns);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
       const yOffs = (filter)
@@ -167,16 +169,16 @@ class TableView extends React.Component {
 
     if (nPagesLoaded >= page || this.tableFullyLoaded) {
       either(this.getCurrentTable().rows)
-        .map(rows => rows.get(row).cells)
+        .map(rows => rows.get(rowId).cells)
         .map(cells => cells.get(cellId))
         .map(focusCell)
-        .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: row})));
+        .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: rowId})));
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {
-        row: row,
-        column: column,
-        page: this.estimateCellPage(row)
+        rowId: rowId,
+        columnId: columnId,
+        page: this.estimateCellPage(rowId)
       };
     }
   };
@@ -307,7 +309,7 @@ class TableView extends React.Component {
 
   //Set visibility of all columns in <coll> to <val>
   setColumnsVisibility = ({val, coll, cb}) => {
-    const columns = this.tables.get(this.state.currentTableId).columns.models;
+    const columns = this.tables.get(this.state.currentTableId).columns;
     columns
       .filter(x => f.contains(x.id, coll))
       .forEach(x => x.visible = val);
@@ -351,6 +353,9 @@ class TableView extends React.Component {
       rowsCollection = this.getCurrentTable().rows;
     } else {
       rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
+      if (rowsFilter.filterMode !== FilterModes.ID_ONLY) {
+        aaRouter.navigate("", {trigger: false});
+      }
     }
 
     this.setState({
