@@ -18,7 +18,6 @@ import TableSettings from "./header/tableSettings/TableSettings";
 import ColumnFilter from "./header/ColumnFilter";
 import {either} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
-import LocationBar from "location-bar";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
 
@@ -51,31 +50,6 @@ class TableView extends React.Component {
         filter: filter
       }
     }
-
-    this.locationBar = new LocationBar();
-    this.locationBar.onChange(this.handleUrlChange);
-    this.locationBar.start({
-      pushState: true,
-      silent: true
-    });
-  };
-
-  handleUrlChange = url => {
-    if (!this.tables) {
-      return;
-    }
-    const urlExtractor = /([\w]{2}-?[\w]*)\/tables\/([0-9]+)\/columns\/([0-9+])\/rows\/([0-9]+)(\?filter)?/;
-    const matchMap = urlExtractor.exec(url);
-    if (!matchMap || matchMap.length !== 6) {
-      return null;
-    }
-    const [fullMatch, langtag, table, column, row, filter] = matchMap;
-    this.gotoCell({
-      row: parseInt(row),
-      column: parseInt(column),
-      page: this.estimateCellPage(row),
-      ignore: "NO_HISTORY_PUSH"
-    });
   };
 
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
@@ -309,7 +283,6 @@ class TableView extends React.Component {
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    this.locationBar.stop();
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -321,6 +294,14 @@ class TableView extends React.Component {
       } else {
         this.doSwitchTable();
       }
+    } else if (nextProps.columnId != this.props.columnId
+      || nextProps.rowId != this.props.rowId) {
+      this.gotoCell({
+        column: nextProps.columnId,
+        row: nextProps.rowId,
+        filter: false,
+        page: this.estimateCellPage(nextProps.rowId)
+      })
     }
   };
 
