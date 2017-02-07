@@ -1,17 +1,16 @@
-import React from 'react';
-import AmpersandMixin from'ampersand-react-mixin';
-import ActionCreator from'../../actions/ActionCreator';
-import {translate} from 'react-i18next';
+import React from "react";
+import ActionCreator from "../../actions/ActionCreator";
+import {translate} from "react-i18next";
 
 //TODO: Ajax spinner when adding row
 class NewRow extends React.Component {
 
-  addRow() {
+  addRow = () => {
     var tableId = this.props.table.getId();
     ActionCreator.addRow(tableId);
   };
 
-  render() {
+  render = () => {
     var t = this.props.t;
     return (
       <div className="new-row">
