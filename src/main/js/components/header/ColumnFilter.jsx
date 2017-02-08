@@ -14,7 +14,8 @@ class ColumnFilter extends React.Component {
     this.setState({open: !this.state.open});
   };
 
-  handleClickOutside = () => {
+  handleClickOutside = event => {
+    event.preventDefault();
     this.setState({open: false});
   };
 
@@ -27,9 +28,15 @@ class ColumnFilter extends React.Component {
       "active": open,
       "has-filter": !open && nHidden > 0,
     });
+
+    const buttonClass = classNames(
+      "button",
+      {"ignore-react-onclickoutside": open}
+    );
+
     return (
       <div id="column-filter-wrapper" className={cssClass}>
-        <a href="#" className="button" onMouseDown={this.togglePopup}>
+        <a href="#" className={buttonClass} onClick={this.togglePopup}>
           <i className="fa fa-eye" />
           {(nHidden > 0)
             ? <text className="infotext">{message}</text>

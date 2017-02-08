@@ -38,8 +38,9 @@ class ColumnFilterPopup extends React.Component {
     return f.allPass([lvl1, lvl2])
   };
 
-  handleClickOutside = () => {
-    this.props.close();
+  handleClickOutside = event => {
+    event.preventDefault();
+    this.props.close(event);
   };
 
   setVisibilityAndUpdateGrid(val, coll) {
