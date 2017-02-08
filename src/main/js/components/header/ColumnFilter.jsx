@@ -9,7 +9,8 @@ class ColumnFilter extends React.Component {
 
   state = {open: false};
 
-  togglePopup = () => {
+  togglePopup = event => {
+    event.preventDefault();
     this.setState({open: !this.state.open});
   };
 
