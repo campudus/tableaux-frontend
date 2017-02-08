@@ -62,7 +62,7 @@ class TableView extends React.Component {
       return;
     }
 
-    const cols = table.columns;
+    const cols = table.columns.models;
 
     const savedView = either(localStorage)
       .map(f.prop(["tableViews"]))
@@ -85,7 +85,7 @@ class TableView extends React.Component {
     }
 
     const {currentTableId} = this.state;
-    const cols = this.tables.get(currentTableId).columns;
+    const cols = this.tables.get(currentTableId).columns.models;
     const view = cols.reduce((a, b) => f.merge({[b.id]: b.visible}, a), {});
     const savedViews = either(localStorage)
       .map(f.prop(["tableViews"]))
@@ -299,8 +299,8 @@ class TableView extends React.Component {
     } else if (nextProps.columnId != this.props.columnId
       || nextProps.rowId != this.props.rowId) {
       this.gotoCell({
-        column: nextProps.columnId,
-        row: nextProps.rowId,
+        columnId: nextProps.columnId,
+        rowId: nextProps.rowId,
         filter: false,
         page: this.estimateCellPage(nextProps.rowId)
       })

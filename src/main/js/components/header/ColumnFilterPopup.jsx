@@ -2,7 +2,6 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import Select from "react-select";
 import {either} from "../../helpers/monads";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
@@ -107,8 +106,8 @@ class ColumnFilterPopup extends React.Component {
     return (
       <div id="column-filter-popup-wrapper">
         <div className="row infotext header-text">
-          {i18n.t("table:hide_unhide")}
           <i className="fa fa-eye" />
+          {i18n.t("table:hide_unhide")}
         </div>
         <div className="wrap-me-grey">
 
