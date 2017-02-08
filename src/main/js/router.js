@@ -4,6 +4,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var locale = require('browser-locale')();
 import Tableaux from "./components/Tableaux.jsx";
+import * as f from "lodash/fp";
 var Dispatcher = require('./dispatcher/Dispatcher');
 var TableauxConstants = require('./constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
@@ -18,7 +19,7 @@ var TableauxRouter = Router.extend({
     'tables(/)' : 'noTableAndLangtag',
     ':langtag/tables(/)' : 'noTable',
 
-    ':langtag/tables/:tableid(/columns/:columnid/rows/:rowid)(?:filterString)' : 'tableBrowser',
+    ':langtag/tables/:tableid(/columns/:columnid)(/rows/:rowid)(?:filterString)' : 'tableBrowser',
 
     ':langtag/media(/)' : 'mediaBrowser',
     ':langtag/media/:folderid' : 'mediaBrowser',
@@ -95,7 +96,23 @@ var TableauxRouter = Router.extend({
     });
   },
 
-  tableBrowser : function (langtag, tableid, columnid, rowid, filterString) {
+  tableBrowser : function (langtag, tableid, a, b, c) {
+    const optionalArgs = [a, b, c].filter(x => x);
+
+    // sort optional args to values
+    let columnid, rowid, filterString;
+    if (optionalArgs.length === 3) {
+      [columnid, rowid, filterString] = optionalArgs;
+    } else if (optionalArgs.length === 2) {
+      if (f.startsWith("filter", f.last(optionalArgs))) {
+        [rowid, filterString] = optionalArgs;
+      } else {
+        [columnid, rowid] = optionalArgs;
+      }
+    } else {
+      rowid = f.first(optionalArgs);
+    }
+
     console.log("TableauxRouter.tableBrowser", langtag, tableid, columnid, rowid, (filterString) ? "rowFilter" : "");
     currentLangtag = langtag;
     //TODO show error to user

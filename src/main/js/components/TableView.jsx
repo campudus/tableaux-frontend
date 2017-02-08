@@ -107,8 +107,8 @@ class TableView extends React.Component {
       return;
     }
     ActionCreator.jumpSpinnerOn();
-    const columnId = this.pendingCellGoto.columnId;
     const columns = this.getCurrentTable().columns.models;
+    const columnId = this.pendingCellGoto.columnId || f.first(columns).getId();
     if (!this.checkIfColExists(columns, columnId)) {
       return;
     }
@@ -132,18 +132,19 @@ class TableView extends React.Component {
 
   estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({rowId, columnId, page, filter, ignore = false}, nPagesLoaded = 0) => {
+  gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH"}, nPagesLoaded = 0) => {
+    const colId = columnId || f.first(this.getCurrentTable().columns.models).getId();
     ActionCreator.jumpSpinnerOn();
-    if (!this.checkIfColExists(this.getCurrentTable().columns.models, columnId)) {
+    if (!this.checkIfColExists(this.getCurrentTable().columns.models, colId)) {
       return;
     }
-    const cellId = `cell-${this.state.currentTableId}-${columnId}-${rowId}`;
+    const cellId = `cell-${this.state.currentTableId}-${colId}-${rowId}`;
 
     // Helper closure
     const focusCell = cell => {
       this.setColumnsVisibility({
         val: true,
-        coll: [columnId]
+        coll: [colId]
       });
       if (filter) {
         this.changeFilter({
@@ -157,7 +158,7 @@ class TableView extends React.Component {
       const rowIndex = f.findIndex(f.matchesProperty('id', rowId), rows);
       const columns = this.getCurrentTable().columns.models;
       const visibleColumns = columns.filter(x => x.visible);
-      const colIndex = f.findIndex(f.matchesProperty("id", columnId), visibleColumns);
+      const colIndex = f.findIndex(f.matchesProperty("id", colId), visibleColumns);
       const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
       const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
       const yOffs = (filter)
@@ -181,7 +182,7 @@ class TableView extends React.Component {
     } else {
       this.pendingCellGoto = {
         rowId: rowId,
-        columnId: columnId,
+        columnId: colId,
         page: this.estimateCellPage(rowId)
       };
     }
