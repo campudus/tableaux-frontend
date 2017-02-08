@@ -1,9 +1,7 @@
 import _ from "lodash";
 import f from "lodash/fp";
 import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
-import Router from "ampersand-router";
-
-export const aaRouter = new Router();
+import App from "ampersand-app";
 
 export function shouldCellFocus() {
   //we dont want to force cell focus when overlay is open
@@ -176,7 +174,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
   const rowId = cell.row.id;
   if (selected !== "NO_HISTORY_PUSH") {
     const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
-    aaRouter.navigate(cellURL, {trigger: false})
+    App.router.navigate(cellURL, {trigger: false})
   }
   this.setState({
     selectedCell: cell,

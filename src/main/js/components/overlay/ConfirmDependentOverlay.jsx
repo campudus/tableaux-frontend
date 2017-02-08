@@ -4,7 +4,7 @@ import {openOverlay, closeOverlay, removeRow} from "../../actions/ActionCreator"
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 import i18n from "i18next";
 import DependentRowsList from "../../components/rows/DependentRowsList";
-import {aaRouter} from "../../components/table/tableNavigationWorker";
+import App from "ampersand-app";
 
 let DeleteRowOverlayFooter = (props) => {
   return (
@@ -44,7 +44,7 @@ DeleteRowOverlayBody.propTypes = {
 export function confirmDeleteRow(row, langtag) {
   const onYesRowDelete = () => {
     removeRow(row.tableId, row.getId());
-    aaRouter.navigate("", {trigger: false});
+    App.router.navigate("", {trigger: false});
     closeOverlay();
   };
 

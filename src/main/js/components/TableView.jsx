@@ -20,7 +20,7 @@ import {either} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
-import {aaRouter} from "./table/tableNavigationWorker";
+import App from "ampersand-app";
 
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -354,7 +354,7 @@ class TableView extends React.Component {
     } else {
       rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
       if (rowsFilter.filterMode !== FilterModes.ID_ONLY) {
-        aaRouter.navigate("", {trigger: false});
+        App.router.navigate("", {trigger: false});
       }
     }
 
