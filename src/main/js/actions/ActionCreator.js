@@ -263,5 +263,14 @@ module.exports = {
 
   setColumnsVisibility: (to, cols, cb) => {
     Dispatcher.trigger(ActionTypes.SET_COLUMNS_VISIBILITY, {coll: cols, val: to, cb: cb});
+  },
+
+  jumpSpinnerOn: function() {
+    console.log("turning the spinner on!")
+    Dispatcher.trigger(ActionTypes.JUMP_SPINNER_ON, {})
+  },
+
+  jumpSpinnerOff: function() {
+      Dispatcher.trigger(ActionTypes.JUMP_SPINNER_OFF, {})
   }
 };

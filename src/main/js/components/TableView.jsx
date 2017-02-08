@@ -43,7 +43,8 @@ class TableView extends React.Component {
     };
 
     const {columnId, rowId, filter} = this.props;
-    if (columnId && rowId) {
+    console.log("colId", columnId, "rowId", rowId, "filter?", filter)
+    if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
         rowId: rowId,
@@ -105,7 +106,7 @@ class TableView extends React.Component {
     if (!this.pendingCellGoto) {
       return;
     }
-
+    ActionCreator.jumpSpinnerOn();
     const columnId = this.pendingCellGoto.columnId;
     const columns = this.getCurrentTable().columns.models;
     if (!this.checkIfColExists(columns, columnId)) {
@@ -120,6 +121,7 @@ class TableView extends React.Component {
   // needs the columns.models as argument, else won't find correct column
   checkIfColExists = (columns, colId) => {
     if (f.findIndex(f.matchesProperty("id", colId), columns) < 0) {
+      ActionCreator.jumpSpinnerOff();
       this.cellJumpError(i18n.t("table:jump.no_such_column", {col: colId}));
       this.pendingCellGoto = null;
       return false;
@@ -131,6 +133,7 @@ class TableView extends React.Component {
   estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
   gotoCell = ({rowId, columnId, page, filter, ignore = false}, nPagesLoaded = 0) => {
+    ActionCreator.jumpSpinnerOn();
     if (!this.checkIfColExists(this.getCurrentTable().columns.models, columnId)) {
       return;
     }
@@ -173,6 +176,7 @@ class TableView extends React.Component {
         .map(cells => cells.get(cellId))
         .map(focusCell)
         .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: rowId})));
+      ActionCreator.jumpSpinnerOff();
       this.pendingCellGoto = null;
     } else {
       this.pendingCellGoto = {

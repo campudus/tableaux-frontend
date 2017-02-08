@@ -92,7 +92,7 @@ class ColumnFilterPopup extends React.Component {
   };
 
   render = () => {
-    const {columns, langtag} = this.props;
+    const {columns} = this.props;
     const n_hidden = columns.filter(x => !x.visible).length;
     const {models} = this.state;
 
