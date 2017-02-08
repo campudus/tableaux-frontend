@@ -65,7 +65,6 @@ class ColumnFilterPopup extends React.Component {
       .getOrElseThrow("Could not extract displayName or name from" + col);
 
   renderCheckboxItems = ({key, index, style}) => {
-    const {colVisible, langtag} = this.props;
     const {models} = this.state;
     const col = models[index];
     const name = this.getColName(col);
@@ -95,13 +94,6 @@ class ColumnFilterPopup extends React.Component {
     const {columns, langtag} = this.props;
     const n_hidden = columns.filter(x => !x.visible).length;
     const {models} = this.state;
-
-    const getName = x => {
-      return either(x)
-        .map(f.prop(["displayName", langtag]))
-        .orElse(f.prop(["name"]))
-        .getOrElseThrow("Could not extract displayName or name from" + x);
-    };
 
     return (
       <div id="column-filter-popup-wrapper">

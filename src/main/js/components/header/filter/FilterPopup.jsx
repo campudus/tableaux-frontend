@@ -9,7 +9,7 @@ import FilterModePopup from "./FilterModePopup";
 import {translate} from "react-i18next";
 import TableauxConstants, {FilterModes, ColumnKinds} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
-import {either, spy} from "../../../helpers/monads";
+import {either} from "../../../helpers/monads";
 
 @translate(['filter', 'table'])
 @listensToClickOutside
@@ -189,7 +189,7 @@ class FilterPopup extends React.Component {
 
     return (
       <div id="filter-popup">
-          {(either(spy(currentFilter)).map(f.matchesProperty("filterColumnId", "noop")).getOrElse(false))
+          {(either(currentFilter).map(f.matchesProperty("filterColumnId", "noop")).getOrElse(false))
             ? (
               <div className="wip-filter-message">
                 {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}

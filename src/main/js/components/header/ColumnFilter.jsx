@@ -26,7 +26,7 @@ class ColumnFilter extends React.Component {
     const cssClass = classNames({
       "active": open,
       "has-filter": !open && nHidden > 0,
-    })
+    });
     return (
       <div id="column-filter-wrapper" className={cssClass}>
         <a href="#" className="button" onMouseDown={this.togglePopup}>
@@ -46,8 +46,7 @@ class ColumnFilter extends React.Component {
       </div>
     )
   }
-}
-;
+};
 
 ColumnFilter.propTypes = {
   langtag: React.PropTypes.string.isRequired,
