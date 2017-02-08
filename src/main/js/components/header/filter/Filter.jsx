@@ -4,6 +4,7 @@ import {translate} from "react-i18next";
 import * as f from "lodash/fp";
 import {FilterModes} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/monads";
+import classNames from "classnames";
 
 class FilterButton extends React.Component {
 
@@ -57,21 +58,19 @@ class FilterButton extends React.Component {
       buttonClass += " ignore-react-onclickoutside";
     }
 
-    const css_class = f.compose(
-      f.first,
-      f.find(x => x[1]),
-      f.zip(["active", "has-filter", ""])
-    )([this.state.open, this.props.currentFilter, true])
+    const cssClass = classNames({
+      "active": this.state.open,
+      "has-filter": this.props.currentFilter && !this.state.open
+    });
 
     return (
-      <div id="filter-wrapper" className={css_class}>
+      <div id="filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
           <i className="fa fa-filter"></i>{t('button.title')}</a>
         {this.renderFilterPopup()}
       </div>
     )
   }
-
 }
 
 export default translate(['filter'])(FilterButton);

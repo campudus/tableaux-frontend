@@ -8,7 +8,8 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255,255,255,0.8);
+    background-color: white;
+    opacity: 0.95;
     z-index: 3;
 
     .jump-spinner-content {
@@ -18,20 +19,18 @@
       justify-content: center;
       height: 100%;
 
-      div {
-        padding: 1em;
-      }
-
       .jump-spinner-img {
       }
 
       .jump-spinner-title {
+        padding: 0.5em;
         font-size: xx-large;
       }
 
       .jump-spinner-subtitle {
         min-height: 2em;
         font-size: large;
+        color: $color-text-medium-grey;
       }
     }
   }

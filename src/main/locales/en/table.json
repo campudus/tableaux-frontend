@@ -44,5 +44,9 @@
     "contains": "contains",
     "starts_with": "starts with",
     "rows_hidden": "Hiding all except row {{rowId}}"
+  },
+  "jumpspinner": {
+    "title": "Hold on, we bring you there!",
+    "subtitle": "Waiting for more data."
   }
 }

@@ -266,11 +266,14 @@ module.exports = {
   },
 
   jumpSpinnerOn: function() {
-    console.log("turning the spinner on!")
     Dispatcher.trigger(ActionTypes.JUMP_SPINNER_ON, {})
   },
 
   jumpSpinnerOff: function() {
       Dispatcher.trigger(ActionTypes.JUMP_SPINNER_OFF, {})
+  },
+
+  resetTableURL: function() {
+      Dispatcher.trigger(ActionTypes.RESET_TABLE_URL, {});
   }
 };

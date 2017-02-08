@@ -44,5 +44,9 @@
     "contains": "enthält",
     "starts_with": "beginnt mit",
     "rows_hidden": "Es wird nur Zeile {{rowId}} angezeigt"
+  },
+  "jumpspinner": {
+    "title": "Gleich am Ziel!",
+    "subtitle": "Weitere Daten werden angefragt."
   }
 }

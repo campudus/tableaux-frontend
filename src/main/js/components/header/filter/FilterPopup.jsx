@@ -158,6 +158,9 @@ class FilterPopup extends React.Component {
     return {
       enter: (event) => {
         this.filterUpdate(event);
+      },
+      escape: event => {
+        this.filterInput.value = "";
       }
     };
   };
@@ -210,12 +213,14 @@ class FilterPopup extends React.Component {
                 />
                 <span className="separator">{t(filterInfoString)}</span>
 
-                <input value={this.state.filterValue} type="text" className="filter-input" ref="filterInput"
+                <input value={this.state.filterValue} type="text" className="filter-input" ref={fi => this.filterInput = fi}
                        onChange={this.filterInputChange}
-                       onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} />
+                       onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+                       onClick={x => this.filterInput.focus()}
+                />
                 <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
                   <a href="#"
-                     className="ignore-react-clickoutside"
+                     className={(this.state.filterModesOpen) ?"ignore-react-clickoutside" : ""}
                      onMouseDown={this.toggleFilterModePopup}>
                     <i className="fa fa-search" />
                     <i className="fa fa-caret-down" />

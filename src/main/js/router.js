@@ -113,7 +113,7 @@ var TableauxRouter = Router.extend({
       rowid = f.first(optionalArgs);
     }
 
-    console.log("TableauxRouter.tableBrowser", langtag, tableid, columnid, rowid, (filterString) ? "rowFilter" : "");
+    console.log(`TableauxRouter.tableBrowser lang=${langtag}, table=${tableid} column=${columnid} row=${rowid} filtering=${(filterString) ? "yes" : "no"}`);
     currentLangtag = langtag;
     //TODO show error to user
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {

@@ -1,10 +1,9 @@
 import React from "react";
 import ColumnFilterPopup from "./ColumnFilterPopup";
-import listensToClickOutside from "react-onclickoutside";
 import i18n from "i18next";
 import classNames from "classnames";
 
-@listensToClickOutside
+
 class ColumnFilter extends React.Component {
 
   state = {open: false};
@@ -14,7 +13,7 @@ class ColumnFilter extends React.Component {
     this.setState({open: !this.state.open});
   };
 
-  handleClickOutside = event => {
+  handleClickedOutside = (event) => {
     event.preventDefault();
     this.setState({open: false});
   };
@@ -34,6 +33,8 @@ class ColumnFilter extends React.Component {
       {"ignore-react-onclickoutside": open}
     );
 
+    console.log("render", cssClass, buttonClass);
+
     return (
       <div id="column-filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.togglePopup}>
@@ -45,7 +46,7 @@ class ColumnFilter extends React.Component {
         </a>
         {(open)
           ? <ColumnFilterPopup langtag={langtag}
-                               close={this.togglePopup}
+                               close={this.handleClickedOutside}
                                columns={this.props.columns}
           />
           : null
@@ -53,7 +54,7 @@ class ColumnFilter extends React.Component {
       </div>
     )
   }
-};
+}
 
 ColumnFilter.propTypes = {
   langtag: React.PropTypes.string.isRequired,

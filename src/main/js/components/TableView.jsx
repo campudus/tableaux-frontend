@@ -43,7 +43,6 @@ class TableView extends React.Component {
     };
 
     const {columnId, rowId, filter} = this.props;
-    console.log("colId", columnId, "rowId", rowId, "filter?", filter)
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -52,6 +51,10 @@ class TableView extends React.Component {
         filter: filter
       }
     }
+  };
+
+  resetURL = () => {
+    App.router.navigate(`${this.props.langtag}/tables/${this.state.currentTableId}`);
   };
 
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
@@ -193,6 +196,7 @@ class TableView extends React.Component {
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    Dispatcher.on(ActionTypes.RESET_TABLE_URL, this.resetURL);
   };
 
   componentDidMount = () => {
@@ -290,6 +294,7 @@ class TableView extends React.Component {
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    Dispatcher.off(ActionTypes.RESET_TABLE_URL, this.resetURL);
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -301,8 +306,8 @@ class TableView extends React.Component {
       } else {
         this.doSwitchTable();
       }
-    } else if (nextProps.columnId != this.props.columnId
-      || nextProps.rowId != this.props.rowId) {
+    } else if (nextProps.rowId
+      && (nextProps.columnId != this.props.columnId || nextProps.rowId != this.props.rowId)) {
       this.gotoCell({
         columnId: nextProps.columnId,
         rowId: nextProps.rowId,
@@ -359,7 +364,7 @@ class TableView extends React.Component {
     } else {
       rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
       if (rowsFilter.filterMode !== FilterModes.ID_ONLY) {
-        App.router.navigate("", {trigger: false});
+        this.resetURL();
       }
     }
 
@@ -431,7 +436,7 @@ class TableView extends React.Component {
       );
     }
   }
-};
+}
 
 TableView.propTypes = {
   langtag: React.PropTypes.string.isRequired,
