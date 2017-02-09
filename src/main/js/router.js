@@ -23,7 +23,8 @@ var TableauxRouter = Router.extend({
 
     ':langtag/media(/)' : 'mediaBrowser',
     ':langtag/media/:folderid' : 'mediaBrowser',
-    '(:langtag/)table(/)(*rest)' : 'redirectToNewUrl',
+    '(:langtag/)table(/)' : 'redirectToNewURL',
+    '(:langtag/)table/*rest' : 'redirectToNewUrl',
   },
 
   alreadyRendered : false,
