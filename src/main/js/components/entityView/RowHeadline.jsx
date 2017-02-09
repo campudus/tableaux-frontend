@@ -1,6 +1,6 @@
-import React from 'react';
-import {ColumnKinds, FallbackLanguage} from '../../constants/TableauxConstants';
-import {getLanguageOfLangtag} from '../../helpers/multiLanguage';
+import React from "react";
+import {ColumnKinds, FallbackLanguage} from "../../constants/TableauxConstants";
+import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
 
 class RowHeadline extends React.Component {
 
@@ -26,7 +26,7 @@ class RowHeadline extends React.Component {
         break;
       case ColumnKinds.link:
         columnIcon = <i key="column-icon" className="fa fa-link" />;
-        columnName = <a target="_blank" href={`/${langtag}/table/${column.toTable}`}>{columnName}
+        columnName = <a target="_blank" href={`/${langtag}/tables/${column.toTable}`}>{columnName}
           <i className="fa fa-external-link" /></a>;
         break;
       case ColumnKinds.numeric:

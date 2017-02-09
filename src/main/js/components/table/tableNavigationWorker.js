@@ -1,5 +1,7 @@
-import _ from 'lodash';
-import {Directions, ColumnKinds, Langtags,DefaultLangtag} from '../../constants/TableauxConstants';
+import _ from "lodash";
+import f from "lodash/fp";
+import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
+import App from "ampersand-app";
 
 export function shouldCellFocus() {
   //we dont want to force cell focus when overlay is open
@@ -26,14 +28,14 @@ export function checkFocusInsideTable() {
 export function disableShouldCellFocus() {
   if (this.state.shouldCellFocus) {
     console.log("Table.disableShouldCellFocus");
-    this.setState({shouldCellFocus : false});
+    this.setState({shouldCellFocus: false});
   }
 }
 
 export function enableShouldCellFocus() {
   if (!this.state.shouldCellFocus) {
     console.log("Table.enableShouldCellFocus");
-    this.setState({shouldCellFocus : true});
+    this.setState({shouldCellFocus: true});
   }
 }
 
@@ -45,60 +47,60 @@ export function getKeyboardShortcuts() {
     enableShouldCellFocus.call(this);
   }
   return {
-    left : (event)=> {
+    left: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.LEFT);
+          setNextSelectedCell.call(this, Directions.LEFT);
         }
       );
     },
-    right : (event) => {
+    right: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.RIGHT);
+          setNextSelectedCell.call(this, Directions.RIGHT);
         }
       );
     },
-    tab : (event)=> {
+    tab: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
+          setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
         }
       );
     },
-    up : (event)=> {
+    up: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.UP);
+          setNextSelectedCell.call(this, Directions.UP);
         }
       );
     },
-    down : (event)=> {
+    down: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.DOWN);
+          setNextSelectedCell.call(this, Directions.DOWN);
         }
       );
     },
-    enter : (event)=> {
+    enter: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (selectedCell && !selectedCellEditing) {
-          toggleCellEditing.call(this);
+          if (selectedCell && !selectedCellEditing) {
+            toggleCellEditing.call(this);
           }
         }
       );
     },
-    escape : (event)=> {
+    escape: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (selectedCell && selectedCellEditing) {
-          toggleCellEditing.call(this, {editing : false});
+          if (selectedCell && selectedCellEditing) {
+            toggleCellEditing.call(this, {editing: false});
           }
         }
       );
     },
-    text : (event)=> {
+    text: (event) => {
       if (selectedCell && !selectedCellEditing
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
@@ -166,11 +168,18 @@ export function isLastRowSelected() {
   return (currentRowId === lastRowId);
 }
 
-export function toggleCellSelection(params) {
+export function toggleCellSelection({selected, cell, langtag}) {
+  const tableId = cell.tableId;
+  const columnId = cell.column.id;
+  const rowId = cell.row.id;
+  if (selected !== "NO_HISTORY_PUSH") {
+    const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
+    App.router.navigate(cellURL, {trigger: false})
+  }
   this.setState({
-    selectedCell : params.cell,
-    selectedCellEditing : false,
-    selectedCellExpandedRow : params.langtag || null
+    selectedCell: cell,
+    selectedCellEditing: false,
+    selectedCellExpandedRow: langtag || null
   });
 }
 
@@ -181,7 +190,7 @@ export function toggleCellEditing(params) {
     const noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);
     if (!noEditingModeNeeded) {
       this.setState({
-        selectedCellEditing : editVal
+        selectedCellEditing: editVal
       });
     }
   }
@@ -195,12 +204,12 @@ export function setNextSelectedCell(direction) {
   let row;
   let nextCellId;
   let rowCell = {
-    id : getCurrentSelectedRowId.call(this),
-    selectedCellExpandedRow : this.props.langtag
+    id: getCurrentSelectedRowId.call(this),
+    selectedCellExpandedRow: this.props.langtag
   };
   let columnCell = {
-    id : getCurrentSelectedColumnId.call(this),
-    selectedCellExpandedRow : this.props.langtag
+    id: getCurrentSelectedColumnId.call(this),
+    selectedCellExpandedRow: this.props.langtag
   };
   let newSelectedCellExpandedRow; //Either row or column switch changes the selected language
   const {table} = this.props;
@@ -235,8 +244,8 @@ export function setNextSelectedCell(direction) {
     let nextCell = row.cells.get(nextCellId);
     if (nextCell) {
       toggleCellSelection.call(this, {
-        cell : nextCell,
-        langtag : newSelectedCellExpandedRow
+        cell: nextCell,
+        langtag: newSelectedCellExpandedRow
       });
     }
   }
@@ -299,8 +308,8 @@ export function getNextRowCell(currentRowId, getPrev) {
   }
 
   return {
-    id : nextRowId,
-    selectedCellExpandedRow : nextSelectedCellExpandedRow
+    id: nextRowId,
+    selectedCellExpandedRow: nextSelectedCellExpandedRow
   };
 
 }
@@ -309,16 +318,15 @@ export function getPreviousRow(currentRowId) {
   return getNextRowCell.call(this, currentRowId, true);
 }
 
-export function getNextColumnCell(currenColumnId, getPrev) {
-  const {columns} = this.props.table;
-  const {selectedCell,expandedRowIds,selectedCellExpandedRow} = this.state;
-  const currentColumn = columns.get(currenColumnId);
-  const indexCurrentColumn = columns.indexOf(currentColumn);
+export function getNextColumnCell(currentColumnId, getPrev) {
+  const columns = this.props.table.columns.filter(col => col.visible);
+  const {selectedCell, expandedRowIds, selectedCellExpandedRow} = this.state;
+  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns)
   const numberOfColumns = columns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
-  const nextColumnIndex = Math.max(0, Math.min(nextIndex, numberOfColumns - 1));
-  const nextColumn = columns.at(nextColumnIndex);
-  const nextColumnId = nextColumn.getId();
+  const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
+  const nextColumn = f.nth(nextColumnIndex, columns);
+  const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
 
@@ -330,8 +338,8 @@ export function getNextColumnCell(currenColumnId, getPrev) {
   }
 
   return {
-    id : nextColumnId,
-    selectedCellExpandedRow : newSelectedCellExpandedRow
+    id: nextColumnId,
+    selectedCellExpandedRow: newSelectedCellExpandedRow
   };
 }
 
@@ -346,7 +354,7 @@ export function getPreviousColumn(currentColumnId) {
 export function preventSleepingOnTheKeyboard(cb) {
   console.log("preventSleepingOnTheKeyboard:", this);
   if (this.keyboardRecentlyUsedTimer === null) {
-    this.keyboardRecentlyUsedTimer = setTimeout(()=> {
+    this.keyboardRecentlyUsedTimer = setTimeout(() => {
       this.keyboardRecentlyUsedTimer = null;
     }, 100);
     cb();

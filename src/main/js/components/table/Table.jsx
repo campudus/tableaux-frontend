@@ -1,17 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AmpersandMixin from "ampersand-react-mixin";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import Columns from "./../columns/Columns.jsx";
 import Rows from "./../rows/Rows.jsx";
-import ActionCreator from "../../actions/ActionCreator";
-
-import {ActionTypes, Directions, ColumnKinds, RowHeight} from '../../constants/TableauxConstants';
-import KeyboardShortcutsHelper from '../../helpers/KeyboardShortcutsHelper';
-import * as tableRowsWorker from './tableRowsWorker';
-import * as tableNavigationWorker from './tableNavigationWorker';
-import * as tableContextMenu from './tableContextMenu';
+import {ActionTypes, Directions, ColumnKinds, RowHeight} from "../../constants/TableauxConstants";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import * as tableRowsWorker from "./tableRowsWorker";
+import * as tableNavigationWorker from "./tableNavigationWorker";
+import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
+import JumpSpinner from "./JumpSpinner";
 
 //Worker
 @listensToClickOutside
@@ -185,6 +183,7 @@ class Table extends React.Component {
                  this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
+          <JumpSpinner/>
           <Columns ref="columns" table={table} langtag={langtag}
                    columns={columns}
           />
@@ -207,7 +206,8 @@ class Table extends React.Component {
       </section>
     );
   }
-};
+}
+;
 
 Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,

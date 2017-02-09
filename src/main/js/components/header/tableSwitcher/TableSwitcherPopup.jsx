@@ -1,10 +1,10 @@
-import React from 'react';
-import listensToClickOutside from 'react-onclickoutside';
-import TableauxConstants from '../../../constants/TableauxConstants';
-import * as _ from 'lodash';
-import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
-import ReactDOM from 'react-dom';
-import {translate} from 'react-i18next';
+import React from "react";
+import listensToClickOutside from "react-onclickoutside";
+import TableauxConstants from "../../../constants/TableauxConstants";
+import * as _ from "lodash";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import ReactDOM from "react-dom";
+import {translate} from "react-i18next";
 
 @translate(['header'])
 @listensToClickOutside
@@ -235,7 +235,7 @@ class SwitcherPopup extends React.Component {
             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)} tabIndex="0"
             ref={"table" + table.id}>
           <div onClick={onClickFn}>{tableDisplayName}</div>
-          <a target="_blank" href={`/${langtag}/table/${table.id}`}><i className="fa fa-external-link"></i></a>
+          <a target="_blank" href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link"></i></a>
         </li>
       );
     });

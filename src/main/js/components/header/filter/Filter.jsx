@@ -1,8 +1,10 @@
-import React from 'react';
-import FilterPopup from './FilterPopup.jsx';
-import {translate} from 'react-i18next';
+import React from "react";
+import FilterPopup from "./FilterPopup.jsx";
+import {translate} from "react-i18next";
 import * as f from "lodash/fp";
 import {FilterModes} from "../../../constants/TableauxConstants";
+import {either} from "../../../helpers/monads";
+import classNames from "classnames";
 
 class FilterButton extends React.Component {
 
@@ -14,7 +16,7 @@ class FilterButton extends React.Component {
 
   state = {
     open: false,
-    filterMode: FilterModes.CONTAINS
+    filterMode: either(this.props.currentFilter).map(f.prop(["filterMode"])).getOrElse(FilterModes.CONTAINS)
   };
 
   constructor(props) {
@@ -26,16 +28,18 @@ class FilterButton extends React.Component {
   };
 
   setFilterMode = mode_string => {
-    this.setState({filterMode: mode_string});
+    this.setState(
+      {filterMode: mode_string});
   };
 
   renderFilterPopup() {
+    const plannedFilter = f.set(["filterMode"], this.state.filterMode, this.props.currentFilter);
     if (this.state.open) {
       return (
         <FilterPopup filterMode={this.state.filterMode}
                      setFilterMode={this.setFilterMode}
                      langtag={this.props.langtag} onClickedOutside={this.handleClickedOutside}
-                     columns={this.props.table.columns} currentFilter={this.props.currentFilter} />
+                     columns={this.props.table.columns} currentFilter={plannedFilter} />
       );
     } else {
       return null;
@@ -50,26 +54,23 @@ class FilterButton extends React.Component {
   render() {
     let {t} = this.props;
     let buttonClass = "button";
-
     if (this.state.open) {
       buttonClass += " ignore-react-onclickoutside";
     }
 
-    const css_class = f.compose(
-      f.first,
-      f.find(x => x[1]),
-      f.zip(["active", "has-filter", ""])
-    )([this.state.open, this.props.currentFilter, true])
+    const cssClass = classNames({
+      "active": this.state.open,
+      "has-filter": this.props.currentFilter && !this.state.open
+    });
 
     return (
-      <div id="filter-wrapper" className={css_class}>
+      <div id="filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
           <i className="fa fa-filter"></i>{t('button.title')}</a>
         {this.renderFilterPopup()}
       </div>
     )
   }
-
 }
 
 export default translate(['filter'])(FilterButton);

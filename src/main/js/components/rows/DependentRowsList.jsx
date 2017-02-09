@@ -1,8 +1,8 @@
-import React from 'react';
-import RowConcatHelper from '../../helpers/RowConcatHelper';
-import {getTableDisplayName} from '../../helpers/multiLanguage';
-import {translate} from 'react-i18next';
-import Spinner from '../header/Spinner';
+import React from "react";
+import RowConcatHelper from "../../helpers/RowConcatHelper";
+import {getTableDisplayName} from "../../helpers/multiLanguage";
+import {translate} from "react-i18next";
+import Spinner from "../header/Spinner";
 
 //Builds the actual dependent tables/rows DOM elements
 @translate('table')
@@ -72,7 +72,7 @@ export default class DependentRowsList extends React.Component {
       dependentTables = dependency.map((dep)=> {
         const {table, column, rows} = dep;
         const tableId = table.id;
-        const linkToTable = `/${langtag}/table/${tableId}`;
+        const linkToTable = `/${langtag}/tables/${tableId}`;
 
         //Builds dependent rows inside dependent tables
         const rowsDisplay = rows.map((row, idx)=> {

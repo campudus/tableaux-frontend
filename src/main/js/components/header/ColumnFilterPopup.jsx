@@ -2,7 +2,6 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import Select from "react-select";
 import {either} from "../../helpers/monads";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
@@ -39,8 +38,9 @@ class ColumnFilterPopup extends React.Component {
     return f.allPass([lvl1, lvl2])
   };
 
-  handleClickOutside = () => {
-    this.props.close();
+  handleClickOutside = event => {
+    event.preventDefault();
+    this.props.close(event);
   };
 
   setVisibilityAndUpdateGrid(val, coll) {
@@ -66,7 +66,6 @@ class ColumnFilterPopup extends React.Component {
       .getOrElseThrow("Could not extract displayName or name from" + col);
 
   renderCheckboxItems = ({key, index, style}) => {
-    const {colVisible, langtag} = this.props;
     const {models} = this.state;
     const col = models[index];
     const name = this.getColName(col);
@@ -93,22 +92,15 @@ class ColumnFilterPopup extends React.Component {
   };
 
   render = () => {
-    const {columns, langtag} = this.props;
+    const {columns} = this.props;
     const n_hidden = columns.filter(x => !x.visible).length;
     const {models} = this.state;
-
-    const getName = x => {
-      return either(x)
-        .map(f.prop(["displayName", langtag]))
-        .orElse(f.prop(["name"]))
-        .getOrElseThrow("Could not extract displayName or name from" + x);
-    };
 
     return (
       <div id="column-filter-popup-wrapper">
         <div className="row infotext header-text">
-          {i18n.t("table:hide_unhide")}
           <i className="fa fa-eye" />
+          {i18n.t("table:hide_unhide")}
         </div>
         <div className="wrap-me-grey">
 

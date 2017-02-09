@@ -3,7 +3,8 @@ var Router = require('ampersand-router');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var locale = require('browser-locale')();
-import Tableaux from './components/Tableaux.jsx';
+import Tableaux from "./components/Tableaux.jsx";
+import * as f from "lodash/fp";
 var Dispatcher = require('./dispatcher/Dispatcher');
 var TableauxConstants = require('./constants/TableauxConstants');
 var ActionTypes = TableauxConstants.ActionTypes;
@@ -14,18 +15,24 @@ export let currentLangtag = null;
 var TableauxRouter = Router.extend({
   routes : {
     '' : 'noTableAndLangtag',
-    ':langtag/' : 'noTableAndLangtag',
-    ':langtag' : 'noTableAndLangtag',
-    'table' : 'noTableAndLangtag',
-    ':langtag/table' : 'noTable',
+    ':langtag(/)' : 'noTableAndLangtag',
+    'tables(/)' : 'noTableAndLangtag',
+    ':langtag/tables(/)' : 'noTable',
 
-    ':langtag/table/:tableid' : 'tableBrowser',
+    ':langtag/tables/:tableid(/columns/:columnid)(/rows/:rowid)(?:filterString)' : 'tableBrowser',
 
-    ':langtag/media' : 'mediaBrowser',
-    ':langtag/media/:folderid' : 'mediaBrowser'
+    ':langtag/media(/)' : 'mediaBrowser',
+    ':langtag/media/:folderid' : 'mediaBrowser',
+    '(:langtag/)table(/)(*rest)' : 'redirectToNewUrl',
   },
 
   alreadyRendered : false,
+
+  redirectToNewUrl: function (langtag = null, rest = null) {
+    const prefix = (langtag) ? `${langtag}/` : "";
+    const suffix = (rest) ? rest : "";
+    return this.redirectTo(`${prefix}tables/${suffix}`)
+  },
 
   renderOrSwitchView : function (viewName, params) {
     if (this.alreadyRendered) {
@@ -56,7 +63,7 @@ var TableauxRouter = Router.extend({
 
   switchTableHandler : function (payload) {
     var langtag = payload.langtag;
-    App.router.history.navigate(langtag + '/table/' + payload.id, {trigger : true});
+    App.router.history.navigate(langtag + '/tables/' + payload.id, {trigger : true});
   },
 
   switchFolderHandler : function (payload) {
@@ -71,7 +78,7 @@ var TableauxRouter = Router.extend({
   noTableAndLangtag : function () {
     console.log("TableauxRouter.noTableAndLangtag");
     var langtag = TableauxConstants.DefaultLangtag;
-    this.redirectTo(langtag + '/table');
+    this.redirectTo(langtag + '/tables');
   },
 
   noTable : function (langtag) {
@@ -89,8 +96,24 @@ var TableauxRouter = Router.extend({
     });
   },
 
-  tableBrowser : function (langtag, tableid) {
-    console.log("TableauxRouter.tableBrowser", langtag, tableid);
+  tableBrowser : function (langtag, tableid, a, b, c) {
+    const optionalArgs = [a, b, c].filter(x => x);
+
+    // sort optional args to values
+    let columnid, rowid, filterString;
+    if (optionalArgs.length === 3) {
+      [columnid, rowid, filterString] = optionalArgs;
+    } else if (optionalArgs.length === 2) {
+      if (f.startsWith("filter", f.last(optionalArgs))) {
+        [rowid, filterString] = optionalArgs;
+      } else {
+        [columnid, rowid] = optionalArgs;
+      }
+    } else {
+      rowid = f.first(optionalArgs);
+    }
+
+    console.log(`TableauxRouter.tableBrowser lang=${langtag}, table=${tableid} column=${columnid} row=${rowid} filtering=${(filterString) ? "yes" : "no"}`);
     currentLangtag = langtag;
     //TODO show error to user
     if (typeof tableid === 'undefined' || isNaN(parseInt(tableid))) {
@@ -107,7 +130,10 @@ var TableauxRouter = Router.extend({
 
     this.renderOrSwitchView(TableauxConstants.ViewNames.TABLE_VIEW, {
       tableId : tableId,
-      langtag : langtag
+      langtag : langtag,
+      columnId: (columnid) ? parseInt(columnid) : null,
+      rowId: (rowid) ? parseInt(rowid) : null,
+      filter: (filterString) ? filterString : null
     });
   },
 

@@ -60,6 +60,12 @@ var TableauxConstant = {
     SPINNER_ON: null,
     SPINNER_OFF: null,
 
+    //Jump-to-cell spinner
+    JUMP_SPINNER_ON: null,
+    JUMP_SPINNER_OFF: null,
+
+    RESET_TABLE_URL: null,
+
     //Context Menu
     SHOW_ROW_CONTEXT_MENU: null,
     CLOSE_ROW_CONTEXT_MENU: null,
@@ -154,7 +160,8 @@ var TableauxConstant = {
   FilterModes: keyMirror(
     {
       CONTAINS: null,
-      STARTS_WITH: null
+      STARTS_WITH: null,
+      ID_ONLY: null
     }
   )
 };
