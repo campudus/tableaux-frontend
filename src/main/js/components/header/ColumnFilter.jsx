@@ -3,7 +3,6 @@ import ColumnFilterPopup from "./ColumnFilterPopup";
 import i18n from "i18next";
 import classNames from "classnames";
 
-
 class ColumnFilter extends React.Component {
 
   state = {open: false};
@@ -32,9 +31,6 @@ class ColumnFilter extends React.Component {
       "button",
       {"ignore-react-onclickoutside": open}
     );
-
-    console.log("render", cssClass, buttonClass);
-
     return (
       <div id="column-filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.togglePopup}>

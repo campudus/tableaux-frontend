@@ -1,5 +1,4 @@
 import React from "react";
-import AmpersandMixin from "ampersand-react-mixin";
 import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
@@ -32,7 +31,7 @@ class Rows extends React.Component {
     ) {
       return true;
     }
-    console.log("! Rows skipped update");
+    // console.log("! Rows skipped update");
     return false;
   };
 
