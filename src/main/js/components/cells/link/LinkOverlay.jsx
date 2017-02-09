@@ -8,12 +8,14 @@ import "react-virtualized/styles.css";
 import {List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
-import {FilterModes} from "../../../constants/TableauxConstants";
+import {FilterModes, Directions} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import FilterModePopup from "../../header/filter/FilterModePopup";
-var apiUrl = require('../../../helpers/apiUrl');
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import classNames from "classnames";
+const apiUrl = require('../../../helpers/apiUrl');
 
 //we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
@@ -26,7 +28,8 @@ const LinkOverlay = React.createClass({
       rowResults: {},
       loading: true,
       filterMode: FilterModes.CONTAINS,
-      filterModePopupOpen: false
+      filterModePopupOpen: false,
+      selected: 0
     };
   },
 
@@ -40,6 +43,41 @@ const LinkOverlay = React.createClass({
 
   //saves all the results from server
   allRowResults: {},
+
+  getKeyboardShortcuts: function() {
+    const rows = this.state.rowResults;
+    const selectNext = (dir) => {
+      const {selected} = this.state;
+      const nextIdx = (selected + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
+      this.setState({selected: nextIdx});
+    };
+    return {
+      enter: event => {
+        const row = this.state.rowResults[this.state.selected];
+        this.addLinkValue.call(this, this.isRowLinked(row), row, event);
+      },
+      escape: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.refs.search.value === "") {
+          this.closeOverlay();
+        } else {
+          this.refs.search.value = "";
+          this.onSearch();
+        }
+      },
+      up: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        selectNext(Directions.UP);
+      },
+      down: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        selectNext(Directions.DOWN);
+      },
+    }
+  },
 
   componentWillMount: function () {
     let self = this;
@@ -91,7 +129,8 @@ const LinkOverlay = React.createClass({
 
   onSearch: function (event) {
     this.setState({
-      rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
+      rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
+      selected: 0
     });
   },
 
@@ -163,7 +202,6 @@ const LinkOverlay = React.createClass({
     event.preventDefault();
     const cell = this.props.cell;
     const rowCellIdValue = this.getRowValues(row);
-
     const link = {
       id: row.id,
       value: rowCellIdValue
@@ -191,32 +229,40 @@ const LinkOverlay = React.createClass({
     return (stringToCheck && stringToCheck.trim() !== "");
   },
 
+  isRowLinked: function(row) {
+    const currentCellValue = either(this.props.cell)
+      .map(f.prop(["value"]))
+      .getOrElse(null);
+    return !!_.find(currentCellValue, link => link.id === row.id)
+  },
+
   getOverlayItem: function (
     {
       key,         // Unique key within array of rows
       index,       // Index of row within collection
-      isScrolling, // The List is currently being scrolled
-      isVisible,   // This row is visible within the List (eg it is not an overscanned row)
       style        // Style object to be applied to row (to position it)
     }
   ) {
-    const {rowResults} = this.state;
-    const {cell} = this.props;
-
-    const currentCellValue = cell ? cell.value : null;
+    const {rowResults,selected} = this.state;
     const row = rowResults[index];
 
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
-      const isLinked = !!_.find(currentCellValue, (link) => {
-        return link.id === row.id;
-      });
-
+      const isLinked = this.isRowLinked(row);
       const rowName = row["cachedRowName"];
+      const rowCssClass = classNames("overlay-table-row",
+        {
+          "isLinked": isLinked,
+          "selected": selected === index
+        });
 
       return <div style={style} key={key}>
         <a href="#"
-           className={isLinked ? 'isLinked overlay-table-row' : 'overlay-table-row'}
-           onClick={this.addLinkValue.bind(this, isLinked, row)}>{rowName}</a>
+           className={rowCssClass}
+           onClick={this.addLinkValue.bind(this, isLinked, row)}
+           onMouseEnter={() => this.setState({selected: index})}
+        >
+          {rowName}
+        </a>
       </div>;
     }
   },
@@ -246,6 +292,7 @@ const LinkOverlay = React.createClass({
           rowCount={rowsCount}
           rowHeight={50}
           rowRenderer={this.getOverlayItem}
+          scrollToIndex={this.state.selected}
           noRowsRenderer={this.noRowsRenderer}
         />
       );
@@ -253,18 +300,22 @@ const LinkOverlay = React.createClass({
 
     const placeholder = (this.state.filterMode === FilterModes.CONTAINS)
       ? "table:filter.contains"
-      : "table:filter.starts_with"
+      : "table:filter.starts_with";
 
     const popupOpen = this.state.filterModePopupOpen;
     return (
-      <div>
+      <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
         {(popupOpen)
           ? this.renderFilterModePopup()
           : null
         }
-        <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}}>
+        <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}} >
           <div className="search-input-wrapper">
-            <input type="text" className="search-input" placeholder={i18n.t(placeholder)+ "..."} onChange={this.onSearch} ref="search"
+            <input type="text"
+                   className="search-input"
+                   placeholder={i18n.t(placeholder) + "..."}
+                   onChange={this.onSearch}
+                   ref="search"
                    autoFocus />
             <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
                onClick={this.toggleFilterModesPopup}>
