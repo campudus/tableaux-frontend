@@ -5,7 +5,7 @@ import i18n from "i18next";
 import {either} from "../../helpers/monads";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
-import {FilterModes} from "../../constants/TableauxConstants";
+import {FilterModes, FallbackLanguage} from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
 
 @listensToClickOutside
@@ -62,6 +62,7 @@ class ColumnFilterPopup extends React.Component {
 
   getColName = col => either(col)
       .map(f.prop(["displayName", this.props.langtag]))
+      .orElse(f.prop(["displayName", FallbackLanguage]))
       .orElse(f.prop(["name"]))
       .getOrElseThrow("Could not extract displayName or name from" + col);
 

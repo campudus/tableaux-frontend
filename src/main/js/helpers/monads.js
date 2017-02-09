@@ -1,3 +1,5 @@
+import {prop, isFunction} from "lodash/fp";
+
 /* Maybe monad.
  * .of(val) - create from (safe!) value
  * .fromNullable(val) - create
@@ -35,6 +37,15 @@ class Just extends Maybe {
   constructor(value) {
     super();
     this._value = value;
+  }
+
+  exec(fname, args) {
+    if (isFunction(prop(fname, this._value))) {
+      prop(fname, this._value).apply(this._value, args);
+      return this;
+    } else {
+      return Maybe.none();
+    }
   }
 
   get value() {
@@ -135,7 +146,10 @@ class Left extends Either {
   }
 
   orElse(f) {
-    return Either.fromNullable(f(this._value));
+    const f_of_val = f(this._value);
+    return (f_of_val !== null && f_of_val !== undefined)
+      ? Either.right(f_of_val)
+      : this;
   }
 
   getOrElse(other) {
@@ -162,10 +176,10 @@ class Left extends Either {
 class Right extends Either {
   map(f) {
     try {
-        const result = f(this.value)
-        return (result)
-            ? Either.right(result)
-            : Either.left(this.value);
+      const result = f(this.value)
+      return (result)
+        ? Either.right(result)
+        : Either.left(this.value);
     } catch (e) {
       return Either.left(e);
     }
@@ -206,8 +220,8 @@ class Right extends Either {
 
 const maybe = x => Maybe.fromNullable(x);
 const either = x => Either.fromNullable(x);
-const spy = x => {
-  console.log("I spy", x);
+const spy = (x, info) => {
+  console.log("I spy " + ((info) ? info : ""), x);
   return x;
 }
 
