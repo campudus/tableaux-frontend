@@ -175,6 +175,7 @@ class ColumnFilterPopup extends React.Component {
               rowHeight={30}
               scrollToIndex={this.state.selected}
               rowRenderer={this.renderCheckboxItems}
+              style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
         />
 
         <div className="row infotext">
