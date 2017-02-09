@@ -2,10 +2,17 @@ import React from "react";
 import ColumnFilterPopup from "./ColumnFilterPopup";
 import i18n from "i18next";
 import classNames from "classnames";
+import connectToAmpersand from "../../helpers/connectToAmpersand";
 
+@connectToAmpersand
 class ColumnFilter extends React.Component {
 
   state = {open: false};
+
+  constructor(props) {
+    super(props);
+    this.props.columns.forEach( col => this.props.watch(col));
+  }
 
   togglePopup = event => {
     event.preventDefault();
