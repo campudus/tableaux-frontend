@@ -110,7 +110,7 @@
         background-color: $color-background-very-light-grey;
       }
 
-      &:hover {
+      &.selected {
         background-color: $color-light-link-color;
       }
     }
