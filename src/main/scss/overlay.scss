@@ -222,18 +222,20 @@ $overlay-headline-height: 50px;
     @include box-sizing(border-box);
 
     &.selected {
-      border-color: $color-green;
+      border-color: $color-darker-link-color;
+      background-color: $color-light-link-color;
     }
 
     &.isLinked {
 
-      border-color: $color-darker-link-color;
-      background-color: $color-light-link-color;
+      border-color: $color-text-light-grey;
+      background-color: lightgrey;
 
       &.selected {
         display: block;
 
         border-color: lightcoral;
+        background-color: $color-border-grey;
 
         &::after {
           color: lightcoral;

@@ -1,16 +1,51 @@
-import Collection from 'ampersand-rest-collection';
-import apiUrl from '../helpers/apiUrl';
-import Table from './Table';
-import Dispatcher from '../dispatcher/Dispatcher';
-import { ActionTypes } from '../constants/TableauxConstants';
-import ActionCreator from '../actions/ActionCreator';
-import Row from './Row';
-import { cellModelSavingError,noPermissionAlertWithLanguage } from '../components/overlay/ConfirmationOverlay.jsx';
-import { getUserLanguageAccess, getUserCountryCodesAccess, canUserChangeCell, reduceValuesToAllowedLanguages,
-  reduceValuesToAllowedCountries, isUserAdmin } from '../helpers/accessManagementHelper';
+import Collection from "ampersand-rest-collection";
+import apiUrl from "../helpers/apiUrl";
+import Table from "./Table";
+import Dispatcher from "../dispatcher/Dispatcher";
+import {ActionTypes} from "../constants/TableauxConstants";
+import ActionCreator from "../actions/ActionCreator";
+import Row from "./Row";
+import {cellModelSavingError, noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
+import {
+  getUserLanguageAccess,
+  getUserCountryCodesAccess,
+  canUserChangeCell,
+  reduceValuesToAllowedLanguages,
+  reduceValuesToAllowedCountries,
+  isUserAdmin
+} from "../helpers/accessManagementHelper";
+import request from "superagent";
 
-var Tables = Collection.extend({
-  model : Table,
+// sets or removes a *single* link to/from a link cell
+const changeLinkCellHandler = ({cell, value}) => {
+  const newValue = value;
+  const curValue = cell.value;
+  const diff = _.first(_.xor(curValue.map(link => link.id), newValue.map(link => link.id)));
+  if (!diff) {
+    return;
+  }
+  const {rowId,tableId} = cell;
+  const colId = cell.column.id;
+  const backendUrl = apiUrl(`/tables/${tableId}/columns/${colId}/rows/${rowId}`);
+  cell.set({value: newValue}); // set locally so fast follow-up request will have correct state
+  const xhrRequest = (curValue.length > newValue.length)
+    ? request.delete(`${backendUrl}/link/${diff}`)
+    : request
+      .patch(backendUrl)
+      .send({value: diff})
+      .set("Content-Type", "application/json");
+  xhrRequest.end((error, response) => {
+    if (error) {
+      console.warn(error);
+      cell.set({value: curValue}); // rollback local state when anything went wrong
+      cellModelSavingError(error); // this saves us from calculating and undoing diff ourselves
+      this.updateConcatCells(cell);
+    }
+  });
+};
+
+const Tables = Collection.extend({
+  model: Table,
 
   initialize() {
     console.log("Rows.initialize:", arguments);
@@ -43,6 +78,10 @@ var Tables = Collection.extend({
 
   changeCellHandler(payload) {
     console.log("changeCellHandler:", payload);
+    if(payload.cell.isLink) {
+      changeLinkCellHandler(payload);
+      return;
+    }
     const self = this;
     const {cell} = payload;
     const oldValue = cell.value;
@@ -52,10 +91,7 @@ var Tables = Collection.extend({
     let isPatch = false;
 
     //Setup for saving the cell
-    if (cell.isLink) {
-      updateNecessary = !_.isEqual(oldValue, newValue);
-      mergedValue = newValue;
-    } else if (cell.isMultiLanguage) {
+    if (cell.isMultiLanguage) {
       mergedValue = _.assign({}, oldValue, newValue);
       newValue = {value : newValue};
       updateNecessary = !_.isEqual(oldValue, mergedValue);
@@ -112,8 +148,8 @@ var Tables = Collection.extend({
        Without wait:true save overrides the model for a short time with just one multilanguage value
        */
       cell.save(newValue, {
-        patch : isPatch,
-        wait : true,
+        patch: isPatch,
+        wait: true,
         success(model, data, options) {
           //is there new data from the server?
           if (!_.isEqual(data.value, mergedValue)) {
