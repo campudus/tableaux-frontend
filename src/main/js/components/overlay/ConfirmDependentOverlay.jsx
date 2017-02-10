@@ -67,7 +67,7 @@ export function openShowDependency(row, langtag) {
 
   const ShowDependencyOverlayBody = (props) => {
 
-    const hasDependencyText = <p>{i18n.t('table:show_dependency_text')}</p>;
+    const hasDependencyText = (count) => <p>{i18n.t('table:show_dependency_text', {count: count})}</p>;
     const hasNoDependencyText = <p>{i18n.t('table:no_dependent_text')}</p>;
 
     return (

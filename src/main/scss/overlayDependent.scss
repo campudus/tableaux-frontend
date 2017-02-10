@@ -71,6 +71,16 @@
         overflow: hidden;
         display: inline-block;
         vertical-align: middle;
+
+        margin-right: 1rem;
+        border: 1px solid $color-darker-link-color;
+        background-color: $color-light-link-color;
+        @include border-radius(3px);
+        padding: 3px;
+
+        &:hover {
+          background-color: #fff;
+        }
       }
 
     }
