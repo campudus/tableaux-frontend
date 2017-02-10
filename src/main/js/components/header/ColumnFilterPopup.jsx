@@ -18,7 +18,7 @@ class ColumnFilterPopup extends React.Component {
     this.state = {
       models: this.props.columns.models.filter(this.buildFilter()),
       currFilter: null,
-      selected: 0
+      selectedId: 0
     };
   }
 
@@ -62,13 +62,13 @@ class ColumnFilterPopup extends React.Component {
   getKeyboardShortcuts = () => {
     const columns = this.state.models;
     const selectNext = (dir) => {
-      const {selected} = this.state;
-      const nextIdx = (selected + ((dir === Directions.UP) ? -1 : 1) + columns.length) % columns.length;
-      this.setState({selected: nextIdx});
+      const {selectedId} = this.state;
+      const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + columns.length) % columns.length;
+      this.setState({selectedId: nextIdx});
     };
     return {
       enter: event => {
-        this.toggleCol(columns[this.state.selected].id)(event);
+        this.toggleCol(columns[this.state.selectedId].id)(event);
       },
       escape: event => {
         event.preventDefault();
@@ -113,9 +113,9 @@ class ColumnFilterPopup extends React.Component {
     const name = this.getColName(col);
 
     const cssClass = classNames("column-filter-checkbox-wrapper", {
-      "even": index % 2 === 0 && index !== this.state.selected,
-      "odd": index % 2 === 1 && index !== this.state.selected,
-      "selected": index === this.state.selected
+      "even": index % 2 === 0 && index !== this.state.selectedId,
+      "odd": index % 2 === 1 && index !== this.state.selectedId,
+      "selected": index === this.state.selectedId
     });
 
     return (
@@ -123,7 +123,7 @@ class ColumnFilterPopup extends React.Component {
            key={key}
            style={style}
            onClick={this.toggleCol(col.id)}
-           onMouseEnter={() => this.setState({selected: index})}
+           onMouseEnter={() => this.setState({selectedId: index})}
       >
         <input type="checkbox"
                checked={col.visible}
@@ -173,7 +173,7 @@ class ColumnFilterPopup extends React.Component {
               height={300}
               rowCount={models.length}
               rowHeight={30}
-              scrollToIndex={this.state.selected}
+              scrollToIndex={this.state.selectedId}
               rowRenderer={this.renderCheckboxItems}
               style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
         />

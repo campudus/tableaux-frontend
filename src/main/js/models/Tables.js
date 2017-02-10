@@ -20,8 +20,8 @@ import request from "superagent";
 const changeLinkCellHandler = ({cell, value}) => {
   const newValue = value;
   const curValue = cell.value;
-  const diff = _.first(_.xor(curValue.map(link => link.id), newValue.map(link => link.id)));
-  if (!diff) {
+  const toggledRowId = _.first(_.xor(curValue.map(link => link.id), newValue.map(link => link.id)));
+  if (!toggledRowId) {
     return;
   }
   const {rowId,tableId} = cell;
@@ -29,10 +29,10 @@ const changeLinkCellHandler = ({cell, value}) => {
   const backendUrl = apiUrl(`/tables/${tableId}/columns/${colId}/rows/${rowId}`);
   cell.set({value: newValue}); // set locally so fast follow-up request will have correct state
   const xhrRequest = (curValue.length > newValue.length)
-    ? request.delete(`${backendUrl}/link/${diff}`)
+    ? request.delete(`${backendUrl}/link/${toggledRowId}`)
     : request
       .patch(backendUrl)
-      .send({value: diff})
+      .send({value: toggledRowId})
       .set("Content-Type", "application/json");
   xhrRequest.end((error, response) => {
     if (error) {

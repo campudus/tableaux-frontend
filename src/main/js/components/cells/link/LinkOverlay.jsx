@@ -29,7 +29,7 @@ const LinkOverlay = React.createClass({
       loading: true,
       filterMode: FilterModes.CONTAINS,
       filterModePopupOpen: false,
-      selected: 0
+      selectedId: 0
     };
   },
 
@@ -47,13 +47,13 @@ const LinkOverlay = React.createClass({
   getKeyboardShortcuts: function() {
     const rows = this.state.rowResults;
     const selectNext = (dir) => {
-      const {selected} = this.state;
-      const nextIdx = (selected + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
-      this.setState({selected: nextIdx});
+      const {selectedId} = this.state;
+      const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
+      this.setState({selectedId: nextIdx});
     };
     return {
       enter: event => {
-        const row = this.state.rowResults[this.state.selected];
+        const row = this.state.rowResults[this.state.selectedId];
         this.addLinkValue.call(this, this.isRowLinked(row), row, event);
       },
       escape: event => {
@@ -130,7 +130,7 @@ const LinkOverlay = React.createClass({
   onSearch: function (event) {
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
-      selected: 0
+      selectedId: 0
     });
   },
 
@@ -243,7 +243,7 @@ const LinkOverlay = React.createClass({
       style        // Style object to be applied to row (to position it)
     }
   ) {
-    const {rowResults,selected} = this.state;
+    const {rowResults,selectedId} = this.state;
     const row = rowResults[index];
 
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
@@ -252,14 +252,14 @@ const LinkOverlay = React.createClass({
       const rowCssClass = classNames("overlay-table-row",
         {
           "isLinked": isLinked,
-          "selected": selected === index
+          "selected": selectedId === index
         });
 
       return <div style={style} key={key}>
         <a href="#"
            className={rowCssClass}
            onClick={this.addLinkValue.bind(this, isLinked, row)}
-           onMouseEnter={() => this.setState({selected: index})}
+           onMouseEnter={() => this.setState({selectedId: index})}
         >
           {rowName}
         </a>
@@ -292,7 +292,7 @@ const LinkOverlay = React.createClass({
           rowCount={rowsCount}
           rowHeight={50}
           rowRenderer={this.getOverlayItem}
-          scrollToIndex={this.state.selected}
+          scrollToIndex={this.state.selectedId}
           noRowsRenderer={this.noRowsRenderer}
         />
       );
