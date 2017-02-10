@@ -1,13 +1,14 @@
-var React = require('react');
-var _ = require('lodash');
-var LinkOverlay = require('./LinkOverlay.jsx');
-var LinkLabelCell = require('./LinkLabelCell.jsx');
-var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+import React from "react";
+import _ from "lodash";
+import LinkOverlay from "./LinkOverlay.jsx";
+import LinkLabelCell from "./LinkLabelCell.jsx";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
+import AmpersandMixin from "ampersand-react-mixin";
 
-var LinkEditCell = React.createClass({
+const LinkEditCell = React.createClass({
 
-    mixins : [],
+    mixins : [AmpersandMixin],
 
     propTypes : {
       cell : React.PropTypes.object.isRequired,

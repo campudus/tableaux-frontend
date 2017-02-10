@@ -5,8 +5,10 @@ import i18n from "i18next";
 import {either} from "../../helpers/monads";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
-import {FilterModes, FallbackLanguage} from "../../constants/TableauxConstants";
+import {FilterModes, Directions, FallbackLanguage} from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import classNames from "classnames";
 
 @listensToClickOutside
 class ColumnFilterPopup extends React.Component {
@@ -15,12 +17,16 @@ class ColumnFilterPopup extends React.Component {
     super(props);
     this.state = {
       models: this.props.columns.models.filter(this.buildFilter()),
-      currFilter: null
+      currFilter: null,
+      selectedId: 0
     };
   }
 
   setFilter = (str, type = FilterModes.CONTAINS) => {
-    const filter = {value: str, type: type};
+    const filter = {
+      value: str,
+      type: type
+    };
     const {columns:{models}} = this.props;
     this.setState({
       filter: filter,
@@ -33,7 +39,7 @@ class ColumnFilterPopup extends React.Component {
     const {columns:{models}} = this.props;
     const lvl1 = col => col != f.first(models); // ignore ID column
     const lvl2 = (filter)
-      ? f.compose( SearchFunctions[filter.type](filter.value), this.getColName )
+      ? f.compose(SearchFunctions[filter.type](filter.value), this.getColName)
       : f.stubTrue;                                // ...or pass all
     return f.allPass([lvl1, lvl2])
   };
@@ -53,11 +59,46 @@ class ColumnFilterPopup extends React.Component {
     this.setVisibilityAndUpdateGrid(val, toggle_ids);
   };
 
+  getKeyboardShortcuts = () => {
+    const columns = this.state.models;
+    const selectNext = (dir) => {
+      const {selectedId} = this.state;
+      const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + columns.length) % columns.length;
+      this.setState({selectedId: nextIdx});
+    };
+    return {
+      enter: event => {
+        this.toggleCol(columns[this.state.selectedId].id)(event);
+      },
+      escape: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.searchBar.value === "") {
+          this.props.close(event);
+        } else {
+          this.searchBar.value = "";
+          this.setFilter("");
+        }
+      },
+      up: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        selectNext(Directions.UP);
+      },
+      down: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        selectNext(Directions.DOWN);
+      },
+    }
+  };
+
   toggleCol = index => event => {
     event.stopPropagation();
     const {columns:{models}} = this.props;
     const the_column = f.first(f.filter(x => x.id === index, models));
     this.setVisibilityAndUpdateGrid(!the_column.visible, [index]);
+    this.forceUpdate();
   };
 
   getColName = col => either(col)
@@ -71,14 +112,22 @@ class ColumnFilterPopup extends React.Component {
     const col = models[index];
     const name = this.getColName(col);
 
+    const cssClass = classNames("column-filter-checkbox-wrapper", {
+      "even": index % 2 === 0 && index !== this.state.selectedId,
+      "odd": index % 2 === 1 && index !== this.state.selectedId,
+      "selected": index === this.state.selectedId
+    });
+
     return (
-      <div className={"column-filter-checkbox-wrapper" + ((index % 2 === 0) ? " even" : " odd")}
+      <div className={cssClass}
            key={key}
            style={style}
-           onClick={this.toggleCol(col.id)}>
+           onClick={this.toggleCol(col.id)}
+           onMouseEnter={() => this.setState({selectedId: index})}
+      >
         <input type="checkbox"
                checked={col.visible}
-               onChange={() => {}}
+               onChange={() => {}} // to avoid React warning "unmanaged input"
         />
         {name}
       </div>
@@ -98,7 +147,9 @@ class ColumnFilterPopup extends React.Component {
     const {models} = this.state;
 
     return (
-      <div id="column-filter-popup-wrapper">
+      <div id="column-filter-popup-wrapper"
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+      >
         <div className="row infotext header-text">
           <i className="fa fa-eye" />
           {i18n.t("table:hide_unhide")}
@@ -110,6 +161,8 @@ class ColumnFilterPopup extends React.Component {
                    className="input"
                    placeholder={i18n.t("table:filter_columns")}
                    onChange={this.handleFilterChange}
+                   ref={input => this.searchBar = input}
+                   autoFocus
             />
           </div>
         </div>
@@ -119,7 +172,9 @@ class ColumnFilterPopup extends React.Component {
               height={300}
               rowCount={models.length}
               rowHeight={30}
+              scrollToIndex={this.state.selectedId}
               rowRenderer={this.renderCheckboxItems}
+              style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
         />
 
         <div className="row infotext">

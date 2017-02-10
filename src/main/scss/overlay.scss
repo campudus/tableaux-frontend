@@ -221,26 +221,28 @@ $overlay-headline-height: 50px;
     line-height: 40px;
     @include box-sizing(border-box);
 
-    &:hover {
+    &.selected {
       border-color: $color-darker-link-color;
-      background-color: white;
+      background-color: $color-light-link-color;
     }
 
     &.isLinked {
 
-      border-color: $color-darker-link-color;
-      background-color: $color-light-link-color;
+      border-color: $color-text-light-grey;
+      background-color: $color-border-grey;
 
-      &:hover {
+      &.selected {
         display: block;
 
         border-color: lightcoral;
-        background-color: white;
+        background-color: $color-background-very-light-grey;
 
         &::after {
           color: lightcoral;
           font-weight: bold;
-          content: "X";
+          content: "\f057";
+          font-family: FontAwesome;
+          font-size: larger;
           float: right;
           text-align: right;
         }
