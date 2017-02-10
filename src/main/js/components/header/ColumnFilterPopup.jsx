@@ -127,8 +127,7 @@ class ColumnFilterPopup extends React.Component {
       >
         <input type="checkbox"
                checked={col.visible}
-               onChange={() => {
-               }}
+               onChange={() => {}} // to avoid React warning "unmanaged input"
         />
         {name}
       </div>

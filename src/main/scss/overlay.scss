@@ -229,18 +229,20 @@ $overlay-headline-height: 50px;
     &.isLinked {
 
       border-color: $color-text-light-grey;
-      background-color: lightgrey;
+      background-color: $color-border-grey;
 
       &.selected {
         display: block;
 
         border-color: lightcoral;
-        background-color: $color-border-grey;
+        background-color: $color-background-very-light-grey;
 
         &::after {
           color: lightcoral;
           font-weight: bold;
-          content: "X";
+          content: "\f057";
+          font-family: FontAwesome;
+          font-size: larger;
           float: right;
           text-align: right;
         }
