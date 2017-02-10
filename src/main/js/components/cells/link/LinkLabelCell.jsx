@@ -1,7 +1,7 @@
-var React = require('react');
-var RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
+const React = require('react');
+let RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 
-var LinkLabelCell = React.createClass({
+export const LinkLabelCell = React.createClass({
 
   propTypes : {
     cell : React.PropTypes.object.isRequired,
@@ -28,20 +28,25 @@ var LinkLabelCell = React.createClass({
   },
 
   render : function () {
-    var theClassName = "link-label";
-    var hasDeleteButton = this.props.deletable;
-    var deleteButton = <i onClick={this.removeLinkHandler} className="fa fa-times"></i>;
+    const {langtag, cell, deletable} = this.props;
 
-    if (hasDeleteButton) {
-      theClassName += " delete";
+    if (deletable) {
+      const tableId = cell.column.toTable;
+      const rowId = this.props.linkElement.id;
+
+      const linkToTable = `/${langtag}/tables/${tableId}`;
+
+      const deleteButton = <i onClick={this.removeLinkHandler} className="fa fa-times"></i>;
+
+      return <a href={[linkToTable, `rows/${rowId}?filter`].join("/")} target="_blank" className="link-label delete">
+        {this.getLinkName()}{deleteButton}
+      </a>;
+    } else {
+      return <span className="link-label">
+        {this.getLinkName()}
+      </span>;
     }
-
-    return (
-      <span className={theClassName}>{this.getLinkName()}{hasDeleteButton ? deleteButton : ""}</span>
-    );
-
   }
-
 });
 
 module.exports = LinkLabelCell;
