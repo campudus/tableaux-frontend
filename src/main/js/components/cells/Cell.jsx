@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AmpersandMixin from "ampersand-react-mixin";
 import ActionCreator from "../../actions/ActionCreator";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import TextCell from "./text/TextCell.jsx";
@@ -16,10 +15,12 @@ import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
+import connectToAmpersand from "../../helpers/connectToAmpersand";
 
 //used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first visible row)
 const CELL_HINT_PADDING = 40;
 
+@connectToAmpersand
 class Cell extends React.Component {
 
   cellDOMNode = null;
@@ -81,6 +82,11 @@ class Cell extends React.Component {
       ActionCreator.toggleCellSelection(cell, selected, langtag);
     } else if (!withRightClick) {
       ActionCreator.toggleCellEditing();
+    }
+
+    if (withRightClick) {
+      event.preventDefault();
+      ActionCreator.showRowContextMenu(this.props.row, langtag, event.pageX, event.pageY, this.props.table, cell)
     }
 
     if (!withRightClick || editing) {
@@ -228,6 +234,8 @@ Cell.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   selected: React.PropTypes.bool,
   editing: React.PropTypes.bool,
+  row: React.PropTypes.object.isRequired,
+  table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool
 };
 

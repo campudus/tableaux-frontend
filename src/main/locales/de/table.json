@@ -3,6 +3,8 @@
   "concat_column_name": "Identifikationsname",
   "confirm_delete_row": "Zeile „{{rowName}}” wirklich löschen?",
   "delete_row": "Zeile löschen",
+  "copy_cell": "Zellinhalt kopieren",
+  "paste_cell": "Zellinhalt einfügen",
   "delete_row_dependent_text": "Dieser Datensatz ist bereits in folgenden Tabellen verknüpft. Die Verknüpfung wird automatisch gelöscht.",
   "show_entity_view": "Zeige Vorschau",
   "entity_view": "Vorschau",
@@ -49,5 +51,10 @@
   "jumpspinner": {
     "title": "Gleich am Ziel!",
     "subtitle": "Weitere Daten werden angefragt."
+  },
+  "copy_links_error": "Kann links nur innerhalb der selben Spalte kopieren",
+  "confirm_copy": {
+    "header": "Zellinhalt einfügen?",
+    "info": "Dies wird alle Inhalte der ausgewählten Zelle in allen Sprachen überschreiben."
   }
 }

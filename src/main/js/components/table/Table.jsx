@@ -10,6 +10,9 @@ import * as tableNavigationWorker from "./tableNavigationWorker";
 import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import JumpSpinner from "./JumpSpinner";
+import i18n from "i18next";
+import ActionCreator from "../../actions/ActionCreator";
+import {contains} from "lodash/fp";
 
 //Worker
 @listensToClickOutside
@@ -31,6 +34,8 @@ class Table extends React.Component {
     this.tableRowsDom = null; //scrolling rows container
     this.columnsDom = null;
 
+    this.pasteOriginCell = {};
+
     this.state = {
       offsetTableData: 0,
       windowHeight: window.innerHeight,
@@ -44,7 +49,7 @@ class Table extends React.Component {
       rowContextMenu: null,
       showScrollToLeftButton: false
     }
-  }
+  };
 
   componentWillMount() {
     Dispatcher.on(ActionTypes.TOGGLE_CELL_SELECTION, tableNavigationWorker.toggleCellSelection, this);
@@ -57,6 +62,8 @@ class Table extends React.Component {
     Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     Dispatcher.on(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
+    Dispatcher.on(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin, this);
+    Dispatcher.on(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo, this);
 
     window.addEventListener("resize", this.windowResize);
     this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
@@ -73,11 +80,56 @@ class Table extends React.Component {
     Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     Dispatcher.off(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
+    Dispatcher.off(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
+    Dispatcher.off(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", tableRowsWorker.rowAdded.bind(this));
     window.GLOBAL_TABLEAUX.tableRowsDom = null;
   }
+
+  setCopyOrigin = cell => {
+    this.pasteOriginCell = cell;
+  };
+
+  pasteCellTo = ({cell}) => {
+    const src = this.pasteOriginCell.cell;
+    if (cell.kind === "link" && !(cell.column.id === src.column.id)) { // only copy same cell type or links from same column
+      ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_links_error")}</div>, 3000);
+      return;
+    }
+
+    if (!cell.isMultilanguage && contains(cell.kind, ["dateTime", "date", "number"])) { // single-value cell can be copied safely
+      cell.save({value: src.value})
+    } else {
+      ActionCreator.openOverlay({
+        head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
+        body: (
+          <div id="confirm-copy-overlay-content" className="confirmation-overlay">
+            <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
+          </div>
+        ),
+        footer: (
+          <div className="button-wrapper">
+            <a href="#" className="button positive"
+               onClick={() => {
+                 cell.save({value: src.value});
+                 ActionCreator.closeOverlay();
+               }}
+            >
+              {i18n.t("common:save")}
+            </a>
+            <a href="#" className="button neutral"
+               onClick={() => ActionCreator.closeOverlay()}
+            >
+              {i18n.t("common:cancel")}
+            </a>
+          </div>
+        ),
+        type: "flexible"
+      })
+    }
+  };
 
   componentDidMount() {
     let {tableRowsDom, columnsDom, headerDOMElement, tableHeaderId, tableDOMNode, tableDOMOffsetY} = this;
@@ -97,7 +149,7 @@ class Table extends React.Component {
 
     //save a reference globally for children. Cells use this.
     window.GLOBAL_TABLEAUX.tableRowsDom = this.tableRowsDom = tableRowsDom;
-  }
+  };
 
   componentDidUpdate() {
     console.log("Table did update.");
@@ -109,7 +161,7 @@ class Table extends React.Component {
       }
       tableNavigationWorker.checkFocusInsideTable.call(this);
     }
-  }
+  };
 
   handleClickOutside = (event) => {
     /*
@@ -121,7 +173,7 @@ class Table extends React.Component {
         selectedCell: null
       });
     }
-  }
+  };
 
   onMouseDownHandler = (e) => {
     //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
@@ -140,7 +192,7 @@ class Table extends React.Component {
        */
       e.preventDefault();
     }
-  }
+  };
 
   handleScroll = (e) => {
     //only when horizontal scroll changed
@@ -163,15 +215,15 @@ class Table extends React.Component {
         });
       }
     }
-  }
+  };
 
   windowResize = () => {
     this.setState({windowHeight: window.innerHeight});
-  }
+  };
 
   tableDataHeight = () => {
     return (this.state.windowHeight - this.state.offsetTableData);
-  }
+  };
 
   render() {
     const {langtag, table:{columns}, rows, table} = this.props;
@@ -207,7 +259,6 @@ class Table extends React.Component {
     );
   }
 }
-;
 
 Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,

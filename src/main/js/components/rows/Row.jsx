@@ -1,13 +1,11 @@
 import React from "react";
 import TableauxConstants from "../../constants/TableauxConstants";
-import Dispatcher from "../../dispatcher/Dispatcher";
 import ActionCreator from "../../actions/ActionCreator";
 import Cell from "../cells/Cell.jsx";
 import connectToAmpersand from "../../helpers/connectToAmpersand";
-
-import MetaCell from '../cells/MetaCell';
-import {hasUserAccessToLanguage, isUserAdmin} from '../../helpers/accessManagementHelper';
-import {initiateDeleteRow} from '../../helpers/rowHelper';
+import MetaCell from "../cells/MetaCell";
+import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {initiateDeleteRow} from "../../helpers/rowHelper";
 import * as f from "lodash/fp";
 
 @connectToAmpersand
@@ -65,7 +63,7 @@ class Row extends React.Component {
 
   renderSingleLanguageCell = (cell, idx) => {
     var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
-    return <div key={idx} className={className}>—.—</div>;
+    return <div key={idx} className={className} onContextMenu={self.contextMenuHandler}>—.—</div>;
   };
 
   renderCells = (langtag, isRowSelected) => {
@@ -93,14 +91,14 @@ class Row extends React.Component {
       // We want to see single-language value even if not expanded
       if (!cell.isMultiLanguage && !self.props.isRowExpanded) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={shouldFocus} />;
+                     shouldFocus={shouldFocus} row={self.props.row} table={self.props.table} />;
       }
 
       // We don't want to repeat our self if expanded
       if (!cell.isMultiLanguage && self.props.isRowExpanded) {
         if (langtag === TableauxConstants.DefaultLangtag) {
           return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                       shouldFocus={shouldFocus} />;
+                       shouldFocus={shouldFocus} row={self.props.row} table={self.props.table} />;
         } else {
           return self.renderSingleLanguageCell(cell, idx);
         }
@@ -109,14 +107,13 @@ class Row extends React.Component {
       // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={shouldFocus} />;
+                     shouldFocus={shouldFocus} row={self.props.row} table={self.props.table} />;
       }
     })
   };
 
   contextMenuHandler = e => {
-    e.preventDefault();
-    ActionCreator.showRowContextMenu(this.props.row, this.props.langtag, e.pageX, e.pageY, this.props.table);
+    e.stopPropagation();
   };
 
   renderLanguageRow = langtag => {

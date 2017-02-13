@@ -1,10 +1,11 @@
-import React from 'react';
-import {translate} from 'react-i18next';
-import ActionCreator from './../../actions/ActionCreator';
-import {noPermissionAlertWithLanguage} from '../overlay/ConfirmationOverlay';
-import {getUserLanguageAccess, isUserAdmin} from '../../helpers/accessManagementHelper';
-import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from '../../helpers/rowHelper';
-import GenericContextMenu from "./GenericContextMenu"
+import React from "react";
+import {translate} from "react-i18next";
+import ActionCreator from "./../../actions/ActionCreator";
+import {noPermissionAlertWithLanguage} from "../overlay/ConfirmationOverlay";
+import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../../helpers/rowHelper";
+import GenericContextMenu from "./GenericContextMenu";
+import {compose, isEmpty, eq} from "lodash/fp";
 
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -48,6 +49,33 @@ class RowContextMenu extends React.Component {
     this.closeRowContextMenu();
   };
 
+  copyItem = () => {
+    const {cell,table,t} = this.props;
+    return (table.type != "settings" && cell.kind !== "concat")
+      ? (
+        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell))} >
+          {t("copy_cell")}
+        </a>
+      )
+      : null;
+  };
+
+  pasteItem = () => {
+    const {cell,table,t,pasteFrom} = this.props;
+    console.log("Cell:", cell, "PasteFrom:", pasteFrom)
+    return (table.type !== "settings"
+    && pasteFrom.cell
+    && cell.kind === pasteFrom.cell.kind
+    && !isEmpty(pasteFrom)
+    && !eq(cell, pasteFrom.cell))
+      ? (
+        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell))} >
+          {t("paste_cell")}
+        </a>
+      )
+      : null;
+  };
+
   render = () => {
     const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props:{t}} = this;
 
@@ -57,6 +85,8 @@ class RowContextMenu extends React.Component {
                           offset={CLICK_OFFSET} menuItems=
         {<div>
           {this.props.table.type === 'settings' ? '' : <a href="#" onClick={duplicateRow}>{t('duplicate_row')}</a>}
+          {this.copyItem()}
+          {this.pasteItem()}
           <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
           <a href="#" onClick={showDependency}>{t('show_dependency')}</a>
           {this.props.table.type === 'settings' ? '' : <a href="#" onClick={deleteRow}>{t('delete_row')}</a>}
@@ -74,7 +104,8 @@ RowContextMenu.propTypes = {
   row : React.PropTypes.object.isRequired,
   offsetY : React.PropTypes.number.isRequired,
   langtag : React.PropTypes.string.isRequired,
-  table : React.PropTypes.object.isRequired
+  table : React.PropTypes.object.isRequired,
+  cell: React.PropTypes.object.isRequired
 };
 
 export default translate(['table'])(RowContextMenu);

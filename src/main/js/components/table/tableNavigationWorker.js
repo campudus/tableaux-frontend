@@ -1,7 +1,8 @@
 import _ from "lodash";
 import f from "lodash/fp";
-import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
+import {Directions, ColumnKinds, Langtags, DefaultLangtag, ActionTypes} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
+import ActionCreator from "../../actions/ActionCreator";
 
 export function shouldCellFocus() {
   //we dont want to force cell focus when overlay is open
@@ -101,7 +102,17 @@ export function getKeyboardShortcuts() {
       );
     },
     text: (event) => {
-      if (selectedCell && !selectedCellEditing
+      if (selectedCell && event.ctrlKey && event.key === "c"  // Cell copy
+        && selectedCell.kind !== "concat") {
+        event.preventDefault();
+        event.stopPropagation();
+        ActionCreator.copyCellContent(selectedCell);
+      } else if (selectedCell && event.ctrlKey && event.key === "v"  // Cell paste
+        && selectedCell.kind === this.pasteOriginCell.cell.kind) {
+        event.preventDefault();
+        event.stopPropagation();
+        ActionCreator.pasteCellContent(selectedCell);
+      } else if (selectedCell && !selectedCellEditing  // Other keypress
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
         || selectedCell.kind === ColumnKinds.numeric)) {

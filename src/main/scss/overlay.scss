@@ -3,6 +3,10 @@ $overlay-headline-height: 50px;
 #overlay {
   display: none;
 
+  #link-select-list {
+    outline: none;
+  }
+
   &.open {
     display: block;
     position: fixed;
@@ -71,6 +75,11 @@ $overlay-headline-height: 50px;
     z-index: 0;
   }
 
+  #confirm-copy-overlay-content {
+    padding: 35px;
+    padding-bottom: 75px;
+  }
+
   #overlay-content {
     padding: 3.5rem;
     overflow-y: auto;
@@ -132,7 +141,7 @@ $overlay-headline-height: 50px;
       margin: 0;
       border-radius: 2em;
       cursor: pointer;
-      background-color: #EFEFEF;
+      background-color: white;
 
       border: 1px solid $color-grey-dark;
 
@@ -228,14 +237,16 @@ $overlay-headline-height: 50px;
 
     &.isLinked {
 
-      border-color: $color-text-light-grey;
-      background-color: $color-border-grey;
+      background-color: $color-primary;
+      color: $color-primary-contrast-text;
+      border-color: $color-primary-darker;
 
       &.selected {
         display: block;
 
-        border-color: lightcoral;
-        background-color: $color-background-very-light-grey;
+        border-color: $color-red;
+        background-color: $color-light-link-color;
+        color: $color-primary-text;
 
         &::after {
           color: lightcoral;

@@ -1,6 +1,6 @@
-import React from 'react';
-import RowContextMenu from './../contextMenu/RowContextMenu';
-import onClickOutside from 'react-onclickoutside';
+import React from "react";
+import RowContextMenu from "./../contextMenu/RowContextMenu";
+import onClickOutside from "react-onclickoutside";
 
 const RowContextMenuWithClickOutside = onClickOutside(RowContextMenu);
 
@@ -22,6 +22,7 @@ export function getRowContextMenu() {
     return <RowContextMenuWithClickOutside
       {...rowContextMenu}
       handleClickOutside={()=>{this.setState({rowContextMenu : null})}}
+      pasteFrom={this.pasteOriginCell}
       offsetY={this.tableDOMOffsetY}/>
   } else {
     return null;
