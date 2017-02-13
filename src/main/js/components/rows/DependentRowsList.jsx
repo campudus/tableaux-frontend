@@ -11,8 +11,8 @@ export default class DependentRowsList extends React.Component {
   static propTypes = {
     row : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
-    textHasDependency : React.PropTypes.element,
-    textHasNoDependency : React.PropTypes.element,
+    textHasDependency : React.PropTypes.func.isRequired,
+    textHasNoDependency : React.PropTypes.element.isRequired,
   };
 
   state = {
@@ -67,7 +67,7 @@ export default class DependentRowsList extends React.Component {
 
     if (dependency && dependency.length > 0) {
 
-      dependentInfoText = textHasDependency ? textHasDependency : null;
+      dependentInfoText = textHasDependency ? textHasDependency(dependency.length) : null;
 
       dependentTables = dependency.map((dep)=> {
         const {table, column, rows} = dep;
@@ -79,7 +79,7 @@ export default class DependentRowsList extends React.Component {
           const dependentRowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag);
           return (
             <div key={idx} className="dependent-row">
-              <span className="dependent-row-id">#{row.id}</span>
+              <a href={[linkToTable, `rows/${row.id}?filter`].join("/")}  target="_blank" className="dependent-row-id">#{row.id} <i className="fa fa-angle-right"/></a>
               {dependentRowDisplayLabel}
             </div>
           );

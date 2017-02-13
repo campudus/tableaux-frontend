@@ -24,17 +24,34 @@
     text-overflow: ellipsis;
     position: relative;
 
+    border: 1px solid $color-primary;
+    box-sizing: border-box;
+
     &.editing {
       display: inline-block;
     }
 
     &.delete {
 
+      &:hover {
+        cursor: pointer;
+
+        color: $color-primary;
+        background-color: $color-primary-contrast-text;
+
+        border: 1px solid $color-primary;
+
+        i {
+          color: $color-primary-contrast-text;
+          background-color: $color-primary;
+        }
+      }
+
       i {
         display: inline-block;
         padding: 0 5px;
-        height: $space-height-link-delete-button - 4px;
-        line-height: $space-height-link-delete-button - 4px;
+        height: $space-height-link-delete-button - 6px;
+        line-height: $space-height-link-delete-button - 6px;
         vertical-align: top;
         margin-top: 1px;
         margin-right: 1px;
