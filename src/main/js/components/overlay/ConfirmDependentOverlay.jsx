@@ -20,7 +20,7 @@ let DeleteRowOverlayBody = (props) => {
   const {row, langtag} = props;
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
-  const hasDependencyText = <p>{i18n.t('table:delete_row_dependent_text')}</p>;
+  const hasDependencyText = () => <p>{i18n.t('table:delete_row_dependent_text')}</p>;
   const hasNoDependencyText = <p>{i18n.t('table:no_dependent_text')}</p>;
 
   const builtDependentView = <DependentRowsList row={row} langtag={langtag}
