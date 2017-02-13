@@ -15,8 +15,10 @@
 
 .column-head .context-menu {
   @include context-menu-look();
-  position: fixed;
+  position: absolute;
   font-weight: normal;
+  right: 0;
+  top: 40px;
   z-index: 2;
 
   a {

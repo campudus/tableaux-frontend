@@ -86,12 +86,10 @@ class ColumnEntry extends React.Component {
   };
 
   renderContextMenu = () => {
-    const {x, y} = this.state.ctxCoords;
     const {column} = this.props;
 
     return (
-      <ColumnContextMenu x={x} y={y}
-                         closeHandler={this.closeContextMenu}
+      <ColumnContextMenu closeHandler={this.closeContextMenu}
                          editHandler={this.editColumn}
                          column={column}
                          langtag={this.props.langtag}

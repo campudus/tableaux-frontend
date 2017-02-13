@@ -18,6 +18,10 @@
 
 }
 
+#tableHeader {
+  overflow: visible;
+}
+
 #table-wrapper {
   display: block;
   line-height: 1.2em;
@@ -82,7 +86,7 @@
 
   .column-head {
     border-right: 1px solid $color-border-grey;
-    overflow: hidden;
+    overflow: visible;
     white-space: nowrap;
     position: relative;
     height:$space-inner-height-table-header;
