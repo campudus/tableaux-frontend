@@ -1,5 +1,4 @@
 const React = require('react');
-let RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
 
 export const LinkLabelCell = React.createClass({
 
@@ -11,9 +10,12 @@ export const LinkLabelCell = React.createClass({
     //Used for performance reason to get cached derived value from the cell model
     linkIndexAt : React.PropTypes.number.isRequired,
 
-    //optional for delete label
+    // clickable label with delete button (optional)
     deletable : React.PropTypes.bool.isRequired,
-    onDelete : React.PropTypes.func
+    onDelete : React.PropTypes.func,
+
+    // clickable label (optional)
+    clickable : React.PropTypes.bool,
   },
 
   getLinkName : function () {
@@ -27,24 +29,52 @@ export const LinkLabelCell = React.createClass({
     this.props.onDelete(this.props.linkElement.id);
   },
 
-  render : function () {
-    const {langtag, cell, deletable} = this.props;
+  renderDeletable : function () {
+    const {langtag, cell, onDelete} = this.props;
 
-    if (deletable) {
-      const tableId = cell.column.toTable;
-      const rowId = this.props.linkElement.id;
+    if (!onDelete) {
+      throw new Error("onDelete property required is deletable");
+    }
 
-      const linkToTable = `/${langtag}/tables/${tableId}`;
+    const tableId = cell.column.toTable;
+    const rowId = this.props.linkElement.id;
 
-      const deleteButton = <i onClick={this.removeLinkHandler} className="fa fa-times"></i>;
+    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
 
-      return <a href={[linkToTable, `rows/${rowId}?filter`].join("/")} target="_blank" className="link-label delete">
-        {this.getLinkName()}{deleteButton}
-      </a>;
-    } else {
-      return <span className="link-label">
+    return <a href={href} target="_blank" className="link-label delete">
+      {this.getLinkName()}
+      <i onClick={this.removeLinkHandler} className="fa fa-times"></i>
+    </a>;
+  },
+
+  renderClickable : function () {
+    const {langtag, cell} = this.props;
+
+    const tableId = cell.column.toTable;
+    const rowId = this.props.linkElement.id;
+
+    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
+
+    return <a href={href} target="_blank" className="link-label delete">
+      {this.getLinkName()}
+    </a>;
+  },
+
+  renderLabel : function () {
+    return <span className="link-label">
         {this.getLinkName()}
       </span>;
+  },
+
+  render : function () {
+    const {clickable, deletable} = this.props;
+
+    if (deletable) {
+      return this.renderDeletable();
+    } else if (clickable) {
+      return this.renderClickable();
+    } else {
+      return this.renderLabel();
     }
   }
 });

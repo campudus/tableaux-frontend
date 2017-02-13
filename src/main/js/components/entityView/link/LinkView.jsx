@@ -15,8 +15,7 @@ const LinkView = React.createClass({
 
     const links = cell.value.map(function (element, index) {
       return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={cell}
-                            langtag={langtag}
-                            deletable={false} />;
+                            langtag={langtag} deletable={false} clickable={true}/>;
 
     });
 
