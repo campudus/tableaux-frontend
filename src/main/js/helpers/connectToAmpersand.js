@@ -27,13 +27,13 @@ const connectToAmpersand = (Component) => class extends React.Component {
     const _events = events || (model.isCollection ? 'add remove reset' : 'change');
 
     this.listenTo(model, _events, () => {
-      if (force) {
+      if (force && this._Component) {  // avoid problems during unmounting
         this._Component.forceUpdate(); // skip Component's shouldComponentUpdate
       } else {
         this.forceUpdate(); // make normal update
       }
     });
-  }
+  };
 
   componentDidMount = () => {
     fp.values(this.props).forEach(model => this.watch(model));
@@ -41,7 +41,7 @@ const connectToAmpersand = (Component) => class extends React.Component {
 
   componentWillUnmount = () => {
     this.stopListening();
-  }
+  };
 
   render() {
     return <Component ref={comp => this._Component = comp} {...this.props} watch={this.watch} />;

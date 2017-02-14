@@ -30,6 +30,7 @@ class Cell extends React.Component {
     this.state = {
       keyboardShortcuts : {}
     };
+    this.props.watch(this.props.cell, {event: "change:value", force: true});
   };
 
   componentDidMount = () => {

@@ -7,7 +7,6 @@ import DateEditCell from "./DateEditCell";
 import {DateFormats} from "../../../constants/TableauxConstants";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
-import keyMirror from "keymirror";
 import {either} from "../../../helpers/monads";
 
 class DateCell extends React.Component {
@@ -51,11 +50,10 @@ class DateCell extends React.Component {
 
   render = () => {
     const {cell, editing} = this.props;
-    const {value} = this.state;
     if (!editing) {
       return (
         <div className="cell-content">
-          {this.momentToString(value)}
+          {this.momentToString(this.getSavedMoment())}
         </div>
       )
     } else {
@@ -64,7 +62,7 @@ class DateCell extends React.Component {
                       toDisplayValue={this.momentToString}
                       handleDateUpdate={this.handleDateUpdate}
                       handleEditFinished={this.finishedEditing}
-                      value={value || new Moment()}
+                      value={this.state.value || new Moment()}
                       cell={cell} />
       )
     }

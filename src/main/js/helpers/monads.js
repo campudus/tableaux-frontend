@@ -17,7 +17,7 @@ class Maybe {
   }
 
   static fromNullable(a) {
-    return a !== null ? Maybe.just(a) : Maybe.none();
+    return (a !== null && a !== undefined) ? Maybe.just(a) : Maybe.none();
   }
 
   static of(a) {

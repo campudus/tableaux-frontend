@@ -1,6 +1,6 @@
-import _ from "lodash";
-import f from "lodash/fp";
-import {Directions, ColumnKinds, Langtags, DefaultLangtag, ActionTypes} from "../../constants/TableauxConstants";
+import * as _ from "lodash";
+import * as f from "lodash/fp";
+import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
 
@@ -102,17 +102,25 @@ export function getKeyboardShortcuts() {
       );
     },
     text: (event) => {
-      if (selectedCell && event.ctrlKey && event.key === "c"  // Cell copy
+      if (!selectedCell) {
+        return;
+      }
+      const actionKey = (f.contains("Mac OS", navigator.userAgent))
+        ? "metaKey"
+        : "ctrlKey";
+      if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
         && selectedCell.kind !== "concat") {
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell);
-      } else if (selectedCell && event.ctrlKey && event.key === "v"  // Cell paste
+      } else if (this.pasteOriginCell
+        && f.prop(actionKey, event) && event.key === "v"  // Cell paste
         && selectedCell.kind === this.pasteOriginCell.cell.kind) {
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell);
-      } else if (selectedCell && !selectedCellEditing  // Other keypress
+      } else if (!selectedCellEditing  // Other keypress
+        && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
         || selectedCell.kind === ColumnKinds.numeric)) {

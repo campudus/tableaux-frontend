@@ -52,7 +52,8 @@
     "title": "Gleich am Ziel!",
     "subtitle": "Weitere Daten werden angefragt."
   },
-  "copy_links_error": "Kann links nur innerhalb der selben Spalte kopieren",
+  "copy_links_error": "Kann links nur innerhalb derselben Spalte kopieren",
+  "copy_multilang_to_singlelang_error": "Kann keine einsprachige Zelle mit mehreren Werten überschreiben.",
   "confirm_copy": {
     "header": "Zellinhalt einfügen?",
     "info": "Dies wird alle Inhalte der ausgewählten Zelle in allen Sprachen überschreiben."

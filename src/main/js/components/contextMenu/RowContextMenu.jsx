@@ -50,10 +50,10 @@ class RowContextMenu extends React.Component {
   };
 
   copyItem = () => {
-    const {cell,table,t} = this.props;
+    const {cell, table, t} = this.props;
     return (table.type != "settings" && cell.kind !== "concat")
       ? (
-        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell))} >
+        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell))}>
           {t("copy_cell")}
         </a>
       )
@@ -61,15 +61,14 @@ class RowContextMenu extends React.Component {
   };
 
   pasteItem = () => {
-    const {cell,table,t,pasteFrom} = this.props;
-    console.log("Cell:", cell, "PasteFrom:", pasteFrom)
+    const {cell, table, t, pasteFrom} = this.props;
     return (table.type !== "settings"
     && pasteFrom.cell
     && cell.kind === pasteFrom.cell.kind
     && !isEmpty(pasteFrom)
     && !eq(cell, pasteFrom.cell))
       ? (
-        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell))} >
+        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell))}>
           {t("paste_cell")}
         </a>
       )
@@ -83,28 +82,31 @@ class RowContextMenu extends React.Component {
       <GenericContextMenu x={this.props.x}
                           y={this.props.y - this.props.offsetY}
                           offset={CLICK_OFFSET} menuItems=
-        {<div>
-          {this.props.table.type === 'settings' ? '' : <a href="#" onClick={duplicateRow}>{t('duplicate_row')}</a>}
-          {this.copyItem()}
-          {this.pasteItem()}
-          <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
-          <a href="#" onClick={showDependency}>{t('show_dependency')}</a>
-          {this.props.table.type === 'settings' ? '' : <a href="#" onClick={deleteRow}>{t('delete_row')}</a>}
-          {this.props.table.type === 'settings' ? '' : <a href="#" onClick={showEntityView}>{t('show_entity_view')}</a>}
-        </div>
-        }
+                            {<div>
+                              {this.props.table.type === 'settings' ? '' : <a href="#" onClick={duplicateRow}>{t(
+                                  'duplicate_row')}</a>}
+                              {this.copyItem()}
+                              {this.pasteItem()}
+                              <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
+                              <a href="#" onClick={showDependency}>{t('show_dependency')}</a>
+                              {this.props.table.type === 'settings' ? '' : <a href="#" onClick={deleteRow}>{t(
+                                  'delete_row')}</a>}
+                              {this.props.table.type === 'settings' ? '' : <a href="#" onClick={showEntityView}>{t(
+                                  'show_entity_view')}</a>}
+                            </div>
+                            }
       />
     );
   }
 }
 
 RowContextMenu.propTypes = {
-  x : React.PropTypes.number.isRequired,
-  y : React.PropTypes.number.isRequired,
-  row : React.PropTypes.object.isRequired,
-  offsetY : React.PropTypes.number.isRequired,
-  langtag : React.PropTypes.string.isRequired,
-  table : React.PropTypes.object.isRequired,
+  x: React.PropTypes.number.isRequired,
+  y: React.PropTypes.number.isRequired,
+  row: React.PropTypes.object.isRequired,
+  offsetY: React.PropTypes.number.isRequired,
+  langtag: React.PropTypes.string.isRequired,
+  table: React.PropTypes.object.isRequired,
   cell: React.PropTypes.object.isRequired
 };
 

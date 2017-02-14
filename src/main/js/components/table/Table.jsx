@@ -12,7 +12,8 @@ import listensToClickOutside from "react-onclickoutside";
 import JumpSpinner from "./JumpSpinner";
 import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
-import {contains} from "lodash/fp";
+import * as f from "lodash/fp";
+import {maybe, spy} from "../../helpers/monads";
 
 //Worker
 @listensToClickOutside
@@ -23,7 +24,7 @@ class Table extends React.Component {
    * Don't change this, its more performant than using this.state !
    */
   constructor(props) {
-    super(props)
+    super(props);
     this.headerDOMElement = null;
     this.scrolledXBefore = 0;
     this.selectNewCreatedRow = false;
@@ -49,7 +50,7 @@ class Table extends React.Component {
       rowContextMenu: null,
       showScrollToLeftButton: false
     }
-  };
+  }
 
   componentWillMount() {
     Dispatcher.on(ActionTypes.TOGGLE_CELL_SELECTION, tableNavigationWorker.toggleCellSelection, this);
@@ -99,9 +100,48 @@ class Table extends React.Component {
       return;
     }
 
-    if (!cell.isMultilanguage && contains(cell.kind, ["dateTime", "date", "number"])) { // single-value cell can be copied safely
-      cell.save({value: src.value})
+    console.log("from", this.pasteOriginCell.cell, "to", cell)
+
+    const canCopySafely = dst => !src.isMultiLanguage
+      || (src.isMultiLanguage && !dst.isMultiLanguage);
+
+    const calcNewValue = (src, dst) => {
+      if (!src.isMultiLanguage && !dst.isMultiLanguage) {
+        return spy( src.value , "single => single");
+      }
+      else if (src.isMultiLanguage && dst.isMultiLanguage) {
+        const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
+        return spy( f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
+          {}, combinedLangtags) , "multi => multi");
+      }
+      else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
+        return spy( f.assoc(this.props.langtag, src.value, dst.value) , "single => multi");
+      }
+      else { // src.isMultiLanguage
+        const findCommonValue = f.compose(
+          f.first,
+          filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
+          f.filter(val => !f.isEmpty(val)),
+          f.values
+        );
+        const value = findCommonValue(src.value);
+        return spy( (value && value !== "")
+          ? value
+          : null , "multi => single");
+      }
+    };
+
+    if (canCopySafely(cell)) {
+      const newValue = calcNewValue(src, cell);
+      if (!newValue) {
+        ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_multilang_to_singlelang_error")}</div>, 3000);
+        return;
+      }
+      ActionCreator.changeCell(cell, calcNewValue(src, cell));
     } else {
+      const newValue = (cell.kind === "link")
+        ? src.value
+        : calcNewValue(src, cell);
       ActionCreator.openOverlay({
         head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
         body: (
@@ -113,7 +153,7 @@ class Table extends React.Component {
           <div className="button-wrapper">
             <a href="#" className="button positive"
                onClick={() => {
-                 cell.save({value: src.value});
+                 ActionCreator.changeCell(cell, newValue);
                  ActionCreator.closeOverlay();
                }}
             >
@@ -149,7 +189,7 @@ class Table extends React.Component {
 
     //save a reference globally for children. Cells use this.
     window.GLOBAL_TABLEAUX.tableRowsDom = this.tableRowsDom = tableRowsDom;
-  };
+  }
 
   componentDidUpdate() {
     console.log("Table did update.");
@@ -161,7 +201,7 @@ class Table extends React.Component {
       }
       tableNavigationWorker.checkFocusInsideTable.call(this);
     }
-  };
+  }
 
   handleClickOutside = (event) => {
     /*
@@ -235,7 +275,7 @@ class Table extends React.Component {
                  this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <JumpSpinner/>
+          <JumpSpinner />
           <Columns ref="columns" table={table} langtag={langtag}
                    columns={columns}
           />
