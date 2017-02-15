@@ -16,7 +16,7 @@ import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import ColumnFilter from "./header/ColumnFilter";
-import {either} from "../helpers/monads";
+import {either, maybe, spy} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
@@ -39,7 +39,8 @@ class TableView extends React.Component {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
-      rowsFilter: null
+      rowsFilter: null,
+      pasteOriginCell: {}
     };
 
     const {columnId, rowId, filter} = this.props;
@@ -50,6 +51,109 @@ class TableView extends React.Component {
         columnId: columnId,
         filter: filter
       }
+    }
+  };
+
+  componentWillMount = () => {
+    Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
+    Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
+    Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    Dispatcher.on(ActionTypes.RESET_TABLE_URL, this.resetURL);
+    Dispatcher.on(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
+    Dispatcher.on(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
+    Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
+    Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    Dispatcher.off(ActionTypes.RESET_TABLE_URL, this.resetURL);
+    Dispatcher.off(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
+    Dispatcher.off(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
+  };
+
+  setCopyOrigin = cell => {
+    this.setState({pasteOriginCell: cell});
+  };
+
+  pasteCellTo = ({cell}) => {
+    const src = this.state.pasteOriginCell.cell;
+    const canCopyLinks = dst => dst.column.id === src.column.id
+      && dst.tableId === src.tableId;
+
+    if (cell.kind === ColumnKinds.link && !canCopyLinks(cell)) { // only copy same cell type or links from same column
+      ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_links_error")}</div>, 3000);
+      return;
+    }
+
+    const canCopySafely = dst => !src.isMultiLanguage
+      || (src.isMultiLanguage && !dst.isMultiLanguage);
+
+    const calcNewValue = (src, dst) => {
+      if (!src.isMultiLanguage && !dst.isMultiLanguage) {
+        return spy( src.value , "single => single");
+      }
+      else if (src.isMultiLanguage && dst.isMultiLanguage) {
+        const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
+        return spy( f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
+          {}, combinedLangtags) , "multi => multi");
+      }
+      else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
+        return spy( f.assoc(this.props.langtag, src.value, dst.value) , "single => multi");
+      }
+      else { // src.isMultiLanguage
+        const findCommonValue = f.compose(
+          f.first,
+          filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
+          f.filter(val => !f.isEmpty(val)),
+          f.values
+        );
+        const value = findCommonValue(src.value);
+        return spy( (value && value !== "")
+          ? value
+          : null , "multi => single");
+      }
+    };
+
+    if (canCopySafely(cell)) {
+      const newValue = calcNewValue(src, cell);
+      if (!newValue) {
+        ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_multilang_to_singlelang_error")}</div>, 3000);
+        return;
+      }
+      ActionCreator.changeCell(cell, newValue);
+    } else {
+      const newValue = (cell.kind === "link")
+        ? src.value
+        : calcNewValue(src, cell);
+      ActionCreator.openOverlay({
+        head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
+        body: (
+          <div id="confirm-copy-overlay-content" className="confirmation-overlay">
+            <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
+          </div>
+        ),
+        footer: (
+          <div className="button-wrapper">
+            <a href="#" className="button positive"
+               onClick={() => {
+                 ActionCreator.changeCell(cell, newValue);
+                 ActionCreator.closeOverlay();
+               }}
+            >
+              {i18n.t("common:save")}
+            </a>
+            <a href="#" className="button neutral"
+               onClick={() => ActionCreator.closeOverlay()}
+            >
+              {i18n.t("common:cancel")}
+            </a>
+          </div>
+        ),
+        type: "flexible"
+      })
     }
   };
 
@@ -191,14 +295,6 @@ class TableView extends React.Component {
     }
   };
 
-  componentWillMount = () => {
-    Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
-    Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
-    Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
-    Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    Dispatcher.on(ActionTypes.RESET_TABLE_URL, this.resetURL);
-  };
-
   componentDidMount = () => {
     ActionCreator.spinnerOn();
 
@@ -289,14 +385,6 @@ class TableView extends React.Component {
     fetchColumns(currentTable).then(fetchPages);
   };
 
-  componentWillUnmount = () => {
-    Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
-    Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
-    Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
-    Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    Dispatcher.off(ActionTypes.RESET_TABLE_URL, this.resetURL);
-  };
-
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.tableId !== this.props.tableId) {
       let oldTable = this.tables.get(this.state.currentTableId);
@@ -380,6 +468,13 @@ class TableView extends React.Component {
 
   doSwitchTable = () => {
     if (this.nextTableId) {
+      if (either(this.state.pasteOriginCell.cell)
+          .map(f.prop("kind"))
+          .map(f.eq(ColumnKinds.link))
+          .getOrElse(false))
+      {
+        this.setState({pasteOriginCell: {}})
+      }
       this.pendingCellGoto = null;
       console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
@@ -404,6 +499,7 @@ class TableView extends React.Component {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
+                         pasteOriginCell={this.state.pasteOriginCell}
           />;
         } else {
           //TODO show error to user
@@ -415,6 +511,12 @@ class TableView extends React.Component {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
+            <div id="clipboard-icon">
+              {(!f.isEmpty(this.state.pasteOriginCell))
+                ? <a href="#" className="button"><i className="fa fa-clipboard"/></a>
+                : null
+              }
+            </div>
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
                            tables={tables} />

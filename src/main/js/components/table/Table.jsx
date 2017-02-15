@@ -10,10 +10,6 @@ import * as tableNavigationWorker from "./tableNavigationWorker";
 import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import JumpSpinner from "./JumpSpinner";
-import i18n from "i18next";
-import ActionCreator from "../../actions/ActionCreator";
-import * as f from "lodash/fp";
-import {maybe, spy} from "../../helpers/monads";
 
 //Worker
 @listensToClickOutside
@@ -34,8 +30,6 @@ class Table extends React.Component {
     this.tableDOMOffsetY = 0;
     this.tableRowsDom = null; //scrolling rows container
     this.columnsDom = null;
-
-    this.pasteOriginCell = {};
 
     this.state = {
       offsetTableData: 0,
@@ -63,8 +57,6 @@ class Table extends React.Component {
     Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     Dispatcher.on(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
-    Dispatcher.on(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin, this);
-    Dispatcher.on(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo, this);
 
     window.addEventListener("resize", this.windowResize);
     this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
@@ -81,95 +73,11 @@ class Table extends React.Component {
     Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     Dispatcher.off(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
-    Dispatcher.off(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
-    Dispatcher.off(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
 
     window.removeEventListener("resize", this.windowResize);
     this.props.table.rows.off("add", tableRowsWorker.rowAdded.bind(this));
     window.GLOBAL_TABLEAUX.tableRowsDom = null;
   }
-
-  setCopyOrigin = cell => {
-    this.pasteOriginCell = cell;
-  };
-
-  pasteCellTo = ({cell}) => {
-    const src = this.pasteOriginCell.cell;
-    if (cell.kind === "link" && !(cell.column.id === src.column.id)) { // only copy same cell type or links from same column
-      ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_links_error")}</div>, 3000);
-      return;
-    }
-
-    console.log("from", this.pasteOriginCell.cell, "to", cell)
-
-    const canCopySafely = dst => !src.isMultiLanguage
-      || (src.isMultiLanguage && !dst.isMultiLanguage);
-
-    const calcNewValue = (src, dst) => {
-      if (!src.isMultiLanguage && !dst.isMultiLanguage) {
-        return spy( src.value , "single => single");
-      }
-      else if (src.isMultiLanguage && dst.isMultiLanguage) {
-        const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
-        return spy( f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
-          {}, combinedLangtags) , "multi => multi");
-      }
-      else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
-        return spy( f.assoc(this.props.langtag, src.value, dst.value) , "single => multi");
-      }
-      else { // src.isMultiLanguage
-        const findCommonValue = f.compose(
-          f.first,
-          filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
-          f.filter(val => !f.isEmpty(val)),
-          f.values
-        );
-        const value = findCommonValue(src.value);
-        return spy( (value && value !== "")
-          ? value
-          : null , "multi => single");
-      }
-    };
-
-    if (canCopySafely(cell)) {
-      const newValue = calcNewValue(src, cell);
-      if (!newValue) {
-        ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_multilang_to_singlelang_error")}</div>, 3000);
-        return;
-      }
-      ActionCreator.changeCell(cell, calcNewValue(src, cell));
-    } else {
-      const newValue = (cell.kind === "link")
-        ? src.value
-        : calcNewValue(src, cell);
-      ActionCreator.openOverlay({
-        head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
-        body: (
-          <div id="confirm-copy-overlay-content" className="confirmation-overlay">
-            <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
-          </div>
-        ),
-        footer: (
-          <div className="button-wrapper">
-            <a href="#" className="button positive"
-               onClick={() => {
-                 ActionCreator.changeCell(cell, newValue);
-                 ActionCreator.closeOverlay();
-               }}
-            >
-              {i18n.t("common:save")}
-            </a>
-            <a href="#" className="button neutral"
-               onClick={() => ActionCreator.closeOverlay()}
-            >
-              {i18n.t("common:cancel")}
-            </a>
-          </div>
-        ),
-        type: "flexible"
-      })
-    }
-  };
 
   componentDidMount() {
     let {tableRowsDom, columnsDom, headerDOMElement, tableHeaderId, tableDOMNode, tableDOMOffsetY} = this;

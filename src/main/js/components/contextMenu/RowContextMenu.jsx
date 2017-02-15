@@ -5,6 +5,7 @@ import {noPermissionAlertWithLanguage} from "../overlay/ConfirmationOverlay";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
+import {ColumnKinds} from "../../constants/TableauxConstants";
 import {compose, isEmpty, eq} from "lodash/fp";
 
 //Distance between clicked coordinate and the left upper corner of the context menu
@@ -51,7 +52,7 @@ class RowContextMenu extends React.Component {
 
   copyItem = () => {
     const {cell, table, t} = this.props;
-    return (table.type != "settings" && cell.kind !== "concat")
+    return (table.type != "settings" && cell.kind !== ColumnKinds.concat)
       ? (
         <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell))}>
           {t("copy_cell")}

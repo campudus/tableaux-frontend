@@ -109,13 +109,13 @@ export function getKeyboardShortcuts() {
         ? "metaKey"
         : "ctrlKey";
       if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
-        && selectedCell.kind !== "concat") {
+        && selectedCell.kind !== ColumnKinds.concat) {
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell);
-      } else if (this.pasteOriginCell
+      } else if (this.props.pasteOriginCell
         && f.prop(actionKey, event) && event.key === "v"  // Cell paste
-        && selectedCell.kind === this.pasteOriginCell.cell.kind) {
+        && selectedCell.kind === this.props.pasteOriginCell.cell.kind) {
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell);
@@ -340,7 +340,7 @@ export function getPreviousRow(currentRowId) {
 export function getNextColumnCell(currentColumnId, getPrev) {
   const columns = this.props.table.columns.filter(col => col.visible);
   const {selectedCell, expandedRowIds, selectedCellExpandedRow} = this.state;
-  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns)
+  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns);
   const numberOfColumns = columns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
   const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
@@ -378,7 +378,7 @@ export function preventSleepingOnTheKeyboard(cb) {
     }, 100);
     cb();
   }
-};
+}
 
 export function getCurrentSelectedRowId() {
   const {selectedCell} = this.state;
@@ -392,7 +392,7 @@ export function getCurrentSelectedColumnId() {
 
 export function scrollToLeftStart(e) {
   scrollToLeftLinear(this.tableRowsDom, 250);
-};
+}
 
 /** Helper function to scroll to the left.
  * TODO: Improve with ease out function. Great article about it:
@@ -400,7 +400,7 @@ export function scrollToLeftStart(e) {
  * **/
 
 function scrollToLeftLinear(element, scrollDuration) {
-  var scrollStep = element.scrollLeft / (scrollDuration / 15);
+  const scrollStep = element.scrollLeft / (scrollDuration / 15);
   if (requestAnimationFrame !== "undefined") {
     requestAnimationFrame(step);
     function step() {
