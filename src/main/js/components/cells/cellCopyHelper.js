@@ -5,9 +5,9 @@ import {spy, maybe} from "../../helpers/monads";
 import {convert, canConvert} from "../../helpers/cellValueConverter";
 import React from "react";
 import i18n from "i18next";
+import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
 
-const canCopySafely = (src, dst) => !src.isMultiLanguage
-  || (src.isMultiLanguage && !dst.isMultiLanguage);
+const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage);
 
 const calcNewValue = function (src, dst) {
   if (!src.isMultiLanguage && !dst.isMultiLanguage) {
@@ -23,21 +23,21 @@ const calcNewValue = function (src, dst) {
   }
   else { // src.isMultiLanguage
     /* const findCommonValue = f.compose(
-      f.first,
-      filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
-      f.filter(val => !f.isEmpty(val)),
-      f.values
-    );
-    const value = findCommonValue(src.value);
-    return spy((value && value !== "")
-      ? value
-      : null, "multi => single"); */
+     f.first,
+     filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
+     f.filter(val => !f.isEmpty(val)),
+     f.values
+     );
+     const value = findCommonValue(src.value);
+     return spy((value && value !== "")
+     ? value
+     : null, "multi => single"); */
 
-    return spy( src.value[this.props.langtag], "multi => single");
+    return spy(src.value[this.props.langtag], "multi => single");
   }
 };
 
-const pasteCellValue = function(src, dst) {
+const pasteCellValue = function (src, dst) {
   const canCopyLinks = dst => dst.column.id === src.column.id
   && dst.tableId === src.tableId;
 
@@ -74,11 +74,7 @@ const pasteCellValue = function(src, dst) {
     }
     ActionCreator.openOverlay({
       head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
-      body: (
-        <div id="confirm-copy-overlay-content" className="confirmation-overlay">
-          <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
-        </div>
-      ),
+      body: <PasteMultilanguageCellInfo langtag={this.props.langtag} oldVals={dst.value} newVals={newValue} />,
       footer: (
         <div className="button-wrapper">
           <a href="#" className="button positive"

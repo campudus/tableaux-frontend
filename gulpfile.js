@@ -19,7 +19,7 @@ gulp.task('default', ['build']);
 
 var config = {
   "outDir" : "out",
-  "tableauxUrl" : "http://localhost:8080/"
+  "tableauxUrl" : "http://0.0.0.0:8080/"
 };
 
 try {
@@ -54,7 +54,7 @@ function runWebpackServer(callback) {
   conf.devtool = 'source-maps';
   // enable development mode
   conf.entry.app.unshift('webpack/hot/only-dev-server');
-  conf.entry.app.unshift('webpack-dev-server/client?http://localhost:3000');
+  conf.entry.app.unshift('webpack-dev-server/client?http://0.0.0.0:3000');
 
   const compiler = webpack(conf);
 
@@ -74,7 +74,7 @@ function runWebpackServer(callback) {
 
     stats : {colors : true}
   });
-  server.listen(3000, 'localhost', callback);
+  server.listen(3000, '0.0.0.0', callback);
 }
 
 function clean(cb) {

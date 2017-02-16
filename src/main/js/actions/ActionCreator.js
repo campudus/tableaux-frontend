@@ -271,15 +271,15 @@ module.exports = {
   },
 
   jumpSpinnerOff: function() {
-      Dispatcher.trigger(ActionTypes.JUMP_SPINNER_OFF, {})
+    Dispatcher.trigger(ActionTypes.JUMP_SPINNER_OFF, {})
   },
 
   resetTableURL: function() {
-      Dispatcher.trigger(ActionTypes.RESET_TABLE_URL, {});
+    Dispatcher.trigger(ActionTypes.RESET_TABLE_URL, {});
   },
 
   copyCellContent: (cell) => {
-      Dispatcher.trigger(ActionTypes.COPY_CELL_CONTENT, {cell});
+    Dispatcher.trigger(ActionTypes.COPY_CELL_CONTENT, {cell});
   },
 
   pasteCellContent: (targetCell) => {

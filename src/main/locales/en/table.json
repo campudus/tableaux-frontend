@@ -53,7 +53,8 @@
     "subtitle": "Waiting for more data."
   },
   "copy_links_error": "Can only copy links from the same column.",
-  "copy_multilang_to_singlelang_error": "Can't copy multiple values to single-language cell",
+  "copy_kind_error": "Can not paste these cell contents here.",
+  "copy_no_conversion_result": "The pasted cell contents don't make any sense in this cell.",
   "confirm_copy": {
     "header": "Proceed pasting cell contents?",
     "info": "This will replace the contents of the selected cell in all languages."

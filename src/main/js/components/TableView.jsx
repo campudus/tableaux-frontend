@@ -83,6 +83,10 @@ class TableView extends React.Component {
     pasteCellValue.call(this, this.state.pasteOriginCell.cell, cell);
   };
 
+  clearCellClipboard = () => {
+    this.setState({pasteOriginCell: {}});
+  };
+
   resetURL = () => {
     App.router.navigate(`${this.props.langtag}/tables/${this.state.currentTableId}`);
   };
@@ -439,7 +443,11 @@ class TableView extends React.Component {
             <Navigation langtag={this.props.langtag} />
             <div id="clipboard-icon">
               {(!f.isEmpty(this.state.pasteOriginCell))
-                ? <a href="#" className="button"><i className="fa fa-clipboard"/></a>
+                ? (
+                  <a href="#" className="button" onClick={this.clearCellClipboard}>
+                    <i className="fa fa-clipboard"/>
+                  </a>
+                )
                 : null
               }
             </div>

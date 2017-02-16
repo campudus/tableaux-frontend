@@ -148,11 +148,11 @@ header {
 
   #clipboard-icon {
     margin-top: 10px;
-    display: inline-block;
     float: right;
-    padding: 10px;
-    padding-right: 0;
+    display: inline-flex;
 
-    pointer-events: none;
+    a {
+      padding: 10px;
+    }
   }
 }
