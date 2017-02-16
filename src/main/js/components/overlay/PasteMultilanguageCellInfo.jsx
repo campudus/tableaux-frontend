@@ -30,8 +30,6 @@ class PasteMultilanguageCellInfo extends React.Component{
       {}, keys(newVals)
     );
 
-    console.log(oldVals, oldValsWithAllKeys, newVals)
-
     const getEntries = compose(
       map(this.renderEntry),
       sortBy(first),

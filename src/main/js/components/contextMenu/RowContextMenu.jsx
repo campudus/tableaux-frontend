@@ -14,6 +14,11 @@ const CLICK_OFFSET = 3;
 
 class RowContextMenu extends React.Component {
 
+  constructor(props) {
+    super(props)
+    console.log("RowContextMenu", props)
+  }
+
   closeRowContextMenu = () => {
     ActionCreator.closeRowContextMenu();
   };
@@ -52,10 +57,10 @@ class RowContextMenu extends React.Component {
   };
 
   copyItem = () => {
-    const {cell, table, t} = this.props;
+    const {cell, table, t, langtag} = this.props;
     return (table.type != "settings" && cell.kind !== ColumnKinds.concat)
       ? (
-        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell))}>
+        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell, langtag))}>
           {t("copy_cell")}
         </a>
       )
@@ -63,14 +68,14 @@ class RowContextMenu extends React.Component {
   };
 
   pasteItem = () => {
-    const {cell, table, t, pasteFrom} = this.props;
+    const {cell, table, t, pasteFrom, langtag} = this.props;
     return (table.type !== "settings"
     && pasteFrom.cell
     && canConvert(pasteFrom.cell.kind, cell.kind)
     && !isEmpty(pasteFrom)
     && !eq(cell, pasteFrom.cell))
       ? (
-        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell))}>
+        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell, langtag))}>
           {t("paste_cell")}
         </a>
       )

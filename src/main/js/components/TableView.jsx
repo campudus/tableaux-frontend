@@ -41,7 +41,8 @@ class TableView extends React.Component {
       currentTableId: this.props.tableId,
       rowsCollection: null,
       rowsFilter: null,
-      pasteOriginCell: {}
+      pasteOriginCell: {},
+      pasteOriginCellLang: props.langtag
     };
 
     const {columnId, rowId, filter} = this.props;
@@ -75,12 +76,17 @@ class TableView extends React.Component {
     Dispatcher.off(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
   };
 
-  setCopyOrigin = cell => {
-    this.setState({pasteOriginCell: cell});
+  setCopyOrigin = ({cell, langtag}) => {
+    this.setState({
+      pasteOriginCell: cell,
+      pasteOriginCellLang: langtag
+    });
   };
 
-  pasteCellTo = ({cell}) => {
-    pasteCellValue.call(this, this.state.pasteOriginCell.cell, cell);
+  pasteCellTo = ({cell, langtag}) => {
+    const src = this.state.pasteOriginCell;
+    const srcLang = this.state.pasteOriginCellLang;
+    pasteCellValue.call(this, src, srcLang, cell, langtag);
   };
 
   clearCellClipboard = () => {

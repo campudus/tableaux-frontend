@@ -1,7 +1,7 @@
 import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 import {ColumnKinds} from "../../constants/TableauxConstants";
-import {spy, maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/monads";
 import {convert, canConvert} from "../../helpers/cellValueConverter";
 import React from "react";
 import i18n from "i18next";
@@ -9,35 +9,25 @@ import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
 
 const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage);
 
-const calcNewValue = function (src, dst) {
+const calcNewValue = function (src, srcLang, dst, dstLang) {
   if (!src.isMultiLanguage && !dst.isMultiLanguage) {
-    return spy(src.value, "single => single");
+    return src.value;
   }
   else if (src.isMultiLanguage && dst.isMultiLanguage) {
     const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
-    return spy(f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
-      {}, combinedLangtags), "multi => multi");
+    return f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
+      {}, combinedLangtags);
   }
   else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
-    return spy(f.assoc(this.props.langtag, src.value, dst.value), "single => multi");
+    return f.assoc(dstLang, src.value, dst.value);
   }
   else { // src.isMultiLanguage
-    /* const findCommonValue = f.compose(
-     f.first,
-     filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
-     f.filter(val => !f.isEmpty(val)),
-     f.values
-     );
-     const value = findCommonValue(src.value);
-     return spy((value && value !== "")
-     ? value
-     : null, "multi => single"); */
-
-    return spy(src.value[this.props.langtag], "multi => single");
+    return src.value[srcLang];
   }
 };
 
-const pasteCellValue = function (src, dst) {
+const pasteCellValue = function (src, srcLang, dst, dstLang) {
+
   const canCopyLinks = dst => dst.column.id === src.column.id
   && dst.tableId === src.tableId;
 
@@ -52,7 +42,7 @@ const pasteCellValue = function (src, dst) {
   }
 
   if (canCopySafely(src, dst)) {
-    const newValue = convert(src.kind, dst.kind, calcNewValue.call(this, src, dst));
+    const newValue = convert(src.kind, dst.kind, calcNewValue.call(this, src, srcLang, dst, dstLang));
     if (!newValue) {
       ActionCreator.showToast(
         <div id="cell-jump-toast">{i18n.t("table:copy_no_conversion_result")}</div>, 3000
@@ -65,7 +55,7 @@ const pasteCellValue = function (src, dst) {
     const newValue = convert(src.kind, dst.kind,
       (dst.kind === "link")
         ? src.value
-        : calcNewValue.call(this, src, dst));
+        : calcNewValue.call(this, src, srcLang, dst, dstLang));
     if (!newValue) {
       ActionCreator.showToast(
         <div id="cell-jump-toast">{i18n.t("table:copy_no_conversion_result")}</div>, 3000

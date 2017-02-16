@@ -143,7 +143,7 @@ class Row extends React.Component {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
-            <i className="fa fa-trash"></i>
+            <i className="fa fa-trash" />
           </button>
         </div>
       )
@@ -174,7 +174,6 @@ class Row extends React.Component {
     }
   }
 }
-;
 
 Row.propTypes = {
   langtag: React.PropTypes.string.isRequired,

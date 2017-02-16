@@ -108,16 +108,17 @@ export function getKeyboardShortcuts() {
       const actionKey = (f.contains("Mac OS", navigator.userAgent))
         ? "metaKey"
         : "ctrlKey";
+      const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
       if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
         event.preventDefault();
         event.stopPropagation();
-        ActionCreator.copyCellContent(selectedCell);
-      } else if (this.props.pasteOriginCell
+        ActionCreator.copyCellContent(selectedCell, langtag);
+      } else if (!_.isEmpty(this.props.pasteOriginCell)
         && f.prop(actionKey, event) && event.key === "v") {  // Cell paste
         event.preventDefault();
         event.stopPropagation();
-        ActionCreator.pasteCellContent(selectedCell);
+        ActionCreator.pasteCellContent(selectedCell, langtag);
       } else if (!selectedCellEditing  // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
@@ -191,7 +192,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
   const columnId = cell.column.id;
   const rowId = cell.row.id;
   if (selected !== "NO_HISTORY_PUSH") {
-    const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
+    const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
     App.router.navigate(cellURL, {trigger: false})
   }
   this.setState({

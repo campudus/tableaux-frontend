@@ -95,8 +95,6 @@ $overlay-headline-height: 50px;
         .entry {
           padding: 5px 0;
           width: 100%;
-          //max-width: 300px;
-          //overflow: hidden;
 
           .icon {
             display: inline-block;
@@ -110,10 +108,6 @@ $overlay-headline-height: 50px;
 
           .text {
             display: inline;
-            //max-width: 200px;
-            //overflow: hidden;
-            //text-overflow: ellipsis;
-            //white-space: nowrap;
           }
         }
 

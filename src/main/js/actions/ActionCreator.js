@@ -278,11 +278,11 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.RESET_TABLE_URL, {});
   },
 
-  copyCellContent: (cell) => {
-    Dispatcher.trigger(ActionTypes.COPY_CELL_CONTENT, {cell});
+  copyCellContent: (cell, langtag) => {
+    Dispatcher.trigger(ActionTypes.COPY_CELL_CONTENT, {cell, langtag});
   },
 
-  pasteCellContent: (targetCell) => {
-      Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell});
+  pasteCellContent: (targetCell, langtag) => {
+      Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell, langtag});
   }
 };

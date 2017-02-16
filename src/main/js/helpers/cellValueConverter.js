@@ -13,7 +13,7 @@ const canConvert = (from, to) => {
     return f.contains(to, [numeric, date, datetime, shorttext,richtext]);
   }
   else if (to === text) {
-    return f.contains(from, [numeric, shorttext, richtext, date, datetime, concat]);
+    return f.contains(from, [numeric, shorttext, richtext, date, datetime]);
   }
   else {
     return canConvert(from, text) && canConvert(text, to);
@@ -43,27 +43,22 @@ const fromText = {
 const toText = {
   [shorttext]: f.identity,
   [richtext]: f.identity,
-  [numeric]: f.identity,
+  [numeric]: num => num.toString(),
   [date]: mom => mom.format(DateFormats.formatForUser),
-  [datetime]: mom => mom.format(DateTimeFormats.formatForUser),
-  [concat]: f.identity
+  [datetime]: str => Moment(str).format(DateTimeFormats.formatForUser),
 };
 
 // (string, string, value) -> value
 const convertSingleValue = f.curry(
   (from, to, value) => {
-    if (from === to
-      || (f.contains(from, [date,datetime]) && f.contains(to, [date,datetime]))) {
-      return value;
-    }
-    else if (to === text) {
+    if (to === text) {
       return toText[from](value);
     }
     else if (from === text) {
       return fromText[to](value);
     }
     else {
-      return f.compose(fromText[to], toText[from])(value, from === currency);
+      return f.compose(fromText[to], toText[from])(value);
     }
   }
 );
@@ -78,12 +73,10 @@ const convert = (from, to, value) => {
     return value;
   }
   else if (f.isObject(value) && !(value instanceof Moment)) {
-//        console.log("Multiple conversion:", from, to, value);
     const conversion = convertSingleValue(from, to);
     return f.mapValues(conversion, value);
   }
   else {
-//        console.log("Converting single value:", from, to, value);
     return convertSingleValue(from, to, value);
   }
 };
