@@ -16,11 +16,12 @@ import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import ColumnFilter from "./header/ColumnFilter";
-import {either, maybe, spy} from "../helpers/monads";
+import {either} from "../helpers/monads";
 import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
+import pasteCellValue from "./cells/cellCopyHelper";
 
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -79,82 +80,7 @@ class TableView extends React.Component {
   };
 
   pasteCellTo = ({cell}) => {
-    const src = this.state.pasteOriginCell.cell;
-    const canCopyLinks = dst => dst.column.id === src.column.id
-      && dst.tableId === src.tableId;
-
-    if (cell.kind === ColumnKinds.link && !canCopyLinks(cell)) { // only copy same cell type or links from same column
-      ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_links_error")}</div>, 3000);
-      return;
-    }
-
-    const canCopySafely = dst => !src.isMultiLanguage
-      || (src.isMultiLanguage && !dst.isMultiLanguage);
-
-    const calcNewValue = (src, dst) => {
-      if (!src.isMultiLanguage && !dst.isMultiLanguage) {
-        return spy( src.value , "single => single");
-      }
-      else if (src.isMultiLanguage && dst.isMultiLanguage) {
-        const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
-        return spy( f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
-          {}, combinedLangtags) , "multi => multi");
-      }
-      else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
-        return spy( f.assoc(this.props.langtag, src.value, dst.value) , "single => multi");
-      }
-      else { // src.isMultiLanguage
-        const findCommonValue = f.compose(
-          f.first,
-          filtered => (f.every(f.eq(f.first(filtered)), filtered)) ? filtered : null,
-          f.filter(val => !f.isEmpty(val)),
-          f.values
-        );
-        const value = findCommonValue(src.value);
-        return spy( (value && value !== "")
-          ? value
-          : null , "multi => single");
-      }
-    };
-
-    if (canCopySafely(cell)) {
-      const newValue = calcNewValue(src, cell);
-      if (!newValue) {
-        ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_multilang_to_singlelang_error")}</div>, 3000);
-        return;
-      }
-      ActionCreator.changeCell(cell, newValue);
-    } else {
-      const newValue = (cell.kind === "link")
-        ? src.value
-        : calcNewValue(src, cell);
-      ActionCreator.openOverlay({
-        head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
-        body: (
-          <div id="confirm-copy-overlay-content" className="confirmation-overlay">
-            <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
-          </div>
-        ),
-        footer: (
-          <div className="button-wrapper">
-            <a href="#" className="button positive"
-               onClick={() => {
-                 ActionCreator.changeCell(cell, newValue);
-                 ActionCreator.closeOverlay();
-               }}
-            >
-              {i18n.t("common:save")}
-            </a>
-            <a href="#" className="button neutral"
-               onClick={() => ActionCreator.closeOverlay()}
-            >
-              {i18n.t("common:cancel")}
-            </a>
-          </div>
-        ),
-        type: "flexible"
-      })
-    }
+    pasteCellValue.call(this, this.state.pasteOriginCell.cell, cell);
   };
 
   resetURL = () => {

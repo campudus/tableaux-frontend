@@ -7,6 +7,7 @@ import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../.
 import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import {compose, isEmpty, eq} from "lodash/fp";
+import {canConvert} from "../../helpers/cellValueConverter";
 
 //Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -65,7 +66,7 @@ class RowContextMenu extends React.Component {
     const {cell, table, t, pasteFrom} = this.props;
     return (table.type !== "settings"
     && pasteFrom.cell
-    && cell.kind === pasteFrom.cell.kind
+    && canConvert(pasteFrom.cell.kind, cell.kind)
     && !isEmpty(pasteFrom)
     && !eq(cell, pasteFrom.cell))
       ? (

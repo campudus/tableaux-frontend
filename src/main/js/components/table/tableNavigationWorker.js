@@ -114,8 +114,7 @@ export function getKeyboardShortcuts() {
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell);
       } else if (this.props.pasteOriginCell
-        && f.prop(actionKey, event) && event.key === "v"  // Cell paste
-        && selectedCell.kind === this.props.pasteOriginCell.cell.kind) {
+        && f.prop(actionKey, event) && event.key === "v") {  // Cell paste
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell);

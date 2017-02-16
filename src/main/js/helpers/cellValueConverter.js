@@ -1,0 +1,91 @@
+import {ColumnKinds, DateFormats, DateTimeFormats} from "../constants/TableauxConstants";
+import * as f from "lodash/fp";
+import Moment from "moment";
+
+const {shorttext,richtext,text,link,numeric,boolean,concat,attachment,datetime,currency,date} = ColumnKinds;
+
+// (string, string) -> bool
+const canConvert = (from, to) => {
+  if (from === to) {
+    return true;
+  }
+  else if (from === text) {
+    return f.contains(to, [numeric, date, datetime, shorttext,richtext]);
+  }
+  else if (to === text) {
+    return f.contains(from, [numeric, shorttext, richtext, date, datetime, concat]);
+  }
+  else {
+    return canConvert(from, text) && canConvert(text, to);
+  }
+};
+
+// string -> string
+const cleanString = f.compose(f.trim, f.replace("\n", " "));
+
+// string -> value
+const fromText = {
+  [shorttext]: cleanString,
+  [richtext]: f.identity,
+  [numeric]: f.compose(f.defaultTo(null), f.parseInt(10), cleanString),
+  [date]: str => {
+    const dateString = f.compose(f.join(""), f.take(DateFormats.formatForUser.length), cleanString)(str);
+    const mom = Moment(dateString, DateFormats.formatForUser);
+    return (mom.isValid()) ? mom : null;
+  },
+  [datetime]: str => {
+    const mom = Moment(cleanString(str), DateTimeFormats.formatForUser);
+    return (mom.isValid()) ? mom : null;
+  }
+};
+
+// value -> string
+const toText = {
+  [shorttext]: f.identity,
+  [richtext]: f.identity,
+  [numeric]: f.identity,
+  [date]: mom => mom.format(DateFormats.formatForUser),
+  [datetime]: mom => mom.format(DateTimeFormats.formatForUser),
+  [concat]: f.identity
+};
+
+// (string, string, value) -> value
+const convertSingleValue = f.curry(
+  (from, to, value) => {
+    if (from === to
+      || (f.contains(from, [date,datetime]) && f.contains(to, [date,datetime]))) {
+      return value;
+    }
+    else if (to === text) {
+      return toText[from](value);
+    }
+    else if (from === text) {
+      return fromText[to](value);
+    }
+    else {
+      return f.compose(fromText[to], toText[from])(value, from === currency);
+    }
+  }
+);
+
+// (str, str, value|object) -> value|object
+const convert = (from, to, value) => {
+  if (!canConvert(from, to)) {
+    return null;
+  }
+
+  if (from === to) {
+    return value;
+  }
+  else if (f.isObject(value) && !(value instanceof Moment)) {
+//        console.log("Multiple conversion:", from, to, value);
+    const conversion = convertSingleValue(from, to);
+    return f.mapValues(conversion, value);
+  }
+  else {
+//        console.log("Converting single value:", from, to, value);
+    return convertSingleValue(from, to, value);
+  }
+};
+
+export {convert, canConvert};
