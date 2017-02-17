@@ -1,67 +1,69 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var SingleFileEdit = require('./SingleFileEdit.jsx');
-var MultiFileEdit = require('./MultiFileEdit.jsx');
-import {translate} from 'react-i18next';
+import React from "react";
+import connectToAmpersand from "../../HOCs/connectToAmpersand";
+import SingleFileEdit from "./SingleFileEdit";
+import MultiFileEdit from "./MultiFileEdit.jsx";
+import {translate} from "react-i18next";
 
-var FileEdit = React.createClass({
-  mixins : [AmpersandMixin],
+@translate(["media"])
+@connectToAmpersand
+class FileEdit extends React.Component {
 
-  propTypes : {
+  static propTypes = {
     file : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
     onClose : React.PropTypes.func.isRequired
-  },
+  };
 
-  getInitialState : function () {
-    return {
+  constructor(props) {
+    super(props);
+    this.state = {
       editedTitleValue : {},
       editedDescValue : {},
       editedExternalnameValue : {},
       editedLanguage : {},
       hasChanged : false
-    }
-  },
+    };
+  }
 
-  onTitleChange : function (titleValue, langtag) {
-    var editedValue = this.state.editedTitleValue;
+  onTitleChange = (titleValue, langtag) => {
+    let editedValue = this.state.editedTitleValue;
     editedValue[langtag] = titleValue;
     this.setState({
       hasChanged : true,
       editedTitleValue : editedValue
     });
-  },
+  };
 
-  onDescriptionChange : function (descriptionValue, langtag) {
-    var editedValue = this.state.editedDescValue;
+  onDescriptionChange = (descriptionValue, langtag) => {
+    let editedValue = this.state.editedDescValue;
     editedValue[langtag] = descriptionValue;
     this.setState({
       hasChanged : true,
       editedDescValue : editedValue
     });
-  },
+  };
 
-  onExternalnameChange : function (externalnameValue, langtag) {
-    var editedValue = this.state.editedExternalnameValue;
+  onExternalnameChange = (externalnameValue, langtag) => {
+    let editedValue = this.state.editedExternalnameValue;
     editedValue[langtag] = externalnameValue;
     this.setState({
       hasChanged : true,
       editedExternalnameValue : editedValue
     });
-  },
+  };
 
-  onLangChange : function (newLang, langtag) {
-    var editedValue = this.state.editedLanguage;
+  onLangChange = (newLang, langtag) => {
+    let editedValue = this.state.editedLanguage;
     editedValue[langtag] = newLang;
     this.setState({
       hasChanged : true,
       editedLanguage : editedValue
     });
-  },
+  };
 
-  render : function () {
-    var file = this.props.file;
-    var overlayBody;
+  render() {
+    const file = this.props.file;
+    let overlayBody;
     if (file.internalName && Object.keys(file.internalName).length > 1) {
       overlayBody = <MultiFileEdit file={this.props.file}
                                    langtag={this.props.langtag}
@@ -90,6 +92,6 @@ var FileEdit = React.createClass({
 
     return overlayBody;
   }
-});
+}
 
-module.exports = translate(['media'])(FileEdit);
+module.exports = FileEdit;

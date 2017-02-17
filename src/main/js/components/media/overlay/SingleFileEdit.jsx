@@ -1,26 +1,25 @@
-var React = require('react');
-var ampersandMixin = require('ampersand-react-mixin');
-var XhrPoolMixin = require('../../mixins/XhrPoolMixin');
-var Dropzone = require('react-dropzone');
-var request = require('superagent');
-var ActionCreator = require('../../../actions/ActionCreator');
-var multiLanguage = require('../../../helpers/multiLanguage');
-var SingleFileTextInput = require('./SingleFileTextInput.jsx');
-var FileChangeUpload = require('./FileChangeUpload.jsx');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var apiUrl = require('../../../helpers/apiUrl');
-var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
-import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess, reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
-import {DefaultLangtag} from '../../../constants/TableauxConstants';
-import {translate} from 'react-i18next';
-import _ from 'lodash';
-import TableauxConstants from '../../../constants/TableauxConstants';
+import React from "react";
+import connectToAmpersand from "../../HOCs/connectToAmpersand";
+import withAbortableXhrRequests from "../../HOCs/withAbortableXhrRequests";
+import Dropzone from "react-dropzone";
+import request from "superagent";
+import ActionCreator from "../../../actions/ActionCreator";
+import multiLanguage from "../../../helpers/multiLanguage";
+import SingleFileTextInput from "./SingleFileTextInput.jsx";
+import FileChangeUpload from "./FileChangeUpload.jsx";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import apiUrl from "../../../helpers/apiUrl";
+import LanguageSwitcher from "../../header/LanguageSwitcher.jsx";
+import {hasUserAccessToLanguage, reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
+import {DefaultLangtag, Langtags} from "../../../constants/TableauxConstants";
+import {translate} from "react-i18next";
 
-var SingleFileEdit = React.createClass({
+@translate(["media"])
+@withAbortableXhrRequests
+@connectToAmpersand
+class SingleFileEdit extends React.Component {
 
-  mixins : [ampersandMixin, XhrPoolMixin],
-
-  propTypes : {
+  static propTypes = {
     file : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
     onClose : React.PropTypes.func.isRequired,
@@ -31,41 +30,42 @@ var SingleFileEdit = React.createClass({
     onTitleChange : React.PropTypes.func.isRequired,
     onDescriptionChange : React.PropTypes.func.isRequired,
     onExternalnameChange : React.PropTypes.func.isRequired
-  },
+  };
 
-  getInitialState : function () {
-    return {
+  constructor(props) {
+    super(props);
+    this.state = {
       isTitleOpen : false,
       isDescriptionOpen : false,
       isExternalnameOpen : false,
-      multifileLanguage : TableauxConstants.Langtags.length > 0 ? TableauxConstants.Langtags[1] : TableauxConstants.DefaultLangtag
+      multifileLanguage : Langtags.length > 0 ? Langtags[1] : DefaultLangtag
     }
-  },
+  }
 
-  componentWillMount : function () {
+  componentWillMount() {
     Dispatcher.on("on-media-overlay-save", this.onSave);
     Dispatcher.on("on-media-overlay-cancel", this.onClose);
-  },
+  }
 
-  componentWillUnmount : function () {
+  componentWillUnmount() {
     Dispatcher.off("on-media-overlay-save", this.onSave);
     Dispatcher.off("on-media-overlay-cancel", this.onClose);
-  },
+  }
 
-  onSave : function () {
+  onSave  = () => {
     if (this.props.hasChanged) {
-      var file = this.props.file;
-      var newTitle = this.props.editedTitleValue;
-      var newDescription = this.props.editedDescValue;
-      var newExternalName = this.props.editedExternalnameValue;
+      const file = this.props.file;
+      const newTitle = this.props.editedTitleValue;
+      const newDescription = this.props.editedDescValue;
+      const newExternalName = this.props.editedExternalnameValue;
       const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, newTitle, newDescription, newExternalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
       console.log("got obj after reduceMediaValuesToAllowedLanguages: ", changeFileParams);
       ActionCreator.changeFile(...changeFileParams);
     }
     this.props.onClose(event)
-  },
+  };
 
-  onClose : function (event) {
+  onClose  = (event) => {
     const {t} = this.props;
     if (this.props.hasChanged) {
       if (confirm(t('file_close_without_saving'))) {
@@ -74,85 +74,83 @@ var SingleFileEdit = React.createClass({
     } else {
       this.props.onClose(event)
     }
-  },
+  };
 
-  onTitleChange : function (titleValue, langtag) {
+  onTitleChange  = (titleValue, langtag) => {
     this.props.onTitleChange(titleValue, langtag);
-  },
+  };
 
-  toggleTitle : function () {
+  toggleTitle  = () => {
     this.setState({
       isTitleOpen : !this.state.isTitleOpen
     });
-  },
+  };
 
-  onDescChange : function (descValue, langtag) {
+  onDescChange  = (descValue, langtag) => {
     this.props.onDescriptionChange(descValue, langtag);
-  },
+  };
 
-  toggleDesc : function () {
+  toggleDesc  = () => {
     this.setState({
       isDescriptionOpen : !this.state.isDescriptionOpen
     });
-  },
+  };
 
-  onExternalnameChange : function (externalnameValue, langtag) {
+  onExternalnameChange  = (externalnameValue, langtag) => {
     this.props.onExternalnameChange(externalnameValue, langtag);
-  },
+  };
 
-  toggleExternalname : function () {
+  toggleExternalname  = () => {
     this.setState({
       isExternalnameOpen : !this.state.isExternalnameOpen
     });
-  },
+  };
 
-  onMultifileLanguageChange : function (lang) {
+  onMultifileLanguageChange  = (lang) => {
     this.setState({
       multifileLanguage : lang
     });
-  },
+  };
 
-  onMultilangDrop : function (files) {
-    var self = this;
-    var langtag = this.state.multifileLanguage;
+  onMultilangDrop  = (files) => {
+    const langtag = this.state.multifileLanguage;
 
     files.forEach(function (file) {
       // upload each file for it's own
-      var uuid = self.props.file.uuid;
+      const uuid = this.props.file.uuid;
 
-      var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
+      const uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
 
-      var req = request.put(uploadUrl)
+      const req = request.put(uploadUrl)
         .attach("file", file, file.name)
-        .end(self.multilangUploadCallback);
+        .end(this.multilangUploadCallback);
 
-      self.addAbortableXhrRequest(req.xhr);
+      this.props.addAbortableXhrRequest(req.xhr);
     });
-  },
+  };
 
-  multilangUploadCallback : function (err, uploadRes) {
+  multilangUploadCallback  = (err, uploadRes) => {
     if (err) {
       console.error("FileDelete.uploadCallback", err);
       return;
     }
 
     if (uploadRes) {
-      var file = uploadRes.body;
+      const file = uploadRes.body;
       ActionCreator.changedFileData(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
     }
-  },
+  };
 
-  renderTextInput : function (id, label, valueObj, langtag, isOpen) {
-    var self = this;
-    var retrieveTranslation = multiLanguage.retrieveTranslation(TableauxConstants.DefaultLangtag);
+  renderTextInput  = (id, label, valueObj, langtag, isOpen) => {
+    const retrieveTranslation = multiLanguage.retrieveTranslation(DefaultLangtag);
 
     if (isOpen) {
-      return (TableauxConstants.Langtags.map(function (langtag) {
-        var value = retrieveTranslation(valueObj, langtag);
-        return self.renderField(id, value, langtag);
+      return (Langtags.map((langtag) => {
+        const value = retrieveTranslation(valueObj, langtag);
+        return this.renderField(id, value, langtag);
       }));
     } else {
-      var value = retrieveTranslation(valueObj, langtag);
+      const value = retrieveTranslation(valueObj, langtag);
       return (
         <div className='field-item'>
           <label htmlFor={id} className="field-label">{label}</label>
@@ -160,13 +158,13 @@ var SingleFileEdit = React.createClass({
         </div>
       );
     }
-  },
+  };
 
-  render : function () {
+  render() {
     const {t} = this.props;
     const {internalName, fileUrl, uuid} = this.props.file;
 
-    var langOptions = TableauxConstants.Langtags.reduce(function (res, langtag) {
+    const langOptions = Langtags.reduce((res, langtag) => {
       if (DefaultLangtag !== langtag && hasUserAccessToLanguage(langtag)) {
         res.push({
           value : langtag,
@@ -176,9 +174,9 @@ var SingleFileEdit = React.createClass({
       return res;
     }, []);
 
-    var fileLangtag = Object.keys(internalName)[0];
-    var fileInternalName = internalName[fileLangtag];
-    const fileUrlOfThisLanguage = apiUrl(fileUrl[TableauxConstants.DefaultLangtag]);
+    const fileLangtag = Object.keys(internalName)[0];
+    const fileInternalName = internalName[fileLangtag];
+    const fileUrlOfThisLanguage = apiUrl(fileUrl[DefaultLangtag]);
 
     return (
       <div className="singlefile-edit">
@@ -234,6 +232,6 @@ var SingleFileEdit = React.createClass({
       </div>
     );
   }
-});
+}
 
-module.exports = translate(['media'])(SingleFileEdit);
+module.exports = SingleFileEdit;
