@@ -1,9 +1,7 @@
-const React = require('react');
-const _ = require('lodash');
-const OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-const RowConcatHelper = require('../../../helpers/RowConcatHelper.js');
-const ActionCreator = require('../../../actions/ActionCreator');
-const XhrPoolMixin = require('../../mixins/XhrPoolMixin');
+import React from "react";
+import _ from "lodash";
+import RowConcatHelper from "../../../helpers/RowConcatHelper.js";
+import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import {List} from "react-virtualized";
 import {translate} from "react-i18next";
@@ -15,36 +13,38 @@ import SearchFunctions from "../../../helpers/searchFunctions";
 import FilterModePopup from "../../header/filter/FilterModePopup";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
-const apiUrl = require('../../../helpers/apiUrl');
+import apiUrl from "../../../helpers/apiUrl";
+import withAbortableXhrRequests from "../../HOCs/withAbortableXhrRequests";
 
 //we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
 
-const LinkOverlay = React.createClass({
-  mixins: [XhrPoolMixin],
+@translate(["table"])
+@withAbortableXhrRequests
+class LinkOverlay extends React.Component{
 
-  getInitialState: function () {
-    return {
+  constructor(props) {
+    console.log("LinkOverlay.props:", props)
+    super(props);
+    this.allRowResults = {};
+    this.state = {
       rowResults: {},
       loading: true,
       filterMode: FilterModes.CONTAINS,
       filterModePopupOpen: false,
       selectedId: 0
     };
-  },
+  }
 
-  propTypes: {
-    cell: React.PropTypes.object,
+  static propTypes = {
+    cell: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired,
     tableId: React.PropTypes.number,
-    contentHeight: React.PropTypes.number,
-    contentWidth: React.PropTypes.number
-  },
+    contentHeight: React.PropTypes.number.isRequired,
+    contentWidth: React.PropTypes.number.isRequired
+  };
 
-  //saves all the results from server
-  allRowResults: {},
-
-  getKeyboardShortcuts: function() {
+  getKeyboardShortcuts = () => {
     const rows = this.state.rowResults;
     const selectNext = (dir) => {
       const {selectedId} = this.state;
@@ -77,44 +77,49 @@ const LinkOverlay = React.createClass({
         selectNext(Directions.DOWN);
       },
     }
-  },
+  };
 
-  componentWillMount: function () {
-    let self = this;
+  componentWillMount = () => {
     let toTableId = this.props.cell.column.toTable;
     let toTable = this.props.cell.tables.get(toTableId);
-    let rowXhr, colXhr;
 
     //Data already fetched, show it instantly and update it in the background
     if (toTable.rows.length > 0) {
-      self.setRowResult(toTable.rows);
+      this.setRowResult(toTable.rows);
     }
 
-    colXhr = toTable.columns.fetch({
-      success: function () {
-        rowXhr = toTable.rows.fetch({
-          url: apiUrl('/tables/' + toTableId + '/columns/first/rows'),
-          success: function () {
-            self.setRowResult(toTable.rows, true);
-          },
-          error: function (err) {
-            console.log('error fetching rows', err);
-          }
+    const fetchColumns = new Promise(
+      (resolve, reject) => {
+        const colXhr = toTable.columns.fetch({
+          success: resolve,
+          error: reject
         });
-        self.addAbortableXhrRequest(rowXhr);
-      },
-      error: function (err) {
-        console.log("error fetching columns", err);
+        this.props.addAbortableXhrRequest(colXhr);
       }
-    });
-    self.addAbortableXhrRequest(colXhr);
-  },
+    );
+
+    const fetchRows = new Promise(
+      (resolve, reject) => {
+        const rowXhr = toTable.rows.fetch({
+          url: apiUrl('/tables/' + toTableId + '/columns/first/rows'),
+          success: () => {
+            this.setRowResult(toTable.rows, true);
+            resolve();
+          },
+          error: reject
+        });
+        this.props.addAbortableXhrRequest(rowXhr);
+      }
+    );
+
+    fetchColumns.then(fetchRows);
+  };
 
   /**
    * Get the input string of the search field
    * @returns {Object} Search value lowercased and trimmed, current filter mode
    */
-  getCurrentSearchValue: function () {
+  getCurrentSearchValue = () => {
     const searchVal = either(this.refs)
       .map(f.prop(["search", "value"]))
       .map(f.trim)
@@ -125,17 +130,17 @@ const LinkOverlay = React.createClass({
       searchVal: searchVal,
       filterMode: this.state.filterMode
     }
-  },
+  };
 
-  onSearch: function (event) {
+  onSearch = (event) => {
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       selectedId: 0
     });
-  },
+  };
 
   //we set the row result depending if a search value is set
-  setRowResult: function (rowResult, fromServer) {
+  setRowResult = (rowResult, fromServer) => {
     //just set the models, because we filter it later which also returns the models.
     this.allRowResults = rowResult.models;
     //we always rebuild the row names, also to prevent wrong display names when switching languages
@@ -145,36 +150,36 @@ const LinkOverlay = React.createClass({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       loading: false
     });
-  },
+  };
 
   //Extends the model by a cached row name string
-  buildRowConcatString: function () {
+  buildRowConcatString = () => {
     const {allRowResults, props:{cell:{column:{toColumn}}}} = this;
     _.forEach(allRowResults, (row) => {
       row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row),
         toColumn,
         this.props.langtag);
     });
-  },
+  };
 
-  getRowValues: function (row) {
+  getRowValues = (row) => {
     const {toColumn, toTable} = this.props.cell.column;
     const toTableObj = this.props.cell.tables.get(toTable);
     const toTableColumns = toTableObj.columns;
     const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the
                                                                                      // identifier / concat column 
     return row.values[toIdColumnIndex];
-  },
+  };
 
-  toggleFilterModesPopup: function () {
+  toggleFilterModesPopup = () => {
     this.setState({filterModePopupOpen: !this.state.filterModePopupOpen});
-  },
+  };
 
-  setFilterMode: function (modeString) {
+  setFilterMode = (modeString) => {
     this.setState({filterMode: modeString}, this.onSearch);
-  },
+  };
 
-  renderFilterModePopup: function () {
+  renderFilterModePopup = () => {
     const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
     return (
       <FilterModePopup x={0} y={0}
@@ -182,10 +187,10 @@ const LinkOverlay = React.createClass({
                        setFilterMode={this.setFilterMode}
                        close={this.toggleFilterModesPopup}
       />)
-  },
+  };
 
   //searchval is already trimmed and to lowercase
-  filterRowsBySearch: function (searchParams) {
+  filterRowsBySearch = (searchParams) => {
     const {searchVal, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
@@ -196,9 +201,9 @@ const LinkOverlay = React.createClass({
     } else {
       return allRowResults;
     }
-  },
+  };
 
-  addLinkValue: function (isLinked, row, event) {
+  addLinkValue = (isLinked, row, event) => {
     event.preventDefault();
     const cell = this.props.cell;
     const rowCellIdValue = this.getRowValues(row);
@@ -219,30 +224,26 @@ const LinkOverlay = React.createClass({
 
     //tell the virtual scroller to redraw
     this.refs.OverlayScroll.forceUpdateGrid();
-  },
+  };
 
-  closeOverlay: function () {
+  closeOverlay = () => {
     ActionCreator.closeOverlay();
-  },
+  };
 
-  stringHasValue: function (stringToCheck) {
-    return (stringToCheck && stringToCheck.trim() !== "");
-  },
-
-  isRowLinked: function(row) {
+  isRowLinked = (row) => {
     const currentCellValue = either(this.props.cell)
       .map(f.prop(["value"]))
       .getOrElse(null);
     return !!_.find(currentCellValue, link => link.id === row.id)
-  },
+  };
 
-  getOverlayItem: function (
+  getOverlayItem  = (
     {
       key,         // Unique key within array of rows
       index,       // Index of row within collection
       style        // Style object to be applied to row (to position it)
     }
-  ) {
+  ) => {
     const {rowResults,selectedId} = this.state;
     const row = rowResults[index];
 
@@ -265,17 +266,17 @@ const LinkOverlay = React.createClass({
         </a>
       </div>;
     }
-  },
+  };
 
-  noRowsRenderer: function () {
+  noRowsRenderer = () => {
     const {t} = this.props;
     return (
       <div className="error">
         {this.getCurrentSearchValue().length > 0 ? t('search_no_results') : t('overlay_no_rows_in_table')}
       </div>);
-  },
+  };
 
-  render: function () {
+  render = () => {
     let listDisplay;
     const {rowResults, loading} = this.state;
     const {contentHeight, contentWidth} = this.props;
@@ -328,7 +329,6 @@ const LinkOverlay = React.createClass({
       </div>
     );
   }
+}
 
-});
-
-module.exports = translate(['table'])(LinkOverlay);
+export default LinkOverlay;

@@ -6,9 +6,8 @@
  * Force will skip the class's shouldComponentUpdate; in this case connectToAmpersand needs to be the
  * first composition of Component
  */
-
-import React from 'react';
-import Events from 'ampersand-events';
+import React from "react";
+import Events from "ampersand-events";
 import * as fp from "lodash/fp";
 
 const connectToAmpersand = (Component) => class extends React.Component {

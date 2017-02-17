@@ -2,20 +2,17 @@ import {ColumnKinds, DateFormats, DateTimeFormats} from "../constants/TableauxCo
 import * as f from "lodash/fp";
 import Moment from "moment";
 
-const {shorttext,richtext,text,link,numeric,boolean,concat,attachment,datetime,currency,date} = ColumnKinds;
+const {shorttext, richtext, text, link, numeric, boolean, concat, attachment, datetime, currency, date} = ColumnKinds;
 
 // (string, string) -> bool
 const canConvert = (from, to) => {
   if (from === to) {
     return true;
-  }
-  else if (from === text) {
-    return f.contains(to, [numeric, date, datetime, shorttext,richtext]);
-  }
-  else if (to === text) {
+  } else if (from === text) {
+    return f.contains(to, [numeric, date, datetime, shorttext, richtext]);
+  } else if (to === text) {
     return f.contains(from, [numeric, shorttext, richtext, date, datetime]);
-  }
-  else {
+  } else {
     return canConvert(from, text) && canConvert(text, to);
   }
 };
@@ -45,7 +42,7 @@ const toText = {
   [richtext]: f.identity,
   [numeric]: num => num.toString(),
   [date]: mom => mom.format(DateFormats.formatForUser),
-  [datetime]: str => Moment(str).format(DateTimeFormats.formatForUser),
+  [datetime]: str => Moment(str).format(DateTimeFormats.formatForUser)
 };
 
 // (string, string, value) -> value
@@ -53,11 +50,9 @@ const convertSingleValue = f.curry(
   (from, to, value) => {
     if (to === text) {
       return toText[from](value);
-    }
-    else if (from === text) {
+    } else if (from === text) {
       return fromText[to](value);
-    }
-    else {
+    } else {
       return f.compose(fromText[to], toText[from])(value);
     }
   }
@@ -71,12 +66,10 @@ const convert = (from, to, value) => {
 
   if (from === to) {
     return value;
-  }
-  else if (f.isObject(value) && !(value instanceof Moment)) {
+  } else if (f.isObject(value) && !(value instanceof Moment)) {
     const conversion = convertSingleValue(from, to);
     return f.mapValues(conversion, value);
-  }
-  else {
+  } else {
     return convertSingleValue(from, to, value);
   }
 };

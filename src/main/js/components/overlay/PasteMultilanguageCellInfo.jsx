@@ -2,10 +2,9 @@ import React from "react";
 import i18n from "i18next";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import {map, sortBy, reduce, entries, compose, first, keys, assoc} from "lodash/fp";
-
 const EMPTY_STRING = "---";
 
-class PasteMultilanguageCellInfo extends React.Component{
+class PasteMultilanguageCellInfo extends React.Component {
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
     oldVals: React.PropTypes.object.isRequired,
@@ -24,7 +23,7 @@ class PasteMultilanguageCellInfo extends React.Component{
   };
 
   render() {
-    const {oldVals,newVals} = this.props;
+    const {oldVals, newVals} = this.props;
     const oldValsWithAllKeys = reduce(
       (result, key) => assoc(key, oldVals[key], result),
       {}, keys(newVals)
@@ -35,6 +34,7 @@ class PasteMultilanguageCellInfo extends React.Component{
       sortBy(first),
       entries
     );
+
     return (
       <div id="confirm-copy-overlay-content" className="confirmation-overlay">
         <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>

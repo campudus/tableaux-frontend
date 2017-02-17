@@ -15,7 +15,7 @@ import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
-import connectToAmpersand from "../../helpers/connectToAmpersand";
+import connectToAmpersand from "../HOCs/connectToAmpersand";
 
 //used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first visible row)
 const CELL_HINT_PADDING = 40;

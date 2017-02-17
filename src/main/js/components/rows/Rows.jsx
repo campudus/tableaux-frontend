@@ -3,7 +3,7 @@ import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 import {RowHeight} from "../../constants/TableauxConstants";
-import connectToAmpersand from "../../helpers/connectToAmpersand";
+import connectToAmpersand from "../HOCs/connectToAmpersand";
 
 @connectToAmpersand
 class Rows extends React.Component {

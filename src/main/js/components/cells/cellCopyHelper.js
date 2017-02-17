@@ -12,31 +12,26 @@ const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage
 const calcNewValue = function (src, srcLang, dst, dstLang) {
   if (!src.isMultiLanguage && !dst.isMultiLanguage) {
     return src.value;
-  }
-  else if (src.isMultiLanguage && dst.isMultiLanguage) {
+  } else if (src.isMultiLanguage && dst.isMultiLanguage) {
     const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
     return f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
       {}, combinedLangtags);
-  }
-  else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
+  } else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
     return f.assoc(dstLang, src.value, dst.value);
-  }
-  else { // src.isMultiLanguage
+  } else { // src.isMultiLanguage
     return src.value[srcLang];
   }
 };
 
 const pasteCellValue = function (src, srcLang, dst, dstLang) {
-
-  const canCopyLinks = dst => dst.column.id === src.column.id
-  && dst.tableId === src.tableId;
+  const canCopyLinks = dst => dst.column.id === src.column.id && dst.tableId === src.tableId;
 
   if (!canConvert(src.kind, dst.kind)) {
     ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_kind_error")}</div>, 3000);
     return;
   }
 
-  if (dst.kind === ColumnKinds.link && !canCopyLinks(dst)) { // only copy same cell type or links from same column
+  if (dst.kind === ColumnKinds.link && !canCopyLinks(dst)) {
     ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:copy_links_error")}</div>, 3000);
     return;
   }
@@ -50,8 +45,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       return;
     }
     ActionCreator.changeCell(dst, newValue);
-  }
-  else {
+  } else {
     const newValue = convert(src.kind, dst.kind,
       (dst.kind === "link")
         ? src.value
@@ -62,16 +56,25 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       );
       return;
     }
+    const saveAndClose = (event) => {
+      if (event) {
+        event.preventDefault();
+      }
+      ActionCreator.changeCell(dst, newValue);
+      ActionCreator.closeOverlay();
+    };
     ActionCreator.openOverlay({
+      keyboardShortcuts: {enter: (event) => saveAndClose()},
       head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
-      body: <PasteMultilanguageCellInfo langtag={this.props.langtag} oldVals={dst.value} newVals={newValue} />,
+      body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
+                                        oldVals={dst.value}
+                                        newVals={newValue}
+                                        saveAndClose={saveAndClose}
+      />,
       footer: (
         <div className="button-wrapper">
           <a href="#" className="button positive"
-             onClick={() => {
-               ActionCreator.changeCell(dst, newValue);
-               ActionCreator.closeOverlay();
-             }}
+             onClick={saveAndClose}
           >
             {i18n.t("common:save")}
           </a>
@@ -83,7 +86,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
         </div>
       ),
       type: "flexible"
-    })
+    });
   }
 };
 
