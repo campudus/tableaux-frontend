@@ -28,11 +28,11 @@ const fromText = {
   [date]: str => {
     const dateString = f.compose(f.join(""), f.take(DateFormats.formatForUser.length), cleanString)(str);
     const mom = Moment(dateString, DateFormats.formatForUser);
-    return (mom.isValid()) ? mom : null;
+    return (mom.isValid()) ? mom.format(DateFormats.formatForServer) : null;
   },
   [datetime]: str => {
     const mom = Moment(cleanString(str), DateTimeFormats.formatForUser);
-    return (mom.isValid()) ? mom : null;
+    return (mom.isValid()) ? mom.format(DateTimeFormats.formatForServer) : null;
   }
 };
 
@@ -41,7 +41,7 @@ const toText = {
   [shorttext]: f.identity,
   [richtext]: f.identity,
   [numeric]: num => num.toString(),
-  [date]: mom => mom.format(DateFormats.formatForUser),
+  [date]: str => Moment(str).format(DateFormats.formatForUser),
   [datetime]: str => Moment(str).format(DateTimeFormats.formatForUser)
 };
 

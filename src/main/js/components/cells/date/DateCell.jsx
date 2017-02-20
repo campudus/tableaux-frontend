@@ -17,8 +17,19 @@ class DateCell extends React.Component {
   }
 
   getSavedMoment = () => {
-    return Moment(this.props.cell.value);
+    const {cell,langtag} = this.props;
+    const momStr = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+    return (momStr) ? Moment(momStr) : null;
+
   };
+
+  componentWillReceiveProps(newProps) {
+    if (!this.props.editing && newProps.editing) {
+      this.setState({value: this.getSavedMoment()})
+    }
+  }
 
   momentToString = moment => {
     return (moment && moment.isValid())
@@ -71,7 +82,8 @@ class DateCell extends React.Component {
 
 DateCell.propTypes = {
   editing: React.PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: React.PropTypes.func.isRequired
+  setCellKeyboardShortcuts: React.PropTypes.func.isRequired,
+  langtag: React.PropTypes.string.isRequired
 };
 
 module.exports = DateCell;

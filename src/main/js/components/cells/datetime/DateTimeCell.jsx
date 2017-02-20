@@ -24,6 +24,12 @@ class DateTimeCell extends React.Component{
     this.noDateTimeText = "";
   };
 
+  componentWillReceiveProps = (newProps) => {
+    if (newProps.editing && !this.props.editing) {
+      this.setState({currentDateTimeValue: this.getDateTimeValue()})
+    }
+  };
+
   getDateTimeValue = () => {
     const cellValue = this.getCellValue();
     if (cellValue) {
@@ -36,10 +42,8 @@ class DateTimeCell extends React.Component{
   getCellValue = () => {
     const {cell, langtag} = this.props;
     return either(cell.value)
-        .map(prop(langtag))
-        .orElse(prop(FallbackLanguage))
-        .orElse(identity)
-        .getOrElse(null)
+      .map((cell.isMultiLanguage) ? prop(langtag) : identity)
+      .getOrElse(null)
   };
 
   onDateTimeUpdate = (newDateTimeValue) => {

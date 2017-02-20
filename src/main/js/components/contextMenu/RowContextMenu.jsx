@@ -70,10 +70,10 @@ class RowContextMenu extends React.Component {
   pasteItem = () => {
     const {cell, table, t, pasteFrom, langtag} = this.props;
     return (table.type !== "settings"
-    && pasteFrom.cell
-    && canConvert(pasteFrom.cell.kind, cell.kind)
+    && pasteFrom
+    && canConvert(pasteFrom.kind, cell.kind)
     && !isEmpty(pasteFrom)
-    && !eq(cell, pasteFrom.cell))
+    && !eq(cell, pasteFrom))
       ? (
         <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell, langtag))}>
           {t("paste_cell")}
