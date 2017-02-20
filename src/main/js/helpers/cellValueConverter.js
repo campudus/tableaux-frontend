@@ -20,19 +20,27 @@ const canConvert = (from, to) => {
 // string -> string
 const cleanString = f.compose(f.trim, f.replace("\n", " "));
 
+const momentFromString = str => {
+  const createMoment = input => format => {
+    const moment = Moment(input, format);
+    return (moment.isValid()) ? moment : null;
+  };
+  const values = f.map(createMoment(str), [DateTimeFormats.formatForUser, DateFormats.formatForUser, DateTimeFormats.formatForServer]);
+  return f.first(f.filter(f.identity, values));
+};
+
 // string -> value
 const fromText = {
   [shorttext]: cleanString,
   [richtext]: f.identity,
   [numeric]: f.compose(f.defaultTo(null), f.parseInt(10), cleanString),
   [date]: str => {
-    const dateString = f.compose(f.join(""), f.take(DateFormats.formatForUser.length), cleanString)(str);
-    const mom = Moment(dateString, DateFormats.formatForUser);
-    return (mom.isValid()) ? mom.format(DateFormats.formatForServer) : null;
+    const mom = momentFromString(str);
+    return (mom) ? mom.format(DateFormats.formatForServer) : null;
   },
   [datetime]: str => {
-    const mom = Moment(cleanString(str), DateTimeFormats.formatForUser);
-    return (mom.isValid()) ? mom.format(DateTimeFormats.formatForServer) : null;
+    const mom = momentFromString(str);
+    return (mom) ? mom.format(DateTimeFormats.formatForServer) : null;
   }
 };
 
@@ -41,8 +49,14 @@ const toText = {
   [shorttext]: f.identity,
   [richtext]: f.identity,
   [numeric]: num => num.toString(),
-  [date]: str => Moment(str).format(DateFormats.formatForUser),
-  [datetime]: str => Moment(str).format(DateTimeFormats.formatForUser)
+  [date]: str => {
+    const moment = momentFromString(str);
+    return (moment) ? moment.format(DateFormats.formatForUser) : null;
+  },
+  [datetime]: str => {
+    const moment = momentFromString(str);
+    return (moment) ? moment.format(DateTimeFormats.formatForUser) : null;
+  }
 };
 
 // (string, string, value) -> value
@@ -67,7 +81,7 @@ const convert = (from, to, value) => {
   if (from === to) {
     return value;
   } else if (f.isObject(value) && !(value instanceof Moment)) {
-    const conversion = convertSingleValue(from, to);
+    const conversion = val => convertSingleValue(from, to, val) || val;
     return f.mapValues(conversion, value);
   } else {
     return convertSingleValue(from, to, value);

@@ -1,36 +1,59 @@
 import React from "react";
 import i18n from "i18next";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
-import {map, sortBy, reduce, entries, compose, first, keys, assoc} from "lodash/fp";
+import {
+  map,
+  sortBy,
+  reduce,
+  entries,
+  compose,
+  first,
+  keys,
+  assoc,
+  cond,
+  eq,
+  identity,
+  always,
+  stubTrue
+} from "lodash/fp";
+import {ColumnKinds, DateFormats, DateTimeFormats} from "../../constants/TableauxConstants";
+import Moment from "moment";
 const EMPTY_STRING = "---";
+const {date,datetime} = ColumnKinds;
 
 class PasteMultilanguageCellInfo extends React.Component {
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
     oldVals: React.PropTypes.object.isRequired,
-    newVals: React.PropTypes.object.isRequired
+    newVals: React.PropTypes.object.isRequired,
+    kind: React.PropTypes.string.isRequired
   };
 
-  renderEntry = ([key, value]) => {
+  renderEntry = kind => ([key, value]) => {
+    const formatValue = cond([
+      [eq(date), always(str => Moment(str).format(DateFormats.formatForUser))],
+      [eq(datetime), always(str => Moment(str).format(DateTimeFormats.formatForUser))],
+      [stubTrue, always(identity)]
+    ])(kind);
     return <div key={key} className="entry">
       <div className="icon">
         {getLanguageOrCountryIcon(key)}
       </div>
       <div className="text">
-        {value || EMPTY_STRING}
+        {(value) ? formatValue(value) : EMPTY_STRING}
       </div>
     </div>
   };
 
   render() {
-    const {oldVals, newVals} = this.props;
+    const {oldVals, newVals, kind} = this.props;
     const oldValsWithAllKeys = reduce(
       (result, key) => assoc(key, oldVals[key], result),
       {}, keys(newVals)
     );
 
-    const getEntries = compose(
-      map(this.renderEntry),
+    const getEntries = kind => compose(
+      map(this.renderEntry(kind)),
       sortBy(first),
       entries
     );
@@ -40,10 +63,10 @@ class PasteMultilanguageCellInfo extends React.Component {
         <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
         <div className="details-container">
           <div className="details left">
-            {getEntries(oldValsWithAllKeys)}
+            {getEntries(kind)(oldValsWithAllKeys)}
           </div>
           <div className="details right">
-            {getEntries(newVals)}
+            {getEntries(kind)(newVals)}
           </div>
         </div>
       </div>

@@ -77,9 +77,9 @@ class DateTimeCell extends React.Component{
     let content;
 
     if (!this.props.editing) {
-      content = either(this.getDateTimeValue())
-          .map(momStr => new Moment(momStr).format(DateTimeFormats.formatForUser))
-          .getOrElse(this.noDateTimeText);
+      content = either((this.touched) ? this.state.currentDateTimeValue : this.getDateTimeValue())
+        .map(momStr => new Moment(momStr).format(DateTimeFormats.formatForUser))
+        .getOrElse(this.noDateTimeText)
     } else {
       content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
                                   noDateTimeText={this.noDateTimeText}

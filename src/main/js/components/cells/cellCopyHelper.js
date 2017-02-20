@@ -40,7 +40,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
     const newValue = convert(src.kind, dst.kind, calcNewValue.call(this, src, srcLang, dst, dstLang));
     if (!newValue) {
       ActionCreator.showToast(
-        <div id="cell-jump-toast">{i18n.t("table:copy_no_conversion_result")}</div>, 3000
+        <div id="cell-jump-toast">{i18n.t("table:copy_kind_error")}</div>, 3000
       );
       return;
     }
@@ -52,7 +52,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
         : calcNewValue.call(this, src, srcLang, dst, dstLang));
     if (!newValue) {
       ActionCreator.showToast(
-        <div id="cell-jump-toast">{i18n.t("table:copy_no_conversion_result")}</div>, 3000
+        <div id="cell-jump-toast">{i18n.t("table:copy_kind_error")}</div>, 3000
       );
       return;
     }
@@ -70,6 +70,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
                                         oldVals={dst.value}
                                         newVals={newValue}
                                         saveAndClose={saveAndClose}
+                                        kind={dst.kind}
       />,
       footer: (
         <div className="button-wrapper">

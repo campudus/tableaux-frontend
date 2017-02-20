@@ -78,7 +78,7 @@ const Tables = Collection.extend({
 
   changeCellHandler(payload) {
     console.log("changeCellHandler:", payload);
-    if(payload.cell.isLink) {
+    if (payload.cell.isLink) {
       changeLinkCellHandler(payload);
       return;
     }

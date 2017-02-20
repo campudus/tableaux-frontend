@@ -39,14 +39,14 @@ class DateCell extends React.Component {
 
   finishedEditing = save => {
     if (save) {
-      const {cell} = this.props;
+      const {cell,langtag} = this.props;
       const inputDate = this.state.value;
       const savedDateString = this.momentToString(this.getSavedMoment());
       if (savedDateString !== this.momentToString(inputDate)) {
         const newValue = either(inputDate)
           .map( m => m.format(DateFormats.formatForServer))
           .getOrElse(null);
-        ActionCreator.changeCell(cell, newValue);
+        ActionCreator.changeCell(cell, (cell.isMultiLanguage) ? {[langtag]: newValue} : newValue);
       }
     } else {
         this.setState({value: this.getSavedMoment()});

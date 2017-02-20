@@ -31,7 +31,7 @@ class DateEditCell extends React.Component {
 
   handleClickClearDate = event => {
     this.handleChange(null, () => this.props.handleEditFinished(true));
-    ActionCreator.toggleCellEditing(false);
+    ActionCreator.toggleCellEditing(true);
     event.preventDefault();
     event.stopPropagation();
   };

@@ -52,11 +52,10 @@
     "title": "Gleich am Ziel!",
     "subtitle": "Weitere Daten werden angefragt."
   },
-  "copy_links_error": "Links können nur innerhalb derselben Spalte kopiert werden.",
-  "copy_kind_error": "Die Zellinhalte können hier nicht eingefügt werden.",
-  "copy_no_conversion_result": "Die Zellinhalte ergeben in der Zielzelle keinen sinvollen Wert.",
+  "copy_links_error": "Links können nur innerhalb derselben Spalte kopiert und eingefügt werden.",
+  "copy_kind_error": "Der kopierte Wert kann hier nicht eingefügt werden.",
   "confirm_copy": {
-    "header": "Zellinhalt einfügen?",
-    "info": "Dies wird alle Inhalte der ausgewählten Zelle in allen Sprachen überschreiben."
+    "header": "Mehrsprachigen Inhalt einfügen?",
+    "info": "Sie haben eine mehrsprachige Zelle kopiert. Durch das Einfügen überschreiben Sie alle bestehenden Werte in den jeweiligen Sprachen wie folgt:"
   }
 }
