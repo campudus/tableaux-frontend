@@ -21,6 +21,9 @@ const canConvert = (from, to) => {
 const cleanString = f.compose(f.trim, f.replace("\n", " "));
 
 const momentFromString = str => {
+  if (!f.isString(str)) {
+    return null;
+  }
   const createMoment = input => format => {
     const moment = Moment(input, format);
     return (moment.isValid()) ? moment : null;
@@ -35,11 +38,11 @@ const fromText = {
   [richtext]: f.identity,
   [numeric]: f.compose(f.defaultTo(null), f.parseInt(10), cleanString),
   [date]: str => {
-    const mom = momentFromString(str);
+    const mom = (f.isEmpty(str)) ? null : momentFromString(str);
     return (mom) ? mom.format(DateFormats.formatForServer) : null;
   },
   [datetime]: str => {
-    const mom = momentFromString(str);
+    const mom = (f.isEmpty(str)) ? null : momentFromString(str);
     return (mom) ? mom.format(DateTimeFormats.formatForServer) : null;
   }
 };
