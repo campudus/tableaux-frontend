@@ -2,6 +2,7 @@ import React from "react";
 import i18n from "i18next";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import {
+  findIndex,
   map,
   sortBy,
   reduce,
@@ -16,7 +17,7 @@ import {
   always,
   stubTrue
 } from "lodash/fp";
-import {ColumnKinds, DateFormats, DateTimeFormats} from "../../constants/TableauxConstants";
+import {ColumnKinds, DateFormats, DateTimeFormats, Langtags} from "../../constants/TableauxConstants";
 import Moment from "moment";
 const EMPTY_STRING = "---";
 const {date,datetime} = ColumnKinds;
@@ -45,6 +46,10 @@ class PasteMultilanguageCellInfo extends React.Component {
     </div>
   };
 
+  langtagComparator([langtag, value]) {
+    return findIndex(eq(langtag))
+  }
+
   render() {
     const {oldVals, newVals, kind} = this.props;
     const oldValsWithAllKeys = reduce(
@@ -54,7 +59,7 @@ class PasteMultilanguageCellInfo extends React.Component {
 
     const getEntries = kind => compose(
       map(this.renderEntry(kind)),
-      sortBy(first),
+      sortBy(this.langtagComparator),
       entries
     );
 

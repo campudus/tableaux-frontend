@@ -1,6 +1,6 @@
 import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
-import {ColumnKinds} from "../../constants/TableauxConstants";
+import {ColumnKinds, Lanagtags} from "../../constants/TableauxConstants";
 import {maybe} from "../../helpers/monads";
 import {convert, canConvert} from "../../helpers/cellValueConverter";
 import React from "react";
@@ -14,22 +14,14 @@ const showErrorToast = msg => {
 const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage);
 const canCopyLinks = (src, dst) => dst.column.id === src.column.id && dst.tableId === src.tableId;
 
-
 const calcNewValue = function (src, srcLang, dst, dstLang) {
   if (!src.isMultiLanguage && !dst.isMultiLanguage) {
     return convert(src.kind, dst.kind, src.value);
   } else if (src.isMultiLanguage && dst.isMultiLanguage) {
     const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
-    const result =
-      f.reduce((result, langtag) => f.assoc(langtag,
-        convert(src.kind, dst.kind, maybe(src.value[langtag]).getOrElse(null)), result),
-        {}, combinedLangtags);
-    return (f.any(
-      tag => result[tag] != null && (!f.isString(result[tag]) || !f.isEmpty(result[tag])),
-      combinedLangtags)
-    )
-      ? result
-      : null;
+    return f.reduce(
+      (result, langtag) => f.assoc(langtag, convert(src.kind, dst.kind, maybe(src.value[langtag]).getOrElse(null)), result),
+      {}, combinedLangtags);
   } else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
     return f.assoc(dstLang, convert(src.kind, dst.kind, src.value), dst.value);
   } else { // src.isMultiLanguage

@@ -20,15 +20,18 @@ const canConvert = (from, to) => {
 // string -> string
 const cleanString = f.compose(f.trim, f.replace("\n", " "));
 
-const momentFromString = str => {
+const momentFromString = str => { // this is more robust downstream than just Moment(str, [formats], true)
   if (!f.isString(str)) {
     return null;
   }
   const createMoment = input => format => {
-    const moment = Moment(input, format);
+    const moment = Moment(input, format, true); // true is for strict mode
     return (moment.isValid()) ? moment : null;
   };
-  const values = f.map(createMoment(str), [DateTimeFormats.formatForUser, DateFormats.formatForUser, DateTimeFormats.formatForServer]);
+  const values = f.map(
+    createMoment(str),
+    [DateTimeFormats.formatForUser, DateFormats.formatForUser, DateTimeFormats.formatForServer]
+  );
   return f.first(f.filter(f.identity, values));
 };
 

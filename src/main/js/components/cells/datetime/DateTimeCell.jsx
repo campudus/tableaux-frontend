@@ -62,6 +62,7 @@ class DateTimeCell extends React.Component{
 
     // only when date selected
     if (this.touched) {
+      this.touched = false;
       const cell = this.props.cell;
 
       const newCellValue = (cell.isMultiLanguage)
@@ -96,6 +97,6 @@ class DateTimeCell extends React.Component{
       </div>
     );
   }
-};
+}
 
 export default DateTimeCell;
