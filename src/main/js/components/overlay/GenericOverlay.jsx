@@ -3,7 +3,7 @@ var ReactDOM = require('react-dom');
 var Dispatcher = require('../../dispatcher/Dispatcher');
 var ActionCreator = require('../../actions/ActionCreator');
 var LinkOverlay = require('../../components/cells/link/LinkOverlay');
-
+import {merge} from "lodash/fp";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
 //TODO: Callback before closing overlay
@@ -14,6 +14,7 @@ var GenericOverlay = React.createClass({
     head : React.PropTypes.element,
     footer : React.PropTypes.element,
     type : React.PropTypes.string,
+    keyboardShortcuts: React.PropTypes.object,
     closeOnBackgroundClicked : React.PropTypes.bool
   },
 
@@ -89,26 +90,26 @@ var GenericOverlay = React.createClass({
   //FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts : function (event) {
     var self = this;
-    return {
-      escape : function (event) {
-        if (self.props.closeOnBackgroundClicked) {
-          event.preventDefault();
-          ActionCreator.closeOverlay();
+    return merge(
+      {
+        escape : function (event) {
+          if (self.props.closeOnBackgroundClicked) {
+            event.preventDefault();
+            ActionCreator.closeOverlay();
+          }
+        },
+        always : function (event) {
+          event.stopPropagation();
         }
       },
-      always : function (event) {
-        event.stopPropagation();
-      }
-    };
+      this.props.keyboardShortcuts
+    );
   },
 
   renderChildren(props){
     let {contentHeight, contentWidth} = this.state;
     return React.Children.map(props.children, child => {
-      if (child.type === LinkOverlay) {
-        return React.cloneElement(child, {contentHeight, contentWidth});
-      } else
-        return child
+      return React.cloneElement(child, {contentHeight, contentWidth});
     });
   },
 

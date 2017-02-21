@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import Dispatcher from '../../../dispatcher/Dispatcher';
 import {getCountryOfLangtag, getCurrencyCode} from '../../../helpers/multiLanguage';
 import CurrencyEditCell from './CurrencyEditCell';
 import ActionCreator from'../../../actions/ActionCreator';

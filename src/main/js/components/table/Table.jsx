@@ -20,7 +20,7 @@ class Table extends React.Component {
    * Don't change this, its more performant than using this.state !
    */
   constructor(props) {
-    super(props)
+    super(props);
     this.headerDOMElement = null;
     this.scrolledXBefore = 0;
     this.selectNewCreatedRow = false;
@@ -121,7 +121,7 @@ class Table extends React.Component {
         selectedCell: null
       });
     }
-  }
+  };
 
   onMouseDownHandler = (e) => {
     //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
@@ -140,7 +140,7 @@ class Table extends React.Component {
        */
       e.preventDefault();
     }
-  }
+  };
 
   handleScroll = (e) => {
     //only when horizontal scroll changed
@@ -163,15 +163,15 @@ class Table extends React.Component {
         });
       }
     }
-  }
+  };
 
   windowResize = () => {
     this.setState({windowHeight: window.innerHeight});
-  }
+  };
 
   tableDataHeight = () => {
     return (this.state.windowHeight - this.state.offsetTableData);
-  }
+  };
 
   render() {
     const {langtag, table:{columns}, rows, table} = this.props;
@@ -183,7 +183,7 @@ class Table extends React.Component {
                  this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <JumpSpinner/>
+          <JumpSpinner />
           <Columns ref="columns" table={table} langtag={langtag}
                    columns={columns}
           />
@@ -207,7 +207,6 @@ class Table extends React.Component {
     );
   }
 }
-;
 
 Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,

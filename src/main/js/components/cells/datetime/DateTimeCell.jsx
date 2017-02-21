@@ -2,58 +2,58 @@ import React from "react";
 import DateTimeEditCell from "./DateTimeEditCell.jsx";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import {DateTimeFormats, FallbackLanguage} from "../../../constants/TableauxConstants";
+import {either} from "../../../helpers/monads";
+import {prop, identity} from "lodash/fp";
 
-var DateTimeCell = React.createClass({
+class DateTimeCell extends React.Component{
 
-  propTypes : {
+  static propTypes = {
     cell : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired,
     editing : React.PropTypes.bool.isRequired,
     setCellKeyboardShortcuts : React.PropTypes.func
-  },
+  };
 
-  //To check if there's any date change at all
-  touched : false,
+  constructor(props)  {
+    super(props);
+    this.state = {
+      currentDateTimeValue : this.getDateTimeValue()
+    };
+    this.touched = false;
+    this.noDateTimeText = "";
+  };
 
-  getInitialState : function () {
-    var self = this;
-    return {
-      currentDateTimeValue : self.getDateTimeValue()
+  componentWillReceiveProps = (newProps) => {
+    if (newProps.editing && !this.props.editing) {
+      this.setState({currentDateTimeValue: this.getDateTimeValue()})
     }
-  },
+  };
 
-  noDateTimeText: "",
-
-  getDateTimeValue : function () {
-    var cellValue = this.getCellValue();
+  getDateTimeValue = () => {
+    const cellValue = this.getCellValue();
     if (cellValue) {
-      return Moment(cellValue, TableauxConstants.DateTimeFormats.formatForServer);
+      return Moment(cellValue, DateTimeFormats.formatForServer);
     } else {
       return null;
     }
-  },
+  };
 
-  getCellValue : function () {
-    var value;
-    if (this.props.cell.isMultiLanguage) {
-      var currentLangValue = this.props.cell.value[this.props.langtag];
-      value = currentLangValue ? currentLangValue : null;
-    } else {
-      var singleVal = this.props.cell.value;
-      value = singleVal ? singleVal : null;
-    }
-    return value;
-  },
+  getCellValue = () => {
+    const {cell, langtag} = this.props;
+    return either(cell.value)
+      .map((cell.isMultiLanguage) ? prop(langtag) : identity)
+      .getOrElse(null)
+  };
 
-  onDateTimeUpdate : function (newDateTimeValue) {
+  onDateTimeUpdate = (newDateTimeValue) => {
     this.setState({
-      currentDateTimeValue : newDateTimeValue
+      currentDateTimeValue: newDateTimeValue
     });
     this.touched = true;
-  },
+  };
 
-  handleEditDone : function (event) {
+  handleEditDone = (event) => {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -62,33 +62,31 @@ var DateTimeCell = React.createClass({
 
     // only when date selected
     if (this.touched) {
+      this.touched = false;
       const cell = this.props.cell;
 
-      let newCellValue;
-      if (cell.isMultiLanguage) {
-        newCellValue = {
-          [this.props.langtag]: currentDateTimeValue
-        };
-      } else {
-        newCellValue = currentDateTimeValue;
-      }
+      const newCellValue = (cell.isMultiLanguage)
+        ? {[this.props.langtag]: currentDateTimeValue}
+        : currentDateTimeValue;
 
       // Save to db
       ActionCreator.changeCell(cell, newCellValue);
     }
-  },
+  };
 
-  render : function () {
-    var content;
+  render = () => {
+    let content;
 
     if (!this.props.editing) {
-      content = (this.state.currentDateTimeValue === null) ? this.noDateTimeText : this.state.currentDateTimeValue.format(TableauxConstants.DateTimeFormats.formatForUser);
+      content = either((this.touched) ? this.state.currentDateTimeValue : this.getDateTimeValue())
+        .map(momStr => new Moment(momStr).format(DateTimeFormats.formatForUser))
+        .getOrElse(this.noDateTimeText)
     } else {
       content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
                                   noDateTimeText={this.noDateTimeText}
                                   onDateTimeUpdate={this.onDateTimeUpdate}
-                                  formatForUser={TableauxConstants.DateTimeFormats.formatForUser}
-                                  formatForServer={TableauxConstants.DateTimeFormats.formatForServer}
+                                  formatForUser={DateTimeFormats.formatForUser}
+                                  formatForServer={DateTimeFormats.formatForServer}
                                   handleEditDone={this.handleEditDone}
                                   setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }
@@ -98,9 +96,7 @@ var DateTimeCell = React.createClass({
         {content}
       </div>
     );
-
-
   }
-});
+}
 
-module.exports = DateTimeCell;
+export default DateTimeCell;

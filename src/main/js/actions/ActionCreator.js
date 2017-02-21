@@ -214,14 +214,15 @@ module.exports = {
       Dispatcher.trigger(ActionTypes.SPINNER_OFF);
     },
 
-    showRowContextMenu: function (row, langtag, x, y, table) {
+    showRowContextMenu: function (row, langtag, x, y, table, cell) {
       Dispatcher.trigger(ActionTypes.SHOW_ROW_CONTEXT_MENU,
         {
           x,
           y,
           row,
           langtag,
-          table
+          table,
+          cell
         });
     },
 
@@ -270,10 +271,18 @@ module.exports = {
   },
 
   jumpSpinnerOff: function() {
-      Dispatcher.trigger(ActionTypes.JUMP_SPINNER_OFF, {})
+    Dispatcher.trigger(ActionTypes.JUMP_SPINNER_OFF, {})
   },
 
   resetTableURL: function() {
-      Dispatcher.trigger(ActionTypes.RESET_TABLE_URL, {});
+    Dispatcher.trigger(ActionTypes.RESET_TABLE_URL, {});
+  },
+
+  copyCellContent: (cell, langtag) => {
+    Dispatcher.trigger(ActionTypes.COPY_CELL_CONTENT, {cell, langtag});
+  },
+
+  pasteCellContent: (targetCell, langtag) => {
+      Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell, langtag});
   }
 };

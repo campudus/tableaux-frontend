@@ -2,7 +2,7 @@ import React from "react";
 import ColumnFilterPopup from "./ColumnFilterPopup";
 import i18n from "i18next";
 import classNames from "classnames";
-import connectToAmpersand from "../../helpers/connectToAmpersand";
+import connectToAmpersand from "../HOCs/connectToAmpersand";
 
 @connectToAmpersand
 class ColumnFilter extends React.Component {

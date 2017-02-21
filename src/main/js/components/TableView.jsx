@@ -1,5 +1,5 @@
 import React from "react";
-import connectToAmpersand from "../helpers/connectToAmpersand";
+import connectToAmpersand from "./HOCs/connectToAmpersand";
 import Dispatcher from "../dispatcher/Dispatcher";
 import Table from "./table/Table.jsx";
 import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
@@ -21,6 +21,7 @@ import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
+import pasteCellValue from "./cells/cellCopyHelper";
 
 //hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -39,7 +40,9 @@ class TableView extends React.Component {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
-      rowsFilter: null
+      rowsFilter: null,
+      pasteOriginCell: {},
+      pasteOriginCellLang: props.langtag
     };
 
     const {columnId, rowId, filter} = this.props;
@@ -51,6 +54,43 @@ class TableView extends React.Component {
         filter: filter
       }
     }
+  };
+
+  componentWillMount = () => {
+    Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
+    Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
+    Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    Dispatcher.on(ActionTypes.RESET_TABLE_URL, this.resetURL);
+    Dispatcher.on(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
+    Dispatcher.on(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
+    Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
+    Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
+    Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
+    Dispatcher.off(ActionTypes.RESET_TABLE_URL, this.resetURL);
+    Dispatcher.off(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
+    Dispatcher.off(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
+  };
+
+  setCopyOrigin = ({cell, langtag}) => {
+    this.setState({
+      pasteOriginCell: cell,
+      pasteOriginCellLang: langtag
+    });
+  };
+
+  pasteCellTo = ({cell, langtag}) => {
+    const src = this.state.pasteOriginCell;
+    const srcLang = this.state.pasteOriginCellLang;
+    pasteCellValue.call(this, src, srcLang, cell, langtag);
+  };
+
+  clearCellClipboard = () => {
+    this.setState({pasteOriginCell: {}});
   };
 
   resetURL = () => {
@@ -191,14 +231,6 @@ class TableView extends React.Component {
     }
   };
 
-  componentWillMount = () => {
-    Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
-    Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
-    Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
-    Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    Dispatcher.on(ActionTypes.RESET_TABLE_URL, this.resetURL);
-  };
-
   componentDidMount = () => {
     ActionCreator.spinnerOn();
 
@@ -289,14 +321,6 @@ class TableView extends React.Component {
     fetchColumns(currentTable).then(fetchPages);
   };
 
-  componentWillUnmount = () => {
-    Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
-    Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
-    Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
-    Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    Dispatcher.off(ActionTypes.RESET_TABLE_URL, this.resetURL);
-  };
-
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.tableId !== this.props.tableId) {
       let oldTable = this.tables.get(this.state.currentTableId);
@@ -380,6 +404,13 @@ class TableView extends React.Component {
 
   doSwitchTable = () => {
     if (this.nextTableId) {
+      if (either(this.state.pasteOriginCell.cell)
+          .map(f.prop("kind"))
+          .map(f.eq(ColumnKinds.link))
+          .getOrElse(false))
+      {
+        this.setState({pasteOriginCell: {}})
+      }
       this.pendingCellGoto = null;
       console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
@@ -404,6 +435,7 @@ class TableView extends React.Component {
         if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
           table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
+                         pasteOriginCell={this.state.pasteOriginCell}
           />;
         } else {
           //TODO show error to user
@@ -415,6 +447,16 @@ class TableView extends React.Component {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
+            <div id="clipboard-icon">
+              {(!f.isEmpty(this.state.pasteOriginCell))
+                ? (
+                  <a href="#" className="button" onClick={this.clearCellClipboard}>
+                    <i className="fa fa-clipboard"/>
+                  </a>
+                )
+                : null
+              }
+            </div>
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
                            tables={tables} />

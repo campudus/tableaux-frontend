@@ -3,6 +3,8 @@
   "concat_column_name": "ID-Name",
   "confirm_delete_row": "Really delete row „{{rowName}}”?",
   "delete_row": "Delete row",
+  "copy_cell": "Copy cell contents",
+  "paste_cell": "Paste cell contents",
   "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed.",
   "show_entity_view": "Show preview",
   "entity_view": "Preview",
@@ -49,5 +51,11 @@
   "jumpspinner": {
     "title": "Hold on, we bring you there!",
     "subtitle": "Waiting for more data."
+  },
+  "copy_links_error": "Can only copy and paste links from the same column.",
+  "copy_kind_error": "Can not paste the copied value here.",
+  "confirm_copy": {
+    "header": "Proceed pasting multi language cell contents?",
+    "info": "You copied a multi language cell. By pasting you will overwrite all existing values in the respective languages like this:"
   }
 }

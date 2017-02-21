@@ -17,7 +17,7 @@ class Maybe {
   }
 
   static fromNullable(a) {
-    return a !== null ? Maybe.just(a) : Maybe.none();
+    return (a !== null && a !== undefined) ? Maybe.just(a) : Maybe.none();
   }
 
   static of(a) {
@@ -79,7 +79,7 @@ class None extends Maybe {
   }
 
   get value() {
-    throw new TypeError('Can\'t extract value of Maybe.None');
+    throw new TypeError("Can't extract value of Maybe.None");
   }
 
   getOrElse(other) {
@@ -95,7 +95,7 @@ class None extends Maybe {
   }
 
   toString() {
-    return 'Maybe.None';
+    return "Maybe.None";
   }
 }
 
@@ -142,13 +142,13 @@ class Left extends Either {
   }
 
   get value() {
-    throw new TypeError('Can\'t extract value of Left.');
+    throw new TypeError("Can't extract value of Left.");
   }
 
   orElse(f) {
-    const f_of_val = f(this._value);
-    return (f_of_val !== null && f_of_val !== undefined)
-      ? Either.right(f_of_val)
+    const fOfVal = f(this._value);
+    return (fOfVal !== null && fOfVal !== undefined)
+      ? Either.right(fOfVal)
       : this;
   }
 
@@ -176,7 +176,7 @@ class Left extends Either {
 class Right extends Either {
   map(f) {
     try {
-      const result = f(this.value)
+      const result = f(this.value);
       return (result)
         ? Either.right(result)
         : Either.left(this.value);
@@ -221,8 +221,8 @@ class Right extends Either {
 const maybe = x => Maybe.fromNullable(x);
 const either = x => Either.fromNullable(x);
 const spy = (x, info) => {
-  console.log("I spy " + ((info) ? info : ""), x);
+  console.log("I spy " + ((info) || ""), x);
   return x;
-}
+};
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy}
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy};

@@ -90,8 +90,6 @@ class ColumnContextMenu extends React.Component {
 }
 
 ColumnContextMenu.propTypes = {
-  x: React.PropTypes.number.isRequired,
-  y: React.PropTypes.number.isRequired,
   column: React.PropTypes.object.isRequired,
   closeHandler: React.PropTypes.func.isRequired,
   editHandler: React.PropTypes.func.isRequired,

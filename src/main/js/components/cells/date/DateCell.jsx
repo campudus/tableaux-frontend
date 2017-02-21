@@ -7,7 +7,6 @@ import DateEditCell from "./DateEditCell";
 import {DateFormats} from "../../../constants/TableauxConstants";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
-import keyMirror from "keymirror";
 import {either} from "../../../helpers/monads";
 
 class DateCell extends React.Component {
@@ -18,8 +17,19 @@ class DateCell extends React.Component {
   }
 
   getSavedMoment = () => {
-    return Moment(this.props.cell.value);
+    const {cell,langtag} = this.props;
+    const momStr = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+    return (momStr) ? Moment(momStr) : null;
+
   };
+
+  componentWillReceiveProps(newProps) {
+    if (!this.props.editing && newProps.editing) {
+      this.setState({value: this.getSavedMoment()})
+    }
+  }
 
   momentToString = moment => {
     return (moment && moment.isValid())
@@ -29,14 +39,14 @@ class DateCell extends React.Component {
 
   finishedEditing = save => {
     if (save) {
-      const {cell} = this.props;
+      const {cell,langtag} = this.props;
       const inputDate = this.state.value;
       const savedDateString = this.momentToString(this.getSavedMoment());
       if (savedDateString !== this.momentToString(inputDate)) {
         const newValue = either(inputDate)
           .map( m => m.format(DateFormats.formatForServer))
           .getOrElse(null);
-        ActionCreator.changeCell(cell, newValue);
+        ActionCreator.changeCell(cell, (cell.isMultiLanguage) ? {[langtag]: newValue} : newValue);
       }
     } else {
         this.setState({value: this.getSavedMoment()});
@@ -51,11 +61,10 @@ class DateCell extends React.Component {
 
   render = () => {
     const {cell, editing} = this.props;
-    const {value} = this.state;
     if (!editing) {
       return (
         <div className="cell-content">
-          {this.momentToString(value)}
+          {this.momentToString(this.getSavedMoment())}
         </div>
       )
     } else {
@@ -64,7 +73,7 @@ class DateCell extends React.Component {
                       toDisplayValue={this.momentToString}
                       handleDateUpdate={this.handleDateUpdate}
                       handleEditFinished={this.finishedEditing}
-                      value={value || new Moment()}
+                      value={this.state.value || new Moment()}
                       cell={cell} />
       )
     }
@@ -73,7 +82,8 @@ class DateCell extends React.Component {
 
 DateCell.propTypes = {
   editing: React.PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: React.PropTypes.func.isRequired
+  setCellKeyboardShortcuts: React.PropTypes.func.isRequired,
+  langtag: React.PropTypes.string.isRequired
 };
 
 module.exports = DateCell;

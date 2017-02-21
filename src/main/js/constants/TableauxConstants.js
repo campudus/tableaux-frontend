@@ -81,7 +81,10 @@ var TableauxConstant = {
     REFRESH_TABLE_NAMES: null,
 
     //Column visibility filtering
-    SET_COLUMNS_VISIBILITY: null
+    SET_COLUMNS_VISIBILITY: null,
+
+    COPY_CELL_CONTENT: null,
+    PASTE_CELL_CONTENT: null
   }),
 
   Directions: keyMirror({

@@ -1,13 +1,11 @@
 import React from "react";
 import TableauxConstants from "../../constants/TableauxConstants";
-import Dispatcher from "../../dispatcher/Dispatcher";
 import ActionCreator from "../../actions/ActionCreator";
 import Cell from "../cells/Cell.jsx";
-import connectToAmpersand from "../../helpers/connectToAmpersand";
-
-import MetaCell from '../cells/MetaCell';
-import {hasUserAccessToLanguage, isUserAdmin} from '../../helpers/accessManagementHelper';
-import {initiateDeleteRow} from '../../helpers/rowHelper';
+import connectToAmpersand from "../HOCs/connectToAmpersand";
+import MetaCell from "../cells/MetaCell";
+import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {initiateDeleteRow} from "../../helpers/rowHelper";
 import * as f from "lodash/fp";
 
 @connectToAmpersand
@@ -65,58 +63,55 @@ class Row extends React.Component {
 
   renderSingleLanguageCell = (cell, idx) => {
     var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
-    return <div key={idx} className={className}>—.—</div>;
+    return <div key={idx} className={className} onContextMenu={self.contextMenuHandler}>—.—</div>;
   };
 
   renderCells = (langtag, isRowSelected) => {
-    var self = this;
-
-    return this.props.row.cells.map(function (cell, idx) {
+    return this.props.row.cells.map((cell, idx) => {
       //Skip cells in hidden columns
-      const cols = self.props.table.columns.models
+      const cols = this.props.table.columns.models;
       if (cols[idx] !== f.first(cols) && !cols[idx].visible) { // keep first column always visible
         return null;
       }
 
       //Check selected row for expanded multilanguage rows
-      var selectedRow = !!isRowSelected;
+      const selectedRow = !!isRowSelected;
       //Is this cell currently selected
-      var selected = self.props.selectedCell
-        ? (cell.getId() === self.props.selectedCell.getId()) && selectedRow
+      const selected = this.props.selectedCell
+        ? (cell.getId() === this.props.selectedCell.getId()) && selectedRow
         : false;
       //Is this cell in edit mode
-      var editing = selected ? self.props.selectedCellEditing : false;
+      const editing = selected ? this.props.selectedCellEditing : false;
       //we want to pass shouldFocus just when the cell is selected or in editing mode to prevent spamming all cells
       // with props changes
-      var shouldFocus = selected || editing ? self.props.shouldCellFocus : false;
+      const shouldFocus = selected || editing ? this.props.shouldCellFocus : false;
 
       // We want to see single-language value even if not expanded
-      if (!cell.isMultiLanguage && !self.props.isRowExpanded) {
+      if (!cell.isMultiLanguage && !this.props.isRowExpanded) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={shouldFocus} />;
+                     shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
       }
 
       // We don't want to repeat our self if expanded
-      if (!cell.isMultiLanguage && self.props.isRowExpanded) {
+      if (!cell.isMultiLanguage && this.props.isRowExpanded) {
         if (langtag === TableauxConstants.DefaultLangtag) {
           return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                       shouldFocus={shouldFocus} />;
+                       shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
         } else {
-          return self.renderSingleLanguageCell(cell, idx);
+          return this.renderSingleLanguageCell(cell, idx);
         }
       }
 
       // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={shouldFocus} />;
+                     shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
       }
     })
   };
 
   contextMenuHandler = e => {
-    e.preventDefault();
-    ActionCreator.showRowContextMenu(this.props.row, this.props.langtag, e.pageX, e.pageY, this.props.table);
+    e.stopPropagation();
   };
 
   renderLanguageRow = langtag => {
@@ -148,7 +143,7 @@ class Row extends React.Component {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
-            <i className="fa fa-trash"></i>
+            <i className="fa fa-trash" />
           </button>
         </div>
       )
@@ -179,7 +174,6 @@ class Row extends React.Component {
     }
   }
 }
-;
 
 Row.propTypes = {
   langtag: React.PropTypes.string.isRequired,

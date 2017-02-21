@@ -145,4 +145,14 @@ header {
       border-color: $color-primary-lighter;
     }
   }
+
+  #clipboard-icon {
+    margin-top: 10px;
+    float: right;
+    display: inline-flex;
+
+    a {
+      padding: 10px;
+    }
+  }
 }

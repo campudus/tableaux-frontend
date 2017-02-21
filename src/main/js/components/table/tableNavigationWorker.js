@@ -1,7 +1,8 @@
-import _ from "lodash";
-import f from "lodash/fp";
+import * as _ from "lodash";
+import * as f from "lodash/fp";
 import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
+import ActionCreator from "../../actions/ActionCreator";
 
 export function shouldCellFocus() {
   //we dont want to force cell focus when overlay is open
@@ -101,7 +102,26 @@ export function getKeyboardShortcuts() {
       );
     },
     text: (event) => {
-      if (selectedCell && !selectedCellEditing
+      if (!selectedCell) {
+        return;
+      }
+      const actionKey = (f.contains("Mac OS", navigator.userAgent))
+        ? "metaKey"
+        : "ctrlKey";
+      const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
+      if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
+        && selectedCell.kind !== ColumnKinds.concat) {
+        event.preventDefault();
+        event.stopPropagation();
+        ActionCreator.copyCellContent(selectedCell, langtag);
+      } else if (!_.isEmpty(this.props.pasteOriginCell)
+        && !_.eq(this.props.pasteOriginCell, selectedCell)
+        && f.prop(actionKey, event) && event.key === "v") {  // Cell paste
+        event.preventDefault();
+        event.stopPropagation();
+        ActionCreator.pasteCellContent(selectedCell, langtag);
+      } else if (!selectedCellEditing  // Other keypress
+        && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
         || selectedCell.kind === ColumnKinds.numeric)) {
@@ -173,7 +193,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
   const columnId = cell.column.id;
   const rowId = cell.row.id;
   if (selected !== "NO_HISTORY_PUSH") {
-    const cellURL = `/${langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
+    const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
     App.router.navigate(cellURL, {trigger: false})
   }
   this.setState({
@@ -321,7 +341,7 @@ export function getPreviousRow(currentRowId) {
 export function getNextColumnCell(currentColumnId, getPrev) {
   const columns = this.props.table.columns.filter(col => col.visible);
   const {selectedCell, expandedRowIds, selectedCellExpandedRow} = this.state;
-  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns)
+  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns);
   const numberOfColumns = columns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
   const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
@@ -359,7 +379,7 @@ export function preventSleepingOnTheKeyboard(cb) {
     }, 100);
     cb();
   }
-};
+}
 
 export function getCurrentSelectedRowId() {
   const {selectedCell} = this.state;
@@ -373,7 +393,7 @@ export function getCurrentSelectedColumnId() {
 
 export function scrollToLeftStart(e) {
   scrollToLeftLinear(this.tableRowsDom, 250);
-};
+}
 
 /** Helper function to scroll to the left.
  * TODO: Improve with ease out function. Great article about it:
@@ -381,7 +401,7 @@ export function scrollToLeftStart(e) {
  * **/
 
 function scrollToLeftLinear(element, scrollDuration) {
-  var scrollStep = element.scrollLeft / (scrollDuration / 15);
+  const scrollStep = element.scrollLeft / (scrollDuration / 15);
   if (requestAnimationFrame !== "undefined") {
     requestAnimationFrame(step);
     function step() {

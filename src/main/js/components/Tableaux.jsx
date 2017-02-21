@@ -1,16 +1,14 @@
-import React from 'react';
-import Dispatcher from '../dispatcher/Dispatcher';
-import TableauxConstants from '../constants/TableauxConstants';
-
-import GenericOverlay from './overlay/GenericOverlay.jsx';
-import ViewRenderer from './ViewRenderer.jsx';
-
-import i18n from 'i18next';
-import XHR from 'i18next-xhr-backend';
-import { I18nextProvider } from 'react-i18next';
-import ActionCreator from '../actions/ActionCreator';
-import Spinner from './header/Spinner.jsx';
-import Toast from './overlay/Toast.jsx';
+import React from "react";
+import Dispatcher from "../dispatcher/Dispatcher";
+import TableauxConstants from "../constants/TableauxConstants";
+import GenericOverlay from "./overlay/GenericOverlay.jsx";
+import ViewRenderer from "./ViewRenderer.jsx";
+import i18n from "i18next";
+import XHR from "i18next-xhr-backend";
+import {I18nextProvider} from "react-i18next";
+import ActionCreator from "../actions/ActionCreator";
+import Spinner from "./header/Spinner.jsx";
+import Toast from "./overlay/Toast.jsx";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -120,6 +118,7 @@ export default class Tableaux extends React.Component {
           head={overlay.head}
           footer={overlay.footer}
           type={overlay.type}
+          keyboardShortcuts={overlay.keyboardShortcuts}
           closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}>
           {overlay.body}
         </GenericOverlay>
