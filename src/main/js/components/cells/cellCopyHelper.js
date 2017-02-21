@@ -14,6 +14,7 @@ const showErrorToast = msg => {
 const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage);
 const canCopyLinks = (src, dst) => dst.column.id === src.column.id && dst.tableId === src.tableId;
 
+
 const calcNewValue = function (src, srcLang, dst, dstLang) {
   if (!src.isMultiLanguage && !dst.isMultiLanguage) {
     return convert(src.kind, dst.kind, src.value);
@@ -37,13 +38,17 @@ const calcNewValue = function (src, srcLang, dst, dstLang) {
 };
 
 const pasteCellValue = function (src, srcLang, dst, dstLang) {
-  if (!canConvert(src.kind, dst.kind)) {
-    showErrorToast("table:copy_kind_error");
+  if (dst.kind === ColumnKinds.link && src.kind === ColumnKinds.link) {
+    if (canCopyLinks(src, dst)) {
+      ActionCreator.changeCell(dst, src.value);
+    } else {
+      showErrorToast("table:copy_links_error");
+    }
     return;
   }
 
-  if (dst.kind === ColumnKinds.link && !canCopyLinks(src, dst)) {
-    showErrorToast("table:copy_links_error");
+  if (!canConvert(src.kind, dst.kind)) {
+    showErrorToast("table:copy_kind_error");
     return;
   }
 
