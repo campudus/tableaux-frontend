@@ -11,15 +11,17 @@ const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage
 
 const calcNewValue = function (src, srcLang, dst, dstLang) {
   if (!src.isMultiLanguage && !dst.isMultiLanguage) {
-    return src.value;
+    return convert(src.kind, dst.kind, src.value);
   } else if (src.isMultiLanguage && dst.isMultiLanguage) {
     const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
-    return f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
-      {}, combinedLangtags);
+    return convert(src.kind, dst.kind,
+      f.reduce((result, langtag) => f.assoc(langtag, maybe(src.value[langtag]).getOrElse(null), result),
+        {}, combinedLangtags)
+    );
   } else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
-    return f.assoc(dstLang, src.value, dst.value);
+    return f.assoc(dstLang, convert(src.kind, dst.kind, src.value), dst.value);
   } else { // src.isMultiLanguage
-    return src.value[srcLang];
+    return convert(src.kind, dst.kind, src.value[srcLang]);
   }
 };
 
@@ -37,7 +39,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
   }
 
   if (canCopySafely(src, dst)) {
-    const newValue = convert(src.kind, dst.kind, calcNewValue.call(this, src, srcLang, dst, dstLang));
+    const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
     if (!newValue) {
       ActionCreator.showToast(
         <div id="cell-jump-toast">{i18n.t("table:copy_kind_error")}</div>, 3000
@@ -46,10 +48,9 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
     }
     ActionCreator.changeCell(dst, newValue);
   } else {
-    const newValue = convert(src.kind, dst.kind,
-      (dst.kind === "link")
+    const newValue = (dst.kind === "link")
         ? src.value
-        : calcNewValue.call(this, src, srcLang, dst, dstLang));
+        : calcNewValue.call(this, src, srcLang, dst, dstLang);
     if (!newValue) {
       ActionCreator.showToast(
         <div id="cell-jump-toast">{i18n.t("table:copy_kind_error")}</div>, 3000

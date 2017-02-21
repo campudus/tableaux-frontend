@@ -81,7 +81,7 @@ const convert = (from, to, value) => {
   if (from === to) {
     return value;
   } else if (f.isObject(value) && !(value instanceof Moment)) {
-    const conversion = val => convertSingleValue(from, to, val) || val;
+    const conversion = convertSingleValue(from, to);
     return f.mapValues(conversion, value);
   } else {
     return convertSingleValue(from, to, value);
