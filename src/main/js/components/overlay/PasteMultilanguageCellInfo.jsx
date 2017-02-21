@@ -31,11 +31,15 @@ class PasteMultilanguageCellInfo extends React.Component {
   };
 
   renderEntry = kind => ([key, value]) => {
-    const formatValue = cond([
-      [eq(date), always(str => Moment(str).format(DateFormats.formatForUser))],
-      [eq(datetime), always(str => Moment(str).format(DateTimeFormats.formatForUser))],
-      [stubTrue, always(identity)]
-    ])(kind);
+    const MAX_LENGTH = 60;
+    const formatValue = compose(
+      text => (text.length > MAX_LENGTH) ? text.substring(0, MAX_LENGTH) : text,
+      cond([
+        [eq(date), always(str => Moment(str).format(DateFormats.formatForUser))],
+        [eq(datetime), always(str => Moment(str).format(DateTimeFormats.formatForUser))],
+        [stubTrue, always(identity)]
+      ])(kind)
+    );
     return <div key={key} className="entry">
       <div className="icon">
         {getLanguageOrCountryIcon(key)}
