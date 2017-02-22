@@ -13,6 +13,8 @@ var File = AmpersandModel.extend({
     externalName : 'object',
     internalName : 'object',
     folder : 'number',
+    createdAt: 'string',
+    updatedAt: 'string',
 
     fileUrl : 'object'
   },
