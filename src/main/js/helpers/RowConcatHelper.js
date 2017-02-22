@@ -118,6 +118,8 @@ var internal = {
           }
           break;
 
+        case ColumnKinds.currency: break; // Suppress warnings
+
         default:
           console.warn("undefined concatElement of kind:", concatColumn.kind, ":", concatValue);
       }
