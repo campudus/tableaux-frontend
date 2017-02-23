@@ -35,7 +35,7 @@ class Folder extends React.Component {
   }
 
   componentWillUnmount() {
-    Dispatcher.on(ActionTypes.ADD_FILE, this.setModifiedFlag);
+    Dispatcher.off(ActionTypes.ADD_FILE, this.setModifiedFlag);
   }
 
   setModifiedFlag = ({uuid}) => {
