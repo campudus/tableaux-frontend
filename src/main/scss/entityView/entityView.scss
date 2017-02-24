@@ -57,6 +57,8 @@
 
   .view-content {
     min-height: 1em;
+    max-height: 250px;
+    overflow-y: auto;
 
     &:empty {
       padding: 12px 0;

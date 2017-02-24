@@ -1,36 +1,88 @@
 import React from "react";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import listensToClickOutside from "react-onclickoutside";
 
-const ShortTextView = React.createClass({
+@listensToClickOutside
+class ShortTextView extends React.Component {
 
-  displayName: "DateTimeView",
+  constructor(props) {
+    super(props);
+    this.displayName = "ShortTextView";
+    this.state = {editing: false};
+  };
 
-  propTypes: {
+  static propTypes = {
     langtag: React.PropTypes.string.isRequired,
     cell: React.PropTypes.object.isRequired
-  },
+  };
 
-  getValue: function () {
-    var cell = this.props.cell;
+  getValue =  () => {
+    const {cell, langtag} = this.props;
 
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
+    const value = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+    return value || "";
+  };
+
+  handleClickOutside = event => {
+    console.log("click outside")
+    this.saveEditsAndClose();
+  };
+
+  setEditing = editing => () => {
+    if (editing) {
+      this.setState({value: this.getValue()});
     }
+    this.setState({editing});
+  };
 
-    return typeof value === "undefined" ? null : value;
-  },
+  getKeyboardShortcuts = () => {
+    const captureEventAnd = fn => event => {
+      event.stopPropagation();
+      (fn || function(){})();
+    };
 
-  render: function () {
-    var value = this.getValue();
+    return {
+      escape: captureEventAnd(this.setEditing(false)),
+      enter: captureEventAnd(this.saveEditsAndClose)
+    }
+  };
 
+  saveEditsAndClose = () => {
+    const {value} = this.state;
+    const {cell, langtag} = this.props;
+    const changes = (cell.isMultiLanguage)
+      ? {value: {[langtag]: value}}
+      : {value};
+    cell.save(changes, {isPatch: true});
+    this.setEditing(false)();
+  };
+
+  renderEditor = () => {
     return (
-      <div className='view-content shorttext' >
-        {value === null ? "" : value}
-      </div>
-    );
+      <input type="text" className="input view-content" value={this.state.value}
+             autoFocus
+             onChange={event => this.setState({value: event.target.value})}
+             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+      />
+    )
+  };
+
+  render() {
+    const value = this.getValue();
+    const {editing} = this.state;
+
+    return (editing)
+      ? this.renderEditor()
+      : (
+        <div className="view-content shorttext ignore-react-onclickoutside"
+             onClick={this.setEditing(true)}
+        >
+          {value}
+        </div>
+      );
   }
-});
+}
 
 export default ShortTextView;

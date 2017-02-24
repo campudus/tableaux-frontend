@@ -1,36 +1,62 @@
 import React from "react";
+import RichTextComponent from "../../helperComponents/RichTextComponent";
 
-const TextView = React.createClass({
+class TextView extends React.Component {
 
-  displayName: "TextView",
-
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
-  },
-
-  getValue: function () {
-    var cell = this.props.cell;
-
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
-    }
-
-    return typeof value === "undefined" ? null : value;
-  },
-
-  render: function () {
-    var value = this.getValue();
-
-    return (
-      <div className='view-content text' >
-        {value === null ? "" : value}
-      </div>
-    );
+  constructor(props) {
+    super(props);
+    this.displayName = "TextView";
+    this.state = {editing: false};
   }
-});
+
+  static propTypes = {
+    langtag : React.PropTypes.string.isRequired,
+    cell : React.PropTypes.object.isRequired,
+  };
+
+  getValue = () => {
+    const cell = this.props.cell;
+    const value = (cell.isMultiLanguage)
+      ? cell.value[this.props.langtag]
+      : cell.value;
+    return value || "";
+  };
+
+  setEditing = editing => () => {
+    this.setState({editing: editing});
+  };
+
+  saveAndClose = (newValue) => {
+    const {cell,langtag} = this.props;
+    const changes = (cell.isMultiLanguage)
+      ? {value: {[langtag]: newValue}}
+      : {value: newValue};
+    cell.save(changes, {isPatch: true});
+    this.setEditing(false)();
+  };
+
+  render() {
+    const value = this.getValue();
+    const {editing} = this.state;
+    const {langtag} = this.props;
+
+    return (editing)
+      ? (
+        <RichTextComponent value={value}
+                           className="view-content"
+                           close={this.setEditing(false)}
+                           saveAndClose={this.saveAndClose}
+                           langtag={langtag}
+        />
+      )
+      : (
+        <RichTextComponent value={value}
+                           className="view-content ignore-react-onclickoutside"
+                           langtag={langtag}
+                           readOnly={true}
+                           onClick={this.setEditing(true)} />
+      );
+  }
+}
 
 export default TextView;
