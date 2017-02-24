@@ -1,0 +1,62 @@
+@import "variables";
+
+#rich-text-component {
+  width: 100%;
+  background-color: white;
+  padding: 10px;
+  border: 2px solid $color-border-grey;
+
+  .symbol-bar {
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 10px;
+
+    .action-group {
+      padding: 5px;
+      background-color: $color-background-very-light-grey;
+      margin-right: 10px;
+      display: inline-flex;
+      align-items: baseline;
+      vertical-align: bottom;
+
+      .description {
+        padding-right: 10px;
+      }
+    }
+
+    a {
+      padding: 5px;
+      background-color: white;
+      border: 1px solid $color-border-grey;
+      margin-right: 5px;
+      text-align: center;
+      border-radius: 3px;
+
+      i {
+        width: 1em;
+      }
+
+      &:hover {
+        background-color: $color-selected-row;
+      }
+    }
+  }
+
+  .content-pane {
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+
+    i {
+      font-style: italic;
+    }
+
+    b {
+      font-weight: bold;
+    }
+  }
+
+  .button-area {
+    text-align: right;
+  }
+}
