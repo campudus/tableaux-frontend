@@ -3,7 +3,7 @@ import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 import {RowHeight} from "../../constants/TableauxConstants";
-import connectToAmpersand from "../HOCs/connectToAmpersand";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 
 @connectToAmpersand

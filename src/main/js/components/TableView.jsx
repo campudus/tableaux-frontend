@@ -1,5 +1,5 @@
 import React from "react";
-import connectToAmpersand from "./HOCs/connectToAmpersand";
+import connectToAmpersand from "./helperComponents/connectToAmpersand";
 import Dispatcher from "../dispatcher/Dispatcher";
 import Table from "./table/Table.jsx";
 import LanguageSwitcher from "./header/LanguageSwitcher.jsx";

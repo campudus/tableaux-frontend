@@ -116,7 +116,7 @@ class Folder extends React.Component {
         );
       }),
       reverse, // keep latest first
-      sortBy(prop("updatedAt"))
+      sortBy(prop("createdAt"))
     );
 
     if (files && files.length > 0) {
