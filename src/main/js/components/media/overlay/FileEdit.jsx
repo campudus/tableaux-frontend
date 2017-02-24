@@ -1,5 +1,5 @@
 import React from "react";
-import connectToAmpersand from "../../HOCs/connectToAmpersand";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import SingleFileEdit from "./SingleFileEdit";
 import MultiFileEdit from "./MultiFileEdit.jsx";
 import {translate} from "react-i18next";
