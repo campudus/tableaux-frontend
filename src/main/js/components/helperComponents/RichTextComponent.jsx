@@ -8,7 +8,11 @@ import ReactDOM from "react-dom";
 import {markdown} from "markdown";
 import toMarkdown from "to-markdown";
 import i18n from "i18next";
+import classNames from "classnames";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import listensToClickOutside from "react-onclickoutside";
 
+@listensToClickOutside
 class RichTextComponent extends React.Component {
   static propTypes = {
     value: React.PropTypes.string.isRequired,
@@ -26,6 +30,24 @@ class RichTextComponent extends React.Component {
     }
     this.state = {text: props.value};
   }
+
+  getKeyboardShortcuts = () => {
+    const captureEventAnd = fn => event => {
+      event.stopPropagation();
+      (fn || function(){})();
+    };
+    return {
+      escape: captureEventAnd(this.props.close)
+    }
+  };
+
+  componentDidMount = () => {
+    this.cp.focus();
+  };
+
+  handleClickOutside = event => {
+    this.props.close();
+  };
 
   format = (command, param) => () => {
     document.execCommand(command, true, param);
@@ -50,6 +72,7 @@ class RichTextComponent extends React.Component {
   render = () => {
     const {hideEditorSymbols,readOnly,close,saveAndClose,onClick} = this.props;
     const clickHandler = onClick || function(){};
+    const contentClass = classNames("content-pane", {"input": !readOnly});
     return (
       <div id="rich-text-component" onClick={clickHandler}>
         {(!readOnly && !hideEditorSymbols)
@@ -73,9 +96,10 @@ class RichTextComponent extends React.Component {
           )
           : null
         }
-        <div className="content-pane input"
+        <div className={contentClass}
              contentEditable={!readOnly}
              ref={cp => this.content = cp}
+             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
         >
         </div>
         {(close)
