@@ -1,0 +1,104 @@
+/*
+ * This component receives a string a input and displays it as markdown.
+ * If readOnly is not set, it works as a rich text editor.
+ * The saveAndClose function will be called with a markdown string as argument.
+ */
+import React from "react";
+import ReactDOM from "react-dom";
+import {markdown} from "markdown";
+import toMarkdown from "to-markdown";
+import i18n from "i18next";
+
+class RichTextComponent extends React.Component {
+  static propTypes = {
+    value: React.PropTypes.string.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    close: React.PropTypes.func,
+    saveAndClose: React.PropTypes.func,
+    readOnly: React.PropTypes.bool,
+    hideEditorSymbols: React.PropTypes.bool
+  };
+
+  constructor(props) {
+    super(props);
+    if (!props.readOnly && !props.saveAndClose) {
+      console.error("RichTextComponent: The has neither received a \"readOnly\" nor a \"saveAndClose\" property. This is probably a mistake");
+    }
+    this.state = {text: props.value};
+  }
+
+  format = (command, param) => () => {
+    document.execCommand(command, true, param);
+  };
+
+  getValue = () => {
+    return ReactDOM.findDOMNode(this.content).innerHTML;
+  };
+
+  saveAndClose = event => {
+    event.stopPropagation();
+    const value = this.getValue();
+    const markdown = toMarkdown(value);
+    this.props.saveAndClose(markdown);
+  };
+
+  componentDidMount = () => {
+    const html = markdown.toHTML(this.props.value);
+    ReactDOM.findDOMNode(this.content).innerHTML = html;
+  };
+
+  render = () => {
+    const {hideEditorSymbols,readOnly,close,saveAndClose,onClick} = this.props;
+    const clickHandler = onClick || function(){};
+    return (
+      <div id="rich-text-component" onClick={clickHandler}>
+        {(!readOnly && !hideEditorSymbols)
+          ? (
+            <div className="symbol-bar">
+              <div className="action-group">
+                <a href="#" onClick={this.format("bold")}><i className="fa fa-bold" /></a>
+                <a href="#" onClick={this.format("italic")}><i className="fa fa-italic" /></a>
+                <a href="#" onClick={this.format("underline")}><i className="fa fa-underline" /></a>
+                <a href="#" onClick={this.format("strikeThrough")}><i className="fa fa-strikethrough" /></a>
+              </div>
+              <div className="action-group">
+                <div className="description">{i18n.t("table:set_header_level")}</div>
+                <a href="#" onClick={this.format("formatBlock", "<p>")}><i className="fa fa-ban" /></a>
+                <a href="#" onClick={this.format("formatBlock", "<h1>")}><i>1</i></a>
+                <a href="#" onClick={this.format("formatBlock", "<h2>")}><i>2</i></a>
+                <a href="#" onClick={this.format("formatBlock", "<h3>")}><i>3</i></a>
+                <a href="#" onClick={this.format("formatBlock", "<h4>")}><i>4</i></a>
+              </div>
+            </div>
+          )
+          : null
+        }
+        <div className="content-pane input"
+             contentEditable={!readOnly}
+             ref={cp => this.content = cp}
+        >
+        </div>
+        {(close)
+          ? (
+            <div className="button-area">
+              {(saveAndClose)
+                ? (
+                <a className="button positive" onClick={this.saveAndClose}>
+                {i18n.t("common:save")}
+                </a>
+                )
+                : null}
+              <a className="button neutral" onClick={close}>
+                {i18n.t("common:cancel")}
+              </a>
+            </div>
+
+          )
+          : null
+        }
+      </div>
+    )
+  }
+}
+
+export default RichTextComponent;
