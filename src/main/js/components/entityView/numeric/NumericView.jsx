@@ -1,6 +1,7 @@
 import React from "react";
 
-const NumericView = React.createClass({
+@listensToClickOutside
+class NumericView extends React.Component {
 
   displayName: "NumericView",
 
@@ -12,25 +13,63 @@ const NumericView = React.createClass({
   getValue: function () {
     var cell = this.props.cell;
 
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
-    }
+    const value = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+    return value || "";
+  };
 
-    return typeof value === "undefined" ? null : value;
-  },
+  handleClickOutside = event => {
+    console.log("click outside")
+    this.saveEditsAndClose();
+  };
+
+  setEditing = editing => () => {
+    if (editing) {
+      this.setState({value: this.getValue()});
+    }
+    this.setState({editing});
+  };
+
+  getKeyboardShortcuts = () => {
+    const captureEventAnd = fn => event => {
+      event.stopPropagation();
+      (fn || function(){})();
+    };
+
+    return {
+      escape: captureEventAnd(this.setEditing(false)),
+      enter: captureEventAnd(this.saveEditsAndClose)
+    }
+  };
 
   render: function () {
     var value = this.getValue();
 
+  renderEditor = () => {
     return (
-      <div className='view-content numeric'>
-        {value === null ? "" : value}
-      </div>
-    );
+      <input type="number" className="input view-content" value={this.state.value}
+             autoFocus
+             onChange={event => this.setState({value: event.target.value})}
+             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+      />
+    )
+  };
+
+  render() {
+    const value = this.getValue();
+    const {editing} = this.state;
+
+    return (editing)
+      ? this.renderEditor()
+      : (
+        <div className="view-content shorttext ignore-react-onclickoutside"
+             onClick={this.setEditing(true)}
+        >
+          {value}
+        </div>
+      );
   }
-});
+}
 
 export default NumericView;

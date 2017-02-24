@@ -1,6 +1,6 @@
 import React from "react";
 
-const TextView = React.createClass({
+class TextView extends React.Component {
 
   displayName: "TextView",
 
@@ -31,6 +31,6 @@ const TextView = React.createClass({
       </div>
     );
   }
-});
+}
 
 export default TextView;
