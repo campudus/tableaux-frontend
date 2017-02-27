@@ -1,7 +1,7 @@
 import React from "react";
 import LinkLabelCell from "../../cells/link/LinkLabelCell.jsx";
 
-const LinkView = React.createClass({
+class LinkView extends Component {
 
   displayName: "LinkView",
 
@@ -19,11 +19,11 @@ const LinkView = React.createClass({
     });
 
     return (
-      <div className='view-content link'>
+      <div className="view-content link">
         {links}
       </div>
     );
   }
-});
+}
 
 export default LinkView;
