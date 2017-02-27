@@ -19,9 +19,12 @@ class RowHeadline extends React.Component {
 
     let columnIcon;
     switch (column.kind) {
-      case ColumnKinds.shorttext:
+
       case ColumnKinds.text:
       case ColumnKinds.richtext:
+        columnIcon = <i key="column-icon" className="fa fa-align-left" />;
+        break;
+      case ColumnKinds.shorttext:
         columnIcon = <i key="column-icon" className="fa fa-font" />;
         break;
       case ColumnKinds.link:
