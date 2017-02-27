@@ -1,37 +1,41 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import {translate} from "react-i18next";
 
-const BooleanView = React.createClass({
+@translate(["common"])
+class BooleanView extends Component {
 
-  displayName: "BooleanView",
+  constructor(props) {
+    super(props);
+    this.displayName = "BooleanView";
+  }
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    t: React.PropTypes.func.isRequired
-  },
+  static propTypes = {
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    t: PropTypes.func.isRequired
+  };
 
-  getValue: function (cell) {
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
-    }
+  toggleValue = event => {
+    const {cell, langtag} = this.props;
+    const changes = (cell.isMultiLanguage)
+      ? {value: {[langtag]: !cell.value[langtag]}}
+      : {value: !cell.value};
+    cell.save(changes, {isPatch: true});
+  };
 
-    return typeof value === "undefined" ? null : value;
-  },
-
-  render: function () {
+  render() {
     const {cell, t} = this.props;
-    var value = this.getValue(cell);
+    const value = ((cell.isMultiLanguage)
+      ? cell.value[this.props.langtag]
+      : cell.value)
+      || false;
 
     return (
-      <div className='view-content boolean'>
+      <div className="view-content boolean" onClick={this.toggleValue}>
         {value ? t("yes") : t("no")}
       </div>
     );
   }
-});
+}
 
-export default translate(["common"])(BooleanView);
+export default BooleanView;

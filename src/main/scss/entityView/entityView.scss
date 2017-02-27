@@ -104,6 +104,18 @@
       @include border-radius(3px);
       @include box-shadow(0 2px 1px $color-text-medium-grey);
       margin: 0 12px 12px 0;
+
+      &.not-set {
+        background-color: $color-border-grey;
+      }
+
+      &:hover {
+        background-color: $color-selected-row;
+      }
+
+      &.editing {
+        @include box-shadow(0 2px 1px $color-primary-darker);
+      }
     }
 
     .langtag {
