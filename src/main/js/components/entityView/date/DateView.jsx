@@ -21,7 +21,9 @@ class DateView extends Component {
   };
 
   handleClickOutside = () => {
-    this.saveEditsAndClose(this.state.moment);
+    if (this.state.editing) {
+      this.saveEditsAndClose(this.state.moment);
+    }
   };
 
   getValue =  () => {
