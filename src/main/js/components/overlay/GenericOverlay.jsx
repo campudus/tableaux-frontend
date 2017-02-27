@@ -121,7 +121,7 @@ var GenericOverlay = React.createClass({
       footer = <footer>{footer}</footer>;
       hasFooterClass = " has-footer";
     }
-    var overlayWrapperClass = "ignore-react-onclickoutside open " + overlayType + hasFooterClass;
+    var overlayWrapperClass = "open " + overlayType + hasFooterClass;
 
     if (this.allowedTypes.indexOf(overlayType) === -1) {
       console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");

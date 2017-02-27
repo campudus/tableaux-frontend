@@ -1,5 +1,5 @@
-import React from "react";
-import AmpersandMixin from "ampersand-react-mixin";
+import React, {Component, PropTypes} from "react";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
@@ -14,12 +14,12 @@ import RowHeadline from "./RowHeadline";
 var View = React.createClass({
   mixins: [AmpersandMixin],
 
-  propTypes: {
+  static propTypes = {
     cell: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired
-  },
+  };
 
-  render: function () {
+  render() {
     let cellKind = null;
     const {cell, langtag} = this.props;
 
@@ -77,6 +77,6 @@ var View = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = View;
