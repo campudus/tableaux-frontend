@@ -1,16 +1,19 @@
-import React from "react";
+import React, {PropTypes, Component} from "react";
 import LinkLabelCell from "../../cells/link/LinkLabelCell.jsx";
 
-const LinkView = React.createClass({
+class LinkView extends Component {
 
-  displayName: "LinkView",
+  constructor(props) {
+    super(props);
+    this.displayName = "LinkView";
+  }
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
-  },
+  static propTypes = {
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired
+  };
 
-  render: function () {
+  render() {
     const {cell, langtag} = this.props;
 
     const links = cell.value.map(function (element, index) {
@@ -19,11 +22,11 @@ const LinkView = React.createClass({
     });
 
     return (
-      <div className='view-content link'>
+      <div className="view-content link">
         {links}
       </div>
     );
   }
-});
+}
 
 export default LinkView;
