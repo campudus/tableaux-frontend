@@ -45,8 +45,12 @@ var View = React.createClass({
         cellKind = <BooleanView cell={cell} langtag={langtag} />;
         break;
 
+      case ColumnKinds.date:
+        cellKind = <DateView cell={cell} langtag={langtag} />;
+        break;
+
       case ColumnKinds.datetime:
-        cellKind = <DateTimeView cell={cell} langtag={langtag} />;
+        cellKind = <DateView cell={cell} langtag={langtag} time={true} />;
         break;
 
       case ColumnKinds.shorttext:

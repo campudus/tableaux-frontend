@@ -9,7 +9,7 @@ import {markdown} from "markdown";
 import toMarkdown from "to-markdown";
 import i18n from "i18next";
 import classNames from "classnames";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import KeyboardShortcutsHelper from "../helpers/KeyboardShortcutsHelper";
 import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
@@ -41,12 +41,11 @@ class RichTextComponent extends React.Component {
     }
   };
 
-  componentDidMount = () => {
-    this.cp.focus();
-  };
-
   handleClickOutside = event => {
-    this.props.close();
+    const closeHandler = this.props.close || function(){};
+    (this.props.readOnly)
+      ? closeHandler()
+      : this.saveAndClose(event);
   };
 
   format = (command, param) => () => {
@@ -66,7 +65,12 @@ class RichTextComponent extends React.Component {
 
   componentDidMount = () => {
     const html = markdown.toHTML(this.props.value);
-    ReactDOM.findDOMNode(this.content).innerHTML = html;
+    const contentDOMNode = ReactDOM.findDOMNode(this.content);
+    contentDOMNode.innerHTML = html;
+    contentDOMNode.focus();
+  };
+
+  componentWillUnmount = () => {
   };
 
   render = () => {
