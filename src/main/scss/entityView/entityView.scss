@@ -62,6 +62,22 @@
       border-radius: 3px;
       padding: 10px;
 
+      .edit-links-button {
+        @include button-look();
+        background-color: $color-primary-lighter;
+        margin-bottom: 10px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .link-list {
+
+        &:not(:empty) {
+          border-top: 1px solid $color-text-light-grey;
+          padding-top: 10px;
+        }
+      }
+
       .link-label {
         display: inline-block;
         box-sizing: border-box;
@@ -81,9 +97,46 @@
           cursor: pointer;
 
           color: $color-primary;
-          background-color: $color-primary-contrast-text;
+          background-color: $color-select-list-selected;
 
           border: 1px solid $color-primary;
+        }
+
+        &.delete {
+
+          &:hover {
+            cursor: pointer;
+
+            color: $color-primary;
+            background-color: $color-select-list-selected;
+
+            border: 1px solid $color-primary;
+
+            i {
+              color: $color-primary-contrast-text;
+              background-color: $color-primary;
+            }
+          }
+
+          i {
+            display: initial;
+            padding: 3px 5px;
+            height: $space-height-link-delete-button - 6px;
+            line-height: $space-height-link-delete-button - 6px;
+            vertical-align: top;
+            margin-top: 1px;
+            margin-right: 1px;
+            margin-left: 5px;
+            border: 1px solid $color-primary;
+            @include border-radius(3px);
+            cursor: pointer;
+            background-color: $color-primary;
+
+            &:hover {
+              background-color: $color-primary-contrast-text;
+              color: $color-primary;
+            }
+          }
         }
       }
     }

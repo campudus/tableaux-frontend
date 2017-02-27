@@ -130,7 +130,9 @@ export default class Tableaux extends React.Component {
           footer={overlay.footer}
           type={overlay.type}
           keyboardShortcuts={overlay.keyboardShortcuts}
-          closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}>
+          closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
+          showBackButton={idx > 0}
+        >
           {overlay.body}
         </GenericOverlay>
       );

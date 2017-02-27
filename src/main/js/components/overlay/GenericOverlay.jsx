@@ -29,27 +29,28 @@ var GenericOverlay = React.createClass({
     return {
       closeOnBackgroundClicked: true
     };
-  },
 
   allowedTypes: ["full-flex", "flexible", "normal", "no-scroll"],
   focusedElementBeforeOverlayOpens: null,
 
   componentWillMount: function () {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
-  },
+  };
 
   recalculateContentDimensions: function () {
     console.log("recalculate");
     const overlayContent = ReactDOM.findDOMNode(this.refs.overlayContent);
     const style = window.getComputedStyle(overlayContent, null);
-    const innerWidth = overlayContent.clientWidth - parseInt(style.getPropertyValue("padding-left")) - parseInt(style.getPropertyValue("padding-right"));
-    const innerHeight = overlayContent.clientHeight - parseInt(style.getPropertyValue("padding-top")) - parseInt(style.getPropertyValue("padding-bottom"));
+    const innerWidth = overlayContent.clientWidth - parseInt(style.getPropertyValue("padding-left")) - parseInt(style.getPropertyValue(
+        "padding-right"));
+    const innerHeight = overlayContent.clientHeight - parseInt(style.getPropertyValue("padding-top")) - parseInt(style.getPropertyValue(
+        "padding-bottom"));
 
     this.setState({
       contentHeight: innerHeight,
       contentWidth: innerWidth
     });
-  },
+  };
 
   componentDidMount: function () {
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
@@ -64,7 +65,7 @@ var GenericOverlay = React.createClass({
 
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
-  },
+  };
 
   componentWillUnmount: function () {
     // Overlay is going to be closed
@@ -75,17 +76,17 @@ var GenericOverlay = React.createClass({
     if (this.focusedElementBeforeOverlayOpens) {
       this.focusedElementBeforeOverlayOpens.focus();
     }
-  },
+  };
 
   handleResize: function (event) {
     this.recalculateContentDimensions();
-  },
+  };
 
   closeOverlay: function (event) {
     if (this.props.closeOnBackgroundClicked) {
       ActionCreator.closeOverlay();
     }
-  },
+  };
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts: function (event) {
@@ -104,12 +105,16 @@ var GenericOverlay = React.createClass({
       },
       this.props.keyboardShortcuts
     );
-  },
+  };
 
   renderChildren(props) {
     let {contentHeight, contentWidth} = this.state;
     return React.Children.map(props.children, child => {
-      return React.cloneElement(child, {contentHeight, contentWidth});
+      return React.cloneElement(child,
+        {
+          contentHeight,
+          contentWidth
+        });
     });
   },
 
@@ -123,27 +128,44 @@ var GenericOverlay = React.createClass({
     }
     var overlayWrapperClass = "open " + overlayType + hasFooterClass;
 
-    if (this.allowedTypes.indexOf(overlayType) === -1) {
+  render() {
+    const overlayType = this.props.type || "normal"; // default to normal
+    if (!contains(overlayType, this.allowedTypes)) {
       console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");
       return null;
     }
+
+    const {footer, showBackButton} = this.props;
+    const overlayWrapperClass = classNames("open " + overlayType, {
+      "has-footer": footer
+    });
 
     return (
       <div id="overlay" className={overlayWrapperClass} tabIndex="1"
            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
         <div id="overlay-wrapper">
-          <h2 className="overlay-header">{this.props.head}</h2>
+          <div className="header-wrapper">
+            <h2 className="overlay-header">{this.props.head}</h2>
+            {(showBackButton)
+              ? (
+                <a className="button back-button" href="#" onClick={() => ActionCreator.closeOverlay()} >
+                  <i className="fa fa-arrow-circle-left" />
+                </a>
+              )
+              : null
+            }
+          </div>
           <div className="content-scroll">
             <div id="overlay-content" ref="overlayContent">
               {this.renderChildren(this.props)}
             </div>
           </div>
-          {footer}
+          {(footer) ? <footer>{footer}</footer> : null}
         </div>
-        <div ref="overlayBackground" onClick={this.closeOverlay} className="background"></div>
+        <div ref="overlayBackground" onClick={this.backgroundClick} className="background"></div>
       </div>
     );
   }
-});
+}
 
 module.exports = GenericOverlay;
