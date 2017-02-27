@@ -1,8 +1,6 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import listensToClickOutside from "react-onclickoutside";
 
-@listensToClickOutside
 class ShortTextView extends React.Component {
 
   constructor(props) {
@@ -18,16 +16,10 @@ class ShortTextView extends React.Component {
 
   getValue =  () => {
     const {cell, langtag} = this.props;
-
     const value = (cell.isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
     return value || "";
-  };
-
-  handleClickOutside = event => {
-    console.log("click outside")
-    this.saveEditsAndClose();
   };
 
   setEditing = editing => () => {
@@ -61,10 +53,11 @@ class ShortTextView extends React.Component {
 
   renderEditor = () => {
     return (
-      <input type="text" className="input view-content" value={this.state.value}
+      <input type="text" className="input view-content view-shorttext" value={this.state.value}
              autoFocus
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+             onBlur={this.saveEditsAndClose}
       />
     )
   };
@@ -76,7 +69,7 @@ class ShortTextView extends React.Component {
     return (editing)
       ? this.renderEditor()
       : (
-        <div className="view-content shorttext ignore-react-onclickoutside"
+        <div className="view-content view-shorttext"
              onClick={this.setEditing(true)}
         >
           {value}

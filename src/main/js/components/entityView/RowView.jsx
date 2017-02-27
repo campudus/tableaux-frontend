@@ -8,10 +8,10 @@ import BooleanView from "./boolean/BooleanView";
 import LinkView from "./link/LinkView";
 import AttachmentView from "./attachment/AttachmentView";
 import CurrencyView from "./currency/CurrencyView";
-import DateTimeView from "./datetime/DateTimeView";
+import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
 
-var View = React.createClass({
+export const View = React.createClass({
   mixins: [AmpersandMixin],
 
   propTypes: {
@@ -45,8 +45,12 @@ var View = React.createClass({
         cellKind = <BooleanView cell={cell} langtag={langtag} />;
         break;
 
+      case ColumnKinds.date:
+        cellKind = <DateView cell={cell} langtag={langtag} />;
+        break;
+
       case ColumnKinds.datetime:
-        cellKind = <DateTimeView cell={cell} langtag={langtag} />;
+        cellKind = <DateView cell={cell} langtag={langtag} time={true} />;
         break;
 
       case ColumnKinds.shorttext:

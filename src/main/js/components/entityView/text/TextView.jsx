@@ -1,5 +1,5 @@
 import React from "react";
-import RichTextComponent from "../../helperComponents/RichTextComponent";
+import RichTextComponent from "../../RichTextComponent";
 
 class TextView extends React.Component {
 
@@ -43,7 +43,7 @@ class TextView extends React.Component {
     return (editing)
       ? (
         <RichTextComponent value={value}
-                           className="view-content"
+                           className="view-content view-text"
                            close={this.setEditing(false)}
                            saveAndClose={this.saveAndClose}
                            langtag={langtag}
@@ -51,7 +51,7 @@ class TextView extends React.Component {
       )
       : (
         <RichTextComponent value={value}
-                           className="view-content ignore-react-onclickoutside"
+                           className="view-content view-text"
                            langtag={langtag}
                            readOnly={true}
                            onClick={this.setEditing(true)} />
