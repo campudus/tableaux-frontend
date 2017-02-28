@@ -50,6 +50,7 @@ $overlay-headline-height: 50px;
       position: absolute;
       top: -10px;
       z-index: 2;
+      background-color: $color-primary-lighter;
     }
   }
 
@@ -296,10 +297,12 @@ $overlay-headline-height: 50px;
     height: 40px;
     line-height: 40px;
     @include box-sizing(border-box);
+    color: $color-dark;
 
     &.selected {
       border-color: $color-darker-link-color;
       background-color: $color-light-link-color;
+      color: $color-primary
     }
 
     &.isLinked {
@@ -313,7 +316,7 @@ $overlay-headline-height: 50px;
 
         border-color: $color-red;
         background-color: $color-light-link-color;
-        color: $color-primary-text;
+        color: $color-primary;
 
         &::after {
           color: lightcoral;

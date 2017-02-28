@@ -121,6 +121,7 @@ export default class Tableaux extends React.Component {
           type={overlay.type}
           keyboardShortcuts={overlay.keyboardShortcuts}
           closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
+          classNames={overlay.classNames}
           showBackButton={true}
         >
           {overlay.body}

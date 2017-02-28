@@ -29,7 +29,6 @@ class RowContextMenu extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log("RowContextMenu", props);
   }
 
   closeRowContextMenu = () => {

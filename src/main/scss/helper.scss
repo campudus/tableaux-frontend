@@ -86,3 +86,41 @@
   }
 
 }
+
+@mixin link-look() {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+  box-sizing: border-box;
+
+  padding: 6px;
+  margin: 0 12px 12px 0;
+
+  color: $color-primary-contrast-text;
+  background-color: $color-primary;
+
+  @include border-radius(3px);
+  @include box-shadow(0 2px 1px $color-primary-darker);
+
+  &:hover {
+    color: $color-primary-contrast-text;
+    background-color: $color-primary-lighter;
+    @include box-shadow(0 2px 2px $color-primary);
+  }
+
+  i {
+    float: right;
+    display: initial;
+    padding: 3px 5px;
+    margin-top: 1px;
+    margin-right: 1px;
+    margin-left: 5px;
+    @include border-radius(3px);
+    background-color: $color-primary;
+
+    &:hover {
+      background-color: $color-primary-contrast-text;
+      color: $color-primary;
+    }
+  }
+}

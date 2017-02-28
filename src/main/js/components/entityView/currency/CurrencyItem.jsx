@@ -17,7 +17,6 @@ class CurrencyItem extends Component {
   };
 
   getKeyboardShortcuts = () => {
-    // FIXME: Overlay won't close after Esc-Esc
     const catchEventAnd = fn => event => {
       event.stopPropagation();
       fn(event);
