@@ -44,7 +44,7 @@ class NumericView extends React.Component {
   };
 
   saveEditsAndClose = () => {
-    const value = parseInt(this.state.value);
+    const value = parseFloat(this.state.value);
     const {cell, langtag} = this.props;
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: value}}

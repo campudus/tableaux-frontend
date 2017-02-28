@@ -1,7 +1,7 @@
 /*
- * This component receives a string a input and displays it as markdown.
- * If readOnly is not set, it works as a rich text editor.
- * The saveAndClose function will be called with a markdown string as argument.
+ * This component receives a string as input, interprets it as markdown, and displays it as HTML.
+ * If readOnly is not set, it works as a simple rich text editor.
+ * The saveAndClose function will receive the visible content converted to markdown as argument.
  */
 import React from "react";
 import ReactDOM from "react-dom";
@@ -25,10 +25,9 @@ class RichTextComponent extends React.Component {
 
   constructor(props) {
     super(props);
-    if (!props.readOnly && !props.saveAndClose) {
-      console.error("RichTextComponent: The has neither received a \"readOnly\" nor a \"saveAndClose\" property. This is probably a mistake");
+    if (props.readOnly ^ props.saveAndClose !== 1) {
+      console.error("RichTextComponent: Component should receive either a \"readOnly\" XOR a \"saveAndClose\" property.");
     }
-    this.state = {text: props.value};
   }
 
   getKeyboardShortcuts = () => {
@@ -67,6 +66,7 @@ class RichTextComponent extends React.Component {
     const html = markdown.toHTML(this.props.value);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
     contentDOMNode.innerHTML = html;
+    contentDOMNode.focus();
   };
 
   componentWillUnmount = () => {
