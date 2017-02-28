@@ -20,6 +20,7 @@ class CurrencyItem extends Component {
     const catchEventAnd = fn => event => {
       event.stopPropagation();
       fn(event);
+      document.getElementById("overlay").focus();
     };
     return {
       enter: catchEventAnd(this.handleClickOutside),
