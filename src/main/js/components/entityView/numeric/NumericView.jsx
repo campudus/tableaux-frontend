@@ -29,6 +29,7 @@ class NumericView extends React.Component {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       (fn || function(){})();
+      document.getElementById("overlay").focus();
     };
 
     return {

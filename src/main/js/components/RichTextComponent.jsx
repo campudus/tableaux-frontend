@@ -32,12 +32,12 @@ class RichTextComponent extends React.Component {
   }
 
   getKeyboardShortcuts = () => {
-    const captureEventAnd = fn => event => {
-      event.stopPropagation();
-      (fn || function(){})();
-    };
     return {
-      escape: captureEventAnd(this.props.close)
+      escape: event => {
+        event.stopPropagation();
+        this.props.close();
+        document.getElementById("overlay").focus();
+      }
     }
   };
 
