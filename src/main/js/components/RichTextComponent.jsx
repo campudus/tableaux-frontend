@@ -95,6 +95,10 @@ class RichTextComponent extends React.Component {
                 <a href="#" onClick={this.format("formatBlock", "<h3>")}><i>3</i></a>
                 <a href="#" onClick={this.format("formatBlock", "<h4>")}><i>4</i></a>
               </div>
+              <div className="action-group">
+                <a href="#" onClick={this.format("insertunorderedlist")}><i className="fa fa-list-ul" /></a>
+                <a href="#" onClick={this.format("insertorderedlist")}><i className="fa fa-list-ol" /></a>
+              </div>
             </div>
           )
           : null
