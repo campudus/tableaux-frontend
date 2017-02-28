@@ -320,8 +320,8 @@ class LinkOverlay extends React.Component {
                    autoFocus />
             <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
                onClick={this.toggleFilterModesPopup}>
-              <i className="fa fa-search"></i>
-              <i className="fa fa-angle-down"></i>
+              <i className="fa fa-search" />
+              <i className="fa fa-angle-down" />
             </a>
           </div>
         </div>

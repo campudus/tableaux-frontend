@@ -20,6 +20,7 @@ class GenericOverlay extends Component {
 
   constructor(props) {
     super(props);
+    console.log("Overlay props:", props)
     this.state = {
       contentHeight: 0,
       contentWidth: 0
@@ -86,16 +87,13 @@ class GenericOverlay extends Component {
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts = (event) => {
-    const self = this;
     return merge(
       {
-        escape: function (event) {
-          if (self.props.closeOnBackgroundClicked) {
-            event.preventDefault();
-            ActionCreator.closeOverlay();
-          }
+        escape: (event) => {
+          event.preventDefault();
+          ActionCreator.closeOverlay();
         },
-        always: function (event) {
+        always: (event) => {
           event.stopPropagation();
         }
       },
@@ -123,7 +121,8 @@ class GenericOverlay extends Component {
 
     const {footer, showBackButton} = this.props;
     const overlayWrapperClass = classNames("open " + overlayType, {
-      "has-footer": footer
+      "has-footer": footer,
+      [this.props.classNames]: this.props.classNames
     });
 
     return (
