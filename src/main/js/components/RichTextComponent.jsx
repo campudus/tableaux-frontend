@@ -67,7 +67,6 @@ class RichTextComponent extends React.Component {
     const html = markdown.toHTML(this.props.value);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
     contentDOMNode.innerHTML = html;
-    contentDOMNode.focus();
   };
 
   componentWillUnmount = () => {

@@ -35,6 +35,7 @@ export function openEntityView(row, langtag) {
   };
 
   openOverlay({
+    classNames: "entity-view-overlay",
     head: <span>{i18n.t("table:entity_view")}: {rowDisplayLabel}</span>,
     body: <EntityViewBody />,
     footer: <EntityViewFooter />,

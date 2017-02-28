@@ -93,13 +93,11 @@ var GenericOverlay = React.createClass({
     var self = this;
     return merge(
       {
-        escape: function (event) {
-          if (self.props.closeOnBackgroundClicked) {
-            event.preventDefault();
-            ActionCreator.closeOverlay();
-          }
+        escape: (event) => {
+          event.preventDefault();
+          ActionCreator.closeOverlay();
         },
-        always: function (event) {
+        always: (event) => {
           event.stopPropagation();
         }
       },
@@ -137,7 +135,8 @@ var GenericOverlay = React.createClass({
 
     const {footer, showBackButton} = this.props;
     const overlayWrapperClass = classNames("open " + overlayType, {
-      "has-footer": footer
+      "has-footer": footer,
+      [this.props.classNames]: this.props.classNames
     });
 
     return (
