@@ -56,6 +56,15 @@
     b {
       font-weight: bold;
     }
+
+    ul > li {
+      list-style: circle inside;
+    }
+
+    ol > li {
+      list-style: decimal inside;
+    }
+
   }
 
   .button-area {
