@@ -20,7 +20,7 @@ class BooleanView extends Component {
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: !cell.value[langtag]}}
       : {value: !cell.value};
-    cell.save(changes, {isPatch: true});
+    cell.save(changes, {patch: true});
   };
 
   render() {
