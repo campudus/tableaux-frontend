@@ -1,146 +1,151 @@
 @import "../variables";
 @import "../helper";
 
+
 #overlay {
   &.entity-view-overlay {
     #overlay-wrapper {
       max-width: 70vw;
 
-      .entityView {
-        position: relative;
-        display: flex;
-        flex-flow: column;
+      #overlay-content {
 
-        .view {
-          margin-top: 25px;
-          text-align: left;
+        .entityView {
+          position: relative;
+          display: flex;
+          flex-flow: column;
 
-          .row-headline {
-            font-weight: bold;
-            padding: 10px 0;
-            text-transform: uppercase;
+          .view {
+            margin-top: 25px;
+            text-align: left;
 
-            a {
-              border: 1px solid $color-subtle-grey;
-              border-radius: 3px;
-              padding: 3px 10px;
-              vertical-align: middle;
+            .row-headline {
+              font-weight: bold;
+              padding: 10px 0;
+              text-transform: uppercase;
 
-              .fa {
+              a {
+                border: 1px solid $color-subtle-grey;
+                border-radius: 3px;
+                padding: 3px 10px;
+                vertical-align: middle;
+
+                .fa {
+                  color: $color-text-medium-grey;
+                  margin-left: 5px;
+                }
+              }
+
+              span {
+                padding-left: 11px;
+              }
+
+              > .fa {
                 color: $color-text-medium-grey;
-                margin-left: 5px;
+                margin-right: 5px;
               }
             }
-
-            span {
-              padding-left: 11px;
-            }
-
-            > .fa {
-              color: $color-text-medium-grey;
-              margin-right: 5px;
-            }
           }
-        }
 
-        .view-content {
-          width: 100%;
-
-          &:empty {
-            padding: 12px 0;
-          }
-        }
-
-        .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime, .view-date {
           .view-content {
-            background-color: white;
-            border: 1px solid $color-text-light-grey;
-            padding: 12px;
-            margin-bottom: 12px;
-          }
-        }
-
-        .view-link, .view-attachment {
-          .view-content {
-            border: 1px solid $color-text-light-grey;
-            border-radius: 3px;
-            padding: 10px;
-
-            .edit-links-button {
-              @include button-look();
-              background-color: $color-primary-lighter;
-              margin-bottom: 10px;
-              width: 100%;
-              text-align: center;
-            }
-
-            .link-list {
-
-              &:not(:empty) {
-                border-top: 1px solid $color-text-light-grey;
-                padding-top: 10px;
-              }
-            }
-
-            .link-label {
-              @include link-look();
-            }
-          }
-        }
-
-        .view-currency {
-          .view-column {
             width: 100%;
-            border: 1px solid $color-text-light-grey;
-            border-radius: 3px;
-            padding: 10px;
+            box-sizing: content-box;
+
+            &:empty {
+              padding: 12px 0;
+            }
           }
 
-          .currency-item {
-            display: inline-block;
-            background-color: white;
-            padding: 8px;
-            @include border-radius(3px);
-            @include box-shadow(0 2px 1px $color-text-medium-grey);
-            margin: 0 12px 12px 0;
+          .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime, .view-date {
+            .view-content {
+              background-color: white;
+              border: 1px solid $color-text-light-grey;
+              padding: 12px;
+              margin-bottom: 12px;
+            }
+          }
 
-            &.not-set {
-              background-color: $color-subtle-grey;
+          .view-link, .view-attachment {
+            .view-content {
+              border: 1px solid $color-text-light-grey;
+              border-radius: 3px;
+              padding: 10px;
+
+              .edit-links-button {
+                @include button-look();
+                background-color: $color-primary-lighter;
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: center;
+              }
+
+              .link-list {
+
+                &:not(:empty) {
+                  border-top: 1px solid $color-text-light-grey;
+                  padding-top: 10px;
+                }
+              }
+
+              .link-label {
+                @include link-look();
+              }
+            }
+          }
+
+          .view-currency {
+            .view-column {
+              width: 100%;
+              border: 1px solid $color-text-light-grey;
+              border-radius: 3px;
+              padding: 10px;
             }
 
-            &:hover {
-              color: $color-primary-contrast-text;
-              background-color: $color-primary-lighter;
-              @include box-shadow(0 2px 1px $color-primary);
+            .currency-item {
+              display: inline-block;
+              background-color: white;
+              padding: 8px;
+              @include border-radius(3px);
+              @include box-shadow(0 2px 1px $color-text-medium-grey);
+              margin: 0 12px 12px 0;
+
+              &.not-set {
+                background-color: $color-subtle-grey;
+              }
+
+              &:hover {
+                color: $color-primary-contrast-text;
+                background-color: $color-primary-lighter;
+                @include box-shadow(0 2px 1px $color-primary);
+
+                input {
+                  background-color: $color-primary-lighter;
+                }
+              }
+
+              &.editing {
+                @include box-shadow(0 2px 1px $color-primary-darker);
+              }
 
               input {
-                background-color: $color-primary-lighter;
+                border: none;
+                outline: none;
+                max-width: 100px;
               }
             }
 
-            &.editing {
-              @include box-shadow(0 2px 1px $color-primary-darker);
-            }
+            .langtag {
+              vertical-align: middle;
+              display: inline-block;
+              text-align: center;
+              margin-right: 5px;
 
-            input {
-              border: none;
-              outline: none;
-              max-width: 100px;
-            }
-          }
-
-          .langtag {
-            vertical-align: middle;
-            display: inline-block;
-            text-align: center;
-            margin-right: 5px;
-
-            .langtag-label {
-              display: block;
+              .langtag-label {
+                display: block;
+              }
             }
           }
+
         }
-
       }
     }
   }
