@@ -52,6 +52,14 @@ class ShortTextView extends React.Component {
     )
   };
 
+  openOnEnter = event => {
+    if (event.key === "Enter") {
+      event.stopPropagation();
+      event.preventDefault();
+      this.setEditing(true)();
+    }
+  };
+
   render() {
     const value = this.getValue();
     const {editing} = this.state;
@@ -61,6 +69,8 @@ class ShortTextView extends React.Component {
       : (
         <div className="view-content view-shorttext"
              onClick={this.setEditing(true)}
+             tabIndex={this.props.tabIdx}
+             onKeyDown={this.openOnEnter}
         >
           {value}
         </div>
