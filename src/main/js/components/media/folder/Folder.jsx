@@ -1,15 +1,16 @@
-const React = require('react');
-import connectToAmpersand from "../../HOCs/connectToAmpersand";
-import Dispatcher from "../../../dispatcher/Dispatcher";
-import NewFolderAction from "./NewFolderAction.jsx";
-import {isUserAdmin} from "../../../helpers/accessManagementHelper";
-import {translate} from "react-i18next";
-import {ActionTypes} from "../../../constants/TableauxConstants";
-import {contains, sortBy, prop, map, compose, reverse} from "lodash/fp";
-let Subfolder = require('./Subfolder.jsx');
-let File = require('./File.jsx');
-let FileUpload = require('./FileUpload.jsx');
-const ActionCreator = require('../../../actions/ActionCreator');
+import React from 'react';
+import connectToAmpersand from '../../HOCs/connectToAmpersand';
+import Dispatcher from '../../../dispatcher/Dispatcher';
+import NewFolderAction from './NewFolderAction.jsx';
+import {isUserAdmin} from '../../../helpers/accessManagementHelper';
+import {translate} from 'react-i18next';
+import {ActionTypes, DateTimeFormats} from '../../../constants/TableauxConstants';
+import {contains, sortBy, prop, map, compose, reverse} from 'lodash/fp';
+import Moment from 'moment';
+import Subfolder from './Subfolder.jsx';
+import File from './File.jsx';
+import FileUpload from './FileUpload.jsx';
+import ActionCreator from '../../../actions/ActionCreator';
 
 @translate(["media"])
 @connectToAmpersand
@@ -22,26 +23,34 @@ class Folder extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {modifiedFiles: []};
+    this.state = {modifiedFiles : []};
   }
 
-  backFolderHandler = (event) =>{
+  backFolderHandler = (event) => {
     event.preventDefault();
     ActionCreator.switchFolder(this.props.folder.parent, this.props.langtag);
   };
 
   componentWillMount() {
-    Dispatcher.on(ActionTypes.ADD_FILE, this.setModifiedFlag);
+    Dispatcher.on(ActionTypes.ADD_FILE, this.addFileToRecentlyModifiedFiles);
   }
 
   componentWillUnmount() {
-    Dispatcher.off(ActionTypes.ADD_FILE, this.setModifiedFlag);
+    Dispatcher.off(ActionTypes.ADD_FILE, this.addFileToRecentlyModifiedFiles);
   }
 
-  setModifiedFlag = ({uuid}) => {
-    console.log("setting modified:", uuid)
+  addFileToRecentlyModifiedFiles = ({uuid}) => {
     const {modifiedFiles} = this.state;
-    this.setState({modifiedFiles: [...modifiedFiles, uuid]}, this.forceUpdate);
+    // Added a workaround to set frontend time on file creation to in-memory models
+    // of new files. They will get replaced with server creation/update times on
+    // reload.
+    const now = Moment().format(DateTimeFormats.formatForServer);
+    const file = this.props.folder.files.get(uuid);
+    file.set({
+      updatedAt : now,
+      createdAt : now
+    });
+    this.setState({modifiedFiles : [...modifiedFiles, uuid]}, this.forceUpdate);
   };
 
   renderCurrentFolder = () => {
@@ -72,12 +81,12 @@ class Folder extends React.Component {
     );
   };
 
-  renderSubfolders  = () =>{
+  renderSubfolders = () => {
     const subFolders = this.props.folder.subfolders;
     const {langtag} = this.props;
     if (subFolders && subFolders.length > 0) {
       const subfolder = subFolders.map((folder, idx) => {
-        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={langtag} /></li>
+        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={langtag}/></li>
       });
       return (
         <div className="media-switcher">
@@ -91,7 +100,7 @@ class Folder extends React.Component {
     }
   };
 
-  renderFiles  = () => {
+  renderFiles = () => {
     const files = this.props.folder.files;
     const {langtag} = this.props;
     const {modifiedFiles} = this.state;
