@@ -23,15 +23,23 @@ class BooleanView extends Component {
     cell.save(changes, {patch: true});
   };
 
+  toggleOnEnter = event => {
+    if (event.key === "Enter") {
+      this.toggleValue();
+      event.stopPropagation();
+    }
+  };
+
   render() {
-    const {cell, t} = this.props;
+    const {cell, t, tabIdx} = this.props;
     const value = ((cell.isMultiLanguage)
       ? cell.value[this.props.langtag]
       : cell.value)
       || false;
 
     return (
-      <div className="view-content boolean" onClick={this.toggleValue}>
+      <div className="view-content boolean" onClick={this.toggleValue} tabIndex={tabIdx} onKeyDown={this.toggleOnEnter}>
+        <input type="checkbox" checked={value} />
         {value ? t("yes") : t("no")}
       </div>
     );

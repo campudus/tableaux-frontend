@@ -35,10 +35,18 @@ class TextView extends React.Component {
     this.setEditing(false)();
   };
 
+  editOnEnter = event => {
+    if (event.key === "Enter") {
+      event.stopPropagation();
+      event.preventDefault();
+      this.setEditing(true)();
+    }
+  };
+
   render() {
     const value = this.getValue();
     const {editing} = this.state;
-    const {langtag} = this.props;
+    const {langtag, tabIdx} = this.props;
 
     return (editing)
       ? (
@@ -47,6 +55,7 @@ class TextView extends React.Component {
                            close={this.setEditing(false)}
                            saveAndClose={this.saveAndClose}
                            langtag={langtag}
+                           tabIndex={tabIdx}
         />
       )
       : (
@@ -54,7 +63,9 @@ class TextView extends React.Component {
                            className="view-content view-text"
                            langtag={langtag}
                            readOnly={true}
-                           onClick={this.setEditing(true)} />
+                           onClick={this.setEditing(true)}
+                           onKeyDown={this.editOnEnter}
+        />
       );
   }
 }

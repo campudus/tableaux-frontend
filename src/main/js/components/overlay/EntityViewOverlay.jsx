@@ -24,11 +24,11 @@ export function openEntityView(row, langtag) {
 
     return (
       <div className="entityView">
-        {cells.map((cell) => {
+        {cells.map((cell, idx) => {
           if (cell.kind === ColumnKinds.concat) {
             return null;
           }
-          return <View key={cell.id} cell={cell} langtag={langtag} />;
+          return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />;
         })}
       </div>
     );

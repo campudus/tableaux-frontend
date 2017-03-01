@@ -16,12 +16,13 @@ class View extends Component {
 
   static propTypes = {
     cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
+    langtag: React.PropTypes.string.isRequired,
+    tabIdx: React.PropTypes.number
   };
 
   render() {
     let cellKind = null;
-    const {cell, langtag} = this.props;
+    const {cell, langtag, tabIdx} = this.props;
 
     const kind = this.props.cell.kind;
 
@@ -30,39 +31,39 @@ class View extends Component {
     switch (kind) {
 
       case ColumnKinds.link:
-        cellKind = <LinkView cell={cell} langtag={langtag} />;
+        cellKind = <LinkView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       case ColumnKinds.attachment:
-        cellKind = <AttachmentView cell={cell} langtag={langtag} />;
+        cellKind = <AttachmentView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       case ColumnKinds.numeric:
-        cellKind = <NumericView cell={cell} langtag={langtag} />;
+        cellKind = <NumericView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       case ColumnKinds.boolean:
-        cellKind = <BooleanView cell={cell} langtag={langtag} />;
+        cellKind = <BooleanView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       case ColumnKinds.date:
-        cellKind = <DateView cell={cell} langtag={langtag} />;
+        cellKind = <DateView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       case ColumnKinds.datetime:
-        cellKind = <DateView cell={cell} langtag={langtag} time={true} />;
+        cellKind = <DateView tabIdx={tabIdx} cell={cell} langtag={langtag} time={true} />;
         break;
 
       case ColumnKinds.shorttext:
-        cellKind = <ShortTextView cell={cell} langtag={langtag} />;
+        cellKind = <ShortTextView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       case ColumnKinds.currency:
-        cellKind = <CurrencyView cell={cell} langtag={langtag} />;
+        cellKind = <CurrencyView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
 
       default:
-        cellKind = <TextView cell={cell} langtag={langtag} />;
+        cellKind = <TextView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
         break;
     }
 

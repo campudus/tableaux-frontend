@@ -87,6 +87,14 @@ class DateView extends Component {
     this.setState({moment});
   };
 
+  openOnEnter = event => {
+    if (event.key === "Enter") {
+      event.stopPropagation();
+      event.preventDefault();
+      this.setEditing(true)();
+    }
+  };
+
   render() {
     const {editing} = this.state;
     const value = (editing)
@@ -95,6 +103,8 @@ class DateView extends Component {
     return (
       <div className="view-content view-datetime"
            onClick={this.setEditing(true)}
+           tabIndex={this.props.tabIdx}
+           onKeyDown={this.openOnEnter}
       >
         {value}
         {(editing)

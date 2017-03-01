@@ -64,6 +64,14 @@ class NumericView extends React.Component {
     )
   };
 
+  editOnEnter = event => {
+    if (event.key === "Enter") {
+      event.stopPropagation();
+      event.preventDefault();
+      this.setEditing(true)();
+    }
+  };
+
   render() {
     const value = this.getValue();
     const {editing} = this.state;
@@ -73,6 +81,8 @@ class NumericView extends React.Component {
       : (
         <div className="view-content view-numeric"
              onClick={this.setEditing(true)}
+             tabIndex={this.props.tabIdx}
+             onKeyDown={this.editOnEnter}
         >
           {value}
         </div>
