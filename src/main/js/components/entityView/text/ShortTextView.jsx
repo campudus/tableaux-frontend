@@ -48,7 +48,7 @@ class ShortTextView extends React.Component {
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: value}}
       : {value};
-    cell.save(changes, {isPatch: true});
+    cell.save(changes, {patch: true});
     this.setEditing(false)();
   };
 

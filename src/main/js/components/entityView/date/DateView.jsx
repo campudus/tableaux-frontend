@@ -79,7 +79,7 @@ class DateView extends Component {
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: value}}
       : {value};
-    cell.save(changes, {isPatch: true});
+    cell.save(changes, {patch: true});
   };
 
   handleChange = moment => {

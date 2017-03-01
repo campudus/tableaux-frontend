@@ -38,7 +38,7 @@ class CurrencyView extends Component {
       : f.set(el, false, editing);
     if (country && value) {
       const changes = {value: {[country]: value}};
-      this.props.cell.save(changes, {isPatch: true});
+      this.props.cell.save(changes, {patch: true});
     }
     this.setState({editing: isEditing});
   };

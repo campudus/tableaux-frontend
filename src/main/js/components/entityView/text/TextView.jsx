@@ -31,7 +31,7 @@ class TextView extends React.Component {
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: newValue}}
       : {value: newValue};
-    cell.save(changes, {isPatch: true});
+    cell.save(changes, {patch: true});
     this.setEditing(false)();
   };
 
