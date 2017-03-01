@@ -1,29 +1,61 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var Subfolder = require('./Subfolder.jsx');
-var File = require('./File.jsx');
-var FileUpload = require('./FileUpload.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+import React from 'react';
+import connectToAmpersand from '../../HOCs/connectToAmpersand';
+import Dispatcher from '../../../dispatcher/Dispatcher';
 import NewFolderAction from './NewFolderAction.jsx';
 import {isUserAdmin} from '../../../helpers/accessManagementHelper';
 import {translate} from 'react-i18next';
+import {ActionTypes, DateTimeFormats} from '../../../constants/TableauxConstants';
+import {contains, sortBy, prop, map, compose, reverse} from 'lodash/fp';
+import Moment from 'moment';
+import Subfolder from './Subfolder.jsx';
+import File from './File.jsx';
+import FileUpload from './FileUpload.jsx';
+import ActionCreator from '../../../actions/ActionCreator';
 
-var Folder = React.createClass({
-  mixins : [AmpersandMixin],
+@translate(["media"])
+@connectToAmpersand
+class Folder extends React.Component {
 
-  propTypes : {
+  static propTypes = {
     folder : React.PropTypes.object.isRequired,
     langtag : React.PropTypes.string.isRequired
-  },
+  };
 
-  backFolderHandler : function (event) {
+  constructor(props) {
+    super(props);
+    this.state = {modifiedFiles : []};
+  }
+
+  backFolderHandler = (event) => {
     event.preventDefault();
     ActionCreator.switchFolder(this.props.folder.parent, this.props.langtag);
-  },
+  };
 
-  renderCurrentFolder : function () {
-    var currentFolder = '';
-    var currentFolderClass = ['current-folder'];
+  componentWillMount() {
+    Dispatcher.on(ActionTypes.ADD_FILE, this.addFileToRecentlyModifiedFiles);
+  }
+
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.ADD_FILE, this.addFileToRecentlyModifiedFiles);
+  }
+
+  addFileToRecentlyModifiedFiles = ({uuid}) => {
+    const {modifiedFiles} = this.state;
+    // Added a workaround to set frontend time on file creation to in-memory models
+    // of new files. They will get replaced with server creation/update times on
+    // reload.
+    const now = Moment().format(DateTimeFormats.formatForServer);
+    const file = this.props.folder.files.get(uuid);
+    file.set({
+      updatedAt : now,
+      createdAt : now
+    });
+    this.setState({modifiedFiles : [...modifiedFiles, uuid]}, this.forceUpdate);
+  };
+
+  renderCurrentFolder = () => {
+    let currentFolder = '';
+    const currentFolderClass = ['current-folder'];
     if (this.props.folder.name === "root") {
       currentFolder = this.props.t('root_folder_name');
     } else if (this.props.folder.name && this.props.folder.description) {
@@ -47,14 +79,14 @@ var Folder = React.createClass({
         {currentFolder}
       </div>
     );
-  },
+  };
 
-  renderSubfolders : function () {
-    const self = this;
+  renderSubfolders = () => {
     const subFolders = this.props.folder.subfolders;
+    const {langtag} = this.props;
     if (subFolders && subFolders.length > 0) {
-      var subfolder = subFolders.map(function (folder, idx) {
-        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={self.props.langtag}/></li>
+      const subfolder = subFolders.map((folder, idx) => {
+        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={langtag}/></li>
       });
       return (
         <div className="media-switcher">
@@ -66,30 +98,41 @@ var Folder = React.createClass({
     } else {
       return null;
     }
-  },
+  };
 
-  renderFiles : function () {
-    const self = this;
+  renderFiles = () => {
     const files = this.props.folder.files;
+    const {langtag} = this.props;
+    const {modifiedFiles} = this.state;
+
+    const sortAndMarkup = compose(
+      map((file) => {
+        return (
+          <li key={file.uuid}
+              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
+            <File key={file.uuid} file={file}
+                  langtag={langtag}/>
+          </li>
+        );
+      }),
+      reverse, // keep latest first
+      sortBy(prop("updatedAt"))
+    );
 
     if (files && files.length > 0) {
-      const filesMarkup = files.map(function (file) {
-        return <li key={file.uuid}><File key={file.uuid} file={file}
-                                         langtag={self.props.langtag}/></li>;
-      });
       return (
         <div className="media-switcher">
           <ol className="media-switcher-menu">
-            {filesMarkup}
+            {sortAndMarkup(files.models)}
           </ol>
         </div>
       );
     } else {
       return null;
     }
-  },
+  };
 
-  render : function () {
+  render() {
     const newFolderAction = isUserAdmin() ? <NewFolderAction parentFolder={this.props.folder}/> : null;
     return (
       <div id="media-wrapper">
@@ -102,6 +145,6 @@ var Folder = React.createClass({
     );
   }
 
-});
+}
 
-module.exports = translate(['media'])(Folder);
+export default Folder;
