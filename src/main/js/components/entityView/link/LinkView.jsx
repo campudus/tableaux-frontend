@@ -34,7 +34,7 @@ class LinkView extends Component {
   };
 
   render() {
-    const {cell, langtag} = this.props;
+    const {cell, langtag, tabIdx} = this.props;
 
     const links = cell.value.map((element, index) => {
       return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={cell}
@@ -44,7 +44,9 @@ class LinkView extends Component {
 
     return (
       <div className="view-content link">
-        <a href="#" className="edit-links-button" onClick={this.openOverlay}>{i18n.t("table:edit_links")}</a>
+        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>
+          {i18n.t("table:edit_links")}
+        </a>
         <div className="link-list">
           {links}
         </div>

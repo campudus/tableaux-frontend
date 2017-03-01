@@ -14,7 +14,8 @@ class AttachmentView extends Component {
 
   static propTypes = {
     langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired
+    cell: PropTypes.object.isRequired,
+    tabIdx: PropTypes.number
   };
 
   removeAttachment = uuid => () => {
@@ -33,7 +34,7 @@ class AttachmentView extends Component {
   };
 
   render() {
-    const {cell, langtag} = this.props;
+    const {cell, langtag, tabIdx} = this.props;
 
     const attachments = cell.value.map((element, id) => {
       return <AttachmentLabelCell key={id} attachmentElement={element} cell={cell}
@@ -45,7 +46,7 @@ class AttachmentView extends Component {
 
     return (
       <div className='view-content link'>
-        <a href="#" className="edit-links-button" onClick={this.openOverlay}>{i18n.t("table:edit_attachments")}</a>
+        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>{i18n.t("table:edit_attachments")}</a>
         <div className="link-list">
           {attachments}
         </div>
