@@ -74,7 +74,7 @@ class DateView extends Component {
   };
 
   saveMoment = moment => {
-    const value = moment.format(this.Formats.formatForServer);
+    const value = ((moment && moment.isValid()) ? moment : Moment()).format(this.Formats.formatForServer);
     const {cell, langtag} = this.props;
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: value}}
@@ -100,7 +100,7 @@ class DateView extends Component {
         {(editing)
           ? <Datetime onBlur={this.saveEditsAndClose}
                       onChange={this.handleChange}
-                      value={this.state.moment || new Moment()}
+                      value={this.state.moment || Moment()}
                       input={false}
           />
           : null
