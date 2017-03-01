@@ -9,6 +9,14 @@
 
       #overlay-content {
 
+        .content-pane {
+          min-height: 17px;
+        }
+
+        #rich-text-component {
+          border: 1px solid $color-text-light-grey;
+        }
+
         .entityView {
           position: relative;
           display: flex;
@@ -61,6 +69,7 @@
               border: 1px solid $color-text-light-grey;
               padding: 12px;
               margin-bottom: 12px;
+              min-height: 17px;
             }
           }
 
@@ -79,6 +88,8 @@
               }
 
               .link-list {
+                max-height: 250px;
+                overflow-y: auto;
 
                 &:not(:empty) {
                   border-top: 1px solid $color-text-light-grey;
@@ -101,7 +112,7 @@
             }
 
             .currency-item {
-              display: inline-block;
+              display: inline-flex;
               background-color: white;
               padding: 8px;
               @include border-radius(3px);
@@ -129,7 +140,18 @@
               input {
                 border: none;
                 outline: none;
-                max-width: 100px;
+                max-width: 60px;
+
+                &:not(:focus) {
+                  color: $color-text-medium-grey;
+                }
+
+                &.left {
+                  text-align: right;
+                }
+                &.right {
+                  width: 30px;
+                }
               }
             }
 
