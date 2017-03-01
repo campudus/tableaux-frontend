@@ -13,7 +13,8 @@
     "start": "gulp clean && gulp",
     "test": "gulp clean && gulp test",
     "testWatch": "gulp clean && gulp testWatch",
-    "lint": "eslint --ext .jsx,.js src/**"
+    "lint": "eslint --ext .jsx,.js src/**",
+    "lintFix": "eslint --fix --ext .jsx,.js src/**"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,7 @@
     "ampersand-state": "5.0.2",
     "ampersand-sync": "5.0.0",
     "babel-core": "6.22.1",
+    "babel-eslint": "7.1.1",
     "babel-loader": "6.2.10",
     "babel-plugin-es6-promise": "1.1.0",
     "babel-plugin-react-transform": "2.0.2",
@@ -51,6 +53,7 @@
     "es6-promise": "4.0.5",
     "eslint": "3.16.1",
     "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-react": "6.10.0",
     "eslint-plugin-standard": "2.0.1",
     "file-loader": "0.9.0",
     "gulp": "3.9.1",
