@@ -72,12 +72,21 @@ class RichTextComponent extends React.Component {
   componentWillUnmount = () => {
   };
 
+  activateOnEnter = event => {
+    if (event && this.props.onClick && event.key === "Enter") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.props.onClick(event);
+    }
+  };
+
   render = () => {
-    const {hideEditorSymbols,readOnly,close,saveAndClose,onClick} = this.props;
+    const {hideEditorSymbols,readOnly,close,saveAndClose,onClick,tabIdx} = this.props;
+    console.log("RichTextComponent.props", this.props)
     const clickHandler = onClick || function(){};
     const contentClass = classNames("content-pane", {"input": !readOnly});
     return (
-      <div id="rich-text-component" onClick={clickHandler}>
+      <div id="rich-text-component" onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.activateOnEnter}>
         {(!readOnly && !hideEditorSymbols)
           ? (
             <div className="symbol-bar">
@@ -106,7 +115,6 @@ class RichTextComponent extends React.Component {
         <div className={contentClass}
              contentEditable={!readOnly}
              ref={cp => this.content = cp}
-             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
         >
         </div>
         {(close)

@@ -9,12 +9,18 @@
 
       #overlay-content {
 
-        .content-pane {
-          min-height: 17px;
-        }
-
         #rich-text-component {
           border: 1px solid $color-text-light-grey;
+          border-radius: 3px;
+
+          &:focus {
+            border: 1px solid $color-primary;
+            outline: none;
+          }
+
+          .content-pane {
+            min-height: 17px;
+          }
         }
 
         .entityView {
@@ -67,9 +73,10 @@
             .view-content {
               background-color: white;
               border: 1px solid $color-text-light-grey;
+              border-radius: 3px;
               padding: 12px;
               margin-bottom: 12px;
-              min-height: 17px;
+              min-height: 40px;
               border-radius: 3px;
 
               input[type=checkbox] {
@@ -78,7 +85,8 @@
             }
 
             &:focus {
-              border: 2px solid $color-primary;
+              border: 1px solid $color-primary;
+              outline: none;
             }
           }
 
@@ -119,7 +127,16 @@
               width: 100%;
               border: 1px solid $color-text-light-grey;
               border-radius: 3px;
-              padding: 10px;
+              padding: 0;
+
+              .view-content {
+                padding: 10px;
+                &:focus {
+                  border: 1px solid $color-primary;
+                  outline: none;
+                  border-radius: 3px;
+                }
+              }
             }
 
             .currency-item {
