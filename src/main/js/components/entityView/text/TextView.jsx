@@ -55,17 +55,17 @@ class TextView extends React.Component {
                            close={this.setEditing(false)}
                            saveAndClose={this.saveAndClose}
                            langtag={langtag}
-                           tabIndex={tabIdx}
+                           tabIdx={tabIdx}
         />
       )
       : (
-        <RichTextComponent value={value}
-                           className="view-content view-text"
-                           langtag={langtag}
-                           readOnly={true}
-                           onClick={this.setEditing(true)}
-                           onKeyDown={this.editOnEnter}
-        />
+          <RichTextComponent value={value}
+                             className="view-content view-text"
+                             langtag={langtag}
+                             readOnly={true}
+                             onClick={this.setEditing(true)}
+                             tabIdx={tabIdx}
+          />
       );
   }
 }
