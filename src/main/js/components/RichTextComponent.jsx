@@ -58,7 +58,9 @@ class RichTextComponent extends React.Component {
     event.stopPropagation();
     const value = this.getValue();
     const markdown = toMarkdown(value);
-    this.props.saveAndClose(markdown);
+    const allTags = new RegExp(/<.*?>/, "g");
+    const cleanedMarkdown = markdown.replace(allTags, "");
+    this.props.saveAndClose(cleanedMarkdown);
   };
 
   componentDidMount = () => {
