@@ -35,7 +35,6 @@ class RichTextComponent extends React.Component {
       escape: event => {
         event.stopPropagation();
         this.props.close();
-        document.getElementById("overlay").focus();
       }
     }
   };
@@ -82,7 +81,6 @@ class RichTextComponent extends React.Component {
 
   render = () => {
     const {hideEditorSymbols,readOnly,close,saveAndClose,onClick,tabIdx} = this.props;
-    console.log("RichTextComponent.props", this.props)
     const clickHandler = onClick || function(){};
     const contentClass = classNames("content-pane", {"input": !readOnly});
     return (
