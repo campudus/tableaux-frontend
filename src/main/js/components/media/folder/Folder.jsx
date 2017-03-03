@@ -1,5 +1,5 @@
-import React from "react";
-import connectToAmpersand from "../../HOCs/connectToAmpersand";
+const React = require('react');
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import NewFolderAction from "./NewFolderAction.jsx";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
@@ -7,10 +7,11 @@ import {translate} from "react-i18next";
 import {ActionTypes, DateTimeFormats} from "../../../constants/TableauxConstants";
 import {contains, sortBy, prop, map, compose, reverse} from "lodash/fp";
 import Moment from "moment";
-import Subfolder from "./Subfolder.jsx";
-import File from "./File.jsx";
-import FileUpload from "./FileUpload.jsx";
-import ActionCreator from "../../../actions/ActionCreator";
+let Subfolder = require('./Subfolder.jsx');
+let File = require('./File.jsx');
+let FileUpload = require('./FileUpload.jsx');
+const ActionCreator = require('../../../actions/ActionCreator');
+
 
 @translate(["media"])
 @connectToAmpersand
@@ -109,7 +110,7 @@ class Folder extends React.Component {
       map((file) => {
         return (
           <li key={file.uuid}
-              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
+              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : "unchanged-file"}>
             <File key={file.uuid} file={file}
                   langtag={langtag}/>
           </li>
