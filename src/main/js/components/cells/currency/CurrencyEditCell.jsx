@@ -18,6 +18,11 @@ export default class CurrencyEditCell extends React.Component {
     setCellKeyboardShortcuts: React.PropTypes.func.isRequired
   };
 
+  constructor(props) {
+    super(props);
+    this.handleClickOutside = props.onClickOutside;
+  }
+
   componentDidMount() {
     this.buildCurrencyRowRefNames();
     this.props.setCellKeyboardShortcuts({
