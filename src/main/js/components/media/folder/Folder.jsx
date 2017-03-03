@@ -109,14 +109,14 @@ class Folder extends React.Component {
       map((file) => {
         return (
           <li key={file.uuid}
-              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
+              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : "unchanged-file"}>
             <File key={file.uuid} file={file}
                   langtag={langtag}/>
           </li>
         );
       }),
       reverse, // keep latest first
-      sortBy(prop("createdAt"))
+      sortBy(prop("updatedAt"))
     );
 
     if (files && files.length > 0) {
