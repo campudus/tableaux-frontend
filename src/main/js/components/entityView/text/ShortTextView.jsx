@@ -21,6 +21,8 @@ class ShortTextView extends React.Component {
   setEditing = editing => () => {
     if (editing) {
       this.setState({value: this.getValue()});
+    } else if (this.prevFocussed) {
+      this.prevFocussed.focus();
     }
     this.setState({editing});
   };
@@ -28,8 +30,8 @@ class ShortTextView extends React.Component {
   getKeyboardShortcuts = () => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
+      event.preventDefault();
       (fn || function(){})();
-      document.getElementById("overlay").focus();
     };
 
     return {
@@ -56,6 +58,7 @@ class ShortTextView extends React.Component {
     if (event.key === "Enter") {
       event.stopPropagation();
       event.preventDefault();
+      this.prevFocussed = document.activeElement;
       this.setEditing(true)();
     }
   };
