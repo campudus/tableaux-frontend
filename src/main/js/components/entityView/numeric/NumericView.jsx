@@ -7,6 +7,7 @@ class NumericView extends React.Component {
     super(props);
     this.displayName = "NumericView";
     this.state = {editing: false};
+    this.prevFocussed = null;
   };
 
   static propTypes = {
@@ -26,6 +27,8 @@ class NumericView extends React.Component {
   setEditing = editing => () => {
     if (editing) {
       this.setState({value: this.getValue()});
+    } else if (this.prevFocussed) {
+      this.prevFocussed.focus();
     }
     this.setState({editing});
   };
@@ -34,7 +37,6 @@ class NumericView extends React.Component {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       (fn || function(){})();
-      document.getElementById("overlay").focus();
     };
 
     return {
@@ -68,6 +70,7 @@ class NumericView extends React.Component {
     if (event.key === "Enter") {
       event.stopPropagation();
       event.preventDefault();
+      this.prevFocussed = document.activeElement;
       this.setEditing(true)();
     }
   };

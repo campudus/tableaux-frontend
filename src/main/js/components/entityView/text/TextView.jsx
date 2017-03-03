@@ -6,6 +6,7 @@ class TextView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = "TextView";
+    this.prevSelection = null;
     this.state = {editing: false};
   }
 
@@ -24,6 +25,9 @@ class TextView extends React.Component {
 
   setEditing = editing => () => {
     this.setState({editing: editing});
+    if (editing === false && this.prevSelection) {
+      this.prevSelection.focus();
+    }
   };
 
   saveAndClose = (newValue) => {
@@ -39,6 +43,7 @@ class TextView extends React.Component {
     if (event.key === "Enter") {
       event.stopPropagation();
       event.preventDefault();
+      this.prevSelection = document.activeElement;
       this.setEditing(true)();
     }
   };

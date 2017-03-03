@@ -39,7 +39,7 @@ class BooleanView extends Component {
 
     return (
       <div className="view-content view-boolean" onClick={this.toggleValue} tabIndex={tabIdx} onKeyDown={this.toggleOnEnter}>
-        <input type="checkbox" checked={value} />
+        <input type="checkbox" checked={value} readOnly />
         {value ? t("yes") : t("no")}
       </div>
     );
