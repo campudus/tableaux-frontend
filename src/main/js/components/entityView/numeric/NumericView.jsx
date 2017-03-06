@@ -1,5 +1,6 @@
 import React from "react";
 
+@listensToClickOutside
 class NumericView extends React.Component {
 
   displayName: "NumericView",
@@ -42,13 +43,20 @@ class NumericView extends React.Component {
   render: function () {
     var value = this.getValue();
 
+  handleClickOutside = event => {
+    if (!this.state.editing) {
+      return;
+    }
+    this.saveEditsAndClose();
+    this.focusTarget.focus();
+  };
+
   renderEditor = () => {
     return (
       <input type="number" className="input view-content view-numeric" value={this.state.value}
              autoFocus
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-             onBlur={this.saveEditsAndClose}
       />
     )
   };
