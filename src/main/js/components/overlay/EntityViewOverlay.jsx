@@ -26,11 +26,10 @@ export function openEntityView(row, langtag) {
 
     return (
       <div className="entityView">
-        {cells.map(
+        {cells
+         .filter(cell => cell.kind !== ColumnKinds.concat)
+         .map(
           (cell, idx) => {
-            if (cell.kind === ColumnKinds.concat) {
-              return null;
-            }
             return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />
           })
         }

@@ -21,7 +21,9 @@ const AttachmentView = React.createClass({
 
     return (
       <div className='view-content link'>
-        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>{i18n.t("table:edit_attachments")} ref={el => this.focusTarget = el} </a>
+        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay} ref={el => this.focusTarget = el}>
+        {i18n.t("table:edit_attachments")}
+      </a>
         <div className="link-list">
           {attachments}
         </div>
