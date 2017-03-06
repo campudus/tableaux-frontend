@@ -34,7 +34,7 @@ class CurrencyView extends Component {
     const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-      <div className="view-content currency" tabIndex={tabIdx}>
+        <div className="view-content currency" tabIndex={tabIdx} ref={el => this.focusTarget = el} >
         {currencyRows}
       </div>
     );

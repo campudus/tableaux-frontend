@@ -74,7 +74,11 @@ class ShortTextView extends React.Component {
              onClick={this.setEditing(true)}
              tabIndex={this.props.tabIdx}
              onKeyDown={this.openOnEnter}
-        >
+             ref={el => {
+               this.focusTarget = el;
+             }
+            }
+          >
           {value}
         </div>
       );

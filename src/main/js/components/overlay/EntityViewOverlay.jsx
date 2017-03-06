@@ -4,6 +4,8 @@ import i18n from "i18next";
 import View from "../entityView/RowView";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import focusOnMount from "../helperComponents/focusOnMount";
 
 export function openEntityView(row, langtag) {
   const firstCell = row.cells.at(0);
@@ -24,12 +26,14 @@ export function openEntityView(row, langtag) {
 
     return (
       <div className="entityView">
-        {cells.map((cell, idx) => {
-          if (cell.kind === ColumnKinds.concat) {
-            return null;
-          }
-          return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />;
-        })}
+        {cells.map(
+          (cell, idx) => {
+            if (cell.kind === ColumnKinds.concat) {
+              return null;
+            }
+            return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />
+          })
+        }
       </div>
     );
   };

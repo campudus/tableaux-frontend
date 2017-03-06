@@ -73,6 +73,7 @@ class NumericView extends React.Component {
              onClick={this.setEditing(true)}
              tabIndex={this.props.tabIdx}
              onKeyDown={this.editOnEnter}
+             ref={el => this.focusTarget = el}
         >
           {value}
         </div>

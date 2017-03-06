@@ -26,7 +26,7 @@ class LinkView extends Component {
 
     return (
       <div className="view-content link">
-        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>
+        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay} ref={el => this.focusTarget = el} >
           {i18n.t("table:edit_links")}
         </a>
         <div className="link-list">
