@@ -30,6 +30,13 @@ class RichTextComponent extends React.Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (this.props.value !== nextProps.value) { // needed as we set HTML content manually
+      this.resetValue(nextProps.value);
+    }
+    return true;
+  }
+
   getKeyboardShortcuts = () => {
     return {
       escape: event => {
@@ -64,7 +71,12 @@ class RichTextComponent extends React.Component {
   };
 
   componentDidMount = () => {
-    const html = markdown.toHTML(this.props.value);
+    this.resetValue();
+  };
+
+  resetValue = (value) => {
+    const valueToSet = value || this.props.value;
+    const html = markdown.toHTML(valueToSet);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
     contentDOMNode.innerHTML = html;
     contentDOMNode.focus();

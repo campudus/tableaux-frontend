@@ -84,7 +84,9 @@ var TableauxConstant = {
     SET_COLUMNS_VISIBILITY: null,
 
     COPY_CELL_CONTENT: null,
-    PASTE_CELL_CONTENT: null
+    PASTE_CELL_CONTENT: null,
+
+    SWITCH_ENTITY_VIEW_LANGUAGE: null
   }),
 
   Directions: keyMirror({
