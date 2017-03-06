@@ -104,6 +104,7 @@ class DateView extends Component {
       <div className="view-content view-datetime"
            onClick={this.setEditing(true)}
            tabIndex={this.props.tabIdx}
+           ref={el => this.focusTarget = el}
            onKeyDown={this.openOnEnter}
       >
         {value}

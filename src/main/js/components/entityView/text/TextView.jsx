@@ -70,6 +70,7 @@ class TextView extends React.Component {
                              readOnly={true}
                              onClick={this.setEditing(true)}
                              tabIdx={tabIdx}
+                             ref={el => this.focusTarget = el}
           />
       );
   }

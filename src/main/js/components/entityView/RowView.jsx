@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from "react";
-import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
@@ -10,6 +9,8 @@ import AttachmentView from "./attachment/AttachmentView";
 import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
+import focusOnMount from "../helperComponents/focusOnMount";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 
 @connectToAmpersand
 class View extends Component {
@@ -23,49 +24,25 @@ class View extends Component {
   render() {
     let cellKind = null;
     const {cell, langtag, tabIdx} = this.props;
-
     const kind = this.props.cell.kind;
-
     const column = this.props.cell.column;
 
-    switch (kind) {
+    const views = {
+      [ColumnKinds.link]: LinkView,
+      [ColumnKinds.attachment]: AttachmentView,
+      [ColumnKinds.numeric]: NumericView,
+      [ColumnKinds.boolean]: BooleanView,
+      [ColumnKinds.date]: DateView,
+      [ColumnKinds.datetime]: DateView,
+      [ColumnKinds.shorttext]: ShortTextView,
+      [ColumnKinds.currency]: CurrencyView,
+      [ColumnKinds.text]: TextView,
+      [ColumnKinds.richtext]: TextView
+    };
 
-      case ColumnKinds.link:
-        cellKind = <LinkView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.attachment:
-        cellKind = <AttachmentView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.numeric:
-        cellKind = <NumericView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.boolean:
-        cellKind = <BooleanView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.date:
-        cellKind = <DateView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.datetime:
-        cellKind = <DateView tabIdx={tabIdx} cell={cell} langtag={langtag} time={true} />;
-        break;
-
-      case ColumnKinds.shorttext:
-        cellKind = <ShortTextView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.currency:
-        cellKind = <CurrencyView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-
-      default:
-        cellKind = <TextView tabIdx={tabIdx} cell={cell} langtag={langtag} />;
-        break;
-    }
+    const CellKind = (tabIdx === 1)
+          ? focusOnMount(views[cell.kind])
+          : views[cell.kind];
 
     let viewClass = "view" + " view-" + kind + " view-" + cell.column.getId() + "-" + cell.rowId;
 
@@ -73,7 +50,7 @@ class View extends Component {
       <div className={viewClass}>
         <RowHeadline column={column} langtag={langtag} />
         <div className="view-column">
-          {cellKind}
+        <CellKind tabIdx={tabIdx} cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime} />
         </div>
       </div>
     );

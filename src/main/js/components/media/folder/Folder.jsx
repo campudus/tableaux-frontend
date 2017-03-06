@@ -1,4 +1,4 @@
-const React = require('react');
+import React from "react";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import NewFolderAction from "./NewFolderAction.jsx";
@@ -7,10 +7,10 @@ import {translate} from "react-i18next";
 import {ActionTypes, DateTimeFormats} from "../../../constants/TableauxConstants";
 import {contains, sortBy, prop, map, compose, reverse} from "lodash/fp";
 import Moment from "moment";
-let Subfolder = require('./Subfolder.jsx');
-let File = require('./File.jsx');
-let FileUpload = require('./FileUpload.jsx');
-const ActionCreator = require('../../../actions/ActionCreator');
+import Subfolder from "./Subfolder.jsx";
+import File from "./File.jsx";
+import FileUpload from "./FileUpload.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
 
 
 @translate(["media"])
