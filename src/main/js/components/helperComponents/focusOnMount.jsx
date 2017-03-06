@@ -13,7 +13,7 @@ const focusOnMount = (_Comp) => class extends Component {
   }
 
   componentDidMount = () => {
-    const focusTarget = this._component.focusTarget || this._component.refs.focusTarget;
+    const focusTarget = this._component.focusTarget;
     if (!focusTarget) {
       console.error("focusOnMount: Element", this._component, "has no valid focusTarget field");
       return;
