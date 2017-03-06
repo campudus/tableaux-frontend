@@ -20,7 +20,6 @@ class GenericOverlay extends Component {
 
   constructor(props) {
     super(props);
-    console.log("Overlay props:", props)
     this.state = {
       contentHeight: 0,
       contentWidth: 0

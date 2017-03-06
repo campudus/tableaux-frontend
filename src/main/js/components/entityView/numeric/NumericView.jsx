@@ -1,6 +1,8 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import listensToClickOutside from "react-onclickoutside";
 
+@listensToClickOutside
 class NumericView extends React.Component {
 
   constructor(props) {
@@ -55,13 +57,20 @@ class NumericView extends React.Component {
     this.setEditing(false)();
   };
 
+  handleClickOutside = event => {
+    if (!this.state.editing) {
+      return;
+    }
+    this.saveEditsAndClose();
+    this.focusTarget.focus();
+  };
+
   renderEditor = () => {
     return (
       <input type="number" className="input view-content view-numeric" value={this.state.value}
              autoFocus
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-             onBlur={this.saveEditsAndClose}
       />
     )
   };

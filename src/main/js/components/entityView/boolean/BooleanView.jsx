@@ -38,7 +38,7 @@ class BooleanView extends Component {
       || false;
 
     return (
-        <div className="view-content view-boolean" onClick={this.toggleValue} tabIndex={tabIdx} onKeyDown={this.toggleOnEnter} ref={this.focusTarget = el} >
+        <div className="view-content view-boolean" onClick={this.toggleValue} tabIndex={tabIdx} onKeyDown={this.toggleOnEnter} ref={el => this.focusTarget = el} >
         <input type="checkbox" checked={value} readOnly />
         {value ? t("yes") : t("no")}
       </div>
