@@ -7,6 +7,9 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import focusOnMount from "../helperComponents/focusOnMount";
 import Dispatcher from "../../dispatcher/Dispatcher";
+import Select from "react-select";
+import classNames from "classnames";
+import listensToClickOutside from "react-onclickoutside";
 
 class EntityViewBody extends Component {
   constructor(props) {
@@ -49,23 +52,61 @@ class EntityViewBody extends Component {
   }
 }
 
+@listensToClickOutside
 class LanguageSwitcher extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      langtag: props.langtag
+    }
+  }
+
+  toggleOpen = () => {
+    const {open} = this.state;
+    this.setOpen(!open)();
+  };
+
+  setOpen = open => () =>  {
+    this.setState({open})
+  };
+
+  setLang = langtag => () => {
+    switchEntityViewLanguage({langtag});
+    this.setState({langtag});
+    this.setOpen(false);
+  };
+
+  handleClickOutside = () => {
+    this.setOpen(false)();
+  };
+
   render() {
+    const {open, langtag} = this.state;
+    const lswCssClass = classNames("eev-language-switcher", {"open": open});
     return (
-        <select className="eev-language-switcher"
-                onChange={event => switchEntityViewLanguage({langtag: event.target.value})}
-        >
-        {Langtags.map(
-          langtag => {
-            return <option key={langtag} value={langtag}>{langtag}</option>
-          }
-        )
-        }
-         </select>
+        <div className={lswCssClass} onClick={this.toggleOpen}>
+        <div className="eev-label">
+        {langtag}
+      </div>
+      {(open)
+       ? (
+           <div className="eev-dropdown">
+           {Langtags.map(
+             lt => {
+               const cssClass = classNames("menu-item", {"active": lt === langtag});
+               return <div key={lt} className={cssClass}><a href="#" onClick={this.setLang(lt)}>{lt}</a></div>
+             }
+           )}
+         </div>
+       )
+       : null
+      }
+      </div>
     );
   }
 }
