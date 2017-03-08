@@ -1,3 +1,4 @@
+
 import React, {Component, PropTypes} from "react";
 
 export default class LinkLabelCell extends Component {
@@ -38,7 +39,7 @@ export default class LinkLabelCell extends Component {
     const tableId = cell.column.toTable;
     const rowId = this.props.linkElement.id;
 
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
+    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter&overlay`;
 
     return <a href={href} target="_blank" className="link-label delete">
       {this.getLinkName()}
@@ -52,7 +53,7 @@ export default class LinkLabelCell extends Component {
     const tableId = cell.column.toTable;
     const rowId = this.props.linkElement.id;
 
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
+    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter&overlay`;
 
     return <a href={href} target="_blank" className="link-label delete">
       {this.getLinkName()}
