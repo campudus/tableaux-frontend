@@ -211,7 +211,7 @@ class Table extends React.Component {
 Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   table: React.PropTypes.object.isRequired,
-  overlayOpen: React.PropTypes.bool.isRequired,
+  overlayOpen: React.PropTypes.bool,
   rows: React.PropTypes.object
 };
 
