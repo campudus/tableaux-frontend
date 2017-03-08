@@ -1,6 +1,6 @@
 const React = require("react");
 
-export const LinkLabelCell = React.createClass({
+export default class LinkLabelCell extends Component {
 
   propTypes: {
     cell: React.PropTypes.object.isRequired,
@@ -21,13 +21,13 @@ export const LinkLabelCell = React.createClass({
   getLinkName: function () {
     const {cell, langtag, linkIndexAt} = this.props;
     return cell.linkString(linkIndexAt, langtag);
-  },
+  };
 
   removeLinkHandler: function (event) {
     event.preventDefault();
     event.stopPropagation();
     this.props.onDelete(this.props.linkElement.id);
-  },
+  };
 
   renderDeletable: function () {
     const {langtag, cell, onDelete} = this.props;
@@ -39,13 +39,13 @@ export const LinkLabelCell = React.createClass({
     const tableId = cell.column.toTable;
     const rowId = this.props.linkElement.id;
 
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
+    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter&overlay`;
 
     return <a href={href} target="_blank" className="link-label delete">
       {this.getLinkName()}
       <i onClick={this.removeLinkHandler} className="fa fa-times"></i>
     </a>;
-  },
+  };
 
   renderClickable: function () {
     const {langtag, cell} = this.props;
@@ -53,18 +53,18 @@ export const LinkLabelCell = React.createClass({
     const tableId = cell.column.toTable;
     const rowId = this.props.linkElement.id;
 
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
+    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter&overlay`;
 
     return <a href={href} target="_blank" className="link-label delete">
       {this.getLinkName()}
     </a>;
-  },
+  };
 
   renderLabel: function () {
     return <span className="link-label">
         {this.getLinkName()}
       </span>;
-  },
+  };
 
   render: function () {
     const {clickable, deletable} = this.props;
@@ -77,6 +77,6 @@ export const LinkLabelCell = React.createClass({
       return this.renderLabel();
     }
   }
-});
+};
 
 module.exports = LinkLabelCell;
