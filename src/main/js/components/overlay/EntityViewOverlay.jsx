@@ -4,10 +4,7 @@ import i18n from "i18next";
 import View from "../entityView/RowView";
 import {ColumnKinds, ActionTypes, Langtags} from "../../constants/TableauxConstants";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
-import connectToAmpersand from "../helperComponents/connectToAmpersand";
-import focusOnMount from "../helperComponents/focusOnMount";
 import Dispatcher from "../../dispatcher/Dispatcher";
-import Select from "react-select";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 
@@ -99,7 +96,7 @@ class LanguageSwitcher extends Component {
            {Langtags.map(
              lt => {
                const cssClass = classNames("menu-item", {"active": lt === langtag});
-               return <div key={lt} className={cssClass}><a href="#" onClick={this.setLang(lt)}>{lt}</a></div>
+               return <div key={lt} className={cssClass}><a href="#" onClick={this.setLang(lt)}><i>{lt}</i></a></div>
              }
            )}
          </div>
