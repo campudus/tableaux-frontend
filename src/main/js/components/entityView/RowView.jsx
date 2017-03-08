@@ -9,16 +9,15 @@ import AttachmentView from "./attachment/AttachmentView";
 import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
-import focusOnMount from "../helperComponents/focusOnMount";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 
 @connectToAmpersand
 class View extends Component {
 
   static propTypes = {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    tabIdx: React.PropTypes.number
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    tabIdx: PropTypes.number
   };
 
   render() {
@@ -40,9 +39,7 @@ class View extends Component {
       [ColumnKinds.richtext]: TextView
     };
 
-    const CellKind = (tabIdx === 1)
-          ? focusOnMount(views[cell.kind])
-          : views[cell.kind];
+    const CellKind = views[cell.kind];
 
     let viewClass = "view" + " view-" + kind + " view-" + cell.column.getId() + "-" + cell.rowId;
 
