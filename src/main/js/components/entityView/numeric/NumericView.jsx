@@ -67,7 +67,7 @@ class NumericView extends React.Component {
 
   renderEditor = () => {
     return (
-      <input type="number" className="input view-content view-numeric" value={this.state.value}
+      <input type="number" className="input view-content view-numeric ignore-react-onclickoutside" value={this.state.value}
              autoFocus
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
