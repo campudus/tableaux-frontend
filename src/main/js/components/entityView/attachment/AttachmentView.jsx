@@ -46,7 +46,7 @@ class AttachmentView extends Component {
 
     return (
       <div className='view-content link'>
-        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay} ref={el => this.focusTarget = el}>
+        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>
         {i18n.t("table:edit_attachments")}
       </a>
         <div className="link-list">
