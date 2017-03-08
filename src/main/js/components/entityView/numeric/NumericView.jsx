@@ -28,6 +28,24 @@ class NumericView extends React.Component {
     this.setState({editing});
   };
 
+  handleKeyPress = event => {
+    if (!this.isKeyAllowed(event)) {
+      return;
+    }
+    KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)(event);
+  };
+
+  isKeyAllowed = event => {
+    const numbers = f.map(f.toString, f.range(0, 10));
+    const allowedKeys = [...numbers, ".", ",", "ArrowLeft", "ArrowRight", "Enter", "Return", "Escape", "Backspace", "Delete", "Tab"];
+    if (!f.contains(event.key, allowedKeys)) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }
+    return true;
+  };
+
   getKeyboardShortcuts = () => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
@@ -52,10 +70,10 @@ class NumericView extends React.Component {
 
   renderEditor = () => {
     return (
-      <input type="number" className="input view-content view-numeric ignore-react-onclickoutside" value={this.state.value}
+      <input type="text" className="input view-content view-numeric ignore-react-onclickoutside" value={this.state.value}
              autoFocus
-             onChange={event => this.setState({value: event.target.value})}
-             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+             onChange={this.normaliseNumberFormat}
+             onKeyDown={this.handleKeyPress}
       />
     )
   };
@@ -67,6 +85,14 @@ class NumericView extends React.Component {
       this.prevFocussed = document.activeElement;
       this.setEditing(true)();
     }
+  };
+
+  normaliseNumberFormat = event => {
+    const inputString = event.target.value.replace(/,/g, ".");
+    const normalised = (inputString.split(".").length > 2)
+      ? inputString.substr(0, inputString.length - 1)
+      : inputString;
+    this.setState({value: normalised});
   };
 
   render() {
