@@ -24,12 +24,7 @@ export default class ViewRenderer extends React.Component {
     this.views = {};
     this.views[ViewNames.TABLE_VIEW] = () => {
       return (
-        <TableView langtag={this.props.params.langtag}
-                   tableId={this.props.params.tableId}
-                   columnId={this.props.params.columnId}
-                   rowId={this.props.params.rowId}
-                   filter={this.props.params.filter}
-                   overlayOpen={!!this.props.params.overlayOpen}
+        <TableView {...this.props.params}
         />
       );
     };
