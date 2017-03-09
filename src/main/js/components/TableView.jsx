@@ -6,6 +6,7 @@ import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
 import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
+import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
 import TableauxConstants, {ActionTypes, ColumnKinds, FilterModes} from "../constants/TableauxConstants";
@@ -46,7 +47,7 @@ class TableView extends React.Component {
     };
 
     const {columnId, rowId} = this.props;
-    const {filter, overlay, entityView} = this.props.urlOptions || {};
+    const {filter, entityView} = this.props.urlOptions || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -217,11 +218,8 @@ class TableView extends React.Component {
 
       ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
       if (entityView) {
-        try {
-          openEntityView(rows[rowIndex], this.props.langtag);
-        } catch (e) {
-          console.error(e)
-        }
+        const focusElementId = (this.props.urlOptions.overlay.focusElement) ? cellId : null;
+        openEntityView(rows[rowIndex], this.props.langtag, focusElementId);
       }
       return cell;
     };
