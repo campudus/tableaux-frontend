@@ -464,9 +464,12 @@ class TableView extends React.Component {
               ? <TableSettings langtag={this.props.langtag} table={currentTable} />
               : null}
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
-            <ColumnFilter langtag={this.props.langtag}
-                          columns={currentTable.columns}
-            />
+            {(currentTable && currentTable.columns && currentTable.columns.length > 1)
+              ?<ColumnFilter langtag={this.props.langtag}
+                             columns={currentTable.columns}
+              />
+              : null
+            }
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables" />
             <Spinner />
