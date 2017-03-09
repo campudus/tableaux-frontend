@@ -20,11 +20,18 @@ var View = React.createClass({
     tabIdx: PropTypes.number
   };
 
+  getViewKind() {
+    return `view-${this.props.cell.kind}`;
+  }
+
+  getViewId(someCell) {
+    const cell = someCell || this.props.cell;
+    return `view-${cell.column.getId()}-${cell.rowId}`;
+  }
+
   render() {
-    let cellKind = null;
     const {cell, langtag, tabIdx} = this.props;
-    const kind = this.props.cell.kind;
-    const column = this.props.cell.column;
+    const {kind, column} = cell;
 
     const views = {
       [ColumnKinds.link]: LinkView,
@@ -39,9 +46,8 @@ var View = React.createClass({
       [ColumnKinds.richtext]: TextView
     };
 
-    const CellKind = views[cell.kind];
-
-    let viewClass = "view" + " view-" + kind + " view-" + cell.column.getId() + "-" + cell.rowId;
+    const CellKind = views[kind];
+    const viewClass = `view ${this.getViewKind()} ${this.getViewId()}`;
 
     return (
       <div className={viewClass}>

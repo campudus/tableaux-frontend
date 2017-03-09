@@ -46,7 +46,7 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId, filter, entityView} = this.props;
+    const {columnId, rowId, urlOptions:{filter, overlay}} = this.props;
     console.log("this.props", props)
     if (rowId) {
       this.pendingCellGoto = {
@@ -214,11 +214,8 @@ class TableView extends React.Component {
 
       ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
       if (entityView) {
-        try {
-          openEntityView(rows[rowIndex], this.props.langtag);
-        } catch (e) {
-          console.error(e)
-        }
+        const focusElementId = (this.props.urlOptions.overlay.focusElement) ? cellId : null;
+        openEntityView(rows[rowIndex], this.props.langtag, focusElementId);
       }
       return cell;
     };
