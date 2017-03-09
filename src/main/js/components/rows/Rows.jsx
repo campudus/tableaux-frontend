@@ -4,6 +4,7 @@ import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 import {RowHeight} from "../../constants/TableauxConstants";
 import connectToAmpersand from "../HOCs/connectToAmpersand";
+import * as f from "lodash/fp";
 
 @connectToAmpersand
 class Rows extends React.Component {
@@ -29,6 +30,10 @@ class Rows extends React.Component {
       || selectedCellExpandedRow !== nP.selectedCellExpandedRow
       || rowsHeight !== nP.rowsHeight
     ) {
+      return true;
+    }
+    const idOf = f.prop("id");
+    if (f.any(([a,b]) => idOf(a) !== idOf(b), f.zip(nP.rows.models, this.props.rows.models))) {
       return true;
     }
     // console.log("! Rows skipped update");
@@ -101,7 +106,6 @@ class Rows extends React.Component {
     );
   }
 }
-;
 
 Rows.propTypes = {
   langtag: React.PropTypes.string.isRequired,
