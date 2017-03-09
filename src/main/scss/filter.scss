@@ -38,25 +38,29 @@
       float: right;
     }
 
-    .filter-mode-button {
-      border-radius: 3px;
-      padding: 7px;
-      padding-top: 6px;
-
+    .filter-mode-wrapper {
       position: relative;
-      right: 42px;
 
-      a {
-        padding: 8px;
-      }
+      .filter-mode-button {
+        padding: 7px;
+        position: absolute;
+        display: inline-block;
+        right: 0;
 
-      i {
-        color: darkgrey;
+        a {
+          padding: 8px;
+        }
+
+        i {
+          color: darkgrey;
+        }
       }
     }
 
     .context-menu {
-      right: 10px;
+      position: absolute;
+      right: 0;
+      top: 32px;
       width: 220px;
       color: black;
       border: 1px solid lightgrey;

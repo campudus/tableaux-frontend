@@ -190,6 +190,8 @@ class FilterPopup extends React.Component {
         [f.stubTrue, f.always("Error")]
       ])(currentFilter);
 
+    const canFilter = !f.isEmpty(this.state.filterValue) || this.state.selectedSortColumn !== null;
+
     return (
       <div id="filter-popup">
           {(either(currentFilter).map(f.matchesProperty("filterColumnId", "noop")).getOrElse(false))
@@ -213,22 +215,28 @@ class FilterPopup extends React.Component {
                 />
                 <span className="separator">{t(filterInfoString)}</span>
 
-                <input value={this.state.filterValue} type="text" className="filter-input" ref={fi => this.filterInput = fi}
+                <span className="filter-mode-wrapper">
+                <input value={this.state.filterValue} type="text" className="filter-input" disabled={this.state.selectedFilterColumn === null} ref={fi => this.filterInput = fi}
                        onChange={this.filterInputChange}
                        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
                        onClick={x => this.filterInput.focus()}
                 />
                 <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
-                  <a href="#"
-                     className={(this.state.filterModesOpen) ?"ignore-react-clickoutside" : ""}
-                     onMouseDown={this.toggleFilterModePopup}>
-                    <i className="fa fa-search" />
-                    <i className="fa fa-caret-down" />
-                  </a>
+                  {(this.state.selectedFilterColumn !== null)
+                    ? (
+                      <a href="#"
+                         className={(this.state.filterModesOpen) ?"ignore-react-clickoutside" : ""}
+                         onMouseDown={this.toggleFilterModePopup}>
+                        <i className="fa fa-search" />
+                        <i className="fa fa-caret-down" />
+                      </a>
+                    )
+                    : null}
                   {(this.state.filterModesOpen)
                     ? this.renderFilterModePopup()
                     : null
                   }
+                </span>
                 </span>
               </div>
             )}
@@ -246,15 +254,17 @@ class FilterPopup extends React.Component {
           />
           <span className="separator">{t('help.sort')}</span>
           <Select
+            disabled={this.state.selectedSortColumn === null}
             className="filter-select"
             options={this.getSortOptions()}
             searchable={true}
             clearable={false}
-            value={this.state.sortValue}
+            value={(this.state.selectedSortColumn !== null) ? this.state.sortValue : ""}
             onChange={this.onChangeSelectSortValue}
             valueRenderer={this.selectSortValueRenderer}
             optionRenderer={this.selectSortValueRenderer}
             noResultsText={t('input.noResult')}
+            placeholder={""}
           />
         </div>
         <div className="description-row">
@@ -262,7 +272,7 @@ class FilterPopup extends React.Component {
             <span className="text">{t('help.note')}</span></p>
           <button tabIndex="1" className="neutral"
                   onClick={this.clearFilter}>{t('button.clearFilter')}</button>
-          <button tabIndex="0" className="filter-go"
+          <button tabIndex="0" className={(canFilter) ? "filter-go" : "filter-go neutral"} disabled={!canFilter}
                   onClick={this.filterUpdate}>{t('button.doFilter')}</button>
         </div>
       </div>
