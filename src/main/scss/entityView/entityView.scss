@@ -4,7 +4,7 @@
 .eev-language-switcher {
   height: 14px;
   width: 40px;
-  position: fixed;
+  position: absolute;
   top: 10px;
   right: 10px;
   background-color: $color-primary-lighter;
@@ -25,18 +25,17 @@
   }
 
   .eev-label {
-    position: fixed;
-    top: 0;
-    height: 14px;
+    position: relative;
+    top: -18px;
+    text-align: center;
   }
 
   .eev-dropdown {
     position: absolute;
-    left: -1px;
+    left: 0;
     top: 100%;
     width: 100%;
-    border: 1px solid $color-border-grey;
-    border-top: none;
+    box-shadow: 0 2px 2px $color-text-medium-grey;
 
     .menu-item {
       background-color: $color-primary-contrast-text;
@@ -78,6 +77,16 @@
   &.entity-view-overlay {
     #overlay-wrapper {
       max-width: 70vw;
+
+      .overlay-header {
+        overflow: visible;
+        span {
+          display: inline-block;
+          max-width: 80%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
 
       #overlay-content {
 
