@@ -112,6 +112,9 @@
           .view {
             text-align: left;
             width: 100%;
+            &:not(:first-of-type) {
+              margin-top: 25px;
+            }
 
             .row-headline {
               font-weight: bold;
