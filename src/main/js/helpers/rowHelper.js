@@ -16,6 +16,6 @@ export function initiateRowDependency(row, langtag) {
   openShowDependency(row, langtag);
 }
 
-export function initiateEntityView(row, langtag) {
-  openEntityView(row, langtag);
+export function initiateEntityView(row, langtag, cellId) {
+  openEntityView(row, langtag, cellId);
 }

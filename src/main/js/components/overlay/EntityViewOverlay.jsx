@@ -7,6 +7,8 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
+import {first, matchesPropery} from "lodash/fp";
+import zenscroll from "zenscroll";
 
 class EntityViewBody extends Component {
   constructor(props) {
@@ -22,6 +24,22 @@ class EntityViewBody extends Component {
   componentWillMount = () => {
     Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
   };
+
+  componentDidMount() {
+    const {focusElementId, row} = this.props;
+    if (focusElementId) {
+      const cell = row.cells.get(focusElementId);
+      if (cell.kind === ColumnKinds.concat) {
+        return; // concat elements are omitted from EntityView
+      }
+      const container = first(document.getElementsByClassName("content-scroll"));
+      const viewId = `view-${cell.column.id}-${cell.rowId}`;
+      const element = first(document.getElementsByClassName(viewId));
+      const scroller = zenscroll.createScroller(container);
+      console.log("tn", container, "c", cell, "id", viewId, "el", element, "scr", scroller)
+      scroller.to(element, 1);
+    }
+  }
 
   componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
@@ -60,7 +78,7 @@ class LanguageSwitcher extends Component {
     this.state = {
       open: false,
       langtag: props.langtag
-    }
+    };
   }
 
   toggleOpen = () => {
@@ -108,7 +126,7 @@ class LanguageSwitcher extends Component {
   }
 }
 
-export function openEntityView(row, langtag) {
+export function openEntityView(row, langtag, focusElementId) {
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
 
@@ -125,7 +143,7 @@ export function openEntityView(row, langtag) {
   openOverlay({
     classNames: "entity-view-overlay",
     head: <span>{i18n.t("table:entity_view")}: {rowDisplayLabel} <LanguageSwitcher langtag={langtag} /></span>,
-    body: <EntityViewBody row={row} langtag={langtag} />,
+    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
     footer: <EntityViewFooter />,
     type: "full-flex"
   });

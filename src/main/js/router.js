@@ -18,7 +18,9 @@ const parseOptions = optString => {
   }
   const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
   const parseFilter = function(str) { return {filter: true} }; // will get more complex once we implement filter routes
-  const parseEntityView = function(str) { return {overlay: true} };
+  const parseEntityView = function(str) {
+    return {overlay: {focusElement: str.split(":").length > 1}};
+  };
   const getOptions = f.cond([
     [f.startsWith("filter"), parseFilter],
     [f.startsWith("overlay"), parseEntityView]
@@ -153,8 +155,7 @@ const TableauxRouter = Router.extend({
       langtag: langtag,
       columnId: (columnid) ? parseInt(columnid) : null,
       rowId: (rowid) ? parseInt(rowid) : null,
-      filter: (urlOptions.filter),
-      entityView: (urlOptions.overlay)
+      urlOptions
     });
   },
 
