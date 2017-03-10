@@ -126,7 +126,7 @@ var TableauxConstant = {
   }),
 
   DateTimeFormats: {
-    formatForServer: "YYYY-MM-DDTHH:mm:SS.SSSZ",
+    formatForServer: "YYYY-MM-DDTHH:mm:ss.SSSZ",
     formatForUser: "DD.MM.YYYY - HH:mm"
   },
 
