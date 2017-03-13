@@ -6,7 +6,7 @@
   },
   "help": {
     "contains": "contains",
-    "note": "Filter and search for numeric and text fields. Links are not yet supported.",
+    "note": "Filter and search for links, numeric and text fields. Some field types are not yet supported.",
     "sort": "sorted",
     "sortasc": "ascending (A-Z or 0-9)",
     "sortdesc": "descending (Z-A or 9-0)"

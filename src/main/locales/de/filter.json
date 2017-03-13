@@ -6,7 +6,7 @@
   },
   "help": {
     "contains": "enthält",
-    "note": "Filtern und suchen Sie nach Nummern- oder Textfeldern. Links werden derzeit noch nicht unterstützt.",
+    "note": "Filtern und suchen Sie nach Links, Nummern- oder Textfeldern. Verschiedene Feldtypen werden derzeit noch nicht unterstützt.",
     "sort": "sortiert",
     "sortasc": "aufsteigend (A-Z bzw. 0-9)",
     "sortdesc": "absteigend (Z-A bzw. 9-0)"
