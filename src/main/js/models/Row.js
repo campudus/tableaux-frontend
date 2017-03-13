@@ -91,7 +91,8 @@ var Row = AmpersandModel.extend({
       attrs.cells = values.map(function ([value, annotations], idx) {
         return {
           index: idx,
-          value: value,
+          value,
+          annotations: extractAnnotations(annotations),
           rowId: attrs.id
         };
       });

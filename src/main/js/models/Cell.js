@@ -13,7 +13,8 @@ var Cell = AmpersandModel.extend({
   modelType: "Cell",
 
   props: {
-    value: "any"
+    value: "any",
+    annotations: "any"
   },
 
   session: {

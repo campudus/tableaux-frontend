@@ -15,6 +15,7 @@ var Cells = Collection.extend({
       column: getColumn(rows, attrs.index),
       rowId: attrs.rowId,
       value: attrs.value,
+      annotations: attrs.annotations,
       row: row
     };
 
