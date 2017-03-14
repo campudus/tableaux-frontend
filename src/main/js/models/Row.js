@@ -5,8 +5,10 @@ var Cell = require("./Cell");
 var Cells = require("./Cells");
 var _ = require("lodash");
 import request from "superagent";
-import { noPermissionAlertWithLanguage } from "../components/overlay/ConfirmationOverlay.jsx";
-import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from "../helpers/accessManagementHelper";
+import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
+import {getUserLanguageAccess, isUserAdmin} from "../helpers/accessManagementHelper";
+import * as f from "lodash/fp";
+import {extractAnnotations} from "../helpers/annotationHelper";
 
 var Row = AmpersandModel.extend({
   props: {
@@ -37,8 +39,15 @@ var Row = AmpersandModel.extend({
     }
 
     // We need to create a new row, or the current is getting changed
-    let copiedRow = new Row({id: this.id, tableId: this.tableId},
-      {collection: this.collection, parent: this.parent});
+    let copiedRow = new Row(
+      {
+        id: this.id,
+        tableId: this.tableId
+      },
+      {
+        collection: this.collection,
+        parent: this.parent
+      });
 
     copiedRow.save(null, {
       url: this.url() + "/duplicate",
@@ -76,7 +85,8 @@ var Row = AmpersandModel.extend({
 
   parse: function (attrs, options) {
     if (attrs.values) {
-      attrs.cells = attrs.values.map(function (value, idx) {
+      const values = f.zip(attrs.values, attrs.annotations);
+      attrs.cells = values.map(function ([value, annotations], idx) {
         return {
           index: idx,
           value: value,

@@ -16,8 +16,11 @@ import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import classNames from "classnames";
+import * as f from "lodash/fp";
 
-// used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first visible row)
+// used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first
+// visible row)
 const CELL_HINT_PADDING = 40;
 
 @connectToAmpersand
@@ -30,7 +33,11 @@ class Cell extends React.Component {
     this.state = {
       keyboardShortcuts: {}
     };
-    this.props.watch(this.props.cell, {event: "change:value", force: true});
+    this.props.watch(this.props.cell,
+      {
+        event: "change:value",
+        force: true
+      });
   };
 
   componentDidMount = () => {
@@ -64,9 +71,10 @@ class Cell extends React.Component {
 
   checkFocus = () => {
     if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
-      var cellDOMNode = this.cellDOMNode;
-      var focusedElement = document.activeElement;
-      // Is current focus this cell or inside of cell don't change the focus. This way child components can force their focus. (e.g. Links Component)
+      const cellDOMNode = this.cellDOMNode;
+      const focusedElement = document.activeElement;
+      // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
+      // focus. (e.g. Links Component)
       if (!focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
         console.log("Cell will force focus");
         cellDOMNode.focus();
@@ -116,79 +124,48 @@ class Cell extends React.Component {
   };
 
   render = () => {
-    let cellKind = null;
     const {cell, langtag, selected, editing} = this.props;
+    const {link, attachment, numeric, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
+    //const selectable = [link, attachment, boolean, concat, currency, text];
+    const noKeyboard = [concat, "disabled", text, richtext];
+
+    const cellKinds = {
+      [link]: LinkCell,
+      [attachment]: AttachmentCell,
+      [numeric]: NumericCell,
+      [boolean]: BooleanCell,
+      [date]: DateCell,
+      [datetime]: DateTimeCell,
+      [shorttext]: ShortTextCell,
+      [concat]: IdentifierCell,
+      [currency]: CurrencyCell,
+      [text]: TextCell,
+      [richtext]: TextCell,
+    };
 
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";
+    const {translationNeeded} = cell.annotations;
+    const cssClass = classNames(`cell cell-${kind} cell-${cell.column.getId()}-${cell.rowId}`,
+      {
+        "selected": selected,
+        "editing": cell.isEditable && editing,
+        "needs-translation": translationNeeded && f.contains(langtag, translationNeeded.langtags),
+        "fully-translated": cell.isMultiLanguage && this.props.showTranslationStatus && !translationNeeded,
+        "needs-translation-other-language": this.props.showTranslationStatus && translationNeeded && !f.contains(langtag, translationNeeded.langtags)
+      }
+    );
 
-    switch (kind) {
+    const CellKind = (kind === "disabled")
+      ? DisabledCell
+      : (cellKinds[kind] || TextCell);
 
-      case ColumnKinds.link:
-        cellKind = <LinkCell cell={this.props.cell} langtag={langtag} selected={selected}
-                             editing={editing}
-                             setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case ColumnKinds.attachment:
-        cellKind = <AttachmentCell cell={this.props.cell} langtag={langtag} selected={selected}
-                                   editing={editing}
-                                   setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case ColumnKinds.numeric:
-        cellKind = <NumericCell cell={this.props.cell} langtag={langtag} editing={editing}
-                                setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case ColumnKinds.boolean:
-        cellKind = <BooleanCell cell={this.props.cell} langtag={langtag} selected={selected}
-                                setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case ColumnKinds.datetime:
-        cellKind = <DateTimeCell cell={this.props.cell} langtag={langtag} editing={editing}
-                                 setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case ColumnKinds.date:
-        cellKind = <DateCell cell={this.props.cell} langtag={langtag} editing={editing}
-                             setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren} />;
-        break;
-
-      case ColumnKinds.shorttext:
-        cellKind = <ShortTextCell cell={this.props.cell} langtag={langtag} editing={editing}
-                                  setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case ColumnKinds.concat:
-        cellKind = <IdentifierCell cell={this.props.cell} langtag={langtag} selected={selected}
-                                   editing={editing}/>;
-        break;
-
-      case ColumnKinds.currency:
-        cellKind = <CurrencyCell cell={this.props.cell} langtag={langtag} selected={selected}
-                                 editing={editing} setCellKeyboardShortcuts={this.setKeyboardShortcutsForChildren}/>;
-        break;
-
-      case "disabled":
-        cellKind = <DisabledCell cell={this.props.cell} langtag={langtag} selected={selected}/>;
-        break;
-
-      default:
-        cellKind = <TextCell cell={this.props.cell} langtag={langtag} editing={editing}
-                             selected={selected}/>;
-        break;
-    }
-
-    let cellClass = "cell" + " cell-" + kind + " cell-" + cell.column.getId() + "-" + cell.rowId;
-
-    if (selected) {
-      cellClass += " selected";
-    }
-
-    if (editing && cell.isEditable) {
-      cellClass += " editing";
-    }
+    const cellItem = (
+      <CellKind cell={cell} langtag={langtag}
+                selected={selected}
+                editing={cell.isEditable && editing}
+                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function (){} : this.setKeyboardShortcutsForChildren}
+      />
+    );
 
     // onKeyDown event just for selected components
     if (selected) {
@@ -198,35 +175,34 @@ class Cell extends React.Component {
       // get global so not every single cell needs to look fo the table rows dom element
       const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
       const difference = this.cellOffset - tableRowsDom.scrollTop;
-      let rowDisplayLabelClass = "row-display-label";
-
-      if (-CELL_HINT_PADDING < difference && difference < CELL_HINT_PADDING) {
-        rowDisplayLabelClass += " flip";
-      }
+      const rowDisplayLabelClass = classNames(
+        "row-display-label",
+        {"flip": -CELL_HINT_PADDING < difference && difference < CELL_HINT_PADDING}
+      );
 
       // We just show the info starting at the fourth column
       const rowDisplayLabelElement = indexOfCell >= 3 ? (
-        <div className={rowDisplayLabelClass}><span className="content">{langtag} | {rowDisplayLabel}</span>
-        </div>) : null;
+          <div className={rowDisplayLabelClass}><span className="content">{langtag} | {rowDisplayLabel}</span>
+          </div>) : null;
 
       return (
-        <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+        <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
-          {cellKind}
+          {cellItem}
           {rowDisplayLabelElement}
         </div>
       );
     } else {
       return (
-        <div className={cellClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+        <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1">
-          {cellKind}
+          {cellItem}
         </div>
       );
     }
   }
-};
+}
 
 Cell.propTypes = {
   cell: React.PropTypes.object.isRequired,
@@ -235,7 +211,8 @@ Cell.propTypes = {
   editing: React.PropTypes.bool,
   row: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
-  shouldFocus: React.PropTypes.bool
+  shouldFocus: React.PropTypes.bool,
+  showTranslationStatus: React.PropTypes.bool
 };
 
 export default Cell;
