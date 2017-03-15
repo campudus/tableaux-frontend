@@ -1,23 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {getCountryOfLangtag, getCurrencyCode} from '../../../helpers/multiLanguage';
-import CurrencyEditCell from './CurrencyEditCell';
-import ActionCreator from'../../../actions/ActionCreator';
-import {getCurrencyWithCountry, splitPriceDecimals} from './currencyHelper';
-import onClickOutside from 'react-onclickoutside';
-import {translate} from 'react-i18next';
+import React from "react";
+import ReactDOM from "react-dom";
+import {getCountryOfLangtag, getCurrencyCode} from "../../../helpers/multiLanguage";
+import CurrencyEditCell from "./CurrencyEditCell";
+import ActionCreator from "../../../actions/ActionCreator";
+import {getCurrencyWithCountry, splitPriceDecimals} from "./currencyHelper";
+import onClickOutside from "react-onclickoutside";
+import {translate} from "react-i18next";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
-@translate(['table'])
+@translate(["table"])
 export default class CurrencyCell extends React.Component {
 
   static propTypes = {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    selected : React.PropTypes.bool.isRequired,
-    editing : React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts : React.PropTypes.func
+    cell: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    selected: React.PropTypes.bool.isRequired,
+    editing: React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: React.PropTypes.func
   };
 
   CurrencyCellDOMNode = null;
@@ -31,7 +31,7 @@ export default class CurrencyCell extends React.Component {
   }
 
   scrollHandler(event) {
-    //prevents the table scroll event
+    // prevents the table scroll event
     event.stopPropagation();
   }
 
@@ -46,7 +46,7 @@ export default class CurrencyCell extends React.Component {
   }
 
   handleClickOutside = (event) => {
-    //prevents from closing editCell when clicking on the scrollbar on windows
+    // prevents from closing editCell when clicking on the scrollbar on windows
     if (!this.CurrencyCellDOMNode.contains(event.target)) {
       this.exitCurrencyCell();
     }
@@ -60,7 +60,7 @@ export default class CurrencyCell extends React.Component {
     if (!currencyCode) {
       return (
         <div className="currency-wrapper">
-          <span className="currency-no-country">{t('error_language_is_no_country')} <i
+          <span className="currency-no-country">{t("error_language_is_no_country")} <i
             className="open-country fa fa-angle-down"/></span>
         </div>
       );
@@ -80,7 +80,6 @@ export default class CurrencyCell extends React.Component {
       </div>
 
     );
-
   }
 
   render() {
@@ -106,7 +105,6 @@ export default class CurrencyCell extends React.Component {
         {currencyCellMarkup}
       </div>
     );
-
   }
 
 }

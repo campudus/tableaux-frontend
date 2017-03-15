@@ -5,22 +5,22 @@ import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
 
 export function shouldCellFocus() {
-  //we dont want to force cell focus when overlay is open
+  // we dont want to force cell focus when overlay is open
   return this.state.shouldCellFocus && !this.props.overlayOpen;
 }
 
-//Takes care that we never loose focus of the table to guarantee keyboard events are triggered
+// Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
-  //Is a cell selected?
+  // Is a cell selected?
   if (this.state.selectedCell !== null) {
     let tableDOMNode = this.tableDOMNode;
     let focusedElement = document.activeElement;
-    //happens in IE
+    // happens in IE
     if (focusedElement === null) {
       tableDOMNode.focus();
     } else if (!tableDOMNode.contains(focusedElement)) {
-      //Is the focus outside the table or is body selected
-      //force table to be focused to get keyboard events
+      // Is the focus outside the table or is body selected
+      // force table to be focused to get keyboard events
       tableDOMNode.focus();
     }
   }
@@ -43,7 +43,7 @@ export function enableShouldCellFocus() {
 export function getKeyboardShortcuts() {
   const {selectedCell, selectedCellEditing} = this.state;
 
-  //Force the next selected cell to be focused
+  // Force the next selected cell to be focused
   if (!shouldCellFocus.call(this)) {
     enableShouldCellFocus.call(this);
   }
@@ -51,54 +51,54 @@ export function getKeyboardShortcuts() {
     left: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          setNextSelectedCell.call(this, Directions.LEFT);
-        }
+        setNextSelectedCell.call(this, Directions.LEFT);
+      }
       );
     },
     right: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          setNextSelectedCell.call(this, Directions.RIGHT);
-        }
+        setNextSelectedCell.call(this, Directions.RIGHT);
+      }
       );
     },
     tab: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
-        }
+        setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
+      }
       );
     },
     up: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          setNextSelectedCell.call(this, Directions.UP);
-        }
+        setNextSelectedCell.call(this, Directions.UP);
+      }
       );
     },
     down: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          setNextSelectedCell.call(this, Directions.DOWN);
-        }
+        setNextSelectedCell.call(this, Directions.DOWN);
+      }
       );
     },
     enter: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          if (selectedCell && !selectedCellEditing) {
-            toggleCellEditing.call(this);
-          }
+        if (selectedCell && !selectedCellEditing) {
+          toggleCellEditing.call(this);
         }
+      }
       );
     },
     escape: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-          if (selectedCell && selectedCellEditing) {
-            toggleCellEditing.call(this, {editing: false});
-          }
+        if (selectedCell && selectedCellEditing) {
+          toggleCellEditing.call(this, {editing: false});
         }
+      }
       );
     },
     text: (event) => {
@@ -136,41 +136,39 @@ export function getKeyboardShortcuts() {
  * This enhances the default browser behaviour because it checks if the selected cell is completely visible.
  */
 export function updateScrollViewToSelectedCell() {
-  //Scrolling container
+  // Scrolling container
   let tableRowsDom = this.tableRowsDom;
-  //Are there any selected cells?
+  // Are there any selected cells?
   const cellsDom = tableRowsDom.getElementsByClassName("cell selected");
   if (cellsDom.length > 0) {
     console.log("Scroll View Update happens.");
-    //Get the first selected cell
+    // Get the first selected cell
     const cell = cellsDom[0];
-    //Cell DOM position and dimensions
+    // Cell DOM position and dimensions
     const targetY = cell.offsetTop;
     const targetX = cell.offsetLeft;
     const cellWidth = cell.offsetWidth;
     const cellHeight = cell.offsetHeight;
-    //Scroll container position and dimensions
+    // Scroll container position and dimensions
     const currentScrollPositionX = tableRowsDom.scrollLeft;
     const currentScrollPositionY = tableRowsDom.scrollTop;
     const containerWidth = tableRowsDom.clientWidth;
     const containerHeight = tableRowsDom.clientHeight;
 
-    //Check if cell is outside the view. Cell has to be completely visible
+    // Check if cell is outside the view. Cell has to be completely visible
     if (targetX < currentScrollPositionX) {
-      //Overflow Left
+      // Overflow Left
       tableRowsDom.scrollLeft = targetX;
-
     } else if (targetX + cellWidth > currentScrollPositionX + containerWidth) {
-      //Overflow Right
+      // Overflow Right
       tableRowsDom.scrollLeft = targetX - (containerWidth - cellWidth);
     }
 
     if (targetY < currentScrollPositionY) {
-      //Overflow Top
+      // Overflow Top
       tableRowsDom.scrollTop = targetY;
-
     } else if (targetY + cellHeight > currentScrollPositionY + containerHeight) {
-      //Overflow Bottom
+      // Overflow Bottom
       tableRowsDom.scrollTop = targetY - (containerHeight - cellHeight);
     }
   }
@@ -194,7 +192,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
   const rowId = cell.row.id;
   if (selected !== "NO_HISTORY_PUSH") {
     const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
-    App.router.navigate(cellURL, {trigger: false})
+    App.router.navigate(cellURL, {trigger: false});
   }
   this.setState({
     selectedCell: cell,
@@ -231,7 +229,7 @@ export function setNextSelectedCell(direction) {
     id: getCurrentSelectedColumnId.call(this),
     selectedCellExpandedRow: this.props.langtag
   };
-  let newSelectedCellExpandedRow; //Either row or column switch changes the selected language
+  let newSelectedCellExpandedRow; // Either row or column switch changes the selected language
   const {table} = this.props;
   const currentSelectedColumnId = getCurrentSelectedColumnId.call(this);
   const currentSelectedRowId = getCurrentSelectedRowId.call(this);
@@ -259,7 +257,7 @@ export function setNextSelectedCell(direction) {
   }
 
   row = table.rows.get(rowCell.id);
-  nextCellId = 'cell-' + table.getId() + '-' + columnCell.id + '-' + rowCell.id;
+  nextCellId = "cell-" + table.getId() + "-" + columnCell.id + "-" + rowCell.id;
   if (row) {
     let nextCell = row.cells.get(nextCellId);
     if (nextCell) {
@@ -271,7 +269,7 @@ export function setNextSelectedCell(direction) {
   }
 }
 
-//returns the next row and the next language cell when expanded
+// returns the next row and the next language cell when expanded
 export function getNextRowCell(currentRowId, getPrev) {
   const {expandedRowIds, selectedCell, selectedCellExpandedRow} = this.state;
   const {rows, langtag} = this.props;
@@ -284,44 +282,44 @@ export function getNextRowCell(currentRowId, getPrev) {
   let nextRowId;
   let jumpToNextRow = false;
 
-  //are there expanded rows and is current selection inside of expanded row block
+  // are there expanded rows and is current selection inside of expanded row block
   if (expandedRowIds && expandedRowIds.length > 0 && expandedRowIds.indexOf(currentRowId) > -1) {
-    //get next (lower / upper) language position
+    // get next (lower / upper) language position
     let nextLangtagIndex = Langtags.indexOf(selectedCellExpandedRow) + (getPrev ? -1 : 1);
-    //jump to new language inside expanded row - but just when cell is multilanguage
+    // jump to new language inside expanded row - but just when cell is multilanguage
     if (nextLangtagIndex >= 0 && nextLangtagIndex <= Langtags.length - 1 && selectedCell.isMultiLanguage) {
-      //keep the row
+      // keep the row
       nextIndex = indexCurrentRow;
-      //set new language
+      // set new language
       nextSelectedCellExpandedRow = Langtags[nextLangtagIndex];
     }
-    //jump from expanded row to next / or previous cell (completely new row)
+    // jump from expanded row to next / or previous cell (completely new row)
     else {
       jumpToNextRow = true;
     }
   }
-  //current row is not expanded so jump to next row
+  // current row is not expanded so jump to next row
   else {
     jumpToNextRow = true;
   }
 
-  //Get the next row id
+  // Get the next row id
   nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
   nextRowId = rows.at(nextRowIndex).getId();
 
   if (jumpToNextRow) {
-    //Next row is expanded
+    // Next row is expanded
     if (expandedRowIds && expandedRowIds.indexOf(nextRowId) > -1) {
-      //Multilanguage cell
+      // Multilanguage cell
       if (selectedCell.isMultiLanguage) {
         nextSelectedCellExpandedRow = getPrev ? Langtags[Langtags.length - 1] : DefaultLangtag;
       }
-      //Skip single language cell to next editable cell - by default the first language
+      // Skip single language cell to next editable cell - by default the first language
       else {
         nextSelectedCellExpandedRow = DefaultLangtag;
       }
     }
-    //Next row is closed row. Set default language
+    // Next row is closed row. Set default language
     else {
       nextSelectedCellExpandedRow = langtag;
     }
@@ -331,7 +329,6 @@ export function getNextRowCell(currentRowId, getPrev) {
     id: nextRowId,
     selectedCellExpandedRow: nextSelectedCellExpandedRow
   };
-
 }
 
 export function getPreviousRow(currentRowId) {
@@ -350,7 +347,7 @@ export function getNextColumnCell(currentColumnId, getPrev) {
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
 
-  //Not Multilanguage and row is expanded so jump to top language
+  // Not Multilanguage and row is expanded so jump to top language
   if (!nextColumn.multilanguage && expandedRowIds && expandedRowIds.indexOf(currentSelectedRowId) > -1) {
     newSelectedCellExpandedRow = DefaultLangtag;
   } else {

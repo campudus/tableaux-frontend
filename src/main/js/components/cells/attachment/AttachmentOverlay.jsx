@@ -1,29 +1,29 @@
-var React = require('react');
-var _ = require('lodash');
-var AmpersandMixin = require('ampersand-react-mixin');
-var ActionCreator = require('../../../actions/ActionCreator');
-var Folder = require('../../../models/media/Folder');
-var multiLanguage = require('../../../helpers/multiLanguage');
-import TableauxConstants from '../../../constants/TableauxConstants';
-import apiUrl from '../../../helpers/apiUrl';
+var React = require("react");
+var _ = require("lodash");
+var AmpersandMixin = require("ampersand-react-mixin");
+var ActionCreator = require("../../../actions/ActionCreator");
+var Folder = require("../../../models/media/Folder");
+var multiLanguage = require("../../../helpers/multiLanguage");
+import TableauxConstants from "../../../constants/TableauxConstants";
+import apiUrl from "../../../helpers/apiUrl";
 const {ColumnKinds} = TableauxConstants;
-import {translate} from 'react-i18next';
+import {translate} from "react-i18next";
 
 var AttachmentOverlay = React.createClass({
-  mixins : [AmpersandMixin],
+  mixins: [AmpersandMixin],
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired
+  propTypes: {
+    cell: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired
   },
 
-  getInitialState : function () {
+  getInitialState: function () {
     return {
-      folder : null
+      folder: null
     };
   },
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     if (this.props.cell.column.kind !== ColumnKinds.attachment) {
       console.error("Couldn't open AttachmentOverlay for this column type.");
       return;
@@ -32,30 +32,30 @@ var AttachmentOverlay = React.createClass({
     this.navigateFolder(null)();
   },
 
-  componentWillUnmount : function () {
+  componentWillUnmount: function () {
     this.props.cell.fetch();
   },
 
-  navigateFolder : function (folderId) {
+  navigateFolder: function (folderId) {
     var self = this;
 
     return function () {
       // TODO View creates Model instance
       if (self.state.folder) {
-        self.setState({folder : null});
+        self.setState({folder: null});
       }
-      var folder = new Folder({id : folderId});
+      var folder = new Folder({id: folderId});
 
       folder.fetch({
-        data : {langtag : self.props.langtag},
-        success : function (err, result) {
-          self.setState({folder : result});
+        data: {langtag: self.props.langtag},
+        success: function (err, result) {
+          self.setState({folder: result});
         }
       });
     };
   },
 
-  toggleAttachments : function (isLinked, file) {
+  toggleAttachments: function (isLinked, file) {
     var cell = this.props.cell;
 
     return function () {
@@ -73,18 +73,18 @@ var AttachmentOverlay = React.createClass({
     };
   },
 
-  getMediaFolderUrl(folderId){
+  getMediaFolderUrl(folderId) {
     return `/${this.props.langtag}/media/${folderId}`;
   },
 
-  render : function () {
+  render: function () {
     var self = this;
     var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     var listDisplay = "Loading...";
     const {langtag, t} = this.props;
 
-    //check for empty obj or map fails
+    // check for empty obj or map fails
     if (this.state.folder) {
       // render back button
       var backButton = null;
@@ -92,12 +92,12 @@ var AttachmentOverlay = React.createClass({
         backButton = (
           <div className="back active" key={this.state.folder.id}>
             <a onClick={self.navigateFolder(this.state.folder.parent)}><i
-              className="fa fa-chevron-left"></i>{t('folder_back')} </a>
+              className="fa fa-chevron-left"></i>{t("folder_back")} </a>
             <span className="folder-name">{this.state.folder.name}</span>
           </div>);
       } else {
         backButton = (
-          <div className="back" key={this.state.folder.id}><span className="folder-name">{t('root_folder_name')}</span>
+          <div className="back" key={this.state.folder.id}><span className="folder-name">{t("root_folder_name")}</span>
           </div>);
       }
 
@@ -109,7 +109,7 @@ var AttachmentOverlay = React.createClass({
               {this.state.folder.subfolders.map(function (subfolder) {
                 return <li key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}>
                   <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
-                </li>
+                </li>;
               })}
             </ul>
           </div>
@@ -123,23 +123,23 @@ var AttachmentOverlay = React.createClass({
                 return file.uuid === linkedFile.uuid;
               });
 
-              var isLinked = linked ? true : false;
+              var isLinked = !!linked;
               var fileTitle = retrieveTranslation(file.title, self.props.langtag);
 
               return <li key={file.uuid}>
                 <a onClick={self.toggleAttachments(isLinked, file)}
-                   className={isLinked ? 'overlay-table-row isLinked' : 'overlay-table-row'}>
+                   className={isLinked ? "overlay-table-row isLinked" : "overlay-table-row"}>
                   <i className="icon fa fa-file"></i><span>{fileTitle}</span>
                 </a>
                 <div className="media-options">
                   <a className="file-link" target="_blank" href={imageUrl}>
-                    <i className="icon fa fa-external-link"></i>{t('show_file')}
+                    <i className="icon fa fa-external-link"></i>{t("show_file")}
                   </a>
                   <a className="change-file" alt="edit" target="_blank" href={self.getMediaFolderUrl(folderId)}>
-                    <i className="icon fa fa-pencil-square-o"></i>{t('change_file')}
+                    <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
                   </a>
                 </div>
-              </li>
+              </li>;
             })}
           </ul>
         </div>
@@ -155,4 +155,4 @@ var AttachmentOverlay = React.createClass({
 
 });
 
-module.exports = translate(['media'])(AttachmentOverlay);
+module.exports = translate(["media"])(AttachmentOverlay);

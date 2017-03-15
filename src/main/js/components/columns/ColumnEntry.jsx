@@ -33,7 +33,7 @@ class ColumnEntry extends React.Component {
   };
 
   saveEdit = () => {
-    const {langtag, column:{id}} = this.props;
+    const {langtag, column: {id}} = this.props;
     const {name, description} = this.state;
     const new_name = (name != this.props.name) ? trim(name) : null;
     const new_desc = (description != this.props.description) ? trim(description) : null;
@@ -42,21 +42,21 @@ class ColumnEntry extends React.Component {
   };
 
   editColumn = () => {
-    const {description, column:{id}, column, langtag} = this.props;
+    const {description, column: {id}, column, langtag} = this.props;
     const name = column.displayName[langtag] || column.name;
 
     ActionCreator.openOverlay({
-      head: <text>{i18n.t('table:editor.edit_column')}</text>,
+      head: <text>{i18n.t("table:editor.edit_column")}</text>,
       body: <ColumnEditorOverlay name={name}
                                  handleInput={this.handleInput}
                                  description={description}
                                  index={id} />,
       footer: <div className="column-editor-footer">
         <a href="#" className="button positive" onClick={this.saveEdit}>
-          {i18n.t('common:save')}
+          {i18n.t("common:save")}
         </a>
         <a href="#" className="button neutral" onClick={this.cancelEdit}>
-          {i18n.t('common:cancel')}
+          {i18n.t("common:cancel")}
         </a>
       </div>,
       closeOnBackgoundClicked: true,
@@ -100,7 +100,7 @@ class ColumnEntry extends React.Component {
   };
 
   render = () => {
-    const {column:{kind,id}, columnContent, columnIcon} = this.props;
+    const {column: {kind, id}, columnContent, columnIcon} = this.props;
     const menu_open = this.state.ctxCoords;
     const contextmenu_css_class = classNames(
       "column-contextmenu-button fa ", {

@@ -1,4 +1,4 @@
-var keyMirror = require('keymirror');
+var keyMirror = require("keymirror");
 
 /*
  * Order is important.
@@ -16,7 +16,7 @@ var TableauxConstant = {
     SWITCHED_TABLE: null,
     SWITCH_LANGUAGE: null,
 
-    //Generic Overlay events
+    // Generic Overlay events
     OPEN_OVERLAY: null,
     CLOSE_OVERLAY: null,
 
@@ -48,39 +48,39 @@ var TableauxConstant = {
     CLEANUP_TABLE: null,
     CLEANUP_TABLE_DONE: null,
 
-    //Overlay Text Type
+    // Overlay Text Type
     OVERLAY_TYPE_TEXT_CLOSE: null,
     OVERLAY_TYPE_TEXT_SAVE: null,
 
-    //Filter
+    // Filter
     CHANGE_FILTER: null,
     CLEAR_FILTER: null,
 
-    //Spinner
+    // Spinner
     SPINNER_ON: null,
     SPINNER_OFF: null,
 
-    //Jump-to-cell spinner
+    // Jump-to-cell spinner
     JUMP_SPINNER_ON: null,
     JUMP_SPINNER_OFF: null,
 
     RESET_TABLE_URL: null,
 
-    //Context Menu
+    // Context Menu
     SHOW_ROW_CONTEXT_MENU: null,
     CLOSE_ROW_CONTEXT_MENU: null,
 
-    //Toast
+    // Toast
     SHOW_TOAST: null,
 
-    //Access Rights
+    // Access Rights
     NO_PERMISSION_SAVE_LANGUAGE: null,
 
-    //Column modification
+    // Column modification
     DONE_EDIT_HEADER: null,
     REFRESH_TABLE_NAMES: null,
 
-    //Column visibility filtering
+    // Column visibility filtering
     SET_COLUMNS_VISIBILITY: null,
 
     COPY_CELL_CONTENT: null,
@@ -94,7 +94,7 @@ var TableauxConstant = {
     UP: null
   }),
 
-  //Lowercase on purpose. Reflects exact API naming
+  // Lowercase on purpose. Reflects exact API naming
   ColumnKinds: keyMirror({
     shorttext: null,
     richtext: null,
@@ -110,19 +110,19 @@ var TableauxConstant = {
   }),
 
   LanguageType: keyMirror({
-    country: null,
+    country: null
   }),
 
   ViewNames: keyMirror({
-    'TABLE_VIEW': null,
-    'MEDIA_VIEW': null
+    "TABLE_VIEW": null,
+    "MEDIA_VIEW": null
   }),
 
   Alignments: keyMirror({
-    'UPPER_LEFT': null,
-    'UPPER_RIGHT': null,
-    'LOWER_LEFT': null,
-    'LOWER_RIGHT': null
+    "UPPER_LEFT": null,
+    "UPPER_RIGHT": null,
+    "LOWER_LEFT": null,
+    "LOWER_RIGHT": null
   }),
 
   DateTimeFormats: {
@@ -135,7 +135,7 @@ var TableauxConstant = {
     formatForUser: "DD.MM.YYYY"
   },
 
-  //Fixed pixel height of a single row including border
+  // Fixed pixel height of a single row including border
   RowHeight: 46,
 
   PageTitle: "DataCenter",
@@ -148,8 +148,8 @@ var TableauxConstant = {
     return languagetags ? languagetags[0] : null;
   },
 
-  //we hardcode this because english is the world language
-  FallbackLanguage: 'en',
+  // we hardcode this because english is the world language
+  FallbackLanguage: "en",
 
   initLangtags: (langtags) => {
     languagetags = langtags;

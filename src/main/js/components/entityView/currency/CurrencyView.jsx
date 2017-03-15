@@ -1,17 +1,17 @@
-import React from 'react';
-import {getCurrencyWithCountry} from '../../cells/currency/currencyHelper';
-import {getCountryOfLangtag, getCurrencyCode, getLanguageOrCountryIcon} from '../../../helpers/multiLanguage';
+import React from "react";
+import {getCurrencyWithCountry} from "../../cells/currency/currencyHelper";
+import {getCountryOfLangtag, getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 
 const CurrencyView = React.createClass({
 
-  displayName : 'CurrencyView',
+  displayName: "CurrencyView",
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired
   },
 
-  getCurrencyValues : function (cell, showAll) {
+  getCurrencyValues: function (cell, showAll) {
     const {column} = cell;
     const {countryCodes} = column;
 
@@ -21,14 +21,14 @@ const CurrencyView = React.createClass({
       const currencyCode = getCurrencyCode(countryCode);
 
       if (showAll || currencyValue) {
-        return <div key={index} className="currency-item">{getLanguageOrCountryIcon(countryCode)} {currencyValue || "--"} {currencyCode}</div>
+        return <div key={index} className="currency-item">{getLanguageOrCountryIcon(countryCode)} {currencyValue || "--"} {currencyCode}</div>;
       } else {
         return null;
       }
     }).filter(Boolean);
   },
 
-  render : function () {
+  render: function () {
     const {cell} = this.props;
     var currencyRows = this.getCurrencyValues(cell, false);
 

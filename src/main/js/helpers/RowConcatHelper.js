@@ -1,18 +1,18 @@
 import * as _ from "lodash";
 import Moment from "moment";
 
-const TableauxConstants = require('../constants/TableauxConstants');
+const TableauxConstants = require("../constants/TableauxConstants");
 const ColumnKinds = TableauxConstants.ColumnKinds;
 
 const NOVALUE = "– NO VALUE –";
 
 var internal = {
-  stringHasValue : (stringToCheck) => {
+  stringHasValue: (stringToCheck) => {
     return (stringToCheck && stringToCheck.toString().trim() !== "");
   },
 
   // can be called with optional defaultLangtag to get fallback value
-  getRowConcatString : (concatValueArray, concatColumn, langtag, defaultLangtag) => {
+  getRowConcatString: (concatValueArray, concatColumn, langtag, defaultLangtag) => {
     if (concatColumn.kind !== ColumnKinds.concat) {
       console.error("getRowConcatString was passed no concat column:", concatColumn);
     }
@@ -44,7 +44,7 @@ var internal = {
      */
     const getCellValueFromLanguage = (cellValue, column) => {
       if (column.multilanguage) {
-        let value = (typeof cellValue[langtag] !== 'undefined') ? cellValue[langtag] : ((typeof defaultLangtag !== 'undefined') ? cellValue[defaultLangtag] : "");
+        let value = (typeof cellValue[langtag] !== "undefined") ? cellValue[langtag] : ((typeof defaultLangtag !== "undefined") ? cellValue[defaultLangtag] : "");
         return (value === null || value === undefined) ? "" : value;
       } else {
         return (cellValue === null || cellValue === undefined) ? "" : cellValue;
@@ -52,7 +52,7 @@ var internal = {
     };
 
     _.forEach(concatValueArray, (concatValue, index) => {
-      //This is the related column for a specific concat element
+      // This is the related column for a specific concat element
       const concatColumn = concatColumnArray[index];
 
       switch (concatColumn.kind) {
@@ -69,7 +69,7 @@ var internal = {
           let toColumn = concatColumn.toColumn;
 
           _.forEach(concatValue, (linkElem, linkIndex) => {
-            //Check the column kind linked to
+            // Check the column kind linked to
             switch (toColumn.kind) {
               case ColumnKinds.shorttext:
               case ColumnKinds.text:
@@ -77,7 +77,7 @@ var internal = {
                 break;
 
               case ColumnKinds.concat:
-                //Concat column has a link as identifier which also links to another concat column
+                // Concat column has a link as identifier which also links to another concat column
                 appendString(internal.getRowConcatString(linkElem.value, toColumn, langtag, defaultLangtag));
                 break;
 
@@ -126,13 +126,13 @@ var internal = {
     });
 
     return concatStringArray.join(" ");
-  },
+  }
 };
 
 const RowConcatHelper = {
-  NOVALUE : NOVALUE,
+  NOVALUE: NOVALUE,
 
-  getCellAsString : function (cellValue, column, langtag) {
+  getCellAsString: function (cellValue, column, langtag) {
     let rowConcatString;
 
     if (column.kind === ColumnKinds.concat) {
@@ -145,8 +145,7 @@ const RowConcatHelper = {
 
         // Link ID value is empty
         if (!internal.stringHasValue(rowConcatString)) {
-
-          //Get default language fallback
+          // Get default language fallback
           if (langtag != TableauxConstants.DefaultLangtag) {
             rowConcatString = cellValue[TableauxConstants.DefaultLangtag];
 
@@ -165,7 +164,7 @@ const RowConcatHelper = {
     return rowConcatString;
   },
 
-  getCellAsStringWithFallback : function (cellValue, column, langtag) {
+  getCellAsStringWithFallback: function (cellValue, column, langtag) {
     // not really nice I think the Cell should replace
     // an empty concat value with "- NO VALUE -" and not
     // the model itself!

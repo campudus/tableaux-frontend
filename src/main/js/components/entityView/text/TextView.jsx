@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 
 const TextView = React.createClass({
 
-  displayName : 'TextView',
+  displayName: "TextView",
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired
   },
 
-  getValue : function () {
+  getValue: function () {
     var cell = this.props.cell;
 
     var value;
@@ -22,7 +22,7 @@ const TextView = React.createClass({
     return typeof value === "undefined" ? null : value;
   },
 
-  render : function () {
+  render: function () {
     var value = this.getValue();
 
     return (

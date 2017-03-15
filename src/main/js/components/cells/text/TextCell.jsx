@@ -1,28 +1,28 @@
-var React = require('react');
-var _ = require('lodash');
+var React = require("react");
+var _ = require("lodash");
 
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var TextEditCell = require('./TextEditCell.jsx');
-var TextArea = require('./TextArea.jsx');
-var ExpandButton = require('./ExpandButton.jsx');
-var TextOverlayFooter = require('./TextOverlayFooter.jsx');
-var OverlayHeadRowIdentificator = require('../../overlay/OverlayHeadRowIdentificator.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+var Dispatcher = require("../../../dispatcher/Dispatcher");
+var TextEditCell = require("./TextEditCell.jsx");
+var TextArea = require("./TextArea.jsx");
+var ExpandButton = require("./ExpandButton.jsx");
+var TextOverlayFooter = require("./TextOverlayFooter.jsx");
+var OverlayHeadRowIdentificator = require("../../overlay/OverlayHeadRowIdentificator.jsx");
+var ActionCreator = require("../../../actions/ActionCreator");
 
 var TextCell = React.createClass({
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
-    editing : React.PropTypes.bool.isRequired,
-    selected : React.PropTypes.bool.isRequired
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired,
+    editing: React.PropTypes.bool.isRequired,
+    selected: React.PropTypes.bool.isRequired
   },
 
-  handleClick : function (event) {
+  handleClick: function (event) {
     ActionCreator.toggleCellEditing();
   },
 
-  saveCell : function (newValue) {
+  saveCell: function (newValue) {
     var cell = this.props.cell;
     var valueToSave;
 
@@ -37,33 +37,32 @@ var TextCell = React.createClass({
     ActionCreator.toggleCellEditing(false);
   },
 
-  openOverlay : function (event, withContent) {
+  openOverlay: function (event, withContent) {
     var self = this;
-    var textValue = withContent ? withContent : this.getValue();
+    var textValue = withContent || this.getValue();
     event.stopPropagation();
     event.preventDefault();
 
     ActionCreator.openOverlay({
-      head : <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
-      body : <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
-      footer : <TextOverlayFooter/>,
-      type : "normal",
-      closeOnBackgroundClicked : false
+      head: <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
+      body: <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
+      footer: <TextOverlayFooter/>,
+      type: "normal",
+      closeOnBackgroundClicked: false
     });
-
   },
 
-  closeOverlay : function (event) {
+  closeOverlay: function (event) {
     ActionCreator.closeOverlay(event);
   },
 
-  saveOverlay : function (content, event) {
+  saveOverlay: function (content, event) {
     this.closeOverlay(event);
     this.saveCell(content);
     ActionCreator.toggleCellEditing(false);
   },
 
-  getValue : function () {
+  getValue: function () {
     var cell = this.props.cell;
 
     var value;
@@ -76,7 +75,7 @@ var TextCell = React.createClass({
     return typeof value === "undefined" ? "" : value;
   },
 
-  renderTextCell : function (cell, value) {
+  renderTextCell: function (cell, value) {
     var self = this;
 
     var expandButton = "";
@@ -92,7 +91,7 @@ var TextCell = React.createClass({
     );
   },
 
-  render : function () {
+  render: function () {
     var cell = this.props.cell;
 
     if (!this.props.editing) {

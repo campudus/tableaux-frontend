@@ -1,4 +1,4 @@
-var Events = require('ampersand-events');
+var Events = require("ampersand-events");
 
 var Dispatcher = {};
 

@@ -1,35 +1,35 @@
-const React = require('react');
+const React = require("react");
 
 export const LinkLabelCell = React.createClass({
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    linkElement : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
+  propTypes: {
+    cell: React.PropTypes.object.isRequired,
+    linkElement: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
 
-    //Used for performance reason to get cached derived value from the cell model
-    linkIndexAt : React.PropTypes.number.isRequired,
+    // Used for performance reason to get cached derived value from the cell model
+    linkIndexAt: React.PropTypes.number.isRequired,
 
     // clickable label with delete button (optional)
-    deletable : React.PropTypes.bool.isRequired,
-    onDelete : React.PropTypes.func,
+    deletable: React.PropTypes.bool.isRequired,
+    onDelete: React.PropTypes.func,
 
     // clickable label (optional)
-    clickable : React.PropTypes.bool,
+    clickable: React.PropTypes.bool
   },
 
-  getLinkName : function () {
+  getLinkName: function () {
     const {cell, langtag, linkIndexAt} = this.props;
     return cell.linkString(linkIndexAt, langtag);
   },
 
-  removeLinkHandler : function (event) {
+  removeLinkHandler: function (event) {
     event.preventDefault();
     event.stopPropagation();
     this.props.onDelete(this.props.linkElement.id);
   },
 
-  renderDeletable : function () {
+  renderDeletable: function () {
     const {langtag, cell, onDelete} = this.props;
 
     if (!onDelete) {
@@ -47,7 +47,7 @@ export const LinkLabelCell = React.createClass({
     </a>;
   },
 
-  renderClickable : function () {
+  renderClickable: function () {
     const {langtag, cell} = this.props;
 
     const tableId = cell.column.toTable;
@@ -60,13 +60,13 @@ export const LinkLabelCell = React.createClass({
     </a>;
   },
 
-  renderLabel : function () {
+  renderLabel: function () {
     return <span className="link-label">
         {this.getLinkName()}
       </span>;
   },
 
-  render : function () {
+  render: function () {
     const {clickable, deletable} = this.props;
 
     if (deletable) {

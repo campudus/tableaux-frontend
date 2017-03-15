@@ -9,14 +9,14 @@ import {ColumnKinds} from "../../constants/TableauxConstants";
 import {compose, isEmpty, eq} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 
-//Distance between clicked coordinate and the left upper corner of the context menu
+// Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
 
 class RowContextMenu extends React.Component {
 
   constructor(props) {
-    super(props)
-    console.log("RowContextMenu", props)
+    super(props);
+    console.log("RowContextMenu", props);
   }
 
   closeRowContextMenu = () => {
@@ -30,7 +30,7 @@ class RowContextMenu extends React.Component {
   };
 
   showTranslations = (event) => {
-    const {props:{row}, closeRowContextMenu} = this;
+    const {props: {row}, closeRowContextMenu} = this;
     ActionCreator.toggleRowExpand(row.getId());
     closeRowContextMenu();
   };
@@ -83,23 +83,23 @@ class RowContextMenu extends React.Component {
   };
 
   render = () => {
-    const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props:{t}} = this;
+    const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props: {t}} = this;
 
     return (
       <GenericContextMenu x={this.props.x}
                           y={this.props.y - this.props.offsetY}
                           offset={CLICK_OFFSET} menuItems=
                             {<div>
-                              {this.props.table.type === 'settings' ? '' : <a href="#" onClick={duplicateRow}>{t(
-                                  'duplicate_row')}</a>}
+                              {this.props.table.type === "settings" ? "" : <a href="#" onClick={duplicateRow}>{t(
+                                  "duplicate_row")}</a>}
                               {this.copyItem()}
                               {this.pasteItem()}
-                              <a href="#" onClick={showTranslations}>{t('show_translation')}</a>
-                              <a href="#" onClick={showDependency}>{t('show_dependency')}</a>
-                              {this.props.table.type === 'settings' ? '' : <a href="#" onClick={deleteRow}>{t(
-                                  'delete_row')}</a>}
-                              {this.props.table.type === 'settings' ? '' : <a href="#" onClick={showEntityView}>{t(
-                                  'show_entity_view')}</a>}
+                              <a href="#" onClick={showTranslations}>{t("show_translation")}</a>
+                              <a href="#" onClick={showDependency}>{t("show_dependency")}</a>
+                              {this.props.table.type === "settings" ? "" : <a href="#" onClick={deleteRow}>{t(
+                                  "delete_row")}</a>}
+                              {this.props.table.type === "settings" ? "" : <a href="#" onClick={showEntityView}>{t(
+                                  "show_entity_view")}</a>}
                             </div>
                             }
       />
@@ -117,4 +117,4 @@ RowContextMenu.propTypes = {
   cell: React.PropTypes.object.isRequired
 };
 
-export default translate(['table'])(RowContextMenu);
+export default translate(["table"])(RowContextMenu);

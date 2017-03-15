@@ -1,12 +1,11 @@
-import React from 'react';
-import {openOverlay, closeOverlay} from '../../actions/ActionCreator';
-import i18n from 'i18next';
-import View from '../entityView/RowView';
-import {ColumnKinds} from '../../constants/TableauxConstants';
-import RowConcatHelper from '../../helpers/RowConcatHelper';
+import React from "react";
+import {openOverlay, closeOverlay} from "../../actions/ActionCreator";
+import i18n from "i18next";
+import View from "../entityView/RowView";
+import {ColumnKinds} from "../../constants/TableauxConstants";
+import RowConcatHelper from "../../helpers/RowConcatHelper";
 
 export function openEntityView(row, langtag) {
-
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
 
@@ -14,8 +13,8 @@ export function openEntityView(row, langtag) {
     return (
       <div className="button-wrapper">
         <button className="button neutral" onClick={() => {
-          closeOverlay()
-        }}>{i18n.t('common:close')}</button>
+          closeOverlay();
+        }}>{i18n.t("common:close")}</button>
       </div>
     );
   };
@@ -25,20 +24,20 @@ export function openEntityView(row, langtag) {
 
     return (
       <div className="entityView">
-        {cells.map((cell)=> {
+        {cells.map((cell) => {
           if (cell.kind === ColumnKinds.concat) {
             return null;
           }
-          return <View key={cell.id} cell={cell} langtag={langtag} />
+          return <View key={cell.id} cell={cell} langtag={langtag} />;
         })}
       </div>
     );
   };
 
   openOverlay({
-    head : <span>{i18n.t('table:entity_view')}: {rowDisplayLabel}</span>,
-    body : <EntityViewBody />,
-    footer : <EntityViewFooter />,
-    type : "full-flex"
+    head: <span>{i18n.t("table:entity_view")}: {rowDisplayLabel}</span>,
+    body: <EntityViewBody />,
+    footer: <EntityViewFooter />,
+    type: "full-flex"
   });
 }

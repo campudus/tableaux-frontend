@@ -11,7 +11,7 @@ import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import JumpSpinner from "./JumpSpinner";
 
-//Worker
+// Worker
 @listensToClickOutside
 class Table extends React.Component {
 
@@ -28,7 +28,7 @@ class Table extends React.Component {
     this.tableHeaderId = "tableHeader";
     this.tableDOMNode = null;
     this.tableDOMOffsetY = 0;
-    this.tableRowsDom = null; //scrolling rows container
+    this.tableRowsDom = null; // scrolling rows container
     this.columnsDom = null;
 
     this.state = {
@@ -37,13 +37,13 @@ class Table extends React.Component {
       scrolledHorizontal: 0,
       selectedCell: null,
       selectedCellEditing: false,
-      //needed for multilanguage cell selection
-      expandedRowIds: null, //Array
+      // needed for multilanguage cell selection
+      expandedRowIds: null, // Array
       selectedCellExpandedRow: null,
       shouldCellFocus: true,
       rowContextMenu: null,
       showScrollToLeftButton: false
-    }
+    };
   }
 
   componentWillMount() {
@@ -86,7 +86,7 @@ class Table extends React.Component {
     tableRowsDom = ReactDOM.findDOMNode(tableRows);
     columnsDom = ReactDOM.findDOMNode(columns);
     this.setState({offsetTableData: tableRowsDom.getBoundingClientRect().top});
-    //Don't change this to state, its more performant during scroll
+    // Don't change this to state, its more performant during scroll
     headerDOMElement = document.getElementById(tableHeaderId);
     tableDOMNode = ReactDOM.findDOMNode(this);
     tableDOMOffsetY = tableDOMNode.getBoundingClientRect().top;
@@ -95,15 +95,15 @@ class Table extends React.Component {
     this.tableDOMNode = tableDOMNode;
     this.tableDOMOffsetY = tableDOMOffsetY;
 
-    //save a reference globally for children. Cells use this.
+    // save a reference globally for children. Cells use this.
     window.GLOBAL_TABLEAUX.tableRowsDom = this.tableRowsDom = tableRowsDom;
   }
 
   componentDidUpdate() {
     console.log("Table did update.");
-    //When overlay is open we don't want anything to force focus inside the table
+    // When overlay is open we don't want anything to force focus inside the table
     if (!this.props.overlayOpen) {
-      //Just update when used with keyboard or when clicking explicitly on a cell
+      // Just update when used with keyboard or when clicking explicitly on a cell
       if (tableNavigationWorker.shouldCellFocus.call(this)) {
         tableNavigationWorker.updateScrollViewToSelectedCell.call(this);
       }
@@ -124,10 +124,10 @@ class Table extends React.Component {
   };
 
   onMouseDownHandler = (e) => {
-    //We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
+    // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
     // in the header
     if (this.tableDOMNode.contains(document.activeElement)) {
-      //deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
+      // deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
       // can't differentiate between clicking the scrollbar or content
       if (this.columnsDom.contains(e.target)) {
         this.handleClickOutside(e);
@@ -143,14 +143,14 @@ class Table extends React.Component {
   };
 
   handleScroll = (e) => {
-    //only when horizontal scroll changed
+    // only when horizontal scroll changed
     if (e.target.scrollLeft != this.scrolledXBefore) {
       var scrolledX = e.target.scrollLeft;
-      //Don't change this to state, its more performant during scroll
+      // Don't change this to state, its more performant during scroll
       this.headerDOMElement.style.left = -scrolledX + "px";
       this.scrolledXBefore = scrolledX;
 
-      //update the scroll to left button when necessary
+      // update the scroll to left button when necessary
       if (scrolledX != 0 && !this.state.showScrollToLeftButton) {
         this.setState({
           showScrollToLeftButton: true,
@@ -174,7 +174,7 @@ class Table extends React.Component {
   };
 
   render() {
-    const {langtag, table:{columns}, rows, table} = this.props;
+    const {langtag, table: {columns}, rows, table} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
     return (
@@ -198,7 +198,7 @@ class Table extends React.Component {
                 table={table}
                 shouldCellFocus={tableNavigationWorker.shouldCellFocus.call(this)}
           />
-          <span id="scrollToLeftStart" className={!showScrollToLeftButton ? 'hide' : null}
+          <span id="scrollToLeftStart" className={!showScrollToLeftButton ? "hide" : null}
                 title="scroll to the beginning of table."
                 onClick={tableNavigationWorker.scrollToLeftStart.bind(this)}><i className="fa fa-chevron-left" /></span>
         </div>

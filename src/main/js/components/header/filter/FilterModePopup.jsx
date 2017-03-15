@@ -39,7 +39,7 @@ class FilterModePopup extends React.Component {
                               </div>
                             </div>
                           } />
-    )
+    );
   }
 }
 

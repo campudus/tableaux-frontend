@@ -4,20 +4,20 @@ import {getTableDisplayName} from "../../helpers/multiLanguage";
 import {translate} from "react-i18next";
 import Spinner from "../header/Spinner";
 
-//Builds the actual dependent tables/rows DOM elements
-@translate('table')
+// Builds the actual dependent tables/rows DOM elements
+@translate("table")
 export default class DependentRowsList extends React.Component {
 
   static propTypes = {
-    row : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    textHasDependency : React.PropTypes.func.isRequired,
-    textHasNoDependency : React.PropTypes.element.isRequired,
+    row: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    textHasDependency: React.PropTypes.func.isRequired,
+    textHasNoDependency: React.PropTypes.element.isRequired
   };
 
   state = {
-    loadingDependency : true,
-    dependency : null
+    loadingDependency: true,
+    dependency: null
   };
 
   request = null;
@@ -36,22 +36,21 @@ export default class DependentRowsList extends React.Component {
   }
 
   checkDependency() {
-    //check dependent rows
+    // check dependent rows
     this.request = this.props.row.dependent(
-      (error)=> {
+      (error) => {
         console.log("checkDependency dependent error:", error);
         alert("Dependencies could not be checked. Please try again.");
         this.request = null;
       },
       (res) => {
         this.setState({
-          dependency : res,
-          loadingDependency : false
+          dependency: res,
+          loadingDependency: false
         });
         this.request = null;
       });
   }
-
 
   render() {
     const {langtag, textHasDependency, textHasNoDependency, t} = this.props;
@@ -61,31 +60,30 @@ export default class DependentRowsList extends React.Component {
     if (loadingDependency) {
       return <div className="dependent-loading-data">
         <Spinner isLoading={true}/>
-        <p>{t('fetching_dependent_rows')}</p>
+        <p>{t("fetching_dependent_rows")}</p>
       </div>;
     }
 
     if (dependency && dependency.length > 0) {
-
       dependentInfoText = textHasDependency ? textHasDependency(dependency.length) : null;
 
-      dependentTables = dependency.map((dep)=> {
+      dependentTables = dependency.map((dep) => {
         const {table, column, rows} = dep;
         const tableId = table.id;
         const linkToTable = `/${langtag}/tables/${tableId}`;
 
-        //Builds dependent rows inside dependent tables
-        const rowsDisplay = rows.map((row, idx)=> {
+        // Builds dependent rows inside dependent tables
+        const rowsDisplay = rows.map((row, idx) => {
           const dependentRowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag);
           return (
             <div key={idx} className="dependent-row">
-              <a href={[linkToTable, `rows/${row.id}?filter`].join("/")}  target="_blank" className="dependent-row-id">#{row.id} <i className="fa fa-angle-right"/></a>
+              <a href={[linkToTable, `rows/${row.id}?filter`].join("/")} target="_blank" className="dependent-row-id">#{row.id} <i className="fa fa-angle-right"/></a>
               {dependentRowDisplayLabel}
             </div>
           );
         });
 
-        //Builds dependent tables
+        // Builds dependent tables
         return (
           <div key={tableId} className="dependent-table">
             <a className="table-link" href={linkToTable} target="_blank"><i
@@ -96,9 +94,8 @@ export default class DependentRowsList extends React.Component {
           </div>
         );
       });
-
     } else {
-      dependentInfoText = textHasNoDependency ? textHasNoDependency : null;
+      dependentInfoText = textHasNoDependency || null;
     }
 
     return (

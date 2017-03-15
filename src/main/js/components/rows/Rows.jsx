@@ -9,7 +9,7 @@ import * as f from "lodash/fp";
 @connectToAmpersand
 class Rows extends React.Component {
 
-  displayName = 'Rows';
+  displayName = "Rows";
 
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ class Rows extends React.Component {
       return true;
     }
     const idOf = f.prop("id");
-    if (f.any(([a,b]) => idOf(a) !== idOf(b), f.zip(nP.rows.models, this.props.rows.models))) {
+    if (f.any(([a, b]) => idOf(a) !== idOf(b), f.zip(nP.rows.models, this.props.rows.models))) {
       return true;
     }
     // console.log("! Rows skipped update");
@@ -45,7 +45,7 @@ class Rows extends React.Component {
     return (expandedRowIds && expandedRowIds.indexOf(rowId) > -1) || false;
   };
 
-  //Is this row, including all associated multilanguage rows selected?
+  // Is this row, including all associated multilanguage rows selected?
   isRowSelected(row) {
     const {selectedCell} = this.props;
     if (selectedCell) {
@@ -77,16 +77,15 @@ class Rows extends React.Component {
                     isRowExpanded={isRowExpanded}
                     isRowSelected={isRowSelected}
                     shouldCellFocus={shouldCellFocusVal}
-        />
+        />;
       });
 
-      if (table.type !== 'settings') {
+      if (table.type !== "settings") {
         renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag} />);
       }
 
       return renderedRows;
     } else {
-
       return null;
     }
   };

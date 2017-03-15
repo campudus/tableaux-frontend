@@ -1,30 +1,30 @@
-var React = require('react');
-var App = require('ampersand-app');
-var multiLanguage = require('../../../helpers/multiLanguage');
-var _ = require('lodash');
-import {isUserAdmin, getUserLanguageAccess, hasUserAccessToLanguage} from '../../../helpers/accessManagementHelper';
-import {getLanguageOrCountryIcon} from '../../../helpers/multiLanguage';
-import {translate} from 'react-i18next';
-import TableauxConstants from '../../../constants/TableauxConstants';
+var React = require("react");
+var App = require("ampersand-app");
+var multiLanguage = require("../../../helpers/multiLanguage");
+var _ = require("lodash");
+import {isUserAdmin, getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import {translate} from "react-i18next";
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 var SingleFileTextInput = React.createClass({
 
-  propTypes : {
-    name : React.PropTypes.string.isRequired,
-    labelText : React.PropTypes.string.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    originalValue : React.PropTypes.object.isRequired,
-    editedValue : React.PropTypes.object.isRequired,
-    isOpen : React.PropTypes.bool.isRequired,
-    onToggle : React.PropTypes.func.isRequired,
-    onChange : React.PropTypes.func.isRequired
+  propTypes: {
+    name: React.PropTypes.string.isRequired,
+    labelText: React.PropTypes.string.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    originalValue: React.PropTypes.object.isRequired,
+    editedValue: React.PropTypes.object.isRequired,
+    isOpen: React.PropTypes.bool.isRequired,
+    onToggle: React.PropTypes.func.isRequired,
+    onChange: React.PropTypes.func.isRequired
   },
 
-  generateId : function (name, langtag) {
-    return name + '_' + langtag;
+  generateId: function (name, langtag) {
+    return name + "_" + langtag;
   },
 
-  renderInput : function (name, valueObj, langtag) {
+  renderInput: function (name, valueObj, langtag) {
     var self = this;
     var inputs;
     var fallbackLang = TableauxConstants.DefaultLangtag;
@@ -43,14 +43,14 @@ var SingleFileTextInput = React.createClass({
     return inputs;
   },
 
-  onChange : function (langtag, event) {
+  onChange: function (langtag, event) {
     var changedVal = event.target.value;
     this.props.onChange(changedVal, langtag);
   },
 
-  renderField : function (id, value, langtag) {
-    //disable input for users without access to that language
-    const disabled = hasUserAccessToLanguage(langtag) ? false : true;
+  renderField: function (id, value, langtag) {
+    // disable input for users without access to that language
+    const disabled = !hasUserAccessToLanguage(langtag);
 
     return (
       <div className="field-input" key={id}>
@@ -60,11 +60,11 @@ var SingleFileTextInput = React.createClass({
       </div>);
   },
 
-  renderLangtag : function (langtag) {
+  renderLangtag: function (langtag) {
     return getLanguageOrCountryIcon(langtag);
   },
 
-  onToggle : function () {
+  onToggle: function () {
     var valueObj = {};
     var self = this;
     TableauxConstants.Langtags.map(function (langtag) {
@@ -76,7 +76,7 @@ var SingleFileTextInput = React.createClass({
     this.props.onToggle(valueObj);
   },
 
-  render : function () {
+  render: function () {
     function generateValue(originalValue, editedValue) {
       return _.merge({}, originalValue, editedValue);
     }
@@ -94,4 +94,4 @@ var SingleFileTextInput = React.createClass({
   }
 });
 
-module.exports = translate(['media'])(SingleFileTextInput);
+module.exports = translate(["media"])(SingleFileTextInput);

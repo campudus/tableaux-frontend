@@ -20,26 +20,26 @@ import {translate} from "react-i18next";
 class SingleFileEdit extends React.Component {
 
   static propTypes = {
-    file : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    onClose : React.PropTypes.func.isRequired,
-    editedTitleValue : React.PropTypes.object.isRequired,
-    editedDescValue : React.PropTypes.object.isRequired,
-    editedExternalnameValue : React.PropTypes.object.isRequired,
-    hasChanged : React.PropTypes.bool.isRequired,
-    onTitleChange : React.PropTypes.func.isRequired,
-    onDescriptionChange : React.PropTypes.func.isRequired,
-    onExternalnameChange : React.PropTypes.func.isRequired
+    file: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    onClose: React.PropTypes.func.isRequired,
+    editedTitleValue: React.PropTypes.object.isRequired,
+    editedDescValue: React.PropTypes.object.isRequired,
+    editedExternalnameValue: React.PropTypes.object.isRequired,
+    hasChanged: React.PropTypes.bool.isRequired,
+    onTitleChange: React.PropTypes.func.isRequired,
+    onDescriptionChange: React.PropTypes.func.isRequired,
+    onExternalnameChange: React.PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      isTitleOpen : false,
-      isDescriptionOpen : false,
-      isExternalnameOpen : false,
-      multifileLanguage : Langtags.length > 0 ? Langtags[1] : DefaultLangtag
-    }
+      isTitleOpen: false,
+      isDescriptionOpen: false,
+      isExternalnameOpen: false,
+      multifileLanguage: Langtags.length > 0 ? Langtags[1] : DefaultLangtag
+    };
   }
 
   componentWillMount() {
@@ -52,7 +52,7 @@ class SingleFileEdit extends React.Component {
     Dispatcher.off("on-media-overlay-cancel", this.onClose);
   }
 
-  onSave  = () => {
+  onSave = () => {
     if (this.props.hasChanged) {
       const file = this.props.file;
       const newTitle = this.props.editedTitleValue;
@@ -62,57 +62,57 @@ class SingleFileEdit extends React.Component {
       console.log("got obj after reduceMediaValuesToAllowedLanguages: ", changeFileParams);
       ActionCreator.changeFile(...changeFileParams);
     }
-    this.props.onClose(event)
+    this.props.onClose(event);
   };
 
-  onClose  = (event) => {
+  onClose = (event) => {
     const {t} = this.props;
     if (this.props.hasChanged) {
-      if (confirm(t('file_close_without_saving'))) {
-        this.props.onClose(event)
+      if (confirm(t("file_close_without_saving"))) {
+        this.props.onClose(event);
       }
     } else {
-      this.props.onClose(event)
+      this.props.onClose(event);
     }
   };
 
-  onTitleChange  = (titleValue, langtag) => {
+  onTitleChange = (titleValue, langtag) => {
     this.props.onTitleChange(titleValue, langtag);
   };
 
-  toggleTitle  = () => {
+  toggleTitle = () => {
     this.setState({
-      isTitleOpen : !this.state.isTitleOpen
+      isTitleOpen: !this.state.isTitleOpen
     });
   };
 
-  onDescChange  = (descValue, langtag) => {
+  onDescChange = (descValue, langtag) => {
     this.props.onDescriptionChange(descValue, langtag);
   };
 
-  toggleDesc  = () => {
+  toggleDesc = () => {
     this.setState({
-      isDescriptionOpen : !this.state.isDescriptionOpen
+      isDescriptionOpen: !this.state.isDescriptionOpen
     });
   };
 
-  onExternalnameChange  = (externalnameValue, langtag) => {
+  onExternalnameChange = (externalnameValue, langtag) => {
     this.props.onExternalnameChange(externalnameValue, langtag);
   };
 
-  toggleExternalname  = () => {
+  toggleExternalname = () => {
     this.setState({
-      isExternalnameOpen : !this.state.isExternalnameOpen
+      isExternalnameOpen: !this.state.isExternalnameOpen
     });
   };
 
-  onMultifileLanguageChange  = (lang) => {
+  onMultifileLanguageChange = (lang) => {
     this.setState({
-      multifileLanguage : lang
+      multifileLanguage: lang
     });
   };
 
-  onMultilangDrop  = (files) => {
+  onMultilangDrop = (files) => {
     const langtag = this.state.multifileLanguage;
 
     files.forEach(function (file) {
@@ -129,7 +129,7 @@ class SingleFileEdit extends React.Component {
     });
   };
 
-  multilangUploadCallback  = (err, uploadRes) => {
+  multilangUploadCallback = (err, uploadRes) => {
     if (err) {
       console.error("FileDelete.uploadCallback", err);
       return;
@@ -141,7 +141,7 @@ class SingleFileEdit extends React.Component {
     }
   };
 
-  renderTextInput  = (id, label, valueObj, langtag, isOpen) => {
+  renderTextInput = (id, label, valueObj, langtag, isOpen) => {
     const retrieveTranslation = multiLanguage.retrieveTranslation(DefaultLangtag);
 
     if (isOpen) {
@@ -167,8 +167,8 @@ class SingleFileEdit extends React.Component {
     const langOptions = Langtags.reduce((res, langtag) => {
       if (DefaultLangtag !== langtag && hasUserAccessToLanguage(langtag)) {
         res.push({
-          value : langtag,
-          label : langtag
+          value: langtag,
+          label: langtag
         });
       }
       return res;
@@ -185,11 +185,11 @@ class SingleFileEdit extends React.Component {
             <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
                               uuid={uuid}/>
           </div>
-          <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>{t('open_file')}</a></span>
+          <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>{t("open_file")}</a></span>
         </div>
         <div className="properties-wrapper">
           <SingleFileTextInput name="fileTitle"
-                               labelText={t('file_title_label')}
+                               labelText={t("file_title_label")}
                                originalValue={this.props.file.title}
                                editedValue={this.props.editedTitleValue}
                                langtag={this.props.langtag}
@@ -198,7 +198,7 @@ class SingleFileEdit extends React.Component {
                                onChange={this.onTitleChange}/>
 
           <SingleFileTextInput name="fileDescription"
-                               labelText={t('file_description_label')}
+                               labelText={t("file_description_label")}
                                originalValue={this.props.file.description}
                                editedValue={this.props.editedDescValue}
                                langtag={this.props.langtag}
@@ -207,7 +207,7 @@ class SingleFileEdit extends React.Component {
                                onChange={this.onDescChange}/>
 
           <SingleFileTextInput name="fileLinkName"
-                               labelText={t('file_link_name_label')}
+                               labelText={t("file_link_name_label")}
                                originalValue={this.props.file.externalName}
                                editedValue={this.props.editedExternalnameValue}
                                langtag={this.props.langtag}
@@ -219,8 +219,8 @@ class SingleFileEdit extends React.Component {
         <div className="multifile-wrapper">
           <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
             <div className="convert-multilanguage-note">
-              <h4>{t('convert_multilanguage_hl')}</h4>
-              <p>{t('convert_multilanguage_description')}</p>
+              <h4>{t("convert_multilanguage_hl")}</h4>
+              <p>{t("convert_multilanguage_description")}</p>
             </div>
           </Dropzone>
           <LanguageSwitcher

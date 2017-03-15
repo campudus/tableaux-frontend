@@ -1,33 +1,33 @@
-var React = require('react');
-var AmpersandMixin = require('ampersand-react-mixin');
-var ActionCreator = require('../../../actions/ActionCreator');
-import {isUserAdmin} from '../../../helpers/accessManagementHelper';
-import {translate} from 'react-i18next';
+var React = require("react");
+var AmpersandMixin = require("ampersand-react-mixin");
+var ActionCreator = require("../../../actions/ActionCreator");
+import {isUserAdmin} from "../../../helpers/accessManagementHelper";
+import {translate} from "react-i18next";
 
 var SubfolderView = React.createClass({
-  mixins : [AmpersandMixin],
+  mixins: [AmpersandMixin],
 
-  propTypes : {
-    folder : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    onRemove : React.PropTypes.func.isRequired,
-    onEdit : React.PropTypes.func.isRequired
+  propTypes: {
+    folder: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    onRemove: React.PropTypes.func.isRequired,
+    onEdit: React.PropTypes.func.isRequired
   },
 
-  folderClickHandler : function (event) {
+  folderClickHandler: function (event) {
     event.preventDefault();
     ActionCreator.switchFolder(this.props.folder.id, this.props.langtag);
   },
 
-  render : function () {
+  render: function () {
     const name = this.props.folder.name;
     const {t} = this.props;
     const mediaOptions = isUserAdmin() ? (
       <div className="media-options">
           <span className="button" onClick={this.props.onEdit} alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i>{t('rename_folder')}
+          <i className="icon fa fa-pencil-square-o"></i>{t("rename_folder")}
         </span>
-        <span className="button" onClick={this.props.onRemove} alt={t('delete_folder')}>
+        <span className="button" onClick={this.props.onRemove} alt={t("delete_folder")}>
           <i className="fa fa-trash"></i>
         </span>
       </div>
@@ -44,4 +44,4 @@ var SubfolderView = React.createClass({
   }
 });
 
-module.exports = translate(['media'])(SubfolderView);
+module.exports = translate(["media"])(SubfolderView);

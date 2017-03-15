@@ -27,7 +27,7 @@ class ColumnFilterPopup extends React.Component {
       value: str,
       type: type
     };
-    const {columns:{models}} = this.props;
+    const {columns: {models}} = this.props;
     this.setState({
       filter: filter,
       models: models.filter(this.buildFilter(filter))
@@ -36,12 +36,12 @@ class ColumnFilterPopup extends React.Component {
 
   // returns a true/false filter function accepting one argument
   buildFilter = filter => {
-    const {columns:{models}} = this.props;
+    const {columns: {models}} = this.props;
     const lvl1 = col => col != f.first(models); // ignore ID column
     const lvl2 = (filter)
       ? f.compose(SearchFunctions[filter.type](filter.value), this.getColName)
       : f.stubTrue;                                // ...or pass all
-    return f.allPass([lvl1, lvl2])
+    return f.allPass([lvl1, lvl2]);
   };
 
   handleClickOutside = event => {
@@ -89,13 +89,13 @@ class ColumnFilterPopup extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         selectNext(Directions.DOWN);
-      },
-    }
+      }
+    };
   };
 
   toggleCol = index => event => {
     event.stopPropagation();
-    const {columns:{models}} = this.props;
+    const {columns: {models}} = this.props;
     const the_column = f.first(f.filter(x => x.id === index, models));
     this.setVisibilityAndUpdateGrid(!the_column.visible, [index]);
     this.forceUpdate();
@@ -131,7 +131,7 @@ class ColumnFilterPopup extends React.Component {
         />
         {name}
       </div>
-    )
+    );
   };
 
   handleFilterChange = event => {
@@ -191,7 +191,7 @@ class ColumnFilterPopup extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 

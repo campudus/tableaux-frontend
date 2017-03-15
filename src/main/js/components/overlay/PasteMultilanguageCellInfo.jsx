@@ -20,7 +20,7 @@ import {
 import {ColumnKinds, DateFormats, DateTimeFormats, Langtags} from "../../constants/TableauxConstants";
 import Moment from "moment";
 const EMPTY_STRING = "---";
-const {date,datetime} = ColumnKinds;
+const {date, datetime} = ColumnKinds;
 
 class PasteMultilanguageCellInfo extends React.Component {
   static propTypes = {
@@ -47,11 +47,11 @@ class PasteMultilanguageCellInfo extends React.Component {
       <div className="text">
         {(value) ? formatValue(value) : EMPTY_STRING}
       </div>
-    </div>
+    </div>;
   };
 
   langtagComparator([langtag, value]) {
-    return findIndex(eq(langtag))
+    return findIndex(eq(langtag));
   }
 
   render() {
@@ -79,7 +79,7 @@ class PasteMultilanguageCellInfo extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 

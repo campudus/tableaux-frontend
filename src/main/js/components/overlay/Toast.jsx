@@ -1,17 +1,17 @@
-import React from 'react';
-import {translate} from 'react-i18next';
+import React from "react";
+import {translate} from "react-i18next";
 
 let Toast = (props) => {
-  const {t,content} = props;
+  const {t, content} = props;
   return (
     <div className="toast-wrapper">
       {content}
     </div>
-  )
+  );
 };
 
 Toast.propTypes = {
-  content : React.PropTypes.any.isRequired
+  content: React.PropTypes.any.isRequired
 };
 
-export default translate(['table'])(Toast);
+export default translate(["table"])(Toast);

@@ -1,18 +1,17 @@
-import React from 'react';
-import Dispatcher from '../dispatcher/Dispatcher';
-import TableauxConstants from '../constants/TableauxConstants';
+import React from "react";
+import Dispatcher from "../dispatcher/Dispatcher";
+import TableauxConstants from "../constants/TableauxConstants";
 
-import TableView from '../components/TableView.jsx';
-import MediaView from '../components/media/MediaView.jsx';
+import TableView from "../components/TableView.jsx";
+import MediaView from "../components/media/MediaView.jsx";
 
 const ViewNames = TableauxConstants.ViewNames;
-
 
 export default class ViewRenderer extends React.Component {
 
   static propTypes = {
-    viewName : React.PropTypes.string.isRequired,
-    params : React.PropTypes.object.isRequired
+    viewName: React.PropTypes.string.isRequired,
+    params: React.PropTypes.object.isRequired
   };
 
   shouldComponentUpdate(nextProps) {
@@ -44,7 +43,7 @@ export default class ViewRenderer extends React.Component {
     if (this.views[viewName]) {
       return this.views[viewName]();
     } else {
-      //TODO show error to user
+      // TODO show error to user
       console.error("View with name " + viewName + " not found.");
     }
   }

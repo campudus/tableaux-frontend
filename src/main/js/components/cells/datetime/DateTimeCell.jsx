@@ -6,19 +6,19 @@ import {DateTimeFormats, FallbackLanguage} from "../../../constants/TableauxCons
 import {either} from "../../../helpers/monads";
 import {prop, identity} from "lodash/fp";
 
-class DateTimeCell extends React.Component{
+class DateTimeCell extends React.Component {
 
   static propTypes = {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    editing : React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts : React.PropTypes.func
+    cell: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    editing: React.PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: React.PropTypes.func
   };
 
-  constructor(props)  {
+  constructor(props) {
     super(props);
     this.state = {
-      currentDateTimeValue : this.getDateTimeValue()
+      currentDateTimeValue: this.getDateTimeValue()
     };
     this.touched = false;
     this.noDateTimeText = "";
@@ -26,7 +26,7 @@ class DateTimeCell extends React.Component{
 
   componentWillReceiveProps = (newProps) => {
     if (newProps.editing && !this.props.editing) {
-      this.setState({currentDateTimeValue: this.getDateTimeValue()})
+      this.setState({currentDateTimeValue: this.getDateTimeValue()});
     }
   };
 
@@ -43,7 +43,7 @@ class DateTimeCell extends React.Component{
     const {cell, langtag} = this.props;
     return either(cell.value)
       .map((cell.isMultiLanguage) ? prop(langtag) : identity)
-      .getOrElse(null)
+      .getOrElse(null);
   };
 
   onDateTimeUpdate = (newDateTimeValue) => {
@@ -80,7 +80,7 @@ class DateTimeCell extends React.Component{
     if (!this.props.editing) {
       content = either((this.touched) ? this.state.currentDateTimeValue : this.getDateTimeValue())
         .map(momStr => new Moment(momStr).format(DateTimeFormats.formatForUser))
-        .getOrElse(this.noDateTimeText)
+        .getOrElse(this.noDateTimeText);
     } else {
       content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
                                   noDateTimeText={this.noDateTimeText}

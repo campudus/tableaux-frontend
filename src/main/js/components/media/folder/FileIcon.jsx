@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 function FileIcon(props) {
   const {internalFileName} = props;
-  const fileExtension = internalFileName ? internalFileName.split('.').pop() : false;
+  const fileExtension = internalFileName ? internalFileName.split(".").pop() : false;
   let fileIcon;
   if (fileExtension) {
-    fileIcon = <img src={"/img/filetypes/" + fileExtension +"-icon-128x128.png"} alt={fileExtension}/>;
+    fileIcon = <img src={"/img/filetypes/" + fileExtension + "-icon-128x128.png"} alt={fileExtension}/>;
   } else {
     fileIcon = <span className="fa-stack empty-icon">
                   <i className="fa fa-file-o fa-stack-2x"></i>
@@ -16,7 +16,7 @@ function FileIcon(props) {
 };
 
 FileIcon.propTypes = {
-  internalFileName : React.PropTypes.string
+  internalFileName: React.PropTypes.string
 };
 
 export default FileIcon;

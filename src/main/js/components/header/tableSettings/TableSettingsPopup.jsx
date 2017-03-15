@@ -3,11 +3,11 @@
  */
 
 import React from "react";
-import NameEditor from './NameEditor'
+import NameEditor from "./NameEditor";
 import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
-class TableSettingsPopup extends React.Component{
+class TableSettingsPopup extends React.Component {
   handleClickOutside = evt => {
     this.props.outsideClickHandler(evt);
   };

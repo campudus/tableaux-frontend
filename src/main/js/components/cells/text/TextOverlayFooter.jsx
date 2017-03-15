@@ -1,17 +1,17 @@
-var React = require('react');
-var ActionCreator = require('../../../actions/ActionCreator');
+var React = require("react");
+var ActionCreator = require("../../../actions/ActionCreator");
 
 var TextOverlayFooter = React.createClass({
 
-  onSaveHandler : function () {
+  onSaveHandler: function () {
     ActionCreator.saveOverlayTypeText();
   },
 
-  onCancelHandler : function () {
+  onCancelHandler: function () {
     ActionCreator.closeOverlayTypeText();
   },
 
-  render : function () {
+  render: function () {
     return (
       <div className="button-wrapper">
         <button className="button positive" onClick={this.onSaveHandler}>Speichern</button>

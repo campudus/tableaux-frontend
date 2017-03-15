@@ -25,7 +25,7 @@ class JumpSpinner extends React.Component {
   };
 
   switchOff() {
-    this.setState({isLoading: false})
+    this.setState({isLoading: false});
   };
 
   render = () => {
@@ -42,7 +42,7 @@ class JumpSpinner extends React.Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 

@@ -17,17 +17,16 @@ class DateCell extends React.Component {
   }
 
   getSavedMoment = () => {
-    const {cell,langtag} = this.props;
+    const {cell, langtag} = this.props;
     const momStr = (cell.isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
     return (momStr) ? Moment(momStr) : null;
-
   };
 
   componentWillReceiveProps(newProps) {
     if (!this.props.editing && newProps.editing) {
-      this.setState({value: this.getSavedMoment()})
+      this.setState({value: this.getSavedMoment()});
     }
   }
 
@@ -39,17 +38,17 @@ class DateCell extends React.Component {
 
   finishedEditing = save => {
     if (save) {
-      const {cell,langtag} = this.props;
+      const {cell, langtag} = this.props;
       const inputDate = this.state.value;
       const savedDateString = this.momentToString(this.getSavedMoment());
       if (savedDateString !== this.momentToString(inputDate)) {
         const newValue = either(inputDate)
-          .map( m => m.format(DateFormats.formatForServer))
+          .map(m => m.format(DateFormats.formatForServer))
           .getOrElse(null);
         ActionCreator.changeCell(cell, (cell.isMultiLanguage) ? {[langtag]: newValue} : newValue);
       }
     } else {
-        this.setState({value: this.getSavedMoment()});
+      this.setState({value: this.getSavedMoment()});
     }
   };
 
@@ -66,7 +65,7 @@ class DateCell extends React.Component {
         <div className="cell-content">
           {this.momentToString(this.getSavedMoment())}
         </div>
-      )
+      );
     } else {
       return (
         <DateEditCell setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}
@@ -75,7 +74,7 @@ class DateCell extends React.Component {
                       handleEditFinished={this.finishedEditing}
                       value={this.state.value || new Moment()}
                       cell={cell} />
-      )
+      );
     }
   }
 }

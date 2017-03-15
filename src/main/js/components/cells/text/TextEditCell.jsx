@@ -1,18 +1,18 @@
-var React = require('react');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var TextArea = require('./TextArea.jsx');
-var ExpandButton = require('./ExpandButton.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
-var Directions = require('../../../constants/TableauxConstants').Directions;
-import listensToClickOutside from 'react-onclickoutside'
+var React = require("react");
+var Dispatcher = require("../../../dispatcher/Dispatcher");
+var TextArea = require("./TextArea.jsx");
+var ExpandButton = require("./ExpandButton.jsx");
+var ActionCreator = require("../../../actions/ActionCreator");
+var Directions = require("../../../constants/TableauxConstants").Directions;
+import listensToClickOutside from "react-onclickoutside";
 
-import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 
 @listensToClickOutside
 class TextEditCell extends React.Component {
 
   getInputName = () => {
-    return this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
+    return this.inputName = "cell-" + this.props.cell.tableId + "-" + this.props.cell.column.getId() + "-" + this.props.cell.rowId;
   };
 
   getKeyboardShortcuts = (event) => {
@@ -27,12 +27,12 @@ class TextEditCell extends React.Component {
         ActionCreator.selectNextCell(Directions.RIGHT);
       },
       enter: function (event) {
-        //stop handling the Table events
+        // stop handling the Table events
         event.stopPropagation();
       },
       always: function (event, shortcutFound) {
         if (!shortcutFound) {
-          //When typing text we don't want any table events
+          // When typing text we don't want any table events
           event.stopPropagation();
         }
       }
@@ -52,7 +52,7 @@ class TextEditCell extends React.Component {
   };
 
   openOverlay = (event) => {
-    //pass possible new text in editmode to overlay
+    // pass possible new text in editmode to overlay
     this.props.openOverlay(event, this.refs.input.value);
   };
 
@@ -60,13 +60,13 @@ class TextEditCell extends React.Component {
     var node = this.refs.input;
     var text = node.value;
     // Sets cursor to end of input field
-    node.value = ""; //textarea must be empty first to jump to end of text
+    node.value = ""; // textarea must be empty first to jump to end of text
     node.value = text;
   };
 
   render = () => {
     return (
-      <div className={'cell-content editing'}>
+      <div className={"cell-content editing"}>
         <textarea autoFocus className="input" name={this.getInputName()} defaultValue={this.props.defaultText}
                   ref="input" rows="4" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}></textarea>
         <ExpandButton onTrigger={this.openOverlay}/>

@@ -1,8 +1,8 @@
-var React = require('react');
-var Datetime = require('react-datetime');
-var ActionCreator = require('../../../actions/ActionCreator');
-var Directions = require('../../../constants/TableauxConstants').Directions;
-import listensToClickOutside from 'react-onclickoutside'
+var React = require("react");
+var Datetime = require("react-datetime");
+var ActionCreator = require("../../../actions/ActionCreator");
+var Directions = require("../../../constants/TableauxConstants").Directions;
+import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
 class DateTimeEditCell extends React.Component {
@@ -13,7 +13,7 @@ class DateTimeEditCell extends React.Component {
 
   componentWillUnmount = () => {
     this.props.handleEditDone();
-    //Important to clean up the keyboard shortcuts
+    // Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
   };
 

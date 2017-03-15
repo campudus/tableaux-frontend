@@ -1,30 +1,30 @@
-var React = require('react');
-var _ = require('lodash');
+var React = require("react");
+var _ = require("lodash");
 
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var ShortTextEditCell = require('./ShortTextEditCell.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+var Dispatcher = require("../../../dispatcher/Dispatcher");
+var ShortTextEditCell = require("./ShortTextEditCell.jsx");
+var ActionCreator = require("../../../actions/ActionCreator");
 
 var ShortTextCell = React.createClass({
 
-  displayName : 'ShortTextCell',
+  displayName: "ShortTextCell",
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
-    editing : React.PropTypes.bool.isRequired,
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired,
+    editing: React.PropTypes.bool.isRequired,
     setCellKeyboardShortcuts: React.PropTypes.func
   },
 
-  getInitialState : function () {
+  getInitialState: function () {
     return null;
   },
 
-  handleClick : function (event) {
+  handleClick: function (event) {
     ActionCreator.toggleCellEditing();
   },
 
-  handleEditDone : function (newValue) {
+  handleEditDone: function (newValue) {
     var cell = this.props.cell;
     var valueToSave;
 
@@ -39,7 +39,7 @@ var ShortTextCell = React.createClass({
     ActionCreator.toggleCellEditing(false);
   },
 
-  getValue : function () {
+  getValue: function () {
     var cell = this.props.cell;
 
     var value;
@@ -52,7 +52,7 @@ var ShortTextCell = React.createClass({
     return typeof value === "undefined" ? null : value;
   },
 
-  renderTextCell : function (cell, value) {
+  renderTextCell: function (cell, value) {
     return (
       <div className='cell-content' onClick={this.handleClick}>
         {value === null ? "" : value}
@@ -60,7 +60,7 @@ var ShortTextCell = React.createClass({
     );
   },
 
-  render : function () {
+  render: function () {
     var cell = this.props.cell;
 
     if (!this.props.editing) {

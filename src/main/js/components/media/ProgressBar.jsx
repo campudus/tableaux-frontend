@@ -1,13 +1,12 @@
-var React = require('react');
+var React = require("react");
 
 var ProgressBar = React.createClass({
 
-  propTypes : {
-    progress : React.PropTypes.number.isRequired
+  propTypes: {
+    progress: React.PropTypes.number.isRequired
   },
 
-  render : function () {
-
+  render: function () {
     var completed = this.props.progress;
     if (completed < 0) {
       completed = 0;
@@ -17,13 +16,13 @@ var ProgressBar = React.createClass({
     }
 
     var style = {
-      width : completed + '%',
-      transition : "width 100ms"
+      width: completed + "%",
+      transition: "width 100ms"
     };
 
     return (
       <div className="progressbar-container">
-        <div className="progressbar-progress" style={style}>{completed + '%'}</div>
+        <div className="progressbar-progress" style={style}>{completed + "%"}</div>
       </div>
     );
   }

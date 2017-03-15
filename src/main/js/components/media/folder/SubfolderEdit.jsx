@@ -1,14 +1,14 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-import KeyboardShortcutsHelper from '../../../helpers/KeyboardShortcutsHelper';
-import listensToClickOutside from 'react-onclickoutside';
+var React = require("react");
+var ReactDOM = require("react-dom");
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
 class SubfolderEdit extends React.Component {
   static propTypes = {
-    folder : React.PropTypes.object.isRequired,
-    onSave : React.PropTypes.func.isRequired,
-    onCancel : React.PropTypes.func.isRequired
+    folder: React.PropTypes.object.isRequired,
+    onSave: React.PropTypes.func.isRequired,
+    onCancel: React.PropTypes.func.isRequired
   };
 
   handleClickOutside = (event) => {
@@ -18,15 +18,15 @@ class SubfolderEdit extends React.Component {
   getKeyboardShortcuts = () => {
     const {onCancel} = this.props;
     return {
-      escape : (event) => {
+      escape: (event) => {
         event.preventDefault();
         onCancel();
       },
-      tab : (event) => {
+      tab: (event) => {
         event.preventDefault();
         this.onSave();
       },
-      enter : (event) => {
+      enter: (event) => {
         event.preventDefault();
         this.onSave();
       }

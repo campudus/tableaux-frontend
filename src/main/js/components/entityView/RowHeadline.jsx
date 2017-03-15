@@ -5,8 +5,8 @@ import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
 class RowHeadline extends React.Component {
 
   static propTypes = {
-    column : React.PropTypes.object,
-    langtag : React.PropTypes.string.isRequired
+    column: React.PropTypes.object,
+    langtag: React.PropTypes.string.isRequired
   };
 
   render = () => {
@@ -52,7 +52,7 @@ class RowHeadline extends React.Component {
 
     return (
       <div className="row-headline">{columnIcon}{columnName}</div>
-    )
+    );
   }
 }
 

@@ -1,15 +1,15 @@
-var React = require('react');
-var _ = require('lodash');
-var ActionCreator = require('../../../actions/ActionCreator');
-var Directions = require('../../../constants/TableauxConstants').Directions;
-import listensToClickOutside from 'react-onclickoutside'
+var React = require("react");
+var _ = require("lodash");
+var ActionCreator = require("../../../actions/ActionCreator");
+var Directions = require("../../../constants/TableauxConstants").Directions;
+import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
 
   constructor(props) {
     super(props);
-      this.MAX_DIGIT_LENGTH  = 15
+    this.MAX_DIGIT_LENGTH = 15;
   }
 
   componentDidMount = () => {
@@ -21,7 +21,7 @@ class NumericEditCell extends React.Component {
 
   componentWillMount = () => {
     // TODO Move this into a mixin
-    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
+    this.inputName = "cell-" + this.props.cell.tableId + "-" + this.props.cell.column.getId() + "-" + this.props.cell.rowId;
   };
 
   componentWillUnmount = () => {
@@ -71,8 +71,7 @@ class NumericEditCell extends React.Component {
 
     if (currLength > this.MAX_DIGIT_LENGTH) {
       throw "MAX_DIGIT_LENGTH reached: " + this.MAX_DIGIT_LENGTH;
-    }
-    else if (currLength >= 0) {
+    } else if (currLength >= 0) {
       var formattedNumber = this.correctNumberFormat(curr);
       var realNumber = parseFloat(formattedNumber);
       if (!isNaN(realNumber)) {
@@ -93,7 +92,7 @@ class NumericEditCell extends React.Component {
     var value = null;
     if (cell.isMultiLanguage) {
       var multiLangValue = cell.value[this.props.langtag];
-      //allow zero as value
+      // allow zero as value
       if (multiLangValue === 0) {
         value = multiLangValue;
       } else if (multiLangValue) {
@@ -104,7 +103,7 @@ class NumericEditCell extends React.Component {
         value = "";
       }
     } else {
-      //allow zero as value
+      // allow zero as value
       if (cell.value === 0) {
         value = cell.value;
       } else {
@@ -131,7 +130,7 @@ class NumericEditCell extends React.Component {
 
   render = () => {
     return (
-      <div className={'cell-content editing'}>
+      <div className={"cell-content editing"}>
         <input autoFocus type="number"
                className="input"
                name={this.inputName}

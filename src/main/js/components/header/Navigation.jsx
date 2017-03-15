@@ -1,25 +1,25 @@
-import React from 'react';
-import NavigationPopup from './NavigationPopup';
-import onClickOutside from 'react-onclickoutside';
+import React from "react";
+import NavigationPopup from "./NavigationPopup";
+import onClickOutside from "react-onclickoutside";
 const NavigationPopupWithClickOutside = onClickOutside(NavigationPopup);
 
 class Navigation extends React.Component {
 
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired
+    langtag: React.PropTypes.string.isRequired
   };
 
   state = {
-    navigationOpen : false
+    navigationOpen: false
   };
 
   handleClickOutside = (event) => {
-    this.setState({navigationOpen : false});
+    this.setState({navigationOpen: false});
   };
 
   mainNavButtonClicked = (e) => {
     e.preventDefault();
-    this.setState({navigationOpen : !this.state.navigationOpen});
+    this.setState({navigationOpen: !this.state.navigationOpen});
   };
 
   render = () => {
@@ -27,16 +27,16 @@ class Navigation extends React.Component {
     const {langtag} = this.props;
 
     return (
-      <nav id="main-navigation-wrapper" className={navigationOpen ? "active": ""}>
+      <nav id="main-navigation-wrapper" className={navigationOpen ? "active" : ""}>
         <a id="burger" className="ignore-react-onclickoutside" href="#" onClick={this.mainNavButtonClicked}>
           <i className="fa fa-bars"></i>
         </a>
-        {navigationOpen ?
-          <NavigationPopupWithClickOutside
+        {navigationOpen
+          ? <NavigationPopupWithClickOutside
             langtag={langtag}
             handleClickOutside={this.handleClickOutside}/> : null}
       </nav>
-    )
+    );
   }
 }
 

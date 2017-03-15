@@ -1,43 +1,43 @@
-var React = require('react');
-var App = require('ampersand-app');
-var MultifileFileEdit = require('./MultifileFileEdit.jsx');
-var ampersandMixin = require('ampersand-react-mixin');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var ActionCreator = require('../../../actions/ActionCreator');
-import {reduceMediaValuesToAllowedLanguages} from '../../../helpers/accessManagementHelper';
-var _ = require('lodash');
-import {translate} from 'react-i18next';
-import TableauxConstants from '../../../constants/TableauxConstants';
+var React = require("react");
+var App = require("ampersand-app");
+var MultifileFileEdit = require("./MultifileFileEdit.jsx");
+var ampersandMixin = require("ampersand-react-mixin");
+var Dispatcher = require("../../../dispatcher/Dispatcher");
+var ActionCreator = require("../../../actions/ActionCreator");
+import {reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
+var _ = require("lodash");
+import {translate} from "react-i18next";
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 var MultiFileEdit = React.createClass({
 
-  mixins : [ampersandMixin],
+  mixins: [ampersandMixin],
 
-  propTypes : {
-    file : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    onClose : React.PropTypes.func.isRequired,
-    editedTitleValue : React.PropTypes.object.isRequired,
-    editedDescValue : React.PropTypes.object.isRequired,
-    editedExternalnameValue : React.PropTypes.object.isRequired,
-    editedLanguage : React.PropTypes.object.isRequired,
-    onTitleChange : React.PropTypes.func.isRequired,
-    onDescriptionChange : React.PropTypes.func.isRequired,
-    onExternalnameChange : React.PropTypes.func.isRequired,
-    hasChanged : React.PropTypes.bool.isRequired
+  propTypes: {
+    file: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    onClose: React.PropTypes.func.isRequired,
+    editedTitleValue: React.PropTypes.object.isRequired,
+    editedDescValue: React.PropTypes.object.isRequired,
+    editedExternalnameValue: React.PropTypes.object.isRequired,
+    editedLanguage: React.PropTypes.object.isRequired,
+    onTitleChange: React.PropTypes.func.isRequired,
+    onDescriptionChange: React.PropTypes.func.isRequired,
+    onExternalnameChange: React.PropTypes.func.isRequired,
+    hasChanged: React.PropTypes.bool.isRequired
   },
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     Dispatcher.on("on-media-overlay-save", this.onSave);
     Dispatcher.on("on-media-overlay-cancel", this.onClose);
   },
 
-  componentWillUnmount : function () {
+  componentWillUnmount: function () {
     Dispatcher.off("on-media-overlay-save", this.onSave);
     Dispatcher.off("on-media-overlay-cancel", this.onClose);
   },
 
-  onSave : function () {
+  onSave: function () {
     var self = this;
     const {t} = this.props;
     if (this.props.hasChanged) {
@@ -53,7 +53,7 @@ var MultiFileEdit = React.createClass({
       });
 
       if (langDuplicates.length > 0) {
-        const multiLanguageError = t('error_multifile_multiple_languages', {langtags : langDuplicates.join(',')});
+        const multiLanguageError = t("error_multifile_multiple_languages", {langtags: langDuplicates.join(",")});
         alert(multiLanguageError);
         return;
       } else {
@@ -63,13 +63,13 @@ var MultiFileEdit = React.createClass({
         _.merge(file.externalName, this.props.editedExternalnameValue);
 
         var changedFile = {
-          title : {},
-          description : {},
-          externalName : {},
-          internalName : {},
-          mimeType : {}
+          title: {},
+          description: {},
+          externalName: {},
+          internalName: {},
+          mimeType: {}
         };
-        for (var langToSwap  in this.props.editedLanguage) {
+        for (var langToSwap in this.props.editedLanguage) {
           if (this.props.editedLanguage.hasOwnProperty(langToSwap)) {
             var langToSwapTo = this.props.editedLanguage[langToSwap];
             changedFile.title[langToSwapTo] = file.title[langToSwap] || null;
@@ -93,10 +93,10 @@ var MultiFileEdit = React.createClass({
     this.props.onClose(event);
   },
 
-  onClose : function () {
+  onClose: function () {
     const {t} = this.props;
     if (this.props.hasChanged) {
-      if (confirm(t('file_close_without_saving'))) {
+      if (confirm(t("file_close_without_saving"))) {
         this.props.onClose();
       }
     } else {
@@ -104,35 +104,34 @@ var MultiFileEdit = React.createClass({
     }
   },
 
-  onTitleChange : function (newValue, langtag) {
+  onTitleChange: function (newValue, langtag) {
     this.props.onTitleChange(newValue, langtag);
   },
 
-  onDescriptionChange : function (newValue, langtag) {
+  onDescriptionChange: function (newValue, langtag) {
     this.props.onDescriptionChange(newValue, langtag);
   },
 
-  onExternalnameChange : function (newValue, langtag) {
+  onExternalnameChange: function (newValue, langtag) {
     this.props.onExternalnameChange(newValue, langtag);
   },
 
-  onLangChange : function (newValue, langtag) {
+  onLangChange: function (newValue, langtag) {
     this.props.onLangChange(newValue, langtag);
   },
 
-  render : function () {
+  render: function () {
     var self = this;
     var files = TableauxConstants.Langtags.map(function (langtag) {
-
       const {file, editedTitleValue, editedDescValue, editedExternalnameValue, editedLanguage} = self.props;
-      const {title,internalName, externalName, description, uuid, fileUrl} = file;
+      const {title, internalName, externalName, description, uuid, fileUrl} = file;
 
       var fileData = {
-        title : editedTitleValue[langtag] ? editedTitleValue[langtag] : title[langtag],
-        description : editedDescValue[langtag] ? editedDescValue[langtag] : description[langtag],
-        externalName : editedExternalnameValue[langtag] ? editedExternalnameValue[langtag] : externalName[langtag],
-        internalName : internalName[langtag],
-        fileUrl : fileUrl[langtag],
+        title: editedTitleValue[langtag] ? editedTitleValue[langtag] : title[langtag],
+        description: editedDescValue[langtag] ? editedDescValue[langtag] : description[langtag],
+        externalName: editedExternalnameValue[langtag] ? editedExternalnameValue[langtag] : externalName[langtag],
+        internalName: internalName[langtag],
+        fileUrl: fileUrl[langtag],
         uuid
       };
       var language = editedLanguage[langtag] ? editedLanguage[langtag] : langtag;
@@ -156,4 +155,4 @@ var MultiFileEdit = React.createClass({
   }
 });
 
-module.exports = translate(['media'])(MultiFileEdit);
+module.exports = translate(["media"])(MultiFileEdit);

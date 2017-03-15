@@ -5,33 +5,33 @@
  URL: https://gist.github.com/simenbrekken/7f59bae89b6b31cc273e
  */
 
-'use strict';
-const _ = require('lodash');
+"use strict";
+const _ = require("lodash");
 const KEYS = {
-  enter : 13,
-  left : 37,
-  right : 39,
-  up : 38,
-  down : 40,
-  escape : 27,
-  backspace : 8,
-  comma : 188,
-  shift : 16,
-  control : 17,
-  command : 91,
-  tab : 9,
+  enter: 13,
+  left: 37,
+  right: 39,
+  up: 38,
+  down: 40,
+  escape: 27,
+  backspace: 8,
+  comma: 188,
+  shift: 16,
+  control: 17,
+  command: 91,
+  tab: 9,
 
-  //These optional keys allow to inject further functionality
-  text : null, //use text key handler for any letter or number
-  always : null, // Bound function gets called on every keyCode. Passes boolean variable shortcutFound
-  navigation : null //left, right, down, up, escape
+  // These optional keys allow to inject further functionality
+  text: null, // use text key handler for any letter or number
+  always: null, // Bound function gets called on every keyCode. Passes boolean variable shortcutFound
+  navigation: null // left, right, down, up, escape
 };
 
 const KeyboardShortcutsHelper = {
-  onKeyboardShortcut : (keyboardShortcutsFn) => {
+  onKeyboardShortcut: (keyboardShortcutsFn) => {
     return (event) => {
       _onKeyboardShortcut(event, keyboardShortcutsFn);
-    }
+    };
   }
 };
 
@@ -60,17 +60,17 @@ function _onKeyboardShortcut(event, keyboardShortcutsFn) {
     }
   });
 
-  //no shortcut found - check for general letters and call 'text' listener
+  // no shortcut found - check for general letters and call 'text' listener
   if (!shortcutFound && shortcuts.text && isText(event.keyCode)) {
     shortcuts.text(event);
   }
 
-  //Navigation key: left, right, down, up, escape. Useful for saving when selecting out
+  // Navigation key: left, right, down, up, escape. Useful for saving when selecting out
   if (!shortcutFound && shortcuts.navigation && isNavigation(event.keyCode)) {
     shortcuts.navigation(event);
   }
 
-  //Gets called on every keyCode
+  // Gets called on every keyCode
   if (shortcuts.always) {
     shortcuts.always(event, shortcutFound);
   }
@@ -94,7 +94,7 @@ export function isText(k) {
 }
 
 export function isNumber(k) {
-  return (48 <= k && k <= 57) || (96 <= k && k <= 105);
+  return (k >= 48 && k <= 57) || (k >= 96 && k <= 105);
 }
 
 export function isUsefulInputControls(event) {
@@ -102,25 +102,24 @@ export function isUsefulInputControls(event) {
   console.log("key:", k);
   const ctrlKey = event.ctrlKey;
   return (
-    //backspace
-    k === 8 ||
-      //entf
-    k === 46 ||
-      //ctrl + a
-    (k === 65 && ctrlKey) ||
-      //ctrl +c
-    (k === 67 && ctrlKey) ||
-      //ctrl + x
-    (k === 88 && ctrlKey) ||
-      //ctrl + v
-    (k === 86 && ctrlKey)
+    // backspace
+    k === 8
+      // entf
+    || k === 46
+      // ctrl + a
+    || (k === 65 && ctrlKey)
+      // ctrl +c
+    || (k === 67 && ctrlKey)
+      // ctrl + x
+    || (k === 88 && ctrlKey)
+      // ctrl + v
+    || (k === 86 && ctrlKey)
   );
 }
 
 export function isAllowedForNumberInput(event) {
   return isNumber(event.keyCode) || isNavigation(event.keyCode) || isUsefulInputControls(event);
 }
-
 
 /*  For use later
  isKeyCodeCommaOrDot : function (keyEvent) {
@@ -133,6 +132,6 @@ export function isAllowedForNumberInput(event) {
  let keyCode = keyEvent.keyCode;
  let shift = keyEvent.shiftKey;
  return (!shift && ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105)));
- },*/
+ }, */
 
 export default KeyboardShortcutsHelper;

@@ -31,8 +31,8 @@ class NameEditor extends React.Component {
   handleInput = (evt) => {
     if (evt && evt.key) {
       f.cond([
-        [f.eq('Enter'), this.saveAndClose],
-        [f.eq('Escape'), this.stopEditing],
+        [f.eq("Enter"), this.saveAndClose],
+        [f.eq("Escape"), this.stopEditing],
         [f.stubTrue, x => null]
       ])(evt.key);
     }
@@ -42,7 +42,7 @@ class NameEditor extends React.Component {
   }; // composed by constructor
 
   getTableDisplayName = () => {
-    const {table:{displayName, name}, langtag} = this.props;
+    const {table: {displayName, name}, langtag} = this.props;
     return displayName[langtag] || displayName[TableauxConstants.FallbackLanguage] || name;
   };
 
@@ -60,17 +60,17 @@ class NameEditor extends React.Component {
     const {name} = this.state;
     if (this.getTableDisplayName() === name) {
       return;
-    } //guardian
+    } // guardian
 
     const {table, langtag} = this.props;
     const patchObj = {"displayName": {[langtag]: name}};
     table
       .save(patchObj,
-        {
-          patch: true,
-          wait: true,
-          success: () => ActionCreator.refreshTableNames()
-        });
+      {
+        patch: true,
+        wait: true,
+        success: () => ActionCreator.refreshTableNames()
+      });
   };
 
   renderOpenInput = () => {
@@ -95,7 +95,7 @@ class NameEditor extends React.Component {
           : <span> {i18n.t("table:editor.rename_table")} </span>
         }
       </a>
-    )
+    );
   };
 }
 

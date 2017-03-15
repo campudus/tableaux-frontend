@@ -16,15 +16,15 @@ import classNames from "classnames";
 import apiUrl from "../../../helpers/apiUrl";
 import withAbortableXhrRequests from "../../HOCs/withAbortableXhrRequests";
 
-//we use this value to get the exact offset for the link list
+// we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
 
 @translate(["table"])
 @withAbortableXhrRequests
-class LinkOverlay extends React.Component{
+class LinkOverlay extends React.Component {
 
   constructor(props) {
-    console.log("LinkOverlay.props:", props)
+    console.log("LinkOverlay.props:", props);
     super(props);
     this.allRowResults = {};
     this.state = {
@@ -75,15 +75,15 @@ class LinkOverlay extends React.Component{
         event.preventDefault();
         event.stopPropagation();
         selectNext(Directions.DOWN);
-      },
-    }
+      }
+    };
   };
 
   componentWillMount = () => {
     let toTableId = this.props.cell.column.toTable;
     let toTable = this.props.cell.tables.get(toTableId);
 
-    //Data already fetched, show it instantly and update it in the background
+    // Data already fetched, show it instantly and update it in the background
     if (toTable.rows.length > 0) {
       this.setRowResult(toTable.rows);
     }
@@ -101,7 +101,7 @@ class LinkOverlay extends React.Component{
     const fetchRows = new Promise(
       (resolve, reject) => {
         const rowXhr = toTable.rows.fetch({
-          url: apiUrl('/tables/' + toTableId + '/columns/first/rows'),
+          url: apiUrl("/tables/" + toTableId + "/columns/first/rows"),
           success: () => {
             this.setRowResult(toTable.rows, true);
             resolve();
@@ -129,7 +129,7 @@ class LinkOverlay extends React.Component{
     return {
       searchVal: searchVal,
       filterMode: this.state.filterMode
-    }
+    };
   };
 
   onSearch = (event) => {
@@ -139,22 +139,22 @@ class LinkOverlay extends React.Component{
     });
   };
 
-  //we set the row result depending if a search value is set
+  // we set the row result depending if a search value is set
   setRowResult = (rowResult, fromServer) => {
-    //just set the models, because we filter it later which also returns the models.
+    // just set the models, because we filter it later which also returns the models.
     this.allRowResults = rowResult.models;
-    //we always rebuild the row names, also to prevent wrong display names when switching languages
+    // we always rebuild the row names, also to prevent wrong display names when switching languages
     this.buildRowConcatString();
     this.setState({
-      //we show all the rows
+      // we show all the rows
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       loading: false
     });
   };
 
-  //Extends the model by a cached row name string
+  // Extends the model by a cached row name string
   buildRowConcatString = () => {
-    const {allRowResults, props:{cell:{column:{toColumn}}}} = this;
+    const {allRowResults, props: {cell: {column: {toColumn}}}} = this;
     _.forEach(allRowResults, (row) => {
       row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row),
         toColumn,
@@ -166,7 +166,7 @@ class LinkOverlay extends React.Component{
     const {toColumn, toTable} = this.props.cell.column;
     const toTableObj = this.props.cell.tables.get(toTable);
     const toTableColumns = toTableObj.columns;
-    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); //This is the index of the
+    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); // This is the index of the
                                                                                      // identifier / concat column 
     return row.values[toIdColumnIndex];
   };
@@ -186,10 +186,10 @@ class LinkOverlay extends React.Component{
                        active={active}
                        setFilterMode={this.setFilterMode}
                        close={this.toggleFilterModesPopup}
-      />)
+      />);
   };
 
-  //searchval is already trimmed and to lowercase
+  // searchval is already trimmed and to lowercase
   filterRowsBySearch = (searchParams) => {
     const {searchVal, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
@@ -222,7 +222,7 @@ class LinkOverlay extends React.Component{
     }
     ActionCreator.changeCell(cell, links);
 
-    //tell the virtual scroller to redraw
+    // tell the virtual scroller to redraw
     this.refs.OverlayScroll.forceUpdateGrid();
   };
 
@@ -234,17 +234,17 @@ class LinkOverlay extends React.Component{
     const currentCellValue = either(this.props.cell)
       .map(f.prop(["value"]))
       .getOrElse(null);
-    return !!_.find(currentCellValue, link => link.id === row.id)
+    return !!_.find(currentCellValue, link => link.id === row.id);
   };
 
-  getOverlayItem  = (
+  getOverlayItem = (
     {
       key,         // Unique key within array of rows
       index,       // Index of row within collection
       style        // Style object to be applied to row (to position it)
     }
   ) => {
-    const {rowResults,selectedId} = this.state;
+    const {rowResults, selectedId} = this.state;
     const row = rowResults[index];
 
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
@@ -272,7 +272,7 @@ class LinkOverlay extends React.Component{
     const {t} = this.props;
     return (
       <div className="error">
-        {this.getCurrentSearchValue().length > 0 ? t('search_no_results') : t('overlay_no_rows_in_table')}
+        {this.getCurrentSearchValue().length > 0 ? t("search_no_results") : t("overlay_no_rows_in_table")}
       </div>);
   };
 

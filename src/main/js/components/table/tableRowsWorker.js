@@ -1,23 +1,23 @@
-import ActionCreator from '../../actions/ActionCreator';
-import React  from 'react';
-import {RowHeight} from '../../constants/TableauxConstants';
-import {disableShouldCellFocus, setNextSelectedCell,isLastRowSelected} from './tableNavigationWorker';
-import {Directions} from '../../constants/TableauxConstants';
-import {translate} from 'react-i18next';
+import ActionCreator from "../../actions/ActionCreator";
+import React from "react";
+import {RowHeight} from "../../constants/TableauxConstants";
+import {disableShouldCellFocus, setNextSelectedCell, isLastRowSelected} from "./tableNavigationWorker";
+import {Directions} from "../../constants/TableauxConstants";
+import {translate} from "react-i18next";
 
 const DuplicatedMessage = (props) => {
-  const {row,t,onJumpToRow} = props;
+  const {row, t, onJumpToRow} = props;
   const onClickHandler = (e) => {
     onJumpToRow(row);
   };
   return (
     <div>
-      <p>{t('row_duplicated')}</p>
-      <a href="#" onClick={onClickHandler}>{t('jump_to_row')} <i className="fa fa-angle-right"/></a>
+      <p>{t("row_duplicated")}</p>
+      <a href="#" onClick={onClickHandler}>{t("jump_to_row")} <i className="fa fa-angle-right"/></a>
     </div>
   );
 };
-const TranslatedDuplicatedMessage = translate(['table'])(DuplicatedMessage);
+const TranslatedDuplicatedMessage = translate(["table"])(DuplicatedMessage);
 
 export function duplicateRow(payload) {
   const {rows} = this.props;
@@ -28,15 +28,15 @@ export function duplicateRow(payload) {
   });
 }
 
-//TODO: Move all this to rows component, with props/actions. Problem is, this executes faster, than the row added to dom, so we get old height.
-//TODO: Scroll to row, not just to the bottom
+// TODO: Move all this to rows component, with props/actions. Problem is, this executes faster, than the row added to dom, so we get old height.
+// TODO: Scroll to row, not just to the bottom
 export function scrollToRow(row) {
   const {tableRowsDom} = this;
   const {rows} = this.props;
   const indexOfRow = rows.indexOf(row);
   const yPositionRow = RowHeight * indexOfRow;
   const rowsDomHeight = tableRowsDom.scrollHeight;
-  //const rowsDomScrollTop = tableRowsDom.scrollTop;
+  // const rowsDomScrollTop = tableRowsDom.scrollTop;
   const rowsViewportHeight = tableRowsDom.clientHeight;
   console.log("row added at index:", indexOfRow, ". jump to bottom at y:", yPositionRow + RowHeight - rowsViewportHeight, ", new row:", row, " is duplicated", row.recentlyDuplicated);
 
@@ -65,9 +65,9 @@ export function toggleRowExpand(payload) {
   var newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
   var rowIdExists = false;
 
-  newExpandedRowIds.forEach((rowId, index)=> {
+  newExpandedRowIds.forEach((rowId, index) => {
     if (rowId === toggleRowId) {
-      //already expanded: remove to close expanding row
+      // already expanded: remove to close expanding row
       newExpandedRowIds.splice(index, 1);
       rowIdExists = true;
     }
@@ -79,7 +79,6 @@ export function toggleRowExpand(payload) {
   }
 
   this.setState({
-    expandedRowIds : newExpandedRowIds
+    expandedRowIds: newExpandedRowIds
   });
-
 }

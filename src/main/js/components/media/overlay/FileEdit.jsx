@@ -9,19 +9,19 @@ import {translate} from "react-i18next";
 class FileEdit extends React.Component {
 
   static propTypes = {
-    file : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    onClose : React.PropTypes.func.isRequired
+    file: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    onClose: React.PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      editedTitleValue : {},
-      editedDescValue : {},
-      editedExternalnameValue : {},
-      editedLanguage : {},
-      hasChanged : false
+      editedTitleValue: {},
+      editedDescValue: {},
+      editedExternalnameValue: {},
+      editedLanguage: {},
+      hasChanged: false
     };
   }
 
@@ -29,8 +29,8 @@ class FileEdit extends React.Component {
     let editedValue = this.state.editedTitleValue;
     editedValue[langtag] = titleValue;
     this.setState({
-      hasChanged : true,
-      editedTitleValue : editedValue
+      hasChanged: true,
+      editedTitleValue: editedValue
     });
   };
 
@@ -38,8 +38,8 @@ class FileEdit extends React.Component {
     let editedValue = this.state.editedDescValue;
     editedValue[langtag] = descriptionValue;
     this.setState({
-      hasChanged : true,
-      editedDescValue : editedValue
+      hasChanged: true,
+      editedDescValue: editedValue
     });
   };
 
@@ -47,8 +47,8 @@ class FileEdit extends React.Component {
     let editedValue = this.state.editedExternalnameValue;
     editedValue[langtag] = externalnameValue;
     this.setState({
-      hasChanged : true,
-      editedExternalnameValue : editedValue
+      hasChanged: true,
+      editedExternalnameValue: editedValue
     });
   };
 
@@ -56,8 +56,8 @@ class FileEdit extends React.Component {
     let editedValue = this.state.editedLanguage;
     editedValue[langtag] = newLang;
     this.setState({
-      hasChanged : true,
-      editedLanguage : editedValue
+      hasChanged: true,
+      editedLanguage: editedValue
     });
   };
 

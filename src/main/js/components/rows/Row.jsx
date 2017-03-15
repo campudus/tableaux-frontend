@@ -11,7 +11,7 @@ import * as f from "lodash/fp";
 @connectToAmpersand
 class Row extends React.Component {
 
-  displayName = 'Row';
+  displayName = "Row";
 
   constructor(props) {
     super(props);
@@ -21,31 +21,30 @@ class Row extends React.Component {
           event: "change",
           force: true
         })
-    )
+    );
   }
 
-  //Allows a good performance when editing large tables
+  // Allows a good performance when editing large tables
   shouldComponentUpdate(nextProps, nextState) {
-    //Update on every available prop change
+    // Update on every available prop change
     if (this.props.langtag != nextProps.langtag
       || this.props.row != nextProps.row
       || this.props.isRowExpanded != nextProps.isRowExpanded
     ) {
       return true;
     }
-    //Don't update when I'm not selected and I will not get selected
+    // Don't update when I'm not selected and I will not get selected
     else if (!this.props.isRowSelected && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
       return false;
     }
-    //When nothing is selected and I get selected
+    // When nothing is selected and I get selected
     else if (!this.props.selectedCell && nextProps.selectedCell && nextProps.selectedCell.rowId === this.props.row.getId()) {
       return true;
     }
-    //When nothing is selected and I don't get expanded
+    // When nothing is selected and I don't get expanded
     else if (!this.props.selectedCell && !nextProps.isRowExpanded) {
       return false;
-    }
-    else {
+    } else {
       return true;
     }
   };
@@ -62,27 +61,27 @@ class Row extends React.Component {
   };
 
   renderSingleLanguageCell = (cell, idx) => {
-    var className = 'cell cell-' + cell.column.getId() + '-' + cell.rowId + ' repeat';
+    var className = "cell cell-" + cell.column.getId() + "-" + cell.rowId + " repeat";
     return <div key={idx} className={className} onContextMenu={self.contextMenuHandler}>—.—</div>;
   };
 
   renderCells = (langtag, isRowSelected) => {
     return this.props.row.cells.map((cell, idx) => {
-      //Skip cells in hidden columns
+      // Skip cells in hidden columns
       const cols = this.props.table.columns.models;
       if (cols[idx] !== f.first(cols) && !cols[idx].visible) { // keep first column always visible
         return null;
       }
 
-      //Check selected row for expanded multilanguage rows
+      // Check selected row for expanded multilanguage rows
       const selectedRow = !!isRowSelected;
-      //Is this cell currently selected
+      // Is this cell currently selected
       const selected = this.props.selectedCell
         ? (cell.getId() === this.props.selectedCell.getId()) && selectedRow
         : false;
-      //Is this cell in edit mode
+      // Is this cell in edit mode
       const editing = selected ? this.props.selectedCellEditing : false;
-      //we want to pass shouldFocus just when the cell is selected or in editing mode to prevent spamming all cells
+      // we want to pass shouldFocus just when the cell is selected or in editing mode to prevent spamming all cells
       // with props changes
       const shouldFocus = selected || editing ? this.props.shouldCellFocus : false;
 
@@ -107,7 +106,7 @@ class Row extends React.Component {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
                      shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
       }
-    })
+    });
   };
 
   contextMenuHandler = e => {
@@ -119,34 +118,34 @@ class Row extends React.Component {
 
     let deleteButton, rowLockedIcon = "";
 
-    //Is this (multilanguage) row selected
+    // Is this (multilanguage) row selected
     const selected = (isRowSelected && (langtag === selectedCellExpandedRow));
     if (selected && row.recentlyDuplicated) {
-      //Todo: TBD: isn't it overkill to throw a action for this?
-      //We want to visually clear the highlighting of a recently duplicated row
+      // Todo: TBD: isn't it overkill to throw a action for this?
+      // We want to visually clear the highlighting of a recently duplicated row
       row.recentlyDuplicated = false;
     }
 
-    //Set row class optional with selected class
-    const className = 'row row-' + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated
+    // Set row class optional with selected class
+    const className = "row row-" + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated
         ? " duplicated"
         : "");
 
-    //show locked language icon
+    // show locked language icon
     if (!isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
       rowLockedIcon = (<i className="fa fa-lock access-denied-icon" />);
     }
     // Add delete button to default-language row
     // or to every not expanded row
     // will not show when no access
-    else if (table.type !== 'settings' && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
+    else if (table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
       deleteButton = (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
             <i className="fa fa-trash" />
           </button>
         </div>
-      )
+      );
     }
 
     return (

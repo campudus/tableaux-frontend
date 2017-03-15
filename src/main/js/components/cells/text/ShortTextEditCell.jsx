@@ -1,7 +1,7 @@
-var React = require('react');
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var TextArea = require('./TextArea.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+var React = require("react");
+var Dispatcher = require("../../../dispatcher/Dispatcher");
+var TextArea = require("./TextArea.jsx");
+var ActionCreator = require("../../../actions/ActionCreator");
 
 import listensToClickOutside from "react-onclickoutside";
 
@@ -16,7 +16,7 @@ class ShortTextEditCell extends React.Component {
   };
 
   componentWillMount = () => {
-    this.inputName = 'cell-' + this.props.cell.tableId + '-' + this.props.cell.column.getId() + '-' + this.props.cell.rowId;
+    this.inputName = "cell-" + this.props.cell.tableId + "-" + this.props.cell.column.getId() + "-" + this.props.cell.rowId;
   };
 
   componentWillUnmount = () => {
@@ -26,19 +26,19 @@ class ShortTextEditCell extends React.Component {
   getKeyboardShortcuts = (event) => {
     var self = this;
     return {
-      //allow left arrow key inside input
+      // allow left arrow key inside input
       left: function (event) {
         event.stopPropagation();
       },
-      //allow left arrow key inside input
+      // allow left arrow key inside input
       right: function (event) {
         event.stopPropagation();
       },
       enter: function (event) {
-        //stop handling the Table events
+        // stop handling the Table events
         event.stopPropagation();
         self.doneEditing(event);
-        //An event just for ShortTextEditCell to create a new Row when last is editing
+        // An event just for ShortTextEditCell to create a new Row when last is editing
         ActionCreator.addRowOrSelectNextCell();
       },
       navigation: function (event) {
@@ -76,7 +76,7 @@ class ShortTextEditCell extends React.Component {
 
   render = () => {
     return (
-      <div className={'cell-content editing'} onKeyDown={this.onKeyboardShortcut}>
+      <div className={"cell-content editing"} onKeyDown={this.onKeyboardShortcut}>
         <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
                ref="input"></input>
       </div>

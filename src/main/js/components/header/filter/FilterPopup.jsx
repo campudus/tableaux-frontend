@@ -11,7 +11,7 @@ import TableauxConstants, {FilterModes, ColumnKinds} from "../../../constants/Ta
 import i18n from "i18next";
 import {either} from "../../../helpers/monads";
 
-@translate(['filter', 'table'])
+@translate(["filter", "table"])
 @listensToClickOutside
 class FilterPopup extends React.Component {
 
@@ -80,7 +80,7 @@ class FilterPopup extends React.Component {
       // Show display name with fallback to machine name
       const columnDisplayName = column.displayName[langtag] || column.name;
       // ID Column gets translated name
-      const labelName = column.id === 0 ? t('concat_column_name') : columnDisplayName;
+      const labelName = column.id === 0 ? t("concat_column_name") : columnDisplayName;
 
       return {
         label: labelName,
@@ -101,7 +101,7 @@ class FilterPopup extends React.Component {
         label: t("help.sortdesc"),
         value: TableauxConstants.SortValues.DESC
       }
-    ]
+    ];
   }
 
   filterInputChange = (event) => {
@@ -136,9 +136,9 @@ class FilterPopup extends React.Component {
 
   selectSortValueRenderer = (option) => {
     if (option.value === TableauxConstants.SortValues.ASC) {
-      return <div><i className="fa fa-sort-alpha-asc"></i> {option.label}</div>
+      return <div><i className="fa fa-sort-alpha-asc"></i> {option.label}</div>;
     } else {
-      return <div><i className="fa fa-sort-alpha-desc"></i> {option.label}</div>
+      return <div><i className="fa fa-sort-alpha-desc"></i> {option.label}</div>;
     }
   };
 
@@ -177,11 +177,11 @@ class FilterPopup extends React.Component {
       : 1;
     return <FilterModePopup active={active}
                             close={this.toggleFilterModePopup}
-                            setFilterMode={this.props.setFilterMode} />
+                            setFilterMode={this.props.setFilterMode} />;
   };
 
   render() {
-    let {t,currentFilter} = this.props;
+    let {t, currentFilter} = this.props;
     const filterInfoString =
       _.cond([
         [_.isNil, f.always("table:filter.contains")],
@@ -210,8 +210,8 @@ class FilterPopup extends React.Component {
                   value={this.state.selectedFilterColumn}
                   onChange={this.onChangeSelectFilter}
                   valueRenderer={this.selectFilterValueRenderer}
-                  noResultsText={t('input.noResult')}
-                  placeholder={t('input.filter')}
+                  noResultsText={t("input.noResult")}
+                  placeholder={t("input.filter")}
                 />
                 <span className="separator">{t(filterInfoString)}</span>
 
@@ -225,7 +225,7 @@ class FilterPopup extends React.Component {
                   {(this.state.selectedFilterColumn !== null)
                     ? (
                       <a href="#"
-                         className={(this.state.filterModesOpen) ?"ignore-react-clickoutside" : ""}
+                         className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
                          onMouseDown={this.toggleFilterModePopup}>
                         <i className="fa fa-search" />
                         <i className="fa fa-caret-down" />
@@ -249,10 +249,10 @@ class FilterPopup extends React.Component {
             value={this.state.selectedSortColumn}
             onChange={this.onChangeSelectSortColumn}
             valueRenderer={this.selectFilterValueRenderer}
-            noResultsText={t('input.noResult')}
-            placeholder={t('input.sort')}
+            noResultsText={t("input.noResult")}
+            placeholder={t("input.sort")}
           />
-          <span className="separator">{t('help.sort')}</span>
+          <span className="separator">{t("help.sort")}</span>
           <Select
             disabled={this.state.selectedSortColumn === null}
             className="filter-select"
@@ -263,20 +263,20 @@ class FilterPopup extends React.Component {
             onChange={this.onChangeSelectSortValue}
             valueRenderer={this.selectSortValueRenderer}
             optionRenderer={this.selectSortValueRenderer}
-            noResultsText={t('input.noResult')}
+            noResultsText={t("input.noResult")}
             placeholder={""}
           />
         </div>
         <div className="description-row">
           <p className="info">
-            <span className="text">{t('help.note')}</span></p>
+            <span className="text">{t("help.note")}</span></p>
           <button tabIndex="1" className="neutral"
-                  onClick={this.clearFilter}>{t('button.clearFilter')}</button>
+                  onClick={this.clearFilter}>{t("button.clearFilter")}</button>
           <button tabIndex="0" className={(canFilter) ? "filter-go" : "filter-go neutral"} disabled={!canFilter}
-                  onClick={this.filterUpdate}>{t('button.doFilter')}</button>
+                  onClick={this.filterUpdate}>{t("button.doFilter")}</button>
         </div>
       </div>
-    )
+    );
   }
 
 }

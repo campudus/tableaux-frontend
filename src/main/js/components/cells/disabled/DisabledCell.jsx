@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 class DisabledCell extends React.Component {
 
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
-    selected : React.PropTypes.bool.isRequired
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired,
+    selected: React.PropTypes.bool.isRequired
   };
 
   constructor(props) {

@@ -66,11 +66,11 @@ class FilterButton extends React.Component {
     return (
       <div id="filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
-          <i className="fa fa-filter"></i>{t('button.title')}</a>
+          <i className="fa fa-filter"></i>{t("button.title")}</a>
         {this.renderFilterPopup()}
       </div>
-    )
+    );
   }
 }
 
-export default translate(['filter'])(FilterButton);
+export default translate(["filter"])(FilterButton);

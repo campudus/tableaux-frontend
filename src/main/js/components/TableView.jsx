@@ -23,7 +23,7 @@ import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "./cells/cellCopyHelper";
 
-//hardcode all the stuffs!
+// hardcode all the stuffs!
 const ID_CELL_W = 80;
 const CELL_W = 300;
 const CELL_H = 46;
@@ -52,7 +52,7 @@ class TableView extends React.Component {
         rowId: rowId,
         columnId: columnId,
         filter: filter
-      }
+      };
     }
   };
 
@@ -142,7 +142,7 @@ class TableView extends React.Component {
     ActionCreator.showToast(
       <div id="cell-jump-toast">{msg}</div>,
       7000
-    )
+    );
   };
 
   checkGotoCellRequest = (loaded) => {
@@ -198,7 +198,7 @@ class TableView extends React.Component {
         });
       }
       const rows = this.getCurrentTable().rows.models;
-      const rowIndex = f.findIndex(f.matchesProperty('id', rowId), rows);
+      const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
       const columns = this.getCurrentTable().columns.models;
       const visibleColumns = columns.filter(x => x.visible);
       const colIndex = f.findIndex(f.matchesProperty("id", colId), visibleColumns);
@@ -254,7 +254,7 @@ class TableView extends React.Component {
     this.tableFullyLoaded = false;
     ActionCreator.spinnerOn();
 
-    //We need to fetch columns first, since rows has Cells that depend on the column model
+    // We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
       return new Promise((resolve, reject) => {
         table.columns.fetch({
@@ -315,8 +315,8 @@ class TableView extends React.Component {
       }).then(fetchPages); // recur with page number increased
     };
 
-    //spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
-    //in the middle, and gets displayed only on the first startup
+    // spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
+    // in the middle, and gets displayed only on the first startup
     ActionCreator.spinnerOn();
     fetchColumns(currentTable).then(fetchPages);
   };
@@ -337,11 +337,11 @@ class TableView extends React.Component {
         rowId: nextProps.rowId,
         filter: false,
         page: this.estimateCellPage(nextProps.rowId)
-      })
+      });
     }
   };
 
-  //Set visibility of all columns in <coll> to <val>
+  // Set visibility of all columns in <coll> to <val>
   setColumnsVisibility = ({val, coll, cb}) => {
     const columns = this.tables.get(this.state.currentTableId).columns;
     columns
@@ -407,9 +407,8 @@ class TableView extends React.Component {
       if (either(this.state.pasteOriginCell.cell)
           .map(f.prop("kind"))
           .map(f.eq(ColumnKinds.link))
-          .getOrElse(false))
-      {
-        this.setState({pasteOriginCell: {}})
+          .getOrElse(false)) {
+        this.setState({pasteOriginCell: {}});
       }
       this.pendingCellGoto = null;
       console.log("doSwitchTable with id:", this.nextTableId);
@@ -430,15 +429,15 @@ class TableView extends React.Component {
       let rowsCollection = this.state.rowsCollection;
       let currentTable = this.getCurrentTable();
 
-      let table = '';
+      let table = "";
       if (this.state.currentTableId) {
-        if (typeof tables.get(this.state.currentTableId) !== 'undefined') {
+        if (typeof tables.get(this.state.currentTableId) !== "undefined") {
           table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
                          pasteOriginCell={this.state.pasteOriginCell}
           />;
         } else {
-          //TODO show error to user
+          // TODO show error to user
           console.error("No table found with id " + this.state.currentTableId);
         }
       }
@@ -465,7 +464,7 @@ class TableView extends React.Component {
               : null}
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
-              ?<ColumnFilter langtag={this.props.langtag}
+              ? <ColumnFilter langtag={this.props.langtag}
                              columns={currentTable.columns}
               />
               : null

@@ -1,29 +1,29 @@
-import React from 'react';
-import connectToAmpersand from '../../HOCs/connectToAmpersand';
-import Dispatcher from '../../../dispatcher/Dispatcher';
-import NewFolderAction from './NewFolderAction.jsx';
-import {isUserAdmin} from '../../../helpers/accessManagementHelper';
-import {translate} from 'react-i18next';
-import {ActionTypes, DateTimeFormats} from '../../../constants/TableauxConstants';
-import {contains, sortBy, prop, map, compose, reverse} from 'lodash/fp';
-import Moment from 'moment';
-import Subfolder from './Subfolder.jsx';
-import File from './File.jsx';
-import FileUpload from './FileUpload.jsx';
-import ActionCreator from '../../../actions/ActionCreator';
+import React from "react";
+import connectToAmpersand from "../../HOCs/connectToAmpersand";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import NewFolderAction from "./NewFolderAction.jsx";
+import {isUserAdmin} from "../../../helpers/accessManagementHelper";
+import {translate} from "react-i18next";
+import {ActionTypes, DateTimeFormats} from "../../../constants/TableauxConstants";
+import {contains, sortBy, prop, map, compose, reverse} from "lodash/fp";
+import Moment from "moment";
+import Subfolder from "./Subfolder.jsx";
+import File from "./File.jsx";
+import FileUpload from "./FileUpload.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
 
 @translate(["media"])
 @connectToAmpersand
 class Folder extends React.Component {
 
   static propTypes = {
-    folder : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired
+    folder: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired
   };
 
   constructor(props) {
     super(props);
-    this.state = {modifiedFiles : []};
+    this.state = {modifiedFiles: []};
   }
 
   backFolderHandler = (event) => {
@@ -47,17 +47,17 @@ class Folder extends React.Component {
     const now = Moment().format(DateTimeFormats.formatForServer);
     const file = this.props.folder.files.get(uuid);
     file.set({
-      updatedAt : now,
-      createdAt : now
+      updatedAt: now,
+      createdAt: now
     });
-    this.setState({modifiedFiles : [...modifiedFiles, uuid]}, this.forceUpdate);
+    this.setState({modifiedFiles: [...modifiedFiles, uuid]}, this.forceUpdate);
   };
 
   renderCurrentFolder = () => {
-    let currentFolder = '';
-    const currentFolderClass = ['current-folder'];
+    let currentFolder = "";
+    const currentFolderClass = ["current-folder"];
     if (this.props.folder.name === "root") {
-      currentFolder = this.props.t('root_folder_name');
+      currentFolder = this.props.t("root_folder_name");
     } else if (this.props.folder.name && this.props.folder.description) {
       currentFolder = this.props.folder.name + " – " + this.props.folder.description;
     } else if (this.props.folder.name) {
@@ -86,7 +86,7 @@ class Folder extends React.Component {
     const {langtag} = this.props;
     if (subFolders && subFolders.length > 0) {
       const subfolder = subFolders.map((folder, idx) => {
-        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={langtag}/></li>
+        return <li key={idx}><Subfolder key={idx} folder={folder} langtag={langtag}/></li>;
       });
       return (
         <div className="media-switcher">

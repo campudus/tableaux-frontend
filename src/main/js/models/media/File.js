@@ -1,35 +1,35 @@
-var AmpersandModel = require('ampersand-model');
+var AmpersandModel = require("ampersand-model");
 
-var apiUrl = require('../../helpers/apiUrl');
+var apiUrl = require("../../helpers/apiUrl");
 
 var File = AmpersandModel.extend({
-  idAttribute : 'uuid',
+  idAttribute: "uuid",
 
-  props : {
-    uuid : 'string',
-    title : 'object',
-    description : 'object',
-    mimeType : 'object',
-    externalName : 'object',
-    internalName : 'object',
-    folder : 'number',
-    createdAt: 'string',
-    updatedAt: 'string',
+  props: {
+    uuid: "string",
+    title: "object",
+    description: "object",
+    mimeType: "object",
+    externalName: "object",
+    internalName: "object",
+    folder: "number",
+    createdAt: "string",
+    updatedAt: "string",
 
-    fileUrl : 'object'
+    fileUrl: "object"
   },
 
-  url : function () {
+  url: function () {
     var base = this.urlRoot();
 
-    return base + '/' + this.getId();
+    return base + "/" + this.getId();
   },
 
-  urlRoot : function () {
-    return apiUrl('/files');
+  urlRoot: function () {
+    return apiUrl("/files");
   },
 
-  parse : function (attrs, option) {
+  parse: function (attrs, option) {
     // because there is already a url function
     attrs.fileUrl = attrs.url;
     delete attrs.url;

@@ -11,7 +11,7 @@ class ColumnFilter extends React.Component {
 
   constructor(props) {
     super(props);
-    this.props.columns.forEach( col => this.props.watch(col));
+    this.props.columns.forEach(col => this.props.watch(col));
   }
 
   togglePopup = event => {
@@ -31,7 +31,7 @@ class ColumnFilter extends React.Component {
     const message = nHidden + " " + i18n.t("table:hidden_items");
     const cssClass = classNames({
       "active": open,
-      "has-filter": !open && nHidden > 0,
+      "has-filter": !open && nHidden > 0
     });
 
     const buttonClass = classNames(
@@ -55,13 +55,13 @@ class ColumnFilter extends React.Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 
 ColumnFilter.propTypes = {
   langtag: React.PropTypes.string.isRequired,
-  columns: React.PropTypes.object.isRequired,
+  columns: React.PropTypes.object.isRequired
 };
 
 export default ColumnFilter;

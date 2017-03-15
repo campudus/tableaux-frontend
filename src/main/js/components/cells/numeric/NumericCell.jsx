@@ -1,30 +1,30 @@
-var React = require('react');
-var _ = require('lodash');
+var React = require("react");
+var _ = require("lodash");
 
-var Dispatcher = require('../../../dispatcher/Dispatcher');
-var NumericEditCell = require('./NumericEditCell.jsx');
-var ActionCreator = require('../../../actions/ActionCreator');
+var Dispatcher = require("../../../dispatcher/Dispatcher");
+var NumericEditCell = require("./NumericEditCell.jsx");
+var ActionCreator = require("../../../actions/ActionCreator");
 
 var NumericCell = React.createClass({
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    editing : React.PropTypes.bool.isRequired,
+  propTypes: {
+    cell: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    editing: React.PropTypes.bool.isRequired,
     setCellKeyboardShortcuts: React.PropTypes.func
   },
 
-  getInitialState : function () {
+  getInitialState: function () {
     return {};
   },
 
-  handleLabelClick : function (event) {
+  handleLabelClick: function (event) {
     console.log("Numeric.handleLabelClick");
     event.preventDefault();
     ActionCreator.toggleCellEditing();
   },
 
-  handleEditDone : function (newValue) {
+  handleEditDone: function (newValue) {
     var cell = this.props.cell;
     var valueToSave;
 
@@ -39,28 +39,28 @@ var NumericCell = React.createClass({
     ActionCreator.toggleCellEditing(false);
   },
 
-  renderSingleLanguage : function () {
+  renderSingleLanguage: function () {
     var cell = this.props.cell;
     return (
-        <div className={'cell-content'} onClick={this.handleLabelClick}>
+        <div className={"cell-content"} onClick={this.handleLabelClick}>
           {cell.value}
         </div>
     );
   },
 
-  renderMultiLanguage : function () {
+  renderMultiLanguage: function () {
     var cell = this.props.cell;
     var langtag = this.props.langtag;
     var value = cell.value[langtag];
 
     return (
-        <div className={'cell-content'} onClick={this.handleLabelClick}>
+        <div className={"cell-content"} onClick={this.handleLabelClick}>
           {value}
         </div>
     );
   },
 
-  render : function () {
+  render: function () {
     var cell = this.props.cell;
     var langtag = this.props.langtag;
 

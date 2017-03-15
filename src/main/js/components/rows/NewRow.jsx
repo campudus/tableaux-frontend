@@ -16,7 +16,7 @@ class NewRow extends React.Component {
         <a href="#" className="button new-row-inner" onClick={this.addRow}>
           <i className="fa fa-plus-circle">
           </i>
-          <span>{t('add_new_row')}</span>
+          <span>{t("add_new_row")}</span>
         </a>
       </div>
     );
@@ -27,4 +27,4 @@ NewRow.propTypes = {
   table: React.PropTypes.object.isRequired
 };
 
-module.exports = translate(['table'])(NewRow);
+module.exports = translate(["table"])(NewRow);

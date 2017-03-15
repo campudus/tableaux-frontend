@@ -1,36 +1,35 @@
-import React from 'react';
-import _ from  'lodash';
-import OverlayHeadRowIdentificator from '../../overlay/OverlayHeadRowIdentificator.jsx';
-import CurrencyRow from './CurrencyRow';
-import {getCurrencyWithCountry} from './currencyHelper';
-
+import React from "react";
+import _ from "lodash";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
+import CurrencyRow from "./CurrencyRow";
+import {getCurrencyWithCountry} from "./currencyHelper";
 
 export default class CurrencyEditCell extends React.Component {
 
-  //holds all the ref names of the currency row children
+  // holds all the ref names of the currency row children
   currencyRowNames = null;
 
   static propTypes = {
-    cell : React.PropTypes.object.isRequired,
-    currencies : React.PropTypes.object.isRequired,
-    saveCell : React.PropTypes.func.isRequired,
-    exitCell : React.PropTypes.func.isRequired,
-    onClickOutside : React.PropTypes.func.isRequired,
-    setCellKeyboardShortcuts : React.PropTypes.func.isRequired
+    cell: React.PropTypes.object.isRequired,
+    currencies: React.PropTypes.object.isRequired,
+    saveCell: React.PropTypes.func.isRequired,
+    exitCell: React.PropTypes.func.isRequired,
+    onClickOutside: React.PropTypes.func.isRequired,
+    setCellKeyboardShortcuts: React.PropTypes.func.isRequired
   };
 
   componentDidMount() {
     this.buildCurrencyRowRefNames();
     this.props.setCellKeyboardShortcuts({
-      always : (event) => {
+      always: (event) => {
         event.stopPropagation();
       },
-      enter : (event) => {
+      enter: (event) => {
         event.preventDefault();
         console.log("hitting enter");
         this.props.exitCell();
       },
-      escape : (event) => {
+      escape: (event) => {
         event.preventDefault();
         this.props.exitCell();
       }
@@ -52,16 +51,16 @@ export default class CurrencyEditCell extends React.Component {
   }
 
   componentWillUnmount() {
-    //Important to clean up the keyboard shortcuts
+    // Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
-    //call every save method of childs
+    // call every save method of childs
     this.saveCell();
   }
 
   buildCurrencyRowRefNames() {
     const countryCodes = this.props.cell.column.countryCodes;
     this.currencyRowNames = [];
-    _.forEach(countryCodes, (countryCode, index)=> {
+    _.forEach(countryCodes, (countryCode, index) => {
       this.currencyRowNames.push(this.getCurrencyRowName(countryCode));
     });
   }
@@ -71,7 +70,7 @@ export default class CurrencyEditCell extends React.Component {
   }
 
   render() {
-    const {cell,currencies} = this.props;
+    const {cell, currencies} = this.props;
     const {column} = cell;
     const {countryCodes} = column;
 

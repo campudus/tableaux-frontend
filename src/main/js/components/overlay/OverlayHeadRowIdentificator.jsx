@@ -1,18 +1,17 @@
-var React = require('react');
-var RowConcatHelper = require('../../helpers/RowConcatHelper');
-var ActionCreator = require('../../actions/ActionCreator');
-
+var React = require("react");
+var RowConcatHelper = require("../../helpers/RowConcatHelper");
+var ActionCreator = require("../../actions/ActionCreator");
 
 var OverlayHeadRowIdentificator = React.createClass({
 
-  propTypes : {
-    cell : React.PropTypes.object,
-    langtag : React.PropTypes.string
+  propTypes: {
+    cell: React.PropTypes.object,
+    langtag: React.PropTypes.string
   },
 
-  rowIdentifierString : "",
+  rowIdentifierString: "",
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     var cell = this.props.cell;
     var tableId = cell.tableId;
     var table = cell.tables.get(tableId);
@@ -24,8 +23,7 @@ var OverlayHeadRowIdentificator = React.createClass({
     this.rowIdentifierString = RowConcatHelper.getCellAsStringWithFallback(idCellValue, idColumn, this.props.langtag);
   },
 
-  render : function () {
-
+  render: function () {
     var rowIdentification = null;
     if (this.rowIdentifierString !== "") {
       rowIdentification = <span className="row-identification-value">{this.rowIdentifierString}</span>;
@@ -45,14 +43,12 @@ var OverlayHeadRowIdentificator = React.createClass({
               <i className="fa fa-columns"></i>{columnDisplayName}</a>{rowIdentification}
           </span>
         );
-
       } else {
         return (
           <span>
             <span className="column-name">{columnDisplayName}: </span>{rowIdentification}
           </span>
         );
-
       }
     } else {
       return null;

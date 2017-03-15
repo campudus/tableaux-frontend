@@ -32,11 +32,11 @@ class Columns extends React.Component {
       !f.isEqual(this.state, nextState)
       || langtag !== nextProps.langtag;
 
-    return shouldUpdate
+    return shouldUpdate;
   };
 
   renderColumn = (langtag, column, index) => {
-    //Skip header of hidden columns
+    // Skip header of hidden columns
     if (column !== f.first(this.props.columns.models) && !column.visible) {
       return;
     }
@@ -56,11 +56,11 @@ class Columns extends React.Component {
       columnContent.push(<i key="column-icon" className="fa fa-bookmark-o" />);
     }
 
-    //This is the ID/Concat Column
+    // This is the ID/Concat Column
     if (column.id === 0) {
-      name = t('concat_column_name');
-    } else if (table.type === 'settings' && column.id === 1) {
-      name = t('concat_column_name');
+      name = t("concat_column_name");
+    } else if (table.type === "settings" && column.id === 1) {
+      name = t("concat_column_name");
     } else {
       name = typeof columnDisplayName === "undefined" ? fallbackColumnDisplayName : columnDisplayName;
     }
@@ -77,7 +77,7 @@ class Columns extends React.Component {
 
     if (column.languageType && column.languageType === LanguageType.country) {
       columnIcon = <span className="column-kind-icon"><i className="fa fa-globe" /><span
-        className="label">{t('country')}</span></span>;
+        className="label">{t("country")}</span></span>;
     }
 
     return (
@@ -90,12 +90,12 @@ class Columns extends React.Component {
                    langtag={langtag}
                    isId={column === f.first(this.props.columns.models)}
       />
-    )
+    );
   };
 
   stopEditing = (payload) => {
-    if (payload &&
-      (payload.newName || payload.newDescription)) {
+    if (payload
+      && (payload.newName || payload.newDescription)) {
       this.saveEdits(payload);
     }
   };

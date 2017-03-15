@@ -35,7 +35,7 @@ class FileChangeUpload extends React.Component {
       });
       const req = request
         .put(uploadUrl)
-        .on('progress', (e) => {
+        .on("progress", (e) => {
           this.setState({
             uploadProgress: parseInt(e.percent)
           });
@@ -70,7 +70,6 @@ class FileChangeUpload extends React.Component {
     }
   };
 
-
   render() {
     const {langtag, internalFileName, isSingleFile} = this.props;
     const {uploadProgress} = this.state;
@@ -84,16 +83,15 @@ class FileChangeUpload extends React.Component {
       hasUserAccessToLanguage(DefaultLangtag));
 
     if ((isSingleFile && hasUserAccessToLanguage(DefaultLangtag)) || (!isSingleFile && hasUserAccessToLanguage(langtag))) {
-      const progressBar = (uploadProgress) ?  <ProgressBar progress={uploadProgress} /> : null;
+      const progressBar = (uploadProgress) ? <ProgressBar progress={uploadProgress} /> : null;
       return (
         <Dropzone onDrop={this.onDrop} className="dropzone" multiple={false}>
           {progressBar}
           <FileIcon internalFileName={internalFileName}></FileIcon>
-          <span className="replace-note">{t('replace_existing_file')}</span>
+          <span className="replace-note">{t("replace_existing_file")}</span>
         </Dropzone>
       );
-    }
-    else {
+    } else {
       return (
         <div className="no-permission-upload-file">
           <FileIcon internalFileName={internalFileName}></FileIcon>

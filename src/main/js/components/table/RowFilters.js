@@ -78,11 +78,11 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
     return sortableValue;
   };
 
-  if (_.isEmpty(toFilterValue) && typeof sortColumnId === 'undefined') {
+  if (_.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
     return allRows;
   }
 
-  if (_.isEmpty(toFilterValue) && typeof sortColumnId === 'undefined') {
+  if (_.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
     return allRows;
   }
 
@@ -112,7 +112,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
         || targetCell.kind === ColumnKinds.text
         || targetCell.kind === ColumnKinds.link
         || targetCell.kind === ColumnKinds.concat) {
-        return searchFunction(toFilterValue, getSortableCellValue(targetCell))
+        return searchFunction(toFilterValue, getSortableCellValue(targetCell));
       } else {
         // column type not support for filtering
         return false;
@@ -131,7 +131,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
       };
 
       if (sortColumnIndex <= -1) {
-        if (typeof rowTwo === 'undefined') {
+        if (typeof rowTwo === "undefined") {
           // strange special case if row was added
           return rowOne.id;
         }
@@ -142,8 +142,8 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
         const cellValueOne = rowOne && rowOne.cells ? getSortableCellValue(rowOne.cells.at(sortColumnIndex)) : null;
         const cellValueTwo = rowTwo && rowTwo.cells ? getSortableCellValue(rowTwo.cells.at(sortColumnIndex)) : null;
 
-        const isEmptyOne = cellValueOne === null || (typeof cellValueOne === 'string' && _.isEmpty(cellValueOne));
-        const isEmptyTwo = cellValueTwo === null || (typeof cellValueTwo === 'string' && _.isEmpty(cellValueTwo));
+        const isEmptyOne = cellValueOne === null || (typeof cellValueOne === "string" && _.isEmpty(cellValueOne));
+        const isEmptyTwo = cellValueTwo === null || (typeof cellValueTwo === "string" && _.isEmpty(cellValueTwo));
 
         if (isEmptyOne && isEmptyTwo) {
           return 0;
@@ -155,7 +155,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
           return sortValue === SortValues.ASC ? lt : gt;
         } else {
           // first compare values and if equal than sort by row id
-          return _.eq(cellValueOne, cellValueTwo) ? compareRowIds() : (_.gt(cellValueOne, cellValueTwo) ? gt : lt)
+          return _.eq(cellValueOne, cellValueTwo) ? compareRowIds() : (_.gt(cellValueOne, cellValueTwo) ? gt : lt);
         }
       }
     }

@@ -6,35 +6,35 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ReactDOM from "react-dom";
 import {translate} from "react-i18next";
 
-@translate(['header'])
+@translate(["header"])
 @listensToClickOutside
 class SwitcherPopup extends React.Component {
 
   static propTypes = {
-    onClickedOutside : React.PropTypes.func.isRequired,
-    onClickedTable : React.PropTypes.func.isRequired,
-    onClickedGroup : React.PropTypes.func.isRequired,
-    langtag : React.PropTypes.string.isRequired,
-    tables : React.PropTypes.object.isRequired,
-    groups : React.PropTypes.array.isRequired,
-    currentTable : React.PropTypes.object.isRequired,
-    currentGroupId : React.PropTypes.number
+    onClickedOutside: React.PropTypes.func.isRequired,
+    onClickedTable: React.PropTypes.func.isRequired,
+    onClickedGroup: React.PropTypes.func.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    tables: React.PropTypes.object.isRequired,
+    groups: React.PropTypes.array.isRequired,
+    currentTable: React.PropTypes.object.isRequired,
+    currentGroupId: React.PropTypes.number
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      filterGroupId : props.currentGroupId !== null && _.isFinite(props.currentGroupId) ? props.currentGroupId : null,
-      filterTableName : "",
-      focusTableId : props.currentTable ? props.currentTable.id : null
+      filterGroupId: props.currentGroupId !== null && _.isFinite(props.currentGroupId) ? props.currentGroupId : null,
+      filterTableName: "",
+      focusTableId: props.currentTable ? props.currentTable.id : null
     };
   }
 
   componentDidMount = () => {
     // scroll to current focus table (initially its the current table)
-    if (this.state.focusTableId !== null && this.refs['table' + this.state.focusTableId]) {
-      ReactDOM.findDOMNode(this.refs['table' + this.state.focusTableId]).focus();
+    if (this.state.focusTableId !== null && this.refs["table" + this.state.focusTableId]) {
+      ReactDOM.findDOMNode(this.refs["table" + this.state.focusTableId]).focus();
     }
 
     // focus on filter input
@@ -56,8 +56,8 @@ class SwitcherPopup extends React.Component {
     this.props.onClickedGroup(groupId);
 
     this.setState({
-      filterGroupId : this.state.filterGroupId === groupId ? null : groupId,
-      filterTableName : ""
+      filterGroupId: this.state.filterGroupId === groupId ? null : groupId,
+      filterTableName: ""
     });
 
     // focus on filter input
@@ -68,7 +68,7 @@ class SwitcherPopup extends React.Component {
   onClickTable = (table) => {
     this.props.onClickedTable(table);
     this.setState({
-      focusTableId : table.id
+      focusTableId: table.id
     });
   };
 
@@ -77,8 +77,8 @@ class SwitcherPopup extends React.Component {
     const focusTableId = (filteredTables.length > 0) ? filteredTables[0].id : this.props.currentTable.id;
 
     this.setState({
-      focusTableId : focusTableId,
-      filterTableName : event.target.value
+      focusTableId: focusTableId,
+      filterTableName: event.target.value
     });
   };
 
@@ -100,7 +100,7 @@ class SwitcherPopup extends React.Component {
 
     if (filteredTables.length > nextFocusTableIndex) {
       this.setState({
-        focusTableId : filteredTables[nextFocusTableIndex].id
+        focusTableId: filteredTables[nextFocusTableIndex].id
       });
     }
   };
@@ -108,20 +108,20 @@ class SwitcherPopup extends React.Component {
   getKeyboardShortcutsFilterTable = (event) => {
     return {
       // enter on input
-      enter : (event) => {
+      enter: (event) => {
         const filteredTables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
         if (filteredTables.length > 0) {
-          this.onClickTable({id : this.state.focusTableId})
+          this.onClickTable({id: this.state.focusTableId});
         }
       },
       // clear input
-      escape : (event) => {
+      escape: (event) => {
         this.setState({
-          filterTableName : "",
-          focusTableId : this.props.currentTable.id
+          filterTableName: "",
+          focusTableId: this.props.currentTable.id
         });
       },
-      up : (event) => {
+      up: (event) => {
         // Cursor jumps around. Silly cursor stop doing that!
         event.preventDefault();
 
@@ -129,7 +129,7 @@ class SwitcherPopup extends React.Component {
           return focusTableIndex - 1;
         });
       },
-      down : (event) => {
+      down: (event) => {
         // Cursor jumps around. Silly cursor stop doing that!
         event.preventDefault();
 
@@ -147,7 +147,7 @@ class SwitcherPopup extends React.Component {
     // filter tables step 1: only tables in selected group
     const filteredTablesByGroup = _.filter(tables, (table) => {
       if (filterGroupId !== null) {
-        return table.group.id === filterGroupId
+        return table.group.id === filterGroupId;
       } else {
         return true;
       }
@@ -197,7 +197,7 @@ class SwitcherPopup extends React.Component {
     } else {
       return (
         <div className="tableswitcher-groups">
-          <div className="tableswitcher-label"><i className="fa fa-filter"></i> {t('tableSwitcher.groups')}</div>
+          <div className="tableswitcher-label"><i className="fa fa-filter"></i> {t("tableSwitcher.groups")}</div>
 
           <div className="tableswitcher-groups-list">
             <ul>
@@ -224,14 +224,14 @@ class SwitcherPopup extends React.Component {
 
       const onKeyDownFn = () => {
         return {
-          enter : () => {
+          enter: () => {
             self.onClickTable(table);
           }
-        }
+        };
       };
 
       return (
-        <li key={"table" + index} className={isActive ? 'active' : ''}
+        <li key={"table" + index} className={isActive ? "active" : ""}
             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)} tabIndex="0"
             ref={"table" + table.id}>
           <div onClick={onClickFn}>{tableDisplayName}</div>
@@ -240,16 +240,16 @@ class SwitcherPopup extends React.Component {
       );
     });
 
-    const style = groups.length <= 1 ? {width : "100%"} : {};
+    const style = groups.length <= 1 ? {width: "100%"} : {};
 
     return (
       <div className="tableswitcher-tables" style={style}>
         <div className="tableswitcher-tables-search">
-          <div className="tableswitcher-label"><i className="fa fa-columns"></i> {t('tableSwitcher.tables')}</div>
+          <div className="tableswitcher-label"><i className="fa fa-columns"></i> {t("tableSwitcher.tables")}</div>
 
           <div className="tableswitcher-input-wrapper2">
             <div className="tableswitcher-input-wrapper">
-              <input value={this.state.filterTableName} placeholder={t('tableSwitcher.search')} type="text"
+              <input value={this.state.filterTableName} placeholder={t("tableSwitcher.search")} type="text"
                      className="tableswitcher-input"
                      ref="filterInput" onChange={this.filterInputChange}
                      onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcutsFilterTable)}

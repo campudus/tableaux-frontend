@@ -1,33 +1,33 @@
-var React = require('react');
-var Dropzone = require('react-dropzone');
-var request = require('superagent');
-var apiUrl = require('../../../helpers/apiUrl');
-var ActionCreator = require('../../../actions/ActionCreator');
-var ProgressBar = require('../ProgressBar.jsx');
-import {translate} from 'react-i18next';
-import TableauxConstants from '../../../constants/TableauxConstants';
+var React = require("react");
+var Dropzone = require("react-dropzone");
+var request = require("superagent");
+var apiUrl = require("../../../helpers/apiUrl");
+var ActionCreator = require("../../../actions/ActionCreator");
+var ProgressBar = require("../ProgressBar.jsx");
+import {translate} from "react-i18next";
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 var FileUpload = React.createClass({
 
-  propTypes : {
-    folder : React.PropTypes.object.isRequired
+  propTypes: {
+    folder: React.PropTypes.object.isRequired
   },
 
-  getInitialState : function () {
+  getInitialState: function () {
     return {
-      runningUploads : {}
+      runningUploads: {}
     };
   },
 
-  onDrop : function (files) {
+  onDrop: function (files) {
     var self = this;
-    //upload with default language
+    // upload with default language
     var langtag = TableauxConstants.DefaultLangtag;
 
     files.forEach(function (file) {
       // upload each file for it's own
 
-      var json = {title : {}, description : {}, folder : self.props.folder.id};
+      var json = {title: {}, description: {}, folder: self.props.folder.id};
       json.title[langtag] = file.name;
       json.description[langtag] = "";
 
@@ -45,14 +45,14 @@ var FileUpload = React.createClass({
           var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
 
           request.put(uploadUrl)
-            .on('progress', function (e) {
+            .on("progress", function (e) {
               var runningUploads = self.state.runningUploads;
               runningUploads[uuid] = {
-                progress : parseInt(e.percent),
-                name : file.name
+                progress: parseInt(e.percent),
+                name: file.name
               };
               self.setState({
-                runningUploads : runningUploads
+                runningUploads: runningUploads
               });
             })
             .attach("file", file, file.name)
@@ -63,11 +63,11 @@ var FileUpload = React.createClass({
     });
   },
 
-  uploadCallback : function (err, res, uuid) {
+  uploadCallback: function (err, res, uuid) {
     var runningUploads = this.state.runningUploads;
     delete runningUploads[uuid];
     this.setState({
-      runningUploads : runningUploads
+      runningUploads: runningUploads
     });
 
     if (err) {
@@ -81,23 +81,24 @@ var FileUpload = React.createClass({
     }
   },
 
-  render : function () {
+  render: function () {
     const {t} = this.props;
     var uploads = [];
     var runningUploads = this.state.runningUploads;
     for (var uploadUuid in runningUploads) {
-      if (runningUploads.hasOwnProperty(uploadUuid))
+      if (runningUploads.hasOwnProperty(uploadUuid)) {
         uploads.push(<div className="file-upload" key={uploadUuid}>
             <span>{runningUploads[uploadUuid].name}</span><ProgressBar progress={runningUploads[uploadUuid].progress}/>
           </div>
-        );
+        ); 
+      }
     }
 
     var runningUploadsPanel = null;
     if (uploads.length > 0) {
       runningUploadsPanel = (
         <div className="running-uploads">
-          <span className="uploads-text">{t('current_uploads')}:</span>
+          <span className="uploads-text">{t("current_uploads")}:</span>
           {uploads}
         </div>
       );
@@ -107,11 +108,11 @@ var FileUpload = React.createClass({
       <div className="file-uploads">
         {runningUploadsPanel}
         <Dropzone onDrop={this.onDrop} className="dropzone">
-          <a>{t('upload_click_or_drop')}</a>
+          <a>{t("upload_click_or_drop")}</a>
         </Dropzone>
       </div>
     );
   }
 });
 
-module.exports = translate(['media'])(FileUpload);
+module.exports = translate(["media"])(FileUpload);

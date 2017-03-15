@@ -1,17 +1,17 @@
-import React from 'react';
-import Moment from 'moment';
-import TableauxConstants from '../../../constants/TableauxConstants';
+import React from "react";
+import Moment from "moment";
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 const DateTimeView = React.createClass({
 
-  displayName : 'DateTimeView',
+  displayName: "DateTimeView",
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired
   },
 
-  getValue : function () {
+  getValue: function () {
     var cell = this.props.cell;
 
     var value;
@@ -24,7 +24,7 @@ const DateTimeView = React.createClass({
     return typeof value === "undefined" ? null : value;
   },
 
-  getDateTimeValue : function () {
+  getDateTimeValue: function () {
     var cellValue = this.getValue();
     if (cellValue) {
       return Moment(cellValue, TableauxConstants.DateTimeFormats.formatForServer).format(TableauxConstants.DateTimeFormats.formatForUser);
@@ -33,7 +33,7 @@ const DateTimeView = React.createClass({
     }
   },
 
-  render : function () {
+  render: function () {
     var value = this.getDateTimeValue();
 
     return (

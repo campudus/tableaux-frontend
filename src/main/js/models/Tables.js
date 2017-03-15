@@ -24,7 +24,7 @@ const changeLinkCellHandler = ({cell, value}) => {
   if (!toggledRowId) {
     return;
   }
-  const {rowId,tableId} = cell;
+  const {rowId, tableId} = cell;
   const colId = cell.column.id;
   const backendUrl = apiUrl(`/tables/${tableId}/columns/${colId}/rows/${rowId}`);
   cell.set({value: newValue}); // set locally so fast follow-up request will have correct state
@@ -55,7 +55,7 @@ const Tables = Collection.extend({
     Dispatcher.on(ActionTypes.CLEANUP_TABLE, this.cleanupTable, this);
   },
 
-  //Clear current/old collections to prevent reinitializing bugs and free memory
+  // Clear current/old collections to prevent reinitializing bugs and free memory
   cleanupTable(payload) {
     const tableId = payload.tableId;
     const tableToCleanUp = this.get(tableId);
@@ -85,21 +85,21 @@ const Tables = Collection.extend({
     const self = this;
     const {cell} = payload;
     const oldValue = cell.value;
-    let newValue = payload.value; //value we send to the server
-    let mergedValue; //The value we display for the user
+    let newValue = payload.value; // value we send to the server
+    let mergedValue; // The value we display for the user
     let updateNecessary = false;
     let isPatch = false;
 
-    //Setup for saving the cell
+    // Setup for saving the cell
     if (cell.isMultiLanguage) {
       mergedValue = _.assign({}, oldValue, newValue);
-      newValue = {value : newValue};
+      newValue = {value: newValue};
       updateNecessary = !_.isEqual(oldValue, mergedValue);
       isPatch = true;
     } else {
       updateNecessary = !_.isEqual(oldValue, newValue);
       mergedValue = newValue;
-      newValue = {value : newValue};
+      newValue = {value: newValue};
     }
 
     if (updateNecessary) {
@@ -114,15 +114,15 @@ const Tables = Collection.extend({
           if (cell.isMultiCountry) {
             newValue = reduceValuesToAllowedCountries(newValue);
             if (_.isEmpty(newValue.value)) {
-              //The user tried to change a multilanguage cell without language permission
+              // The user tried to change a multilanguage cell without language permission
               noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
               return;
             }
           } else {
-            //reduce values to send just authorized language values to server
+            // reduce values to send just authorized language values to server
             newValue = reduceValuesToAllowedLanguages(newValue);
             if (_.isEmpty(newValue.value)) {
-              //The user tried to change a multilanguage cell without language permission
+              // The user tried to change a multilanguage cell without language permission
               noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
               return;
             }
@@ -134,11 +134,11 @@ const Tables = Collection.extend({
        */
 
       console.log("Cell Model: saving cell with value:", newValue);
-      //we give direct feedback for user
+      // we give direct feedback for user
       cell.value = mergedValue;
       self.updateConcatCells(cell);
 
-      //we need to clear the newValue, otherwise ampersand save method is merging a strange object
+      // we need to clear the newValue, otherwise ampersand save method is merging a strange object
       if (!isPatch) {
         newValue = null;
       }
@@ -151,9 +151,9 @@ const Tables = Collection.extend({
         patch: isPatch,
         wait: true,
         success(model, data, options) {
-          //is there new data from the server?
+          // is there new data from the server?
           if (!_.isEqual(data.value, mergedValue)) {
-            console.log('Cell model saved successfully. Server data changed meanwhile:', data.value, mergedValue);
+            console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
             cell.value = data.value;
             self.updateConcatCells(cell);
           }
@@ -165,10 +165,9 @@ const Tables = Collection.extend({
         }
       });
     }
-
   },
 
-  //We just trigger a changed event for concat cells when we are a identifier cell
+  // We just trigger a changed event for concat cells when we are a identifier cell
   updateConcatCells(changedCell) {
     if (changedCell.isIdentifier) {
       Dispatcher.trigger(changedCell.changedCellEvent, changedCell);
@@ -205,7 +204,7 @@ const Tables = Collection.extend({
       return;
     }
 
-    const newRow = new Row({tableId : tableId, columns : table.columns}, {collection : rows});
+    const newRow = new Row({tableId: tableId, columns: table.columns}, {collection: rows});
     ActionCreator.spinnerOn();
 
     newRow.save({}, {
@@ -216,15 +215,14 @@ const Tables = Collection.extend({
       error(err) {
         self.cleanUpRow(newRow);
         rows.remove(newRow);
-        console.error('could not add new row!', err, arguments);
+        console.error("could not add new row!", err, arguments);
         ActionCreator.spinnerOff();
       }
     });
-
   },
 
   url() {
-    return apiUrl('/tables');
+    return apiUrl("/tables");
   },
 
   parse(response) {

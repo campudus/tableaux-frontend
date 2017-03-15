@@ -1,44 +1,44 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var Dispatcher = require('../../dispatcher/Dispatcher');
-var ActionCreator = require('../../actions/ActionCreator');
-var LinkOverlay = require('../../components/cells/link/LinkOverlay');
+var React = require("react");
+var ReactDOM = require("react-dom");
+var Dispatcher = require("../../dispatcher/Dispatcher");
+var ActionCreator = require("../../actions/ActionCreator");
+var LinkOverlay = require("../../components/cells/link/LinkOverlay");
 import {merge} from "lodash/fp";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
-//TODO: Callback before closing overlay
+// TODO: Callback before closing overlay
 var GenericOverlay = React.createClass({
 
-  propTypes : {
-    //body : React.PropTypes.element.isRequired,
-    head : React.PropTypes.element,
-    footer : React.PropTypes.element,
-    type : React.PropTypes.string,
+  propTypes: {
+    // body : React.PropTypes.element.isRequired,
+    head: React.PropTypes.element,
+    footer: React.PropTypes.element,
+    type: React.PropTypes.string,
     keyboardShortcuts: React.PropTypes.object,
-    closeOnBackgroundClicked : React.PropTypes.bool
+    closeOnBackgroundClicked: React.PropTypes.bool
   },
 
-  getInitialState : function () {
+  getInitialState: function () {
     return {
-      contentHeight : 0,
-      contentWidth : 0
+      contentHeight: 0,
+      contentWidth: 0
     };
   },
 
-  getDefaultProps : function () {
+  getDefaultProps: function () {
     return {
-      closeOnBackgroundClicked : true
+      closeOnBackgroundClicked: true
     };
   },
 
-  allowedTypes : ["full-flex", "flexible", "normal", "no-scroll"],
-  focusedElementBeforeOverlayOpens : null,
+  allowedTypes: ["full-flex", "flexible", "normal", "no-scroll"],
+  focusedElementBeforeOverlayOpens: null,
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
   },
 
-  recalculateContentDimensions : function () {
+  recalculateContentDimensions: function () {
     console.log("recalculate");
     const overlayContent = ReactDOM.findDOMNode(this.refs.overlayContent);
     const style = window.getComputedStyle(overlayContent, null);
@@ -46,59 +46,59 @@ var GenericOverlay = React.createClass({
     const innerHeight = overlayContent.clientHeight - parseInt(style.getPropertyValue("padding-top")) - parseInt(style.getPropertyValue("padding-bottom"));
 
     this.setState({
-      contentHeight : innerHeight,
-      contentWidth : innerWidth
+      contentHeight: innerHeight,
+      contentWidth: innerWidth
     });
   },
 
-  componentDidMount : function () {
+  componentDidMount: function () {
     document.getElementsByTagName("body")[0].style.overflow = "hidden";
 
     const overlayDOMNode = ReactDOM.findDOMNode(this);
     const focusedElement = document.activeElement;
 
-    //Is current focus is this overlay or inside of overlay don't change the focus.
+    // Is current focus is this overlay or inside of overlay don't change the focus.
     if (!focusedElement || !overlayDOMNode.contains(focusedElement) || focusedElement.isEqualNode(overlayDOMNode)) {
       overlayDOMNode.focus();
     }
 
-    window.addEventListener('resize', this.handleResize);
+    window.addEventListener("resize", this.handleResize);
     this.handleResize();
   },
 
-  componentWillUnmount : function () {
-    //Overlay is going to be closed
+  componentWillUnmount: function () {
+    // Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener("resize", this.handleResize);
 
-    //Reset active element before overlay opened
+    // Reset active element before overlay opened
     if (this.focusedElementBeforeOverlayOpens) {
       this.focusedElementBeforeOverlayOpens.focus();
     }
   },
 
-  handleResize : function (event) {
+  handleResize: function (event) {
     this.recalculateContentDimensions();
   },
 
-  closeOverlay : function (event) {
+  closeOverlay: function (event) {
     if (this.props.closeOnBackgroundClicked) {
       ActionCreator.closeOverlay();
     }
   },
 
-  //FIXME: Isolated tabbing to prevent tabbing into browser url bar
-  getKeyboardShortcuts : function (event) {
+  // FIXME: Isolated tabbing to prevent tabbing into browser url bar
+  getKeyboardShortcuts: function (event) {
     var self = this;
     return merge(
       {
-        escape : function (event) {
+        escape: function (event) {
           if (self.props.closeOnBackgroundClicked) {
             event.preventDefault();
             ActionCreator.closeOverlay();
           }
         },
-        always : function (event) {
+        always: function (event) {
           event.stopPropagation();
         }
       },
@@ -106,15 +106,15 @@ var GenericOverlay = React.createClass({
     );
   },
 
-  renderChildren(props){
+  renderChildren(props) {
     let {contentHeight, contentWidth} = this.state;
     return React.Children.map(props.children, child => {
       return React.cloneElement(child, {contentHeight, contentWidth});
     });
   },
 
-  render : function () {
-    var overlayType = this.props.type || "normal"; //default to normal
+  render: function () {
+    var overlayType = this.props.type || "normal"; // default to normal
     var footer = this.props.footer;
     var hasFooterClass = "";
     if (footer) {

@@ -1,25 +1,25 @@
-import React from 'react';
-import App from 'ampersand-app';
-import Dispatcher from '../../dispatcher/Dispatcher';
-import ActionCreator from '../../actions/ActionCreator';
+import React from "react";
+import App from "ampersand-app";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import ActionCreator from "../../actions/ActionCreator";
 
-import Navigation from '../../components/header/Navigation.jsx';
-import PageTitle from '../../components/header/PageTitle.jsx';
-import LanguageSwitcher from '../../components/header/LanguageSwitcher.jsx';
+import Navigation from "../../components/header/Navigation.jsx";
+import PageTitle from "../../components/header/PageTitle.jsx";
+import LanguageSwitcher from "../../components/header/LanguageSwitcher.jsx";
 
-import FolderModel from '../../models/media/Folder';
-import Folder from './folder/Folder.jsx';
+import FolderModel from "../../models/media/Folder";
+import Folder from "./folder/Folder.jsx";
 
 export default class MediaView extends React.Component {
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired,
-    folderId : React.PropTypes.number
+    langtag: React.PropTypes.string.isRequired,
+    folderId: React.PropTypes.number
   };
 
   state = {
-    activeOverlay : null,
-    currentFolder : null,
-    isLoading : true
+    activeOverlay: null,
+    currentFolder: null,
+    isLoading: true
   };
 
   constructor(props) {
@@ -30,7 +30,7 @@ export default class MediaView extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.folderId !== this.props.folderId) {
       this.setState({
-        isLoading : true
+        isLoading: true
       });
       this.loadFolder(nextProps.folderId);
     }
@@ -43,18 +43,18 @@ export default class MediaView extends React.Component {
   }
 
   loadFolder(folderId) {
-    let folder = new FolderModel({id : folderId || null});
+    let folder = new FolderModel({id: folderId || null});
     folder.fetch({
-      data : {langtag : this.props.langtag},
-      success : () => {
+      data: {langtag: this.props.langtag},
+      success: () => {
         let oldFolder = this.state.currentFolder;
 
         this.setState({
-          currentFolder : folder,
-          isLoading : false
+          currentFolder: folder,
+          isLoading: false
         });
 
-        //Reset old folder
+        // Reset old folder
         if (oldFolder) {
           this.cleanUpFolder(oldFolder);
         }
@@ -87,7 +87,7 @@ export default class MediaView extends React.Component {
         </div>
       );
     } else {
-      //show spinner
+      // show spinner
       return null;
     }
   }

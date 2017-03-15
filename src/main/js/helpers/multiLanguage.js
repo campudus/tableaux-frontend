@@ -1,6 +1,6 @@
-import TableauxConstants from '../constants/TableauxConstants';
-import React from 'react';
-import _  from 'lodash';
+import TableauxConstants from "../constants/TableauxConstants";
+import React from "react";
+import _ from "lodash";
 
 /**
  * Parses json for translation value.
@@ -13,7 +13,7 @@ import _  from 'lodash';
 function retrieveTranslation(json, language, defaultLanguage) {
   if (!_.isPlainObject(json)) {
     console.error("json is not a plain object", json);
-    throw "json is not a plain object"
+    throw "json is not a plain object";
   }
 
   let content = json[language];
@@ -29,15 +29,15 @@ function retrieveTranslation(json, language, defaultLanguage) {
 }
 
 function getLanguageOrCountryIcon(langtag) {
-  //we try to split on "-" (dash) character
+  // we try to split on "-" (dash) character
   const langtagSplitted = langtag.split(/-|_/);
   let icon, countryOrLanguage, country, language = langtagSplitted[0];
 
-  //hey, we got a full langtag, e.g. de-CH
+  // hey, we got a full langtag, e.g. de-CH
   if (langtagSplitted.length > 1) {
     country = langtagSplitted[1];
   }
-  countryOrLanguage = country ? country : language;
+  countryOrLanguage = country || language;
   icon = countryOrLanguage.toLowerCase() + ".png";
 
   return (
@@ -50,24 +50,24 @@ function getLanguageOrCountryIcon(langtag) {
 
 function getCurrencyCode(country) {
   const currencyCodeMap = {
-    DE : "EUR",
-    FR : "EUR",
-    US : "USD",
-    GB : "GBP",
-    IT : "EUR",
-    PL : "PLN",
-    NL : "EUR",
-    ES : "EUR",
-    AT : "EUR",
-    CH : "SFR",
-    CZ : "CZK",
-    DK : "DKK"
+    DE: "EUR",
+    FR: "EUR",
+    US: "USD",
+    GB: "GBP",
+    IT: "EUR",
+    PL: "PLN",
+    NL: "EUR",
+    ES: "EUR",
+    AT: "EUR",
+    CH: "SFR",
+    CZ: "CZK",
+    DK: "DKK"
   };
   return currencyCodeMap[country] || null;
 }
 
-//converts en-US to US or en to EN
-//TODO Map EN to GB or
+// converts en-US to US or en to EN
+// TODO Map EN to GB or
 function getCountryOfLangtag(langtag) {
   const splittedLangtag = langtag.split(/-|_/);
   return splittedLangtag.length > 1 ? splittedLangtag[1] : String(splittedLangtag[0]).toUpperCase();
@@ -102,10 +102,10 @@ function getTableDisplayName(table, langtag) {
  * Console.println(translation);
  */
 module.exports = {
-  retrieveTranslation : function (defaultLanguage) {
+  retrieveTranslation: function (defaultLanguage) {
     return function (json, language) {
-      return retrieveTranslation(json, language, defaultLanguage)
-    }
+      return retrieveTranslation(json, language, defaultLanguage);
+    };
   },
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,

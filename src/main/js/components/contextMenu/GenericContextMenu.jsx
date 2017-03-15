@@ -8,9 +8,9 @@
 
 import React from "react";
 import ReactDom from "react-dom";
-import * as f from "lodash/fp"
+import * as f from "lodash/fp";
 
-class GenericContextMenu extends React.Component{
+class GenericContextMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,20 +20,20 @@ class GenericContextMenu extends React.Component{
   }
 
   componentDidMount() {
-    const {align,noClampX,noClampY,x,y} = this.props;
+    const {align, noClampX, noClampY, x, y} = this.props;
     const offset = this.props.offset || 0;
     const el = ReactDom.findDOMNode(this);
 
     if (x) {
       const w = el.offsetWidth;
-      const xShift = ((f.endsWith('RIGHT', align)) ? w : 0); // shift to align corner at (x,y)
+      const xShift = ((f.endsWith("RIGHT", align)) ? w : 0); // shift to align corner at (x,y)
       const xPos = (noClampX) ? x + offset - xShift : f.clamp(0, window.innerWidth - w, x + offset - xShift);
       this.setState({x: xPos});
     }
 
     if (y) {
       const h = el.offsetHeight;
-      const yShift = ((f.startsWith('LOWER', align)) ? h : 0);
+      const yShift = ((f.startsWith("LOWER", align)) ? h : 0);
       const yPos = (noClampY) ? y + offset - yShift : f.clamp(0, window.innerHeight - h, y + offset - yShift);
       this.setState({y: yPos});
     }

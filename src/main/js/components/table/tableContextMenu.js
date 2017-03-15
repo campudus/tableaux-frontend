@@ -6,13 +6,13 @@ const RowContextMenuWithClickOutside = onClickOutside(RowContextMenu);
 
 export function showRowContextMenu(payload) {
   this.setState({
-    rowContextMenu : payload
+    rowContextMenu: payload
   });
 }
 
 export function closeRowContextMenu(payload) {
   this.setState({
-    rowContextMenu : null
+    rowContextMenu: null
   });
 }
 
@@ -21,9 +21,9 @@ export function getRowContextMenu() {
   if (rowContextMenu !== null) {
     return <RowContextMenuWithClickOutside
       {...rowContextMenu}
-      handleClickOutside={()=>{this.setState({rowContextMenu : null})}}
+      handleClickOutside={() => { this.setState({rowContextMenu: null}); }}
       pasteFrom={this.props.pasteOriginCell}
-      offsetY={this.tableDOMOffsetY}/>
+      offsetY={this.tableDOMOffsetY}/>;
   } else {
     return null;
   }

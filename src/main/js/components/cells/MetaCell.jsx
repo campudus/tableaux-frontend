@@ -1,5 +1,5 @@
-import React from 'react';
-import {getLanguageOrCountryIcon} from '../../helpers/multiLanguage';
+import React from "react";
+import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 
 class MetaCell extends React.Component {
 
@@ -8,18 +8,18 @@ class MetaCell extends React.Component {
   }
 
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired,
-    rowId : React.PropTypes.number.isRequired,
-    onClick : React.PropTypes.func.isRequired,
-    rowExpanded : React.PropTypes.bool.isRequired
+    langtag: React.PropTypes.string.isRequired,
+    rowId: React.PropTypes.number.isRequired,
+    onClick: React.PropTypes.func.isRequired,
+    rowExpanded: React.PropTypes.bool.isRequired
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    const {langtag,rowId,rowExpanded} = this.props;
+    const {langtag, rowId, rowExpanded} = this.props;
     return (langtag !== nextProps.langtag
       || rowId !== nextProps.rowId
       || rowExpanded !== nextProps.rowExpanded
-    )
+    );
   }
 
   render = () => {
@@ -37,13 +37,12 @@ class MetaCell extends React.Component {
     }
 
     return (
-      <div className={'meta-cell cell cell-0-' + rowId + (rowExpanded ? " row-expanded": "")} onClick={onClick}>
+      <div className={"meta-cell cell cell-0-" + rowId + (rowExpanded ? " row-expanded" : "")} onClick={onClick}>
         <div className="cell-content">
           {cellContent}
         </div>
       </div>
     );
-
   };
 
 }

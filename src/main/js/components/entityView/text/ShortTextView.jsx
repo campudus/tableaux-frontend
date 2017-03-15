@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 
 const ShortTextView = React.createClass({
 
-  displayName : 'DateTimeView',
+  displayName: "DateTimeView",
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired
   },
 
-  getValue : function () {
+  getValue: function () {
     var cell = this.props.cell;
 
     var value;
@@ -22,7 +22,7 @@ const ShortTextView = React.createClass({
     return typeof value === "undefined" ? null : value;
   },
 
-  render : function () {
+  render: function () {
     var value = this.getValue();
 
     return (

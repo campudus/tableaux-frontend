@@ -1,26 +1,26 @@
-var React = require('react');
-var multiLanguage = require('../../../helpers/multiLanguage');
-import TableauxConstants from '../../../constants/TableauxConstants';
+var React = require("react");
+var multiLanguage = require("../../../helpers/multiLanguage");
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 var AttachmentLabelCell = React.createClass({
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    attachmentElement : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
+  propTypes: {
+    cell: React.PropTypes.object.isRequired,
+    attachmentElement: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
 
-    //optional for delete label
-    deletable : React.PropTypes.bool.isRequired,
-    onDelete : React.PropTypes.func
+    // optional for delete label
+    deletable: React.PropTypes.bool.isRequired,
+    onDelete: React.PropTypes.func
   },
 
-  removeAttachmentHandler : function (event) {
+  removeAttachmentHandler: function (event) {
     event.preventDefault();
     event.stopPropagation();
     this.props.onDelete(this.props.id);
   },
 
-  render : function () {
+  render: function () {
     var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     var attachmentTitle = retrieveTranslation(this.props.attachmentElement.title, this.props.langtag);
@@ -36,7 +36,6 @@ var AttachmentLabelCell = React.createClass({
     return (
       <span className={theClassName}>{attachmentTitle}{hasDeleteButton ? deleteButton : ""}</span>
     );
-
   }
 
 });

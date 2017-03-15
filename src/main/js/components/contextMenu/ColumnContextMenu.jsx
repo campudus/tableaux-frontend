@@ -11,7 +11,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
 const Alignments = TableauxConstants.Alignments;
 
-const PROTECTED_CELL_KINDS = ['concat']; //cell kinds that should not be editable
+const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
 @listensToClickOutside
 class ColumnContextMenu extends React.Component {
@@ -21,11 +21,11 @@ class ColumnContextMenu extends React.Component {
     this.state = {
       x: x,
       y: y
-    }
+    };
   }
 
   handleClickOutside = evt => {
-    //fix behaviour on outsideclicks; adding "react-ignore-clickoutside" class leads to different faulty behaviour
+    // fix behaviour on outsideclicks; adding "react-ignore-clickoutside" class leads to different faulty behaviour
     const el = document.getElementById(this.props.popupToggleButtonId);
     const target = evt.target;
     if (el !== target) {
@@ -75,7 +75,7 @@ class ColumnContextMenu extends React.Component {
       );
 
     return (
-      <GenericContextMenu x={x-1} y={y-1}
+      <GenericContextMenu x={x - 1} y={y - 1}
                           clickOutsideHandler={this.closeContextMenu}
                           menuItems={
                             <div>
@@ -85,7 +85,7 @@ class ColumnContextMenu extends React.Component {
                             </div>
                           }
                           align={Alignments.UPPER_RIGHT} />
-    )
+    );
   }
 }
 

@@ -1,7 +1,7 @@
 import * as f from "lodash/fp";
 import {FilterModes} from "../constants/TableauxConstants";
 
-const clean = f.compose(f.toLower, f.trim) // normalise string
+const clean = f.compose(f.toLower, f.trim); // normalise string
 
 const SearchFunctions = {
   [FilterModes.CONTAINS]: f.curry(
@@ -9,7 +9,7 @@ const SearchFunctions = {
       const fcontains = a => b => f.contains(b)(a);
       return f.every(
         fcontains(clean(str)),
-        f.words(clean(stringOfFilters)))
+        f.words(clean(stringOfFilters)));
     }),
   [FilterModes.STARTS_WITH]: f.curry(
     (searchVal, str) => {

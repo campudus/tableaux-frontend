@@ -15,18 +15,18 @@ const ActionTypes = TableauxConstants.ActionTypes;
 export default class Tableaux extends React.Component {
 
   state = {
-    currentView : this.props.initialViewName,
-    currentViewParams : this.props.initialParams,
-    activeOverlay : null,
-    isLoading : true,
-    toast : null
+    currentView: this.props.initialViewName,
+    currentViewParams: this.props.initialParams,
+    activeOverlay: null,
+    isLoading: true,
+    toast: null
   };
 
   toastTimer = null;
 
   static propTypes = {
-    initialViewName : React.PropTypes.string.isRequired,
-    initialParams : React.PropTypes.object.isRequired
+    initialViewName: React.PropTypes.string.isRequired,
+    initialParams: React.PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -38,27 +38,26 @@ export default class Tableaux extends React.Component {
     Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
     Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
 
-
     i18n
       .use(XHR)
       .init({
         // we need to define just 'en' otherwise fallback doesn't work correctly since i18next tries to load the
         // json only once with the exact fallbackLng Key. So 'en-GB' doesn't work because all
-        fallbackLng : 'en',
-        lng : this.props.initialParams.langtag,
+        fallbackLng: "en",
+        lng: this.props.initialParams.langtag,
 
         // have a common namespace used around the full app
-        ns : ['common', 'header', 'table', 'media'],
-        defaultNS : 'common',
+        ns: ["common", "header", "table", "media"],
+        defaultNS: "common",
 
-        debug : false,
+        debug: false,
 
-        interpolation : {
-          escapeValue : false // not needed for react!!
+        interpolation: {
+          escapeValue: false // not needed for react!!
         }
       }, () => {
         this.setState({
-          isLoading : false
+          isLoading: false
         });
       });
   }
@@ -70,8 +69,8 @@ export default class Tableaux extends React.Component {
   }
 
   switchViewHandler(payload) {
-    console.log('switchViewHandler', payload);
-    //check if language has changed
+    console.log("switchViewHandler", payload);
+    // check if language has changed
     if (this.currentLangtag !== payload.params.langtag) {
       ActionCreator.spinnerOn();
       i18n.changeLanguage(payload.params.langtag, () => {
@@ -86,8 +85,8 @@ export default class Tableaux extends React.Component {
 
   changeView(payload) {
     this.setState({
-      currentView : payload.viewName,
-      currentViewParams : payload.params
+      currentView: payload.viewName,
+      currentViewParams: payload.params
     });
   }
 
@@ -95,8 +94,8 @@ export default class Tableaux extends React.Component {
     var newViewParams = Object.assign({}, this.state.currentViewParams);
     newViewParams.overlayOpen = true;
     this.setState({
-      activeOverlay : content,
-      currentViewParams : newViewParams
+      activeOverlay: content,
+      currentViewParams: newViewParams
     });
   }
 
@@ -104,8 +103,8 @@ export default class Tableaux extends React.Component {
     var newViewParams = Object.assign({}, this.state.currentViewParams);
     newViewParams.overlayOpen = false;
     this.setState({
-      activeOverlay : null,
-      currentViewParams : newViewParams
+      activeOverlay: null,
+      currentViewParams: newViewParams
     });
   }
 
@@ -134,13 +133,13 @@ export default class Tableaux extends React.Component {
     }
   }
 
-  //TODO: Stop hiding toast when user hovers over the toast message
+  // TODO: Stop hiding toast when user hovers over the toast message
   showToast(payload) {
-    //default 1000ms
+    // default 1000ms
     const {content, milliseconds = 1000} = payload;
 
     this.setState({
-      toast : content
+      toast: content
     });
 
     if (this.toastTimer) {
@@ -153,14 +152,13 @@ export default class Tableaux extends React.Component {
   hideToast = () => {
     this.toastTimer = null;
     this.setState({
-      toast : null
+      toast: null
     });
   };
 
-
   render() {
     if (this.state.isLoading) {
-      return <div className="initial-loader"><Spinner isLoading={true}/></div>
+      return <div className="initial-loader"><Spinner isLoading={true}/></div>;
     } else {
       return <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">

@@ -10,7 +10,7 @@ class TableSettings extends React.Component {
   }
 
   setOpenState = open => {
-    this.setState({open: open})
+    this.setState({open: open});
   };
 
   toggleSettingsPopup = () => {
@@ -21,7 +21,7 @@ class TableSettings extends React.Component {
     const target = evt.target;
     const el = this.tableSettings;
     if (!contains(target, [el, el.firstChild])) {
-      this.setOpenState(false)
+      this.setOpenState(false);
     }
   };
 

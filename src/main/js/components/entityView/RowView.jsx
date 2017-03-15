@@ -1,25 +1,25 @@
-import React from 'react';
-import AmpersandMixin from 'ampersand-react-mixin';
-import {ColumnKinds} from '../../constants/TableauxConstants';
-import ShortTextView from './text/ShortTextView';
-import TextView from './text/TextView';
-import NumericView from './numeric/NumericView';
-import BooleanView from './boolean/BooleanView';
-import LinkView from './link/LinkView';
-import AttachmentView from './attachment/AttachmentView';
-import CurrencyView from './currency/CurrencyView';
-import DateTimeView from './datetime/DateTimeView';
-import RowHeadline from './RowHeadline';
+import React from "react";
+import AmpersandMixin from "ampersand-react-mixin";
+import {ColumnKinds} from "../../constants/TableauxConstants";
+import ShortTextView from "./text/ShortTextView";
+import TextView from "./text/TextView";
+import NumericView from "./numeric/NumericView";
+import BooleanView from "./boolean/BooleanView";
+import LinkView from "./link/LinkView";
+import AttachmentView from "./attachment/AttachmentView";
+import CurrencyView from "./currency/CurrencyView";
+import DateTimeView from "./datetime/DateTimeView";
+import RowHeadline from "./RowHeadline";
 
 var View = React.createClass({
-  mixins : [AmpersandMixin],
+  mixins: [AmpersandMixin],
 
-  propTypes : {
-    cell : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired,
+  propTypes: {
+    cell: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired
   },
 
-  render : function () {
+  render: function () {
     let cellKind = null;
     const {cell, langtag} = this.props;
 
@@ -71,7 +71,7 @@ var View = React.createClass({
           {cellKind}
         </div>
       </div>
-    )
+    );
   }
 });
 

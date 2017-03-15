@@ -1,59 +1,59 @@
-var React = require('react');
-var FileChangeUpload = require('./FileChangeUpload.jsx');
-var LanguageSwitcher = require('../../header/LanguageSwitcher.jsx');
-var apiUrl = require('../../../helpers/apiUrl');
-import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess} from '../../../helpers/accessManagementHelper';
-import {translate} from 'react-i18next';
+var React = require("react");
+var FileChangeUpload = require("./FileChangeUpload.jsx");
+var LanguageSwitcher = require("../../header/LanguageSwitcher.jsx");
+var apiUrl = require("../../../helpers/apiUrl");
+import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess} from "../../../helpers/accessManagementHelper";
+import {translate} from "react-i18next";
 
 var MultifileFileEdit = React.createClass({
 
-  propTypes : {
-    langtag : React.PropTypes.string.isRequired,
-    originalLangtag : React.PropTypes.string.isRequired,
-    fileData : React.PropTypes.object.isRequired,
-    onTitleChange : React.PropTypes.func.isRequired,
-    onDescriptionChange : React.PropTypes.func.isRequired,
-    onExternalnameChange : React.PropTypes.func.isRequired,
-    onLangChange : React.PropTypes.func.isRequired
+  propTypes: {
+    langtag: React.PropTypes.string.isRequired,
+    originalLangtag: React.PropTypes.string.isRequired,
+    fileData: React.PropTypes.object.isRequired,
+    onTitleChange: React.PropTypes.func.isRequired,
+    onDescriptionChange: React.PropTypes.func.isRequired,
+    onExternalnameChange: React.PropTypes.func.isRequired,
+    onLangChange: React.PropTypes.func.isRequired
   },
 
-  componentWillMount : function () {
+  componentWillMount: function () {
     this.titleId = "fileTitle_" + this.props.langtag;
     this.descId = "fileDescription_" + this.props.langtag;
     this.externalNameId = "fileLinkName" + this.props.langtag;
   },
 
-  shouldComponentUpdate : function (nextProps) {
-    return nextProps.fileData.title !== this.props.fileData.title ||
-      nextProps.fileData.description !== this.props.fileData.description ||
-      nextProps.fileData.externalName !== this.props.fileData.externalName ||
-      nextProps.fileData.internalName !== this.props.fileData.internalName ||
-      nextProps.langtag !== this.props.langtag;
+  shouldComponentUpdate: function (nextProps) {
+    return nextProps.fileData.title !== this.props.fileData.title
+      || nextProps.fileData.description !== this.props.fileData.description
+      || nextProps.fileData.externalName !== this.props.fileData.externalName
+      || nextProps.fileData.internalName !== this.props.fileData.internalName
+      || nextProps.langtag !== this.props.langtag;
   },
 
-  onTitleChange : function (event) {
+  onTitleChange: function (event) {
     this.props.onTitleChange(event.target.value, this.props.originalLangtag);
   },
 
-  onDescriptionChange : function (event) {
+  onDescriptionChange: function (event) {
     this.props.onDescriptionChange(event.target.value, this.props.originalLangtag);
   },
 
-  onExternalNameChange : function (event) {
+  onExternalNameChange: function (event) {
     this.props.onExternalnameChange(event.target.value, this.props.originalLangtag);
   },
 
-  onLangChange : function (lang) {
+  onLangChange: function (lang) {
     this.props.onLangChange(lang, this.props.originalLangtag);
   },
 
-  render : function () {
+  render: function () {
     const {langtag, fileData, t} = this.props;
     const {internalName, uuid, description, externalName, title, fileUrl} = fileData;
     const permissionToChange = hasUserAccessToLanguage(langtag);
 
-    const openFileLink = internalName && fileUrl ?
-      <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>{t('open_file')}</a></span> : null;
+    const openFileLink = internalName && fileUrl
+      ? <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>{t("open_file")}</a></span> : null;
 
     return (
       <div className="multifile-file-edit">
@@ -74,7 +74,7 @@ var MultifileFileEdit = React.createClass({
             limitLanguages={getUserLanguageAccess()}
           />
           <div className='field-item'>
-            <label htmlFor={this.titleId} className="field-label">{t('file_title_label')}</label>
+            <label htmlFor={this.titleId} className="field-label">{t("file_title_label")}</label>
             <div className="field-input">
               <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.titleId}
                      value={title}
@@ -82,7 +82,7 @@ var MultifileFileEdit = React.createClass({
             </div>
           </div>
           <div className='field-item'>
-            <label htmlFor={this.descId} className="field-label">{t('file_description_label')}</label>
+            <label htmlFor={this.descId} className="field-label">{t("file_description_label")}</label>
             <div className="field-input">
               <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.descId}
                      value={description}
@@ -90,7 +90,7 @@ var MultifileFileEdit = React.createClass({
             </div>
           </div>
           <div className='field-item'>
-            <label htmlFor={this.externalNameId} className="field-label">{t('file_link_name_label')}</label>
+            <label htmlFor={this.externalNameId} className="field-label">{t("file_link_name_label")}</label>
             <div className="field-input">
               <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.externalNameId}
                      value={externalName}
@@ -103,4 +103,4 @@ var MultifileFileEdit = React.createClass({
   }
 });
 
-module.exports = translate(['media'])(MultifileFileEdit);
+module.exports = translate(["media"])(MultifileFileEdit);

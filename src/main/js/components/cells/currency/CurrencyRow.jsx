@@ -1,42 +1,42 @@
-import React from 'react';
-import {getCountryOfLangtag, getCurrencyCode, getLanguageOrCountryIcon} from '../../../helpers/multiLanguage';
-import {splitPriceDecimals} from './currencyHelper';
-import {isAllowedForNumberInput} from '../../../helpers/KeyboardShortcutsHelper';
+import React from "react";
+import {getCountryOfLangtag, getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import {splitPriceDecimals} from "./currencyHelper";
+import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";
 
 export default class CurrencyRow extends React.Component {
 
   currencyInputTouched = false;
 
   static propTypes = {
-    country : React.PropTypes.string.isRequired,
-    countryCurrencyValue : React.PropTypes.number
+    country: React.PropTypes.string.isRequired,
+    countryCurrencyValue: React.PropTypes.number
   };
 
   constructor(props) {
     super(props);
   }
 
-  //returns float 0 when nothing has ever been entered for this country
+  // returns float 0 when nothing has ever been entered for this country
   mergeSplittedCurrencyValues() {
     const integerVal = String(this.refs.currencyInteger.value).trim();
     const decimalVal = String(this.refs.currencyDecimals.value).trim();
-    const mergedVal = (integerVal === "" ? "0" : integerVal ) + "." + (decimalVal === "" ? "00" : decimalVal);
+    const mergedVal = (integerVal === "" ? "0" : integerVal) + "." + (decimalVal === "" ? "00" : decimalVal);
     return parseFloat(mergedVal);
   }
 
-  //Gets called from parent component when unmounting to save the values
+  // Gets called from parent component when unmounting to save the values
   saveThisCurrency = () => {
     const {country} = this.props;
     const newCurrencyFloatValue = this.mergeSplittedCurrencyValues();
     const oldCurrencyFloatValue = this.props.countryCurrencyValue;
 
-    //User has changed nothing for this country and there's never been a value set
+    // User has changed nothing for this country and there's never been a value set
     if (oldCurrencyFloatValue === null && !this.currencyInputTouched) {
       return null;
     }
-    //we just want to save this cell when value has changed
+    // we just want to save this cell when value has changed
     if (newCurrencyFloatValue != oldCurrencyFloatValue) {
-      return {[country] : newCurrencyFloatValue};
+      return {[country]: newCurrencyFloatValue};
     }
     return null;
   }
@@ -65,7 +65,6 @@ export default class CurrencyRow extends React.Component {
       </div>
     );
   }
-
 
   render() {
     const {country, countryCurrencyValue} = this.props;

@@ -1,14 +1,14 @@
-var React = require('react');
-var multiLanguage = require('../../../helpers/multiLanguage');
-import TableauxConstants from '../../../constants/TableauxConstants';
+var React = require("react");
+var multiLanguage = require("../../../helpers/multiLanguage");
+import TableauxConstants from "../../../constants/TableauxConstants";
 
 var FileEditHead = React.createClass({
-  propTypes : {
-    file : React.PropTypes.object.isRequired,
-    langtag : React.PropTypes.string.isRequired
+  propTypes: {
+    file: React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired
   },
 
-  render : function () {
+  render: function () {
     // default language (for fallback)
     var fallbackLang = TableauxConstants.DefaultLangtag;
     var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);

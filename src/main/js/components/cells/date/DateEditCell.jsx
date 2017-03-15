@@ -80,7 +80,7 @@ class DateEditCell extends React.Component {
                   value={moment}
                   timeFormat={false} />
       </div>
-    )
+    );
   }
 }
 

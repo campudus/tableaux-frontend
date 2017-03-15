@@ -1,5 +1,5 @@
-import React from 'react';
-import {translate} from 'react-i18next';
+import React from "react";
+import {translate} from "react-i18next";
 
 let NavigationPopup = (props) => {
   const {langtag, t} = props;
@@ -9,9 +9,9 @@ let NavigationPopup = (props) => {
         <h1>DataCenter</h1>
       </div>
       <ul id="main-navigation-list">
-        <li><a href={ "/" + langtag + "/table" }><i className="fa fa-columns"></i>{t('header:menu.tables')}
+        <li><a href={ "/" + langtag + "/table" }><i className="fa fa-columns"></i>{t("header:menu.tables")}
         </a></li>
-        <li><a href={ "/" + langtag + "/media" }><i className="fa fa-file"></i>{t('header:menu.media')}</a>
+        <li><a href={ "/" + langtag + "/media" }><i className="fa fa-file"></i>{t("header:menu.media")}</a>
         </li>
       </ul>
     </div>
@@ -19,7 +19,7 @@ let NavigationPopup = (props) => {
 };
 
 NavigationPopup.propTypes = {
-  langtag : React.PropTypes.string.isRequired
+  langtag: React.PropTypes.string.isRequired
 };
 
-export default translate(['header'])(NavigationPopup);
+export default translate(["header"])(NavigationPopup);
