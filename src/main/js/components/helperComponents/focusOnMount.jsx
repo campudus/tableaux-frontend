@@ -26,6 +26,6 @@ const focusOnMount = (_Comp) => class extends Component {
         <_Comp {...this.props} ref={cmp => this._component = cmp} />
     );
   }
-}
+};
 
 export default focusOnMount;

@@ -36,7 +36,7 @@ class EntityViewBody extends Component {
       const viewId = `view-${cell.column.id}-${cell.rowId}`;
       const element = first(document.getElementsByClassName(viewId));
       const scroller = zenscroll.createScroller(container);
-      console.log("tn", container, "c", cell, "id", viewId, "el", element, "scr", scroller)
+      console.log("tn", container, "c", cell, "id", viewId, "el", element, "scr", scroller);
       scroller.to(element, 1);
     }
   }
@@ -59,7 +59,7 @@ class EntityViewBody extends Component {
          .filter(cell => cell.kind !== ColumnKinds.concat)
          .map(
            (cell, idx) => {
-             return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />
+             return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />;
            })
         }
       </div>
@@ -70,7 +70,7 @@ class EntityViewBody extends Component {
 @listensToClickOutside
 class LanguageSwitcher extends Component {
   static propTypes = {
-    langtag: PropTypes.string.isRequired,
+    langtag: PropTypes.string.isRequired
   };
 
   constructor(props) {
@@ -86,8 +86,8 @@ class LanguageSwitcher extends Component {
     this.setOpen(!open)();
   };
 
-  setOpen = open => () =>  {
-    this.setState({open})
+  setOpen = open => () => {
+    this.setState({open});
   };
 
   setLang = langtag => () => {
@@ -114,7 +114,7 @@ class LanguageSwitcher extends Component {
            {Langtags.map(
              lt => {
                const cssClass = classNames("menu-item", {"active": lt === langtag});
-               return <div key={lt} className={cssClass}><a href="#" onClick={this.setLang(lt)}><i>{lt}</i></a></div>
+               return <div key={lt} className={cssClass}><a href="#" onClick={this.setLang(lt)}><i>{lt}</i></a></div>;
              }
            )}
          </div>
