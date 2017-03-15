@@ -2,7 +2,7 @@ import React from "react";
 import TableauxConstants from "../../constants/TableauxConstants";
 import ActionCreator from "../../actions/ActionCreator";
 import Cell from "../cells/Cell.jsx";
-import connectToAmpersand from "../HOCs/connectToAmpersand";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import MetaCell from "../cells/MetaCell";
 import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {initiateDeleteRow} from "../../helpers/rowHelper";

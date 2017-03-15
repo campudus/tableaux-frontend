@@ -13,7 +13,7 @@ const AttachmentView = React.createClass({
   render: function () {
     const {cell, langtag} = this.props;
 
-    var attachments = cell.value.map(function (element, id) {
+    const attachments = cell.value.map((element, id) => {
       return <AttachmentLabelCell key={id} attachmentElement={element} cell={cell}
                                   langtag={langtag}
                                   deletable={false} />;
@@ -21,10 +21,15 @@ const AttachmentView = React.createClass({
 
     return (
       <div className='view-content link'>
-        {attachments}
+        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>
+        {i18n.t("table:edit_attachments")}
+      </a>
+        <div className="link-list">
+          {attachments}
+        </div>
       </div>
     );
   }
-});
+}
 
 export default AttachmentView;

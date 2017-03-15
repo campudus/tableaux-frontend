@@ -101,12 +101,12 @@ var TableauxRouter = Router.extend({
     const optionalArgs = [a, b, c].filter(x => x);
 
     // sort optional args to values
-    let columnid, rowid, filterString;
+    let columnid, rowid, optionStr;
     if (optionalArgs.length === 3) {
-      [columnid, rowid, filterString] = optionalArgs;
+      [columnid, rowid, optionStr] = optionalArgs;
     } else if (optionalArgs.length === 2) {
       if (f.startsWith("filter", f.last(optionalArgs))) {
-        [rowid, filterString] = optionalArgs;
+        [rowid, optionStr] = optionalArgs;
       } else {
         [columnid, rowid] = optionalArgs;
       }
@@ -114,7 +114,12 @@ var TableauxRouter = Router.extend({
       rowid = f.first(optionalArgs);
     }
 
-    console.log(`TableauxRouter.tableBrowser lang=${langtag}, table=${tableid} column=${columnid} row=${rowid} filtering=${(filterString) ? "yes" : "no"}`);
+    const urlOptions = parseOptions(optionStr);
+    console.log("urlOptions:", urlOptions);
+
+    console.log(`TableauxRouter.tableBrowser lang=${langtag}, table=${tableid} column=${columnid} row=${rowid} filtering=${(urlOptions.filter)
+      ? "yes"
+      : "no"}`);
     currentLangtag = langtag;
     // TODO show error to user
     if (typeof tableid === "undefined" || isNaN(parseInt(tableid))) {
@@ -127,7 +132,7 @@ var TableauxRouter = Router.extend({
       return;
     }
 
-    var tableId = parseInt(tableid);
+    const tableId = parseInt(tableid);
 
     this.renderOrSwitchView(TableauxConstants.ViewNames.TABLE_VIEW, {
       tableId: tableId,

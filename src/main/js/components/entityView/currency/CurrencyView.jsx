@@ -2,7 +2,7 @@ import React from "react";
 import {getCurrencyWithCountry} from "../../cells/currency/currencyHelper";
 import {getCountryOfLangtag, getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 
-const CurrencyView = React.createClass({
+class CurrencyView extends Component {
 
   displayName: "CurrencyView",
 
@@ -14,6 +14,7 @@ const CurrencyView = React.createClass({
   getCurrencyValues: function (cell, showAll) {
     const {column} = cell;
     const {countryCodes} = column;
+    const {editing} = this.state;
 
     return countryCodes.map((countryCode, index) => {
       const currencyValues = cell.value;
@@ -30,14 +31,14 @@ const CurrencyView = React.createClass({
 
   render: function () {
     const {cell} = this.props;
-    var currencyRows = this.getCurrencyValues(cell, false);
+    const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-      <div className='view-content currency'>
+        <div className="view-content currency" tabIndex={tabIdx}>
         {currencyRows}
       </div>
     );
   }
-});
+}
 
 export default CurrencyView;

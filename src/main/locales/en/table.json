@@ -32,6 +32,9 @@
   "filter_columns": "Search columns...",
   "no_results_found": "No matching columns found",
   "hide_unhide": "Hide/unhide columns",
+  "set_header_level": "Heading:",
+  "edit_links": "Link/unlink items",
+  "edit_attachments": "Link/unlink files",
   "jump": {
     "no_such_row": "No row with ID {{row}} in this table",
     "no_such_column": "No column with ID {{col}} in this table"

@@ -1,5 +1,4 @@
-import React from "react";
-import AmpersandMixin from "ampersand-react-mixin";
+import React, {Component, PropTypes} from "react";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
@@ -10,69 +9,55 @@ import AttachmentView from "./attachment/AttachmentView";
 import CurrencyView from "./currency/CurrencyView";
 import DateTimeView from "./datetime/DateTimeView";
 import RowHeadline from "./RowHeadline";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 
 var View = React.createClass({
   mixins: [AmpersandMixin],
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
-  },
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    tabIdx: PropTypes.number
+  };
 
-  render: function () {
-    let cellKind = null;
-    const {cell, langtag} = this.props;
+  getViewKind() {
+    return `view-${this.props.cell.kind}`;
+  }
 
-    const kind = this.props.cell.kind;
+  getViewId(someCell) {
+    const cell = someCell || this.props.cell;
+    return `view-${cell.column.getId()}-${cell.rowId}`;
+  }
 
-    const column = this.props.cell.column;
+  render() {
+    const {cell, langtag, tabIdx} = this.props;
+    const {kind, column} = cell;
 
-    switch (kind) {
+    const views = {
+      [ColumnKinds.link]: LinkView,
+      [ColumnKinds.attachment]: AttachmentView,
+      [ColumnKinds.numeric]: NumericView,
+      [ColumnKinds.boolean]: BooleanView,
+      [ColumnKinds.date]: DateView,
+      [ColumnKinds.datetime]: DateView,
+      [ColumnKinds.shorttext]: ShortTextView,
+      [ColumnKinds.currency]: CurrencyView,
+      [ColumnKinds.text]: TextView,
+      [ColumnKinds.richtext]: TextView
+    };
 
-      case ColumnKinds.link:
-        cellKind = <LinkView cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.attachment:
-        cellKind = <AttachmentView cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.numeric:
-        cellKind = <NumericView cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.boolean:
-        cellKind = <BooleanView cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.datetime:
-        cellKind = <DateTimeView cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.shorttext:
-        cellKind = <ShortTextView cell={cell} langtag={langtag} />;
-        break;
-
-      case ColumnKinds.currency:
-        cellKind = <CurrencyView cell={cell} langtag={langtag} />;
-        break;
-
-      default:
-        cellKind = <TextView cell={cell} langtag={langtag} />;
-        break;
-    }
-
-    let viewClass = "view" + " view-" + kind + " view-" + cell.column.getId() + "-" + cell.rowId;
+    const CellKind = views[kind];
+    const viewClass = `view ${this.getViewKind()} ${this.getViewId()}`;
 
     return (
       <div className={viewClass}>
         <RowHeadline column={column} langtag={langtag} />
         <div className="view-column">
-          {cellKind}
+        <CellKind tabIdx={tabIdx} cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime} />
         </div>
       </div>
     );
   }
-});
+}
 
 module.exports = View;

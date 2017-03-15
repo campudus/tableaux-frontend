@@ -14,7 +14,7 @@ import FilterModePopup from "../../header/filter/FilterModePopup";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import apiUrl from "../../../helpers/apiUrl";
-import withAbortableXhrRequests from "../../HOCs/withAbortableXhrRequests";
+import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 
 // we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
@@ -320,8 +320,8 @@ class LinkOverlay extends React.Component {
                    autoFocus />
             <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
                onClick={this.toggleFilterModesPopup}>
-              <i className="fa fa-search"></i>
-              <i className="fa fa-angle-down"></i>
+              <i className="fa fa-search" />
+              <i className="fa fa-angle-down" />
             </a>
           </div>
         </div>

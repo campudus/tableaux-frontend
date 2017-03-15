@@ -109,7 +109,7 @@ class Folder extends React.Component {
       map((file) => {
         return (
           <li key={file.uuid}
-              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
+              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : "unchanged-file"}>
             <File key={file.uuid} file={file}
                   langtag={langtag}/>
           </li>

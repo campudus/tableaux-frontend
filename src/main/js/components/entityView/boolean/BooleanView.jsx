@@ -1,7 +1,8 @@
 import React from "react";
 import {translate} from "react-i18next";
 
-const BooleanView = React.createClass({
+@translate(["common"])
+class BooleanView extends Component {
 
   displayName: "BooleanView",
 
@@ -24,7 +25,10 @@ const BooleanView = React.createClass({
 
   render: function () {
     const {cell, t} = this.props;
-    var value = this.getValue(cell);
+    const value = ((cell.isMultiLanguage)
+      ? cell.value[this.props.langtag]
+      : cell.value)
+      || false;
 
     return (
       <div className='view-content boolean'>
@@ -32,6 +36,6 @@ const BooleanView = React.createClass({
       </div>
     );
   }
-});
+}
 
 export default translate(["common"])(BooleanView);

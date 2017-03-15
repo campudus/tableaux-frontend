@@ -1,5 +1,5 @@
 import React from "react";
-import connectToAmpersand from "./HOCs/connectToAmpersand";
+import connectToAmpersand from "./helperComponents/connectToAmpersand";
 import Dispatcher from "../dispatcher/Dispatcher";
 import Table from "./table/Table.jsx";
 import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
@@ -22,6 +22,7 @@ import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "./cells/cellCopyHelper";
+import {openEntityView} from "./overlay/EntityViewOverlay";
 
 // hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -45,7 +46,8 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId, filter} = this.props;
+    const {columnId, rowId, urlOptions: {filter, overlay}} = this.props;
+    console.log("this.props", props);
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -175,7 +177,7 @@ class TableView extends React.Component {
 
   estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH"}, nPagesLoaded = 0) => {
+  gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH", entityView}, nPagesLoaded = 0) => {
     const colId = columnId || f.first(this.getCurrentTable().columns.models).getId();
     ActionCreator.jumpSpinnerOn();
     if (!this.checkIfColExists(this.getCurrentTable().columns.models, colId)) {
@@ -211,6 +213,10 @@ class TableView extends React.Component {
       scrollContainer.scrollTop = yOffs;
 
       ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
+      if (entityView) {
+        const focusElementId = (this.props.urlOptions.overlay.focusElement) ? cellId : null;
+        openEntityView(rows[rowIndex], this.props.langtag, focusElementId);
+      }
       return cell;
     };
 
@@ -450,7 +456,7 @@ class TableView extends React.Component {
               {(!f.isEmpty(this.state.pasteOriginCell))
                 ? (
                   <a href="#" className="button" onClick={this.clearCellClipboard}>
-                    <i className="fa fa-clipboard"/>
+                    <i className="fa fa-clipboard" />
                   </a>
                 )
                 : null
@@ -484,7 +490,7 @@ class TableView extends React.Component {
 
 TableView.propTypes = {
   langtag: React.PropTypes.string.isRequired,
-  overlayOpen: React.PropTypes.bool.isRequired,
+  overlayOpen: React.PropTypes.bool,
   tableId: React.PropTypes.number
 };
 
