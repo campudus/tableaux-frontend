@@ -275,7 +275,7 @@ module.exports = {
   },
 
   pasteCellContent: (targetCell, langtag) => {
-      Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell, langtag});
+    Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell, langtag});
   },
 
   switchEntityViewLanguage: ({langtag}) => {

@@ -18,7 +18,7 @@ class NumericView extends React.Component {
     cell: React.PropTypes.object.isRequired
   };
 
-  getValue =  () => {
+  getValue = () => {
     const {cell, langtag} = this.props;
 
     const value = (cell.isMultiLanguage)
@@ -57,13 +57,13 @@ class NumericView extends React.Component {
   getKeyboardShortcuts = () => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
-      (fn || function(){})();
+      (fn || function () {})();
     };
 
     return {
       escape: captureEventAnd(this.setEditing(false)),
       enter: captureEventAnd(this.saveEditsAndClose)
-    }
+    };
   };
 
   saveEditsAndClose = () => {
@@ -90,7 +90,7 @@ class NumericView extends React.Component {
              onChange={this.normaliseNumberFormat}
              onKeyDown={this.handleKeyPress}
       />
-    )
+    );
   };
 
   editOnEnter = event => {

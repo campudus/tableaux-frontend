@@ -26,7 +26,7 @@ class DateView extends Component {
     }
   };
 
-  getValue =  () => {
+  getValue = () => {
     const {cell, langtag} = this.props;
     const value = (cell.isMultiLanguage)
       ? cell.value[langtag]
@@ -59,13 +59,13 @@ class DateView extends Component {
   getKeyboardShortcuts = () => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
-      (fn || function(){})();
+      (fn || function () {})();
     };
 
     return {
       escape: captureEventAnd(this.setEditing(false)),
       enter: captureEventAnd(this.saveEditsAndClose)
-    }
+    };
   };
 
   saveEditsAndClose = moment => {
@@ -116,7 +116,7 @@ class DateView extends Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 

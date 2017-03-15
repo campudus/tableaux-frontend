@@ -43,11 +43,11 @@ class RichTextComponent extends React.Component {
         event.stopPropagation();
         this.props.close();
       }
-    }
+    };
   };
 
   handleClickOutside = event => {
-    const closeHandler = this.props.close || function(){};
+    const closeHandler = this.props.close || function () {};
     (this.props.readOnly)
       ? closeHandler()
       : this.saveAndClose(event);
@@ -94,8 +94,8 @@ class RichTextComponent extends React.Component {
   };
 
   render = () => {
-    const {hideEditorSymbols,readOnly,close,saveAndClose,onClick,tabIdx} = this.props;
-    const clickHandler = onClick || function(){};
+    const {hideEditorSymbols, readOnly, close, saveAndClose, onClick, tabIdx} = this.props;
+    const clickHandler = onClick || function () {};
     const contentClass = classNames("content-pane", {"input": !readOnly});
     return (
         <div id="rich-text-component" onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.activateOnEnter} ref={el => this.focusTarget = el} >
@@ -148,7 +148,7 @@ class RichTextComponent extends React.Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 

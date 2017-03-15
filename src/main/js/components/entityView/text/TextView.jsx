@@ -11,8 +11,8 @@ class TextView extends React.Component {
   }
 
   static propTypes = {
-    langtag : React.PropTypes.string.isRequired,
-    cell : React.PropTypes.object.isRequired,
+    langtag: React.PropTypes.string.isRequired,
+    cell: React.PropTypes.object.isRequired
   };
 
   getValue = () => {
@@ -31,7 +31,7 @@ class TextView extends React.Component {
   };
 
   saveAndClose = (newValue) => {
-    const {cell,langtag} = this.props;
+    const {cell, langtag} = this.props;
     const changes = (cell.isMultiLanguage)
       ? {value: {[langtag]: newValue}}
       : {value: newValue};

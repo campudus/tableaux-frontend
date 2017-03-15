@@ -28,7 +28,6 @@ export default class Tableaux extends React.Component {
     Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
     Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
 
-
     i18n
       .use(XHR)
       .init({
@@ -161,10 +160,9 @@ export default class Tableaux extends React.Component {
     });
   };
 
-
   render() {
     if (this.state.isLoading) {
-      return <div className="initial-loader"><Spinner isLoading={true} /></div>
+      return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       return <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
