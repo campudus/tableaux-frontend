@@ -24,7 +24,7 @@ class LinkView extends Component {
       head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
       body: <LinkOverlay cell={cell} langtag={langtag} />,
       type: "no-scroll"
-    })
+    });
   };
 
   removeLink = id => () => {

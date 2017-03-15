@@ -12,7 +12,6 @@ import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 
-
 @translate(["media"])
 @connectToAmpersand
 class Folder extends React.Component {

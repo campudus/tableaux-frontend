@@ -8,7 +8,7 @@ class CurrencyView extends Component {
     super(props);
     this.displayName = "CurrencyView";
     const {countryCodes} = props.cell.column;
-    this.state = {editing: f.range(0,countryCodes.length).map(f.stubFalse)};
+    this.state = {editing: f.range(0, countryCodes.length).map(f.stubFalse)};
   };
 
   static propTypes = {
@@ -27,7 +27,7 @@ class CurrencyView extends Component {
                            countryCode={countryCode}
                            editing={editing[index]}
                            toggleEdit={this.setEditing(index)}
-      />
+      />;
     });
   };
 

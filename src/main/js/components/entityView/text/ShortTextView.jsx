@@ -15,7 +15,7 @@ class ShortTextView extends React.Component {
     cell: React.PropTypes.object.isRequired
   };
 
-  getValue =  () => {
+  getValue = () => {
     const {cell, langtag} = this.props;
     const value = (cell.isMultiLanguage)
       ? cell.value[langtag]
@@ -36,13 +36,13 @@ class ShortTextView extends React.Component {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       event.preventDefault();
-      (fn || function(){})();
+      (fn || function () {})();
     };
 
     return {
       escape: captureEventAnd(this.setEditing(false)),
       enter: captureEventAnd(this.saveEditsAndClose)
-    }
+    };
   };
 
   saveEditsAndClose = () => {
@@ -63,7 +63,7 @@ class ShortTextView extends React.Component {
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onBlur={this.saveEditsAndClose}
       />
-    )
+    );
   };
 
   openOnEnter = event => {

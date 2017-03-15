@@ -46,8 +46,8 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId, urlOptions:{filter, overlay}} = this.props;
-    console.log("this.props", props)
+    const {columnId, rowId, urlOptions: {filter, overlay}} = this.props;
+    console.log("this.props", props);
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -55,7 +55,7 @@ class TableView extends React.Component {
         columnId,
         filter,
         entityView: overlay
-      }
+      };
     }
   };
 
@@ -415,7 +415,7 @@ class TableView extends React.Component {
           .map(f.prop("kind"))
           .map(f.eq(ColumnKinds.link))
           .getOrElse(false)) {
-        this.setState({pasteOriginCell: {}})
+        this.setState({pasteOriginCell: {}});
       }
       this.pendingCellGoto = null;
       console.log("doSwitchTable with id:", this.nextTableId);

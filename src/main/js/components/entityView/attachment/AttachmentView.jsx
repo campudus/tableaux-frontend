@@ -30,7 +30,7 @@ class AttachmentView extends Component {
       head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
       body: <AttachmentOverlay cell={cell} langtag={langtag} />,
       type: "normal"
-    })
+    });
   };
 
   render() {

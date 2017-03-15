@@ -63,13 +63,13 @@ class CurrencyItem extends Component {
 
   filterKeyEvents = place => event => {
     const {key} = event;
-    const numberKeys = f.map(f.toString, f.range(0,10));
+    const numberKeys = f.map(f.toString, f.range(0, 10));
     if (!f.contains(key, [...numberKeys, "Backspace", "Enter", "Escape", "Delete", "ArrowLeft", "ArrowRight"])) {
       event.preventDefault();
       return;
     }
     if (place === POST_COMMA && f.contains(key, numberKeys)
-      && this.state.postComma.length == 2 ) {
+      && this.state.postComma.length == 2) {
       event.preventDefault();
       return;
     }
@@ -88,18 +88,18 @@ class CurrencyItem extends Component {
     this.setState({
       preComma,
       postComma,
-      currencyValue: parseInt(preComma) + parseInt(postComma)/100
+      currencyValue: parseInt(preComma) + parseInt(postComma) / 100
     });
   };
 
   valueToString = (pre, post) => {
     const postString = (parseInt(post)) ? post.toString() : "00";
-    return `${(pre || 0).toString()},${(postString.length === 2) ? postString : postString + "0"}`
+    return `${(pre || 0).toString()},${(postString.length === 2) ? postString : postString + "0"}`;
   };
 
   render() {
     const {countryCode, editing} = this.props;
-    const {preComma,postComma,currencyValue} = this.state;
+    const {preComma, postComma, currencyValue} = this.state;
     const currencyString = this.valueToString(preComma, postComma);
     const currencyCode = getCurrencyCode(countryCode);
     const cssClass = classNames(
@@ -110,7 +110,7 @@ class CurrencyItem extends Component {
       }
     );
     const clickHandler = (editing)
-      ? function(){}
+      ? function () {}
       : () => this.props.toggleEdit(true);
     return (
       <div className={cssClass} onClick={clickHandler}>
