@@ -225,4 +225,9 @@ const spy = (x, info) => {
   return x;
 };
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy};
+const fspy = info => x => {
+  console.log("I spy " + ((info) || ""), x);
+  return x;
+};
+
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy};
