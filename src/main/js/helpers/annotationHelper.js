@@ -91,6 +91,7 @@ const refreshCellAnnotations = cell => {
             cellAnnotations
           );
           cell.set({annotations: updatedAnnotations});
+          refreshRowAnnotations(cell.row)
         }
       }
     );
