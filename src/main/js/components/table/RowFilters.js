@@ -4,8 +4,17 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import * as _ from "lodash";
+import {either, fspy} from "../../helpers/monads";
 
 const getFilteredRows = (currentTable, langtag, rowsFilter) => {
+  console.log("getFilteredRows:", rowsFilter)
+  if (!areFilterSettingsValid(rowsFilter)) {
+    console.log("Not setting filter due to invalid values");
+    return (rowsFilter.sortColumnId)                      // is a sorting mode set?
+      ? getRowsFilteredByColumnValues(currentTable, langtag, rowsFilter)
+      : currentTable.rows;
+  }
+
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   const filterFunction = _.cond([
     [f.equals(FilterModes.ID_ONLY), f.always(getRowsFilteredById)],
@@ -14,27 +23,49 @@ const getFilteredRows = (currentTable, langtag, rowsFilter) => {
   return filterFunction(currentTable, langtag, rowsFilter);
 };
 
+export const areFilterSettingsValid = settings => {
+  console.log("Filter settings:", settings)
+  const {filterColumnId, filterValue, filterMode} = settings;
+  return (f.isNumber(filterColumnId) && filterColumnId >= 0 && filterValue) // row filter
+    || (filterMode === FilterModes.ID_ONLY && f.isNumber(filterValue))
+    || (filterMode === FilterModes.UNTRANSLATED);
+};
+
 const getRowsFilteredById = (table, langtag, rowsFilter) => {
+  console.log("Filtered by row id")
   const reqId = rowsFilter.filterValue;
   return new FilteredSubcollection(table.rows, {
     where: {id: reqId}
   });
 };
 
+const getUntranslatedRows = (table, langtag, rowsFilter) => {
+  console.log("Filtered by translation status")
+  const closures = mkClosures(table, langtag, rowsFilter);
+  const needsTranslation = f.compose(
+    f.contains(langtag),
+    f.prop("langtags"),
+    f.first,
+    f.filter(f.matchesProperty("value", "needs_translation")),
+    f.filter(f.matchesProperty("type", "flag")),
+  );
+  const hasUntranslatedCells = f.compose(
+    f.any(f.identity),
+    f.map(needsTranslation),
+    f.prop("annotations"),
+  );
+  return new FilteredSubcollection(table.rows, {
+    filter: rowsFilter.filterValue ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
+    comparator: closures.comparator,
+    watched: ["annotations"]
+  });
+};
+
 const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
-  const filterColumnId = rowsFilter.filterColumnId;
-  const filterValue = rowsFilter.filterValue;
-  const filterMode = rowsFilter.filterMode;
-  const sortColumnId = rowsFilter.sortColumnId;
-  const sortValue = rowsFilter.sortValue;
-
-  const columnsOfTable = currentTable.columns;
-
-  const filterColumnIndex = _.isFinite(filterColumnId)
-    ? columnsOfTable.indexOf(columnsOfTable.get(filterColumnId))
-    : -1;
-  const sortColumnIndex = _.isFinite(sortColumnId) ? columnsOfTable.indexOf(columnsOfTable.get(sortColumnId)) : -1;
-
+  console.log("Filtered by column value")
+  const {filterColumnId, filterValue, filterMode, sortColumnId} = rowsFilter;
+  const closures = mkClosures(currentTable, langtag, rowsFilter);
+  const filterColumnIndex = closures.getColumnIndex(filterColumnId);
   const allRows = currentTable.rows;
   const toFilterValue = filterValue.toLowerCase().trim();
 
@@ -105,13 +136,16 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
 
       const targetCell = row.cells.at(filterColumnIndex);
       const searchFunction = searchFunctions[filterMode];
+      const filterableCellKinds = [
+        ColumnKinds.shorttext,
+        ColumnKinds.richtext,
+        ColumnKinds.text,
+        ColumnKinds.numeric,
+        ColumnKinds.link,
+        ColumnKinds.concat
+      ];
 
-      if (targetCell.kind === ColumnKinds.shorttext
-        || targetCell.kind === ColumnKinds.richtext
-        || targetCell.kind === ColumnKinds.numeric
-        || targetCell.kind === ColumnKinds.text
-        || targetCell.kind === ColumnKinds.link
-        || targetCell.kind === ColumnKinds.concat) {
+      if (f.contains(targetCell.kind, filterableCellKinds)) {
         return searchFunction(toFilterValue, getSortableCellValue(targetCell));
       } else {
         // column type not support for filtering
@@ -160,6 +194,73 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
       }
     }
   });
+};
+
+// Generate settings-specific helper functions needed by all filters
+const mkClosures = (table, langtag, rowsFilter) => {
+  const {columns, rows} = table;
+  const cleanString = f.compose(f.trim, f.toLower, f.toString);
+  const getColumnIndex = id => f.findIndex(f.matchesProperty("id", id), columns.models);
+  const {sortValue} = rowsFilter;
+
+  const sortColumnIdx = getColumnIndex(rowsFilter.sortColumnId);
+  const isOfKind = kind => f.matchesProperty("kind", kind);
+  const getConcatString = cell => {
+    const str = cell.rowConcatString(langtag);
+    return (str === RowConcatHelper.NOVALUE) ? "" : str;
+  };
+  const joinLinkStrings = f.compose(
+    f.join(":"),
+    f.map(f.defaultTo("")),
+    f.map(f.trim),
+    f.map(f.prop([langtag])),
+    f.prop("linkStringLanguages")
+  );
+  const getSortableCellValue = cell => {
+    const rawValue = f.cond([
+      [f.prop("isLink"), joinLinkStrings],
+      [isOfKind(ColumnKinds.concat), getConcatString],
+      [f.prop("isMultiLanguage"), f.prop(["value", langtag])],
+      [f.stubTrue, f.prop(["value"])]
+    ])(cell);
+    const fixedValue = f.cond([
+      [isOfKind(ColumnKinds.number), f.always(f.toNumber(rawValue))],
+      [isOfKind(ColumnKinds.boolean), f.always(!!rawValue)],
+      [f.stubTrue, f.always(cleanString(rawValue))]
+    ])(cell);
+    return (fixedValue || cell.kind === ColumnKinds.boolean) ? fixedValue : "";
+  };
+
+  const comparator = (a, b) => {
+    const dir = (sortValue === SortValues.ASC) ? +1 : -1;
+    const [gt, lt] = [dir, -dir];
+    const [aFirst, bFirst, equal] = [-1, +1, 0];
+    const getSortValue = row => {
+      return either(row)
+        .map(r => r.cells.at(sortColumnIdx))
+        .map(getSortableCellValue)
+        .getOrElse(null);
+    };
+    const compareRowIds = (a, b) => f.eq(f.prop("id", a), f.prop("id", b)) ? equal : a.id - b.id;
+    const compareValues = (a, b) => (f.gt(a, b)) ? gt : lt;
+
+    return (sortColumnIdx >= 0)
+      ? f.cond([
+        [(vals) => f.every(f.identity, f.map(f.isEmpty, vals)), f.always(equal)],
+        [([A, dummy]) => f.isEmpty(A), f.always(bFirst)],
+        [([dummy, B]) => f.isEmpty(B), f.always(aFirst)],
+        [f.stubTrue, ([A, B]) => (f.equals(A, B)) ? compareRowIds(a, b) : compareValues(A, B)]
+      ])(f.map(getSortValue, [a, b]))
+      : compareRowIds(a, b);
+  };
+
+  return {
+    getColumnIndex: getColumnIndex,
+    getSortableCellValue: getSortableCellValue,
+    rows: rows,
+    cleanString: cleanString,
+    comparator: comparator
+  };
 };
 
 export default getFilteredRows;

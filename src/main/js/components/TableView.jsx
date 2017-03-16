@@ -377,6 +377,7 @@ class TableView extends React.Component {
   };
 
   changeFilter = (rowsFilter) => {
+    console.log("changeFilter:", rowsFilter)
     const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
     const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(
         sortValue);

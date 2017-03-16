@@ -10,6 +10,7 @@ import {translate} from "react-i18next";
 import TableauxConstants, {FilterModes, ColumnKinds} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
 import {either} from "../../../helpers/monads";
+import SearchFunctions from "../../../helpers/searchFunctions";
 
 @translate(["filter", "table"])
 @listensToClickOutside
@@ -70,7 +71,14 @@ class FilterPopup extends React.Component {
   }
 
   getSearchableColumns() {
-    return this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
+    const searchableColumns = this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
+    return [
+      {
+        label: i18n.t("table:filters.needs_translation"),
+        value: "none",
+        kind: ColumnKinds.boolean
+      }, ...searchableColumns
+    ];
   }
 
   buildColumnOptions(filterFn) {
@@ -84,7 +92,8 @@ class FilterPopup extends React.Component {
 
       return {
         label: labelName,
-        value: column.id
+        value: column.id,
+        kind: column.kind
       };
     });
   }
@@ -136,14 +145,38 @@ class FilterPopup extends React.Component {
 
   selectSortValueRenderer = (option) => {
     if (option.value === TableauxConstants.SortValues.ASC) {
-      return <div><i className="fa fa-sort-alpha-asc"></i> {option.label}</div>;
+      return <div><i className="fa fa-sort-alpha-asc" /> {option.label}</div>;
     } else {
-      return <div><i className="fa fa-sort-alpha-desc"></i> {option.label}</div>;
+      return <div><i className="fa fa-sort-alpha-desc" /> {option.label}</div>;
     }
   };
 
-  onChangeSelectFilter = (selection) => {
-    this.setState({selectedFilterColumn: selection.value});
+  filtersForKind = kind => {
+    console.log("Select proper kind for", kind)
+    const isIn = els => el => f.contains(el, els);
+    return f.cond([
+      [f.eq(ColumnKinds.boolean), f.always("boolean")],
+      [f.eq(ColumnKinds.number), f.always("text")],
+      [f.stubTrue, f.always("text")]
+    ])(kind);
+  };
+
+  onChangeSelectFilter = (option) => {
+    const {value, kind} = option;
+    if (f.isString(value) || f.kind === "boolean") {
+      this.props.setFilterMode(FilterModes.UNTRANSLATED);
+      this.setState({
+        selectedFilterColumn: value,
+        selectedColumnKind: ColumnKinds.boolean,
+        filterValue: true
+      })
+    } else {
+      this.setState({
+        selectedFilterMode: this.state.selectedFilterMode || FilterModes.CONTAINS,
+        selectedFilterColumn: value,
+        selectedColumnKind: this.filtersForKind(kind)
+      });
+    }
   };
 
   onChangeSelectSortColumn = (selection) => {
@@ -182,64 +215,74 @@ class FilterPopup extends React.Component {
 
   render() {
     let {t, currentFilter} = this.props;
-    const filterInfoString =
-      _.cond([
-        [_.isNil, f.always("table:filter.contains")],
-        [f.matchesProperty("filterMode", FilterModes.CONTAINS), f.always("table:filter.contains")],
-        [f.matchesProperty("filterMode", FilterModes.STARTS_WITH), f.always("table:filter.starts_with")],
-        [f.stubTrue, f.always("Error")]
-      ])(currentFilter);
+    const filterInfoString = either(currentFilter.filterMode)
+      .map(mode => f.prop([mode, "displayName"], SearchFunctions))
+      .getOrElse("");
+    const {filterValue, selectedSortColumn} = this.state;
 
-    const canFilter = !f.isEmpty(this.state.filterValue) || this.state.selectedSortColumn !== null;
+    const canFilter = !f.isEmpty(filterValue) || selectedSortColumn !== null || f.isBoolean(filterValue);
 
     return (
       <div id="filter-popup">
-          {(either(currentFilter).map(f.matchesProperty("filterColumnId", "noop")).getOrElse(false))
-            ? (
-              <div className="wip-filter-message">
-                {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
-              </div>
-            )
-            : (
-              <div className="filter-row">
-                <Select
-                  className="filter-select"
-                  options={this.getSearchableColumns()}
-                  searchable={true}
-                  clearable={false}
-                  value={this.state.selectedFilterColumn}
-                  onChange={this.onChangeSelectFilter}
-                  valueRenderer={this.selectFilterValueRenderer}
-                  noResultsText={t("input.noResult")}
-                  placeholder={t("input.filter")}
-                />
-                <span className="separator">{t(filterInfoString)}</span>
+        {(either(currentFilter).map(f.matchesProperty("filterColumnId", "noop")).getOrElse(false))
+          ? (
+            <div className="wip-filter-message">
+              {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
+            </div>
+          )
+          : (
+            <div className="filter-row">
+              <Select
+                className="filter-select"
+                options={this.getSearchableColumns()}
+                searchable={true}
+                clearable={false}
+                value={this.state.selectedFilterColumn}
+                onChange={this.onChangeSelectFilter}
+                valueRenderer={this.selectFilterValueRenderer}
+                noResultsText={t("input.noResult")}
+                placeholder={t("input.filter")}
+              />
+              <span className="separator">{t(filterInfoString)}</span>
 
-                <span className="filter-mode-wrapper">
-                <input value={this.state.filterValue} type="text" className="filter-input" disabled={this.state.selectedFilterColumn === null} ref={fi => this.filterInput = fi}
-                       onChange={this.filterInputChange}
-                       onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-                       onClick={x => this.filterInput.focus()}
-                />
-                <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
-                  {(this.state.selectedFilterColumn !== null)
-                    ? (
-                      <a href="#"
-                         className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
-                         onMouseDown={this.toggleFilterModePopup}>
-                        <i className="fa fa-search" />
-                        <i className="fa fa-caret-down" />
-                      </a>
-                    )
-                    : null}
-                  {(this.state.filterModesOpen)
-                    ? this.renderFilterModePopup()
-                    : null
-                  }
+              {(this.state.selectedColumnKind === "boolean")
+                ? <span onClick={() => this.setState({filterValue: !filterValue})} >
+                  <input checked={filterValue}
+                         onChange={function () {}}
+                         type="checkbox"
+                  />
+                  {i18n.t((filterValue) ? "common:yes" : "common:no")}
                 </span>
+                : <span className="filter-mode-wrapper">
+                  <input value={this.state.filterValue}
+                         type="text"
+                         className="filter-input"
+                         disabled={this.state.selectedFilterColumn === null}
+                         ref={fi => this.filterInput = fi}
+                         onChange={this.filterInputChange}
+                         onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+                         onClick={x => this.filterInput.focus()}
+                  />
+                  <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
+                    {(this.state.selectedFilterColumn !== null)
+                      ? (
+                        <a href="#"
+                           className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
+                           onMouseDown={this.toggleFilterModePopup}>
+                          <i className="fa fa-search" />
+                          <i className="fa fa-caret-down" />
+                        </a>
+                      )
+                      : null}
+                    {(this.state.filterModesOpen)
+                      ? this.renderFilterModePopup()
+                      : null
+                    }
+                  </span>
                 </span>
-              </div>
-            )}
+              }
+            </div>
+          )}
         <div className="sort-row">
           <Select
             className="filter-select"
