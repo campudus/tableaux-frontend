@@ -18,6 +18,7 @@ const getFilteredRows = (currentTable, langtag, rowsFilter) => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   const filterFunction = _.cond([
     [f.equals(FilterModes.ID_ONLY), f.always(getRowsFilteredById)],
+    [f.equals(FilterModes.UNTRANSLATED), f.always(getRowsFilteredByTranslationStatus)],
     [mode => f.contains(mode, valueFilters), f.always(getRowsFilteredByColumnValues)]
   ])(rowsFilter.filterMode);
   return filterFunction(currentTable, langtag, rowsFilter);
@@ -39,9 +40,10 @@ const getRowsFilteredById = (table, langtag, rowsFilter) => {
   });
 };
 
-const getUntranslatedRows = (table, langtag, rowsFilter) => {
+const getRowsFilteredByTranslationStatus = (table, langtag, rowsFilter) => {
   console.log("Filtered by translation status")
   const closures = mkClosures(table, langtag, rowsFilter);
+  const untranslated = rowsFilter.filterValue;
   const needsTranslation = f.compose(
     f.contains(langtag),
     f.prop("langtags"),
@@ -55,7 +57,7 @@ const getUntranslatedRows = (table, langtag, rowsFilter) => {
     f.prop("annotations"),
   );
   return new FilteredSubcollection(table.rows, {
-    filter: rowsFilter.filterValue ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
+    filter: (untranslated) ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
     comparator: closures.comparator,
     watched: ["annotations"]
   });
@@ -241,7 +243,10 @@ const mkClosures = (table, langtag, rowsFilter) => {
         .map(getSortableCellValue)
         .getOrElse(null);
     };
-    const compareRowIds = (a, b) => f.eq(f.prop("id", a), f.prop("id", b)) ? equal : a.id - b.id;
+    const compareRowIds = (a, b) => {
+      const idOf = f.prop("id");
+      return f.eq(idOf(a), idOf(b)) ? equal : idOf(a) - idOf(b);
+    };
     const compareValues = (a, b) => (f.gt(a, b)) ? gt : lt;
 
     return (sortColumnIdx >= 0)

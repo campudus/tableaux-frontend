@@ -6,7 +6,7 @@ import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagement
 import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {first, compose, isEmpty, eq, drop, remove, merge} from "lodash/fp";
+import {first, compose, isEmpty, eq, drop, remove, merge, contains} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 import {addTranslationNeeded, getAnnotation, deleteCellAnnotation} from "../../helpers/annotationHelper";
 
@@ -104,12 +104,15 @@ class RowContextMenu extends React.Component {
 
   removeTranslationNeeded = () => {
     const {langtag, cell, t} = this.props;
+    const isPrimaryLanguage = langtag === first(Langtags);
     if (!this.canTranslate(cell) || !cell.annotations || !cell.annotations.translationNeeded) {
+      return null;
+    }
+    if (!isPrimaryLanguage && !contains(langtag, cell.annotations.translationNeeded.langtags)) {
       return null;
     }
     const translationNeeded = merge({type: "flag", value: "translationNeeded"}, cell.annotations.translationNeeded);
     const remainingLangtags = remove(eq(langtag), getAnnotation(translationNeeded, cell).langtags);
-    const isPrimaryLanguage = langtag === first(Langtags);
 
     const fn = (isPrimaryLanguage || isEmpty(remainingLangtags))
       ? () => deleteCellAnnotation(translationNeeded, cell, true)
