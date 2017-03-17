@@ -4,13 +4,12 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import * as _ from "lodash";
-import {either, fspy} from "../../helpers/monads";
+import {either} from "../../helpers/monads";
 
 const getFilteredRows = (currentTable, langtag, rowsFilter) => {
   console.log("getFilteredRows:", rowsFilter)
   if (!areFilterSettingsValid(rowsFilter)) {
-    console.log("Not setting filter due to invalid values");
-    return (rowsFilter.sortColumnId)                      // is a sorting mode set?
+    return (f.isInteger(rowsFilter.sortColumnId))                      // is a sorting mode set?
       ? getRowsFilteredByColumnValues(currentTable, langtag, rowsFilter)
       : currentTable.rows;
   }
@@ -25,7 +24,6 @@ const getFilteredRows = (currentTable, langtag, rowsFilter) => {
 };
 
 export const areFilterSettingsValid = settings => {
-  console.log("Filter settings:", settings)
   const {filterColumnId, filterValue, filterMode} = settings;
   return (f.isNumber(filterColumnId) && filterColumnId >= 0 && filterValue) // row filter
     || (filterMode === FilterModes.ID_ONLY && f.isNumber(filterValue))
@@ -139,6 +137,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
       const targetCell = row.cells.at(filterColumnIndex);
       const searchFunction = searchFunctions[filterMode];
       const filterableCellKinds = [
+        ColumnKinds.concat,
         ColumnKinds.shorttext,
         ColumnKinds.richtext,
         ColumnKinds.text,
@@ -209,7 +208,7 @@ const mkClosures = (table, langtag, rowsFilter) => {
   const isOfKind = kind => f.matchesProperty("kind", kind);
   const getConcatString = cell => {
     const str = cell.rowConcatString(langtag);
-    return (str === RowConcatHelper.NOVALUE) ? "" : str;
+    return (str === RowConcatHelper.NOVALUE) ? "" : cleanString(str);
   };
   const joinLinkStrings = f.compose(
     f.join(":"),

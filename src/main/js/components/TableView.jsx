@@ -45,7 +45,7 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId, filter} = this.props;
+    const {columnId, rowId, urlOptions: {filter, overlay}} = this.props;
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -193,7 +193,7 @@ class TableView extends React.Component {
         this.changeFilter({
           filterMode: FilterModes.ID_ONLY,
           filterValue: rowId,
-          filterColumnId: "noop",
+          filterColumnId: null,
           sortColumnId: 0
         });
       }
@@ -376,27 +376,32 @@ class TableView extends React.Component {
     });
   };
 
-  changeFilter = (rowsFilter) => {
-    console.log("changeFilter:", rowsFilter)
-    const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
-    const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(
-        sortValue);
+  changeFilter = ({filter, sorting}) => {
+    const isFilterEmpty = _.isEmpty(filter.value) && !_.isFinite(filter.columnId)
+      && !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
 
-    let rowsCollection;
     if (isFilterEmpty) {
-      rowsFilter = null;
-      rowsCollection = this.getCurrentTable().rows;
+      this.setState({
+        rowsFilter: null,
+        rowsCollection: this.getCurrentTable().rows
+      });
     } else {
-      rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
-      if (rowsFilter.filterMode !== FilterModes.ID_ONLY) {
+      const rowsFilter = {
+        sortColumnId: sorting.columnId,
+        sortValue: sorting.value,
+        filterColumnId: filter.columnId,
+        filterMode: filter.mode,
+        filterValue: filter.value,
+        filterColumnKind: filter.columnKind
+      };
+      this.setState({
+        rowsFilter,
+        rowsCollection: getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter)
+      });
+      if (filter.mode !== FilterModes.ID_ONLY) {
         this.resetURL();
       }
     }
-
-    this.setState({
-      rowsCollection: rowsCollection,
-      rowsFilter: rowsFilter
-    });
   };
 
   getCurrentTable = () => {

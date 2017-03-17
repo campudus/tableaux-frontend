@@ -1,9 +1,7 @@
 import React from "react";
 import FilterPopup from "./FilterPopup.jsx";
 import {translate} from "react-i18next";
-import * as f from "lodash/fp";
 import {FilterModes} from "../../../constants/TableauxConstants";
-import {either} from "../../../helpers/monads";
 import classNames from "classnames";
 
 class FilterButton extends React.Component {
@@ -21,25 +19,21 @@ class FilterButton extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      open: false
+    };
   }
 
   handleClickedOutside = (event) => {
     this.setState({open: false});
   };
 
-  setFilterMode = mode_string => {
-    this.setState(
-      {filterMode: mode_string});
-  };
-
   renderFilterPopup() {
-    const plannedFilter = f.set(["filterMode"], this.state.filterMode, this.props.currentFilter);
+    const {currentFilter, table:{columns}, langtag} = this.props;
     if (this.state.open) {
       return (
-        <FilterPopup filterMode={this.state.filterMode}
-                     setFilterMode={this.setFilterMode}
-                     langtag={this.props.langtag} onClickedOutside={this.handleClickedOutside}
-                     columns={this.props.table.columns} currentFilter={plannedFilter} />
+        <FilterPopup langtag={langtag} onClickedOutside={this.handleClickedOutside}
+                     columns={columns} currentFilter={currentFilter} />
       );
     } else {
       return null;
@@ -66,7 +60,7 @@ class FilterButton extends React.Component {
     return (
       <div id="filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
-          <i className="fa fa-filter"></i>{t("button.title")}</a>
+          <i className="fa fa-filter" />{t("button.title")}</a>
         {this.renderFilterPopup()}
       </div>
     );
