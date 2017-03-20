@@ -3,8 +3,8 @@ import * as f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
-
-import {spy} from "./monads"
+import Cookies from "js-cookie";
+import {spy} from "./monads";
 
 const extractAnnotations = obj => {
   const findAnnotationType = typeStr => f.filter(f.matchesProperty("type", typeStr));
@@ -230,5 +230,34 @@ const setRowAnnotation = (annotation, target) => {
     .end((target instanceof Row) ? afterRowUpdate : afterTableUpdate);
 };
 
-export {deleteCellAnnotation, addTranslationNeeded, getAnnotation, extractAnnotations, refreshAnnotations, setRowAnnotation};
+const sessionUnlock = el => {
+  const key = `table-${el.tableId || el.id}`;
+  const value = JSON.parse(Cookies.get(key) || "[]");
+  if (el instanceof Row && value !== true) {
+    Cookies.set(key, (value === true) ? [el.id] : f.uniq([...value, el.id]));
+    el.set({final: false});
+  } else {
+    Cookies.set(key, true);
+    el.table.rows.models.forEach(row => row.set({final: false}));
+  }
+};
+
+const isLocked = el => {
+  const key = `table-${el.tableId || el.id}`;
+  const value = JSON.parse(Cookies.get(key) || "[]");
+  return (el instanceof Row)
+    ? value !== true && !f.contains(el.id, value)
+    : value !== true;
+};
+
+export {
+  deleteCellAnnotation,
+  addTranslationNeeded,
+  getAnnotation,
+  extractAnnotations,
+  refreshAnnotations,
+  setRowAnnotation,
+  sessionUnlock,
+  isLocked
+};
 export default setCellAnnotation;

@@ -8,6 +8,8 @@ import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManageme
 import {initiateDeleteRow} from "../../helpers/rowHelper";
 import * as f from "lodash/fp";
 import classNames from "classnames";
+import {isLocked} from "../../helpers/annotationHelper";
+import askForSessionUnlock from "../overlay/SessionUnlockDialog";
 
 @connectToAmpersand
 class Row extends React.Component {
@@ -116,9 +118,6 @@ class Row extends React.Component {
 
   renderLanguageRow = langtag => {
     const {isRowSelected, selectedCellExpandedRow, row, isRowExpanded, table} = this.props;
-
-    let deleteButton, rowLockedIcon = "";
-
     // Is this (multilanguage) row selected
     const selected = (isRowSelected && (langtag === selectedCellExpandedRow));
     if (selected && row.recentlyDuplicated) {
@@ -133,27 +132,38 @@ class Row extends React.Component {
       "final": row.final
     });
 
-    // show locked language icon
-    if (!isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
-      rowLockedIcon = (<i className="fa fa-lock access-denied-icon" />);
-    }
-    // Add delete button to default-language row
-    // or to every not expanded row
-    // will not show when no access
-    else if (table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
-      deleteButton = (
+
+    const cantTranslate = !isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag);
+    const canDeleteRow = table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected && isUserAdmin();
+    const canUnlockRow = isUserAdmin();
+    const cantTranslateIcon = (cantTranslate) ? <i className="fa fa-ban access-denied-icon" /> : null;
+    const deleteButton = (canDeleteRow && !row.final)
+      ? (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
             <i className="fa fa-trash" />
           </button>
         </div>
-      );
-    }
+      )
+      : null;
+    const unlockFunction = (canUnlockRow)
+      ? () => askForSessionUnlock(row)
+      : () => {};
+    const unlockButton = (row.final && !cantTranslate && isLocked(row))
+      ? (
+        <div className="delete-row">
+          <button className="button" onClick={unlockFunction}>
+            <i className="fa fa-lock" />
+          </button>
+        </div>
+      )
+      : null;
 
     return (
       <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1"
            onContextMenu={this.contextMenuHandler}>
-        {rowLockedIcon}
+        {cantTranslateIcon}
+        {unlockButton}
         {deleteButton}
         <MetaCell langtag={langtag} rowId={this.props.row.getId()}
                   onClick={this.toggleExpand} rowExpanded={this.props.isRowExpanded} />
@@ -163,11 +173,10 @@ class Row extends React.Component {
   };
 
   render = () => {
-    const self = this;
     if (this.props.isRowExpanded) {
       // render all language-rows for this row
-      const rows = TableauxConstants.Langtags.map(function (langtag) {
-        return self.renderLanguageRow(langtag);
+      const rows = TableauxConstants.Langtags.map((langtag) => {
+        return this.renderLanguageRow(langtag);
       });
       return <div className="row-group expanded" tabIndex="-1">{rows}</div>;
     } else {
