@@ -86,8 +86,14 @@ class FilterPopup extends React.Component {
       {
         label: this.props.t("filter.needs_translation"),
         value: FilterModes.UNTRANSLATED,
-        kind: ColumnKinds.boolean
-      }, ...searchableColumns
+        kind: BOOL
+      },
+      {
+        label: this.props.t("filter.is_final"),
+        value: FilterModes.FINAL,
+        kind: BOOL
+      },
+      ...searchableColumns
     ];
   }
 
@@ -164,10 +170,10 @@ class FilterPopup extends React.Component {
 
   onChangeSelectFilter = option => {
     const {value, kind} = option;
-    if (value === FilterModes.UNTRANSLATED) {
+    if (f.contains(value, [FilterModes.UNTRANSLATED, FilterModes.FINAL])) {
       const filter = {
         columnId: null,
-        mode: FilterModes.UNTRANSLATED,
+        mode: value,
         columnKind: BOOL,
         value: true
       };

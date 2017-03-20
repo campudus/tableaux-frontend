@@ -18,6 +18,7 @@ const getFilteredRows = (currentTable, langtag, rowsFilter) => {
   const filterFunction = _.cond([
     [f.equals(FilterModes.ID_ONLY), f.always(getRowsFilteredById)],
     [f.equals(FilterModes.UNTRANSLATED), f.always(getRowsFilteredByTranslationStatus)],
+    [f.equals(FilterModes.FINAL), f.always(getRowsFilteredByFinalFlag)],
     [mode => f.contains(mode, valueFilters), f.always(getRowsFilteredByColumnValues)]
   ])(rowsFilter.filterMode);
   return filterFunction(currentTable, langtag, rowsFilter);
@@ -27,7 +28,16 @@ export const areFilterSettingsValid = settings => {
   const {filterColumnId, filterValue, filterMode} = settings;
   return (f.isNumber(filterColumnId) && filterColumnId >= 0 && filterValue) // row filter
     || (filterMode === FilterModes.ID_ONLY && f.isNumber(filterValue))
-    || (filterMode === FilterModes.UNTRANSLATED);
+    || (f.contains(filterMode, [FilterModes.UNTRANSLATED, FilterModes.FINAL]));
+};
+
+const getRowsFilteredByFinalFlag = (table, langtag, filterSettings) => {
+  console.log("Filtered by final flag")
+  const closures = mkClosures(table, langtag, filterSettings);
+  return new FilteredSubcollection(table.rows, {
+    filter: f.matchesProperty("final", filterSettings.filterValue),
+    comparator: closures.comparator
+  });
 };
 
 const getRowsFilteredById = (table, langtag, rowsFilter) => {
