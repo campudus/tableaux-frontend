@@ -91,7 +91,7 @@ const refreshCellAnnotations = cell => {
             cellAnnotations
           );
           cell.set({annotations: updatedAnnotations});
-          refreshRowAnnotations(cell.row)
+          refreshRowAnnotations(cell.row);
         }
       }
     );
@@ -194,5 +194,39 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   }
 };
 
-export {deleteCellAnnotation, addTranslationNeeded, getAnnotation, extractAnnotations, refreshAnnotations};
+const getRowAnnotationPath = target => {
+  const getSingleRowPath = row => {
+    return `tables/${row.tableId}/rows/${row.id}/annotations`;
+  };
+  const getTableRowsPath = table => {
+    return `tables/${table.id}/annotations`;
+  };
+  return apiUrl((target instanceof Row) ? getSingleRowPath(target) : getTableRowsPath(target));
+};
+
+const setRowAnnotation = (annotation, target) => {
+  const afterRowUpdate = (error, response) => {
+    if (error) {
+      console.error("Could not set annotation", annotation, "for row", target.id);
+    } else {
+      refreshRowAnnotations(target);
+    }
+  };
+
+  const afterTableUpdate = (error, response) => {
+    if (error) {
+      console.error("Coult not set annoation", annotation, "for table", table.id);
+    } else {
+      target.rows.models.forEach(refreshRowAnnotations);
+    }
+  };
+
+  const url = getRowAnnotationPath(target);
+  request
+    .patch(url)
+    .send(annotation)
+    .end((target instanceof Row) ? afterRowUpdate : afterTableUpdate);
+};
+
+export {deleteCellAnnotation, addTranslationNeeded, getAnnotation, extractAnnotations, refreshAnnotations, setRowAnnotation};
 export default setCellAnnotation;

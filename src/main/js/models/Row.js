@@ -13,7 +13,9 @@ import {extractAnnotations} from "../helpers/annotationHelper";
 var Row = AmpersandModel.extend({
   props: {
     id: "number",
-    values: "array"
+    values: "array",
+    annotations: "array",
+    final: "boolean"
   },
 
   session: {

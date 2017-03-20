@@ -17,6 +17,8 @@ const Rows = Collection.extend({
       id: attrs.id,
       tableId: tableId,
       values: attrs.values,
+      annotations: attrs.annotations || [],
+      final: !!attrs.final,
       columns: columns
     };
 
