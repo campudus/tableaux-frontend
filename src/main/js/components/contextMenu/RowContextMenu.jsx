@@ -8,7 +8,12 @@ import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
 import {first, compose, isEmpty, eq, drop, remove, merge, contains} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
-import {addTranslationNeeded, getAnnotation, deleteCellAnnotation} from "../../helpers/annotationHelper";
+import {
+  addTranslationNeeded,
+  getAnnotation,
+  deleteCellAnnotation,
+  setRowAnnotation
+} from "../../helpers/annotationHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -97,7 +102,8 @@ class RowContextMenu extends React.Component {
     const fn = () => addTranslationNeeded(neededTranslations, cell);
     return (
       <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
-        {(isPrimaryLanguage) ? t("translation_needed") : t("this_translation_needed", {langtag})}
+        {(isPrimaryLanguage) ? t("translations.translation_needed") : t("translations.this_translation_needed",
+            {langtag})}
       </a>
     )
   };
@@ -111,7 +117,10 @@ class RowContextMenu extends React.Component {
     if (!isPrimaryLanguage && !contains(langtag, cell.annotations.translationNeeded.langtags)) {
       return null;
     }
-    const translationNeeded = merge({type: "flag", value: "translationNeeded"}, cell.annotations.translationNeeded);
+    const translationNeeded = merge({
+      type: "flag",
+      value: "translationNeeded"
+    }, cell.annotations.translationNeeded);
     const remainingLangtags = remove(eq(langtag), getAnnotation(translationNeeded, cell).langtags);
 
     const fn = (isPrimaryLanguage || isEmpty(remainingLangtags))
@@ -119,9 +128,21 @@ class RowContextMenu extends React.Component {
       : () => deleteCellAnnotation(translationNeeded, cell).then(() => addTranslationNeeded(remainingLangtags, cell));
     return (
       <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
-        {(isPrimaryLanguage) ? t("no_translation_needed") : t("no_such_translation_needed", {langtag})}
+        {(isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed",
+            {langtag})}
       </a>
     )
+  };
+
+  setFinal = isFinal => () => {
+    const {cell:{row}} = this.props;
+    setRowAnnotation({final: isFinal}, row);
+  };
+
+  setFinalItem = () => {
+    const {t, cell:{row:{final}}} = this.props;
+    const label = (final) ? t("set_not_final") : t("set_final");
+    return <a href="#" onClick={compose(this.closeRowContextMenu, this.setFinal(!final))}>{label}</a>
   };
 
   render = () => {
@@ -141,6 +162,7 @@ class RowContextMenu extends React.Component {
                                   "delete_row")}</a>}
                               {this.requestTranslationsItem()}
                               {this.removeTranslationNeeded()}
+                              {this.setFinalItem()}
                               {this.props.table.type === "settings" ? "" : <a href="#" onClick={showEntityView}>{t(
                                   "show_entity_view")}</a>}
                             </div>

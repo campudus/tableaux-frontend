@@ -7,6 +7,7 @@ import MetaCell from "../cells/MetaCell";
 import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {initiateDeleteRow} from "../../helpers/rowHelper";
 import * as f from "lodash/fp";
+import classNames from "classnames";
 
 @connectToAmpersand
 class Row extends React.Component {
@@ -15,7 +16,7 @@ class Row extends React.Component {
 
   constructor(props) {
     super(props);
-    props.table.columns.models.map(
+    props.table.columns.models.forEach(
       col => props.watch(col,
         {
           event: "change",
@@ -61,7 +62,7 @@ class Row extends React.Component {
   };
 
   renderSingleLanguageCell = (cell, idx) => {
-    var className = "cell cell-" + cell.column.getId() + "-" + cell.rowId + " repeat";
+    const className = "cell cell-" + cell.column.getId() + "-" + cell.rowId + " repeat";
     return <div key={idx} className={className} onContextMenu={self.contextMenuHandler}>—.—</div>;
   };
 
@@ -126,10 +127,11 @@ class Row extends React.Component {
       row.recentlyDuplicated = false;
     }
 
-    // Set row class optional with selected class
-    const className = "row row-" + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated
-        ? " duplicated"
-        : "");
+    const className = classNames(`row row-${this.props.row.getId()}`, {
+      "selected": selected,
+      "duplicated": row.recentlyDuplicated,
+      "final": row.final
+    });
 
     // show locked language icon
     if (!isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
