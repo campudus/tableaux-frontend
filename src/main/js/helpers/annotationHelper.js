@@ -4,6 +4,8 @@ import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
 
+import {spy} from "./monads"
+
 const extractAnnotations = obj => {
   const findAnnotationType = typeStr => f.filter(f.matchesProperty("type", typeStr));
   const findAnnotationFlag = (flagStr, obj) => f.compose(
@@ -209,19 +211,19 @@ const setRowAnnotation = (annotation, target) => {
     if (error) {
       console.error("Could not set annotation", annotation, "for row", target.id);
     } else {
-      refreshRowAnnotations(target);
+      target.set(annotation);
     }
   };
 
   const afterTableUpdate = (error, response) => {
     if (error) {
-      console.error("Coult not set annoation", annotation, "for table", table.id);
+      console.error("Could not set annotation", annotation, "for table", table.id);
     } else {
-      target.rows.models.forEach(refreshRowAnnotations);
+      target.rows.models.forEach(row => row.set(annotation));
     }
   };
 
-  const url = getRowAnnotationPath(target);
+  const url = spy(getRowAnnotationPath(target), "annotation url");
   request
     .patch(url)
     .send(annotation)
