@@ -45,7 +45,8 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId, urlOptions: {filter, overlay}} = this.props;
+    const {columnId, rowId} = this.props;
+    const {filter, overlay} = this.props.urlOptions || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
