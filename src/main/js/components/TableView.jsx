@@ -6,7 +6,6 @@ import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
 import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
-import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
 import TableauxConstants, {SortValues, ActionTypes, FilterModes, ColumnKinds} from "../constants/TableauxConstants";
@@ -466,13 +465,11 @@ class TableView extends React.Component {
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
                            tables={tables} />
-            {(AccessControl.isUserAdmin())
-              ? <TableSettings langtag={this.props.langtag} table={currentTable} />
-              : null}
+            <TableSettings langtag={this.props.langtag} table={currentTable} />
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
               ? <ColumnFilter langtag={this.props.langtag}
-                             columns={currentTable.columns}
+                              columns={currentTable.columns}
               />
               : null
             }

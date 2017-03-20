@@ -37,7 +37,7 @@ class TableSettings extends React.Component {
              this.tableSettings = tableSettings;
            }}
            href="#">
-          <i className="fa fa-cogs aria-button">
+          <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"}>
           </i>
         </a>
         {(open)

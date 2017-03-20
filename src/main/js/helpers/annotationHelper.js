@@ -198,10 +198,10 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
 
 const getRowAnnotationPath = target => {
   const getSingleRowPath = row => {
-    return `tables/${row.tableId}/rows/${row.id}/annotations`;
+    return `/tables/${row.tableId}/rows/${row.id}/annotations`;
   };
   const getTableRowsPath = table => {
-    return `tables/${table.id}/annotations`;
+    return `/tables/${table.id}/rows/annotations`;
   };
   return apiUrl((target instanceof Row) ? getSingleRowPath(target) : getTableRowsPath(target));
 };
@@ -217,7 +217,7 @@ const setRowAnnotation = (annotation, target) => {
 
   const afterTableUpdate = (error, response) => {
     if (error) {
-      console.error("Could not set annotation", annotation, "for table", table.id);
+      console.error("Could not set annotation", annotation, "for table", target.id);
     } else {
       target.rows.models.forEach(row => row.set(annotation));
     }
