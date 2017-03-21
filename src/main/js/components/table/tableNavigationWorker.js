@@ -3,6 +3,7 @@ import * as f from "lodash/fp";
 import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
+import askForSessionUnlock from "../overlay/SessionUnlockDialog";
 
 export function shouldCellFocus() {
   // we dont want to force cell focus when overlay is open
@@ -204,7 +205,15 @@ export function toggleCellSelection({selected, cell, langtag}) {
 export function toggleCellEditing(params) {
   const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
+  const needsMyTranslation = f.contains(
+    this.props.langtag,
+    f.prop(["annotations", "translationNeeded", "langtags"], selectedCell)
+  );
   if (selectedCell) {
+    if (selectedCell.row.final && !needsMyTranslation) {  // needs_translation overrules final
+      askForSessionUnlock(selectedCell.row);
+      return;
+    }
     const noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);
     if (!noEditingModeNeeded) {
       this.setState({
