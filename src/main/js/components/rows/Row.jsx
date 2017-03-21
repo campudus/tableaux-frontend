@@ -150,11 +150,11 @@ class Row extends React.Component {
     const unlockFunction = (canUnlockRow)
       ? () => askForSessionUnlock(row)
       : () => {};
-    const unlockButton = (row.final && !cantTranslate && isLocked(row))
+    const unlockButton = (row.final && !cantTranslate)
       ? (
         <div className="delete-row">
           <button className="button" onClick={unlockFunction}>
-            <i className="fa fa-lock" />
+            <i className={(isLocked(row)) ? "fa fa-lock" : "fa fa-unlock"} />
           </button>
         </div>
       )

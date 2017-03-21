@@ -3,6 +3,7 @@ import * as f from "lodash/fp";
 import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
+import {isLocked} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../overlay/SessionUnlockDialog";
 
 export function shouldCellFocus() {
@@ -210,7 +211,7 @@ export function toggleCellEditing(params) {
     f.prop(["annotations", "translationNeeded", "langtags"], selectedCell)
   );
   if (selectedCell) {
-    if (selectedCell.row.final && !needsMyTranslation) {  // needs_translation overrules final
+    if (isLocked(selectedCell.row) && !needsMyTranslation) {  // needs_translation overrules final
       askForSessionUnlock(selectedCell.row);
       return;
     }
