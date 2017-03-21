@@ -14,6 +14,7 @@ import SearchFunctions from "../../../helpers/searchFunctions";
 
 const BOOL = "boolean";
 const TEXT = "text";
+const SPECIAL_SEARCHES = [FilterModes.UNTRANSLATED, FilterModes.FINAL];
 
 @translate(["filter", "table"])
 @listensToClickOutside
@@ -55,7 +56,11 @@ class FilterPopup extends React.Component {
     const currFilter = props.currentFilter;
 
     const filter = {
-      columnId: f.defaultTo(null)(f.toNumber(f.prop(["filterColumnId"], currFilter))),
+      columnId: either(currFilter)
+        .map(f.prop("columnId"))
+        .map(f.defaultTo(null)(f.toNumber))
+        .orElse(id => (f.contains(id, SPECIAL_SEARCHES)) ? id : null)
+        .getOrElse(null),
       mode: f.prop("filterMode", currFilter),
       value: f.prop("filterValue", currFilter),
       columnKind: f.prop("filterColumnKind", currFilter)
@@ -108,7 +113,7 @@ class FilterPopup extends React.Component {
 
       return {
         label: labelName,
-        value: column.id,
+        value: f.toString(column.id),
         kind: column.kind
       };
     });
@@ -135,7 +140,8 @@ class FilterPopup extends React.Component {
 
   filterUpdate = (event) => {
     const {filter, sorting} = this.state;
-    ActionCreator.changeFilter(filter, sorting);
+    const colIdToNumber = obj => f.assoc("columnId", parseInt(obj.columnId), obj);
+    ActionCreator.changeFilter(colIdToNumber(filter), colIdToNumber(sorting));
     this.handleClickOutside(event);
   };
 
@@ -170,9 +176,9 @@ class FilterPopup extends React.Component {
 
   onChangeSelectFilter = option => {
     const {value, kind} = option;
-    if (f.contains(value, [FilterModes.UNTRANSLATED, FilterModes.FINAL])) {
+    if (f.contains(value, SPECIAL_SEARCHES)) {
       const filter = {
-        columnId: null,
+        columnId: value,
         mode: value,
         columnKind: BOOL,
         value: true
@@ -240,14 +246,13 @@ class FilterPopup extends React.Component {
   };
 
   render() {
-    let {t} = this.props;
+    const {t} = this.props;
     const {filter, sorting} = this.state;
     const filterInfoString = either(filter.mode)
       .map(mode => f.prop([mode, "displayName"], SearchFunctions))
       .getOrElse("");
-
-    const filterColumnSelected = f.isInteger(filter.columnId);
-    const sortColumnSelected = f.isInteger(sorting.columnId);
+    const filterColumnSelected = f.isInteger(parseInt(filter.columnId));
+    const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
     const hasFilterValue = (filter.columnKind === TEXT && f.isString(filter.value) && !f.isEmpty(filter.value))
       || (filter.columnKind === BOOL && f.isBoolean(filter.value));
     const canApplyFilter = sortColumnSelected || hasFilterValue;
@@ -280,7 +285,8 @@ class FilterPopup extends React.Component {
                 ? <span onClick={() => this.setState({filter: f.assoc("value", !filter.value, filter)})}>
                   <input checked={!!f.prop("value", filter)}
                          value={!!f.prop("value", filter)}
-                         onChange={() => {}}
+                         onChange={() => {
+                         }}
                          type="checkbox"
                   />
                   {i18n.t((filter.value) ? "common:yes" : "common:no")}
