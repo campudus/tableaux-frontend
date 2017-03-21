@@ -1,15 +1,13 @@
-var AmpersandModel = require("ampersand-model");
-var Dispatcher = require("../dispatcher/Dispatcher");
-var Tables = require("./Tables");
-var Column = require("./Column");
-var TableauxConstants = require("./../constants/TableauxConstants");
+const AmpersandModel = require("ampersand-model");
+const Dispatcher = require("../dispatcher/Dispatcher");
+const TableauxConstants = require("./../constants/TableauxConstants");
 const {ColumnKinds} = TableauxConstants;
-var RowConcatHelper = require("../helpers/RowConcatHelper");
-var _ = require("lodash");
+const RowConcatHelper = require("../helpers/RowConcatHelper");
+const _ = require("lodash");
 import apiUrl from "../helpers/apiUrl";
 
 // FIXME: Handle Concat synch more elegant the Ampersand way
-var Cell = AmpersandModel.extend({
+const Cell = AmpersandModel.extend({
   modelType: "Cell",
 
   props: {
@@ -90,7 +88,7 @@ var Cell = AmpersandModel.extend({
       deps: ["linkStringLanguages"],
       fn: function () {
         return function (linkIndexAt, langtag) {
-          var linkElemValue = this.linkStringLanguages[linkIndexAt];
+          const linkElemValue = this.linkStringLanguages[linkIndexAt];
           if (linkElemValue) {
             return linkElemValue[langtag] || "";
           } else {
@@ -106,13 +104,15 @@ var Cell = AmpersandModel.extend({
         if (!this.isLink) {
           return null;
         }
-        var linksWithLangtags = [];
-        var linkValues = this.value;
-        var linkToColumn = this.column.toColumn;
+        const linksWithLangtags = [];
+        const linkValues = this.value;
+        const linkToColumn = this.column.toColumn;
         _.forEach(linkValues, function (linkElement) {
-          var linkWithLangtag = {};
+          const linkWithLangtag = {};
           _.forEach(TableauxConstants.Langtags, (langtag, idx) => {
-            linkWithLangtag[langtag] = RowConcatHelper.getCellAsStringWithFallback(linkElement.value, linkToColumn, langtag);
+            linkWithLangtag[langtag] = RowConcatHelper.getCellAsStringWithFallback(linkElement.value,
+              linkToColumn,
+              langtag);
           });
           linksWithLangtags.push(linkWithLangtag);
         });
@@ -127,8 +127,8 @@ var Cell = AmpersandModel.extend({
         if (!this.isConcatCell) {
           return null;
         }
-        var rowConcatAllLangs = {};
-        var self = this;
+        const rowConcatAllLangs = {};
+        const self = this;
         _.forEach(TableauxConstants.Langtags, function (langtag, idx) {
           // not really nice I think the Cell should replace
           // an empty concat value with "- NO VALUE -" and not
@@ -167,15 +167,15 @@ var Cell = AmpersandModel.extend({
   },
 
   initConcatEvents: function () {
-    var self = this;
+    const self = this;
 
-    var changedCellListener = function (changedCell) {
+    const changedCellListener = function (changedCell) {
       // find the index value of the concat obj to update
-      var concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
+      const concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
         return column.id === changedCell.column.id;
       });
       // we update the value with a new object to force derived attributes to be refreshed
-      var tmpValue = _.cloneDeep(this.value);
+      const tmpValue = _.cloneDeep(this.value);
       tmpValue[concatIndexToUpdate] = changedCell.value;
       this.value = tmpValue;
     };
@@ -184,8 +184,8 @@ var Cell = AmpersandModel.extend({
     // This cell is a concat cell and listens to its identifier cells
     if (this.isConcatCell) {
       this.column.concats.forEach(function (columnObj) {
-        var changedEvent = "changed-cell:" + self.tableId + ":" + columnObj.id + ":" + self.rowId;
-        var handler = changedCellListener.bind(self);
+        const changedEvent = "changed-cell:" + self.tableId + ":" + columnObj.id + ":" + self.rowId;
+        const handler = changedCellListener.bind(self);
 
         Dispatcher.on(changedEvent, handler);
 
@@ -219,8 +219,8 @@ var Cell = AmpersandModel.extend({
 
   serialize: function (options) {
     if (this.isLink) {
-      var serializedObj = {};
-      var linkValues = this.value.map(function (to) {
+      const serializedObj = {};
+      const linkValues = this.value.map(function (to) {
         return to.id;
       });
       serializedObj.value = {
