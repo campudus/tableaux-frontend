@@ -36,6 +36,26 @@
   "filter_columns": "Search columns...",
   "no_results_found": "No matching columns found",
   "hide_unhide": "Hide/unhide columns",
+  "set_header_level": "Heading:",
+  "edit_links": "Link/unlink items",
+  "edit_attachments": "Link/unlink files",
+  "final": {
+    "set_final": "Mark as final",
+    "set_not_final": "Remove \"final\" mark",
+    "unlock_dialog_header": "Edit finalized item",
+    "unlock_dialog_body": "This item has been marked as final. Remove the mark and edit it?",
+    "set_all_rows_final": "Set the whole table as final"
+  },
+  "translations": {
+    "dialog_headline": "Multi language cell modified",
+    "dialog_question": "You modified content which had already been translated. Would you like to inform other languages' translators?\nChoose \"no\" if you just fixed a mistake.",
+    "flag_all": "Yes, inform translators",
+    "dont_flag_all": "No, other languages aren't affected",
+    "translation_needed": "Translation necessary",
+    "this_translation_needed": "Translation to \"{{langtag}}\" necessary",
+    "no_translation_needed": "No translation needed",
+    "no_such_translation_needed": "No translation to \"{{langtag}}\" necessary"
+  },
   "jump": {
     "no_such_row": "No row with ID {{row}} in this table",
     "no_such_column": "No column with ID {{col}} in this table"
@@ -50,7 +70,9 @@
   "filter": {
     "contains": "contains",
     "starts_with": "starts with",
-    "rows_hidden": "Hiding all except row {{rowId}}"
+    "rows_hidden": "Hiding all except row {{rowId}}",
+    "needs_translation": "Needs translation",
+    "is_final": "Is marked as final"
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",

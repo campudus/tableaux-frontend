@@ -29,7 +29,7 @@ class TableSettingsPopup extends React.Component {
     Cookies.remove(`table-${table.id}`);
   };
     return [
-      <a href="#" onClick={setAllRowsFinal}>{i18n.t("set_all_rows_final")}</a>,
+      <a href="#" onClick={setAllRowsFinal}>{i18n.t("table:final.set_all_rows_final")}</a>,
       (isUserAdmin()) ? <NameEditor table={table} langtag={langtag} /> : null
     ];
   };

@@ -11,12 +11,12 @@ const askForSessionUnlock = (el) => {
 
   class Body extends Component{
     render() {
-      return <div className="content-wrapper">{i18n.t("unlock_dialog_body")}</div>;
+      return <div className="content-wrapper">{i18n.t("table:final.unlock_dialog_body")}</div>;
     }
   }
 
   const doUnlock = () => sessionUnlock(el);
-  const header = <span>{i18n.t("unlock_dialog_header")}</span>;
+  const header = <span>{i18n.t("table:final.unlock_dialog_header")}</span>;
   const footer = (
     <div className="button-wrapper">
       <a href="#" className="button positive" onClick={compose(ActionCreator.closeOverlay, doUnlock)}>
