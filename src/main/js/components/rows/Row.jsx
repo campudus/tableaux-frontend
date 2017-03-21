@@ -25,6 +25,7 @@ class Row extends React.Component {
           force: true
         })
     );
+    props.watch(props.row, {event: "change:final", force: true})
   }
 
   // Allows a good performance when editing large tables
