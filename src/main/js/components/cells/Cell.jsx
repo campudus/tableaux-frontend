@@ -124,6 +124,8 @@ class Cell extends React.Component {
   };
 
   render = () => {
+
+    console.log(this.props.cell)
     const {cell, langtag, selected, editing} = this.props;
     const {link, attachment, numeric, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
     //const selectable = [link, attachment, boolean, concat, currency, text];

@@ -1,5 +1,5 @@
 import React from "react";
-import connectToAmpersand from "../../HOCs/connectToAmpersand";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import NewFolderAction from "./NewFolderAction.jsx";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
