@@ -124,7 +124,7 @@ class RowContextMenu extends React.Component {
       type: "flag",
       value: "translationNeeded"
     }, cell.annotations.translationNeeded);
-    const remainingLangtags = remove(eq(langtag), getAnnotation(translationNeeded, cell).langtags);
+    const remainingLangtags = remove(eq(langtag), prop("langtags", getAnnotation(translationNeeded, cell)));
 
     const fn = (isPrimaryLanguage || isEmpty(remainingLangtags))
       ? () => deleteCellAnnotation(translationNeeded, cell, true)
