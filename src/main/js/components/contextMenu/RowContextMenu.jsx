@@ -17,6 +17,11 @@ import {
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
+const translationNeverNeeded = cell => contains(cell.kind, [
+  ColumnKinds.currency,
+  ColumnKinds.link,
+  ColumnKinds.attachment
+]);
 
 class RowContextMenu extends React.Component {
 
@@ -88,7 +93,7 @@ class RowContextMenu extends React.Component {
       : null;
   };
 
-  canTranslate = cell => cell.isMultiLanguage && cell.isEditable;
+  canTranslate = cell => cell.isMultiLanguage && cell.isEditable && !translationNeverNeeded(cell);
 
   requestTranslationsItem = () => {
     const {langtag, cell, t} = this.props;
@@ -114,7 +119,7 @@ class RowContextMenu extends React.Component {
     const neededTranslations = prop(["annotations", "translationNeeded", "langtags"], cell);
     if (!this.canTranslate(cell) || (!contains(langtag, neededTranslations) && !isPrimaryLanguage)) {
       return null;
-    }q
+    }
     const translationNeeded = merge({
       type: "flag",
       value: "translationNeeded"
