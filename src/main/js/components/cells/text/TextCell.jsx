@@ -5,6 +5,7 @@ import ExpandButton from "./ExpandButton.jsx";
 import TextOverlayFooter from "./TextOverlayFooter.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
+import {isEmpty} from "lodash/fp";
 
 class TextCell extends Component {
 
@@ -16,11 +17,15 @@ class TextCell extends Component {
   };
 
   saveCell = (newValue) => {
-    const {cell, langtag} = this.props;
+    const oldValue = this.getValue();
+    if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
+      return;
+    }
+    const {cell, langtag, contentChanged} = this.props;
     const valueToSave = (cell.isMultiLanguage)
     ? {[langtag]: newValue}
     : newValue;
-    ActionCreator.changeCell(cell, valueToSave);
+    cell.save({value: valueToSave}, {success: contentChanged});
     ActionCreator.toggleCellEditing(false);
   };
 

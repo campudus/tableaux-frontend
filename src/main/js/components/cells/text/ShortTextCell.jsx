@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import ShortTextEditCell from "./ShortTextEditCell";
 import ActionCreator from "../../../actions/ActionCreator";
+import {isEmpty} from "lodash/fp";
 
 class ShortTextCell extends Component {
   static propTypes = {
@@ -17,7 +18,8 @@ class ShortTextCell extends Component {
   }
 
   handleEditDone = (newValue) => {
-    if (this.getValue() === newValue) {
+    const oldValue = this.getValue();
+    if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
       return;
     }
     const {cell, cell:{isMultiLanguage}, langtag, contentChanged} = this.props;

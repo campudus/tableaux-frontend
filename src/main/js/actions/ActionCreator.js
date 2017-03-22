@@ -79,12 +79,10 @@ module.exports = {
     });
   },
 
-  toggleCellEditing: function (editing) {
-    if (editing === undefined) {
-      editing = true;
-    }
+  toggleCellEditing: function ({editing = true, langtag}) {
     Dispatcher.trigger(ActionTypes.TOGGLE_CELL_EDITING, {
-      editing: editing
+      editing,
+      langtag
     });
   },
 

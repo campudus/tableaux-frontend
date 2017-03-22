@@ -127,7 +127,7 @@ class Cell extends React.Component {
     if (!selected) {
       ActionCreator.toggleCellSelection(cell, selected, langtag);
     } else if (!withRightClick) {
-      ActionCreator.toggleCellEditing();
+      ActionCreator.toggleCellEditing({langtag});
     }
 
     if (withRightClick) {
@@ -202,8 +202,7 @@ class Cell extends React.Component {
                 selected={selected}
                 editing={cell.isEditable && editing}
                 contentChanged={contentChanged(cell, langtag)}
-                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {
-                  } : this.setKeyboardShortcutsForChildren}
+                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {} : this.setKeyboardShortcutsForChildren}
       />
     );
 
