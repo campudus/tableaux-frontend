@@ -20,7 +20,8 @@ const CLICK_OFFSET = 3;
 const translationNeverNeeded = cell => contains(cell.kind, [
   ColumnKinds.currency,
   ColumnKinds.link,
-  ColumnKinds.attachment
+  ColumnKinds.attachment,
+  ColumnKinds.concat
 ]);
 
 class RowContextMenu extends React.Component {
