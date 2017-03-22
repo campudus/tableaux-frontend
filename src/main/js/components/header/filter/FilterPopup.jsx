@@ -11,6 +11,7 @@ import TableauxConstants, {FilterModes, ColumnKinds, SortValues} from "../../../
 import i18n from "i18next";
 import {either} from "../../../helpers/monads";
 import SearchFunctions from "../../../helpers/searchFunctions";
+import classNames from "classnames"
 
 const BOOL = "boolean";
 const TEXT = "text";
@@ -89,9 +90,10 @@ class FilterPopup extends React.Component {
 
   getSearchableColumns() {
     const searchableColumns = this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
+    const {langtag} = this.props;
     return [
       {
-        label: this.props.t("filter.needs_translation"),
+        label: this.props.t("translations.this_translation_needed", {langtag}),
         value: FilterModes.UNTRANSLATED,
         kind: BOOL
       },
@@ -247,6 +249,22 @@ class FilterPopup extends React.Component {
                             })} />;
   };
 
+  boolInput = () => {
+    const isYesSelected = this.state.filter.value;
+    const yesClassName = classNames("neutral yes", {"active": isYesSelected});
+    const noClassName = classNames("neutral no", {"active": !isYesSelected});
+    return (
+      <span className="bool-input">
+        <a href="#" className={yesClassName} onClick={() => this.setState({filter: f.assoc("value", true, this.state.filter)})}>
+          {i18n.t("common:yes")}
+        </a>
+        <a href="#" className={noClassName} onClick={() => this.setState({filter: f.assoc("value", false, this.state.filter)})}>
+          {i18n.t("common:no")}
+        </a>
+      </span>
+    )
+  };
+
   render() {
     const {t} = this.props;
     const {filter, sorting} = this.state;
@@ -284,15 +302,7 @@ class FilterPopup extends React.Component {
               <span className="separator">{t(filterInfoString)}</span>
 
               {(filter.columnKind === BOOL)
-                ? <span onClick={() => this.setState({filter: f.assoc("value", !filter.value, filter)})}>
-                  <input checked={!!f.prop("value", filter)}
-                         value={!!f.prop("value", filter)}
-                         onChange={() => {
-                         }}
-                         type="checkbox"
-                  />
-                  {i18n.t((filter.value) ? "common:yes" : "common:no")}
-                </span>
+                ? this.boolInput()
                 : <span className="filter-mode-wrapper">
                   <input value={filter.value}
                          type="text"
