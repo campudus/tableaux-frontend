@@ -9,7 +9,7 @@ import FilterModePopup from "./FilterModePopup";
 import {translate} from "react-i18next";
 import TableauxConstants, {FilterModes, ColumnKinds, SortValues} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
-import {either} from "../../../helpers/monads";
+import {either, fspy} from "../../../helpers/monads";
 import SearchFunctions from "../../../helpers/searchFunctions";
 
 const BOOL = "boolean";
@@ -57,9 +57,10 @@ class FilterPopup extends React.Component {
 
     const filter = {
       columnId: either(currFilter)
-        .map(f.prop("columnId"))
-        .map(f.defaultTo(null)(f.toNumber))
-        .orElse(id => (f.contains(id, SPECIAL_SEARCHES)) ? id : null)
+        .map(cf => {const mode = f.prop(["filterMode"], cf); return (f.contains(mode, SPECIAL_SEARCHES)) ? mode : null})
+        .map(fspy("Special search:"))
+        .orElse(f.compose(f.toString, f.prop("filterColumnId")))
+        .map(fspy("filter column Id:"))
         .getOrElse(null),
       mode: f.prop("filterMode", currFilter),
       value: f.prop("filterValue", currFilter),
@@ -67,7 +68,7 @@ class FilterPopup extends React.Component {
     };
 
     const sorting = {
-      columnId: f.prop("sortColumnId", currFilter),
+      columnId: f.toString(f.prop("sortColumnId", currFilter)),
       value: f.defaultTo(TableauxConstants.SortValues.ASC)(f.prop("sortValue", currFilter))
     };
 

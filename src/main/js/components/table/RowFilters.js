@@ -77,51 +77,8 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
   const closures = mkClosures(currentTable, langtag, rowsFilter);
   const filterColumnIndex = closures.getColumnIndex(filterColumnId);
   const allRows = currentTable.rows;
-  const toFilterValue = filterValue.toLowerCase().trim();
-
-  const getSortableCellValue = function (cell) {
-    let sortableValue;
-
-    if (cell.isLink) {
-      const linkValues = _.map(cell.linkStringLanguages, (linkElement) => {
-        return linkElement[langtag] ? linkElement[langtag] : "";
-      });
-
-      sortableValue = _.join(linkValues, ":");
-    } else if (cell.kind === ColumnKinds.concat) {
-      // not really nice I think the Cell should replace
-      // an empty concat value with "- NO VALUE -" and not
-      // the model itself!
-      const temp = cell.rowConcatString(langtag);
-      sortableValue = temp === RowConcatHelper.NOVALUE ? "" : temp;
-    } else if (cell.isMultiLanguage) {
-      sortableValue = cell.value[langtag];
-    } else {
-      sortableValue = cell.value;
-    }
-
-    if (sortableValue) {
-      if (cell.kind === ColumnKinds.numeric) {
-        sortableValue = _.toNumber(sortableValue);
-      } else if (cell.kind === ColumnKinds.boolean) {
-        sortableValue = !!sortableValue;
-      } else {
-        sortableValue = sortableValue.toString().trim().toLowerCase();
-      }
-    } else {
-      if (cell.kind === ColumnKinds.boolean) {
-        sortableValue = false;
-      } else {
-        sortableValue = "";
-      }
-    }
-
-    return sortableValue;
-  };
-
-  if (_.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
-    return allRows;
-  }
+  const toFilterValue = closures.cleanString(filterValue);
+  const getSortableCellValue = closures.getSortableCellValue;
 
   if (_.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
     return allRows;
@@ -140,7 +97,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
       // Always return true for rows with empty first value.
       // This should allow to add new rows while filtered.
       // _.isEmpty(123) returns TRUE, so we check for number (int & float)
-      if (_.isEmpty(firstCellValue) && !_.isFinite(firstCellValue)) {
+      if (_.isEmpty(firstCellValue) && !_.isNumber(firstCellValue)) {
         return true;
       }
 
@@ -152,8 +109,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
         ColumnKinds.richtext,
         ColumnKinds.text,
         ColumnKinds.numeric,
-        ColumnKinds.link,
-        ColumnKinds.concat
+        ColumnKinds.link
       ];
 
       if (f.contains(targetCell.kind, filterableCellKinds)) {
@@ -164,46 +120,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
       }
     },
 
-    comparator: (rowOne, rowTwo) => {
-      // swap gt and lt to support ASC and DESC
-      // gt = in case rowOne > rowTwo
-      // lt = in case rowOne < rowTwo
-      const gt = sortValue === SortValues.ASC ? +1 : -1;
-      const lt = sortValue === SortValues.ASC ? -1 : +1;
-
-      const compareRowIds = () => {
-        return rowOne.id === rowTwo.id ? 0 : (rowOne.id > rowTwo.id ? gt : lt);
-      };
-
-      if (sortColumnIndex <= -1) {
-        if (typeof rowTwo === "undefined") {
-          // strange special case if row was added
-          return rowOne.id;
-        }
-
-        // Default sort by row id
-        return compareRowIds();
-      } else {
-        const cellValueOne = rowOne && rowOne.cells ? getSortableCellValue(rowOne.cells.at(sortColumnIndex)) : null;
-        const cellValueTwo = rowTwo && rowTwo.cells ? getSortableCellValue(rowTwo.cells.at(sortColumnIndex)) : null;
-
-        const isEmptyOne = cellValueOne === null || (typeof cellValueOne === "string" && _.isEmpty(cellValueOne));
-        const isEmptyTwo = cellValueTwo === null || (typeof cellValueTwo === "string" && _.isEmpty(cellValueTwo));
-
-        if (isEmptyOne && isEmptyTwo) {
-          return 0;
-        } else if (isEmptyOne) {
-          // ensure than in both sorting cases null/emptys are last!
-          return sortValue === SortValues.ASC ? gt : lt;
-        } else if (isEmptyTwo) {
-          // ensure than in both sorting cases null/emptys are last!
-          return sortValue === SortValues.ASC ? lt : gt;
-        } else {
-          // first compare values and if equal than sort by row id
-          return _.eq(cellValueOne, cellValueTwo) ? compareRowIds() : (_.gt(cellValueOne, cellValueTwo) ? gt : lt);
-        }
-      }
-    }
+    comparator: closures.comparator
   });
 };
 
