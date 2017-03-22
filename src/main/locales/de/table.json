@@ -42,8 +42,7 @@
   "final": {
     "set_final": "Freigabemarkierung setzen",
     "set_not_final": "Freigabemarkierung entfernen",
-    "unlock_dialog_header": "Freigegebenen Posten bearbeiten",
-    "unlock_dialog_body": "Diese Zeile wurde als \"freigegeben\" markiert. Markierung entfernen und bearbeiten?",
+    "unlock_toast": "Diese Zeile wurde als \"freigegeben\" markiert.\nNoch einmal klicken um sie trotzdem zu bearbeiten.",
     "set_all_rows_final": "Die ganze Tabelle freigeben"
   },
   "translations": {

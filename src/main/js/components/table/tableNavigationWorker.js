@@ -204,6 +204,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
 }
 
 export function toggleCellEditing(params) {
+  console.log("tableNavigationWorker toggleCellEditing", params)
   const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
   const needsMyTranslation = f.contains(
@@ -211,7 +212,7 @@ export function toggleCellEditing(params) {
     f.prop(["annotations", "translationNeeded", "langtags"], selectedCell)
   );
   if (selectedCell) {
-    if (isLocked(selectedCell.row) && !needsMyTranslation) {  // needs_translation overrules final
+    if (editVal && isLocked(selectedCell.row) && !needsMyTranslation) {  // needs_translation overrules final
       askForSessionUnlock(selectedCell.row);
       return;
     }

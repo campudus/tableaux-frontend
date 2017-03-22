@@ -1,42 +1,46 @@
 import React, {Component, PropTypes} from "react";
 import {sessionUnlock, isLocked} from "../../helpers/annotationHelper";
 import ActionCreator from "../../actions/ActionCreator";
-import {compose, contains} from "lodash/fp";
+import * as f from "lodash/fp";
 import i18n from "i18next";
+
+const TOAST_TIME = 3000;
+
+/* This is a stateful element */
+class Candidates {
+  static _cnd = [];
+  static add(id) {
+    console.log("adding", id, "to", this._cnd);
+    this._cnd = [...this._cnd, id];
+    window.setTimeout(() => this.remove(id), TOAST_TIME)
+    console.log("Now:", this._cnd);
+  }
+
+  static remove(id) {
+    console.log("removing", id, "from", this._cnd);
+    this._cnd = f.remove(f.eq(id), this._cnd);
+    console.log("Now:", this._cnd);
+  }
+
+  static has(id) {
+    console.log("looking up", id, "in", this._cnd, f.contains(id, this._cnd));
+    return (f.contains(id, this._cnd))
+  }
+}
 
 const askForSessionUnlock = (el) => {
   if (!isLocked(el)) {
     return;
   }
+  const {id} = el;
 
-  class Body extends Component{
-    render() {
-      return <div className="content-wrapper">{i18n.t("table:final.unlock_dialog_body")}</div>;
-    }
+  if (Candidates.has(id)) {
+    Candidates.remove(id);
+    sessionUnlock(el);
+  } else {
+    Candidates.add(id);
+    ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:final.unlock_toast")}</div>, TOAST_TIME );
   }
-
-  const doUnlock = () => sessionUnlock(el);
-  const header = <span>{i18n.t("table:final.unlock_dialog_header")}</span>;
-  const footer = (
-    <div className="button-wrapper">
-      <a href="#" className="button positive" onClick={compose(ActionCreator.closeOverlay, doUnlock)}>
-        {i18n.t("common:yes")}
-      </a>
-      <a href="#" className="button neutral" onClick={ActionCreator.closeOverlay}>
-        {i18n.t("common:no")}
-      </a>
-    </div>
-  );
-  ActionCreator.openOverlay({
-    head: header,
-    body: <Body />,
-    footer,
-    type: "flexible",
-    keyboardShortcuts: {
-      enter: compose(ActionCreator.closeOverlay, doUnlock),
-      escape: ActionCreator.closeOverlay
-    }
-  })
 };
 
 export default askForSessionUnlock;

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
-import {ColumnKinds} from "../../constants/TableauxConstants";
+import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
 import TextCell from "./text/TextCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
@@ -18,10 +18,47 @@ import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
 import * as f from "lodash/fp";
+import {addTranslationNeeded, deleteCellAnnotation} from "../../helpers/annotationHelper";
+import openTranslationDialog from "../overlay/TranslationDialog";
+import {either} from "../../helpers/monads";
 
 // used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first
 // visible row)
 const CELL_HINT_PADDING = 40;
+
+export const contentChanged = (cell, langtag, oldValue) => () => {
+  if (!cell.isMultiLanguage || either(cell).map(f.prop(["value", langtag])).orElse(f.prop("value")).value === oldValue) {
+    return;
+  }
+  const isPrimaryLanguage = langtag === f.first(Langtags);
+  const untranslated = f.compose(
+    f.filter(lt => f.isEmpty(f.prop(["value", lt], cell))),
+    f.drop(1)
+  )(Langtags);
+  const translationAnnotation = f.prop(["annotations", "translationNeeded"], cell);
+  const translationsExist = untranslated.length !== Langtags.length - 1;
+
+  if (isPrimaryLanguage) {
+    const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
+    const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
+      ? addTranslationNeeded(untranslated, cell)
+      : () => {
+      };
+    if (translationsExist) {
+      openTranslationDialog(flagAllTranslations, flagEmptyTranslations);
+    } else {
+      flagEmptyTranslations();
+    }
+  } else {
+    const remainingTranslations = f.remove(f.equals(langtag), untranslated);
+    if (translationAnnotation && f.contains(langtag, translationAnnotation.langtags)) {
+      deleteCellAnnotation(translationAnnotation, cell).then(() => addTranslationNeeded(remainingTranslations, cell));
+    } else if (!f.isEmpty(remainingTranslations)) {
+      addTranslationNeeded(remainingTranslations, cell);
+    }
+  }
+};
+
 
 @connectToAmpersand
 class Cell extends React.Component {
@@ -151,7 +188,8 @@ class Cell extends React.Component {
         "editing": cell.isEditable && editing,
         "needs-translation": translationNeeded && f.contains(langtag, translationNeeded.langtags),
         "fully-translated": cell.isMultiLanguage && this.props.showTranslationStatus && !translationNeeded,
-        "needs-translation-other-language": this.props.showTranslationStatus && translationNeeded && !f.contains(langtag, translationNeeded.langtags)
+        "needs-translation-other-language": this.props.showTranslationStatus && translationNeeded && !f.contains(langtag,
+          translationNeeded.langtags)
       }
     );
 
@@ -163,7 +201,9 @@ class Cell extends React.Component {
       <CellKind cell={cell} langtag={langtag}
                 selected={selected}
                 editing={cell.isEditable && editing}
-                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function (){} : this.setKeyboardShortcutsForChildren}
+                contentChanged={contentChanged(cell, langtag)}
+                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {
+                  } : this.setKeyboardShortcutsForChildren}
       />
     );
 

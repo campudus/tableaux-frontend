@@ -42,8 +42,7 @@
   "final": {
     "set_final": "Mark as final",
     "set_not_final": "Remove \"final\" mark",
-    "unlock_dialog_header": "Edit finalized item",
-    "unlock_dialog_body": "This item has been marked as final. Remove the mark and edit it?",
+    "unlock_toast": "This row has been marked as final.\nTo edit anyway, click again.",
     "set_all_rows_final": "Set the whole table as final"
   },
   "translations": {

@@ -4,7 +4,6 @@ import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
 import Cookies from "js-cookie";
-import {spy} from "./monads";
 
 const extractAnnotations = obj => {
   const findAnnotationType = typeStr => f.filter(f.matchesProperty("type", typeStr));
@@ -155,7 +154,10 @@ const setCellAnnotation = (annotation, cell) => {
 };
 
 const addTranslationNeeded = (langtags, cell) => {
-  console.log("Settings translation needed for", f.prop(["annotations", "translationNeeded", "langtags"], cell), "=>", langtags)
+  console.log("Settings translation needed for",
+    f.prop(["annotations", "translationNeeded", "langtags"], cell),
+    "=>",
+    langtags)
   request
     .post(cellAnnotationUrl(cell))
     .send({
@@ -223,7 +225,7 @@ const setRowAnnotation = (annotation, target) => {
     }
   };
 
-  const url = spy(getRowAnnotationPath(target), "annotation url");
+  const url = getRowAnnotationPath(target);
   request
     .patch(url)
     .send(annotation)
