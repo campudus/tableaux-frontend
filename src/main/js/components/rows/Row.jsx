@@ -46,11 +46,7 @@ class Row extends React.Component {
       return true;
     }
     // When nothing is selected and I don't get expanded
-    else if (!this.props.selectedCell && !nextProps.isRowExpanded) {
-      return false;
-    } else {
-      return true;
-    }
+    else return !(!this.props.selectedCell && !nextProps.isRowExpanded);
   };
 
   toggleExpand = () => {

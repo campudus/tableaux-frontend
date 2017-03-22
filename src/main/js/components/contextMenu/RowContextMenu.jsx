@@ -6,7 +6,7 @@ import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagement
 import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {first, compose, isEmpty, eq, drop, remove, merge, contains} from "lodash/fp";
+import {first, compose, isEmpty, eq, drop, remove, merge, contains, prop} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 import {
   addTranslationNeeded,
@@ -92,7 +92,7 @@ class RowContextMenu extends React.Component {
 
   requestTranslationsItem = () => {
     const {langtag, cell, t} = this.props;
-    if (!this.canTranslate(cell)) {
+    if (!this.canTranslate(cell) || contains(langtag, prop(["annotations", "translationNeeded", "langtags"], cell))) {
       return null;
     }
     const isPrimaryLanguage = langtag === first(Langtags);
@@ -111,12 +111,10 @@ class RowContextMenu extends React.Component {
   removeTranslationNeeded = () => {
     const {langtag, cell, t} = this.props;
     const isPrimaryLanguage = langtag === first(Langtags);
-    if (!this.canTranslate(cell) || !cell.annotations || !cell.annotations.translationNeeded) {
+    const neededTranslations = prop(["annotations", "translationNeeded", "langtags"], cell);
+    if (!this.canTranslate(cell) || (!contains(langtag, neededTranslations) && !isPrimaryLanguage)) {
       return null;
-    }
-    if (!isPrimaryLanguage && !contains(langtag, cell.annotations.translationNeeded.langtags)) {
-      return null;
-    }
+    }q
     const translationNeeded = merge({
       type: "flag",
       value: "translationNeeded"
