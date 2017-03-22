@@ -1,16 +1,16 @@
-var AmpersandModel = require("ampersand-model");
-var apiUrl = require("../helpers/apiUrl");
-var Columns = require("./Columns");
-var Cell = require("./Cell");
-var Cells = require("./Cells");
-var _ = require("lodash");
+const AmpersandModel = require("ampersand-model");
+const apiUrl = require("../helpers/apiUrl");
+const Columns = require("./Columns");
+const Cell = require("./Cell");
+const Cells = require("./Cells");
+const _ = require("lodash");
 import request from "superagent";
 import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
 import {getUserLanguageAccess, isUserAdmin} from "../helpers/accessManagementHelper";
 import * as f from "lodash/fp";
 import {extractAnnotations} from "../helpers/annotationHelper";
 
-var Row = AmpersandModel.extend({
+const Row = AmpersandModel.extend({
   props: {
     id: "number",
     values: "array",
@@ -106,7 +106,7 @@ var Row = AmpersandModel.extend({
   },
 
   url: function () {
-    var base = this.urlRoot();
+    const base = this.urlRoot();
 
     if (this.isNew()) {
       return base;
@@ -117,7 +117,7 @@ var Row = AmpersandModel.extend({
 
   urlRoot: function () {
     // first try tableId because there could be a Row with out collection
-    var tableId = this.tableId || this.collection.parent.getId();
+    const tableId = this.tableId || this.collection.parent.getId();
     return apiUrl("/tables/" + tableId + "/rows");
   }
 });

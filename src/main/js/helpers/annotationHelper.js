@@ -128,7 +128,7 @@ const getAnnotation = (annotation, cell) => {
   return f.cond([
     [isFlag, getFlag],
     [isText, getText],
-    [f.stubTrue, f.always(null)]
+    [f.stubTrue, f.always({})]
   ])(annotation);
 };
 
@@ -232,7 +232,7 @@ const setRowAnnotation = (annotation, target) => {
 
 const sessionUnlock = el => {
   const key = `table-${el.tableId || el.id}`;
-  const value = JSON.parse(Cookies.get(key) || "[]");
+  const value = getSessionUnlockedElements(el);
   if (el instanceof Row && value !== true) {
     Cookies.set(key, (value === true) ? [el.id] : f.uniq([...value, el.id]));
     el.set({final: false});
@@ -242,12 +242,15 @@ const sessionUnlock = el => {
   }
 };
 
-const isLocked = el => {
+const getSessionUnlockedElements = el => {
   const key = `table-${el.tableId || el.id}`;
-  const value = JSON.parse(Cookies.get(key) || "[]");
+  return JSON.parse(Cookies.get(key) || "[]");
+};
+
+const isLocked = el => {
   return (el instanceof Row)
-    ? value !== true && !f.contains(el.id, value)
-    : value !== true;
+    ? el.final
+    : getSessionUnlockedElements(el) !== true;
 };
 
 export {
@@ -258,6 +261,7 @@ export {
   refreshAnnotations,
   setRowAnnotation,
   sessionUnlock,
-  isLocked
+  isLocked,
+  getSessionUnlockedElements
 };
 export default setCellAnnotation;
