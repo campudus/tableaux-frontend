@@ -9,7 +9,7 @@ import {initiateDeleteRow} from "../../helpers/rowHelper";
 import * as f from "lodash/fp";
 import classNames from "classnames";
 import {isLocked} from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../overlay/SessionUnlockDialog";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 
 @connectToAmpersand
 class Row extends React.Component {

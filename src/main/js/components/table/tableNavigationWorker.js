@@ -4,7 +4,7 @@ import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
 import {isLocked} from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../overlay/SessionUnlockDialog";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 
 export function shouldCellFocus() {

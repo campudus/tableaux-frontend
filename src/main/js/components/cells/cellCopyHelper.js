@@ -7,7 +7,7 @@ import i18n from "i18next";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
 import {hasUserAccessToLanguage, isUserAdmin, getUserLanguageAccess} from "../../helpers/accessManagementHelper";
 import {isLocked} from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../overlay/SessionUnlockDialog";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 
 const showErrorToast = msg => {
   ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg)}</div>, 3000);

@@ -10,20 +10,15 @@ const TOAST_TIME = 3000;
 class Candidates {
   static _cnd = [];
   static add(id) {
-    console.log("adding", id, "to", this._cnd);
     this._cnd = [...this._cnd, id];
     window.setTimeout(() => this.remove(id), TOAST_TIME)
-    console.log("Now:", this._cnd);
   }
 
   static remove(id) {
-    console.log("removing", id, "from", this._cnd);
     this._cnd = f.remove(f.eq(id), this._cnd);
-    console.log("Now:", this._cnd);
   }
 
   static has(id) {
-    console.log("looking up", id, "in", this._cnd, f.contains(id, this._cnd));
     return (f.contains(id, this._cnd))
   }
 }
