@@ -132,7 +132,6 @@ class Row extends React.Component {
 
     const cantTranslate = !isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag);
     const canDeleteRow = table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected && isUserAdmin();
-    const canUnlockRow = isUserAdmin();
     const cantTranslateIcon = (cantTranslate) ? <i className="fa fa-ban access-denied-icon" /> : null;
     const deleteButton = (canDeleteRow && !row.final)
       ? (
@@ -143,17 +142,8 @@ class Row extends React.Component {
         </div>
       )
       : null;
-    const unlockFunction = (canUnlockRow)
-      ? () => askForSessionUnlock(row)
-      : () => {};
     const unlockButton = (row.final && !cantTranslate)
-      ? (
-        <div className="delete-row">
-          <button className="button" onClick={unlockFunction}>
-            <i className={(isLocked(row)) ? "fa fa-lock" : "fa fa-unlock"} />
-          </button>
-        </div>
-      )
+      ? <i className="fa fa-lock access-denied-icon" />
       : null;
 
     return (
