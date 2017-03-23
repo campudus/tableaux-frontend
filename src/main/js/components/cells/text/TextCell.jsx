@@ -6,6 +6,8 @@ import TextOverlayFooter from "./TextOverlayFooter.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import {isEmpty} from "lodash/fp";
+import {isLocked} from "../../../helpers/annotationHelper";
+import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 
 class TextCell extends Component {
 
@@ -30,6 +32,10 @@ class TextCell extends Component {
   };
 
   openOverlay = (event, withContent) => {
+    if (isLocked(this.props.cell.row)) {
+      askForSessionUnlock(this.props.cell.row);
+      return;
+    }
     const textValue = withContent || this.getValue();
     event.stopPropagation();
     event.preventDefault();
