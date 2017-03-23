@@ -25,7 +25,7 @@ class Row extends React.Component {
           force: true
         })
     );
-    props.watch(props.row, {event: "change:final", force: true})
+    props.watch(props.row, {event: "change:final", force: true});
   }
 
   // Allows a good performance when editing large tables
@@ -128,7 +128,6 @@ class Row extends React.Component {
       "duplicated": row.recentlyDuplicated,
       "final": row.final
     });
-
 
     const cantTranslate = !isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag);
     const canDeleteRow = table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected && isUserAdmin();

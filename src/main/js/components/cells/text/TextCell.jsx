@@ -62,7 +62,6 @@ class TextCell extends Component {
   };
 
   renderTextCell = (cell, value) => {
-
     const expandButton = (this.props.selected)
       ? <ExpandButton onTrigger={this.openOverlay} />
       : null;

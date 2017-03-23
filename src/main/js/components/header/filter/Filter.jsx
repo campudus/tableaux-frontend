@@ -31,7 +31,7 @@ class FilterButton extends React.Component {
   };
 
   renderFilterPopup() {
-    const {currentFilter, table:{columns}, langtag} = this.props;
+    const {currentFilter, table: {columns}, langtag} = this.props;
     if (this.state.open) {
       return (
         <FilterPopup langtag={langtag} onClickedOutside={this.handleClickedOutside}

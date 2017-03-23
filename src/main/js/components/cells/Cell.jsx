@@ -59,7 +59,6 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   }
 };
 
-
 @connectToAmpersand
 class Cell extends React.Component {
 
@@ -163,7 +162,7 @@ class Cell extends React.Component {
   render = () => {
     const {cell, langtag, selected, editing} = this.props;
     const {link, attachment, numeric, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
-    //const selectable = [link, attachment, boolean, concat, currency, text];
+    // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
 
     const cellKinds = {
@@ -177,7 +176,7 @@ class Cell extends React.Component {
       [concat]: IdentifierCell,
       [currency]: CurrencyCell,
       [text]: TextCell,
-      [richtext]: TextCell,
+      [richtext]: TextCell
     };
 
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";

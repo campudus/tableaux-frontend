@@ -111,7 +111,7 @@ class RowContextMenu extends React.Component {
         {(isPrimaryLanguage) ? t("translations.translation_needed") : t("translations.this_translation_needed",
             {langtag})}
       </a>
-    )
+    );
   };
 
   removeTranslationNeeded = () => {
@@ -135,11 +135,11 @@ class RowContextMenu extends React.Component {
         {(isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed",
             {langtag})}
       </a>
-    )
+    );
   };
 
   setFinal = isFinal => () => {
-    const {cell:{row}} = this.props;
+    const {cell: {row}} = this.props;
     setRowAnnotation({final: isFinal}, row);
   };
 
@@ -147,9 +147,9 @@ class RowContextMenu extends React.Component {
     if (!isUserAdmin()) {
       return null;
     }
-    const {t, cell:{row:{final}}} = this.props;
+    const {t, cell: {row: {final}}} = this.props;
     const label = (final) ? t("final.set_not_final") : t("final.set_final");
-    return <a href="#" onClick={compose(this.closeRowContextMenu, this.setFinal(!final))}>{label}</a>
+    return <a href="#" onClick={compose(this.closeRowContextMenu, this.setFinal(!final))}>{label}</a>;
   };
 
   render = () => {

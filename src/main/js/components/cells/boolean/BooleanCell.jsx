@@ -31,7 +31,7 @@ class BooleanCell extends Component {
     }
   };
 
-  render () {
+  render() {
     return (
       <div className={"cell-content"} onClick={this.toggleCheckboxValue}>
         <input className="checkbox" type="checkbox"

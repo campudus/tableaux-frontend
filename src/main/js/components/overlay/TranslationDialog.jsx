@@ -9,7 +9,7 @@ class DialogHead extends Component {
       <span>
         {i18n.t("table:translations.dialog_headline")}
       </span>
-    )
+    );
   }
 }
 
@@ -19,7 +19,7 @@ class DialogBody extends Component {
       <div className="content-wrapper">
         {i18n.t("table:translations.dialog_question")}
       </div>
-    )
+    );
   }
 }
 
@@ -42,11 +42,11 @@ class DialogFooter extends Component {
           {i18n.t("table:translations.dont_flag_all")}
         </a>
       </div>
-    )
+    );
   }
 }
 
-const openTranslationDialog = (confirm, cancel = function (){}) => {
+const openTranslationDialog = (confirm, cancel = function () {}) => {
   if (!confirm) {
     console.error("openTranslationDialog(confirm, cancel) needs at least a confirm function argument passed");
   }
@@ -68,7 +68,7 @@ const openTranslationDialog = (confirm, cancel = function (){}) => {
           ActionCreator.closeOverlay();
         }
       }
-    })
+    });
 };
 
 export default openTranslationDialog;

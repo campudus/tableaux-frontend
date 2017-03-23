@@ -26,14 +26,14 @@ class NumericCell extends Component {
   };
 
   render() {
-   const {cell, langtag, editing} = this.props;
+    const {cell, langtag, editing} = this.props;
 
     if (!editing) {
       return (
         <div className="cell-content">
           {(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
         </div>
-      )
+      );
     } else {
       return <NumericEditCell cell={cell}
                               langtag={langtag}

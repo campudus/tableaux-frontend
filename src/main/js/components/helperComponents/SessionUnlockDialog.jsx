@@ -11,7 +11,7 @@ class Candidates {
   static _cnd = [];
   static add(id) {
     this._cnd = [...this._cnd, id];
-    window.setTimeout(() => this.remove(id), TOAST_TIME)
+    window.setTimeout(() => this.remove(id), TOAST_TIME);
   }
 
   static remove(id) {
@@ -19,7 +19,7 @@ class Candidates {
   }
 
   static has(id) {
-    return (f.contains(id, this._cnd))
+    return (f.contains(id, this._cnd));
   }
 }
 
@@ -34,7 +34,7 @@ const askForSessionUnlock = (el) => {
     sessionUnlock(el);
   } else {
     Candidates.add(id);
-    ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:final.unlock_toast")}</div>, TOAST_TIME );
+    ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:final.unlock_toast")}</div>, TOAST_TIME);
   }
 };
 

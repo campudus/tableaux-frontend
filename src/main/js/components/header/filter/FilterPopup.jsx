@@ -11,7 +11,7 @@ import TableauxConstants, {FilterModes, ColumnKinds, SortValues} from "../../../
 import i18n from "i18next";
 import {either} from "../../../helpers/monads";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import classNames from "classnames"
+import classNames from "classnames";
 
 const BOOL = "boolean";
 const TEXT = "text";
@@ -60,7 +60,7 @@ class FilterPopup extends React.Component {
       columnId: either(currFilter)
         .map(cf => {
           const mode = f.prop(["filterMode"], cf);
-          return (f.contains(mode, SPECIAL_SEARCHES)) ? mode : null
+          return (f.contains(mode, SPECIAL_SEARCHES)) ? mode : null;
         })
         .orElse(f.compose(f.toString, f.prop("filterColumnId")))
         .getOrElse(null),
@@ -200,7 +200,7 @@ class FilterPopup extends React.Component {
         value: f.isString(oldValue) ? oldValue : "",
         columnKind: this.filtersForKind(kind)
       };
-      this.setState({filter})
+      this.setState({filter});
     }
   };
 
@@ -262,7 +262,7 @@ class FilterPopup extends React.Component {
           {i18n.t("common:no")}
         </a>
       </span>
-    )
+    );
   };
 
   render() {

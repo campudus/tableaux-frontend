@@ -25,9 +25,9 @@ class TableSettingsPopup extends React.Component {
   menuItemContents = () => {
     const {table, langtag} = this.props;
     const setAllRowsFinal = () => {
-    setRowAnnotation({final: true}, table);
-    Cookies.remove(`table-${table.id}`);
-  };
+      setRowAnnotation({final: true}, table);
+      Cookies.remove(`table-${table.id}`);
+    };
     return [
       <a href="#" onClick={setAllRowsFinal}>{i18n.t("table:final.set_all_rows_final")}</a>,
       (isUserAdmin()) ? <NameEditor table={table} langtag={langtag} /> : null
@@ -46,7 +46,7 @@ class TableSettingsPopup extends React.Component {
              )
         }
       </div>
-    )
+    );
   }
 }
 

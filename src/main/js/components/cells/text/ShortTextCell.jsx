@@ -22,7 +22,7 @@ class ShortTextCell extends Component {
     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
       return;
     }
-    const {cell, cell:{isMultiLanguage}, langtag, contentChanged} = this.props;
+    const {cell, cell: {isMultiLanguage}, langtag, contentChanged} = this.props;
     const valueToSave = (isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
@@ -32,7 +32,7 @@ class ShortTextCell extends Component {
   };
 
   getValue = () => {
-    const {cell, cell:{isMultiLanguage}, langtag} = this.props;
+    const {cell, cell: {isMultiLanguage}, langtag} = this.props;
     return (isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;

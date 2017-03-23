@@ -7,7 +7,7 @@ import * as _ from "lodash";
 import {either} from "../../helpers/monads";
 
 const getFilteredRows = (currentTable, langtag, rowsFilter) => {
-  console.log("getFilteredRows:", rowsFilter)
+  console.log("getFilteredRows:", rowsFilter);
   if (!areFilterSettingsValid(rowsFilter)) {
     return (f.isInteger(rowsFilter.sortColumnId))                      // is a sorting mode set?
       ? getRowsFilteredByColumnValues(currentTable, langtag, rowsFilter)
@@ -32,7 +32,7 @@ export const areFilterSettingsValid = settings => {
 };
 
 const getRowsFilteredByFinalFlag = (table, langtag, filterSettings) => {
-  console.log("Filtered by final flag")
+  console.log("Filtered by final flag");
   const closures = mkClosures(table, langtag, filterSettings);
   return new FilteredSubcollection(table.rows, {
     filter: f.matchesProperty("final", filterSettings.filterValue),
@@ -41,7 +41,7 @@ const getRowsFilteredByFinalFlag = (table, langtag, filterSettings) => {
 };
 
 const getRowsFilteredById = (table, langtag, rowsFilter) => {
-  console.log("Filtered by row id")
+  console.log("Filtered by row id");
   const reqId = rowsFilter.filterValue;
   return new FilteredSubcollection(table.rows, {
     where: {id: reqId}
@@ -49,7 +49,7 @@ const getRowsFilteredById = (table, langtag, rowsFilter) => {
 };
 
 const getRowsFilteredByTranslationStatus = (table, langtag, rowsFilter) => {
-  console.log("Filtered by translation status")
+  console.log("Filtered by translation status");
   const closures = mkClosures(table, langtag, rowsFilter);
   const untranslated = rowsFilter.filterValue;
   const needsTranslation = f.compose(
@@ -72,7 +72,7 @@ const getRowsFilteredByTranslationStatus = (table, langtag, rowsFilter) => {
 };
 
 const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
-  console.log("Filtered by column value")
+  console.log("Filtered by column value");
   const {filterColumnId, filterValue, filterMode, sortColumnId} = rowsFilter;
   const closures = mkClosures(currentTable, langtag, rowsFilter);
   const filterColumnIndex = closures.getColumnIndex(filterColumnId);

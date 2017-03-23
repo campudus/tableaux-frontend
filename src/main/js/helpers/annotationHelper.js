@@ -157,7 +157,7 @@ const addTranslationNeeded = (langtags, cell) => {
   console.log("Settings translation needed for",
     f.prop(["annotations", "translationNeeded", "langtags"], cell),
     "=>",
-    langtags)
+    langtags);
   request
     .post(cellAnnotationUrl(cell))
     .send({
