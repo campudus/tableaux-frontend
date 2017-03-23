@@ -1,43 +1,42 @@
-var React = require("react");
-var multiLanguage = require("../../../helpers/multiLanguage");
+import React, {Component, PropTypes} from "react";
+import multiLanguage from "../../../helpers/multiLanguage";
 import TableauxConstants from "../../../constants/TableauxConstants";
+import {isLocked} from "../../../helpers/annotationHelper";
+import classNames from "classnames";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
-var AttachmentLabelCell = React.createClass({
+@connectToAmpersand
+class AttachmentLabelCell extends Component {
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    attachmentElement: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    attachmentElement: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    deletable: PropTypes.bool.isRequired,
+    onDelete: PropTypes.func
+  };
 
-    // optional for delete label
-    deletable: React.PropTypes.bool.isRequired,
-    onDelete: React.PropTypes.func
-  },
-
-  removeAttachmentHandler: function (event) {
+  removeAttachmentHandler = (event) => {
     event.preventDefault();
     event.stopPropagation();
     this.props.onDelete(this.props.id);
-  },
+  };
 
-  render: function () {
-    var fallbackLang = TableauxConstants.DefaultLangtag;
-    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-    var attachmentTitle = retrieveTranslation(this.props.attachmentElement.title, this.props.langtag);
+  render() {
+    const {cell, deletable, attachmentElement, langtag} = this.props;
+    const fallbackLang = TableauxConstants.DefaultLangtag;
+    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
+    const attachmentTitle = retrieveTranslation(attachmentElement.title, langtag);
 
-    var theClassName = "link-label";
-    var hasDeleteButton = this.props.deletable;
-    var deleteButton = <i onClick={this.removeAttachmentHandler} className="fa fa-times"></i>;
-
-    if (hasDeleteButton) {
-      theClassName += " delete";
-    }
+    const hasDeleteButton = deletable && !isLocked(cell.row);
+    const theClassName = classNames("link-label", {"delete": hasDeleteButton});
+    const deleteButton = <i onClick={this.removeAttachmentHandler} className="fa fa-times" />;
 
     return (
       <span className={theClassName}>{attachmentTitle}{hasDeleteButton ? deleteButton : ""}</span>
     );
   }
 
-});
+}
 
 module.exports = AttachmentLabelCell;

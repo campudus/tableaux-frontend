@@ -1,77 +1,72 @@
-var React = require("react");
-var _ = require("lodash");
-var AttachmentOverlay = require("./AttachmentOverlay.jsx");
-var AttachmentLabelCell = require("./AttachmentLabelCell.jsx");
-var OverlayHeadRowIdentificator = require("../../overlay/OverlayHeadRowIdentificator.jsx");
-var ActionCreator = require("../../../actions/ActionCreator");
+import React, {Component, PropTypes} from "react";
+import * as _ from "lodash";
+import AttachmentOverlay from "./AttachmentOverlay.jsx";
+import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import {isLocked} from "../../../helpers/annotationHelper";
 
-var AttachmentEditCell = React.createClass({
+@connectToAmpersand
+class AttachmentEditCell extends Component {
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-  mixins: [],
-
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
-
-  componentDidMount: function () {
-    var self = this;
+  componentDidMount = () => {
     this.props.setCellKeyboardShortcuts({
-      enter: function (event) {
-        // stop handling the Table events
+      enter: (event) => {
         event.stopPropagation();
         event.preventDefault();
-        self.openOverlay();
+        this.openOverlay();
       }
     });
-  },
+  };
 
-  componentWillUnmount: function () {
+  componentWillUnmount = () => {
     // Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
-  },
+  };
 
-  removeAttachment: function (file) {
-    var cell = this.props.cell;
+  removeAttachment = (file) => {
+    const {cell} = this.props;
 
-    return function () {
-      var attachments = _.clone(cell.value);
-
-      _.remove(attachments, function (attachment) {
-        return file.uuid === attachment.uuid;
-      });
-
+    return () => {
+      let attachments = _.clone(cell.value);
+      _.remove(attachments, (attachment) => file.uuid === attachment.uuid);
       ActionCreator.changeCell(cell, attachments);
     };
-  },
+  };
 
-  openOverlay: function () {
-    ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
-      body: <AttachmentOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
-      type: "normal"
-    });
-  },
+  openOverlay = () => {
+    const {cell, langtag} = this.props;
+    if (!isLocked(cell.row)) {
+      ActionCreator.openOverlay({
+        head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
+        body: <AttachmentOverlay cell={cell} langtag={langtag} />,
+        type: "normal"
+      });
+    }
+  };
 
-  render: function () {
-    var self = this;
-    var attachments = self.props.cell.value.map(function (element, arrayIndex) {
+  render() {
+    const {cell, langtag} = this.props;
+    const attachments = cell.value.map((element, arrayIndex) => {
       return <AttachmentLabelCell key={arrayIndex} id={element.id} deletable={true} attachmentElement={element}
-                                  cell={self.props.cell} langtag={self.props.langtag}
-                                  onDelete={self.removeAttachment(element)}/>;
+                                  cell={cell} langtag={langtag}
+                                  onDelete={this.removeAttachment(element)}/>;
     });
-
-    attachments.push(<button key={"add-btn"} className="add" onClick={self.openOverlay}>+</button>);
 
     return (
       <div className={"cell-content"}>
-        {attachments}
+        {[...attachments, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
       </div>
     );
   }
 
-});
+}
 
 module.exports = AttachmentEditCell;

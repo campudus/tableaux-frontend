@@ -1,71 +1,45 @@
-var React = require("react");
-var BooleanEditCell = require("./BooleanEditCell.jsx");
-var ActionCreator = require("../../../actions/ActionCreator");
-var Directions = require("../../../constants/TableauxConstants").Directions;
+import React, {Component, PropTypes} from "react";
+import ActionCreator from "../../../actions/ActionCreator";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
-var BooleanCell = React.createClass({
+@connectToAmpersand
+class BooleanCell extends Component {
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    selected: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    selected: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-  handleEditDone: function (newValue) {
-    var cell = this.props.cell;
-    var valueToSave;
-
-    if (cell.isMultiLanguage) {
-      valueToSave = {};
-      valueToSave[this.props.langtag] = newValue;
-    } else {
-      valueToSave = newValue;
-    }
-
+  handleEditDone = (newValue) => {
+    const {cell, langtag} = this.props;
+    const valueToSave = (cell.isMultiLanguage)
+      ? {[langtag]: newValue}
+      : newValue;
     ActionCreator.changeCell(cell, valueToSave);
-  },
+  };
 
-  getCheckboxValue: function () {
-    var cell = this.props.cell;
-    var booleanValue;
+  getCheckboxValue = () => {
+    const {cell, langtag} = this.props;
+    return !!((cell.isMultiLanguage) ? cell.value[langtag] : cell.value);
+  };
 
-    if (cell.isMultiLanguage) {
-      booleanValue = cell.value[this.props.langtag];
-    } else {
-      booleanValue = cell.value;
+  toggleCheckboxValue = () => {
+    if (this.props.selected) {
+      this.handleEditDone(!this.getCheckboxValue());
     }
+  };
 
-    return !!booleanValue;
-  },
-
-  /**
-   * Toggle value only when selected, changes it visually and saves it to database
-   */
-  toggleCheckboxValue: function () {
-    var newVal = !this.getCheckboxValue();
-    this.handleEditDone(newVal);
-  },
-
-  render: function () {
-    var booleanCellNode;
-    // We split this simple boolean into two components to get the keydown listener just once when selected!
-    if (!this.props.selected) {
-      booleanCellNode =
-        <input className="checkbox" type="checkbox" readOnly="readonly" checked={this.getCheckboxValue()}/>;
-    } else {
-      booleanCellNode = <BooleanEditCell checked={this.getCheckboxValue()}
-                                         langtag={this.props.langtag}
-                                         onSave={this.toggleCheckboxValue}
-                                         setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
-    }
-
+  render () {
     return (
-      <div className={"cell-content"}>
-        {booleanCellNode}
+      <div className={"cell-content"} onClick={this.toggleCheckboxValue}>
+        <input className="checkbox" type="checkbox"
+               checked={this.getCheckboxValue()}
+               readOnly="readOnly" />
       </div>
     );
   }
-});
+}
 
 module.exports = BooleanCell;
