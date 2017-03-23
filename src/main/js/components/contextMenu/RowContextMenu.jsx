@@ -70,7 +70,7 @@ class RowContextMenu extends React.Component {
 
   copyItem = () => {
     const {cell, table, t, langtag} = this.props;
-    return (table.type != "settings" && cell.kind !== ColumnKinds.concat)
+    return (table.type !== "settings" && cell.kind !== ColumnKinds.concat)
       ? (
         <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell, langtag))}>
           {t("copy_cell")}

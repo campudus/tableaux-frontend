@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from "react";
+import React from "react";
 import {sessionUnlock, isLocked} from "../../helpers/annotationHelper";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";

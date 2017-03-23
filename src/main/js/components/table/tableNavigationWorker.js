@@ -204,7 +204,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
   });
 }
 
-export function toggleCellEditing(params) {
+export function toggleCellEditing(params = {}) {
   const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;

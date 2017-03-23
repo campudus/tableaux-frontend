@@ -1,9 +1,6 @@
 const AmpersandModel = require("ampersand-model");
 const apiUrl = require("../helpers/apiUrl");
-const Columns = require("./Columns");
-const Cell = require("./Cell");
 const Cells = require("./Cells");
-const _ = require("lodash");
 import request from "superagent";
 import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
 import {getUserLanguageAccess, isUserAdmin} from "../helpers/accessManagementHelper";
