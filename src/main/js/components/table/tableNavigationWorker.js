@@ -90,7 +90,7 @@ export function getKeyboardShortcuts() {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
         if (selectedCell && !selectedCellEditing) {
-          toggleCellEditing.call(this);
+          toggleCellEditing.call(this, {langtag: this.state.selectedCellExpandedRow || this.props.langtag});
         }
       }
       );
@@ -205,7 +205,6 @@ export function toggleCellSelection({selected, cell, langtag}) {
 }
 
 export function toggleCellEditing(params) {
-  console.log("tableNavigationWorker toggleCellEditing", params)
   const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
@@ -214,7 +213,7 @@ export function toggleCellEditing(params) {
     f.intersection(getUserLanguageAccess(), f.prop(["annotations", "translationNeeded", "langtags"], selectedCell))
   );
   if (selectedCell && canEdit) {
-    if (editVal && isLocked(selectedCell.row) && !needsTranslation) {  // needs_translation overrules final
+    if (!this.state.selectedCellEditing && isLocked(selectedCell.row) && !needsTranslation) {  // needs_translation overrules final
       askForSessionUnlock(selectedCell.row);
       return;
     }

@@ -144,6 +144,9 @@ class RowContextMenu extends React.Component {
   };
 
   setFinalItem = () => {
+    if (!isUserAdmin()) {
+      return null;
+    }
     const {t, cell:{row:{final}}} = this.props;
     const label = (final) ? t("final.set_not_final") : t("final.set_final");
     return <a href="#" onClick={compose(this.closeRowContextMenu, this.setFinal(!final))}>{label}</a>
