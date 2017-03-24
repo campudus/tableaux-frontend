@@ -10,6 +10,7 @@ import {first, compose, isEmpty, eq, drop, remove, merge, contains, prop} from "
 import {canConvert} from "../../helpers/cellValueConverter";
 import {
   addTranslationNeeded,
+  removeTranslationNeeded,
   getAnnotation,
   deleteCellAnnotation,
   setRowAnnotation
@@ -129,7 +130,7 @@ class RowContextMenu extends React.Component {
 
     const fn = (isPrimaryLanguage || isEmpty(remainingLangtags))
       ? () => deleteCellAnnotation(translationNeeded, cell, true)
-      : () => deleteCellAnnotation(translationNeeded, cell).then(() => addTranslationNeeded(remainingLangtags, cell));
+      : () => removeTranslationNeeded(langtag, cell);
     return (
       <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
         {(isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed",

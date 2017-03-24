@@ -154,10 +154,25 @@ const setCellAnnotation = (annotation, cell) => {
 };
 
 const addTranslationNeeded = (langtags, cell) => {
-  console.log("Settings translation needed for",
-    f.prop(["annotations", "translationNeeded", "langtags"], cell),
-    "=>",
-    langtags);
+  const oldCellAnnotations = f.prop("annotations", cell) || {};
+  const finishTransaction = (f.isEmpty(f.prop("translationNeeded", oldCellAnnotations)))
+    ? (response) => {
+      const uuid = f.compose(
+        f.prop("uuid"),
+        JSON.parse,
+        f.prop("text")
+      )(response);
+      const newTranslationStatus = f.assoc(["translationNeeded", "uuid"], uuid, f.prop(["annotations"], cell));
+      cell.set(
+        {annotations: newTranslationStatus}
+      );
+    }
+    : (response) => {};
+  cell.set({annotations: f.assoc(
+    ["translationNeeded", "langtags"],
+    f.merge(f.prop(["translationNeeded", "langtags"], oldCellAnnotations), langtags),
+    (f.isBoolean(oldCellAnnotations.translationNeeded) ? f.assoc(["translationNeeded"], {}, oldCellAnnotations) : oldCellAnnotations)
+  )});
   request
     .post(cellAnnotationUrl(cell))
     .send({
@@ -166,11 +181,31 @@ const addTranslationNeeded = (langtags, cell) => {
       langtags
     })
     .end(
-      (error, result) => {
+      (error, response) => {
         if (error) {
+          cell.set({annotations: oldCellAnnotations}); // rollback on error
           console.error(`Error setting langtag ${langtags}`);
         } else {
-          refreshAnnotations(cell);
+          finishTransaction(response);
+        }
+      }
+    );
+};
+
+const removeTranslationNeeded = (langtag, cell) => {
+  const oldCellAnnotations = f.prop("annotations", cell) || {};
+  const remainingLangtags = f.remove(f.eq(langtag), f.prop(["translationNeeded", "langtags"], oldCellAnnotations));
+  const uuid = f.prop(["translationNeeded", "uuid"], oldCellAnnotations);
+  cell.set(
+    {annotations: f.assoc(["translationNeeded", "langtags"], remainingLangtags, oldCellAnnotations)}
+  );
+  request
+    .delete(`${cellAnnotationUrl(cell)}/${uuid}/${langtag}`)
+    .end(
+      (error, response) => {
+        if (error) {
+          console.error("Could not remove langtag", langtag);
+          cell.set({annotations: oldCellAnnotations});
         }
       }
     );
@@ -258,6 +293,7 @@ const isLocked = el => {
 export {
   deleteCellAnnotation,
   addTranslationNeeded,
+  removeTranslationNeeded,
   getAnnotation,
   extractAnnotations,
   refreshAnnotations,
