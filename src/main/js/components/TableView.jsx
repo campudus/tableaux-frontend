@@ -331,7 +331,7 @@ class TableView extends React.Component {
         this.doSwitchTable();
       }
     } else if (nextProps.rowId
-      && (nextProps.columnId != this.props.columnId || nextProps.rowId != this.props.rowId)) {
+      && (nextProps.columnId !== this.props.columnId || nextProps.rowId !== this.props.rowId)) {
       this.gotoCell({
         columnId: nextProps.columnId,
         rowId: nextProps.rowId,

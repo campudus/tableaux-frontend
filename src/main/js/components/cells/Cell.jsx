@@ -18,7 +18,7 @@ import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
 import * as f from "lodash/fp";
-import {addTranslationNeeded, deleteCellAnnotation} from "../../helpers/annotationHelper";
+import {addTranslationNeeded, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/monads";
 
@@ -27,6 +27,7 @@ import {either} from "../../helpers/monads";
 const CELL_HINT_PADDING = 40;
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
+  console.log("contentChanged")
   if (!cell.isMultiLanguage || either(cell).map(f.prop(["value", langtag])).orElse(f.prop("value")).value === oldValue) {
     return;
   }
@@ -42,8 +43,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
     const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
     const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
       ? addTranslationNeeded(untranslated, cell)
-      : () => {
-      };
+      : () => {};
     if (translationsExist) {
       openTranslationDialog(flagAllTranslations, flagEmptyTranslations);
     } else {
@@ -52,7 +52,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   } else {
     const remainingTranslations = f.remove(f.equals(langtag), untranslated);
     if (translationAnnotation && f.contains(langtag, translationAnnotation.langtags)) {
-      deleteCellAnnotation(translationAnnotation, cell).then(() => addTranslationNeeded(remainingTranslations, cell));
+      removeTranslationNeeded(langtag, cell);
     } else if (!f.isEmpty(remainingTranslations)) {
       addTranslationNeeded(remainingTranslations, cell);
     }
