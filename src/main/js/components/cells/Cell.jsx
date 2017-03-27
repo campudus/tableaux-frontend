@@ -18,7 +18,7 @@ import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
 import * as f from "lodash/fp";
-import {addTranslationNeeded, removeTranslationNeeded} from "../../helpers/annotationHelper";
+import {addTranslationNeeded, removeTranslationNeeded, deleteCellAnnotation} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/monads";
 
@@ -39,6 +39,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   const translationsExist = untranslated.length !== Langtags.length - 1;
 
   if (isPrimaryLanguage) {
+    console.log("isPrimaryLanguage")
     const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
     const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
       ? addTranslationNeeded(untranslated, cell)
@@ -49,11 +50,14 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
       flagEmptyTranslations();
     }
   } else {
-    const remainingTranslations = f.remove(f.equals(langtag), untranslated);
-    if (translationAnnotation && f.contains(langtag, translationAnnotation.langtags)) {
+    const remainingTranslations = f.remove(f.equals(langtag), f.prop("langtags", translationAnnotation));
+    console.log("Remaing translations:", remainingTranslations)
+    if (f.contains(langtag, translationAnnotation.langtags)) {
       removeTranslationNeeded(langtag, cell);
-    } else if (!f.isEmpty(remainingTranslations)) {
-      addTranslationNeeded(remainingTranslations, cell);
+      if (f.isEmpty(remainingTranslations)) {
+        console.log("Removing empty translation annotation")
+        deleteCellAnnotation(translationAnnotation, cell);
+      }
     }
   }
 };
