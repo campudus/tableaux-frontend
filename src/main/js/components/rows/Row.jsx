@@ -29,9 +29,9 @@ class Row extends React.Component {
   // Allows a good performance when editing large tables
   shouldComponentUpdate(nextProps, nextState) {
     // Update on every available prop change
-    if (this.props.langtag != nextProps.langtag
-      || this.props.row != nextProps.row
-      || this.props.isRowExpanded != nextProps.isRowExpanded
+    if (this.props.langtag !== nextProps.langtag
+      || this.props.row !== nextProps.row
+      || this.props.isRowExpanded !== nextProps.isRowExpanded
     ) {
       return true;
     }

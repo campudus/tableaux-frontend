@@ -27,7 +27,6 @@ import {either} from "../../helpers/monads";
 const CELL_HINT_PADDING = 40;
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
-  console.log("contentChanged")
   if (!cell.isMultiLanguage || either(cell).map(f.prop(["value", langtag])).orElse(f.prop("value")).value === oldValue) {
     return;
   }
