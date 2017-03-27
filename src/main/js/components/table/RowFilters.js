@@ -66,8 +66,7 @@ const getRowsFilteredByTranslationStatus = (table, langtag, rowsFilter) => {
   );
   return new FilteredSubcollection(table.rows, {
     filter: (untranslated) ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
-    comparator: closures.comparator,
-    watched: ["annotations"]
+    comparator: closures.comparator
   });
 };
 
