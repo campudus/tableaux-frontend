@@ -170,8 +170,10 @@ const addTranslationNeeded = (langtags, cell) => {
     : (response) => {};
   cell.set({annotations: f.assoc(
     ["translationNeeded", "langtags"],
-    f.merge(f.prop(["translationNeeded", "langtags"], oldCellAnnotations), langtags),
-    (f.isBoolean(oldCellAnnotations.translationNeeded) ? f.assoc(["translationNeeded"], {}, oldCellAnnotations) : oldCellAnnotations)
+    f.uniq(f.union(f.prop(["translationNeeded", "langtags"], oldCellAnnotations), langtags)),
+    (f.isBoolean(oldCellAnnotations.translationNeeded)
+      ? f.assoc(["translationNeeded"], {}, oldCellAnnotations)
+      : oldCellAnnotations)
   )});
   request
     .post(cellAnnotationUrl(cell))
@@ -187,9 +189,20 @@ const addTranslationNeeded = (langtags, cell) => {
           console.error(`Error setting langtag ${langtags}`);
         } else {
           finishTransaction(response);
+          refreshRowTranslations(JSON.parse(f.prop("text", response)), cell);
         }
       }
     );
+};
+
+const refreshRowTranslations = (xhrResponseBody, cell) => {
+  const row = cell.row;
+  const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
+  const rowAnnotations = f.prop("annotations", row);
+  const cellAnnotations = f.nth(cellIdx)(rowAnnotations);
+  const translationIdx = Math.max(f.findIndex(f.matchesProperty("value", "needsTranslation"), cellAnnotations), 0);
+  const newAnnotations = f.assocPath([cellIdx, translationIdx], xhrResponseBody, rowAnnotations || []);
+  row.set({annotations: newAnnotations});
 };
 
 const removeTranslationNeeded = (langtag, cell) => {
@@ -199,6 +212,7 @@ const removeTranslationNeeded = (langtag, cell) => {
   cell.set(
     {annotations: f.assoc(["translationNeeded", "langtags"], remainingLangtags, oldCellAnnotations)}
   );
+  refreshRowTranslations({uuid, langtags: remainingLangtags}, cell);
   request
     .delete(`${cellAnnotationUrl(cell)}/${uuid}/${langtag}`)
     .end(
@@ -217,6 +231,11 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   }
   const {uuid, type, value} = annotation;
   const r = request.delete(`${cellAnnotationUrl(cell)}/${uuid}`);
+  const {row} = cell;
+  const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
+  const cellAnnotations = f.prop(["annotations", cellIdx]);
+  const newAnnotations = f.assocPath([cellIdx], f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)), f.prop("annotations", row));
+  row.set({annotations: newAnnotations});
 
   if (fireAndForget) {
     r.end(
@@ -224,7 +243,7 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
         if (error) {
           console.error(`Error deleting ${type} annotation ${value}:`, error);
         } else {
-          refreshAnnotations(cell);
+          cell.set({annotations: extractAnnotations(newAnnotations)});
         }
       }
     );
