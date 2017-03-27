@@ -19,7 +19,7 @@ const parseOptions = optString => {
   const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
   const parseFilter = function (str) { return {filter: true}; }; // will get more complex once we implement filter routes
   const parseEntityView = function (str) {
-    return {overlay: {focusElement: str.split(":").length > 1}};
+    return {entityView: {focusElement: str.split(":").length > 1}};
   };
   const getOptions = f.cond([
     [f.startsWith("filter"), parseFilter],

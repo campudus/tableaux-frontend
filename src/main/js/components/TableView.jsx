@@ -218,7 +218,7 @@ class TableView extends React.Component {
 
       ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
       if (entityView) {
-        const focusElementId = (this.props.urlOptions.overlay.focusElement) ? cellId : null;
+        const focusElementId = (this.props.urlOptions.entityView.focusElement) ? cellId : null;
         openEntityView(rows[rowIndex], this.props.langtag, focusElementId);
       }
       return cell;
