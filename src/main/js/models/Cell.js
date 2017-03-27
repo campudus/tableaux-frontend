@@ -11,8 +11,7 @@ const Cell = AmpersandModel.extend({
   modelType: "Cell",
 
   props: {
-    value: "any",
-    annotations: "any"
+    value: "any"
   },
 
   session: {
@@ -24,7 +23,8 @@ const Cell = AmpersandModel.extend({
     column: "object",
     rowId: "number",
     row: "object",
-    changedHandler: "array"
+    changedHandler: "array",
+    annotations: "object"
   },
 
   derived: {
