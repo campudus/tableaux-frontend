@@ -140,6 +140,11 @@ $overlay-border-radius: 5px;
           }
         }
 
+        .item-description {
+          margin-top: 15px;
+          color: $color-text-medium-grey;
+        }
+
         .item-content {
           &:not(:first-child) {
             padding-top: 15px;
@@ -259,6 +264,7 @@ $overlay-border-radius: 5px;
     & > .can-expand {
       .link-label-wrapper:last-of-type {
         background: linear-gradient($color-primary, transparent);
+        color: $color-primary-lighter;
       }
     }
 
@@ -293,5 +299,33 @@ $overlay-border-radius: 5px;
       }
     }
   }
+}
 
+#confirm-copy-overlay-content {
+  .item {
+    display: flex;
+    justify-content: space-between;
+    .country-icon {
+      flex: 3;
+      .langtag-label {
+        font-weight: 500;
+        margin-left: 5px;
+      }
+    }
+    .old {
+      flex: 10;
+      .text {
+        text-decoration: line-through;
+      }
+    }
+
+    i {
+      flex: 1;
+    }
+
+    .new {
+      float: right;
+      flex: 10;
+    }
+  }
 }
