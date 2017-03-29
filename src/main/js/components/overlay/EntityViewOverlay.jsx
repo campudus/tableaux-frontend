@@ -145,6 +145,6 @@ export function openEntityView(row, langtag, focusElementId) {
     head: <span>{i18n.t("table:entity_view")}: {rowDisplayLabel} <LanguageSwitcher langtag={langtag} /></span>,
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
     footer: <EntityViewFooter />,
-    type: "full-flex"
+    type: "full-height"
   });
 }

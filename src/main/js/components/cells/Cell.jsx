@@ -18,6 +18,7 @@ import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
 import * as f from "lodash/fp";
+import {FallBackLanguage} from "../../constants/TableauxConstants";
 import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/monads";
@@ -44,10 +45,13 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
     const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
     const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
       ? addTranslationNeeded(untranslated, cell)
-      : () => {
-      };
+      : () => {};
     if (translationsExist) {
-      openTranslationDialog(flagAllTranslations, flagEmptyTranslations);
+      const column = cell.column;
+      const columnName = f.prop(["displayName", langtag], column)
+        || f.prop(["displayName", FallBackLanguage], column)
+        || f.prop(["displayName"], column);
+      openTranslationDialog(columnName, flagAllTranslations, flagEmptyTranslations);
     } else {
       flagEmptyTranslations();
     }

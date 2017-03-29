@@ -46,14 +46,24 @@ $color-background-disabled: #FAFAFA;
 $color-foreground-disabled: $color-text-medium-grey;
 $color-needs-translation: #FFA64F;
 $color-fully-translated: lighten($color-green, 30);
+$color-hover-background: $color-light-link-color;
+$color-hover-foreground: $color-primary-lighter;
+
+$color-overlay-header: #444;
+$color-overlay-background: #e9e9e9;
+$color-overlay-background-even: #dfdfdf;
+$color-overlay-footer: #fff;
+$color-overlay-question: #fb4;
+$color-overlay-success: #6ec;
+$color-overlay-warning: #f55;
 
 // Fonts ----------------------------------- //
-$font-main: 'Lato', Helvetica Neue, Helvetica, Arial, sans-serif;
-$font-sec: 'Montserrat', Helvetica Neue, Helvetica, Arial, sans-serif;
+$font-main: 'Roboto', Helvetica Neue, Helvetica, Arial, sans-serif;
+$font-sec: $font-main;
 
 // Font sizes ----------------------------------- //
 $font-size-base: 10px;
-$font-size-standard: 1.4rem;
+$font-size-standard: 1.3rem;
 
 // Spaces ----------------------------------- //
 $space-padding-header: 5%;

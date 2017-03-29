@@ -1,21 +1,24 @@
-import React, {PropTypes, Component} from "react";
+import React, {Component, PropTypes} from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
-import {merge, contains, isEmpty, isNull} from "lodash/fp";
+import {contains, isEmpty, isNull, merge, props, prop, nth, noop, last} from "lodash/fp";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
+import Header from "./Header";
+import Footer from "./Footer";
+import InfoBox from "./InfoBox";
 
 // TODO: Callback before closing overlay
 class GenericOverlay extends Component {
 
   static propTypes = {
     // body : React.PropTypes.element.isRequired,
-    head: PropTypes.element,
+    head: PropTypes.element.isRequired,
+    body: PropTypes.element.isRequired,
     footer: PropTypes.element,
     type: PropTypes.string,
-    keyboardShortcuts: PropTypes.object,
-    closeOnBackgroundClicked: PropTypes.bool,
-    showBackButton: PropTypes.bool
+    isOnTop: PropTypes.bool.isRequired,
+    keyboardShortcuts: PropTypes.object
   };
 
   constructor(props) {
@@ -25,11 +28,11 @@ class GenericOverlay extends Component {
       contentWidth: 0
     };
 
-    this.allowedTypes = ["full-flex", "flexible", "normal", "no-scroll"];
+    this.allowedTypes = ["normal", "full-height"];
     this.focusedElementBeforeOverlayOpens = null;
   }
 
-  componentWillMount= () => {
+  componentWillMount = () => {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
   };
 
@@ -49,9 +52,7 @@ class GenericOverlay extends Component {
   };
 
   componentDidMount = () => {
-    document.getElementsByTagName("body")[0].style.overflow = "hidden";
-
-    const overlayDOMNode = ReactDOM.findDOMNode(this);
+    const overlayDOMNode = ReactDOM.findDOMNode(last(document.getElementsByClassName("overlay")));
     const focusedElement = document.activeElement;
 
     // Is current focus is this overlay or inside of overlay don't change the focus.
@@ -63,7 +64,7 @@ class GenericOverlay extends Component {
     this.handleResize();
   };
 
-  componentWillUnmount= () => {
+  componentWillUnmount = () => {
     // Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
     window.removeEventListener("resize", this.handleResize);
@@ -75,13 +76,12 @@ class GenericOverlay extends Component {
   };
 
   handleResize = (event) => {
-    this.recalculateContentDimensions();
+    //this.recalculateContentDimensions();
   };
 
   backgroundClick = (event) => {
-    if (this.props.closeOnBackgroundClicked !== false) {
-      ActionCreator.closeOverlay();
-    }
+    event.stopPropagation();
+    ActionCreator.closeOverlay();
   };
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
@@ -118,38 +118,56 @@ class GenericOverlay extends Component {
       return null;
     }
 
-    const {footer, showBackButton} = this.props;
-    const overlayWrapperClass = classNames("open " + overlayType, {
+    const {footer, head, body, isOnTop} = this.props;
+    const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
+      "active": isOnTop,
       [this.props.classNames]: this.props.classNames
     });
 
     return (
-      <div id="overlay" className={overlayWrapperClass} tabIndex="1"
-           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
-        <div id="overlay-wrapper">
-          <div className="header-wrapper">
-            <h2 className="overlay-header">{this.props.head}</h2>
-            {(showBackButton)
-              ? (
-                <a className="button back-button" href="#" onClick={() => ActionCreator.closeOverlay()} >
-                  <i className="fa fa-arrow-circle-left" />
-                </a>
-              )
-              : null
-            }
-          </div>
-          <div className="content-scroll">
-            <div id="overlay-content" ref="overlayContent">
-              {this.renderChildren(this.props)}
-            </div>
+      <div className={overlayWrapperClass} tabIndex="1"
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+      >
+        <div className={"overlay-wrapper " + overlayType} onClick={event => { event.stopPropagation(); event.preventDefault(); }}>
+          {head}
+          <div className="overlay-content">
+            {body}
           </div>
           {(footer) ? <footer>{footer}</footer> : null}
         </div>
-        <div ref="overlayBackground" onClick={this.backgroundClick} className="background"></div>
+        <div ref="overlayBackground" onClick={this.backgroundClick} className="background" />
       </div>
     );
   }
 }
 
-module.exports = GenericOverlay;
+const showDialog = ({type = "default", context = "Action", title, heading = null, message, actions = {}}) => {
+  const enterKeyFn = nth(1)(prop("positive", actions) || prop("neutral", actions));
+  const escKeyFn = nth(1)(prop("negative", actions) || prop("neutral", actions));
+  const keyShortcuts = {
+    enter: event => {
+      event.preventDefault();
+      (enterKeyFn || function () {})();
+      ActionCreator.closeOverlay();
+      event.stopPropagation();
+    },
+    escape: event => {
+      event.preventDefault();
+      (escKeyFn || function () {})();
+      ActionCreator.closeOverlay();
+      event.stopPropagation();
+    }
+  };
+  ActionCreator.openOverlay(
+    {
+      head: <Header context={context} title={title} />,
+      body: <InfoBox heading={heading} message={message} type={type} />,
+      footer: <Footer actions={actions} />,
+      keyboardShortcuts: keyShortcuts
+    }
+  )
+};
+
+export default GenericOverlay;
+export {showDialog}

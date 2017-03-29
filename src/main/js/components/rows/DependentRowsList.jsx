@@ -3,6 +3,7 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import {getTableDisplayName} from "../../helpers/multiLanguage";
 import {translate} from "react-i18next";
 import Spinner from "../header/Spinner";
+import LinkList from "../helperComponents/LinkList";
 
 // Builds the actual dependent tables/rows DOM elements
 @translate("table")
@@ -11,8 +12,8 @@ export default class DependentRowsList extends React.Component {
   static propTypes = {
     row: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired,
-    textHasDependency: React.PropTypes.func.isRequired,
-    textHasNoDependency: React.PropTypes.element.isRequired
+    hasDependency: React.PropTypes.func.isRequired,
+    hasNoDependency: React.PropTypes.func.isRequired
   };
 
   state = {
@@ -44,6 +45,12 @@ export default class DependentRowsList extends React.Component {
         this.request = null;
       },
       (res) => {
+        console.log("Response:", res)
+        if (res && res.length > 0) {
+          this.props.hasDependency(res.length);
+        } else {
+          this.props.hasNoDependency();
+        }
         this.setState({
           dependency: res,
           loadingDependency: false
@@ -53,9 +60,8 @@ export default class DependentRowsList extends React.Component {
   }
 
   render() {
-    const {langtag, textHasDependency, textHasNoDependency, t} = this.props;
+    const {langtag, t} = this.props;
     const {loadingDependency, dependency} = this.state;
-    let dependentInfoText = null, dependentTables = null;
 
     if (loadingDependency) {
       return <div className="dependent-loading-data">
@@ -64,48 +70,33 @@ export default class DependentRowsList extends React.Component {
       </div>;
     }
 
-    if (dependency && dependency.length > 0) {
-      dependentInfoText = textHasDependency ? textHasDependency(dependency.length) : null;
-
-      dependentTables = dependency.map((dep) => {
-        const {table, column, rows} = dep;
+    const dependentTables = (dependency || []).map(
+      ({table, column, rows}) => {
         const tableId = table.id;
         const linkToTable = `/${langtag}/tables/${tableId}`;
-
-        // Builds dependent rows inside dependent tables
-        const rowsDisplay = rows.map((row, idx) => {
-          const dependentRowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag);
-          return (
-            <div key={idx} className="dependent-row">
-              <a href={[linkToTable, `rows/${row.id}?filter`].join("/")} target="_blank" className="dependent-row-id">#{row.id} <i className="fa fa-angle-right"/></a>
-              {dependentRowDisplayLabel}
-            </div>
-          );
-        });
-
-        // Builds dependent tables
-        return (
-          <div key={tableId} className="dependent-table">
-            <a className="table-link" href={linkToTable} target="_blank"><i
-              className="fa fa-columns"/>{getTableDisplayName(table, langtag)}<i className="fa fa-angle-right"/></a>
-            <div className="dependent-rows">
-              {rowsDisplay}
-            </div>
-          </div>
+        const tableName = getTableDisplayName(table, langtag);
+        const links = rows.map(
+          (row) => {
+            return {
+              displayName: RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag),
+              linkTarget: `${linkToTable}/rows/${row.id}?filter`
+            }
+          }
         );
-      });
-    } else {
-      dependentInfoText = textHasNoDependency || null;
-    }
+
+        return <LinkList key={table.id}
+                         table={{name: tableName, linkTarget: linkToTable}}
+                         links={links}
+        />
+      }
+    );
 
     return (
       <div className="dependent-wrapper">
-        <div className="dependent-row-info">{dependentInfoText}</div>
-        <div className="dependent-tables">
+        <div className="content-items">
           {dependentTables}
         </div>
       </div>
     );
   }
-
 }

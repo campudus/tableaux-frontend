@@ -111,20 +111,19 @@ export default class Tableaux extends React.Component {
     if (f.isEmpty(overlays)) {
       return null;
     }
-    return overlays.map((overlay, idx) => {
+    const lastOverlayIdx = overlays.length - 1;
+    console.log("LastOverlayIdx", lastOverlayIdx)
+    return overlays.map(({head, body, footer, type, keyboardShortcuts}, idx) => {
       return (
         <GenericOverlay
-          key={`genericoverlay-${idx}`}
-          head={overlay.head}
-          footer={overlay.footer}
-          type={overlay.type}
-          keyboardShortcuts={overlay.keyboardShortcuts}
-          closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
-          classNames={overlay.classNames}
-          showBackButton={true}
-        >
-          {overlay.body}
-        </GenericOverlay>
+          key={`overlay-${idx}`}
+          head={head}
+          body={body}
+          footer={footer}
+          type={type}
+          isOnTop={idx === lastOverlayIdx}
+          keyboardShortcuts={keyboardShortcuts}
+        />
       );
     });
   }

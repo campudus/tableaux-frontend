@@ -5,11 +5,13 @@
  */
 import React from "react";
 import ActionCreator from "../../actions/ActionCreator";
-import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import i18n from "i18next";
 import {compose, contains, trim} from "lodash/fp";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 import classNames from "classnames";
+import Footer from "../overlay/Footer";
+import Header from "../overlay/Header";
+import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 
 class ColumnEntry extends React.Component {
 
@@ -28,39 +30,35 @@ class ColumnEntry extends React.Component {
     this.setState(inputState);
   };
 
-  cancelEdit = () => {
-    ActionCreator.closeOverlay();
-  };
-
   saveEdit = () => {
     const {langtag, column: {id}} = this.props;
     const {name, description} = this.state;
-    const new_name = (name != this.props.name) ? trim(name) : null;
-    const new_desc = (description != this.props.description) ? trim(description) : null;
+    const new_name = (name !== this.props.name) ? trim(name) : null;
+    const new_desc = (description !== this.props.description) ? trim(description) : null;
     ActionCreator.editColumnHeaderDone(id, langtag, new_name, new_desc);
-    ActionCreator.closeOverlay();
   };
 
   editColumn = () => {
     const {description, column: {id}, column, langtag} = this.props;
     const name = column.displayName[langtag] || column.name;
 
+    const buttons = {
+      positive: [i18n.t("common:save"), this.saveEdit],
+      neutral: [i18n.t("common:cancel"), null]
+    };
+
     ActionCreator.openOverlay({
-      head: <text>{i18n.t("table:editor.edit_column")}</text>,
+      head: <Header context={i18n.t("table:editor.edit_column")}
+                    title={name}
+                    actions={buttons}
+      />,
       body: <ColumnEditorOverlay name={name}
                                  handleInput={this.handleInput}
                                  description={description}
-                                 index={id} />,
-      footer: <div className="column-editor-footer">
-        <a href="#" className="button positive" onClick={this.saveEdit}>
-          {i18n.t("common:save")}
-        </a>
-        <a href="#" className="button neutral" onClick={this.cancelEdit}>
-          {i18n.t("common:cancel")}
-        </a>
-      </div>,
-      closeOnBackgoundClicked: true,
-      type: "flexible"
+                                 index={id}
+      />,
+      //footer: <Footer actions={buttons} />,
+      type: "normal"
     });
   };
 
@@ -115,7 +113,7 @@ class ColumnEntry extends React.Component {
           {columnContent}
           {columnIcon}
         </div>
-        {(kind != "concat")
+        {(kind !== "concat")
           ? <a href="#" className={contextmenu_css_class} id={this.calcId()}
              onClick={this.toggleContextMenu}>
           </a>
