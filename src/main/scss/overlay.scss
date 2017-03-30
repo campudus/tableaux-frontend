@@ -117,10 +117,25 @@ $overlay-border-radius: 5px;
     overflow-y: auto;
 
     .content-items {
+      .item-header {
+        font-weight: bold;
+        text-transform: uppercase;
+        padding-bottom: 15px;
+
+        i {
+          color: $color-primary;
+          margin-left: 10px;
+        }
+      }
       .item {
         width: 100%;
         padding: 15px 5%;
         box-sizing: border-box;
+        border-color: transparent;
+
+        &:hover {
+          border-color: $color-primary;
+        }
 
         &:nth-child(even) {
           background-color: $color-overlay-background-even;
@@ -130,24 +145,21 @@ $overlay-border-radius: 5px;
           background-color: $color-overlay-background;
         }
 
-        .item-header {
-          font-weight: bold;
-          text-transform: uppercase;
-
-          i {
-            color: $color-primary;
-            margin-left: 10px;
-          }
-        }
-
         .item-description {
           margin-top: 15px;
           color: $color-text-medium-grey;
         }
 
         .item-content {
+          border-color: inherit;
+
           &:not(:first-child) {
             padding-top: 15px;
+          }
+
+          .langtag-label {
+            margin-left: 5px;
+            font-weight: 500;
           }
         }
       }
@@ -216,14 +228,15 @@ $overlay-border-radius: 5px;
     input[type=text], input[type=numeric], textarea {
       background-color: inherit;
       outline: none;
-      border: none;
       width: 96%;
       margin: 5px 0;
-      border-bottom: 1px solid transparent;
+      border: none;
+      border-color: inherit !important; // TODO: Remove important once media styles are done
+      border-bottom: 1px solid;
       transition: border 0.3s;
 
-      &:hover, &:focus {
-        border-bottom: 1px solid $color-primary-lighter;
+      &:focus {
+        border-color: $color-primary;
       }
     }
 

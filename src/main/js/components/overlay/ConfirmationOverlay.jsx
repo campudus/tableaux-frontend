@@ -1,20 +1,16 @@
-import React from "react";
+import React from "react";2
 import {showDialog} from "./GenericOverlay";
 import i18n from "i18next";
-
-const YES = i18n.t("common:yes");
-const NO = i18n.t("common:no");
-const OK = i18n.t("common:ok");
 
 export function confirmDeleteFile(fileName, onYes) {
   showDialog({
     type: "warning",
     context: fileName,
-    title: i18n.t("media:confirm_delete_file_headline"),
-    heading: <p>{i18n.t("media:confirm_delete_file_question", {fileName})}</p>,
+    title: i18n.t("media:delete_file_headline"),
+    heading: <p>{i18n.t("media:confirm_delete_file", {fileName})}</p>,
     actions: {
-      negative: [YES, onYes],
-      neutral: [NO, null]
+      negative: [i18n.t("common:yes"), onYes],
+      neutral: [i18n.t("common:no"), null]
     }
   })
 }
@@ -26,8 +22,8 @@ export function confirmDeleteFolder(folderName, onYes) {
     title: i18n.t("media:confirm_delete_folder_headline"),
     heading: <p>{i18n.t("media:confirm_delete_folder_question", {folderName})}</p>,
     actions: {
-      negative: [YES, onYes],
-      neutral: [NO, null]
+      negative: [i18n.t("common:yes"), onYes],
+      neutral: [i18n.t("common:no"), null]
     }
   })
 }
@@ -68,7 +64,7 @@ export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries)
     title: i18n.t("common:access_management.permission_denied_headline"),
     heading: i18n.t("table:error_occured_hl"),
     message: totalError,
-    actions: {neutral: [OK, null]}
+    actions: {neutral: [i18n.t("common:ok"), null]}
   });
 
   console.warn("Access denied. User can not edit this language.");
@@ -80,7 +76,7 @@ export function cellModelSavingError(errorFromServer) {
   const userError = i18n.t("table:error_saving_cell");
   const techError = (errorFromServer && errorFromServer.body)
     ? errorFromServer.body
-    : "Unspecified error"
+    : "Unspecified error";
 
   const totalError = <p><strong>Server error:</strong> {techError}</p>;
 
@@ -90,7 +86,7 @@ export function cellModelSavingError(errorFromServer) {
     title: i18n.t("table:error_occured_hl"),
     heading: userError,
     message: totalError,
-    actions: {neutral: [OK, null]}
+    actions: {neutral: [i18n.t("common:ok"), null]}
   });
 }
 
@@ -101,6 +97,6 @@ export function simpleError(errorMsg, errorHead) {
     title: i18n.t("table:error_occured_hl"),
     heading: errorHead || i18n.t("table:error_occured_hl"),
     message: errorMsg,
-    actions: {neutral: [OK, null]}
+    actions: {neutral: [i18n.t("common:ok"), null]}
   })
 }

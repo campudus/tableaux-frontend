@@ -148,7 +148,7 @@ var MultiFileEdit = React.createClass({
     });
 
     return (
-      <div className="multifile-file-edit-wrapper">
+      <div className="multifile-file-edit-wrapper content-items">
         {files}
       </div>
     );

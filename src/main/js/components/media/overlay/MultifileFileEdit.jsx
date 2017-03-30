@@ -56,7 +56,7 @@ var MultifileFileEdit = React.createClass({
       ? <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>{t("open_file")}</a></span> : null;
 
     return (
-      <div className="multifile-file-edit">
+      <div className="multifile-file-edit item">
         <div className="cover-wrapper">
           <div className="cover">
             <FileChangeUpload
@@ -73,29 +73,23 @@ var MultifileFileEdit = React.createClass({
             disabled={!permissionToChange}
             limitLanguages={getUserLanguageAccess()}
           />
-          <div className='field-item'>
-            <label htmlFor={this.titleId} className="field-label">{t("file_title_label")}</label>
-            <div className="field-input">
-              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.titleId}
+          <div className="item">
+            <div className="item-header">{t("file_title_label")}</div>
+              <input disabled={!permissionToChange} type="text" id={this.titleId}
                      value={title}
                      onChange={this.onTitleChange}/>
-            </div>
           </div>
-          <div className='field-item'>
-            <label htmlFor={this.descId} className="field-label">{t("file_description_label")}</label>
-            <div className="field-input">
-              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.descId}
+          <div className="item">
+            <div className="item-header">{t("file_description_label")}</div>
+              <input disabled={!permissionToChange} type="text" id={this.descId}
                      value={description}
                      onChange={this.onDescriptionChange}/>
-            </div>
           </div>
-          <div className='field-item'>
-            <label htmlFor={this.externalNameId} className="field-label">{t("file_link_name_label")}</label>
-            <div className="field-input">
-              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.externalNameId}
+          <div className="item">
+            <div className="item-header">{t("file_link_name_label")}</div>
+              <input disabled={!permissionToChange} type="text" id={this.externalNameId}
                      value={externalName}
                      onChange={this.onExternalNameChange}/>
-            </div>
           </div>
         </div>
       </div>

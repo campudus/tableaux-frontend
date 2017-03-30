@@ -1,32 +1,32 @@
-var React = require("react");
-var AmpersandMixin = require("ampersand-react-mixin");
+import React, {Component, PropTypes} from "react";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import apiUrl from "../../../helpers/apiUrl";
+import multiLanguage from "../../../helpers/multiLanguage";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import FileEdit from "../overlay/FileEdit.jsx";
 
-var apiUrl = require("../../../helpers/apiUrl");
-var multiLanguage = require("../../../helpers/multiLanguage");
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-// var ActionCreator = require('../../../actions/ActionCreator');
-
-var FileEdit = require("../overlay/FileEdit.jsx");
-var FileEditHead = require("../overlay/FileEditHead.jsx");
-var FileEditFooter = require("../overlay/FileEditFooter.jsx");
+import Header from "../../overlay/Header";
+import Footer from "../../overlay/Footer";
 
 import TableauxConstants from "../../../constants/TableauxConstants";
 import ActionCreator from "../../../actions/ActionCreator";
-import {isUserAdmin, getUserLanguageAccess} from "../../../helpers/accessManagementHelper";
-import {noPermissionAlertWithLanguage, confirmDeleteFile} from "../../../components/overlay/ConfirmationOverlay";
+import {getUserLanguageAccess, isUserAdmin} from "../../../helpers/accessManagementHelper";
+import {confirmDeleteFile, noPermissionAlertWithLanguage} from "../../../components/overlay/ConfirmationOverlay";
 import {translate} from "react-i18next";
+import i18n from "i18next";
 
-var File = React.createClass({
-  mixins: [AmpersandMixin],
+@translate(["media"])
+@connectToAmpersand
+class File extends Component {
 
-  propTypes: {
-    file: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
-  },
+  static propTypes = {
+    file: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired
+  };
 
-  onRemove: function () {
-    var fallbackLang = TableauxConstants.DefaultLangtag;
-    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
+  onRemove = () => {
+    const fallbackLang = TableauxConstants.DefaultLangtag;
+    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
 
     if (isUserAdmin()) {
       confirmDeleteFile(
@@ -42,31 +42,39 @@ var File = React.createClass({
     } else {
       noPermissionAlertWithLanguage(getUserLanguageAccess());
     }
-  },
+  };
 
-  onSave: function () {
+  onSave = () => {
     Dispatcher.trigger("on-media-overlay-save");
-  },
+  };
 
-  onCancel: function () {
+  onCancel = () => {
     Dispatcher.trigger("on-media-overlay-cancel");
-  },
+  };
 
-  onEdit: function () {
+  onEdit = () => {
+    const {file, langtag, t} = this.props;
+    const {FallbackLanguage} = TableauxConstants;
     ActionCreator.openOverlay({
-      head: <FileEditHead file={this.props.file} langtag={this.props.langtag}/>,
-      body: <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose}/>,
-      footer: <FileEditFooter onSave={this.onSave} onCancel={this.onCancel}/>,
-      type: "full-flex",
-      closeOnBackgroundClicked: false
+      head: <Header context={t("change_file")}
+                    title={multiLanguage.retrieveTranslation(FallbackLanguage)(file.title, langtag)}
+      />,
+      body: <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose} />,
+      footer: <Footer actions={
+        {
+          positive: [i18n.t("common:save"), this.onSave],
+          neutral: [i18n.t("common:close"), null]
+        }
+      }
+      />
     });
-  },
+  };
 
-  onEditClose: function (event) {
+  onEditClose = (event) => {
     ActionCreator.closeOverlay();
-  },
+  };
 
-  render: function () {
+  render() {
     // default language (for fallback)
     const fallbackLang = TableauxConstants.DefaultLangtag;
     const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
@@ -82,10 +90,10 @@ var File = React.createClass({
     let mediaOptions = (
       <div className="media-options">
           <span onClick={this.onEdit} className="button" alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
+          <i className="icon fa fa-pencil-square-o" />{t("change_file")}
         </span>
         <a href={imageUrl} target="_blank" className="button">
-          <i className="icon fa fa-external-link"></i>{t("show_file")}
+          <i className="icon fa fa-external-link" />{t("show_file")}
         </a>
         {isUserAdmin() ? (
           <span className="button" onClick={this.onRemove} alt={t("delete_file")}><i className="fa fa-trash"></i></span>
@@ -95,11 +103,11 @@ var File = React.createClass({
     return (
       <div key={"file" + this.props.file.uuid} className="file">
         <a className="file-link" onClick={this.onEdit} target="_blank">
-          <i className="icon fa fa-file"></i><span>{title}</span></a>
+          <i className="icon fa fa-file" /><span>{title}</span></a>
         {mediaOptions}
       </div>
     );
   }
-});
+}
 
-module.exports = translate(["media"])(File);
+export default File;

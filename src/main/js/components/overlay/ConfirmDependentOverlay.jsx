@@ -81,9 +81,8 @@ export function openShowDependency(row, langtag) {
   const itemName = RowConcatHelper.getCellAsStringWithFallback(cell.value, cell.column, langtag);
 
   openOverlay({
-    head: <Header context={i18n.t("table:dependencies")} title={itemName} />,
+    head: <Header context={i18n.t("table:dependencies")} title={itemName} actions={{neutral: [i18n.t("common:close"), null]}}/>,
     body: <RowsOverlay row={row} langtag={langtag} />,
-    footer: <Footer actions={{neutral: [i18n.t("common:close"), null]}} />,
     type: "full-height"
   });
 }

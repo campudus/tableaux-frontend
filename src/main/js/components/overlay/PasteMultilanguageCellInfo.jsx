@@ -15,12 +15,14 @@ import {
   eq,
   identity,
   always,
-  stubTrue
+  stubTrue,
+  zip
 } from "lodash/fp";
 import {ColumnKinds, DateFormats, DateTimeFormats, Langtags} from "../../constants/TableauxConstants";
 import Moment from "moment";
 const EMPTY_STRING = "---";
 const {date, datetime} = ColumnKinds;
+import InfoBox from "./InfoBox";
 
 class PasteMultilanguageCellInfo extends React.Component {
   static propTypes = {
@@ -31,6 +33,10 @@ class PasteMultilanguageCellInfo extends React.Component {
   };
 
   renderEntry = kind => ([key, value]) => {
+    if (kind === "flag") {
+      return <div key={key} className="country-icon">{getLanguageOrCountryIcon(key)}</div>;
+    }
+
     const MAX_LENGTH = 30;
     const formatValue = compose(
       text => (text.length > MAX_LENGTH) ? text.substring(0, MAX_LENGTH) + "..." : text,
@@ -41,18 +47,15 @@ class PasteMultilanguageCellInfo extends React.Component {
       ])(kind)
     );
     return <div key={key} className="entry">
-      <div className="icon">
-        {getLanguageOrCountryIcon(key)}
-      </div>
       <div className="text">
         {(value) ? formatValue(value) : EMPTY_STRING}
       </div>
     </div>;
   };
 
-  langtagComparator([langtag, value]) {
+  langtagComparator = ([langtag, value]) => {
     return findIndex(eq(langtag));
-  }
+  };
 
   render() {
     const {oldVals, newVals, kind} = this.props;
@@ -67,16 +70,26 @@ class PasteMultilanguageCellInfo extends React.Component {
       entries
     );
 
+    const entrylist = zip(getEntries("flag")(oldValsWithAllKeys), zip(getEntries(kind)(oldValsWithAllKeys), getEntries(kind)(newVals)))
+      .map(
+        ([flag, [oldValue, newValue]], idx) => (
+          <div key={idx} className="item">
+            {flag}
+            <div className="old">{oldValue}</div>
+            <i className="fa fa-long-arrow-right"/>
+            <div className="new">{newValue}</div>
+          </div>
+        )
+      );
+
     return (
       <div id="confirm-copy-overlay-content" className="confirmation-overlay">
-        <div className="info-text">{i18n.t("table:confirm_copy.info")}</div>
-        <div className="details-container">
-          <div className="details left">
-            {getEntries(kind)(oldValsWithAllKeys)}
-          </div>
-          <div className="details right">
-            {getEntries(kind)(newVals)}
-          </div>
+        <InfoBox heading={i18n.t("table:confirm_copy.header")}
+                 message={i18n.t("table:confirm_copy.info")}
+                 type="question"
+        />
+        <div className="content-items">
+          {entrylist}
         </div>
       </div>
     );

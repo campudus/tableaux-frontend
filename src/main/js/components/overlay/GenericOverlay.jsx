@@ -142,19 +142,19 @@ class GenericOverlay extends Component {
   }
 }
 
-const showDialog = ({type = "default", context = "Action", title, heading = null, message, actions = {}}) => {
-  const enterKeyFn = nth(1)(prop("positive", actions) || prop("neutral", actions));
-  const escKeyFn = nth(1)(prop("negative", actions) || prop("neutral", actions));
+const showDialog = ({type = "default", context = "Action", title, heading = "", message = "", actions = {}}) => {
+  const enterKeyFn = nth(1)(prop("positive", actions)) || nth(1)(prop("negative", actions)) || prop("neutral", actions);
+  const escKeyFn = nth(1)(prop("neutral", actions));
   const keyShortcuts = {
     enter: event => {
       event.preventDefault();
-      (enterKeyFn || function () {})();
+      (enterKeyFn || noop)();
       ActionCreator.closeOverlay();
       event.stopPropagation();
     },
     escape: event => {
       event.preventDefault();
-      (escKeyFn || function () {})();
+      (escKeyFn || noop)();
       ActionCreator.closeOverlay();
       event.stopPropagation();
     }

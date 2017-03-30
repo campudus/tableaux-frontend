@@ -27,15 +27,15 @@ class ColumnEditorOverlay extends React.Component {
     return (
       <div className="content-items">
         <div className="item">
-          <h1 className="editor-big-text">{i18n.t("table:editor.colname")}</h1>
-          <span>({i18n.t("table:editor.sanity_info")})</span>
-          <input type="text" autoFocus className="input"
+          <div className="item-header">{i18n.t("table:editor.colname")}</div>
+          <div className="item-description">({i18n.t("table:editor.sanity_info")})</div>
+          <input type="text" autoFocus className="item-content"
                  onChange={this.modify("name")}
                  value={this.state.name} />
         </div>
         <div className="item">
-          <h1 className="editor-big-text">{i18n.t("table:editor.description")}</h1>
-          <textarea type="text" className="input"
+          <div className="item-header">{i18n.t("table:editor.description")}</div>
+          <textarea type="text" className="item-content"
                     rows="6"
                     onChange={this.modify("description")}
                     value={this.state.description} />
