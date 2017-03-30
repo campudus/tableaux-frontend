@@ -115,7 +115,7 @@ class SingleFileEdit extends React.Component {
   onMultilangDrop = (files) => {
     const langtag = this.state.multifileLanguage;
 
-    files.forEach(function (file) {
+    files.forEach((file) => {
       // upload each file for it's own
       const uuid = this.props.file.uuid;
 
