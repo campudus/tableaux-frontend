@@ -179,7 +179,7 @@ class SingleFileEdit extends React.Component {
     const fileUrlOfThisLanguage = apiUrl(fileUrl[DefaultLangtag]);
 
     return (
-      <div className="singlefile-edit">
+      <div className="singlefile-edit content-items">
         <div className="cover-wrapper">
           <div className="cover">
             <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
@@ -216,8 +216,8 @@ class SingleFileEdit extends React.Component {
                                onChange={this.onExternalnameChange}/>
         </div>
 
-        <div className="multifile-wrapper">
-          <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
+        <div className="multifile-wrapper item">
+          <Dropzone onDrop={this.onMultilangDrop} className="item dropzone" multiple={false}>
             <div className="convert-multilanguage-note">
               <h4>{t("convert_multilanguage_hl")}</h4>
               <p>{t("convert_multilanguage_description")}</p>
