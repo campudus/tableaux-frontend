@@ -279,6 +279,15 @@ class TableView extends React.Component {
       const total = table.rows.pageCount();
       if (page > table.rows.pageCount()) { // we're done
         console.log("Done fetching", total, "pages");
+        if (total === 0) { // Special case: empty table
+          this.setState({
+            initialLoading: false,
+            rowsCollection: table.rows,
+            currentTableId: tableId,
+            rowsFilter: null
+          });
+          ActionCreator.spinnerOff();
+        }
         this.tableFullyLoaded = true;
         this.checkGotoCellRequest(page, table.rows.pageCount());
         ActionCreator.spinnerOff();
