@@ -1,5 +1,5 @@
-var Dispatcher = require("../dispatcher/Dispatcher");
-var ActionTypes = require("../constants/TableauxConstants").ActionTypes;
+const Dispatcher = require("../dispatcher/Dispatcher");
+const ActionTypes = require("../constants/TableauxConstants").ActionTypes;
 
 module.exports = {
 
@@ -284,5 +284,9 @@ module.exports = {
 
   pasteCellContent: (targetCell, langtag) => {
     Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell, langtag});
+  },
+
+  switchEntityViewLanguage: ({langtag}) => {
+    Dispatcher.trigger(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, {langtag});
   }
 };

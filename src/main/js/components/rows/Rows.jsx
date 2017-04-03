@@ -3,17 +3,16 @@ import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 import {RowHeight} from "../../constants/TableauxConstants";
-import connectToAmpersand from "../HOCs/connectToAmpersand";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 
 @connectToAmpersand
 class Rows extends React.Component {
 
-  displayName = "Rows";
-
   constructor(props) {
     super(props);
     this.numberOfRows = 0;
+    this.displayName = "Rows";
   }
 
   shouldComponentUpdate(nP) {
@@ -33,6 +32,8 @@ class Rows extends React.Component {
       return true;
     }
     const idOf = f.prop("id");
+    // create pairs of old/new elements, check ids at same index
+    // to detect resorting etc
     if (f.any(([a, b]) => idOf(a) !== idOf(b), f.zip(nP.rows.models, this.props.rows.models))) {
       return true;
     }

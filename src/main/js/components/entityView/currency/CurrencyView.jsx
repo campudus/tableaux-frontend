@@ -1,43 +1,60 @@
-import React from "react";
-import {getCurrencyWithCountry} from "../../cells/currency/currencyHelper";
-import {getCountryOfLangtag, getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import React, {Component, PropTypes} from "react";
+import CurrencyItem from "./CurrencyItem";
+import * as f from "lodash/fp";
 
-const CurrencyView = React.createClass({
+class CurrencyView extends Component {
 
-  displayName: "CurrencyView",
+  constructor(props) {
+    super(props);
+    this.displayName = "CurrencyView";
+    const {countryCodes} = props.cell.column;
+    this.state = {editing: f.range(0, countryCodes.length).map(f.stubFalse)};
+  };
 
-  propTypes: {
+  static propTypes = {
     langtag: React.PropTypes.string.isRequired,
     cell: React.PropTypes.object.isRequired
-  },
+  };
 
-  getCurrencyValues: function (cell, showAll) {
+  getCurrencyValues = (cell) => {
     const {column} = cell;
     const {countryCodes} = column;
+    const {editing} = this.state;
 
     return countryCodes.map((countryCode, index) => {
-      const currencyValues = cell.value;
-      const currencyValue = getCurrencyWithCountry(currencyValues, countryCode);
-      const currencyCode = getCurrencyCode(countryCode);
+      return <CurrencyItem key={index}
+                           cell={cell}
+                           countryCode={countryCode}
+                           editing={editing[index]}
+                           toggleEdit={this.setEditing(index)}
+      />;
+    });
+  };
 
-      if (showAll || currencyValue) {
-        return <div key={index} className="currency-item">{getLanguageOrCountryIcon(countryCode)} {currencyValue || "--"} {currencyCode}</div>;
-      } else {
-        return null;
-      }
-    }).filter(Boolean);
-  },
+  setEditing = (el) => (to, [country, value] = []) => {
+    const {editing} = this.state;
+    const isEditing = (to === true)
+      ? f.assoc(el, true, f.map(f.stubFalse, editing))
+      : f.set(el, false, editing);
+    if (country && value) {
+      const changes = {value: {[country]: value}};
+      this.props.cell.save(changes, {patch: true});
+    }
+    if (editing[el] !== to) {
+      this.setState({editing: isEditing});
+    }
+  };
 
-  render: function () {
-    const {cell} = this.props;
-    var currencyRows = this.getCurrencyValues(cell, false);
+  render() {
+    const {cell, tabIdx} = this.props;
+    const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-      <div className='view-content currency'>
+        <div className="view-content currency" tabIndex={tabIdx}>
         {currencyRows}
       </div>
     );
   }
-});
+}
 
 export default CurrencyView;

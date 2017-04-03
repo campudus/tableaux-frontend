@@ -5,7 +5,7 @@ import {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../co
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
-import connectToAmpersand from "../HOCs/connectToAmpersand";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 
 @translate(["table"])
 @connectToAmpersand

@@ -1,127 +1,286 @@
-.entityView {
-  display: table;
-  table-layout: fixed;
-  border-collapse: collapse;
-  text-align: left;
-  position: relative;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-  -moz-transform: translateX(-50%);
-  -ms-transform: translateX(-50%);
-  -o-transform: translateX(-50%);
-  transform: translateX(-50%);
+@import "../variables";
+@import "../helper";
 
-  .view {
-    display: table-row;
+.eev-language-switcher {
+  height: 14px;
+  width: 40px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: $color-primary-lighter;
+  border-radius: 3px;
+  color: $color-primary-contrast-text;
+  outline: none;
+  padding: 8px;
+  border: none;
+  transition: background-color 0.5s;
 
-    &:not(:last-child) {
-      border-bottom: 1px solid $color-grey-dark;
-    }
+  &:hover {
+    background-color: $color-primary;
+  }
 
-    .row-headline {
-      display: table-cell;
-      text-transform: uppercase;
-      font-weight: bold;
-      vertical-align: middle;
-      white-space: nowrap;
-      padding-right: 20px;
+  &.open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .eev-label {
+    position: relative;
+    top: -18px;
+    text-align: center;
+  }
+
+  .eev-dropdown {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    box-shadow: 0 2px 2px $color-text-medium-grey;
+
+    .menu-item {
+      background-color: $color-primary-contrast-text;
+      color: $color-text-medium-grey;
+      height: 30px;
+      padding: 0;
+      &.active {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+      position: relative;
 
       a {
-        border: 1px solid $color-subtle-grey;
-        border-radius: 3px;
-        padding: 3px 10px;
-        vertical-align: middle;
-
-        .fa {
-          color: $color-text-medium-grey;
-          margin-left: 5px;
-        }
-      }
-
-      span {
-        padding-left: 11px;
-      }
-
-      > .fa {
-        color: $color-text-medium-grey;
-        margin-right: 5px;
-      }
-    }
-  }
-
-  .view-column {
-    display: table-cell;
-    padding-top: 12px;
-    min-width: 200px;
-  }
-
-  .view-content {
-    min-height: 1em;
-
-    &:empty {
-      padding: 12px 0;
-    }
-  }
-
-  .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime {
-    .view-content {
-      background-color: white;
-      border: 1px solid $color-grey-dark;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-  }
-
-  .view-link, .view-attachment {
-    .view-content {
-
-      .link-label {
-        display: inline-block;
+        position: absolute;
+        right: 0;
+        padding: 5px 10px;
+        width: 100%;
+        height: 100%;
+        display: block;
         box-sizing: border-box;
 
-        padding: 6px;
-        margin: 0 12px 12px 0;
+        i {
+          position: absolute;
+          top: -10px;
+          right: 0;
+          padding-right: 8px;
+        }
+      }
 
+      &:hover {
+        background-color: $color-primary-lighter;
         color: $color-primary-contrast-text;
-        background-color: $color-primary;
+      }
+    }
+  }
+}
 
-        border: 1px solid $color-primary;
+#overlay {
+  &.entity-view-overlay {
+    #overlay-wrapper {
+      max-width: 70vw;
 
-        @include border-radius(3px);
-        @include box-shadow(0 2px 1px $color-text-medium-grey);
+      .overlay-header {
+        overflow: visible;
+        span {
+          display: inline-block;
+          max-width: 80%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
 
-        &:hover {
-          cursor: pointer;
+      #overlay-content {
 
-          color: $color-primary;
-          background-color: $color-primary-contrast-text;
+        #rich-text-component {
+          border: 1px solid $color-text-light-grey;
+          border-radius: 3px;
 
-          border: 1px solid $color-primary;
+          &:focus {
+            border: 1px solid $color-primary;
+            outline: none;
+          }
+
+          .content-pane {
+            min-height: 17px;
+          }
+        }
+
+        .entityView {
+          position: relative;
+          display: flex;
+          flex-flow: column;
+
+          .view {
+            text-align: left;
+            width: 100%;
+            &:not(:first-of-type) {
+              margin-top: 25px;
+            }
+
+            .row-headline {
+              font-weight: bold;
+              padding: 10px 0;
+              text-transform: uppercase;
+
+              a {
+                border: 1px solid $color-subtle-grey;
+                border-radius: 3px;
+                padding: 3px 10px;
+                vertical-align: middle;
+
+                .fa {
+                  color: $color-text-medium-grey;
+                  margin-left: 5px;
+                }
+              }
+
+              span {
+                padding-left: 11px;
+              }
+
+              > .fa {
+                color: $color-text-medium-grey;
+                margin-right: 5px;
+              }
+            }
+          }
+
+          .view-content {
+            width: 100%;
+            box-sizing: border-box;
+
+            &:empty {
+              padding: 12px 0;
+            }
+          }
+
+          .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime, .view-date {
+            .view-content {
+              background-color: white;
+              border: 1px solid $color-text-light-grey;
+              border-radius: 3px;
+              padding: 12px;
+              margin-bottom: 12px;
+              min-height: 40px;
+              border-radius: 3px;
+
+              input[type=checkbox] {
+                margin-right: 15px;
+              }
+            }
+
+            &:focus {
+              border: 1px solid $color-primary;
+              outline: none;
+            }
+          }
+
+          .view-link, .view-attachment {
+            .view-content {
+              border: 1px solid $color-text-light-grey;
+              border-radius: 3px;
+              padding: 10px;
+
+              .edit-links-button {
+                @include button-look();
+                background-color: $color-primary-lighter;
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: center;
+              }
+
+              .link-list {
+                max-height: 250px;
+                overflow-y: auto;
+
+                &:not(:empty) {
+                  border-top: 1px solid $color-text-light-grey;
+                  padding-top: 10px;
+                }
+              }
+
+              .link-label {
+                @include link-look();
+              }
+            }
+          }
+
+          .view-currency {
+
+            .view-column {
+              box-sizing: border-box;
+              width: 100%;
+              border: 1px solid $color-text-light-grey;
+              border-radius: 3px;
+              padding: 0;
+
+              .view-content {
+                padding: 10px;
+                &:focus {
+                  border: 1px solid $color-primary;
+                  outline: none;
+                  border-radius: 3px;
+                }
+              }
+            }
+
+            .currency-item {
+              display: inline-flex;
+              background-color: white;
+              padding: 8px;
+              @include border-radius(3px);
+              @include box-shadow(0 2px 1px $color-text-medium-grey);
+              margin: 0 12px 12px 0;
+
+              &.not-set {
+                background-color: $color-subtle-grey;
+              }
+
+              &:hover {
+                color: $color-primary-contrast-text;
+                background-color: $color-primary-lighter;
+                @include box-shadow(0 2px 1px $color-primary);
+
+                input {
+                  background-color: $color-primary-lighter;
+                }
+              }
+
+              &.editing {
+                @include box-shadow(0 2px 1px $color-primary-darker);
+              }
+
+              input {
+                border: none;
+                outline: none;
+                max-width: 60px;
+
+                &:not(:focus) {
+                  color: $color-text-medium-grey;
+                }
+
+                &.left {
+                  text-align: right;
+                }
+                &.right {
+                  width: 30px;
+                }
+              }
+            }
+
+            .langtag {
+              vertical-align: middle;
+              display: inline-block;
+              text-align: center;
+              margin-right: 5px;
+
+              .langtag-label {
+                display: block;
+              }
+            }
+          }
+
         }
       }
     }
   }
-
-  .view-currency {
-    .currency-item {
-      display: inline-block;
-      background-color: white;
-      padding: 8px;
-      @include border-radius(3px);
-      @include box-shadow(0 2px 1px $color-text-medium-grey);
-      margin: 0 12px 12px 0;
-    }
-
-    .langtag {
-      vertical-align: middle;
-      display: inline-block;
-      text-align: center;
-      margin-right: 5px;
-
-      .langtag-label {
-        display: block;
-      }
-    }
-  }
-
 }

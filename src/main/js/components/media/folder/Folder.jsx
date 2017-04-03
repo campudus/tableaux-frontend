@@ -1,5 +1,5 @@
 import React from "react";
-import connectToAmpersand from "../../HOCs/connectToAmpersand";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import NewFolderAction from "./NewFolderAction.jsx";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
@@ -109,7 +109,7 @@ class Folder extends React.Component {
       map((file) => {
         return (
           <li key={file.uuid}
-              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
+              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : "unchanged-file"}>
             <File key={file.uuid} file={file}
                   langtag={langtag}/>
           </li>

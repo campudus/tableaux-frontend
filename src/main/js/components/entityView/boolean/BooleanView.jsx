@@ -1,37 +1,49 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import {translate} from "react-i18next";
 
-const BooleanView = React.createClass({
+@translate(["common"])
+class BooleanView extends Component {
 
-  displayName: "BooleanView",
+  constructor(props) {
+    super(props);
+    this.displayName = "BooleanView";
+  }
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    t: React.PropTypes.func.isRequired
-  },
+  static propTypes = {
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    t: PropTypes.func.isRequired
+  };
 
-  getValue: function (cell) {
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
+  toggleValue = event => {
+    const {cell, langtag} = this.props;
+    const changes = (cell.isMultiLanguage)
+      ? {value: {[langtag]: !cell.value[langtag]}}
+      : {value: !cell.value};
+    cell.save(changes, {patch: true});
+  };
+
+  toggleOnEnter = event => {
+    if (event.key === "Enter") {
+      this.toggleValue();
+      event.stopPropagation();
     }
+  };
 
-    return typeof value === "undefined" ? null : value;
-  },
-
-  render: function () {
-    const {cell, t} = this.props;
-    var value = this.getValue(cell);
+  render() {
+    const {cell, t, tabIdx} = this.props;
+    const value = ((cell.isMultiLanguage)
+      ? cell.value[this.props.langtag]
+      : cell.value)
+      || false;
 
     return (
-      <div className='view-content boolean'>
+        <div className="view-content view-boolean" onClick={this.toggleValue} tabIndex={tabIdx} onKeyDown={this.toggleOnEnter}>
+        <input type="checkbox" checked={value} readOnly />
         {value ? t("yes") : t("no")}
       </div>
     );
   }
-});
+}
 
-export default translate(["common"])(BooleanView);
+export default BooleanView;

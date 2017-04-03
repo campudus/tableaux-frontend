@@ -9,21 +9,11 @@ import {I18nextProvider} from "react-i18next";
 import ActionCreator from "../actions/ActionCreator";
 import Spinner from "./header/Spinner.jsx";
 import Toast from "./overlay/Toast.jsx";
+import * as f from "lodash/fp";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
 export default class Tableaux extends React.Component {
-
-  state = {
-    currentView: this.props.initialViewName,
-    currentViewParams: this.props.initialParams,
-    activeOverlay: null,
-    isLoading: true,
-    toast: null
-  };
-
-  toastTimer = null;
-
   static propTypes = {
     initialViewName: React.PropTypes.string.isRequired,
     initialParams: React.PropTypes.object.isRequired
@@ -60,6 +50,16 @@ export default class Tableaux extends React.Component {
           isLoading: false
         });
       });
+
+    this.state = {
+      currentView: this.props.initialViewName,
+      currentViewParams: this.props.initialParams,
+      activeOverlays: [],
+      isLoading: true,
+      toast: null
+    };
+
+    this.toastTimer = null;
   }
 
   componentWillUnmount() {
@@ -91,45 +91,49 @@ export default class Tableaux extends React.Component {
   }
 
   openOverlay(content) {
-    var newViewParams = Object.assign({}, this.state.currentViewParams);
-    newViewParams.overlayOpen = true;
+    const {currentViewParams, activeOverlays} = this.state;
     this.setState({
-      activeOverlay: content,
-      currentViewParams: newViewParams
+      activeOverlays: [...activeOverlays, content],
+      currentViewParams: f.assoc("overlayOpen", true, currentViewParams)
     });
   }
 
   closeOverlay() {
-    var newViewParams = Object.assign({}, this.state.currentViewParams);
-    newViewParams.overlayOpen = false;
+    const {currentViewParams, activeOverlays} = this.state;
     this.setState({
-      activeOverlay: null,
-      currentViewParams: newViewParams
+      activeOverlays: f.dropRight(1, activeOverlays),
+      currentViewParams: f.assoc("overlayOpen", false, currentViewParams)
     });
   }
 
-  renderActiveOverlay() {
-    let overlay = this.state.activeOverlay;
-    if (overlay) {
+  renderActiveOverlays() {
+    let overlays = this.state.activeOverlays;
+    if (f.isEmpty(overlays)) {
+      return null;
+    }
+    return overlays.map((overlay, idx) => {
       return (
         <GenericOverlay
-          key="genericoverlay"
+          key={`genericoverlay-${idx}`}
           head={overlay.head}
           footer={overlay.footer}
           type={overlay.type}
           keyboardShortcuts={overlay.keyboardShortcuts}
-          closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}>
+          closeOnBackgroundClicked={overlay.closeOnBackgroundClicked}
+          classNames={overlay.classNames}
+          showBackButton={true}
+        >
           {overlay.body}
         </GenericOverlay>
       );
-    }
+    });
   }
 
   renderToast() {
     const {toast} = this.state;
     if (toast) {
       console.log("render toast");
-      return (<Toast content={toast}/>);
+      return (<Toast content={toast} />);
     }
   }
 
@@ -158,12 +162,12 @@ export default class Tableaux extends React.Component {
 
   render() {
     if (this.state.isLoading) {
-      return <div className="initial-loader"><Spinner isLoading={true}/></div>;
+      return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       return <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
-          <ViewRenderer viewName={this.state.currentView} params={this.state.currentViewParams}/>
-          {this.renderActiveOverlay()}
+          <ViewRenderer viewName={this.state.currentView} params={this.state.currentViewParams} />
+          {this.renderActiveOverlays()}
           {this.renderToast()}
         </div>
       </I18nextProvider>;
