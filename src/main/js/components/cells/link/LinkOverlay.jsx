@@ -7,7 +7,7 @@ import {List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {FilterModes, Directions} from "../../../constants/TableauxConstants";
-import {either} from "../../../helpers/monads";
+import {either, fspy} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import FilterModePopup from "../../header/filter/FilterModePopup";
@@ -194,12 +194,25 @@ class LinkOverlay extends React.Component {
     const {searchVal, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
+    const linkedRows = f.compose(
+      fspy("sorted linked rows"),
+      f.sortBy(f.prop("cachedRowId")),
+      fspy("linked rows"),
+      f.filter(this.isRowLinked),
+      fspy("all rows")
+    )(allRowResults);
+    const unlinkedRows = f.compose(
+      fspy("sorted unlinked rows"),
+      f.sortBy(f.prop("cachedRowId")),
+      fspy("unlinked rows"),
+      f.reject(this.isRowLinked)
+    )(allRowResults);
 
     if (searchVal !== "" && allRowResults.length > 0) {
       const byCachedRowName = f.compose(searchFunction(searchVal), f.prop("cachedRowName"));
-      return allRowResults.filter(byCachedRowName);
+      return [...linkedRows, ...unlinkedRows.filter(byCachedRowName)];
     } else {
-      return allRowResults;
+      return [...linkedRows, ...unlinkedRows];
     }
   };
 
@@ -221,7 +234,7 @@ class LinkOverlay extends React.Component {
       links.push(link);
     }
     ActionCreator.changeCell(cell, links);
-
+    this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
     // tell the virtual scroller to redraw
     this.refs.OverlayScroll.forceUpdateGrid();
   };
@@ -250,7 +263,7 @@ class LinkOverlay extends React.Component {
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
       const isLinked = this.isRowLinked(row);
       const rowName = row["cachedRowName"];
-      const rowCssClass = classNames("overlay-table-row",
+      const rowCssClass = classNames("list-item",
         {
           "isLinked": isLinked,
           "selected": selectedId === index
@@ -271,7 +284,7 @@ class LinkOverlay extends React.Component {
   noRowsRenderer = () => {
     const {t} = this.props;
     return (
-      <div className="error">
+      <div className="empty">
         {this.getCurrentSearchValue().length > 0 ? t("search_no_results") : t("overlay_no_rows_in_table")}
       </div>);
   };
@@ -279,7 +292,10 @@ class LinkOverlay extends React.Component {
   render = () => {
     let listDisplay;
     const {rowResults, loading} = this.state;
-    const {contentHeight, contentWidth} = this.props;
+    const contentHeight = (0.8 * window.innerHeight) | 0;
+    const contentWidth = (0.6 * window.innerWidth) | 0;
+
+    console.log("ReactVirtualized:", contentWidth, "x", contentHeight)
     const rowsCount = rowResults.length || 0;
 
     if (loading) {
@@ -291,7 +307,7 @@ class LinkOverlay extends React.Component {
           width={contentWidth}
           height={contentHeight - CSS_SEARCH_HEIGHT}
           rowCount={rowsCount}
-          rowHeight={50}
+          rowHeight={40}
           rowRenderer={this.getOverlayItem}
           scrollToIndex={this.state.selectedId}
           noRowsRenderer={this.noRowsRenderer}
@@ -305,7 +321,7 @@ class LinkOverlay extends React.Component {
 
     const popupOpen = this.state.filterModePopupOpen;
     return (
-      <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
+      <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} className="link-overlay">
         {(popupOpen)
           ? this.renderFilterModePopup()
           : null
