@@ -105,15 +105,15 @@ var AttachmentOverlay = React.createClass({
         <div className="folder-file-list">
           <div className="folder-navigation">
             {backButton}
-            <ul className="folder-list">
+            <ul className="folder-list content-items">
               {this.state.folder.subfolders.map(function (subfolder) {
-                return <li key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}>
+                return <li className="item" key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}>
                   <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
                 </li>;
               })}
             </ul>
           </div>
-          <ul className="file-list">
+          <ul className="file-list content-items">
             {this.state.folder.files.map(function (file) {
               const folderId = file.folder;
               var currentCellValue = self.props.cell.value;
@@ -126,12 +126,12 @@ var AttachmentOverlay = React.createClass({
               var isLinked = !!linked;
               var fileTitle = retrieveTranslation(file.title, self.props.langtag);
 
-              return <li key={file.uuid}>
+              return <li key={file.uuid} className="item">
                 <a onClick={self.toggleAttachments(isLinked, file)}
-                   className={isLinked ? "overlay-table-row isLinked" : "overlay-table-row"}>
+                   className={isLinked ? "item-header overlay-table-row isLinked" : "item-header overlay-table-row"}>
                   <i className="icon fa fa-file"></i><span>{fileTitle}</span>
                 </a>
-                <div className="media-options">
+                <div className="media-options item-content">
                   <a className="file-link" target="_blank" href={imageUrl}>
                     <i className="icon fa fa-external-link"></i>{t("show_file")}
                   </a>

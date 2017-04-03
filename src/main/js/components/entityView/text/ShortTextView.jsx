@@ -1,18 +1,24 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+import ActionCreator from "../../../actions/ActionCreator";
+import i18n from "i18next";
 
 class ShortTextView extends React.Component {
 
   constructor(props) {
     super(props);
-    this.displayName = "ShortTextView";
-    this.state = {editing: false};
-    this.prevFocussed = null;
+    this.originalValue = this.getValue();
+    this.state = {
+      value: this.originalValue
+    };
   };
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
+    cell: React.PropTypes.object.isRequired,
+    focusNextItem: React.PropTypes.func.isRequired,
+    focusPreviousItem: React.PropTypes.func.isRequired
   };
 
   getValue = () => {
@@ -23,73 +29,48 @@ class ShortTextView extends React.Component {
     return value || "";
   };
 
-  setEditing = editing => () => {
-    if (editing) {
-      this.setState({value: this.getValue()});
-    } else if (this.prevFocussed) {
-      this.prevFocussed.focus();
-    }
-    this.setState({editing});
-  };
-
   getKeyboardShortcuts = () => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       event.preventDefault();
-      (fn || function () {})();
+      (fn || function () {
+      })();
     };
 
     return {
-      escape: captureEventAnd(this.setEditing(false)),
-      enter: captureEventAnd(this.saveEditsAndClose)
+      escape: captureEventAnd(() => {}),
+      enter: captureEventAnd(this.saveEditsAndClose),
+      tab: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        ((event.shiftKey)
+          ? this.props.focusPreviousItem
+          : this.props.focusNextItem)();
+      }
     };
   };
 
   saveEditsAndClose = () => {
     const {value} = this.state;
+    if (value.trim() === this.originalValue) {
+      return;
+    }
+    this.originalValue = value.trim();
     const {cell, langtag} = this.props;
-    const changes = (cell.isMultiLanguage)
-      ? {value: {[langtag]: value}}
-      : {value};
-    cell.save(changes, {patch: true});
-    this.setEditing(false)();
+    ActionCreator.changeCell(cell, (cell.isMultiLanguage? {[langtag]: value} : value))
   };
 
-  renderEditor = () => {
-    return (
-      <input type="text" className="input view-content view-shorttext" value={this.state.value}
-             autoFocus
+  render() {
+    const {langtag} = this.props;
+    return <div className="item-content">
+      <input type="text" value={this.state.value}
+             placeholder={i18n.t("table:empty.text")}
+             disabled={!hasUserAccessToLanguage(langtag)}
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onBlur={this.saveEditsAndClose}
       />
-    );
-  };
-
-  openOnEnter = event => {
-    if (event.key === "Enter") {
-      event.stopPropagation();
-      event.preventDefault();
-      this.prevFocussed = document.activeElement;
-      this.setEditing(true)();
-    }
-  };
-
-  render() {
-    const value = this.getValue();
-    const {editing} = this.state;
-
-    return (editing)
-      ? this.renderEditor()
-      : (
-        <div className="view-content view-shorttext"
-             onClick={this.setEditing(true)}
-             tabIndex={this.props.tabIdx}
-             onKeyDown={this.openOnEnter}
-          >
-          {value}
-        </div>
-      );
+    </div>
   }
 }
 

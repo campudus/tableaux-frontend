@@ -1,18 +1,12 @@
 import React, {PropTypes, Component} from "react";
-import LinkLabelCell from "../../cells/link/LinkLabelCell.jsx";
-import i18n from "i18next";
-import {ActionTypes} from "../../../constants/TableauxConstants";
-import ActionCreator from "../../../actions/ActionCreator";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
 import LinkOverlay from "../../cells/link/LinkOverlay";
+import LinkList from "../../helperComponents/LinkList";
+import {FallbackLanguage} from "../../../constants/TableauxConstants";
+import {prop, pullAt} from "lodash/fp";
 
 class LinkView extends Component {
-
-  constructor(props) {
-    super(props);
-    this.displayName = "LinkView";
-  }
-
+  
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired
@@ -29,28 +23,32 @@ class LinkView extends Component {
 
   removeLink = id => () => {
     const {cell} = this.props;
-    const newValue = cell.value.filter(el => el.id !== id);
+    const newValue = pullAt(id, cell.value);
     ActionCreator.changeCell(cell, newValue);
   };
 
-  render() {
-    const {cell, langtag, tabIdx} = this.props;
+  mkLinkList = (cell, langtag) => {
+    const tableUrl = `/${langtag}/tables/${cell.column.toTable}`;
 
-    const links = cell.value.map((element, index) => {
-      return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={cell}
-                            langtag={langtag} deletable={true} onDelete={this.removeLink(element.id)}
-                            clickable={true}/>;
-    });
+    return cell.value.map(
+      (link, idx) => {
+        return {
+          displayName: cell.linkString(idx, langtag),
+          linkTarget: `${tableUrl}/rows/${link.id}?filter&overlay`
+        }
+      }
+    );
+  };
+
+  render() {
+    const {cell, langtag} = this.props;
+    const links = this.mkLinkList(cell, langtag);
 
     return (
-      <div className="view-content link">
-        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>
-          {i18n.t("table:edit_links")}
-        </a>
-        <div className="link-list">
-          {links}
-        </div>
-      </div>
+      <LinkList links={links}
+                setLink={() => () => {}}
+                unlink={() => () => {}}
+      />
     );
   }
 }

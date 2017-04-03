@@ -3,6 +3,7 @@ import Moment from "moment";
 import {DateFormats, DateTimeFormats} from "../../../constants/TableauxConstants";
 import Datetime from "react-datetime";
 import listensToClickOutside from "react-onclickoutside";
+import i18n from "i18next";
 
 @listensToClickOutside
 class DateView extends Component {
@@ -46,6 +47,7 @@ class DateView extends Component {
   };
 
   setEditing = editing => () => {
+    console.log("Setting calendar editing to", editing)
     if (editing) {
       this.setState({
         moment: this.momentFromString(this.getValue()),
@@ -101,12 +103,12 @@ class DateView extends Component {
       ? this.stringFromMoment(this.state.moment)
       : this.stringFromMoment(this.getValue());
     return (
-      <div className="view-content view-datetime"
+      <div className="item-content datetime"
            onClick={this.setEditing(true)}
            tabIndex={this.props.tabIdx}
            onKeyDown={this.openOnEnter}
       >
-        {value}
+        {value || i18n.t("table:empty.date")}
         {(editing)
           ? <Datetime onBlur={this.saveEditsAndClose}
                       onChange={this.handleChange}

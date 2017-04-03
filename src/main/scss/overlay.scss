@@ -50,6 +50,7 @@ $overlay-border-radius: 5px;
     background-color: $color-overlay-background;
 
     &.full-height {
+      max-width: 60vw;
       height: 100vh;
       max-height: 100vh;
       margin: 0 auto;
@@ -126,7 +127,18 @@ $overlay-border-radius: 5px;
           color: $color-primary;
           margin-left: 10px;
         }
+
+        .column-icon {
+          float: right;
+          color: $color-text-medium-grey;
+
+          &.button {
+            @include button-look();
+            text-transform: none;
+          }
+        }
       }
+
       .item {
         width: 100%;
         padding: 15px 5%;
@@ -228,7 +240,7 @@ $overlay-border-radius: 5px;
     input[type=text], input[type=numeric], textarea {
       background-color: inherit;
       outline: none;
-      width: 96%;
+      width: 100%;
       margin: 5px 0;
       border: none;
       border-color: inherit !important; // TODO: Remove important once media styles are done
@@ -237,6 +249,20 @@ $overlay-border-radius: 5px;
 
       &:focus {
         border-color: $color-primary;
+      }
+    }
+
+    .checkbox {
+      background-color: $color-background-very-light-grey;
+      border: 2px solid $color-text-light-grey;
+      border-radius: 3px;
+      width: 23px;
+      height: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:checked {
       }
     }
 
@@ -276,30 +302,63 @@ $overlay-border-radius: 5px;
   .link-list {
     & > .can-expand {
       .link-label-wrapper:last-of-type {
-        background: linear-gradient($color-primary, transparent);
-        color: $color-primary-lighter;
+        background: linear-gradient($color-primary-contrast-text, transparent);
+        color: $color-text-light-grey;
+        &:hover {
+          background: linear-gradient($color-hover-background, transparent);
+        }
       }
     }
 
     .link-label-wrapper {
       width: 100%;
-      background-color: $color-primary;
-      color: $color-primary-contrast-text;
+      background-color: $color-primary-contrast-text;
+      color: $color-primary-text;
       border-radius: 3px;
-      padding: 8px;
+      padding: 12px;
       box-sizing: border-box;
       margin-bottom: 5px;
+      position: relative;
 
       &:hover {
         background-color: $color-hover-background;
-        color: $color-hover-foreground;
       }
-    }
 
-    .link-label {
-      display: block;
-      i {
-        float: right;
+      .link-label {
+        display: block;
+        i {
+          float: right;
+        }
+      }
+
+      &.with-buttons {
+        .link-label {
+          display: inline-block;
+          width: calc(100% - 38px);
+        }
+        i {
+          color: transparent;
+        }
+        .secondary-button-icon {
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          padding: 12px;
+        }
+        &.show-buttons {
+          i {
+            color: $color-very-dark;
+          }
+
+          .link-label, .secondary-button-icon {
+            &:hover {
+              i {
+                color: $color-primary;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -339,6 +398,36 @@ $overlay-border-radius: 5px;
     .new {
       float: right;
       flex: 10;
+    }
+  }
+}
+
+.overlay {
+  .link-overlay {
+    .ReactVirtualized__List {
+      padding: 0 20px;
+      position: absolute;
+      bottom: 0;
+      .ReactVirtualized__Grid__innerScrollContainer {
+        position: relative;
+
+        .list-item {
+          display: block;
+          width: calc(100% - 20px);
+          padding: 8px;
+          border-radius: 3px;
+          background-color: $color-white;
+          $color: $color-black;
+          &.isLinked {
+            background-color: $color-primary;
+            color: $color-primary-contrast-text;
+          }
+          &:hover {
+            background-color: $color-hover-background;
+            color: $color-hover-foreground;
+          }
+        }
+      }
     }
   }
 }

@@ -56,7 +56,7 @@ class TextView extends React.Component {
     return (editing)
       ? (
         <RichTextComponent value={value}
-                           className="view-content view-text"
+                           className="item-content text-editor"
                            close={this.setEditing(false)}
                            saveAndClose={this.saveAndClose}
                            langtag={langtag}
@@ -65,7 +65,7 @@ class TextView extends React.Component {
       )
       : (
           <RichTextComponent value={value}
-                             className="view-content view-text"
+                             className="item-content text"
                              langtag={langtag}
                              readOnly={true}
                              onClick={this.setEditing(true)}

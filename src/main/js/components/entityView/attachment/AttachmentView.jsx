@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from "react";
-import AttachmentLabelCell from "../../cells/attachment/AttachmentLabelCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
-import AttachmentOverlay from "../../cells/attachment/AttachmentOverlay";
-import i18n from "i18next";
+import LinkList from "../../helperComponents/LinkList";
+import {FallbackLanguage} from "../../../constants/TableauxConstants";
+import multiLanguage from "../../../helpers/multiLanguage";
 
 class AttachmentView extends Component {
 
@@ -24,34 +23,28 @@ class AttachmentView extends Component {
     ActionCreator.changeCell(cell, newValue);
   };
 
-  openOverlay = () => {
-    const {cell, langtag} = this.props;
-    ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
-      body: <AttachmentOverlay cell={cell} langtag={langtag} />,
-      type: "normal"
-    });
-  };
-
   render() {
-    const {cell, langtag, tabIdx} = this.props;
+    const {cell, langtag} = this.props;
 
-    const attachments = cell.value.map((element, id) => {
+    /*const attachments = cell.value.map((element, id) => {
       return <AttachmentLabelCell key={id} attachmentElement={element} cell={cell}
                                   langtag={langtag}
                                   deletable={true}
                                   onDelete={this.removeAttachment(element.uuid)}
       />;
-    });
+    });*/
+
+    const attachments = cell.value.map(
+      ({title}, idx) => {
+        const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
+        const displayName = translate(title, langtag);
+        return {displayName}
+      }
+    );
 
     return (
-      <div className='view-content link'>
-        <a href="#" tabIndex={tabIdx} className="edit-links-button" onClick={this.openOverlay}>
-        {i18n.t("table:edit_attachments")}
-      </a>
-        <div className="link-list">
-          {attachments}
-        </div>
+      <div className="view-content link">
+        <LinkList links={attachments} />
       </div>
     );
   }

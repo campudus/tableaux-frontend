@@ -65,7 +65,7 @@ export default class DependentRowsList extends React.Component {
 
     if (loadingDependency) {
       return <div className="dependent-loading-data">
-        <Spinner isLoading={true}/>
+        <Spinner isLoading={true} />
         <p>{t("fetching_dependent_rows")}</p>
       </div>;
     }
@@ -84,10 +84,17 @@ export default class DependentRowsList extends React.Component {
           }
         );
 
-        return <LinkList key={table.id}
-                         table={{name: tableName, linkTarget: linkToTable}}
-                         links={links}
-        />
+        return (
+          <div className="item">
+            <a className="item-header" href={linkToTable}>
+              {tableName}
+              <i className="fa fa-external-link"/>
+            </a>
+            <LinkList key={table.id}
+                      links={links}
+            />
+          </div>
+        )
       }
     );
 

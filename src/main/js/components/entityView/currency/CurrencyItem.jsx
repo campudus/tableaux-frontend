@@ -42,8 +42,8 @@ class CurrencyItem extends Component {
 
   renderEditFields = () => {
     return (
-      <div>
-        <input className="currrency-input left"
+      <div className="currency-input ignore-react-onclickoutside">
+        <input className="left"
                onChange={this.handleChange(PRE_COMMA)}
                value={this.state.preComma}
                autoFocus
@@ -51,7 +51,7 @@ class CurrencyItem extends Component {
                placeholder="0"
         />
         ,
-        <input className="currency-input right"
+        <input className="right"
                onChange={this.handleChange(POST_COMMA)}
                value={this.state.postComma}
                onKeyDown={this.filterKeyEvents(POST_COMMA)}
@@ -69,7 +69,7 @@ class CurrencyItem extends Component {
       return;
     }
     if (place === POST_COMMA && f.contains(key, numberKeys)
-      && this.state.postComma.length == 2) {
+      && this.state.postComma.length === 2) {
       event.preventDefault();
       return;
     }
@@ -110,16 +110,19 @@ class CurrencyItem extends Component {
       }
     );
     const clickHandler = (editing)
-      ? function () {}
+      ? function () {
+      }
       : () => this.props.toggleEdit(true);
     return (
       <div className={cssClass} onClick={clickHandler}>
         {getLanguageOrCountryIcon(countryCode)}
-        {(editing)
-          ? this.renderEditFields()
-          : currencyString + " "
-        }
-        {currencyCode}
+        <div className="value">
+          {(editing)
+            ? this.renderEditFields()
+            : currencyString
+          }
+        </div>
+        <div className="currency-code">{currencyCode}</div>
       </div>
     );
   }

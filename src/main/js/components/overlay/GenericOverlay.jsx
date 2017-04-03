@@ -100,23 +100,10 @@ class GenericOverlay extends Component {
     );
   };
 
-  renderChildren = (props) => {
-    const {contentHeight, contentWidth} = this.state;
-    return React.Children.map(props.children, child => {
-      return React.cloneElement(child,
-        {
-          contentHeight,
-          contentWidth
-        });
-    });
-  };
-
   render() {
-    const overlayType = this.props.type || "normal"; // default to normal
-    if (!contains(overlayType, this.allowedTypes)) {
-      console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");
-      return null;
-    }
+    const overlayType = (contains(this.props.type, this.allowedTypes))
+      ? this.props.type
+      : "normal";
 
     const {footer, head, body, isOnTop} = this.props;
     const overlayWrapperClass = classNames("overlay open", {

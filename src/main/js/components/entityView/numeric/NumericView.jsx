@@ -1,39 +1,40 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import listensToClickOutside from "react-onclickoutside";
+import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+import ActionCreator from "../../../actions/ActionCreator";
 import * as f from "lodash/fp";
 
-@listensToClickOutside
 class NumericView extends React.Component {
 
   constructor(props) {
     super(props);
-    this.displayName = "NumericView";
-    this.state = {editing: false};
-    this.prevFocussed = null;
+    this.originalValue = parseFloat(this.getValue()) || 0;
+    this.state = {
+      value: this.originalValue
+    };
   };
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
+    cell: React.PropTypes.object.isRequired,
+    focusNextItem: React.PropTypes.func.isRequired,
+    focusPreviousItem: React.PropTypes.func.isRequired
   };
 
   getValue = () => {
     const {cell, langtag} = this.props;
-
     const value = (cell.isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
-    return value || "";
+    return value || 0;
   };
 
-  setEditing = editing => () => {
-    if (editing) {
-      this.setState({value: this.getValue()});
-    } else if (this.prevFocussed) {
-      this.prevFocussed.focus();
-    }
-    this.setState({editing});
+  normaliseNumberFormat = event => {
+    const inputString = event.target.value.replace(/,/g, ".");
+    const normalised = (inputString.split(".").length > 2)
+      ? inputString.substr(0, inputString.length - 1)
+      : inputString;
+    this.setState({value: normalised});
   };
 
   handleKeyPress = event => {
@@ -61,70 +62,32 @@ class NumericView extends React.Component {
     };
 
     return {
-      escape: captureEventAnd(this.setEditing(false)),
+      escape: captureEventAnd(() => {}),
       enter: captureEventAnd(this.saveEditsAndClose)
     };
   };
 
   saveEditsAndClose = () => {
     const value = parseFloat(this.state.value);
-    const {cell, langtag} = this.props;
-    const changes = (cell.isMultiLanguage)
-      ? {value: {[langtag]: value}}
-      : {value};
-    cell.save(changes, {patch: true});
-    this.setEditing(false)();
-  };
-
-  handleClickOutside = event => {
-    if (!this.state.editing) {
+    if (value === this.originalValue) {
       return;
     }
-    this.saveEditsAndClose();
-  };
-
-  renderEditor = () => {
-    return (
-      <input type="text" className="input view-content view-numeric ignore-react-onclickoutside" value={this.state.value}
-             autoFocus
-             onChange={this.normaliseNumberFormat}
-             onKeyDown={this.handleKeyPress}
-      />
-    );
-  };
-
-  editOnEnter = event => {
-    if (event.key === "Enter") {
-      event.stopPropagation();
-      event.preventDefault();
-      this.prevFocussed = document.activeElement;
-      this.setEditing(true)();
-    }
-  };
-
-  normaliseNumberFormat = event => {
-    const inputString = event.target.value.replace(/,/g, ".");
-    const normalised = (inputString.split(".").length > 2)
-      ? inputString.substr(0, inputString.length - 1)
-      : inputString;
-    this.setState({value: normalised});
+    this.originalValue = value;
+    const {cell, langtag} = this.props;
+    ActionCreator.changeCell(cell, (cell.isMultiLanguage? {[langtag]: value} : value))
   };
 
   render() {
-    const value = this.getValue();
-    const {editing} = this.state;
-
-    return (editing)
-      ? this.renderEditor()
-      : (
-        <div className="view-content view-numeric"
-             onClick={this.setEditing(true)}
-             tabIndex={this.props.tabIdx}
-             onKeyDown={this.editOnEnter}
-        >
-          {value}
-        </div>
-      );
+    const {langtag} = this.props;
+    return <div className="item-content">
+      <input type="text" value={this.state.value}
+             disabled={!hasUserAccessToLanguage(langtag)}
+             onChange={this.normaliseNumberFormat}
+             onKeyDown={this.handleKeyPress}
+             onBlur={this.saveEditsAndClose}
+             placeholder={0}
+      />
+    </div>
   }
 }
 

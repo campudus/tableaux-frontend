@@ -97,8 +97,9 @@ class RichTextComponent extends React.Component {
     const {hideEditorSymbols, readOnly, close, saveAndClose, onClick, tabIdx} = this.props;
     const clickHandler = onClick || function () {};
     const contentClass = classNames("content-pane", {"input": !readOnly});
+    const cssClass = classNames("rich-text-component", {"editing": !readOnly});
     return (
-        <div id="rich-text-component" onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.activateOnEnter} ref={el => this.focusTarget = el} >
+        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.activateOnEnter} ref={el => this.focusTarget = el} >
         {(!readOnly && !hideEditorSymbols)
           ? (
             <div className="symbol-bar">
@@ -129,24 +130,6 @@ class RichTextComponent extends React.Component {
              ref={cp => this.content = cp}
         >
         </div>
-        {(close)
-          ? (
-            <div className="button-area">
-              {(saveAndClose)
-                ? (
-                <a className="button positive" onClick={this.saveAndClose}>
-                {i18n.t("common:save")}
-                </a>
-                )
-                : null}
-              <a className="button neutral" onClick={close}>
-                {i18n.t("common:cancel")}
-              </a>
-            </div>
-
-          )
-          : null
-        }
       </div>
     );
   }

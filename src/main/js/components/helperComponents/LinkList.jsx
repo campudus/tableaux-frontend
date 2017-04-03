@@ -13,41 +13,72 @@ const MAX_DISPLAYED_LINKS = 4;
 
 class LinkList extends Component {
   static propTypes = {
-    table: PropTypes.object.isRequired,
     links: PropTypes.array.isRequired,
-    editIcons: PropTypes.bool
+    setLink: PropTypes.func,
+    unlink: PropTypes.func
   };
 
   constructor(props) {
     super(props);
-    this.state = {expanded: false};
+    this.state = {
+      expanded: false,
+      hovered: null
+    };
   }
 
   toggleExpand = () => this.setState({expanded: !this.state.expanded});
 
   renderLinks = (links, max) => ((max) ? take(max, links) : links).map(
-    ({displayName, linkTarget, linked = false}, idx) => {
-      const {editIcons} = this.props;
-      const cssClass = classNames("link-label", {"with-edit-icons": editIcons});
-      const linkIcon = (linked) ? "fa fa-times" : "fa fa-check";
+    ({displayName, linkTarget = "#"}, idx) => {
       return (
         <div className="link-label-wrapper" key={idx}>
-          <a className={cssClass} href={linkTarget} target="_blank">
+          <a className="link-label" href={linkTarget} target="_blank">
             {displayName}
             <i className="fa fa-long-arrow-right" />
           </a>
-          {
-            (editIcons)
-              ? <a className="edit-icon" href="#"><i className={linkIcon} /></a>
-              : null
-          }
         </div>
       )
     }
   );
 
+  setHovering = idx => isHovering => () => {
+    this.setState({hovered: (isHovering) ? idx : null});
+  };
+
+  renderInteractiveLinks = (links, max) => {
+    const {setLink, unlink} = this.props;
+    return ((max) ? take(max, links) : links).map(
+      ({displayName, linkTarget, linked}, idx) => {
+        const mainFn = (linked) ? unlink(idx) : setLink(idx);
+        const iconClass = classNames("main-button-icon",
+          {
+            "fa fa-check": !linked,
+            "fa fa-times": linked
+          }
+        );
+        const cssClass = classNames("link-label-wrapper with-buttons", {
+          "show-buttons": this.state.hovered === idx
+        });
+
+        return (
+          <div className={cssClass} key={idx}
+               onMouseEnter={this.setHovering(idx)(true)}
+               onMouseLeave={this.setHovering(idx)(false)}
+          >
+            <a className="link-label" href="#" onClick={mainFn} >
+              {displayName}<i className={iconClass} />
+            </a>
+            <a className="secondary-button-icon" href={linkTarget} target="_blank">
+              <i className="fa fa-long-arrow-right" />
+            </a>
+          </div>
+        )
+      }
+    );
+  };
+
   render() {
-    const {table, links} = this.props;
+    const {links} = this.props;
     const nLinks = links.length;
     const {expanded} = this.state;
     const canExpand = nLinks > MAX_DISPLAYED_LINKS;
@@ -55,15 +86,15 @@ class LinkList extends Component {
       "can-expand": canExpand & !expanded,
       "expanded": expanded
     });
+    const {setLink, unlink} = this.props;
 
     return (
-      <div className="item link-list">
-        <a className="item-header link" href={table.linkTarget} target="_blank">
-          {table.name}
-          <i className="fa fa-external-link" />
-        </a>
+      <div className="link-list">
         <div className={cssClass}>
-          {this.renderLinks(links, (!expanded) ? MAX_DISPLAYED_LINKS : null)}
+          {(setLink && unlink)
+            ? this.renderInteractiveLinks(links, (!expanded) ? MAX_DISPLAYED_LINKS : null)
+            : this.renderLinks(links, (!expanded) ? MAX_DISPLAYED_LINKS : null)
+          }
         </div>
         {(canExpand)
           ? (<a className="expand-button" href="#" onClick={this.toggleExpand}>

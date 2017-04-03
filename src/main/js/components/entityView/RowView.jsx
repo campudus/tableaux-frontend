@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {ColumnKinds} from "../../constants/TableauxConstants";
+import {ColumnKinds, FallbackLanguage} from "../../constants/TableauxConstants";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
 import NumericView from "./numeric/NumericView";
@@ -10,6 +10,7 @@ import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import {isEmpty, prop} from "lodash/fp";
 
 @connectToAmpersand
 class View extends Component {
@@ -32,7 +33,6 @@ class View extends Component {
   render() {
     const {cell, langtag, tabIdx} = this.props;
     const {kind, column} = cell;
-
     const views = {
       [ColumnKinds.link]: LinkView,
       [ColumnKinds.attachment]: AttachmentView,
@@ -47,14 +47,17 @@ class View extends Component {
     };
 
     const CellKind = views[kind];
-    const viewClass = `view ${this.getViewKind()} ${this.getViewId()}`;
+    const viewClass = `view item ${this.getViewKind()} ${this.getViewId()}`;
+    const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
 
     return (
       <div className={viewClass}>
-        <RowHeadline column={column} langtag={langtag} />
-        <div className="view-column">
-        <CellKind tabIdx={tabIdx} cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime} />
-        </div>
+        <RowHeadline column={column} langtag={langtag} cell={cell} />
+        {(!isEmpty(description)) ? <div className="item-description">{description}</div> : null}
+        <CellKind tabIdx={tabIdx} cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
+                  focusNextItem={() => console.log("Focus next")}
+                  focusPreviousItem={() => console.log("Focus prev")}
+        />
       </div>
     );
   }

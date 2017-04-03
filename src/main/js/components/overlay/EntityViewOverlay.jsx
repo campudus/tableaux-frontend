@@ -7,8 +7,10 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
-import {first, matchesPropery} from "lodash/fp";
+import {first, matchesPropery, prop} from "lodash/fp";
 import zenscroll from "zenscroll";
+import Header from "./Header";
+import {FallbackLanguage} from "../../constants/TableauxConstants";
 
 class EntityViewBody extends Component {
   constructor(props) {
@@ -54,7 +56,7 @@ class EntityViewBody extends Component {
     const {langtag} = this.state;
 
     return (
-        <div className="entityView">
+        <div className="entity-view content-items">
         {cells
          .filter(cell => cell.kind !== ColumnKinds.concat)
          .map(
@@ -129,22 +131,21 @@ class LanguageSwitcher extends Component {
 export function openEntityView(row, langtag, focusElementId) {
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
-
-  const EntityViewFooter = (props) => {
-    return (
-      <div className="button-wrapper">
-        <button className="button neutral" onClick={() => {
-          closeOverlay();
-        }}>{i18n.t("common:close")}</button>
-      </div>
-    );
-  };
+  console.log("row:", row)
+  const table = row.table;
+  const tableName = prop(["displayName", langtag], table) || prop(["displayName", FallbackLanguage], table);
 
   openOverlay({
+    head: <Header context={tableName} title={rowDisplayLabel} components={<LanguageSwitcher langtag={langtag} />} />,
+    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
+    type: "full-height"
+  });
+
+/*  openOverlay({
     classNames: "entity-view-overlay",
     head: <span>{i18n.t("table:entity_view")}: {rowDisplayLabel} <LanguageSwitcher langtag={langtag} /></span>,
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
     footer: <EntityViewFooter />,
     type: "full-height"
-  });
+  }); */
 }

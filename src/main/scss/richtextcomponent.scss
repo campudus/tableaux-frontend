@@ -1,11 +1,18 @@
 @import "variables";
 
-#rich-text-component {
+.rich-text-component {
   width: 100%;
-  background-color: white;
-  padding: 10px;
-  border: 2px solid $color-border-grey;
+  min-height: 30px;
+  background-color: transparent;
   box-sizing: border-box;
+  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+  margin-bottom: 5px;
+  transition: border 0.3s;
+
+  &:hover, &:focus {
+    border-bottom: 1px solid $color-primary;
+  }
 
   .symbol-bar {
     width: 100%;
@@ -19,6 +26,7 @@
       display: inline-flex;
       align-items: baseline;
       vertical-align: bottom;
+      color: $color-text-medium-grey;
 
       .description {
         padding-right: 10px;
@@ -27,7 +35,7 @@
 
     a {
       padding: 5px;
-      background-color: $color-primary-lighter;
+      background-color: $color-text-light-grey;
       color: $color-primary-contrast-text;
       margin-right: 5px;
       text-align: center;
@@ -39,7 +47,7 @@
       }
 
       &:hover {
-        background-color: $color-primary;
+        background-color: $color-text-medium-grey;
       }
     }
   }
@@ -47,7 +55,13 @@
   .content-pane {
     width: 100%;
     max-height: 250px;
-    overflow-y: auto;
+    overflow: hidden;
+    color: $color-text-medium-grey;
+
+    &.input {
+      overflow-y: auto;
+      color: $color-primary-text;
+    }
 
     i, em {
       font-style: italic;

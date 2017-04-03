@@ -1,61 +1,112 @@
 import React from "react";
 import {ColumnKinds, FallbackLanguage} from "../../constants/TableauxConstants";
 import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
+import * as f from "lodash/fp";
+import ActionCreator from "../../actions/ActionCreator";
+import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
+import Header from "../overlay/Header";
+import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import LinkOverlay from "../cells/link/LinkOverlay";
+import i18n from "i18next";
 
 class RowHeadline extends React.Component {
 
   static propTypes = {
-    column: React.PropTypes.object,
+    column: React.PropTypes.object.isRequired,
+    cell: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired
   };
 
-  render = () => {
-    const {column, langtag} = this.props;
-
+  getDisplayName = column => {
+    const {langtag} = this.props;
     const language = getLanguageOfLangtag(langtag);
-    const columnDisplayName = column.displayName[langtag] || column.displayName[language];
-    const fallbackColumnDisplayName = column.displayName[FallbackLanguage] || column.name;
-    let columnName = typeof columnDisplayName === "undefined" ? fallbackColumnDisplayName : columnDisplayName;
+    return column.displayName[langtag]
+      || column.displayName[language]
+      || column.displayName[FallbackLanguage];
+  };
 
-    let columnIcon;
-    switch (column.kind) {
+  getColumnIcon = column => {
+    const columnIcons = {
+      [ColumnKinds.text]: "align-left",
+      [ColumnKinds.richtext]: "align-left",
+      [ColumnKinds.shorttext]: "font",
+      [ColumnKinds.link]: "link",
+      [ColumnKinds.numeric]: "hashtag",
+      [ColumnKinds.attachment]: "files",
+      [ColumnKinds.boolean]: "check-square-o",
+      [ColumnKinds.datetime]: "calendar",
+      [ColumnKinds.date]: "calendar",
+      [ColumnKinds.currency]: "money",
+    };
+    return <i className={`column-icon fa fa-${columnIcons[column.kind] || "question"}`} />;
+  };
 
-      case ColumnKinds.text:
-      case ColumnKinds.richtext:
-        columnIcon = <i key="column-icon" className="fa fa-align-left" />;
-        break;
-      case ColumnKinds.shorttext:
-        columnIcon = <i key="column-icon" className="fa fa-font" />;
-        break;
-      case ColumnKinds.link:
-        columnIcon = <i key="column-icon" className="fa fa-link" />;
-        columnName = <a target="_blank" href={`/${langtag}/tables/${column.toTable}`}>{columnName}
-          <i className="fa fa-external-link" /></a>;
-        break;
-      case ColumnKinds.numeric:
-        columnIcon = <i key="column-icon" className="fa fa-hashtag" />;
-        break;
-      case ColumnKinds.attachment:
-        columnIcon = <i key="column-icon" className="fa fa-files-o" />;
-        break;
-      case ColumnKinds.boolean:
-        columnIcon = <i key="column-icon" className="fa fa-check-square-o" />;
-        break;
-      case ColumnKinds.datetime:
-        columnIcon = <i key="column-icon" className="fa fa-calendar" />;
-        break;
-      case ColumnKinds.currency:
-        columnIcon = <i key="column-icon" className="fa fa-money" />;
-        break;
-    }
-
-    if (!React.isValidElement(columnName)) {
-      columnName = <span>{columnName}</span>;
-    }
-
+  mkLinkHeader = column => {
+    const {langtag} = this.props;
+    const url = `/${langtag}/tables/${column.toTable}`;
     return (
-      <div className="row-headline">{columnIcon}{columnName}</div>
-    );
+      <div className="item-header">
+        <a className="column-icon button" href="#" onClick={this.openLinkOverlay}>
+          {i18n.t("table:edit_links")}
+        </a>
+        <a href={url} target="_blank">
+          {this.getDisplayName(column)}
+          <i className="fa fa-external-link" />
+        </a>
+      </div>
+    )
+  };
+
+  openAttachmentOverlay = () => {
+    const {cell, langtag} = this.props;
+    const table = cell.tables.get(cell.tableId);
+    const tableName = table.displayName[langtag] || table.displayName[FallbackLanguage];
+    ActionCreator.openOverlay({
+      head: <Header context={tableName} title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} />,
+      body: <AttachmentOverlay cell={cell} langtag={langtag} />,
+      type: "normal"
+    });
+  };
+
+  openLinkOverlay = () => {
+    const {cell, langtag} = this.props;
+    const table = cell.tables.get(cell.tableId);
+    const tableName = table.displayName[langtag] || table.displayName[FallbackLanguage];
+    ActionCreator.openOverlay({
+      head: <Header context={tableName} title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} />,
+      body: <LinkOverlay tableId={table.id} cell={cell} langtag={langtag} contentWidth={800} contentHeight={600} />,
+      type: "full-height"
+    });
+  };
+
+  mkAttachmentHeader = column => {
+    const {langtag, cell} = this.props;
+    console.log("mkAttachmentHeader", cell)
+    const url = `/${langtag}/tables/${cell.toTable}`;
+    return (
+      <div className="item-header">
+        <a className="button column-icon" href="#" onClick={this.openAttachmentOverlay}>
+          {i18n.t("table:edit_attachments")}
+        </a>
+        {this.getDisplayName(column)}
+      </div>
+    )
+  };
+
+  mkDefaultHeader = column => (
+    <div className="item-header">
+      {this.getColumnIcon(column)}
+      {this.getDisplayName(column)}
+    </div>
+  );
+
+  render = () => {
+    const {column} = this.props;
+    return f.cond([
+      [f.matchesProperty("kind", "link"), this.mkLinkHeader],
+      [f.matchesProperty("kind", "attachment"), this.mkAttachmentHeader],
+      [f.stubTrue, this.mkDefaultHeader]
+    ])(column);
   }
 }
 

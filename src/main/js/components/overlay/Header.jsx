@@ -5,7 +5,7 @@ import * as f from "lodash/fp";
 
 class Header extends Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,  // main headline
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,  // main headline
     context: PropTypes.string,           // additional context info
     actions: PropTypes.object,           // map: {[positive|negative|neutral]: [text, function]} for buttons
     components: PropTypes.element        // more components to display, e.g. search bar
@@ -27,7 +27,7 @@ class Header extends Component {
       >
         {text}
       </a>
-    )
+    );
     const buttonsItem = (f.isEmpty(actions))
       ? null
       : (

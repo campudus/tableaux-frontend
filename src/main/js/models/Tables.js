@@ -42,14 +42,20 @@ const changeLinkCellHandler = ({cell, value}) => {
       .patch(backendUrl)
       .send({value: toggledRowId})
       .set("Content-Type", "application/json");
-  xhrRequest.end((error, response) => {
-    if (error) {
-      console.warn(error);
-      cell.set({value: curValue}); // rollback local state when anything went wrong
-      cellModelSavingError(error); // this saves us from calculating and undoing diff ourselves
-      this.updateConcatCells(cell);
-    }
-  });
+  return new Promise(
+    (resolve, reject) => {
+      xhrRequest.end((error, response) => {
+        if (error) {
+          console.warn(error);
+          cell.set({value: curValue}); // rollback local state when anything went wrong
+          cellModelSavingError(error); // this saves us from calculating and undoing diff ourselves
+          this.updateConcatCells(cell);
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
 };
 
 const Tables = Collection.extend({
@@ -86,8 +92,7 @@ const Tables = Collection.extend({
   changeCellHandler(payload) {
     console.log("changeCellHandler:", payload);
     if (payload.cell.isLink) {
-      changeLinkCellHandler(payload);
-      return;
+      return changeLinkCellHandler(payload);
     }
     const self = this;
     const {cell} = payload;
@@ -109,69 +114,78 @@ const Tables = Collection.extend({
       newValue = {value: newValue};
     }
 
-    if (updateNecessary) {
-      /**
-       * Basic language access management
-       */
-      if (!isUserAdmin()) {
-        if (!canUserChangeCell(cell)) {
-          noPermissionAlertWithLanguage(getUserLanguageAccess());
-          return;
-        } else {
-          if (cell.isMultiCountry) {
-            newValue = reduceValuesToAllowedCountries(newValue);
-            if (_.isEmpty(newValue.value)) {
-              // The user tried to change a multilanguage cell without language permission
-              noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
+    return new Promise(
+      (resolve, reject) => {
+
+        if (updateNecessary) {
+          /**
+           * Basic language access management
+           */
+          if (!isUserAdmin()) {
+            if (!canUserChangeCell(cell)) {
+              noPermissionAlertWithLanguage(getUserLanguageAccess());
               return;
-            }
-          } else {
-            // reduce values to send just authorized language values to server
-            newValue = reduceValuesToAllowedLanguages(newValue);
-            if (_.isEmpty(newValue.value)) {
-              // The user tried to change a multilanguage cell without language permission
-              noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
-              return;
+            } else {
+              if (cell.isMultiCountry) {
+                newValue = reduceValuesToAllowedCountries(newValue);
+                if (_.isEmpty(newValue.value)) {
+                  // The user tried to change a multilanguage cell without language permission
+                  noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
+                  return;
+                }
+              } else {
+                // reduce values to send just authorized language values to server
+                newValue = reduceValuesToAllowedLanguages(newValue);
+                if (_.isEmpty(newValue.value)) {
+                  // The user tried to change a multilanguage cell without language permission
+                  noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
+                  return;
+                }
+              }
             }
           }
-        }
-      }
-      /**
-       * End basic language access management
-       */
+          /**
+           * End basic language access management
+           */
 
-      console.log("Cell Model: saving cell with value:", newValue);
-      // we give direct feedback for user
-      cell.value = mergedValue;
-      self.updateConcatCells(cell);
-
-      // we need to clear the newValue, otherwise ampersand save method is merging a strange object
-      if (!isPatch) {
-        newValue = null;
-      }
-
-      /*
-       We want to wait to prevent flashes. We set the value explicitly before saving.
-       Without wait:true save overrides the model for a short time with just one multilanguage value
-       */
-      cell.save(newValue, {
-        patch: isPatch,
-        wait: true,
-        success(model, data, options) {
-          // is there new data from the server?
-          if (!_.isEqual(data.value, mergedValue)) {
-            console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
-            cell.value = data.value;
-            self.updateConcatCells(cell);
-          }
-        },
-        error(error) {
-          cellModelSavingError(error);
-          cell.value = oldValue;
+          console.log("Cell Model: saving cell with value:", newValue);
+          // we give direct feedback for user
+          cell.value = mergedValue;
           self.updateConcatCells(cell);
+
+          // we need to clear the newValue, otherwise ampersand save method is merging a strange object
+          if (!isPatch) {
+            newValue = null;
+          }
+
+          /*
+           We want to wait to prevent flashes. We set the value explicitly before saving.
+           Without wait:true save overrides the model for a short time with just one multilanguage value
+           */
+          cell.save(newValue, {
+            patch: isPatch,
+            wait: true,
+            success(model, data, options) {
+              // is there new data from the server?
+              if (!_.isEqual(data.value, mergedValue)) {
+                console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
+                cell.value = data.value;
+                self.updateConcatCells(cell);
+              }
+              resolve();
+            },
+            error(error) {
+              cellModelSavingError(error);
+              cell.value = oldValue;
+              self.updateConcatCells(cell);
+              reject(error);
+            }
+          });
+        } else {
+          console.log("No update required");
+          resolve();
         }
       });
-    }
   },
 
   // We just trigger a changed event for concat cells when we are a identifier cell

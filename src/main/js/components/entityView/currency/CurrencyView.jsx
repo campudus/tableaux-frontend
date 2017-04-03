@@ -6,7 +6,6 @@ class CurrencyView extends Component {
 
   constructor(props) {
     super(props);
-    this.displayName = "CurrencyView";
     const {countryCodes} = props.cell.column;
     this.state = {editing: f.range(0, countryCodes.length).map(f.stubFalse)};
   };
@@ -50,7 +49,7 @@ class CurrencyView extends Component {
     const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-        <div className="view-content currency" tabIndex={tabIdx}>
+        <div className="item-content currency" tabIndex={tabIdx}>
         {currencyRows}
       </div>
     );

@@ -1,22 +1,111 @@
 @import "../variables";
 @import "../helper";
 
+.overlay {
+  .entity-view {
+    .currency {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+
+      .currency-item {
+        position: relative;
+        width: 32%;
+        padding: 8px 0;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+
+        div, span {
+          height: 100%;
+          margin: 0 2px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 5px 0;
+        }
+
+        .langtag {
+          flex: 1;
+          background-color: $color-white;
+          img {
+            padding-top: 5px;
+          }
+          .langtag-label {
+            font-weight: normal;
+            padding: 0;
+          }
+        }
+
+        .value {
+          flex: 3;
+          background-color: $color-white;
+
+          .currency-input {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+            input {
+              border: none;
+              width: 45%;
+              color: $color-text-medium-grey;
+              &.left {
+                text-align: right;
+              }
+              &:focus {
+                border-bottom: 1px solid $color-primary-lighter;
+                color: $color-primary-text;
+              }
+            }
+          }
+        }
+
+        .currency-code {
+          flex: 1;
+          background-color: $color-background-very-light-grey;
+        }
+      }
+    }
+
+    .boolean {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+      .value {
+        margin-left: 10px;
+        color: $color-text-medium-grey;
+        pointer-events: none;
+      }
+    }
+
+    .datetime {
+      border-color: inherit;
+      border-bottom: 1px solid;
+      padding-bottom: 2px;
+      transition: border 0.3s;
+    }
+  }
+}
+
 .eev-language-switcher {
   height: 14px;
   width: 40px;
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: $color-primary-lighter;
+  background-color: transparent;
   border-radius: 3px;
   color: $color-primary-contrast-text;
   outline: none;
-  padding: 8px;
-  border: none;
-  transition: background-color 0.5s;
+  padding: 3px;
+  border: 1px solid $color-text-light-grey;
 
   &:hover {
-    background-color: $color-primary;
+    background-color: $color-hover-background;
+    color: $color-hover-foreground;
   }
 
   &.open {
@@ -26,7 +115,6 @@
 
   .eev-label {
     position: relative;
-    top: -18px;
     text-align: center;
   }
 
@@ -38,9 +126,9 @@
     box-shadow: 0 2px 2px $color-text-medium-grey;
 
     .menu-item {
-      background-color: $color-primary-contrast-text;
+      background-color: $color-white;
       color: $color-text-medium-grey;
-      height: 30px;
+      height: 24px;
       padding: 0;
       &.active {
         background-color: $color-primary;
@@ -59,227 +147,14 @@
 
         i {
           position: absolute;
-          top: -10px;
           right: 0;
           padding-right: 8px;
         }
       }
 
       &:hover {
-        background-color: $color-primary-lighter;
-        color: $color-primary-contrast-text;
-      }
-    }
-  }
-}
-
-#overlay {
-  &.entity-view-overlay {
-    #overlay-wrapper {
-      max-width: 70vw;
-
-      .overlay-header {
-        overflow: visible;
-        span {
-          display: inline-block;
-          max-width: 80%;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-
-      #overlay-content {
-
-        #rich-text-component {
-          border: 1px solid $color-text-light-grey;
-          border-radius: 3px;
-
-          &:focus {
-            border: 1px solid $color-primary;
-            outline: none;
-          }
-
-          .content-pane {
-            min-height: 17px;
-          }
-        }
-
-        .entityView {
-          position: relative;
-          display: flex;
-          flex-flow: column;
-
-          .view {
-            text-align: left;
-            width: 100%;
-            &:not(:first-of-type) {
-              margin-top: 25px;
-            }
-
-            .row-headline {
-              font-weight: bold;
-              padding: 10px 0;
-              text-transform: uppercase;
-
-              a {
-                border: 1px solid $color-subtle-grey;
-                border-radius: 3px;
-                padding: 3px 10px;
-                vertical-align: middle;
-
-                .fa {
-                  color: $color-text-medium-grey;
-                  margin-left: 5px;
-                }
-              }
-
-              span {
-                padding-left: 11px;
-              }
-
-              > .fa {
-                color: $color-text-medium-grey;
-                margin-right: 5px;
-              }
-            }
-          }
-
-          .view-content {
-            width: 100%;
-            box-sizing: border-box;
-
-            &:empty {
-              padding: 12px 0;
-            }
-          }
-
-          .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime, .view-date {
-            .view-content {
-              background-color: white;
-              border: 1px solid $color-text-light-grey;
-              border-radius: 3px;
-              padding: 12px;
-              margin-bottom: 12px;
-              min-height: 40px;
-              border-radius: 3px;
-
-              input[type=checkbox] {
-                margin-right: 15px;
-              }
-            }
-
-            &:focus {
-              border: 1px solid $color-primary;
-              outline: none;
-            }
-          }
-
-          .view-link, .view-attachment {
-            .view-content {
-              border: 1px solid $color-text-light-grey;
-              border-radius: 3px;
-              padding: 10px;
-
-              .edit-links-button {
-                @include button-look();
-                background-color: $color-primary-lighter;
-                margin-bottom: 10px;
-                width: 100%;
-                text-align: center;
-              }
-
-              .link-list {
-                max-height: 250px;
-                overflow-y: auto;
-
-                &:not(:empty) {
-                  border-top: 1px solid $color-text-light-grey;
-                  padding-top: 10px;
-                }
-              }
-
-              .link-label {
-                @include link-look();
-              }
-            }
-          }
-
-          .view-currency {
-
-            .view-column {
-              box-sizing: border-box;
-              width: 100%;
-              border: 1px solid $color-text-light-grey;
-              border-radius: 3px;
-              padding: 0;
-
-              .view-content {
-                padding: 10px;
-                &:focus {
-                  border: 1px solid $color-primary;
-                  outline: none;
-                  border-radius: 3px;
-                }
-              }
-            }
-
-            .currency-item {
-              display: inline-flex;
-              background-color: white;
-              padding: 8px;
-              @include border-radius(3px);
-              @include box-shadow(0 2px 1px $color-text-medium-grey);
-              margin: 0 12px 12px 0;
-
-              &.not-set {
-                background-color: $color-subtle-grey;
-              }
-
-              &:hover {
-                color: $color-primary-contrast-text;
-                background-color: $color-primary-lighter;
-                @include box-shadow(0 2px 1px $color-primary);
-
-                input {
-                  background-color: $color-primary-lighter;
-                }
-              }
-
-              &.editing {
-                @include box-shadow(0 2px 1px $color-primary-darker);
-              }
-
-              input {
-                border: none;
-                outline: none;
-                max-width: 60px;
-
-                &:not(:focus) {
-                  color: $color-text-medium-grey;
-                }
-
-                &.left {
-                  text-align: right;
-                }
-                &.right {
-                  width: 30px;
-                }
-              }
-            }
-
-            .langtag {
-              vertical-align: middle;
-              display: inline-block;
-              text-align: center;
-              margin-right: 5px;
-
-              .langtag-label {
-                display: block;
-              }
-            }
-          }
-
-        }
+        background-color: $color-hover-background;
+        color: $color-hover-foreground;
       }
     }
   }
