@@ -19,7 +19,7 @@
 
 #table-settings-wrapper {
   float:left;
-  margin-left: 0px;
+  margin-left: 0;
   margin-right: 10px;
   margin-top: 10px;
 
@@ -37,6 +37,15 @@
   #table-settings-popup {
     @include header-panel-look();
     padding: 10px 0;
+
+    .menu-item {
+      width: 100%;
+      padding: 8px;
+
+      &.active {
+        background-color: $color-light-link-color;
+      }
+    }
   }
 
   a {

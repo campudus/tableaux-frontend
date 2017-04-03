@@ -26,6 +26,10 @@ $overlay-headline-height: 50px;
 
       .content-scroll {
         position: static;
+
+        div:last-of-type {
+          margin-bottom: 25px;
+        }
       }
     }
   }

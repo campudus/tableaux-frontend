@@ -1,12 +1,11 @@
 import React from "react";
-import connectToAmpersand from "./HOCs/connectToAmpersand";
+import connectToAmpersand from "./helperComponents/connectToAmpersand";
 import Dispatcher from "../dispatcher/Dispatcher";
 import Table from "./table/Table.jsx";
 import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
 import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
-import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
 import TableauxConstants, {SortValues, ActionTypes, FilterModes, ColumnKinds} from "../constants/TableauxConstants";
@@ -45,7 +44,8 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId, filter} = this.props;
+    const {columnId, rowId} = this.props;
+    const {filter} = this.props.urlOptions || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -193,7 +193,7 @@ class TableView extends React.Component {
         this.changeFilter({
           filterMode: FilterModes.ID_ONLY,
           filterValue: rowId,
-          filterColumnId: "noop",
+          filterColumnId: null,
           sortColumnId: 0
         });
       }
@@ -331,7 +331,7 @@ class TableView extends React.Component {
         this.doSwitchTable();
       }
     } else if (nextProps.rowId
-      && (nextProps.columnId != this.props.columnId || nextProps.rowId != this.props.rowId)) {
+      && (nextProps.columnId !== this.props.columnId || nextProps.rowId !== this.props.rowId)) {
       this.gotoCell({
         columnId: nextProps.columnId,
         rowId: nextProps.rowId,
@@ -376,26 +376,32 @@ class TableView extends React.Component {
     });
   };
 
-  changeFilter = (rowsFilter) => {
-    const {filterValue, filterColumnId, sortValue, sortColumnId} = rowsFilter;
-    const isFilterEmpty = _.isEmpty(filterValue) && !_.isFinite(filterColumnId) && !_.isFinite(sortColumnId) && _.isEmpty(
-        sortValue);
+  changeFilter = ({filter, sorting}) => {
+    const isFilterEmpty = _.isEmpty(filter.value) && !_.isFinite(filter.columnId)
+      && !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
 
-    let rowsCollection;
     if (isFilterEmpty) {
-      rowsFilter = null;
-      rowsCollection = this.getCurrentTable().rows;
+      this.setState({
+        rowsFilter: null,
+        rowsCollection: this.getCurrentTable().rows
+      });
     } else {
-      rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
-      if (rowsFilter.filterMode !== FilterModes.ID_ONLY) {
+      const rowsFilter = {
+        sortColumnId: sorting.columnId,
+        sortValue: sorting.value,
+        filterColumnId: filter.columnId,
+        filterMode: filter.mode,
+        filterValue: filter.value,
+        filterColumnKind: filter.columnKind
+      };
+      this.setState({
+        rowsFilter,
+        rowsCollection: getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter)
+      });
+      if (filter.mode !== FilterModes.ID_ONLY) {
         this.resetURL();
       }
     }
-
-    this.setState({
-      rowsCollection: rowsCollection,
-      rowsFilter: rowsFilter
-    });
   };
 
   getCurrentTable = () => {
@@ -459,13 +465,11 @@ class TableView extends React.Component {
             <TableSwitcher langtag={this.props.langtag}
                            currentTable={currentTable}
                            tables={tables} />
-            {(AccessControl.isUserAdmin())
-              ? <TableSettings langtag={this.props.langtag} table={currentTable} />
-              : null}
+            <TableSettings langtag={this.props.langtag} table={currentTable} />
             <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
               ? <ColumnFilter langtag={this.props.langtag}
-                             columns={currentTable.columns}
+                              columns={currentTable.columns}
               />
               : null
             }

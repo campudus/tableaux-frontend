@@ -1,5 +1,18 @@
+@import "../variables";
+
+@mixin boxshadow-translatables {
+  @include box-shadow(inset 0 0 8px rgba($color-primary, 0.75));
+
+  &.needs-translation {
+    @include box-shadow(inset 0 0 8px darken($color-needs-translation, 20));
+  }
+
+  &.fully-translated {
+    @include box-shadow(inset 0 0 8px darken($color-fully-translated, 20));
+  }
+}
+
 .cell {
-  border-right: 1px solid $color-border-grey;
   position: relative;
   vertical-align: top;
   white-space: nowrap;
@@ -7,7 +20,7 @@
   overflow: visible;
   text-overflow: ellipsis;
   border: 1px solid transparent;
-  border-right: 1px solid #efefef;
+  border-right: 1px solid $color-border-grey;
   outline: none;
 
   button {
@@ -37,7 +50,6 @@
     input, textarea {
       outline: none;
       padding: 0;
-      padding: 0;
       border: 0;
       background-color: transparent;
       width: 100%;
@@ -58,8 +70,28 @@
     }
   }
 
+  &.needs-translation {
+    background-color: $color-needs-translation;
+  }
+
+  &.fully-translated {
+    background-color: $color-fully-translated;
+  }
+
+  &.needs-translation-other-language {
+    border-color: $color-needs-translation;
+  }
+
   &.selected {
     border: 1px solid $color-primary;
+
+    &.needs-translation {
+      border-color: darken($color-needs-translation, 20);
+    }
+
+    &.fully-translated {
+      border-color: darken($color-fully-translated, 20);
+    }
 
     &.cell-link, &.cell-text, &.cell-attachment, &.cell-richtext, &.cell-currency {
       border: 0;
@@ -67,15 +99,14 @@
       .cell-content {
         @include box-sizing(border-box);
         position: absolute;
-        top: 0px;
-        left: 0px;
+        top: 0;
+        left: 0;
         padding: 9px;
         height: auto;
         min-height: $space-height-cell;
         background-color: $color-selected-row;
         border: 1px solid #3296dc;
         z-index: 1;
-        //box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         width: 100%;
         max-height: 170px;
         overflow-y: auto;
@@ -97,12 +128,14 @@
 
   }
 
+
+
   &.editing {
-    @include box-shadow(inset 0 0 8px rgba($color-primary, 0.75));
+    @include boxshadow-translatables();
 
     &.cell-link, &.cell-text, &.cell-attachment, &.cell-richtext, &.cell-currency {
       .cell-content {
-        @include box-shadow(inset 0 0 8px rgba($color-primary, 0.75));
+        @include boxshadow-translatables();
       }
     }
 

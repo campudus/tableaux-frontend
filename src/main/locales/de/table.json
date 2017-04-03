@@ -2,6 +2,10 @@
   "add_new_row": "Neue Zeile hinzufügen",
   "concat_column_name": "Identifikationsname",
   "confirm_delete_row": "Zeile „{{rowName}}” wirklich löschen?",
+  "translation_needed": "Übersetzung nötig",
+  "this_translation_needed": "Übersetzung nötig für \"{{langtag}}\"",
+  "no_translation_needed": "Keine Übersetzung nötig",
+  "no_such_translation_needed": "Keine Übersetzung nötig für \"{{langtag}}\"",
   "delete_row": "Zeile löschen",
   "copy_cell": "Zellinhalt kopieren",
   "paste_cell": "Zellinhalt einfügen",
@@ -32,6 +36,25 @@
   "filter_columns": "Spalten suchen...",
   "no_results_found": "Keine entsprechenden Spalten gefunden",
   "hide_unhide": "Spalten zeigen/verbergen",
+  "set_header_level": "Überschrift:",
+  "edit_links": "Einträge verlinken/entfernen",
+  "edit_attachments": "Dateien verlinken/entfernen",
+  "final": {
+    "set_final": "Permanente Freigabemarkierung setzen",
+    "set_not_final": "Permanente Freigabemarkierung entfernen",
+    "unlock_toast": "Diese Zeile wurde als \"freigegeben\" markiert.\nNoch einmal klicken um die Sperre für diese Sitzung aufzuheben.",
+    "set_all_rows_final": "Die ganze Tabelle freigeben"
+  },
+  "translations": {
+    "dialog_headline": "Änderung einer mehrsprachigen Zelle",
+    "dialog_question": "Sie haben einen bereits übersetzen Inhalt verändert. Möchten Sie die Übersetzer der anderen Sprachen informieren?\nWählen Sie \"Nein\" falls Sie bspw. nur einen Rechtschreibfehler korrigiert haben.",
+    "flag_all": "Ja, Übersetzer informieren",
+    "dont_flag_all": "Nein, andere Sprachen sind nicht betroffen",
+    "translation_needed": "Übersetzung nötig",
+    "this_translation_needed": "Übersetzung nötig für \"{{langtag}}\"",
+    "no_translation_needed": "Keine Übersetzung nötig",
+    "no_such_translation_needed": "Keine Übersetzung nötig für \"{{langtag}}\""
+  },
   "jump": {
     "no_such_row": "Diese Tabelle enthält keine Zeile mit ID {{row}}",
     "no_such_column": "Diese Tabelle enthält keine Spalte mit ID {{col}}"
@@ -46,7 +69,9 @@
   "filter": {
     "contains": "enthält",
     "starts_with": "beginnt mit",
-    "rows_hidden": "Es wird nur Zeile {{rowId}} angezeigt"
+    "rows_hidden": "Es wird nur Zeile {{rowId}} angezeigt",
+    "needs_translation": "Übersetzung benötigt",
+    "is_final": "Als freigegeben markiert"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",

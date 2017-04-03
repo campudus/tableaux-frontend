@@ -2,11 +2,12 @@ import React from "react";
 import TableauxConstants from "../../constants/TableauxConstants";
 import ActionCreator from "../../actions/ActionCreator";
 import Cell from "../cells/Cell.jsx";
-import connectToAmpersand from "../HOCs/connectToAmpersand";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import MetaCell from "../cells/MetaCell";
 import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {initiateDeleteRow} from "../../helpers/rowHelper";
 import * as f from "lodash/fp";
+import classNames from "classnames";
 
 @connectToAmpersand
 class Row extends React.Component {
@@ -15,21 +16,22 @@ class Row extends React.Component {
 
   constructor(props) {
     super(props);
-    props.table.columns.models.map(
+    props.table.columns.models.forEach(
       col => props.watch(col,
         {
           event: "change",
           force: true
         })
     );
+    props.watch(props.row, {event: "change:final", force: true});
   }
 
   // Allows a good performance when editing large tables
   shouldComponentUpdate(nextProps, nextState) {
     // Update on every available prop change
-    if (this.props.langtag != nextProps.langtag
-      || this.props.row != nextProps.row
-      || this.props.isRowExpanded != nextProps.isRowExpanded
+    if (this.props.langtag !== nextProps.langtag
+      || this.props.row !== nextProps.row
+      || this.props.isRowExpanded !== nextProps.isRowExpanded
     ) {
       return true;
     }
@@ -42,11 +44,7 @@ class Row extends React.Component {
       return true;
     }
     // When nothing is selected and I don't get expanded
-    else if (!this.props.selectedCell && !nextProps.isRowExpanded) {
-      return false;
-    } else {
-      return true;
-    }
+    else return !(!this.props.selectedCell && !nextProps.isRowExpanded);
   };
 
   toggleExpand = () => {
@@ -61,7 +59,7 @@ class Row extends React.Component {
   };
 
   renderSingleLanguageCell = (cell, idx) => {
-    var className = "cell cell-" + cell.column.getId() + "-" + cell.rowId + " repeat";
+    const className = "cell cell-" + cell.column.getId() + "-" + cell.rowId + " repeat";
     return <div key={idx} className={className} onContextMenu={self.contextMenuHandler}>—.—</div>;
   };
 
@@ -115,9 +113,6 @@ class Row extends React.Component {
 
   renderLanguageRow = langtag => {
     const {isRowSelected, selectedCellExpandedRow, row, isRowExpanded, table} = this.props;
-
-    let deleteButton, rowLockedIcon = "";
-
     // Is this (multilanguage) row selected
     const selected = (isRowSelected && (langtag === selectedCellExpandedRow));
     if (selected && row.recentlyDuplicated) {
@@ -126,32 +121,33 @@ class Row extends React.Component {
       row.recentlyDuplicated = false;
     }
 
-    // Set row class optional with selected class
-    const className = "row row-" + this.props.row.getId() + (selected ? " selected" : "") + (row.recentlyDuplicated
-        ? " duplicated"
-        : "");
+    const className = classNames(`row row-${this.props.row.getId()}`, {
+      "selected": selected,
+      "duplicated": row.recentlyDuplicated,
+      "final": row.final
+    });
 
-    // show locked language icon
-    if (!isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag)) {
-      rowLockedIcon = (<i className="fa fa-lock access-denied-icon" />);
-    }
-    // Add delete button to default-language row
-    // or to every not expanded row
-    // will not show when no access
-    else if (table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected) {
-      deleteButton = (
+    const cantTranslate = !isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag);
+    const canDeleteRow = table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected && isUserAdmin();
+    const cantTranslateIcon = (cantTranslate) ? <i className="fa fa-ban access-denied-icon" /> : null;
+    const deleteButton = (canDeleteRow && !row.final)
+      ? (
         <div className="delete-row">
           <button className="button" onClick={this.onClickDelete}>
             <i className="fa fa-trash" />
           </button>
         </div>
-      );
-    }
+      )
+      : null;
+    const unlockButton = (row.final && !cantTranslate)
+      ? <i className="fa fa-lock access-denied-icon" />
+      : null;
 
     return (
       <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1"
            onContextMenu={this.contextMenuHandler}>
-        {rowLockedIcon}
+        {cantTranslateIcon}
+        {unlockButton}
         {deleteButton}
         <MetaCell langtag={langtag} rowId={this.props.row.getId()}
                   onClick={this.toggleExpand} rowExpanded={this.props.isRowExpanded} />
@@ -161,11 +157,10 @@ class Row extends React.Component {
   };
 
   render = () => {
-    const self = this;
     if (this.props.isRowExpanded) {
       // render all language-rows for this row
-      const rows = TableauxConstants.Langtags.map(function (langtag) {
-        return self.renderLanguageRow(langtag);
+      const rows = TableauxConstants.Langtags.map((langtag) => {
+        return this.renderLanguageRow(langtag);
       });
       return <div className="row-group expanded" tabIndex="-1">{rows}</div>;
     } else {

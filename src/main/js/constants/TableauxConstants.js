@@ -164,7 +164,9 @@ var TableauxConstant = {
     {
       CONTAINS: null,
       STARTS_WITH: null,
-      ID_ONLY: null
+      ID_ONLY: null,
+      UNTRANSLATED: null,
+      FINAL: null
     }
   )
 };

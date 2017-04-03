@@ -3,22 +3,21 @@ import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
 import {RowHeight} from "../../constants/TableauxConstants";
-import connectToAmpersand from "../HOCs/connectToAmpersand";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 
 @connectToAmpersand
 class Rows extends React.Component {
 
-  displayName = "Rows";
-
   constructor(props) {
     super(props);
     this.numberOfRows = 0;
+    this.displayName = "Rows";
   }
 
   shouldComponentUpdate(nP) {
     const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
-    if (nP.rows.length != this.numberOfRows) { // forcing update on rows.onAdd leads to exponential render calls
+    if (nP.rows.length !== this.numberOfRows) { // forcing update on rows.onAdd leads to exponential render calls
       this.numberOfRows = nP.rows.length;
       return true;
     }
@@ -33,7 +32,9 @@ class Rows extends React.Component {
       return true;
     }
     const idOf = f.prop("id");
-    if (f.any(([a, b]) => idOf(a) !== idOf(b), f.zip(nP.rows.models, this.props.rows.models))) {
+    // create pairs of old/new elements, check ids at same index
+    // to detect resorting etc
+    if (f.any(([a, b]) => idOf(a) !== idOf(b), f.zip(nP.rows.models, rows.models))) {
       return true;
     }
     // console.log("! Rows skipped update");

@@ -5,12 +5,25 @@ import {noPermissionAlertWithLanguage} from "../overlay/ConfirmationOverlay";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
-import {ColumnKinds} from "../../constants/TableauxConstants";
-import {compose, isEmpty, eq} from "lodash/fp";
+import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
+import {first, compose, isEmpty, eq, drop, remove, merge, contains, prop} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
+import {
+  addTranslationNeeded,
+  removeTranslationNeeded,
+  getAnnotation,
+  deleteCellAnnotation,
+  setRowAnnotation
+} from "../../helpers/annotationHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
+const translationNeverNeeded = cell => contains(cell.kind, [
+  ColumnKinds.currency,
+  ColumnKinds.link,
+  ColumnKinds.attachment,
+  ColumnKinds.concat
+]);
 
 class RowContextMenu extends React.Component {
 
@@ -58,7 +71,7 @@ class RowContextMenu extends React.Component {
 
   copyItem = () => {
     const {cell, table, t, langtag} = this.props;
-    return (table.type != "settings" && cell.kind !== ColumnKinds.concat)
+    return (table.type !== "settings" && cell.kind !== ColumnKinds.concat)
       ? (
         <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell, langtag))}>
           {t("copy_cell")}
@@ -82,9 +95,66 @@ class RowContextMenu extends React.Component {
       : null;
   };
 
+  canTranslate = cell => cell.isMultiLanguage && cell.isEditable && !translationNeverNeeded(cell);
+
+  requestTranslationsItem = () => {
+    const {langtag, cell, t} = this.props;
+    if (!this.canTranslate(cell) || contains(langtag, prop(["annotations", "translationNeeded", "langtags"], cell))) {
+      return null;
+    }
+    const isPrimaryLanguage = langtag === first(Langtags);
+    const neededTranslations = (isPrimaryLanguage)
+      ? drop(1)(Langtags)
+      : [langtag];
+    const fn = () => addTranslationNeeded(neededTranslations, cell);
+    return (
+      <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
+        {(isPrimaryLanguage) ? t("translations.translation_needed") : t("translations.this_translation_needed",
+            {langtag})}
+      </a>
+    );
+  };
+
+  removeTranslationNeeded = () => {
+    const {langtag, cell, t} = this.props;
+    const isPrimaryLanguage = langtag === first(Langtags);
+    const neededTranslations = prop(["annotations", "translationNeeded", "langtags"], cell);
+    if (!this.canTranslate(cell) || (!contains(langtag, neededTranslations) && !isPrimaryLanguage)) {
+      return null;
+    }
+    const translationNeeded = merge({
+      type: "flag",
+      value: "translationNeeded"
+    }, cell.annotations.translationNeeded);
+    const remainingLangtags = remove(eq(langtag), prop("langtags", getAnnotation(translationNeeded, cell)));
+
+    const fn = (isPrimaryLanguage || isEmpty(remainingLangtags))
+      ? () => deleteCellAnnotation(translationNeeded, cell, true)
+      : () => removeTranslationNeeded(langtag, cell);
+    return (
+      <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
+        {(isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed",
+            {langtag})}
+      </a>
+    );
+  };
+
+  setFinal = isFinal => () => {
+    const {cell: {row}} = this.props;
+    setRowAnnotation({final: isFinal}, row);
+  };
+
+  setFinalItem = () => {
+    if (!isUserAdmin()) {
+      return null;
+    }
+    const {t, cell: {row: {final}}} = this.props;
+    const label = (final) ? t("final.set_not_final") : t("final.set_final");
+    return <a href="#" onClick={compose(this.closeRowContextMenu, this.setFinal(!final))}>{label}</a>;
+  };
+
   render = () => {
     const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props: {t}} = this;
-
     return (
       <GenericContextMenu x={this.props.x}
                           y={this.props.y - this.props.offsetY}
@@ -98,6 +168,9 @@ class RowContextMenu extends React.Component {
                               <a href="#" onClick={showDependency}>{t("show_dependency")}</a>
                               {this.props.table.type === "settings" ? "" : <a href="#" onClick={deleteRow}>{t(
                                   "delete_row")}</a>}
+                              {this.requestTranslationsItem()}
+                              {this.removeTranslationNeeded()}
+                              {this.setFinalItem()}
                               {this.props.table.type === "settings" ? "" : <a href="#" onClick={showEntityView}>{t(
                                   "show_entity_view")}</a>}
                             </div>

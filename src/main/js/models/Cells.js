@@ -1,20 +1,20 @@
-var Collection = require("ampersand-collection");
-var _ = require("lodash");
-var Cell = require("./Cell");
+const Collection = require("ampersand-collection");
+const Cell = require("./Cell");
 
-var Cells = Collection.extend({
+const Cells = Collection.extend({
   model: function (attrs, options) {
-    var row = options.collection.parent;
-    var rows = row.collection;
-    var tables = rows.parent.collection;
-    var tableId = rows.parent.getId();
+    const row = options.collection.parent;
+    const rows = row.collection;
+    const tables = rows.parent.collection;
+    const tableId = rows.parent.getId();
 
-    var json = {
+    const json = {
       tables: tables,
       tableId: tableId,
       column: getColumn(rows, attrs.index),
       rowId: attrs.rowId,
       value: attrs.value,
+      annotations: attrs.annotations,
       row: row
     };
 

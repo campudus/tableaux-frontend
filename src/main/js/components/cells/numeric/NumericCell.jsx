@@ -1,79 +1,46 @@
-var React = require("react");
-var _ = require("lodash");
+import React, {Component, PropTypes} from "react";
+import NumericEditCell from "./NumericEditCell.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
+import {prop, isEmpty} from "lodash/fp";
 
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-var NumericEditCell = require("./NumericEditCell.jsx");
-var ActionCreator = require("../../../actions/ActionCreator");
+class NumericCell extends Component {
 
-var NumericCell = React.createClass({
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
-
-  getInitialState: function () {
-    return {};
-  },
-
-  handleLabelClick: function (event) {
-    console.log("Numeric.handleLabelClick");
-    event.preventDefault();
-    ActionCreator.toggleCellEditing();
-  },
-
-  handleEditDone: function (newValue) {
-    var cell = this.props.cell;
-    var valueToSave;
-
-    if (cell.isMultiLanguage) {
-      valueToSave = {};
-      valueToSave[this.props.langtag] = newValue;
-    } else {
-      valueToSave = newValue;
+  handleEditDone = (newValue) => {
+    const {cell, langtag, contentChanged} = this.props;
+    const oldValue = prop(["value", langtag], cell) || prop("value", cell);
+    if (newValue === oldValue || (isEmpty(newValue) && isEmpty(oldValue))) {
+      return;
     }
-
-    ActionCreator.changeCell(cell, valueToSave);
+    const valueToSave = (cell.isMultiLanguage)
+      ? {[langtag]: newValue}
+      : newValue;
+    cell.save({value: valueToSave}, {success: contentChanged});
     ActionCreator.toggleCellEditing(false);
-  },
+  };
 
-  renderSingleLanguage: function () {
-    var cell = this.props.cell;
-    return (
-        <div className={"cell-content"} onClick={this.handleLabelClick}>
-          {cell.value}
+  render() {
+    const {cell, langtag, editing} = this.props;
+
+    if (!editing) {
+      return (
+        <div className="cell-content">
+          {(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
         </div>
-    );
-  },
-
-  renderMultiLanguage: function () {
-    var cell = this.props.cell;
-    var langtag = this.props.langtag;
-    var value = cell.value[langtag];
-
-    return (
-        <div className={"cell-content"} onClick={this.handleLabelClick}>
-          {value}
-        </div>
-    );
-  },
-
-  render: function () {
-    var cell = this.props.cell;
-    var langtag = this.props.langtag;
-
-    if (!this.props.editing) {
-      if (cell.isMultiLanguage) {
-        return this.renderMultiLanguage();
-      } else {
-        return this.renderSingleLanguage();
-      }
+      );
     } else {
-      return <NumericEditCell cell={cell} langtag={langtag} onSave={this.handleEditDone} setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
+      return <NumericEditCell cell={cell}
+                              langtag={langtag}
+                              onSave={this.handleEditDone}
+                              setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts} />;
     }
   }
-});
+}
 
-module.exports = NumericCell;
+export default NumericCell;

@@ -1,75 +1,61 @@
-var React = require("react");
-var _ = require("lodash");
+import React, {Component, PropTypes} from "react";
+import ShortTextEditCell from "./ShortTextEditCell";
+import ActionCreator from "../../../actions/ActionCreator";
+import {isEmpty} from "lodash/fp";
 
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-var ShortTextEditCell = require("./ShortTextEditCell.jsx");
-var ActionCreator = require("../../../actions/ActionCreator");
+class ShortTextCell extends Component {
+  static propTypes = {
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    editing: PropTypes.bool.isRequired,
+    contentChanged: PropTypes.func.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-var ShortTextCell = React.createClass({
+  constructor(props) {
+    super(props);
+    this.displayName = "ShortTextEditCell";
+  }
 
-  displayName: "ShortTextCell",
-
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
-
-  getInitialState: function () {
-    return null;
-  },
-
-  handleClick: function (event) {
-    ActionCreator.toggleCellEditing();
-  },
-
-  handleEditDone: function (newValue) {
-    var cell = this.props.cell;
-    var valueToSave;
-
-    if (cell.isMultiLanguage) {
-      valueToSave = {};
-      valueToSave[this.props.langtag] = newValue;
-    } else {
-      valueToSave = newValue;
+  handleEditDone = (newValue) => {
+    const oldValue = this.getValue();
+    if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
+      return;
     }
+    const {cell, cell: {isMultiLanguage}, langtag, contentChanged} = this.props;
+    const valueToSave = (isMultiLanguage)
+      ? {[langtag]: newValue}
+      : newValue;
 
-    ActionCreator.changeCell(cell, valueToSave);
+    cell.save({value: valueToSave}, {patch: true, success: contentChanged(cell, langtag)});
     ActionCreator.toggleCellEditing(false);
-  },
+  };
 
-  getValue: function () {
-    var cell = this.props.cell;
+  getValue = () => {
+    const {cell, cell: {isMultiLanguage}, langtag} = this.props;
+    return (isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+  };
 
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
-    }
-
-    return typeof value === "undefined" ? null : value;
-  },
-
-  renderTextCell: function (cell, value) {
+  renderTextCell = (cell, value) => {
     return (
-      <div className='cell-content' onClick={this.handleClick}>
-        {value === null ? "" : value}
+      <div className="cell-content">
+        {(value === null) ? "" : value}
       </div>
     );
-  },
+  };
 
-  render: function () {
-    var cell = this.props.cell;
+  render() {
+    const {cell, editing} = this.props;
 
-    if (!this.props.editing) {
+    if (!editing) {
       return this.renderTextCell(cell, this.getValue());
     } else {
       return <ShortTextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}
                                 setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
     }
   }
-});
+}
 
-module.exports = ShortTextCell;
+export default ShortTextCell;

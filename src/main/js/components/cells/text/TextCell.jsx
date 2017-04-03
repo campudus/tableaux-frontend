@@ -1,108 +1,96 @@
-var React = require("react");
-var _ = require("lodash");
+import React, {Component, PropTypes} from "react";
+import TextEditCell from "./TextEditCell.jsx";
+import TextArea from "./TextArea.jsx";
+import ExpandButton from "./ExpandButton.jsx";
+import TextOverlayFooter from "./TextOverlayFooter.jsx";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
+import {isEmpty} from "lodash/fp";
+import {isLocked} from "../../../helpers/annotationHelper";
+import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-var TextEditCell = require("./TextEditCell.jsx");
-var TextArea = require("./TextArea.jsx");
-var ExpandButton = require("./ExpandButton.jsx");
-var TextOverlayFooter = require("./TextOverlayFooter.jsx");
-var OverlayHeadRowIdentificator = require("../../overlay/OverlayHeadRowIdentificator.jsx");
-var ActionCreator = require("../../../actions/ActionCreator");
+class TextCell extends Component {
 
-var TextCell = React.createClass({
+  static propTypes = {
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    editing: PropTypes.bool.isRequired,
+    selected: PropTypes.bool.isRequired
+  };
 
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    selected: React.PropTypes.bool.isRequired
-  },
-
-  handleClick: function (event) {
-    ActionCreator.toggleCellEditing();
-  },
-
-  saveCell: function (newValue) {
-    var cell = this.props.cell;
-    var valueToSave;
-
-    if (cell.isMultiLanguage) {
-      valueToSave = {};
-      valueToSave[this.props.langtag] = newValue;
-    } else {
-      valueToSave = newValue;
+  saveCell = (newValue) => {
+    const oldValue = this.getValue();
+    if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
+      return;
     }
-
-    ActionCreator.changeCell(cell, valueToSave);
+    const {cell, langtag, contentChanged} = this.props;
+    const valueToSave = (cell.isMultiLanguage)
+    ? {[langtag]: newValue}
+    : newValue;
+    cell.save({value: valueToSave}, {success: contentChanged});
     ActionCreator.toggleCellEditing(false);
-  },
+  };
 
-  openOverlay: function (event, withContent) {
-    var self = this;
-    var textValue = withContent || this.getValue();
+  openOverlay = (event, withContent) => {
+    if (isLocked(this.props.cell.row)) {
+      askForSessionUnlock(this.props.cell.row);
+      return;
+    }
+    const textValue = withContent || this.getValue();
     event.stopPropagation();
     event.preventDefault();
 
     ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={self.props.cell} langtag={self.props.langtag}/>,
-      body: <TextArea initialContent={textValue} onClose={self.closeOverlay} onSave={self.saveOverlay}/>,
-      footer: <TextOverlayFooter/>,
+      head: <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />,
+      body: <TextArea initialContent={textValue} onClose={this.closeOverlay} onSave={this.saveOverlay} />,
+      footer: <TextOverlayFooter />,
       type: "normal",
       closeOnBackgroundClicked: false
     });
-  },
+  };
 
-  closeOverlay: function (event) {
+  closeOverlay = (event) => {
     ActionCreator.closeOverlay(event);
-  },
+  };
 
-  saveOverlay: function (content, event) {
+  saveOverlay = (content, event) => {
     this.closeOverlay(event);
     this.saveCell(content);
     ActionCreator.toggleCellEditing(false);
-  },
+  };
 
-  getValue: function () {
-    var cell = this.props.cell;
+  getValue = () => {
+    const {cell, langtag} = this.props;
+    const value = (cell.isMultiLanguage)
+    ? cell.value[langtag]
+      : cell.value;
+    return value || "";
+  };
 
-    var value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[this.props.langtag];
-    } else {
-      value = cell.value;
-    }
-
-    return typeof value === "undefined" ? "" : value;
-  },
-
-  renderTextCell: function (cell, value) {
-    var self = this;
-
-    var expandButton = "";
-    if (this.props.selected) {
-      expandButton = <ExpandButton onTrigger={self.openOverlay}></ExpandButton>;
-    }
+  renderTextCell = (cell, value) => {
+    const expandButton = (this.props.selected)
+      ? <ExpandButton onTrigger={this.openOverlay} />
+      : null;
 
     return (
       <div className='cell-content' onClick={this.handleClick}>
-        {value === null ? "" : value}
+        {value}
         {expandButton}
       </div>
     );
-  },
+  };
 
-  render: function () {
-    var cell = this.props.cell;
-
-    if (!this.props.editing) {
+  render() {
+    const {cell, langtag, editing} = this.props;
+    if (!editing) {
       return this.renderTextCell(cell, this.getValue());
     } else {
-      return <TextEditCell cell={cell} defaultText={this.getValue()} langtag={this.props.langtag}
+      return <TextEditCell cell={cell} defaultText={this.getValue()} langtag={langtag}
                            onBlur={this.saveCell}
                            openOverlay={this.openOverlay} closeOverlay={this.closeOverlay}
-                           saveOverlay={this.saveOverlay}/>;
+                           saveOverlay={this.saveOverlay} />;
     }
   }
-});
+}
 
-module.exports = TextCell;
+export default TextCell;

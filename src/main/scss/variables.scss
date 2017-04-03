@@ -43,6 +43,8 @@ $color-success: #5EC786;
 $color-green: $color-success;
 $color-red: #D86357;
 $dark-blue-grey-background: #3C4246;
+$color-needs-translation: lighten($color-primary, 40);
+$color-fully-translated: lighten($color-green, 30);
 
 // Fonts ----------------------------------- //
 $font-main: 'Lato', Helvetica Neue, Helvetica, Arial, sans-serif;

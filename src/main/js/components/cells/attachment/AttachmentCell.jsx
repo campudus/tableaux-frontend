@@ -1,55 +1,44 @@
-var React = require("react");
-var AttachmentLabelCell = require("./AttachmentLabelCell.jsx");
-var AttachmentEditCell = require("./AttachmentEditCell.jsx");
+import React, {Component, PropTypes} from "react";
+import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
+import AttachmentEditCell from "./AttachmentEditCell.jsx";
+import * as f from "lodash/fp";
 
-var AttachmentCell = React.createClass({
+class AttachmentCell extends Component {
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    selected: React.PropTypes.bool.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    selected: PropTypes.bool.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-  getInitialState: function () {
-    return null;
-  },
+  render() {
+    const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = this.props;
 
-  render: function () {
-    var self = this;
-
-    if (self.props.selected) {
-      return <AttachmentEditCell cell={self.props.cell} langtag={self.props.langtag}
-                                 editing={self.props.editing}
-                                 setCellKeyboardShortcuts={self.props.setCellKeyboardShortcuts}></AttachmentEditCell>;
+    if (selected) {
+      return <AttachmentEditCell cell={cell} langtag={langtag}
+                                 editing={editing}
+                                 setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+      />;
     } else {
-      // Show a attachment preview for performance
-      var tooManyAttachments = false;
-      var attachments = self.props.cell.value.map(function (element, id) {
-        // Limit to maximum 3 Links
-        if (id <= 2) {
-          return <AttachmentLabelCell key={id} attachmentElement={element} cell={self.props.cell}
-                                      langtag={self.props.langtag}
-                                      deletable={false}/>;
-        } else {
-          tooManyAttachments = true;
-          return null;
-        }
-      }).filter(Boolean); // remove null and empty array values: http://stackoverflow.com/a/13798078
-
-      // More note ...
-      if (tooManyAttachments) {
-        attachments.push(<span key={"more"} className="more">&hellip;</span>);
-      }
+      // Show an attachment preview for performance
+      const tooManyAttachments = cell.value.length > 3;
+      const attachments = f.take(3, cell.value)
+                           .map((element, id) => {
+                             return <AttachmentLabelCell key={id} attachmentElement={element} cell={cell}
+                                                         langtag={langtag}
+                                                         deletable={false}
+                             />;
+                           });
       return (
         <div className={"cell-content"}>
-          {attachments}
+          {(tooManyAttachments) ? [...attachments, <span key={"more"} className="more">&hellip;</span>] : attachments}
         </div>
       );
     }
   }
 
-});
+}
 
 module.exports = AttachmentCell;

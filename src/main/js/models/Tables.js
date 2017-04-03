@@ -48,7 +48,6 @@ const Tables = Collection.extend({
   model: Table,
 
   initialize() {
-    console.log("Rows.initialize:", arguments);
     Dispatcher.on(ActionTypes.CHANGE_CELL, this.changeCellHandler, this);
     Dispatcher.on(ActionTypes.REMOVE_ROW, this.removeRowHandler, this);
     Dispatcher.on(ActionTypes.CREATE_ROW, this.addRowHandler, this);

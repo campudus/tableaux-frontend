@@ -1,58 +1,44 @@
-var React = require("react");
-var _ = require("lodash");
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-var LinkOverlay = require("./LinkOverlay.jsx");
-var LinkLabelCell = require("./LinkLabelCell.jsx");
-var LinkEditCell = require("./LinkEditCell.jsx");
+import React, {Component, PropTypes} from "react";
+import LinkLabelCell from "./LinkLabelCell.jsx";
+import LinkEditCell from "./LinkEditCell.jsx";
+import * as f from "lodash/fp";
 
-var LinkCell = React.createClass({
+class LinkCell extends Component {
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    selected: React.PropTypes.bool.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    selected: PropTypes.bool.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-  getInitialState: function () {
-    return null;
-  },
+  render() {
+    const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = this.props;
 
-  render: function () {
-    var self = this;
-
-    if (self.props.selected) {
-      return <LinkEditCell cell={self.props.cell} langtag={self.props.langtag}
-                           editing={self.props.editing}
-                           setCellKeyboardShortcuts={self.props.setCellKeyboardShortcuts}></LinkEditCell>;
+    if (selected) {
+      return <LinkEditCell cell={cell} langtag={langtag}
+                           editing={editing}
+                           setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+      />;
     } else {
       // Show a link preview for performance
-      var tooManyLinks = false;
-      var links = self.props.cell.value.map(function (element, index) {
-        // Limit to maximum 3 Links
-        if (index <= 2) {
-          return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={self.props.cell}
-                                langtag={self.props.langtag}
-                                deletable={false}/>;
-        } else {
-          tooManyLinks = true;
-          return null;
-        }
-      }).filter(Boolean); // remove null and empty array values: http://stackoverflow.com/a/13798078
-
-      // More note ...
-      if (tooManyLinks) {
-        links.push(<span key={"more"} className="more">&hellip;</span>);
-      }
+      const tooManyLinks = cell.value.length > 3;
+      const links = f.take(3, cell.value)
+                     .map((element, index) => {
+                       return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={cell}
+                                               langtag={langtag}
+                                               deletable={false}
+                         />;
+                     });
       return (
-          <div className={"cell-content"}>
-            {links}
-          </div>
+        <div className={"cell-content"}>
+          {(tooManyLinks) ? [...links, <span key={"more"} className="more">&hellip;</span>] : links}
+        </div>
       );
     }
   }
 
-});
+}
 
 module.exports = LinkCell;

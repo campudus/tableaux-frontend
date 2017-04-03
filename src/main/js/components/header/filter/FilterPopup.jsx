@@ -7,9 +7,15 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import Select from "react-select";
 import FilterModePopup from "./FilterModePopup";
 import {translate} from "react-i18next";
-import TableauxConstants, {FilterModes, ColumnKinds} from "../../../constants/TableauxConstants";
+import TableauxConstants, {FilterModes, ColumnKinds, SortValues} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
 import {either} from "../../../helpers/monads";
+import SearchFunctions from "../../../helpers/searchFunctions";
+import classNames from "classnames";
+
+const BOOL = "boolean";
+const TEXT = "text";
+const SPECIAL_SEARCHES = [FilterModes.UNTRANSLATED, FilterModes.FINAL];
 
 @translate(["filter", "table"])
 @listensToClickOutside
@@ -48,16 +54,29 @@ class FilterPopup extends React.Component {
 
   constructor(props) {
     super(props);
+    const currFilter = props.currentFilter;
 
-    let currFilter = props.currentFilter;
+    const filter = {
+      columnId: either(currFilter)
+        .map(cf => {
+          const mode = f.prop(["filterMode"], cf);
+          return (f.contains(mode, SPECIAL_SEARCHES)) ? mode : null;
+        })
+        .orElse(f.compose(f.toString, f.prop("filterColumnId")))
+        .getOrElse(null),
+      mode: f.prop("filterMode", currFilter),
+      value: f.prop("filterValue", currFilter),
+      columnKind: f.prop("filterColumnKind", currFilter)
+    };
+
+    const sorting = {
+      columnId: f.toString(f.prop("sortColumnId", currFilter)),
+      value: f.defaultTo(TableauxConstants.SortValues.ASC)(f.prop("sortValue", currFilter))
+    };
 
     this.state = {
-      selectedFilterColumn: currFilter && _.isFinite(currFilter.filterColumnId) ? currFilter.filterColumnId : null,
-      selectedSortColumn: currFilter && _.isFinite(currFilter.sortColumnId) ? currFilter.sortColumnId : null,
-      filterValue: currFilter && !_.isEmpty(currFilter.filterValue) ? currFilter.filterValue : "",
-      sortValue: currFilter && !_.isEmpty(currFilter.sortValue)
-        ? currFilter.sortValue
-        : TableauxConstants.SortValues.ASC,
+      filter,
+      sorting,
       filterModesOpen: false
     };
 
@@ -70,7 +89,21 @@ class FilterPopup extends React.Component {
   }
 
   getSearchableColumns() {
-    return this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
+    const searchableColumns = this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
+    const {langtag} = this.props;
+    return [
+      {
+        label: this.props.t("translations.this_translation_needed", {langtag}),
+        value: FilterModes.UNTRANSLATED,
+        kind: BOOL
+      },
+      {
+        label: this.props.t("filter.is_final"),
+        value: FilterModes.FINAL,
+        kind: BOOL
+      },
+      ...searchableColumns
+    ];
   }
 
   buildColumnOptions(filterFn) {
@@ -84,7 +117,8 @@ class FilterPopup extends React.Component {
 
       return {
         label: labelName,
-        value: column.id
+        value: f.toString(column.id),
+        kind: column.kind
       };
     });
   }
@@ -105,19 +139,13 @@ class FilterPopup extends React.Component {
   }
 
   filterInputChange = (event) => {
-    this.setState({filterValue: event.target.value});
+    this.setState({filter: f.assoc("value", event.target.value, this.state.filter)});
   };
 
   filterUpdate = (event) => {
-    const {selectedFilterColumn, selectedSortColumn} = this.state;
-    const filterMode = either(this.props.currentFilter)
-      .map(f.prop("filterMode"))
-      .getOrElse(FilterModes.CONTAINS);
-    ActionCreator.changeFilter(selectedFilterColumn,
-      this.state.filterValue,
-      filterMode,
-      selectedSortColumn,
-      this.state.sortValue);
+    const {filter, sorting} = this.state;
+    const colIdToNumber = obj => f.assoc("columnId", parseInt(obj.columnId), obj);
+    ActionCreator.changeFilter(colIdToNumber(filter), colIdToNumber(sorting));
     this.handleClickOutside(event);
   };
 
@@ -136,22 +164,59 @@ class FilterPopup extends React.Component {
 
   selectSortValueRenderer = (option) => {
     if (option.value === TableauxConstants.SortValues.ASC) {
-      return <div><i className="fa fa-sort-alpha-asc"></i> {option.label}</div>;
+      return <div><i className="fa fa-sort-alpha-asc" /> {option.label}</div>;
     } else {
-      return <div><i className="fa fa-sort-alpha-desc"></i> {option.label}</div>;
+      return <div><i className="fa fa-sort-alpha-desc" /> {option.label}</div>;
     }
   };
 
-  onChangeSelectFilter = (selection) => {
-    this.setState({selectedFilterColumn: selection.value});
+  filtersForKind = kind => {
+    return f.cond([
+      [f.eq(ColumnKinds.boolean), f.always("boolean")],
+      [f.eq(ColumnKinds.number), f.always("text")],
+      [f.stubTrue, f.always("text")]
+    ])(kind);
+  };
+
+  onChangeSelectFilter = option => {
+    const {value, kind} = option;
+    if (f.contains(value, SPECIAL_SEARCHES)) {
+      const filter = {
+        columnId: value,
+        mode: value,
+        columnKind: BOOL,
+        value: true
+      };
+      this.setState({filter});
+    } else {
+      const defaultMode = FilterModes.CONTAINS;
+      const oldValue = this.state.filter.value;
+      const filterMode = (this.state.filter.columnKind === BOOL)
+        ? defaultMode
+        : this.state.filter.mode || defaultMode;
+      const filter = {
+        mode: filterMode,
+        columnId: value,
+        value: f.isString(oldValue) ? oldValue : "",
+        columnKind: this.filtersForKind(kind)
+      };
+      this.setState({filter});
+    }
   };
 
   onChangeSelectSortColumn = (selection) => {
-    this.setState({selectedSortColumn: selection.value});
+    const {value} = selection;
+    const sortValue = f.defaultTo(SortValues.ASC)(f.prop(["sorting", "sortvalue"], this.state));
+    this.setState({
+      sorting: {
+        columnId: value,
+        value: sortValue
+      }
+    });
   };
 
   onChangeSelectSortValue = (selection) => {
-    this.setState({sortValue: selection.value});
+    this.setState({sorting: f.assoc("value", selection.value, this.state.sorting)});
   };
 
   getKeyboardShortcuts = (event) => {
@@ -177,76 +242,104 @@ class FilterPopup extends React.Component {
       : 1;
     return <FilterModePopup active={active}
                             close={this.toggleFilterModePopup}
-                            setFilterMode={this.props.setFilterMode} />;
+                            setFilterMode={(mode) => this.setState({
+                              filter: f.assoc("mode",
+                                mode,
+                                this.state.filter)
+                            })} />;
+  };
+
+  boolInput = () => {
+    const isYesSelected = this.state.filter.value;
+    const yesClassName = classNames("neutral yes", {"active": isYesSelected});
+    const noClassName = classNames("neutral no", {"active": !isYesSelected});
+    return (
+      <span className="bool-input">
+        <a href="#" className={yesClassName} onClick={() => this.setState({filter: f.assoc("value", true, this.state.filter)})}>
+          {i18n.t("common:yes")}
+        </a>
+        <a href="#" className={noClassName} onClick={() => this.setState({filter: f.assoc("value", false, this.state.filter)})}>
+          {i18n.t("common:no")}
+        </a>
+      </span>
+    );
   };
 
   render() {
-    let {t, currentFilter} = this.props;
-    const filterInfoString =
-      _.cond([
-        [_.isNil, f.always("table:filter.contains")],
-        [f.matchesProperty("filterMode", FilterModes.CONTAINS), f.always("table:filter.contains")],
-        [f.matchesProperty("filterMode", FilterModes.STARTS_WITH), f.always("table:filter.starts_with")],
-        [f.stubTrue, f.always("Error")]
-      ])(currentFilter);
-
-    const canFilter = !f.isEmpty(this.state.filterValue) || this.state.selectedSortColumn !== null;
+    const {t} = this.props;
+    const {filter, sorting} = this.state;
+    const filterInfoString = either(filter.mode)
+      .map(mode => f.prop([mode, "displayName"], SearchFunctions))
+      .getOrElse("");
+    const filterColumnSelected = f.isInteger(parseInt(filter.columnId));
+    const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
+    const hasFilterValue = (filter.columnKind === TEXT && f.isString(filter.value) && !f.isEmpty(filter.value))
+      || (filter.columnKind === BOOL && f.isBoolean(filter.value));
+    const canApplyFilter = sortColumnSelected || hasFilterValue;
+    const sortOptions = this.getSortOptions();
 
     return (
       <div id="filter-popup">
-          {(either(currentFilter).map(f.matchesProperty("filterColumnId", "noop")).getOrElse(false))
-            ? (
-              <div className="wip-filter-message">
-                {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
-              </div>
-            )
-            : (
-              <div className="filter-row">
-                <Select
-                  className="filter-select"
-                  options={this.getSearchableColumns()}
-                  searchable={true}
-                  clearable={false}
-                  value={this.state.selectedFilterColumn}
-                  onChange={this.onChangeSelectFilter}
-                  valueRenderer={this.selectFilterValueRenderer}
-                  noResultsText={t("input.noResult")}
-                  placeholder={t("input.filter")}
-                />
-                <span className="separator">{t(filterInfoString)}</span>
+        {(either(filter).map(f.matchesProperty("mode", FilterModes.ID_ONLY)).getOrElse(false))
+          ? (
+            <div className="wip-filter-message">
+              {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
+            </div>
+          )
+          : (
+            <div className="filter-row">
+              <Select
+                className="filter-select"
+                options={this.getSearchableColumns()}
+                searchable={true}
+                clearable={false}
+                value={filter.columnId}
+                onChange={this.onChangeSelectFilter}
+                valueRenderer={this.selectFilterValueRenderer}
+                noResultsText={t("input.noResult")}
+                placeholder={t("input.filter")}
+              />
+              <span className="separator">{t(filterInfoString)}</span>
 
-                <span className="filter-mode-wrapper">
-                <input value={this.state.filterValue} type="text" className="filter-input" disabled={this.state.selectedFilterColumn === null} ref={fi => this.filterInput = fi}
-                       onChange={this.filterInputChange}
-                       onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-                       onClick={x => this.filterInput.focus()}
-                />
-                <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
-                  {(this.state.selectedFilterColumn !== null)
-                    ? (
-                      <a href="#"
-                         className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
-                         onMouseDown={this.toggleFilterModePopup}>
-                        <i className="fa fa-search" />
-                        <i className="fa fa-caret-down" />
-                      </a>
-                    )
-                    : null}
-                  {(this.state.filterModesOpen)
-                    ? this.renderFilterModePopup()
-                    : null
-                  }
+              {(filter.columnKind === BOOL)
+                ? this.boolInput()
+                : <span className="filter-mode-wrapper">
+                  <input value={filter.value}
+                         type="text"
+                         className="filter-input"
+                         disabled={!filterColumnSelected}
+                         ref={fi => { this.filterInput = fi; }}
+                         onChange={this.filterInputChange}
+                         onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+                         onClick={x => this.filterInput.focus()}
+                  />
+                  <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
+                    {(filterColumnSelected)
+                      ? (
+                        <a href="#"
+                           className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
+                           onMouseDown={this.toggleFilterModePopup}>
+                          <i className="fa fa-search" />
+                          <i className="fa fa-caret-down" />
+                        </a>
+                      )
+                      : null}
+                    {(this.state.filterModesOpen)
+                      ? this.renderFilterModePopup()
+                      : null
+                    }
+                  </span>
                 </span>
-                </span>
-              </div>
-            )}
+              }
+            </div>
+          )}
         <div className="sort-row">
           <Select
             className="filter-select"
             options={this.getSortableColumns()}
             searchable={true}
             clearable={false}
-            value={this.state.selectedSortColumn}
+            value={sorting.columnId}
             onChange={this.onChangeSelectSortColumn}
             valueRenderer={this.selectFilterValueRenderer}
             noResultsText={t("input.noResult")}
@@ -254,12 +347,12 @@ class FilterPopup extends React.Component {
           />
           <span className="separator">{t("help.sort")}</span>
           <Select
-            disabled={this.state.selectedSortColumn === null}
+            disabled={!sortColumnSelected}
             className="filter-select"
-            options={this.getSortOptions()}
+            options={sortOptions}
             searchable={true}
             clearable={false}
-            value={(this.state.selectedSortColumn !== null) ? this.state.sortValue : ""}
+            value={(sortColumnSelected) ? sorting.value : ""}
             onChange={this.onChangeSelectSortValue}
             valueRenderer={this.selectSortValueRenderer}
             optionRenderer={this.selectSortValueRenderer}
@@ -272,7 +365,9 @@ class FilterPopup extends React.Component {
             <span className="text">{t("help.note")}</span></p>
           <button tabIndex="1" className="neutral"
                   onClick={this.clearFilter}>{t("button.clearFilter")}</button>
-          <button tabIndex="0" className={(canFilter) ? "filter-go" : "filter-go neutral"} disabled={!canFilter}
+          <button tabIndex="0"
+                  className={(canApplyFilter) ? "filter-go" : "filter-go neutral"}
+                  disabled={!canApplyFilter}
                   onClick={this.filterUpdate}>{t("button.doFilter")}</button>
         </div>
       </div>

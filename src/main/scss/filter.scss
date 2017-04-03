@@ -57,6 +57,27 @@
       }
     }
 
+    .bool-input {
+      a {
+        @include button-look();
+        background-color: $color-button-grey;
+        padding: 8px 30px;
+
+        &.yes {
+          margin-right: 30px;
+        }
+
+        &.active {
+          &.yes {
+            background-color: $color-green;
+          }
+          &.no {
+            background-color: $color-red;
+          }
+        }
+      }
+    }
+
     .context-menu {
       position: absolute;
       right: 0;

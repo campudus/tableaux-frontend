@@ -1,73 +1,68 @@
-import React from "react";
-import _ from "lodash";
+import React, {Component, PropTypes} from "react";
+import * as _ from "lodash";
 import LinkOverlay from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import AmpersandMixin from "ampersand-react-mixin";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import {isLocked} from "../../../helpers/annotationHelper";
 
-const LinkEditCell = React.createClass({
+@connectToAmpersand
+class LinkEditCell extends Component {
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
+  };
 
-  mixins: [AmpersandMixin],
-
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
-  },
-
-  componentDidMount: function () {
-    var self = this;
+  componentDidMount = () => {
     this.props.setCellKeyboardShortcuts({
-      enter: function (event) {
-          // stop handling the Table events
+      enter: (event) => {
         event.stopPropagation();
         event.preventDefault();
-        self.openOverlay();
+        this.openOverlay();
       }
     });
-  },
+  };
 
-  componentWillUnmount: function () {
+  componentWillUnmount = () => {
       // Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
-  },
+  };
 
-  removeLink: function (idx) {
-    var cell = this.props.cell;
-    var newValue = _.filter(cell.value, function (element, arrayIndex) {
-      return element.id !== idx;
-    });
+  removeLink = (idx) => {
+    const {cell} = this.props;
+    const newValue = _.filter(cell.value, (element) => element.id !== idx);
     ActionCreator.changeCell(cell, newValue);
-  },
+  };
 
-  openOverlay: function () {
-    ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag}/>,
-      body: <LinkOverlay cell={this.props.cell} langtag={this.props.langtag}/>,
-      type: "no-scroll"
-    });
-  },
+  openOverlay = () => {
+    const {cell, langtag} = this.props;
+    if (!isLocked(cell.row)) {
+      ActionCreator.openOverlay({
+        head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
+        body: <LinkOverlay cell={cell} langtag={langtag} />,
+        type: "no-scroll"
+      });
+    }
+  };
 
-  render: function () {
-    var self = this;
-    var links = self.props.cell.value.map(function (element, index) {
-      return <LinkLabelCell key={element.id} deletable={true} linkElement={element}
-                              cell={self.props.cell} langtag={self.props.langtag} onDelete={self.removeLink}
+  render() {
+    const {cell, langtag} = this.props;
+    const links = cell.value.map((element, index) => {
+      return <LinkLabelCell key={element.id} deletable={!isLocked(cell.row)} linkElement={element}
+                              cell={cell} langtag={langtag} onDelete={this.removeLink}
                               linkIndexAt={index}/>;
     });
 
-    links.push(<button key={"add-btn"} className="add" onClick={self.openOverlay}>+</button>);
-
     return (
         <div className={"cell-content"}>
-          {links}
+          {[...links, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
         </div>
     );
   }
 
-})
-  ;
+}
 
 module.exports = LinkEditCell;

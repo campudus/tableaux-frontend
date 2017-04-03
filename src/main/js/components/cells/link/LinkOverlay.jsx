@@ -14,7 +14,7 @@ import FilterModePopup from "../../header/filter/FilterModePopup";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import apiUrl from "../../../helpers/apiUrl";
-import withAbortableXhrRequests from "../../HOCs/withAbortableXhrRequests";
+import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 
 // we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;

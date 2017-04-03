@@ -3,6 +3,9 @@ import * as f from "lodash/fp";
 import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
+import {isLocked} from "../../helpers/annotationHelper";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
+import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 
 export function shouldCellFocus() {
   // we dont want to force cell focus when overlay is open
@@ -87,7 +90,7 @@ export function getKeyboardShortcuts() {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
         if (selectedCell && !selectedCellEditing) {
-          toggleCellEditing.call(this);
+          toggleCellEditing.call(this, {langtag: this.state.selectedCellExpandedRow || this.props.langtag});
         }
       }
       );
@@ -201,10 +204,19 @@ export function toggleCellSelection({selected, cell, langtag}) {
   });
 }
 
-export function toggleCellEditing(params) {
+export function toggleCellEditing(params = {}) {
+  const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
-  if (selectedCell) {
+  const needsTranslation = f.contains(
+    params.langtag,
+    f.intersection(getUserLanguageAccess(), f.prop(["annotations", "translationNeeded", "langtags"], selectedCell))
+  );
+  if (selectedCell && canEdit) {
+    if (!this.state.selectedCellEditing && isLocked(selectedCell.row) && !needsTranslation) {  // needs_translation overrules final
+      askForSessionUnlock(selectedCell.row);
+      return;
+    }
     const noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);
     if (!noEditingModeNeeded) {
       this.setState({

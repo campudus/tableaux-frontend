@@ -3,6 +3,8 @@ import {FilterModes} from "../constants/TableauxConstants";
 
 const clean = f.compose(f.toLower, f.trim); // normalise string
 
+// TODO: Filternamen in locale speichern, Schema: {filters: {[mode]: display name}}
+
 const SearchFunctions = {
   [FilterModes.CONTAINS]: f.curry(
     (stringOfFilters, str) => {
@@ -16,5 +18,8 @@ const SearchFunctions = {
       return f.startsWith(clean(searchVal), clean(str));
     })
 };
+
+SearchFunctions[FilterModes.CONTAINS].displayName = "table:filter.contains";
+SearchFunctions[FilterModes.STARTS_WITH].displayName = "table:filter.starts_with";
 
 export default SearchFunctions;

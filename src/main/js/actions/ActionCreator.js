@@ -79,12 +79,10 @@ module.exports = {
     });
   },
 
-  toggleCellEditing: function (editing) {
-    if (editing === undefined) {
-      editing = true;
-    }
+  toggleCellEditing: function ({editing = true, langtag}) {
     Dispatcher.trigger(ActionTypes.TOGGLE_CELL_EDITING, {
-      editing: editing
+      editing,
+      langtag
     });
   },
 
@@ -192,14 +190,8 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
   },
 
-  changeFilter: function (newFilterColumnId, newFilterValue, newFilterMode, newSortColumnId, newSortValue) {
-    Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {
-      filterColumnId: newFilterColumnId,
-      filterValue: newFilterValue,
-      filterMode: newFilterMode,
-      sortColumnId: newSortColumnId,
-      sortValue: newSortValue
-    });
+  changeFilter: function (filter, sorting) {
+    Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {filter, sorting});
   },
 
   clearFilter: function () {

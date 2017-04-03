@@ -1,17 +1,18 @@
-var AmpersandModel = require("ampersand-model");
-var apiUrl = require("../helpers/apiUrl");
-var Columns = require("./Columns");
-var Cell = require("./Cell");
-var Cells = require("./Cells");
-var _ = require("lodash");
+const AmpersandModel = require("ampersand-model");
+const apiUrl = require("../helpers/apiUrl");
+const Cells = require("./Cells");
 import request from "superagent";
-import { noPermissionAlertWithLanguage } from "../components/overlay/ConfirmationOverlay.jsx";
-import { getUserLanguageAccess, canUserChangeCell, reduceValuesToAllowedLanguages, isUserAdmin } from "../helpers/accessManagementHelper";
+import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
+import {getUserLanguageAccess, isUserAdmin} from "../helpers/accessManagementHelper";
+import * as f from "lodash/fp";
+import {extractAnnotations} from "../helpers/annotationHelper";
 
-var Row = AmpersandModel.extend({
+const Row = AmpersandModel.extend({
   props: {
     id: "number",
-    values: "array"
+    values: "array",
+    annotations: "array",
+    final: "boolean"
   },
 
   session: {
@@ -37,8 +38,15 @@ var Row = AmpersandModel.extend({
     }
 
     // We need to create a new row, or the current is getting changed
-    let copiedRow = new Row({id: this.id, tableId: this.tableId},
-      {collection: this.collection, parent: this.parent});
+    let copiedRow = new Row(
+      {
+        id: this.id,
+        tableId: this.tableId
+      },
+      {
+        collection: this.collection,
+        parent: this.parent
+      });
 
     copiedRow.save(null, {
       url: this.url() + "/duplicate",
@@ -76,10 +84,12 @@ var Row = AmpersandModel.extend({
 
   parse: function (attrs, options) {
     if (attrs.values) {
-      attrs.cells = attrs.values.map(function (value, idx) {
+      const values = f.zip(attrs.values, attrs.annotations);
+      attrs.cells = values.map(function ([value, annotations], idx) {
         return {
           index: idx,
-          value: value,
+          value,
+          annotations: extractAnnotations(annotations),
           rowId: attrs.id
         };
       });
@@ -93,7 +103,7 @@ var Row = AmpersandModel.extend({
   },
 
   url: function () {
-    var base = this.urlRoot();
+    const base = this.urlRoot();
 
     if (this.isNew()) {
       return base;
@@ -104,7 +114,7 @@ var Row = AmpersandModel.extend({
 
   urlRoot: function () {
     // first try tableId because there could be a Row with out collection
-    var tableId = this.tableId || this.collection.parent.getId();
+    const tableId = this.tableId || this.collection.parent.getId();
     return apiUrl("/tables/" + tableId + "/rows");
   }
 });

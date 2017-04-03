@@ -2,6 +2,8 @@ const Collection = require("ampersand-rest-collection");
 const _ = require("lodash");
 const apiUrl = require("../helpers/apiUrl");
 const Row = require("./Row");
+import {getSessionUnlockedElements} from "../helpers/annotationHelper";
+import * as f from "lodash/fp";
 
 export const INITIAL_PAGE_SIZE = 30;
 export const PAGE_SIZE = 500;
@@ -13,10 +15,13 @@ const Rows = Collection.extend({
   model: function (attrs, options) {
     const tableId = options.collection.parent.getId();
     const columns = options.collection.parent.columns;
+    const sessionUnlocked = getSessionUnlockedElements({tableId});
     const json = {
       id: attrs.id,
       tableId: tableId,
       values: attrs.values,
+      annotations: attrs.annotations || [],
+      final: !!attrs.final && sessionUnlocked !== true && !f.contains(attrs.id, sessionUnlocked),
       columns: columns
     };
 
