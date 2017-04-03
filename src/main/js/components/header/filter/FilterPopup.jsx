@@ -308,7 +308,7 @@ class FilterPopup extends React.Component {
                          type="text"
                          className="filter-input"
                          disabled={!filterColumnSelected}
-                         ref={fi => this.filterInput = fi}
+                         ref={fi => { this.filterInput = fi; }}
                          onChange={this.filterInputChange}
                          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
                          onClick={x => this.filterInput.focus()}

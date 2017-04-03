@@ -45,7 +45,7 @@ class TableView extends React.Component {
     };
 
     const {columnId, rowId} = this.props;
-    const {filter, overlay} = this.props.urlOptions || {};
+    const {filter} = this.props.urlOptions || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),

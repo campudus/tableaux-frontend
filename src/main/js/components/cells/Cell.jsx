@@ -39,7 +39,6 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   const translationsExist = untranslated.length !== Langtags.length - 1;
 
   if (isPrimaryLanguage) {
-    console.log("isPrimaryLanguage")
     const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
     const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
       ? addTranslationNeeded(untranslated, cell)
@@ -51,11 +50,9 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
     }
   } else {
     const remainingTranslations = f.remove(f.equals(langtag), f.prop("langtags", translationAnnotation));
-    console.log("Remaing translations:", remainingTranslations)
     if (f.contains(langtag, translationAnnotation.langtags)) {
       removeTranslationNeeded(langtag, cell);
       if (f.isEmpty(remainingTranslations)) {
-        console.log("Removing empty translation annotation")
         deleteCellAnnotation(translationAnnotation, cell);
       }
     }
