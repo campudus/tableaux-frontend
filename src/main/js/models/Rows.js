@@ -41,7 +41,8 @@ const Rows = Collection.extend({
   parse: function (resp) {
     // set totalSize for calculating pagination
     this.totalSize = _.get(resp, ["page", "totalSize"], 0);
-
+    console.log("Rows.parse", _.get(resp, "page"))
+    console.log("set this.totalsize to", this.totalSize)
     // do real parsing
     return resp.rows;
   },
@@ -64,9 +65,7 @@ const Rows = Collection.extend({
     if (pageNumber === 1) {
       return {
         offset: 0,
-        limit: totalSize >= INITIAL_PAGE_SIZE
-          ? INITIAL_PAGE_SIZE
-          : totalSize % INITIAL_PAGE_SIZE
+        limit: INITIAL_PAGE_SIZE
       };
     } else {
       return {
