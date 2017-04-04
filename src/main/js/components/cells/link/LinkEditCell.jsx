@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import * as _ from "lodash";
-import LinkOverlay from "./LinkOverlay.jsx";
+import {openLinkOverlay} from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
@@ -46,11 +45,9 @@ class LinkEditCell extends Component {
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
-    ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
-      body: <LinkOverlay cell={cell} langtag={langtag} />,
-      type: "no-scroll"
-    });
+    if (!isLocked(cell.row)) {
+      openLinkOverlay(cell, langtag);
+    }
   };
 
   render() {

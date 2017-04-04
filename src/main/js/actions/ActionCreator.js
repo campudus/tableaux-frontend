@@ -280,5 +280,10 @@ module.exports = {
 
   switchEntityViewLanguage: ({langtag}) => {
     Dispatcher.trigger(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, {langtag});
+  },
+
+  filterLinksInOverlay: ({filterMode, filterValue}) => {
+    console.log("filterLinksInOverlay", {filterMode, filterValue})
+    Dispatcher.trigger(ActionTypes.FILTER_LINKS, {filterMode, filterValue});
   }
 };

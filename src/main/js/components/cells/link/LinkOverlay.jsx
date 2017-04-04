@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import _ from "lodash";
 import RowConcatHelper from "../../../helpers/RowConcatHelper.js";
 import ActionCreator from "../../../actions/ActionCreator";
@@ -6,22 +6,106 @@ import "react-virtualized/styles.css";
 import {List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
-import {FilterModes, Directions} from "../../../constants/TableauxConstants";
-import {either, fspy} from "../../../helpers/monads";
+import {ActionTypes, Directions, FilterModes} from "../../../constants/TableauxConstants";
+import {either} from "../../../helpers/monads";
 import * as f from "lodash/fp";
-import SearchFunctions from "../../../helpers/searchFunctions";
-import FilterModePopup from "../../header/filter/FilterModePopup";
+import SearchFunctions, {SEARCH_FUNCTION_IDS} from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import apiUrl from "../../../helpers/apiUrl";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
+import Header from "../../overlay/Header";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import listensToClickOutside from "react-onclickoutside";
 
 // we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
 
+@listensToClickOutside
+class SearchBar extends Component {
+  static propTypes = {
+    langtag: PropTypes.string.isRequired
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      filterValue: "",
+      filterMode: FilterModes.CONTAINS,
+      popupOpen: false
+    }
+  }
+
+  updateFilter = ({mode, value}) => {
+    const {filterMode, filterValue} = this.state;
+    const newValue = {
+      filterMode: mode || filterMode,
+      filterValue: (f.isString(value)) ? value : filterValue,
+      popupOpen: false
+    };
+    this.setState(newValue, () => ActionCreator.filterLinksInOverlay(newValue));
+  };
+
+  handleClickOutside = event => {
+    this.setState({popupOpen: false});
+  };
+
+  renderSearchOptions = () => {
+    const {langtag} = this.props;
+    const {popupOpen, filterMode, filterValue} = this.state;
+    const activeIndex = f.findIndex(f.eq(filterMode), SEARCH_FUNCTION_IDS);
+    console.log("activeIndex:", activeIndex)
+    return (popupOpen)
+      ? (
+        <div className="filter-option-popup">
+          {
+            SEARCH_FUNCTION_IDS.map(
+              (id, idx) => {
+                const name = i18n.t(SearchFunctions[id].displayName);
+                const itemClass = classNames("menu-item", {"active": idx === activeIndex});
+                return (
+                  <div className={itemClass} key={id}>
+                    <a className="menu-item-inner"  href="#" onClick={() => this.updateFilter({mode: id})} >
+                      {name}
+                    </a>
+                  </div>
+                )
+              }
+            )
+          }
+        </div>
+      )
+      : null;
+  };
+
+  render() {
+    const {langtag} = this.props;
+    const {filterMode, filterValue, popupOpen} = this.state;
+    const filterName = i18n.t(SearchFunctions[filterMode].displayName);
+    const buttonClass = classNames("ignore-react-onclickoutside", {"active": popupOpen});
+    return (
+      <div className="filter-bar">
+        <input type="text"
+               className="header-input"
+               autoFocus
+               value={filterValue}
+               placeholder={filterName}
+               onChange={event => this.updateFilter({value: event.target.value})}
+        />
+        <a href="#" className="popup-button" onClick={() => this.setState({popupOpen: !popupOpen})}>
+          <i className="fa fa-search" />
+          <i className="fa fa-angle-down" />
+        </a>
+        {this.renderSearchOptions()}
+      </div>
+    );
+  }
+}
+
 @translate(["table"])
 @withAbortableXhrRequests
-class LinkOverlay extends React.Component {
+class LinkOverlay extends Component {
 
   constructor(props) {
     console.log("LinkOverlay.props:", props);
@@ -37,11 +121,17 @@ class LinkOverlay extends React.Component {
   }
 
   static propTypes = {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    tableId: React.PropTypes.number,
-    contentHeight: React.PropTypes.number.isRequired,
-    contentWidth: React.PropTypes.number.isRequired
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    tableId: PropTypes.number
+  };
+
+  componentDidMount = () => { // why is componentWillMount never called?
+    Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
   };
 
   getKeyboardShortcuts = () => {
@@ -115,24 +205,13 @@ class LinkOverlay extends React.Component {
     fetchColumns.then(fetchRows);
   };
 
-  /**
-   * Get the input string of the search field
-   * @returns {Object} Search value lowercased and trimmed, current filter mode
-   */
   getCurrentSearchValue = () => {
-    const searchVal = either(this.refs)
-      .map(f.prop(["search", "value"]))
-      .map(f.trim)
-      .map(f.toLower)
-      .map(f.toString)
-      .getOrElse("");
-    return {
-      searchVal: searchVal,
-      filterMode: this.state.filterMode
-    };
+    const {filterValue, filterMode} = this.state;
+    return {filterMode, filterValue};
   };
 
   onSearch = (event) => {
+    console.log("onSearch")
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       selectedId: 0
@@ -175,41 +254,32 @@ class LinkOverlay extends React.Component {
     this.setState({filterModePopupOpen: !this.state.filterModePopupOpen});
   };
 
-  setFilterMode = (modeString) => {
-    this.setState({filterMode: modeString}, this.onSearch);
-  };
-
-  renderFilterModePopup = () => {
-    const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
-    return (
-      <FilterModePopup x={0} y={0}
-                       active={active}
-                       setFilterMode={this.setFilterMode}
-                       close={this.toggleFilterModesPopup}
-      />);
+  setFilterMode = ({filterMode = FilterModes.CONTAINS, filterValue = ""}) => {
+    console.log("setFilterMode", {filterMode, filterValue})
+    this.setState({
+        filterMode,
+        filterValue
+      },
+      () => this.onSearch());
   };
 
   // searchval is already trimmed and to lowercase
   filterRowsBySearch = (searchParams) => {
-    const {searchVal, filterMode} = searchParams;
+    console.log("filterRowsBySearch", searchParams)
+    const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
+    const lowerCaseRowId = f.compose(f.toLower, f.trim, f.prop("cachedRowId"));
     const linkedRows = f.compose(
-      fspy("sorted linked rows"),
-      f.sortBy(f.prop("cachedRowId")),
-      fspy("linked rows"),
-      f.filter(this.isRowLinked),
-      fspy("all rows")
+      f.sortBy(lowerCaseRowId),
+      f.filter(this.isRowLinked)
     )(allRowResults);
-    const unlinkedRows = f.compose(
-      fspy("sorted unlinked rows"),
-      f.sortBy(f.prop("cachedRowId")),
-      fspy("unlinked rows"),
-      f.reject(this.isRowLinked)
-    )(allRowResults);
+    const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
 
-    if (searchVal !== "" && allRowResults.length > 0) {
-      const byCachedRowName = f.compose(searchFunction(searchVal), f.prop("cachedRowName"));
+    const byCachedRowName = f.compose(searchFunction(filterValue), f.prop("cachedRowName"));
+    console.log("--> total", allRowResults.length, linkedRows.length, unlinkedRows.filter(byCachedRowName).length)
+
+    if (filterValue !== "" && allRowResults.length > 0) {
       return [...linkedRows, ...unlinkedRows.filter(byCachedRowName)];
     } else {
       return [...linkedRows, ...unlinkedRows];
@@ -250,34 +320,50 @@ class LinkOverlay extends React.Component {
     return !!_.find(currentCellValue, link => link.id === row.id);
   };
 
-  getOverlayItem = (
-    {
-      key,         // Unique key within array of rows
-      index,       // Index of row within collection
-      style        // Style object to be applied to row (to position it)
-    }
-  ) => {
+  getOverlayItem = ({
+                      key,         // Unique key within array of rows
+                      index,       // Index of row within collection
+                      style        // Style object to be applied to row (to position it)
+                    }) => {
     const {rowResults, selectedId} = this.state;
     const row = rowResults[index];
 
     if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
       const isLinked = this.isRowLinked(row);
+      const isSelected = selectedId === index;
       const rowName = row["cachedRowName"];
       const rowCssClass = classNames("list-item",
         {
           "isLinked": isLinked,
-          "selected": selectedId === index
+          "selected": isSelected
         });
+      const {langtag, cell, tableId} = this.props;
+      const tableUrl = `/${langtag}/tables/${cell.column.toTable}/rows/${row.id}?filter&overlay`;
 
-      return <div style={style} key={key}>
-        <a href="#"
-           className={rowCssClass}
-           onClick={this.addLinkValue.bind(this, isLinked, row)}
-           onMouseEnter={() => this.setState({selectedId: index})}
-        >
-          {rowName}
-        </a>
-      </div>;
+      return (isSelected)
+        ? (
+          <div style={style} key={key}>
+            <div className={rowCssClass}>
+              <div className={(isLinked) ? "left linked" : "left"}>
+                <a href="#" onClick={this.addLinkValue.bind(this, isLinked, row)}>
+                  {rowName}
+                  <i className={(isLinked) ? "fa fa-times" : "fa fa-check"} />
+                </a>
+
+              </div>
+              <a href={tableUrl} className="right">
+                <i className="fa fa-long-arrow-right" />
+              </a>
+            </div>
+          </div>
+        )
+        : (
+          <div style={style} key={key} onMouseEnter={() => this.setState({selectedId: index})}>
+            <div className={rowCssClass}>
+              {rowName}
+            </div>
+          </div>
+        );
     }
   };
 
@@ -294,8 +380,6 @@ class LinkOverlay extends React.Component {
     const {rowResults, loading} = this.state;
     const contentHeight = (0.8 * window.innerHeight) | 0;
     const contentWidth = (0.6 * window.innerWidth) | 0;
-
-    console.log("ReactVirtualized:", contentWidth, "x", contentHeight)
     const rowsCount = rowResults.length || 0;
 
     if (loading) {
@@ -315,36 +399,26 @@ class LinkOverlay extends React.Component {
       );
     }
 
-    const placeholder = (this.state.filterMode === FilterModes.CONTAINS)
-      ? "table:filter.contains"
-      : "table:filter.starts_with";
-
     const popupOpen = this.state.filterModePopupOpen;
     return (
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)} className="link-overlay">
-        {(popupOpen)
-          ? this.renderFilterModePopup()
-          : null
-        }
-        <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}} >
-          <div className="search-input-wrapper">
-            <input type="text"
-                   className="search-input"
-                   placeholder={i18n.t(placeholder) + "..."}
-                   onChange={this.onSearch}
-                   ref="search"
-                   autoFocus />
-            <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
-               onClick={this.toggleFilterModesPopup}>
-              <i className="fa fa-search" />
-              <i className="fa fa-angle-down" />
-            </a>
-          </div>
-        </div>
         {listDisplay}
       </div>
     );
   }
 }
+
+export const openLinkOverlay = (cell, langtag) => {
+  const table = cell.tables.get(cell.tableId);
+  const tableName = table.displayName[langtag] || table.displayName[FallbackLanguage];
+  ActionCreator.openOverlay({
+    head: <Header context={tableName}
+                  title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
+                  components={<SearchBar langtag={langtag} />}
+    />,
+    body: <LinkOverlay cell={cell} langtag={langtag} />,
+    type: "full-height"
+  });
+};
 
 export default LinkOverlay;

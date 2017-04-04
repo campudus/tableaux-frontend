@@ -1,8 +1,6 @@
 import React, {PropTypes, Component} from "react";
-import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
-import LinkOverlay from "../../cells/link/LinkOverlay";
+import {openLinkOverlay} from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
-import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import {prop, pullAt} from "lodash/fp";
 
 class LinkView extends Component {
@@ -14,11 +12,7 @@ class LinkView extends Component {
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
-    ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
-      body: <LinkOverlay cell={cell} langtag={langtag} />,
-      type: "no-scroll"
-    });
+    openLinkOverlay(cell, langtag);
   };
 
   removeLink = id => () => {

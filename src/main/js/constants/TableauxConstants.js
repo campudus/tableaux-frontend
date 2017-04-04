@@ -86,7 +86,8 @@ var TableauxConstant = {
     COPY_CELL_CONTENT: null,
     PASTE_CELL_CONTENT: null,
 
-    SWITCH_ENTITY_VIEW_LANGUAGE: null
+    SWITCH_ENTITY_VIEW_LANGUAGE: null,
+    FILTER_LINKS: null
   }),
 
   Directions: keyMirror({

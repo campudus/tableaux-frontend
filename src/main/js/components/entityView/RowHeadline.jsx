@@ -6,7 +6,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 import Header from "../overlay/Header";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
-import LinkOverlay from "../cells/link/LinkOverlay";
+import {openLinkOverlay} from "../cells/link/LinkOverlay";
 import i18n from "i18next";
 
 class RowHeadline extends React.Component {
@@ -42,11 +42,11 @@ class RowHeadline extends React.Component {
   };
 
   mkLinkHeader = column => {
-    const {langtag} = this.props;
+    const {cell, langtag} = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     return (
       <div className="item-header">
-        <a className="column-icon button" href="#" onClick={this.openLinkOverlay}>
+        <a className="column-icon button" href="#" onClick={() => openLinkOverlay(cell, langtag)}>
           {i18n.t("table:edit_links")}
         </a>
         <a href={url} target="_blank">
@@ -65,17 +65,6 @@ class RowHeadline extends React.Component {
       head: <Header context={tableName} title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} />,
       body: <AttachmentOverlay cell={cell} langtag={langtag} />,
       type: "normal"
-    });
-  };
-
-  openLinkOverlay = () => {
-    const {cell, langtag} = this.props;
-    const table = cell.tables.get(cell.tableId);
-    const tableName = table.displayName[langtag] || table.displayName[FallbackLanguage];
-    ActionCreator.openOverlay({
-      head: <Header context={tableName} title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} />,
-      body: <LinkOverlay tableId={table.id} cell={cell} langtag={langtag} contentWidth={800} contentHeight={600} />,
-      type: "full-height"
     });
   };
 

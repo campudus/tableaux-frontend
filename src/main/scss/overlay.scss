@@ -68,6 +68,10 @@ $overlay-border-radius: 5px;
       border-top-right-radius: $overlay-border-radius;
       position: relative;
 
+      &.with-components {
+        height: $overlay-headline-height + 40px;
+      }
+
       .close-button {
         position: absolute;
         left: 0;
@@ -398,36 +402,6 @@ $overlay-border-radius: 5px;
     .new {
       float: right;
       flex: 10;
-    }
-  }
-}
-
-.overlay {
-  .link-overlay {
-    .ReactVirtualized__List {
-      padding: 0 20px;
-      position: absolute;
-      bottom: 0;
-      .ReactVirtualized__Grid__innerScrollContainer {
-        position: relative;
-
-        .list-item {
-          display: block;
-          width: calc(100% - 20px);
-          padding: 8px;
-          border-radius: 3px;
-          background-color: $color-white;
-          $color: $color-black;
-          &.isLinked {
-            background-color: $color-primary;
-            color: $color-primary-contrast-text;
-          }
-          &:hover {
-            background-color: $color-hover-background;
-            color: $color-hover-foreground;
-          }
-        }
-      }
     }
   }
 }
