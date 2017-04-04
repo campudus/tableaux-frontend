@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import NumericEditCell from "./NumericEditCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import {prop, isEmpty} from "lodash/fp";
+import {prop, isNil} from "lodash/fp";
 
 class NumericCell extends Component {
 
@@ -15,7 +15,7 @@ class NumericCell extends Component {
   handleEditDone = (newValue) => {
     const {cell, langtag, contentChanged} = this.props;
     const oldValue = prop(["value", langtag], cell) || prop("value", cell);
-    if (newValue === oldValue || (isEmpty(newValue) && isEmpty(oldValue))) {
+    if (newValue === oldValue || (isNil(newValue) && isNil(oldValue))) {
       return;
     }
     const valueToSave = (cell.isMultiLanguage)
