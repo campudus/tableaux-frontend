@@ -68,7 +68,11 @@ function runWebpackServer(callback) {
     proxy : {
       '/api/*' : {
         target : config.tableauxUrl,
-        pathRewrite : {'^/api' : ''}
+        pathRewrite : {'^/api' : ''},
+        xfwd : true,
+        onProxyReq : function (proxyReq, req) {
+          proxyReq.setHeader('X-Forwarded-Url', req.originalUrl);
+        }
       }
     },
 
