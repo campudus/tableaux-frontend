@@ -5,6 +5,7 @@ import LinkLabelCell from "./LinkLabelCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
+import {isUserAdmin} from "../../../helpers/accessManagementHelper";
 
 @connectToAmpersand
 class LinkEditCell extends Component {
@@ -33,19 +34,12 @@ class LinkEditCell extends Component {
   };
 
   componentWillUnmount = () => {
-      // Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
-  };
-
-  removeLink = (idx) => {
-    const {cell} = this.props;
-    const newValue = _.filter(cell.value, (element) => element.id !== idx);
-    ActionCreator.changeCell(cell, newValue);
   };
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
-    if (!isLocked(cell.row)) {
+    if (isUserAdmin() && !isLocked(cell.row)) {
       openLinkOverlay(cell, langtag);
     }
   };
@@ -53,8 +47,8 @@ class LinkEditCell extends Component {
   render() {
     const {cell, langtag} = this.props;
     const links = cell.value.map((element, index) => {
-      return <LinkLabelCell key={element.id} deletable={!isLocked(cell.row)} linkElement={element}
-                              cell={cell} langtag={langtag} onDelete={this.removeLink}
+      return <LinkLabelCell key={element.id} deletable={false} linkElement={element}
+                              cell={cell} langtag={langtag}
                               linkIndexAt={index}/>;
     });
 

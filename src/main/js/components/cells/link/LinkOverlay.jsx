@@ -66,7 +66,7 @@ class SearchBar extends Component {
                 const itemClass = classNames("menu-item", {"active": idx === activeIndex});
                 return (
                   <div className={itemClass} key={id}>
-                    <a className="menu-item-inner"  href="#" onClick={() => this.updateFilter({mode: id})} >
+                    <a className="menu-item-inner" href="#" onClick={() => this.updateFilter({mode: id})}>
                       {name}
                     </a>
                   </div>
@@ -77,6 +77,22 @@ class SearchBar extends Component {
         </div>
       )
       : null;
+  };
+
+  handleInputKeys = event => {
+    const inputKey = f.prop(["target", "key"], event);
+    switch (inputKey) {
+      case "escape":
+        if (!f.isEmpty(this.state.value)) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.setState({value: ""})
+        }
+        else {
+          ActionCreator.closeOverlay();
+        }
+        break;
+    }
   };
 
   render() {
@@ -91,6 +107,7 @@ class SearchBar extends Component {
                autoFocus
                value={filterValue}
                placeholder={filterName}
+               onKeyDown={this.handleInputKeys}
                onChange={event => this.updateFilter({value: event.target.value})}
         />
         <a href="#" className="popup-button" onClick={() => this.setState({popupOpen: !popupOpen})}>
@@ -105,7 +122,8 @@ class SearchBar extends Component {
 
 @translate(["table"])
 @withAbortableXhrRequests
-class LinkOverlay extends Component {
+class LinkOverlay
+  extends Component {
 
   constructor(props) {
     console.log("LinkOverlay.props:", props);
@@ -149,12 +167,6 @@ class LinkOverlay extends Component {
       escape: event => {
         event.preventDefault();
         event.stopPropagation();
-        if (this.refs.search.value === "") {
-          this.closeOverlay();
-        } else {
-          this.refs.search.value = "";
-          this.onSearch();
-        }
       },
       up: event => {
         event.preventDefault();
@@ -207,7 +219,10 @@ class LinkOverlay extends Component {
 
   getCurrentSearchValue = () => {
     const {filterValue, filterMode} = this.state;
-    return {filterMode, filterValue};
+    return {
+      filterMode,
+      filterValue
+    };
   };
 
   onSearch = (event) => {
@@ -255,7 +270,6 @@ class LinkOverlay extends Component {
   };
 
   setFilterMode = ({filterMode = FilterModes.CONTAINS, filterValue = ""}) => {
-    console.log("setFilterMode", {filterMode, filterValue})
     this.setState({
         filterMode,
         filterValue
@@ -265,7 +279,6 @@ class LinkOverlay extends Component {
 
   // searchval is already trimmed and to lowercase
   filterRowsBySearch = (searchParams) => {
-    console.log("filterRowsBySearch", searchParams)
     const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;

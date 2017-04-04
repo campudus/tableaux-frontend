@@ -64,7 +64,7 @@ class RowHeadline extends React.Component {
     ActionCreator.openOverlay({
       head: <Header context={tableName} title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} />,
       body: <AttachmentOverlay cell={cell} langtag={langtag} />,
-      type: "normal"
+      type: "full-height"
     });
   };
 

@@ -10,6 +10,7 @@ import ActionCreator from "../actions/ActionCreator";
 import Spinner from "./header/Spinner.jsx";
 import Toast from "./overlay/Toast.jsx";
 import * as f from "lodash/fp";
+import {fspy} from "../helpers/monads";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -112,7 +113,25 @@ export default class Tableaux extends React.Component {
       return null;
     }
     const lastOverlayIdx = overlays.length - 1;
-    console.log("LastOverlayIdx", lastOverlayIdx)
+
+    const bigOverlayIdces = overlays
+      .map((ol, idx) => (ol.type === "full-height") ? idx : null)
+      .filter(f.isInteger); // 0 is falsy
+
+    const getSpecialClass = idx => {
+      const left = f.compose(
+        f.dropRight(1),
+        f.takeRight(3)
+      )(bigOverlayIdces);
+      console.log("Big overlays at", bigOverlayIdces, "left:", left)
+      return f.cond([
+        [() => bigOverlayIdces.length < 2, f.noop],
+        [idx => f.contains(idx, left), f.always("is-left")],
+        [f.eq(f.last(bigOverlayIdces)), f.always("is-right")],
+        [f.stubTrue, f.noop]
+      ])(idx);
+    };
+
     return overlays.map(({head, body, footer, type, keyboardShortcuts}, idx) => {
       return (
         <GenericOverlay
@@ -123,6 +142,7 @@ export default class Tableaux extends React.Component {
           type={type}
           isOnTop={idx === lastOverlayIdx}
           keyboardShortcuts={keyboardShortcuts}
+          specialClass={getSpecialClass(idx)}
         />
       );
     });

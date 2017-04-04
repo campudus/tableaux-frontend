@@ -14,7 +14,7 @@ class NumericEditCell extends React.Component {
 
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
-    var node = this.refs.input;
+    var node = this.input;
     // Sets cursor to end of input field
     node.value = node.value;
   };
@@ -29,28 +29,27 @@ class NumericEditCell extends React.Component {
   };
 
   getKeyboardShortcuts = () => {
-    var self = this;
     return {
-      up: function (event) {
+      up: (event) => {
         event.preventDefault();
-        self.doneEditing(event);
+        this.doneEditing(event);
       },
-      down: function (event) {
+      down: (event) => {
         event.preventDefault();
-        self.doneEditing(event);
+        this.doneEditing(event);
       },
-      left: function (event) {
+      left: (event) => {
         event.stopPropagation();
       },
-      right: function (event) {
+      right: (event) => {
         event.stopPropagation();
       },
-      enter: function (event) {
-        self.doneEditing(event);
+      enter: (event) => {
+        this.doneEditing(event);
         ActionCreator.selectNextCell(Directions.DOWN);
       },
-      navigation: function (event) {
-        self.doneEditing(event);
+      navigation: (event) => {
+        this.doneEditing(event);
       }
     };
   };
@@ -80,11 +79,11 @@ class NumericEditCell extends React.Component {
     }
     input.value = (result === null) ? "" : result;
     return result;
-  }
+  };
 
   doneEditing = (event) => {
-    this.props.onSave(this.formatNumberCell(this.refs.input));
-  }
+    this.props.onSave(this.formatNumberCell(this.input));
+  };
 
   getValue = () => {
     var cell = this.props.cell;
@@ -135,7 +134,7 @@ class NumericEditCell extends React.Component {
                className="input"
                name={this.inputName}
                defaultValue={this.getValue()}
-               onChange={this.onChangeHandler} ref="input"/>
+               onChange={this.onChangeHandler} ref={input => {this.input = input}}/>
       </div>
     );
   }

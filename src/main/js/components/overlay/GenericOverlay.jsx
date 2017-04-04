@@ -18,18 +18,22 @@ class GenericOverlay extends Component {
     footer: PropTypes.element,
     type: PropTypes.string,
     isOnTop: PropTypes.bool.isRequired,
-    keyboardShortcuts: PropTypes.object
+    keyboardShortcuts: PropTypes.object,
+    specialClass: PropTypes.string
   };
 
   constructor(props) {
     super(props);
     this.state = {
       contentHeight: 0,
-      contentWidth: 0
+      contentWidth: 0,
+      overlayIsNew: true
     };
 
     this.allowedTypes = ["normal", "full-height"];
     this.focusedElementBeforeOverlayOpens = null;
+
+    window.setTimeout(() => this.setState({overlayIsNew: false}), 400);
   }
 
   componentWillMount = () => {
@@ -105,7 +109,7 @@ class GenericOverlay extends Component {
       ? this.props.type
       : "normal";
 
-    const {footer, head, body, isOnTop} = this.props;
+    const {footer, head, body, isOnTop, specialClass} = this.props;
     const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
       "active": isOnTop,
@@ -116,7 +120,9 @@ class GenericOverlay extends Component {
       <div className={overlayWrapperClass} tabIndex="1"
            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
-        <div className={"overlay-wrapper " + overlayType} onClick={event => { event.stopPropagation(); event.preventDefault(); }}>
+        <div className={"overlay-wrapper " + overlayType + " " +(specialClass || "") + ((this.state.overlayIsNew) ? " is-new" : "")}
+             onClick={event => { event.stopPropagation(); event.preventDefault(); }}
+        >
           {head}
           <div className="overlay-content">
             {body}
