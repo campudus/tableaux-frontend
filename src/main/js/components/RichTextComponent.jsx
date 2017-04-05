@@ -104,6 +104,7 @@ class RichTextComponent extends React.Component {
           ? (
             <div className="symbol-bar">
               <div className="action-group">
+                <a href="#" onClick={this.format("removeFormat")}><i className="fa fa-times"/></a>
                 <a href="#" onClick={this.format("bold")}><i className="fa fa-bold" /></a>
                 <a href="#" onClick={this.format("italic")}><i className="fa fa-italic" /></a>
                 <a href="#" onClick={this.format("underline")}><i className="fa fa-underline" /></a>

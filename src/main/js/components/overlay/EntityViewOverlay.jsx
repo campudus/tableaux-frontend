@@ -131,8 +131,7 @@ class LanguageSwitcher extends Component {
 export function openEntityView(row, langtag, focusElementId) {
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
-  console.log("row:", row)
-  const table = row.table;
+  const table = firstCell.tables.get(firstCell.tableId);
   const tableName = prop(["displayName", langtag], table) || prop(["displayName", FallbackLanguage], table);
 
   openOverlay({
@@ -140,12 +139,4 @@ export function openEntityView(row, langtag, focusElementId) {
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
     type: "full-height"
   });
-
-/*  openOverlay({
-    classNames: "entity-view-overlay",
-    head: <span>{i18n.t("table:entity_view")}: {rowDisplayLabel} <LanguageSwitcher langtag={langtag} /></span>,
-    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
-    footer: <EntityViewFooter />,
-    type: "full-height"
-  }); */
 }

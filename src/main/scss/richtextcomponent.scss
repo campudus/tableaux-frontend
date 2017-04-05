@@ -56,56 +56,55 @@
     width: 100%;
     max-height: 250px;
     overflow: hidden;
-    color: $color-text-medium-grey;
 
     &.input {
       overflow-y: auto;
       color: $color-primary-text;
-    }
 
-    i, em {
-      font-style: italic;
-    }
+      i, em {
+        font-style: italic;
+      }
 
-    b, strong {
-      font-weight: bold;
-    }
+      b, strong {
+        font-weight: bold;
+      }
 
-    ul > li {
-      list-style: circle inside;
-    }
+      ul > li {
+        list-style: circle inside;
+      }
 
-    ol > li {
-      list-style: decimal inside;
-    }
+      ol > li {
+        list-style: decimal inside;
+      }
 
-    h1, h2, h3, h4 {
-      background-color: white;
-      text-align: left;
-      color: $color-text-medium-grey;
-      border: none;
-      margin: 5px 0;
-    }
+      h1, h2, h3, h4 {
+        background-color: transparent;
+        text-align: left;
+        color: $color-text-medium-grey;
+        border: none;
+        margin: 5px 0;
+      }
 
-    h1 {
-      font-weight: bold;
-      font-style: italic;
-      font-size: x-large;
-    }
+      h1 {
+        font-weight: bold;
+        font-style: italic;
+        font-size: x-large;
+      }
 
-    h2 {
-      font-weight: bold;
-      font-size: medium;
-    }
+      h2 {
+        font-weight: bold;
+        font-size: medium;
+      }
 
-    h3 {
-      font-style: italic;
-      font-size: large;
-    }
+      h3 {
+        font-style: italic;
+        font-size: large;
+      }
 
-    h4 {
-      font-variant: small-caps;
-      font-size: medium;
+      h4 {
+        font-variant: small-caps;
+        font-size: medium;
+      }
     }
 
   }
