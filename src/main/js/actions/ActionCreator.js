@@ -56,12 +56,10 @@ module.exports = {
   },
 
   openOverlay: function (overlayContent) {
-    console.log("+ calling openOverlay");
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
   },
 
   closeOverlay: function () {
-    console.log("- calling closeOverlay");
     Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY);
   },
 
@@ -283,7 +281,10 @@ module.exports = {
   },
 
   filterLinksInOverlay: ({filterMode, filterValue}) => {
-    console.log("filterLinksInOverlay", {filterMode, filterValue})
     Dispatcher.trigger(ActionTypes.FILTER_LINKS, {filterMode, filterValue});
+  },
+
+  broadcastRowLoaded: (data) => { // data: {overlayId: timestamp, row: Row}
+    Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, data);
   }
 };

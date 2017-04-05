@@ -46,12 +46,12 @@ class RowHeadline extends React.Component {
     const url = `/${langtag}/tables/${column.toTable}`;
     return (
       <div className="item-header">
-        <a className="column-icon button" href="#" onClick={() => openLinkOverlay(cell, langtag)}>
-          {i18n.t("table:edit_links")}
-        </a>
         <a href={url} target="_blank">
           {this.getDisplayName(column)}
           <i className="fa fa-external-link" />
+        </a>
+        <a className="column-icon button" href="#" onClick={() => openLinkOverlay(cell, langtag)}>
+          {i18n.t("table:edit_links")}
         </a>
       </div>
     )
@@ -70,22 +70,21 @@ class RowHeadline extends React.Component {
 
   mkAttachmentHeader = column => {
     const {langtag, cell} = this.props;
-    console.log("mkAttachmentHeader", cell)
     const url = `/${langtag}/tables/${cell.toTable}`;
     return (
       <div className="item-header">
+        {this.getDisplayName(column)}
         <a className="button column-icon" href="#" onClick={this.openAttachmentOverlay}>
           {i18n.t("table:edit_attachments")}
         </a>
-        {this.getDisplayName(column)}
       </div>
     )
   };
 
   mkDefaultHeader = column => (
     <div className="item-header">
-      {this.getColumnIcon(column)}
       {this.getDisplayName(column)}
+      {this.getColumnIcon(column)}
     </div>
   );
 

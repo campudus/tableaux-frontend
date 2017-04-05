@@ -103,7 +103,7 @@ export default class Tableaux extends React.Component {
     const {currentViewParams, activeOverlays} = this.state;
     this.setState({
       activeOverlays: f.dropRight(1, activeOverlays),
-      currentViewParams: f.assoc("overlayOpen", false, currentViewParams)
+      currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
     });
   }
 
@@ -119,11 +119,7 @@ export default class Tableaux extends React.Component {
       .filter(f.isInteger); // 0 is falsy
 
     const getSpecialClass = idx => {
-      const left = f.compose(
-        f.dropRight(1),
-        f.takeRight(3)
-      )(bigOverlayIdces);
-      console.log("Big overlays at", bigOverlayIdces, "left:", left)
+      const left = f.dropRight(1)(bigOverlayIdces);
       return f.cond([
         [() => bigOverlayIdces.length < 2, f.noop],
         [idx => f.contains(idx, left), f.always("is-left")],

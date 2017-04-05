@@ -2,6 +2,7 @@ import React, {PropTypes, Component} from "react";
 import {openLinkOverlay} from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
 import {prop, pullAt} from "lodash/fp";
+import ActionCreator from "../../../actions/ActionCreator";
 
 class LinkView extends Component {
   
@@ -16,6 +17,7 @@ class LinkView extends Component {
   };
 
   removeLink = id => () => {
+    console.log("remove link no.", id)
     const {cell} = this.props;
     const newValue = pullAt(id, cell.value);
     ActionCreator.changeCell(cell, newValue);
@@ -28,7 +30,7 @@ class LinkView extends Component {
       (link, idx) => {
         return {
           displayName: cell.linkString(idx, langtag),
-          linkTarget: `${tableUrl}/rows/${link.id}?filter&overlay`
+          linkTarget: {tables: cell.tables, tableId: cell.column.toTable, rowId: link.id}
         }
       }
     );
@@ -40,8 +42,8 @@ class LinkView extends Component {
 
     return (
       <LinkList links={links}
-                setLink={() => () => {}}
-                unlink={() => () => {}}
+                langtag={langtag}
+                unlink={this.removeLink}
       />
     );
   }

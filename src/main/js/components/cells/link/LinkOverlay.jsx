@@ -18,6 +18,7 @@ import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificat
 import Header from "../../overlay/Header";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import listensToClickOutside from "react-onclickoutside";
+import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 
 // we use this value to get the exact offset for the link list
 const CSS_SEARCH_HEIGHT = 70;
@@ -55,7 +56,6 @@ class SearchBar extends Component {
     const {langtag} = this.props;
     const {popupOpen, filterMode, filterValue} = this.state;
     const activeIndex = f.findIndex(f.eq(filterMode), SEARCH_FUNCTION_IDS);
-    console.log("activeIndex:", activeIndex)
     return (popupOpen)
       ? (
         <div className="filter-option-popup">
@@ -126,7 +126,6 @@ class LinkOverlay
   extends Component {
 
   constructor(props) {
-    console.log("LinkOverlay.props:", props);
     super(props);
     this.allRowResults = {};
     this.state = {
@@ -290,8 +289,6 @@ class LinkOverlay
     const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
 
     const byCachedRowName = f.compose(searchFunction(filterValue), f.prop("cachedRowName"));
-    console.log("--> total", allRowResults.length, linkedRows.length, unlinkedRows.filter(byCachedRowName).length)
-
     if (filterValue !== "" && allRowResults.length > 0) {
       return [...linkedRows, ...unlinkedRows.filter(byCachedRowName)];
     } else {
@@ -364,7 +361,9 @@ class LinkOverlay
                 </a>
 
               </div>
-              <a href={tableUrl} className="right">
+              <a href="#" className="right"
+                 onClick={() => loadAndOpenEntityView({tables: cell.tables, tableId: cell.column.toTable, rowId: row.id}, langtag)}
+              >
                 <i className="fa fa-long-arrow-right" />
               </a>
             </div>

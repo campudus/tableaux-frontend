@@ -75,11 +75,12 @@ export default class DependentRowsList extends React.Component {
         const tableId = table.id;
         const linkToTable = `/${langtag}/tables/${tableId}`;
         const tableName = getTableDisplayName(table, langtag);
+        const tables = this.props.row.cells.at(0).tables;
         const links = rows.map(
           (row) => {
             return {
               displayName: RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag),
-              linkTarget: `${linkToTable}/rows/${row.id}?filter`
+              linkTarget: {tables, tableId: column.toTable, rowId: row.id}
             }
           }
         );
@@ -90,7 +91,8 @@ export default class DependentRowsList extends React.Component {
               {tableName}
               <i className="fa fa-external-link"/>
             </a>
-            <LinkList key={table.id}
+            <LinkList langtag={langtag}
+                      key={table.id}
                       links={links}
             />
           </div>

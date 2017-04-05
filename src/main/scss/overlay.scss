@@ -139,6 +139,9 @@ $overlay-border-radius: 5px;
         font-weight: bold;
         text-transform: uppercase;
         padding-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
 
         i {
           color: $color-primary;
@@ -146,7 +149,6 @@ $overlay-border-radius: 5px;
         }
 
         .column-icon {
-          float: right;
           color: $color-text-medium-grey;
 
           &.button {
@@ -255,7 +257,7 @@ $overlay-border-radius: 5px;
     }
 
     input[type=text], input[type=numeric], textarea {
-      background-color: inherit;
+      background-color: transparent;
       outline: none;
       width: 100%;
       margin: 5px 0;
@@ -345,31 +347,54 @@ $overlay-border-radius: 5px;
         }
       }
 
-      &.with-buttons {
-        .link-label {
-          display: inline-block;
-          width: calc(100% - 38px);
-        }
-        i {
-          color: transparent;
-        }
-        .secondary-button-icon {
-          position: absolute;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          padding: 12px;
-        }
+      &.has-buttons {
         &.show-buttons {
-          i {
-            color: $color-very-dark;
+          padding: 0;
+          background-color: transparent;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          &>div {
+            background-color: $color-white;
+            display: flex;
+            align-items: stretch;
+            padding: 12px;
+            border-radius: 3px;
+
+            i {
+              color: $color-primary;
+            }
+
+            &:hover {
+              background-color: $color-hover-background;
+              color: $color-hover-foreground;
+            }
           }
 
-          .link-label, .secondary-button-icon {
-            &:hover {
-              i {
-                color: $color-primary;
-              }
+          .main-button {
+            flex: 1;
+            justify-content: space-between;
+
+            &>a {
+              display: block;
+              width: 100%;
+              height: 100%;
+            }
+
+            .text-wrapper {
+              max-width: 90%;
+              overflow: hidden;
+              height: 1.3rem;
+            }
+          }
+
+          .unlink-button {
+            width: 16px;
+            margin-left: 2px;
+            justify-content: center;
+
+            a {
             }
           }
         }
