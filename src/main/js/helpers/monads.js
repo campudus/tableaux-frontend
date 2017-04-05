@@ -40,9 +40,10 @@ class Just extends Maybe {
   }
 
   exec(fname, args) {
-    if (isFunction(prop(fname, this._value))) {
-      prop(fname, this._value).apply(this._value, args);
-      return this;
+    const fn = prop(fname, this._value);
+    if (isFunction(fn)) {
+      const result = fn.call(this._value, args);
+      return (result === null || result === undefined) ? this : Just.of(result);
     } else {
       return Maybe.none();
     }
@@ -75,6 +76,10 @@ class Just extends Maybe {
 
 class None extends Maybe {
   map(f) {
+    return this;
+  }
+
+  exec() {
     return this;
   }
 
