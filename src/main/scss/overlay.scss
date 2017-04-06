@@ -71,6 +71,11 @@ $overlay-border-radius: 5px;
         &.is-new {
           animation: from-right 0.4s 1;
         }
+
+        &.is-exiting {
+          transform: translateX(80vw);
+          transition: transform 0.4s;
+        }
       }
     }
 

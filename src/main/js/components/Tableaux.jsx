@@ -56,11 +56,13 @@ export default class Tableaux extends React.Component {
       currentView: this.props.initialViewName,
       currentViewParams: this.props.initialParams,
       activeOverlays: [],
+      exitingOverlays: false,
       isLoading: true,
       toast: null
     };
 
     this.toastTimer = null;
+    this.exitingOverlays = [];
   }
 
   componentWillUnmount() {
@@ -93,18 +95,41 @@ export default class Tableaux extends React.Component {
 
   openOverlay(content) {
     const {currentViewParams, activeOverlays} = this.state;
+    const timestamp = new Date().getTime();
     this.setState({
-      activeOverlays: [...activeOverlays, content],
+      activeOverlays: [...activeOverlays, f.assoc("id", timestamp, content)],
       currentViewParams: f.assoc("overlayOpen", true, currentViewParams)
     });
   }
 
   closeOverlay() {
     const {currentViewParams, activeOverlays} = this.state;
-    this.setState({
-      activeOverlays: f.dropRight(1, activeOverlays),
-      currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
-    });
+    const overlayToClose = f.last(activeOverlays);
+    const fullSizeOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"), activeOverlays);
+    console.log(fullSizeOverlays, overlayToClose)
+    if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") { // closing a right-aligned full-height overlay
+      console.log("Overlay should close after timeout")
+      const removeOverlayAfterTimeout = () => {
+        const {activeOverlays} = this.state;
+        console.log("closing")
+        this.exitingOverlays = f.reject(f.eq(overlayToClose.id), this.exitingOverlays),
+        this.setState({
+          exitingOverlays: !f.isEmpty(this.exitingOverlays),
+          activeOverlays: f.reject(f.matchesProperty("id", overlayToClose.id), activeOverlays),
+          currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
+        })
+      };
+      const {exitingOverlays} = this;
+      this.exitingOverlays = [...this.exitingOverlays, overlayToClose.id];
+      this.setState({exitingOverlays: true});
+      window.setTimeout(removeOverlayAfterTimeout, 400);
+    } else {
+      console.log("Closing immediately")
+      this.setState({
+        activeOverlays: f.dropRight(1, activeOverlays),
+        currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
+      });
+    }
   }
 
   renderActiveOverlays() {
@@ -112,21 +137,41 @@ export default class Tableaux extends React.Component {
     if (f.isEmpty(overlays)) {
       return null;
     }
-    const lastOverlayIdx = overlays.length - 1;
 
     const bigOverlayIdces = overlays
       .map((ol, idx) => (ol.type === "full-height") ? idx : null)
       .filter(f.isInteger); // 0 is falsy
+    const nonExitingOverlays = f.reject(ii => f.contains(overlays[ii].id, this.exitingOverlays), bigOverlayIdces);
 
     const getSpecialClass = idx => {
-      const left = f.dropRight(1)(bigOverlayIdces);
+      const left = f.dropRight(1)(f.intersection(bigOverlayIdces, nonExitingOverlays));
+      const isExitingOverlay = idx => f.contains(overlays[idx].id, this.exitingOverlays);
+      const followsAfterExitingOverlay = idx => {
+        return (nonExitingOverlays.length < 2)
+          ? false
+          : overlays[f.last(nonExitingOverlays)].id === overlays[idx].id;
+      };
+      const shouldBeRightAligned = idx => {
+        return followsAfterExitingOverlay(idx)
+        || (f.isEmpty(this.exitingOverlays) && f.last(bigOverlayIdces) === idx)
+      };
+      const shouldBeLeftAligned = idx => f.contains(idx, left);
+
       return f.cond([
+        [isExitingOverlay, f.always("is-right is-exiting") ],
         [() => bigOverlayIdces.length < 2, f.noop],
-        [idx => f.contains(idx, left), f.always("is-left")],
-        [f.eq(f.last(bigOverlayIdces)), f.always("is-right")],
+        [shouldBeRightAligned, f.always("is-right")],
+        [shouldBeLeftAligned, f.always("is-left")],
         [f.stubTrue, f.noop]
       ])(idx);
     };
+
+    const topIndex = f.compose(
+      f.last,
+      f.reject(idx => f.contains(overlays[idx].id, this.exitingOverlays)),
+      f.range(0)
+    )(overlays.length);
+
 
     return overlays.map(({head, body, footer, type, keyboardShortcuts}, idx) => {
       return (
@@ -136,7 +181,7 @@ export default class Tableaux extends React.Component {
           body={body}
           footer={footer}
           type={type}
-          isOnTop={idx === lastOverlayIdx}
+          isOnTop={idx === topIndex}
           keyboardShortcuts={keyboardShortcuts}
           specialClass={getSpecialClass(idx)}
         />
