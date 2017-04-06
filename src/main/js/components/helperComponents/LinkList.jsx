@@ -7,7 +7,7 @@
 import React, {Component, PropTypes} from "react";
 import classNames from "classnames";
 import i18n from "i18next";
-import {isString, take} from "lodash/fp";
+import {isEmpty, isString, take} from "lodash/fp";
 import {loadAndOpenEntityView} from "../overlay/EntityViewOverlay";
 
 const MAX_DISPLAYED_LINKS = 4;
@@ -30,6 +30,9 @@ class LinkList extends Component {
   toggleExpand = () => this.setState({expanded: !this.state.expanded});
 
   proceedTo = linkTarget => () => {
+    if (isEmpty(linkTarget)) {
+      return;
+    }
     if (isString(linkTarget)) {
       window.open(linkTarget, "_blank");
     } else {
@@ -38,12 +41,12 @@ class LinkList extends Component {
   };
 
   renderLinks = (links, max) => ((max) ? take(max, links) : links).map(
-    ({displayName, linkTarget = "#"}, idx) => {
+    ({displayName, linkTarget}, idx) => {
       return (
-        <div className="link-label-wrapper" key={idx}>
-          <a className="link-label" onClick={this.proceedTo(linkTarget)}>
+        <div className="link-label-wrapper" key={idx} onClick={this.proceedTo(linkTarget)} >
+          <a className="link-label" href="#">
             {displayName}
-            <i className="fa fa-long-arrow-right" />
+            {(isEmpty(linkTarget)) ? null : <i className="fa fa-long-arrow-right" />}
           </a>
         </div>
       )
@@ -59,7 +62,7 @@ class LinkList extends Component {
           "show-buttons": hovered
         });
         const setHoverState = () => {
-          if (this.state.expanded || idx < (MAX_DISPLAYED_LINKS - 1)) {
+          if (this.state.expanded || idx < MAX_DISPLAYED_LINKS) {
             this.setState({hovered: idx});
           }
         };
@@ -73,15 +76,15 @@ class LinkList extends Component {
                  }
                }}
           >
-            <div className="main-button">
-              <a href="#" onClick={this.proceedTo(linkTarget)}>
+            <div className="main-button" onClick={this.proceedTo(linkTarget)} >
+              <a href="#">
                 <div className="text-wrapper">{displayName}</div>
               </a>
               {(hovered) ? <i className="fa fa-long-arrow-right" /> : null}
             </div>
             {(hovered)
-              ? (<div className="unlink-button">
-                  <a href="#" onClick={unlink(idx)}>
+              ? (<div className="unlink-button" onClick={unlink(idx)}>
+                  <a href="#" >
                     <i className="fa fa-times" />
                   </a>
                 </div>

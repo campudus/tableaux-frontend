@@ -40,12 +40,11 @@ export default class DependentRowsList extends React.Component {
     // check dependent rows
     this.request = this.props.row.dependent(
       (error) => {
-        console.log("checkDependency dependent error:", error);
+        console.error("checkDependency dependent error:", error);
         alert("Dependencies could not be checked. Please try again.");
         this.request = null;
       },
       (res) => {
-        console.log("Response:", res)
         if (res && res.length > 0) {
           this.props.hasDependency(res.length);
         } else {
@@ -71,7 +70,7 @@ export default class DependentRowsList extends React.Component {
     }
 
     const dependentTables = (dependency || []).map(
-      ({table, column, rows}) => {
+      ({table, column, rows}, idx) => {
         const tableId = table.id;
         const linkToTable = `/${langtag}/tables/${tableId}`;
         const tableName = getTableDisplayName(table, langtag);
@@ -80,17 +79,19 @@ export default class DependentRowsList extends React.Component {
           (row) => {
             return {
               displayName: RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag),
-              linkTarget: {tables, tableId: column.toTable, rowId: row.id}
+              linkTarget: {tables, tableId, rowId: row.id}
             }
           }
         );
 
         return (
-          <div className="item">
-            <a className="item-header" href={linkToTable}>
-              {tableName}
-              <i className="fa fa-external-link"/>
-            </a>
+          <div className="item" key={idx}>
+            <div className="item-header" >
+              <a href="#" onClick={() => window.open(linkToTable, "_blank")}>
+                {tableName}
+                <i className="fa fa-external-link"/>
+              </a>
+            </div>
             <LinkList langtag={langtag}
                       key={table.id}
                       links={links}
