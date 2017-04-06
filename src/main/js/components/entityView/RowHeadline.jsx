@@ -46,7 +46,7 @@ class RowHeadline extends React.Component {
     const url = `/${langtag}/tables/${column.toTable}`;
     return (
       <div className="item-header">
-        <a href={url} target="_blank">
+        <a href="#" onClick={() => window.open(url, "_blank")}>
           {this.getDisplayName(column)}
           <i className="fa fa-external-link" />
         </a>

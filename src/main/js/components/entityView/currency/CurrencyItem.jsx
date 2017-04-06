@@ -119,7 +119,7 @@ class CurrencyItem extends Component {
         <div className="value">
           {(editing)
             ? this.renderEditFields()
-            : currencyString
+            : <div className="currency-string">{currencyString}</div>
           }
         </div>
         <div className="currency-code">{currencyCode}</div>

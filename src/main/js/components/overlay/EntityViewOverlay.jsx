@@ -254,7 +254,7 @@ class EntityViewBodyWrapper extends Component {
     const loadPages = () => new Promise(
       (resolve, reject) => {
         const loadPage = (pageNum) => {
-          console.log("Loading page", pageNum, "of", this.state.pages);
+          console.log("Loading page", pageNum, "of", targetTable.rows.pageCount());
           const requestedRow = targetTable.rows.get(rowId);
           if (pageNum > targetTable.rows.pageCount() || isRowFullyLoaded(requestedRow)) {
             resolve(requestedRow || null);
@@ -298,11 +298,11 @@ class EntityViewBodyWrapper extends Component {
       const percentageLoaded = 100.0 * fetched / (pages || 1);
       const barStyle = {
         height: "5px",
-        transition: "width 0.3s",
+        transition: "width 0.7s",
         width: `${percentageLoaded}%`,
         margin: 0,
         backgroundColor: "#3296DC"
-      }
+      };
       return <div className="loading-bar" style={barStyle}></div>
     }
   }
@@ -326,7 +326,8 @@ export function openEntityView(row, langtag, focusElementId) {
   openOverlay({
     head: <Header context={tableName} title={rowDisplayLabel} components={<LanguageSwitcher langtag={langtag} />} />,
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
-    type: "full-height"
+    type: "full-height",
+    preferRight: true
   });
 }
 
@@ -336,6 +337,7 @@ export function loadAndOpenEntityView(target, langtag) {
   openOverlay({
     head: <EntityViewHeaderWrapper overlayId={overlayId} langtag={langtag} />,
     body: <EntityViewBodyWrapper overlayId={overlayId} langtag={langtag} toLoad={target} />,
-    type: "full-height"
+    type: "full-height",
+    preferRight: true
   })
 }

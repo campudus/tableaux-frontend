@@ -8,7 +8,6 @@ import Header from "./Header";
 import Footer from "./Footer";
 import InfoBox from "./InfoBox";
 
-// TODO: Callback before closing overlay
 class GenericOverlay extends Component {
 
   static propTypes = {
@@ -19,7 +18,8 @@ class GenericOverlay extends Component {
     type: PropTypes.string,
     isOnTop: PropTypes.bool.isRequired,
     keyboardShortcuts: PropTypes.object,
-    specialClass: PropTypes.string
+    specialClass: PropTypes.string,
+    preferRight: PropTypes.bool
   };
 
   constructor(props) {
@@ -38,21 +38,6 @@ class GenericOverlay extends Component {
 
   componentWillMount = () => {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
-  };
-
-  recalculateContentDimensions = () => {
-    console.log("recalculate");
-    const overlayContent = ReactDOM.findDOMNode(this.refs.overlayContent);
-    const style = window.getComputedStyle(overlayContent, null);
-    const innerWidth = overlayContent.clientWidth - parseInt(style.getPropertyValue("padding-left")) - parseInt(style.getPropertyValue(
-        "padding-right"));
-    const innerHeight = overlayContent.clientHeight - parseInt(style.getPropertyValue("padding-top")) - parseInt(style.getPropertyValue(
-        "padding-bottom"));
-
-    this.setState({
-      contentHeight: innerHeight,
-      contentWidth: innerWidth
-    });
   };
 
   componentDidMount = () => {
@@ -115,12 +100,16 @@ class GenericOverlay extends Component {
       "active": isOnTop,
       [this.props.classNames]: this.props.classNames
     });
+    const wrapperClass = classNames("overlay-wrapper " + overlayType + " " + (specialClass || ""), {
+      "is-new": this.state.overlayIsNew,
+      "is-right": this.props.preferRight
+    });
 
     return (
       <div className={overlayWrapperClass} tabIndex="1"
            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
-        <div className={"overlay-wrapper " + overlayType + " " +(specialClass || "") + ((this.state.overlayIsNew) ? " is-new" : "")}
+        <div className={wrapperClass}
              onClick={event => { event.stopPropagation(); event.preventDefault(); }}
         >
           {head}

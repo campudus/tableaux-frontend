@@ -26,14 +26,6 @@ class AttachmentView extends Component {
   render() {
     const {cell, langtag} = this.props;
 
-    /*const attachments = cell.value.map((element, id) => {
-      return <AttachmentLabelCell key={id} attachmentElement={element} cell={cell}
-                                  langtag={langtag}
-                                  deletable={true}
-                                  onDelete={this.removeAttachment(element.uuid)}
-      />;
-    });*/
-
     const attachments = cell.value.map(
       ({title}, idx) => {
         const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
@@ -44,7 +36,7 @@ class AttachmentView extends Component {
 
     return (
       <div className="view-content link">
-        <LinkList links={attachments} />
+        <LinkList links={attachments} langtag={langtag} />
       </div>
     );
   }

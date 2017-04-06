@@ -65,16 +65,18 @@ $overlay-border-radius: 5px;
         transform: perspective(500px) translate3d(-20vw, 0, -10px);
       }
       &.is-right {
-        transition: transform 0.4s;
-        transform: translateX(20vw);
-
-        &.is-new {
-          animation: from-right 0.4s 1;
-        }
-
-        &.is-exiting {
-          transform: translateX(80vw);
+        &:not(.is-left) {
           transition: transform 0.4s;
+          transform: translateX(20vw);
+
+          &.is-new {
+            animation: from-right 0.4s 1;
+          }
+
+          &.is-exiting {
+            transform: translateX(80vw);
+            transition: transform 0.4s;
+          }
         }
       }
     }
@@ -345,6 +347,12 @@ $overlay-border-radius: 5px;
         background-color: $color-hover-background;
       }
 
+      .text-wrapper {
+        max-width: 90%;
+        overflow: hidden;
+        height: 1.3rem;
+      }
+
       .link-label {
         display: block;
         i {
@@ -360,7 +368,7 @@ $overlay-border-radius: 5px;
           justify-content: space-between;
           align-items: center;
 
-          &>div {
+          & > div {
             background-color: $color-white;
             display: flex;
             align-items: stretch;
@@ -381,16 +389,10 @@ $overlay-border-radius: 5px;
             flex: 1;
             justify-content: space-between;
 
-            &>a {
+            & > a {
               display: block;
               width: 100%;
               height: 100%;
-            }
-
-            .text-wrapper {
-              max-width: 90%;
-              overflow: hidden;
-              height: 1.3rem;
             }
           }
 
@@ -447,6 +449,40 @@ $overlay-border-radius: 5px;
 }
 
 @keyframes from-right {
-  from {transform: translateX(80vw)}
-  to {transform: translateX(20vw)}
+  from {
+    transform: translateX(80vw)
+  }
+  to {
+    transform: translateX(20vw)
+  }
+}
+
+.breadcrumb-wrapper {
+  position: absolute;
+  left: 0;
+  bottom: 2vh;
+  z-index: 2000;
+  max-width: 35vw;
+  background-color: $color-overlay-header;
+  border-bottom-right-radius: $overlay-border-radius;
+  border-top-right-radius: $overlay-border-radius;
+  padding: 20px;
+
+  a {
+    display: block;
+    height: 100%;
+    width: 100%;
+
+    .context {
+      font-size: smaller;
+      color: $color-text-medium-grey;
+    }
+    .title {
+      font-size: medium;
+      color: $color-primary-contrast-text;
+      i {
+        margin-right: 5px;
+      }
+    }
+  }
 }
