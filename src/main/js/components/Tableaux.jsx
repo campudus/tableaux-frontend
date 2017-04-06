@@ -10,7 +10,6 @@ import ActionCreator from "../actions/ActionCreator";
 import Spinner from "./header/Spinner.jsx";
 import Toast from "./overlay/Toast.jsx";
 import * as f from "lodash/fp";
-import {fspy} from "../helpers/monads";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -103,34 +102,70 @@ export default class Tableaux extends React.Component {
   }
 
   closeOverlay() {
-    const {currentViewParams, activeOverlays} = this.state;
-    const overlayToClose = f.last(activeOverlays);
-    const fullSizeOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"), activeOverlays);
-    console.log(fullSizeOverlays, overlayToClose)
-    if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") { // closing a right-aligned full-height overlay
-      console.log("Overlay should close after timeout")
-      const removeOverlayAfterTimeout = () => {
-        const {activeOverlays} = this.state;
-        console.log("closing")
-        this.exitingOverlays = f.reject(f.eq(overlayToClose.id), this.exitingOverlays),
-        this.setState({
-          exitingOverlays: !f.isEmpty(this.exitingOverlays),
-          activeOverlays: f.reject(f.matchesProperty("id", overlayToClose.id), activeOverlays),
-          currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
+    return new Promise(
+      (resolve, reject) => {
+        const {currentViewParams, activeOverlays} = this.state;
+        const overlayToClose = f.compose(
+          f.last,
+          f.reject(ol => f.contains(ol.id, this.exitingOverlays))
+        )(activeOverlays);
+        const fullSizeOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"));
+        if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") { // closing a right-aligned full-height overlay
+          const removeOverlayAfterTimeout = () => {
+            const {activeOverlays} = this.state;
+            this.exitingOverlays = f.reject(f.eq(overlayToClose.id), this.exitingOverlays),
+              this.setState({
+                exitingOverlays: !f.isEmpty(this.exitingOverlays),
+                activeOverlays: f.reject(f.matchesProperty("id", overlayToClose.id), activeOverlays),
+                currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
+              });
+          };
+          const {exitingOverlays} = this;
+          this.exitingOverlays = [...this.exitingOverlays, overlayToClose.id];
+          this.setState({exitingOverlays: true}, resolve);
+          window.setTimeout(removeOverlayAfterTimeout, 400);
+        } else {
+          this.setState({
+            activeOverlays: f.dropRight(1, activeOverlays),
+            currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
+          }, resolve);
+        }
+      });
+  }
+
+  renderRootButton = () => {
+    const {activeOverlays} = this.state;
+    const bigOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"));
+    if (bigOverlays.length < 2) {
+      return;
+    }
+    // Close all but first, as full-height overlays can't (yet?) be created from dialogs
+    // => first overlay must be the root
+    const closeAllButRoot = () => {
+      const closeNOverlays = n => {
+        this.closeOverlay().then(() => {   // wait for setState to finish, to avoid messing with outdated transient data
+          if (n > 1) {
+            closeNOverlays(n - 1);
+          }
         })
       };
-      const {exitingOverlays} = this;
-      this.exitingOverlays = [...this.exitingOverlays, overlayToClose.id];
-      this.setState({exitingOverlays: true});
-      window.setTimeout(removeOverlayAfterTimeout, 400);
-    } else {
-      console.log("Closing immediately")
-      this.setState({
-        activeOverlays: f.dropRight(1, activeOverlays),
-        currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
-      });
-    }
-  }
+      closeNOverlays(activeOverlays.length - 1)
+    };
+
+    const {context, title} = f.first(activeOverlays).head.props;
+
+    return (
+      <div className="breadcrumb-wrapper">
+        <a href="#" onClick={closeAllButRoot}>
+          <div className="context">{context}</div>
+          <div className="title">
+            <i className="fa fa-long-arrow-left" />
+            {title}
+          </div>
+        </a>
+      </div>
+    )
+  };
 
   renderActiveOverlays() {
     let overlays = this.state.activeOverlays;
@@ -153,12 +188,12 @@ export default class Tableaux extends React.Component {
       };
       const shouldBeRightAligned = idx => {
         return followsAfterExitingOverlay(idx)
-        || (f.isEmpty(this.exitingOverlays) && f.last(bigOverlayIdces) === idx)
+          || (f.isEmpty(this.exitingOverlays) && f.last(bigOverlayIdces) === idx)
       };
       const shouldBeLeftAligned = idx => f.contains(idx, left);
 
       return f.cond([
-        [isExitingOverlay, f.always("is-right is-exiting") ],
+        [isExitingOverlay, f.always("is-right is-exiting")],
         [() => bigOverlayIdces.length < 2, f.noop],
         [shouldBeRightAligned, f.always("is-right")],
         [shouldBeLeftAligned, f.always("is-left")],
@@ -172,18 +207,12 @@ export default class Tableaux extends React.Component {
       f.range(0)
     )(overlays.length);
 
-
-    return overlays.map(({head, body, footer, type, keyboardShortcuts}, idx) => {
+    return overlays.map((overlayParams, idx) => {
       return (
-        <GenericOverlay
-          key={`overlay-${idx}`}
-          head={head}
-          body={body}
-          footer={footer}
-          type={type}
-          isOnTop={idx === topIndex}
-          keyboardShortcuts={keyboardShortcuts}
-          specialClass={getSpecialClass(idx)}
+        <GenericOverlay {...overlayParams}
+                        key={`overlay-${idx}`}
+                        isOnTop={idx === topIndex}
+                        specialClass={getSpecialClass(idx)}
         />
       );
     });
@@ -192,7 +221,6 @@ export default class Tableaux extends React.Component {
   renderToast() {
     const {toast} = this.state;
     if (toast) {
-      console.log("render toast");
       return (<Toast content={toast} />);
     }
   }
@@ -228,6 +256,7 @@ export default class Tableaux extends React.Component {
         <div id="tableaux-view">
           <ViewRenderer viewName={this.state.currentView} params={this.state.currentViewParams} />
           {this.renderActiveOverlays()}
+          {this.renderRootButton()}
           {this.renderToast()}
         </div>
       </I18nextProvider>;

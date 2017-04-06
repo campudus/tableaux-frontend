@@ -15,6 +15,14 @@
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;
+        border: none;
+        border-color: transparent;
+        &:hover{
+          border-color: $color-primary-lighter;
+        }
+        &.editing {
+          border-color: transparent;
+        }
 
         div, span {
           height: 100%;
@@ -41,6 +49,14 @@
         .value {
           flex: 3;
           background-color: $color-white;
+          border-color: inherit;
+
+          .currency-string {
+            border-bottom: 1px solid;
+            border-color: inherit;
+            height: 1.3rem;
+            width: 80%;
+          }
 
           .currency-input {
             display: flex;
@@ -53,6 +69,9 @@
               color: $color-text-medium-grey;
               &.left {
                 text-align: right;
+              }
+              &.right {
+                width: 20%;
               }
               &:focus {
                 border-bottom: 1px solid $color-primary-lighter;
