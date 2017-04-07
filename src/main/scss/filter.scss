@@ -150,6 +150,35 @@
       width: 55px;
     }
 
+    .bool-input {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      position: absolute;
+      width: 220px;
+
+      .selection-text {
+        font-style: italic;
+        color: $color-text-medium-grey;
+      }
+
+      .checkbox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 28px;
+        height: 28px;
+        border: 1px solid $color-text-light-grey;
+        border-radius: 3px;
+        margin-right: 10px;
+
+        &.checked:before {
+          font-family: FontAwesome;
+          content: "\f00c";
+          color: $color-primary-text;
+        }
+      }
+    }
   }
 
   .description-row {

@@ -18,6 +18,7 @@ const getFilteredRows = (currentTable, langtag, rowsFilter) => {
   const filterFunction = _.cond([
     [f.equals(FilterModes.ID_ONLY), f.always(getRowsFilteredById)],
     [f.equals(FilterModes.UNTRANSLATED), f.always(getRowsFilteredByTranslationStatus)],
+    [f.equals(FilterModes.ANY_UNTRANSLATED), f.always(getRowsFilteredByOthersTranslation)],
     [f.equals(FilterModes.FINAL), f.always(getRowsFilteredByFinalFlag)],
     [mode => f.contains(mode, valueFilters), f.always(getRowsFilteredByColumnValues)]
   ])(rowsFilter.filterMode);
@@ -28,7 +29,7 @@ export const areFilterSettingsValid = settings => {
   const {filterColumnId, filterValue, filterMode} = settings;
   return (f.isNumber(filterColumnId) && filterColumnId >= 0 && filterValue) // row filter
     || (filterMode === FilterModes.ID_ONLY && f.isNumber(filterValue))
-    || (f.contains(filterMode, [FilterModes.UNTRANSLATED, FilterModes.FINAL]));
+    || (f.contains(filterMode, [FilterModes.ANY_UNTRANSLATED, FilterModes.UNTRANSLATED, FilterModes.FINAL]));
 };
 
 const getRowsFilteredByFinalFlag = (table, langtag, filterSettings) => {
@@ -45,6 +46,28 @@ const getRowsFilteredById = (table, langtag, rowsFilter) => {
   const reqId = rowsFilter.filterValue;
   return new FilteredSubcollection(table.rows, {
     where: {id: reqId}
+  });
+};
+
+const getRowsFilteredByOthersTranslation = (table, langtag, rowsFilter) => {
+  console.log("Filtered by other languages' translation status");
+  const closures = mkClosures(table, langtag, rowsFilter);
+  const untranslated = rowsFilter.filterValue;
+  const needsTranslation = f.compose(
+    f.complement(f.isEmpty),
+    f.prop("langtags"),
+    f.first,
+    f.filter(f.matchesProperty("value", "needs_translation")),
+    f.filter(f.matchesProperty("type", "flag"))
+  );
+  const hasUntranslatedCells = f.compose(
+    f.any(f.identity),
+    f.map(needsTranslation),
+    f.prop("annotations"),
+  );
+  return new FilteredSubcollection(table.rows, {
+    filter: (untranslated) ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
+    comparator: closures.comparator
   });
 };
 

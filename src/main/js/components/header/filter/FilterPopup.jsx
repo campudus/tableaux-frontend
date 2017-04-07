@@ -7,7 +7,7 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import Select from "react-select";
 import FilterModePopup from "./FilterModePopup";
 import {translate} from "react-i18next";
-import TableauxConstants, {FilterModes, ColumnKinds, SortValues} from "../../../constants/TableauxConstants";
+import TableauxConstants, {FilterModes, ColumnKinds, SortValues, Langtags} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
 import {either} from "../../../helpers/monads";
 import SearchFunctions from "../../../helpers/searchFunctions";
@@ -15,7 +15,7 @@ import classNames from "classnames";
 
 const BOOL = "boolean";
 const TEXT = "text";
-const SPECIAL_SEARCHES = [FilterModes.UNTRANSLATED, FilterModes.FINAL];
+const SPECIAL_SEARCHES = [FilterModes.ANY_UNTRANSLATED, FilterModes.UNTRANSLATED, FilterModes.FINAL];
 
 @translate(["filter", "table"])
 @listensToClickOutside
@@ -92,9 +92,15 @@ class FilterPopup extends React.Component {
     const searchableColumns = this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
     const {langtag} = this.props;
     return [
-      {
+      (langtag !== f.first(Langtags))
+      ? {
         label: this.props.t("translations.this_translation_needed", {langtag}),
         value: FilterModes.UNTRANSLATED,
+        kind: BOOL
+      }
+      : {
+        label: this.props.t("filter.needs_translation"),
+        value: FilterModes.ANY_UNTRANSLATED,
         kind: BOOL
       },
       {
@@ -252,16 +258,14 @@ class FilterPopup extends React.Component {
 
   boolInput = () => {
     const isYesSelected = this.state.filter.value;
-    const yesClassName = classNames("neutral yes", {"active": isYesSelected});
-    const noClassName = classNames("neutral no", {"active": !isYesSelected});
+    const checkboxCss = classNames("checkbox", {"checked": isYesSelected});
     return (
-      <span className="bool-input">
-        <a href="#" className={yesClassName} onClick={() => this.setState({filter: f.assoc("value", true, this.state.filter)})}>
-          {i18n.t("common:yes")}
-        </a>
-        <a href="#" className={noClassName} onClick={() => this.setState({filter: f.assoc("value", false, this.state.filter)})}>
-          {i18n.t("common:no")}
-        </a>
+      <span className="bool-input" onClick={() => this.setState({filter: f.assoc("value", !isYesSelected, this.state.filter)})}>
+        <div className={checkboxCss}>
+        </div>
+        <div className="selection-text">
+          ({i18n.t((isYesSelected) ? "common:yes" : "common:no")})
+        </div>
       </span>
     );
   };
