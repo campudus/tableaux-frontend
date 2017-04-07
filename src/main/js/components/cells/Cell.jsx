@@ -50,7 +50,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
     }
   } else {
     const remainingTranslations = f.remove(f.equals(langtag), f.prop("langtags", translationAnnotation));
-    if (f.contains(langtag, translationAnnotation.langtags)) {
+    if (f.contains(langtag, f.prop("langtags", translationAnnotation))) {
       removeTranslationNeeded(langtag, cell);
       if (f.isEmpty(remainingTranslations)) {
         deleteCellAnnotation(translationAnnotation, cell);

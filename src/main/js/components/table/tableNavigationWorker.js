@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import * as f from "lodash/fp";
-import {Directions, ColumnKinds, Langtags, DefaultLangtag} from "../../constants/TableauxConstants";
+import {ColumnKinds, DefaultLangtag, Directions, Langtags} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
 import {isLocked} from "../../helpers/annotationHelper";
@@ -54,54 +54,62 @@ export function getKeyboardShortcuts() {
     left: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.LEFT);
-      }
+          setNextSelectedCell.call(this, Directions.LEFT);
+        }
       );
     },
     right: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.RIGHT);
-      }
+          setNextSelectedCell.call(this, Directions.RIGHT);
+        }
       );
     },
     tab: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
-      }
+          setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
+        }
       );
     },
     up: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.UP);
-      }
+          setNextSelectedCell.call(this, Directions.UP);
+        }
       );
     },
     down: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        setNextSelectedCell.call(this, Directions.DOWN);
-      }
+          setNextSelectedCell.call(this, Directions.DOWN);
+        }
       );
     },
     enter: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (selectedCell && !selectedCellEditing) {
-          toggleCellEditing.call(this, {langtag: this.state.selectedCellExpandedRow || this.props.langtag, event});
+          if (selectedCell && !selectedCellEditing) {
+            toggleCellEditing.call(this,
+              {
+                langtag: this.state.selectedCellExpandedRow || this.props.langtag,
+                event
+              });
+          }
         }
-      }
       );
     },
     escape: (event) => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (selectedCell && selectedCellEditing) {
-          toggleCellEditing.call(this, {editing: false, event});
+          if (selectedCell && selectedCellEditing) {
+            toggleCellEditing.call(this,
+              {
+                editing: false,
+                event
+              });
+          }
         }
-      }
       );
     },
     text: (event) => {
@@ -111,6 +119,9 @@ export function getKeyboardShortcuts() {
       const actionKey = (f.contains("Mac OS", navigator.userAgent))
         ? "metaKey"
         : "ctrlKey";
+      const systemPaste = selectedCellEditing
+      && f.contains(selectedCell.kind,
+        [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
       const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
       if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
@@ -119,7 +130,8 @@ export function getKeyboardShortcuts() {
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!_.isEmpty(this.props.pasteOriginCell)
         && !_.eq(this.props.pasteOriginCell, selectedCell)
-        && f.prop(actionKey, event) && event.key === "v") {  // Cell paste
+        && f.prop(actionKey, event) && event.key === "v"
+        && !systemPaste) {  // Cell paste
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
@@ -127,6 +139,7 @@ export function getKeyboardShortcuts() {
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
+        || selectedCell.kind === ColumnKinds.richtext
         || selectedCell.kind === ColumnKinds.numeric)) {
         toggleCellEditing.call(this, {event});
       }
