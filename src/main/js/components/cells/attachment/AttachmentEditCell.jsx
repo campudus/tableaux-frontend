@@ -61,7 +61,7 @@ class AttachmentEditCell extends Component {
     });
 
     return (
-      <div className={"cell-content"}>
+      <div className={"cell-content"} onScroll={event => {event.stopPropagation()}}>
         {[...attachments, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
       </div>
     );

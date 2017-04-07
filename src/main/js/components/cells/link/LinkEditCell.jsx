@@ -57,7 +57,7 @@ class LinkEditCell extends Component {
     });
 
     return (
-        <div className={"cell-content"}>
+        <div className={"cell-content"} onScroll={event => {event.stopPropagation()}}>
           {[...links, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
         </div>
     );
