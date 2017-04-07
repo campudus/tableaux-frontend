@@ -90,7 +90,7 @@ export function getKeyboardShortcuts() {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
         if (selectedCell && !selectedCellEditing) {
-          toggleCellEditing.call(this, {langtag: this.state.selectedCellExpandedRow || this.props.langtag});
+          toggleCellEditing.call(this, {langtag: this.state.selectedCellExpandedRow || this.props.langtag, event});
         }
       }
       );
@@ -99,7 +99,7 @@ export function getKeyboardShortcuts() {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
         if (selectedCell && selectedCellEditing) {
-          toggleCellEditing.call(this, {editing: false});
+          toggleCellEditing.call(this, {editing: false, event});
         }
       }
       );
@@ -128,7 +128,7 @@ export function getKeyboardShortcuts() {
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
         || selectedCell.kind === ColumnKinds.numeric)) {
-        toggleCellEditing.call(this);
+        toggleCellEditing.call(this, {event});
       }
     }
   };
@@ -214,7 +214,7 @@ export function toggleCellEditing(params = {}) {
   );
   if (selectedCell && canEdit) {
     if (!this.state.selectedCellEditing && isLocked(selectedCell.row) && !needsTranslation) {  // needs_translation overrules final
-      askForSessionUnlock(selectedCell.row);
+      askForSessionUnlock(selectedCell.row, f.prop(["event", "key"], params));
       return;
     }
     const noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);

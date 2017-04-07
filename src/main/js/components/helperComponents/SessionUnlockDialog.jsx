@@ -23,17 +23,21 @@ class Candidates {
   }
 }
 
-const askForSessionUnlock = (el) => {
+const askForSessionUnlock = (el, key) => {
+  console.log("asForSessionUnlock: key", key)
   if (!isLocked(el)) {
     return;
   }
   const {id} = el;
+  const keyCanUnlock = key && key === "Enter";
 
-  if (Candidates.has(id)) {
+  if (Candidates.has(id) && keyCanUnlock) {
     Candidates.remove(id);
     sessionUnlock(el);
   } else {
-    Candidates.add(id);
+    if (key && keyCanUnlock) {
+      Candidates.add(id);
+    }
     ActionCreator.showToast(
       <div id="cell-jump-toast">
         <h1>{i18n.t("table:final.unlock_header")}</h1>
