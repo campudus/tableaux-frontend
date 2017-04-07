@@ -114,7 +114,7 @@ export function getKeyboardShortcuts() {
       const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
       if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
-        event.preventDefault();
+        // event.preventDefault();
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!_.isEmpty(this.props.pasteOriginCell)
