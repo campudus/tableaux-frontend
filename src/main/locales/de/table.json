@@ -40,9 +40,10 @@
   "edit_links": "Einträge verlinken/entfernen",
   "edit_attachments": "Dateien verlinken/entfernen",
   "final": {
-    "set_final": "Permanente Freigabemarkierung setzen",
-    "set_not_final": "Permanente Freigabemarkierung entfernen",
-    "unlock_toast": "Diese Zeile wurde als \"freigegeben\" markiert.\nNoch einmal klicken um die Sperre für diese Sitzung aufzuheben.",
+    "set_final": "Markierung \"Final\" setzen",
+    "set_not_final": "Markierung \"Final\" entfernen",
+    "unlock_header": "Zeile vor Änderungen geschützt",
+    "unlock_toast": "Zum entsperren 2x Klicken/Eingabetaste",
     "set_all_rows_final": "Die ganze Tabelle freigeben"
   },
   "translations": {

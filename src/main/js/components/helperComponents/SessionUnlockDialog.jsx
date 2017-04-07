@@ -34,7 +34,11 @@ const askForSessionUnlock = (el) => {
     sessionUnlock(el);
   } else {
     Candidates.add(id);
-    ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:final.unlock_toast")}</div>, TOAST_TIME);
+    ActionCreator.showToast(
+      <div id="cell-jump-toast">
+        <h1>{i18n.t("table:final.unlock_header")}</h1>
+        <p>{i18n.t("table:final.unlock_toast")}</p>
+      </div>, TOAST_TIME);
   }
 };
 

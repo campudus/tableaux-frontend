@@ -40,9 +40,10 @@
   "edit_links": "Link/unlink items",
   "edit_attachments": "Link/unlink files",
   "final": {
-    "set_final": "Set permanent \"final\" mark",
-    "set_not_final": "Remove permanent \"final\" mark",
-    "unlock_toast": "This row has been marked as final.\nClick again to unlock for this session.",
+    "set_final": "Mark as \"final\"",
+    "set_not_final": "Remove \"final\" mark",
+    "unlock_header": "Row protected from modifications",
+    "unlock_toast": "2x left click or enter key to unlock",
     "set_all_rows_final": "Set the whole table as final"
   },
   "translations": {
