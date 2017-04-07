@@ -18,7 +18,6 @@ $status-error-background-color: #ffa088;*/
 // Colors ----------------------------------- //
 $color-body-background: #EFEFEF;
 $color-background-very-light-grey: #F8F8F8;
-$color-background-disabled: #FAFAFA;
 $color-primary: #3296DC;
 $color-primary-lighter: #91C8FF;
 $color-primary-darker: darken($color-primary, 10);
@@ -43,6 +42,8 @@ $color-success: #5EC786;
 $color-green: $color-success;
 $color-red: #D86357;
 $dark-blue-grey-background: #3C4246;
+$color-background-disabled: #FAFAFA;
+$color-foreground-disabled: $color-text-medium-grey;
 $color-needs-translation: lighten($color-primary, 40);
 $color-fully-translated: lighten($color-green, 30);
 

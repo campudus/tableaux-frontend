@@ -109,7 +109,7 @@ class FilterPopup extends React.Component {
   buildColumnOptions(filterFn) {
     const {t, columns, langtag} = this.props;
 
-    return _.map(_.filter(columns.models, filterFn), (column) => {
+    return _.map(columns.models, (column) => {
       // Show display name with fallback to machine name
       const columnDisplayName = column.displayName[langtag] || column.name;
       // ID Column gets translated name
@@ -118,7 +118,8 @@ class FilterPopup extends React.Component {
       return {
         label: labelName,
         value: f.toString(column.id),
-        kind: column.kind
+        kind: column.kind,
+        disabled: !filterFn(column)
       };
     });
   }

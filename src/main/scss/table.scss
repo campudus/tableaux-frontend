@@ -89,10 +89,10 @@
     overflow: visible;
     white-space: nowrap;
     position: relative;
-    height:$space-inner-height-table-header;
+    height: $space-inner-height-table-header;
 
     a {
-      outline:none;
+      outline: none;
     }
 
     .column-name-wrapper {
@@ -111,7 +111,6 @@
         text-overflow: ellipsis;
       }
     }
-
 
     .column-contextmenu-button {
       position: absolute;
@@ -220,7 +219,16 @@
 }
 
 #cell-jump-toast {
-    padding: 25px;
-    border-radius: 5px;
-    background-color: rgba(0,0,0,0.6);
+  padding: 25px;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.Select {
+  .Select-option {
+    &.is-disabled {
+      background-color: $color-background-disabled;
+      color: $color-foreground-disabled;
+    }
+  }
 }
