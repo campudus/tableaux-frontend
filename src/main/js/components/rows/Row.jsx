@@ -23,7 +23,7 @@ class Row extends React.Component {
           force: true
         })
     );
-    props.watch(props.row, {event: "change:final", force: true});
+    props.watch(props.row, {event: "change:final,change:unlocked", force: true});
   }
 
   // Allows a good performance when editing large tables
@@ -129,7 +129,6 @@ class Row extends React.Component {
 
     const cantTranslate = !isUserAdmin() && (isRowSelected || isRowExpanded) && !hasUserAccessToLanguage(langtag);
     const canDeleteRow = table.type !== "settings" && (langtag === TableauxConstants.DefaultLangtag || !isRowExpanded) && isRowSelected && isUserAdmin();
-    const cantTranslateIcon = (cantTranslate) ? <i className="fa fa-ban access-denied-icon" /> : null;
     const deleteButton = (canDeleteRow && !row.final)
       ? (
         <div className="delete-row">
@@ -139,15 +138,20 @@ class Row extends React.Component {
         </div>
       )
       : null;
-    const unlockButton = (row.final && !cantTranslate)
-      ? <i className="fa fa-lock access-denied-icon" />
-      : null;
+    const rowAccessStatusIcon = (() => {
+      if (cantTranslate) {
+        return <i className="fa fa-ban access-denied-icon" />; // access-denied-icon defines style
+      } else if (row.final) {
+        return <i className={"access-denied-icon fa " + ((row.unlocked) ? "fa-unlock" : "fa-lock")} />
+      } else {
+        return null;
+      }
+    })();
 
     return (
       <div key={this.props.row.getId() + "-" + langtag} className={className} tabIndex="-1"
            onContextMenu={this.contextMenuHandler}>
-        {cantTranslateIcon}
-        {unlockButton}
+        {rowAccessStatusIcon}
         {deleteButton}
         <MetaCell langtag={langtag} rowId={this.props.row.getId()}
                   onClick={this.toggleExpand} rowExpanded={this.props.isRowExpanded} />

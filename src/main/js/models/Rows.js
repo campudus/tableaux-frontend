@@ -2,7 +2,6 @@ const Collection = require("ampersand-rest-collection");
 const _ = require("lodash");
 const apiUrl = require("../helpers/apiUrl");
 const Row = require("./Row");
-import {getSessionUnlockedElements} from "../helpers/annotationHelper";
 import * as f from "lodash/fp";
 
 export const INITIAL_PAGE_SIZE = 30;
@@ -15,13 +14,12 @@ const Rows = Collection.extend({
   model: function (attrs, options) {
     const tableId = options.collection.parent.getId();
     const columns = options.collection.parent.columns;
-    const sessionUnlocked = getSessionUnlockedElements({tableId});
     const json = {
       id: attrs.id,
       tableId: tableId,
       values: attrs.values,
       annotations: attrs.annotations || [],
-      final: !!attrs.final && sessionUnlocked !== true && !f.contains(attrs.id, sessionUnlocked),
+      final: !!attrs.final,
       columns: columns
     };
 
@@ -41,8 +39,6 @@ const Rows = Collection.extend({
   parse: function (resp) {
     // set totalSize for calculating pagination
     this.totalSize = _.get(resp, ["page", "totalSize"], 0);
-    console.log("Rows.parse", _.get(resp, "page"))
-    console.log("set this.totalsize to", this.totalSize)
     // do real parsing
     return resp.rows;
   },

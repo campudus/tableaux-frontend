@@ -1,5 +1,5 @@
 import React from "react";
-import {sessionUnlock, isLocked} from "../../helpers/annotationHelper";
+import {unlockRow, isLocked} from "../../helpers/annotationHelper";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import i18n from "i18next";
@@ -24,18 +24,17 @@ class Candidates {
 }
 
 const askForSessionUnlock = (el, key) => {
-  console.log("asForSessionUnlock: key", key)
   if (!isLocked(el)) {
     return;
   }
   const {id} = el;
   const keyCanUnlock = key && key === "Enter";
 
-  if (Candidates.has(id) && keyCanUnlock) {
+  if (Candidates.has(id) && (!key || keyCanUnlock)) {
     Candidates.remove(id);
-    sessionUnlock(el);
+    unlockRow(el);
   } else {
-    if (key && keyCanUnlock) {
+    if (!key || (key && keyCanUnlock)) {
       Candidates.add(id);
     }
     ActionCreator.showToast(

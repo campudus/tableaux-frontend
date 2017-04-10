@@ -21,7 +21,8 @@ const Row = AmpersandModel.extend({
     recentlyDuplicated: {
       type: "boolean",
       default: false
-    }
+    },
+    unlocked: "boolean"
   },
 
   collections: {

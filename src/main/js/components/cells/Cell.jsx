@@ -187,7 +187,7 @@ class Cell extends React.Component {
     const isPrimaryLanguage = langtag === f.first(Langtags);
     const cellNeedsTranslation = translationNeeded && f.contains(langtag,
         translationNeeded.langtags) && !isPrimaryLanguage;
-    const needsTranslationOtherLanguages = translationNeeded && isPrimaryLanguage;
+    const needsTranslationOtherLanguages = !f.isEmpty(f.prop("langtags", translationNeeded)) && isPrimaryLanguage;
     const cssClass = classNames(`cell cell-${kind} cell-${cell.column.getId()}-${cell.rowId}`,
       {
         "selected": selected,

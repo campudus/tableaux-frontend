@@ -3,7 +3,6 @@ import * as f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
-import Cookies from "js-cookie";
 
 const extractAnnotations = obj => {
   const findAnnotationType = typeStr => f.filter(f.matchesProperty("type", typeStr));
@@ -167,14 +166,17 @@ const addTranslationNeeded = (langtags, cell) => {
         {annotations: newTranslationStatus}
       );
     }
-    : (response) => {};
-  cell.set({annotations: f.assoc(
-    ["translationNeeded", "langtags"],
-    f.uniq(f.union(f.prop(["translationNeeded", "langtags"], oldCellAnnotations), langtags)),
-    (f.isBoolean(oldCellAnnotations.translationNeeded)
-      ? f.assoc(["translationNeeded"], {}, oldCellAnnotations)
-      : oldCellAnnotations)
-  )});
+    : (response) => {
+    };
+  cell.set({
+    annotations: f.assoc(
+      ["translationNeeded", "langtags"],
+      f.uniq(f.union(f.prop(["translationNeeded", "langtags"], oldCellAnnotations), langtags)),
+      (f.isBoolean(oldCellAnnotations.translationNeeded)
+        ? f.assoc(["translationNeeded"], {}, oldCellAnnotations)
+        : oldCellAnnotations)
+    )
+  });
   request
     .post(cellAnnotationUrl(cell))
     .send({
@@ -212,7 +214,10 @@ const removeTranslationNeeded = (langtag, cell) => {
   cell.set(
     {annotations: f.assoc(["translationNeeded", "langtags"], remainingLangtags, oldCellAnnotations)}
   );
-  refreshRowTranslations({uuid, langtags: remainingLangtags}, cell);
+  refreshRowTranslations({
+    uuid,
+    langtags: remainingLangtags
+  }, cell);
   request
     .delete(`${cellAnnotationUrl(cell)}/${uuid}/${langtag}`)
     .end(
@@ -234,7 +239,9 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   const {row} = cell;
   const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
   const cellAnnotations = f.prop(["annotations", cellIdx]);
-  const newAnnotations = f.assocPath([cellIdx], f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)), f.prop("annotations", row));
+  const newAnnotations = f.assocPath([cellIdx],
+    f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)),
+    f.prop("annotations", row));
   row.set({annotations: newAnnotations});
 
   if (fireAndForget) {
@@ -286,28 +293,19 @@ const setRowAnnotation = (annotation, target) => {
     .end((target instanceof Row) ? afterRowUpdate : afterTableUpdate);
 };
 
-const sessionUnlock = el => {
-  const key = `table-${el.tableId || el.id}`;
-  const value = getSessionUnlockedElements(el);
-  if (el instanceof Row && value !== true) {
-    Cookies.set(key, (value === true) ? [el.id] : f.uniq([...value, el.id]));
-    el.set({final: false});
-  } else {
-    Cookies.set(key, true);
-    el.table.rows.models.forEach(row => row.set({final: false}));
+// Stateful variable!
+let unlockedRow = null;
+
+const unlockRow = (row, unlockState) => {
+  const unlock = f.isNil(unlockState) || unlockState === true;
+  if (unlockedRow) {
+    unlockedRow.set({unlocked: false});
   }
+  row.set({unlocked: unlock});
+  unlockedRow = (unlock) ? row : null;
 };
 
-const getSessionUnlockedElements = el => {
-  const key = `table-${el.tableId || el.id}`;
-  return JSON.parse(Cookies.get(key) || "[]");
-};
-
-const isLocked = el => {
-  return (el instanceof Row)
-    ? el.final
-    : getSessionUnlockedElements(el) !== true;
-};
+const isLocked = row => row.final && !row.unlocked;
 
 export {
   deleteCellAnnotation,
@@ -317,8 +315,7 @@ export {
   extractAnnotations,
   refreshAnnotations,
   setRowAnnotation,
-  sessionUnlock,
-  isLocked,
-  getSessionUnlockedElements
+  unlockRow,
+  isLocked
 };
 export default setCellAnnotation;

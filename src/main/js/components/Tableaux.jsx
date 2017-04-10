@@ -128,7 +128,6 @@ export default class Tableaux extends React.Component {
   renderToast() {
     const {toast} = this.state;
     if (toast) {
-      console.log("render toast");
       return (<Toast content={toast}/>);
     }
   }

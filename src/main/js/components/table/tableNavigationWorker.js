@@ -3,7 +3,7 @@ import * as f from "lodash/fp";
 import {ColumnKinds, DefaultLangtag, Directions, Langtags} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
-import {isLocked} from "../../helpers/annotationHelper";
+import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 
@@ -209,6 +209,9 @@ export function toggleCellSelection({selected, cell, langtag}) {
   if (selected !== "NO_HISTORY_PUSH") {
     const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
     App.router.navigate(cellURL, {trigger: false});
+  }
+  if (!f.isNil(this.state.selectedCell) && !f.eq(this.state.selectedCell.row, cell.row)) {
+    unlockRow(this.state.selectedCell.row, false);
   }
   this.setState({
     selectedCell: cell,
