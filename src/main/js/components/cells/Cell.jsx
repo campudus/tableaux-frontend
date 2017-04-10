@@ -18,7 +18,7 @@ import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
 import * as f from "lodash/fp";
-import {addTranslationNeeded, removeTranslationNeeded, deleteCellAnnotation} from "../../helpers/annotationHelper";
+import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/monads";
 
@@ -27,7 +27,9 @@ import {either} from "../../helpers/monads";
 const CELL_HINT_PADDING = 40;
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
-  if (!cell.isMultiLanguage || either(cell).map(f.prop(["value", langtag])).orElse(f.prop("value")).value === oldValue) {
+  if (!cell.isMultiLanguage || either(cell)
+      .map(f.prop(["value", langtag]))
+      .orElse(f.prop("value")).value === oldValue) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -42,7 +44,8 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
     const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
     const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
       ? addTranslationNeeded(untranslated, cell)
-      : () => {};
+      : () => {
+      };
     if (translationsExist) {
       openTranslationDialog(flagAllTranslations, flagEmptyTranslations);
     } else {
@@ -181,14 +184,15 @@ class Cell extends React.Component {
 
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";
     const {translationNeeded} = cell.annotations;
+    const isPrimaryLanguage = langtag === f.first(Langtags);
+    const cellNeedsTranslation = translationNeeded && f.contains(langtag,
+        translationNeeded.langtags) && !isPrimaryLanguage;
+    const needsTranslationOtherLanguages = translationNeeded && isPrimaryLanguage;
     const cssClass = classNames(`cell cell-${kind} cell-${cell.column.getId()}-${cell.rowId}`,
       {
         "selected": selected,
         "editing": cell.isEditable && editing,
-        "needs-translation": translationNeeded && f.contains(langtag, translationNeeded.langtags),
-        "fully-translated": cell.isMultiLanguage && this.props.showTranslationStatus && !translationNeeded,
-        "needs-translation-other-language": this.props.showTranslationStatus && translationNeeded && !f.contains(langtag,
-          translationNeeded.langtags)
+        "needs-translation": cellNeedsTranslation
       }
     );
 
@@ -201,9 +205,16 @@ class Cell extends React.Component {
                 selected={selected}
                 editing={cell.isEditable && editing}
                 contentChanged={contentChanged(cell, langtag)}
-                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {} : this.setKeyboardShortcutsForChildren}
+                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {
+                } : this.setKeyboardShortcutsForChildren}
       />
     );
+
+    const expandCorner = (needsTranslationOtherLanguages)
+      ? <div className="needs-translation-other-language"
+             onClick={evt => { evt.stopPropagation(); ActionCreator.toggleRowExpand(cell.row.getId()) } }
+      />
+      : null;
 
     // onKeyDown event just for selected components
     if (selected) {
@@ -220,14 +231,15 @@ class Cell extends React.Component {
 
       // We just show the info starting at the fourth column
       const rowDisplayLabelElement = indexOfCell >= 3 ? (
-          <div className={rowDisplayLabelClass}><span className="content">{langtag} | {rowDisplayLabel}</span>
-          </div>) : null;
+        <div className={rowDisplayLabelClass}><span className="content">{langtag} | {rowDisplayLabel}</span>
+        </div>) : null;
 
       return (
         <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
           {cellItem}
+          {expandCorner}
           {rowDisplayLabelElement}
         </div>
       );
@@ -236,6 +248,7 @@ class Cell extends React.Component {
         <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1">
           {cellItem}
+          {expandCorner}
         </div>
       );
     }
