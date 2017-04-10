@@ -1,8 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {isLocked} from "../../../helpers/annotationHelper";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
-@connectToAmpersand
 export default class LinkLabelCell extends Component {
 
   static propTypes = {
@@ -27,8 +24,6 @@ export default class LinkLabelCell extends Component {
   };
 
   removeLinkHandler = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
     this.props.onDelete(this.props.linkElement.id);
   };
 
@@ -72,7 +67,7 @@ export default class LinkLabelCell extends Component {
   render() {
     const {clickable, deletable, cell} = this.props;
 
-    if (deletable && !isLocked(cell.row)) {
+    if (deletable) {
       return this.renderDeletable();
     } else if (clickable) {
       return this.renderClickable();

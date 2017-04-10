@@ -16,6 +16,11 @@ class LinkEditCell extends Component {
     setCellKeyboardShortcuts: PropTypes.func
   };
 
+  constructor(props) {
+    super(props);
+    this.props.watch(props.cell.row, {events: "change:unlocked", force: true});
+  }
+
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts({
       enter: (event) => {
