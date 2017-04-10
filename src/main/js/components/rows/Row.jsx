@@ -142,7 +142,7 @@ class Row extends React.Component {
       if (cantTranslate) {
         return <i className="fa fa-ban access-denied-icon" />; // access-denied-icon defines style
       } else if (row.final) {
-        return <i className={"access-denied-icon fa " + ((row.unlocked) ? "fa-unlock" : "fa-lock")} />
+        return <i className={"access-denied-icon fa " + ((row.unlocked) ? "fa-unlock" : "fa-lock")} />;
       } else {
         return null;
       }

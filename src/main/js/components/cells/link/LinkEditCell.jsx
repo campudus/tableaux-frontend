@@ -62,7 +62,7 @@ class LinkEditCell extends Component {
     });
 
     return (
-        <div className={"cell-content"} onScroll={event => {event.stopPropagation()}}>
+        <div className={"cell-content"} onScroll={event => { event.stopPropagation(); }}>
           {[...links, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
         </div>
     );
@@ -70,4 +70,4 @@ class LinkEditCell extends Component {
 
 }
 
-module.exports = LinkEditCell;
+export default LinkEditCell;
