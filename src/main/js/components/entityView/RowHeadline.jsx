@@ -8,13 +8,15 @@ import Header from "../overlay/Header";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import {openLinkOverlay} from "../cells/link/LinkOverlay";
 import i18n from "i18next";
+import ItemPopupMenu from "./ItemPopupMenu";
 
 class RowHeadline extends React.Component {
 
   static propTypes = {
     column: React.PropTypes.object.isRequired,
     cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
+    langtag: React.PropTypes.string.isRequired,
+    setTranslationView: React.PropTypes.func.isrequired
   };
 
   getDisplayName = column => {
@@ -46,10 +48,16 @@ class RowHeadline extends React.Component {
     const url = `/${langtag}/tables/${column.toTable}`;
     return (
       <div className="item-header">
-        <a href="#" onClick={() => window.open(url, "_blank")}>
-          {this.getDisplayName(column)}
-          <i className="fa fa-external-link" />
-        </a>
+        <div className="title-wrapper">
+          <ItemPopupMenu langtag={this.props.langtag}
+                         cell={this.props.cell}
+                         setTranslationView={this.props.setTranslationView}
+          />
+          <a href="#" onClick={() => window.open(url, "_blank")}>
+            {this.getDisplayName(column)}
+            <i className="fa fa-external-link" />
+          </a>
+        </div>
         <a className="column-icon button" href="#" onClick={() => openLinkOverlay(cell, langtag)}>
           {i18n.t("table:edit_links")}
         </a>
@@ -73,7 +81,13 @@ class RowHeadline extends React.Component {
     const url = `/${langtag}/tables/${cell.toTable}`;
     return (
       <div className="item-header">
-        {this.getDisplayName(column)}
+        <div className="title-wrapper">
+          <ItemPopupMenu langtag={this.props.langtag}
+                         cell={this.props.cell}
+                         setTranslationView={this.props.setTranslationView}
+          />
+          {this.getDisplayName(column)}
+        </div>
         <a className="button column-icon" href="#" onClick={this.openAttachmentOverlay}>
           {i18n.t("table:edit_attachments")}
         </a>
@@ -83,7 +97,13 @@ class RowHeadline extends React.Component {
 
   mkDefaultHeader = column => (
     <div className="item-header">
-      {this.getDisplayName(column)}
+      <div className="title-wrapper">
+        <ItemPopupMenu langtag={this.props.langtag}
+                       cell={this.props.cell}
+                       setTranslationView={this.props.setTranslationView}
+        />
+        {this.getDisplayName(column)}
+      </div>
       {this.getColumnIcon(column)}
     </div>
   );

@@ -149,6 +149,7 @@ $overlay-border-radius: 5px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        position: relative;
 
         i {
           color: $color-primary;
@@ -186,6 +187,12 @@ $overlay-border-radius: 5px;
         .item-description {
           margin-top: 15px;
           color: $color-text-medium-grey;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          i {
+            margin-right: 10px;
+          }
         }
 
         .item-content {
@@ -272,6 +279,7 @@ $overlay-border-radius: 5px;
       border-color: inherit !important; // TODO: Remove important once media styles are done
       border-bottom: 1px solid;
       transition: border 0.3s;
+      font-family: Roboto;
 
       &:focus {
         border-color: $color-primary;
@@ -350,7 +358,7 @@ $overlay-border-radius: 5px;
       .text-wrapper {
         max-width: 90%;
         overflow: hidden;
-        height: 1.3rem;
+        height: $font-size-standard;
       }
 
       .link-label {

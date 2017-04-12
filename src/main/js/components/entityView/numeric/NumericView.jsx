@@ -78,7 +78,7 @@ class NumericView extends React.Component {
   };
 
   render() {
-    const {langtag} = this.props;
+    const {langtag, cell, setTranslationView} = this.props;
     return <div className="item-content">
       <input type="text" value={this.state.value}
              disabled={!hasUserAccessToLanguage(langtag)}

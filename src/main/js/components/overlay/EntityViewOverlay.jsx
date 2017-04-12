@@ -12,11 +12,16 @@ import Header from "./Header";
 import {showDialog} from "./GenericOverlay";
 import {maybe} from "../../helpers/monads";
 import i18n from "i18next";
+import TranslationPopup from "../entityView/TranslationPopup";
+import * as f from "lodash/fp";
 
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
-    this.state = {langtag: props.langtag};
+    this.state = {
+      langtag: props.langtag,
+      translationView: false
+    };
   }
 
   static PropTypes = {
@@ -52,6 +57,26 @@ class EntityViewBody extends Component {
     this.setState({langtag});
   };
 
+  setTranslationView = item => {
+    const oldItem = this.state.translationView;
+    const newItem = {
+      show: (f.isNil(item.show) ? f.prop("show", oldItem) : item.show),
+      cell: (f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell)
+    };
+    this.setState({translationView: newItem});
+  };
+
+  renderTranslationView = () => {
+    const {translationView} = this.state;
+    const {langtag} = this.props;
+    return (translationView.show)
+      ? <TranslationPopup cell={translationView.cell || {}}
+                          langtag={langtag}
+                          setTranslationView={this.setTranslationView}
+      />
+      : null
+  };
+
   render() {
     const cells = this.props.row.cells.models;
     const {langtag} = this.state;
@@ -62,9 +87,12 @@ class EntityViewBody extends Component {
           .filter(cell => cell.kind !== ColumnKinds.concat)
           .map(
             (cell, idx) => {
-              return <View key={cell.id} tabIdx={idx + 1} cell={cell} langtag={langtag} />;
+              return <View key={cell.id} cell={cell} langtag={langtag}
+                           setTranslationView={this.setTranslationView}
+              />;
             })
         }
+        {this.renderTranslationView()}
       </div>
     );
   }

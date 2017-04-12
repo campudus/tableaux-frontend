@@ -6,6 +6,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {copyCellToClipboard} from "../cells/cellCopyHelper";
 
 export function shouldCellFocus() {
   // we dont want to force cell focus when overlay is open
@@ -125,7 +126,6 @@ export function getKeyboardShortcuts() {
       const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
       if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
-        // event.preventDefault();
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!_.isEmpty(this.props.pasteOriginCell)

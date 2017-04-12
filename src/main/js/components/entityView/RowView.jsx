@@ -11,6 +11,7 @@ import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {isEmpty, prop} from "lodash/fp";
+import {canConvert} from "../../helpers/cellValueConverter";
 
 @connectToAmpersand
 class View extends Component {
@@ -18,7 +19,7 @@ class View extends Component {
   static propTypes = {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
-    tabIdx: PropTypes.number
+    setTranslationView: PropTypes.func.isRequired
   };
 
   getViewKind() {
@@ -31,7 +32,7 @@ class View extends Component {
   }
 
   render() {
-    const {cell, langtag, tabIdx} = this.props;
+    const {cell, langtag, setTranslationView} = this.props;
     const {kind, column} = cell;
     const views = {
       [ColumnKinds.link]: LinkView,
@@ -49,18 +50,24 @@ class View extends Component {
     const CellKind = views[kind];
     const viewClass = `view item ${this.getViewKind()} ${this.getViewId()}`;
     const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
+    const translationContent = (canConvert(kind, ColumnKinds.text))
+      ? cell
+      : {column: prop("column", cell)};
 
     return (
-      <div className={viewClass}>
-        <RowHeadline column={column} langtag={langtag} cell={cell} />
-        {(!isEmpty(description)) ? <div className="item-description">{description}</div> : null}
-        <CellKind tabIdx={tabIdx} cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
+      <div className={viewClass} onMouseEnter={() => setTranslationView({cell: translationContent})}>
+        <RowHeadline column={column} langtag={langtag} cell={cell}
+                     setTranslationView={setTranslationView}
+        />
+        {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle"/><div>{description}</div></div> : null}
+        <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
                   focusNextItem={() => console.log("Focus next")}
                   focusPreviousItem={() => console.log("Focus prev")}
+                  setTranslationView={setTranslationView}
         />
       </div>
     );
   }
 }
 
-module.exports = View;
+export default View;
