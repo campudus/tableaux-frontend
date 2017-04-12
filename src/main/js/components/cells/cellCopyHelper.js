@@ -95,7 +95,6 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       neutral: [i18n.t("common:cancel"), null]
     };
     ActionCreator.openOverlay({
-      keyboardShortcuts: {enter: save},
       head: <Header title={i18n.t("table:copy_cell")} />,
       body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
                                         oldVals={dst.value}
@@ -103,7 +102,8 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
                                         saveAndClose={save}
                                         kind={dst.kind}
       />,
-      footer: <Footer actions={buttons} />
+      footer: <Footer actions={buttons} />,
+      keyboardShortcuts: {enter: event => { save(event); ActionCreator.closeOverlay(); }}
     });
   }
 };
