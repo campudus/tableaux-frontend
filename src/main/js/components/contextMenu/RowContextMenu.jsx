@@ -3,7 +3,7 @@ import {translate} from "react-i18next";
 import ActionCreator from "./../../actions/ActionCreator";
 import {noPermissionAlertWithLanguage} from "../overlay/ConfirmationOverlay";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
-import {initiateDeleteRow, initiateRowDependency, initiateEntityView} from "../../helpers/rowHelper";
+import {initiateDeleteRow, initiateRowDependency, initiateEntityView, initiateDuplicateRow} from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
 import {first, compose, isEmpty, eq, drop, remove, merge, contains, prop} from "lodash/fp";
@@ -48,12 +48,9 @@ class RowContextMenu extends React.Component {
   };
 
   duplicateRow = (event) => {
-    const {row} = this.props;
-    if (isUserAdmin()) {
-      ActionCreator.duplicateRow(row.tableId, row.getId());
-    } else {
-      noPermissionAlertWithLanguage(getUserLanguageAccess());
-    }
+    const {row, langtag} = this.props;
+    initiateDuplicateRow(row, langtag);
+    this.closeRowContextMenu();
   };
 
   showDependency = (event) => {

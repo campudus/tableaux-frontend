@@ -286,5 +286,9 @@ module.exports = {
 
   broadcastRowLoaded: (data) => { // data: {overlayId: timestamp, row: Row}
     Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, data);
+  },
+
+  setTranslationView: (translationInfo) =>{
+    Dispatcher.trigger(ActionTypes.SET_TRANSLATION_VIEW, translationInfo);
   }
 };

@@ -14,6 +14,7 @@ import {maybe} from "../../helpers/monads";
 import i18n from "i18next";
 import TranslationPopup from "../entityView/TranslationPopup";
 import * as f from "lodash/fp";
+import HeaderPopupMenu from "../entityView/HeaderPopupMenu";
 
 class EntityViewBody extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class EntityViewBody extends Component {
 
   componentWillMount = () => {
     Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
+    Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
   };
 
   componentDidMount() {
@@ -51,6 +53,7 @@ class EntityViewBody extends Component {
 
   componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
+    Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
   };
 
   switchLang = ({langtag}) => {
@@ -158,7 +161,7 @@ class LanguageSwitcher extends Component {
   }
 }
 
-class EntityViewHeaderWrapper extends Component {
+class LoadingEntityViewHeaderWrapper extends Component {
   static propTypes = {
     row: PropTypes.object,
     overlayId: PropTypes.number.isRequired,
@@ -191,20 +194,20 @@ class EntityViewHeaderWrapper extends Component {
       ? {
         context: getTableName(row, langtag),
         title: getDisplayLabel(row, langtag),
-        components: <div></div>,
+        components: mkHeaderComponents(row, langtag),
         langtag
       }
       : {
         context: "",
         title: i18n.t("table:loading"),
-        components: <div></div>,
+        components: <div/>,
         langtag
       };
     return <Header {...elements} />
   }
 }
 
-class EntityViewBodyWrapper extends Component {
+class LoadingEntityViewBodyWrapper extends Component {
   static propTypes = {
     overlayId: PropTypes.number.isRequired,
     toLoad: PropTypes.object,
@@ -336,6 +339,15 @@ class EntityViewBodyWrapper extends Component {
   }
 }
 
+const mkHeaderComponents = (row, langtag) => {
+  return (
+    <div className="header-components">
+      <LanguageSwitcher langtag={langtag} />
+      <HeaderPopupMenu langtag={langtag} row={row} />
+    </div>
+  )
+};
+
 const getTableName = (row, langtag) => {
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
@@ -352,7 +364,7 @@ export function openEntityView(row, langtag, focusElementId) {
   const rowDisplayLabel = getDisplayLabel(row, langtag);
   const tableName = getTableName(row, langtag);
   openOverlay({
-    head: <Header context={tableName} title={rowDisplayLabel} components={<LanguageSwitcher langtag={langtag} />} />,
+    head: <Header context={tableName} title={rowDisplayLabel} components={mkHeaderComponents(row, langtag)} />,
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
     type: "full-height",
     preferRight: true
@@ -363,8 +375,8 @@ export function openEntityView(row, langtag, focusElementId) {
 export function loadAndOpenEntityView(target, langtag) {
   const overlayId = new Date().getTime();
   openOverlay({
-    head: <EntityViewHeaderWrapper overlayId={overlayId} langtag={langtag} />,
-    body: <EntityViewBodyWrapper overlayId={overlayId} langtag={langtag} toLoad={target} />,
+    head: <LoadingEntityViewHeaderWrapper overlayId={overlayId} langtag={langtag} />,
+    body: <LoadingEntityViewBodyWrapper overlayId={overlayId} langtag={langtag} toLoad={target} />,
     type: "full-height",
     preferRight: true
   })

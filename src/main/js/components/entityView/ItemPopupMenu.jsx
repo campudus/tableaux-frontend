@@ -38,8 +38,11 @@ class ItemPopupMenu extends Component {
       fn
     );
     return (
-      <div className={entryClass} onMouseEnter={() => this.setState({active: idx})}>
-        <a href="#" onClick={clickHandler}>
+      <div className={entryClass}
+           onMouseEnter={() => this.setState({active: idx})}
+           onClick={clickHandler}
+      >
+        <a href="#">
           {(value) ? i18n.t(title, {langtag: value}) : i18n.t(title)}
         </a>
       </div>
@@ -104,6 +107,10 @@ class ItemPopupMenu extends Component {
     });
   };
 
+  componentWillUnmount = () => {
+    this.cancelClosingTimer();
+  };
+
   startClosingTimer = () => {
     this.cancelClosingTimer();
     this.timeoutId = window.setTimeout(() => this.setState({open: false}), CLOSING_TIMEOUT);
@@ -131,7 +138,7 @@ class ItemPopupMenu extends Component {
     return (
       <div className="entry-popup-wrapper">
         <div className={buttonClass}
-             onMouseEnter={this.cancelClosingTimer}
+             onMouseEnter={() => { this.setState({open: true}); this.cancelClosingTimer; }}
              onMouseLeave={this.handleMouseLeave}
         >
           <a href="#" onClick={() => this.setState({open: !open})}>
