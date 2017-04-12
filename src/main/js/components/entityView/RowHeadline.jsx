@@ -16,7 +16,7 @@ class RowHeadline extends React.Component {
     column: React.PropTypes.object.isRequired,
     cell: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired,
-    setTranslationView: React.PropTypes.func.isrequired
+    setTranslationView: React.PropTypes.func.isRequired
   };
 
   getDisplayName = column => {

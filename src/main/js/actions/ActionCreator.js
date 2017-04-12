@@ -288,7 +288,11 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, data);
   },
 
-  setTranslationView: (translationInfo) =>{
+  setTranslationView: (translationInfo) => {
     Dispatcher.trigger(ActionTypes.SET_TRANSLATION_VIEW, translationInfo);
+  },
+
+  filterEntityView: (payload) => {
+    Dispatcher.trigger(ActionTypes.FILTER_ENTITY_VIEW, payload);
   }
 };

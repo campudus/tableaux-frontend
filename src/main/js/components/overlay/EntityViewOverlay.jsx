@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import {broadcastRowLoaded, openOverlay, switchEntityViewLanguage} from "../../actions/ActionCreator";
 import View from "../entityView/RowView";
-import {ActionTypes, ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
+import {ActionTypes, ColumnKinds, FallbackLanguage, Langtags, FilterModes} from "../../constants/TableauxConstants";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import classNames from "classnames";
@@ -15,45 +15,59 @@ import i18n from "i18next";
 import TranslationPopup from "../entityView/TranslationPopup";
 import * as f from "lodash/fp";
 import HeaderPopupMenu from "../entityView/HeaderPopupMenu";
+import FilterBar from "../entityView/FilterBar";
+import columnFilter from "../entityView/columnFilter";
 
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
     this.state = {
       langtag: props.langtag,
-      translationView: false
+      translationView: false,
+      filter: {value: "", mode: FilterModes.CONTAINS}
     };
   }
 
   static PropTypes = {
     langtag: PropTypes.string.isRequired,
-    row: PropTypes.object.isRequired
+    row: PropTypes.object.isRequired,
+    id: PropTypes.number.isRequired
   };
 
   componentWillMount = () => {
     Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
+    Dispatcher.on(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
   };
 
   componentDidMount() {
-    const {focusElementId, row} = this.props;
+    const {focusElementId, row, id} = this.props;
     if (focusElementId) {
       const cell = row.cells.get(focusElementId);
       if (cell.kind === ColumnKinds.concat) {
-        return; // concat elements are omitted from EntityView
+        return; // concat elements are omitted from EntityView and are first anyway
       }
-      const container = first(document.getElementsByClassName("content-scroll"));
+      const container = first(document.getElementsByClassName(id.toString())).parentElement;
       const viewId = `view-${cell.column.id}-${cell.rowId}`;
       const element = first(document.getElementsByClassName(viewId));
       const scroller = zenscroll.createScroller(container);
-//      console.log("tn", container, "c", cell, "id", viewId, "el", element, "scr", scroller);
-      scroller.to(element, 1);
+      console.log("tn", container, "c", cell, "id", viewId, "el", element, "scr", scroller);
+      scroller.center(element, 1);
     }
   }
 
   componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
-    Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
+    Dispatcher.off(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
+    Dispatcher.off(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
+  };
+
+  setColumnFilter = ({id, value, filterMode}) => {
+    if (id != this.props.id) {
+      return;
+    }
+
+    this.setState({filter: {value, mode: filterMode}});
   };
 
   switchLang = ({langtag}) => {
@@ -82,12 +96,13 @@ class EntityViewBody extends Component {
 
   render() {
     const cells = this.props.row.cells.models;
-    const {langtag} = this.state;
+    const {langtag, filter} = this.state;
 
     return (
-      <div className="entity-view content-items">
+      <div className={"entity-view content-items " + this.props.id} >
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
+          .filter(columnFilter(langtag, filter))
           .map(
             (cell, idx) => {
               return <View key={cell.id} cell={cell} langtag={langtag}
@@ -165,7 +180,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
   static propTypes = {
     row: PropTypes.object,
     overlayId: PropTypes.number.isRequired,
-    langtag: PropTypes.string.isRequired,
+    langtag: PropTypes.string.isRequired
   };
 
   constructor(props) {
@@ -188,13 +203,13 @@ class LoadingEntityViewHeaderWrapper extends Component {
   };
 
   render() {
-    const {langtag} = this.props;
+    const {overlayId, langtag} = this.props;
     const {row} = this.state;
     const elements = (row)
       ? {
         context: getTableName(row, langtag),
         title: getDisplayLabel(row, langtag),
-        components: mkHeaderComponents(row, langtag),
+        components: mkHeaderComponents(overlayId, row, langtag),
         langtag
       }
       : {
@@ -323,7 +338,7 @@ class LoadingEntityViewBodyWrapper extends Component {
   render() {
     const {row} = this.state;
     if (row) {
-      return <EntityViewBody row={row} langtag={this.props.langtag} />
+      return <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.overlayId} />
     } else {
       const {pages, fetched} = this.state;
       const percentageLoaded = 100.0 * fetched / (pages || 1);
@@ -339,11 +354,12 @@ class LoadingEntityViewBodyWrapper extends Component {
   }
 }
 
-const mkHeaderComponents = (row, langtag) => {
+const mkHeaderComponents = (id, row, langtag) => {
   return (
     <div className="header-components">
       <LanguageSwitcher langtag={langtag} />
-      <HeaderPopupMenu langtag={langtag} row={row} />
+      <HeaderPopupMenu langtag={langtag} row={row} id={id} />
+      <FilterBar id={id} />
     </div>
   )
 };
@@ -363,9 +379,12 @@ const getDisplayLabel = (row, langtag) => {
 export function openEntityView(row, langtag, focusElementId) {
   const rowDisplayLabel = getDisplayLabel(row, langtag);
   const tableName = getTableName(row, langtag);
+  const overlayId = new Date().getTime();
   openOverlay({
-    head: <Header context={tableName} title={rowDisplayLabel} components={mkHeaderComponents(row, langtag)} />,
-    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
+    head: <Header context={tableName} title={rowDisplayLabel}
+                  components={mkHeaderComponents(overlayId, row, langtag)}
+    />,
+    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} id={overlayId} />,
     type: "full-height",
     preferRight: true
   });

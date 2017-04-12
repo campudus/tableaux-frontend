@@ -83,43 +83,51 @@ class HeaderPopupMenu extends Component {
     return (
       <div className="header-popup-wrapper">
         <div className={buttonClass}
-             onMouseEnter={() => {this.setState({open: true}); this.cancelClosingTimer(); }}
+             onMouseEnter={() => {
+               this.setState({open: true});
+               this.cancelClosingTimer();
+             }}
              onMouseLeave={this.handleMouseLeave}
         >
-          <a href="#" onClick={event => {event.stopPropagation(); this.setState({open: !open}); }}>
+          <a href="#" onClick={event => {
+            event.stopPropagation();
+            this.setState({open: !open});
+          }}>
             <i className="fa fa-ellipsis-v" />
           </a>
         </div>
         {(open)
           ? (
-            <div className="popup" onMouseLeave={this.handleMouseLeave} onMouseEnter={this.cancelClosingTimer}>
-              <div className="separator">{i18n.t("table:menus.information")}</div>
-              {this.mkEntry(0,
-                {
-                  title: "table:show_dependency",
-                  fn: () => openShowDependency(row, langtag)
-                })}
-              {this.mkEntry(1,
-                {
-                  title: "table:show_translations",
-                  fn: () => ActionCreator.setTranslationView(translationInfo)
-                })}
-              <div className="separator">{i18n.t("table:menus.edit")}</div>
-              {this.mkEntry(2,
-                {
-                  title: "table:delete_row",
-                  fn: () => initiateDeleteRow(row, langtag)
-                })}
-              {this.mkEntry(3,
-                {
-                  title: "table:duplicate_row",
-                  fn: () => initiateDuplicateRow(row, langtag)
-                })}
-              {this.mkEntry(4,
-                {
-                  title: (row.final) ? "table:final.set_not_final" : "table:final.set_final",
-                  fn: () => setRowAnnotation({final: !row.final}, row)
-                })}
+            <div className="popup-wrapper">
+              <div className="popup" onMouseLeave={this.handleMouseLeave} onMouseEnter={this.cancelClosingTimer}>
+                <div className="separator">{i18n.t("table:menus.information")}</div>
+                {this.mkEntry(0,
+                  {
+                    title: "table:show_dependency",
+                    fn: () => openShowDependency(row, langtag)
+                  })}
+                {this.mkEntry(1,
+                  {
+                    title: "table:show_translation",
+                    fn: () => ActionCreator.setTranslationView(translationInfo)
+                  })}
+                <div className="separator">{i18n.t("table:menus.edit")}</div>
+                {this.mkEntry(2,
+                  {
+                    title: "table:delete_row",
+                    fn: () => initiateDeleteRow(row, langtag)
+                  })}
+                {this.mkEntry(3,
+                  {
+                    title: "table:duplicate_row",
+                    fn: () => initiateDuplicateRow(row, langtag)
+                  })}
+                {this.mkEntry(4,
+                  {
+                    title: (row.final) ? "table:final.set_not_final" : "table:final.set_final",
+                    fn: () => setRowAnnotation({final: !row.final}, row)
+                  })}
+              </div>
             </div>
           )
           : null

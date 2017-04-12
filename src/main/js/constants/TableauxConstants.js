@@ -89,6 +89,7 @@ var TableauxConstant = {
     SWITCH_ENTITY_VIEW_LANGUAGE: null,
     ENTITY_VIEW_ROW_LOADED: null,
     SET_TRANSLATION_VIEW: null,
+    FILTER_ENTITY_VIEW: null,
     FILTER_LINKS: null
   }),
 
