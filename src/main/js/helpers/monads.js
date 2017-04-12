@@ -1,4 +1,4 @@
-import {prop, isFunction} from "lodash/fp";
+import {map, prop, range, isFunction} from "lodash/fp";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -39,11 +39,29 @@ class Just extends Maybe {
     this._value = value;
   }
 
-  exec(fname, args) {
+  exec(fname) {
     const fn = prop(fname, this._value);
     if (isFunction(fn)) {
-      const result = fn.call(this._value, args);
-      return (result === null || result === undefined) ? this : Just.of(result);
+      try {
+        const args = map(n => arguments[n], range(1, arguments.length));
+        return Maybe.fromNullable(fn.apply(this._value, args));
+      } catch (e) {
+        return Maybe.none();
+      }
+    } else {
+      return Maybe.none();
+    }
+  }
+
+  method(fname) {
+    const fn = prop(fname, this._value);
+    if (isFunction(fn)) {
+      try {
+        const args = map(n => arguments[n], range(1, arguments.length));
+        return this;
+      } catch (e) {
+        return Maybe.none();
+      }
     } else {
       return Maybe.none();
     }
@@ -80,6 +98,10 @@ class None extends Maybe {
   }
 
   exec() {
+    return this;
+  }
+
+  method() {
     return this;
   }
 
