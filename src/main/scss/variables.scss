@@ -81,4 +81,19 @@ $space-inner-height-table-header: $space-height-table-header -$space-border-size
 $space-height-cell-content: 25px;
 $space-height-link-delete-button: 23px;
 
+// Button look helpers ---------------------- //
+@mixin rounded-lower-borders {
+  border-radius: 0 0 3px 3px;
+}
 
+@mixin rounded-upper-borders {
+  border-radius: 3px 3px 0 0;
+}
+
+@mixin button-with-icon {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}

@@ -54,9 +54,15 @@ $overlay-border-radius: 5px;
       max-height: 100vh;
       margin: 0 auto;
       transition: transform 0.4s;
+      border-radius: 0;
+
+      .header-wrapper {
+        border-radius: 0;
+      }
 
       .overlay-content {
         max-height: calc(100% - 130px);
+        min-height: 500px;
         overflow-y: auto;
       }
 
@@ -469,7 +475,7 @@ $overlay-border-radius: 5px;
   position: absolute;
   left: 0;
   bottom: 2vh;
-  z-index: 2000;
+  z-index: 100;
   max-width: 35vw;
   background-color: $color-overlay-header;
   border-bottom-right-radius: $overlay-border-radius;

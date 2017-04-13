@@ -358,8 +358,10 @@ const mkHeaderComponents = (id, row, langtag) => {
   return (
     <div className="header-components">
       <LanguageSwitcher langtag={langtag} />
-      <HeaderPopupMenu langtag={langtag} row={row} id={id} />
-      <FilterBar id={id} />
+      <div className="search-and-popup">
+        <FilterBar id={id} />
+        <HeaderPopupMenu langtag={langtag} row={row} id={id} />
+      </div>
     </div>
   )
 };

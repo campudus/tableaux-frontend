@@ -37,7 +37,7 @@ class FilterBar extends Component {
   render() {
     const {value, filterMode} = this.state;
     const modeString = SearchFunctions[filterMode].displayName;
-    return <input className="filter-bar"
+    return <input className="header-filter-bar"
                   onChange={this.handleChange}
                   onKeyDown={this.handleInput}
                   value={value}
