@@ -1,11 +1,12 @@
-import React, {PropTypes, Component} from "react";
+import React, {Component, PropTypes} from "react";
 import {openLinkOverlay} from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
-import {prop, pullAt} from "lodash/fp";
+import {isEmpty, prop, pullAt} from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
+import i18n from "i18next";
 
 class LinkView extends Component {
-  
+
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired
@@ -30,7 +31,11 @@ class LinkView extends Component {
       (link, idx) => {
         return {
           displayName: cell.linkString(idx, langtag),
-          linkTarget: {tables: cell.tables, tableId: cell.column.toTable, rowId: link.id}
+          linkTarget: {
+            tables: cell.tables,
+            tableId: cell.column.toTable,
+            rowId: link.id
+          }
         }
       }
     );
@@ -40,11 +45,12 @@ class LinkView extends Component {
     const {cell, langtag} = this.props;
     const links = this.mkLinkList(cell, langtag);
 
-    return (
-      <LinkList links={links}
-                langtag={langtag}
-                unlink={this.removeLink}
-      />
+    return (isEmpty(links)
+        ? <div className="item-description">{i18n.t("table:empty.links")}</div>
+        : <LinkList links={links}
+                    langtag={langtag}
+                    unlink={this.removeLink}
+        />
     );
   }
 }

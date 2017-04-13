@@ -37,8 +37,10 @@
   "no_results_found": "No matching columns found",
   "hide_unhide": "Hide/unhide columns",
   "set_header_level": "Heading:",
-  "edit_links": "Link/unlink items",
+  "edit_links": "Add {{title}}",
   "edit_attachments": "Link/unlink files",
+  "show_all_items": "Show all {{nItems}} items",
+  "show_less": "Show less",
   "final": {
     "set_final": "Mark as \"final\"",
     "set_not_final": "Remove \"final\" mark",
@@ -83,5 +85,18 @@
   "confirm_copy": {
     "header": "Proceed pasting multi language cell contents?",
     "info": "You copied a multi language cell. By pasting you will overwrite all existing values in the respective languages like this:"
+  },
+  "menus": {
+    "information": "Information",
+    "edit": "Edit",
+    "data_set": "Data set",
+    "translation": "Translation"
+  },
+  "empty": {
+    "text": "No text has been entered yet",
+    "number": "No number has been entered yet",
+    "links": "No data has been linked yet",
+    "attachments": "No files have been linked yet",
+    "date": "No date has been chosen yet"
   }
 }

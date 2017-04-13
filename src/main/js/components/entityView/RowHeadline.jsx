@@ -46,6 +46,7 @@ class RowHeadline extends React.Component {
   mkLinkHeader = column => {
     const {cell, langtag} = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
+    const colName = this.getDisplayName(column);
     return (
       <div className="item-header">
         <div className="title-wrapper">
@@ -54,12 +55,12 @@ class RowHeadline extends React.Component {
                          setTranslationView={this.props.setTranslationView}
           />
           <a href="#" onClick={() => window.open(url, "_blank")}>
-            {this.getDisplayName(column)}
+            {colName}
             <i className="fa fa-external-link" />
           </a>
         </div>
         <a className="column-icon button" href="#" onClick={() => openLinkOverlay(cell, langtag)}>
-          {i18n.t("table:edit_links")}
+          {i18n.t("table:edit_links", {title: colName})}
         </a>
       </div>
     )

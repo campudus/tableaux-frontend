@@ -340,19 +340,18 @@
   .header-wrapper {
     .header-components {
       position: absolute;
-      left: 0;
+      left: 45px;
       right: 0;
       top: 0;
       bottom: 0;
 
       .search-and-popup {
         position: relative;
-        width: calc(100% - 155px);
+        width: calc(100% - 60px);
         height: calc(100% - 10px);
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        left: 45px;
 
         .header-filter-bar {
           padding: 5px;

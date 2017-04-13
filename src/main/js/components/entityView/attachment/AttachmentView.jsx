@@ -3,6 +3,8 @@ import ActionCreator from "../../../actions/ActionCreator";
 import LinkList from "../../helperComponents/LinkList";
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import multiLanguage from "../../../helpers/multiLanguage";
+import {isEmpty} from "lodash/fp";
+import i18n from "i18next";
 
 class AttachmentView extends Component {
 
@@ -34,11 +36,11 @@ class AttachmentView extends Component {
       }
     );
 
-    return (
-      <div className="view-content link">
+    return (isEmpty(attachments))
+      ? <div className="item-description">{i18n.t("table:empty.attachments")}</div>
+      : <div className="view-content link">
         <LinkList links={attachments} langtag={langtag} />
       </div>
-    );
   }
 }
 
