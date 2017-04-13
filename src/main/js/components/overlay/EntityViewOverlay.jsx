@@ -17,6 +17,7 @@ import * as f from "lodash/fp";
 import HeaderPopupMenu from "../entityView/HeaderPopupMenu";
 import FilterBar from "../entityView/FilterBar";
 import columnFilter from "../entityView/columnFilter";
+import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 
 class EntityViewBody extends Component {
   constructor(props) {
@@ -155,7 +156,8 @@ class LanguageSwitcher extends Component {
     return (
       <div className={lswCssClass} onClick={this.toggleOpen}>
         <div className="eev-label">
-          {langtag}
+          {getLanguageOrCountryIcon(langtag)}
+          <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"} />
         </div>
         {(open)
           ? (
@@ -163,7 +165,8 @@ class LanguageSwitcher extends Component {
               {Langtags.map(
                 lt => {
                   const cssClass = classNames("menu-item", {"active": lt === langtag});
-                  return <div key={lt} className={cssClass}><a href="#" onClick={this.setLang(lt)}><i>{lt}</i></a>
+                  return <div key={lt} className={cssClass}>
+                    <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt)}</a>
                   </div>;
                 }
               )}

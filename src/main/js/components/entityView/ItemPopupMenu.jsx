@@ -152,7 +152,7 @@ class ItemPopupMenu extends Component {
                  onMouseLeave={this.startClosingTimer}
             >
               <div className="separator">
-                {"title"}
+                {i18n.t("table:menus.data_set")}
               </div>
               {this.mkEntry(0,
                 {
@@ -174,7 +174,7 @@ class ItemPopupMenu extends Component {
                 ? (
                   <div>
                     <div className="separator">
-                      {"title2"}
+                      {i18n.t("table:menus.translation")}
                     </div>
                     {this.mkAddTranslationEntry()}
                     {this.mkRemoveTranslationEntry()}

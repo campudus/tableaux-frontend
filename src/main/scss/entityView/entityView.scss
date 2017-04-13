@@ -3,6 +3,11 @@
 
 .overlay {
   .entity-view {
+    .rich-text-component {
+      .content-pane {
+        max-height: 250px;
+      }
+    }
     .currency {
       display: flex;
       flex-flow: row wrap;
@@ -111,7 +116,7 @@
 
 .eev-language-switcher {
   height: 14px;
-  width: 40px;
+  width: 60px;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -122,26 +127,33 @@
   padding: 3px;
   border: 1px solid $color-text-medium-grey;
 
-  &:hover {
-    background-color: $color-hover-background;
-    color: $color-hover-foreground;
+  .langtag {
+    display: flex;
+    justify-content: space-between;
+    min-width: 36px;
+  }
+
+  &:hover, &.open {
+    background-color: $color-primary;
+    border-color: $color-primary;
   }
 
   &.open {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    @include rounded-upper-borders();
   }
 
   .eev-label {
     position: relative;
     text-align: center;
+    display: flex;
+    justify-content: space-between;
   }
 
   .eev-dropdown {
     position: absolute;
-    left: 0;
-    top: 100%;
-    width: 100%;
+    left: -1px;
+    top: calc(100% + 1px);
+    width: calc(100% + 2px);
     box-shadow: 0 2px 2px $color-text-medium-grey;
     z-index: 5;
 
@@ -238,7 +250,7 @@
 
               .separator {
                 color: $color-text-light-grey;
-                padding: 10px;
+                padding: 10px 20px;
                 border-top: 1px solid $color-border-grey;
               }
 
@@ -254,7 +266,7 @@
                 }
                 a {
                   box-sizing: border-box;
-                  padding: 10px 10px;
+                  padding: 10px 20px;
                   display: block;
                   width: 100%;
                   height: 100%;
@@ -399,7 +411,7 @@
             z-index: 6;
 
             .entry {
-              padding: 10px;
+              padding: 10px 20px;
               z-index: 100;
               &:last-of-type {
                 @include rounded-lower-borders();
@@ -418,7 +430,7 @@
             }
 
             .separator {
-              padding: 10px;
+              padding: 10px 20px;
               color: $color-text-light-grey;
               border-top: 1px solid $color-border-grey;
             }

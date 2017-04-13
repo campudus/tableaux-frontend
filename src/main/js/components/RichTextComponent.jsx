@@ -9,7 +9,6 @@ import {markdown} from "markdown";
 import toMarkdown from "to-markdown";
 import i18n from "i18next";
 import classNames from "classnames";
-import KeyboardShortcutsHelper from "../helpers/KeyboardShortcutsHelper";
 import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
@@ -20,12 +19,13 @@ class RichTextComponent extends React.Component {
     close: React.PropTypes.func,
     saveAndClose: React.PropTypes.func,
     readOnly: React.PropTypes.bool,
-    hideEditorSymbols: React.PropTypes.bool
+    hideEditorSymbols: React.PropTypes.bool,
+    handleContent: React.PropTypes.func
   };
 
   constructor(props) {
     super(props);
-    if (props.readOnly ^ props.saveAndClose !== 1) {
+    if ((!!props.readOnly ^ !!props.saveAndClose) !== 1) {
       console.error("RichTextComponent: Component should receive either a \"readOnly\" XOR a \"saveAndClose\" property.");
     }
   }
@@ -63,11 +63,7 @@ class RichTextComponent extends React.Component {
 
   saveAndClose = event => {
     event.stopPropagation();
-    const value = this.getValue();
-    const markdown = toMarkdown(value);
-    const allTags = new RegExp(/<.*?>/, "g");
-    const cleanedMarkdown = markdown.replace(allTags, "");
-    this.props.saveAndClose(cleanedMarkdown);
+    this.props.saveAndClose(this.getMarkdown());
   };
 
   componentDidMount = () => {
@@ -85,11 +81,23 @@ class RichTextComponent extends React.Component {
   componentWillUnmount = () => {
   };
 
-  activateOnEnter = event => {
+  getMarkdown = inValue => {
+    const value = inValue || this.getValue();
+    const markdown = toMarkdown(value);
+    const allTags = new RegExp(/<.*?>/, "g");
+    return markdown.replace(allTags, "");
+  };
+
+  handleInput = event => {
     if (event && this.props.onClick && event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
       this.props.onClick(event);
+    } else if (event && event.target) {
+      const {handleContent} = this.props;
+      if (handleContent) {
+        handleContent(this.getMarkdown(event.target.value));
+      }
     }
   };
 
@@ -99,7 +107,7 @@ class RichTextComponent extends React.Component {
     const contentClass = classNames("content-pane", {"input": !readOnly});
     const cssClass = classNames("rich-text-component", {"editing": !readOnly});
     return (
-        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.activateOnEnter} ref={el => this.focusTarget = el} >
+        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} ref={el => { this.focusTarget = el }} >
         {(!readOnly && !hideEditorSymbols)
           ? (
             <div className="symbol-bar">
@@ -128,7 +136,8 @@ class RichTextComponent extends React.Component {
         }
         <div className={contentClass}
              contentEditable={!readOnly}
-             ref={cp => this.content = cp}
+             ref={cp => { this.content = cp }}
+             onChange={evt => (readOnly) ? null : this.handleInput(evt)}
         >
         </div>
       </div>

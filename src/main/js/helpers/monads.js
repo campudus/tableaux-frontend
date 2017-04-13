@@ -58,6 +58,7 @@ class Just extends Maybe {
     if (isFunction(fn)) {
       try {
         const args = map(n => arguments[n], range(1, arguments.length));
+        fn.apply(this._value, args);
         return this;
       } catch (e) {
         return Maybe.none();
