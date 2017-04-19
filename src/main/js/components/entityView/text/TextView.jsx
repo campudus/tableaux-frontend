@@ -12,7 +12,8 @@ class TextView extends React.Component {
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
+    cell: React.PropTypes.object.isRequired,
+    funcs: React.PropTypes.object.isRequired
   };
 
   getValue = () => {
@@ -51,27 +52,31 @@ class TextView extends React.Component {
   render() {
     const value = this.getValue();
     const {editing} = this.state;
-    const {langtag, tabIdx} = this.props;
+    const {langtag, funcs} = this.props;
 
-    return (editing)
-      ? (
-        <RichTextComponent value={value}
-                           className="item-content text-editor"
-                           close={this.setEditing(false)}
-                           saveAndClose={this.saveAndClose}
-                           langtag={langtag}
-                           tabIdx={tabIdx}
-        />
-      )
-      : (
+    return <div onKeyDown={(this.editing) ? function () {} : this.editOnEnter}
+                tabIndex={1}
+                ref={el => { funcs.register(el) }}
+    >
+      {(editing)
+        ? (
+          <RichTextComponent value={value}
+                             className="item-content text-editor"
+                             close={this.setEditing(false)}
+                             saveAndClose={this.saveAndClose}
+                             langtag={langtag}
+          />
+        )
+        : (
           <RichTextComponent value={value}
                              className="item-content text"
                              langtag={langtag}
                              readOnly={true}
                              onClick={this.setEditing(true)}
-                             tabIdx={tabIdx}
           />
-      );
+        )
+      }
+    </div>;
   }
 }
 

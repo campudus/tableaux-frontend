@@ -19,7 +19,8 @@ class View extends Component {
   static propTypes = {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
-    setTranslationView: PropTypes.func.isRequired
+    setTranslationView: PropTypes.func.isRequired,
+    funcs: PropTypes.object.isRequired
   };
 
   getViewKind() {
@@ -55,15 +56,18 @@ class View extends Component {
       : {column: prop("column", cell)};
 
     return (
-      <div className={viewClass} onMouseEnter={() => setTranslationView({cell: translationContent})}>
+      <div className={viewClass}
+           onMouseEnter={() => setTranslationView({cell: translationContent})}
+           onClick={() => this.props.funcs.focus(this.props.funcs.id)}
+      >
         <RowHeadline column={column} langtag={langtag} cell={cell}
                      setTranslationView={setTranslationView}
+                     funcs={this.props.funcs}
         />
         {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle"/><div>{description}</div></div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
-                  focusNextItem={() => console.log("Focus next")}
-                  focusPreviousItem={() => console.log("Focus prev")}
                   setTranslationView={setTranslationView}
+                  funcs={this.props.funcs}
         />
       </div>
     );

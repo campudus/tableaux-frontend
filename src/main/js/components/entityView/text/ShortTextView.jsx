@@ -16,9 +16,7 @@ class ShortTextView extends React.Component {
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    focusNextItem: React.PropTypes.func.isRequired,
-    focusPreviousItem: React.PropTypes.func.isRequired
+    cell: React.PropTypes.object.isRequired
   };
 
   getValue = () => {
@@ -39,14 +37,7 @@ class ShortTextView extends React.Component {
 
     return {
       escape: captureEventAnd(() => {}),
-      enter: captureEventAnd(this.saveEditsAndClose),
-      tab: event => {
-        event.preventDefault();
-        event.stopPropagation();
-        ((event.shiftKey)
-          ? this.props.focusPreviousItem
-          : this.props.focusNextItem)();
-      }
+      enter: captureEventAnd(this.saveEditsAndClose)
     };
   };
 
@@ -61,7 +52,7 @@ class ShortTextView extends React.Component {
   };
 
   render() {
-    const {langtag} = this.props;
+    const {langtag, funcs} = this.props;
     return <div className="item-content">
       <input type="text" value={this.state.value}
              placeholder={i18n.t("table:empty.text")}
@@ -69,6 +60,7 @@ class ShortTextView extends React.Component {
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onBlur={this.saveEditsAndClose}
+             ref={el => { funcs.register(el) }}
       />
     </div>
   }

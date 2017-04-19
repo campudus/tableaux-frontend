@@ -16,7 +16,8 @@ class RowHeadline extends React.Component {
     column: React.PropTypes.object.isRequired,
     cell: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired,
-    setTranslationView: React.PropTypes.func.isRequired
+    setTranslationView: React.PropTypes.func.isRequired,
+    funcs: React.PropTypes.object.isRequired
   };
 
   getDisplayName = column => {
@@ -44,7 +45,7 @@ class RowHeadline extends React.Component {
   };
 
   mkLinkHeader = column => {
-    const {cell, langtag} = this.props;
+    const {cell, langtag, funcs} = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     const colName = this.getDisplayName(column);
     return (
@@ -59,7 +60,10 @@ class RowHeadline extends React.Component {
             <i className="fa fa-external-link" />
           </a>
         </div>
-        <a className="column-icon button" href="#" onClick={() => openLinkOverlay(cell, langtag)}>
+        <a className="column-icon button" href="#"
+           onClick={() => openLinkOverlay(cell, langtag)}
+           ref={el => { funcs.register(el) }}
+        >
           {i18n.t("table:edit_links", {title: colName})}
         </a>
       </div>
@@ -78,7 +82,7 @@ class RowHeadline extends React.Component {
   };
 
   mkAttachmentHeader = column => {
-    const {langtag, cell} = this.props;
+    const {langtag, cell, funcs} = this.props;
     const url = `/${langtag}/tables/${cell.toTable}`;
     return (
       <div className="item-header">
@@ -89,7 +93,10 @@ class RowHeadline extends React.Component {
           />
           {this.getDisplayName(column)}
         </div>
-        <a className="button column-icon" href="#" onClick={this.openAttachmentOverlay}>
+        <a className="button column-icon" href="#"
+           onClick={this.openAttachmentOverlay}
+           ref={el => { funcs.register(el) }}
+        >
           {i18n.t("table:edit_attachments")}
         </a>
       </div>

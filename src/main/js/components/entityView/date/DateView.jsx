@@ -18,7 +18,8 @@ class DateView extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
-    time: PropTypes.bool
+    time: PropTypes.bool,
+    funcs: PropTypes.object.isRequired
   };
 
   handleClickOutside = () => {
@@ -99,14 +100,16 @@ class DateView extends Component {
 
   render() {
     const {editing} = this.state;
+    const {funcs} = this.props;
     const value = (editing)
       ? this.stringFromMoment(this.state.moment)
       : this.stringFromMoment(this.getValue());
     return (
       <div className="item-content datetime"
            onClick={this.setEditing(true)}
-           tabIndex={this.props.tabIdx}
+           tabIndex={1}
            onKeyDown={this.openOnEnter}
+           ref={el => { funcs.register(el) }}
       >
         {value || i18n.t("table:empty.date")}
         {(editing)

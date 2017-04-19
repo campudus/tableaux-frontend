@@ -12,7 +12,8 @@ class CurrencyView extends Component {
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
+    cell: React.PropTypes.object.isRequired,
+    funcs: React.PropTypes.object.isRequired
   };
 
   getCurrencyValues = (cell) => {
@@ -45,11 +46,13 @@ class CurrencyView extends Component {
   };
 
   render() {
-    const {cell, tabIdx} = this.props;
+    const {cell, funcs} = this.props;
     const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-        <div className="item-content currency" tabIndex={tabIdx}>
+        <div className="item-content currency"
+             ref={el => { funcs.register(el) }}
+        >
         {currencyRows}
       </div>
     );

@@ -16,9 +16,7 @@ class NumericView extends React.Component {
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    focusNextItem: React.PropTypes.func.isRequired,
-    focusPreviousItem: React.PropTypes.func.isRequired
+    cell: React.PropTypes.object.isRequired
   };
 
   getValue = () => {
@@ -78,7 +76,7 @@ class NumericView extends React.Component {
   };
 
   render() {
-    const {langtag, cell, setTranslationView} = this.props;
+    const {langtag, funcs} = this.props;
     return <div className="item-content">
       <input type="text" value={this.state.value}
              disabled={!hasUserAccessToLanguage(langtag)}
@@ -86,6 +84,7 @@ class NumericView extends React.Component {
              onKeyDown={this.handleKeyPress}
              onBlur={this.saveEditsAndClose}
              placeholder={0}
+             ref={el => { funcs.register(el) }}
       />
     </div>
   }

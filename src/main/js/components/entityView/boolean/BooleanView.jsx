@@ -8,7 +8,8 @@ class BooleanView extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
-    t: PropTypes.func.isRequired
+    t: PropTypes.func.isRequired,
+    funcs: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -31,18 +32,23 @@ class BooleanView extends Component {
 
   toggleOnEnter = event => {
     if (event.key === "Enter") {
-      this.toggleValue();
+      this.toggleValue(event);
+      event.preventDefault();
       event.stopPropagation();
     }
   };
 
   render() {
-    const {t, tabIdx} = this.props;
+    const {t, funcs} = this.props;
     const {selected} = this.state;
     const checkboxCss = classNames("checkbox", {"checked": selected});
 
     return (
-        <div className="item-content boolean" onClick={this.toggleValue} tabIndex={tabIdx} onKeyDown={this.toggleOnEnter}>
+        <div className="item-content boolean" onClick={this.toggleValue}
+             onKeyDown={this.toggleOnEnter}
+             tabIndex={1}
+             ref={el => { funcs.register(el) }}
+        >
         <div className={checkboxCss}>
           {(selected)
             ? <i className="fa fa-check" />

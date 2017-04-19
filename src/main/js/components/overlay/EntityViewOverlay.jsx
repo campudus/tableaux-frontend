@@ -1,12 +1,11 @@
 import React, {Component, PropTypes} from "react";
 import {broadcastRowLoaded, openOverlay, switchEntityViewLanguage} from "../../actions/ActionCreator";
 import View from "../entityView/RowView";
-import {ActionTypes, ColumnKinds, FallbackLanguage, Langtags, FilterModes} from "../../constants/TableauxConstants";
+import {ActionTypes, ColumnKinds, FallbackLanguage, Langtags, FilterModes, Directions} from "../../constants/TableauxConstants";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
-import {first, prop} from "lodash/fp";
 import zenscroll from "zenscroll";
 import Header from "./Header";
 import {showDialog} from "./GenericOverlay";
@@ -18,6 +17,7 @@ import HeaderPopupMenu from "../entityView/HeaderPopupMenu";
 import FilterBar from "../entityView/FilterBar";
 import columnFilter from "../entityView/columnFilter";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
 class EntityViewBody extends Component {
   constructor(props) {
@@ -25,14 +25,29 @@ class EntityViewBody extends Component {
     this.state = {
       langtag: props.langtag,
       translationView: false,
-      filter: {value: "", mode: FilterModes.CONTAINS}
+      filter: {value: "", mode: FilterModes.CONTAINS},
+      focused: null
     };
+    this.focusElements = [];
   }
 
   static PropTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
     id: PropTypes.number.isRequired
+  };
+
+  getKeyboardShortcuts = () => {
+    console.log("EVO Shortcuts")
+    return {
+      tab: event => {
+        console.log("Tab!")
+        event.preventDefault();
+        event.stopPropagation();
+        const dir = (event.shiftKey) ? Directions.UP : Directions.DOWN;
+        this.changeFocus(dir);
+      }
+    }
   };
 
   componentWillMount = () => {
@@ -42,18 +57,16 @@ class EntityViewBody extends Component {
   };
 
   componentDidMount() {
-    const {focusElementId, row, id} = this.props;
+    const {focusElementId, row} = this.props;
     if (focusElementId) {
       const cell = row.cells.get(focusElementId);
       if (cell.kind === ColumnKinds.concat) {
         return; // concat elements are omitted from EntityView and are first anyway
       }
-      const container = first(document.getElementsByClassName(id.toString())).parentElement;
       const viewId = `view-${cell.column.id}-${cell.rowId}`;
-      const element = first(document.getElementsByClassName(viewId));
-      const scroller = zenscroll.createScroller(container);
-      console.log("tn", container, "c", cell, "id", viewId, "el", element, "scr", scroller);
-      scroller.center(element, 1);
+      const element = f.first(document.getElementsByClassName(viewId));
+      const scroller = this.getScroller()
+                           .center(element, 1);
     }
   }
 
@@ -84,6 +97,37 @@ class EntityViewBody extends Component {
     this.setState({translationView: newItem});
   };
 
+  getScroller = () => {
+    const {id} = this.props;
+    const container = f.first(document.getElementsByClassName(id.toString())).parentElement;
+    return zenscroll.createScroller(container);
+  };
+
+  registerFocusable = id => el => {
+    if (f.isNil(this.focusElements[id])) {
+//      console.log(`Registering el #${id}:`, el)
+      this.focusElements = f.assoc(id, el, this.focusElements);
+    }
+  };
+
+  changeFocus = dir => {
+    const numericDir = (dir === Directions.UP) ? -1 : +1;
+    const {focused} = this.state;
+    const {focusElements} = this;
+    const toFocus = f.cond([
+      [f.isNumber, f.identity],
+      [f.isString, d => focused + numericDir]
+    ])(dir);
+
+    if (!f.inRange(0, focusElements.length, toFocus) || f.isNil(focusElements[toFocus])) {
+      return;
+    }
+
+    maybe(focusElements[toFocus])
+      .method("focus");
+    this.setState({focused: toFocus});
+  };
+
   renderTranslationView = () => {
     const {translationView} = this.state;
     const {langtag} = this.props;
@@ -100,7 +144,9 @@ class EntityViewBody extends Component {
     const {langtag, filter} = this.state;
 
     return (
-      <div className={"entity-view content-items " + this.props.id} >
+      <div className={"entity-view content-items " + this.props.id}
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+      >
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
           .filter(columnFilter(langtag, filter))
@@ -108,6 +154,11 @@ class EntityViewBody extends Component {
             (cell, idx) => {
               return <View key={cell.id} cell={cell} langtag={langtag}
                            setTranslationView={this.setTranslationView}
+                           funcs={{
+                             register: this.registerFocusable(idx),
+                             focus: this.changeFocus,
+                             id: idx
+                           }}
               />;
             })
         }
@@ -283,7 +334,7 @@ class LoadingEntityViewBodyWrapper extends Component {
     const loadColumns = () => new Promise(
       (resolve, reject) => {
         const tableMonad = maybe(targetTable)
-          .map(prop("columns"))
+          .map(f.prop("columns"))
           .exec("fetch", {
             reset: true,
             success: () => {
@@ -373,7 +424,7 @@ const getTableName = (row, langtag) => {
   const firstCell = row.cells.at(0);
   const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
   const table = firstCell.tables.get(firstCell.tableId);
-  return prop(["displayName", langtag], table) || prop(["displayName", FallbackLanguage], table);
+  return f.prop(["displayName", langtag], table) || f.prop(["displayName", FallbackLanguage], table);
 };
 
 const getDisplayLabel = (row, langtag) => {
