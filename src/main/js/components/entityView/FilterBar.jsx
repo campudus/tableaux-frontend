@@ -23,6 +23,11 @@ class FilterBar extends Component {
       event.preventDefault();
       event.stopPropagation();
       this.setState({value: ""});
+      ActionCreator.filterEntityView({
+        id: this.props.id,
+        value: "",
+        filterMode: this.state.filterMode
+      });
     }
   };
 
@@ -31,7 +36,11 @@ class FilterBar extends Component {
     const {id} = this.props;
     const {filterMode} = this.state;
     this.setState({value});
-    ActionCreator.filterEntityView({id, value, filterMode});
+    ActionCreator.filterEntityView({
+      id,
+      value,
+      filterMode
+    });
   };
 
   render() {
