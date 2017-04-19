@@ -28,7 +28,7 @@ class EntityViewBody extends Component {
       filter: {value: "", mode: FilterModes.CONTAINS},
       focused: null
     };
-    this.focusElements = [];
+    this.focusElements = {};
   }
 
   static PropTypes = {
@@ -38,10 +38,8 @@ class EntityViewBody extends Component {
   };
 
   getKeyboardShortcuts = () => {
-    console.log("EVO Shortcuts")
     return {
       tab: event => {
-        console.log("Tab!")
         event.preventDefault();
         event.stopPropagation();
         const dir = (event.shiftKey) ? Directions.UP : Directions.DOWN;
@@ -67,6 +65,10 @@ class EntityViewBody extends Component {
       const element = f.first(document.getElementsByClassName(viewId));
       const scroller = this.getScroller()
                            .center(element, 1);
+      this.setState({focused: focusElementId});
+    } else {
+      const firstCell = row.cells.at(0);
+      this.changeFocus(firstCell.id);
     }
   }
 
@@ -104,22 +106,21 @@ class EntityViewBody extends Component {
   };
 
   registerFocusable = id => el => {
-    if (f.isNil(this.focusElements[id])) {
-//      console.log(`Registering el #${id}:`, el)
       this.focusElements = f.assoc(id, el, this.focusElements);
-    }
   };
 
   changeFocus = dir => {
     const numericDir = (dir === Directions.UP) ? -1 : +1;
     const {focused} = this.state;
+    const {langtag, filter} = this.state;
+    const visibleCells = this.props.row.cells.models.filter(columnFilter(langtag, filter));
+    const selectedIdx = f.findIndex(f.matchesProperty("id", focused), visibleCells);
     const {focusElements} = this;
     const toFocus = f.cond([
-      [f.isNumber, f.identity],
-      [f.isString, d => focused + numericDir]
+      [d => f.contains(d, [Directions.UP, Directions.DOWN]), d => f.prop([selectedIdx + numericDir, "id"], visibleCells)],
+      [f.stubTrue, f.identity]
     ])(dir);
-
-    if (!f.inRange(0, focusElements.length, toFocus) || f.isNil(focusElements[toFocus])) {
+    if (f.isNil(f.prop(toFocus, focusElements))) {
       return;
     }
 
@@ -152,12 +153,12 @@ class EntityViewBody extends Component {
           .filter(columnFilter(langtag, filter))
           .map(
             (cell, idx) => {
-              return <View key={cell.id} cell={cell} langtag={langtag}
+              return <View key={idx} cell={cell} langtag={langtag}
                            setTranslationView={this.setTranslationView}
                            funcs={{
-                             register: this.registerFocusable(idx),
+                             register: this.registerFocusable(cell.id),
                              focus: this.changeFocus,
-                             id: idx
+                             id: cell.id
                            }}
               />;
             })
