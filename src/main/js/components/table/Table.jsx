@@ -131,6 +131,7 @@ class Table extends React.Component {
       // can't differentiate between clicking the scrollbar or content
       if (this.columnsDom.contains(e.target)) {
         this.handleClickOutside(e);
+        e.preventDefault();
       }
 
       /*
@@ -138,7 +139,6 @@ class Table extends React.Component {
        When a child component inside of the Table needs focus attach a "onMouseDown" event to it and
        call "event.stopPropagation()". This prevents calling this function and enables the standard browser behaviour
        */
-      e.preventDefault();
     }
   };
 

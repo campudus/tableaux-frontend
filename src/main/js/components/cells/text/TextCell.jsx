@@ -21,6 +21,7 @@ class TextCell extends Component {
   saveCell = (newValue) => {
     const oldValue = this.getValue();
     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
+      ActionCreator.toggleCellEditing({editing: false});
       return;
     }
     const {cell, langtag, contentChanged} = this.props;
@@ -28,7 +29,7 @@ class TextCell extends Component {
     ? {[langtag]: newValue}
     : newValue;
     cell.save({value: valueToSave}, {patch: true, success: contentChanged});
-    ActionCreator.toggleCellEditing(false);
+    ActionCreator.toggleCellEditing({editing: false});
   };
 
   openOverlay = (event, withContent) => {
@@ -74,7 +75,7 @@ class TextCell extends Component {
 
     return (
       <div className='cell-content' onClick={this.handleClick}>
-        {value}
+        {value.split("\n")[0]}
         {expandButton}
       </div>
     );
