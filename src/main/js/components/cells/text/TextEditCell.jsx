@@ -20,7 +20,7 @@ class TextEditCell extends React.Component {
     return {
       escape: function (event) {
         self.doneEditing(event);
-        ActionCreator.toggleCellEditing(false);
+        ActionCreator.toggleCellEditing({editing: false});
       },
       tab: function (event) {
         self.doneEditing(event);

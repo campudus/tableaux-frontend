@@ -1,6 +1,5 @@
 import React from "react";
 import _ from "lodash";
-import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import CurrencyRow from "./CurrencyRow";
 import {getCurrencyWithCountry} from "./currencyHelper";
 
@@ -18,6 +17,8 @@ export default class CurrencyEditCell extends React.Component {
     setCellKeyboardShortcuts: React.PropTypes.func.isRequired
   };
 
+  handleClickOutside = evt => this.props.onClickOutside(evt);
+
   componentDidMount() {
     this.buildCurrencyRowRefNames();
     this.props.setCellKeyboardShortcuts({
@@ -26,7 +27,7 @@ export default class CurrencyEditCell extends React.Component {
       },
       enter: (event) => {
         event.preventDefault();
-        console.log("hitting enter");
+        event.stopPropagation();
         this.props.exitCell();
       },
       escape: (event) => {
@@ -48,7 +49,7 @@ export default class CurrencyEditCell extends React.Component {
     if (!_.isEmpty(valuesToSave)) {
       this.props.saveCell(valuesToSave);
     }
-  }
+  };
 
   componentWillUnmount() {
     // Important to clean up the keyboard shortcuts
@@ -83,7 +84,7 @@ export default class CurrencyEditCell extends React.Component {
     });
 
     return (
-      <div className="cell-currency-rows">
+      <div className="cell-currency-rows" onClick={e => { e.stopPropagation(); }}>
         {currencyRows}
       </div>
     );

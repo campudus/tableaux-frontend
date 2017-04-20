@@ -6,10 +6,12 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {getCurrencyWithCountry, splitPriceDecimals} from "./currencyHelper";
 import onClickOutside from "react-onclickoutside";
 import {translate} from "react-i18next";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
 @translate(["table"])
+@connectToAmpersand
 export default class CurrencyCell extends React.Component {
 
   static propTypes = {
@@ -38,12 +40,12 @@ export default class CurrencyCell extends React.Component {
   saveCurrencyCell = (valuesToSave) => {
     console.log("----> i want to save currency values: ", valuesToSave);
     ActionCreator.changeCell(this.props.cell, valuesToSave);
-  }
+  };
 
   exitCurrencyCell = () => {
     console.log("exiting cell");
-    ActionCreator.toggleCellEditing(false);
-  }
+    ActionCreator.toggleCellEditing({editing: false});
+  };
 
   handleClickOutside = (event) => {
     // prevents from closing editCell when clicking on the scrollbar on windows
@@ -56,12 +58,14 @@ export default class CurrencyCell extends React.Component {
     const currencyValue = getCurrencyWithCountry(currencyValues, country);
     const splittedValueAsString = splitPriceDecimals(currencyValue);
     const currencyCode = getCurrencyCode(country);
-    const {langtag, t} = this.props;
+    const {t} = this.props;
     if (!currencyCode) {
       return (
         <div className="currency-wrapper">
-          <span className="currency-no-country">{t("error_language_is_no_country")} <i
-            className="open-country fa fa-angle-down"/></span>
+          <span className="currency-no-country">
+            {t("error_language_is_no_country")}
+            <i className="open-country fa fa-angle-down" />
+          </span>
         </div>
       );
     }
@@ -74,16 +78,16 @@ export default class CurrencyCell extends React.Component {
         <span className="currency-value-decimals">
           ,{splittedValueAsString[1]}
         </span>
-      <span
-        className="currency-code">{currencyCode}</span>
-        <i className="open-country fa fa-angle-down"/>
+        <span
+          className="currency-code">{currencyCode}</span>
+        <i className="open-country fa fa-angle-down" />
       </div>
 
     );
   }
 
   render() {
-    const {selected, langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
+    const {langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
     const currencyValues = cell.value;
     const country = getCountryOfLangtag(langtag);
     let currencyCellMarkup;
