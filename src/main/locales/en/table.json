@@ -44,7 +44,7 @@
     "set_not_final": "Remove \"final\" mark",
     "unlock_header": "Row protected from modifications",
     "unlock_toast": "2x left click or enter key to unlock",
-    "set_all_rows_final": "Set the whole table as final"
+    "set_all_rows_final": "Mark the whole table as \"final\""
   },
   "translations": {
     "dialog_headline": "Multi language cell modified",

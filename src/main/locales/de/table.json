@@ -44,7 +44,7 @@
     "set_not_final": "Markierung \"Final\" entfernen",
     "unlock_header": "Zeile vor Änderungen geschützt",
     "unlock_toast": "Zum entsperren 2x Klicken/Eingabetaste",
-    "set_all_rows_final": "Die ganze Tabelle freigeben"
+    "set_all_rows_final": "Ganze Tabelle \"Final\" markieren"
   },
   "translations": {
     "dialog_headline": "Änderung einer mehrsprachigen Zelle",
