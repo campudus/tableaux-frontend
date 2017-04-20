@@ -26,7 +26,7 @@ const calcNewValue = function (src, srcLang, dst, dstLang) {
   } else if (src.isMultiLanguage && dst.isMultiLanguage) {
     const combinedLangtags = f.uniq([...f.keys(src.value), ...f.keys(dst.value)]);
     return f.reduce(
-      (result, langtag) => f.assoc(langtag, convert(src.kind, dst.kind, getAllowedValue(langtag)), result),
+      (result, langtag) => f.assoc(langtag, convert(src.kind, dst.kind, getAllowedValue(langtag) || ""), result),
       {}, combinedLangtags);
   } else if (dst.isMultiLanguage) { // set only current langtag's value of dst to src value
     return f.assoc(dstLang, convert(src.kind, dst.kind, src.value), dst.value);
@@ -44,7 +44,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       : f.contains(dstLang, canTranslate);
   };
   if (isLocked(dst.row) && !canOverrideLock()) {
-    askForSessionUnlock(dst.row);
+    askForSessionUnlock(dst.row, {key: "v"});
     return;
   }
 
@@ -90,7 +90,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       ActionCreator.closeOverlay();
     };
     ActionCreator.openOverlay({
-      keyboardShortcuts: {enter: (event) => saveAndClose()},
+      keyboardShortcuts: {enter: saveAndClose},
       head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
       body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
                                         oldVals={dst.value}
