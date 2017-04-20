@@ -221,6 +221,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
 }
 
 export function toggleCellEditing(params = {}) {
+  console.log("toggleCellEditing", params)
   const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
@@ -229,11 +230,12 @@ export function toggleCellEditing(params = {}) {
     f.intersection(getUserLanguageAccess(), f.prop(["annotations", "translationNeeded", "langtags"], selectedCell))
   );
   if (selectedCell && canEdit) {
-    if (!this.state.selectedCellEditing && isLocked(selectedCell.row) && !needsTranslation) {  // needs_translation overrules final
+    const noEditingModeNeeded = (f.contains(selectedCell.kind, [ColumnKinds.boolean, ColumnKinds.link, ColumnKinds.attachment]));
+    if ((!this.state.selectedCellEditing || !noEditingModeNeeded) // Editing requested or unnecessary
+      && isLocked(selectedCell.row) && !needsTranslation) {       // needs_translation overrules final
       askForSessionUnlock(selectedCell.row, f.prop(["event", "key"], params));
       return;
     }
-    const noEditingModeNeeded = (selectedCell.kind === ColumnKinds.boolean || selectedCell.kind === ColumnKinds.link);
     if (!noEditingModeNeeded) {
       this.setState({
         selectedCellEditing: editVal

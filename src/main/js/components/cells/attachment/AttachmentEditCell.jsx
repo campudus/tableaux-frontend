@@ -19,9 +19,11 @@ class AttachmentEditCell extends Component {
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts({
       enter: (event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        this.openOverlay();
+        if (!isLocked(this.props.cell.row)) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.openOverlay();
+        }
       }
     });
   };
@@ -43,13 +45,11 @@ class AttachmentEditCell extends Component {
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
-    if (!isLocked(cell.row)) {
-      ActionCreator.openOverlay({
-        head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
-        body: <AttachmentOverlay cell={cell} langtag={langtag} />,
-        type: "normal"
-      });
-    }
+    ActionCreator.openOverlay({
+      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
+      body: <AttachmentOverlay cell={cell} langtag={langtag} />,
+      type: "normal"
+    });
   };
 
   render() {

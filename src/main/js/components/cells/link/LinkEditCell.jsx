@@ -24,9 +24,11 @@ class LinkEditCell extends Component {
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts({
       enter: (event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        this.openOverlay();
+        if (!isLocked(this.props.cell.row)) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.openOverlay();
+        }
       }
     });
   };
@@ -44,13 +46,11 @@ class LinkEditCell extends Component {
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
-    if (!isLocked(cell.row)) {
-      ActionCreator.openOverlay({
-        head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
-        body: <LinkOverlay cell={cell} langtag={langtag} />,
-        type: "no-scroll"
-      });
-    }
+    ActionCreator.openOverlay({
+      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
+      body: <LinkOverlay cell={cell} langtag={langtag} />,
+      type: "no-scroll"
+    });
   };
 
   render() {
