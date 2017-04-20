@@ -27,7 +27,7 @@ class TextCell extends Component {
     const valueToSave = (cell.isMultiLanguage)
     ? {[langtag]: newValue}
     : newValue;
-    cell.save({value: valueToSave}, {success: contentChanged});
+    cell.save({value: valueToSave}, {patch: true, success: contentChanged});
     ActionCreator.toggleCellEditing(false);
   };
 
