@@ -371,7 +371,8 @@ class LoadingEntityViewBodyWrapper extends Component {
           }
         };
         loadPage(1);
-      });
+      }
+    );
 
     return new Promise(
       (resolve, reject) => {

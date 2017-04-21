@@ -100,11 +100,11 @@
               &.linked a {
                 background-color: $color-primary;
                 color: $color-primary-contrast-text;
+              }
 
-                &:hover {
-                  background-color: $color-hover-background;
-                  color: $color-hover-foreground;
-                }
+              &.has-focus a {
+                background-color: $color-hover-background;
+                color: $color-hover-foreground;
               }
             }
 
@@ -121,8 +121,14 @@
               background-color: $color-white;
               color: $color-primary;
 
-              &:hover {
+              &.linked {
+                background-color: $color-primary;
+                color: $color-primary-contrast-text;
+              }
+
+              &.has-focus {
                 background-color: $color-hover-background;
+                color: $color-primary;
               }
             }
           }

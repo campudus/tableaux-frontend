@@ -49,7 +49,7 @@ class Header extends Component {
           <div className="title">{title}</div>
         </div>
         {buttonsItem}
-        {components || null}
+        {(components) ? React.cloneElement(components, {id: this.props.id}) : null}
       </div>
     )
   }

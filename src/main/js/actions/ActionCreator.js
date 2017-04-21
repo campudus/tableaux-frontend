@@ -294,5 +294,9 @@ module.exports = {
 
   filterEntityView: (payload) => {
     Dispatcher.trigger(ActionTypes.FILTER_ENTITY_VIEW, payload);
+  },
+
+  passOnKeyStrokes: (payload) => {
+    Dispatcher.trigger(ActionTypes.PASS_ON_KEYSTROKES, payload);
   }
 };

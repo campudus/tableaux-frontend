@@ -19,7 +19,8 @@ class GenericOverlay extends Component {
     isOnTop: PropTypes.bool.isRequired,
     keyboardShortcuts: PropTypes.object,
     specialClass: PropTypes.string,
-    preferRight: PropTypes.bool
+    preferRight: PropTypes.bool,
+    id: PropTypes.number.isRequired
   };
 
   constructor(props) {
@@ -112,11 +113,11 @@ class GenericOverlay extends Component {
         <div className={wrapperClass}
              onClick={event => { event.stopPropagation(); event.preventDefault(); }}
         >
-          {head}
+          {React.cloneElement(head, {id: this.props.id})}
           <div className="overlay-content">
-            {body}
+            {React.cloneElement(body, {id: this.props.id})}
           </div>
-          {(footer) ? <footer>{footer}</footer> : null}
+          {(footer) ? <footer>{React.cloneElement(footer, {id: this.props.id})}</footer> : null}
         </div>
         <div ref="overlayBackground" onClick={this.backgroundClick} className="background" />
       </div>

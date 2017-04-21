@@ -90,7 +90,8 @@ var TableauxConstant = {
     ENTITY_VIEW_ROW_LOADED: null,
     SET_TRANSLATION_VIEW: null,
     FILTER_ENTITY_VIEW: null,
-    FILTER_LINKS: null
+    FILTER_LINKS: null,
+    PASS_ON_KEYSTROKES: null
   }),
 
   Directions: keyMirror({
