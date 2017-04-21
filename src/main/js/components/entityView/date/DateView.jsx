@@ -4,6 +4,7 @@ import {DateFormats, DateTimeFormats} from "../../../constants/TableauxConstants
 import Datetime from "react-datetime";
 import listensToClickOutside from "react-onclickoutside";
 import i18n from "i18next";
+import {changeCell} from "../../../models/Tables";
 
 @listensToClickOutside
 class DateView extends Component {
@@ -80,9 +81,9 @@ class DateView extends Component {
     const value = ((moment && moment.isValid()) ? moment : Moment()).format(this.Formats.formatForServer);
     const {cell, langtag} = this.props;
     const changes = (cell.isMultiLanguage)
-      ? {value: {[langtag]: value}}
-      : {value};
-    cell.save(changes, {patch: true});
+      ? {[langtag]: value}
+      : value;
+    changeCell({cell, value: changes});
   };
 
   handleChange = moment => {

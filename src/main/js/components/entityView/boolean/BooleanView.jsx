@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import {translate} from "react-i18next";
 import classNames from "classnames";
+import {changeCell} from "../../../models/Tables";
 
 @translate(["common"])
 class BooleanView extends Component {
@@ -24,10 +25,10 @@ class BooleanView extends Component {
     const {cell, langtag} = this.props;
     const newValue = !this.state.selected;
     const changes = (cell.isMultiLanguage)
-      ? {value: {[langtag]: newValue}}
-      : {value: newValue};
+      ? {[langtag]: newValue}
+      : newValue;
     this.setState({selected: newValue});
-    cell.save(changes, {patch: true});
+    changeCell({cell, value: changes});
   };
 
   toggleOnEnter = event => {

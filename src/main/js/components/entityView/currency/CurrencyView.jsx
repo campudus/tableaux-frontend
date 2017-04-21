@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import CurrencyItem from "./CurrencyItem";
 import * as f from "lodash/fp";
+import {changeCell} from "../../../models/Tables";
 
 class CurrencyView extends Component {
 
@@ -33,12 +34,13 @@ class CurrencyView extends Component {
 
   setEditing = (el) => (to, [country, value] = []) => {
     const {editing} = this.state;
+    const {cell} = this.props;
     const isEditing = (to === true)
       ? f.assoc(el, true, f.map(f.stubFalse, editing))
       : f.set(el, false, editing);
     if (country && value) {
-      const changes = {value: {[country]: value}};
-      this.props.cell.save(changes, {patch: true});
+      const changes = {[country]: value};
+      changeCell({cell, value: changes});
     }
     if (editing[el] !== to) {
       this.setState({editing: isEditing});

@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from "react";
 import NumericEditCell from "./NumericEditCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import {prop, isNil} from "lodash/fp";
+import {changeCell} from "../../../models/Tables";
 
 class NumericCell extends Component {
 
@@ -21,7 +22,7 @@ class NumericCell extends Component {
     const valueToSave = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    cell.save({value: valueToSave}, {success: contentChanged});
+    changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
     ActionCreator.toggleCellEditing(false);
   };
 

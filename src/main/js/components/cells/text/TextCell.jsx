@@ -9,7 +9,8 @@ import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import Header from "../../overlay/Header";
 import i18n from "i18next";
-import {maybe, fspy} from "../../../helpers/monads";
+import {maybe} from "../../../helpers/monads";
+import {changeCell} from "../../../models/Tables";
 
 class TextCell extends Component {
 
@@ -30,7 +31,7 @@ class TextCell extends Component {
     const valueToSave = (cell.isMultiLanguage)
     ? {[langtag]: newValue}
     : newValue;
-    cell.save({value: valueToSave}, {patch: true, success: contentChanged});
+    changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
     ActionCreator.toggleCellEditing({editing: false});
   };
 

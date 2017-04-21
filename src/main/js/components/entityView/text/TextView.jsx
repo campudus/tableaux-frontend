@@ -1,5 +1,6 @@
 import React from "react";
 import RichTextComponent from "../../RichTextComponent";
+import {changeCell} from "../../../models/Tables.js";
 
 class TextView extends React.Component {
 
@@ -34,9 +35,9 @@ class TextView extends React.Component {
   saveAndClose = (newValue) => {
     const {cell, langtag} = this.props;
     const changes = (cell.isMultiLanguage)
-      ? {value: {[langtag]: newValue}}
-      : {value: newValue};
-    cell.save(changes, {patch: true});
+      ? {[langtag]: newValue}
+      : newValue;
+    changeCell({cell, value: changes});
     this.setEditing(false)();
   };
 
@@ -55,6 +56,7 @@ class TextView extends React.Component {
     const {langtag, funcs} = this.props;
 
     return <div onKeyDown={(this.editing) ? function () {} : this.editOnEnter}
+                onClick={e => { e.stopPropagation(); e.preventDefault(); }}
                 tabIndex={1}
                 ref={el => { funcs.register(el) }}
     >
