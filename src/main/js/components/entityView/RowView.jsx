@@ -10,8 +10,13 @@ import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
-import {isEmpty, prop} from "lodash/fp";
+import {always, cond, isEmpty, prop, stubTrue} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
+import * as Access from "../../helpers/accessManagementHelper";
+import * as Annotations from "../../helpers/annotationHelper";
+import {getCountryOfLangtag} from "../../helpers/multiLanguage";
+import classNames from "classnames";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 
 @connectToAmpersand
 class View extends Component {
@@ -23,6 +28,11 @@ class View extends Component {
     funcs: PropTypes.object.isRequired
   };
 
+  constructor(props) {
+    super(props);
+    this.props.watch(this.props.cell, {events: "change:annotations", force: true});
+  }
+
   getViewKind() {
     return `view-${this.props.cell.kind}`;
   }
@@ -31,6 +41,28 @@ class View extends Component {
     const cell = someCell || this.props.cell;
     return `view-${cell.column.getId()}-${cell.rowId}`;
   }
+
+  canEditValue = theoretically => {
+    const {cell, langtag} = this.props;
+    const canEditUnlocked = Access.isUserAdmin() ||
+      (Access.canUserChangeCell(cell)
+      && cond([
+        [() => cell.isMultiLanguage, always(Access.hasUserAccessToLanguage(langtag))],
+        [() => cell.isMultiCountry, always(Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag)))],
+        [stubTrue, always(false)]                // Non-admins can't change single-value items
+      ])());
+    return (theoretically)
+      ? canEditUnlocked
+      : canEditUnlocked && (!Annotations.isLocked(cell.row) || Annotations.isTranslationNeeded(langtag)(cell))
+  };
+
+  clickHandler = () => {
+    const {cell:{row}, funcs} = this.props;
+    funcs.focus(funcs.id);
+    if (!this.canEditValue() && this.canEditValue(Symbol("theoretically"))) {
+      askForSessionUnlock(row);
+    }
+  };
 
   render() {
     const {cell, langtag, setTranslationView} = this.props;
@@ -48,8 +80,10 @@ class View extends Component {
       [ColumnKinds.richtext]: TextView
     };
 
+    const isDisabled = !this.canEditValue();
+
     const CellKind = views[kind];
-    const viewClass = `view item ${this.getViewKind()} ${this.getViewId()}`;
+    const viewClass = classNames(`view item ${this.getViewKind()} ${this.getViewId()}`, {"disabled": isDisabled});
     const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
     const translationContent = (canConvert(kind, ColumnKinds.text))
       ? cell
@@ -58,16 +92,18 @@ class View extends Component {
     return (
       <div className={viewClass}
            onMouseEnter={() => setTranslationView({cell: translationContent})}
-           onClick={() => this.props.funcs.focus(this.props.funcs.id)}
+           onClick={this.clickHandler}
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}
                      setTranslationView={setTranslationView}
                      funcs={this.props.funcs}
+                     thisUserCantEdit={isDisabled}
         />
         {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle"/><div>{description}</div></div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
                   setTranslationView={setTranslationView}
                   funcs={this.props.funcs}
+                  thisUserCantEdit={isDisabled}
         />
       </div>
     );

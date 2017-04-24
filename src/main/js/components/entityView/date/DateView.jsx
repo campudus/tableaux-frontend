@@ -5,6 +5,7 @@ import Datetime from "react-datetime";
 import listensToClickOutside from "react-onclickoutside";
 import i18n from "i18next";
 import {changeCell} from "../../../models/Tables";
+import classNames from "classnames";
 
 @listensToClickOutside
 class DateView extends Component {
@@ -20,7 +21,8 @@ class DateView extends Component {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
     time: PropTypes.bool,
-    funcs: PropTypes.object.isRequired
+    funcs: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   handleClickOutside = () => {
@@ -49,13 +51,12 @@ class DateView extends Component {
   };
 
   setEditing = editing => () => {
-    console.log("Setting calendar editing to", editing)
     if (editing) {
       this.setState({
         moment: this.momentFromString(this.getValue()),
         editing
       });
-    } else {
+    } else if (!this.props.thisUserCantEdit) {
       this.setState({editing});
     }
   };
@@ -101,19 +102,20 @@ class DateView extends Component {
 
   render() {
     const {editing} = this.state;
-    const {funcs} = this.props;
+    const {funcs, thisUserCantEdit} = this.props;
     const value = (editing)
       ? this.stringFromMoment(this.state.moment)
       : this.stringFromMoment(this.getValue());
+    const cssClass = classNames("item-content datetime", {"disabled": thisUserCantEdit});
     return (
-      <div className="item-content datetime"
+      <div className={cssClass}
            onClick={this.setEditing(true)}
            tabIndex={1}
            onKeyDown={this.openOnEnter}
            ref={el => { funcs.register(el) }}
       >
         {value || i18n.t("table:empty.date")}
-        {(editing)
+        {(editing && !thisUserCantEdit)
           ? <Datetime onBlur={this.saveEditsAndClose}
                       onChange={this.handleChange}
                       value={this.state.moment || Moment()}

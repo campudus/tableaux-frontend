@@ -4,6 +4,7 @@ import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiL
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
+import {hasUserAccessToCountryCode} from "../../../helpers/accessManagementHelper";
 
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
@@ -14,7 +15,8 @@ class CurrencyItem extends Component {
     cell: PropTypes.object.isRequired,
     countryCode: PropTypes.string.isRequired,
     editing: PropTypes.bool.isRequired,
-    toggleEdit: PropTypes.func.isRequired
+    toggleEdit: PropTypes.func.isRequired,
+    isDisabled: PropTypes.bool
   };
 
   constructor(props) {
@@ -77,7 +79,6 @@ class CurrencyItem extends Component {
       event.preventDefault();
       event.stopPropagation();
       this.handleClickOutside();
-      document.getElementById("overlay").focus();
     }
   };
 
@@ -99,6 +100,7 @@ class CurrencyItem extends Component {
 
   render() {
     const {countryCode, editing} = this.props;
+    const isDisabled = this.props.isDisabled || !hasUserAccessToCountryCode(countryCode);
     const {preComma, postComma, currencyValue} = this.state;
     const currencyString = this.valueToString(preComma, postComma);
     const currencyCode = getCurrencyCode(countryCode);
@@ -106,10 +108,11 @@ class CurrencyItem extends Component {
       "currency-item",
       {
         "not-set": !currencyValue && !editing,
-        "editing": editing
+        "editing": editing && !isDisabled,
+        "disabled": isDisabled
       }
     );
-    const clickHandler = (editing)
+    const clickHandler = (editing && !isDisabled)
       ? function () {
       }
       : () => this.props.toggleEdit(true);
@@ -117,7 +120,7 @@ class CurrencyItem extends Component {
       <div className={cssClass} onClick={clickHandler}>
         {getLanguageOrCountryIcon(countryCode)}
         <div className="value">
-          {(editing)
+          {(editing && !isDisabled)
             ? this.renderEditFields()
             : <div className="currency-string">{currencyString}</div>
           }

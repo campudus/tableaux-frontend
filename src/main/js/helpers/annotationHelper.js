@@ -153,6 +153,7 @@ const setCellAnnotation = (annotation, cell) => {
 };
 
 const addTranslationNeeded = (langtags, cell) => {
+  if (!f.isArray(langtags)) console.warn("addTranslationNeeded: array expected, got", langtags)
   const oldCellAnnotations = f.prop("annotations", cell) || {};
   const finishTransaction = (f.isEmpty(f.prop("translationNeeded", oldCellAnnotations)))
     ? (response) => {
@@ -305,6 +306,14 @@ const unlockRow = (row, unlockState) => {
   unlockedRow = (unlock) ? row : null;
 };
 
+const isTranslationNeeded = langtag => cell => {
+  const langtags = f.prop(["annotations", "translationNeeded", "langtags"], cell);
+
+  return (f.isString(langtag))
+    ? f.contains(langtag, langtags)
+    : !f.isEmpty(langtags);
+};
+
 const isLocked = row => row.final && !row.unlocked;
 
 export {
@@ -316,6 +325,7 @@ export {
   refreshAnnotations,
   setRowAnnotation,
   unlockRow,
-  isLocked
+  isLocked,
+  isTranslationNeeded
 };
 export default setCellAnnotation;

@@ -1,6 +1,5 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 
@@ -16,7 +15,8 @@ class ShortTextView extends React.Component {
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
+    cell: React.PropTypes.object.isRequired,
+    thisUserCantEdit: React.PropTypes.bool
   };
 
   getValue = () => {
@@ -52,11 +52,11 @@ class ShortTextView extends React.Component {
   };
 
   render() {
-    const {langtag, funcs} = this.props;
+    const {langtag, funcs, thisUserCantEdit} = this.props;
     return <div className="item-content">
       <input type="text" value={this.state.value}
              placeholder={i18n.t("table:empty.text")}
-             disabled={!hasUserAccessToLanguage(langtag)}
+             disabled={thisUserCantEdit}
              onChange={event => this.setState({value: event.target.value})}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onBlur={this.saveEditsAndClose}

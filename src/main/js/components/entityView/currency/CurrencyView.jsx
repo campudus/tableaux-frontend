@@ -14,7 +14,8 @@ class CurrencyView extends Component {
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
     cell: React.PropTypes.object.isRequired,
-    funcs: React.PropTypes.object.isRequired
+    funcs: React.PropTypes.object.isRequired,
+    thisUserCantEdit: React.PropTypes.bool
   };
 
   getCurrencyValues = (cell) => {
@@ -28,6 +29,7 @@ class CurrencyView extends Component {
                            countryCode={countryCode}
                            editing={editing[index]}
                            toggleEdit={this.setEditing(index)}
+                           isDisabled={this.props.thisUserCantEdit}
       />;
     });
   };

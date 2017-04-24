@@ -43,7 +43,7 @@ class TextCell extends Component {
     const textValue = withContent || this.getValue();
     maybe(event)
       .method("stopPropagation")
-      .method("preventDefault")
+      .method("preventDefault");
 
     const {cell, langtag} = this.props;
     const table = cell.tables.get(cell.tableId);
@@ -83,9 +83,7 @@ class TextCell extends Component {
     return value || "";
   };
 
-  componentWillReceiveProps = (nextProps, nextState) => {
-    console.log("nextProps", nextProps)
-
+  componentWillReceiveProps = (nextProps) => {
     if (!this.props.editing && nextProps.editing) {
       this.openOverlay();
     }

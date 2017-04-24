@@ -21,6 +21,7 @@ class ShortTextCell extends Component {
   handleEditDone = (newValue) => {
     const oldValue = this.getValue();
     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
+      ActionCreator.toggleCellEditing({editing: false});
       return;
     }
     const {cell, cell: {isMultiLanguage}, langtag, contentChanged} = this.props;
@@ -29,7 +30,7 @@ class ShortTextCell extends Component {
       : newValue;
 
     changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
-    ActionCreator.toggleCellEditing(false);
+    ActionCreator.toggleCellEditing({editing: false});
   };
 
   getValue = () => {

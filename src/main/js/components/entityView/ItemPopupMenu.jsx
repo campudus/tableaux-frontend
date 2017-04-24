@@ -69,7 +69,7 @@ class ItemPopupMenu extends Component {
     }
     const neededTranslation = (this.isPrimaryLanguage())
       ? f.drop(1, Langtags)
-      : f.merge(f.prop(["annotation", "needsTranslation", "langtag"], cell), langtag);
+      : [...(f.prop(["annotation", "needsTranslation", "langtags"], cell) || []), langtag];
     const text = (this.isPrimaryLanguage())
       ? "table:translations.translation_needed"
       : "table:translations.this_translation_needed";

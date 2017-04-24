@@ -10,7 +10,8 @@ class BooleanView extends Component {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
     t: PropTypes.func.isRequired,
-    funcs: PropTypes.object.isRequired
+    funcs: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   constructor(props) {
@@ -22,7 +23,11 @@ class BooleanView extends Component {
   toggleValue = event => {
     event.preventDefault();
     event.stopPropagation();
-    const {cell, langtag} = this.props;
+    const {cell, langtag, thisUserCantEdit} = this.props;
+    if (thisUserCantEdit) {
+      return;
+    }
+
     const newValue = !this.state.selected;
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
@@ -34,15 +39,13 @@ class BooleanView extends Component {
   toggleOnEnter = event => {
     if (event.key === "Enter") {
       this.toggleValue(event);
-      event.preventDefault();
-      event.stopPropagation();
     }
   };
 
   render() {
-    const {t, funcs} = this.props;
+    const {t, funcs, thisUserCantEdit} = this.props;
     const {selected} = this.state;
-    const checkboxCss = classNames("checkbox", {"checked": selected});
+    const checkboxCss = classNames("checkbox", {"checked": selected, "disabled": thisUserCantEdit});
 
     return (
         <div className="item-content boolean" onClick={this.toggleValue}

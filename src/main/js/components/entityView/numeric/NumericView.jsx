@@ -1,6 +1,5 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import * as f from "lodash/fp";
 
@@ -16,7 +15,8 @@ class NumericView extends React.Component {
 
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired
+    cell: React.PropTypes.object.isRequired,
+    thisUserCantEdit: React.PropTypes.bool
   };
 
   getValue = () => {
@@ -76,10 +76,10 @@ class NumericView extends React.Component {
   };
 
   render() {
-    const {langtag, funcs} = this.props;
+    const {langtag, funcs, thisUserCantEdit} = this.props;
     return <div className="item-content">
       <input type="text" value={this.state.value}
-             disabled={!hasUserAccessToLanguage(langtag)}
+             disabled={thisUserCantEdit}
              onChange={this.normaliseNumberFormat}
              onKeyDown={this.handleKeyPress}
              onBlur={this.saveEditsAndClose}

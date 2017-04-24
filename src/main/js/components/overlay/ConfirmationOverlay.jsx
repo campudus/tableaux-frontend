@@ -4,7 +4,7 @@ import i18n from "i18next";
 
 export function confirmDeleteFile(fileName, onYes) {
   showDialog({
-    type: "warning",
+    type: "question",
     context: fileName,
     title: i18n.t("media:delete_file_headline"),
     heading: <p>{i18n.t("media:confirm_delete_file", {fileName})}</p>,
@@ -17,7 +17,7 @@ export function confirmDeleteFile(fileName, onYes) {
 
 export function confirmDeleteFolder(folderName, onYes) {
   showDialog({
-    type: "warning",
+    type: "question",
     context: folderName,
     title: i18n.t("media:confirm_delete_folder_headline"),
     heading: <p>{i18n.t("media:confirm_delete_folder_question", {folderName})}</p>,
@@ -59,7 +59,7 @@ export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries)
     </p></div>;
 
   showDialog({
-    type: "important",
+    type: "warning",
     context: i18n.t("common:error"),
     title: i18n.t("common:access_management.permission_denied_headline"),
     heading: i18n.t("table:error_occured_hl"),
@@ -81,7 +81,7 @@ export function cellModelSavingError(errorFromServer) {
   const totalError = <p><strong>Server error:</strong> {techError}</p>;
 
   showDialog({
-    type: "important",
+    type: "warning",
     context: i18n.t("common:error"),
     title: i18n.t("table:error_occured_hl"),
     heading: userError,
@@ -92,7 +92,7 @@ export function cellModelSavingError(errorFromServer) {
 
 export function simpleError(errorMsg, errorHead) {
   showDialog({
-    type: "important",
+    type: "warning",
     context: i18n.t("common:error"),
     title: i18n.t("table:error_occured_hl"),
     heading: errorHead || i18n.t("table:error_occured_hl"),

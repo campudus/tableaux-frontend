@@ -17,13 +17,14 @@ class NumericCell extends Component {
     const {cell, langtag, contentChanged} = this.props;
     const oldValue = prop(["value", langtag], cell) || prop("value", cell);
     if (newValue === oldValue || (isNil(newValue) && isNil(oldValue))) {
+      ActionCreator.toggleCellEditing({editing: false});
       return;
     }
     const valueToSave = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
     changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
-    ActionCreator.toggleCellEditing(false);
+    ActionCreator.toggleCellEditing({editing: false});
   };
 
   render() {

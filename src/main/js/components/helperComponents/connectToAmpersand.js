@@ -36,7 +36,7 @@ const connectToAmpersand = (Component) => class extends React.Component {
 
   componentDidMount = () => {
     fp.values(this.props).forEach(model => this.watch(model));
-  }
+  };
 
   componentWillUnmount = () => {
     this.stopListening();

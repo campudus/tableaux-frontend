@@ -17,7 +17,8 @@ class RowHeadline extends React.Component {
     cell: React.PropTypes.object.isRequired,
     langtag: React.PropTypes.string.isRequired,
     setTranslationView: React.PropTypes.func.isRequired,
-    funcs: React.PropTypes.object.isRequired
+    funcs: React.PropTypes.object.isRequired,
+    thisUserCantEdit: React.PropTypes.bool
   };
 
   getDisplayName = column => {
@@ -45,7 +46,7 @@ class RowHeadline extends React.Component {
   };
 
   mkLinkHeader = column => {
-    const {cell, langtag, funcs} = this.props;
+    const {cell, langtag, funcs, thisUserCantEdit} = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     const colName = this.getDisplayName(column);
     return (
@@ -60,12 +61,17 @@ class RowHeadline extends React.Component {
             <i className="fa fa-external-link" />
           </a>
         </div>
-        <a className="column-icon button" href="#"
-           onClick={() => openLinkOverlay(cell, langtag)}
-           ref={el => { funcs.register(el) }}
-        >
-          {i18n.t("table:edit_links", {title: colName})}
-        </a>
+        {(thisUserCantEdit)
+          ? <i className="fa fa-link"/>
+          : <a className="column-icon button" href="#"
+               onClick={() => openLinkOverlay(cell, langtag)}
+               ref={el => {
+                 funcs.register(el)
+               }}
+          >
+            {i18n.t("table:edit_links", {title: colName})}
+          </a>
+        }
       </div>
     )
   };
@@ -82,7 +88,7 @@ class RowHeadline extends React.Component {
   };
 
   mkAttachmentHeader = column => {
-    const {langtag, cell, funcs} = this.props;
+    const {langtag, cell, funcs, thisUserCantEdit} = this.props;
     const url = `/${langtag}/tables/${cell.toTable}`;
     return (
       <div className="item-header">
@@ -93,12 +99,17 @@ class RowHeadline extends React.Component {
           />
           {this.getDisplayName(column)}
         </div>
-        <a className="button column-icon" href="#"
-           onClick={this.openAttachmentOverlay}
-           ref={el => { funcs.register(el) }}
-        >
-          {i18n.t("table:edit_attachments")}
-        </a>
+        {(thisUserCantEdit)
+          ? <i className="fa fa-files-o" />
+          : <a className="button column-icon" href="#"
+               onClick={this.openAttachmentOverlay}
+               ref={el => {
+                 funcs.register(el)
+               }}
+          >
+            {i18n.t("table:edit_attachments")}
+          </a>
+        }
       </div>
     )
   };

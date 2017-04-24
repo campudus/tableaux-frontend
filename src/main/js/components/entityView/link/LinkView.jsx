@@ -9,7 +9,8 @@ class LinkView extends Component {
 
   static propTypes = {
     langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired
+    cell: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   openOverlay = () => {
@@ -18,6 +19,9 @@ class LinkView extends Component {
   };
 
   removeLink = id => () => {
+    if (this.props.thisUserCantEdit) {
+      return;
+    }
     console.log("remove link no.", id)
     const {cell} = this.props;
     const newValue = pullAt(id, cell.value);

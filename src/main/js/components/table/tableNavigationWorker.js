@@ -210,7 +210,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
     const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
     App.router.navigate(cellURL, {trigger: false});
   }
-  if (!f.isNil(this.state.selectedCell) && !f.eq(this.state.selectedCell.row, cell.row)) {
+  if (!f.isNil(this.state.selectedCell) && !f.equals(this.state.selectedCell.row, cell.row)) {
     unlockRow(this.state.selectedCell.row, false);
   }
   this.setState({

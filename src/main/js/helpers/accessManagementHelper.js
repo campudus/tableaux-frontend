@@ -1,5 +1,5 @@
 import _ from "lodash";
-import TableauxConstants, {ColumnKinds, Langtags} from "../constants/TableauxConstants";
+import TableauxConstants, {ColumnKinds} from "../constants/TableauxConstants";
 import Keks from "js-cookie";
 
 // overwrite converter so we can parse express-cookies
