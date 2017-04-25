@@ -29,10 +29,11 @@ class LinkList extends Component {
 
   toggleExpand = () => this.setState({expanded: !this.state.expanded});
 
-  proceedTo = linkTarget => () => {
+  proceedTo = linkTarget => evt => {
     if (isEmpty(linkTarget)) {
       return;
     }
+    evt.stopPropagation();
     if (isString(linkTarget)) {
       window.open(linkTarget, "_blank");
     } else {

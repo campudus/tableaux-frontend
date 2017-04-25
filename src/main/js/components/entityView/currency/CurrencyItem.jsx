@@ -51,6 +51,7 @@ class CurrencyItem extends Component {
                autoFocus
                onKeyDown={this.filterKeyEvents(PRE_COMMA)}
                placeholder="0"
+               onClick={e => e.stopPropagation()}
         />
         ,
         <input className="right"
@@ -58,6 +59,7 @@ class CurrencyItem extends Component {
                value={this.state.postComma}
                onKeyDown={this.filterKeyEvents(POST_COMMA)}
                placeholder="00"
+               onClick={e => e.stopPropagation()}
         />
       </div>
     );

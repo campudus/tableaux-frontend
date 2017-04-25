@@ -77,7 +77,7 @@ class NumericView extends React.Component {
 
   render() {
     const {langtag, funcs, thisUserCantEdit} = this.props;
-    return <div className="item-content">
+    return <div className="item-content numeric">
       <input type="text" value={this.state.value}
              disabled={thisUserCantEdit}
              onChange={this.normaliseNumberFormat}

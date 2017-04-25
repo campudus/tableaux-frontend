@@ -53,7 +53,7 @@ class ShortTextView extends React.Component {
 
   render() {
     const {langtag, funcs, thisUserCantEdit} = this.props;
-    return <div className="item-content">
+    return <div className="item-content shorttext">
       <input type="text" value={this.state.value}
              placeholder={i18n.t("table:empty.text")}
              disabled={thisUserCantEdit}

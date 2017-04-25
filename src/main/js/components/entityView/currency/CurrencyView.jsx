@@ -56,6 +56,7 @@ class CurrencyView extends Component {
     return (
         <div className="item-content currency"
              ref={el => { funcs.register(el) }}
+             tabIndex={1}
         >
         {currencyRows}
       </div>

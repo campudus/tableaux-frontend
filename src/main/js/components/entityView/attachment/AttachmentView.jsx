@@ -38,7 +38,7 @@ class AttachmentView extends Component {
 
     return (isEmpty(attachments))
       ? <div className="item-description">{i18n.t("table:empty.attachments")}</div>
-      : <div className="view-content link">
+      : <div className="item-content link">
         <LinkList links={attachments} langtag={langtag} />
       </div>
   }

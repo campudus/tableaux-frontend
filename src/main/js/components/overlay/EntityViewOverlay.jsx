@@ -109,6 +109,24 @@ class EntityViewBody extends Component {
       this.focusElements = f.assoc(id, el, this.focusElements);
   };
 
+  setFocusClassToParentItem = (el, value = true, steps = 0) => {
+    if (!el || steps > 5) {
+      console.warn(`Could not set "has-focused-child" class to container item of ${el}: ${(el) 
+        ? "Reachead maxium DOM traversal depth, giving up." 
+        : "Empty element found, got confused."}`);
+      return;
+    }
+    const parent = el.parentElement;
+    const classes = parent.className;
+    if (/(^|\s)item($|\s)/.test(classes)) { // "item" followed and predeceded by either space or string start/end
+      parent.className = (value)
+        ? `${classes} has-focused-child`
+        : classes.replace(/\W*?has-focused-child\W*?/, "");
+    } else {
+      this.setFocusClassToParentItem(parent, value, steps + 1);
+    }
+  };
+
   changeFocus = dir => {
     const numericDir = (dir === Directions.UP) ? -1 : +1;
     const {focused} = this.state;
@@ -124,8 +142,12 @@ class EntityViewBody extends Component {
       return;
     }
 
+    maybe(focusElements[focused])
+      .map(el => this.setFocusClassToParentItem(el, false));
+
     maybe(focusElements[toFocus])
-      .method("focus");
+      .method("focus")
+      .map(el => this.setFocusClassToParentItem(el));
     this.setState({focused: toFocus});
   };
 

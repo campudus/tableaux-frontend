@@ -42,7 +42,7 @@ class OverlayHeadRowIdentificator extends Component {
       return (
         <span>
             <a href={linkToTable} target="_blank" className="column-name with-link">
-              <i className="fa fa-columns" />
+              <i className="fa fa-fw fa-columns" />
               {columnDisplayName}
             </a>
           {rowIdentification}

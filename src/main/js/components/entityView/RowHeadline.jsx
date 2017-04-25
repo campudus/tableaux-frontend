@@ -62,7 +62,13 @@ class RowHeadline extends React.Component {
           </a>
         </div>
         {(thisUserCantEdit)
-          ? <i className="fa fa-link"/>
+          ? <a className="column-icon button neutral" href="#"
+               ref={el => {
+                 funcs.register(el)
+               }}
+          >
+            {i18n.t("table:edit_links", {title: colName})}
+          </a>
           : <a className="column-icon button" href="#"
                onClick={() => openLinkOverlay(cell, langtag)}
                ref={el => {
@@ -88,8 +94,7 @@ class RowHeadline extends React.Component {
   };
 
   mkAttachmentHeader = column => {
-    const {langtag, cell, funcs, thisUserCantEdit} = this.props;
-    const url = `/${langtag}/tables/${cell.toTable}`;
+    const {funcs, thisUserCantEdit} = this.props;
     return (
       <div className="item-header">
         <div className="title-wrapper">
@@ -100,7 +105,13 @@ class RowHeadline extends React.Component {
           {this.getDisplayName(column)}
         </div>
         {(thisUserCantEdit)
-          ? <i className="fa fa-files-o" />
+          ? <a className="button neutral column-icon" href="#"
+               ref={el => {
+                 funcs.register(el)
+               }}
+          >
+            {i18n.t("table:edit_attachments")}
+          </a>
           : <a className="button column-icon" href="#"
                onClick={this.openAttachmentOverlay}
                ref={el => {
