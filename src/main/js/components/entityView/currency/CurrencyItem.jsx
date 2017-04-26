@@ -5,6 +5,8 @@ import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import {hasUserAccessToCountryCode} from "../../../helpers/accessManagementHelper";
+import {Directions} from "../../../constants/TableauxConstants";
+
 
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
@@ -16,6 +18,7 @@ class CurrencyItem extends Component {
     countryCode: PropTypes.string.isRequired,
     editing: PropTypes.bool.isRequired,
     toggleEdit: PropTypes.func.isRequired,
+    changeActive: PropTypes.func.isRequired,
     isDisabled: PropTypes.bool
   };
 
@@ -67,17 +70,32 @@ class CurrencyItem extends Component {
 
   filterKeyEvents = place => event => {
     const {key} = event;
+    if ((event.ctrlKey || event.metaKey) && f.contains(key, ["c", "v", "a", "r"])) { // don't capture system commands
+      return;
+    }
     const numberKeys = f.map(f.toString, f.range(0, 10));
-    if (!f.contains(key, [...numberKeys, "Backspace", "Enter", "Escape", "Delete", "ArrowLeft", "ArrowRight"])) {
+    if (!f.contains(key, [...numberKeys, "Backspace", "Enter", "Escape", "Delete", "ArrowLeft", "ArrowRight", "Tab"])) {
       event.preventDefault();
       return;
     }
-    if (place === POST_COMMA && f.contains(key, numberKeys)
-      && this.state.postComma.length === 2) {
+    if (f.contains(key, ["Tab", "Enter"])) {
+      const {currencyValue} = this.state;
+      const {countryCode} = this.props;
+      if ((key === "Enter" || place === PRE_COMMA) && event.shiftKey) { // don't prevent default if shift-tab in post-comma position, so focus changes to pre-comma input
+        event.preventDefault();
+        event.stopPropagation();
+        this.props.changeActive(Directions.DOWN)([countryCode, currencyValue]);
+      } else if ((key === "Enter" || place === POST_COMMA) && !event.shiftKey) { // don't prevent.. tab... pre-comma... -> ... post-comma...
+        event.preventDefault();
+        event.stopPropagation();
+        this.props.changeActive(Directions.UP)([countryCode, currencyValue]);
+      } else {
+        event.stopPropagation();
+      }
+    } else if (place === POST_COMMA && f.contains(key, numberKeys)
+      && this.state.postComma.length === 2) { // limit comma-value of currency to 2 digits
       event.preventDefault();
-      return;
-    }
-    if (f.contains(key, ["Enter", "Escape"])) {
+    } else if (key === "Escape") {
       event.preventDefault();
       event.stopPropagation();
       this.handleClickOutside();

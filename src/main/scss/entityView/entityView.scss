@@ -86,6 +86,7 @@
             margin: 0;
             input {
               border: none;
+              border-bottom: 1px solid transparent;
               width: 45%;
               color: $color-text-medium-grey;
               &.left {

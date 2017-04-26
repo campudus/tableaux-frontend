@@ -9,7 +9,7 @@ import {addTranslationNeeded, removeTranslationNeeded} from "../../helpers/annot
 import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
 import {canConvert} from "../../helpers/cellValueConverter";
 
-const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
+const CLOSING_TIMEOUT = 200; // ms; time to close popup after mouse left
 
 @listenToClickOutside
 class ItemPopupMenu extends Component {

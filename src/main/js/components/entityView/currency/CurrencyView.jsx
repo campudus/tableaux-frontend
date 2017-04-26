@@ -2,6 +2,10 @@ import React, {Component, PropTypes} from "react";
 import CurrencyItem from "./CurrencyItem";
 import * as f from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import {Directions} from "../../../constants/TableauxConstants";
+import {isLocked} from "../../../helpers/annotationHelper";
+import {askForSessionUnlock} from "../../helperComponents/SessionUnlockDialog";
 
 class CurrencyView extends Component {
 
@@ -30,6 +34,7 @@ class CurrencyView extends Component {
                            editing={editing[index]}
                            toggleEdit={this.setEditing(index)}
                            isDisabled={this.props.thisUserCantEdit}
+                           changeActive={this.changeActive(index)}
       />;
     });
   };
@@ -49,6 +54,35 @@ class CurrencyView extends Component {
     }
   };
 
+  getKeyCommands = () => {
+    return {
+      tab: evt => {
+        if (f.any(f.identity, this.state.editing)) {
+          evt.stopPropagation();
+          evt.preventDefault();
+        }
+      },
+      enter: evt => {
+        const {row} = this.props.cell;
+        if (isLocked(row)) {
+          askForSessionUnlock(row);
+          return;
+        }
+        if (!f.any(f.identity, this.state.editing)) {
+          this.setEditing(0)(true);
+        }
+        evt.stopPropagation();
+        evt.preventDefault();
+      }
+    }
+  };
+
+  changeActive = id => dir => values => {
+    const N = this.props.cell.column.countryCodes.length;
+    const next = (id + N + ((dir === Directions.UP) ? 1 : -1)) % N;
+    this.setEditing(next)(true, values);
+  };
+
   render() {
     const {cell, funcs} = this.props;
     const currencyRows = this.getCurrencyValues(cell, false);
@@ -57,6 +91,7 @@ class CurrencyView extends Component {
         <div className="item-content currency"
              ref={el => { funcs.register(el) }}
              tabIndex={1}
+             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
         >
         {currencyRows}
       </div>
