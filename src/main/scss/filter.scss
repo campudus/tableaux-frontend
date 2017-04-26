@@ -1,5 +1,4 @@
 @import "variables";
-@import "helper";
 
 #filter-wrapper {
   float: left;
@@ -159,7 +158,6 @@
       line-height: 30px;
       border: 1px solid $color-grey-dark;
       @include border-radius(3px);
-      outline: none;
       width: 200px;
 
       &:focus, &:active {

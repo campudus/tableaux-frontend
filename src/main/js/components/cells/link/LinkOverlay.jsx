@@ -21,7 +21,8 @@ import listensToClickOutside from "react-onclickoutside";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 
 // we use this value to get the exact offset for the link list
-const CSS_SEARCH_HEIGHT = 70;
+const HEADER_HEIGHT = 120;
+const MARGIN_HEIGHT = 20;
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
 
@@ -87,7 +88,11 @@ class SearchBar extends Component {
       if (!f.isEmpty(this.state.filterValue)) {
         event.preventDefault();
         event.stopPropagation();
-        this.setState({filterValue: ""}, () => this.updateFilter({mode: this.state.filterMode, value: this.state.filterValue}));
+        this.setState({filterValue: ""},
+          () => this.updateFilter({
+            mode: this.state.filterMode,
+            value: this.state.filterValue
+          }));
       }
       else {
         ActionCreator.closeOverlay();
@@ -409,13 +414,14 @@ class LinkOverlay extends Component {
           <div style={style} key={key}>
             <div className={rowCssClass}>
               <div className={mainButtonClass}
-                   onMouseOver={() => this.setState({selectedMode: MAIN_BUTTON},
+                   onMouseEnter={() => this.setState({selectedMode: MAIN_BUTTON},
                      () => this.refs.OverlayScroll.forceUpdateGrid())}
+                   onClick={this.addLinkValue.bind(this, isLinked, row)}
               >
-                <a href="#" onClick={this.addLinkValue.bind(this, isLinked, row)}>
+                <a href="#">
                   {rowName}
-                  <i className={(isLinked) ? "fa fa-times" : "fa fa-check"} />
                 </a>
+                <i className={(isLinked) ? "fa fa-times" : "fa fa-check"} />
 
               </div>
               <a href="#" className={linkButtonClass}
@@ -424,7 +430,7 @@ class LinkOverlay extends Component {
                    tableId: cell.column.toTable,
                    rowId: row.id
                  }, langtag)}
-                 onMouseOver={() => this.setState({selectedMode: LINK_BUTTON},
+                 onMouseEnter={() => this.setState({selectedMode: LINK_BUTTON},
                    () => this.refs.OverlayScroll.forceUpdateGrid())}
               >
                 <i className="fa fa-long-arrow-right" />
@@ -435,7 +441,9 @@ class LinkOverlay extends Component {
         : (
           <div style={style} key={key} onMouseEnter={() => this.setState({selectedId: index})}>
             <div className={rowCssClass}>
-              {rowName}
+              <div className="link-label">
+                {rowName}
+              </div>
             </div>
           </div>
         );
@@ -451,28 +459,23 @@ class LinkOverlay extends Component {
   };
 
   render = () => {
-    let listDisplay;
     const {rowResults, loading} = this.state;
-    const contentHeight = (0.8 * window.innerHeight) | 0;
+    const contentHeight = (window.innerHeight - HEADER_HEIGHT - 2 * MARGIN_HEIGHT) | 0;
     const contentWidth = (0.6 * window.innerWidth) | 0;
     const rowsCount = rowResults.length || 0;
 
-    if (loading) {
-      listDisplay = "Loading...";
-    } else {
-      listDisplay = (
-        <List
-          ref="OverlayScroll"
-          width={contentWidth}
-          height={contentHeight - CSS_SEARCH_HEIGHT}
-          rowCount={rowsCount}
-          rowHeight={40}
-          rowRenderer={this.getOverlayItem}
-          scrollToIndex={this.state.selectedId}
-          noRowsRenderer={this.noRowsRenderer}
-        />
-      );
-    }
+    const listDisplay = (loading)
+      ? "Loading..."
+      : <List
+        ref="OverlayScroll"
+        width={contentWidth}
+        height={contentHeight}
+        rowCount={rowsCount}
+        rowHeight={40}
+        rowRenderer={this.getOverlayItem}
+        scrollToIndex={this.state.selectedId}
+        noRowsRenderer={this.noRowsRenderer}
+      />;
 
     return (
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
@@ -489,12 +492,13 @@ class LinkOverlay extends Component {
 export const openLinkOverlay = (cell, langtag) => {
   const table = cell.tables.get(cell.tableId);
   const tableName = table.displayName[langtag] || table.displayName[FallbackLanguage];
+  const overlayContent = <LinkOverlay cell={cell} langtag={langtag} />;
   ActionCreator.openOverlay({
     head: <Header context={tableName}
                   title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
                   components={<SearchBar langtag={langtag} />}
     />,
-    body: <LinkOverlay cell={cell} langtag={langtag} />,
+    body: overlayContent,
     type: "full-height"
   });
 };

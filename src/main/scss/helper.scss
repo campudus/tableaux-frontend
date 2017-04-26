@@ -47,7 +47,7 @@
   font-family: $font-main;
   padding: 7px 15px;
   color: white;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   display: inline-block;
   border: 0;
@@ -123,4 +123,38 @@
       color: $color-primary;
     }
   }
+}
+
+@mixin popup-menu {
+  @include rounded-lower-borders;
+  background-color: $color-white;
+  position: absolute;
+  box-shadow: 0 5px 15px $color-text-medium-grey;
+  border-top: 3px solid $color-primary;
+  z-index: 6;
+
+  .entry {
+    padding: 10px 20px;
+    z-index: 100;
+    &:last-of-type {
+      @include rounded-lower-borders();
+    }
+
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    &.active {
+      background-color: $color-hover-background;
+      color: $color-hover-foreground;
+    }
+  }
+}
+
+@mixin flex-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

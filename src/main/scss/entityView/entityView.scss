@@ -3,6 +3,17 @@
 
 .overlay {
   .entity-view {
+    .item {
+      border: 1px solid transparent;
+
+      &.disabled {
+        cursor: not-allowed;
+      }
+      &.has-focused-child {
+        border-color: $color-primary;
+      }
+    }
+
     .rich-text-component {
       .content-pane {
         max-height: 250px;
@@ -15,13 +26,20 @@
 
       .currency-item {
         position: relative;
-        width: 32%;
-        padding: 8px 0;
+        width: 33%;
+        padding: 7px 0;
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;
         border: none;
         border-color: transparent;
+
+        &.not-set {
+          .currency-string, .langtag-label, .currency-code {
+            color: $color-text-medium-grey;
+          }
+        }
+
         &:hover {
           border-color: $color-primary-lighter;
         }
@@ -30,44 +48,42 @@
         }
 
         div, span {
+          @include flex-centered();
           height: 100%;
-          margin: 0 2px;
-          display: flex;
+          margin: 0 0.5px;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
           padding: 5px 0;
         }
 
         .langtag {
           flex: 1;
+          @include flex-centered();
           background-color: $color-white;
-          img {
-            padding-top: 5px;
-          }
           .langtag-label {
             font-weight: normal;
             padding: 0;
+            margin: 0;
+            height: $font-size-standard;
           }
         }
 
         .value {
-          flex: 3;
+          flex: 2;
           background-color: $color-white;
           border-color: inherit;
 
           .currency-string {
             border-bottom: 1px solid;
             border-color: inherit;
-            height: 1.3rem;
+            height: $font-size-standard;
             width: 80%;
           }
 
           .currency-input {
-            display: flex;
+            @include flex-centered();
             flex-flow: row nowrap;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
+            margin: 0;
             input {
               border: none;
               width: 45%;
@@ -205,12 +221,12 @@
             text-transform: none;
             font-weight: normal;
             position: absolute;
-            left: -28px;
+            left: -40px;
 
             .popup-button {
               position: relative;
-              height: 23px;
-              width: 23px;
+              height: 30px;
+              width: 30px;
 
               a {
                 position: absolute;
@@ -238,40 +254,10 @@
             }
 
             .entry-popup {
-              position: absolute;
-              background-color: $color-white;
-              border-top: 3px solid $color-primary;
+              @include popup-menu();
               z-index: 5;
               width: 25vw;
-              top: 23px;
-              border-bottom-left-radius: 3px;
-              border-bottom-right-radius: 3px;
-              box-shadow: 0 2px 10px;
-
-              .separator {
-                color: $color-text-light-grey;
-                padding: 10px 20px;
-                border-top: 1px solid $color-border-grey;
-              }
-
-              .entry {
-                &:last-of-type {
-                  border-bottom-right-radius: 3px;
-                  border-bottom-left-radius: 3px;
-                }
-
-                &.active {
-                  background-color: $color-hover-background;
-                  color: $color-hover-foreground;
-                }
-                a {
-                  box-sizing: border-box;
-                  padding: 10px 20px;
-                  display: block;
-                  width: 100%;
-                  height: 100%;
-                }
-              }
+              top: 30px;
             }
           }
         }
@@ -316,8 +302,7 @@
         font-weight: bold;
 
         a {
-          padding: 10px;
-          padding-bottom: 16px;
+          padding: 10px 10px 16px;
         }
       }
 
@@ -337,6 +322,14 @@
 }
 
 .overlay {
+
+  .separator {
+    padding: 10px 20px;
+    color: $color-text-medium-grey;
+    border-top: 1px solid $color-border-grey;
+    text-transform: uppercase;
+  }
+
   .header-wrapper {
     .header-components {
       position: absolute;
@@ -356,6 +349,7 @@
         .header-filter-bar {
           padding: 5px;
           border-radius: 3px;
+          border: none;
           width: calc(100% - 41px);
           margin-right: 10px;
         }
@@ -363,7 +357,7 @@
         .header-popup-wrapper {
           position: relative;
           width: 29px;
-          height: 29px;
+          height: 28px;
 
           .popup-button {
             position: relative;
@@ -399,39 +393,13 @@
           }
 
           .popup-wrapper {
-            @include rounded-lower-borders;
-            background-color: $color-white;
-            position: absolute;
-            right: -2px;
-            top: 31px;
-            width: 30vw;
-            box-shadow: 0 2px 10px;
-            border-top: 3px solid $color-primary;
-            z-index: 6;
+            @include popup-menu();
+            right: 0;
+            top: 27px;
+            width: 25vw;
 
             .entry {
-              padding: 10px 20px;
-              z-index: 100;
-              &:last-of-type {
-                @include rounded-lower-borders();
-              }
-
-              a {
-                display: block;
-                width: 100%;
-                height: 100%;
-              }
-
-              &.active {
-                background-color: $color-hover-background;
-                color: $color-hover-foreground;
-              }
-            }
-
-            .separator {
-              padding: 10px 20px;
-              color: $color-text-light-grey;
-              border-top: 1px solid $color-border-grey;
+              left: 1px;
             }
           }
         }

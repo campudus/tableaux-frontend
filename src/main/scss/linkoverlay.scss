@@ -1,3 +1,5 @@
+@import "variables";
+
 .overlay {
   .filter-bar {
     position: absolute;
@@ -13,7 +15,6 @@
     }
 
     .popup-button {
-      display: block;
       position: absolute;
       right: -16px;
       top: 0;
@@ -58,12 +59,20 @@
         position: relative;
 
         .list-item {
-          display: block;
-          width: calc(100% - 20px);
-          padding: 8px;
+          display: flex;
+          width: 100%;
+          padding: 8px 0;
           border-radius: 3px;
           background-color: $color-white;
           color: $color-black;
+          overflow: hidden;
+          position: relative;
+
+          .link-label {
+            height: $font-size-standard;
+            overflow: hidden;
+            padding: 0 8px;
+          }
 
           &.isLinked {
             background-color: $color-primary;
@@ -75,49 +84,53 @@
             padding: 0;
 
             .left {
-              width: calc(100% - 34px);
-              height: 34px;
+              flex-grow: 1;
+              padding: 8px;
+              background-color: $color-white;
+              color: $color-primary-text;
+              border-radius: 3px 0 0 3px;
+              display: flex;
+
+              &:hover {
+                background-color: $color-hover-background;
+                color: $color-hover-foreground;
+              }
+
+              i {
+                flex: 1;
+                text-align: right;
+                color: $color-primary;
+                padding: 0 8px;
+              }
 
               a {
                 display: block;
-                width: 100%;
-                padding: 8px;
-                background-color: $color-white;
-                color: $color-primary-text;
-                border-radius: 3px;
-
-                &:hover {
-                  background-color: $color-hover-background;
-                  color: $color-hover-foreground;
-                }
-
-                i {
-                  float: right;
-                  color: $color-primary;
-                }
+                flex: 90;
+                height: $font-size-standard;
+                overflow: hidden;
               }
 
-              &.linked a {
+              &.linked {
                 background-color: $color-primary;
                 color: $color-primary-contrast-text;
               }
 
-              &.has-focus a {
+              &.has-focus {
                 background-color: $color-hover-background;
                 color: $color-hover-foreground;
               }
             }
 
             .right {
-              position: absolute;
-              right: 4px;
+              right: 0;
               top: 0;
               display: flex;
               justify-content: center;
               align-items: center;
               width: 29px;
               height: 29px;
-              border-radius: 3px;
+              border-radius: 0 3px 3px 0;
+              margin-left: 3px;
               background-color: $color-white;
               color: $color-primary;
 

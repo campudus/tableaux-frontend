@@ -80,6 +80,7 @@ class GenericOverlay extends Component {
       {
         escape: (event) => {
           event.preventDefault();
+          event.stopPropagation();
           ActionCreator.closeOverlay();
         },
         always: (event) => {
@@ -99,11 +100,15 @@ class GenericOverlay extends Component {
     const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
       "active": isOnTop,
+      "header-components": head.props.components,
+      "header-buttons": head.props.actions,
       [this.props.classNames]: this.props.classNames
     });
     const wrapperClass = classNames("overlay-wrapper " + overlayType + " " + (specialClass || ""), {
       "is-new": this.state.overlayIsNew,
-      "is-right": this.props.preferRight
+      "is-right": this.props.preferRight,
+      "header-components": head.props.components,
+      "header-buttons": head.props.actions
     });
 
     return (
