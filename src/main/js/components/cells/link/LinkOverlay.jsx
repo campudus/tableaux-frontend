@@ -94,9 +94,6 @@ class SearchBar extends Component {
             value: this.state.filterValue
           }));
       }
-      else {
-        ActionCreator.closeOverlay();
-      }
     };
 
     const passOnKey = () => {
@@ -207,6 +204,7 @@ class LinkOverlay extends Component {
       escape: event => {
         event.preventDefault();
         event.stopPropagation();
+        ActionCreator.closeOverlay();
       },
       up: event => {
         event.preventDefault();
@@ -414,8 +412,11 @@ class LinkOverlay extends Component {
           <div style={style} key={key}>
             <div className={rowCssClass}>
               <div className={mainButtonClass}
-                   onMouseEnter={() => this.setState({selectedMode: MAIN_BUTTON},
-                     () => this.refs.OverlayScroll.forceUpdateGrid())}
+                   onMouseOver={e => {
+                     this.setState({selectedMode: MAIN_BUTTON}, () => this.refs.OverlayScroll.forceUpdateGrid());
+                     this.background.focus();
+                     e.stopPropagation();
+                   }}
                    onClick={this.addLinkValue.bind(this, isLinked, row)}
               >
                 <a href="#">
@@ -430,8 +431,11 @@ class LinkOverlay extends Component {
                    tableId: cell.column.toTable,
                    rowId: row.id
                  }, langtag)}
-                 onMouseEnter={() => this.setState({selectedMode: LINK_BUTTON},
-                   () => this.refs.OverlayScroll.forceUpdateGrid())}
+                 onMouseOver={e => {
+                   this.setState({selectedMode: LINK_BUTTON}, () => this.refs.OverlayScroll.forceUpdateGrid());
+                   this.background.focus();
+                   e.stopPropagation();
+                 }}
               >
                 <i className="fa fa-long-arrow-right" />
               </a>
@@ -439,7 +443,11 @@ class LinkOverlay extends Component {
           </div>
         )
         : (
-          <div style={style} key={key} onMouseEnter={() => this.setState({selectedId: index})}>
+          <div style={style} key={key} onMouseOver={e => {
+            this.setState({selectedId: index});
+            this.background.focus();
+            e.stopPropagation();
+          }}>
             <div className={rowCssClass}>
               <div className="link-label">
                 {rowName}
@@ -482,6 +490,7 @@ class LinkOverlay extends Component {
            className="link-overlay"
            tabIndex={1}
            onMouseOver={e => e.target.focus()}
+           ref={el => { this.background = el; }}
       >
         {listDisplay}
       </div>
