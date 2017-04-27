@@ -15,7 +15,8 @@ const showErrorToast = msg => {
   ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg)}</div>, 3000);
 };
 
-const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage);
+const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage)
+  || (dst.isMultiLanguage && f.every(v => f.isEmpty(v) && !f.isNumber(v), f.values(f.prop("value", dst))));
 const canCopyLinks = (src, dst) => dst.column.id === src.column.id && dst.tableId === src.tableId;
 
 const calcNewValue = function (src, srcLang, dst, dstLang) {
