@@ -51,6 +51,16 @@ class ShortTextView extends React.Component {
     ActionCreator.changeCell(cell, (cell.isMultiLanguage? {[langtag]: value} : value))
   };
 
+  componentWillReceiveProps(np) {
+    const {cell, langtag} = np;
+    const nextVal = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+    if (nextVal !== this.originalValue) {
+      this.setState({value: nextVal});
+    }
+  }
+
   render() {
     const {langtag, funcs, thisUserCantEdit} = this.props;
     return <div className="item-content shorttext">

@@ -65,6 +65,16 @@ class NumericView extends React.Component {
     };
   };
 
+  componentWillReceiveProps(np) {
+    const {cell, langtag} = np;
+    const nextVal = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
+    if ((parseFloat(nextVal) || 0) !== this.originalValue) {
+      this.setState({value: nextVal});
+    }
+  }
+
   saveEditsAndClose = () => {
     const value = parseFloat(this.state.value);
     if (value === this.originalValue) {
