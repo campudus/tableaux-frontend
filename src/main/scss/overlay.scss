@@ -98,6 +98,7 @@ $overlay-border-radius: 5px;
     left: 40vw;
   }
 }
+
 //--------------------------------------------------------------------------------
 // Now back for real browsers
 //--------------------------------------------------------------------------------
@@ -392,8 +393,9 @@ $overlay-border-radius: 5px;
   }
 
   .link-list {
+    max-height: 430px;
     & > .can-expand {
-      .link-label-wrapper:last-of-type {
+      .link-label-wrapper-2:last-of-type .link-label-wrapper {
         background: linear-gradient($color-primary-contrast-text, transparent);
         color: $color-text-light-grey;
         &:hover {
@@ -402,76 +404,84 @@ $overlay-border-radius: 5px;
       }
     }
 
-    .link-label-wrapper {
-      width: 100%;
-      background-color: $color-primary-contrast-text;
-      color: $color-primary-text;
-      border-radius: 3px;
-      padding: 12px;
-      box-sizing: border-box;
-      margin-bottom: 5px;
+    div {
+      max-height: 430px;
+    }
+
+    .link-label-wrapper-2 {
       position: relative;
-      height: 37px;
+      height: 42px;
+      .link-label-wrapper {
+        width: 100%;
+        background-color: $color-primary-contrast-text;
+        color: $color-primary-text;
+        border-radius: 3px;
+        padding: 12px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        position: absolute;
+        height: 37px;
 
-      &:hover {
-        background-color: $color-hover-background;
-      }
-
-      .text-wrapper {
-        max-width: 90%;
-        overflow: hidden;
-        height: $font-size-standard;
-      }
-
-      .link-label {
-        display: block;
-        i {
-          float: right;
+        &:hover {
+          background-color: $color-hover-background;
         }
-      }
 
-      &.has-buttons {
-        &.show-buttons {
-          padding: 0;
-          background-color: transparent;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .text-wrapper {
+          max-width: 90%;
+          overflow: hidden;
+          height: $font-size-standard;
+        }
 
-          & > div {
-            background-color: $color-white;
+        .link-label {
+          display: block;
+          i {
+            float: right;
+          }
+        }
+
+        &.has-buttons {
+          &.show-buttons {
+            padding: 0;
+            background-color: transparent;
             display: flex;
-            align-items: stretch;
-            padding: 12px;
-            border-radius: 3px;
-
-            i {
-              color: $color-primary;
-            }
-
-            &:hover {
-              background-color: $color-hover-background;
-              color: $color-hover-foreground;
-            }
-          }
-
-          .main-button {
-            flex: 1;
             justify-content: space-between;
+            align-items: center;
 
-            & > a {
-              display: block;
-              width: 100%;
-              height: 100%;
+            & > div {
+              background-color: $color-white;
+              display: flex;
+              align-items: stretch;
+              padding: 12px;
+              border-radius: 3px;
+
+              i {
+                color: $color-primary;
+              }
+
+              &:hover {
+                background-color: $color-hover-background;
+                color: $color-hover-foreground;
+              }
             }
-          }
 
-          .unlink-button {
-            width: 16px;
-            margin-left: 2px;
-            justify-content: center;
+            .main-button {
+              flex: 1;
+              justify-content: space-between;
 
-            a {
+              & > a {
+                display: block;
+                width: 100%;
+                height: 100%;
+              }
+            }
+
+            .unlink-button {
+              width: 16px;
+              margin-left: 2px;
+              justify-content: center;
+
+              a {
+              }
             }
           }
         }

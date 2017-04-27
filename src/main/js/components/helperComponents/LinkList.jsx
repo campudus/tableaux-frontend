@@ -7,8 +7,9 @@
 import React, {Component, PropTypes} from "react";
 import classNames from "classnames";
 import i18n from "i18next";
-import {isEmpty, isString, take} from "lodash/fp";
+import * as f from "lodash/fp";
 import {loadAndOpenEntityView} from "../overlay/EntityViewOverlay";
+import {List, AutoSizer} from "react-virtualized";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -30,71 +31,105 @@ class LinkList extends Component {
   toggleExpand = () => this.setState({expanded: !this.state.expanded});
 
   proceedTo = linkTarget => evt => {
-    if (isEmpty(linkTarget)) {
+    if (f.isEmpty(linkTarget)) {
       return;
     }
     evt.stopPropagation();
-    if (isString(linkTarget)) {
+    if (f.isString(linkTarget)) {
       window.open(linkTarget, "_blank");
     } else {
       loadAndOpenEntityView(linkTarget, this.props.langtag)
     }
   };
 
-  renderLinks = (links, max) => ((max) ? take(max, links) : links).map(
-    ({displayName, linkTarget}, idx) => {
-      return (
-        <div className="link-label-wrapper" key={idx} onClick={this.proceedTo(linkTarget)} >
+  renderLink = ({index, key, style}) => {
+    const {displayName, linkTarget} = this.props.links[index];
+    return (
+      <div className="link-label-wrapper-2" key={key} style={style}>
+        <div className="link-label-wrapper" onClick={this.proceedTo(linkTarget)} >
           <a className="link-label" href="#">
             {displayName}
-            {(isEmpty(linkTarget)) ? null : <i className="fa fa-long-arrow-right" />}
+            {(f.isEmpty(linkTarget)) ? null : <i className="fa fa-long-arrow-right" />}
           </a>
         </div>
-      )
-    }
-  );
+      </div>
+    )
+  };
 
-  renderInteractiveLinks = (links, max) => {
-    const {unlink} = this.props;
-    return ((max) ? take(max, links) : links).map(
-      ({displayName, linkTarget}, idx) => {
-        const hovered = this.state.hovered === idx;
-        const cssClass = classNames("link-label-wrapper has-buttons", {
-          "show-buttons": hovered
-        });
-        const setHoverState = () => {
-          if (this.state.expanded || idx < MAX_DISPLAYED_LINKS) {
-            this.setState({hovered: idx});
-          }
-        };
+  renderInteractiveLink = ({index, key, style}) => {
+    const {links, unlink} = this.props;
+    const {displayName, linkTarget} = links[index];
+    const hovered = this.state.hovered === index;
+    const cssClass = classNames("link-label-wrapper has-buttons", {
+      "show-buttons": hovered
+    });
+    const setHoverState = () => {
+      this.setState({hovered: index});
+    };
 
-        return (
-          <div key={idx} className={cssClass}
-               onMouseEnter={setHoverState}
-               onMouseLeave={() => {
-                 if (hovered) {
-                   this.setState({hovered: null})
-                 }
-               }}
-          >
-            <div className="main-button" onClick={this.proceedTo(linkTarget)} >
-              <a href="#">
-                <div className="text-wrapper">{displayName}</div>
-              </a>
-              {(hovered) ? <i className="fa fa-long-arrow-right" /> : null}
-            </div>
-            {(hovered)
-              ? (<div className="unlink-button" onClick={unlink(idx)}>
-                  <a href="#" >
-                    <i className="fa fa-times" />
-                  </a>
-                </div>
-              )
-              : null }
+    return (
+      <div className="link-label-wrapper-2" style={style} key={key}>
+        <div className={cssClass}
+             onMouseEnter={setHoverState}
+             onMouseLeave={() => {
+               if (hovered) {
+                 this.setState({hovered: null})
+               }
+             }}
+        >
+          <div className="main-button" onClick={this.proceedTo(linkTarget)} >
+            <a href="#">
+              <div className="text-wrapper">{displayName}</div>
+            </a>
+            {(hovered) ? <i className="fa fa-long-arrow-right" /> : null}
           </div>
-        )
-      }
-    );
+          {(hovered)
+            ? (<div className="unlink-button" onClick={unlink(index)}>
+                <a href="#" >
+                  <i className="fa fa-times" />
+                </a>
+              </div>
+            )
+            : null }
+        </div>
+      </div>
+    )
+  };
+
+  renderPreview = () => {
+    const {links, unlink} = this.props;
+    const nLinks = links.length;
+    const canExpand = nLinks > MAX_DISPLAYED_LINKS;
+    const renderFn = (unlink) ? this.renderInteractiveLink : this.renderLink;
+    const cssClass = classNames("item-content", {"can-expand": canExpand});
+    return (
+      <div className={cssClass}>
+        {f.range(0, f.min([nLinks, MAX_DISPLAYED_LINKS]))
+          .map(index => renderFn({index}))
+        }
+      </div>
+    )
+  };
+
+  renderAll = () => {
+    const {links, unlink} = this.props;
+    const nLinks = links.length;
+    const {expanded} = this.state;
+    const canExpand = nLinks > MAX_DISPLAYED_LINKS;
+    const cssClass = classNames("item-content", {
+      "can-expand": canExpand & !expanded,
+      "expanded": expanded
+    });
+
+    return (
+      <List width={window.innerWidth * 0.6 - 100}
+            height={430}
+            rowCount={nLinks}
+            rowHeight={42}
+            rowRenderer={(unlink) ? this.renderInteractiveLink : this.renderLink}
+            hovered={this.state.hovered}
+      />
+    )
   };
 
   render() {
@@ -110,12 +145,10 @@ class LinkList extends Component {
 
     return (
       <div className="link-list">
-        <div className={cssClass}>
-          {(unlink)
-            ? this.renderInteractiveLinks(links, (!expanded) ? MAX_DISPLAYED_LINKS : null)
-            : this.renderLinks(links, (!expanded) ? MAX_DISPLAYED_LINKS : null)
-          }
-        </div>
+        {(expanded)
+          ? this.renderAll()
+          : this.renderPreview()
+        }
         {(canExpand)
           ? (<a className="expand-button" href="#" onClick={this.toggleExpand}>
               <i className={(expanded) ? "fa fa-angle-up" : "fa fa-angle-down"} />
