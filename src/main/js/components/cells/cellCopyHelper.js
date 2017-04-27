@@ -92,7 +92,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       ActionCreator.changeCell(dst, newValue);
     };
     const buttons = {
-      positive: [i18n.t("common:save"), this.save],
+      positive: [i18n.t("common:save"), save],
       neutral: [i18n.t("common:cancel"), null]
     };
     ActionCreator.openOverlay({
