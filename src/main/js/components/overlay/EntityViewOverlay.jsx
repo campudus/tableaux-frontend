@@ -323,11 +323,7 @@ class LoadingEntityViewBodyWrapper extends Component {
           row
         })
       };
-      this.state = {
-        row: null,
-        pages: 1,
-        fetched: 0
-      };
+      this.state = {row: null};
       this.loadRow(toLoad)
           .then(setLoadedRow)
           .catch(
@@ -352,8 +348,6 @@ class LoadingEntityViewBodyWrapper extends Component {
       .exec("get", tableId)
       .getOrElse(table);
 
-    const isRowFullyLoaded = row => row && row.cells && row.columns && row.cells.length === row.columns.length;
-
     const loadColumns = () => new Promise(
       (resolve, reject) => {
         const tableMonad = maybe(targetTable)
@@ -374,38 +368,29 @@ class LoadingEntityViewBodyWrapper extends Component {
       }
     );
 
-    const loadPages = () => new Promise(
+    const loadRow = () => new Promise(
       (resolve, reject) => {
-        const loadPage = (pageNum) => {
-          console.log("Loading page", pageNum, "of", targetTable.rows.pageCount());
-          const requestedRow = targetTable.rows.get(rowId);
-          if (pageNum > targetTable.rows.pageCount() || isRowFullyLoaded(requestedRow)) {
-            resolve(requestedRow || null);
+        targetTable.rows.getOrFetch(rowId, (err, row) => {
+          if (err) {
+            reject("Could not retrieve row with proper Id");
           } else {
-            targetTable.rows.fetchPage(pageNum, {
-              reset: pageNum === 1,
-              success: () => {
-                this.setState({fetched: pageNum});
-                loadPage(pageNum + 1)
-              },
-              error: () => reject("Could not load page number" + pageNum)
-            });
+            resolve(row);
           }
-        };
-        loadPage(1);
+        })
       }
     );
+
+    const isRowFullyLoaded = row => row && row.cells && row.columns && row.cells.length === row.columns.length;
 
     return new Promise(
       (resolve, reject) => {
         const cachedRow = maybe(targetTable.rows.get(rowId))
           .exec("get", rowId);
-        if (cachedRow.isJust && isRowFullyLoaded(cachedRow.value)) {
-          console.log("Using already cached row");
+        if (cachedRow.isJust && isRowFullyLoaded(cachedRow.value)) { // This will also skip fetching columns
           resolve(cachedRow.value);
         } else {
           loadColumns()
-            .then(loadPages)
+            .then(loadRow)
             .then(result => (result) ? resolve(result) : reject("Could not load desired row"))
             .catch(console.error)
         }
@@ -415,20 +400,9 @@ class LoadingEntityViewBodyWrapper extends Component {
 
   render() {
     const {row} = this.state;
-    if (row) {
-      return <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.overlayId} />
-    } else {
-      const {pages, fetched} = this.state;
-      const percentageLoaded = 100.0 * fetched / (pages || 1);
-      const barStyle = {
-        height: "5px",
-        transition: "width 0.7s",
-        width: `${percentageLoaded}%`,
-        margin: 0,
-        backgroundColor: "#3296DC"
-      };
-      return <div className="loading-bar" style={barStyle}></div>
-    }
+    return (row)
+      ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.overlayId} />
+      : null
   }
 }
 
