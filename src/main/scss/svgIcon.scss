@@ -1,0 +1,19 @@
+.svg-icon {  // subclasses set by containerClasses prop
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  padding: 0 3px;
+
+  svg {      // subclasses set by svgClasses prop, equivalent to .svg-icon-content
+    width: 100%;
+    height: 100%;
+  }
+
+  &.color-primary svg {
+    fill: $color-primary;
+  }
+
+  &.color-white svg {
+    fill: $color-white;
+  }
+}
