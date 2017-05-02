@@ -354,10 +354,7 @@ class LoadingEntityViewBodyWrapper extends Component {
           .map(f.prop("columns"))
           .exec("fetch", {
             reset: true,
-            success: () => {
-              this.setState({pages: targetTable.rows.pageCount()});
-              resolve();
-            },
+            success: resolve,
             error: e => {
               reject("Error initialising table columns:", e)
             }
@@ -370,30 +367,23 @@ class LoadingEntityViewBodyWrapper extends Component {
 
     const loadRow = () => new Promise(
       (resolve, reject) => {
-        targetTable.rows.getOrFetch(rowId, (err, row) => {
+        targetTable.rows.fetchById(rowId, (err, row) => {
           if (err) {
             reject("Could not retrieve row with proper Id");
           } else {
+            console.log("Row fetched:", row)
             resolve(row);
           }
         })
       }
     );
 
-    const isRowFullyLoaded = row => row && row.cells && row.columns && row.cells.length === row.columns.length;
-
     return new Promise(
       (resolve, reject) => {
-        const cachedRow = maybe(targetTable.rows.get(rowId))
-          .exec("get", rowId);
-        if (cachedRow.isJust && isRowFullyLoaded(cachedRow.value)) { // This will also skip fetching columns
-          resolve(cachedRow.value);
-        } else {
-          loadColumns()
-            .then(loadRow)
-            .then(result => (result) ? resolve(result) : reject("Could not load desired row"))
-            .catch(console.error)
-        }
+        loadColumns()
+          .then(loadRow)
+          .then(result => (result) ? resolve(result) : reject("Could not load desired row"))
+          .catch(console.error)
       }
     );
   };
