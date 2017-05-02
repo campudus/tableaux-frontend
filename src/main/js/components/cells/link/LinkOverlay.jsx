@@ -85,14 +85,15 @@ class SearchBar extends Component {
     const inputKey = f.prop(["target", "key"], event);
 
     const clearOrClose = () => {
-      event.preventDefault();
-      event.stopPropagation();
       if (!f.isEmpty(this.state.filterValue)) {
         this.setState({filterValue: ""},
           () => this.updateFilter({
             mode: this.state.filterMode,
             value: this.state.filterValue
           }));
+
+        event.preventDefault();
+        event.stopPropagation();
       }
     };
 
