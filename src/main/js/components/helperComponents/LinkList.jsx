@@ -42,7 +42,7 @@ class LinkList extends Component {
     }
   };
 
-  renderLink = ({index, key, style}) => {
+  renderLink = ({index, key = index, style}) => {
     const {displayName, linkTarget} = this.props.links[index];
     return (
       <div className="link-label-wrapper-2" key={key} style={style}>
@@ -56,7 +56,7 @@ class LinkList extends Component {
     )
   };
 
-  renderInteractiveLink = ({index, key, style}) => {
+  renderInteractiveLink = ({index, key = index, style}) => {
     const {links, unlink} = this.props;
     const {displayName, linkTarget} = links[index];
     const hovered = this.state.hovered === index;
