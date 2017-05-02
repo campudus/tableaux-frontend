@@ -17,39 +17,53 @@ import ReactDOM from "react-dom";
 import request from "superagent";
 
 const iconUrls = {
-  devMonkey: "http://localhost:8081/monkey.svg",
-  star: "http://localhost:8081/star.svg",
-  lock: "http://localhost:8081/lock.svg"
+  arrow: "/img/icons/arrow-long.svg",
+  burger: "/img/icons/burger-thin.svg",
+  check: "/img/icons/check.svg",
+  cross: "/img/icons/cross.svg",
+  tablelink: "/img/icons/goto-table.svg",
+  plus: "/img/icons/plus.svg",
+  addTranslation: "/img/icons/translation-add.svg",
+  compareTranslation: "/img/icons/translation-compare.svg",
+  vdots: "/img/icons/vertical-dots.svg"
 };
 
 class ImageCache {
   static _cache = {};
+  static _subscribers = {};
 
-  static isCached(id) {
-    return !f.isNil(f.prop(id, ImageCache._cache));
+  static getCached(id) {
+    return f.prop(id, ImageCache._cache);
   }
 
   static cache(url, resolve, reject) {
-    request
-      .get(url)
-      .end(
-        (error, response) => {
-          if (error) {
-            reject(error);
-          } else {
-            ImageCache._cache[url] = response.text;
-            resolve(response.text);
+    const subscribers = f.prop(["_subscribers", url], ImageCache) || [];
+    ImageCache._subscribers[url] = [...subscribers, {error: reject, success: resolve}];
+
+    if (f.isEmpty(subscribers)) { // We're referring to the subscribers value BEFORE we added the current one
+      request
+        .get(url)
+        .end(
+          (error, response) => {
+            const subscribers = f.prop(["_subscribers", url], ImageCache);
+            if (error) {
+              subscribers.forEach(s => s.error(error));
+            } else {
+              ImageCache._cache[url] = response.text;
+              subscribers.forEach(s => s.success(response.text));
+            }
           }
-        }
-      )
+        )
+    }
   }
 
   static getOrFetch(identifier) {
     const url = f.prop(identifier, iconUrls) || identifier;
     return new Promise(
       (resolve, reject) => {
-        if (ImageCache.isCached(url)) {
-          resolve(ImageCache._cache[url]);
+        const cachedImg = ImageCache.getCached(url);
+        if (cachedImg) {
+          resolve(cachedImg);
         } else {
           ImageCache.cache(url, resolve, reject);
         }
@@ -60,12 +74,12 @@ class ImageCache {
 
 class SvgIcon extends Component {
   static propTypes = {
-    icon: PropTypes.string.isRequired,
-    containerClasses: PropTypes.string,
-    svgClasses: PropTypes.string,
-    fillColor: PropTypes.string,
-    center: PropTypes.bool,
-    data: PropTypes.object
+    icon: PropTypes.string.isRequired,   // url or key for iconUrls map
+    containerClasses: PropTypes.string,  // classes added to the container element
+    svgClasses: PropTypes.string,        // classes added to the svg element
+    fillColor: PropTypes.string,         // html-string, fill property of top svg element
+    center: PropTypes.bool,              // apply "preserveAspectRadio: xMidyMid meet" to svg?
+    title: PropTypes.string              // svg title, displayed on hover by e.g. firefox (default: empty)
   };
 
   constructor(props) {
@@ -83,6 +97,7 @@ class SvgIcon extends Component {
   processImage = () => {
     const {fillColor, center, svgClasses} = this.props;
     this.svgData.classList.add("svg-icon-content");
+    this.svgData.setAttribute("title", this.props.title || "");
     if (fillColor) {
       this.svgData.setAttribute("fill", fillColor);
     }
