@@ -36,6 +36,8 @@
     top: 5px;
     right: 5px;
     z-index: 1;
+    font-weight: bold;
+    color: $color-primary;
 
     &:hover {
       color: $color-primary-contrast-text;

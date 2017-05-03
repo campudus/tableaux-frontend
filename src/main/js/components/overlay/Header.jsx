@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from "react";
 import classNames from "classnames";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 class Header extends Component {
   static propTypes = {
@@ -42,7 +43,7 @@ class Header extends Component {
         <a className="close-button" href="#" onClick={() => {
           ActionCreator.closeOverlay()
         }}>
-          <i className="fa fa-times" />
+          <SvgIcon icon="cross" containerClasses="color-white" center={true} />
         </a>
         <div className="labels">
           <div className="context-info">{context || "Action"}</div>

@@ -9,6 +9,7 @@ import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import {openLinkOverlay} from "../cells/link/LinkOverlay";
 import i18n from "i18next";
 import ItemPopupMenu from "./ItemPopupMenu";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 class RowHeadline extends React.Component {
 
@@ -58,7 +59,7 @@ class RowHeadline extends React.Component {
           />
           <a href="#" onClick={() => window.open(url, "_blank")}>
             {colName}
-            <i className="fa fa-external-link" />
+            <SvgIcon icon="tablelink" containerClasses="color-primary"/>
           </a>
         </div>
         {(thisUserCantEdit)
@@ -75,6 +76,7 @@ class RowHeadline extends React.Component {
                  funcs.register(el)
                }}
           >
+            <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_links", {title: colName})}
           </a>
         }
@@ -118,6 +120,7 @@ class RowHeadline extends React.Component {
                  funcs.register(el)
                }}
           >
+            <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_attachments")}
           </a>
         }

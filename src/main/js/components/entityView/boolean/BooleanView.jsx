@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from "react";
 import {translate} from "react-i18next";
 import classNames from "classnames";
 import {changeCell} from "../../../models/Tables";
+import SvgIcon from "../../helperComponents/SvgIcon";
 
 @translate(["common"])
 class BooleanView extends Component {
@@ -55,7 +56,7 @@ class BooleanView extends Component {
         >
         <div className={checkboxCss}>
           {(selected)
-            ? <i className="fa fa-check" />
+            ? <SvgIcon icon="check"/>
             : ""
           }
         </div>

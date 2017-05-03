@@ -1,7 +1,7 @@
 .svg-icon {  // subclasses set by containerClasses prop
   display: inline-block;
   height: 1em;
-  width: 1em;
+  max-width: 1em;
   padding: 0 3px;
 
   svg {      // subclasses set by svgClasses prop, equivalent to .svg-icon-content

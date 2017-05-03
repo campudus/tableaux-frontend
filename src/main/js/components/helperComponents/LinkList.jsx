@@ -10,6 +10,7 @@ import i18n from "i18next";
 import * as f from "lodash/fp";
 import {loadAndOpenEntityView} from "../overlay/EntityViewOverlay";
 import {List, AutoSizer} from "react-virtualized";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -86,7 +87,7 @@ class LinkList extends Component {
           {(hovered)
             ? (<div className="unlink-button" onClick={unlink(index)}>
                 <a href="#" >
-                  <i className="fa fa-times" />
+                  <SvgIcon icon="cross" containerClasses="color-primary"/>
                 </a>
               </div>
             )

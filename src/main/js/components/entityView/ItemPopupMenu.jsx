@@ -8,6 +8,7 @@ import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
 import {addTranslationNeeded, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
 import {canConvert} from "../../helpers/cellValueConverter";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 const CLOSING_TIMEOUT = 200; // ms; time to close popup after mouse left
 
@@ -142,7 +143,7 @@ class ItemPopupMenu extends Component {
              onMouseLeave={this.handleMouseLeave}
         >
           <a href="#" onClick={() => this.setState({open: !open})}>
-            <i className="fa fa-ellipsis-v" />
+            <SvgIcon icon="vdots" containerClasses="color-primary"/>
           </a>
         </div>
         {(open)

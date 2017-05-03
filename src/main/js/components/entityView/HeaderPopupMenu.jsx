@@ -8,6 +8,7 @@ import {maybe} from "../../helpers/monads";
 import {initiateDeleteRow, initiateDuplicateRow} from "../../helpers/rowHelper";
 import {setRowAnnotation} from "../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -93,7 +94,7 @@ class HeaderPopupMenu extends Component {
             event.stopPropagation();
             this.setState({open: !open});
           }}>
-            <i className="fa fa-ellipsis-v" />
+            <SvgIcon icon="vdots" containerClasses="color-white" />
           </a>
         </div>
         {(open)

@@ -19,6 +19,7 @@ import Header from "../../overlay/Header";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import listensToClickOutside from "react-onclickoutside";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
+import SvgIcon from "../../helperComponents/SvgIcon";
 
 // we use this value to get the exact offset for the link list
 const HEADER_HEIGHT = 120;
@@ -423,8 +424,10 @@ class LinkOverlay extends Component {
                 <a href="#">
                   {rowName}
                 </a>
-                <i className={(isLinked) ? "fa fa-times" : "fa fa-check"} />
-
+                {(isLinked)
+                  ? <SvgIcon icon="cross" containerClasses="color-primary" />
+                  : <SvgIcon icon="check" containerClasses="color-primary" />
+                }
               </div>
               <a href="#" className={linkButtonClass}
                  onClick={() => loadAndOpenEntityView({

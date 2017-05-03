@@ -245,7 +245,9 @@
               &:hover, &.is-open {
                 a {
                   background-color: $color-primary;
-                  color: $color-primary-contrast-text;
+                  svg {
+                    fill: $color-white;
+                  }
                 }
               }
 
@@ -358,7 +360,7 @@
         .header-popup-wrapper {
           position: relative;
           width: 29px;
-          height: 28px;
+          height: 26px;
 
           .popup-button {
             position: relative;

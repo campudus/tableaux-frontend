@@ -156,6 +156,7 @@ $overlay-border-radius: 5px;
         position: absolute;
         left: 0;
         top: 0;
+        font-size: smaller;
         padding: 10px;
         i {
           color: $color-primary-contrast-text;
@@ -214,6 +215,11 @@ $overlay-border-radius: 5px;
         align-items: center;
         position: relative;
 
+        .svg-icon {
+          height: 0.8em;
+          max-width: 2em;
+        }
+
         i {
           color: $color-primary;
           margin-left: 10px;
@@ -225,6 +231,12 @@ $overlay-border-radius: 5px;
           &.button {
             @include button-look();
             text-transform: none;
+          }
+
+          .svg-icon {
+            padding: 0 8px 0 0;
+            width: 0.8em;
+            max-width: 0.8em;
           }
         }
       }
@@ -327,7 +339,7 @@ $overlay-border-radius: 5px;
           }
         }
         .message {
-          font-size: smaller;
+          font-size: small;
           color: $color-text-medium-grey;
         }
       }
@@ -479,9 +491,6 @@ $overlay-border-radius: 5px;
               width: 16px;
               margin-left: 2px;
               justify-content: center;
-
-              a {
-              }
             }
           }
         }
