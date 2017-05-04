@@ -1,12 +1,14 @@
 import React, {Component, PropTypes} from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
-import {contains, isEmpty, isNull, merge, props, prop, nth, noop, last} from "lodash/fp";
+import {contains, defaultTo, isEmpty, isNull, last, map, merge, noop, nth, prop, props, throttle} from "lodash/fp";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import Header from "./Header";
 import Footer from "./Footer";
 import InfoBox from "./InfoBox";
+
+const FRAME_DELAY = (1000/60) | 0; // ms delay between frames at 60 fps
 
 class GenericOverlay extends Component {
 
@@ -33,6 +35,7 @@ class GenericOverlay extends Component {
 
     this.allowedTypes = ["normal", "full-height"];
     this.focusedElementBeforeOverlayOpens = null;
+    this.childrenEventHandlers = {};
 
     window.setTimeout(() => this.setState({overlayIsNew: false}), 400);
   }
@@ -91,6 +94,16 @@ class GenericOverlay extends Component {
     );
   };
 
+  registerChildForEvent = ({type, handler}) => {
+    const handlersForType = defaultTo([], this.childrenEventHandlers[type]);
+    this.childrenEventHandlers[type] = [...handlersForType, handler];
+  };
+
+  passOnEvents = type => event => {
+    const handlersForType = defaultTo([], this.childrenEventHandlers[type]);
+    map(handler => handler(event), handlersForType);
+  };
+
   render() {
     const overlayType = (contains(this.props.type, this.allowedTypes))
       ? this.props.type
@@ -116,11 +129,19 @@ class GenericOverlay extends Component {
            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
         <div className={wrapperClass}
-             onClick={event => { event.stopPropagation(); event.preventDefault(); }}
+             onClick={event => {
+               event.stopPropagation();
+               event.preventDefault();
+             }}
+             onScroll={throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
           {React.cloneElement(head, {id: this.props.id})}
           <div className="overlay-content">
-            {React.cloneElement(body, {id: this.props.id})}
+            {React.cloneElement(body,
+              {
+                id: this.props.id,
+                registerForEvent: this.registerChildForEvent
+              })}
           </div>
           {(footer) ? <footer>{React.cloneElement(footer, {id: this.props.id})}</footer> : null}
         </div>

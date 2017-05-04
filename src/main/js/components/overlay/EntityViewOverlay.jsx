@@ -1,7 +1,14 @@
 import React, {Component, PropTypes} from "react";
 import {broadcastRowLoaded, openOverlay, switchEntityViewLanguage} from "../../actions/ActionCreator";
 import View from "../entityView/RowView";
-import {ActionTypes, ColumnKinds, FallbackLanguage, Langtags, FilterModes, Directions} from "../../constants/TableauxConstants";
+import {
+  ActionTypes,
+  ColumnKinds,
+  Directions,
+  FallbackLanguage,
+  FilterModes,
+  Langtags
+} from "../../constants/TableauxConstants";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import classNames from "classnames";
@@ -19,26 +26,39 @@ import columnFilter from "../entityView/columnFilter";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
+@listensToClickOutside
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
     this.state = {
       langtag: props.langtag,
       translationView: false,
-      filter: {value: "", mode: FilterModes.CONTAINS},
-      focused: null
+      filter: {
+        value: "",
+        mode: FilterModes.CONTAINS
+      },
+      focused: null,
     };
     this.focusElements = {};
+    this.translationItem = null;
+    props.registerForEvent({
+      type: "scroll",
+      handler: () => this.setTranslationItem()
+    });
   }
 
   static PropTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
-    id: PropTypes.number.isRequired
+    id: PropTypes.number.isRequired,
+    registerForEvent: PropTypes.func.isRequired
   };
 
   getKeyboardShortcuts = () => {
     return {
+      escape: event => {
+        this.setTranslationView({show: false});
+      },
       tab: event => {
         event.preventDefault();
         event.stopPropagation();
@@ -47,6 +67,10 @@ class EntityViewBody extends Component {
       }
     }
   };
+
+  handleClickOutside() {
+    this.setTranslationView({show: false});
+  }
 
   componentWillMount = () => {
     Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
@@ -83,7 +107,12 @@ class EntityViewBody extends Component {
       return;
     }
 
-    this.setState({filter: {value, mode: filterMode}});
+    this.setState({
+      filter: {
+        value,
+        mode: filterMode
+      }
+    });
   };
 
   switchLang = ({langtag}) => {
@@ -106,25 +135,7 @@ class EntityViewBody extends Component {
   };
 
   registerFocusable = id => el => {
-      this.focusElements = f.assoc(id, el, this.focusElements);
-  };
-
-  setFocusClassToParentItem = (el, value = true, steps = 0) => {
-    if (!el || steps > 5) {
-      console.warn(`Could not set "has-focused-child" class to container item of ${el}: ${(el) 
-        ? "Reachead maxium DOM traversal depth, giving up." 
-        : "Empty element found, got confused."}`);
-      return;
-    }
-    const parent = el.parentElement;
-    const classes = parent.className;
-    if (/(^|\s)item($|\s)/.test(classes)) { // "item" followed and predeceded by either space or string start/end
-      parent.className = (value)
-        ? `${classes} has-focused-child`
-        : classes.replace(/\W*?has-focused-child\W*?/, "");
-    } else {
-      this.setFocusClassToParentItem(parent, value, steps + 1);
-    }
+    this.focusElements = f.assoc(id, el, this.focusElements);
   };
 
   changeFocus = dir => {
@@ -135,36 +146,54 @@ class EntityViewBody extends Component {
     const selectedIdx = f.findIndex(f.matchesProperty("id", focused), visibleCells);
     const {focusElements} = this;
     const toFocus = f.cond([
-      [d => f.contains(d, [Directions.UP, Directions.DOWN]), d => f.prop([selectedIdx + numericDir, "id"], visibleCells)],
-      [f.stubTrue, f.identity]
+      [
+        d => f.contains(d, [Directions.UP, Directions.DOWN]),
+        d => f.prop([selectedIdx + numericDir, "id"], visibleCells)
+      ],
+      [
+        f.stubTrue,
+        f.identity
+      ]
     ])(dir);
-    if (f.isNil(f.prop(toFocus, focusElements))) {
-      return;
-    }
-
-    maybe(focusElements[focused])
-      .map(el => this.setFocusClassToParentItem(el, false));
 
     maybe(focusElements[toFocus])
       .method("focus")
-      .map(el => this.setFocusClassToParentItem(el));
-    this.setState({focused: toFocus});
+      .map(() => this.setState({focused: toFocus}));
   };
 
   renderTranslationView = () => {
-    const {translationView} = this.state;
-    const {langtag} = this.props;
+    const {translationView, langtag, arrowPosition} = this.state;
+    const arrow = (f.isNumber(arrowPosition) && f.prop("show", translationView))
+      ? <div className="translation-arrow" style={{transform: `translateY(${arrowPosition}px)`}} />
+      : null;
     return (translationView.show)
-      ? <TranslationPopup cell={translationView.cell || {}}
-                          langtag={langtag}
-                          setTranslationView={this.setTranslationView}
-      />
+      ? (
+        <div>
+          <TranslationPopup cell={translationView.cell || {}}
+                            langtag={langtag}
+                            setTranslationView={this.setTranslationView}
+          />
+          {arrow}
+        </div>
+      )
       : null
+  };
+
+  setTranslationItem = el => {
+    if (el && el !== this.translationItem) {
+      this.translationItem = el;
+    }
+    const arrowPos = maybe(this.translationItem)
+      .exec("getBoundingClientRect")
+      .map(f.prop("top"))
+      .map(pos => {
+        this.setState({arrowPosition: (pos >= 120) ? pos : null});
+      });
   };
 
   render() {
     const cells = this.props.row.cells.models;
-    const {langtag, filter} = this.state;
+    const {langtag, filter, translationView, focused} = this.state;
 
     return (
       <div className={"entity-view content-items " + this.props.id}
@@ -177,7 +206,9 @@ class EntityViewBody extends Component {
             (cell, idx) => {
               return <View key={idx} cell={cell} langtag={langtag}
                            setTranslationView={this.setTranslationView}
+                           hasFocusedChild={f.eq(cell.id, focused)}
                            funcs={{
+                             setTranslationItem: this.setTranslationItem,
                              register: this.registerFocusable(cell.id),
                              focus: this.changeFocus,
                              id: cell.id
@@ -292,7 +323,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
       : {
         context: "",
         title: i18n.t("table:loading"),
-        components: <div/>,
+        components: <div />,
         langtag
       };
     return <Header {...elements} />
@@ -371,7 +402,6 @@ class LoadingEntityViewBodyWrapper extends Component {
           if (err) {
             reject("Could not retrieve row with proper Id");
           } else {
-            console.log("Row fetched:", row)
             resolve(row);
           }
         })
@@ -391,7 +421,9 @@ class LoadingEntityViewBodyWrapper extends Component {
   render() {
     const {row} = this.state;
     return (row)
-      ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.overlayId} />
+      ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.overlayId}
+                        registerForEvent={this.props.registerForEvent}
+      />
       : null
   }
 }

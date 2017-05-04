@@ -5,6 +5,7 @@ import {FallbackLanguage, Langtags, ColumnKinds} from "../../constants/TableauxC
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import {convert} from "../../helpers/cellValueConverter";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 const KEY = "translations";
 
@@ -20,8 +21,8 @@ class LanguageView extends Component {
     const {cell, langtag, isExpanded, toggleExpand} = this.props;
     const value = f.prop(["value", langtag], cell);
     const buttonClass = classNames("fa", {
-      "fa-chevron-down": !isExpanded,
-      "fa-chevron-up": isExpanded
+      "fa-angle-down": !isExpanded,
+      "fa-angle-up": isExpanded
     });
 
     return (
@@ -111,7 +112,7 @@ class TranslationPopup extends Component {
       <div className="translation-view">
         <div className="pseudo-header">
           <a href="#" onClick={() => setTranslationView({show: false})}>
-            <i className="fa fa-times" />
+            <SvgIcon icon="cross"/>
           </a>
           <div>{title}</div>
         </div>

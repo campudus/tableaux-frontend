@@ -4,13 +4,33 @@
 .overlay {
   .entity-view {
     .item {
-      border: 1px solid transparent;
+      position: relative;
+      border: none;
 
       &.disabled {
         cursor: not-allowed;
       }
+
+      &:hover {
+        &:before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          border-left: 3px solid $color-text-medium-grey;
+        }
+      }
+
       &.has-focused-child {
-        border-color: $color-primary;
+        &:before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          border-left: 3px solid $color-primary;
+        }
       }
     }
 
@@ -271,16 +291,32 @@
 
 .overlay {
   .entity-view {
+    .translation-arrow {
+      margin-top: 10px;
+      position: fixed;
+      left: -1.5vw;
+      top: 0;
+      border-top: 1.5vw solid transparent;
+      border-bottom: 1.5vw solid transparent;
+      border-right: 1.5vw solid $color-overlay-background-even;
+    }
+
     .translation-view {
       position: absolute;
-      left: -35vw;
-      width: 35vw;
-      top: 5vh;
-      height: 90vh;
+      left: -40vw;
+      width: 38vw;
+      top: 0;
+      height: 1000vh;
       background-color: $color-overlay-background;
       overflow: hidden;
       overflow-y: auto;
       box-shadow: 0 0 15px 0;
+
+      .toggle-button {
+        a {
+          padding: 10px;
+        }
+      }
 
       .item-header {
         padding-bottom: 0;
@@ -303,9 +339,15 @@
         align-items: center;
         font-size: larger;
         font-weight: bold;
+        justify-content: space-between;
 
         a {
-          padding: 10px 10px 16px;
+          padding: 8px 8px 18px;
+          font-size: x-small;
+        }
+
+        div {
+          padding-right: 20px;
         }
       }
 

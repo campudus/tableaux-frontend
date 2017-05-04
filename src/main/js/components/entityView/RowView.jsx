@@ -18,6 +18,8 @@ import {getCountryOfLangtag} from "../../helpers/multiLanguage";
 import classNames from "classnames";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 
+import * as f from "lodash/fp";
+
 @connectToAmpersand
 class View extends Component {
 
@@ -25,12 +27,23 @@ class View extends Component {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
     setTranslationView: PropTypes.func.isRequired,
+    hasFocusedChild: PropTypes.bool.isRequired,
     funcs: PropTypes.object.isRequired
   };
+
+  shouldComponentUpdate(nextProps, nextState) { // don't re-render when only functions changed
+    const pKeys = f.keys(this.props);
+    const sKeys = f.keys(this.state);
+    const pDiffs = pKeys.filter(k => this.props[k] !== nextProps[k]);
+    const sDiffs = sKeys.filter(k => this.state[k] !== nextState[k]);
+    const diffs = [...pDiffs, ...sDiffs];
+    return !(diffs.length === 1 && f.first(diffs) === "funcs");
+  }
 
   constructor(props) {
     super(props);
     this.props.watch(this.props.cell, {events: "change:annotations", force: true});
+    this.props.watch(this.props.cell, {events: "change:value", force: true});
   }
 
   getViewKind() {
@@ -57,15 +70,20 @@ class View extends Component {
   };
 
   clickHandler = () => {
-    const {cell:{row}, funcs} = this.props;
+    const {cell, cell:{row,kind}, funcs, setTranslationView} = this.props;
+    const translationContent = (canConvert(kind, ColumnKinds.text))
+      ? cell
+      : {column: prop("column", cell), id: cell.id};
     funcs.focus(funcs.id);
+    funcs.setTranslationItem(this.viewElement);
+    setTranslationView({cell: translationContent});
     if (!this.canEditValue() && this.canEditValue(Symbol("theoretically"))) {
       askForSessionUnlock(row);
     }
   };
 
   render() {
-    const {cell, langtag, setTranslationView} = this.props;
+    const {cell, funcs, langtag, setTranslationView, hasFocusedChild} = this.props;
     const {kind, column} = cell;
     const views = {
       [ColumnKinds.link]: LinkView,
@@ -83,16 +101,16 @@ class View extends Component {
     const isDisabled = !this.canEditValue();
 
     const CellKind = views[kind];
-    const viewClass = classNames(`view item ${this.getViewKind()} ${this.getViewId()}`, {"disabled": isDisabled});
+    const viewClass = classNames(`view item ${this.getViewKind()} ${this.getViewId()}`, {
+      "disabled": isDisabled,
+      "has-focused-child": hasFocusedChild
+    });
     const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
-    const translationContent = (canConvert(kind, ColumnKinds.text))
-      ? cell
-      : {column: prop("column", cell)};
 
     return (
       <div className={viewClass}
-           onMouseEnter={() => setTranslationView({cell: translationContent})}
            onClick={this.clickHandler}
+           ref={el => { this.viewElement = el; }}
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}
                      setTranslationView={setTranslationView}
