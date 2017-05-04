@@ -5,7 +5,7 @@ import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {addTranslationNeeded, removeTranslationNeeded} from "../../helpers/annotationHelper";
+import {addTranslationNeeded, removeTranslationNeeded, deleteCellAnnotation} from "../../helpers/annotationHelper";
 import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
 import {canConvert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
@@ -36,7 +36,8 @@ class ItemPopupMenu extends Component {
     const entryClass = classNames("entry", {"active": this.state.active === idx});
     const clickHandler = f.compose(
       () => this.setState({open: false}),
-      fn
+      fn,
+      e => { e.stopPropagation(); }
     );
     return (
       <div className={entryClass}
@@ -91,11 +92,11 @@ class ItemPopupMenu extends Component {
     }
     const remaining = f.remove(f.eq(langtag), untranslated);
     const deleteAnnotationFn = (cellTranslationAnnotation)
-      ? () => deleteAnnotation(f.merge(cellTranslationAnnotation,
+      ? () => deleteCellAnnotation(f.merge(cellTranslationAnnotation,
         {
           type: "flag",
           value: "translationNeeded"
-        }), cell)
+        }), cell, true)
       : f.noop;
     return this.mkEntry(4, {
       title: (this.isPrimaryLanguage())
@@ -136,6 +137,7 @@ class ItemPopupMenu extends Component {
     const buttonClass = classNames("popup-button", {
       "is-open": open
     });
+
     return (
       <div className="entry-popup-wrapper">
         <div className={buttonClass}
