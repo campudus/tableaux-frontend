@@ -80,7 +80,8 @@ $overlay-border-radius: 5px;
             }
 
             &.is-exiting {
-              transform: translateX(80vw);
+              left: 100vw;
+              transform: none;
               transition: left 0.4s;
             }
           }

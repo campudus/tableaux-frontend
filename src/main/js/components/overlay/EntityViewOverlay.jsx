@@ -103,7 +103,7 @@ class EntityViewBody extends Component {
   };
 
   setColumnFilter = ({id, value, filterMode}) => {
-    if (id != this.props.id) {
+    if (id !== this.props.id) {
       return;
     }
 

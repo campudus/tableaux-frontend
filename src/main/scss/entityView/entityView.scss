@@ -256,9 +256,8 @@
                 border-radius: 3px;
                 @include button-with-icon();
 
-                i {
-                  margin: 0;
-                  color: inherit;
+                div {
+                  flex: 1;
                 }
               }
 
@@ -416,9 +415,9 @@
               border: 1px solid $color-text-medium-grey;
               border-radius: 3px;
 
-              i {
-                margin: 0;
-                color: inherit;
+              .svg-icon {
+                flex: 1;
+                max-width: none;
               }
             }
 
@@ -440,7 +439,7 @@
           .popup-wrapper {
             @include popup-menu();
             right: 0;
-            top: 27px;
+            top: 26px;
             width: 25vw;
 
             .entry {
@@ -450,5 +449,14 @@
         }
       }
     }
+  }
+}
+
+//--------------------------------------------
+// IE places "fixed" elements more naturally
+//--------------------------------------------
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .overlay .entity-view .translation-arrow {
+    left: 38.5vw;
   }
 }
