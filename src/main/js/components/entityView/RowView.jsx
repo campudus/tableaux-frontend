@@ -114,7 +114,7 @@ class View extends Component {
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}
                      setTranslationView={setTranslationView}
-                     funcs={this.props.funcs}
+                     funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
                      thisUserCantEdit={isDisabled}
         />
         {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle"/><div>{description}</div></div> : null}

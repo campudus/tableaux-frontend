@@ -17,7 +17,8 @@ class ItemPopupMenu extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
-    setTranslationView: PropTypes.func.isRequired
+    setTranslationView: PropTypes.func.isRequired,
+    funcs: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -184,10 +185,13 @@ class ItemPopupMenu extends Component {
                     {this.mkEntry(5,
                       {
                         title: "table:show_translation",
-                        fn: () => this.props.setTranslationView({
-                          show: true,
-                          cell
-                        })
+                        fn: () => {
+                          this.props.setTranslationView({
+                            show: true,
+                            cell
+                          });
+                          this.props.funcs.setTranslationItem(this.props.funcs.translationItem);
+                        }
                       })
                     }
                   </div>
