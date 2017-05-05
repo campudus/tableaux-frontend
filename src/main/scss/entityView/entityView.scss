@@ -270,8 +270,15 @@
                 }
               }
 
-              &.is-open a {
-                @include rounded-upper-borders;
+              &.is-open {
+                a {
+                  @include rounded-upper-borders;
+                }
+                &.menu-is-right {
+                  a {
+                    border-radius: 3px 0 0 3px;
+                  }
+                }
               }
             }
 
@@ -280,6 +287,15 @@
               z-index: 5;
               width: 25vw;
               top: 30px;
+
+              &.inverse {
+                bottom: 0;
+                left: 29px;
+                top: auto;
+                border-top: none;
+                border-radius: 0 3px 3px 0;
+                border-left: 3px solid $color-primary;
+              }
             }
           }
         }
@@ -314,6 +330,9 @@
       .toggle-button {
         a {
           padding: 10px;
+          i {
+            color: $color-text-light-grey;
+          }
         }
       }
 

@@ -50,7 +50,7 @@ class EntityViewBody extends Component {
   static PropTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
-    id: PropTypes.number.isRequired,
+    overlayId: PropTypes.number.isRequired,
     registerForEvent: PropTypes.func.isRequired
   };
 
@@ -103,7 +103,7 @@ class EntityViewBody extends Component {
   };
 
   setColumnFilter = ({id, value, filterMode}) => {
-    if (id !== this.props.id) {
+    if (id !== this.props.overlayId) {
       return;
     }
 
@@ -421,7 +421,7 @@ class LoadingEntityViewBodyWrapper extends Component {
   render() {
     const {row} = this.state;
     return (row)
-      ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.overlayId}
+      ? <EntityViewBody row={row} langtag={this.props.langtag} overlayId={this.props.overlayId}
                         registerForEvent={this.props.registerForEvent}
       />
       : null
@@ -460,7 +460,7 @@ export function openEntityView(row, langtag, focusElementId) {
     head: <Header context={tableName} title={rowDisplayLabel}
                   components={mkHeaderComponents(overlayId, row, langtag)}
     />,
-    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} id={overlayId} />,
+    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} overlayId={overlayId} />,
     type: "full-height",
     preferRight: true
   });

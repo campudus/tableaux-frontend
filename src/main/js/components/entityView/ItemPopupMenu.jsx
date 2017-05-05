@@ -9,6 +9,7 @@ import {addTranslationNeeded, removeTranslationNeeded, deleteCellAnnotation} fro
 import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
 import {canConvert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
+import ReactDOM from "react-dom";
 
 const CLOSING_TIMEOUT = 200; // ms; time to close popup after mouse left
 
@@ -25,18 +26,25 @@ class ItemPopupMenu extends Component {
     super(props);
     this.state = {
       open: false,
-      active: null
+      active: null,
+      isOffScreen: false
     };
+    this.nodeRef = null;
   }
 
   handleClickOutside = () => {
+    this.closePopup();
+  };
+
+  closePopup = () => {
+    this.nodeRef = null;
     this.setState({open: false});
   };
 
   mkEntry = (idx, {title, fn, value}) => {
     const entryClass = classNames("entry", {"active": this.state.active === idx});
     const clickHandler = f.compose(
-      () => this.setState({open: false}),
+      () => this.closePopup(),
       fn,
       e => { e.stopPropagation(); }
     );
@@ -114,9 +122,22 @@ class ItemPopupMenu extends Component {
     this.cancelClosingTimer();
   };
 
+  componentDidUpdate() {
+    if (!this.nodeRef) {
+      return;
+    }
+    const nodeDOM = ReactDOM.findDOMNode(this.nodeRef);
+    const elRect = nodeDOM.getBoundingClientRect();
+    if (!this.state.isOffScreen && elRect.bottom > window.innerHeight) {
+      this.setState({isOffScreen: true});
+    } else if (this.state.isOffScreen && elRect.bottom + elRect.height < window.innerHeight) { // if it won't be off-screen after resetting
+      this.setState({isOffScreen: false});
+    }
+  };
+
   startClosingTimer = () => {
     this.cancelClosingTimer();
-    this.timeoutId = window.setTimeout(() => this.setState({open: false}), CLOSING_TIMEOUT);
+    this.timeoutId = window.setTimeout(() => this.closePopup(), CLOSING_TIMEOUT);
   };
 
   cancelClosingTimer = () => {
@@ -133,11 +154,14 @@ class ItemPopupMenu extends Component {
   };
 
   render() {
-    const {open} = this.state;
+    const {open, isOffScreen} = this.state;
     const {cell: {row}, cell, langtag} = this.props;
     const buttonClass = classNames("popup-button", {
-      "is-open": open
+      "is-open": open,
+      "menu-is-right": isOffScreen
     });
+
+    const popupClass = classNames("entry-popup", {"inverse": isOffScreen})
 
     return (
       <div className="entry-popup-wrapper">
@@ -151,9 +175,10 @@ class ItemPopupMenu extends Component {
         </div>
         {(open)
           ? (
-            <div className="entry-popup"
+            <div className={popupClass}
                  onMouseEnter={this.cancelClosingTimer}
                  onMouseLeave={this.startClosingTimer}
+                 ref={el => { this.nodeRef = el; }}
             >
               <div className="separator">
                 {i18n.t("table:menus.data_set")}

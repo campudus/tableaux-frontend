@@ -21,8 +21,8 @@ class LanguageView extends Component {
     const {cell, langtag, isExpanded, toggleExpand} = this.props;
     const value = f.prop(["value", langtag], cell);
     const buttonClass = classNames("fa", {
-      "fa-angle-down": !isExpanded,
-      "fa-angle-up": isExpanded
+      "fa-plus": !isExpanded,
+      "fa-minus": isExpanded
     });
 
     return (
