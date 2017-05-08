@@ -1,5 +1,5 @@
-
 import React, {Component, PropTypes} from "react";
+import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 
 export default class LinkLabelCell extends Component {
 
@@ -11,10 +11,6 @@ export default class LinkLabelCell extends Component {
     // Used for performance reason to get cached derived value from the cell model
     linkIndexAt: PropTypes.number.isRequired,
 
-    // clickable label with delete button (optional)
-    deletable: PropTypes.bool.isRequired,
-    onDelete: PropTypes.func,
-
     // clickable label (optional)
     clickable: PropTypes.bool
   };
@@ -24,58 +20,19 @@ export default class LinkLabelCell extends Component {
     return cell.linkString(linkIndexAt, langtag);
   };
 
-  removeLinkHandler = (event) => {
-    event.preventDefault();
-    this.props.onDelete(this.props.linkElement.id);
-  };
-
-  renderDeletable = () => {
-    const {langtag, cell, onDelete} = this.props;
-
-    if (!onDelete) {
-      throw new Error("onDelete property required is deletable");
-    }
-
-    const tableId = cell.column.toTable;
-    const rowId = this.props.linkElement.id;
-
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter&overlay`;
-
-    return <a href={href} target="_blank" className="link-label delete">
-      {this.getLinkName()}
-      <i onClick={this.removeLinkHandler} className="fa fa-times" />
-    </a>;
-  };
-
-  renderClickable = () => {
-    const {langtag, cell} = this.props;
-
-    const tableId = cell.column.toTable;
-    const rowId = this.props.linkElement.id;
-
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter&overlay`;
-
-    return <a href={href} target="_blank" className="link-label delete">
-      {this.getLinkName()}
-    </a>;
-  };
-
-  renderLabel = () => {
-    return <span className="link-label">
-        {this.getLinkName()}
-      </span>;
-  };
-
   render() {
-    const {clickable, deletable, cell} = this.props;
+    const {langtag, cell} = this.props;
+    const tableId = cell.column.toTable;
+    const rowId = this.props.linkElement.id;
 
-    if (deletable) {
-      return this.renderDeletable();
-    } else if (clickable) {
-      return this.renderClickable();
-    } else {
-      return this.renderLabel();
-    }
+    const clickFn = evt => {
+      loadAndOpenEntityView({tables: cell.tables, tableId, rowId}, langtag);
+      evt.stopPropagation();
+    };
+
+    return <a href="#" onClick={clickFn} className="link-label delete">
+      {this.getLinkName()}
+    </a>;
   }
 }
 

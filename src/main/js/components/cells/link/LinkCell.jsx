@@ -28,7 +28,6 @@ class LinkCell extends Component {
                      .map((element, index) => {
                        return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={cell}
                                                langtag={langtag}
-                                               deletable={false}
                          />;
                      });
       return (
