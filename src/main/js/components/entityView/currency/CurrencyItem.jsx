@@ -95,7 +95,7 @@ class CurrencyItem extends Component {
     } else if (place === POST_COMMA && f.contains(key, numberKeys)
       && this.state.postComma.length === 2) { // limit comma-value of currency to 2 digits
       event.preventDefault();
-    } else if (key === "Escape") {
+    } else if (f.contains(key, ["Escape", "ArrowUp", "ArrowDown"])) {
       event.preventDefault();
       event.stopPropagation();
       this.handleClickOutside();

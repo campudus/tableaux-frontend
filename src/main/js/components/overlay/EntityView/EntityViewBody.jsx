@@ -51,6 +51,16 @@ class EntityViewBody extends Component {
         event.stopPropagation();
         const dir = (event.shiftKey) ? Directions.UP : Directions.DOWN;
         this.changeFocus(dir);
+      },
+      up: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.changeFocus(Directions.UP);
+      },
+      down: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.changeFocus(Directions.DOWN);
       }
     }
   };

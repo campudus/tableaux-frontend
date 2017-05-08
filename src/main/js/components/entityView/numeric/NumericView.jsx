@@ -44,7 +44,7 @@ class NumericView extends React.Component {
 
   isKeyAllowed = event => {
     const numbers = f.map(f.toString, f.range(0, 10));
-    const allowedKeys = [...numbers, ".", ",", "ArrowLeft", "ArrowRight", "Enter", "Return", "Escape", "Backspace", "Delete", "Tab"];
+    const allowedKeys = [...numbers, ".", ",", "ArrowLeft", "ArrowRight", "Enter", "Return", "Escape", "Backspace", "Delete", "Tab", "ArrowUp", "ArrowDown"];
     if (!f.contains(event.key, allowedKeys)) {
       event.preventDefault();
       event.stopPropagation();
@@ -60,7 +60,6 @@ class NumericView extends React.Component {
     };
 
     return {
-      escape: captureEventAnd(() => {}),
       enter: captureEventAnd(this.saveEditsAndClose)
     };
   };
