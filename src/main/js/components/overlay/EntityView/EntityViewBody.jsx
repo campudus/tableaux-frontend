@@ -10,6 +10,8 @@ import * as f from "lodash/fp";
 import columnFilter from "./columnFilter";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 
+const CLOSE_POPUP_DELAY = 200; // milliseconds
+
 @listensToClickOutside
 class EntityViewBody extends Component {
   constructor(props) {
@@ -22,6 +24,7 @@ class EntityViewBody extends Component {
         mode: FilterModes.CONTAINS
       },
       focused: null,
+      itemWithPopup: null
     };
     this.focusElements = {};
     this.translationItem = null;
@@ -84,6 +87,7 @@ class EntityViewBody extends Component {
     Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     Dispatcher.off(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
     Dispatcher.off(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
+    this.cancelClosingTimer();
   };
 
   setColumnFilter = ({id, value, filterMode}) => {
@@ -175,9 +179,46 @@ class EntityViewBody extends Component {
       });
   };
 
+  openItemPopup = idx => () => {
+    this.cancelClosingTimer();
+    this.setState({itemWithPopup: idx});
+  };
+  closeItemPopup = idx => () => {
+    this.cancelClosingTimer();
+    if (this.state.itemWithPopup !== idx) {
+      return;
+    }
+    this.setState({itemWithPopup: null});
+  };
+
+  startClosingTimer = () => {
+    this.cancelClosingTimer();
+    this.timerId = window.setTimeout(this.closeItemPopup(this.state.itemWithPopup), CLOSE_POPUP_DELAY);
+  };
+  cancelClosingTimer = () => {
+    maybe(this.timerId)
+      .map(id => {
+        window.clearTimeout(id);
+        this.timerId = null;
+      });
+  };
+
+  enterItemPopupButton = idx => () => {
+    this.cancelClosingTimer();
+    if (this.state.itemWithPopup !== idx) {
+      this.openItemPopup(idx)();
+    }
+  };
+  leaveItemPopupButton = idx => () => {
+    if (this.state.itemWithPopup === idx) {
+      this.startClosingTimer();
+    }
+  };
+
   render() {
     const cells = this.props.row.cells.models;
-    const {langtag, filter, translationView, focused} = this.state;
+    const {langtag, filter, focused} = this.state;
+    const {enterItemPopupButton, leaveItemPopupButton, openItemPopup, closeItemPopup} = this;
 
     return (
       <div className={"entity-view content-items " + this.props.id}
@@ -191,11 +232,16 @@ class EntityViewBody extends Component {
               return <View key={idx} cell={cell} langtag={langtag}
                            setTranslationView={this.setTranslationView}
                            hasFocusedChild={f.eq(cell.id, focused)}
+                           popupOpen={this.state.itemWithPopup === idx}
                            funcs={{
                              setTranslationItem: this.setTranslationItem,
                              register: this.registerFocusable(cell.id),
                              focus: this.changeFocus,
-                             id: cell.id
+                             id: cell.id,
+                             enterItemPopupButton: enterItemPopupButton(idx),
+                             leaveItemPopupButton: leaveItemPopupButton(idx),
+                             openItemPopup: openItemPopup(idx),
+                             closeItemPopup: closeItemPopup(idx)
                            }}
               />;
             })

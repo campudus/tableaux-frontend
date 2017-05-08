@@ -11,8 +11,6 @@ import {canConvert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
 import ReactDOM from "react-dom";
 
-const CLOSING_TIMEOUT = 200; // ms; time to close popup after mouse left
-
 @listenToClickOutside
 class ItemPopupMenu extends Component {
   static propTypes = {
@@ -38,13 +36,13 @@ class ItemPopupMenu extends Component {
 
   closePopup = () => {
     this.nodeRef = null;
-    this.setState({open: false});
+    this.props.funcs.closeItemPopup();
   };
 
   mkEntry = (idx, {title, fn, value}) => {
     const entryClass = classNames("entry", {"active": this.state.active === idx});
     const clickHandler = f.compose(
-      () => this.closePopup(),
+      this.closePopup,
       fn,
       e => { e.stopPropagation(); }
     );
@@ -118,10 +116,6 @@ class ItemPopupMenu extends Component {
     });
   };
 
-  componentWillUnmount = () => {
-    this.cancelClosingTimer();
-  };
-
   componentDidUpdate() {
     if (!this.nodeRef) {
       return;
@@ -135,49 +129,33 @@ class ItemPopupMenu extends Component {
     }
   };
 
-  startClosingTimer = () => {
-    this.cancelClosingTimer();
-    this.timeoutId = window.setTimeout(() => this.closePopup(), CLOSING_TIMEOUT);
-  };
-
-  cancelClosingTimer = () => {
-    if (!f.isNil(this.timeoutId)) {
-      window.clearTimeout(this.timeoutId);
-      delete this.timeoutId;
-    }
-  };
-
-  handleMouseLeave = () => {
-    if (this.state.open) {
-      this.startClosingTimer();
-    }
-  };
-
   render() {
-    const {open, isOffScreen} = this.state;
-    const {cell: {row}, cell, langtag} = this.props;
+    const {isOffScreen} = this.state;
+    const {cell: {row}, cell, langtag, popupOpen} = this.props;
     const buttonClass = classNames("popup-button", {
-      "is-open": open,
+      "is-open": popupOpen,
       "menu-is-right": isOffScreen
     });
-
-    const popupClass = classNames("entry-popup", {"inverse": isOffScreen})
+    const {enterItemPopupButton, leaveItemPopupButton, closeItemPopup, openItemPopup} = this.props.funcs;
+    const popupClass = classNames("entry-popup", {"inverse": isOffScreen});
+    const wrapperClass = classNames("entry-popup-wrapper", {"ignore-react-onclickoutside": popupOpen});
 
     return (
-      <div className="entry-popup-wrapper">
+      <div className={wrapperClass}>
         <div className={buttonClass}
-             onMouseEnter={() => { this.setState({open: true}); this.cancelClosingTimer; }}
-             onMouseLeave={this.handleMouseLeave}
+             onMouseEnter={enterItemPopupButton}
+             onMouseLeave={leaveItemPopupButton}
+             onClick={(this.props.popupOpen) ? this.closePopup : f.noop}
         >
-          <a href="#" onClick={() => this.setState({open: !open})}>
+          <a href="#">
             <SvgIcon icon="vdots" containerClasses="color-primary"/>
           </a>
         </div>
-        {(open)
+        {(popupOpen)
           ? (
             <div className={popupClass}
-                 onMouseEnter={this.cancelClosingTimer}
-                 onMouseLeave={this.startClosingTimer}
+                 onMouseEnter={enterItemPopupButton}
+                 onMouseLeave={leaveItemPopupButton}
                  ref={el => { this.nodeRef = el; }}
             >
               <div className="separator">

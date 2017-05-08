@@ -28,7 +28,8 @@ class View extends Component {
     langtag: PropTypes.string.isRequired,
     setTranslationView: PropTypes.func.isRequired,
     hasFocusedChild: PropTypes.bool.isRequired,
-    funcs: PropTypes.object.isRequired
+    funcs: PropTypes.object.isRequired,
+    popupOpen: PropTypes.bool.isRequired
   };
 
   shouldComponentUpdate(nextProps, nextState) { // don't re-render when only functions changed
@@ -116,6 +117,7 @@ class View extends Component {
                      setTranslationView={setTranslationView}
                      funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
                      thisUserCantEdit={isDisabled}
+                     popupOpen={this.props.popupOpen}
         />
         {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle"/><div>{description}</div></div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}

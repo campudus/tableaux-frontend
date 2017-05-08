@@ -19,7 +19,8 @@ class RowHeadline extends React.Component {
     langtag: React.PropTypes.string.isRequired,
     setTranslationView: React.PropTypes.func.isRequired,
     funcs: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool
+    thisUserCantEdit: React.PropTypes.bool,
+    popupOpen: React.PropTypes.bool.isRequired
   };
 
   getDisplayName = column => {
@@ -57,6 +58,7 @@ class RowHeadline extends React.Component {
                          cell={this.props.cell}
                          setTranslationView={this.props.setTranslationView}
                          funcs={this.props.funcs}
+                         popupOpen={this.props.popupOpen}
           />
           <a href="#" onClick={() => window.open(url, "_blank")}>
             {colName}
@@ -105,6 +107,7 @@ class RowHeadline extends React.Component {
                          cell={this.props.cell}
                          setTranslationView={this.props.setTranslationView}
                          funcs={this.props.funcs}
+                         popupOpen={this.props.popupOpen}
           />
           {this.getDisplayName(column)}
         </div>
@@ -136,7 +139,8 @@ class RowHeadline extends React.Component {
         <ItemPopupMenu langtag={this.props.langtag}
                        cell={this.props.cell}
                        setTranslationView={this.props.setTranslationView}
-                       funcs={this.props.funcs || {}}
+                       funcs={this.props.funcs}
+                       popupOpen={this.props.popupOpen}
         />
         {this.getDisplayName(column)}
       </div>
