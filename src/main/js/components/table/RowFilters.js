@@ -6,53 +6,45 @@ import * as f from "lodash/fp";
 import * as _ from "lodash";
 import {either} from "../../helpers/monads";
 
-const getFilteredRows = (currentTable, langtag, rowsFilter) => {
-  console.log("getFilteredRows:", rowsFilter);
-  if (!areFilterSettingsValid(rowsFilter)) {
-    return (f.isInteger(rowsFilter.sortColumnId))                      // is a sorting mode set?
-      ? getRowsFilteredByColumnValues(currentTable, langtag, rowsFilter)
-      : currentTable.rows;
-  }
-
+const mkFilterFn = closures => (settings) => {
+  console.log("Trying to find filter:", settings)
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
-  const filterFunction = _.cond([
-    [f.equals(FilterModes.ID_ONLY), f.always(getRowsFilteredById)],
-    [f.equals(FilterModes.UNTRANSLATED), f.always(getRowsFilteredByTranslationStatus)],
-    [f.equals(FilterModes.ANY_UNTRANSLATED), f.always(getRowsFilteredByOthersTranslation)],
-    [f.equals(FilterModes.FINAL), f.always(getRowsFilteredByFinalFlag)],
-    [mode => f.contains(mode, valueFilters), f.always(getRowsFilteredByColumnValues)]
-  ])(rowsFilter.filterMode);
-  return filterFunction(currentTable, langtag, rowsFilter);
+  return f.cond([
+    [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
+    [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
+    [f.stubTrue, f.stubTrue]
+  ])(settings);
 };
 
-export const areFilterSettingsValid = settings => {
-  const {filterColumnId, filterValue, filterMode} = settings;
-  return (f.isNumber(filterColumnId) && filterColumnId >= 0 && filterValue) // row filter
-    || (filterMode === FilterModes.ID_ONLY && f.isNumber(filterValue))
-    || (f.contains(filterMode, [FilterModes.ANY_UNTRANSLATED, FilterModes.UNTRANSLATED, FilterModes.FINAL]));
-};
-
-const getRowsFilteredByFinalFlag = (table, langtag, filterSettings) => {
-  console.log("Filtered by final flag");
-  const closures = mkClosures(table, langtag, filterSettings);
-  return new FilteredSubcollection(table.rows, {
-    filter: f.matchesProperty("final", filterSettings.filterValue),
+const getFilteredRows = (currentTable, langtag, filterSettings) => {
+  const closures = mkClosures(currentTable, langtag, filterSettings);
+  console.log("fs.f", mkFilterFn(closures))
+  const allFilters = f.map(mkFilterFn(closures), filterSettings.filters || []);
+  const combinedFilter = f.compose(
+    f.every(f.identity),
+    f.juxt(allFilters)
+  );
+  return new FilteredSubcollection(currentTable.rows, {
+    filter: combinedFilter,
     comparator: closures.comparator
   });
 };
 
-const getRowsFilteredById = (table, langtag, rowsFilter) => {
-  console.log("Filtered by row id");
-  const reqId = rowsFilter.filterValue;
-  return new FilteredSubcollection(table.rows, {
-    where: {id: reqId}
-  });
+const mkFinalFilter = closures => ({value}) => {
+  console.log("Final filter")
+  return f.matchesProperty("final", value);
 };
 
-const getRowsFilteredByOthersTranslation = (table, langtag, rowsFilter) => {
-  console.log("Filtered by other languages' translation status");
-  const closures = mkClosures(table, langtag, rowsFilter);
-  const untranslated = rowsFilter.filterValue;
+const mkIDFilter = closures => ({value}) => {
+  console.log("ID filter");
+  return f.matchesProperty("id", value);
+};
+
+const mkOthersTranslationStatusFilter = closures => ({value}) => {
+  console.log("Translation in other language")
   const needsTranslation = f.compose(
     f.complement(f.isEmpty),
     f.prop("langtags"),
@@ -65,16 +57,11 @@ const getRowsFilteredByOthersTranslation = (table, langtag, rowsFilter) => {
     f.map(needsTranslation),
     f.prop("annotations"),
   );
-  return new FilteredSubcollection(table.rows, {
-    filter: (untranslated) ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
-    comparator: closures.comparator
-  });
+  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
 
-const getRowsFilteredByTranslationStatus = (table, langtag, rowsFilter) => {
-  console.log("Filtered by translation status");
-  const closures = mkClosures(table, langtag, rowsFilter);
-  const untranslated = rowsFilter.filterValue;
+const mkTranslationStatusFilter = closures => ({value}) => {
+  console.log("Translation in my language")
   const needsTranslation = f.compose(
     f.contains(langtag),
     f.prop("langtags"),
@@ -87,32 +74,20 @@ const getRowsFilteredByTranslationStatus = (table, langtag, rowsFilter) => {
     f.map(needsTranslation),
     f.prop("annotations"),
   );
-  return new FilteredSubcollection(table.rows, {
-    filter: (untranslated) ? hasUntranslatedCells : row => !hasUntranslatedCells(row),
-    comparator: closures.comparator
-  });
+  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells)
 };
 
-const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
-  console.log("Filtered by column value");
-  const {filterColumnId, filterValue, filterMode, sortColumnId} = rowsFilter;
-  const closures = mkClosures(currentTable, langtag, rowsFilter);
-  const filterColumnIndex = closures.getColumnIndex(filterColumnId);
-  const allRows = currentTable.rows;
-  const toFilterValue = closures.cleanString(filterValue);
+const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
+  console.log("Column value filter");
+  const filterColumnIndex = closures.getColumnIndex(columnId);
+  const toFilterValue = closures.cleanString(value);
   const getSortableCellValue = closures.getSortableCellValue;
 
   if (_.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
-    return allRows;
+    return f.stubTrue;
   }
 
-  return new FilteredSubcollection(allRows, {
-    filter: (row) => {
-      if (filterColumnIndex <= -1 || (_.isEmpty(filterValue))) {
-        // no or invalid column found OR no filter value
-        return true;
-      }
-
+  return (row) => {
       const firstCell = row.cells.at(0);
       const firstCellValue = getSortableCellValue(firstCell);
 
@@ -124,7 +99,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
       }
 
       const targetCell = row.cells.at(filterColumnIndex);
-      const searchFunction = searchFunctions[filterMode];
+      const searchFunction = searchFunctions[mode];
       const filterableCellKinds = [
         ColumnKinds.concat,
         ColumnKinds.shorttext,
@@ -140,10 +115,7 @@ const getRowsFilteredByColumnValues = (currentTable, langtag, rowsFilter) => {
         // column type not support for filtering
         return false;
       }
-    },
-
-    comparator: closures.comparator
-  });
+    };
 };
 
 // Generate settings-specific helper functions needed by all filters

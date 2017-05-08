@@ -398,10 +398,7 @@ class TableView extends React.Component {
       const rowsFilter = {
         sortColumnId: sorting.columnId,
         sortValue: sorting.value,
-        filterColumnId: filter.columnId,
-        filterMode: filter.mode,
-        filterValue: filter.value,
-        filterColumnKind: filter.columnKind
+        filters: [filter]
       };
       this.setState({
         rowsFilter,
