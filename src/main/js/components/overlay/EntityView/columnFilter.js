@@ -1,6 +1,6 @@
-import {ColumnKinds, FallbackLanguage} from "../../constants/TableauxConstants";
-import RowConcatHelper from "../../helpers/RowConcatHelper";
-import SearchFunctions from "../../helpers/searchFunctions";
+import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
+import RowConcatHelper from "../../../helpers/RowConcatHelper";
+import SearchFunctions from "../../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 
 const isOfKind = kind => f.matchesProperty("kind", kind);

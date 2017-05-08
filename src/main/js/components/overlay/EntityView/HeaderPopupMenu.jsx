@@ -1,14 +1,14 @@
 import React, {Component, PropTypes} from "react";
-import ActionCreator from "../../actions/ActionCreator";
+import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 import classNames from "classnames";
 import * as f from "lodash/fp";
-import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
-import {maybe} from "../../helpers/monads";
-import {initiateDeleteRow, initiateDuplicateRow} from "../../helpers/rowHelper";
-import {setRowAnnotation} from "../../helpers/annotationHelper";
+import {openShowDependency} from "../ConfirmDependentOverlay";
+import {maybe} from "../../../helpers/monads";
+import {initiateDeleteRow, initiateDuplicateRow} from "../../../helpers/rowHelper";
+import {setRowAnnotation} from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
-import SvgIcon from "../helperComponents/SvgIcon";
+import SvgIcon from "../../helperComponents/SvgIcon";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 

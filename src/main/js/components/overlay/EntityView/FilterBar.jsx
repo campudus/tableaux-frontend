@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
-import ActionCreator from "../../actions/ActionCreator";
-import {FilterModes} from "../../constants/TableauxConstants";
-import SearchFunctions from "../../helpers/searchFunctions";
+import ActionCreator from "../../../actions/ActionCreator";
+import {FilterModes} from "../../../constants/TableauxConstants";
+import SearchFunctions from "../../../helpers/searchFunctions";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 

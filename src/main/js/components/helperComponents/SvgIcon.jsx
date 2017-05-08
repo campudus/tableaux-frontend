@@ -88,6 +88,9 @@ class SvgIcon extends Component {
     ImageCache
       .getOrFetch(props.icon)
       .then(svg => {
+        if (!this.containerElement) {    // Icon unmounted before svg was loaded
+          return;
+        }
         this.containerElement.innerHTML = svg;
         this.svgData = this.containerElement.children["0"];
         this.setState({loading: false}, this.processImage);
