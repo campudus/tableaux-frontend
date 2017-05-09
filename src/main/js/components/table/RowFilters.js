@@ -1,10 +1,31 @@
 import FilteredSubcollection from "ampersand-filtered-subcollection";
-import {ColumnKinds, SortValues, FilterModes} from "../../constants/TableauxConstants";
+import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import * as _ from "lodash";
 import {either} from "../../helpers/monads";
+
+export const FilterableCellKinds = [
+  ColumnKinds.concat,
+  ColumnKinds.shorttext,
+  ColumnKinds.richtext,
+  ColumnKinds.text,
+  ColumnKinds.numeric,
+  ColumnKinds.link
+];
+
+export const SortableCellKinds = [
+  ColumnKinds.text,
+  ColumnKinds.shorttext,
+  ColumnKinds.richtext,
+  ColumnKinds.numeric,
+  ColumnKinds.concat,
+  ColumnKinds.link,
+  ColumnKinds.boolean,
+  ColumnKinds.date,
+  ColumnKinds.datetime
+];
 
 const mkFilterFn = closures => (settings) => {
   console.log("Trying to find filter:", settings)
@@ -21,7 +42,6 @@ const mkFilterFn = closures => (settings) => {
 
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
-  console.log("fs.f", mkFilterFn(closures))
   const allFilters = f.map(mkFilterFn(closures), filterSettings.filters || []);
   const combinedFilter = f.compose(
     f.every(f.identity),
@@ -88,34 +108,26 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
   }
 
   return (row) => {
-      const firstCell = row.cells.at(0);
-      const firstCellValue = getSortableCellValue(firstCell);
+    const firstCell = row.cells.at(0);
+    const firstCellValue = getSortableCellValue(firstCell);
 
-      // Always return true for rows with empty first value.
-      // This should allow to add new rows while filtered.
-      // _.isEmpty(123) returns TRUE, so we check for number (int & float)
-      if (_.isEmpty(firstCellValue) && !_.isNumber(firstCellValue)) {
-        return true;
-      }
+    // Always return true for rows with empty first value.
+    // This should allow to add new rows while filtered.
+    // _.isEmpty(123) returns TRUE, so we check for number (int & float)
+    if (_.isEmpty(firstCellValue) && !_.isNumber(firstCellValue)) {
+      return true;
+    }
 
-      const targetCell = row.cells.at(filterColumnIndex);
-      const searchFunction = searchFunctions[mode];
-      const filterableCellKinds = [
-        ColumnKinds.concat,
-        ColumnKinds.shorttext,
-        ColumnKinds.richtext,
-        ColumnKinds.text,
-        ColumnKinds.numeric,
-        ColumnKinds.link
-      ];
+    const targetCell = row.cells.at(filterColumnIndex);
+    const searchFunction = searchFunctions[mode];
 
-      if (f.contains(targetCell.kind, filterableCellKinds)) {
-        return searchFunction(toFilterValue, getSortableCellValue(targetCell));
-      } else {
-        // column type not support for filtering
-        return false;
-      }
-    };
+    if (f.contains(targetCell.kind, FilterableCellKinds)) {
+      return searchFunction(toFilterValue, getSortableCellValue(targetCell));
+    } else {
+      // column type not support for filtering
+      return false;
+    }
+  };
 };
 
 // Generate settings-specific helper functions needed by all filters
