@@ -20,7 +20,9 @@ class FilterRow extends Component {
     onChangeColumn: PropTypes.func.isRequired,
     onChangeValue: PropTypes.func.isRequired,
     onChangeMode: PropTypes.func.isRequired,
-    filter: PropTypes.object.isRequired
+    filter: PropTypes.object.isRequired,
+    onAddFilter: PropTypes.func,
+    onRemoveFilter: PropTypes.func
   };
 
   constructor(props) {
@@ -52,7 +54,7 @@ class FilterRow extends Component {
     return <FilterModePopup active={active}
                             close={this.toggleFilterModePopup}
                             setFilterMode={this.props.onChangeMode}
-    />
+    />;
   };
 
   boolInput = () => {
@@ -70,13 +72,12 @@ class FilterRow extends Component {
   };
 
   render() {
-    const {filter, onChangeColumn, onChangeValue, searchableColumns, t, valueRenderer} = this.props;
+    const {filter, onAddFilter, onRemoveFilter, onChangeColumn, onChangeValue, searchableColumns, t, valueRenderer} = this.props;
     const {mode, columnId} = this.props.filter;
     const filterInfoString = either(mode)
       .map(mode => f.prop([mode, "displayName"], SearchFunctions))
       .getOrElse("");
     const filterColumnSelected = f.isInteger(parseInt(columnId));
-    console.log("filter:", filter)
     return (
       <div className="filter-row">
         <Select
@@ -106,25 +107,41 @@ class FilterRow extends Component {
                          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
                          onClick={x => this.filterInput.focus()}
                   />
-                  <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
-                    {(filterColumnSelected)
-                      ? (
-                        <a href="#"
-                           className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
-                           onMouseDown={this.toggleFilterModePopup}>
-                          <i className="fa fa-search" />
-                          <i className="fa fa-caret-down" />
-                        </a>
-                      )
-                      : null}
-                    {(this.state.filterModesOpen)
-                      ? this.renderFilterModePopup()
-                      : null
-                    }
-                  </span>
-                </span>
+            <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
+              {(filterColumnSelected)
+                ? (
+                  <a href="#"
+                     className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
+                     onMouseDown={this.toggleFilterModePopup}>
+                    <i className="fa fa-search" />
+                    <i className="fa fa-caret-down" />
+                  </a>
+                )
+                : null}
+              {(this.state.filterModesOpen)
+                ? this.renderFilterModePopup()
+                : null
+              }
+            </span>
+          </span>
         }
-      </div>)
+        {(onRemoveFilter)
+          ? <span className="filter-array-button" onClick={onRemoveFilter}>
+            <a href="#">
+              <i className="fa fa-minus" />
+            </a>
+          </span>
+          : <span className="filter-array-button empty" />
+        }
+        {(onAddFilter)
+          ? <span className="filter-array-button" onClick={onAddFilter}>
+            <a href="#">
+              <i className="fa fa-plus" />
+            </a>
+          </span>
+          : <span className="filter-array-button empty" />
+        }
+      </div>);
   }
 }
 

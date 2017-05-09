@@ -27,19 +27,6 @@ export const SortableCellKinds = [
   ColumnKinds.datetime
 ];
 
-const mkFilterFn = closures => (settings) => {
-  console.log("Trying to find filter:", settings)
-  const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
-  return f.cond([
-    [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
-    [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
-    [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
-    [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
-    [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
-    [f.stubTrue, f.stubTrue]
-  ])(settings);
-};
-
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
   const allFilters = f.map(mkFilterFn(closures), filterSettings.filters || []);
@@ -53,8 +40,19 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
   });
 };
 
+const mkFilterFn = closures => (settings) => {
+  const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
+  return f.cond([
+    [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
+    [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
+    [f.stubTrue, f.stubTrue]
+  ])(settings);
+};
+
 const mkFinalFilter = closures => ({value}) => {
-  console.log("Final filter")
   return f.matchesProperty("final", value);
 };
 
@@ -64,7 +62,6 @@ const mkIDFilter = closures => ({value}) => {
 };
 
 const mkOthersTranslationStatusFilter = closures => ({value}) => {
-  console.log("Translation in other language")
   const needsTranslation = f.compose(
     f.complement(f.isEmpty),
     f.prop("langtags"),
@@ -81,9 +78,8 @@ const mkOthersTranslationStatusFilter = closures => ({value}) => {
 };
 
 const mkTranslationStatusFilter = closures => ({value}) => {
-  console.log("Translation in my language")
   const needsTranslation = f.compose(
-    f.contains(langtag),
+    f.contains(closures.langtag),
     f.prop("langtags"),
     f.first,
     f.filter(f.matchesProperty("value", "needs_translation")),
@@ -94,11 +90,10 @@ const mkTranslationStatusFilter = closures => ({value}) => {
     f.map(needsTranslation),
     f.prop("annotations"),
   );
-  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells)
+  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
 
 const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
-  console.log("Column value filter");
   const filterColumnIndex = closures.getColumnIndex(columnId);
   const toFilterValue = closures.cleanString(value);
   const getSortableCellValue = closures.getSortableCellValue;
@@ -196,7 +191,8 @@ const mkClosures = (table, langtag, rowsFilter) => {
     getSortableCellValue: getSortableCellValue,
     rows: rows,
     cleanString: cleanString,
-    comparator: comparator
+    comparator: comparator,
+    langtag
   };
 };
 

@@ -190,8 +190,8 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.OVERLAY_TYPE_TEXT_SAVE);
   },
 
-  changeFilter: function (filter, sorting) {
-    Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {filter, sorting});
+  changeRowFilters: function (filters, sorting) {
+    Dispatcher.trigger(ActionTypes.CHANGE_FILTER, {filters, sorting});
   },
 
   clearFilter: function () {

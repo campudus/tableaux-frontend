@@ -8,7 +8,7 @@ import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
-import TableauxConstants, {SortValues, ActionTypes, FilterModes, ColumnKinds} from "../constants/TableauxConstants";
+import TableauxConstants, {ActionTypes, ColumnKinds, FilterModes} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
 import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
@@ -16,7 +16,7 @@ import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import ColumnFilter from "./header/ColumnFilter";
 import {either} from "../helpers/monads";
-import {PAGE_SIZE, INITIAL_PAGE_SIZE} from "../models/Rows";
+import {INITIAL_PAGE_SIZE, PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
@@ -44,8 +44,8 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId} = this.props;
-    const {filter} = this.props.urlOptions || {};
+    const {columnId, rowId} = props;
+    const {filter} = props || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -115,10 +115,10 @@ class TableView extends React.Component {
       .getOrElse(null);
 
     if (savedView) {
-      cols.map(col => col.visible = savedView[col.id]);
+      cols.map(col => { col.visible = savedView[col.id]; });
     } else {
-      cols.forEach(x => x.visible = false);
-      f.map(x => x.visible = true, f.take(DEFAULT_VISIBLE_COLUMS, cols));
+      cols.forEach(x => { x.visible = false; });
+      f.map(x => { x.visible = true; }, f.take(DEFAULT_VISIBLE_COLUMS, cols));
     }
   };
 
@@ -191,10 +191,13 @@ class TableView extends React.Component {
       });
       if (filter) {
         this.changeFilter({
-          filterMode: FilterModes.ID_ONLY,
-          filterValue: rowId,
-          filterColumnId: null,
-          sortColumnId: 0
+          filters: [
+            {
+              mode: FilterModes.ID_ONLY,
+              value: rowId
+            }
+          ],
+          sorting: {columnId: 0}
         });
       }
       const rows = this.getCurrentTable().rows.models;
@@ -355,7 +358,7 @@ class TableView extends React.Component {
     const columns = this.tables.get(this.state.currentTableId).columns;
     columns
       .filter(x => f.contains(x.id, coll))
-      .forEach(x => x.visible = val);
+      .forEach(x => { x.visible = val; });
     this.saveView();
     if (cb) {
       cb();
@@ -385,11 +388,15 @@ class TableView extends React.Component {
     });
   };
 
-  changeFilter = ({filter, sorting}) => {
-    const isFilterEmpty = _.isEmpty(filter.value) && !_.isFinite(filter.columnId)
-      && !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
+  changeFilter = ({filters, sorting}) => {
+    const isFilterEmpty = filter => _.isEmpty(filter.value) && !_.isString(filter.mode);
+    const isSortingEmpty = !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
+    const areAllFiltersEmpty = f.compose(
+      f.any(f.identity),
+      f.map(isFilterEmpty)
+    )(filters);
 
-    if (isFilterEmpty) {
+    if (areAllFiltersEmpty && isSortingEmpty) {
       this.setState({
         rowsFilter: null,
         rowsCollection: this.getCurrentTable().rows
@@ -398,13 +405,13 @@ class TableView extends React.Component {
       const rowsFilter = {
         sortColumnId: sorting.columnId,
         sortValue: sorting.value,
-        filters: [filter]
+        filters: f.reject(isFilterEmpty, filters)
       };
       this.setState({
         rowsFilter,
         rowsCollection: getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter)
       });
-      if (filter.mode !== FilterModes.ID_ONLY) {
+      if (f.get([0, "mode"], filters) !== FilterModes.ID_ONLY) {
         this.resetURL();
       }
     }
@@ -462,7 +469,7 @@ class TableView extends React.Component {
               {(!f.isEmpty(this.state.pasteOriginCell))
                 ? (
                   <a href="#" className="button" onClick={this.clearCellClipboard}>
-                    <i className="fa fa-clipboard"/>
+                    <i className="fa fa-clipboard" />
                   </a>
                 )
                 : null

@@ -16,8 +16,8 @@ class FilterModePopup extends React.Component {
     this.props.close();
   };
 
-  setFilterMode = mode_string => () => {
-    this.props.setFilterMode(mode_string);
+  setFilterMode = modeString => () => {
+    this.props.setFilterMode(modeString);
     this.props.close();
   };
 
