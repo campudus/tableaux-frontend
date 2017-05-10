@@ -65,11 +65,7 @@ class FilterPopup extends React.Component {
   }
 
   addFilter = () => {
-    const filter = {mode: FilterModes.CONTAINS};
-    if (f.get(["state", "filters", "length"], this) >= 6) {
-      return;
-    }
-    this.setState({filters: [...this.state.filters, filter]});
+    this.setState({filters: [...this.state.filters, {}]});
   };
 
   removeFilter = (idx = this.state.filters.length - 1) => () => {
@@ -254,7 +250,17 @@ class FilterPopup extends React.Component {
     )(filters);
     const canApplyFilter = sortColumnSelected || anyFilterHasValue;
     const sortOptions = this.getSortOptions();
-    const searchableColumns = this.getSearchableColumns();
+
+    const allColumns = this.getSearchableColumns();
+    const selectedByOtherFilters = idx => f.compose(
+      f.pull(filters[idx].columnId),       // remove element selected by this filter
+      f.map(f.get(["columnId"]))
+    )(filters);
+    const isSelectedByOtherFilter = idx => f.compose(
+      v => f.contains(v, selectedByOtherFilters(idx)),
+      f.get("value")
+    );
+    const availableColumns = idx => f.reject(isSelectedByOtherFilter(idx), allColumns);
 
     return (
       <div id="filter-popup">
@@ -268,12 +274,12 @@ class FilterPopup extends React.Component {
                     {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
                   </div>
                 )
-                : <FilterRow searchableColumns={searchableColumns}
+                : <FilterRow searchableColumns={availableColumns(idx)}
                              valueRenderer={this.selectFilterValueRenderer}
                              onChangeColumn={this.onChangeFilterColumn(idx)}
                              onChangeValue={this.changeFilterValue(idx)}
                              onChangeMode={this.changeFilterMode(idx)}
-                             onAddFilter={(filters.length < 6) ? this.addFilter : null}
+                             onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
                              onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
                              filter={filter}
                              key={idx}
