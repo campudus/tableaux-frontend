@@ -2,6 +2,7 @@ import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
+import * as f from "lodash/fp";
 
 class ShortTextView extends React.Component {
 
@@ -43,7 +44,7 @@ class ShortTextView extends React.Component {
 
   saveEditsAndClose = () => {
     const {value} = this.state;
-    if (value.trim() === this.originalValue) {
+    if (f.isNil(value) || value.trim() === this.originalValue) {
       return;
     }
     this.originalValue = value.trim();

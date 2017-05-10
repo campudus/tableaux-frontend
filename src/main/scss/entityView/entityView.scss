@@ -11,6 +11,10 @@
         cursor: not-allowed;
       }
 
+      &:not(.has-mouse-pointer) .popup-button svg {
+        fill: transparent;
+      }
+
       &:hover {
         &:before {
           content: "";

@@ -45,6 +45,7 @@ class View extends Component {
     super(props);
     this.props.watch(this.props.cell, {events: "change:annotations", force: true});
     this.props.watch(this.props.cell, {events: "change:value", force: true});
+    this.state = {hovered: false};
   }
 
   getViewKind() {
@@ -104,13 +105,16 @@ class View extends Component {
     const CellKind = views[kind];
     const viewClass = classNames(`view item ${this.getViewKind()} ${this.getViewId()}`, {
       "disabled": isDisabled,
-      "has-focused-child": hasFocusedChild
+      "has-focused-child": hasFocusedChild,
+      "has-mouse-pointer": this.state.hovered
     });
     const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
 
     return (
       <div className={viewClass}
            onClick={this.clickHandler}
+           onMouseEnter={() => this.setState({hovered: true})}
+           onMouseLeave={() => this.setState({hovered: false})}
            ref={el => { this.viewElement = el; }}
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}

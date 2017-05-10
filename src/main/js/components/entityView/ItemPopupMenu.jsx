@@ -193,7 +193,7 @@ class ItemPopupMenu extends Component {
                             show: true,
                             cell
                           });
-                          this.props.funcs.setTranslationItem(this.props.funcs.translationItem);
+                          this.props.funcs.setTranslationItem(this.props.funcs.viewElement);
                         }
                       })
                     }
