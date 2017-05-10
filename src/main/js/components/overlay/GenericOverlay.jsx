@@ -22,7 +22,8 @@ class GenericOverlay extends Component {
     keyboardShortcuts: PropTypes.object,
     specialClass: PropTypes.string,
     preferRight: PropTypes.bool,
-    id: PropTypes.number.isRequired
+    id: PropTypes.number.isRequired,
+    classes: PropTypes.string
   };
 
   constructor(props) {
@@ -117,7 +118,7 @@ class GenericOverlay extends Component {
       "header-buttons": head.props.actions,
       [this.props.classNames]: this.props.classNames
     });
-    const wrapperClass = classNames("overlay-wrapper " + overlayType + " " + (specialClass || ""), {
+    const wrapperClass = classNames(`overlay-wrapper ${overlayType} ${this.props.classes || ""} ${specialClass || ""}`, {
       "is-new": this.state.overlayIsNew,
       "is-right": this.props.preferRight,
       "header-components": head.props.components,

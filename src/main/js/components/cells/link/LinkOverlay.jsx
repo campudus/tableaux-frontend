@@ -3,11 +3,11 @@ import _ from "lodash";
 import RowConcatHelper from "../../../helpers/RowConcatHelper.js";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
-import {List} from "react-virtualized";
+import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {ActionTypes, Directions, FilterModes} from "../../../constants/TableauxConstants";
-import {either} from "../../../helpers/monads";
+import {either, maybe} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions, {SEARCH_FUNCTION_IDS} from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -17,127 +17,15 @@ import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrReq
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
 import Header from "../../overlay/Header";
 import Dispatcher from "../../../dispatcher/Dispatcher";
-import listensToClickOutside from "react-onclickoutside";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import ReactDOM from "react-dom";
+import SearchBar from "./LinkOverlaySearchBar"
 
-// we use this value to get the exact offset for the link list
-const HEADER_HEIGHT = 120;
-const MARGIN_HEIGHT = 20;
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
-
-@listensToClickOutside
-class SearchBar extends Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      filterValue: "",
-      filterMode: FilterModes.CONTAINS,
-      popupOpen: false
-    }
-  }
-
-  updateFilter = ({mode, value}) => {
-    const {filterMode, filterValue} = this.state;
-    const newValue = {
-      filterMode: mode || filterMode,
-      filterValue: (f.isString(value)) ? value : filterValue,
-      popupOpen: false
-    };
-    this.setState(newValue, () => ActionCreator.filterLinksInOverlay(newValue));
-  };
-
-  handleClickOutside = event => {
-    this.setState({popupOpen: false});
-  };
-
-  renderSearchOptions = () => {
-    const {popupOpen, filterMode} = this.state;
-    const activeIndex = f.findIndex(f.eq(filterMode), SEARCH_FUNCTION_IDS);
-    return (popupOpen)
-      ? (
-        <div className="filter-option-popup">
-          {
-            SEARCH_FUNCTION_IDS.map(
-              (id, idx) => {
-                const name = i18n.t(SearchFunctions[id].displayName);
-                const itemClass = classNames("menu-item", {"active": idx === activeIndex});
-                return (
-                  <div className={itemClass} key={id}>
-                    <a className="menu-item-inner" href="#" onClick={() => this.updateFilter({mode: id})}>
-                      {name}
-                    </a>
-                  </div>
-                )
-              }
-            )
-          }
-        </div>
-      )
-      : null;
-  };
-
-  handleInputKeys = event => {
-    const inputKey = f.prop(["target", "key"], event);
-
-    const clearOrClose = () => {
-      if (!f.isEmpty(this.state.filterValue)) {
-        this.setState({filterValue: ""},
-          () => this.updateFilter({
-            mode: this.state.filterMode,
-            value: this.state.filterValue
-          }));
-
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    };
-
-    const passOnKey = () => {
-      event.preventDefault();
-      ActionCreator.passOnKeyStrokes({
-        id: this.props.id,
-        event
-      })
-    };
-
-    const isIn = x => y => f.contains(f.toLower(y), f.map(f.toLower, x));
-
-    f.cond([
-      [f.eq("Escape"), clearOrClose],
-      [isIn(["arrowup", "arrowdown", "tab", "enter"]), passOnKey],
-      [f.stubTrue, f.noop]
-    ])(event.key)
-  };
-
-  render() {
-    const {filterMode, filterValue, popupOpen} = this.state;
-    const filterName = i18n.t(SearchFunctions[filterMode].displayName);
-
-    return (
-      <div className="filter-bar">
-        <input type="text"
-               className="header-input"
-               autoFocus
-               value={filterValue}
-               placeholder={filterName}
-               onKeyDown={this.handleInputKeys}
-               onChange={event => this.updateFilter({value: event.target.value})}
-        />
-        <a href="#" className="popup-button" onClick={() => this.setState({popupOpen: !popupOpen})}>
-          <i className="fa fa-search" />
-          <i className="fa fa-angle-down" />
-        </a>
-        {this.renderSearchOptions()}
-      </div>
-    );
-  }
-}
+const LINKED_ITEMS = 0;
+const UNLINKED_ITEMS = 1;
 
 @translate(["table"])
 @withAbortableXhrRequests
@@ -151,8 +39,13 @@ class LinkOverlay extends Component {
       loading: true,
       filterMode: FilterModes.CONTAINS,
       filterModePopupOpen: false,
-      selectedId: 0,
-      selectedMode: 0
+      popupOpen: false,
+      selectedId: {
+        linked: 0,
+        unlinked: 0
+      },
+      selectedMode: 0,
+      activeBox: UNLINKED_ITEMS
     };
   }
 
@@ -179,22 +72,23 @@ class LinkOverlay extends Component {
   };
 
   getKeyboardShortcuts = () => {
-    const rows = this.state.rowResults;
-    const {selectedMode} = this.state;
+    const {selectedMode, activeBox} = this.state;
+    const rows = f.get((activeBox === UNLINKED_ITEMS) ? "unlinked" : "linked", this.state.rowResults);
     const selectNext = (dir) => {
-      const {selectedId} = this.state;
+      const selectedId = this.getSelectedId();
       const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
-      this.setState({selectedId: nextIdx}, () => this.refs.OverlayScroll.forceUpdateGrid());
+      //this.setState({selectedId: nextIdx}, () => this.refs.OverlayScroll.forceUpdateGrid());
+      this.setSelectedId(nextIdx);
     };
     return {
       enter: event => {
+        const {activeBox, rowResults} = this.state;
+        const activeBoxIDString = (activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
+        const row = f.get([activeBoxIDString, this.getSelectedId()], rowResults);
         if (selectedMode === MAIN_BUTTON) {
-          const row = this.state.rowResults[this.state.selectedId];
-          this.addLinkValue.call(this, this.isRowLinked(row), row, event);
+          this.addLinkValue.call(this, activeBox === LINKED_ITEMS, row, event);
         } else {
           const {cell} = this.props;
-          const {rowResults, selectedId} = this.state;
-          const row = rowResults[selectedId];
           const target = {
             tables: cell.tables,
             tableId: cell.column.toTable,
@@ -221,19 +115,43 @@ class LinkOverlay extends Component {
       right: event => {
         event.preventDefault();
         event.stopPropagation();
-        this.setState({selectedMode: LINK_BUTTON}, () => this.refs.OverlayScroll.forceUpdateGrid());
+        this.setState({selectedMode: LINK_BUTTON});
       },
       left: event => {
         event.preventDefault();
         event.stopPropagation();
-        this.setState({selectedMode: MAIN_BUTTON}, () => this.refs.OverlayScroll.forceUpdateGrid());
+        this.setState({selectedMode: MAIN_BUTTON});
       },
       tab: event => {
         event.preventDefault();
         event.stopPropagation();
-        this.setState({selectedMode: (selectedMode + 1) % 2}, () => this.refs.OverlayScroll.forceUpdateGrid());
+        if (event.shiftKey) {
+          this.setState({selectedMode: (selectedMode + 1) % 2});
+        } else {
+          this.setState({activeBox: (activeBox + 1) % 2})
+        }
       }
     };
+  };
+
+  setSelectedId = id => {
+    const activeBox = (this.state.activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
+    const idToSet = f.clamp(0, f.size(f.get(activeBox, this.state.rowResults)) - 1, id);
+    const andFocusIfLinked = () => {
+      if (activeBox !== "linked") {
+        return;
+      }
+      const domNode = ReactDOM.findDOMNode(f.get(this.state.selectedId.linked, this.elements));
+      const focused = (f.get("tagName", document.activeElement) === "INPUT") ? document.activeElement : null;
+      maybe(domNode).method("focus");   // scroll link item into view
+      maybe(focused).method("focus");   // restore search box focus
+    };
+    this.setState({selectedId: f.assoc(activeBox, idToSet, this.state.selectedId)}, andFocusIfLinked);
+  };
+
+  getSelectedId = () => {
+    const activeBox = (this.state.activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
+    return f.get(activeBox, this.state.selectedId);
   };
 
   componentWillMount = () => {
@@ -283,7 +201,11 @@ class LinkOverlay extends Component {
   onSearch = (event) => {
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
-      selectedId: 0
+      selectedId: {
+        linked: this.state.selectedId.linked,
+        unlinked: 0,
+      },
+      activeBox: UNLINKED_ITEMS
     });
   };
 
@@ -337,13 +259,11 @@ class LinkOverlay extends Component {
       f.filter(this.isRowLinked)
     )(allRowResults);
     const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
-
     const byCachedRowName = f.compose(searchFunction(filterValue), f.prop("cachedRowName"));
-    if (filterValue !== "" && allRowResults.length > 0) {
-      return [...linkedRows, ...unlinkedRows.filter(byCachedRowName)];
-    } else {
-      return [...linkedRows, ...unlinkedRows];
-    }
+    return {
+      linked: linkedRows,
+      unlinked: (filterValue !== "") ? unlinkedRows.filter(byCachedRowName) : unlinkedRows
+    };
   };
 
   addLinkValue = (isLinked, row, event) => {
@@ -365,14 +285,8 @@ class LinkOverlay extends Component {
     }
     ActionCreator.changeCell(cell, links);
     this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
-    // tell the virtual scroller to redraw
-    this.refs.OverlayScroll.forceUpdateGrid();
   };
-
-  closeOverlay = () => {
-    ActionCreator.closeOverlay();
-  };
-
+  
   isRowLinked = (row) => {
     const currentCellValue = either(this.props.cell)
       .map(f.prop(["value"]))
@@ -380,86 +294,99 @@ class LinkOverlay extends Component {
     return !!_.find(currentCellValue, link => link.id === row.id);
   };
 
-  getOverlayItem = ({
-                      key,         // Unique key within array of rows
-                      index,       // Index of row within collection
-                      style        // Style object to be applied to row (to position it)
-                    }) => {
-    const {rowResults, selectedId, selectedMode} = this.state;
+  renderListItem = ({isLinked}) => ({
+                                      key,         // Unique key within array of rows
+                                      index,       // Index of row within collection
+                                      style        // Style object to be applied to row (to position it)
+                                    }) => {
+    const {selectedId, selectedMode, activeBox} = this.state;
+    const rowResults = f.get((isLinked) ? "linked" : "unlinked", this.state.rowResults);
     const row = rowResults[index];
 
-    if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
-      const isLinked = this.isRowLinked(row);
-      const isSelected = selectedId === index;
-      const rowName = row["cachedRowName"];
-      const rowCssClass = classNames("list-item",
-        {
-          "isLinked": isLinked,
-          "selected": isSelected
-        });
-      const {langtag, cell} = this.props;
+    if (_.isEmpty(rowResults) || _.isEmpty(row)) {
+      return null;
+    }
 
-      const mainButtonClass = classNames("left", {
-        "linked": isLinked,
-        "has-focus": selectedMode === MAIN_BUTTON
+    const isSelected = this.getSelectedId() === index && activeBox === ((isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS);
+    const rowName = row["cachedRowName"];
+    const rowCssClass = classNames("list-item",
+      {
+        "isLinked": isLinked,
+        "selected": isSelected
       });
-      const linkButtonClass = classNames("right",
-        {
-          "has-focus": selectedMode === LINK_BUTTON,
-          "linked": isLinked
-        });
+    const {langtag, cell} = this.props;
 
-      return (isSelected)
-        ? (
-          <div style={style} key={key}>
-            <div className={rowCssClass}>
-              <div className={mainButtonClass}
-                   onMouseOver={e => {
-                     this.setState({selectedMode: MAIN_BUTTON}, () => this.refs.OverlayScroll.forceUpdateGrid());
-                     this.background.focus();
-                     e.stopPropagation();
-                   }}
-                   onClick={this.addLinkValue.bind(this, isLinked, row)}
-              >
-                <a href="#">
-                  {rowName}
-                </a>
-                {(isLinked)
-                  ? <SvgIcon icon="cross" containerClasses="color-primary" />
-                  : <SvgIcon icon="check" containerClasses="color-primary" />
-                }
-              </div>
-              <a href="#" className={linkButtonClass}
-                 onClick={() => loadAndOpenEntityView({
-                   tables: cell.tables,
-                   tableId: cell.column.toTable,
-                   rowId: row.id
-                 }, langtag)}
+    const mainButtonClass = classNames("left", {
+      "linked": isLinked,
+      "has-focus": selectedMode === MAIN_BUTTON
+    });
+    const linkButtonClass = classNames("right",
+      {
+        "has-focus": selectedMode === LINK_BUTTON,
+        "linked": isLinked
+      });
+
+    const refIfLinked = el => {
+      if (isLinked) {
+        this.elements = f.assoc(index, el, this.elements || {})
+      }
+    };
+
+    return (isSelected)
+      ? (
+        <div style={style} key={key} ref={refIfLinked} tabIndex={(isLinked) ? 1 : -1}>
+          <div className={rowCssClass}>
+            <div className={mainButtonClass}
                  onMouseOver={e => {
-                   this.setState({selectedMode: LINK_BUTTON}, () => this.refs.OverlayScroll.forceUpdateGrid());
+                   this.setState({selectedMode: MAIN_BUTTON});
                    this.background.focus();
                    e.stopPropagation();
                  }}
-              >
-                <i className="fa fa-long-arrow-right" />
-              </a>
-            </div>
-          </div>
-        )
-        : (
-          <div style={style} key={key} onMouseOver={e => {
-            this.setState({selectedId: index});
-            this.background.focus();
-            e.stopPropagation();
-          }}>
-            <div className={rowCssClass}>
-              <div className="link-label">
+                 onClick={this.addLinkValue.bind(this, isLinked, row)}
+            >
+              <a href="#">
                 {rowName}
-              </div>
+              </a>
+              {(isLinked)
+                ? <SvgIcon icon="cross" containerClasses="color-primary" />
+                : <SvgIcon icon="check" containerClasses="color-primary" />
+              }
+            </div>
+            <a href="#" className={linkButtonClass}
+               onClick={() => loadAndOpenEntityView({
+                 tables: cell.tables,
+                 tableId: cell.column.toTable,
+                 rowId: row.id
+               }, langtag)}
+               onMouseOver={e => {
+                 this.setState({selectedMode: LINK_BUTTON});
+                 this.background.focus();
+                 e.stopPropagation();
+               }}
+            >
+              <i className="fa fa-long-arrow-right" />
+            </a>
+          </div>
+        </div>
+      )
+      : (
+        <div style={style} key={key} tabIndex={1}
+             onMouseOver={e => {
+               this.setSelectedId(index);
+               this.background.focus();
+               e.stopPropagation();
+             }}
+             ref={refIfLinked}
+        >
+
+          <div className={rowCssClass}>
+            <div className="link-label">
+              {rowName}
             </div>
           </div>
-        );
-    }
+        </div>
+      );
+
   };
 
   noRowsRenderer = () => {
@@ -472,31 +399,46 @@ class LinkOverlay extends Component {
 
   render = () => {
     const {rowResults, loading} = this.state;
-    const contentHeight = (window.innerHeight - HEADER_HEIGHT - 2 * MARGIN_HEIGHT) | 0;
-    const contentWidth = (0.6 * window.innerWidth) | 0;
-    const rowsCount = rowResults.length || 0;
 
-    const listDisplay = (loading)
+    const unlinkedRows = (loading)
       ? "Loading..."
-      : <List
-        ref="OverlayScroll"
-        width={contentWidth}
-        height={contentHeight}
-        rowCount={rowsCount}
-        rowHeight={40}
-        rowRenderer={this.getOverlayItem}
-        scrollToIndex={this.state.selectedId}
-        noRowsRenderer={this.noRowsRenderer}
-      />;
+      : <AutoSizer>
+        {({width, height}) => <List
+          ref="OverlayScroll"
+          width={width}
+          height={height}
+          rowCount={rowResults.unlinked.length || 0}
+          rowHeight={40}
+          rowRenderer={this.renderListItem({isLinked: false})}
+          scrollToIndex={this.state.selectedId.unlinked}
+          noRowsRenderer={this.noRowsRenderer}
+        />}
+      </AutoSizer>;
 
+    const linkedRows = (loading)
+      ? <div className="link-list info-text">
+        {i18n.t("table:link-overlay-loading")}
+      </div>
+      : <div className="link-list">
+        {f.range(0, f.size(rowResults.linked)).map(
+          (idx) => this.renderListItem({isLinked: true})({index: idx, style: {}, key: idx})
+        )}
+      </div>;
     return (
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
            className="link-overlay"
            tabIndex={1}
            onMouseOver={e => e.target.focus()}
-           ref={el => { this.background = el; }}
+           ref={el => {
+             this.background = el;
+           }}
       >
-        {listDisplay}
+        <div className="linked-items" onMouseEnter={() => { this.setState({activeBox: LINKED_ITEMS}); }}>
+          {linkedRows}
+        </div>
+        <div className="unlinked-items" onMouseEnter={() => { this.setState({activeBox: UNLINKED_ITEMS}); }}>
+          {unlinkedRows}
+        </div>
       </div>
     );
   }
@@ -512,7 +454,8 @@ export const openLinkOverlay = (cell, langtag) => {
                   components={<SearchBar langtag={langtag} />}
     />,
     body: overlayContent,
-    type: "full-height"
+    type: "full-height",
+    classes: "link-overlay"
   });
 };
 

@@ -1,6 +1,33 @@
 @import "variables";
 
 .overlay {
+
+  .overlay-wrapper.link-overlay {
+
+      .link-overlay {
+        display: flex;
+        height: 100%;
+        margin: 0;
+        flex-direction: column;
+
+        .linked-items {
+          max-height: 30vh;
+          overflow-y: auto;
+          background-color: $color-white;
+          border-bottom: 3px solid $color-text-light-grey;
+
+          .link-list {
+            padding: 20px;
+          }
+        }
+
+        .unlinked-items {
+          padding: 25px 0;
+          flex: 1;
+      }
+    }
+  }
+
   .filter-bar {
     position: absolute;
     bottom: 15px;
@@ -57,93 +84,99 @@
       bottom: 0;
       .ReactVirtualized__Grid__innerScrollContainer {
         position: relative;
+      }
+    }
 
-        .list-item {
-          display: flex;
-          width: 100%;
-          padding: 8px 0;
-          border-radius: 3px;
+    .linked-items .link-list {
+      &>div {
+        margin: 2px 15px;
+      }
+    }
+
+    .list-item {
+      display: flex;
+      width: 100%;
+      padding: 8px 0;
+      border-radius: 3px;
+      background-color: $color-white;
+      color: $color-black;
+      overflow: hidden;
+      position: relative;
+
+      .link-label {
+        height: $font-size-standard;
+        overflow: hidden;
+        padding: 0 8px;
+      }
+
+      &.isLinked {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+
+      &.selected {
+        background-color: transparent;
+        padding: 0;
+
+        .left {
+          flex-grow: 1;
+          padding: 8px;
           background-color: $color-white;
-          color: $color-black;
-          overflow: hidden;
-          position: relative;
+          color: $color-primary-text;
+          border-radius: 3px 0 0 3px;
+          display: flex;
 
-          .link-label {
-            height: $font-size-standard;
-            overflow: hidden;
+          &:hover {
+            background-color: $color-hover-background;
+            color: $color-hover-foreground;
+          }
+
+          i {
+            flex: 1;
+            text-align: right;
+            color: $color-primary;
             padding: 0 8px;
           }
 
-          &.isLinked {
+          a {
+            display: block;
+            flex: 90;
+            height: $font-size-standard;
+            overflow: hidden;
+          }
+
+          &.linked {
             background-color: $color-primary;
             color: $color-primary-contrast-text;
           }
 
-          &.selected {
-            background-color: transparent;
-            padding: 0;
+          &.has-focus {
+            background-color: $color-hover-background;
+            color: $color-hover-foreground;
+          }
+        }
 
-            .left {
-              flex-grow: 1;
-              padding: 8px;
-              background-color: $color-white;
-              color: $color-primary-text;
-              border-radius: 3px 0 0 3px;
-              display: flex;
+        .right {
+          right: 0;
+          top: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 29px;
+          height: 29px;
+          border-radius: 0 3px 3px 0;
+          margin-left: 3px;
+          background-color: $color-white;
+          color: $color-primary;
 
-              &:hover {
-                background-color: $color-hover-background;
-                color: $color-hover-foreground;
-              }
+          &.linked {
+            background-color: $color-primary;
+            color: $color-primary-contrast-text;
+          }
 
-              i {
-                flex: 1;
-                text-align: right;
-                color: $color-primary;
-                padding: 0 8px;
-              }
-
-              a {
-                display: block;
-                flex: 90;
-                height: $font-size-standard;
-                overflow: hidden;
-              }
-
-              &.linked {
-                background-color: $color-primary;
-                color: $color-primary-contrast-text;
-              }
-
-              &.has-focus {
-                background-color: $color-hover-background;
-                color: $color-hover-foreground;
-              }
-            }
-
-            .right {
-              right: 0;
-              top: 0;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 29px;
-              height: 29px;
-              border-radius: 0 3px 3px 0;
-              margin-left: 3px;
-              background-color: $color-white;
-              color: $color-primary;
-
-              &.linked {
-                background-color: $color-primary;
-                color: $color-primary-contrast-text;
-              }
-
-              &.has-focus {
-                background-color: $color-hover-background;
-                color: $color-primary;
-              }
-            }
+          &.has-focus {
+            background-color: $color-hover-background;
+            color: $color-primary;
           }
         }
       }
