@@ -20,7 +20,14 @@ import request from "superagent";
 const changeLinkCellHandler = ({cell, value}) => {
   const newValue = value;
   const curValue = cell.value;
-  const toggledRowId = _.first(_.xor(curValue.map(link => link.id), newValue.map(link => link.id)));
+  const rowDiff = _.xor(curValue.map(link => link.id), newValue.map(link => link.id));
+
+  if (_.size(rowDiff) > 1) { // multiple new values, set all
+    cell.save({value});
+    return;
+  }
+
+  const toggledRowId = _.first(rowDiff);
   if (!toggledRowId) {
     return;
   }
