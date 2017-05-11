@@ -15,6 +15,7 @@ import {
   isUserAdmin
 } from "../helpers/accessManagementHelper";
 import request from "superagent";
+import * as _ from "lodash";
 
 // sets or removes a *single* link to/from a link cell
 const changeLinkCellHandler = ({cell, value}) => {
