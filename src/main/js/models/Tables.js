@@ -16,6 +16,7 @@ import {
 } from "../helpers/accessManagementHelper";
 import request from "superagent";
 import * as _ from "lodash";
+import * as f from "lodash/fp";
 
 // sets or removes a *single* link to/from a link cell
 const changeLinkCell = ({cell, value}) => {
@@ -23,14 +24,20 @@ const changeLinkCell = ({cell, value}) => {
   const curValue = cell.value;
   const rowDiff = _.xor(curValue.map(link => link.id), newValue.map(link => link.id));
 
-  if (_.size(rowDiff) > 1) { // multiple new values, set all
-    cell.save({value});
-    return;
+  if (_.size(rowDiff) !== 1) { // multiple new values or permutation, set new array
+    return new Promise(
+      (resolve, reject) => {
+        cell.save({value}, {
+          success: resolve(cell.value),
+          error: reject("Could not set multiple link values")
+        });
+      }
+    );
   }
 
-  const toggledRowId = _.first(rowDiff);
+  const [toggledRowId] = rowDiff;
   if (!toggledRowId) {
-    return;
+    return new Promise((resolve, reject) => { reject("Tried to toggle zero links"); });
   }
   const {rowId, tableId} = cell;
   const colId = cell.column.id;

@@ -20,7 +20,10 @@ import Dispatcher from "../../../dispatcher/Dispatcher";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import ReactDOM from "react-dom";
-import SearchBar from "./LinkOverlaySearchBar"
+import SearchBar from "./LinkOverlaySearchBar";
+import request from "superagent";
+import DragSortList from "./DragSortList";
+import {changeCell} from "../../../models/Tables";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -106,11 +109,23 @@ class LinkOverlay extends Component {
         event.preventDefault();
         event.stopPropagation();
         selectNext(Directions.UP);
+        if (this.state.activeBox === LINKED_ITEMS && event.shiftKey) {
+          const selectedId = this.getSelectedId();
+          if (selectedId > 0) {
+            this.swapLinkedItems(selectedId - 1, selectedId);
+          }
+        }
       },
       down: event => {
         event.preventDefault();
         event.stopPropagation();
         selectNext(Directions.DOWN);
+        if (this.state.activeBox === LINKED_ITEMS && event.shiftKey) {
+          const selectedId = this.getSelectedId();
+          if (selectedId < f.size(this.state.rowResults.linked)) {
+            this.swapLinkedItems(selectedId, selectedId + 1);
+          }
+        }
       },
       right: event => {
         event.preventDefault();
@@ -254,8 +269,11 @@ class LinkOverlay extends Component {
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
     const lowerCaseRowId = f.compose(f.toLower, f.trim, f.prop("cachedRowId"));
+    const linkPosition = f.reduce(
+      f.merge, {}, this.props.cell.value.map((row, idx) => ({[row.id]: idx}))
+    );
     const linkedRows = f.compose(
-      f.sortBy(lowerCaseRowId),
+      f.sortBy(link => f.get(link.id, linkPosition)),
       f.filter(this.isRowLinked)
     )(allRowResults);
     const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
@@ -286,7 +304,7 @@ class LinkOverlay extends Component {
     ActionCreator.changeCell(cell, links);
     this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
   };
-  
+
   isRowLinked = (row) => {
     const currentCellValue = either(this.props.cell)
       .map(f.prop(["value"]))
@@ -294,12 +312,8 @@ class LinkOverlay extends Component {
     return !!_.find(currentCellValue, link => link.id === row.id);
   };
 
-  renderListItem = ({isLinked}) => ({
-                                      key,         // Unique key within array of rows
-                                      index,       // Index of row within collection
-                                      style        // Style object to be applied to row (to position it)
-                                    }) => {
-    const {selectedId, selectedMode, activeBox} = this.state;
+  renderListItem = ({isLinked}) => ({key, index, style = {}}) => {
+    const {selectedMode, activeBox} = this.state;
     const rowResults = f.get((isLinked) ? "linked" : "unlinked", this.state.rowResults);
     const row = rowResults[index];
 
@@ -344,7 +358,7 @@ class LinkOverlay extends Component {
                  }}
                  onClick={this.addLinkValue.bind(this, isLinked, row)}
             >
-              <a href="#">
+              <a href="#" draggable={false}>
                 {rowName}
               </a>
               {(isLinked)
@@ -352,7 +366,7 @@ class LinkOverlay extends Component {
                 : <SvgIcon icon="check" containerClasses="color-primary" />
               }
             </div>
-            <a href="#" className={linkButtonClass}
+            <a href="#" className={linkButtonClass} draggable={false}
                onClick={() => loadAndOpenEntityView({
                  tables: cell.tables,
                  tableId: cell.column.toTable,
@@ -397,6 +411,34 @@ class LinkOverlay extends Component {
       </div>);
   };
 
+  swapLinkedItems = (a, b) => {
+    const linkedItems = f.get(["rowResults", "linked"], this.state) || [];
+    const {cell} = this.props;
+    const rearranged = f.compose(
+      f.assoc(a, f.get(b, linkedItems)),
+      f.assoc(b, f.get(a, linkedItems)),
+    )(linkedItems);
+    const sendSwapRequest = (linkId, data) => (
+      request
+        .put(apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/link/${linkId}/order`))
+        .send(data)
+        .accept("json")
+    );
+    const setSwapResultOnCell = (error, response) => {
+      cell.set({
+        value: f.compose(
+          f.get("value"),
+          JSON.parse,
+          f.get("text")
+        )(response)
+      })
+    };
+
+    changeCell({cell, value: rearranged})
+      .catch(() => this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)}));
+    this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
+  };
+
   render = () => {
     const {rowResults, loading} = this.state;
 
@@ -416,14 +458,25 @@ class LinkOverlay extends Component {
       </AutoSizer>;
 
     const linkedRows = (loading)
-      ? <div className="link-list info-text">
-        {i18n.t("table:link-overlay-loading")}
-      </div>
-      : <div className="link-list">
-        {f.range(0, f.size(rowResults.linked)).map(
-          (idx) => this.renderListItem({isLinked: true})({index: idx, style: {}, key: idx})
-        )}
-      </div>;
+      ? (
+        <div className="link-list info-text">
+          {i18n.t("table:link-overlay-loading")}
+        </div>
+      )
+      : (
+          <DragSortList renderListItem={this.renderListItem({isLinked: true})}
+                        items={rowResults.linked.map((
+                          (row, index) => {
+                            return {
+                              index,
+                              id: row.id
+                            }
+                          }
+                        ))}
+                        swapItems={this.swapLinkedItems}
+          />
+      );
+
     return (
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
            className="link-overlay"
