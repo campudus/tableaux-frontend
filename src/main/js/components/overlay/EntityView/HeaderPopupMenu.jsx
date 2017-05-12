@@ -9,6 +9,8 @@ import {initiateDeleteRow, initiateDuplicateRow} from "../../../helpers/rowHelpe
 import {setRowAnnotation} from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../../constants/TableauxConstants";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -23,9 +25,24 @@ class HeaderPopupMenu extends Component {
     super(props);
     this.state = {
       open: false,
-      active: null
+      active: null,
+      row: props.row
     };
   }
+
+  componentDidMount() {
+    Dispatcher.on(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
+  }
+
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
+  }
+
+  changeRow = ({row, id}) => {
+    if (this.props.id === id) {
+      this.setState({row});
+    }
+  };
 
   mkEntry = (id, {title, fn}) => {
     const entryClass = classNames("entry", {"active": id === this.state.active});
@@ -73,8 +90,8 @@ class HeaderPopupMenu extends Component {
   };
 
   render() {
-    const {row, langtag} = this.props;
-    const {open} = this.state;
+    const {langtag} = this.props;
+    const {open, row} = this.state;
     const buttonClass = classNames("popup-button", {"is-open": open});
     const translationInfo = {
       show: true,

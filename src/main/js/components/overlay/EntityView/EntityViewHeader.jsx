@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import {switchEntityViewLanguage} from "../../../actions/ActionCreator";
-import {FallbackLanguage, Langtags} from "../../../constants/TableauxConstants";
+import {FallbackLanguage, Langtags, Directions} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 import HeaderPopupMenu from "./HeaderPopupMenu";
@@ -8,6 +8,7 @@ import FilterBar from "./FilterBar";
 import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
+import {changeEntityViewRow, changeHeaderTitle} from "../../../actions/ActionCreator";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -71,10 +72,70 @@ class LanguageSwitcher extends Component {
   }
 }
 
-const mkHeaderComponents = (id, row, langtag) => {
+class RowSwitcher extends Component {
+  static propTypes = {
+    row: PropTypes.object.isRequired,
+    id: PropTypes.number.isRequired,
+    langtag: PropTypes.string.isRequired
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {row: props.row};
+  }
+
+  getNextRow = dir => {
+    const {row} = this.state;
+    const rowsCollection = f.get(["collection", "models"], row);
+    const myRowIdx = f.findIndex(f.matchesProperty("id", row.id), rowsCollection);
+    const dirAsNumber = (dir === Directions.UP) ? -1 : 1;
+    return f.get([myRowIdx + dirAsNumber], rowsCollection);
+  };
+
+  switchRow = dir => () => {
+    const nextRow = this.getNextRow(dir);
+    if (nextRow) {
+      this.setState({row: nextRow});
+      changeEntityViewRow({id: this.props.id, row: nextRow});
+      changeHeaderTitle({id: this.props.id, title: getDisplayLabel(nextRow, this.props.langtag)})
+    }
+  };
+
+  render() {
+    return (
+      <div className="row-switcher">
+        {(this.getNextRow(Directions.UP))
+          ? (
+            <div className="button" onClick={this.switchRow(Directions.UP)}>
+              <a href="#">
+                <i className="fa fa-angle-left" />
+              </a>
+            </div>
+          )
+          : null
+        }
+        {(this.getNextRow(Directions.DOWN))
+          ? (
+            <div className="button" onClick={this.switchRow(Directions.DOWN)}>
+              <a href="#">
+                <i className="fa fa-angle-right"/>
+              </a>
+            </div>
+          )
+          : null
+        }
+      </div>
+    );
+  }
+}
+
+const mkHeaderComponents = (id, row, langtag, {canSwitchRows} = {}) => {
   return (
     <div className="header-components">
-      <LanguageSwitcher langtag={langtag} />
+      <div className="top-right">
+        <LanguageSwitcher langtag={langtag} />
+        {(canSwitchRows) ? <RowSwitcher row={row} id={id} langtag={langtag} /> : null}
+      </div>
       <div className="search-and-popup">
         <FilterBar id={id} />
         <HeaderPopupMenu langtag={langtag} row={row} id={id} />

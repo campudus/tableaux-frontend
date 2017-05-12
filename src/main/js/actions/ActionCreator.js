@@ -298,5 +298,13 @@ module.exports = {
 
   passOnKeyStrokes: (payload) => {
     Dispatcher.trigger(ActionTypes.PASS_ON_KEYSTROKES, payload);
+  },
+
+  changeEntityViewRow: (payload) => {
+    Dispatcher.trigger(ActionTypes.CHANGE_ENTITY_VIEW_ROW, payload);
+  },
+
+  changeHeaderTitle: (payload) => {
+    Dispatcher.trigger(ActionTypes.CHANGE_HEADER_TITLE, payload);
   }
 };

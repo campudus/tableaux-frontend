@@ -12,8 +12,8 @@ export function openEntityView(row, langtag, focusElementId) {
   const tableName = getTableName(row, langtag);
   const overlayId = new Date().getTime();
   openOverlay({
-    head: <Header context={tableName} title={rowDisplayLabel}
-                  components={mkHeaderComponents(overlayId, row, langtag)}
+    head: <Header context={tableName} title={rowDisplayLabel} id={overlayId}
+                  components={mkHeaderComponents(overlayId, row, langtag, {canSwitchRows: true})} // views of local table can switch rows
     />,
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} overlayId={overlayId} />,
     type: "full-height",

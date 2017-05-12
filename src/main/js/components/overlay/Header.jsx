@@ -3,17 +3,48 @@ import classNames from "classnames";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import SvgIcon from "../helperComponents/SvgIcon";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../constants/TableauxConstants";
 
 class Header extends Component {
   static propTypes = {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,  // main headline
     context: PropTypes.string,           // additional context info
     actions: PropTypes.object,           // map: {[positive|negative|neutral]: [text, function]} for buttons
-    components: PropTypes.element        // more components to display, e.g. search bar
+    components: PropTypes.element,       // more components to display, e.g. search bar
+    id: PropTypes.number
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: props.title,
+      context: props.context
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.id) {
+      Dispatcher.on(ActionTypes.CHANGE_HEADER_TITLE, this.changeTitle);
+    }
+  }
+
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.CHANGE_HEADER_TITLE, this.changeTitle);
+  }
+
+  changeTitle = ({id, title, context}) => {
+    if (id !== this.props.id) {
+      return;
+    }
+    const newTitle = title || this.state.title;
+    const newContext = context || this.state.context;
+    this.setState({title: newTitle, context: newContext});
   };
 
   render() {
-    const {title, context, actions, components} = this.props;
+    const {actions, components} = this.props;
+    const {title, context} = this.state;
     const cssClass = classNames(
       "header-wrapper",
       {

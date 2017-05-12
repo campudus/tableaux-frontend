@@ -19,6 +19,7 @@ class EntityViewBody extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      row: props.row,
       langtag: props.langtag,
       translationView: false,
       filter: {
@@ -75,10 +76,12 @@ class EntityViewBody extends Component {
     Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
     Dispatcher.on(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
+    Dispatcher.on(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
   };
 
   componentDidMount() {
-    const {focusElementId, row} = this.props;
+    const {focusElementId} = this.props;
+    const {row} = this.state;
     if (focusElementId) {
       const cell = row.cells.get(focusElementId);
       if (cell.kind === ColumnKinds.concat) {
@@ -99,6 +102,24 @@ class EntityViewBody extends Component {
     Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     Dispatcher.off(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
     Dispatcher.off(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
+    Dispatcher.off(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
+    this.cancelClosingTimer();
+  };
+
+  changeRow = ({id, row}) => {
+    console.log("ebv changeRow", id, this.props.overlayId)
+    if (this.props.overlayId !== id) {
+      return;
+    }
+    this.setState({row,
+      filter: {
+        value: "",
+        mode: FilterModes.CONTAINS
+      },
+      focused: null,
+      itemWithPopup: null
+    });
+    this.translationItem = null;
     this.cancelClosingTimer();
   };
 
@@ -142,7 +163,7 @@ class EntityViewBody extends Component {
     const numericDir = (dir === Directions.UP) ? -1 : +1;
     const {focused} = this.state;
     const {langtag, filter} = this.state;
-    const visibleCells = this.props.row.cells.models.filter(columnFilter(langtag, filter));
+    const visibleCells = this.state.row.cells.models.filter(columnFilter(langtag, filter));
     const selectedIdx = f.findIndex(f.matchesProperty("id", focused), visibleCells);
     const {focusElements} = this;
     const toFocus = f.cond([
@@ -228,11 +249,11 @@ class EntityViewBody extends Component {
   };
 
   render() {
-    const cells = this.props.row.cells.models;
+    const cells = this.state.row.cells.models;
     const {langtag, filter, focused} = this.state;
     const {enterItemPopupButton, leaveItemPopupButton, openItemPopup, closeItemPopup} = this;
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
-      "is-locked": isLocked(this.props.row)
+      "is-locked": isLocked(this.state.row)
     });
 
     return (
