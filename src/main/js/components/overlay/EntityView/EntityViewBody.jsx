@@ -9,6 +9,8 @@ import TranslationPopup from "../../entityView/TranslationPopup";
 import * as f from "lodash/fp";
 import columnFilter from "./columnFilter";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import classNames from "classnames";
+import {isLocked} from "../../../helpers/annotationHelper";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 
@@ -229,9 +231,12 @@ class EntityViewBody extends Component {
     const cells = this.props.row.cells.models;
     const {langtag, filter, focused} = this.state;
     const {enterItemPopupButton, leaveItemPopupButton, openItemPopup, closeItemPopup} = this;
+    const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
+      "is-locked": isLocked(this.props.row)
+    });
 
     return (
-      <div className={"entity-view content-items " + this.props.id}
+      <div className={evbClass}
            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
         {cells

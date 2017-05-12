@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {ColumnKinds, FallbackLanguage} from "../../constants/TableauxConstants";
+import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
 import NumericView from "./numeric/NumericView";
@@ -101,12 +101,16 @@ class View extends Component {
     };
 
     const isDisabled = !this.canEditValue();
-
+    const isMyTranslationNeeded = langtag !== f.first(Langtags) && Annotations.isTranslationNeeded(langtag)(cell);
+    const isAnyTranslationNeeded = langtag === f.first(Langtags)
+      && !f.isEmpty(f.get(["annotations", "translationNeeded", "langtags"], cell));
     const CellKind = views[kind];
     const viewClass = classNames(`view item ${this.getViewKind()} ${this.getViewId()}`, {
       "disabled": isDisabled,
       "has-focused-child": hasFocusedChild,
-      "has-mouse-pointer": this.state.hovered
+      "has-mouse-pointer": this.state.hovered,
+      "needs-my-translation": isMyTranslationNeeded,
+      "needs-other-translation": isAnyTranslationNeeded
     });
     const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
 

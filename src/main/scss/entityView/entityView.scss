@@ -3,6 +3,18 @@
 
 .overlay {
   .entity-view {
+    &.is-locked {
+      &:before {
+        font-family: FontAwesome;
+        content: "\f023";
+        position: fixed;
+        right: 0;
+        padding: 10px;
+        top: 82px;
+        font-size: large;
+        color: $color-text-light-grey;
+      }
+    }
     .item {
       position: relative;
       border: none;
@@ -35,6 +47,37 @@
           height: 100%;
           border-left: 3px solid $color-primary;
         }
+      }
+
+      &.needs-other-translation {
+        &:after {
+          content: "";
+          position: absolute;
+          left: calc(100% - 12px);
+          top: calc(100% - 12px);
+          width: 0;
+          height: 0;
+          border: 6px solid transparent;
+          border-right-color: $color-needs-translation;
+          border-bottom-color: $color-needs-translation;
+        }
+      }
+
+      &.needs-my-translation {
+        &:after {
+          content: "";
+          position: absolute;
+          left: 5px;
+          top: 5px;
+          width: 0;
+          height: 0;
+          border: 3px solid $color-needs-translation;
+          border-radius: 3px;
+        }
+      }
+
+      &.needs-other-translation {
+
       }
     }
 
