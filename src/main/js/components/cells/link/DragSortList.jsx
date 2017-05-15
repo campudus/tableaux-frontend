@@ -3,6 +3,7 @@ import "react-virtualized/styles.css";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import {DragDropContext, DragSource, DropTarget} from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
+import classNames from "classnames";
 
 const ItemType = Symbol("item-type");
 
@@ -28,8 +29,9 @@ const itemTarget = {
   }
 };
 
-@DropTarget(ItemType, itemTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+@DropTarget(ItemType, itemTarget, (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isHovered: monitor.isOver()
 }))
 @DragSource(ItemType, itemSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
@@ -38,11 +40,14 @@ const itemTarget = {
 }))
 class DragItem extends Component {
   render() {
-    const {isDragging, connectDragSource, connectDropTarget, connectDragPreview} = this.props;
-    const style = {opacity: (isDragging) ? 0.2 : 1};
+    const {isDragging, connectDragSource, connectDropTarget, connectDragPreview, isHovered} = this.props;
+    const itemClass = classNames("draggable", {
+      "is-dragging": isDragging,
+      "is-hovered": isHovered
+    });
     return connectDragPreview(
       connectDropTarget(
-        <div className="draggable" style={style}>
+        <div className={itemClass} >
           {connectDragSource(
             <div className="drag-handle"><SvgIcon icon="burger" /></div>
           )}

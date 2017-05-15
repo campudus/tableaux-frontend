@@ -109,9 +109,26 @@
           &:hover .drag-handle svg {
             fill: $color-text-medium-grey;
           }
+
+          &.is-dragging {
+            opacity: 0;
+          }
+
+          &.is-hovered {
+            opacity: 0.2;
+          }
         }
         div:nth-child(2) {
           flex: 1;
+        }
+      }
+
+      .items-title {
+        display: flex;
+        span {
+          padding-top: 10px;
+          padding-left: 40px;
+          font-size: large;
         }
       }
     }

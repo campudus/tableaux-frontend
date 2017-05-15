@@ -441,6 +441,7 @@ class LinkOverlay extends Component {
 
   render = () => {
     const {rowResults, loading} = this.state;
+    const {cell:{column:{displayName}}} = this.props;
 
     const unlinkedRows = (loading)
       ? "Loading..."
@@ -457,15 +458,18 @@ class LinkOverlay extends Component {
         />}
       </AutoSizer>;
 
-    const linkedRows = (loading)
+    const linkedRows = (f.isEmpty(f.get("linked", rowResults)) && !loading)
       ? (
-        <div className="link-list info-text">
-          {i18n.t("table:link-overlay-loading")}
+        <div className="link-list info">
+          <i className="fa fa-chain-broken"/>
+          <div className="text">
+            {i18n.t("table:link-overlay-empty")}
+          </div>
         </div>
       )
       : (
           <DragSortList renderListItem={this.renderListItem({isLinked: true})}
-                        items={rowResults.linked.map((
+                        items={f.defaultTo([])(rowResults.linked).map((
                           (row, index) => {
                             return {
                               index,
@@ -487,6 +491,7 @@ class LinkOverlay extends Component {
            }}
       >
         <div className="linked-items" onMouseEnter={() => { this.setState({activeBox: LINKED_ITEMS}); }}>
+          <span className="items-title"><span>{i18n.t("table:link-overlay-items-title", {name: displayName[this.props.langtag] || displayName})}</span></span>
           {linkedRows}
         </div>
         <div className="unlinked-items" onMouseEnter={() => { this.setState({activeBox: UNLINKED_ITEMS}); }}>
