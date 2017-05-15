@@ -41,10 +41,9 @@ class OverlayHeadRowIdentificator extends Component {
       const linkToTable = `/${langtag}/tables/${toTable}`;
       return (
         <span>
-            <a href={linkToTable} target="_blank" className="column-name with-link">
-              <i className="fa fa-fw fa-columns" />
-              {columnDisplayName}
-            </a>
+            <span className="column-name">
+              {columnDisplayName}:
+            </span>
           {rowIdentification}
         </span>
       );

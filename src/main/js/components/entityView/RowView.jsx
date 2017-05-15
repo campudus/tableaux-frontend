@@ -10,15 +10,14 @@ import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import * as f from "lodash/fp";
 import {always, cond, isEmpty, prop, stubTrue} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 import * as Access from "../../helpers/accessManagementHelper";
 import * as Annotations from "../../helpers/annotationHelper";
 import {getCountryOfLangtag} from "../../helpers/multiLanguage";
 import classNames from "classnames";
-import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
-
-import * as f from "lodash/fp";
+import i18n from "i18next";
 
 @connectToAmpersand
 class View extends Component {
@@ -43,8 +42,16 @@ class View extends Component {
 
   constructor(props) {
     super(props);
-    this.props.watch(this.props.cell, {events: "change:annotations", force: true});
-    this.props.watch(this.props.cell, {events: "change:value", force: true});
+    this.props.watch(this.props.cell,
+      {
+        events: "change:annotations",
+        force: true
+      });
+    this.props.watch(this.props.cell,
+      {
+        events: "change:value",
+        force: true
+      });
     this.state = {hovered: false};
   }
 
@@ -72,15 +79,18 @@ class View extends Component {
   };
 
   clickHandler = () => {
-    const {cell, cell:{row,kind}, funcs, setTranslationView} = this.props;
+    const {cell, cell: {row, kind}, funcs, setTranslationView} = this.props;
     const translationContent = (canConvert(kind, ColumnKinds.text))
       ? cell
-      : {column: prop("column", cell), id: cell.id};
+      : {
+        column: prop("column", cell),
+        id: cell.id
+      };
     funcs.focus(funcs.id);
     funcs.setTranslationItem(this.viewElement);
     setTranslationView({cell: translationContent});
     if (!this.canEditValue() && this.canEditValue(Symbol("theoretically"))) {
-      askForSessionUnlock(row);
+      funcs.hintUnlockButton();
     }
   };
 
@@ -108,18 +118,37 @@ class View extends Component {
     const viewClass = classNames(`view item ${this.getViewKind()} ${this.getViewId()}`, {
       "disabled": isDisabled,
       "has-focused-child": hasFocusedChild,
-      "has-mouse-pointer": this.state.hovered,
-      "needs-my-translation": isMyTranslationNeeded,
-      "needs-other-translation": isAnyTranslationNeeded
+      "has-mouse-pointer": this.state.hovered
     });
     const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
+
+    const translationTag = (isMyTranslationNeeded || isAnyTranslationNeeded)
+      ? (
+        <span className="action-item translation" onClick={evt => {
+          evt.stopPropagation();
+          setTranslationView({
+            cell,
+            show: true
+          });
+        }}>
+          <a className="content">
+            {(isMyTranslationNeeded)
+              ? i18n.t("table:translations.this_translation_needed", {langtag})
+              : i18n.t("table:translations.translation_needed")
+            }
+          </a>
+        </span>
+      )
+      : null;
 
     return (
       <div className={viewClass}
            onClick={this.clickHandler}
            onMouseEnter={() => this.setState({hovered: true})}
            onMouseLeave={() => this.setState({hovered: false})}
-           ref={el => { this.viewElement = el; }}
+           ref={el => {
+             this.viewElement = el;
+           }}
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}
                      setTranslationView={setTranslationView}
@@ -127,12 +156,18 @@ class View extends Component {
                      thisUserCantEdit={isDisabled}
                      popupOpen={this.props.popupOpen}
         />
-        {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle"/><div>{description}</div></div> : null}
+        {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle" />
+          <div>{description}</div>
+        </div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
                   setTranslationView={setTranslationView}
                   funcs={this.props.funcs}
                   thisUserCantEdit={isDisabled}
-        />
+        >
+          <div className="action-tags">
+            {translationTag}
+          </div>
+        </CellKind>
       </div>
     );
   }

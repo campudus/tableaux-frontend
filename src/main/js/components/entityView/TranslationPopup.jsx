@@ -6,9 +6,14 @@ import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import {convert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import {isTranslationNeeded} from "../../helpers/annotationHelper";
+import Empty from "../helperComponents/emptyEntry";
+import {switchEntityViewLanguage} from "../../actions/ActionCreator";
 
 const KEY = "translations";
 
+@connectToAmpersand
 class LanguageView extends Component {
   static propTypes = {
     cell: PropTypes.object.isRequired,
@@ -25,10 +30,13 @@ class LanguageView extends Component {
       "fa-minus": isExpanded
     });
 
+    const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
+
     return (
-      <div className="item translation-item">
+      <div className={wrapperClass}>
         <div className="item-header">
           <div className="label">{getLanguageOrCountryIcon(langtag)}</div>
+          {(f.isEmpty(value)) ? <Empty/> : null}
           <div className="toggle-button">
             <a href="#" onClick={toggleExpand}>
               <i className={buttonClass} />
@@ -38,7 +46,7 @@ class LanguageView extends Component {
         {(value && isExpanded)
           ? (
             <div className="item-content">
-              <div className="content-box">
+              <div className="content-box" onClick={() => switchEntityViewLanguage({langtag})}>
                 {convert(cell.kind, ColumnKinds.text, value)}
               </div>
             </div>
@@ -114,7 +122,7 @@ class TranslationPopup extends Component {
           <a href="#" onClick={() => setTranslationView({show: false})}>
             <SvgIcon icon="cross"/>
           </a>
-          <div>{title}</div>
+          <div className="title">{title}</div>
         </div>
         <div className="content-items">
           {(!cell.isMultiLanguage)
@@ -124,7 +132,7 @@ class TranslationPopup extends Component {
                                         isExpanded={this.isExpanded(lt)}
                                         toggleExpand={this.toggleTranslation(lt)}
               />),
-              f.sortBy(comparator),
+//              f.sortBy(comparator),
               f.reject(f.eq(langtag))
             )(Langtags)
           }

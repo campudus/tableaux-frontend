@@ -78,6 +78,7 @@ class TextView extends React.Component {
           />
         )
       }
+      {this.props.children}
     </div>;
   }
 }

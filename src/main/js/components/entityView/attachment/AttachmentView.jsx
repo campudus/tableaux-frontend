@@ -40,6 +40,7 @@ class AttachmentView extends Component {
       ? <div className="item-description">{i18n.t("table:empty.attachments")}</div>
       : <div className="item-content link">
         <LinkList links={attachments} langtag={langtag} />
+        {this.props.children}
       </div>
   }
 }

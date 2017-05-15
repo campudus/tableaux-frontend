@@ -177,8 +177,14 @@ $overlay-border-radius: 5px;
         }
 
         .title {
+          height: 1em;
+          width: 90%;
+          overflow: hidden;
           color: $color-primary-contrast-text;
           font-size: medium;
+          .column-name {
+            margin-right: 10px;
+          }
         }
       }
 

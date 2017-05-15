@@ -54,14 +54,15 @@ class BooleanView extends Component {
              tabIndex={1}
              ref={el => { funcs.register(el) }}
         >
-        <div className={checkboxCss}>
-          {(selected)
-            ? <SvgIcon icon="check"/>
-            : ""
-          }
-        </div>
+          <div className={checkboxCss}>
+            {(selected)
+              ? <SvgIcon icon="check"/>
+              : ""
+            }
+          </div>
           <div className="value">{`${t("current_selection")}: `}{selected ? t("yes") : t("no")}</div>
-      </div>
+          {this.props.children}
+        </div>
     );
   }
 }

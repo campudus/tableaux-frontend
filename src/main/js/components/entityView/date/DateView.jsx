@@ -123,6 +123,7 @@ class DateView extends Component {
           />
           : null
         }
+        {this.props.children}
       </div>
     );
   }

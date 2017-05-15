@@ -73,6 +73,7 @@ class ShortTextView extends React.Component {
              onBlur={this.saveEditsAndClose}
              ref={el => { funcs.register(el) }}
       />
+      {this.props.children}
     </div>
   }
 }

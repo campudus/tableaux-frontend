@@ -96,6 +96,7 @@ class NumericView extends React.Component {
              placeholder={i18n.t("table:empty.number")}
              ref={el => { funcs.register(el) }}
       />
+      {this.props.children}
     </div>
   }
 }

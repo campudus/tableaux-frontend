@@ -50,11 +50,20 @@ class LinkView extends Component {
     const links = this.mkLinkList(cell, langtag);
 
     return (isEmpty(links)
-        ? <div className="item-description">{i18n.t("table:empty.links")}</div>
-        : <LinkList links={links}
-                    langtag={langtag}
-                    unlink={this.removeLink}
-        />
+        ? (
+          <div className="item-description">
+            {i18n.t("table:empty.links")}
+            {this.props.children}
+          </div>
+        )
+        : (
+          <div><LinkList links={links}
+                         langtag={langtag}
+                         unlink={this.removeLink}
+          />
+            {this.props.children}
+          </div>
+        )
     );
   }
 }

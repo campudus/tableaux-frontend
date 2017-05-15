@@ -93,7 +93,8 @@ class CurrencyView extends Component {
              tabIndex={1}
              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
         >
-        {currencyRows}
+          {currencyRows}
+          {this.props.children}
       </div>
     );
   }

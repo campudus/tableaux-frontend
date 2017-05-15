@@ -3,18 +3,6 @@
 
 .overlay {
   .entity-view {
-    &.is-locked {
-      &:before {
-        font-family: FontAwesome;
-        content: "\f023";
-        position: fixed;
-        right: 0;
-        padding: 10px;
-        top: 82px;
-        font-size: large;
-        color: $color-text-light-grey;
-      }
-    }
     .item {
       position: relative;
       border: none;
@@ -23,8 +11,13 @@
         cursor: not-allowed;
       }
 
-      &:not(.has-mouse-pointer) .popup-button svg {
-        fill: transparent;
+      &:not(.has-mouse-pointer) .popup-button {
+        a {
+          border-color: transparent !important;
+        }
+        svg {
+          fill: transparent;
+        }
       }
 
       &:hover {
@@ -48,36 +41,31 @@
           border-left: 3px solid $color-primary;
         }
       }
+    }
 
-      &.needs-other-translation {
-        &:after {
-          content: "";
-          position: absolute;
-          left: calc(100% - 12px);
-          top: calc(100% - 12px);
-          width: 0;
-          height: 0;
-          border: 6px solid transparent;
-          border-right-color: $color-needs-translation;
-          border-bottom-color: $color-needs-translation;
+    .action-tags {
+      display: flex;
+      .action-item {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background-color: $color-text-light-grey;
+        border-radius: 0.6em;
+        border: 1px solid $color-text-light-grey;
+        text-transform: uppercase;
+        color: $color-primary-contrast-text;
+        padding: 3px 1em 1px;
+        font-size: x-small;
+        font-weight: bold;
+        margin-right: 1em;
+        a {
+          @include button-with-icon();
         }
-      }
 
-      &.needs-my-translation {
-        &:after {
-          content: "";
-          position: absolute;
-          left: 5px;
-          top: 5px;
-          width: 0;
-          height: 0;
-          border: 3px solid $color-needs-translation;
-          border-radius: 3px;
+        &.translation {
+          background-color: $color-needs-translation;
+          border-color: $color-needs-translation;
         }
-      }
-
-      &.needs-other-translation {
-
       }
     }
 
@@ -328,6 +316,7 @@
                 background-color: transparent;
                 color: $color-primary;
                 border-radius: 3px;
+                border: 1px solid $color-primary;
                 @include button-with-icon();
 
                 div {
@@ -378,28 +367,81 @@
   }
 }
 
+.overlay .entity-view .unlock-bar {
+  position: fixed;
+  bottom: 0;
+  width: 60vw;
+  background-color: $color-overlay-header;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $color-primary-contrast-text;
+  font-size: small;
+  padding: 0.5em 0;
+  .text {
+    margin-right: 2em;
+    i {
+      color: $color-text-medium-grey;
+      margin-right: 1em;
+    }
+    span {
+      font-weight: bold;
+    }
+  }
+  .button {
+    padding: 0.5em 1em;
+    border: 1px solid $color-text-light-grey;
+    border-radius: 3px;
+    position: relative;
+    display: block;
+    a {
+      @include button-with-icon();
+    }
+    &:hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+    &.shake {
+      animation: do-the-shake 200ms 4 alternate;
+    }
+  }
+}
+
 .overlay {
   .entity-view {
     .translation-arrow {
       margin-top: 10px;
       position: fixed;
-      left: -1.5vw;
+      left: calc(-2vw + 1px);
       top: 0;
-      border-top: 1.5vw solid transparent;
-      border-bottom: 1.5vw solid transparent;
-      border-right: 1.5vw solid $color-overlay-background-even;
+      border-top: 2.5vw solid transparent;
+      border-bottom: 2.5vw solid transparent;
+      border-right: 2vw solid $color-primary;
+      z-index: 2;
     }
 
     .translation-view {
       position: absolute;
       left: -40vw;
-      width: 38vw;
+      width: 40vw;
       top: 0;
       height: 1000vh;
       background-color: $color-overlay-background;
       overflow: hidden;
       overflow-y: auto;
-      box-shadow: 0 0 15px 0;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        width: 40vw;
+        height: 100vh;
+        box-shadow: inset -10px 0 20px -10px $color-very-dark;
+        z-index: 1;
+        pointer-events: none;
+      }
 
       .toggle-button {
         a {
@@ -425,17 +467,39 @@
         padding-top: 10px;
       }
 
+      .item.needs-translation {
+        .label:before {
+          position: absolute;
+          left: -15px;
+          content: "";
+          width: 0;
+          height: 0;
+          border: 3px solid $color-needs-translation;
+          border-radius: 3px;
+        }
+      }
+
+
       .pseudo-header {
         display: flex;
         height: 50px;
         align-items: center;
-        font-size: larger;
+        font-size: smaller;
         font-weight: bold;
         justify-content: space-between;
+        background-color: $color-overlay-header;
+        color: $color-primary-contrast-text;
+
+        .title {
+          text-transform: uppercase;
+        }
+
+        svg {
+          fill: $color-primary-contrast-text;
+        }
 
         a {
-          padding: 8px 8px 18px;
-          font-size: x-small;
+          padding: 8px 8px;
         }
 
         div {
@@ -542,6 +606,17 @@
         }
       }
     }
+  }
+}
+
+@keyframes do-the-shake {
+  from {
+    transform: scale(1);
+    background-color: $color-primary;
+  }
+  to {
+    transform: scale(1.1);
+    background-color: $color-primary-lighter;
   }
 }
 

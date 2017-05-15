@@ -10,9 +10,11 @@ import * as f from "lodash/fp";
 import columnFilter from "./columnFilter";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
-import {isLocked} from "../../../helpers/annotationHelper";
+import {isLocked, unlockRow} from "../../../helpers/annotationHelper";
+import i18n from "i18next";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
+const SHAKE_DURATION = 800;
 
 @listensToClickOutside
 class EntityViewBody extends Component {
@@ -104,10 +106,10 @@ class EntityViewBody extends Component {
     Dispatcher.off(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
     Dispatcher.off(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
     this.cancelClosingTimer();
+    maybe(this.shakeTimerId).map(window.clearTimeout);
   };
 
   changeRow = ({id, row}) => {
-    console.log("ebv changeRow", id, this.props.overlayId)
     if (this.props.overlayId !== id) {
       return;
     }
@@ -141,6 +143,7 @@ class EntityViewBody extends Component {
   };
 
   setTranslationView = item => {
+    console.log("setTranslationView", item)
     const oldItem = this.state.translationView;
     const newItem = {
       show: (f.isNil(item.show) ? f.prop("show", oldItem) : item.show),
@@ -248,6 +251,37 @@ class EntityViewBody extends Component {
     }
   };
 
+  shakeBar = () => {
+    this.setState({shaking: true});
+    this.shakeTimerId = window.setTimeout(() => this.setState({shaking: false}), SHAKE_DURATION)
+  };
+
+  unlockRow = () => {
+    unlockRow(this.state.row, true);
+    this.setState({row: this.state.row}); //
+  };
+
+  renderUnlockBar = () => {
+    const {row} = this.state;
+    if (!isLocked(row)) {
+      return null;
+    }
+    const buttonClass = classNames("button", {"shake": this.state.shaking});
+    return (
+      <div className="unlock-bar">
+        <div className="text">
+          <i className="fa fa-lock" />
+          <span>{i18n.t("table:row-is-locked")}</span>
+        </div>
+        <div className={buttonClass} onClick={this.unlockRow}>
+          <a href="#">
+            {i18n.t("table:unlock-row")}
+          </a>
+        </div>
+      </div>
+    )
+  };
+
   render() {
     const cells = this.state.row.cells.models;
     const {langtag, filter, focused} = this.state;
@@ -277,11 +311,13 @@ class EntityViewBody extends Component {
                              enterItemPopupButton: enterItemPopupButton(idx),
                              leaveItemPopupButton: leaveItemPopupButton(idx),
                              openItemPopup: openItemPopup(idx),
-                             closeItemPopup: closeItemPopup(idx)
+                             closeItemPopup: closeItemPopup(idx),
+                             hintUnlockButton: this.shakeBar
                            }}
               />;
             })
         }
+        {this.renderUnlockBar()}
         {this.renderTranslationView()}
       </div>
     );
