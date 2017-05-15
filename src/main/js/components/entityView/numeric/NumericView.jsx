@@ -2,6 +2,7 @@ import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import * as f from "lodash/fp";
+import i18n from "i18next";
 
 class NumericView extends React.Component {
 
@@ -85,14 +86,14 @@ class NumericView extends React.Component {
   };
 
   render() {
-    const {langtag, funcs, thisUserCantEdit} = this.props;
+    const {funcs, thisUserCantEdit} = this.props;
     return <div className="item-content numeric">
-      <input type="text" value={this.state.value}
+      <input type="text" value={this.state.value || ""}
              disabled={thisUserCantEdit}
              onChange={this.normaliseNumberFormat}
              onKeyDown={this.handleKeyPress}
              onBlur={this.saveEditsAndClose}
-             placeholder={0}
+             placeholder={i18n.t("table:empty.number")}
              ref={el => { funcs.register(el) }}
       />
     </div>
