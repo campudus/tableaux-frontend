@@ -6,6 +6,7 @@ import listensToClickOutside from "react-onclickoutside";
 import i18n from "i18next";
 import {changeCell} from "../../../models/Tables";
 import classNames from "classnames";
+import * as f from "lodash/fp";
 
 @listensToClickOutside
 class DateView extends Component {
@@ -79,7 +80,9 @@ class DateView extends Component {
   };
 
   saveMoment = moment => {
-    const value = ((moment && moment.isValid()) ? moment : Moment()).format(this.Formats.formatForServer);
+    const value = (moment)
+      ? ((moment.isValid()) ? moment : Moment()).format(this.Formats.formatForServer)
+      : null;
     const {cell, langtag} = this.props;
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: value}
@@ -114,13 +117,32 @@ class DateView extends Component {
            onKeyDown={this.openOnEnter}
            ref={el => { funcs.register(el) }}
       >
-        {value || i18n.t("table:empty.date")}
+        <div className="content-wrapper">{
+          (value)
+            ? (<div className="content">
+              <div><i className="fa fa-calendar"/><span>{f.first(value.split(" - "))}</span></div>
+              {(this.props.time)
+                ? <div><i className="fa fa-clock-o"/><span>{f.last(value.split(" - "))}</span></div>
+                : null
+              }
+            </div>
+          )
+            : i18n.t("table:empty.date")
+        }</div>
         {(editing && !thisUserCantEdit)
-          ? <Datetime onBlur={this.saveEditsAndClose}
-                      onChange={this.handleChange}
-                      value={this.state.moment || Moment()}
-                      input={false}
-          />
+          ? (
+            <div className="datetime-popup">
+              <Datetime onBlur={this.saveEditsAndClose}
+                        onChange={this.handleChange}
+                        value={this.state.moment || Moment()}
+                        input={false}
+              />
+              <div className="clear-datetime" onClick={() => this.handleChange(null)}>
+                <i className="fa fa-ban"/>
+                <span>{i18n.t("common:clear-date")}</span>
+              </div>
+            </div>
+          )
           : null
         }
         {this.props.children}

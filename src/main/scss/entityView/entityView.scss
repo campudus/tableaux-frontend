@@ -182,6 +182,33 @@
       border-bottom: 1px solid;
       padding-bottom: 2px;
       transition: border 0.3s;
+
+      i {
+        margin-right: 5px;
+      }
+
+      .content-wrapper {
+        .content {
+          display: flex;
+          div {
+            margin-right: 10px;
+          }
+        }
+      }
+
+      .datetime-popup {
+        position: absolute;
+        top: 100%;
+        z-index: 1;
+        .clear-datetime {
+          display: flex;
+          justify-content: center;
+          color: $color-primary-contrast-text;
+          background-color: $color-overlay-header;
+          align-items: center;
+          height: 3em;
+        }
+      }
     }
   }
 }
