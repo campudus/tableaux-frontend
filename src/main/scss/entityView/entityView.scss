@@ -302,13 +302,13 @@
     display: inline-flex;
     justify-content: space-between;
     .button {
-      color: $color-text-light-grey;
+      color: $color-primary-contrast-text;
+      font-size: larger;
       width: 22px;
       height: 22px;
       position: relative;
       border-radius: 3px;
       &:hover {
-        color: $color-primary-contrast-text;
         background-color: $color-primary;
       }
       a {
@@ -653,5 +653,8 @@
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .overlay .entity-view .translation-arrow {
     left: 38.5vw;
+  }
+  .overlay .unlock-bar {
+    left: 40vw;
   }
 }

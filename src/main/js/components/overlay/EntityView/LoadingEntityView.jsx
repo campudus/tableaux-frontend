@@ -9,6 +9,7 @@ import i18n from "i18next";
 import * as f from "lodash/fp";
 import EntityViewBody from "./EntityViewBody";
 import mkHeaderComponents, {getDisplayLabel, getTableName} from "./EntityViewHeader";
+import ActionCreator from "../../../actions/ActionCreator";
 
 class LoadingEntityViewHeaderWrapper extends Component {
   static propTypes = {
@@ -34,6 +35,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
     if (this.props.overlayId === overlayId) {
       this.setState({row});
     }
+    ActionCreator.changeHeaderTitle({id: overlayId, title: getDisplayLabel(row, this.props.langtag)})
   };
 
   render() {
@@ -52,7 +54,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
         components: <div />,
         langtag
       };
-    return <Header {...elements} />
+    return <Header {...elements} id={this.props.overlayId}/>
   }
 }
 

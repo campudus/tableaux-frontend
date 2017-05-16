@@ -56,7 +56,10 @@
     "translation_needed": "Translation necessary",
     "this_translation_needed": "Translation to \"{{langtag}}\" necessary",
     "no_translation_needed": "No translation needed",
-    "no_such_translation_needed": "No translation to \"{{langtag}}\" necessary"
+    "no_such_translation_needed": "No translation to \"{{langtag}}\" necessary",
+    "expand_all": "Expand all translations",
+    "collapse_all": "Collapse all translations",
+    "is_single_language": "Value can't be localized"
   },
   "jump": {
     "no_such_row": "No row with ID {{row}} in this table",
@@ -98,5 +101,10 @@
     "links": "No data has been linked yet",
     "attachments": "No files have been linked yet",
     "date": "No date has been chosen yet"
-  }
+  },
+  "link-overlay-empty": "Nothing linked yet. You can choose data from the following list.",
+  "link-overlay-items-title": "Linked data from table {{name}}",
+  "row-is-locked": "Data is read only",
+  "unlock-row": "Unlock"
+
 }

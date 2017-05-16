@@ -143,7 +143,6 @@ class EntityViewBody extends Component {
   };
 
   setTranslationView = item => {
-    console.log("setTranslationView", item)
     const oldItem = this.state.translationView;
     const newItem = {
       show: (f.isNil(item.show) ? f.prop("show", oldItem) : item.show),

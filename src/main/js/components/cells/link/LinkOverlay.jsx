@@ -458,12 +458,20 @@ class LinkOverlay extends Component {
         />}
       </AutoSizer>;
 
+    // because keeping track of multiple partial localisation strings gets more tiresome...
+    const linkEmptyLines = i18n.t("table:link-overlay-empty").split(".");
+
     const linkedRows = (f.isEmpty(f.get("linked", rowResults)) && !loading)
       ? (
-        <div className="link-list info">
+        <div className="link-list empty-info">
           <i className="fa fa-chain-broken"/>
           <div className="text">
-            {i18n.t("table:link-overlay-empty")}
+            <span>
+              {linkEmptyLines[0]}.
+            </span>
+            <span>
+              {linkEmptyLines[1]}.
+            </span>
           </div>
         </div>
       )

@@ -119,7 +119,6 @@ class Cell extends React.Component {
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
       if (!focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
-        console.log("Cell will force focus");
         cellDOMNode.focus();
       }
     }

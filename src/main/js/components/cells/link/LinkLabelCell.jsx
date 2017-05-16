@@ -30,7 +30,7 @@ export default class LinkLabelCell extends Component {
       evt.stopPropagation();
     };
 
-    return <a href="#" onClick={clickFn} className="link-label delete">
+    return <a href="#" onClick={clickFn} className="link-label">
       {this.getLinkName()}
     </a>;
   }

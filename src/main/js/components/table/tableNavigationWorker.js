@@ -157,7 +157,6 @@ export function updateScrollViewToSelectedCell() {
   // Are there any selected cells?
   const cellsDom = tableRowsDom.getElementsByClassName("cell selected");
   if (cellsDom.length > 0) {
-    console.log("Scroll View Update happens.");
     // Get the first selected cell
     const cell = cellsDom[0];
     // Cell DOM position and dimensions
@@ -398,7 +397,6 @@ export function getPreviousColumn(currentColumnId) {
  * @param cb
  */
 export function preventSleepingOnTheKeyboard(cb) {
-  console.log("preventSleepingOnTheKeyboard:", this);
   if (this.keyboardRecentlyUsedTimer === null) {
     this.keyboardRecentlyUsedTimer = setTimeout(() => {
       this.keyboardRecentlyUsedTimer = null;

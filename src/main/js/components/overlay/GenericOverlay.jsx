@@ -7,13 +7,15 @@ import classNames from "classnames";
 import Header from "./Header";
 import Footer from "./Footer";
 import InfoBox from "./InfoBox";
+import * as f from "lodash/fp";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../constants/TableauxConstants";
 
 const FRAME_DELAY = (1000/60) | 0; // ms delay between frames at 60 fps
 
 class GenericOverlay extends Component {
 
   static propTypes = {
-    // body : React.PropTypes.element.isRequired,
     head: PropTypes.element.isRequired,
     body: PropTypes.element.isRequired,
     footer: PropTypes.element,
@@ -28,10 +30,21 @@ class GenericOverlay extends Component {
 
   constructor(props) {
     super(props);
+
+    const sharedProps = {
+      id: props.id,
+      registerForEvent: this.registerChildForEvent
+    };
+
     this.state = {
       contentHeight: 0,
       contentWidth: 0,
-      overlayIsNew: true
+      overlayIsNew: true,
+      childrenProps: {
+        head: f.merge(f.get("props", props.head), sharedProps),
+        body: f.merge(f.get("props", props.body), sharedProps),
+        footer: f.assoc(f.get(["footer", "props"], props), sharedProps)
+      }
     };
 
     this.allowedTypes = ["normal", "full-height"];
@@ -54,23 +67,18 @@ class GenericOverlay extends Component {
       overlayDOMNode.focus();
     }
 
-    window.addEventListener("resize", this.handleResize);
-    this.handleResize();
+    Dispatcher.on(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
   };
 
   componentWillUnmount = () => {
     // Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    window.removeEventListener("resize", this.handleResize);
+    Dispatcher.off(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
 
     // Reset active element before overlay opened
     if (this.focusedElementBeforeOverlayOpens) {
       this.focusedElementBeforeOverlayOpens.focus();
     }
-  };
-
-  handleResize = (event) => {
-    //this.recalculateContentDimensions();
   };
 
   backgroundClick = (event) => {
@@ -105,12 +113,37 @@ class GenericOverlay extends Component {
     map(handler => handler(event), handlersForType);
   };
 
+  updateChildrenProps = ({id, props}) => {
+    if (id !== this.props.id) {
+      return;
+    }
+    console.log("updating old children props:", this.state.childrenProps, "with", props)
+    const modifiedProps = f.keys(props);
+    updatedProps = childIdString => {
+      const existingProps = f.get(childIdString, this.state.childrenProps);
+      const existingKeys = f.intersection(modifiedProps, existingProps);
+      return f.merge(
+        existingProps,
+        f.fromPairs(
+          f.zip(existingKeys, f.props(existingKeys, props))
+        )
+      )
+    };
+
+    this.setState({childrenProps: {
+      head: updatedProps("head"),
+      body: updatedProps("body"),
+      footer: updatedProps("footer")
+    }}, () => console.log("updated children props to", this.state.childrenProps))
+  };
+
   render() {
     const overlayType = (contains(this.props.type, this.allowedTypes))
       ? this.props.type
       : "normal";
 
     const {footer, head, body, isOnTop, specialClass} = this.props;
+    const {childrenProps} = this.state;
     const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
       "active": isOnTop,
@@ -136,15 +169,11 @@ class GenericOverlay extends Component {
              }}
              onScroll={throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
-          {React.cloneElement(head, {id: this.props.id})}
+          {React.cloneElement(head, childrenProps.head)}
           <div className="overlay-content">
-            {React.cloneElement(body,
-              {
-                id: this.props.id,
-                registerForEvent: this.registerChildForEvent
-              })}
+            {React.cloneElement(body, childrenProps.body)}
           </div>
-          {(footer) ? <footer>{React.cloneElement(footer, {id: this.props.id})}</footer> : null}
+          {(footer) ? <footer>{React.cloneElement(footer, childrenProps.footer)}</footer> : null}
         </div>
         <div ref="overlayBackground" onClick={this.backgroundClick} className="background" />
       </div>

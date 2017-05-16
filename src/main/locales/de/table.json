@@ -56,7 +56,10 @@
     "translation_needed": "Übersetzung nötig",
     "this_translation_needed": "Übersetzung nötig für \"{{langtag}}\"",
     "no_translation_needed": "Keine Übersetzung nötig",
-    "no_such_translation_needed": "Keine Übersetzung nötig für \"{{langtag}}\""
+    "no_such_translation_needed": "Keine Übersetzung nötig für \"{{langtag}}\"",
+    "expand_all": "Alle Übersetzungen aufklappen",
+    "collapse_all": "Alle Übersetzungen einklappen",
+    "is_single_language": "Wert ist nicht mehrsprachig"
   },
   "jump": {
     "no_such_row": "Diese Tabelle enthält keine Zeile mit ID {{row}}",
@@ -98,5 +101,9 @@
     "links": "Es wurden noch keine Datensätze verknüpft",
     "attachments": "Es wurden noch keine Dateien verknüpft",
     "date": "Es wurde noch kein Datum gewählt"
-  }
+  },
+  "link-overlay-empty": "Keine Verknüpfungen bisher. Sie können aus der folgenden Liste Datensätze wählen.",
+  "link-overlay-items-title": "Verknüpfte Datensätze aus der Tabelle {{name}}",
+  "row-is-locked": "Datensatz ist schreibgeschützt",
+  "unlock-row": "Entsperren"
 }

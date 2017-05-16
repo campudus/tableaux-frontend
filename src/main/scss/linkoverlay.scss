@@ -89,6 +89,7 @@
 
     .linked-items {
       padding-right: 20px;
+
       .link-list {
         width: 100%;
         box-sizing: border-box;
@@ -97,6 +98,24 @@
           display: flex;
           width: 100%;
           align-items: center;
+        }
+
+        &.empty-info {
+          padding: 20px 40px !important;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: $color-text-medium-grey;
+
+          i {
+            font-size: larger;
+            margin-right: 1em;
+          }
+          .text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+          }
         }
 
         .draggable {
@@ -126,7 +145,7 @@
       .items-title {
         display: flex;
         span {
-          padding-top: 10px;
+          padding-top: 20px;
           padding-left: 40px;
           font-size: large;
         }

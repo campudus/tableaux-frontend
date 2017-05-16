@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from "react";
-import {switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import {FallbackLanguage, Langtags, Directions} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
@@ -8,7 +7,9 @@ import FilterBar from "./FilterBar";
 import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
-import {changeEntityViewRow, changeHeaderTitle} from "../../../actions/ActionCreator";
+import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
+import {ActionTypes} from "../../../constants/TableauxConstants";
+import Dispatcher from "../../../dispatcher/Dispatcher";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -24,6 +25,14 @@ class LanguageSwitcher extends Component {
     };
   }
 
+  componentDidMount() {
+    Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.handleLangtagSwitch);
+  }
+
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.handleLangtagSwitch);
+  }
+
   toggleOpen = () => {
     const {open} = this.state;
     this.setOpen(!open)();
@@ -33,9 +42,14 @@ class LanguageSwitcher extends Component {
     this.setState({open});
   };
 
+  handleLangtagSwitch = ({langtag}) => {
+    if (this.state.langtag != langtag) {
+      this.setState({langtag});
+    }
+  };
+
   setLang = langtag => () => {
-    switchEntityViewLanguage({langtag});
-    this.setState({langtag});
+    this.setState({langtag}, () => switchEntityViewLanguage({langtag}));
     this.setOpen(false);
   };
 

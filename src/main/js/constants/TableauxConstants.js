@@ -93,7 +93,8 @@ var TableauxConstant = {
     FILTER_LINKS: null,
     PASS_ON_KEYSTROKES: null,
     CHANGE_ENTITY_VIEW_ROW: null,
-    CHANGE_HEADER_TITLE: null
+    CHANGE_HEADER_TITLE: null,
+    UPDATE_OVERLAY: null
   }),
 
   Directions: keyMirror({

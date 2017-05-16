@@ -306,5 +306,9 @@ module.exports = {
 
   changeHeaderTitle: (payload) => {
     Dispatcher.trigger(ActionTypes.CHANGE_HEADER_TITLE, payload);
+  },
+
+  updateOverlay: ({id, props}) => {
+    Dispatcher.trigger(ActionTypes.UPDATE_OVERLAY, {id, props});
   }
 };
