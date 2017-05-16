@@ -1,6 +1,7 @@
 import React from "react";
 import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
+import {isLocked} from "../../../helpers/annotationHelper";
 
 class TextView extends React.Component {
 
@@ -53,7 +54,8 @@ class TextView extends React.Component {
   render() {
     const value = this.getValue();
     const {editing} = this.state;
-    const {langtag, funcs} = this.props;
+    const {langtag, funcs, cell} = this.props;
+    const isRowLocked = isLocked(cell.row);
 
     return <div onKeyDown={(this.editing) ? function () {} : this.editOnEnter}
                 onClick={e => { e.stopPropagation(); e.preventDefault(); }}
@@ -74,7 +76,7 @@ class TextView extends React.Component {
                              className="item-content text"
                              langtag={langtag}
                              readOnly={true}
-                             onClick={this.setEditing(true)}
+                             onClick={(isRowLocked) ? function () {} : this.setEditing(true)}
           />
         )
       }

@@ -10,6 +10,7 @@ import toMarkdown from "to-markdown";
 import i18n from "i18next";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
+import * as f from "lodash/fp";
 
 @listensToClickOutside
 class RichTextComponent extends React.Component {
@@ -89,11 +90,14 @@ class RichTextComponent extends React.Component {
   };
 
   handleInput = event => {
-    if (event && this.props.onClick && event.key === "Enter") {
-      event.preventDefault();
+    console.log("Key:", f.get("key", event))
+    if (f.contains(f.get("key", event), ["Enter", "ArrowUp", "ArrowDown"])) {
       event.stopPropagation();
-      this.props.onClick(event);
-    } else if (event && event.target) {
+    }
+  };
+
+  handleChange = event => {
+    if (f.get("target", event)) {
       const {handleContent} = this.props;
       if (handleContent) {
         handleContent(this.getMarkdown(event.target.value));
@@ -102,7 +106,7 @@ class RichTextComponent extends React.Component {
   };
 
   render = () => {
-    const {hideEditorSymbols, readOnly, close, saveAndClose, onClick, tabIdx} = this.props;
+    const {hideEditorSymbols, readOnly, onClick, tabIdx} = this.props;
     const clickHandler = onClick || function () {};
     const contentClass = classNames("content-pane", {"input": !readOnly});
     const cssClass = classNames("rich-text-component", {"editing": !readOnly});
@@ -137,7 +141,7 @@ class RichTextComponent extends React.Component {
         <div className={contentClass}
              contentEditable={!readOnly}
              ref={cp => { this.content = cp }}
-             onChange={evt => (readOnly) ? null : this.handleInput(evt)}
+             onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
         >
         </div>
       </div>

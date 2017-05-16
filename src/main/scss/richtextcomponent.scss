@@ -18,11 +18,10 @@
     width: 100%;
     padding: 10px 0;
     margin-bottom: 10px;
+    border-bottom: 1px solid $color-text-light-grey;
 
     .action-group {
-      padding: 5px;
-      background-color: $color-background-very-light-grey;
-      margin-right: 10px;
+      margin-right: 1em;
       display: inline-flex;
       align-items: baseline;
       vertical-align: bottom;
@@ -34,20 +33,20 @@
     }
 
     a {
-      padding: 5px;
+      padding: 4px;
       background-color: $color-text-light-grey;
-      color: $color-primary-contrast-text;
+      color: $color-border-grey;
       margin-right: 5px;
       text-align: center;
       border-radius: 3px;
-      transition: background-color 0.5s;
 
       i {
         width: 1em;
       }
 
       &:hover {
-        background-color: $color-text-medium-grey;
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
       }
     }
   }
@@ -77,33 +76,32 @@
         list-style: decimal inside;
       }
 
+      p {
+        margin: 5px;
+      }
+
       h1, h2, h3, h4 {
         background-color: transparent;
         text-align: left;
-        color: $color-text-medium-grey;
         border: none;
         margin: 5px 0;
+        font-weight: bold;
       }
 
       h1 {
-        font-weight: bold;
-        font-style: italic;
-        font-size: x-large;
+        font-size: 1.8rem;
       }
 
       h2 {
-        font-weight: bold;
-        font-size: medium;
+        font-size: 1.7rem;
       }
 
       h3 {
-        font-style: italic;
-        font-size: large;
+        font-size: 1.6rem;
       }
 
       h4 {
-        font-variant: small-caps;
-        font-size: medium;
+        font-size: 1.5rem;
       }
     }
 

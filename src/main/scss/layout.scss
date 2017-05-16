@@ -33,3 +33,10 @@ input, textarea {
   font-family: $font-main;
   font-size: $font-size-standard;
 }
+
+.empty-item {
+  text-transform: uppercase;
+  color: $color-text-medium-grey;
+  font-style: italic;
+  font-weight: lighter;
+}
