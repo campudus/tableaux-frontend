@@ -318,77 +318,69 @@
   }
 }
 
-.overlay {
-  .overlay-content {
-    .content-items {
-      .item-header {
-        .title-wrapper {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
+.overlay .overlay-content .content-items .item-header .title-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 
-          .entry-popup-wrapper {
-            text-transform: none;
-            font-weight: normal;
-            position: absolute;
-            left: -40px;
+  .entry-popup-wrapper {
+    text-transform: none;
+    font-weight: normal;
+    position: absolute;
+    left: -40px;
 
-            .popup-button {
-              position: relative;
-              height: 30px;
-              width: 30px;
+    .popup-button {
+      position: relative;
+      height: 30px;
+      width: 30px;
 
-              a {
-                position: absolute;
-                background-color: transparent;
-                color: $color-primary;
-                border-radius: 3px;
-                border: 1px solid $color-primary;
-                @include button-with-icon();
+      a {
+        position: absolute;
+        background-color: transparent;
+        color: $color-primary;
+        border-radius: 3px;
+        border: 1px solid $color-primary;
+        @include button-with-icon();
 
-                div {
-                  flex: 1;
-                }
-              }
+        div {
+          flex: 1;
+        }
+      }
 
-              &:hover, &.is-open {
-                a {
-                  background-color: $color-primary;
-                  svg {
-                    fill: $color-white;
-                  }
-                }
-              }
-
-              &.is-open {
-                a {
-                  @include rounded-upper-borders;
-                }
-                &.menu-is-right {
-                  a {
-                    border-radius: 3px 0 0 3px;
-                  }
-                }
-              }
-            }
-
-            .entry-popup {
-              @include popup-menu();
-              z-index: 5;
-              width: 25vw;
-              top: 30px;
-
-              &.inverse {
-                bottom: 0;
-                left: 29px;
-                top: auto;
-                border-top: none;
-                border-radius: 0 3px 3px 0;
-                border-left: 3px solid $color-primary;
-              }
-            }
+      &:hover, &.is-open {
+        a {
+          background-color: $color-primary;
+          svg {
+            fill: $color-white;
           }
         }
+      }
+
+      &.is-open {
+        a {
+          @include rounded-upper-borders;
+        }
+        &.menu-is-right {
+          a {
+            border-radius: 3px 0 0 3px;
+          }
+        }
+      }
+    }
+
+    .entry-popup {
+      @include popup-menu();
+      z-index: 5;
+      width: 25vw;
+      top: 30px;
+
+      &.inverse {
+        bottom: 0;
+        left: 29px;
+        top: auto;
+        border-top: none;
+        border-radius: 0 3px 3px 0;
+        border-left: 3px solid $color-primary;
       }
     }
   }
@@ -509,7 +501,6 @@
         }
       }
 
-
       .pseudo-header {
         display: flex;
         height: 50px;
@@ -521,7 +512,13 @@
         color: $color-primary-contrast-text;
 
         .title {
+          flex: 1;
           text-transform: uppercase;
+        }
+
+        .toggle-all-button {
+          font-weight: normal;
+          color: $color-primary;
         }
 
         svg {

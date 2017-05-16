@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
 import {maybe} from "../../helpers/monads";
-import {FallbackLanguage, Langtags, ColumnKinds} from "../../constants/TableauxConstants";
+import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import {convert} from "../../helpers/cellValueConverter";
@@ -10,6 +10,7 @@ import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {isTranslationNeeded} from "../../helpers/annotationHelper";
 import Empty from "../helperComponents/emptyEntry";
 import {switchEntityViewLanguage} from "../../actions/ActionCreator";
+import i18n from "i18next";
 
 const KEY = "translations";
 
@@ -36,7 +37,7 @@ class LanguageView extends Component {
       <div className={wrapperClass}>
         <div className="item-header">
           <div className="label">{getLanguageOrCountryIcon(langtag)}</div>
-          {(f.isEmpty(value)) ? <Empty/> : null}
+          {(f.isEmpty(value)) ? <Empty /> : null}
           <div className="toggle-button">
             <a href="#" onClick={toggleExpand}>
               <i className={buttonClass} />
@@ -106,6 +107,16 @@ class TranslationPopup extends Component {
     this.storeTranslations(newLangState);
   };
 
+  setAllTranslations = status => () => {
+    const newLangState = f.compose(
+      f.reduce(f.merge, {}),
+      f.map(lt => ({[lt]: status}))
+    )(Langtags);
+    this.setState({translations: newLangState});
+    console.log("newLangState:", newLangState)
+    this.storeTranslations(newLangState);
+  };
+
   isExpanded = langtag => f.prop(["translations", langtag], this.state) || false;
 
   render() {
@@ -114,15 +125,31 @@ class TranslationPopup extends Component {
       || f.prop(["column", "displayName", FallbackLanguage], cell)
       || "";
 
-    const comparator = lt => `${this.isExpanded(lt) ? 0 : 1}-${lt}`; // expanded first, then alphabetical
+//    const comparator = lt => `${this.isExpanded(lt) ? 0 : 1}-${lt}`; // expanded first, then alphabetical
+    const isAnyCollapsed = f.compose(
+      f.any(f.complement(f.identity)),           // any not truthy
+      f.map(f.last),                             // of "display" values
+      f.reject(f.matchesProperty(0, langtag)),   // of elements without langtag === current langtag
+      f.entries                                  // of tuples [langtag, "display"]
+    )(this.state.translations);                  // of saved translations
 
     return (
       <div className="translation-view">
         <div className="pseudo-header">
           <a href="#" onClick={() => setTranslationView({show: false})}>
-            <SvgIcon icon="cross"/>
+            <SvgIcon icon="cross" />
           </a>
           <div className="title">{title}</div>
+          {(cell.isMultiLanguage)
+            ? (
+              <div className="toggle-all-button"
+                   onClick={this.setAllTranslations(isAnyCollapsed)}
+              >
+                {i18n.t((isAnyCollapsed) ? "table:translations.expand_all" : "table:translations.collapse_all")}
+              </div>
+            )
+            : <div className="toggle-all-button">{i18n.t("table:translations.is_single_language")}</div>
+          }
         </div>
         <div className="content-items">
           {(!cell.isMultiLanguage)
@@ -132,7 +159,7 @@ class TranslationPopup extends Component {
                                         isExpanded={this.isExpanded(lt)}
                                         toggleExpand={this.toggleTranslation(lt)}
               />),
-//              f.sortBy(comparator),
+//              f.sortBy(comparator), // requested to remove from execution, but keep in code
               f.reject(f.eq(langtag))
             )(Langtags)
           }
