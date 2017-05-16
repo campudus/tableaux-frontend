@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from "react";
-import * as _ from "lodash";
 import {openLinkOverlay} from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
@@ -18,7 +16,11 @@ class LinkEditCell extends Component {
 
   constructor(props) {
     super(props);
-    this.props.watch(props.cell.row, {events: "change:unlocked", force: true});
+    this.props.watch(props.cell.row,
+      {
+        events: "change:unlocked",
+        force: true
+      });
   }
 
   componentDidMount = () => {
@@ -48,14 +50,16 @@ class LinkEditCell extends Component {
     const {cell, langtag} = this.props;
     const links = cell.value.map((element, index) => {
       return <LinkLabelCell key={element.id} deletable={false} linkElement={element}
-                              cell={cell} langtag={langtag}
-                              linkIndexAt={index}/>;
+                            cell={cell} langtag={langtag}
+                            linkIndexAt={index} />;
     });
 
     return (
-        <div className={"cell-content"} onScroll={event => { event.stopPropagation(); }}>
-          {[...links, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
-        </div>
+      <div className={"cell-content"} onScroll={event => {
+        event.stopPropagation();
+      }}>
+        {[...links, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
+      </div>
     );
   }
 

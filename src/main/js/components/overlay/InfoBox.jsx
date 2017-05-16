@@ -24,7 +24,7 @@ class InfoBox extends Component {
           <div className="message">{message}</div>
         </div>
       </div>
-    )
+    );
   }
 }
 

@@ -7,7 +7,6 @@ import * as f from "lodash/fp";
 import {hasUserAccessToCountryCode} from "../../../helpers/accessManagementHelper";
 import {Directions} from "../../../constants/TableauxConstants";
 
-
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
 

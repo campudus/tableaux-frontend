@@ -49,17 +49,23 @@ var AttachmentOverlay = React.createClass({
       folder.fetch({
         data: {langtag: self.props.langtag},
         success: function (err, result) {
+          if (err) {
+            throw new Error(err);
+          }
           self.setState({folder: result});
+        },
+        error: function (e) {
+          throw new Error(e);
         }
       });
     };
   },
 
   toggleAttachments: function (isLinked, file) {
-    var cell = this.props.cell;
+    const cell = this.props.cell;
 
     return function () {
-      var attachments = _.clone(cell.value);
+      let attachments = _.clone(cell.value);
 
       if (isLinked) {
         _.remove(attachments, function (attachment) {

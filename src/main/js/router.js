@@ -2,7 +2,6 @@ const App = require("ampersand-app");
 const Router = require("ampersand-router");
 let React = require("react");
 const ReactDOM = require("react-dom");
-let locale = require("browser-locale")();
 import Tableaux from "./components/Tableaux.jsx";
 import * as f from "lodash/fp";
 const Dispatcher = require("./dispatcher/Dispatcher");
@@ -17,7 +16,9 @@ const parseOptions = optString => {
     return {};
   }
   const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
-  const parseFilter = function (str) { return {filter: true}; }; // will get more complex once we implement filter routes
+  const parseFilter = function (str) {
+    return {filter: true};
+  }; // will get more complex once we implement filter routes
   const parseEntityView = function (str) {
     return {entityView: {focusElement: str.split(":").length > 1}};
   };

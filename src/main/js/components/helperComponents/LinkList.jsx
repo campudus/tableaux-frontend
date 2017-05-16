@@ -9,7 +9,7 @@ import classNames from "classnames";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 import {loadAndOpenEntityView} from "../overlay/EntityViewOverlay";
-import {List, AutoSizer} from "react-virtualized";
+import {List} from "react-virtualized";
 import SvgIcon from "../helperComponents/SvgIcon";
 
 const MAX_DISPLAYED_LINKS = 4;
@@ -39,7 +39,7 @@ class LinkList extends Component {
     if (f.isString(linkTarget)) {
       window.open(linkTarget, "_blank");
     } else {
-      loadAndOpenEntityView(linkTarget, this.props.langtag)
+      loadAndOpenEntityView(linkTarget, this.props.langtag);
     }
   };
 
@@ -47,14 +47,14 @@ class LinkList extends Component {
     const {displayName, linkTarget} = this.props.links[index];
     return (
       <div className="link-label-wrapper-2" key={key} style={style}>
-        <div className="link-label-wrapper" onClick={this.proceedTo(linkTarget)} >
+        <div className="link-label-wrapper" onClick={this.proceedTo(linkTarget)}>
           <a className="link-label" href="#">
             {displayName}
             {(f.isEmpty(linkTarget)) ? null : <i className="fa fa-long-arrow-right" />}
           </a>
         </div>
       </div>
-    )
+    );
   };
 
   renderInteractiveLink = ({index, key = index, style}) => {
@@ -74,11 +74,11 @@ class LinkList extends Component {
              onMouseEnter={setHoverState}
              onMouseLeave={() => {
                if (hovered) {
-                 this.setState({hovered: null})
+                 this.setState({hovered: null});
                }
              }}
         >
-          <div className="main-button" onClick={this.proceedTo(linkTarget)} >
+          <div className="main-button" onClick={this.proceedTo(linkTarget)}>
             <a href="#">
               <div className="text-wrapper">{displayName}</div>
             </a>
@@ -86,15 +86,15 @@ class LinkList extends Component {
           </div>
           {(hovered)
             ? (<div className="unlink-button" onClick={unlink(index)}>
-                <a href="#" >
-                  <SvgIcon icon="cross" containerClasses="color-primary"/>
+                <a href="#">
+                  <SvgIcon icon="cross" containerClasses="color-primary" />
                 </a>
               </div>
             )
             : null }
         </div>
       </div>
-    )
+    );
   };
 
   renderPreview = () => {
@@ -109,18 +109,12 @@ class LinkList extends Component {
           .map(index => renderFn({index}))
         }
       </div>
-    )
+    );
   };
 
   renderAll = () => {
     const {links, unlink} = this.props;
     const nLinks = links.length;
-    const {expanded} = this.state;
-    const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-    const cssClass = classNames("item-content", {
-      "can-expand": canExpand & !expanded,
-      "expanded": expanded
-    });
 
     return (
       <List width={window.innerWidth * 0.6 - 100}
@@ -130,7 +124,7 @@ class LinkList extends Component {
             rowRenderer={(unlink) ? this.renderInteractiveLink : this.renderLink}
             hovered={this.state.hovered}
       />
-    )
+    );
   };
 
   render() {
@@ -138,11 +132,6 @@ class LinkList extends Component {
     const nLinks = links.length;
     const {expanded} = this.state;
     const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-    const cssClass = classNames("item-content", {
-      "can-expand": canExpand & !expanded,
-      "expanded": expanded
-    });
-    const {unlink} = this.props;
 
     return (
       <div className="link-list">
@@ -162,7 +151,7 @@ class LinkList extends Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 

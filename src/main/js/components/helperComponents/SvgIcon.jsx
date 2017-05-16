@@ -13,7 +13,6 @@
 
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
-import ReactDOM from "react-dom";
 import request from "superagent";
 
 const iconUrls = {
@@ -38,7 +37,12 @@ class ImageCache {
 
   static cache(url, resolve, reject) {
     const subscribers = f.prop(["_subscribers", url], ImageCache) || [];
-    ImageCache._subscribers[url] = [...subscribers, {error: reject, success: resolve}];
+    ImageCache._subscribers[url] = [...subscribers,
+      {
+        error: reject,
+        success: resolve
+      }
+    ];
 
     if (f.isEmpty(subscribers)) { // We're referring to the subscribers value BEFORE we added the current one
       request
@@ -53,7 +57,7 @@ class ImageCache {
               subscribers.forEach(s => s.success(response.text));
             }
           }
-        )
+        );
     }
   }
 
@@ -68,7 +72,7 @@ class ImageCache {
           ImageCache.cache(url, resolve, reject);
         }
       }
-    )
+    );
   }
 }
 
@@ -94,13 +98,15 @@ class SvgIcon extends Component {
         this.containerElement.innerHTML = svg;
         this.svgData = this.containerElement.children["0"];
         this.setState({loading: false}, this.processImage);
-      })
+      });
   }
 
   processImage = () => {
     const {fillColor, center, svgClasses, title} = this.props;
     this.svgData.classList.add("svg-icon-content");
-    f.map(t => { t.innerHTML = f.defaultTo("", title); }, this.svgData.getElementsByTagName("title"))
+    f.map(t => {
+      t.innerHTML = f.defaultTo("", title);
+    }, this.svgData.getElementsByTagName("title"));
     if (fillColor) {
       this.svgData.setAttribute("fill", fillColor);
     }
@@ -108,22 +114,18 @@ class SvgIcon extends Component {
       this.svgData.setAttribute("preserveAspectRatio", "xMidYMid meet");
     }
     if (svgClasses) {
-      " ".split(svgClasses).forEach(c => this.svgData.classList.add(c))
+      " ".split(svgClasses).forEach(c => this.svgData.classList.add(c));
     }
   };
 
-  clickHandler = e => {
-    const imgDOM = ReactDOM.findDOMNode(this.img);
-  };
-
-  componentDidMount() {
-    this.clickHandler();
-  }
-
   render() {
-    return <div className={"svg-icon " + (this.props.containerClasses || "")}
-                ref={el => { this.containerElement = el }}
-    />
+    return (
+      <div className={"svg-icon " + (this.props.containerClasses || "")}
+           ref={el => {
+             this.containerElement = el;
+           }}
+      />
+    );
   }
 }
 

@@ -38,7 +38,10 @@ class TextView extends React.Component {
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    changeCell({cell, value: changes});
+    changeCell({
+      cell,
+      value: changes
+    });
     this.setEditing(false)();
   };
 
@@ -57,10 +60,14 @@ class TextView extends React.Component {
     const {langtag, funcs, cell} = this.props;
     const isRowLocked = isLocked(cell.row);
 
-    return <div onKeyDown={(this.editing) ? function () {} : this.editOnEnter}
-                onClick={e => { e.stopPropagation(); e.preventDefault(); }}
+    return <div onKeyDown={(this.editing) ? function () {
+    } : this.editOnEnter}
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
                 tabIndex={1}
-                ref={el => { funcs.register(el) }}
+                ref={el => { funcs.register(el); }}
     >
       {(editing)
         ? (
@@ -76,7 +83,8 @@ class TextView extends React.Component {
                              className="item-content text"
                              langtag={langtag}
                              readOnly={true}
-                             onClick={(isRowLocked) ? function () {} : this.setEditing(true)}
+                             onClick={(isRowLocked) ? function () {
+                             } : this.setEditing(true)}
           />
         )
       }

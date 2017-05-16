@@ -61,7 +61,7 @@ class TextCell extends Component {
           </div>
         </div>
       ),
-      type: "full-height",
+      type: "full-height"
     });
   };
 

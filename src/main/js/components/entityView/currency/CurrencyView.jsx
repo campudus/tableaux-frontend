@@ -1,11 +1,11 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
 import CurrencyItem from "./CurrencyItem";
 import * as f from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import {Directions} from "../../../constants/TableauxConstants";
 import {isLocked} from "../../../helpers/annotationHelper";
-import {askForSessionUnlock} from "../../helperComponents/SessionUnlockDialog";
+import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 
 class CurrencyView extends Component {
 
@@ -47,7 +47,10 @@ class CurrencyView extends Component {
       : f.set(el, false, editing);
     if (country && value) {
       const changes = {[country]: value};
-      changeCell({cell, value: changes});
+      changeCell({
+        cell,
+        value: changes
+      });
     }
     if (editing[el] !== to) {
       this.setState({editing: isEditing});
@@ -74,7 +77,7 @@ class CurrencyView extends Component {
         evt.stopPropagation();
         evt.preventDefault();
       }
-    }
+    };
   };
 
   changeActive = id => dir => values => {
@@ -88,13 +91,13 @@ class CurrencyView extends Component {
     const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-        <div className="item-content currency"
-             ref={el => { funcs.register(el) }}
-             tabIndex={1}
-             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
-        >
-          {currencyRows}
-          {this.props.children}
+      <div className="item-content currency"
+           ref={el => { funcs.register(el); }}
+           tabIndex={1}
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
+      >
+        {currencyRows}
+        {this.props.children}
       </div>
     );
   }

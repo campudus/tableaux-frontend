@@ -12,7 +12,7 @@ const itemSource = {
     return {
       id: props.id,
       index: props.index
-    }
+    };
   }
 };
 
@@ -54,7 +54,7 @@ class DragItem extends Component {
           {this.props.children}
         </div>
       )
-    )
+    );
   }
 }
 
@@ -86,7 +86,7 @@ class DragSortList extends Component {
           )
         }
       </div>
-    )
+    );
   }
 }
 

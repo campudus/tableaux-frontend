@@ -6,10 +6,9 @@
 import React from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
-import {compose, contains, trim} from "lodash/fp";
+import {trim} from "lodash/fp";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 import classNames from "classnames";
-import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 
@@ -33,9 +32,9 @@ class ColumnEntry extends React.Component {
   saveEdit = () => {
     const {langtag, column: {id}} = this.props;
     const {name, description} = this.state;
-    const new_name = (name !== this.props.name) ? trim(name) : null;
-    const new_desc = (description !== this.props.description) ? trim(description) : null;
-    ActionCreator.editColumnHeaderDone(id, langtag, new_name, new_desc);
+    const newName = (name !== this.props.name) ? trim(name) : null;
+    const newDesc = (description !== this.props.description) ? trim(description) : null;
+    ActionCreator.editColumnHeaderDone(id, langtag, newName, newDesc);
   };
 
   editColumn = () => {
@@ -57,13 +56,14 @@ class ColumnEntry extends React.Component {
                                  description={description}
                                  index={id}
       />,
-      //footer: <Footer actions={buttons} />,
       type: "normal"
     });
   };
 
   openContextMenu = (evt) => {
-    if (!evt) return;
+    if (!evt) {
+      return;
+    }
     const colHeaderCell = evt.target.parentNode;
     const rect = colHeaderCell.getBoundingClientRect();
     this.setState({
@@ -99,26 +99,26 @@ class ColumnEntry extends React.Component {
 
   render = () => {
     const {column: {kind, id}, columnContent, columnIcon} = this.props;
-    const menu_open = this.state.ctxCoords;
-    const contextmenu_css_class = classNames(
+    const menuOpen = this.state.ctxCoords;
+    const contextMenuClass = classNames(
       "column-contextmenu-button fa ", {
-        "fa-angle-up": menu_open,
-        "fa-angle-down": !menu_open
+        "fa-angle-up": menuOpen,
+        "fa-angle-down": !menuOpen
       });
-    classNames("column-head", {"context-menu-open": menu_open});
+    classNames("column-head", {"context-menu-open": menuOpen});
     return (
-      <div className={classNames("column-head", {"context-menu-open": menu_open})}
+      <div className={classNames("column-head", {"context-menu-open": menuOpen})}
            key={id}>
         <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}>
           {columnContent}
           {columnIcon}
         </div>
         {(kind !== "concat")
-          ? <a href="#" className={contextmenu_css_class} id={this.calcId()}
-             onClick={this.toggleContextMenu}>
+          ? <a href="#" className={contextMenuClass} id={this.calcId()}
+               onClick={this.toggleContextMenu}>
           </a>
           : null}
-        {(menu_open) ? this.renderContextMenu() : null}
+        {(menuOpen) ? this.renderContextMenu() : null}
       </div>
     );
   }

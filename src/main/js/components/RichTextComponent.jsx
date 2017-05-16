@@ -90,7 +90,6 @@ class RichTextComponent extends React.Component {
   };
 
   handleInput = event => {
-    console.log("Key:", f.get("key", event))
     if (f.contains(f.get("key", event), ["Enter", "ArrowUp", "ArrowDown"])) {
       event.stopPropagation();
     }
@@ -111,7 +110,7 @@ class RichTextComponent extends React.Component {
     const contentClass = classNames("content-pane", {"input": !readOnly});
     const cssClass = classNames("rich-text-component", {"editing": !readOnly});
     return (
-        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} ref={el => { this.focusTarget = el }} >
+        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} ref={el => { this.focusTarget = el; }} >
         {(!readOnly && !hideEditorSymbols)
           ? (
             <div className="symbol-bar">
@@ -140,7 +139,7 @@ class RichTextComponent extends React.Component {
         }
         <div className={contentClass}
              contentEditable={!readOnly}
-             ref={cp => { this.content = cp }}
+             ref={cp => { this.content = cp; }}
              onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
         >
         </div>

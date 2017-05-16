@@ -18,8 +18,8 @@ class SearchBar extends Component {
     super(props);
     this.state = {
       filterValue: "",
-      filterMode: FilterModes.CONTAINS,
-    }
+      filterMode: FilterModes.CONTAINS
+    };
   }
 
   updateFilter = ({mode, value}) => {
@@ -53,7 +53,7 @@ class SearchBar extends Component {
                       {name}
                     </a>
                   </div>
-                )
+                );
               }
             )
           }
@@ -63,8 +63,6 @@ class SearchBar extends Component {
   };
 
   handleInputKeys = event => {
-    const inputKey = f.prop(["target", "key"], event);
-
     const clearOrClose = () => {
       if (!f.isEmpty(this.state.filterValue)) {
         this.setState({filterValue: ""},
@@ -83,7 +81,7 @@ class SearchBar extends Component {
       ActionCreator.passOnKeyStrokes({
         id: this.props.id,
         event
-      })
+      });
     };
 
     const isIn = x => y => f.contains(f.toLower(y), f.map(f.toLower, x));
@@ -92,7 +90,7 @@ class SearchBar extends Component {
       [f.eq("Escape"), clearOrClose],
       [isIn(["arrowup", "arrowdown", "tab", "enter"]), passOnKey],
       [f.stubTrue, f.noop]
-    ])(event.key)
+    ])(event.key);
   };
 
   render() {

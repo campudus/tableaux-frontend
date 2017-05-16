@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {broadcastRowLoaded} from "../../../actions/ActionCreator";
+import ActionCreator, {broadcastRowLoaded} from "../../../actions/ActionCreator";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import Header from "../Header";
@@ -9,7 +9,6 @@ import i18n from "i18next";
 import * as f from "lodash/fp";
 import EntityViewBody from "./EntityViewBody";
 import mkHeaderComponents, {getDisplayLabel, getTableName} from "./EntityViewHeader";
-import ActionCreator from "../../../actions/ActionCreator";
 
 class LoadingEntityViewHeaderWrapper extends Component {
   static propTypes = {
@@ -35,7 +34,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
     if (this.props.overlayId === overlayId) {
       this.setState({row});
     }
-    ActionCreator.changeHeaderTitle({id: overlayId, title: getDisplayLabel(row, this.props.langtag)})
+    ActionCreator.changeHeaderTitle({id: overlayId, title: getDisplayLabel(row, this.props.langtag)});
   };
 
   render() {
@@ -54,7 +53,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
         components: <div />,
         langtag
       };
-    return <Header {...elements} id={this.props.overlayId}/>
+    return <Header {...elements} id={this.props.overlayId}/>;
   }
 }
 
@@ -80,7 +79,7 @@ class LoadingEntityViewBodyWrapper extends Component {
         broadcastRowLoaded({
           overlayId: this.props.overlayId,
           row
-        })
+        });
       };
       this.state = {row: null};
       this.loadRow(toLoad)
@@ -115,7 +114,7 @@ class LoadingEntityViewBodyWrapper extends Component {
             reset: true,
             success: resolve,
             error: e => {
-              reject("Error initialising table columns:", e)
+              reject("Error initializing table columns:", e);
             }
           });
         if (tableMonad.isNone) {
@@ -132,7 +131,7 @@ class LoadingEntityViewBodyWrapper extends Component {
           } else {
             resolve(row);
           }
-        })
+        });
       }
     );
 
@@ -141,7 +140,7 @@ class LoadingEntityViewBodyWrapper extends Component {
         loadColumns()
           .then(loadRow)
           .then(result => (result) ? resolve(result) : reject("Could not load desired row"))
-          .catch(console.error)
+          .catch(console.error);
       }
     );
   };
@@ -152,7 +151,7 @@ class LoadingEntityViewBodyWrapper extends Component {
       ? <EntityViewBody row={row} langtag={this.props.langtag} overlayId={this.props.overlayId}
                         registerForEvent={this.props.registerForEvent}
       />
-      : null
+      : null;
   }
 }
 

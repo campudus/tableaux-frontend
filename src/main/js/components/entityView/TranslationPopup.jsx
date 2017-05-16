@@ -55,7 +55,7 @@ class LanguageView extends Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 
@@ -76,7 +76,7 @@ class SingleLanguageView extends Component {
           {value}
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -113,7 +113,6 @@ class TranslationPopup extends Component {
       f.map(lt => ({[lt]: status}))
     )(Langtags);
     this.setState({translations: newLangState});
-    console.log("newLangState:", newLangState)
     this.storeTranslations(newLangState);
   };
 
@@ -165,7 +164,7 @@ class TranslationPopup extends Component {
           }
         </div>
       </div>
-    )
+    );
   }
 }
 

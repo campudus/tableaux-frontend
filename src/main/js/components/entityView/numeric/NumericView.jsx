@@ -82,22 +82,24 @@ class NumericView extends React.Component {
     }
     this.originalValue = value;
     const {cell, langtag} = this.props;
-    ActionCreator.changeCell(cell, (cell.isMultiLanguage? {[langtag]: value} : value))
+    ActionCreator.changeCell(cell, ((cell.isMultiLanguage) ? {[langtag]: value} : value));
   };
 
   render() {
     const {funcs, thisUserCantEdit} = this.props;
-    return <div className="item-content numeric">
-      <input type="text" value={this.state.value || ""}
-             disabled={thisUserCantEdit}
-             onChange={this.normaliseNumberFormat}
-             onKeyDown={this.handleKeyPress}
-             onBlur={this.saveEditsAndClose}
-             placeholder={i18n.t("table:empty.number")}
-             ref={el => { funcs.register(el) }}
-      />
-      {this.props.children}
-    </div>
+    return (
+      <div className="item-content numeric">
+        <input type="text" value={this.state.value || ""}
+               disabled={thisUserCantEdit}
+               onChange={this.normaliseNumberFormat}
+               onKeyDown={this.handleKeyPress}
+               onBlur={this.saveEditsAndClose}
+               placeholder={i18n.t("table:empty.number")}
+               ref={el => { funcs.register(el); }}
+        />
+        {this.props.children}
+      </div>
+    );
   }
 }
 

@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import {openLinkOverlay} from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
-import {isEmpty, prop, pullAt} from "lodash/fp";
+import {isEmpty, pullAt} from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 
@@ -22,15 +22,12 @@ class LinkView extends Component {
     if (this.props.thisUserCantEdit) {
       return;
     }
-    console.log("remove link no.", id)
     const {cell} = this.props;
     const newValue = pullAt(id, cell.value);
     ActionCreator.changeCell(cell, newValue);
   };
 
   mkLinkList = (cell, langtag) => {
-    const tableUrl = `/${langtag}/tables/${cell.column.toTable}`;
-
     return cell.value.map(
       (link, idx) => {
         return {
@@ -40,7 +37,7 @@ class LinkView extends Component {
             tableId: cell.column.toTable,
             rowId: link.id
           }
-        }
+        };
       }
     );
   };

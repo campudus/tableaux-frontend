@@ -1,18 +1,22 @@
 import React from "react";
 import {translate} from "react-i18next";
 import ActionCreator from "./../../actions/ActionCreator";
-import {noPermissionAlertWithLanguage} from "../overlay/ConfirmationOverlay";
-import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
-import {initiateDeleteRow, initiateRowDependency, initiateEntityView, initiateDuplicateRow} from "../../helpers/rowHelper";
+import {isUserAdmin} from "../../helpers/accessManagementHelper";
+import {
+  initiateDeleteRow,
+  initiateDuplicateRow,
+  initiateEntityView,
+  initiateRowDependency
+} from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {first, compose, isEmpty, eq, drop, remove, merge, contains, prop} from "lodash/fp";
+import {compose, contains, drop, eq, first, isEmpty, merge, prop, remove} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 import {
   addTranslationNeeded,
-  removeTranslationNeeded,
-  getAnnotation,
   deleteCellAnnotation,
+  getAnnotation,
+  removeTranslationNeeded,
   setRowAnnotation
 } from "../../helpers/annotationHelper";
 
@@ -26,10 +30,6 @@ const translationNeverNeeded = cell => contains(cell.kind, [
 ]);
 
 class RowContextMenu extends React.Component {
-
-  constructor(props) {
-    super(props);
-  }
 
   closeRowContextMenu = () => {
     ActionCreator.closeRowContextMenu();
@@ -106,7 +106,7 @@ class RowContextMenu extends React.Component {
     return (
       <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
         {(isPrimaryLanguage) ? t("translations.translation_needed") : t("translations.this_translation_needed",
-            {langtag})}
+          {langtag})}
       </a>
     );
   };
@@ -130,7 +130,7 @@ class RowContextMenu extends React.Component {
     return (
       <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
         {(isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed",
-            {langtag})}
+          {langtag})}
       </a>
     );
   };
@@ -157,18 +157,18 @@ class RowContextMenu extends React.Component {
                           offset={CLICK_OFFSET} menuItems=
                             {<div>
                               {this.props.table.type === "settings" ? "" : <a href="#" onClick={duplicateRow}>{t(
-                                  "duplicate_row")}</a>}
+                                "duplicate_row")}</a>}
                               {this.copyItem()}
                               {this.pasteItem()}
                               <a href="#" onClick={showTranslations}>{t("show_translation")}</a>
                               <a href="#" onClick={showDependency}>{t("show_dependency")}</a>
                               {this.props.table.type === "settings" ? "" : <a href="#" onClick={deleteRow}>{t(
-                                  "delete_row")}</a>}
+                                "delete_row")}</a>}
                               {this.requestTranslationsItem()}
                               {this.removeTranslationNeeded()}
                               {this.setFinalItem()}
                               {this.props.table.type === "settings" ? "" : <a href="#" onClick={showEntityView}>{t(
-                                  "show_entity_view")}</a>}
+                                "show_entity_view")}</a>}
                             </div>
                             }
       />

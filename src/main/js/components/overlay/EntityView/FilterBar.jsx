@@ -15,7 +15,7 @@ class FilterBar extends Component {
     this.state = {
       value: "",
       filterMode: FilterModes.CONTAINS
-    }
+    };
   }
 
   handleInput = event => {
@@ -46,12 +46,14 @@ class FilterBar extends Component {
   render() {
     const {value, filterMode} = this.state;
     const modeString = SearchFunctions[filterMode].displayName;
-    return <input className="header-filter-bar"
-                  onChange={this.handleChange}
-                  onKeyDown={this.handleInput}
-                  value={value}
-                  placeholder={i18n.t(modeString) + "..."}
-    />
+    return (
+      <input className="header-filter-bar"
+             onChange={this.handleChange}
+             onKeyDown={this.handleInput}
+             value={value}
+             placeholder={i18n.t(modeString) + "..."}
+      />
+    );
   }
 }
 

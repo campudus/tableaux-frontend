@@ -8,7 +8,6 @@ import {
   reduce,
   entries,
   compose,
-  first,
   keys,
   assoc,
   cond,
@@ -18,7 +17,7 @@ import {
   stubTrue,
   zip
 } from "lodash/fp";
-import {ColumnKinds, DateFormats, DateTimeFormats, Langtags} from "../../constants/TableauxConstants";
+import {ColumnKinds, DateFormats, DateTimeFormats} from "../../constants/TableauxConstants";
 import Moment from "moment";
 const EMPTY_STRING = "---";
 const {date, datetime} = ColumnKinds;

@@ -6,7 +6,6 @@ import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
 import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
-import * as AccessControl from "../helpers/accessManagementHelper";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
 import TableauxConstants, {ActionTypes, ColumnKinds, FilterModes} from "../constants/TableauxConstants";
@@ -55,7 +54,7 @@ class TableView extends React.Component {
         columnId,
         filter,
         entityView
-      }
+      };
     }
   };
 
@@ -118,10 +117,16 @@ class TableView extends React.Component {
       .getOrElse(null);
 
     if (savedView) {
-      cols.map(col => { col.visible = savedView[col.id]; });
+      cols.map(col => {
+        col.visible = savedView[col.id];
+      });
     } else {
-      cols.forEach(x => { x.visible = false; });
-      f.map(x => { x.visible = true; }, f.take(DEFAULT_VISIBLE_COLUMS, cols));
+      cols.forEach(x => {
+        x.visible = false;
+      });
+      f.map(x => {
+        x.visible = true;
+      }, f.take(DEFAULT_VISIBLE_COLUMS, cols));
     }
   };
 
@@ -365,7 +370,9 @@ class TableView extends React.Component {
     const columns = this.tables.get(this.state.currentTableId).columns;
     columns
       .filter(x => f.contains(x.id, coll))
-      .forEach(x => { x.visible = val; });
+      .forEach(x => {
+        x.visible = val;
+      });
     this.saveView();
     if (cb) {
       cb();

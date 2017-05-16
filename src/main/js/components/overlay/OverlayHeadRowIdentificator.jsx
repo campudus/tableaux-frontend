@@ -37,8 +37,6 @@ class OverlayHeadRowIdentificator extends Component {
     const columnDisplayName = column.displayName[langtag] || column.name;
 
     if (this.props.cell.isLink) {
-      const {toTable} = this.props.cell.column;
-      const linkToTable = `/${langtag}/tables/${toTable}`;
       return (
         <span>
             <span className="column-name">

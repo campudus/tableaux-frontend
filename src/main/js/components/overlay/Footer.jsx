@@ -27,7 +27,7 @@ class Footer extends Component {
           {(pos) ? makeButton("positive", pos) : null}
         </div>
       );
-      return <footer className="button-wrapper">{buttonsItem}</footer>
+      return <footer className="button-wrapper">{buttonsItem}</footer>;
     }
   }
 }

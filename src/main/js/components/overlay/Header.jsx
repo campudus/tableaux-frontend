@@ -72,7 +72,7 @@ class Header extends Component {
     return (
       <div className={cssClass}>
         <a className="close-button" href="#" onClick={() => {
-          ActionCreator.closeOverlay()
+          ActionCreator.closeOverlay();
         }}>
           <SvgIcon icon="cross" containerClasses="color-white" center={true} />
         </a>
@@ -83,7 +83,7 @@ class Header extends Component {
         {buttonsItem}
         {(components) ? React.cloneElement(components, {id: this.props.id}) : null}
       </div>
-    )
+    );
   }
 }
 

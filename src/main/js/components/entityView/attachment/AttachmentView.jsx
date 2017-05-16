@@ -32,7 +32,7 @@ class AttachmentView extends Component {
       ({title}, idx) => {
         const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
         const displayName = translate(title, langtag);
-        return {displayName}
+        return {displayName};
       }
     );
 
@@ -41,7 +41,7 @@ class AttachmentView extends Component {
       : <div className="item-content link">
         <LinkList links={attachments} langtag={langtag} />
         {this.props.children}
-      </div>
+      </div>;
   }
 }
 

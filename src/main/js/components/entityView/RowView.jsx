@@ -11,7 +11,6 @@ import DateView from "./date/DateView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
-import {always, cond, isEmpty, prop, stubTrue} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 import * as Access from "../../helpers/accessManagementHelper";
 import * as Annotations from "../../helpers/annotationHelper";
@@ -66,24 +65,24 @@ class View extends Component {
 
   canEditValue = theoretically => {
     const {cell, langtag} = this.props;
-    const canEditUnlocked = Access.isUserAdmin() ||
-      (Access.canUserChangeCell(cell)
-      && cond([
-        [() => cell.isMultiLanguage, always(Access.hasUserAccessToLanguage(langtag))],
-        [() => cell.isMultiCountry, always(Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag)))],
-        [stubTrue, always(false)]                // Non-admins can't change single-value items
+    const canEditUnlocked = Access.isUserAdmin()
+      || (Access.canUserChangeCell(cell)
+      && f.cond([
+        [() => cell.isMultiLanguage, f.always(Access.hasUserAccessToLanguage(langtag))],
+        [() => cell.isMultiCountry, f.always(Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag)))],
+        [f.stubTrue, f.always(false)]                // Non-admins can't change single-value items
       ])());
     return (theoretically)
       ? canEditUnlocked
-      : canEditUnlocked && (!Annotations.isLocked(cell.row) || Annotations.isTranslationNeeded(langtag)(cell))
+      : canEditUnlocked && (!Annotations.isLocked(cell.row) || Annotations.isTranslationNeeded(langtag)(cell));
   };
 
   clickHandler = () => {
-    const {cell, cell: {row, kind}, funcs, setTranslationView} = this.props;
+    const {cell, cell: {kind}, funcs, setTranslationView} = this.props;
     const translationContent = (canConvert(kind, ColumnKinds.text))
       ? cell
       : {
-        column: prop("column", cell),
+        column: f.get("column", cell),
         id: cell.id
       };
     funcs.focus(funcs.id);
@@ -95,7 +94,7 @@ class View extends Component {
   };
 
   render() {
-    const {cell, funcs, langtag, setTranslationView, hasFocusedChild} = this.props;
+    const {cell, langtag, setTranslationView, hasFocusedChild} = this.props;
     const {kind, column} = cell;
     const views = {
       [ColumnKinds.link]: LinkView,
@@ -120,7 +119,7 @@ class View extends Component {
       "has-focused-child": hasFocusedChild,
       "has-mouse-pointer": this.state.hovered
     });
-    const description = prop(["description", langtag], column) || prop(["description", FallbackLanguage], column);
+    const description = f.get(["description", langtag], column) || f.get(["description", FallbackLanguage], column);
 
     const translationTag = (isMyTranslationNeeded || isAnyTranslationNeeded)
       ? (
@@ -156,7 +155,7 @@ class View extends Component {
                      thisUserCantEdit={isDisabled}
                      popupOpen={this.props.popupOpen}
         />
-        {(!isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle" />
+        {(!f.isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle" />
           <div>{description}</div>
         </div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}

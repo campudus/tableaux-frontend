@@ -6,7 +6,6 @@ import ActionCreator from "../../actions/ActionCreator";
 import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
-import {copyCellToClipboard} from "../cells/cellCopyHelper";
 
 export function shouldCellFocus() {
   // we dont want to force cell focus when overlay is open
@@ -54,42 +53,48 @@ export function getKeyboardShortcuts() {
   return {
     left: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.LEFT);
         }
       );
     },
     right: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.RIGHT);
         }
       );
     },
     tab: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
         }
       );
     },
     up: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.UP);
         }
       );
     },
     down: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.DOWN);
         }
       );
     },
     enter: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           if (selectedCell && !selectedCellEditing) {
             toggleCellEditing.call(this,
               {
@@ -102,7 +107,8 @@ export function getKeyboardShortcuts() {
     },
     escape: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           if (selectedCell && selectedCellEditing) {
             toggleCellEditing.call(this,
               {
@@ -320,14 +326,10 @@ export function getNextRowCell(currentRowId, getPrev) {
       nextIndex = indexCurrentRow;
       // set new language
       nextSelectedCellExpandedRow = Langtags[nextLangtagIndex];
-    }
-    // jump from expanded row to next / or previous cell (completely new row)
-    else {
+    } else {
       jumpToNextRow = true;
     }
-  }
-  // current row is not expanded so jump to next row
-  else {
+  } else {
     jumpToNextRow = true;
   }
 
@@ -341,14 +343,10 @@ export function getNextRowCell(currentRowId, getPrev) {
       // Multilanguage cell
       if (selectedCell.isMultiLanguage) {
         nextSelectedCellExpandedRow = getPrev ? Langtags[Langtags.length - 1] : DefaultLangtag;
-      }
-      // Skip single language cell to next editable cell - by default the first language
-      else {
+      } else {
         nextSelectedCellExpandedRow = DefaultLangtag;
       }
-    }
-    // Next row is closed row. Set default language
-    else {
+    } else {
       nextSelectedCellExpandedRow = langtag;
     }
   }
@@ -427,13 +425,13 @@ export function scrollToLeftStart(e) {
 function scrollToLeftLinear(element, scrollDuration) {
   const scrollStep = element.scrollLeft / (scrollDuration / 15);
   if (requestAnimationFrame !== "undefined") {
-    requestAnimationFrame(step);
-    function step() {
+    const step = () => {
       if (element.scrollLeft > 0) {
         requestAnimationFrame(step);
         element.scrollLeft -= scrollStep;
       }
-    }
+    };
+    requestAnimationFrame(step);
   } else {
     element.scrollLeft = 0;
   }

@@ -1,13 +1,12 @@
 var React = require("react");
-var App = require("ampersand-app");
 var MultifileFileEdit = require("./MultifileFileEdit.jsx");
 var ampersandMixin = require("ampersand-react-mixin");
 var Dispatcher = require("../../../dispatcher/Dispatcher");
 var ActionCreator = require("../../../actions/ActionCreator");
 import {reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
-var _ = require("lodash");
 import {translate} from "react-i18next";
 import TableauxConstants from "../../../constants/TableauxConstants";
+var _ = require("lodash");
 
 var MultiFileEdit = React.createClass({
 
@@ -86,7 +85,16 @@ var MultiFileEdit = React.createClass({
         _.merge(file.internalName, changedFile.internalName);
         _.merge(file.mimeType, changedFile.mimeType);
 
-        const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
+        const changeFileParams = reduceMediaValuesToAllowedLanguages([
+          file.uuid,
+          file.title,
+          file.description,
+          file.externalName,
+          file.internalName,
+          file.mimeType,
+          file.folder,
+          file.fileUrl
+        ]);
         ActionCreator.changeFile(...changeFileParams);
       }
     }
@@ -143,7 +151,7 @@ var MultiFileEdit = React.createClass({
                            onTitleChange={self.onTitleChange}
                            onDescriptionChange={self.onDescriptionChange}
                            onExternalnameChange={self.onExternalnameChange}
-                           onLangChange={self.onLangChange}/>
+                           onLangChange={self.onLangChange} />
       );
     });
 

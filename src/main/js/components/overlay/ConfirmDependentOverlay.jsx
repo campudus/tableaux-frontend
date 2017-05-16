@@ -16,7 +16,7 @@ class RowsOverlay extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {depMessage:  <p>{i18n.t("table:fetching_dependent_rows")}</p>}
+    this.state = {depMessage: <p>{i18n.t("table:fetching_dependent_rows")}</p>};
   }
 
   hasDependencies = n => {
@@ -50,7 +50,7 @@ class RowsOverlay extends Component {
                            hasNoDependency={this.hasNoDependencies}
         />
       </div>
-    )
+    );
   }
 }
 
@@ -81,7 +81,7 @@ export function openShowDependency(row, langtag) {
   const itemName = RowConcatHelper.getCellAsStringWithFallback(cell.value, cell.column, langtag);
 
   openOverlay({
-    head: <Header context={i18n.t("table:dependencies")} title={itemName}/>,
+    head: <Header context={i18n.t("table:dependencies")} title={itemName} />,
     body: <RowsOverlay row={row} langtag={langtag} />,
     type: "full-height"
   });

@@ -1,6 +1,4 @@
-import React, {Component, PropTypes} from "react";
 import i18n from "i18next";
-import {compose} from "lodash/fp";
 import {showDialog} from "./GenericOverlay";
 
 const openTranslationDialog = (context, confirm, cancel = function () {}) => {

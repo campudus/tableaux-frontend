@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {FallbackLanguage, Langtags, Directions} from "../../../constants/TableauxConstants";
+import {ActionTypes, Directions, FallbackLanguage, Langtags} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 import HeaderPopupMenu from "./HeaderPopupMenu";
@@ -8,7 +8,6 @@ import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
-import {ActionTypes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 
 @listensToClickOutside
@@ -43,7 +42,7 @@ class LanguageSwitcher extends Component {
   };
 
   handleLangtagSwitch = ({langtag}) => {
-    if (this.state.langtag != langtag) {
+    if (this.state.langtag !== langtag) {
       this.setState({langtag});
     }
   };
@@ -110,8 +109,14 @@ class RowSwitcher extends Component {
     const nextRow = this.getNextRow(dir);
     if (nextRow) {
       this.setState({row: nextRow});
-      changeEntityViewRow({id: this.props.id, row: nextRow});
-      changeHeaderTitle({id: this.props.id, title: getDisplayLabel(nextRow, this.props.langtag)})
+      changeEntityViewRow({
+        id: this.props.id,
+        row: nextRow
+      });
+      changeHeaderTitle({
+        id: this.props.id,
+        title: getDisplayLabel(nextRow, this.props.langtag)
+      });
     }
   };
 
@@ -132,7 +137,7 @@ class RowSwitcher extends Component {
           ? (
             <div className="button" onClick={this.switchRow(Directions.DOWN)}>
               <a href="#">
-                <i className="fa fa-angle-right"/>
+                <i className="fa fa-angle-right" />
               </a>
             </div>
           )
@@ -155,12 +160,11 @@ const mkHeaderComponents = (id, row, langtag, {canSwitchRows} = {}) => {
         <HeaderPopupMenu langtag={langtag} row={row} id={id} />
       </div>
     </div>
-  )
+  );
 };
 
 const getTableName = (row, langtag) => {
   const firstCell = row.cells.at(0);
-  const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
   const table = firstCell.tables.get(firstCell.tableId);
   return f.prop(["displayName", langtag], table) || f.prop(["displayName", FallbackLanguage], table);
 };

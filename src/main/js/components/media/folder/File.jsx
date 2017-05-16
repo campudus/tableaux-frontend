@@ -60,13 +60,10 @@ class File extends Component {
                     title={multiLanguage.retrieveTranslation(FallbackLanguage)(file.title, langtag)}
       />,
       body: <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose} />,
-      footer: <Footer actions={
-        {
-          positive: [i18n.t("common:save"), this.onSave],
-          neutral: [i18n.t("common:close"), null]
-        }
-      }
-      />
+      footer: (
+        <Footer actions={{positive: [i18n.t("common:save"), this.onSave], neutral: [i18n.t("common:close"), null]}}
+        />
+      )
     });
   };
 

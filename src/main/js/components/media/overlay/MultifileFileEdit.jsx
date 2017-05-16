@@ -2,7 +2,7 @@ var React = require("react");
 var FileChangeUpload = require("./FileChangeUpload.jsx");
 var LanguageSwitcher = require("../../header/LanguageSwitcher.jsx");
 var apiUrl = require("../../../helpers/apiUrl");
-import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess} from "../../../helpers/accessManagementHelper";
+import {getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
 
 var MultifileFileEdit = React.createClass({
@@ -62,7 +62,7 @@ var MultifileFileEdit = React.createClass({
             <FileChangeUpload
               langtag={langtag}
               internalFileName={internalName}
-              uuid={uuid}/>
+              uuid={uuid} />
           </div>
           {openFileLink}
         </div>
@@ -75,21 +75,21 @@ var MultifileFileEdit = React.createClass({
           />
           <div className="item">
             <div className="item-header">{t("file_title_label")}</div>
-              <input disabled={!permissionToChange} type="text" id={this.titleId}
-                     value={title}
-                     onChange={this.onTitleChange}/>
+            <input disabled={!permissionToChange} type="text" id={this.titleId}
+                   value={title}
+                   onChange={this.onTitleChange} />
           </div>
           <div className="item">
             <div className="item-header">{t("file_description_label")}</div>
-              <input disabled={!permissionToChange} type="text" id={this.descId}
-                     value={description}
-                     onChange={this.onDescriptionChange}/>
+            <input disabled={!permissionToChange} type="text" id={this.descId}
+                   value={description}
+                   onChange={this.onDescriptionChange} />
           </div>
           <div className="item">
             <div className="item-header">{t("file_link_name_label")}</div>
-              <input disabled={!permissionToChange} type="text" id={this.externalNameId}
-                     value={externalName}
-                     onChange={this.onExternalNameChange}/>
+            <input disabled={!permissionToChange} type="text" id={this.externalNameId}
+                   value={externalName}
+                   onChange={this.onExternalNameChange} />
           </div>
         </div>
       </div>

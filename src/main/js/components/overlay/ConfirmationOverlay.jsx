@@ -1,4 +1,4 @@
-import React from "react";2
+import React from "react";
 import {showDialog} from "./GenericOverlay";
 import i18n from "i18next";
 
@@ -12,7 +12,7 @@ export function confirmDeleteFile(fileName, onYes) {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
     }
-  })
+  });
 }
 
 export function confirmDeleteFolder(folderName, onYes) {
@@ -25,7 +25,7 @@ export function confirmDeleteFolder(folderName, onYes) {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
     }
-  })
+  });
 }
 
 export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries) {
@@ -98,5 +98,5 @@ export function simpleError(errorMsg, errorHead) {
     heading: errorHead || i18n.t("table:error_occured_hl"),
     message: errorMsg,
     actions: {neutral: [i18n.t("common:ok"), null]}
-  })
+  });
 }

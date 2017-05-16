@@ -1,5 +1,4 @@
 var React = require("react");
-var _ = require("lodash");
 var ActionCreator = require("../../../actions/ActionCreator");
 var Directions = require("../../../constants/TableauxConstants").Directions;
 import listensToClickOutside from "react-onclickoutside";
@@ -69,7 +68,7 @@ class NumericEditCell extends React.Component {
     var currLength = curr.trim().length;
 
     if (currLength > this.MAX_DIGIT_LENGTH) {
-      throw "MAX_DIGIT_LENGTH reached: " + this.MAX_DIGIT_LENGTH;
+      throw new Error("MAX_DIGIT_LENGTH reached: " + this.MAX_DIGIT_LENGTH);
     } else if (currLength >= 0) {
       var formattedNumber = this.correctNumberFormat(curr);
       var realNumber = parseFloat(formattedNumber);
@@ -134,7 +133,7 @@ class NumericEditCell extends React.Component {
                className="input"
                name={this.inputName}
                defaultValue={this.getValue()}
-               onChange={this.onChangeHandler} ref={input => {this.input = input}}/>
+               onChange={this.onChangeHandler} ref={input => { this.input = input; }}/>
       </div>
     );
   }

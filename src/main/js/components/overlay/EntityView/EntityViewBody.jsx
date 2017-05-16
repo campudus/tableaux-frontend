@@ -67,7 +67,7 @@ class EntityViewBody extends Component {
         event.stopPropagation();
         this.changeFocus(Directions.DOWN);
       }
-    }
+    };
   };
 
   handleClickOutside() {
@@ -91,8 +91,7 @@ class EntityViewBody extends Component {
       }
       const viewId = `view-${cell.column.id}-${cell.rowId}`;
       const element = f.first(document.getElementsByClassName(viewId));
-      const scroller = this.getScroller()
-                           .center(element, 1);
+      this.getScroller().center(element, 1);
       this.setState({focused: focusElementId});
     } else {
       const firstCell = row.cells.at(0);
@@ -199,14 +198,14 @@ class EntityViewBody extends Component {
           {arrow}
         </div>
       )
-      : null
+      : null;
   };
 
   setTranslationItem = el => {
     if (el && el !== this.translationItem) {
       this.translationItem = el;
     }
-    const arrowPos = maybe(this.translationItem)
+    maybe(this.translationItem)
       .exec("getBoundingClientRect")
       .map(f.prop("top"))
       .map(pos => {
@@ -252,7 +251,7 @@ class EntityViewBody extends Component {
 
   shakeBar = () => {
     this.setState({shaking: true});
-    this.shakeTimerId = window.setTimeout(() => this.setState({shaking: false}), SHAKE_DURATION)
+    this.shakeTimerId = window.setTimeout(() => this.setState({shaking: false}), SHAKE_DURATION);
   };
 
   unlockRow = () => {
@@ -278,7 +277,7 @@ class EntityViewBody extends Component {
           </a>
         </div>
       </div>
-    )
+    );
   };
 
   render() {

@@ -33,7 +33,7 @@ class ShortTextView extends React.Component {
       event.stopPropagation();
       event.preventDefault();
       (fn || function () {
-      })();
+      })(event);
     };
 
     return {
@@ -49,14 +49,16 @@ class ShortTextView extends React.Component {
     }
     this.originalValue = value.trim();
     const {cell, langtag} = this.props;
-    ActionCreator.changeCell(cell, (cell.isMultiLanguage? {[langtag]: value} : value))
+    ActionCreator.changeCell(cell, ((cell.isMultiLanguage) ? {[langtag]: value} : value));
   };
 
   componentWillReceiveProps(np) {
     const {cell, langtag} = np;
-    const nextVal = (cell.isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
+    const nextVal = f.defaultTo("")(
+      (cell.isMultiLanguage)
+        ? cell.value[langtag]
+        : cell.value
+    );
     if (nextVal !== this.originalValue) {
       this.setState({value: nextVal});
     }
@@ -64,17 +66,19 @@ class ShortTextView extends React.Component {
 
   render() {
     const {funcs, thisUserCantEdit} = this.props;
-    return <div className="item-content shorttext">
-      <input type="text" value={this.state.value || ""}
-             placeholder={i18n.t("table:empty.text")}
-             disabled={thisUserCantEdit}
-             onChange={event => this.setState({value: event.target.value})}
-             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-             onBlur={this.saveEditsAndClose}
-             ref={el => { funcs.register(el) }}
-      />
-      {this.props.children}
-    </div>
+    return (
+      <div className="item-content shorttext">
+        <input type="text" value={this.state.value || ""}
+               placeholder={i18n.t("table:empty.text")}
+               disabled={thisUserCantEdit}
+               onChange={event => { this.setState({value: event.target.value}) }}
+               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+               onBlur={this.saveEditsAndClose}
+               ref={el => { funcs.register(el); }}
+        />
+        {this.props.children}
+      </div>
+    );
   }
 }
 

@@ -1,7 +1,5 @@
 import React from "react";
-import Dispatcher from "../dispatcher/Dispatcher";
 import TableauxConstants from "../constants/TableauxConstants";
-
 import TableView from "../components/TableView.jsx";
 import MediaView from "../components/media/MediaView.jsx";
 
@@ -30,7 +28,9 @@ export default class ViewRenderer extends React.Component {
     };
 
     this.views[ViewNames.MEDIA_VIEW] = () => {
-      return <MediaView langtag={this.props.params.langtag} folderId={this.props.params.folderId} overlayOpen={!!this.props.params.overlayOpen}/>;
+      return <MediaView langtag={this.props.params.langtag}
+                        folderId={this.props.params.folderId}
+                        overlayOpen={!!this.props.params.overlayOpen} />;
     };
   }
 

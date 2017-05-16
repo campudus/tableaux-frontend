@@ -6,10 +6,10 @@ import "react-virtualized/styles.css";
 import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
-import {ActionTypes, Directions, FilterModes} from "../../../constants/TableauxConstants";
+import {ActionTypes, Directions, FallbackLanguage, FilterModes} from "../../../constants/TableauxConstants";
 import {either, maybe} from "../../../helpers/monads";
 import * as f from "lodash/fp";
-import SearchFunctions, {SEARCH_FUNCTION_IDS} from "../../../helpers/searchFunctions";
+import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import apiUrl from "../../../helpers/apiUrl";
@@ -21,7 +21,6 @@ import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import ReactDOM from "react-dom";
 import SearchBar from "./LinkOverlaySearchBar";
-import request from "superagent";
 import DragSortList from "./DragSortList";
 import {changeCell} from "../../../models/Tables";
 
@@ -80,7 +79,6 @@ class LinkOverlay extends Component {
     const selectNext = (dir) => {
       const selectedId = this.getSelectedId();
       const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
-      //this.setState({selectedId: nextIdx}, () => this.refs.OverlayScroll.forceUpdateGrid());
       this.setSelectedId(nextIdx);
     };
     return {
@@ -89,7 +87,7 @@ class LinkOverlay extends Component {
         const activeBoxIDString = (activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
         const row = f.get([activeBoxIDString, this.getSelectedId()], rowResults);
         if (selectedMode === MAIN_BUTTON) {
-          this.addLinkValue.call(this, activeBox === LINKED_ITEMS, row, event);
+          this.addLinkValue(activeBox === LINKED_ITEMS, row, event);
         } else {
           const {cell} = this.props;
           const target = {
@@ -143,7 +141,7 @@ class LinkOverlay extends Component {
         if (event.shiftKey) {
           this.setState({selectedMode: (selectedMode + 1) % 2});
         } else {
-          this.setState({activeBox: (activeBox + 1) % 2})
+          this.setState({activeBox: (activeBox + 1) % 2});
         }
       }
     };
@@ -218,7 +216,7 @@ class LinkOverlay extends Component {
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       selectedId: {
         linked: this.state.selectedId.linked,
-        unlinked: 0,
+        unlinked: 0
       },
       activeBox: UNLINKED_ITEMS
     });
@@ -251,13 +249,13 @@ class LinkOverlay extends Component {
     const {toColumn, toTable} = this.props.cell.column;
     const toTableObj = this.props.cell.tables.get(toTable);
     const toTableColumns = toTableObj.columns;
-    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); // This is the index of the
-                                                                                     // identifier / concat column 
+    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id));
     return row.values[toIdColumnIndex];
   };
 
   setFilterMode = ({filterMode = FilterModes.CONTAINS, filterValue = ""}) => {
-    this.setState({
+    this.setState(
+      {
         filterMode,
         filterValue
       },
@@ -268,7 +266,6 @@ class LinkOverlay extends Component {
     const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
-    const lowerCaseRowId = f.compose(f.toLower, f.trim, f.prop("cachedRowId"));
     const linkPosition = f.reduce(
       f.merge, {}, this.props.cell.value.map((row, idx) => ({[row.id]: idx}))
     );
@@ -342,7 +339,7 @@ class LinkOverlay extends Component {
 
     const refIfLinked = el => {
       if (isLinked) {
-        this.elements = f.assoc(index, el, this.elements || {})
+        this.elements = f.assoc(index, el, this.elements || {});
       }
     };
 
@@ -356,7 +353,7 @@ class LinkOverlay extends Component {
                    this.background.focus();
                    e.stopPropagation();
                  }}
-                 onClick={this.addLinkValue.bind(this, isLinked, row)}
+                 onClick={evt => this.addLinkValue(isLinked, row, evt)}
             >
               <a href="#" draggable={false}>
                 {rowName}
@@ -400,7 +397,6 @@ class LinkOverlay extends Component {
           </div>
         </div>
       );
-
   };
 
   noRowsRenderer = () => {
@@ -418,30 +414,18 @@ class LinkOverlay extends Component {
       f.assoc(a, f.get(b, linkedItems)),
       f.assoc(b, f.get(a, linkedItems)),
     )(linkedItems);
-    const sendSwapRequest = (linkId, data) => (
-      request
-        .put(apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/link/${linkId}/order`))
-        .send(data)
-        .accept("json")
-    );
-    const setSwapResultOnCell = (error, response) => {
-      cell.set({
-        value: f.compose(
-          f.get("value"),
-          JSON.parse,
-          f.get("text")
-        )(response)
-      })
-    };
 
-    changeCell({cell, value: rearranged})
+    changeCell({
+      cell,
+      value: rearranged
+    })
       .catch(() => this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)}));
     this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
   };
 
   render = () => {
     const {rowResults, loading} = this.state;
-    const {cell:{column:{displayName}}} = this.props;
+    const {cell: {column: {displayName}}} = this.props;
 
     const unlinkedRows = (loading)
       ? "Loading..."
@@ -464,7 +448,7 @@ class LinkOverlay extends Component {
     const linkedRows = (f.isEmpty(f.get("linked", rowResults)) && !loading)
       ? (
         <div className="link-list empty-info">
-          <i className="fa fa-chain-broken"/>
+          <i className="fa fa-chain-broken" />
           <div className="text">
             <span>
               {linkEmptyLines[0]}.
@@ -476,17 +460,17 @@ class LinkOverlay extends Component {
         </div>
       )
       : (
-          <DragSortList renderListItem={this.renderListItem({isLinked: true})}
-                        items={f.defaultTo([])(rowResults.linked).map((
-                          (row, index) => {
-                            return {
-                              index,
-                              id: row.id
-                            }
-                          }
-                        ))}
-                        swapItems={this.swapLinkedItems}
-          />
+        <DragSortList renderListItem={this.renderListItem({isLinked: true})}
+                      items={f.defaultTo([])(rowResults.linked).map(
+                        (row, index) => {
+                          return {
+                            index,
+                            id: row.id
+                          };
+                        }
+                      )}
+                      swapItems={this.swapLinkedItems}
+        />
       );
 
     return (
@@ -498,11 +482,16 @@ class LinkOverlay extends Component {
              this.background = el;
            }}
       >
-        <div className="linked-items" onMouseEnter={() => { this.setState({activeBox: LINKED_ITEMS}); }}>
-          <span className="items-title"><span>{i18n.t("table:link-overlay-items-title", {name: displayName[this.props.langtag] || displayName})}</span></span>
+        <div className="linked-items" onMouseEnter={() => {
+          this.setState({activeBox: LINKED_ITEMS});
+        }}>
+          <span className="items-title"><span>{i18n.t("table:link-overlay-items-title",
+            {name: displayName[this.props.langtag] || displayName})}</span></span>
           {linkedRows}
         </div>
-        <div className="unlinked-items" onMouseEnter={() => { this.setState({activeBox: UNLINKED_ITEMS}); }}>
+        <div className="unlinked-items" onMouseEnter={() => {
+          this.setState({activeBox: UNLINKED_ITEMS});
+        }}>
           {unlinkedRows}
         </div>
       </div>

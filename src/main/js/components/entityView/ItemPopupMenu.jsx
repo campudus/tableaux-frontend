@@ -55,7 +55,7 @@ class ItemPopupMenu extends Component {
           {(value) ? i18n.t(title, {langtag: value}) : i18n.t(title)}
         </a>
       </div>
-    )
+    );
   };
 
   isPrimaryLanguage = () => {
@@ -68,7 +68,7 @@ class ItemPopupMenu extends Component {
     return f.contains(
       langtag,
       f.prop(["annotation", "needsTranslation", "langtags"], cell)
-    )
+    );
   };
 
   mkAddTranslationEntry = () => {
@@ -136,7 +136,7 @@ class ItemPopupMenu extends Component {
       "is-open": popupOpen,
       "menu-is-right": isOffScreen
     });
-    const {enterItemPopupButton, leaveItemPopupButton, closeItemPopup, openItemPopup} = this.props.funcs;
+    const {enterItemPopupButton, leaveItemPopupButton} = this.props.funcs;
     const popupClass = classNames("entry-popup", {"inverse": isOffScreen});
     const wrapperClass = classNames("entry-popup-wrapper", {"ignore-react-onclickoutside": popupOpen});
 
@@ -206,7 +206,7 @@ class ItemPopupMenu extends Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 

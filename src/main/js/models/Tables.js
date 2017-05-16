@@ -7,16 +7,15 @@ import ActionCreator from "../actions/ActionCreator";
 import Row from "./Row";
 import {cellModelSavingError, noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
 import {
-  getUserLanguageAccess,
-  getUserCountryCodesAccess,
   canUserChangeCell,
-  reduceValuesToAllowedLanguages,
+  getUserCountryCodesAccess,
+  getUserLanguageAccess,
+  isUserAdmin,
   reduceValuesToAllowedCountries,
-  isUserAdmin
+  reduceValuesToAllowedLanguages
 } from "../helpers/accessManagementHelper";
 import request from "superagent";
 import * as _ from "lodash";
-import * as f from "lodash/fp";
 
 // sets or removes a *single* link to/from a link cell
 const changeLinkCell = ({cell, value}) => {
@@ -37,7 +36,9 @@ const changeLinkCell = ({cell, value}) => {
 
   const [toggledRowId] = rowDiff;
   if (!toggledRowId) {
-    return new Promise((resolve, reject) => { reject("Tried to toggle zero links"); });
+    return new Promise((resolve, reject) => {
+      reject("Tried to toggle zero links");
+    });
   }
   const {rowId, tableId} = cell;
   const colId = cell.column.id;
@@ -91,7 +92,6 @@ export const changeCell = payload => {
 
   return new Promise(
     (resolve, reject) => {
-
       if (updateNecessary) {
         /**
          * Basic language access management
@@ -239,7 +239,10 @@ const Tables = Collection.extend({
       return;
     }
 
-    const newRow = new Row({tableId: tableId, columns: table.columns}, {collection: rows});
+    const newRow = new Row({
+      tableId: tableId,
+      columns: table.columns
+    }, {collection: rows});
     ActionCreator.spinnerOn();
 
     newRow.save({}, {

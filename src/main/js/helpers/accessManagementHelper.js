@@ -28,7 +28,7 @@ const Cookies = Keks.withConverter({
 
 // Just for development
 export function initDevelopmentAccessCookies() {
-  if (process.env.NODE_ENV != "production") {
+  if (process.env.NODE_ENV !== "production") {
     Cookies.set("userAdmin", true);
     Cookies.set("userLangtagsAccess", 'j:["en"]');
     Cookies.set("userCountryCodesAccess", 'j:["GB"]');

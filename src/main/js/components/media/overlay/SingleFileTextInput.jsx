@@ -1,10 +1,9 @@
 import React, {Component, PropTypes} from "react";
-import multiLanguage from "../../../helpers/multiLanguage";
+import multiLanguage, {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import _ from "lodash";
-import {isUserAdmin, getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
-import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
-import {Langtags, DefaultLangtag} from "../../../constants/TableauxConstants";
+import {DefaultLangtag, Langtags} from "../../../constants/TableauxConstants";
 
 class SingleFileTextInput extends Component {
 
@@ -35,7 +34,7 @@ class SingleFileTextInput extends Component {
           retrieveTranslation(valueObj, lt),
           lt
         )
-      )
+      );
   };
 
   onChange = (langtag, event) => {
@@ -52,7 +51,7 @@ class SingleFileTextInput extends Component {
         <div className="item-content" key={id}>
           <div onClick={this.onToggle}>{this.renderLangtag(langtag)}</div>
           <input disabled={disabled} type="text" ref={id} id={id} value={value}
-                 onChange={this.onChange.bind(this, langtag)}/>
+                 onChange={this.onChange.bind(this, langtag)} />
         </div>
       </div>);
   };
@@ -80,10 +79,10 @@ class SingleFileTextInput extends Component {
     var labelText = this.props.labelText;
     var langtag = this.props.langtag;
     var value = generateValue(this.props.originalValue, this.props.editedValue);
-    var id = this.generateId(this.props.name, langtag);
+// ???    var id = this.generateId(this.props.name, langtag);
     return (
       <div className="item-contents">
-        <div  className="item-header">{labelText}</div>
+        <div className="item-header">{labelText}</div>
         {this.renderInput(this.props.name, value, langtag)}
       </div>
     );

@@ -153,7 +153,7 @@ const setCellAnnotation = (annotation, cell) => {
 };
 
 const addTranslationNeeded = (langtags, cell) => {
-  if (!f.isArray(langtags)) console.warn("addTranslationNeeded: array expected, got", langtags)
+  if (!f.isArray(langtags)) console.warn("addTranslationNeeded: array expected, got", langtags);
   const oldCellAnnotations = f.prop("annotations", cell) || {};
   const finishTransaction = (f.isEmpty(f.prop("translationNeeded", oldCellAnnotations)))
     ? (response) => {

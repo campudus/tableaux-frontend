@@ -151,7 +151,7 @@ class HeaderPopupMenu extends Component {
           : null
         }
       </div>
-    )
+    );
   }
 }
 

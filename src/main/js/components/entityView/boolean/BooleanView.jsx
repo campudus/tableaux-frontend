@@ -17,7 +17,7 @@ class BooleanView extends Component {
 
   constructor(props) {
     super(props);
-    const {langtag, cell:{value,isMultiLanguage}} = props;
+    const {langtag, cell: {value, isMultiLanguage}} = props;
     this.state = {selected: (isMultiLanguage) ? value[langtag] : value};
   }
 
@@ -52,7 +52,7 @@ class BooleanView extends Component {
         <div className="item-content boolean" onClick={this.toggleValue}
              onKeyDown={this.toggleOnEnter}
              tabIndex={1}
-             ref={el => { funcs.register(el) }}
+             ref={el => { funcs.register(el); }}
         >
           <div className={checkboxCss}>
             {(selected)

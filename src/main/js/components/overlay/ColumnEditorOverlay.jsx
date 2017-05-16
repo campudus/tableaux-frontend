@@ -17,9 +17,9 @@ class ColumnEditorOverlay extends React.Component {
 
   modify = key => evt => {
     if (evt && evt.target) {
-      const new_state = {[key]: evt.target.value};
-      this.setState(new_state);
-      this.props.handleInput(new_state);
+      const newState = {[key]: evt.target.value};
+      this.setState(newState);
+      this.props.handleInput(newState);
     }
   };
 

@@ -80,7 +80,7 @@ export default class DependentRowsList extends React.Component {
             return {
               displayName: RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag),
               linkTarget: {tables, tableId, rowId: row.id}
-            }
+            };
           }
         );
 
@@ -97,7 +97,7 @@ export default class DependentRowsList extends React.Component {
                       links={links}
             />
           </div>
-        )
+        );
       }
     );
 

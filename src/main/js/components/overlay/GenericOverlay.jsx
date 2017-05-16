@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
-import {contains, defaultTo, isEmpty, isNull, last, map, merge, noop, nth, prop, props, throttle} from "lodash/fp";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import Header from "./Header";
@@ -11,7 +10,7 @@ import * as f from "lodash/fp";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
 
-const FRAME_DELAY = (1000/60) | 0; // ms delay between frames at 60 fps
+const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
 class GenericOverlay extends Component {
 
@@ -59,7 +58,7 @@ class GenericOverlay extends Component {
   };
 
   componentDidMount = () => {
-    const overlayDOMNode = ReactDOM.findDOMNode(last(document.getElementsByClassName("overlay")));
+    const overlayDOMNode = ReactDOM.findDOMNode(f.last(document.getElementsByClassName("overlay")));
     const focusedElement = document.activeElement;
 
     // Is current focus is this overlay or inside of overlay don't change the focus.
@@ -88,7 +87,7 @@ class GenericOverlay extends Component {
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts = (event) => {
-    return merge(
+    return f.merge(
       {
         escape: (event) => {
           event.preventDefault();
@@ -104,22 +103,21 @@ class GenericOverlay extends Component {
   };
 
   registerChildForEvent = ({type, handler}) => {
-    const handlersForType = defaultTo([], this.childrenEventHandlers[type]);
+    const handlersForType = f.defaultTo([], this.childrenEventHandlers[type]);
     this.childrenEventHandlers[type] = [...handlersForType, handler];
   };
 
   passOnEvents = type => event => {
-    const handlersForType = defaultTo([], this.childrenEventHandlers[type]);
-    map(handler => handler(event), handlersForType);
+    const handlersForType = f.defaultTo([], this.childrenEventHandlers[type]);
+    f.map(handler => handler(event), handlersForType);
   };
 
   updateChildrenProps = ({id, props}) => {
     if (id !== this.props.id) {
       return;
     }
-    console.log("updating old children props:", this.state.childrenProps, "with", props)
     const modifiedProps = f.keys(props);
-    updatedProps = childIdString => {
+    const updatedProps = childIdString => {
       const existingProps = f.get(childIdString, this.state.childrenProps);
       const existingKeys = f.intersection(modifiedProps, existingProps);
       return f.merge(
@@ -127,18 +125,18 @@ class GenericOverlay extends Component {
         f.fromPairs(
           f.zip(existingKeys, f.props(existingKeys, props))
         )
-      )
+      );
     };
 
     this.setState({childrenProps: {
       head: updatedProps("head"),
       body: updatedProps("body"),
       footer: updatedProps("footer")
-    }}, () => console.log("updated children props to", this.state.childrenProps))
+    }}, () => console.log("updated children props to", this.state.childrenProps));
   };
 
   render() {
-    const overlayType = (contains(this.props.type, this.allowedTypes))
+    const overlayType = (f.contains(this.props.type, this.allowedTypes))
       ? this.props.type
       : "normal";
 
@@ -167,7 +165,7 @@ class GenericOverlay extends Component {
                event.stopPropagation();
                event.preventDefault();
              }}
-             onScroll={throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
+             onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
           {React.cloneElement(head, childrenProps.head)}
           <div className="overlay-content">
@@ -182,18 +180,18 @@ class GenericOverlay extends Component {
 }
 
 const showDialog = ({type = "default", context = "Action", title, heading = "", message = "", actions = {}}) => {
-  const enterKeyFn = nth(1)(prop("positive", actions)) || nth(1)(prop("negative", actions)) || prop("neutral", actions);
-  const escKeyFn = nth(1)(prop("neutral", actions));
+  const enterKeyFn = f.nth(1)(f.prop("positive", actions)) || f.nth(1)(f.prop("negative", actions)) || f.prop("neutral", actions);
+  const escKeyFn = f.nth(1)(f.prop("neutral", actions));
   const keyShortcuts = {
     enter: event => {
       event.preventDefault();
-      (enterKeyFn || noop)();
+      (enterKeyFn || f.noop)();
       ActionCreator.closeOverlay();
       event.stopPropagation();
     },
     escape: event => {
       event.preventDefault();
-      (escKeyFn || noop)();
+      (escKeyFn || f.noop)();
       ActionCreator.closeOverlay();
       event.stopPropagation();
     }
@@ -205,8 +203,8 @@ const showDialog = ({type = "default", context = "Action", title, heading = "", 
       footer: <Footer actions={actions} />,
       keyboardShortcuts: keyShortcuts
     }
-  )
+  );
 };
 
 export default GenericOverlay;
-export {showDialog}
+export {showDialog};

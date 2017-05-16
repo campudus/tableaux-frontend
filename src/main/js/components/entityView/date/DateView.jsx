@@ -115,7 +115,7 @@ class DateView extends Component {
            onClick={this.setEditing(true)}
            tabIndex={1}
            onKeyDown={this.openOnEnter}
-           ref={el => { funcs.register(el) }}
+           ref={el => { funcs.register(el); }}
       >
         <div className="content-wrapper">{
           (value)

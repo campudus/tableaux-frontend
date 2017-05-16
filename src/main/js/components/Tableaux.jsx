@@ -113,14 +113,13 @@ export default class Tableaux extends React.Component {
         if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") { // closing a right-aligned full-height overlay
           const removeOverlayAfterTimeout = () => {
             const {activeOverlays} = this.state;
-            this.exitingOverlays = f.reject(f.eq(overlayToClose.id), this.exitingOverlays),
-              this.setState({
-                exitingOverlays: !f.isEmpty(this.exitingOverlays),
-                activeOverlays: f.reject(f.matchesProperty("id", overlayToClose.id), activeOverlays),
-                currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
-              });
+            this.exitingOverlays = f.reject(f.eq(overlayToClose.id), this.exitingOverlays);
+            this.setState({
+              exitingOverlays: !f.isEmpty(this.exitingOverlays),
+              activeOverlays: f.reject(f.matchesProperty("id", overlayToClose.id), activeOverlays),
+              currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
+            });
           };
-          const {exitingOverlays} = this;
           this.exitingOverlays = [...this.exitingOverlays, overlayToClose.id];
           this.setState({exitingOverlays: true}, resolve);
           window.setTimeout(removeOverlayAfterTimeout, 400);
@@ -147,9 +146,9 @@ export default class Tableaux extends React.Component {
           if (n > 1) {
             closeNOverlays(n - 1);
           }
-        })
+        });
       };
-      closeNOverlays(activeOverlays.length - 1)
+      closeNOverlays(activeOverlays.length - 1);
     };
 
     const {context, title} = f.first(activeOverlays).head.props;
@@ -164,7 +163,7 @@ export default class Tableaux extends React.Component {
           </div>
         </a>
       </div>
-    )
+    );
   };
 
   renderActiveOverlays() {
@@ -188,7 +187,7 @@ export default class Tableaux extends React.Component {
       };
       const shouldBeRightAligned = idx => {
         return followsAfterExitingOverlay(idx)
-          || (f.isEmpty(this.exitingOverlays) && f.last(bigOverlayIdces) === idx)
+          || (f.isEmpty(this.exitingOverlays) && f.last(bigOverlayIdces) === idx);
       };
       const shouldBeLeftAligned = idx => f.contains(idx, left);
 

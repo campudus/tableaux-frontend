@@ -43,7 +43,7 @@ const connectToAmpersand = (Component) => class extends React.Component {
   };
 
   render() {
-    return <Component ref={comp => this._Component = comp} {...this.props} watch={this.watch} />;
+    return <Component ref={comp => { this._Component = comp; }} {...this.props} watch={this.watch} />;
   }
 };
 

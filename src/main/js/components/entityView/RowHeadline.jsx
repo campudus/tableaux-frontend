@@ -42,7 +42,7 @@ class RowHeadline extends React.Component {
       [ColumnKinds.boolean]: "check-square-o",
       [ColumnKinds.datetime]: "calendar",
       [ColumnKinds.date]: "calendar",
-      [ColumnKinds.currency]: "money",
+      [ColumnKinds.currency]: "money"
     };
     return <i className={`column-icon fa fa-${columnIcons[column.kind] || "question"}`} />;
   };
@@ -67,24 +67,20 @@ class RowHeadline extends React.Component {
         </div>
         {(thisUserCantEdit)
           ? <a className="column-icon button neutral" href="#"
-               ref={el => {
-                 funcs.register(el)
-               }}
+               ref={el => { funcs.register(el); }}
           >
             {i18n.t("table:edit_links", {title: colName})}
           </a>
           : <a className="column-icon button" href="#"
                onClick={() => openLinkOverlay(cell, langtag)}
-               ref={el => {
-                 funcs.register(el)
-               }}
+               ref={el => { funcs.register(el); }}
           >
             <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_links", {title: colName})}
           </a>
         }
       </div>
-    )
+    );
   };
 
   openAttachmentOverlay = () => {
@@ -113,24 +109,20 @@ class RowHeadline extends React.Component {
         </div>
         {(thisUserCantEdit)
           ? <a className="button neutral column-icon" href="#"
-               ref={el => {
-                 funcs.register(el)
-               }}
+               ref={el => { funcs.register(el); }}
           >
             {i18n.t("table:edit_attachments")}
           </a>
           : <a className="button column-icon" href="#"
                onClick={this.openAttachmentOverlay}
-               ref={el => {
-                 funcs.register(el)
-               }}
+               ref={el => { funcs.register(el); }}
           >
             <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_attachments")}
           </a>
         }
       </div>
-    )
+    );
   };
 
   mkDefaultHeader = column => (
