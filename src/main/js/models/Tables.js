@@ -201,7 +201,8 @@ const Tables = Collection.extend({
   },
 
   changeCellHandler(payload) {
-    changeCell(payload);
+    const cb = payload.cb || function () {};
+    changeCell(payload).then(cb());
   },
 
   // We just trigger a changed event for concat cells when we are a identifier cell

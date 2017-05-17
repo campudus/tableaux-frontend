@@ -3,10 +3,11 @@ const ActionTypes = require("../constants/TableauxConstants").ActionTypes;
 
 module.exports = {
 
-  changeCell: function (cell, newValue) {
+  changeCell: function (cell, newValue, cb) {
     Dispatcher.trigger(ActionTypes.CHANGE_CELL, {
-      cell: cell,
-      value: newValue
+      cell,
+      value: newValue,
+      cb
     });
   },
 
