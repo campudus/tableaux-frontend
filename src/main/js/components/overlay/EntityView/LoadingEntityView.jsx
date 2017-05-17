@@ -44,7 +44,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
       ? {
         context: getTableName(row, langtag),
         title: getDisplayLabel(row, langtag),
-        components: mkHeaderComponents(overlayId, row, langtag),
+        components: mkHeaderComponents(overlayId, row, null, langtag),
         langtag
       }
       : {

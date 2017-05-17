@@ -9,6 +9,7 @@ import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
+import {either, fspy} from "../../../helpers/monads";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -99,7 +100,9 @@ class RowSwitcher extends Component {
 
   getNextRow = dir => {
     const {row} = this.state;
-    const rowsCollection = f.get(["collection", "models"], row);
+    const firstCell = row.cells.at(0);
+    const table = firstCell.tables.get(firstCell.tableId);
+    const rowsCollection = f.get("models", this.props.rows || table.rows);
     const myRowIdx = f.findIndex(f.matchesProperty("id", row.id), rowsCollection);
     const dirAsNumber = (dir === Directions.UP) ? -1 : 1;
     return f.get([myRowIdx + dirAsNumber], rowsCollection);
@@ -148,12 +151,12 @@ class RowSwitcher extends Component {
   }
 }
 
-const mkHeaderComponents = (id, row, langtag, {canSwitchRows} = {}) => {
+const mkHeaderComponents = (id, row, rows, langtag, {canSwitchRows} = {}) => {
   return (
     <div className="header-components">
       <div className="top-right">
         <LanguageSwitcher langtag={langtag} />
-        {(canSwitchRows) ? <RowSwitcher row={row} id={id} langtag={langtag} /> : null}
+        {(canSwitchRows) ? <RowSwitcher row={row} rows={rows} id={id} langtag={langtag} /> : null}
       </div>
       <div className="search-and-popup">
         <FilterBar id={id} />

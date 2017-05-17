@@ -5,7 +5,7 @@ import mkHeaderComponents, {getDisplayLabel, getTableName} from "./EntityView/En
 import EntityViewBody from "./EntityView/EntityViewBody";
 import {LoadingEntityViewBodyWrapper, LoadingEntityViewHeaderWrapper} from "./EntityView/LoadingEntityView";
 
-export function openEntityView(row, langtag, focusElementId) {
+export function openEntityView(row, langtag, focusElementId, rows) {
   const rowDisplayLabel = getDisplayLabel(row, langtag);
   const tableName = getTableName(row, langtag);
   const overlayId = new Date().getTime();
@@ -13,6 +13,7 @@ export function openEntityView(row, langtag, focusElementId) {
     head: <Header context={tableName} title={rowDisplayLabel} id={overlayId}
                   components={mkHeaderComponents(overlayId,
                     row,
+                    rows,
                     langtag,
                     {canSwitchRows: true})} // views of local table can switch rows
     />,

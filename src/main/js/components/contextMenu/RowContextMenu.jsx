@@ -60,8 +60,8 @@ class RowContextMenu extends React.Component {
   };
 
   showEntityView = () => {
-    const {row, langtag, cell} = this.props;
-    initiateEntityView(row, langtag, cell.id);
+    const {row, langtag, cell, rows} = this.props;
+    initiateEntityView(row, langtag, cell.id, rows);
     this.closeRowContextMenu();
   };
 
