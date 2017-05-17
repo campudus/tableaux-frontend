@@ -7,6 +7,7 @@ import i18n from "i18next";
 import {changeCell} from "../../../models/Tables";
 import classNames from "classnames";
 import * as f from "lodash/fp";
+import {contentChanged} from "../../cells/Cell";
 
 @listensToClickOutside
 class DateView extends Component {
@@ -80,6 +81,7 @@ class DateView extends Component {
   };
 
   saveMoment = moment => {
+    const oldValue = this.getValue();
     const value = (moment)
       ? ((moment.isValid()) ? moment : Moment()).format(this.Formats.formatForServer)
       : null;
@@ -87,7 +89,8 @@ class DateView extends Component {
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: value}
       : value;
-    changeCell({cell, value: changes});
+    changeCell({cell, value: changes})
+      .then(() => contentChanged(cell, langtag, oldValue));
   };
 
   handleChange = moment => {

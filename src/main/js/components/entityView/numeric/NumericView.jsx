@@ -3,6 +3,7 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import i18n from "i18next";
+import {contentChanged} from "../../cells/Cell";
 
 class NumericView extends React.Component {
 
@@ -80,9 +81,13 @@ class NumericView extends React.Component {
     if (value === this.originalValue) {
       return;
     }
-    this.originalValue = value;
     const {cell, langtag} = this.props;
-    ActionCreator.changeCell(cell, ((cell.isMultiLanguage) ? {[langtag]: value} : value));
+    ActionCreator.changeCell(
+      cell,
+      ((cell.isMultiLanguage) ? {[langtag]: value} : value),
+      () => contentChanged(cell, langtag, this.originalValue)
+    );
+    this.originalValue = value;
   };
 
   render() {

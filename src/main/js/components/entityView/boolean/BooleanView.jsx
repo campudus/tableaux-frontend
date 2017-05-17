@@ -3,6 +3,7 @@ import {translate} from "react-i18next";
 import classNames from "classnames";
 import {changeCell} from "../../../models/Tables";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import {contentChanged} from "../../cells/Cell";
 
 @translate(["common"])
 class BooleanView extends Component {
@@ -34,7 +35,8 @@ class BooleanView extends Component {
       ? {[langtag]: newValue}
       : newValue;
     this.setState({selected: newValue});
-    changeCell({cell, value: changes});
+    changeCell({cell, value: changes})
+      .then(() => contentChanged(cell, langtag));
   };
 
   toggleOnEnter = event => {

@@ -463,11 +463,21 @@
       }
 
       .toggle-button {
+        height: 30px;
+        width: 30px;
+        border-radius: 3px;
+        color: $color-text-light-grey;
         a {
-          padding: 10px;
+          @include button-with-icon();
+          color: inherit;
           i {
-            color: $color-text-light-grey;
+            margin: 0;
+            color: inherit;
           }
+        }
+        &:hover {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
         }
       }
 

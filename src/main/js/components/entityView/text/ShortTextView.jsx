@@ -4,6 +4,8 @@ import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 
+import {contentChanged} from "../../cells/Cell";
+
 class ShortTextView extends React.Component {
 
   constructor(props) {
@@ -47,9 +49,13 @@ class ShortTextView extends React.Component {
     if (f.isNil(value) || value.trim() === this.originalValue) {
       return;
     }
-    this.originalValue = value.trim();
     const {cell, langtag} = this.props;
-    ActionCreator.changeCell(cell, ((cell.isMultiLanguage) ? {[langtag]: value} : value));
+    ActionCreator.changeCell(
+      cell,
+      ((cell.isMultiLanguage) ? {[langtag]: value} : value),
+      () => contentChanged(cell, langtag, this.originalValue)
+    );
+    this.originalValue = value.trim();
   };
 
   componentWillReceiveProps(np) {

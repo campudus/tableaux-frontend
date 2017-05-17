@@ -34,10 +34,10 @@ class LanguageView extends Component {
     const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
 
     return (
-      <div className={wrapperClass}>
+      <div className={wrapperClass} onClick={() => switchEntityViewLanguage({langtag})}>
         <div className="item-header">
           <div className="label">{getLanguageOrCountryIcon(langtag)}</div>
-          {(f.isEmpty(value)) ? <Empty /> : null}
+          {(f.isEmpty(value)) ? <div><Empty /></div> : null}
           <div className="toggle-button">
             <a href="#" onClick={toggleExpand}>
               <i className={buttonClass} />
@@ -47,7 +47,7 @@ class LanguageView extends Component {
         {(value && isExpanded)
           ? (
             <div className="item-content">
-              <div className="content-box" onClick={() => switchEntityViewLanguage({langtag})}>
+              <div className="content-box">
                 {convert(cell.kind, ColumnKinds.text, value)}
               </div>
             </div>
@@ -99,7 +99,8 @@ class TranslationPopup extends Component {
   storeTranslations = translations => maybe(window.localStorage)
     .exec("setItem", KEY, JSON.stringify(translations));
 
-  toggleTranslation = lang => () => {
+  toggleTranslation = lang => evt => {
+    evt.stopPropagation();
     const {translations} = this.state;
     const toggledLang = !f.prop(lang, translations);
     const newLangState = f.assoc(lang, toggledLang, translations);

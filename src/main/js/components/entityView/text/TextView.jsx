@@ -2,6 +2,7 @@ import React from "react";
 import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
+import {contentChanged} from "../../cells/Cell";
 
 class TextView extends React.Component {
 
@@ -35,13 +36,12 @@ class TextView extends React.Component {
 
   saveAndClose = (newValue) => {
     const {cell, langtag} = this.props;
+    const oldValue = this.getValue();
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    changeCell({
-      cell,
-      value: changes
-    });
+    changeCell({cell, value: changes})
+      .then(() => contentChanged(cell, langtag, oldValue));
     this.setEditing(false)();
   };
 
