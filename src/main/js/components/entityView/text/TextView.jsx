@@ -1,10 +1,10 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {contentChanged} from "../../cells/Cell";
 
-class TextView extends React.Component {
+class TextView extends Component {
 
   constructor(props) {
     super(props);
@@ -14,9 +14,10 @@ class TextView extends React.Component {
   }
 
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    funcs: React.PropTypes.object.isRequired
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    funcs: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   getValue = () => {
@@ -57,15 +58,11 @@ class TextView extends React.Component {
   render() {
     const value = this.getValue();
     const {editing} = this.state;
-    const {langtag, funcs, cell} = this.props;
+    const {langtag, funcs, cell, thisUserCantEdit} = this.props;
     const isRowLocked = isLocked(cell.row);
 
-    return <div onKeyDown={(this.editing) ? function () {
+    return <div onKeyDown={(this.editing || thisUserCantEdit) ? function () {
     } : this.editOnEnter}
-                onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                }}
                 tabIndex={1}
                 ref={el => { funcs.register(el); }}
     >

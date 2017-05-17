@@ -12,7 +12,7 @@ import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
-import apiUrl from "../../../helpers/apiUrl";
+import apiUrl, {openInNewTab} from "../../../helpers/apiUrl";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
 import Header from "../../overlay/Header";
@@ -425,7 +425,8 @@ class LinkOverlay extends Component {
 
   render = () => {
     const {rowResults, loading} = this.state;
-    const {cell: {column: {displayName}}} = this.props;
+    const {cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
+    const targetTable = {tableId: column.toTable, langtag};
 
     const unlinkedRows = (loading)
       ? "Loading..."
@@ -485,8 +486,13 @@ class LinkOverlay extends Component {
         <div className="linked-items" onMouseEnter={() => {
           this.setState({activeBox: LINKED_ITEMS});
         }}>
-          <span className="items-title"><span>{i18n.t("table:link-overlay-items-title",
-            {name: displayName[this.props.langtag] || displayName})}</span></span>
+          <span className="items-title">
+            <span>{i18n.t("table:link-overlay-items-title")}
+              <a className="table-link" href="#" onClick={() => openInNewTab(targetTable)}>
+                {displayName[this.props.langtag] || displayName}
+              </a>
+            </span>
+          </span>
           {linkedRows}
         </div>
         <div className="unlinked-items" onMouseEnter={() => {

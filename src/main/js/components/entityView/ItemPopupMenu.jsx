@@ -17,7 +17,8 @@ class ItemPopupMenu extends Component {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
     setTranslationView: PropTypes.func.isRequired,
-    funcs: PropTypes.object.isRequired
+    funcs: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool.isRequired
   };
 
   constructor(props) {
@@ -131,7 +132,7 @@ class ItemPopupMenu extends Component {
 
   render() {
     const {isOffScreen} = this.state;
-    const {cell: {row}, cell, langtag, popupOpen} = this.props;
+    const {cell: {row}, cell, langtag, popupOpen, thisUserCantEdit} = this.props;
     const buttonClass = classNames("popup-button", {
       "is-open": popupOpen,
       "menu-is-right": isOffScreen
@@ -171,12 +172,14 @@ class ItemPopupMenu extends Component {
                   title: "table:copy_cell",
                   fn: () => ActionCreator.copyCellContent(cell, langtag)
                 })}
-              {this.mkEntry(2,
-                {
-                  title: "table:paste_cell",
-                  fn: () => ActionCreator.pasteCellContent(cell, langtag)
-                })}
-
+              {(thisUserCantEdit)
+                ? null
+                : this.mkEntry(2,
+                  {
+                    title: "table:paste_cell",
+                    fn: () => ActionCreator.pasteCellContent(cell, langtag)
+                  })
+              }
               {(cell.isMultiLanguage && canConvert(cell.kind, ColumnKinds.text))
                 ? (
                   <div>

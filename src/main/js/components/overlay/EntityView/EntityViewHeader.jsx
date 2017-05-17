@@ -9,7 +9,6 @@ import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
-import {either, fspy} from "../../../helpers/monads";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {

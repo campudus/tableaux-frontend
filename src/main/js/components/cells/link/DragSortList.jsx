@@ -5,7 +5,7 @@ import {DragDropContext, DragSource, DropTarget} from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import classNames from "classnames";
 
-const ItemType = Symbol("item-type");
+const ItemType = "item-type";
 
 const itemSource = {
   beginDrag(props) {

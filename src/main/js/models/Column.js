@@ -1,5 +1,5 @@
 var AmpersandModel = require("ampersand-model");
-var apiUrl = require("../helpers/apiUrl");
+import apiUrl from "../helpers/apiUrl";
 import TableauxConstants from "../constants/TableauxConstants";
 const {ColumnKinds} = TableauxConstants;
 

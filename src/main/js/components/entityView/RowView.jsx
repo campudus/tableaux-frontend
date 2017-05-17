@@ -88,7 +88,7 @@ class View extends Component {
     funcs.focus(funcs.id);
     funcs.setTranslationItem(this.viewElement);
     setTranslationView({cell: translationContent});
-    if (!this.canEditValue() && this.canEditValue(Symbol("theoretically"))) {
+    if (!this.canEditValue() && this.canEditValue("theoretically")) {
       funcs.hintUnlockButton();
     }
   };

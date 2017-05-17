@@ -1,6 +1,6 @@
 var Collection = require("ampersand-rest-collection");
 
-var apiUrl = require("../helpers/apiUrl");
+import apiUrl from "../helpers/apiUrl";
 
 var Column = require("./Column");
 

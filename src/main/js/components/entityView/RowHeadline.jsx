@@ -59,6 +59,7 @@ class RowHeadline extends React.Component {
                          setTranslationView={this.props.setTranslationView}
                          funcs={this.props.funcs}
                          popupOpen={this.props.popupOpen}
+                         thisUserCantEdit={thisUserCantEdit}
           />
           <a href="#" onClick={() => window.open(url, "_blank")}>
             {colName}
@@ -104,6 +105,7 @@ class RowHeadline extends React.Component {
                          setTranslationView={this.props.setTranslationView}
                          funcs={this.props.funcs}
                          popupOpen={this.props.popupOpen}
+                         thisUserCantEdit={thisUserCantEdit}
           />
           {this.getDisplayName(column)}
         </div>
@@ -133,6 +135,7 @@ class RowHeadline extends React.Component {
                        setTranslationView={this.props.setTranslationView}
                        funcs={this.props.funcs}
                        popupOpen={this.props.popupOpen}
+                       thisUserCantEdit={this.props.thisUserCantEdit}
         />
         {this.getDisplayName(column)}
       </div>

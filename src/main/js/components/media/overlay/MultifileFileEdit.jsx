@@ -1,11 +1,11 @@
-var React = require("react");
-var FileChangeUpload = require("./FileChangeUpload.jsx");
-var LanguageSwitcher = require("../../header/LanguageSwitcher.jsx");
-var apiUrl = require("../../../helpers/apiUrl");
+import apiUrl from "../../../helpers/apiUrl";
+import LanguageSwitcher from "../../header/LanguageSwitcher.jsx";
+import FileChangeUpload from "./FileChangeUpload.jsx";
+import React from "react";
 import {getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
 
-var MultifileFileEdit = React.createClass({
+const MultifileFileEdit = React.createClass({
 
   propTypes: {
     langtag: React.PropTypes.string.isRequired,

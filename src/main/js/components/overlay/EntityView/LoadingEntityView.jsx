@@ -62,8 +62,7 @@ class LoadingEntityViewBodyWrapper extends Component {
     overlayId: PropTypes.number.isRequired,
     toLoad: PropTypes.object,
     row: PropTypes.object,
-    langtag: PropTypes.string.isRequired,
-    focusElementId: PropTypes.any
+    langtag: PropTypes.string.isRequired
   };
 
   constructor(props) {

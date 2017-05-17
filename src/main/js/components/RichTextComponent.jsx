@@ -110,7 +110,7 @@ class RichTextComponent extends React.Component {
     const contentClass = classNames("content-pane", {"input": !readOnly});
     const cssClass = classNames("rich-text-component", {"editing": !readOnly});
     return (
-        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} ref={el => { this.focusTarget = el; }} >
+        <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} >
         {(!readOnly && !hideEditorSymbols)
           ? (
             <div className="symbol-bar">

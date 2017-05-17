@@ -6,7 +6,7 @@ import * as f from "lodash/fp";
 import {openShowDependency} from "../ConfirmDependentOverlay";
 import {maybe} from "../../../helpers/monads";
 import {initiateDeleteRow, initiateDuplicateRow} from "../../../helpers/rowHelper";
-import {setRowAnnotation} from "../../../helpers/annotationHelper";
+import {isLocked, setRowAnnotation} from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import Dispatcher from "../../../dispatcher/Dispatcher";
@@ -36,6 +36,7 @@ class HeaderPopupMenu extends Component {
 
   componentWillUnmount() {
     Dispatcher.off(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
+    this.cancelClosingTimer();
   }
 
   changeRow = ({row, id}) => {
@@ -65,10 +66,6 @@ class HeaderPopupMenu extends Component {
 
   handleClickOutside = () => {
     this.setState({open: false});
-  };
-
-  componentWillUnmount = () => {
-    this.cancelClosingTimer();
   };
 
   startClosingTimer = () => {
@@ -130,11 +127,14 @@ class HeaderPopupMenu extends Component {
                     fn: () => ActionCreator.setTranslationView(translationInfo)
                   })}
                 <div className="separator">{i18n.t("table:menus.edit")}</div>
-                {this.mkEntry(2,
-                  {
-                    title: "table:delete_row",
-                    fn: () => initiateDeleteRow(row, langtag)
-                  })}
+                {(isLocked(row))
+                  ? null
+                  : this.mkEntry(2,
+                    {
+                      title: "table:delete_row",
+                      fn: () => initiateDeleteRow(row, langtag)
+                    })
+                }
                 {this.mkEntry(3,
                   {
                     title: "table:duplicate_row",

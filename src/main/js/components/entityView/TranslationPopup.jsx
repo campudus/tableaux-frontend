@@ -145,7 +145,9 @@ class TranslationPopup extends Component {
               <div className="toggle-all-button"
                    onClick={this.setAllTranslations(isAnyCollapsed)}
               >
-                {i18n.t((isAnyCollapsed) ? "table:translations.expand_all" : "table:translations.collapse_all")}
+                <a href="#">
+                  {i18n.t((isAnyCollapsed) ? "table:translations.expand_all" : "table:translations.collapse_all")}
+                </a>
               </div>
             )
             : <div className="toggle-all-button">{i18n.t("table:translations.is_single_language")}</div>
