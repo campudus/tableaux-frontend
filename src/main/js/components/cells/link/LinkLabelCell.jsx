@@ -24,6 +24,7 @@ export default class LinkLabelCell extends Component {
   };
 
   removeLinkHandler = (event) => {
+    event.preventDefault();
     this.props.onDelete(this.props.linkElement.id);
   };
 
