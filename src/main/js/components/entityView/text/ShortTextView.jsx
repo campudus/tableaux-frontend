@@ -71,7 +71,7 @@ class ShortTextView extends React.Component {
         <input type="text" value={this.state.value || ""}
                placeholder={i18n.t("table:empty.text")}
                disabled={thisUserCantEdit}
-               onChange={event => { this.setState({value: event.target.value}) }}
+               onChange={event => { this.setState({value: event.target.value}); }}
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
                onBlur={this.saveEditsAndClose}
                ref={el => { funcs.register(el); }}
