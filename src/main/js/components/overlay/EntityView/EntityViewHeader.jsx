@@ -9,6 +9,7 @@ import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
+import {unlockRow} from "../../../helpers/annotationHelper";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -110,6 +111,7 @@ class RowSwitcher extends Component {
   switchRow = dir => () => {
     const nextRow = this.getNextRow(dir);
     if (nextRow) {
+      unlockRow({}, false);
       this.setState({row: nextRow});
       changeEntityViewRow({
         id: this.props.id,

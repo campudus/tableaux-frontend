@@ -33,8 +33,8 @@ class RowHeadline extends React.Component {
 
   getColumnIcon = column => {
     const columnIcons = {
-      [ColumnKinds.text]: "align-left",
-      [ColumnKinds.richtext]: "align-left",
+      [ColumnKinds.text]: "paragraph",
+      [ColumnKinds.richtext]: "paragraph",
       [ColumnKinds.shorttext]: "font",
       [ColumnKinds.link]: "link",
       [ColumnKinds.numeric]: "hashtag",
