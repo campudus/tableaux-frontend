@@ -61,7 +61,7 @@ class RowHeadline extends React.Component {
                          popupOpen={this.props.popupOpen}
                          thisUserCantEdit={thisUserCantEdit}
           />
-          <a href="#" onClick={() => window.open(url, "_blank")}>
+          <a className="title-wrapper" href="#" onClick={() => window.open(url, "_blank")}>
             {colName}
             <SvgIcon icon="tablelink" containerClasses="color-primary"/>
           </a>

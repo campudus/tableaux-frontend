@@ -172,17 +172,20 @@ $overlay-border-radius: 5px;
 
         .context-info {
           color: $color-text-medium-grey;
-          //font-size: smaller;
-          font-weight: 500;
+          font-size: 14px;
+          font-weight: 300;
           padding-bottom: 3px;
         }
 
         .title {
-          height: 1em;
           width: 90%;
+          white-space: nowrap;
           overflow: hidden;
+          text-overflow: ellipsis;
           color: $color-primary-contrast-text;
-          font-size: medium;
+          font-size: 18px;
+          padding-bottom: 0.3em; //prevents cut of characters
+
           .column-name {
             margin-right: 10px;
           }

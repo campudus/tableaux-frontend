@@ -44,19 +44,23 @@
 
 .action-tags {
   display: flex;
+
   .action-item {
     display: flex;
     justify-content: space-around;
     align-items: center;
     background-color: $color-text-light-grey;
-    border-radius: 0.6em;
+    border-radius: 10px;
     border: 1px solid $color-text-light-grey;
     text-transform: uppercase;
     color: $color-primary-contrast-text;
-    padding: 3px 1em 1px;
-    font-size: x-small;
-    font-weight: bold;
+    padding: 4px 10px 3px 10px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: normal;
     margin-right: 1em;
+    cursor: pointer;
+
     a {
       @include button-with-icon();
     }
@@ -64,6 +68,11 @@
     &.translation {
       background-color: $color-needs-translation;
       border-color: $color-needs-translation;
+    }
+
+    &:hover {
+      background-color: $color-needs-translation-dark;
+      border-color: $color-needs-translation-dark;
     }
   }
 }
@@ -323,6 +332,12 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+
+  .svg-icon {
+    height: 12px;
+    vertical-align: middle;
+    margin-left: 0.1em;
+  }
 
   .entry-popup-wrapper {
     text-transform: none;
