@@ -169,6 +169,7 @@ $overlay-border-radius: 5px;
         left: 45px;
         top: 30px;
         right: 45px;
+        z-index: 1;
 
         .context-info {
           color: $color-text-medium-grey;
@@ -220,7 +221,7 @@ $overlay-border-radius: 5px;
       .item-header {
         font-weight: bold;
         text-transform: uppercase;
-        padding-bottom: 15px;
+        padding-bottom: 5px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -254,7 +255,7 @@ $overlay-border-radius: 5px;
 
       .item {
         width: 100%;
-        padding: 15px 50px;
+        padding: 30px 50px;
         box-sizing: border-box;
         border-color: transparent;
 
@@ -271,7 +272,7 @@ $overlay-border-radius: 5px;
         }
 
         .item-description {
-          margin-top: 15px;
+          padding: 5px 0;
           color: $color-text-medium-grey;
           display: flex;
           flex-direction: row;
@@ -283,10 +284,6 @@ $overlay-border-radius: 5px;
 
         .item-content {
           border-color: inherit;
-
-          &:not(:first-child) {
-            padding-top: 15px;
-          }
 
           .langtag-label {
             margin-left: 5px;
@@ -360,7 +357,7 @@ $overlay-border-radius: 5px;
       background-color: transparent;
       outline: none;
       width: 100%;
-      margin: 5px 0;
+      margin-top: 5px;
       border: none;
       border-color: inherit !important; // TODO: Remove important once media styles are done
       border-bottom: 1px solid;

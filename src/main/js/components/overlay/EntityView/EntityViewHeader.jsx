@@ -136,7 +136,7 @@ class RowSwitcher extends Component {
               </a>
             </div>
           )
-          : null
+          : <div />
         }
         {(this.getNextRow(Directions.DOWN))
           ? (
@@ -146,7 +146,7 @@ class RowSwitcher extends Component {
               </a>
             </div>
           )
-          : null
+          : <div />
         }
       </div>
     );

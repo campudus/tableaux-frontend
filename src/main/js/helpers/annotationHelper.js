@@ -309,6 +309,7 @@ class UnlockedRowManager {
   static relock() {
     maybe(UnlockedRowManager.getUnlocked())
       .method("set", {unlocked: false});
+    UnlockedRowManager.unlockedRow = null;
   }
 }
 
