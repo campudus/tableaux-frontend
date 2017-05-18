@@ -33,7 +33,12 @@ class AttachmentLabelCell extends Component {
     const deleteButton = <i onClick={this.removeAttachmentHandler} className="fa fa-times" />;
 
     return (
-      <span className={theClassName}>{attachmentTitle}{hasDeleteButton ? deleteButton : ""}</span>
+      <div className={theClassName}>
+        <div className="label-text">
+          {attachmentTitle}
+          {hasDeleteButton ? deleteButton : ""}
+          </div>
+      </div>
     );
   }
 

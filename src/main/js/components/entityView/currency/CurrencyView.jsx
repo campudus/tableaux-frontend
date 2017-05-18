@@ -91,12 +91,14 @@ class CurrencyView extends Component {
     const currencyRows = this.getCurrencyValues(cell, false);
 
     return (
-      <div className="item-content currency"
-           ref={el => { funcs.register(el); }}
-           tabIndex={1}
-           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
-      >
-        {currencyRows}
+      <div>
+        <div className="item-content currency"
+             ref={el => { funcs.register(el); }}
+             tabIndex={1}
+             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
+        >
+          {currencyRows}
+        </div>
         {this.props.children}
       </div>
     );

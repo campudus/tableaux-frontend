@@ -1,7 +1,7 @@
 @import "../variables";
 @import "../helper";
 
-.cell.cell-link {
+.cell.cell-link, .cell.cell-attachment {
 
   //Overwrite editing styling because editing mode is with overlay
   &.cell-link.editing .cell-content {
