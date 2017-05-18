@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from "react";
-import * as _ from "lodash";
 import AttachmentOverlay from "./AttachmentOverlay.jsx";
 import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
@@ -35,16 +34,6 @@ class AttachmentEditCell extends Component {
     this.props.setCellKeyboardShortcuts({});
   };
 
-  removeAttachment = (file) => {
-    const {cell} = this.props;
-
-    return () => {
-      let attachments = _.clone(cell.value);
-      _.remove(attachments, (attachment) => file.uuid === attachment.uuid);
-      ActionCreator.changeCell(cell, attachments);
-    };
-  };
-
   openOverlay = () => {
     const {cell, langtag} = this.props;
     const columnName = cell.column.displayName[langtag] || cell.column.displayName[FallbackLanguage];
@@ -58,9 +47,8 @@ class AttachmentEditCell extends Component {
   render() {
     const {cell, langtag} = this.props;
     const attachments = cell.value.map((element, arrayIndex) => {
-      return <AttachmentLabelCell key={arrayIndex} id={element.id} deletable={true} attachmentElement={element}
-                                  cell={cell} langtag={langtag}
-                                  onDelete={this.removeAttachment(element)}/>;
+      return <AttachmentLabelCell key={arrayIndex} id={element.id} attachmentElement={element}
+                                  cell={cell} langtag={langtag}/>;
     });
 
     return (
@@ -69,7 +57,6 @@ class AttachmentEditCell extends Component {
       </div>
     );
   }
-
 }
 
 module.exports = AttachmentEditCell;
