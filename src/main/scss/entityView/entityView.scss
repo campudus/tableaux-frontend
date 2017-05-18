@@ -424,7 +424,7 @@
       border-color: $color-primary;
     }
     &.shake {
-      animation: do-the-shake 200ms 4 alternate;
+      animation: do-the-shake 200ms 2 alternate;
     }
   }
 }
@@ -665,11 +665,13 @@
 @keyframes do-the-shake {
   from {
     transform: scale(1);
-    background-color: $color-primary;
+    background-color: transparent;
+    border-color: transparent;
   }
   to {
     transform: scale(1.1);
-    background-color: $color-primary-lighter;
+    background-color: $color-primary;
+    border-color: transparent;
   }
 }
 

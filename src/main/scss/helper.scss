@@ -92,20 +92,16 @@
   display: inline-flex;
   align-items: baseline;
   box-sizing: border-box;
-
-  padding: 6px;
   margin-right: 12px;
 
   color: $color-primary-contrast-text;
   background-color: $color-primary;
 
   @include border-radius(3px);
-  @include box-shadow(0 2px 1px $color-primary-darker);
 
   &:hover {
     color: $color-primary-contrast-text;
-    background-color: $color-primary-lighter;
-    @include box-shadow(0 2px 2px $color-primary);
+    background-color: $color-primary-darker;
   }
 
   i {

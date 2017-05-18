@@ -3,10 +3,6 @@
 
 .cell.cell-link {
 
-  .cell-content {
-    display: flex;
-  }
-
   //Overwrite editing styling because editing mode is with overlay
   &.cell-link.editing .cell-content {
     @include box-shadow(none);
@@ -21,41 +17,23 @@
     align-items: baseline;
     text-wrap: none;
     line-height: 1em;
-    padding: 3px 6px;
-    margin: 0 6px 6px 0;
+    margin: 0 6px 0 0;
 
     .label-text {
       overflow: hidden;
       text-overflow: ellipsis;
+      padding: 6px 8px;
     }
   }
 
   &.selected, &.editing {
     .cell-content {
       flex-flow: row wrap;
+      padding-bottom: 3px;
+
+      .link-label {
+        margin-bottom: 6px;
+      }
     }
   }
-
-  .add {
-    width: 30px;
-    height: 30px;
-    border-radius: 30px;
-    vertical-align: bottom;
-    display: block;
-    background-color: white;
-    border: 1px solid $color-border-grey;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    z-index: 1;
-    font-weight: bold;
-    color: $color-primary;
-
-    &:hover {
-      color: $color-primary-contrast-text;
-      background-color: $color-primary;
-      border-color: $color-primary;
-    }
-  }
-
 }

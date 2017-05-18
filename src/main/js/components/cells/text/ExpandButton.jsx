@@ -12,7 +12,7 @@ var ExpandButton = React.createClass({
   },
 
   render: function () {
-    return <button className="add" onClick={this.onClick}><span className="fa fa-expand"></span></button>;
+    return <button className="expand" onClick={this.onClick}><span className="fa fa-expand"></span></button>;
   }
 });
 

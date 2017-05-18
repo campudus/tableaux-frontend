@@ -25,7 +25,7 @@ $overlay-border-radius: 5px;
 
       &.is-left {
         transition: transform 0.5s;
-        transform: perspective(500px) translate3d(-20vw, 0, -10px);
+        transform: translateX(-20vw);
       }
       &.is-right {
         &:not(.is-left) {
@@ -67,7 +67,7 @@ $overlay-border-radius: 5px;
         &.is-left {
           transition: left 0.5s;
           transform: none;
-          left: 0;
+          left: 0vw; // redundant unit is required here
         }
         &.is-right {
           &:not(.is-left) {
@@ -224,7 +224,7 @@ $overlay-border-radius: 5px;
         position: relative;
 
         .svg-icon {
-          height: 0.8em;
+          height: 1em;
           max-width: 2em;
         }
 
