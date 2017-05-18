@@ -105,6 +105,6 @@
   "link-overlay-empty": "Nothing linked yet. You can choose data from the following list.",
   "link-overlay-items-title": "Linked data from table {{name}}",
   "row-is-locked": "Data is read only",
-  "unlock-row": "Unlock"
-
+  "unlock-row": "Unlock",
+  "clear-date": "No date / time"
 }

@@ -142,7 +142,7 @@ class DateView extends Component {
               />
               <div className="clear-datetime" onClick={() => this.handleChange(null)}>
                 <i className="fa fa-ban"/>
-                <span>{i18n.t("common:clear-date")}</span>
+                <span>{i18n.t("table:clear-date")}</span>
               </div>
             </div>
           )

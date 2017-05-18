@@ -198,8 +198,9 @@
 
   .datetime-popup {
     position: absolute;
-    top: 100%;
+    top: calc(100% - 0.7em);
     z-index: 1;
+    box-shadow: 0 0 15px 0 $color-text-medium-grey;
     .clear-datetime {
       display: flex;
       justify-content: center;
