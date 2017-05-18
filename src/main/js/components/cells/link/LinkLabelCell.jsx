@@ -21,7 +21,7 @@ export default class LinkLabelCell extends Component {
   };
 
   render() {
-    const {langtag, cell} = this.props;
+    const {langtag, cell, clickable} = this.props;
     const tableId = cell.column.toTable;
     const rowId = this.props.linkElement.id;
 
@@ -30,8 +30,8 @@ export default class LinkLabelCell extends Component {
       evt.stopPropagation();
     };
 
-    return <a href="#" onClick={clickFn} className="link-label">
-      {this.getLinkName()}
+    return <a href="#" onClick={(clickable) ? clickFn : () => {}} className="link-label">
+      <div className="label-text">{this.getLinkName()}</div>
     </a>;
   }
 }

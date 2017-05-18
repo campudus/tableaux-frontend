@@ -25,11 +25,17 @@ class LinkCell extends Component {
       // Show a link preview for performance
       const tooManyLinks = cell.value.length > 3;
       const links = f.take(3, cell.value)
-                     .map((element, index) => {
-                       return <LinkLabelCell key={element.id} linkElement={element} linkIndexAt={index} cell={cell}
-                                               langtag={langtag}
-                         />;
-                     });
+                     .map(
+                       (element, index) => (
+                         <LinkLabelCell key={element.id}
+                                        linkElement={element}
+                                        linkIndexAt={index}
+                                        cell={cell}
+                                        langtag={langtag}
+                                        clickable={false}
+                         />
+                       )
+                     );
       return (
         <div className={"cell-content"}>
           {(tooManyLinks) ? [...links, <span key={"more"} className="more">&hellip;</span>] : links}

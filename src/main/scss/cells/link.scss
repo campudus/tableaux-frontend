@@ -3,29 +3,36 @@
 
 .cell.cell-link {
 
+  .cell-content {
+    display: flex;
+  }
+
   //Overwrite editing styling because editing mode is with overlay
   &.cell-link.editing .cell-content {
     @include box-shadow(none);
   }
 
   //Label
-  & .link-label {
+  .link-label {
     @include link-look();
-    display: initial;
-    padding: 2px 6px;
+    max-width: 240px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: baseline;
+    text-wrap: none;
+    line-height: 1em;
+    padding: 3px 6px;
+    margin: 0 6px 6px 0;
+
+    .label-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
-  &.selected {
-    display: flex;
-
-    .link-label {
-      max-width: 240px;
-      display: inline-flex;
-      align-items: baseline;
-      overflow: hidden;
-      text-wrap: none;
-      line-height: 1em;
-      padding: 3px 6px;
+  &.selected, &.editing {
+    .cell-content {
+      flex-flow: row wrap;
     }
   }
 

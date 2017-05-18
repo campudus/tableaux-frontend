@@ -48,11 +48,14 @@ class LinkEditCell extends Component {
 
   render() {
     const {cell, langtag} = this.props;
-    const links = cell.value.map((element, index) => {
-      return <LinkLabelCell key={element.id} deletable={false} linkElement={element}
-                            cell={cell} langtag={langtag}
-                            linkIndexAt={index} />;
-    });
+    const links = cell.value.map(
+      (element, index) => (
+        <LinkLabelCell key={element.id} clickable={true} linkElement={element}
+                       cell={cell} langtag={langtag}
+                       linkIndexAt={index}
+        />
+      )
+    );
 
     return (
       <div className={"cell-content"} onScroll={event => {
