@@ -1,23 +1,14 @@
 import React from "react";
 import {openOverlay} from "../../actions/ActionCreator";
-import Header from "./Header";
-import mkHeaderComponents, {getDisplayLabel, getTableName} from "./EntityView/EntityViewHeader";
+import EntityViewHeader from "./EntityView/EntityViewHeader";
 import EntityViewBody from "./EntityView/EntityViewBody";
 import {LoadingEntityViewBodyWrapper, LoadingEntityViewHeaderWrapper} from "./EntityView/LoadingEntityView";
 
 export function openEntityView(row, langtag, focusElementId, rows) {
-  const rowDisplayLabel = getDisplayLabel(row, langtag);
-  const tableName = getTableName(row, langtag);
-  const overlayId = new Date().getTime();
+
   openOverlay({
-    head: <Header context={tableName} title={rowDisplayLabel} id={overlayId}
-                  components={mkHeaderComponents(overlayId,
-                    row,
-                    rows,
-                    langtag,
-                    {canSwitchRows: true})} // views of local table can switch rows
-    />,
-    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} overlayId={overlayId} />,
+    head: <EntityViewHeader row={row} rows={rows} langtag={langtag} canSwitchRows={true} />,
+    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
     type: "full-height",
     preferRight: true
   });
@@ -25,10 +16,10 @@ export function openEntityView(row, langtag, focusElementId, rows) {
 
 // target: {(tables: Tables, tableId: int > 0, | table: Table) rowId: int > 0}
 export function loadAndOpenEntityView(target, langtag) {
-  const overlayId = new Date().getTime();
+  const temporaryFakeId = 0; // replaced by GenericOverlay.render() <- Tableaux.renderActiveOverlays()
   openOverlay({
-    head: <LoadingEntityViewHeaderWrapper overlayId={overlayId} langtag={langtag} />,
-    body: <LoadingEntityViewBodyWrapper overlayId={overlayId} langtag={langtag} toLoad={target} />,
+    head: <LoadingEntityViewHeaderWrapper langtag={langtag} id={temporaryFakeId} />,
+    body: <LoadingEntityViewBodyWrapper langtag={langtag} toLoad={target} id={temporaryFakeId} />,
     type: "full-height",
     preferRight: true
   });

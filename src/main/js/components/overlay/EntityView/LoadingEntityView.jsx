@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import ActionCreator, {broadcastRowLoaded} from "../../../actions/ActionCreator";
+import {broadcastRowLoaded} from "../../../actions/ActionCreator";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import Header from "../Header";
@@ -8,12 +8,12 @@ import {maybe} from "../../../helpers/monads";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 import EntityViewBody from "./EntityViewBody";
-import mkHeaderComponents, {getDisplayLabel, getTableName} from "./EntityViewHeader";
+import EntityViewHeader from "./EntityViewHeader";
 
 class LoadingEntityViewHeaderWrapper extends Component {
   static propTypes = {
     row: PropTypes.object,
-    overlayId: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
     langtag: PropTypes.string.isRequired
   };
 
@@ -30,36 +30,32 @@ class LoadingEntityViewHeaderWrapper extends Component {
     Dispatcher.off(ActionTypes.ENTITY_VIEW_ROW_LOADED, this.handleRowLoaded);
   };
 
-  handleRowLoaded = ({overlayId, row}) => {
-    if (this.props.overlayId === overlayId) {
+  handleRowLoaded = ({id, row}) => {
+    if (this.props.id === id) {
       this.setState({row});
     }
-    ActionCreator.changeHeaderTitle({id: overlayId, title: getDisplayLabel(row, this.props.langtag)});
   };
 
   render() {
-    const {overlayId, langtag} = this.props;
+    const {id, langtag} = this.props;
     const {row} = this.state;
-    const elements = (row)
-      ? {
-        context: getTableName(row, langtag),
-        title: getDisplayLabel(row, langtag),
-        components: mkHeaderComponents(overlayId, row, null, langtag),
-        langtag
-      }
-      : {
-        context: "",
-        title: i18n.t("table:loading"),
-        components: <div />,
-        langtag
-      };
-    return <Header {...elements} id={this.props.overlayId}/>;
+    return (row)
+      ? <EntityViewHeader row={row}
+                          langtag={langtag}
+                          id={id}
+      />
+      : <Header context=""
+                title={i18n.t("table:loading")}
+                components={<div />}
+                langtag={langtag}
+                id={id}
+      />;
   }
 }
 
 class LoadingEntityViewBodyWrapper extends Component {
   static propTypes = {
-    overlayId: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
     toLoad: PropTypes.object,
     row: PropTypes.object,
     langtag: PropTypes.string.isRequired
@@ -76,7 +72,7 @@ class LoadingEntityViewBodyWrapper extends Component {
       const setLoadedRow = row => {
         this.setState({row});
         broadcastRowLoaded({
-          overlayId: this.props.overlayId,
+          id: this.props.id,
           row
         });
       };
@@ -147,7 +143,7 @@ class LoadingEntityViewBodyWrapper extends Component {
   render() {
     const {row} = this.state;
     return (row)
-      ? <EntityViewBody row={row} langtag={this.props.langtag} overlayId={this.props.overlayId}
+      ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.id}
                         registerForEvent={this.props.registerForEvent}
       />
       : null;

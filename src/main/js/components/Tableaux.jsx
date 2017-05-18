@@ -152,6 +152,7 @@ export default class Tableaux extends React.Component {
     };
 
     const {context, title} = f.first(activeOverlays).head.props;
+    console.log("In root-button:", f.first(activeOverlays).head.props)
 
     return (
       <div className="breadcrumb-wrapper">

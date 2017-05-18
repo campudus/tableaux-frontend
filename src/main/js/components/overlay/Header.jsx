@@ -24,7 +24,7 @@ class Header extends Component {
   }
 
   componentDidMount() {
-    if (this.props.id) {
+    if (f.isNumber(this.props.id)) {
       Dispatcher.on(ActionTypes.CHANGE_HEADER_TITLE, this.changeTitle);
     }
   }

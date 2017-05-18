@@ -10,6 +10,7 @@ import * as f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
+import Header from "../../overlay/Header";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -152,19 +153,23 @@ class RowSwitcher extends Component {
   }
 }
 
-const mkHeaderComponents = (id, row, rows, langtag, {canSwitchRows} = {}) => {
-  return (
+const EntityViewHeader = props => {
+  const {row, langtag} = props;
+  const rowDisplayLabel = getDisplayLabel(row, langtag);
+  const tableName = getTableName(row, langtag);
+  const components = (
     <div className="header-components">
       <div className="top-right">
-        <LanguageSwitcher langtag={langtag} />
-        {(canSwitchRows) ? <RowSwitcher row={row} rows={rows} id={id} langtag={langtag} /> : null}
+        <LanguageSwitcher langtag={props.langtag} />
+        {(props.canSwitchRows) ? <RowSwitcher {...props} /> : null}
       </div>
       <div className="search-and-popup">
-        <FilterBar id={id} />
-        <HeaderPopupMenu langtag={langtag} row={row} id={id} />
+        <FilterBar id={props.id} />
+        <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} />
       </div>
     </div>
   );
+  return <Header {...props} context={tableName} title={rowDisplayLabel} components={components}/>;
 };
 
 const getTableName = (row, langtag) => {
@@ -179,4 +184,4 @@ const getDisplayLabel = (row, langtag) => {
 };
 
 export {getTableName, getDisplayLabel};
-export default mkHeaderComponents;
+export default EntityViewHeader;

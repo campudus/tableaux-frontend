@@ -42,7 +42,6 @@ class EntityViewBody extends Component {
   static PropTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
-    overlayId: PropTypes.number.isRequired,
     registerForEvent: PropTypes.func.isRequired
   };
 
@@ -109,7 +108,7 @@ class EntityViewBody extends Component {
   };
 
   changeRow = ({id, row}) => {
-    if (this.props.overlayId !== id) {
+    if (this.props.id !== id) {
       return;
     }
     this.setState({row,
@@ -125,7 +124,7 @@ class EntityViewBody extends Component {
   };
 
   setColumnFilter = ({id, value, filterMode}) => {
-    if (id !== this.props.overlayId) {
+    if (id !== this.props.id) {
       return;
     }
 
