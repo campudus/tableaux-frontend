@@ -6,6 +6,8 @@ import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificat
 import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
+import Header from "../../overlay/Header";
+import {FallbackLanguage} from "../../../constants/TableauxConstants";
 
 @connectToAmpersand
 class AttachmentEditCell extends Component {
@@ -45,8 +47,9 @@ class AttachmentEditCell extends Component {
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
+    const columnName = cell.column.displayName[langtag] || cell.column.displayName[FallbackLanguage];
     ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
+      head: <Header title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} context={columnName} />,
       body: <AttachmentOverlay cell={cell} langtag={langtag} />,
       type: "normal"
     });

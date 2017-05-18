@@ -48,11 +48,8 @@ var AttachmentOverlay = React.createClass({
 
       folder.fetch({
         data: {langtag: self.props.langtag},
-        success: function (err, result) {
-          if (err) {
-            throw new Error(err);
-          }
-          self.setState({folder: result});
+        success: function (collection, response) {
+          self.setState({folder: response});
         },
         error: function (e) {
           throw new Error(e);
