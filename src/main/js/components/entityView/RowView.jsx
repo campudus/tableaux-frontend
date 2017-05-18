@@ -36,7 +36,7 @@ class View extends Component {
     const pDiffs = pKeys.filter(k => this.props[k] !== nextProps[k]);
     const sDiffs = sKeys.filter(k => this.state[k] !== nextState[k]);
     const diffs = [...pDiffs, ...sDiffs];
-    return !(diffs.length === 1 && f.first(diffs) === "funcs");
+    return !(diffs.length === 1 && f.first(diffs) === "funcs") || (nextProps.cell.row.unlocked === true);
   }
 
   constructor(props) {
