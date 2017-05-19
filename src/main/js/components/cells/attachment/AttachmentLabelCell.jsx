@@ -1,15 +1,22 @@
 import React, {Component, PropTypes} from "react";
 import multiLanguage from "../../../helpers/multiLanguage";
 import TableauxConstants from "../../../constants/TableauxConstants";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
-@connectToAmpersand
 class AttachmentLabelCell extends Component {
 
   static propTypes = {
     cell: PropTypes.object.isRequired,
     attachmentElement: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired
+    langtag: PropTypes.string.isRequired,
+    openOverlay: PropTypes.func.isRequired,
+    selected: PropTypes.bool.isRequired
+  };
+
+  handleClick = evt => {
+    if (this.props.selected) {
+      evt.stopPropagation();
+      this.props.openOverlay(this.props.attachmentElement.folder);
+    }
   };
 
   render() {
@@ -19,7 +26,7 @@ class AttachmentLabelCell extends Component {
     const attachmentTitle = retrieveTranslation(attachmentElement.title, langtag);
 
     return (
-      <div className="link-label">
+      <div className="link-label" onClick={this.handleClick}>
         <div className="label-text">
           {attachmentTitle}
         </div>

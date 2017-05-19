@@ -73,9 +73,7 @@ class Cell extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      keyboardShortcuts: {}
-    };
+    this.keyboardShortcuts = {};
     this.props.watch(this.props.cell,
       {
         event: "change:value",
@@ -103,13 +101,11 @@ class Cell extends React.Component {
   };
 
   getKeyboardShortcuts = (event) => {
-    return this.state.keyboardShortcuts;
+    return this.keyboardShortcuts;
   };
 
   setKeyboardShortcutsForChildren = (childrenEvents) => {
-    this.setState({
-      keyboardShortcuts: childrenEvents
-    });
+    this.keyboardShortcuts = childrenEvents;
   };
 
   checkFocus = () => {
