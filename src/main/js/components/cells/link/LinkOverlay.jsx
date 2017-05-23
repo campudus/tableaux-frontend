@@ -11,7 +11,6 @@ import {either, maybe} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import classNames from "classnames";
 import apiUrl, {openInNewTab} from "../../../helpers/apiUrl";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
@@ -23,6 +22,7 @@ import ReactDOM from "react-dom";
 import SearchBar from "./LinkOverlaySearchBar";
 import DragSortList from "./DragSortList";
 import {changeCell} from "../../../models/Tables";
+import LinkItem from "./LinkItem";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -192,7 +192,7 @@ class LinkOverlay extends Component {
           url: apiUrl("/tables/" + toTableId + "/columns/first/rows"),
           success: () => {
             this.setRowResult(toTable.rows, true);
-            resolve();
+            resolve(toTable);
           },
           error: reject
         });
@@ -225,9 +225,9 @@ class LinkOverlay extends Component {
   // we set the row result depending if a search value is set
   setRowResult = (rowResult, fromServer) => {
     // just set the models, because we filter it later which also returns the models.
-    this.allRowResults = rowResult.models;
+    this.allRowResults = rowResult.models || rowResult;
     // we always rebuild the row names, also to prevent wrong display names when switching languages
-    this.buildRowConcatString();
+    this.updateRowConcatStrings();
     this.setState({
       // we show all the rows
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
@@ -236,7 +236,8 @@ class LinkOverlay extends Component {
   };
 
   // Extends the model by a cached row name string
-  buildRowConcatString = () => {
+  updateRowConcatStrings = () => {
+    return;
     const {allRowResults, props: {cell: {column: {toColumn}}}} = this;
     _.forEach(allRowResults, (row) => {
       row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row),
@@ -282,7 +283,8 @@ class LinkOverlay extends Component {
   };
 
   addLinkValue = (isLinked, row, event) => {
-    event.preventDefault();
+    console.log("addLinkValue", isLinked, row)
+    maybe(event).method("preventDefault");
     const cell = this.props.cell;
     const rowCellIdValue = this.getRowValues(row);
     const link = {
@@ -319,23 +321,7 @@ class LinkOverlay extends Component {
     }
 
     const isSelected = this.getSelectedId() === index && activeBox === ((isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS);
-    const rowName = row["cachedRowName"];
-    const rowCssClass = classNames("list-item",
-      {
-        "isLinked": isLinked,
-        "selected": isSelected
-      });
     const {langtag, cell} = this.props;
-
-    const mainButtonClass = classNames("left", {
-      "linked": isLinked,
-      "has-focus": selectedMode === MAIN_BUTTON
-    });
-    const linkButtonClass = classNames("right",
-      {
-        "has-focus": selectedMode === LINK_BUTTON,
-        "linked": isLinked
-      });
 
     const refIfLinked = el => {
       if (isLinked) {
@@ -343,60 +329,36 @@ class LinkOverlay extends Component {
       }
     };
 
-    return (isSelected)
-      ? (
-        <div style={style} key={key} ref={refIfLinked} tabIndex={(isLinked) ? 1 : -1}>
-          <div className={rowCssClass}>
-            <div className={mainButtonClass}
-                 onMouseOver={e => {
-                   this.setState({selectedMode: MAIN_BUTTON});
-                   this.background.focus();
-                   e.stopPropagation();
-                 }}
-                 onClick={evt => this.addLinkValue(isLinked, row, evt)}
-            >
-              <a href="#" draggable={false}>
-                {rowName}
-              </a>
-              {(isLinked)
-                ? <SvgIcon icon="cross" containerClasses="color-primary" />
-                : <SvgIcon icon="check" containerClasses="color-primary" />
-              }
-            </div>
-            <a href="#" className={linkButtonClass} draggable={false}
-               onClick={() => loadAndOpenEntityView({
-                 tables: cell.tables,
-                 tableId: cell.column.toTable,
-                 rowId: row.id
-               }, langtag)}
-               onMouseOver={e => {
-                 this.setState({selectedMode: LINK_BUTTON});
-                 this.background.focus();
-                 e.stopPropagation();
-               }}
-            >
-              <i className="fa fa-long-arrow-right" />
-            </a>
-          </div>
-        </div>
-      )
-      : (
-        <div style={style} key={key} tabIndex={1}
-             onMouseOver={e => {
-               this.setSelectedId(index);
-               this.background.focus();
-               e.stopPropagation();
-             }}
-             ref={refIfLinked}
-        >
+    const mouseOverBoxHandler = val => e => {
+      this.setState({selectedMode: val});
+      this.background.focus();
+      //e.stopPropagation();
+    };
 
-          <div className={rowCssClass}>
-            <div className="link-label">
-              {rowName}
-            </div>
-          </div>
-        </div>
-      );
+    const mouseOverItemHandler = index => e => {
+      this.setSelectedId(index);
+      this.background.focus();
+      //e.stopPropagation();
+    };
+
+    return (
+      <LinkItem
+        key={key}
+        mouseOverHandler={{
+          box: mouseOverBoxHandler,
+          item: mouseOverItemHandler(index)
+        }}
+        refIfLinked={refIfLinked}
+        clickHandler={this.addLinkValue}
+        isLinked={isLinked}
+        isSelected={isSelected}
+        row={row}
+        cell={cell}
+        langtag={langtag}
+        style={style}
+        selectedMode={selectedMode}
+      />
+    )
   };
 
   noRowsRenderer = () => {
@@ -419,14 +381,43 @@ class LinkOverlay extends Component {
       cell,
       value: rearranged
     })
-      .catch(() => this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)}));
+      .catch(
+        error => {
+          console.error("Error changing cell, restoring original data:", error);
+          this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)})
+        });
     this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
+  };
+
+  renderRowCreator = () => {
+    const {cell: {column: {displayName, toTable}}, langtag} = this.props;
+    const addAndLinkRow = () => {
+      const isAlreadyLinked = false;
+      ActionCreator.addRow(toTable,
+        row => {
+          //this.setRowResult([...this.allRowResults, row]);
+          this.addLinkValue(isAlreadyLinked, row);
+        }
+      )
+    };
+
+    const linkTableName = displayName[langtag] || displayName[FallbackLanguage] || "";
+
+    return (
+      <div className="row-creator-button" onClick={addAndLinkRow}>
+        <SvgIcon icon="plus" containerClasses="color-primary" />
+        <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>
+      </div>
+    );
   };
 
   render = () => {
     const {rowResults, loading} = this.state;
     const {cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
-    const targetTable = {tableId: column.toTable, langtag};
+    const targetTable = {
+      tableId: column.toTable,
+      langtag
+    };
 
     const unlinkedRows = (loading)
       ? "Loading..."
@@ -500,6 +491,7 @@ class LinkOverlay extends Component {
         }}>
           {unlinkedRows}
         </div>
+        {this.renderRowCreator()}
       </div>
     );
   }
