@@ -18,9 +18,10 @@ module.exports = {
     });
   },
 
-  addRow: function (tableId) {
+  addRow: function (tableId, callback) {
     Dispatcher.trigger(ActionTypes.CREATE_ROW, {
-      tableId: tableId
+      tableId,
+      callback
     });
   },
 
@@ -311,5 +312,10 @@ module.exports = {
 
   updateOverlay: ({id, props}) => {
     Dispatcher.trigger(ActionTypes.UPDATE_OVERLAY, {id, props});
+  },
+
+  broadcastDataChange: (payload) => {
+    console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`)
+    Dispatcher.trigger(ActionTypes.BROADCAST_DATA_CHANGE, payload);
   }
 };

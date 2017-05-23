@@ -27,8 +27,11 @@ const changeLinkCell = ({cell, value}) => {
     return new Promise(
       (resolve, reject) => {
         cell.save({value}, {
-          success: resolve(cell.value),
-          error: reject("Could not set multiple link values")
+          success: () => {
+            ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
+            resolve(cell.value);
+          },
+          error: err => reject("Could not set multiple link values:", err)
         });
       }
     );
@@ -60,6 +63,7 @@ const changeLinkCell = ({cell, value}) => {
           updateConcatCells(cell);
           reject(error);
         } else {
+          ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
           resolve(newValue);
         }
       });
@@ -141,6 +145,7 @@ export const changeCell = payload => {
           patch: isPatch,
           wait: true,
           success(model, data, options) {
+            ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
             // is there new data from the server?
             if (!_.isEqual(data.value, mergedValue)) {
               console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
@@ -228,7 +233,7 @@ const Tables = Collection.extend({
 
   addRowHandler(payload) {
     const self = this;
-    const tableId = payload.tableId;
+    const {tableId, callback} = payload;
     const table = this.get(tableId);
     const rows = table.rows;
 
@@ -249,6 +254,9 @@ const Tables = Collection.extend({
     newRow.save({}, {
       success(row) {
         rows.add(row);
+        if (callback) {
+          callback(row);
+        }
         ActionCreator.spinnerOff();
       },
       error(err) {

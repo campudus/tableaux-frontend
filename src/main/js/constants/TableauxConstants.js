@@ -85,6 +85,7 @@ var TableauxConstant = {
 
     COPY_CELL_CONTENT: null,
     PASTE_CELL_CONTENT: null,
+    BROADCAST_DATA_CHANGE: null,
 
     SWITCH_ENTITY_VIEW_LANGUAGE: null,
     ENTITY_VIEW_ROW_LOADED: null,
