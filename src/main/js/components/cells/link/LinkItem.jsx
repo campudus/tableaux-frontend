@@ -20,7 +20,8 @@ const getLinkLabel = (collection, langtag) => {
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
 
-const getCssClass = ({isLinked, isSelected}) => classNames("list-item", {
+const getCssClass = ({isLinked, isSelected}) => classNames("list-item",
+  {
     "isLinked": isLinked,
     "selected": isSelected
   }
@@ -58,7 +59,7 @@ const SelectedItem = props => {
                tables: props.cell.tables,
                tableId: props.cell.column.toTable,
                rowId: props.row.id
-             }, props.langtag)
+             }, props.langtag);
            }}
         >
           <i className="fa fa-long-arrow-right" />

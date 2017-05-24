@@ -8,6 +8,7 @@ import "../index.html";
 import "../scss/main.scss";
 import watchConnection from "./watchers/watchConnection";
 
+if (process.env.NODE_ENV !== "production") {
 getSentryUrlFromServer(() => {
   console.warn("Sentry not enabled");
 }, (sentryUrl) => {

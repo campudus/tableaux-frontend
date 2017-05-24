@@ -45,14 +45,23 @@ class ConnectionWatcher {
     ConnectionWatcher.connected = newState;
     const now = Moment();
     const lastSeen = now.subtract(PING_TIME, "seconds");
-    console.warn(`Connection status changed to ${(newState) ? "connected" : "disconnected"} at ${((newState) ? now : lastSeen).toString()}`);
+    console.warn(`Connection status changed to ${(newState) ? "connected" : "disconnected"} at ${((newState)
+      ? now
+      : lastSeen).toString()}`);
     showDialog({
       type: (newState) ? "important" : "warning",
       context: "Server connection",
       title: (newState) ? "Reconnected" : "Disconnected",
       heading: (newState) ? "Connection to server re-established" : "Connection to server lost",
-      message: (newState) ? `You may now safely continue working` : `Modifications after ${lastSeen.toString()} could not be saved. Please check your network connection.`,
-      actions: {[(newState) ? "positive" : "negative"]: ["Ok", function () {}]}
+      message: (newState)
+        ? `You may now safely continue working`
+        : `Modifications after ${lastSeen.toString()} could not be saved. Please check your network connection.`,
+      actions: {
+        [(newState) ? "positive" : "negative"]: [
+          "Ok", function () {
+          }
+        ]
+      }
     });
     ActionCreator.broadcastConnectionStatus({
       connected: newState,

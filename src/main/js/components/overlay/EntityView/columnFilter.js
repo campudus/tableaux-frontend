@@ -9,8 +9,8 @@ const joinLinkStrings = langtag => f.compose(
   f.join(":"),
   f.map(f.defaultTo("")),
   f.map(f.trim),
-  f.map(f.prop([langtag])),
-  f.prop("linkStringLanguages")
+  f.map(f.get([langtag])),
+  f.prop("displayValue")
 );
 
 const joinAttachmentFileNames = langtag => f.compose(

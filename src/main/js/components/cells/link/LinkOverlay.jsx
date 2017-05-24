@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from "react";
 import _ from "lodash";
-import RowConcatHelper from "../../../helpers/RowConcatHelper.js";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import {AutoSizer, List} from "react-virtualized";
@@ -227,22 +226,10 @@ class LinkOverlay extends Component {
     // just set the models, because we filter it later which also returns the models.
     this.allRowResults = rowResult.models || rowResult;
     // we always rebuild the row names, also to prevent wrong display names when switching languages
-    this.updateRowConcatStrings();
     this.setState({
       // we show all the rows
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       loading: false
-    });
-  };
-
-  // Extends the model by a cached row name string
-  updateRowConcatStrings = () => {
-    return;
-    const {allRowResults, props: {cell: {column: {toColumn}}}} = this;
-    _.forEach(allRowResults, (row) => {
-      row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row),
-        toColumn,
-        this.props.langtag);
     });
   };
 
@@ -264,6 +251,7 @@ class LinkOverlay extends Component {
   };
 
   filterRowsBySearch = (searchParams) => {
+    const {langtag} = this.props;
     const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
@@ -275,15 +263,19 @@ class LinkOverlay extends Component {
       f.filter(this.isRowLinked)
     )(allRowResults);
     const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
-    const byCachedRowName = f.compose(searchFunction(filterValue), f.prop("cachedRowName"));
+    const byDisplayValues = f.compose(
+      searchFunction(filterValue),
+      f.join(" "),
+      f.map(f.get(["displayValue", langtag])),
+      f.get(["cells", "models"]),
+    );
     return {
       linked: linkedRows,
-      unlinked: (filterValue !== "") ? unlinkedRows.filter(byCachedRowName) : unlinkedRows
+      unlinked: (filterValue !== "") ? unlinkedRows.filter(byDisplayValues) : unlinkedRows
     };
   };
 
   addLinkValue = (isLinked, row, event) => {
-    console.log("addLinkValue", isLinked, row)
     maybe(event).method("preventDefault");
     const cell = this.props.cell;
     const rowCellIdValue = this.getRowValues(row);
@@ -332,13 +324,13 @@ class LinkOverlay extends Component {
     const mouseOverBoxHandler = val => e => {
       this.setState({selectedMode: val});
       this.background.focus();
-      //e.stopPropagation();
+      // e.stopPropagation();
     };
 
     const mouseOverItemHandler = index => e => {
       this.setSelectedId(index);
       this.background.focus();
-      //e.stopPropagation();
+      // e.stopPropagation();
     };
 
     return (
@@ -358,7 +350,7 @@ class LinkOverlay extends Component {
         style={style}
         selectedMode={selectedMode}
       />
-    )
+    );
   };
 
   noRowsRenderer = () => {
@@ -384,7 +376,7 @@ class LinkOverlay extends Component {
       .catch(
         error => {
           console.error("Error changing cell, restoring original data:", error);
-          this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)})
+          this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)});
         });
     this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
   };
@@ -393,12 +385,7 @@ class LinkOverlay extends Component {
     const {cell: {column: {displayName, toTable}}, langtag} = this.props;
     const addAndLinkRow = () => {
       const isAlreadyLinked = false;
-      ActionCreator.addRow(toTable,
-        row => {
-          //this.setRowResult([...this.allRowResults, row]);
-          this.addLinkValue(isAlreadyLinked, row);
-        }
-      )
+      ActionCreator.addRow(toTable, row => this.addLinkValue(isAlreadyLinked, row));
     };
 
     const linkTableName = displayName[langtag] || displayName[FallbackLanguage] || "";

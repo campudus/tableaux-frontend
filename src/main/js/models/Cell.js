@@ -8,8 +8,6 @@ import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
 import getDisplayValue from "./getDisplayValue";
 
-import {fspy} from "../helpers/monads"
-
 // FIXME: Handle Concat synch more elegant the Ampersand way
 const Cell = AmpersandModel.extend({
   modelType: "Cell",
@@ -88,6 +86,7 @@ const Cell = AmpersandModel.extend({
       }
     },
 
+    /*
     linkString: {
       deps: ["linkStringLanguages"],
       fn: function () {
@@ -124,6 +123,7 @@ const Cell = AmpersandModel.extend({
         return linksWithLangtags;
       }
     },
+    */
 
     rowConcatLanguages: {
       deps: ["value"],
@@ -222,40 +222,6 @@ const Cell = AmpersandModel.extend({
     };
     Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
   },
-
-/*  initConcatEvents: function () {
-    const self = this;
-
-    const changedCellListener = function (changedCell) {
-      // find the index value of the concat obj to update
-      const concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
-        return column.id === changedCell.column.id;
-      });
-      // we update the value with a new object to force derived attributes to be refreshed
-      const tmpValue = _.cloneDeep(this.value);
-      tmpValue[concatIndexToUpdate] = changedCell.value;
-      this.value = tmpValue;
-    };
-
-    // debugger;
-    // This cell is a concat cell and listens to its identifier cells
-    if (this.isConcatCell) {
-      this.column.concats.forEach(function (columnObj) {
-        const changedEvent = "changed-cell:" + self.tableId + ":" + columnObj.id + ":" + self.rowId;
-        const handler = changedCellListener.bind(self);
-
-        Dispatcher.on(changedEvent, handler);
-
-        if (!self.changedHandler) {
-          self.changedHandler = [];
-        }
-        self.changedHandler.push({
-          name: changedEvent,
-          handler: handler
-        }); // save reference
-      });
-    }
-  },*/
 
   // Delete all cell attrs and event listeners
   cleanupCell: function () {
