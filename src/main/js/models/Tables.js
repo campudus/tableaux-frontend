@@ -60,7 +60,7 @@ const changeLinkCell = ({cell, value}) => {
           console.warn(error);
           cell.set({value: curValue}); // rollback local state when anything went wrong
           cellModelSavingError(error); // this saves us from calculating and undoing diff ourselves
-          updateConcatCells(cell);
+//          updateConcatCells(cell);
           reject(error);
         } else {
           ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
@@ -130,7 +130,7 @@ export const changeCell = payload => {
         console.log("Cell Model: saving cell with value:", newValue);
         // we give direct feedback for user
         cell.value = mergedValue;
-        updateConcatCells(cell);
+//        updateConcatCells(cell);
 
         // we need to clear the newValue, otherwise ampersand save method is merging a strange object
         if (!isPatch) {
@@ -150,14 +150,14 @@ export const changeCell = payload => {
             if (!_.isEqual(data.value, mergedValue)) {
               console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
               cell.value = data.value;
-              updateConcatCells(cell);
+//              updateConcatCells(cell);
             }
             resolve();
           },
           error(error) {
             cellModelSavingError(error);
             cell.value = oldValue;
-            updateConcatCells(cell);
+//            updateConcatCells(cell);
             reject(error);
           }
         });
@@ -212,7 +212,7 @@ const Tables = Collection.extend({
 
   // We just trigger a changed event for concat cells when we are a identifier cell
   updateConcatCells(changedCell) {
-    updateConcatCells(changedCell);
+//    updateConcatCells(changedCell);
   },
 
   removeRowHandler(payload) {

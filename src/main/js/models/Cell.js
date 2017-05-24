@@ -1,10 +1,14 @@
 const AmpersandModel = require("ampersand-model");
 const Dispatcher = require("../dispatcher/Dispatcher");
 const TableauxConstants = require("./../constants/TableauxConstants");
-const {ColumnKinds} = TableauxConstants;
+const {ActionTypes, ColumnKinds} = TableauxConstants;
 const RowConcatHelper = require("../helpers/RowConcatHelper");
 const _ = require("lodash");
+import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
+import getDisplayValue from "./getDisplayValue";
+
+import {fspy} from "../helpers/monads"
 
 // FIXME: Handle Concat synch more elegant the Ampersand way
 const Cell = AmpersandModel.extend({
@@ -159,14 +163,68 @@ const Cell = AmpersandModel.extend({
         // the cell is not editable.
         return !(table.type === "settings" && (column.id === 1 || column.id === 2));
       }
+    },
+
+    linkIds: {
+      deps: ["value"],
+      fn: function () {
+        return (this.isLink)
+          ? f.reduce(f.merge, {}, (this.value || []).map(
+            (link, idx) => ({
+              [link.id]: idx
+            })
+          ))
+          : null;
+      }
+    },
+
+    displayValue: {
+      deps: ["value", "column", "tables"],
+      fn: function () {
+        return getDisplayValue(this.column, this)(this.value);
+      }
     }
   },
 
   initialize: function (attrs, options) {
-    this.initConcatEvents();
+    if (this.isConcatCell) {
+      this.initConcatEvents(attrs);
+    } else if (this.isLink) {
+      this.initLinkEvents(attrs);
+    }
   },
 
-  initConcatEvents: function () {
+  initConcatEvents: function (attrs) {
+    const {concats} = attrs.column;
+    const calcId = ({id}) => `cell-${attrs.tableId}-${id}-${attrs.row.id}`;
+
+    this.concatIds = f.reduce(f.merge, {}, concats.map((c, idx) => ({[calcId(c)]: idx})));
+    this.handleDataChange = ({cell}) => {
+      if (!cell.id || !f.contains(cell.id, f.keys(this.concatIds))) {
+        return;
+      }
+      this.value = f.assoc(
+        f.get(cell.id, this.concatIds),
+        cell.value,
+        this.value
+      );
+    };
+
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
+  },
+
+  initLinkEvents: function (attrs, options) {
+    this.handleDataChange = ({row, cell}) => {
+      if (row.tableId !== attrs.column.toTable || !f.contains(row.id.toString(), f.keys(this.linkIds))) {
+        return;
+      }
+      console.log("Available links:", this.linkIds)
+      this.value = fspy("changed link value to")(f.assoc([fspy("link #")(this.linkIds[fspy("index:")(row.id.toString())]), "value"], fspy("new value")(cell.value), this.value));
+    };
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
+  },
+
+/*  initConcatEvents: function () {
     const self = this;
 
     const changedCellListener = function (changedCell) {
@@ -198,18 +256,12 @@ const Cell = AmpersandModel.extend({
         }); // save reference
       });
     }
-  },
+  },*/
 
   // Delete all cell attrs and event listeners
   cleanupCell: function () {
-    // We need to remove multiple dependant changed id cell events
-    if (this.isConcatCell) {
-      if (this.changedHandler && this.changedHandler.length > 0) {
-        this.changedHandler.forEach(function (event) {
-          // removes all callbacks
-          Dispatcher.off(event.name, event.handler);
-        });
-      }
+    if (this.handleDataChange) {
+      Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
     }
   },
 

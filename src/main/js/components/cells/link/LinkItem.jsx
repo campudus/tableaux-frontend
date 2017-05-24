@@ -1,24 +1,12 @@
 import React, {PropTypes} from "react";
 import classNames from "classnames";
-import {FallbackLanguage} from "../../../constants/TableauxConstants";
-import * as f from "lodash/fp";
-import Empty from "../../helperComponents/emptyEntry";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import subscribeToTable from "../../helperComponents/subscribeToTable";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
+import getLinkLabel from "../../cells/link/linkLabelHelper";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
-
-const getLabel = (collection, langtag) => {
-  const getCellString = langtag => cell => (cell.isMultiLanguage)
-    ? f.defaultTo(cell.value[FallbackLanguage])(cell.value[langtag])
-    : cell.value;
-  const value = f.join(" ")(f.map(getCellString(langtag), collection));
-  return (f.isEmpty(value))
-    ? <Empty />
-    : value;
-};
 
 const getCssClass = ({isLinked, isSelected}) => classNames("list-item", {
     "isLinked": isLinked,
@@ -44,7 +32,7 @@ const SelectedItem = props => {
              onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
         >
           <a href="#" draggable={false}>
-            {getLabel(props.rowData, props.langtag)}
+            {getLinkLabel(props.rowData, props.langtag)}
           </a>
           {(props.isLinked)
             ? <SvgIcon icon="cross" containerClasses="color-primary" />
@@ -61,7 +49,7 @@ const SelectedItem = props => {
              }, props.langtag)
            }}
         >
-          <i className="fa fa-long-arrow-right"/>
+          <i className="fa fa-long-arrow-right" />
         </a>
       </div>
     </div>
@@ -76,7 +64,7 @@ const PlainItem = props => {
     >
       <div className={getCssClass(props)}>
         <div className="link-label">
-          {getLabel(props.rowData, props.langtag)}
+          {getLinkLabel(props.rowData, props.langtag)}
         </div>
       </div>
     </div>
@@ -84,7 +72,10 @@ const PlainItem = props => {
 };
 
 const LinkItem = props => {
-  const Item = subscribeToTable({rowToWatch: props.row, cellToWatch: props.cell})((props.isSelected)
+  const Item = subscribeToTable({
+    rowToWatch: props.row,
+    cellToWatch: props.cell
+  })((props.isSelected)
     ? SelectedItem
     : PlainItem);
   return <Item {...props} key={props.row.id} />;
