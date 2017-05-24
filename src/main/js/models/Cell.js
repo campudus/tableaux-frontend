@@ -218,8 +218,7 @@ const Cell = AmpersandModel.extend({
       if (row.tableId !== attrs.column.toTable || !f.contains(row.id.toString(), f.keys(this.linkIds))) {
         return;
       }
-      console.log("Available links:", this.linkIds)
-      this.value = fspy("changed link value to")(f.assoc([fspy("link #")(this.linkIds[fspy("index:")(row.id.toString())]), "value"], fspy("new value")(cell.value), this.value));
+      this.value = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
     };
     Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
   },

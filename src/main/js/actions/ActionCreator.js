@@ -317,5 +317,9 @@ module.exports = {
   broadcastDataChange: (payload) => {
     console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`)
     Dispatcher.trigger(ActionTypes.BROADCAST_DATA_CHANGE, payload);
+  },
+
+  broadcastConnectionStatus: (payload) => {
+    Dispatcher.trigger(ActionTypes.CONNECTION_STATUS_CHANGED, payload);
   }
 };

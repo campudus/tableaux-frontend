@@ -20,7 +20,7 @@ const mkDefaultValue = (column) => (value) => f.reduce(
 
 const mkLinkValue = (column, cell) => f.map(
   f.compose(
-    mkDefaultValue(column.toColumn),
+    getDisplayValue(column.toColumn),
     f.get("value")
   )
 );

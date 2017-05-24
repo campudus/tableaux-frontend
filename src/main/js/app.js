@@ -6,6 +6,7 @@ import TableauxConstants from "./constants/TableauxConstants";
 import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";
 import "../scss/main.scss";
+import watchConnection from "./watchers/watchConnection";
 
 getSentryUrlFromServer(() => {
   console.warn("Sentry not enabled");

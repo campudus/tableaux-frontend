@@ -3,7 +3,19 @@ import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import subscribeToTable from "../../helperComponents/subscribeToTable";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
-import getLinkLabel from "../../cells/link/linkLabelHelper";
+import * as f from "lodash/fp";
+import {FallbackLanguage} from "../../../constants/TableauxConstants";
+import Empty from "../../helperComponents/emptyEntry";
+
+const getLinkLabel = (collection, langtag) => {
+  const getCellString = langtag => cell => (cell.isMultiLanguage)
+    ? f.defaultTo(cell.value[FallbackLanguage])(cell.value[langtag])
+    : cell.value;
+  const value = f.join(" ")(f.map(getCellString(langtag), collection));
+  return (f.isEmpty(value))
+    ? <Empty />
+    : value;
+};
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
