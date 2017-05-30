@@ -107,5 +107,6 @@
   "link-overlay-add-new-row": "Create a new entry in table {{tableName}}",
   "row-is-locked": "Data is read only",
   "unlock-row": "Unlock",
-  "clear-date": "No date / time"
+  "clear-date": "No date / time",
+  "entity-view-search-placeholder": "Search for column title or content"
 }

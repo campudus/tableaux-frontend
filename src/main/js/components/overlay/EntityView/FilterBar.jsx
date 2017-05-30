@@ -45,14 +45,18 @@ class FilterBar extends Component {
 
   render() {
     const {value, filterMode} = this.state;
-    const modeString = SearchFunctions[filterMode].displayName;
     return (
-      <input className="header-filter-bar"
-             onChange={this.handleChange}
-             onKeyDown={this.handleInput}
-             value={value}
-             placeholder={i18n.t(modeString) + "..."}
-      />
+      <div className="header-filter-bar-wrapper">
+        <input className="header-filter-bar"
+               onChange={this.handleChange}
+               onKeyDown={this.handleInput}
+               value={value}
+               placeholder={i18n.t("table:entity-view-search-placeholder") + "..."}
+        />
+        <div className="icon-wrapper">
+          <i className="fa fa-search" />
+        </div>
+      </div>
     );
   }
 }

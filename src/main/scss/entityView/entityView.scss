@@ -228,19 +228,19 @@
   top: 10px;
   right: 20px;
   display: inline-flex;
-  width: 152px;
+  width: 156px;
   justify-content: space-between;
   align-items: center;
   z-index: 2;
 
   .eev-language-switcher {
     height: 14px;
-    width: 60px;
+    width: 50px;
     background-color: transparent;
     border-radius: 3px;
     color: $color-primary-contrast-text;
     outline: none;
-    padding: 3px;
+    padding: 3px 10px;
     border: 1px solid $color-text-medium-grey;
 
     .langtag {
@@ -267,8 +267,8 @@
 
     .eev-dropdown {
       position: absolute;
-      left: -1px;
-      top: calc(100% + 1px);
+      left: 0;
+      top: 100%;
       width: calc(100% + 2px);
       box-shadow: 0 2px 2px $color-text-medium-grey;
       z-index: 5;
@@ -617,12 +617,40 @@
         justify-content: space-between;
         align-items: flex-end;
 
-        .header-filter-bar {
-          padding: 5px;
-          border-radius: 3px;
-          border: none;
+        .header-filter-bar-wrapper {
           flex: 1;
+          display: inline-flex;
           margin-right: 15px;
+          position: relative;
+
+          .header-filter-bar {
+            flex: 1;
+            padding: 5px;
+            border-radius: 3px;
+            border: none;
+          }
+
+          // https://stackoverflow.com/questions/2610497/change-an-html5-inputs-placeholder-color-with-css#2610741
+          *::-webkit-input-placeholder {
+            color: $color-text-medium-grey;
+          }
+          *::-moz-placeholder {
+            color: $color-text-medium-grey;
+          }
+          *:-ms-input-placeholder {
+            color: $color-text-medium-grey;
+          }
+
+          .icon-wrapper {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
         }
 
         .header-popup-wrapper {

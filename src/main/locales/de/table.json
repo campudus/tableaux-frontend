@@ -107,5 +107,6 @@
   "link-overlay-add-new-row": "Neuen Datensatz in Tabelle {{tableName}} erstellen",
   "row-is-locked": "Datensatz ist schreibgeschützt",
   "unlock-row": "Entsperren",
-  "clear-date": "Kein Datum / Zeit"
+  "clear-date": "Kein Datum / Zeit",
+  "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt"
 }
