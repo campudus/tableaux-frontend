@@ -510,13 +510,32 @@
     .item-header {
       padding-bottom: 0;
       .label {
-        width: 45px;
+        width: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .langtag {
+          text-transform: none;
+          font-weight: normal;
+          img {
+            margin-right: 5px;
+          }
+        }
       }
-      .langtag {
-        text-transform: none;
-        font-weight: normal;
-        img {
-          margin-right: 5px;
+      .svg-icon {
+        border-radius: 3px;
+        padding: 8px 4px;
+
+        svg {
+          fill: $color-text-medium-grey;
+        }
+
+        &:hover {
+          background-color: $color-primary;
+          svg {
+            fill: $color-primary-contrast-text;
+          }
         }
       }
     }

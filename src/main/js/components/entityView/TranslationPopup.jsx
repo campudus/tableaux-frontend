@@ -34,12 +34,22 @@ class LanguageView extends Component {
     const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
 
     return (
-      <div className={wrapperClass} onClick={() => switchEntityViewLanguage({langtag})}>
+      <div className={wrapperClass} onClick={toggleExpand}>
         <div className="item-header">
-          <div className="label">{getLanguageOrCountryIcon(langtag)}</div>
+          <div className="label">
+            {getLanguageOrCountryIcon(langtag)}
+            <a className="switch-language-icon" href="#"
+               onClick={evt => {
+                 evt.stopPropagation();
+                 switchEntityViewLanguage({langtag});
+               }}
+            >
+              <SvgIcon icon="compareTranslation"/>
+            </a>
+          </div>
           {(f.isEmpty(value)) ? <div><Empty /></div> : null}
           <div className="toggle-button">
-            <a href="#" onClick={toggleExpand}>
+            <a href="#">
               <i className={buttonClass} />
             </a>
           </div>
