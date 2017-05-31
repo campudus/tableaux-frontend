@@ -4,10 +4,10 @@ import EntityViewHeader from "./EntityView/EntityViewHeader";
 import EntityViewBody from "./EntityView/EntityViewBody";
 import {LoadingEntityViewBodyWrapper, LoadingEntityViewHeaderWrapper} from "./EntityView/LoadingEntityView";
 
-export function openEntityView(row, langtag, focusElementId, rows) {
+export function openEntityView(row, langtag, focusElementId, rows, filterColumn) {
   openOverlay({
     head: <EntityViewHeader row={row} rows={rows} langtag={langtag} canSwitchRows={true} />,
-    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} />,
+    body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} filterColumn={filterColumn} />,
     type: "full-height",
     preferRight: true
   });

@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import ActionCreator from "../../../actions/ActionCreator";
 import {FilterModes} from "../../../constants/TableauxConstants";
-import SearchFunctions from "../../../helpers/searchFunctions";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 
@@ -44,7 +43,7 @@ class FilterBar extends Component {
   };
 
   render() {
-    const {value, filterMode} = this.state;
+    const {value} = this.state;
     return (
       <div className="header-filter-bar-wrapper">
         <input className="header-filter-bar"

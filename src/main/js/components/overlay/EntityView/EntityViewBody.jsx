@@ -111,7 +111,8 @@ class EntityViewBody extends Component {
     if (this.props.id !== id) {
       return;
     }
-    this.setState({row,
+    this.setState({
+      row,
       filter: {
         value: "",
         mode: FilterModes.CONTAINS
@@ -253,7 +254,7 @@ class EntityViewBody extends Component {
     this.shakeTimerId = window.setTimeout(() => this.setState({shaking: false}), SHAKE_DURATION);
   };
 
-  unlockRow = () => {
+  unlockRowTemporary = () => {
     unlockRow(this.state.row, true);
     this.setState({row: this.state.row}); //
   };
@@ -270,7 +271,7 @@ class EntityViewBody extends Component {
           <i className="fa fa-lock" />
           <span>{i18n.t("table:row-is-locked")}</span>
         </div>
-        <div className={buttonClass} onClick={this.unlockRow}>
+        <div className={buttonClass} onClick={this.unlockRowTemporary}>
           <a href="#">
             {i18n.t("table:unlock-row")}
           </a>
@@ -282,10 +283,15 @@ class EntityViewBody extends Component {
   render() {
     const cells = this.state.row.cells.models;
     const {langtag, filter, focused} = this.state;
+    const {filterColumn} = this.props;
     const {enterItemPopupButton, leaveItemPopupButton, openItemPopup, closeItemPopup} = this;
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
       "is-locked": isLocked(this.state.row)
     });
+    const prefilteredIds = (filterColumn) ? f.map(f.get("id"), filterColumn.concats || filterColumn.groups) : null;
+    const preFilter = (filterColumn)
+      ? cell => f.contains(f.get(["column", "id"], cell), prefilteredIds)
+      : f.stubTrue;
 
     return (
       <div className={evbClass}
@@ -293,6 +299,7 @@ class EntityViewBody extends Component {
       >
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
+          .filter(preFilter)
           .filter(columnFilter(langtag, filter))
           .map(
             (cell, idx) => {

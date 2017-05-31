@@ -144,7 +144,7 @@ class LoadingEntityViewBodyWrapper extends Component {
     const {row} = this.state;
     return (row)
       ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.id}
-                        registerForEvent={this.props.registerForEvent}
+                        registerForEvent={this.props.registerForEvent} filterColumn={this.props.toLoad.filterColumn}
       />
       : null;
   }
