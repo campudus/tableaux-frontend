@@ -1,20 +1,13 @@
 import React, {PropTypes} from "react";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import subscribeToTable from "../../helperComponents/subscribeToTable";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
-import * as f from "lodash/fp";
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
-import Empty from "../../helperComponents/emptyEntry";
 
-const getLinkLabel = (collection, langtag) => {
-  const getCellString = langtag => cell => (cell.isMultiLanguage)
-    ? f.defaultTo(cell.value[FallbackLanguage])(cell.value[langtag])
-    : cell.value;
-  const value = f.join(" ")(f.map(getCellString(langtag), collection));
-  return (f.isEmpty(value))
-    ? <Empty />
-    : value;
+const getLinkLabel = (row, langtag) => {
+  //const cell = row.cells.at(0);
+  //return cell.displayValue[langtag] || cell.displayValue[FallbackLanguage];
+  return row.displayValue[langtag]
 };
 
 const MAIN_BUTTON = 0;
@@ -45,7 +38,7 @@ const SelectedItem = props => {
              onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
         >
           <a href="#" draggable={false}>
-            {getLinkLabel(props.rowData, props.langtag)}
+            {getLinkLabel(props.row, props.langtag)}
           </a>
           {(props.isLinked)
             ? <SvgIcon icon="cross" containerClasses="color-primary" />
@@ -77,7 +70,7 @@ const PlainItem = props => {
     >
       <div className={getCssClass(props)}>
         <div className="link-label">
-          {getLinkLabel(props.rowData, props.langtag)}
+          {getLinkLabel(props.row, props.langtag)}
         </div>
       </div>
     </div>
@@ -85,12 +78,9 @@ const PlainItem = props => {
 };
 
 const LinkItem = props => {
-  const Item = subscribeToTable({
-    rowToWatch: props.row,
-    cellToWatch: props.cell
-  })((props.isSelected)
+  const Item = (props.isSelected)
     ? SelectedItem
-    : PlainItem);
+    : PlainItem;
   return <Item {...props} key={props.row.id} />;
 };
 

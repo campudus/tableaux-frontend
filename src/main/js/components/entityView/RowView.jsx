@@ -8,6 +8,7 @@ import LinkView from "./link/LinkView";
 import AttachmentView from "./attachment/AttachmentView";
 import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
+import GroupView from "./group/GroupView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
@@ -27,7 +28,8 @@ class View extends Component {
     setTranslationView: PropTypes.func.isRequired,
     hasFocusedChild: PropTypes.bool.isRequired,
     funcs: PropTypes.object.isRequired,
-    popupOpen: PropTypes.bool.isRequired
+    popupOpen: PropTypes.bool.isRequired,
+    lockStatus: PropTypes.any          // just to signal a neccessary re-render when row (un-)locked
   };
 
   shouldComponentUpdate(nextProps, nextState) { // don't re-render when only functions changed
@@ -36,7 +38,7 @@ class View extends Component {
     const pDiffs = pKeys.filter(k => this.props[k] !== nextProps[k]);
     const sDiffs = sKeys.filter(k => this.state[k] !== nextState[k]);
     const diffs = [...pDiffs, ...sDiffs];
-    return !(diffs.length === 1 && f.first(diffs) === "funcs") || (nextProps.cell.row.unlocked === true);
+    return !(diffs.length === 1 && f.first(diffs) === "funcs");
   }
 
   constructor(props) {
@@ -106,7 +108,8 @@ class View extends Component {
       [ColumnKinds.shorttext]: ShortTextView,
       [ColumnKinds.currency]: CurrencyView,
       [ColumnKinds.text]: TextView,
-      [ColumnKinds.richtext]: TextView
+      [ColumnKinds.richtext]: TextView,
+      [ColumnKinds.group]: GroupView
     };
 
     const isDisabled = !this.canEditValue();

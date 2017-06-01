@@ -10,7 +10,7 @@ const apiUrl = (destination) => {
 };
 
 // Generate url from a target object; if langtag is given returns apiUrl, else url to table
-const urlToTableDestination = ({tableId, table, column, columnId, row, rowId, filter = false, overlay = false, langtag}) => {
+const urlToTableDestination = ({tableId, table, column, columnId, row, rowId, filter = false, overlay = false, langtag} = {}) => {
   const targetTable = tableId || f.get("id", table);
   const targetCol = columnId || f.get("id", column);
   const targetRow = rowId || f.get("id", row);
@@ -18,9 +18,10 @@ const urlToTableDestination = ({tableId, table, column, columnId, row, rowId, fi
   const tablePart = `/tables/${targetTable}`;
   const columnPart = (f.isNumber(targetCol)) ? `/columns/${targetCol}` : "";
   const rowPart = (isFinite(targetRow)) ? `/rows/${targetRow}` : "";
-  return (languagePart)
+  const url = (languagePart)
     ? languagePart + tablePart + columnPart + rowPart
     : apiUrl(tablePart + columnPart + rowPart);
+  return (f.contains("undefined", url)) ? "/" : url;
 };
 
 // Expects either a full Url or a target object

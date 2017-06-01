@@ -18,6 +18,10 @@ var Column = AmpersandModel.extend({
       type: "object",
       default: null
     },
+    groups: {
+      type: "object",
+      default: null
+    },
     displayName: {
       type: "object",
       default: null
@@ -45,6 +49,12 @@ var Column = AmpersandModel.extend({
     },
     visible: {
       type: "boolean"
+    },
+    isGroupMember: {
+      type: "boolean"
+    },
+    constraint: {
+      type: "object"
     }
   },
 

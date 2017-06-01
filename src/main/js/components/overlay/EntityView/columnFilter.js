@@ -21,7 +21,7 @@ const joinAttachmentFileNames = langtag => f.compose(
 );
 
 const getConcatString = langtag => cell => {
-  const str = cell.rowConcatString(langtag);
+  const str = cell.displayValue[langtag];
   return (str === RowConcatHelper.NOVALUE) ? "" : cleanString(str);
 };
 

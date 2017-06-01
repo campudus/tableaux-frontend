@@ -291,7 +291,7 @@ class EntityViewBody extends Component {
     const prefilteredIds = (filterColumn) ? f.map(f.get("id"), filterColumn.concats || filterColumn.groups) : null;
     const preFilter = (filterColumn)
       ? cell => f.contains(f.get(["column", "id"], cell), prefilteredIds)
-      : f.stubTrue;
+      : cell => !cell.column.isGroupMember;
 
     return (
       <div className={evbClass}
@@ -318,6 +318,7 @@ class EntityViewBody extends Component {
                              closeItemPopup: closeItemPopup(idx),
                              hintUnlockButton: this.shakeBar
                            }}
+                           lockStatus={cell.row.unlocked}
               />;
             })
         }

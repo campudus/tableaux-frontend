@@ -21,7 +21,8 @@ const AttachmentCell = props => {
     ActionCreator.openOverlay({
       head: <Header title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} context={columnName} />,
       body: <AttachmentOverlay cell={cell} langtag={langtag} folderId={folderId} />,
-      type: "normal"
+      type: "full-height",
+      preferRight: true
     });
   };
 

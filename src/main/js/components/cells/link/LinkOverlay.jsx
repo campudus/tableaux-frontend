@@ -5,8 +5,8 @@ import "react-virtualized/styles.css";
 import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
-import {ActionTypes, Directions, FallbackLanguage, FilterModes} from "../../../constants/TableauxConstants";
-import {either, maybe} from "../../../helpers/monads";
+import {ActionTypes, Directions, FallbackLanguage, DefaultLangtag, FilterModes} from "../../../constants/TableauxConstants";
+import {either, maybe, fspy} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -167,8 +167,9 @@ class LinkOverlay extends Component {
   };
 
   componentWillMount = () => {
-    let toTableId = this.props.cell.column.toTable;
-    let toTable = this.props.cell.tables.get(toTableId);
+    const toTableId = this.props.cell.column.toTable;
+    const toTable = this.props.cell.tables.get(toTableId);
+    const {cell} = this.props;
 
     // Data already fetched, show it instantly and update it in the background
     if (toTable.rows.length > 0) {
@@ -185,13 +186,15 @@ class LinkOverlay extends Component {
       }
     );
 
-    const fetchRows = new Promise(
+    const fetchForeignRows = new Promise(
       (resolve, reject) => {
         const rowXhr = toTable.rows.fetch({
-          url: apiUrl("/tables/" + toTableId + "/columns/first/rows"),
+          url: apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`),
           success: () => {
-            this.setRowResult(toTable.rows, true);
-            resolve(toTable);
+            this.setRowResult(
+              f.map(row => ({id: row.id, value: row.cells.at(0).value, displayValue: row.cells.at(0).displayValue}), toTable.rows.models),
+              true);
+            resolve();
           },
           error: reject
         });
@@ -199,7 +202,8 @@ class LinkOverlay extends Component {
       }
     );
 
-    fetchColumns.then(fetchRows);
+    fetchColumns
+      .then(fetchForeignRows);
   };
 
   getCurrentSearchValue = () => {
@@ -224,7 +228,12 @@ class LinkOverlay extends Component {
   // we set the row result depending if a search value is set
   setRowResult = (rowResult, fromServer) => {
     // just set the models, because we filter it later which also returns the models.
-    this.allRowResults = rowResult.models || rowResult;
+    const {cell} = this.props;
+    const linkedRows = f.map(
+      ([cellValue, cellDisplayValue]) => ({id: cellValue.id, value: cellValue.value, displayValue: cellDisplayValue}),
+      f.zip(cell.value, cell.displayValue)
+    );
+    this.allRowResults = [...linkedRows, ...(rowResult.models || rowResult)];
     // we always rebuild the row names, also to prevent wrong display names when switching languages
     this.setState({
       // we show all the rows
@@ -275,19 +284,19 @@ class LinkOverlay extends Component {
     };
   };
 
-  addLinkValue = (isLinked, row, event) => {
+  addLinkValue = (isLinked, link, event) => {
     maybe(event).method("preventDefault");
     const cell = this.props.cell;
-    const rowCellIdValue = this.getRowValues(row);
-    const link = {
+   /* const link = {
       id: row.id,
-      value: rowCellIdValue
-    };
+      value: row.value,
+
+    };*/
     let links = _.clone(cell.value);
 
     if (isLinked) {
       _.remove(links, function (linked) {
-        return row.id === linked.id;
+        return link.id === linked.id;
       });
     } else {
       links.push(link);
@@ -388,7 +397,7 @@ class LinkOverlay extends Component {
       ActionCreator.addRow(toTable, row => this.addLinkValue(isAlreadyLinked, row));
     };
 
-    const linkTableName = displayName[langtag] || displayName[FallbackLanguage] || "";
+    const linkTableName = displayName[langtag] || displayName[DefaultLangtag] || "";
 
     return (
       <div className="row-creator-button" onClick={addAndLinkRow}>
@@ -414,7 +423,7 @@ class LinkOverlay extends Component {
           width={width}
           height={height}
           rowCount={rowResults.unlinked.length || 0}
-          rowHeight={40}
+          rowHeight={34}
           rowRenderer={this.renderListItem({isLinked: false})}
           scrollToIndex={this.state.selectedId.unlinked}
           noRowsRenderer={this.noRowsRenderer}
@@ -467,7 +476,7 @@ class LinkOverlay extends Component {
           <span className="items-title">
             <span>{i18n.t("table:link-overlay-items-title")}
               <a className="table-link" href="#" onClick={() => openInNewTab(targetTable)}>
-                {displayName[this.props.langtag] || displayName}
+                {displayName[this.props.langtag] || displayName[DefaultLangtag]}
               </a>
             </span>
           </span>
@@ -486,7 +495,7 @@ class LinkOverlay extends Component {
 
 export const openLinkOverlay = (cell, langtag) => {
   const table = cell.tables.get(cell.tableId);
-  const tableName = table.displayName[langtag] || table.displayName[FallbackLanguage];
+  const tableName = table.displayName[langtag] || table.displayName[DefaultLangtag];
   const overlayContent = <LinkOverlay cell={cell} langtag={langtag} />;
   ActionCreator.openOverlay({
     head: <Header context={tableName}

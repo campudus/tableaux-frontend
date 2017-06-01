@@ -119,7 +119,8 @@ var TableauxConstant = {
     attachment: null,
     datetime: null,
     currency: null,
-    date: null
+    date: null,
+    group: null
   }),
 
   LanguageType: keyMirror({

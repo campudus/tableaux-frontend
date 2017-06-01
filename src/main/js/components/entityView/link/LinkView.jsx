@@ -31,7 +31,7 @@ class LinkView extends Component {
     return cell.value.map(
       (link, idx) => {
         return {
-          displayName: cell.displayValue[idx][langtag],
+          displayName: cell.displayValue[idx][langtag] || cell.displayValue[idx],
           linkTarget: {
             tables: cell.tables,
             tableId: cell.column.toTable,

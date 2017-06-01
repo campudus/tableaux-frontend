@@ -416,103 +416,156 @@
   }
 }
 
-.attachment-overlay-wrapper {
+.overlay .overlay-wrapper .overlay-content .attachment-overlay-wrapper { // overrule some overlay styles
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
 
-  .overlay-table-row {
-    width: 70%;
-    margin-right: 0;
-  }
-
-  .media-options {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 30%;
-    overflow: hidden;
+  .folder-file-list {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
     height: 100%;
-    white-space: nowrap;
-    opacity: 0.1;
-    @include transition(opacity 0.3s ease-out);
-    text-align: center;
+    overflow: hidden;
+    position: relative;
 
     i {
-      margin-right: 3px;
+      margin-right: 5px;
     }
 
-    a {
-      display: inline-block;
-      padding: 12px 10px;
+    .folder-navigation {
+      flex: 1;
+      background-color: $color-overlay-background-even;
+      color: $color-primary-contrast-text;
+      height: 100%;
+
+      .back {
+        padding: 3px 8px 10px 3px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+
+        a {
+          padding: 4px 8px;
+          border-radius: 3px;
+          color: $color-text-medium-grey;
+
+          &:hover {
+            color: $color-primary-contrast-text;
+            background-color: $color-primary;
+          }
+        }
+      }
+
+      .folder-name {
+        color: $color-primary-text;
+      }
+
+      ul li {
+        padding: 5px 20px;
+        width: 100%;
+        position: relative;
+        box-sizing: border-box;
+        color: $color-primary-text;
+
+        a {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+
+        &:hover {
+          color: $color-hover-foreground;
+          background-color: $color-hover-background;
+          &:before {
+            font-family: FontAwesome;
+            content: "\f178";
+            position: absolute;
+            right: 10px;
+          }
+        }
+      }
+    }
+
+    .file-list {
+      flex: 2;
+      padding: 15px;
+      height: 100%;
       overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100px;
+      overflow-y: auto;
 
-      &:hover {
+      li {
+        min-width: 200px;
+        box-sizing: border-box;
+        position: relative;
+        padding: 8px;
+        border-radius: 3px;
+        background-color: $color-primary-contrast-text;
         color: $color-primary;
+        margin-bottom: 5px;
+
+        .overlay-table-row {
+          display: block;
+          width: 100%;
+          padding: 5px;
+          padding-bottom: 10px;
+
+          &:hover {
+            &:before {
+              content: "\f00c";
+              position: absolute;
+              right: 10px;
+            }
+          }
+        }
+
+        &.is-linked {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
+
+          .overlay-table-row {
+            &:hover {
+              &:before {
+                content: "\f00d";
+                position: absolute;
+                right: 10px;
+              }
+            }
+          }
+        }
+
+        a {
+          &:hover {
+            color: $color-primary-darker;
+          }
+        }
+
+        &:hover {
+          background-color: $color-hover-background;
+          color: $color-hover-foreground;
+
+          .media-options {
+            color: $color-primary;
+          }
+        }
+
+        font-size: small;
+        font-style: italic;
+
+        .overlay-table-row {
+          display: block;
+          width: 100%;
+        }
+
+        .media-options {
+          color: transparent;
+          a {
+            padding: 5px;
+          }
+        }
       }
-    }
-  }
-
-  .folder-name {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .file-list {
-    li {
-      position: relative;
-
-      &:hover .media-options {
-        opacity: 1;
-      }
-    }
-  }
-
-  .folder-list {
-    a {
-      cursor: pointer;
-      border-radius: 3px;
-      padding: 10px;
-      display: block;
-      &:hover {
-        color: $color-primary;
-        background-color: $color-border-grey;
-      }
-    }
-  }
-
-  .back {
-    position: relative;
-    text-align: center;
-    margin-bottom: 15px;
-    border-bottom: 2px solid $color-border-grey;
-    min-height: 30px;
-
-    a {
-      position: absolute;
-      left: 0;
-      display: inline-block;
-      padding-top: 5px;
-      padding-bottom: 10px;
-      cursor: pointer;
-      vertical-align: middle;
-
-      &:hover {
-        color: $color-primary;
-      }
-
-      i {
-        margin-right: 5px;
-      }
-
-      * {
-        vertical-align: middle;
-      }
-    }
-  }
-
-  li {
-    span {
-      margin-left: 5px;
     }
   }
 }

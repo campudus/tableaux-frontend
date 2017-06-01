@@ -4,7 +4,7 @@ import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 const LinkLabelCell = props => {
   const {cell, clickable, langtag, linkElement, linkIndexAt} = props;
   const getLinkName = () => {
-    return cell.displayValue[linkIndexAt][langtag];
+    return cell.displayValue[linkIndexAt][langtag] || cell.displayValue[linkIndexAt];
   };
 
   const tableId = cell.column.toTable;

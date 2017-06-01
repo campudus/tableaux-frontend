@@ -28,7 +28,8 @@ class RowHeadline extends React.Component {
     const language = getLanguageOfLangtag(langtag);
     return column.displayName[langtag]
       || column.displayName[language]
-      || column.displayName[FallbackLanguage];
+      || column.displayName[FallbackLanguage]
+      || column.name;
   };
 
   getColumnIcon = column => {

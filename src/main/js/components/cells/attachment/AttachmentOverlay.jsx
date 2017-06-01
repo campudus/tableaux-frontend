@@ -58,7 +58,8 @@ class AttachmentOverlay extends Component {
   toggleAttachments = (isLinked, file) => {
     const cell = this.props.cell;
 
-    return () => {
+    return event => {
+      event.stopPropagation();
       let attachments = _.clone(cell.value);
 
       if (isLinked) {
@@ -92,7 +93,7 @@ class AttachmentOverlay extends Component {
       )
       : (this.state.folder)
         ? (
-          <div className="back" key={this.state.folder.id}><span className="folder-name">{t("root_folder_name")}</span>
+          <div className="back" key={this.state.folder.id}><div/><span className="folder-name">{t("root_folder_name")}</span>
           </div>
         )
         : null;
@@ -103,15 +104,15 @@ class AttachmentOverlay extends Component {
         <div className="folder-file-list">
           <div className="folder-navigation">
             {backButton}
-            <ul className="folder-list content-items">
+            <ul className="folder-list">
               {this.state.folder.subfolders.map((subfolder) => {
-                return <li className="item" key={subfolder.id} onClick={this.navigateFolder(subfolder.id)}>
+                return <li className="" key={subfolder.id} onClick={this.navigateFolder(subfolder.id)}>
                   <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
                 </li>;
               })}
             </ul>
           </div>
-          <ul className="file-list content-items">
+          <ul className="file-list">
             {this.state.folder.files.map((file) => {
               const folderId = file.folder;
               const currentCellValue = this.props.cell.value;
@@ -124,16 +125,16 @@ class AttachmentOverlay extends Component {
               const isLinked = !!linked;
               const fileTitle = retrieveTranslation(file.title, this.props.langtag);
 
-              return <li key={file.uuid} className="item">
+              return <li key={file.uuid} className={isLinked ? "file is-linked" : "file"}>
                 <a onClick={this.toggleAttachments(isLinked, file)}
-                   className={isLinked ? "item-header overlay-table-row isLinked" : "item-header overlay-table-row"}>
+                   className={"overlay-table-row"}>
                   <i className="icon fa fa-file"></i><span>{fileTitle}</span>
                 </a>
-                <div className="media-options item-content">
-                  <a className="file-link" target="_blank" href={imageUrl}>
+                <div className="media-options">
+                  <a className="file-link" href="#" onClick={() => window.open(imageUrl)}>
                     <i className="icon fa fa-external-link"></i>{t("show_file")}
                   </a>
-                  <a className="change-file" alt="edit" target="_blank" href={this.getMediaFolderUrl(folderId)}>
+                  <a className="change-file" alt="edit" href="#" onClick={() => window.open(this.getMediaFolderUrl(folderId))}>
                     <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
                   </a>
                 </div>

@@ -7,6 +7,7 @@ const _ = require("lodash");
 import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
 import getDisplayValue from "./getDisplayValue";
+import ActionCreator from "../actions/ActionCreator.js";
 
 // FIXME: Handle Concat synch more elegant the Ampersand way
 const Cell = AmpersandModel.extend({
@@ -125,6 +126,7 @@ const Cell = AmpersandModel.extend({
     },
     */
 
+    /*
     rowConcatLanguages: {
       deps: ["value"],
       fn: function () {
@@ -150,7 +152,7 @@ const Cell = AmpersandModel.extend({
           return this.rowConcatLanguages[langtag] || "";
         };
       }
-    },
+    },*/
 
     isEditable: {
       deps: ["tables", "tableId", "column"],
@@ -181,7 +183,7 @@ const Cell = AmpersandModel.extend({
     displayValue: {
       deps: ["value", "column", "tables"],
       fn: function () {
-        return getDisplayValue(this.column, this)(this.value);
+          return getDisplayValue(this.column, this.value);
       }
     }
   },
@@ -199,7 +201,7 @@ const Cell = AmpersandModel.extend({
     const calcId = ({id}) => `cell-${attrs.tableId}-${id}-${attrs.row.id}`;
 
     this.concatIds = f.reduce(f.merge, {}, concats.map((c, idx) => ({[calcId(c)]: idx})));
-    this.handleDataChange = ({cell}) => {
+    const handleDataChange = function ({cell}) {
       if (!cell.id || !f.contains(cell.id, f.keys(this.concatIds))) {
         return;
       }
@@ -208,19 +210,25 @@ const Cell = AmpersandModel.extend({
         cell.value,
         this.value
       );
+      const self = this;
+      ActionCreator.broadcastDataChange({cell: self, row: cell.row});
     };
 
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
+    this.handleDataChange = handleDataChange.bind(this);
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange, this);
   },
 
   initLinkEvents: function (attrs, options) {
-    this.handleDataChange = ({row, cell}) => {
+    const handleDataChange = function({row, cell}) {
       if (row.tableId !== attrs.column.toTable || !f.contains(row.id.toString(), f.keys(this.linkIds))) {
         return;
       }
       this.value = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
+      const self = this;
+      ActionCreator.broadcastDataChange({cell: self, row: self.row});
     };
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
+    this.handleDataChange = handleDataChange.bind(this);
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange, this);
   },
 
   // Delete all cell attrs and event listeners

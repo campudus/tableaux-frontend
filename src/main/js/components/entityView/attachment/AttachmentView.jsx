@@ -5,6 +5,7 @@ import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import multiLanguage from "../../../helpers/multiLanguage";
 import {isEmpty} from "lodash/fp";
 import i18n from "i18next";
+import apiUrl from "../../../helpers/apiUrl";
 
 class AttachmentView extends Component {
 
@@ -27,12 +28,13 @@ class AttachmentView extends Component {
 
   render() {
     const {cell, langtag} = this.props;
+    const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
 
     const attachments = cell.value.map(
-      ({title}, idx) => {
-        const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
+      ({title, url}) => {
         const displayName = translate(title, langtag);
-        return {displayName};
+        const linkTarget = apiUrl(translate(url, langtag));
+        return {displayName, linkTarget};
       }
     );
 

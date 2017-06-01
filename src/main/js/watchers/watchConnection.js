@@ -20,14 +20,14 @@ class ConnectionWatcher {
           .ping()
           .then(ConnectionWatcher.watchConnection);
       },
-      PING_TIME * 1000);
+      (connected) ? (PING_TIME * 0.5 + (PING_TIME * Math.random()) * 1000) : PING_TIME * 500);
   };
 
   static ping() {
     return new Promise(
       function (resolve, reject) {
         request
-          .get(apiUrl("/"))
+          .get(apiUrl("/system/versions"))
           .end(
             function (err, response) {
               if (err) {

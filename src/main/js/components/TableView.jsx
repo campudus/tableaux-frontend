@@ -124,9 +124,12 @@ class TableView extends React.Component {
       cols.forEach(x => {
         x.visible = false;
       });
-      f.map(x => {
-        x.visible = true;
-      }, f.take(DEFAULT_VISIBLE_COLUMS, cols));
+      f.compose(
+        f.map(x => { x.visible = true; }),
+        f.take(DEFAULT_VISIBLE_COLUMS),
+        f.drop(1),
+        f.reject(f.get("isGroupMember"))
+      )(cols);
     }
   };
 

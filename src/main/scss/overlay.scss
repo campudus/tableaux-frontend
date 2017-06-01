@@ -458,50 +458,49 @@ $overlay-border-radius: 5px;
           }
         }
 
-        &.has-buttons {
-          &.show-buttons {
-            padding: 0;
-            background-color: transparent;
+        &.has-buttons.show-buttons {
+          padding: 0;
+          background-color: transparent;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          & > div {
+            background-color: $color-white;
             display: flex;
+            align-items: stretch;
+            padding: 12px;
+            border-radius: 3px;
+
+            i {
+              color: $color-primary;
+            }
+
+            &:hover {
+              background-color: $color-hover-background;
+              color: $color-hover-foreground;
+            }
+          }
+
+          .main-button {
+            flex: 1;
             justify-content: space-between;
-            align-items: center;
 
-            & > div {
-              background-color: $color-white;
-              display: flex;
-              align-items: stretch;
-              padding: 12px;
-              border-radius: 3px;
-
-              i {
-                color: $color-primary;
-              }
-
-              &:hover {
-                background-color: $color-hover-background;
-                color: $color-hover-foreground;
-              }
+            & > a {
+              display: block;
+              width: 100%;
+              height: 100%;
             }
+          }
 
-            .main-button {
-              flex: 1;
-              justify-content: space-between;
-
-              & > a {
-                display: block;
-                width: 100%;
-                height: 100%;
-              }
-            }
-
-            .unlink-button {
-              width: 16px;
-              margin-left: 2px;
-              justify-content: center;
-            }
+          .unlink-button {
+            width: 16px;
+            margin-left: 2px;
+            justify-content: center;
           }
         }
       }
+
     }
 
     .expand-button {

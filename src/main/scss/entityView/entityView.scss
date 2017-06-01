@@ -2,7 +2,9 @@
 @import "../helper";
 
 // EntityView-specific items
-.overlay .entity-view .item {
+.overlay .entity-view .content-items {
+  margin-bottom: 40px;
+  .item {
   position: relative;
   border: none;
 
@@ -40,6 +42,7 @@
       border-left: 3px solid $color-primary;
     }
   }
+}
 }
 
 .action-tags {
