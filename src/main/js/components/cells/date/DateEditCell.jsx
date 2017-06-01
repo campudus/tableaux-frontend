@@ -5,6 +5,7 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import ActionCreator from "../../../actions/ActionCreator";
 import Datetime from "react-datetime";
+import {Directions} from "../../../constants/TableauxConstants";
 
 @listensToClickOutside
 class DateEditCell extends React.Component {

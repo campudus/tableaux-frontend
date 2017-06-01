@@ -10,7 +10,7 @@ const GroupView = (props) => {
     }
     evt.stopPropagation();
     openEntityView(cell.row, langtag, null, [], cell.column);
-  }
+  };
 
   return (
     <div className="item-content group"
@@ -23,8 +23,8 @@ const GroupView = (props) => {
       </div>
       {props.children}
     </div>
-  )
-}
+  );
+};
 
 GroupView.propTypes = {
   langtag: PropTypes.string.isRequired,

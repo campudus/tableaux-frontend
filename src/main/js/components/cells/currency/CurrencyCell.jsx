@@ -28,10 +28,6 @@ export default class CurrencyCell extends React.Component {
     this.CurrencyCellDOMNode = ReactDOM.findDOMNode(this);
   }
 
-  constructor(props) {
-    super(props);
-  }
-
   scrollHandler(event) {
     // prevents the table scroll event
     event.stopPropagation();

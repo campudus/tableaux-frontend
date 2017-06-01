@@ -19,7 +19,7 @@ var Columns = Collection.extend({
       f.map(f.get("groups")),
       f.filter(f.matchesProperty("kind", ColumnKinds.group))
     )(cols);
-    console.log("Group member ids:", groupMemberIds)
+    console.log("Group member ids:", groupMemberIds);
     return cols.map(
       col => f.assoc("isGroupMember", f.contains(col.id, groupMemberIds), col)
     );

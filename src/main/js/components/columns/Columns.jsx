@@ -1,7 +1,7 @@
 import React from "react";
 import {translate} from "react-i18next";
 import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
-import {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
+import {ActionTypes, ColumnKinds, FallbackLanguage, LanguageType} from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
@@ -14,7 +14,11 @@ class Columns extends React.Component {
   constructor(props) {
     super(props);
     this.props.columns.forEach((column) => {
-      this.props.watch(column, {event: "change", force: true});
+      this.props.watch(column,
+        {
+          event: "change",
+          force: true
+        });
     });
   };
 
@@ -41,7 +45,8 @@ class Columns extends React.Component {
       return;
     }
 
-    let name, columnContent = [];
+    let name = [];
+    let columnContent = [];
     const {t, table} = this.props;
     const description = column.description[langtag];
 

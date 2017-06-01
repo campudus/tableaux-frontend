@@ -2,12 +2,11 @@ import React, {PropTypes} from "react";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
-import {FallbackLanguage} from "../../../constants/TableauxConstants";
 
 const getLinkLabel = (row, langtag) => {
-  //const cell = row.cells.at(0);
-  //return cell.displayValue[langtag] || cell.displayValue[FallbackLanguage];
-  return row.displayValue[langtag]
+  // const cell = row.cells.at(0);
+  // return cell.displayValue[langtag] || cell.displayValue[FallbackLanguage];
+  return row.displayValue[langtag];
 };
 
 const MAIN_BUTTON = 0;

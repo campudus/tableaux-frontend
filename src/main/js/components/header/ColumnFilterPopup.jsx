@@ -5,7 +5,7 @@ import i18n from "i18next";
 import {either} from "../../helpers/monads";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
-import {FilterModes, Directions, FallbackLanguage} from "../../constants/TableauxConstants";
+import {Directions, FallbackLanguage, FilterModes} from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
@@ -102,10 +102,10 @@ class ColumnFilterPopup extends React.Component {
   };
 
   getColName = col => either(col)
-      .map(f.prop(["displayName", this.props.langtag]))
-      .orElse(f.prop(["displayName", FallbackLanguage]))
-      .orElse(f.prop(["name"]))
-      .getOrElseThrow("Could not extract displayName or name from" + col);
+    .map(f.prop(["displayName", this.props.langtag]))
+    .orElse(f.prop(["displayName", FallbackLanguage]))
+    .orElse(f.prop(["name"]))
+    .getOrElseThrow("Could not extract displayName or name from" + col);
 
   renderCheckboxItems = ({key, index, style}) => {
     const {models} = this.state;
@@ -127,7 +127,8 @@ class ColumnFilterPopup extends React.Component {
       >
         <input type="checkbox"
                checked={col.visible}
-               onChange={() => {}} // to avoid React warning "unmanaged input"
+               onChange={() => {
+               }} // to avoid React warning "unmanaged input"
         />
         {name}
       </div>

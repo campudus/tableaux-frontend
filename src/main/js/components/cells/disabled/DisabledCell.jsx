@@ -8,10 +8,6 @@ class DisabledCell extends React.Component {
     selected: React.PropTypes.bool.isRequired
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   getValue = () => {
     const {cell, langtag} = this.props;
 

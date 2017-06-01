@@ -152,7 +152,7 @@ const Cell = AmpersandModel.extend({
           return this.rowConcatLanguages[langtag] || "";
         };
       }
-    },*/
+    }, */
 
     isEditable: {
       deps: ["tables", "tableId", "column"],
@@ -183,7 +183,7 @@ const Cell = AmpersandModel.extend({
     displayValue: {
       deps: ["value", "column", "tables"],
       fn: function () {
-          return getDisplayValue(this.column, this.value);
+        return getDisplayValue(this.column, this.value);
       }
     }
   },
@@ -219,7 +219,7 @@ const Cell = AmpersandModel.extend({
   },
 
   initLinkEvents: function (attrs, options) {
-    const handleDataChange = function({row, cell}) {
+    const handleDataChange = function ({row, cell}) {
       if (row.tableId !== attrs.column.toTable || !f.contains(row.id.toString(), f.keys(this.linkIds))) {
         return;
       }

@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 
-class OverlayHeadRowIdentificator extends Component {
+export default class OverlayHeadRowIdentificator extends Component {
 
   static propTypes = {
     cell: React.PropTypes.object,
@@ -54,5 +54,3 @@ class OverlayHeadRowIdentificator extends Component {
     }
   }
 }
-
-module.exports = OverlayHeadRowIdentificator;

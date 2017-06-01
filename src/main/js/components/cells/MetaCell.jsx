@@ -3,10 +3,6 @@ import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 
 class MetaCell extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   static propTypes = {
     langtag: React.PropTypes.string.isRequired,
     rowId: React.PropTypes.number.isRequired,
@@ -32,7 +28,7 @@ class MetaCell extends React.Component {
       cellContent =
         <div className="meta-info-collapsed">
           <div className="row-number">{rowId}</div>
-          <div className="row-expand"><i className="fa fa-chevron-down"/></div>
+          <div className="row-expand"><i className="fa fa-chevron-down" /></div>
         </div>;
     }
 

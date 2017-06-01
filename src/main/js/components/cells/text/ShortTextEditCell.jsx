@@ -1,8 +1,5 @@
-var React = require("react");
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-var TextArea = require("./TextArea.jsx");
-var ActionCreator = require("../../../actions/ActionCreator");
-
+import ActionCreator from "../../../actions/ActionCreator";
+import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
@@ -11,8 +8,10 @@ class ShortTextEditCell extends React.Component {
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
     // Sets cursor to end of input field
-    var node = this.refs.input;
-    node.value = node.value;
+    const node = this.refs.input;
+    const value = node.value;
+    node.value = "";
+    node.value = value;
   };
 
   componentWillMount = () => {
@@ -24,7 +23,7 @@ class ShortTextEditCell extends React.Component {
   };
 
   getKeyboardShortcuts = (event) => {
-    var self = this;
+    const self = this;
     return {
       // allow left arrow key inside input
       left: function (event) {
@@ -56,9 +55,9 @@ class ShortTextEditCell extends React.Component {
   };
 
   getValue = () => {
-    var cell = this.props.cell;
+    const cell = this.props.cell;
 
-    var value = null;
+    let value = null;
     if (cell.isMultiLanguage) {
       if (cell.value[this.props.langtag]) {
         value = cell.value[this.props.langtag];
@@ -83,7 +82,6 @@ class ShortTextEditCell extends React.Component {
     );
   };
 }
-;
 
 ShortTextEditCell.propTypes = {
   cell: React.PropTypes.object.isRequired,
@@ -92,4 +90,4 @@ ShortTextEditCell.propTypes = {
   setCellKeyboardShortcuts: React.PropTypes.func
 };
 
-module.exports = ShortTextEditCell;
+export default ShortTextEditCell;

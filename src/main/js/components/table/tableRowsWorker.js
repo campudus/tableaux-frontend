@@ -1,9 +1,9 @@
 import ActionCreator from "../../actions/ActionCreator";
 import React from "react";
-import {RowHeight} from "../../constants/TableauxConstants";
-import {disableShouldCellFocus, setNextSelectedCell, isLastRowSelected} from "./tableNavigationWorker";
-import {Directions} from "../../constants/TableauxConstants";
+import {Directions, RowHeight} from "../../constants/TableauxConstants";
+import {disableShouldCellFocus, isLastRowSelected, setNextSelectedCell} from "./tableNavigationWorker";
 import {translate} from "react-i18next";
+import _ from "lodash";
 
 const DuplicatedMessage = (props) => {
   const {row, t, onJumpToRow} = props;
@@ -13,10 +13,11 @@ const DuplicatedMessage = (props) => {
   return (
     <div>
       <p>{t("row_duplicated")}</p>
-      <a href="#" onClick={onClickHandler}>{t("jump_to_row")} <i className="fa fa-angle-right"/></a>
+      <a href="#" onClick={onClickHandler}>{t("jump_to_row")} <i className="fa fa-angle-right" /></a>
     </div>
   );
 };
+
 const TranslatedDuplicatedMessage = translate(["table"])(DuplicatedMessage);
 
 export function duplicateRow(payload) {
@@ -24,11 +25,12 @@ export function duplicateRow(payload) {
   const {rowId} = payload;
   const rowToCopy = rows.get(rowId);
   rowToCopy.duplicate((row) => {
-    ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={scrollToRow.bind(this)}/>, 3000, true);
+    ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={scrollToRow.bind(this)} />, 3000, true);
   });
 }
 
-// TODO: Move all this to rows component, with props/actions. Problem is, this executes faster, than the row added to dom, so we get old height.
+// TODO: Move all this to rows component, with props/actions.
+// TODO: Problem is, this executes faster, than the row added to dom, so we get old height.
 // TODO: Scroll to row, not just to the bottom
 export function scrollToRow(row) {
   const {tableRowsDom} = this;
@@ -61,9 +63,9 @@ export function createRowOrSelectNext() {
 }
 
 export function toggleRowExpand(payload) {
-  var toggleRowId = payload.rowId;
-  var newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
-  var rowIdExists = false;
+  const toggleRowId = payload.rowId;
+  const newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
+  let rowIdExists = false;
 
   newExpandedRowIds.forEach((rowId, index) => {
     if (rowId === toggleRowId) {
