@@ -17,7 +17,7 @@ const is = f.curryN(5)(
 const not = f.curryN(5)(
   (testname, i, expected, fn, args) => {
     const test = !is(testname, i, expected, fn, args);
-    console.log("--> success if test fails");
+    console.log("--> expected to fail");
     return test;
   }
 );
@@ -29,17 +29,42 @@ const throws = f.curryN(5)(
       const result = fn.apply(null, args);
       console.log("--> failure: expected to throw, but returned", result);
       return false;
-    }
-    catch (e) {
-      console.log("--> successfully caught", typeof e);
-      return (e instanceof expected);
+    } catch (e) {
+      console.log("--> successfully caught", e.name);
+      return true;
     }
   }
 );
 
-const test = (name) => (tests) => {
+const conformsTo = f.curryN(5)(
+  (testname, i, testFn, fn, args) => {
+    if (!f.isFunction(testFn)) {
+      throw new TypeError("simpleTests.coformsTo was called with testFunction", testFn, "of type", f.get("type", testFn), "expected a callable object");
+    }
+    const result = fn.apply(null, args);
+    const testResult = testFn(result);
+    console.log(`${testname} test #${i + 1}: calling ${fn.name} with args`, args, "=>", result);
+    if (testResult) {
+      console.log("--> success");
+      return true;
+    } else {
+      console.log(`--> failure: expected validator ${testFn.name}(${result}) to be truthy, got`, testResult);
+      return false;
+    }
+  }
+);
+
+// expects an array of tests, each consisting of:
+// [
+//  op from ["conformsTo", "is", "not", "throws"],
+//  (un-)expected result | error object class | validator function,
+//  function to evaluate,
+//  array of arguments
+// ]
+const unitTests = (name) => (tests) => {
   console.log("Running tests:", name);
   const ops = {
+    conformsTo,
     is,
     not,
     throws
@@ -47,8 +72,20 @@ const test = (name) => (tests) => {
   const results = tests.map(
     ([op, expected, fn, args], i) => ops[op](name, i, expected, fn, args)
   );
-  console.log(`Tests: ${f.size(results)}, success: ${f.size(f.filter(f.eq(true),
+  console.warn(`${name}: ${f.size(results)} tests, succeeded: ${f.size(f.filter(f.eq(true),
     results))}, failed: ${f.size(f.reject(f.eq(true), results))}`);
 };
 
-export default (process.env.NODE_ENV !== "production") ? test : f.noop;
+const unitTestFunction = (process.env.NODE_ENV !== "production")
+  ? (() => { console.warn("process.env.NODE_ENV !== production; testing enabled"); return unitTests; })()
+  : f.noop;
+
+unitTestFunction("simpleTests self-test")([
+  ["throws", null, conformsTo, ["generated throwing test", -1, null, f.noop, []]],
+  ["is", true, conformsTo, ["generated true test", -1, f.isEmpty, f.identity, []]],
+  ["not", true, conformsTo, ["generated false test", -1, f.isEmpty, f.identity, ["no-number"]]],
+  ["not", true, f.equals, [1, 2]],
+  ["conformsTo", f.isString, f.always("string"), [1, 2, 3]]
+]);
+
+export default unitTestFunction;

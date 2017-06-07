@@ -2,8 +2,6 @@ const AmpersandModel = require("ampersand-model");
 const Dispatcher = require("../dispatcher/Dispatcher");
 const TableauxConstants = require("./../constants/TableauxConstants");
 const {ActionTypes, ColumnKinds} = TableauxConstants;
-const RowConcatHelper = require("../helpers/RowConcatHelper");
-const _ = require("lodash");
 import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
 import getDisplayValue from "./getDisplayValue";
@@ -87,73 +85,6 @@ const Cell = AmpersandModel.extend({
       }
     },
 
-    /*
-    linkString: {
-      deps: ["linkStringLanguages"],
-      fn: function () {
-        return function (linkIndexAt, langtag) {
-          const linkElemValue = this.linkStringLanguages[linkIndexAt];
-          if (linkElemValue) {
-            return linkElemValue[langtag] || "";
-          } else {
-            return null;
-          }
-        };
-      }
-    },
-
-    linkStringLanguages: {
-      deps: ["value"],
-      fn: function () {
-        if (!this.isLink) {
-          return null;
-        }
-        const linksWithLangtags = [];
-        const linkValues = this.value;
-        const linkToColumn = this.column.toColumn;
-        _.forEach(linkValues, function (linkElement) {
-          const linkWithLangtag = {};
-          _.forEach(TableauxConstants.Langtags, (langtag, idx) => {
-            linkWithLangtag[langtag] = RowConcatHelper.getCellAsStringWithFallback(linkElement.value,
-              linkToColumn,
-              langtag);
-          });
-          linksWithLangtags.push(linkWithLangtag);
-        });
-
-        return linksWithLangtags;
-      }
-    },
-    */
-
-    /*
-    rowConcatLanguages: {
-      deps: ["value"],
-      fn: function () {
-        if (!this.isConcatCell) {
-          return null;
-        }
-        const rowConcatAllLangs = {};
-        const self = this;
-        _.forEach(TableauxConstants.Langtags, function (langtag, idx) {
-          // not really nice I think the Cell should replace
-          // an empty concat value with "- NO VALUE -" and not
-          // the model itself!
-          rowConcatAllLangs[langtag] = RowConcatHelper.getCellAsStringWithFallback(self.value, self.column, langtag);
-        });
-        return rowConcatAllLangs;
-      }
-    },
-
-    rowConcatString: {
-      deps: ["rowConcatLanguages"],
-      fn: function () {
-        return function (langtag) {
-          return this.rowConcatLanguages[langtag] || "";
-        };
-      }
-    }, */
-
     isEditable: {
       deps: ["tables", "tableId", "column"],
       fn: function () {
@@ -189,7 +120,7 @@ const Cell = AmpersandModel.extend({
   },
 
   initialize: function (attrs, options) {
-    if (this.isConcatCell) {
+    if (f.contains(attrs.column.kind, [ColumnKinds.concat, ColumnKinds.group])) {
       this.initConcatEvents(attrs);
     } else if (this.isLink) {
       this.initLinkEvents(attrs);
@@ -197,7 +128,7 @@ const Cell = AmpersandModel.extend({
   },
 
   initConcatEvents: function (attrs) {
-    const {concats} = attrs.column;
+    const concats = (attrs.column.kind === ColumnKinds.concat) ? attrs.column.concats : attrs.column.groups;
     const calcId = ({id}) => `cell-${attrs.tableId}-${id}-${attrs.row.id}`;
 
     this.concatIds = f.reduce(f.merge, {}, concats.map((c, idx) => ({[calcId(c)]: idx})));
@@ -205,28 +136,46 @@ const Cell = AmpersandModel.extend({
       if (!cell.id || !f.contains(cell.id, f.keys(this.concatIds))) {
         return;
       }
-      this.value = f.assoc(
+      const newValue = f.assoc(
         f.get(cell.id, this.concatIds),
         cell.value,
         this.value
       );
-      const self = this;
-      ActionCreator.broadcastDataChange({cell: self, row: cell.row});
+      if (!f.equals(newValue, this.value)) {
+        this.value = newValue;
+        const self = this;
+        ActionCreator.broadcastDataChange({
+          cell: self,
+          row: self.row,
+          triggeredFrom: self
+        });
+      }
     };
 
     this.handleDataChange = handleDataChange.bind(this);
     Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange, this);
   },
 
-  initLinkEvents: function (attrs, options) {
+  initLinkEvents: function (attrs) {
     const handleDataChange = function ({row, cell}) {
-      if (row.tableId !== attrs.column.toTable || !f.contains(row.id.toString(), f.keys(this.linkIds))) {
+      if (row.tableId !== attrs.column.toTable || cell.column.id !== attrs.column.toColumn.id
+        || !f.contains(row.id.toString(), f.keys(this.linkIds))
+      ) {
         return;
       }
-      this.value = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
-      const self = this;
-      ActionCreator.broadcastDataChange({cell: self, row: self.row});
+
+      const newValue = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
+      if (!f.equals(newValue, this.value)) {
+        this.value = newValue;
+        const self = this;
+        ActionCreator.broadcastDataChange({
+          cell: self,
+          row: self.row,
+          triggeredFrom: self
+        });
+      }
     };
+
     this.handleDataChange = handleDataChange.bind(this);
     Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange, this);
   },

@@ -1,9 +1,9 @@
-var AmpersandModel = require("ampersand-model");
+const AmpersandModel = require("ampersand-model");
 import apiUrl from "../helpers/apiUrl";
 import TableauxConstants from "../constants/TableauxConstants";
 const {ColumnKinds} = TableauxConstants;
 
-var Column = AmpersandModel.extend({
+const Column = AmpersandModel.extend({
   props: {
     id: "number",
     name: "string",
@@ -37,6 +37,10 @@ var Column = AmpersandModel.extend({
     countryCodes: {
       type: "array",
       default: null
+    },
+    format: {
+      type: "string",
+      default: null
     }
   },
 
@@ -68,7 +72,7 @@ var Column = AmpersandModel.extend({
   },
 
   url: function () {
-    var base = this.urlRoot();
+    const base = this.urlRoot();
     if (this.isNew()) {
       return base;
     } else {

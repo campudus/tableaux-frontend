@@ -31,19 +31,22 @@ const applyToAllLangs = fn => f.reduce(
 
 // To catch cases where (obj.langtag || obj.DefaultLangtag) is falsey, but obj still has langtag keys
 const isLangObj = (obj) => !f.isEmpty(f.intersection(f.keys(obj), Langtags));
+// Retrieve obj[lantag] or obj[DefaultLangtag].
+// If both are unset, return null if obj has language keys but not langtag or DefaultLangtag, else return obj
+const getValueForLang = (obj, lt) => f.get(lt, obj) || f.get(DefaultLangtag, obj) || ((isLangObj(obj)) ? null : obj);
 
 // Return cell.value
 const getDefaultValue = (column) => (value) => (
   applyToAllLangs(lt => {
-    const val = f.find(f.identity, [...f.props([lt, DefaultLangtag], value), value]);
-    return (f.isEmpty(val) || isLangObj(val)) ? "" : val;
+    const val = getValueForLang(value, lt) || "";
+    return (f.isEmpty(val) && !f.isNumber(val)) ? "" : format(column, val);
   })
 );
 
 // bool -> column display name || ""
 const getBoolValue = (column) => (value) => {
   const getValue = lt => {
-    const isTrue = f.find(f.complement(f.isNil), [...f.props([lt, DefaultLangtag], value), value, false]); // allow false
+    const isTrue = f.find(f.isBoolean, [...f.props([lt, DefaultLangtag], value), value, false]); // allow false
     return (isTrue && !isLangObj(isTrue)) ? column.displayName[lt] || column.displayName[DefaultLangtag] : "";
   };
   return applyToAllLangs(getValue);
@@ -52,11 +55,11 @@ const getBoolValue = (column) => (value) => {
 // convert date to human-friendly format
 const getDateValue = (column) => (value) => {
   const getDate = lt => {
-    const date = f.find(f.identity, [...f.props([lt, DefaultLangtag], value), value]);
+    const date = getValueForLang(value, lt);
     const Formats = (column.kind === ColumnKinds.datetime) ? DateTimeFormats : DateFormats;
-    return (f.isEmpty(date) || isLangObj(date))
+    return (f.isEmpty(date))
       ? ""
-      : Moment(date, Formats.formatForServer).format(Formats.formatForUser);
+      : Moment(date, Formats.formatForServer).format(getValueForLang(column.format, lt) || Formats.formatForUser);
   };
   return applyToAllLangs(getDate);
 };
@@ -79,7 +82,54 @@ const getConcatValue = (selector) => (column) => value => {
     )
   );
 
-  return applyToAllLangs(lt => f.join(" ", f.map(f.get(lt), displayValues)));
+  return applyToAllLangs(lt => format(column, f.map(f.get(lt), displayValues)));
 };
+
+const moustache = f.memoize(
+  (n) => new RegExp(`\\{\\{${n}\\}\\}`, "g")  // double-escape regex generator string to get single-escaped regex-braces
+);
+
+// Replace all moustache expressions "{{i}}" of the column's format string where i in [1,..,N], N = displayValue.length,
+// with displayValue[i]
+const format = f.curryN(2)(
+  (column, displayValue) => {
+    if (f.isEmpty(f.get("format", column))) { // no or empty format string => simple concat
+      return (f.isArray(displayValue))
+        ? f.compose(
+          f.join(" "),
+          f.map(f.trim)
+        )(displayValue)
+        : f.trim(displayValue);
+    }
+
+    const valueArray = (f.isArray(displayValue)) ? displayValue : [displayValue];
+    // replace all occurences of {{n+1}} with displayValue[n]; then recur with n = n+1
+    const applyFormat = function (result, dVal = valueArray, i = 1) {
+      return (f.isEmpty(dVal))
+        ? result
+        : applyFormat(
+          result.replace(moustache(i), f.trim(f.first(dVal))),
+          f.tail(dVal),
+          i + 1
+        );
+    };
+
+    return f.trim(applyFormat(f.get("format", column)));
+  }
+);
+
+import unitTests from "../helpers/simpleTests";
+unitTests("formatting")([
+  ["is", "foo", format, [{}, "foo"]],
+  ["is", "foo bar", format, [{}, ["foo", "bar"]]],
+  ["is", "testVal foo", format, [{format: "testVal {{1}}"}, "foo"]],
+  ["is", "foo bar baz", format, [{format: "{{1}} bar {{2}}"}, ["foo", "baz"]]],
+  ["is", "1 x 2 x 3mm", format, [{format: "{{1}} x {{2}} x {{3}}mm"}, [1, 2, 3]]],
+  ["is", "2 times moustaches is 2 times the fun", format, [{format: "{{1}} times {{2}} is {{1}} times the fun"}, [2, "moustaches"]]],
+  ["is", "foo bar", format, [{format: ""}, ["foo", "bar"]]],
+  ["not", "foo bar", format, [{format: " "}, ["foo", "bar"]]],
+  ["is", "foo bar", format, [{format: ""}, [" foo", " bar    "]]],
+  ["not", "foo   bar", format, [{format: ""}, ["foo ", " bar"]]]
+]);
 
 export default getDisplayValue;

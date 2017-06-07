@@ -16,14 +16,50 @@ import {
 } from "../helpers/accessManagementHelper";
 import request from "superagent";
 import * as _ from "lodash";
+import * as f from "lodash/fp";
 
 // sets or removes a *single* link to/from a link cell
 const changeLinkCell = ({cell, value}) => {
-  const newValue = value;
   const curValue = cell.value;
-  const rowDiff = _.xor(curValue.map(link => link.id), newValue.map(link => link.id));
 
-  if (_.size(rowDiff) !== 1) { // multiple new values or permutation, set new array
+  if (f.size(value) > 1
+    && f.size(curValue) === f.size(value)
+    && f.size(f.intersection(value.map(f.get("id")), curValue.map(f.get("id")))) === f.size(curValue)
+  ) { // reordering happened
+    const swappers = f.compose(
+      f.map(f.get([0, "id"])),
+      f.reject(([a, b]) => f.get("id", a) === f.get("id", b))
+    )(f.zip(value, cell.value));
+    cell.set({value: f.map(f.pick(["id", "value"]), value)}); // don't store LinkOverlay's display value
+    const sortUrl = `/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/link/${f.first(swappers)}/order`;
+    return new Promise(
+      (resolve, reject) => {
+        if (f.isEmpty(swappers)) {
+          reject("Something went horribly wrong. Swappers:", swappers);
+        }
+        request
+          .put(apiUrl(sortUrl))
+          .send({
+            location: "before",
+            id: swappers[1]
+          })
+          .end(
+            (err, response) => {
+              if (err) {
+                cell.set({value: curValue});
+                reject(err);
+              } else {
+                ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
+                resolve(response);
+              }
+            }
+          );
+      }
+    );
+  }
+
+  const rowDiff = _.xor(curValue.map(link => link.id), value.map(link => link.id));
+  if (_.size(rowDiff) > 1) { // multiple new values, set new array
     return new Promise(
       (resolve, reject) => {
         cell.save({value}, {
@@ -37,6 +73,7 @@ const changeLinkCell = ({cell, value}) => {
     );
   }
 
+  // Else a single link was added or removed
   const [toggledRowId] = rowDiff;
   if (!toggledRowId) {
     return new Promise((resolve, reject) => {
@@ -46,8 +83,8 @@ const changeLinkCell = ({cell, value}) => {
   const {rowId, tableId} = cell;
   const colId = cell.column.id;
   const backendUrl = apiUrl(`/tables/${tableId}/columns/${colId}/rows/${rowId}`);
-  cell.set({value: newValue}); // set locally so fast follow-up request will have correct state
-  const xhrRequest = (curValue.length > newValue.length)
+  cell.set({value: value}); // set locally so fast follow-up request will have correct state
+  const xhrRequest = (curValue.length > value.length)
     ? request.delete(`${backendUrl}/link/${toggledRowId}`)
     : request
       .patch(backendUrl)
@@ -63,14 +100,13 @@ const changeLinkCell = ({cell, value}) => {
           reject(error);
         } else {
           ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
-          resolve(newValue);
+          resolve(value);
         }
       });
     });
 };
 
 export const changeCell = payload => {
-  console.log("changeCellHandler:", payload);
   if (payload.cell.isLink) {
     return changeLinkCell(payload);
   }
@@ -126,7 +162,7 @@ export const changeCell = payload => {
          * End basic language access management
          */
 
-        console.log("Cell Model: saving cell with value:", newValue);
+        console.log("Cell Model: saving cell with value:", newValue.value, "from", cell.value);
         // we give direct feedback for user
         cell.value = mergedValue;
 

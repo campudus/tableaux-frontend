@@ -59,11 +59,13 @@ class LinkOverlay extends Component {
   componentDidMount = () => { // why is componentWillMount never called?
     Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.on(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
   };
 
   componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
+    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
   };
 
   handleMyKeys = ({id, event}) => {
@@ -241,7 +243,7 @@ class LinkOverlay extends Component {
       }),
       f.zip(cell.value, cell.displayValue)
     );
-    this.allRowResults = [...linkedRows, ...(rowResult.models || rowResult)];
+    this.allRowResults = [...linkedRows, ...rowResult];
     // we always rebuild the row names, also to prevent wrong display names when switching languages
     this.setState({
       // we show all the rows
@@ -250,12 +252,21 @@ class LinkOverlay extends Component {
     });
   };
 
-  getRowValues = (row) => {
-    const {toColumn, toTable} = this.props.cell.column;
-    const toTableObj = this.props.cell.tables.get(toTable);
-    const toTableColumns = toTableObj.columns;
-    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id));
-    return row.values[toIdColumnIndex];
+  updateLinkValues = ({cell, row}) => {
+    const thisCell = this.props.cell;
+    if (cell.column.id !== thisCell.column.toColumn.id || cell.tableId !== thisCell.column.toTable) {
+      return;
+    }
+    const linkedRows = f.map(f.get("id"), thisCell.value);
+    if (!f.contains(row.id, linkedRows)) {
+      return;
+    }
+    const oldValueIdx = f.findIndex(f.matchesProperty("id", row.id), this.allRowResults);
+    const newLink = f.assoc("id", row.id, f.pick(["value", "displayValue"], cell));
+    this.allRowResults = f.assoc(oldValueIdx, newLink, this.allRowResults);
+    this.setState({
+      rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
+    });
   };
 
   setFilterMode = ({filterMode = FilterModes.CONTAINS, filterValue = ""}) => {
@@ -292,23 +303,18 @@ class LinkOverlay extends Component {
     };
   };
 
-  addLinkValue = (isLinked, link, event) => {
+  addLinkValue = (isAlreadyLinked, link, event) => {
     maybe(event).method("preventDefault");
     const cell = this.props.cell;
-    /* const link = {
-     id: row.id,
-     value: row.value,
+    const withoutLink = f.remove(f.matchesProperty("id", link.id));
+    const links = (isAlreadyLinked)
+      ? withoutLink(cell.value)
+      : [...cell.value, link];
 
-     }; */
-    let links = _.clone(cell.value);
-
-    if (isLinked) {
-      _.remove(links, function (linked) {
-        return link.id === linked.id;
-      });
-    } else {
-      links.push(link);
+    if (isAlreadyLinked && f.get(["constraint", "deleteCascade"], cell.column)) {
+      this.allRowResults = withoutLink(this.allRowResults);
     }
+
     ActionCreator.changeCell(cell, links);
     this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
   };
@@ -317,7 +323,7 @@ class LinkOverlay extends Component {
     const currentCellValue = either(this.props.cell)
       .map(f.prop(["value"]))
       .getOrElse(null);
-    return !!_.find(currentCellValue, link => link.id === row.id);
+    return !!_.find(currentCellValue, link => f.get("id", link) === f.get("id", row));
   };
 
   renderListItem = ({isLinked}) => ({key, index, style = {}}) => {
@@ -399,20 +405,29 @@ class LinkOverlay extends Component {
   };
 
   renderRowCreator = () => {
-    const {cell: {column: {displayName, toTable}}, langtag} = this.props;
+    const {cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
     const addAndLinkRow = () => {
-      const isAlreadyLinked = false;
-      ActionCreator.addRow(toTable, row => this.addLinkValue(isAlreadyLinked, row));
+      const linkNewRow = row => {
+        const link = {id: row.id, value: null, displayValue: {}};
+        this.allRowResults = [...this.allRowResults, link];
+        this.addLinkValue(false, link);
+      };
+      ActionCreator.addRow(toTable, linkNewRow);
     };
 
     const linkTableName = displayName[langtag] || displayName[DefaultLangtag] || "";
+    const linked = f.size(this.state.rowResults.linked);
+    const cardinalityTo = f.get(["cardinality", "to"], constraint) || 0;
+    const allowed = (cardinalityTo > 0) ? cardinalityTo : Number.POSITIVE_INFINITY;
 
-    return (
-      <div className="row-creator-button" onClick={addAndLinkRow}>
-        <SvgIcon icon="plus" containerClasses="color-primary" />
-        <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>
-      </div>
-    );
+    return (linked < allowed)
+      ? (
+        <div className="row-creator-button" onClick={addAndLinkRow}>
+          <SvgIcon icon="plus" containerClasses="color-primary" />
+          <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>
+        </div>
+      )
+      : null;
   };
 
   render = () => {

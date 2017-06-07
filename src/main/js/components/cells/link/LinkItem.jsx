@@ -2,11 +2,13 @@ import React, {PropTypes} from "react";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
+import * as f from "lodash/fp";
+import Empty from "../../helperComponents/emptyEntry";
 
 const getLinkLabel = (row, langtag) => {
   // const cell = row.cells.at(0);
   // return cell.displayValue[langtag] || cell.displayValue[FallbackLanguage];
-  return row.displayValue[langtag];
+  return f.get(["displayValue", langtag], row) || <Empty/>;
 };
 
 const MAIN_BUTTON = 0;

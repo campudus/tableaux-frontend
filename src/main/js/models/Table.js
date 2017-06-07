@@ -26,6 +26,10 @@ const Table = Model.extend({
         };
       },
       allowNull: true
+    },
+    hidden: {
+      type: "boolean",
+      default: "false"
     }
   },
 
