@@ -47,6 +47,12 @@ export default class CurrencyRow extends React.Component {
     this.currencyInputTouched = true;
   };
 
+  handleFocus = selector => evt => {
+    const el = this.refs[selector];
+    const l = evt.target.value.length;
+    el.setSelectionRange(l, l);
+  };
+
   renderCurrencyValue(value) {
     const splittedValue = splitPriceDecimals(value);
 
@@ -54,11 +60,15 @@ export default class CurrencyRow extends React.Component {
     return (
       <div>
         <input ref="currencyInteger" className="currency-input integer" type="text" defaultValue={splittedValue[0]}
-               onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged} />
+               onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged}
+               onFocus={this.handleFocus("currencyInteger")}
+        />
         <span className="delimiter">,</span>
         <input ref="currencyDecimals" onChange={this.currencyInputChanged} className="currency-input decimals"
                type="text" defaultValue={splittedValue[1]}
-               onKeyDown={this.onKeyDownInput} />
+               onKeyDown={this.onKeyDownInput}
+               onFocus={this.handleFocus("currencyDecimals")}
+        />
       </div>
     );
   }

@@ -7,11 +7,6 @@ class ShortTextEditCell extends React.Component {
 
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
-    // Sets cursor to end of input field
-    const node = this.refs.input;
-    const value = node.value;
-    node.value = "";
-    node.value = value;
   };
 
   componentWillMount = () => {
@@ -55,29 +50,26 @@ class ShortTextEditCell extends React.Component {
   };
 
   getValue = () => {
-    const cell = this.props.cell;
+    const {cell, langtag} = this.props;
+    const value = (cell.isMultiLanguage)
+      ? cell.value[langtag]
+      : cell.value;
 
-    let value = null;
-    if (cell.isMultiLanguage) {
-      if (cell.value[this.props.langtag]) {
-        value = cell.value[this.props.langtag];
-      } else {
-        // in this case we don't
-        // have a value for this language
-        value = "";
-      }
-    } else {
-      value = cell.value || "";
-    }
+    return value || "";
+  };
 
-    return value;
+  setCaret = () => {
+    const value = this.getValue();
+    const l = value.length;
+    this.refs.input.setSelectionRange(l, l);
   };
 
   render = () => {
     return (
       <div className={"cell-content editing"} onKeyDown={this.onKeyboardShortcut}>
         <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
-               ref="input"></input>
+               onFocus={this.setCaret}
+               ref="input" />
       </div>
     );
   };
