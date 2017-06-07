@@ -193,7 +193,7 @@
       position: relative;
 
       .link-label {
-        height: $font-size-standard;
+        height: $line-height-standard;
         overflow: hidden;
         padding: 0 8px;
       }
@@ -230,7 +230,7 @@
           a {
             display: block;
             flex: 90;
-            height: $font-size-standard;
+            height: $line-height-standard;
             overflow: hidden;
           }
 

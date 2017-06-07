@@ -294,8 +294,7 @@ class LinkOverlay extends Component {
     const byDisplayValues = f.compose(
       searchFunction(filterValue),
       f.join(" "),
-      f.map(f.get(["displayValue", langtag])),
-      f.get(["cells", "models"]),
+      f.map(f.get(["displayValue", langtag]))
     );
     return {
       linked: linkedRows,
