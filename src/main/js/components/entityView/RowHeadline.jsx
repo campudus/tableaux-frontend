@@ -52,6 +52,8 @@ class RowHeadline extends React.Component {
     const {cell, langtag, funcs, thisUserCantEdit} = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     const colName = this.getDisplayName(column);
+    const toTableVisible = !cell.tables.get(cell.column.toTable).hidden;
+
     return (
       <div className="item-header">
         <div className="title-wrapper">
@@ -62,9 +64,9 @@ class RowHeadline extends React.Component {
                          popupOpen={this.props.popupOpen}
                          thisUserCantEdit={thisUserCantEdit}
           />
-          <a className="title-wrapper" href="#" onClick={() => window.open(url, "_blank")}>
+          <a className="title-wrapper" href="#" onClick={(toTableVisible) ? () => window.open(url, "_blank") : f.noop}>
             {colName}
-            <SvgIcon icon="tablelink" containerClasses="color-primary"/>
+            {(toTableVisible) ? <SvgIcon icon="tablelink" containerClasses="color-primary"/> : null}
           </a>
         </div>
         {(thisUserCantEdit)

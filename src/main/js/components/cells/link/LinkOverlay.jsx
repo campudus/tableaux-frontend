@@ -432,7 +432,7 @@ class LinkOverlay extends Component {
 
   render = () => {
     const {rowResults, loading} = this.state;
-    const {cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
+    const {cell, cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
     const targetTable = {
       tableId: column.toTable,
       langtag
@@ -493,14 +493,17 @@ class LinkOverlay extends Component {
              this.background = el;
            }}
       >
-        <div className="linked-items" onMouseEnter={() => {
-          this.setState({activeBox: LINKED_ITEMS});
-        }}>
+        <div className="linked-items" onMouseEnter={() => { this.setState({activeBox: LINKED_ITEMS}); }}>
           <span className="items-title">
             <span>{i18n.t("table:link-overlay-items-title")}
-              <a className="table-link" href="#" onClick={() => openInNewTab(targetTable)}>
-                {displayName[this.props.langtag] || displayName[DefaultLangtag]}
-              </a>
+              {(cell.tables.get(cell.column.toTable).hidden)
+                ? displayName[langtag] || displayName[DefaultLangtag]
+                : (
+                  <a className="table-link" href="#" onClick={() => openInNewTab(targetTable)}>
+                    {displayName[langtag] || displayName[DefaultLangtag]}
+                  </a>
+                )
+              }
             </span>
           </span>
           {linkedRows}
