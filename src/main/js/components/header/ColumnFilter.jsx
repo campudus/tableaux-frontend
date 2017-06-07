@@ -3,6 +3,7 @@ import ColumnFilterPopup from "./ColumnFilterPopup";
 import i18n from "i18next";
 import classNames from "classnames";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import * as f from "lodash/fp";
 
 @connectToAmpersand
 class ColumnFilter extends React.Component {
@@ -27,7 +28,11 @@ class ColumnFilter extends React.Component {
   render = () => {
     const {langtag, columns} = this.props;
     const {open} = this.state;
-    const nHidden = columns.filter(x => !x.visible).length;
+    const nHidden = f.compose(
+      f.size,
+      f.reject(f.get("visible")),
+      f.drop(1)
+    )(columns.models);
     const message = nHidden + " " + i18n.t("table:hidden_items");
     const cssClass = classNames({
       "active": open,
