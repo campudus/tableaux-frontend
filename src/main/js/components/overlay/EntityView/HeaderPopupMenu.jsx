@@ -48,7 +48,6 @@ class HeaderPopupMenu extends Component {
   mkEntry = (id, {title, fn}) => {
     const entryClass = classNames("entry", {"active": id === this.state.active});
     const clickHandler = f.compose(
-      () => console.log("Clicked", title),
       () => this.setState({open: false}),
       fn
     );
@@ -65,6 +64,7 @@ class HeaderPopupMenu extends Component {
   };
 
   handleClickOutside = () => {
+    this.cancelClosingTimer();
     this.setState({open: false});
   };
 
@@ -80,9 +80,22 @@ class HeaderPopupMenu extends Component {
     }
   };
 
-  handleMouseLeave = () => {
+  handleMouseLeave = event => {
+    if (event.buttons > 0) {
+      return;
+    }
     if (this.state.open) {
       this.startClosingTimer();
+    }
+  };
+
+  handleMouseEnter = event => {
+    if (event.buttons > 0) {
+      return;
+    }
+    this.cancelClosingTimer();
+    if (!this.state.open) {
+      this.setState({open: true});
     }
   };
 
@@ -98,10 +111,7 @@ class HeaderPopupMenu extends Component {
     return (
       <div className="header-popup-wrapper">
         <div className={buttonClass}
-             onMouseEnter={() => {
-               this.setState({open: true});
-               this.cancelClosingTimer();
-             }}
+             onMouseEnter={this.handleMouseEnter}
              onMouseLeave={this.handleMouseLeave}
         >
           <a href="#" onClick={event => {
@@ -114,7 +124,7 @@ class HeaderPopupMenu extends Component {
         {(open)
           ? (
             <div className="popup-wrapper">
-              <div className="popup" onMouseLeave={this.handleMouseLeave} onMouseEnter={this.cancelClosingTimer}>
+              <div className="popup" onMouseLeave={this.handleMouseLeave} onMouseEnter={this.handleMouseEnter}>
                 <div className="separator">{i18n.t("table:menus.information")}</div>
                 {this.mkEntry(0,
                   {

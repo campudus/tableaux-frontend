@@ -552,7 +552,7 @@
         }
 
         font-size: small;
-        font-style: italic;
+        font-weight: bold;
 
         .overlay-table-row {
           display: block;
@@ -561,6 +561,7 @@
 
         .media-options {
           color: transparent;
+          font-weight: normal;
           a {
             padding: 5px;
           }

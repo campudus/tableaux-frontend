@@ -1,4 +1,5 @@
-import {map, prop, range, isFunction} from "lodash/fp";
+import {curryN, isFunction, map, prop, range} from "lodash/fp";
+import test from "./simpleTests";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -258,4 +259,15 @@ const fspy = info => x => {
   return x;
 };
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy};
+const logged = curryN(2)(
+  (msg, fn) => function () {
+    console.log("Logging:", msg);
+    return fn.apply(null, arguments);
+  }
+);
+
+test("Monads")([
+  ["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]]
+]);
+
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged};

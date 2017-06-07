@@ -5,13 +5,37 @@ import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {addTranslationNeeded, removeTranslationNeeded, deleteCellAnnotation} from "../../helpers/annotationHelper";
+import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
 import {canConvert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
 import ReactDOM from "react-dom";
 
 @listenToClickOutside
+class MenuPopup extends Component {
+  static props = {
+    clickOutside: PropTypes.func.isRequired,
+    handleMouseEnter: PropTypes.func.isRequired,
+    handleMouseLeave: PropTypes.func.isRequired,
+    popupClass: PropTypes.string.isRequired
+  };
+
+  handleClickOutside(evt) {
+    this.props.clickOutside(evt);
+  }
+
+  render() {
+    return (
+      <div className={this.props.popupClass}
+           onMouseEnter={this.props.handleMouseEnter}
+           onMouseLeave={this.props.handleMouseLeave}
+      >
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
 class ItemPopupMenu extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -31,10 +55,6 @@ class ItemPopupMenu extends Component {
     this.nodeRef = null;
   }
 
-  handleClickOutside = () => {
-    this.closePopup();
-  };
-
   closePopup = () => {
     this.nodeRef = null;
     this.props.funcs.closeItemPopup();
@@ -45,7 +65,9 @@ class ItemPopupMenu extends Component {
     const clickHandler = f.compose(
       this.closePopup,
       fn,
-      e => { e.stopPropagation(); }
+      e => {
+        e.stopPropagation();
+      }
     );
     return (
       <div className={entryClass}
@@ -138,26 +160,30 @@ class ItemPopupMenu extends Component {
       "menu-is-right": isOffScreen
     });
     const {enterItemPopupButton, leaveItemPopupButton} = this.props.funcs;
-    const popupClass = classNames("entry-popup", {"inverse": isOffScreen});
-    const wrapperClass = classNames("entry-popup-wrapper", {"ignore-react-onclickoutside": popupOpen});
+    const popupClass = classNames("entry-popup ignore-react-onclickoutside", {"inverse": isOffScreen});
+    const wrapperClass = classNames("entry-popup-wrapper");
 
     return (
       <div className={wrapperClass}>
         <div className={buttonClass}
              onMouseEnter={enterItemPopupButton}
              onMouseLeave={leaveItemPopupButton}
-             onClick={(this.props.popupOpen) ? this.closePopup : f.noop}
+             onMouseDown={(popupOpen) ? f.noop : this.props.funcs.openItemPopup}
         >
           <a href="#">
-            <SvgIcon icon="vdots" containerClasses="color-primary"/>
+            <SvgIcon icon="vdots" containerClasses="color-primary" />
           </a>
         </div>
         {(popupOpen)
           ? (
-            <div className={popupClass}
-                 onMouseEnter={enterItemPopupButton}
-                 onMouseLeave={leaveItemPopupButton}
-                 ref={el => { this.nodeRef = el; }}
+            <MenuPopup
+              popupClass={popupClass}
+              handleMouseEnter={enterItemPopupButton}
+              handleMouseLeave={leaveItemPopupButton}
+              clickOutside={this.closePopup}
+              ref={el => {
+                this.nodeRef = el;
+              }}
             >
               <div className="separator">
                 {i18n.t("table:menus.data_set")}
@@ -204,7 +230,7 @@ class ItemPopupMenu extends Component {
                 )
                 : null
               }
-            </div>
+            </MenuPopup>
           )
           : null
         }

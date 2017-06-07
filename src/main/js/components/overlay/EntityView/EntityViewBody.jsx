@@ -237,13 +237,21 @@ class EntityViewBody extends Component {
       });
   };
 
-  enterItemPopupButton = idx => () => {
+  // Opening/closing popup by click will modify the DOM, so the hovering pointer will cause mouseEnter + mouseLeave
+  // events. To ignore them, check if any button is pressed when handling the enter/leave events.
+  enterItemPopupButton = idx => event => {
+    if (event.buttons > 0) {
+      return;
+    }
     this.cancelClosingTimer();
     if (this.state.itemWithPopup !== idx) {
       this.openItemPopup(idx)();
     }
   };
-  leaveItemPopupButton = idx => () => {
+  leaveItemPopupButton = idx => event => {
+    if (event.buttons > 0) {
+      return;
+    }
     if (this.state.itemWithPopup === idx) {
       this.startClosingTimer();
     }
