@@ -45,7 +45,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
                           id={id}
       />
       : <Header context=""
-                title={i18n.t("table:loading")}
+                title={i18n.t("common:loading")}
                 components={<div />}
                 langtag={langtag}
                 id={id}
@@ -69,16 +69,9 @@ class LoadingEntityViewBodyWrapper extends Component {
     }
 
     if (toLoad) {
-      const setLoadedRow = row => {
-        this.setState({row});
-        broadcastRowLoaded({
-          id: this.props.id,
-          row
-        });
-      };
       this.state = {row: null};
       this.loadRow(toLoad)
-          .then(setLoadedRow)
+          .then(this.setLoadedRow)
           .catch(
             error => {
               console.error(error);
@@ -95,6 +88,14 @@ class LoadingEntityViewBodyWrapper extends Component {
       this.state = {row: props.row};
     }
   }
+
+  setLoadedRow = row => {
+    this.setState({row});
+    broadcastRowLoaded({
+      id: this.props.id,
+      row
+    });
+  };
 
   loadRow = ({table, tables, tableId, rowId}) => {
     const targetTable = maybe(tables)

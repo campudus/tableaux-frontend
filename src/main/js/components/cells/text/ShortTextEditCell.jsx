@@ -68,7 +68,7 @@ class ShortTextEditCell extends React.Component {
     return (
       <div className={"cell-content editing"} onKeyDown={this.onKeyboardShortcut}>
         <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
-               ref={ el => { this.input = el; this.setCaret() }}
+               ref={ el => { this.input = el; this.setCaret(); }}
         />
       </div>
     );

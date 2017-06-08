@@ -286,8 +286,8 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.FILTER_LINKS, {filterMode, filterValue});
   },
 
-  broadcastRowLoaded: ({overlayId, row}) => {
-    Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, {overlayId, row});
+  broadcastRowLoaded: ({id, row}) => {
+    Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, {id, row});
   },
 
   setTranslationView: (translationInfo) => {
