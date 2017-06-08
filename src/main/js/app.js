@@ -6,28 +6,29 @@ import TableauxConstants from "./constants/TableauxConstants";
 import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";
 import "../scss/main.scss";
-import watchConnection from "./watchers/watchConnection";
+import "./watchers/watchConnection";
 
-if (process.env.NODE_ENV !== "production") {
-getSentryUrlFromServer(() => {
-  console.warn("Sentry not enabled");
-}, (sentryUrl) => {
-  if (sentryUrl && sentryUrl.length > 5) {
-    Raven
-      .config(sentryUrl)
-      .install();
+if (process.env.NODE_ENV === "production") {
+  getSentryUrlFromServer(
+    () => {
+      console.warn("Sentry not enabled");
+    },
+    (sentryUrl) => {
+      if (sentryUrl && sentryUrl.length > 5) {
+        Raven
+          .config(sentryUrl)
+          .install();
 
-    console.log("Sentry initialized");
+        console.log("Sentry initialized");
 
-    Raven.captureMessage("Sentry initialized", {
-      level: 'info'
+        Raven.captureMessage("Sentry initialized", {
+          level: "info"
+        });
+      } else {
+        console.warn("Sentry not enabled");
+      }
     });
-  } else {
-    console.warn("Sentry not enabled");
-  }
-});
-
-if (process.env.NODE_ENV !== "production") {
+} else {
   window.Perf = require("react-addons-perf");
 }
 
