@@ -12,15 +12,6 @@
     cursor: not-allowed;
   }
 
-  &:not(.has-mouse-pointer) .popup-button {
-    a {
-      border-color: transparent !important;
-    }
-    svg {
-      fill: transparent;
-    }
-  }
-
   &:hover {
     &:before {
       content: "";
@@ -81,9 +72,11 @@
   }
 }
 
-.rich-text-component {
-  .content-pane {
-    max-height: 250px;
+.overlay .entity-view {
+  .rich-text-component {
+    .content-pane {
+      max-height: 250px;
+    }
   }
 }
 
@@ -333,6 +326,17 @@
 }
 
 // Entry popup
+.overlay .overlay-content .content-items .item.has-mouse-pointer .entry-popup-wrapper .popup-button { // stack all the selectors!
+  a {
+    border: 1px solid transparentize($color-primary, 0.2);
+    .svg-icon {
+      svg {
+        fill: $color-primary;
+      }
+    }
+  }
+}
+
 .overlay .overlay-content .content-items .item-header .title-wrapper {
   position: relative;
   display: inline-flex;
@@ -360,11 +364,14 @@
         background-color: transparent;
         color: $color-primary;
         border-radius: 3px;
-        border: 1px solid $color-primary;
         @include button-with-icon();
 
         div {
           flex: 1;
+        }
+
+        svg {
+          fill: transparent;
         }
       }
 

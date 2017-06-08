@@ -27,8 +27,8 @@ class MenuPopup extends Component {
   render() {
     return (
       <div className={this.props.popupClass}
-           onMouseEnter={this.props.handleMouseEnter}
-           onMouseLeave={this.props.handleMouseLeave}
+//           onMouseEnter={this.props.handleMouseEnter}
+//           onMouseLeave={this.props.handleMouseLeave}
       >
         {this.props.children}
       </div>
@@ -166,12 +166,11 @@ class ItemPopupMenu extends Component {
     return (
       <div className={wrapperClass}>
         <div className={buttonClass}
-             onMouseEnter={enterItemPopupButton}
              onMouseLeave={leaveItemPopupButton}
              onMouseDown={(popupOpen) ? f.noop : this.props.funcs.openItemPopup}
         >
           <a href="#">
-            <SvgIcon icon="vdots" containerClasses="color-primary" />
+            <SvgIcon icon="vdots" />
           </a>
         </div>
         {(popupOpen)

@@ -4,6 +4,7 @@ import LinkList from "../../helperComponents/LinkList";
 import {isEmpty, pullAt} from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
+import * as f from "lodash/fp";
 
 class LinkView extends Component {
 
@@ -31,7 +32,7 @@ class LinkView extends Component {
     return cell.value.map(
       (link, idx) => {
         return {
-          displayName: cell.displayValue[idx][langtag] || cell.displayValue[idx],
+          displayName: f.get([idx, langtag], cell.displayValue || ""),
           linkTarget: {
             tables: cell.tables,
             tableId: cell.column.toTable,

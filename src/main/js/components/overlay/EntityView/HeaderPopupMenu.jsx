@@ -111,12 +111,12 @@ class HeaderPopupMenu extends Component {
     return (
       <div className="header-popup-wrapper">
         <div className={buttonClass}
-             onMouseEnter={this.handleMouseEnter}
              onMouseLeave={this.handleMouseLeave}
         >
           <a href="#" onClick={event => {
             event.stopPropagation();
             this.setState({open: !open});
+            this.cancelClosingTimer();
           }}>
             <SvgIcon icon="vdots" containerClasses="color-white" />
           </a>
@@ -124,7 +124,10 @@ class HeaderPopupMenu extends Component {
         {(open)
           ? (
             <div className="popup-wrapper">
-              <div className="popup" onMouseLeave={this.handleMouseLeave} onMouseEnter={this.handleMouseEnter}>
+              <div className="popup"
+                   onMouseLeave={this.handleMouseLeave}
+                   onMouseEnter={this.handleMouseEnter}
+              >
                 <div className="separator">{i18n.t("table:menus.information")}</div>
                 {this.mkEntry(0,
                   {
