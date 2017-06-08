@@ -1,12 +1,31 @@
+import Raven from "raven-js";
+import {getAllLangtagsFromServer, getSentryUrlFromServer} from "./helpers/serverSettingsHelper";
 import App from "ampersand-app";
 import Router from "./router";
 import TableauxConstants from "./constants/TableauxConstants";
-import {getAllLangtagsFromServer} from "./helpers/serverSettingsHelper";
 import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";
 import "../scss/main.scss";
 
-if (process.env.NODE_ENV != "production") {
+getSentryUrlFromServer(() => {
+  console.warn("Sentry not enabled");
+}, (sentryUrl) => {
+  if (sentryUrl && sentryUrl.length > 5) {
+    Raven
+      .config(sentryUrl)
+      .install();
+
+    console.log("Sentry initialized");
+
+    Raven.captureMessage("Sentry initialized", {
+      level: 'info'
+    });
+  } else {
+    console.warn("Sentry not enabled");
+  }
+});
+
+if (process.env.NODE_ENV !== "production") {
   window.Perf = require("react-addons-perf");
 }
 

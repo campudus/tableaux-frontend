@@ -3,14 +3,27 @@ import request from "superagent";
 
 export function getAllLangtagsFromServer(onError, onOk) {
   request.get(apiUrl("/system/settings/langtags"))
-    .end((error, result) => {
-      if (error) {
-        console.warn("error fetching langtags from server:", error);
-        onError(error);
-      } else {
-        onOk(result.body.value);
-      }
-    }
-    );
+         .end((error, result) => {
+             if (error) {
+               console.warn("error fetching langtags from server:", error);
+               onError(error);
+             } else {
+               onOk(result.body.value);
+             }
+           }
+         );
+}
+
+export function getSentryUrlFromServer(onError, onOk) {
+  request.get(apiUrl("/system/settings/sentryUrl"))
+         .end((error, result) => {
+             if (error) {
+               console.warn("error fetching sentryUrl from server:", error);
+               onError(error);
+             } else {
+               onOk(result.body.value);
+             }
+           }
+         );
 }
 
