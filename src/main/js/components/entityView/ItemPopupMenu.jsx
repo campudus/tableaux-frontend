@@ -27,8 +27,8 @@ class MenuPopup extends Component {
   render() {
     return (
       <div className={this.props.popupClass}
-//           onMouseEnter={this.props.handleMouseEnter}
-//           onMouseLeave={this.props.handleMouseLeave}
+           onMouseEnter={this.props.handleMouseEnter}
+           onMouseLeave={this.props.handleMouseLeave}
       >
         {this.props.children}
       </div>

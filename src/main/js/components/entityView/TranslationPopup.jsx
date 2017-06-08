@@ -14,17 +14,10 @@ import i18n from "i18next";
 
 const KEY = "translations";
 
-@connectToAmpersand
-class LanguageView extends Component {
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    isExpanded: PropTypes.bool.isRequired,
-    toggleExpand: PropTypes.func.isRequired
-  };
+const LanguageView = connectToAmpersand(
+  (props) => {
 
-  render() {
-    const {cell, langtag, isExpanded, toggleExpand} = this.props;
+    const {cell, langtag, isExpanded, toggleExpand} = props;
     const value = f.prop(["value", langtag], cell);
     const buttonClass = classNames("fa", {
       "fa-plus": !isExpanded,
@@ -36,17 +29,18 @@ class LanguageView extends Component {
     return (
       <div className={wrapperClass} onClick={toggleExpand}>
         <div className="item-header">
-          <div className="label">
-            {getLanguageOrCountryIcon(langtag)}
-            <a className="switch-language-icon" href="#"
-               onClick={evt => {
-                 evt.stopPropagation();
-                 switchEntityViewLanguage({langtag});
-               }}
-            >
-              <SvgIcon icon="compareTranslation"/>
-            </a>
-          </div>
+          <a className="switch-language-icon" href="#"
+             onClick={evt => {
+               evt.stopPropagation();
+               switchEntityViewLanguage({langtag});
+             }}
+          >
+            <div className="label">
+              {getLanguageOrCountryIcon(langtag)}
+            </div>
+            <SvgIcon icon="compareTranslation" />
+          </a>
+
           {(f.isEmpty(value)) ? <div><Empty /></div> : null}
           <div className="toggle-button">
             <a href="#">
@@ -67,28 +61,25 @@ class LanguageView extends Component {
       </div>
     );
   }
-}
+);
 
-class SingleLanguageView extends Component {
-  static PropTypes = {
-    cell: PropTypes.object.isRequired,
-    setTranslationView: PropTypes.func.isRequired
-  };
-
-  render() {
-    const {cell} = this.props;
-    const value = (f.isNil(f.prop("value", this.props.cell)))
-      ? "---"
-      : convert(cell.kind, ColumnKinds.text, cell.value);
-    return (
-      <div className="item single-value">
-        <div className="item-content">
-          {value}
-        </div>
+const SingleLanguageView = props => {
+  const {cell} = props;
+  const value = (f.isNil(f.prop("value", cell)))
+    ? "---"
+    : convert(cell.kind, ColumnKinds.text, cell.value);
+  return (
+    <div className="item single-value">
+      <div className="item-content">
+        {value}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+SingleLanguageView.PropTypes = {
+  cell: PropTypes.object.isRequired,
+  setTranslationView: PropTypes.func.isRequired
+};
 
 class TranslationPopup extends Component {
   static propTypes = {
@@ -135,13 +126,14 @@ class TranslationPopup extends Component {
       || f.prop(["column", "displayName", FallbackLanguage], cell)
       || "";
 
-//    const comparator = lt => `${this.isExpanded(lt) ? 0 : 1}-${lt}`; // expanded first, then alphabetical
     const isAnyCollapsed = f.compose(
       f.any(f.complement(f.identity)),           // any not truthy
       f.map(f.last),                             // of "display" values
       f.reject(f.matchesProperty(0, langtag)),   // of elements without langtag === current langtag
       f.entries                                  // of tuples [langtag, "display"]
     )(this.state.translations);                  // of saved translations
+
+    const toggleButtonClass = classNames("toggle-all-button", {"is-multi-lang": cell.isMultiLanguage});
 
     return (
       <div className="translation-view">
@@ -152,7 +144,7 @@ class TranslationPopup extends Component {
           <div className="title">{title}</div>
           {(cell.isMultiLanguage)
             ? (
-              <div className="toggle-all-button"
+              <div className={toggleButtonClass}
                    onClick={this.setAllTranslations(isAnyCollapsed)}
               >
                 <a href="#">

@@ -325,6 +325,12 @@ class LinkOverlay extends Component {
     return !!_.find(currentCellValue, link => f.get("id", link) === f.get("id", row));
   };
 
+  setActiveBox = (val) => (e) => {
+    this.setState({activeBox: val});
+    e.stopPropagation();
+    this.background.focus();
+  };
+
   renderListItem = ({isLinked}) => ({key, index, style = {}}) => {
     const {selectedMode, activeBox} = this.state;
     const rowResults = f.get((isLinked) ? "linked" : "unlinked", this.state.rowResults);
@@ -344,15 +350,19 @@ class LinkOverlay extends Component {
     };
 
     const mouseOverBoxHandler = val => e => {
-      this.setState({selectedMode: val});
+      this.setState({
+        selectedMode: val,
+        activeBox: (isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS
+      });
+      e.stopPropagation();
       this.background.focus();
-      // e.stopPropagation();
     };
 
     const mouseOverItemHandler = index => e => {
       this.setSelectedId(index);
+      this.setState({activeBox: (isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS});
+      e.stopPropagation();
       this.background.focus();
-      // e.stopPropagation();
     };
 
     return (
@@ -492,7 +502,7 @@ class LinkOverlay extends Component {
              this.background = el;
            }}
       >
-        <div className="linked-items" onMouseEnter={() => { this.setState({activeBox: LINKED_ITEMS}); }}>
+        <div className="linked-items" onMouseEnter={this.setActiveBox(LINKED_ITEMS)}>
           <span className="items-title">
             <span>{i18n.t("table:link-overlay-items-title")}
               {(cell.tables.get(cell.column.toTable).hidden)
@@ -507,9 +517,7 @@ class LinkOverlay extends Component {
           </span>
           {linkedRows}
         </div>
-        <div className="unlinked-items" onMouseEnter={() => {
-          this.setState({activeBox: UNLINKED_ITEMS});
-        }}>
+        <div className="unlinked-items" onMouseEnter={this.setActiveBox(UNLINKED_ITEMS)}>
           {unlinkedRows}
         </div>
         {this.renderRowCreator()}
