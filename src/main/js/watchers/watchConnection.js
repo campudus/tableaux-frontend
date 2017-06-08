@@ -9,6 +9,7 @@ const PING_TIME = 10; // seconds
 class ConnectionWatcher {
   static connected = true; // hope for the best
   static since = Moment();
+  static LOST_DIALOG_NAME = "connection-lost-dialog";
 
   static watchConnection(connected) {
     if (connected !== ConnectionWatcher.connected) {
@@ -48,7 +49,11 @@ class ConnectionWatcher {
     console.warn(`Connection status changed to ${(newState) ? "connected" : "disconnected"} at ${((newState)
       ? now
       : lastSeen).toString()}`);
+    if (newState) {
+      ActionCreator.closeOverlay(ConnectionWatcher.LOST_DIALOG_NAME);
+    }
     showDialog({
+      name: (newState) ? null : ConnectionWatcher.LOST_DIALOG_NAME,
       type: (newState) ? "important" : "warning",
       context: "Server connection",
       title: (newState) ? "Reconnected" : "Disconnected",

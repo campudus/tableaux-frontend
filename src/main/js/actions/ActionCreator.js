@@ -61,8 +61,8 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
   },
 
-  closeOverlay: function () {
-    Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY);
+  closeOverlay: function (name = null) {
+    Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY, name);
   },
 
   enableShouldCellFocus: function () {

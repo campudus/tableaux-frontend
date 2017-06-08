@@ -102,14 +102,19 @@ export default class Tableaux extends React.Component {
     });
   }
 
-  closeOverlay = () => {
+  closeOverlay = (name) => {
     return new Promise(
       (resolve, reject) => {
         const {currentViewParams, activeOverlays} = this.state;
-        const overlayToClose = f.compose(
-          f.last,
-          f.reject(ol => f.contains(ol.id, this.exitingOverlays))
-        )(activeOverlays);
+        const overlayToClose = (f.isString(name))
+          ? f.find(f.matchesProperty("name", name), activeOverlays)
+          : f.compose(
+            f.last,
+            f.reject(ol => f.contains(ol.id, this.exitingOverlays))
+          )(activeOverlays);
+        if (!overlayToClose) {
+          resolve();
+        }
         const fullSizeOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"));
         if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") { // closing a right-aligned full-height overlay
           const removeOverlayAfterTimeout = () => {
