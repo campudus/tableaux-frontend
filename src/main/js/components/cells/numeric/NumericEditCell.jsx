@@ -2,6 +2,7 @@ import {Directions} from "../../../constants/TableauxConstants";
 import ActionCreator from "../../../actions/ActionCreator";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
+import {maybe} from "../../../helpers/monads";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
@@ -95,8 +96,8 @@ class NumericEditCell extends React.Component {
   };
 
   handleFocus = () => {
-    const l = this.getValue().length;
-    this.input.setSelectionRange(l, l);
+    const l = this.getValue().toString().length;
+    maybe(this.input).method("setSelectionRange", l, l);
   };
 
   render = () => {
@@ -108,7 +109,7 @@ class NumericEditCell extends React.Component {
                name={this.inputName}
                defaultValue={this.getValue()}
                onChange={this.onChangeHandler}
-               ref={input => { this.input = input; }}
+               ref={input => { this.input = input; this.handleFocus(); }}
         />
       </div>
     );

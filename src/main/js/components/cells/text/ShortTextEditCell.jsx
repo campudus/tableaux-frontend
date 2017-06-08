@@ -1,6 +1,7 @@
 import ActionCreator from "../../../actions/ActionCreator";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
+import {maybe} from "../../../helpers/monads";
 
 @listensToClickOutside
 class ShortTextEditCell extends React.Component {
@@ -46,7 +47,7 @@ class ShortTextEditCell extends React.Component {
   };
 
   doneEditing = (event) => {
-    this.props.onBlur(this.refs.input.value);
+    this.props.onBlur(this.input.value);
   };
 
   getValue = () => {
@@ -59,17 +60,16 @@ class ShortTextEditCell extends React.Component {
   };
 
   setCaret = () => {
-    const value = this.getValue();
-    const l = value.length;
-    this.refs.input.setSelectionRange(l, l);
+    const l = this.getValue().length;
+    maybe(this.input).method("setSelectionRange", l, l);
   };
 
-  render = () => {
+  render() {
     return (
       <div className={"cell-content editing"} onKeyDown={this.onKeyboardShortcut}>
         <input autoFocus type="text" className="input" name={this.inputName} defaultValue={this.getValue()}
-               onFocus={this.setCaret}
-               ref="input" />
+               ref={ el => { this.input = el; this.setCaret() }}
+        />
       </div>
     );
   };
