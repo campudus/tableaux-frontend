@@ -254,7 +254,7 @@ const Tables = Collection.extend({
 
   addRowHandler(payload) {
     const self = this;
-    const {tableId, callback} = payload;
+    const {tableId, cb} = payload;
     const table = this.get(tableId);
     const rows = table.rows;
 
@@ -275,8 +275,8 @@ const Tables = Collection.extend({
     newRow.save({}, {
       success(row) {
         rows.add(row);
-        if (callback) {
-          callback(row);
+        if (cb) {
+          cb(row);
         }
         ActionCreator.spinnerOff();
       },

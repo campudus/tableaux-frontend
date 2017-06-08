@@ -16,5 +16,6 @@
   "close": "Schließen",
   "edit": "Bearbeiten",
   "current_selection": "Aktuelle Auswahl",
-  "empty": "Leer"
+  "empty": "Leer",
+  "loading": "Lade..."
 }

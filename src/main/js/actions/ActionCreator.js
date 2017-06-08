@@ -18,10 +18,10 @@ module.exports = {
     });
   },
 
-  addRow: function (tableId, callback) {
+  addRow: function (tableId, cb) {
     Dispatcher.trigger(ActionTypes.CREATE_ROW, {
       tableId,
-      callback
+      cb
     });
   },
 
@@ -286,8 +286,8 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.FILTER_LINKS, {filterMode, filterValue});
   },
 
-  broadcastRowLoaded: (data) => { // data: {overlayId: timestamp, row: Row}
-    Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, data);
+  broadcastRowLoaded: ({overlayId, row}) => {
+    Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, {overlayId, row});
   },
 
   setTranslationView: (translationInfo) => {

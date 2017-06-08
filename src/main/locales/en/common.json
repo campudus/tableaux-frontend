@@ -15,5 +15,6 @@
   "ok": "Ok",
   "close": "Close",
   "edit": "Edit",
-  "current_selection": "Current selection"
+  "current_selection": "Current selection",
+  "loading": "Loading..."
 }

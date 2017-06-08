@@ -10,6 +10,7 @@ import ActionCreator from "../actions/ActionCreator";
 import Spinner from "./header/Spinner.jsx";
 import Toast from "./overlay/Toast.jsx";
 import * as f from "lodash/fp";
+import RootButton from "./RootButton";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -101,7 +102,7 @@ export default class Tableaux extends React.Component {
     });
   }
 
-  closeOverlay() {
+  closeOverlay = () => {
     return new Promise(
       (resolve, reject) => {
         const {currentViewParams, activeOverlays} = this.state;
@@ -130,39 +131,6 @@ export default class Tableaux extends React.Component {
           }, resolve);
         }
       });
-  }
-
-  renderRootButton = () => {
-    const {activeOverlays} = this.state;
-    const bigOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"));
-    if (bigOverlays.length < 2) {
-      return;
-    }
-    // Close all but first, as full-height overlays can't (yet?) be created from dialogs
-    // => first overlay must be the root
-    const closeAllButRoot = () => {
-      const closeNOverlays = n => {
-        this.closeOverlay().then(() => {   // wait for setState to finish, to avoid messing with outdated transient data
-          if (n > 1) {
-            closeNOverlays(n - 1);
-          }
-        });
-      };
-      closeNOverlays(activeOverlays.length - 1);
-    };
-
-    const {context, title} = f.first(activeOverlays).head.props;
-    return (
-      <div className="breadcrumb-wrapper">
-        <a href="#" onClick={closeAllButRoot}>
-          <div className="context">{context}</div>
-          <div className="title">
-            <i className="fa fa-long-arrow-left" />
-            {title}
-          </div>
-        </a>
-      </div>
-    );
   };
 
   renderActiveOverlays() {
@@ -247,14 +215,17 @@ export default class Tableaux extends React.Component {
   };
 
   render() {
-    if (this.state.isLoading) {
+    const {activeOverlays, currentView, currentViewParams, isLoading} = this.state;
+    if (isLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       return <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
-          <ViewRenderer viewName={this.state.currentView} params={this.state.currentViewParams} />
+          <ViewRenderer viewName={currentView} params={currentViewParams} />
           {this.renderActiveOverlays()}
-          {this.renderRootButton()}
+          <RootButton closeOverlay={this.closeOverlay}
+                      activeOverlays={activeOverlays}
+          />
           {this.renderToast()}
         </div>
       </I18nextProvider>;

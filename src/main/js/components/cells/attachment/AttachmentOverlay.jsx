@@ -143,7 +143,7 @@ class AttachmentOverlay extends Component {
           </ul>
         </div>
       )
-      : "Loading...";
+      : <div className="loading-message">{t("loading")}</div>;
 
     return (
       <div className="attachment-overlay-wrapper">
@@ -153,4 +153,4 @@ class AttachmentOverlay extends Component {
   }
 }
 
-module.exports = translate(["media"])(AttachmentOverlay);
+module.exports = translate(["media", "common"])(AttachmentOverlay);
