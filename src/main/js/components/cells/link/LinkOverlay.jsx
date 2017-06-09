@@ -455,7 +455,7 @@ class LinkOverlay extends Component {
           width={width}
           height={height}
           rowCount={rowResults.unlinked.length || 0}
-          rowHeight={34}
+          rowHeight={40}
           rowRenderer={this.renderListItem({isLinked: false})}
           scrollToIndex={this.state.selectedId.unlinked}
           noRowsRenderer={this.noRowsRenderer}

@@ -2,38 +2,36 @@
 @import "../helper";
 
 // EntityView-specific items
-.overlay .entity-view .content-items {
+.overlay .entity-view.content-items {
   margin-bottom: 40px;
   .item {
-  position: relative;
-  border: none;
+    position: relative;
+    &.disabled {
+      cursor: not-allowed;
+    }
 
-  &.disabled {
-    cursor: not-allowed;
-  }
+    &:hover {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-left: 3px solid $color-text-medium-grey;
+      }
+    }
 
-  &:hover {
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      border-left: 3px solid $color-text-medium-grey;
+    &.has-focused-child {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-left: 3px solid $color-primary;
+      }
     }
   }
-
-  &.has-focused-child {
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      border-left: 3px solid $color-primary;
-    }
-  }
-}
 }
 
 .action-tags {
@@ -221,7 +219,7 @@
 // Language and row switchers
 .top-right {
   position: absolute;
-  top: 10px;
+  top: $dist-from-top;
   right: 20px;
   display: inline-flex;
   width: 156px;
@@ -237,7 +235,7 @@
     color: $color-primary-contrast-text;
     outline: none;
     padding: 3px 10px;
-    border: 1px solid $color-text-medium-grey;
+    border: 1px solid transparentize($color-text-medium-grey, 0.5);
 
     .langtag {
       display: flex;
@@ -328,7 +326,7 @@
 // Entry popup
 .overlay .overlay-content .content-items .item.has-mouse-pointer .entry-popup-wrapper .popup-button { // stack all the selectors!
   a {
-    border: 1px solid transparentize($color-primary, 0.2);
+    border: 1px solid transparentize($color-primary, 0.5);
     .svg-icon {
       svg {
         fill: $color-primary;
@@ -463,11 +461,11 @@
   .translation-arrow {
     margin-top: 10px;
     position: fixed;
-    left: calc(-2vw + 1px);
+    left: calc(-2em + 1px);
     top: 0;
-    border-top: 2.5vw solid transparent;
-    border-bottom: 2.5vw solid transparent;
-    border-right: 2vw solid $color-primary;
+    border-top: 2.5em solid transparent;
+    border-bottom: 2.5em solid transparent;
+    border-right: 2em solid $color-primary;
     z-index: 2;
   }
 
@@ -478,24 +476,15 @@
     top: 0;
     height: 100vh;
     background-color: $color-overlay-background;
-    overflow: hidden;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 
     .content-items {
+      flex: 1;
       position: relative;
-      &:before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: - $pseudo-header-height;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        min-height: 100vh;
-        box-shadow: inset -10px 0 20px -10px $color-very-dark;
-        z-index: 1;
-        pointer-events: none;
-      }
+      overflow: hidden;
+      overflow-y: auto;
+      margin: 0;
     }
 
     .toggle-button {
@@ -519,30 +508,30 @@
 
     .item-header {
       padding-bottom: 0;
-      .label {
-        width: 75px;
+      .switch-language-icon {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        width: 70px;
+        color: $color-text-medium-grey;
+        border-radius: 3px;
+        padding: 8px 5px;
+        padding-left: 12px;
 
-        .langtag {
-          text-transform: none;
+        .label {
           font-weight: normal;
           img {
             margin-right: 5px;
           }
         }
-      }
-      .svg-icon {
-        border-radius: 3px;
-        padding: 8px 4px;
 
         svg {
-          fill: $color-text-medium-grey;
+          fill: transparent;
         }
 
         &:hover {
           background-color: $color-primary;
+          color: $color-primary-contrast-text;
+
           svg {
             fill: $color-primary-contrast-text;
           }
@@ -567,15 +556,30 @@
     }
 
     .pseudo-header {
+      flex: 0 0 auto;
       display: flex;
       height: $pseudo-header-height;
       align-items: center;
-      font-size: smaller;
       font-weight: bold;
       justify-content: space-between;
       background-color: $color-overlay-header;
       color: $color-primary-contrast-text;
       padding-right: 10px;
+
+      // Cast a shadow inwards over the translation view
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        box-shadow: inset -10px 0 40px -10px $color-very-dark;
+        z-index: 1;
+        pointer-events: none;
+      }
 
       .title {
         flex: 1;
@@ -584,13 +588,16 @@
 
       .toggle-all-button {
         font-weight: normal;
-        color: $color-primary;
         padding: 5px;
         border-radius: 3px;
+        color: transparent;
 
-        &:hover {
-          background-color: $color-primary;
-          color: $color-primary-contrast-text;
+        &.is-multi-lang {
+          color: $color-primary;
+          &:hover {
+            background-color: $color-primary;
+            color: $color-primary-contrast-text;
+          }
         }
       }
 
@@ -654,7 +661,7 @@
 
           .header-filter-bar {
             flex: 1;
-            padding: 5px;
+            padding: 8px 15px;
             border-radius: 3px;
             border: none;
           }
@@ -679,13 +686,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            color: $color-text-light-grey;
           }
         }
 
         .header-popup-wrapper {
           position: relative;
-          width: 29px;
-          height: 26px;
+          width: 31px;
+          height: 31px;
 
           .popup-button {
             position: relative;
@@ -696,7 +704,7 @@
               @include button-with-icon();
               background-color: transparent;
               color: $color-primary-contrast-text;
-              border: 1px solid $color-text-medium-grey;
+              border: 1px solid transparentize($color-text-medium-grey, 0.5);
               border-radius: 3px;
 
               .svg-icon {
@@ -723,7 +731,7 @@
           .popup-wrapper {
             @include popup-menu();
             right: 0;
-            top: 26px;
+            top: 100%;
             width: 25vw;
 
             .entry {
@@ -754,7 +762,7 @@
 //--------------------------------------------
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .overlay .entity-view .translation-arrow {
-    left: 38vw;
+    left: calc(40vw - 2em);
   }
   .overlay .unlock-bar {
     left: 40vw;

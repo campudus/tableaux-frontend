@@ -113,6 +113,10 @@
       }
     }
 
+    .unlinked-items {
+      padding: 0 30px;
+    }
+
     .linked-items {
       padding-right: 20px;
 
@@ -185,12 +189,15 @@
     .list-item {
       display: flex;
       width: 100%;
-      padding: 8px 0;
+      height: 37px;
       border-radius: 3px;
       background-color: $color-white;
       color: $color-black;
       overflow: hidden;
       position: relative;
+      align-items: center;
+      padding: 0 25px;
+      box-sizing: border-box;
 
       .link-label {
         height: $line-height-standard;
@@ -209,22 +216,17 @@
 
         .left {
           flex-grow: 1;
-          padding: 8px;
+          padding: 0 25px;
           background-color: $color-white;
           color: $color-primary-text;
           border-radius: 3px 0 0 3px;
           display: flex;
+          align-items: center;
+          height: 100%;
 
           &:hover {
             background-color: $color-hover-background;
             color: $color-hover-foreground;
-          }
-
-          i {
-            flex: 1;
-            text-align: right;
-            color: $color-primary;
-            padding: 0 8px;
           }
 
           a {
@@ -243,6 +245,13 @@
             background-color: $color-hover-background;
             color: $color-hover-foreground;
           }
+
+          .svg-icon {
+            padding-right: 20px;
+            width: 1em;
+            height: 1em;
+            font-size: medium;
+          }
         }
 
         .right {
@@ -252,11 +261,11 @@
           justify-content: center;
           align-items: center;
           width: 29px;
-          height: 29px;
+          height: 100%;
           border-radius: 0 3px 3px 0;
-          margin-left: 3px;
           background-color: $color-white;
           color: $color-primary;
+          position: absolute;
 
           &.linked {
             background-color: $color-primary;

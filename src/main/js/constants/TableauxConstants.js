@@ -152,7 +152,7 @@ var TableauxConstant = {
   // Fixed pixel height of a single row including border
   RowHeight: 46,
 
-  PageTitle: "DataCenter",
+  PageTitle: "GRUD",
 
   get Langtags() {
     return languagetags || null;
