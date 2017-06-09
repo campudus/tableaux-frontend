@@ -6,7 +6,7 @@ import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {ActionTypes, DefaultLangtag, Directions, FilterModes} from "../../../constants/TableauxConstants";
-import {either, maybe} from "../../../helpers/monads";
+import {either, maybe, fspy} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -293,12 +293,11 @@ class LinkOverlay extends Component {
     const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
     const byDisplayValues = f.compose(
       searchFunction(filterValue),
-      f.join(" "),
-      f.map(f.get(["displayValue", langtag]))
+      f.get(["displayValue", langtag])
     );
     return {
       linked: linkedRows,
-      unlinked: (filterValue !== "") ? unlinkedRows.filter(byDisplayValues) : unlinkedRows
+      unlinked: (filterValue !== "") ? f.filter(byDisplayValues, unlinkedRows) : unlinkedRows
     };
   };
 

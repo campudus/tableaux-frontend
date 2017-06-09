@@ -55,23 +55,29 @@
   }
 
   .filter-bar {
-    position: absolute;
-    bottom: 15px;
-    width: 90%;
-    left: calc(5% - 8px);
+    grid-column-start: 2;
+    grid-column-end: 5;
+    -ms-grid-column: 2;
+    -ms-grid-column-span: 3;
+    grid-row-start: 3;
+    -ms-grid-row: 3;
+    position: relative;
+    display: block;
 
     input[type=text] {
       width: 100%;
       padding: 8px;
       border-radius: 3px;
       border: none;
+      box-sizing:border-box;
     }
 
-    .popup-button {
+    a.popup-button {
       position: absolute;
-      right: -16px;
-      top: 0;
-      bottom: 0;
+      top: -7px;
+      right: 0;
+      width: 31px;
+      height: 31px;
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -82,9 +88,10 @@
 
     .filter-option-popup {
       position: absolute;
-      right: -16px;
+      right: 0;
       z-index: 1;
       background-color: $color-white;
+      box-shadow: 0 5px 10px 0 $color-text-light-grey;
       .menu-item {
         position: relative;
         a {

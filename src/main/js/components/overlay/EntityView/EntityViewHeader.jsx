@@ -62,26 +62,28 @@ class LanguageSwitcher extends Component {
     const {open, langtag} = this.state;
     const lswCssClass = classNames("eev-language-switcher", {"open": open});
     return (
-      <div className={lswCssClass} onClick={this.toggleOpen}>
-        <div className="eev-label">
-          {getLanguageOrCountryIcon(langtag)}
-          <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"} />
+      <div className="eev-language-switcher-wrapper">
+        <div className={lswCssClass} onClick={this.toggleOpen}>
+          <div className="eev-label">
+            {getLanguageOrCountryIcon(langtag)}
+            <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"} />
+          </div>
+          {(open)
+            ? (
+              <div className="eev-dropdown">
+                {Langtags.map(
+                  lt => {
+                    const cssClass = classNames("menu-item", {"active": lt === langtag});
+                    return <div key={lt} className={cssClass}>
+                      <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt)}</a>
+                    </div>;
+                  }
+                )}
+              </div>
+            )
+            : null
+          }
         </div>
-        {(open)
-          ? (
-            <div className="eev-dropdown">
-              {Langtags.map(
-                lt => {
-                  const cssClass = classNames("menu-item", {"active": lt === langtag});
-                  return <div key={lt} className={cssClass}>
-                    <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt)}</a>
-                  </div>;
-                }
-              )}
-            </div>
-          )
-          : null
-        }
       </div>
     );
   }
@@ -130,23 +132,23 @@ class RowSwitcher extends Component {
       <div className="row-switcher">
         {(this.getNextRow(Directions.UP))
           ? (
-            <div className="button" onClick={this.switchRow(Directions.UP)}>
+            <div className="button clickable" onClick={this.switchRow(Directions.UP)}>
               <a href="#">
                 <i className="fa fa-angle-left" />
               </a>
             </div>
           )
-          : <div />
+          : <div className="button dummy"/>
         }
         {(this.getNextRow(Directions.DOWN))
           ? (
-            <div className="button" onClick={this.switchRow(Directions.DOWN)}>
+            <div className="button clickable" onClick={this.switchRow(Directions.DOWN)}>
               <a href="#">
                 <i className="fa fa-angle-right" />
               </a>
             </div>
           )
-          : <div />
+          : <div className="button dummy" />
         }
       </div>
     );
@@ -159,17 +161,13 @@ const EntityViewHeader = props => {
   const tableName = getTableName(row, langtag);
   const components = (
     <div className="header-components">
-      <div className="top-right">
-        <LanguageSwitcher langtag={props.langtag} />
-        {(props.canSwitchRows) ? <RowSwitcher {...props} /> : null}
-      </div>
-      <div className="search-and-popup">
-        <FilterBar id={props.id} />
-        <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} />
-      </div>
+      <LanguageSwitcher langtag={props.langtag} />
+      {(props.canSwitchRows) ? <RowSwitcher {...props} /> : null}
+      <FilterBar id={props.id} />
+      <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} />
     </div>
   );
-  return <Header {...props} context={tableName} title={rowDisplayLabel} components={components}/>;
+  return <Header {...props} context={tableName} title={rowDisplayLabel} components={components} />;
 };
 
 const getTableName = (row, langtag) => {

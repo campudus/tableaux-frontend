@@ -21,9 +21,9 @@ if (process.env.NODE_ENV === "production") {
 
         console.log("Sentry initialized");
 
-        Raven.captureMessage("Sentry initialized", {
-          level: "info"
-        });
+        // Raven.captureMessage("Sentry initialized", {
+        //   level: "info"
+        // });
       } else {
         console.warn("Sentry not enabled");
       }

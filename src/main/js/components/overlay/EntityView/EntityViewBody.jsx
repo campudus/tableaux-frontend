@@ -15,6 +15,7 @@ import i18n from "i18next";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
+const ARROW_HEIGHT_IN_PX = 50 / 2;
 
 @listensToClickOutside
 class EntityViewBody extends Component {
@@ -70,7 +71,7 @@ class EntityViewBody extends Component {
   };
 
   handleClickOutside() {
-    this.setTranslationView({show: false});
+    //this.setTranslationView({show: false});
   }
 
   componentWillMount = () => {
@@ -205,12 +206,15 @@ class EntityViewBody extends Component {
     if (el && el !== this.translationItem) {
       this.translationItem = el;
     }
-    maybe(this.translationItem)
+    const br = maybe(this.translationItem)
       .exec("getBoundingClientRect")
-      .map(f.prop("top"))
-      .map(pos => {
-        this.setState({arrowPosition: (pos >= 120) ? pos : null});
-      });
+      .getOrElse(null);
+    if (!br) {
+      return;
+    }
+
+    const pos = br.top + 0.5*br.height - ARROW_HEIGHT_IN_PX;
+    this.setState({arrowPosition: (pos >= 120) ? pos : null});
   };
 
   openItemPopup = idx => () => {

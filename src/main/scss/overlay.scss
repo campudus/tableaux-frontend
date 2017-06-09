@@ -144,64 +144,57 @@ $dist-from-top: 20px;
 
     background-color: $color-overlay-background;
     .header-wrapper {
+      $vspacing: 50px;
       height: $overlay-headline-height;
       background-color: $color-overlay-header;
       border-top-left-radius: $overlay-border-radius;
       border-top-right-radius: $overlay-border-radius;
       position: relative;
 
-      &.with-components {
-        height: $overlay-headline-height + 40px;
+      display: grid;
+      display: -ms-grid;
+      grid-template-columns: $vspacing 1fr 2*$vspacing $vspacing $vspacing;
+      -ms-grid-columns: $vspacing 1fr 2*$vspacing $vspacing $vspacing;
+      grid-template-rows: $vspacing 1fr;
+      -ms-grid-rows: $vspacing 1fr;
+
+      a {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
       }
 
-      .close-button {
-        position: absolute;
-        left: 0;
-        top: 0;
-        font-size: smaller;
-        padding: $dist-from-top 10px 10px;
-        i {
-          color: $color-primary-contrast-text;
-        }
+      .close-button:hover svg {
+        fill: $color-text-medium-grey;
       }
 
       .labels {
-        position: absolute;
-        left: 45px;
-        top: $dist-from-top + 25px;
-        right: 45px;
-        z-index: 1;
-
+        -ms-grid-column: 2;
+        -ms-grid-column-span: 3;
+        grid-column-start: 2;
+        grid-column-end: 5;
+        -ms-grid-row: 2;
+        grid-row-start: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
         .context-info {
           color: $color-text-medium-grey;
           font-size: 14px;
-          font-weight: 300;
-          padding-bottom: 3px;
         }
-
         .title {
-          width: 90%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
           color: $color-primary-contrast-text;
-          font-size: 18px;
-          padding-bottom: 0.3em; //prevents cut of characters
-
-          .column-name {
-            margin-right: 10px;
-          }
+          font-size: 20px;
         }
       }
 
-      .action-buttons {
-        position: absolute;
-        right: 0;
-        bottom: 10px;
-        .button {
-          margin: 0 10px;
-          @include button-look();
-        }
+      &.with-components {
+        height: $overlay-headline-height + 40px;
+        grid-template-rows: $vspacing 1fr 1fr;
+        -ms-grid-rows: $vspacing 1fr 1fr;
       }
     }
   }

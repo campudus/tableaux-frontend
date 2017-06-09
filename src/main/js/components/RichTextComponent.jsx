@@ -108,7 +108,7 @@ class RichTextComponent extends React.Component {
     const {hideEditorSymbols, readOnly, onClick, tabIdx} = this.props;
     const clickHandler = onClick || function () {};
     const contentClass = classNames("content-pane", {"input": !readOnly});
-    const cssClass = classNames("rich-text-component", {"editing": !readOnly});
+    const cssClass = classNames("rich-text-component", {"editing": !readOnly, "preview": readOnly});
     return (
         <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} >
         {(!readOnly && !hideEditorSymbols)

@@ -69,19 +69,27 @@ class Header extends Component {
           {(pos) ? makeButton("positive", pos) : null}
         </div>
       );
+
+    const children = f.compose(
+      f.filter(f.identity),
+      f.defaultTo([components]),
+      f.get(["props", "children"])
+    )(components);
+
     return (
       <div className={cssClass}>
-        <a className="close-button" href="#" onClick={() => {
-          ActionCreator.closeOverlay();
-        }}>
-          <SvgIcon icon="cross" containerClasses="color-white" center={true} />
-        </a>
+        <div className="close-button">
+          <a href="#" onClick={() => { ActionCreator.closeOverlay(); }}>
+            <SvgIcon icon="cross" containerClasses="color-white" center={true} />
+          </a>
+        </div>
         <div className="labels">
           <div className="context-info">{context || "Action"}</div>
           <div className="title">{title}</div>
         </div>
         {buttonsItem}
-        {(components) ? React.cloneElement(components, {id: this.props.id}) : null}
+        {children
+          .map((el, idx) => React.cloneElement(el, {id: this.props.id, key: idx}))}
       </div>
     );
   }
