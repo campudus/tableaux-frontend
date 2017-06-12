@@ -1,85 +1,113 @@
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
-import {maybe} from "../../helpers/monads";
-import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
+import {maybe, fspy, logged} from "../../helpers/monads";
+import {FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
-import {convert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {isTranslationNeeded} from "../../helpers/annotationHelper";
 import Empty from "../helperComponents/emptyEntry";
 import {switchEntityViewLanguage} from "../../actions/ActionCreator";
 import i18n from "i18next";
+import ReactMarkdown from "react-markdown";
 
 const KEY = "translations";
 
-const LanguageView = connectToAmpersand(
-  (props) => {
+const displayCell = (cell, langtag) => {
+  const value = f.get("displayValue", cell);
+  const displayArray = () => value.map(
+    (v, idx) => <div key={idx}>{f.get(langtag, v)}</div>
+  );
+  const displayMarkdown = () => (
+    <ReactMarkdown source={f.get(langtag, value)}/>
+  );
 
-    const {cell, langtag, isExpanded, toggleExpand} = props;
-    const value = f.prop(["value", langtag], cell);
-    const buttonClass = classNames("fa", {
-      "fa-plus": !isExpanded,
-      "fa-minus": isExpanded
-    });
+  const hasArrayValue = () => f.isArray(value);
+  const hasMarkdownValue = () => f.contains(f.get("kind", cell), ["text", "richtext"]);
 
-    const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
+  const result = f.cond([
+    [hasArrayValue, displayArray],
+    [hasMarkdownValue, displayMarkdown],
+    [f.stubTrue, f.always(f.get(langtag, value))]
+  ])(cell);
 
-    return (
-      <div className={wrapperClass} onClick={toggleExpand}>
-        <div className="item-header">
-          <a className="switch-language-icon" href="#"
-             onClick={evt => {
-               evt.stopPropagation();
-               switchEntityViewLanguage({langtag});
-             }}
-          >
-            <div className="label">
-              {getLanguageOrCountryIcon(langtag)}
-            </div>
-            <SvgIcon icon="compareTranslation" />
-          </a>
+  return (f.isEmpty(result))
+    ? <Empty/>
+    : result;
+};
 
-          {(f.isEmpty(value)) ? <div><Empty /></div> : null}
-          <div className="toggle-button">
-            <a href="#">
-              <i className={buttonClass} />
-            </a>
+const LanguageView = (props) => {
+
+  const {cell, langtag, isExpanded, toggleExpand} = props;
+  const value = f.get(["value", langtag], cell);
+  const buttonClass = classNames("fa", {
+    "fa-plus": !isExpanded,
+    "fa-minus": isExpanded
+  });
+  const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
+
+  return (
+    <div className={wrapperClass} onClick={toggleExpand}>
+      <div className="item-header">
+        <a className="switch-language-icon" href="#"
+           onClick={evt => {
+             evt.stopPropagation();
+             switchEntityViewLanguage({langtag});
+           }}
+        >
+          <div className="label">
+            {getLanguageOrCountryIcon(langtag)}
           </div>
+          <SvgIcon icon="compareTranslation" />
+        </a>
+
+        {(f.isEmpty(value)) ? <div><Empty /></div> : null}
+        <div className="toggle-button">
+          <a href="#">
+            <i className={buttonClass} />
+          </a>
         </div>
-        {(value && isExpanded)
-          ? (
-            <div className="item-content">
-              <div className="content-box">
-                {convert(cell.kind, ColumnKinds.text, value)}
-              </div>
-            </div>
-          )
-          : null
-        }
       </div>
-    );
-  }
-);
+      {(value && isExpanded)
+        ? (
+          <div className="item-content">
+            <div className="content-box">
+              {displayCell(cell, langtag)}
+            </div>
+          </div>
+        )
+        : null
+      }
+    </div>
+  );
+};
+
+// LanguageView.propTypes = SingleLanguageView.PropTypes = {
+//   cell: PropTypes.object.isRequired,
+//   setTranslationView: PropTypes.func.isRequired,
+//   langtag: PropTypes.string.isRequired,
+//   isExpanded: PropTypes.bool.isRequired,
+//   toggleExpand: PropTypes.func.isRequired
+//};
 
 const SingleLanguageView = props => {
-  const {cell} = props;
-  const value = (f.isNil(f.prop("value", cell)))
-    ? "---"
-    : convert(cell.kind, ColumnKinds.text, cell.value);
+  const {cell, langtag} = props;
   return (
     <div className="item single-value">
       <div className="item-content">
-        {value}
+        {displayCell(cell, langtag)}
       </div>
     </div>
   );
 };
 SingleLanguageView.PropTypes = {
   cell: PropTypes.object.isRequired,
-  setTranslationView: PropTypes.func.isRequired
+  langtag: PropTypes.string.isRequired
 };
+
+const SingleLanguageWithAmpersand = connectToAmpersand(SingleLanguageView);
+const MultiLanguageWithAmpersand = connectToAmpersand(LanguageView);
 
 class TranslationPopup extends Component {
   static propTypes = {
@@ -157,13 +185,12 @@ class TranslationPopup extends Component {
         </div>
         <div className="content-items">
           {(!cell.isMultiLanguage)
-            ? <SingleLanguageView cell={cell} />
+            ? <SingleLanguageWithAmpersand cell={cell} langtag={langtag} />
             : f.compose(
-              f.map(lt => <LanguageView key={lt} cell={cell} langtag={lt}
-                                        isExpanded={this.isExpanded(lt)}
-                                        toggleExpand={this.toggleTranslation(lt)}
+              f.map(lt => <MultiLanguageWithAmpersand key={lt} cell={cell} langtag={lt}
+                                                      isExpanded={this.isExpanded(lt)}
+                                                      toggleExpand={this.toggleTranslation(lt)}
               />),
-//              f.sortBy(comparator), // requested to remove from execution, but keep in code
               f.reject(f.eq(langtag))
             )(Langtags)
           }

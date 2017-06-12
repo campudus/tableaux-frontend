@@ -31,12 +31,11 @@ class RichTextComponent extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  componentWillReceiveProps = (nextProps) => {
     if (this.props.value !== nextProps.value) { // needed as we set HTML content manually
       this.resetValue(nextProps.value);
     }
-    return true;
-  }
+  };
 
   getKeyboardShortcuts = () => {
     return {
@@ -68,11 +67,11 @@ class RichTextComponent extends React.Component {
   };
 
   componentDidMount = () => {
-    this.resetValue();
+    this.resetValue(this.props.value);
   };
 
   resetValue = (value) => {
-    const valueToSet = value || this.props.value;
+    const valueToSet = value || "";
     const html = markdown.toHTML(valueToSet);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
     contentDOMNode.innerHTML = html;
@@ -110,38 +109,40 @@ class RichTextComponent extends React.Component {
     const contentClass = classNames("content-pane", {"input": !readOnly});
     const cssClass = classNames("rich-text-component", {"editing": !readOnly, "preview": readOnly});
     return (
+      <div className="rich-text-wrapper">
         <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} >
-        {(!readOnly && !hideEditorSymbols)
-          ? (
-            <div className="symbol-bar">
-              <div className="action-group">
-                <a href="#" onClick={this.format("removeFormat")}><i className="fa fa-times"/></a>
-                <a href="#" onClick={this.format("bold")}><i className="fa fa-bold" /></a>
-                <a href="#" onClick={this.format("italic")}><i className="fa fa-italic" /></a>
-                <a href="#" onClick={this.format("underline")}><i className="fa fa-underline" /></a>
-                <a href="#" onClick={this.format("strikeThrough")}><i className="fa fa-strikethrough" /></a>
+          {(!readOnly && !hideEditorSymbols)
+            ? (
+              <div className="symbol-bar">
+                <div className="action-group">
+                  <a href="#" onClick={this.format("removeFormat")}><i className="fa fa-times"/></a>
+                  <a href="#" onClick={this.format("bold")}><i className="fa fa-bold" /></a>
+                  <a href="#" onClick={this.format("italic")}><i className="fa fa-italic" /></a>
+                  <a href="#" onClick={this.format("underline")}><i className="fa fa-underline" /></a>
+                  <a href="#" onClick={this.format("strikeThrough")}><i className="fa fa-strikethrough" /></a>
+                </div>
+                <div className="action-group">
+                  <div className="description">{i18n.t("table:set_header_level")}</div>
+                  <a href="#" onClick={this.format("formatBlock", "<p>")}><i className="fa fa-ban" /></a>
+                  <a href="#" onClick={this.format("formatBlock", "<h1>")}><i>1</i></a>
+                  <a href="#" onClick={this.format("formatBlock", "<h2>")}><i>2</i></a>
+                  <a href="#" onClick={this.format("formatBlock", "<h3>")}><i>3</i></a>
+                  <a href="#" onClick={this.format("formatBlock", "<h4>")}><i>4</i></a>
+                </div>
+                <div className="action-group">
+                  <a href="#" onClick={this.format("insertunorderedlist")}><i className="fa fa-list-ul" /></a>
+                  <a href="#" onClick={this.format("insertorderedlist")}><i className="fa fa-list-ol" /></a>
+                </div>
               </div>
-              <div className="action-group">
-                <div className="description">{i18n.t("table:set_header_level")}</div>
-                <a href="#" onClick={this.format("formatBlock", "<p>")}><i className="fa fa-ban" /></a>
-                <a href="#" onClick={this.format("formatBlock", "<h1>")}><i>1</i></a>
-                <a href="#" onClick={this.format("formatBlock", "<h2>")}><i>2</i></a>
-                <a href="#" onClick={this.format("formatBlock", "<h3>")}><i>3</i></a>
-                <a href="#" onClick={this.format("formatBlock", "<h4>")}><i>4</i></a>
-              </div>
-              <div className="action-group">
-                <a href="#" onClick={this.format("insertunorderedlist")}><i className="fa fa-list-ul" /></a>
-                <a href="#" onClick={this.format("insertorderedlist")}><i className="fa fa-list-ol" /></a>
-              </div>
-            </div>
-          )
-          : null
-        }
-        <div className={contentClass}
-             contentEditable={!readOnly}
-             ref={cp => { this.content = cp; }}
-             onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
-        >
+            )
+            : null
+          }
+          <div className={contentClass}
+               contentEditable={!readOnly}
+               ref={cp => { this.content = cp; }}
+               onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
+          >
+          </div>
         </div>
       </div>
     );

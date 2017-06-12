@@ -81,15 +81,9 @@ class View extends Component {
 
   clickHandler = () => {
     const {cell, cell: {kind}, funcs, setTranslationView} = this.props;
-    const translationContent = (canConvert(kind, ColumnKinds.text))
-      ? cell
-      : {
-        column: f.get("column", cell),
-        id: cell.id
-      };
     funcs.focus(funcs.id);
     funcs.setTranslationItem(this.viewElement);
-    setTranslationView({cell: translationContent});
+    setTranslationView({cell});
     if (!this.canEditValue() && this.canEditValue("theoretically")) {
       funcs.hintUnlockButton();
     }

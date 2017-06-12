@@ -71,6 +71,9 @@
 }
 
 .overlay .entity-view {
+  .rich-text-wrapper {
+    overflow: hidden;
+  }
   .rich-text-component {
     position: relative;
     .content-pane {
@@ -81,7 +84,7 @@
 
 .overlay .entity-view .item {
   &:nth-child(even) .rich-text-component.preview {
-    &:after {
+    &:before {
       content: "";
       position: absolute;
       left: 0;
@@ -96,7 +99,7 @@
   }
 
   &:nth-child(odd) .rich-text-component.preview {
-    &:after {
+    &:before {
       content: "";
       position: absolute;
       left: 0;

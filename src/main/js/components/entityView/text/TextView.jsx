@@ -3,6 +3,8 @@ import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {contentChanged} from "../../cells/Cell";
+import * as f from "lodash/fp";
+import i18n from "i18next";
 
 class TextView extends Component {
 
@@ -21,9 +23,9 @@ class TextView extends Component {
   };
 
   getValue = () => {
-    const cell = this.props.cell;
+    const {cell, langtag} = this.props;
     const value = (cell.isMultiLanguage)
-      ? cell.value[this.props.langtag]
+      ? cell.value[langtag]
       : cell.value;
     return value || "";
   };
@@ -41,7 +43,10 @@ class TextView extends Component {
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    changeCell({cell, value: changes})
+    changeCell({
+      cell,
+      value: changes
+    })
       .then(() => contentChanged(cell, langtag, oldValue));
     this.setEditing(false)();
   };
