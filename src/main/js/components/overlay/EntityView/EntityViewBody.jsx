@@ -108,10 +108,6 @@ class EntityViewBody extends Component {
     }
     this.setState({
       row,
-      filter: {
-        value: "",
-        mode: FilterModes.CONTAINS
-      },
       focused: null,
       itemWithPopup: null
     });
@@ -127,7 +123,8 @@ class EntityViewBody extends Component {
     this.setState({
       filter: {
         value,
-        mode: filterMode
+        mode: filterMode,
+        langtag: this.state.langtag
       }
     });
   };
@@ -306,7 +303,7 @@ class EntityViewBody extends Component {
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
           .filter(preFilter)
-          .filter(columnFilter(langtag, filter))
+          .filter(columnFilter(filter.langtag, filter))
           .map(
             (cell, idx) => {
               return <View key={idx} cell={cell} langtag={langtag}
