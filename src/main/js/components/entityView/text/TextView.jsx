@@ -3,8 +3,6 @@ import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {contentChanged} from "../../cells/Cell";
-import * as f from "lodash/fp";
-import i18n from "i18next";
 
 class TextView extends Component {
 
@@ -69,7 +67,9 @@ class TextView extends Component {
     return <div onKeyDown={(this.editing || thisUserCantEdit) ? function () {
     } : this.editOnEnter}
                 tabIndex={1}
-                ref={el => { funcs.register(el); }}
+                ref={el => {
+                  funcs.register(el);
+                }}
     >
       {(editing)
         ? (

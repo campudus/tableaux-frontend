@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import {openLinkOverlay} from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
-import {isEmpty, pullAt} from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 import * as f from "lodash/fp";
@@ -24,7 +23,7 @@ class LinkView extends Component {
       return;
     }
     const {cell} = this.props;
-    const newValue = pullAt(id, cell.value);
+    const newValue = f.pullAt(id, cell.value);
     ActionCreator.changeCell(cell, newValue);
   };
 
@@ -47,7 +46,7 @@ class LinkView extends Component {
     const {cell, langtag} = this.props;
     const links = this.mkLinkList(cell, langtag);
 
-    return (isEmpty(links)
+    return (f.isEmpty(links)
         ? (
           <div className="item-description">
             {i18n.t("table:empty.links")}

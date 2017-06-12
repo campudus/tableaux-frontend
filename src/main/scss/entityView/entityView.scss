@@ -528,6 +528,7 @@ $arrow-height: 50px;
     background-color: $color-overlay-background;
     display: flex;
     flex-direction: column;
+    transform: translate3d(0,0,0); // Stop OSX+Chrome from having strange depth-buffer issues
 
     .content-items {
       flex: 1;
@@ -722,7 +723,7 @@ $arrow-height: 50px;
         right: 0;
         top: 0;
         height: 31px;
-        width: 25px;
+        width: 40px;
         display: flex;
         justify-content: center;
         align-items: center;

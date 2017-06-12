@@ -3,9 +3,9 @@ import ActionCreator from "../../../actions/ActionCreator";
 import LinkList from "../../helperComponents/LinkList";
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import multiLanguage from "../../../helpers/multiLanguage";
-import {isEmpty} from "lodash/fp";
 import i18n from "i18next";
 import apiUrl from "../../../helpers/apiUrl";
+import * as f from "lodash/fp";
 
 class AttachmentView extends Component {
 
@@ -30,15 +30,14 @@ class AttachmentView extends Component {
     const {cell, langtag} = this.props;
     const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
 
-    const attachments = cell.value.map(
-      ({title, url}) => {
-        const displayName = translate(title, langtag);
+    const attachments = f.zip(cell.value, cell.displayValue).map(
+      ([{url}, displayValue]) => {
         const linkTarget = apiUrl(translate(url, langtag));
-        return {displayName, linkTarget};
+        return {displayName: displayValue[langtag], linkTarget};
       }
     );
 
-    return (isEmpty(attachments))
+    return (f.isEmpty(attachments))
       ? <div className="item-description">{i18n.t("table:empty.attachments")}</div>
       : <div className="item-content link">
         <LinkList links={attachments} langtag={langtag} />

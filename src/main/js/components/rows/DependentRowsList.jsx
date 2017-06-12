@@ -4,6 +4,7 @@ import {getTableDisplayName} from "../../helpers/multiLanguage";
 import {translate} from "react-i18next";
 import Spinner from "../header/Spinner";
 import LinkList from "../helperComponents/LinkList";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 // Builds the actual dependent tables/rows DOM elements
 @translate("table")
@@ -89,7 +90,7 @@ export default class DependentRowsList extends React.Component {
             <div className="item-header" >
               <a href="#" onClick={() => window.open(linkToTable, "_blank")}>
                 {tableName}
-                <i className="fa fa-external-link"/>
+                <SvgIcon icon="tablelink" containerClasses="color-primary"/>
               </a>
             </div>
             <LinkList langtag={langtag}

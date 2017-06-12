@@ -12,7 +12,6 @@ import GroupView from "./group/GroupView";
 import RowHeadline from "./RowHeadline";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
-import {canConvert} from "../../helpers/cellValueConverter";
 import * as Access from "../../helpers/accessManagementHelper";
 import * as Annotations from "../../helpers/annotationHelper";
 import {getCountryOfLangtag} from "../../helpers/multiLanguage";
@@ -80,7 +79,7 @@ class View extends Component {
   };
 
   clickHandler = () => {
-    const {cell, cell: {kind}, funcs, setTranslationView} = this.props;
+    const {cell, funcs, setTranslationView} = this.props;
     funcs.focus(funcs.id);
     funcs.setTranslationItem(this.viewElement);
     setTranslationView({cell});

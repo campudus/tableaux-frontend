@@ -15,6 +15,7 @@ const getDisplayValue = f.curryN(2)(
       [f.eq(ColumnKinds.concat), f.always(getConcatValue("concats"))],
       [f.eq(ColumnKinds.group), f.always(getConcatValue("groups"))],
       [f.eq(ColumnKinds.boolean), f.always(getBoolValue)],
+      [f.eq(ColumnKinds.attachment), f.always(getAttachmentFileName)],
       [f.startsWith("date"), f.always(getDateValue)],
       [f.stubTrue, f.always(getDefaultValue)]
     ])(column.kind);
@@ -71,6 +72,22 @@ const getLinkValue = (column) => (links) => f.map(
   ),
   links
 );
+
+const getAttachmentFileName = (column) => (links) => {
+  const getFileName = (lt, link) => f.compose(
+    f.defaultTo("unnamed file"),
+    f.find(f.identity),
+    f.props([
+      ["title", lt], ["externalName", lt], ["internalName", lt],
+      ["title", DefaultLangtag], ["externalName", DefaultLangtag], ["internalName", DefaultLangtag]
+    ])
+  )(link);
+
+  return f.map(
+    link => applyToAllLangs(langtag => getFileName(langtag, link)),
+    links
+  );
+};
 
 // recursively concatenate string values
 const getConcatValue = (selector) => (column) => value => {

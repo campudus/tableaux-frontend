@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from "react";
 import View from "../../entityView/RowView";
 import {ActionTypes, ColumnKinds, Directions, FilterModes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
-import listensToClickOutside from "react-onclickoutside";
 import zenscroll from "zenscroll";
 import {maybe} from "../../../helpers/monads";
 import TranslationPopup from "../../entityView/TranslationPopup";
@@ -17,7 +16,6 @@ const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
 const ARROW_HEIGHT_IN_PX = 50 / 2;
 
-@listensToClickOutside
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
@@ -69,10 +67,6 @@ class EntityViewBody extends Component {
       }
     };
   };
-
-  handleClickOutside() {
-    //this.setTranslationView({show: false});
-  }
 
   componentWillMount = () => {
     Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
@@ -213,7 +207,7 @@ class EntityViewBody extends Component {
       return;
     }
 
-    const pos = br.top + 0.5*br.height - ARROW_HEIGHT_IN_PX;
+    const pos = br.top + 0.5 * br.height - ARROW_HEIGHT_IN_PX;
     this.setState({arrowPosition: (pos >= 120) ? pos : null});
   };
 

@@ -51,64 +51,63 @@
     }
   }
 
+  .button-area {
+    text-align: right;
+  }
+
   .content-pane {
     width: 100%;
     max-height: 70vh;
     overflow: hidden;
     line-height: 1.5em;
+  }
+}
 
-    &.input {
-      overflow-y: auto;
-      color: $color-primary-text;
+.content-pane.input, .content-box { // the latter is for react-markdown components
+  overflow-y: auto;
+  color: $color-primary-text;
 
-      i, em {
-        font-style: italic;
-      }
-
-      b, strong {
-        font-weight: bold;
-      }
-
-      ul > li {
-        list-style: circle inside;
-      }
-
-      ol > li {
-        list-style: decimal inside;
-      }
-
-      p {
-        margin: 5px;
-      }
-
-      h1, h2, h3, h4 {
-        background-color: transparent;
-        text-align: left;
-        border: none;
-        margin: 5px 0;
-        font-weight: bold;
-      }
-
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      h2 {
-        font-size: 1.7rem;
-      }
-
-      h3 {
-        font-size: 1.6rem;
-      }
-
-      h4 {
-        font-size: 1.5rem;
-      }
-    }
-
+  i, em {
+    font-style: italic;
   }
 
-  .button-area {
-    text-align: right;
+  b, strong {
+    font-weight: bold;
+  }
+
+  ul > li {
+    list-style: circle inside;
+  }
+
+  ol > li {
+    list-style: decimal inside;
+  }
+
+  p {
+    margin: 5px;
+  }
+
+  h1, h2, h3, h4 {
+    background-color: transparent;
+    text-align: left;
+    border: none;
+    margin: 5px 0;
+    font-weight: bold;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.7rem;
+  }
+
+  h3 {
+    font-size: 1.6rem;
+  }
+
+  h4 {
+    font-size: 1.5rem;
   }
 }

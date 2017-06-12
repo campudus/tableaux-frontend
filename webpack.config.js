@@ -1,10 +1,10 @@
-var path = require('path');
-var webpack = require('webpack');
+var path = require("path");
+var webpack = require("webpack");
 var config = {
   "outDir": "out"
 };
 try {
-  config = require('./config.json');
+  config = require("./config.json");
 } catch (e) {
   // ignore
 }
@@ -13,18 +13,18 @@ var plugins = [
   new webpack.HotModuleReplacementPlugin()
 ];
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   plugins = [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
-      'process.env': {
+      "process.env": {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV)
       }
     }),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
-        except: ['require', 'export', '$super']
+        except: ["require", "export", "$super"]
       },
       compress: {
         warnings: false,
@@ -43,36 +43,36 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   entry: {
-    app: [path.resolve(__dirname, 'src/main/js/app.js')]
+    app: [path.resolve(__dirname, "src/main/js/app.js")]
   },
   output: {
     path: path.resolve(config.outDir),
-    filename: 'js/[name].js',
-    publicPath: '/'
+    filename: "js/[name].js",
+    publicPath: "/"
   },
   module: {
     loaders: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'react-hot'
+        loader: "react-hot"
       },
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel',
+        loader: "babel",
         query: {
-          plugins: ['transform-decorators-legacy', 'es6-promise'],
-          presets: ['es2015', 'react', 'stage-0']
+          plugins: ["transform-decorators-legacy", "es6-promise"],
+          presets: ["es2015", "react", "stage-0"]
         }
       },
       { // required for react-markdown in webpack 1 (see https://github.com/rexxars/react-markdown)
         test: /\.json$/,
-        loader: 'json-loader'
+        loader: "json-loader"
       },
       {
         test: /\.s?css$/,
-        loaders: ['style', 'css', 'sass']
+        loaders: ["style", "css", "sass"]
       }, {
         test: /\.html$/,
         loader: "file?name=[name].[ext]"
@@ -104,6 +104,6 @@ module.exports = {
   },
   plugins: plugins,
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ["", ".js", ".jsx"]
   }
 };

@@ -6,7 +6,7 @@ import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {ActionTypes, DefaultLangtag, Directions, FilterModes} from "../../../constants/TableauxConstants";
-import {either, maybe, fspy} from "../../../helpers/monads";
+import {either, maybe} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -416,7 +416,11 @@ class LinkOverlay extends Component {
     const {cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
     const addAndLinkRow = () => {
       const linkNewRow = row => {
-        const link = {id: row.id, value: null, displayValue: {}};
+        const link = {
+          id: row.id,
+          value: null,
+          displayValue: {}
+        };
         this.allRowResults = [...this.allRowResults, link];
         this.addLinkValue(false, link);
       };

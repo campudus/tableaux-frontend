@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
-import {maybe, fspy, logged} from "../../helpers/monads";
+import {maybe} from "../../helpers/monads";
 import {FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
@@ -16,8 +16,10 @@ const KEY = "translations";
 
 const displayCell = (cell, langtag) => {
   const value = f.get("displayValue", cell);
-  const displayArray = () => value.map(
-    (v, idx) => <div key={idx}>{f.get(langtag, v)}</div>
+  const displayArray = () => (
+    <ul>
+      {value.map((v, idx) => <li key={idx}>{f.get(langtag, v)}</li>)}
+    </ul>
   );
   const displayMarkdown = () => (
     <ReactMarkdown source={f.get(langtag, value)}/>
@@ -38,7 +40,6 @@ const displayCell = (cell, langtag) => {
 };
 
 const LanguageView = (props) => {
-
   const {cell, langtag, isExpanded, toggleExpand} = props;
   const value = f.get(["value", langtag], cell);
   const buttonClass = classNames("fa", {
@@ -82,14 +83,6 @@ const LanguageView = (props) => {
     </div>
   );
 };
-
-// LanguageView.propTypes = SingleLanguageView.PropTypes = {
-//   cell: PropTypes.object.isRequired,
-//   setTranslationView: PropTypes.func.isRequired,
-//   langtag: PropTypes.string.isRequired,
-//   isExpanded: PropTypes.bool.isRequired,
-//   toggleExpand: PropTypes.func.isRequired
-//};
 
 const SingleLanguageView = props => {
   const {cell, langtag} = props;
