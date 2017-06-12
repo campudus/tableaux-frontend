@@ -23,7 +23,7 @@ const connectToAmpersand = (Component) => class extends React.Component {
       return;
     }
 
-    const _events = events || (model.isCollection ? "add remove reset" : "change");
+    const _events = events || (model.isCollection ? "add remove reset change" : "change");
 
     this.listenTo(model, _events, () => {
       if (callback) {

@@ -11,11 +11,13 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import {isLocked, unlockRow} from "../../../helpers/annotationHelper";
 import i18n from "i18next";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
 const ARROW_HEIGHT_IN_PX = 50 / 2;
 
+@connectToAmpersand
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
@@ -111,6 +113,7 @@ class EntityViewBody extends Component {
       focused: null,
       itemWithPopup: null
     });
+    this.props.watch(row)
     this.translationItem = null;
     this.cancelClosingTimer();
   };
@@ -322,6 +325,7 @@ class EntityViewBody extends Component {
                              hintUnlockButton: this.shakeBar
                            }}
                            lockStatus={cell.row.unlocked}
+                           final={cell.row.final}
               />;
             })
         }
