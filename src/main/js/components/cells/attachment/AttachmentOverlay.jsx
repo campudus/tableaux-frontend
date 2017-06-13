@@ -8,6 +8,7 @@ import TableauxConstants, {ColumnKinds} from "../../../constants/TableauxConstan
 import apiUrl from "../../../helpers/apiUrl";
 import {translate} from "react-i18next";
 import Spinner from "../../header/Spinner";
+import SvgIcon from "../../helperComponents/SvgIcon";
 
 @connectToAmpersand
 class AttachmentOverlay extends Component {
@@ -86,14 +87,17 @@ class AttachmentOverlay extends Component {
     const backButton = (this.state.folder && this.state.folder.name !== "root")
       ? (
         <div className="back active" key={this.state.folder.id}>
-          <a onClick={this.navigateFolder(this.state.folder.parent)}><i
-            className="fa fa-chevron-left"></i>{t("folder_back")} </a>
+          <a onClick={this.navigateFolder(this.state.folder.parent)}>
+            <i className="fa fa-chevron-left" />
+            {t("folder_back")}
+          </a>
           <span className="folder-name">{this.state.folder.name}</span>
         </div>
       )
       : (this.state.folder)
         ? (
-          <div className="back" key={this.state.folder.id}><div/><span className="folder-name">{t("root_folder_name")}</span>
+          <div className="back" key={this.state.folder.id}><div/>
+            <span className="folder-name">{t("root_folder_name")}</span>
           </div>
         )
         : null;
@@ -114,7 +118,6 @@ class AttachmentOverlay extends Component {
           </div>
           <ul className="file-list">
             {this.state.folder.files.map((file) => {
-              const folderId = file.folder;
               const currentCellValue = this.props.cell.value;
               const imageUrl = apiUrl(retrieveTranslation(file.fileUrl, langtag));
 
@@ -125,20 +128,13 @@ class AttachmentOverlay extends Component {
               const isLinked = !!linked;
               const fileTitle = retrieveTranslation(file.title, this.props.langtag);
 
-              return <li key={file.uuid} className={isLinked ? "file is-linked" : "file"}>
-                <a onClick={this.toggleAttachments(isLinked, file)}
-                   className={"overlay-table-row"}>
-                  <i className="icon fa fa-file"></i><span>{fileTitle}</span>
-                </a>
-                <div className="media-options">
-                  <a className="file-link" href="#" onClick={() => window.open(imageUrl)}>
-                    <i className="icon fa fa-external-link"></i>{t("show_file")}
-                  </a>
-                  <a className="change-file" alt="edit" href="#" onClick={() => window.open(this.getMediaFolderUrl(folderId))}>
-                    <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
-                  </a>
-                </div>
-              </li>;
+              return <FileItem key={file.uuid}
+                               isLinked={isLinked}
+                               toggleAttachment={this.toggleAttachments(isLinked, file)}
+                               title={fileTitle}
+                               url={imageUrl}
+                               folderId={file.folder}
+              />;
             })}
           </ul>
         </div>
@@ -152,5 +148,29 @@ class AttachmentOverlay extends Component {
     );
   }
 }
+
+const FileItem = translate(["media", "common"])(
+  (props) => {
+    const {isLinked, toggleAttachment, title, url, folderId, icon, t} = props;
+
+    return (
+      <li className={isLinked ? "file is-linked" : "file"}>
+        <a onClick={toggleAttachment}
+           className={"overlay-table-row"}>
+          <i className="icon fa fa-file"></i><span>{title}</span>
+          {(isLinked) ? <SvgIcon icon="cross"/> : <SvgIcon icon="check"/>}
+        </a>
+        <div className="media-options">
+          <a className="file-link" href="#" onClick={() => window.open(url)}>
+            <i className="icon fa fa-external-link"></i>{t("show_file")}
+          </a>
+          <a className="change-file" alt="edit" href="#" onClick={() => window.open(this.getMediaFolderUrl(folderId))}>
+            <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
+          </a>
+        </div>
+      </li>
+    );
+  }
+);
 
 module.exports = translate(["media", "common"])(AttachmentOverlay);

@@ -89,8 +89,12 @@ class SvgIcon extends Component {
   constructor(props) {
     super(props);
     this.state = {loading: true};
+    this.setSvg(props.icon);
+  }
+
+  setSvg = (fileName) => {
     ImageCache
-      .getOrFetch(props.icon)
+      .getOrFetch(fileName)
       .then(svg => {
         if (!this.containerElement) {    // Icon unmounted before svg was loaded
           return;
@@ -99,7 +103,13 @@ class SvgIcon extends Component {
         this.svgData = this.containerElement.children["0"];
         this.setState({loading: false}, this.processImage);
       });
-  }
+  };
+
+  componentWillReceiveProps = (newProps) => {
+    if (newProps.icon !== this.props.icon) {
+      this.setSvg(newProps.icon);
+    }
+  };
 
   processImage = () => {
     const {fillColor, center, svgClasses, title} = this.props;

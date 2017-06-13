@@ -497,7 +497,7 @@
       overflow-y: auto;
 
       li {
-        min-width: 200px;
+        width: 100%;
         box-sizing: border-box;
         position: relative;
         padding: 8px;
@@ -506,39 +506,34 @@
         color: $color-primary;
         margin-bottom: 5px;
 
+        svg {
+          fill: transparent;
+        }
+
         .overlay-table-row {
-          display: block;
-          width: 100%;
+          box-sizing: border-box;
+          display: flex !important;
+          align-items: center;
+          justify-content: space-between;
           padding: 5px;
           padding-bottom: 10px;
 
-          &:hover {
-            &:before {
-              content: "\f00c";
-              position: absolute;
-              right: 10px;
-            }
+          span {
+            flex: 1;
           }
         }
 
         &.is-linked {
           background-color: $color-primary;
           color: $color-primary-contrast-text;
-
-          .overlay-table-row {
-            &:hover {
-              &:before {
-                content: "\f00d";
-                position: absolute;
-                right: 10px;
-              }
-            }
-          }
         }
 
         a {
           &:hover {
             color: $color-primary-darker;
+            svg {
+              fill: $color-primary;
+            }
           }
         }
 
