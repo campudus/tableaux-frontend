@@ -40,7 +40,7 @@ export default class OverlayHeadRowIdentificator extends Component {
       return (
         <span>
             <span className="column-name">
-              {columnDisplayName}:
+              {columnDisplayName}:{" "}
             </span>
           {rowIdentification}
         </span>
@@ -48,7 +48,7 @@ export default class OverlayHeadRowIdentificator extends Component {
     } else {
       return (
         <span>
-            <span className="column-name">{columnDisplayName}: </span>{rowIdentification}
+            <span className="column-name">{columnDisplayName}:{" "}</span>{rowIdentification}
           </span>
       );
     }

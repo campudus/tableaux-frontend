@@ -188,6 +188,10 @@ $dist-from-top: 20px;
         .title {
           color: $color-primary-contrast-text;
           font-size: 20px;
+
+          .column-name {
+            font-weight: 500;
+          }
         }
       }
 
