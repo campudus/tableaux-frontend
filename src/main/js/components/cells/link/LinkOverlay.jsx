@@ -414,7 +414,7 @@ class LinkOverlay extends Component {
   };
 
   renderRowCreator = () => {
-    const {cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
+    const {cell, cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
     const addAndLinkRow = () => {
       const linkNewRow = row => {
         const link = {
@@ -424,6 +424,8 @@ class LinkOverlay extends Component {
         };
         this.allRowResults = [...this.allRowResults, link];
         this.addLinkValue(false, link);
+
+        loadAndOpenEntityView({tables: cell.tables, tableId: toTable, rowId: row.id}, langtag);
       };
       ActionCreator.addRow(toTable, linkNewRow);
     };
