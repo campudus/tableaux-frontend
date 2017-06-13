@@ -28,6 +28,8 @@
     }
 
     .row-creator-button {
+      cursor: pointer;
+
       color: $color-primary;
       background-color: $color-white;
 
@@ -166,6 +168,8 @@
 
         .draggable {
           .drag-handle {
+            cursor: pointer;
+
             position: absolute;
             left: 0;
 
@@ -268,6 +272,8 @@
           }
 
           .svg-icon {
+            cursor: pointer;
+
             padding-right: 20px;
             width: 1em;
             height: 1em;
