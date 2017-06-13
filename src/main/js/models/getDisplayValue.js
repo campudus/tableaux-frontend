@@ -135,18 +135,21 @@ const format = f.curryN(2)(
   }
 );
 
-import unitTests from "../helpers/simpleTests";
-unitTests("formatting")([
-  ["is", "foo", format, [{}, "foo"]],
-  ["is", "foo bar", format, [{}, ["foo", "bar"]]],
-  ["is", "testVal foo", format, [{format: "testVal {{1}}"}, "foo"]],
-  ["is", "foo bar baz", format, [{format: "{{1}} bar {{2}}"}, ["foo", "baz"]]],
-  ["is", "1 x 2 x 3mm", format, [{format: "{{1}} x {{2}} x {{3}}mm"}, [1, 2, 3]]],
-  ["is", "2 times moustaches is 2 times the fun", format, [{format: "{{1}} times {{2}} is {{1}} times the fun"}, [2, "moustaches"]]],
-  ["is", "foo bar", format, [{format: ""}, ["foo", "bar"]]],
-  ["not", "foo bar", format, [{format: " "}, ["foo", "bar"]]],
-  ["is", "foo bar", format, [{format: ""}, [" foo", " bar    "]]],
-  ["not", "foo   bar", format, [{format: ""}, ["foo ", " bar"]]]
-]);
+const tests = {
+  title: "formatting",
+  tests: [
+    ["is", "foo", format, [{}, "foo"]],
+    ["is", "foo bar", format, [{}, ["foo", "bar"]]],
+    ["is", "testVal foo", format, [{format: "testVal {{1}}"}, "foo"]],
+    ["is", "foo bar baz", format, [{format: "{{1}} bar {{2}}"}, ["foo", "baz"]]],
+    ["is", "1 x 2 x 3mm", format, [{format: "{{1}} x {{2}} x {{3}}mm"}, [1, 2, 3]]],
+    ["is", "2 times moustaches is 2 times the fun", format, [{format: "{{1}} times {{2}} is {{1}} times the fun"}, [2, "moustaches"]]],
+    ["is", "foo bar", format, [{format: ""}, ["foo", "bar"]]],
+    ["not", "foo bar", format, [{format: " "}, ["foo", "bar"]]],
+    ["is", "foo bar", format, [{format: ""}, [" foo", " bar    "]]],
+    ["not", "foo   bar", format, [{format: ""}, ["foo ", " bar"]]]
+  ]
+};
 
+export {format, tests};
 export default getDisplayValue;

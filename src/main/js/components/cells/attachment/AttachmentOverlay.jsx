@@ -4,10 +4,10 @@ import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import _ from "lodash";
 import React, {Component, PropTypes} from "react";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import TableauxConstants, {ColumnKinds} from "../../../constants/TableauxConstants";
 import apiUrl from "../../../helpers/apiUrl";
 import {translate} from "react-i18next";
-const {ColumnKinds} = TableauxConstants;
+import Spinner from "../../header/Spinner";
 
 @connectToAmpersand
 class AttachmentOverlay extends Component {
@@ -143,7 +143,7 @@ class AttachmentOverlay extends Component {
           </ul>
         </div>
       )
-      : <div className="loading-message">{t("loading")}</div>;
+      : <Spinner isLoading={true} />
 
     return (
       <div className="attachment-overlay-wrapper">

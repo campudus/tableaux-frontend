@@ -22,6 +22,7 @@ import SearchBar from "./LinkOverlaySearchBar";
 import DragSortList from "./DragSortList";
 import {changeCell} from "../../../models/Tables";
 import LinkItem from "./LinkItem";
+import Spinner from "../../header/Spinner";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -451,7 +452,7 @@ class LinkOverlay extends Component {
     };
 
     const unlinkedRows = (loading)
-      ? "Loading..."
+      ? <Spinner isLoading={true} />
       : <AutoSizer>
         {({width, height}) => <List
           ref="OverlayScroll"

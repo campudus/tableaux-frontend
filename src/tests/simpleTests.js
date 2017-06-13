@@ -72,20 +72,32 @@ const unitTests = (name) => (tests) => {
   const results = tests.map(
     ([op, expected, fn, args], i) => ops[op](name, i, expected, fn, args)
   );
-  console.warn(`${name}: ${f.size(results)} tests, succeeded: ${f.size(f.filter(f.eq(true),
-    results))}, failed: ${f.size(f.reject(f.eq(true), results))}`);
+
+  const summary = {
+    total: f.size(results),
+    success: f.size(f.filter(f.eq(true), results)),
+    failed: f.size(f.reject(f.eq(true), results))
+  };
+
+  const message = `${summary.total} tests run, ${summary.success} succeeded, ${summary.failed} failed`;
+  ((summary.failed > 0) ? console.error : console.warn)(message);
+  return summary;
 };
 
 const unitTestFunction = (process.env.NODE_ENV !== "production")
   ? (() => { console.warn("process.env.NODE_ENV !== production; testing enabled"); return unitTests; })()
   : f.noop;
 
-unitTestFunction("simpleTests self-test")([
-  ["throws", null, conformsTo, ["generated throwing test", -1, null, f.noop, []]],
-  ["is", true, conformsTo, ["generated true test", -1, f.isEmpty, f.identity, []]],
-  ["not", true, conformsTo, ["generated false test", -1, f.isEmpty, f.identity, ["no-number"]]],
-  ["not", true, f.equals, [1, 2]],
-  ["conformsTo", f.isString, f.always("string"), [1, 2, 3]]
-]);
+const tests = {
+  title: "Tests functions self-test",
+  tests: [
+      ["throws", null, conformsTo, ["generated throwing test", -1, null, f.noop, []]],
+    ["is", true, conformsTo, ["generated true test", -1, f.isEmpty, f.identity, []]],
+    ["not", true, conformsTo, ["generated false test", -1, f.isEmpty, f.identity, ["no-number"]]],
+    ["not", true, f.equals, [1, 2]],
+    ["conformsTo", f.isString, f.always("string"), [1, 2, 3]]
+  ]
+};
 
+export {tests};
 export default unitTestFunction;

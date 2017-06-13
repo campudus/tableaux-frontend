@@ -30,6 +30,7 @@ if (process.env.NODE_ENV === "production") {
     });
 } else {
   window.Perf = require("react-addons-perf");
+  require("../../tests/runTests");
 }
 
 App.extend({

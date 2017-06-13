@@ -511,7 +511,7 @@ $arrow-height: 50px;
 
   .translation-arrow {
     position: fixed;
-    left: -$arrow-height/10*3 + 1px;
+    left: -$arrow-height * 0.3 + 1px;
     top: 0;
     border-top: 0.50*$arrow-height solid transparent;
     border-bottom: 0.5*$arrow-height solid transparent;
@@ -807,7 +807,7 @@ $arrow-height: 50px;
 //--------------------------------------------
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .overlay .entity-view .translation-arrow {
-    left: calc(40vw - 0.4 * 80px); // arrow-height
+    left: calc(40vw - 0.3 * 50px); // arrow-height
   }
   .overlay .unlock-bar {
     left: 40vw;

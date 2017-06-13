@@ -1,5 +1,5 @@
 import {curryN, isFunction, map, prop, range} from "lodash/fp";
-import test from "./simpleTests";
+import test from "../../../tests/simpleTests";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -266,8 +266,9 @@ const logged = curryN(2)(
   }
 );
 
-test("Monads")([
-  ["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]]
-]);
+const tests = {
+  title: "Monads",
+  tests: [["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]]]
+};
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged};
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, tests};
