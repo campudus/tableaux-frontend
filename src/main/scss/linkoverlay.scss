@@ -28,16 +28,24 @@
     }
 
     .row-creator-button {
-      background-color: transparentize($color-white, 0.3);
-      position: fixed;
-      bottom: 5px;
-      height: 30px;
-      border: 1px solid $color-primary;
       color: $color-primary;
+      background-color: $color-white;
+
+      height: 30px;
+
+      position: absolute;
+      left: 50%;
+      bottom: 5px;
+
+      transform: translateX(-50%);
+
+      padding-right: 15px;
+
+      border: 1px solid $color-primary;
+      border-radius: 3px;
+
       display: flex;
       align-items: center;
-      width: calc(60vw - 56px);
-      margin-left: 20px;
 
       div {
         padding: 0 10px;
