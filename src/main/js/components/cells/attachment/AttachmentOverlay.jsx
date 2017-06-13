@@ -133,13 +133,13 @@ class AttachmentOverlay extends Component {
                                toggleAttachment={this.toggleAttachments(isLinked, file)}
                                title={fileTitle}
                                url={imageUrl}
-                               folderId={file.folder}
+                               editorUrl={this.getMediaFolderUrl(file.folder)}
               />;
             })}
           </ul>
         </div>
       )
-      : <Spinner isLoading={true} />
+      : <Spinner isLoading={true} />;
 
     return (
       <div className="attachment-overlay-wrapper">
@@ -151,7 +151,7 @@ class AttachmentOverlay extends Component {
 
 const FileItem = translate(["media", "common"])(
   (props) => {
-    const {isLinked, toggleAttachment, title, url, folderId, icon, t} = props;
+    const {isLinked, toggleAttachment, title, url, editorUrl, t} = props;
 
     return (
       <li className={isLinked ? "file is-linked" : "file"}>
@@ -164,7 +164,7 @@ const FileItem = translate(["media", "common"])(
           <a className="file-link" href="#" onClick={() => window.open(url)}>
             <i className="icon fa fa-external-link"></i>{t("show_file")}
           </a>
-          <a className="change-file" alt="edit" href="#" onClick={() => window.open(this.getMediaFolderUrl(folderId))}>
+          <a className="change-file" alt="edit" href="#" onClick={() => window.open(editorUrl)}>
             <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
           </a>
         </div>

@@ -113,7 +113,7 @@ class EntityViewBody extends Component {
       focused: null,
       itemWithPopup: null
     });
-    this.props.watch(row)
+    this.props.watch(row);
     this.translationItem = null;
     this.cancelClosingTimer();
   };

@@ -1,5 +1,4 @@
 import {curryN, isFunction, map, prop, range} from "lodash/fp";
-import test from "../../../tests/simpleTests";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value

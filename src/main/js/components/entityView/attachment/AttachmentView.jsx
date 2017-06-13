@@ -31,10 +31,11 @@ class AttachmentView extends Component {
     const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
 
     const attachments = f.zip(cell.value, cell.displayValue).map(
-      ([{url}, displayValue]) => {
-        const linkTarget = apiUrl(translate(url, langtag));
-        return {displayName: displayValue[langtag], linkTarget};
-      }
+      ([{url}, displayValue]) => (
+        {
+          displayName: displayValue[langtag],
+          linkTarget: (f.isPlainObject(url)) ? apiUrl(translate(url, langtag)) : ""}
+      )
     );
 
     return (f.isEmpty(attachments))
