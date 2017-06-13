@@ -11,6 +11,7 @@ import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
+import i18n from "i18next";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -158,6 +159,11 @@ class RowSwitcher extends Component {
 const EntityViewHeader = props => {
   const {row, langtag} = props;
   const rowDisplayLabel = getDisplayLabel(row, langtag);
+
+  const title = rowDisplayLabel === RowConcatHelper.NOVALUE
+    ? <span className="empty-item">({i18n.t("common:empty")})</span>
+    : rowDisplayLabel;
+
   const tableName = getTableName(row, langtag);
   const components = (
     <div className="header-components">
@@ -167,7 +173,7 @@ const EntityViewHeader = props => {
       <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} />
     </div>
   );
-  return <Header {...props} context={tableName} title={rowDisplayLabel} components={components} />;
+  return <Header {...props} context={tableName} title={title} components={components} />;
 };
 
 const getTableName = (row, langtag) => {
