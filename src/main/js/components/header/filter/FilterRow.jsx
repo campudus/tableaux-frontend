@@ -33,7 +33,7 @@ class FilterRow extends Component {
   getKeyboardShortcuts = (event) => {
     return {
       enter: (event) => {
-        this.applyFilters(event);
+        this.props.applyFilters(event);
       },
       escape: event => {
         this.filterInput.value = "";

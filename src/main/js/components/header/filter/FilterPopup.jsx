@@ -282,6 +282,7 @@ class FilterPopup extends React.Component {
                              onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
                              onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
                              filter={filter}
+                             applyFilters={this.applyFilters}
                              key={idx}
                              t={t}
                 />;
