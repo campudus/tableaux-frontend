@@ -1,13 +1,12 @@
 const AmpersandModel = require("ampersand-model");
-const Dispatcher = require("../dispatcher/Dispatcher");
 const TableauxConstants = require("./../constants/TableauxConstants");
-const {ActionTypes, ColumnKinds} = TableauxConstants;
+const {ColumnKinds} = TableauxConstants;
 import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
 import getDisplayValue from "./getDisplayValue";
 import ActionCreator from "../actions/ActionCreator.js";
+import {clearCallbacks, listenForCellChange} from "../dispatcher/GlobalCellChangeListener";
 
-// FIXME: Handle Concat synch more elegant the Ampersand way
 const Cell = AmpersandModel.extend({
   modelType: "Cell",
 
@@ -120,7 +119,7 @@ const Cell = AmpersandModel.extend({
   },
 
   initialize: function (attrs, options) {
-    if (f.contains(attrs.column.kind, [ColumnKinds.concat, ColumnKinds.group])) {
+    if (f.contains(f.get(["column", "kind"], attrs), [ColumnKinds.concat, ColumnKinds.group])) {
       this.initConcatEvents(attrs);
     } else if (this.isLink) {
       this.initLinkEvents(attrs);
@@ -152,8 +151,9 @@ const Cell = AmpersandModel.extend({
       }
     };
 
-    this.handleDataChange = handleDataChange.bind(this);
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange, this);
+    f.keys(this.concatIds).forEach(
+      key => listenForCellChange(this.id, key, handleDataChange.bind(this))
+    );
   },
 
   initLinkEvents: function (attrs) {
@@ -166,6 +166,20 @@ const Cell = AmpersandModel.extend({
 
       const newValue = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
       if (!f.equals(newValue, this.value)) {
+        const sortedIds = f.compose(
+          f.sortBy(f.identity),
+          f.map(f.get("id"))
+        );
+        const oldIds = sortedIds(this.value);
+        const newIds = sortedIds(newValue);
+        if (!f.equals(oldIds, newIds)) {
+          clearCallbacks(this.id);
+          newValue.forEach(
+            ({id}) => {
+              listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
+            }
+          );
+        }
         this.value = newValue;
         const self = this;
         ActionCreator.broadcastDataChange({
@@ -176,15 +190,15 @@ const Cell = AmpersandModel.extend({
       }
     };
 
-    this.handleDataChange = handleDataChange.bind(this);
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange, this);
+    this.value.forEach(
+      ({id}) => {
+        listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
+      }
+    );
   },
 
   // Delete all cell attrs and event listeners
   cleanupCell: function () {
-    if (this.handleDataChange) {
-      Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.handleDataChange);
-    }
   },
 
   url: function () {

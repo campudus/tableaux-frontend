@@ -7,6 +7,7 @@ import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";
 import "../scss/main.scss";
 import "./watchers/watchConnection";
+import "./dispatcher/GlobalCellChangeListener";
 
 if (process.env.NODE_ENV === "production") {
   getSentryUrlFromServer(
