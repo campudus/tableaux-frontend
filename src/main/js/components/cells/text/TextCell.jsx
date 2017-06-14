@@ -49,17 +49,21 @@ class TextCell extends Component {
     const table = cell.tables.get(cell.tableId);
     const context = table.displayName[langtag] || table.displayName[FallbackLanguage];
 
+    const Wrapper = props => <div>{props.children}</div>;
+
     ActionCreator.openOverlay({
       head: <Header context={context}
                     title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
                     actions={{positive: [i18n.t("common:save"), this.saveCell]}}
       />,
       body: (
-        <div className="content-items">
-          <div className="item">
-            <RichTextComponent value={textValue} langtag={langtag} saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}/>
+        <Wrapper>
+          <div className="content-items">
+            <div className="item">
+              <RichTextComponent value={textValue} langtag={langtag} saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}/>
+            </div>
           </div>
-        </div>
+        </Wrapper>
       ),
       type: "full-height"
     });
