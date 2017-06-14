@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import i18n from "i18next";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 
 export default class OverlayHeadRowIdentificator extends Component {
@@ -30,26 +31,31 @@ export default class OverlayHeadRowIdentificator extends Component {
       return null;
     }
 
-    const rowIdentification = (this.rowIdentifierString !== "")
-      ? <span className="row-identification-value">{this.rowIdentifierString}</span>
-      : null;
+    const rowIdentification = (this.rowIdentifierString === "" || this.rowIdentifierString === RowConcatHelper.NOVALUE)
+      ? <span className="row-identification-value empty-item">({i18n.t("common:empty")})</span>
+      : <span className="row-identification-value">{this.rowIdentifierString}</span>;
+
     const {column} = cell;
     const columnDisplayName = column.displayName[langtag] || column.name;
 
     if (this.props.cell.isLink) {
+      // TODO link to table?
       return (
         <span>
-            <span className="column-name">
-              {columnDisplayName}:{" "}
-            </span>
+          <span className="column-name">
+            {columnDisplayName}:{" "}
+          </span>
           {rowIdentification}
         </span>
       );
     } else {
       return (
         <span>
-            <span className="column-name">{columnDisplayName}:{" "}</span>{rowIdentification}
+          <span className="column-name">
+            {columnDisplayName}:{" "}
           </span>
+          {rowIdentification}
+        </span>
       );
     }
   }
