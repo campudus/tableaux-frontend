@@ -162,7 +162,9 @@ export const changeCell = payload => {
          * End basic language access management
          */
 
-        console.log("Cell Model: saving cell with value:", newValue.value, "from", cell.value);
+        if (process.env.NODE_ENV !== "production") {
+          console.log("Cell Model: saving cell with value:", newValue.value, "from", cell.value);
+        }
         // we give direct feedback for user
         cell.value = mergedValue;
 
@@ -181,7 +183,7 @@ export const changeCell = payload => {
           success(model, data, options) {
             ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
             // is there new data from the server?
-            if (!_.isEqual(data.value, mergedValue)) {
+            if (!_.isEqual(data.value, mergedValue) && (process.env.NODE_ENV !== "production")) {
               console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
               cell.value = data.value;
             }
