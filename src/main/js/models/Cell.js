@@ -190,11 +190,13 @@ const Cell = AmpersandModel.extend({
       }
     };
 
-    this.value.forEach(
-      ({id}) => {
-        listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
-      }
-    );
+    if (_.isArray(this.value)) {
+      this.value.forEach(
+        ({id}) => {
+          listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
+        }
+      );
+    }
   },
 
   // Delete all cell attrs and event listeners
