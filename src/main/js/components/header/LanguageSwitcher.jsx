@@ -1,11 +1,11 @@
-var React = require("react");
-var App = require("ampersand-app");
-var Select = require("react-select");
-var _ = require("lodash");
+import _ from "lodash";
+import Select from "react-select";
+import React from "react";
+
 import TableauxConstants from "./../../constants/TableauxConstants";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 
-var LanguageSwitcher = React.createClass({
+const LanguageSwitcher = React.createClass({
 
   propTypes: {
     langtag: React.PropTypes.string.isRequired,
@@ -19,7 +19,7 @@ var LanguageSwitcher = React.createClass({
   onChange: function (langObj) {
     // prevents undefined language tag: we just want to switch the language when there is actually something selected
     if (!_.isEmpty(langObj)) {
-      var langtag = langObj.value;
+      const langtag = langObj.value;
       if (this.props.onChange) {
         this.props.onChange(langtag);
       }
@@ -35,13 +35,17 @@ var LanguageSwitcher = React.createClass({
     // Inside select box show user just the languages he has access to
     const languagesToDisplay = !disabled && limitLanguages ? limitLanguages : TableauxConstants.Langtags;
 
-    var options = this.props.options || languagesToDisplay.reduce(function (res, langtag) {
-      res.push({
-        value: langtag,
-        label: langtag
-      });
-      return res;
-    }, []);
+    const options = this.props.options
+      || languagesToDisplay.reduce(
+        function (res, langtag) {
+          res.push({
+            value: langtag,
+            label: langtag
+          });
+          return res;
+        },
+        []
+      );
 
     return (
       <div className="language-switcher">
@@ -60,4 +64,4 @@ var LanguageSwitcher = React.createClass({
   }
 });
 
-module.exports = LanguageSwitcher;
+export default LanguageSwitcher;

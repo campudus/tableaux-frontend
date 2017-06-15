@@ -16,6 +16,7 @@ class Row extends React.Component {
 
   constructor(props) {
     super(props);
+
     props.table.columns.models.forEach(
       col => props.watch(col,
         {
@@ -23,7 +24,14 @@ class Row extends React.Component {
           force: true
         })
     );
-    props.watch(props.row, {event: "change:final,change:unlocked", force: true});
+
+    props.watch(
+      props.row,
+      {
+        event: "change:final,change:unlocked",
+        force: true
+      }
+    );
   }
 
   // Allows a good performance when editing large tables
@@ -34,17 +42,16 @@ class Row extends React.Component {
       || this.props.isRowExpanded !== nextProps.isRowExpanded
     ) {
       return true;
-    }
-    // Don't update when I'm not selected and I will not get selected
-    else if (!this.props.isRowSelected && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
+    } else if (!this.props.isRowSelected && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
+      // Don't update when I'm not selected and I will not get selected
       return false;
-    }
-    // When nothing is selected and I get selected
-    else if (!this.props.selectedCell && nextProps.selectedCell && nextProps.selectedCell.rowId === this.props.row.getId()) {
+    } else if (!this.props.selectedCell && nextProps.selectedCell && nextProps.selectedCell.rowId === this.props.row.getId()) {
+      // When nothing is selected and I get selected
       return true;
+    } else {
+      // When nothing is selected and I don't get expanded
+      return !(!this.props.selectedCell && !nextProps.isRowExpanded);
     }
-    // When nothing is selected and I don't get expanded
-    else return !(!this.props.selectedCell && !nextProps.isRowExpanded);
   };
 
   toggleExpand = () => {

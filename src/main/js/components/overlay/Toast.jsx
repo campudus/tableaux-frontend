@@ -2,7 +2,7 @@ import React from "react";
 import {translate} from "react-i18next";
 
 let Toast = (props) => {
-  const {t, content} = props;
+  const {content} = props;
   return (
     <div className="toast-wrapper">
       {content}

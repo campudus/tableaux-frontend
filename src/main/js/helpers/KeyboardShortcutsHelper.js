@@ -37,14 +37,14 @@ const KeyboardShortcutsHelper = {
 
 function _onKeyboardShortcut(event, keyboardShortcutsFn) {
   if (!_.isFunction(keyboardShortcutsFn)) {
-    throw "Define function keyboardShortcutsFn in order to use KeyboardShortcutsMixin.";
+    throw new Error("Define function keyboardShortcutsFn in order to use KeyboardShortcutsMixin.");
   }
 
   let shortcuts = keyboardShortcutsFn();
   let shortcutFound = false;
 
   if (!_.isObject(shortcuts)) {
-    throw "Return type of keyboardShortcutsFn must be an object.";
+    throw new Error("Return type of keyboardShortcutsFn must be an object.");
   }
 
   if (_.isEmpty(shortcuts)) {

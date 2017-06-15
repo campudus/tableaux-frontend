@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from "react";
 import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
-import {contentChanged} from "../../cells/Cell"
+import {contentChanged} from "../../cells/Cell";
 
 class TextView extends Component {
 
@@ -41,11 +41,12 @@ class TextView extends Component {
     const changes = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
+
     changeCell({
       cell,
       value: changes
-    })
-      .then(contentChanged(cell, langtag, oldValue));
+    }).then(contentChanged(cell, langtag, oldValue));
+
     this.setEditing(false)();
   };
 
@@ -85,7 +86,8 @@ class TextView extends Component {
                              className="item-content text"
                              langtag={langtag}
                              readOnly={true}
-                             onClick={(isRowLocked) ? function () {} : this.setEditing(true)}
+                             onClick={(isRowLocked) ? function () {
+                             } : this.setEditing(true)}
           />
         )
       }

@@ -33,10 +33,6 @@ class TableSwitcherButton extends React.Component {
     Dispatcher.off(TableauxConstants.ActionTypes.REFRESH_TABLE_NAMES, this.refresh);
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   onClickedOutside = (event) => {
     this.setState({isOpen: false});
   };
@@ -85,7 +81,7 @@ class TableSwitcherButton extends React.Component {
                                onClickedOutside={this.onClickedOutside}
                                onClickedTable={this.onClickedTable}
                                onClickedGroup={this.onClickedGroup}
-                               currentGroupId={this.state.currentGroupId}/>;
+                               currentGroupId={this.state.currentGroupId} />;
   };
 
   togglePopup = (event) => {

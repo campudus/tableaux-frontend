@@ -1,6 +1,4 @@
 import React from "react";
-import App from "ampersand-app";
-import Dispatcher from "../../dispatcher/Dispatcher";
 import ActionCreator from "../../actions/ActionCreator";
 
 import Navigation from "../../components/header/Navigation.jsx";
@@ -37,8 +35,10 @@ export default class MediaView extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    var shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag;
-    var shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading || nextState.currentFolder !== this.state.currentFolder;
+    const shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag;
+    const shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading
+      || nextState.currentFolder !== this.state.currentFolder;
+
     return shouldRenderPropUpdate || shouldRenderStateUpdate;
   }
 
@@ -79,11 +79,11 @@ export default class MediaView extends React.Component {
       return (
         <div>
           <header>
-            <Navigation langtag={this.props.langtag}/>
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch}/>
-            <PageTitle titleKey="pageTitle.media"/>
+            <Navigation langtag={this.props.langtag} />
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
+            <PageTitle titleKey="pageTitle.media" />
           </header>
-          <Folder folder={this.state.currentFolder} langtag={this.props.langtag}/>
+          <Folder folder={this.state.currentFolder} langtag={this.props.langtag} />
         </div>
       );
     } else {

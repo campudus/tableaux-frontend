@@ -1,12 +1,9 @@
-var AmpersandCollection = require("ampersand-collection");
+import AmpersandCollection from "ampersand-collection";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../constants/TableauxConstants";
+import File from "./File";
 
-var apiUrl = require("../../helpers/apiUrl");
-var Dispatcher = require("../../dispatcher/Dispatcher");
-var ActionTypes = require("../../constants/TableauxConstants").ActionTypes;
-
-var File = require("./File");
-
-var FilesCollection = AmpersandCollection.extend({
+const FilesCollection = AmpersandCollection.extend({
   model: File,
 
   initialize: function () {
@@ -25,10 +22,10 @@ var FilesCollection = AmpersandCollection.extend({
 
   mergeFileHandler: function (payload) {
     if (payload.uuid === "undefined") {
-      throw "file must already exist";
+      throw new Error("File's uuid can't be undefined. File must already exist.");
     }
 
-    var file = new File({
+    const file = new File({
       uuid: payload.uuid,
       title: payload.title,
       description: payload.description,
@@ -43,13 +40,13 @@ var FilesCollection = AmpersandCollection.extend({
   },
 
   changeFileHandler: function (payload) {
-    var self = this;
+    const self = this;
 
     if (payload.uuid === "undefined") {
-      throw "file must already exist";
+      throw new Error("File's uuid can't be undefined. File must already exist.");
     }
 
-    var file = this.get(payload.uuid);
+    const file = this.get(payload.uuid);
 
     console.log("saving file:", file, " payload:", payload);
 
@@ -69,7 +66,7 @@ var FilesCollection = AmpersandCollection.extend({
   },
 
   removeFileHandler: function (payload) {
-    var file = this.get(payload.fileId);
+    const file = this.get(payload.fileId);
 
     file.destroy({
       success: function () {

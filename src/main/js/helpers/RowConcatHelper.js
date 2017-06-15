@@ -146,7 +146,7 @@ const RowConcatHelper = {
         // Link ID value is empty
         if (!internal.stringHasValue(rowConcatString)) {
           // Get default language fallback
-          if (langtag != TableauxConstants.DefaultLangtag) {
+          if (langtag !== TableauxConstants.DefaultLangtag) {
             rowConcatString = cellValue[TableauxConstants.DefaultLangtag];
 
             // Default language fallback is not empty. Postfix the langtag

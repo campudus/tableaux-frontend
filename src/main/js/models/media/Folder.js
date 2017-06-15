@@ -44,4 +44,4 @@ const Folder = AmpersandModel.extend({
   }
 });
 
-module.exports = Folder;
+export default Folder;

@@ -2,6 +2,8 @@ import TableauxConstants from "../constants/TableauxConstants";
 import React from "react";
 import _ from "lodash";
 
+const langtagSeparatorRegex = /[-_]/;
+
 /**
  * Parses json for translation value.
  *
@@ -13,7 +15,7 @@ import _ from "lodash";
 function retrieveTranslation(json, language, defaultLanguage) {
   if (!_.isPlainObject(json)) {
     console.error("json is not a plain object", json);
-    throw "json is not a plain object";
+    throw new Error("json is not a plain object");
   }
 
   let content = json[language];
@@ -30,19 +32,20 @@ function retrieveTranslation(json, language, defaultLanguage) {
 
 function getLanguageOrCountryIcon(langtag) {
   // we try to split on "-" (dash) character
-  const langtagSplitted = langtag.split(/-|_/);
-  let icon, countryOrLanguage, country, language = langtagSplitted[0];
+  const langtagSplitted = langtag.split(langtagSeparatorRegex);
 
-  // hey, we got a full langtag, e.g. de-CH
-  if (langtagSplitted.length > 1) {
-    country = langtagSplitted[1];
-  }
-  countryOrLanguage = country || language;
-  icon = countryOrLanguage.toLowerCase() + ".png";
+  // check if we got a full langtag, e.g. de-CH
+  // ... if so return only the country
+  // ... otherwise return just the language
+  const countryOrLanguage = langtagSplitted.length > 1
+    ? langtagSplitted[1]
+    : langtagSplitted[0];
+
+  const icon = countryOrLanguage.toLowerCase() + ".png";
 
   return (
     <span className="langtag">
-      <img src={"/img/flags/" + icon} alt={countryOrLanguage}/><span
+      <img src={"/img/flags/" + icon} alt={countryOrLanguage} /><span
       className="langtag-label">{countryOrLanguage}</span>
     </span>
   );
@@ -69,12 +72,12 @@ function getCurrencyCode(country) {
 // converts en-US to US or en to EN
 // TODO Map EN to GB or
 function getCountryOfLangtag(langtag) {
-  const splittedLangtag = langtag.split(/-|_/);
+  const splittedLangtag = langtag.split(langtagSeparatorRegex);
   return splittedLangtag.length > 1 ? splittedLangtag[1] : String(splittedLangtag[0]).toUpperCase();
 }
 
 function getLanguageOfLangtag(langtag) {
-  return langtag.split(/-|_/)[0];
+  return langtag.split(langtagSeparatorRegex)[0];
 }
 
 function getTableDisplayName(table, langtag) {

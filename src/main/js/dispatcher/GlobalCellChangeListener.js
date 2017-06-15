@@ -39,11 +39,12 @@ const triggerCallbacks = (payload) => {
       }
     }
   );
+
   badKeys.forEach(
     function (badKey) {
       providers.delete(badKey);
     }
-  )
+  );
 };
 
 Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, triggerCallbacks);
