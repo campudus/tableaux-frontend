@@ -1,12 +1,13 @@
-var Dispatcher = require("../dispatcher/Dispatcher");
-var ActionTypes = require("../constants/TableauxConstants").ActionTypes;
+const Dispatcher = require("../dispatcher/Dispatcher");
+const ActionTypes = require("../constants/TableauxConstants").ActionTypes;
 
 module.exports = {
 
-  changeCell: function (cell, newValue) {
+  changeCell: function (cell, newValue, cb) {
     Dispatcher.trigger(ActionTypes.CHANGE_CELL, {
-      cell: cell,
-      value: newValue
+      cell,
+      value: newValue,
+      cb
     });
   },
 
@@ -17,9 +18,10 @@ module.exports = {
     });
   },
 
-  addRow: function (tableId) {
+  addRow: function (tableId, cb) {
     Dispatcher.trigger(ActionTypes.CREATE_ROW, {
-      tableId: tableId
+      tableId,
+      cb
     });
   },
 
@@ -56,13 +58,11 @@ module.exports = {
   },
 
   openOverlay: function (overlayContent) {
-    console.log("+ calling openOverlay");
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
   },
 
-  closeOverlay: function () {
-    console.log("- calling closeOverlay");
-    Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY);
+  closeOverlay: function (name = null) {
+    Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY, name);
   },
 
   enableShouldCellFocus: function () {
@@ -276,5 +276,50 @@ module.exports = {
 
   pasteCellContent: (targetCell, langtag) => {
     Dispatcher.trigger(ActionTypes.PASTE_CELL_CONTENT, {cell: targetCell, langtag});
+  },
+
+  switchEntityViewLanguage: ({langtag}) => {
+    Dispatcher.trigger(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, {langtag});
+  },
+
+  filterLinksInOverlay: ({filterMode, filterValue}) => {
+    Dispatcher.trigger(ActionTypes.FILTER_LINKS, {filterMode, filterValue});
+  },
+
+  broadcastRowLoaded: ({id, row}) => {
+    Dispatcher.trigger(ActionTypes.ENTITY_VIEW_ROW_LOADED, {id, row});
+  },
+
+  setTranslationView: (translationInfo) => {
+    Dispatcher.trigger(ActionTypes.SET_TRANSLATION_VIEW, translationInfo);
+  },
+
+  filterEntityView: (payload) => {
+    Dispatcher.trigger(ActionTypes.FILTER_ENTITY_VIEW, payload);
+  },
+
+  passOnKeyStrokes: (payload) => {
+    Dispatcher.trigger(ActionTypes.PASS_ON_KEYSTROKES, payload);
+  },
+
+  changeEntityViewRow: (payload) => {
+    Dispatcher.trigger(ActionTypes.CHANGE_ENTITY_VIEW_ROW, payload);
+  },
+
+  changeHeaderTitle: (payload) => {
+    Dispatcher.trigger(ActionTypes.CHANGE_HEADER_TITLE, payload);
+  },
+
+  updateOverlay: ({id, props}) => {
+    Dispatcher.trigger(ActionTypes.UPDATE_OVERLAY, {id, props});
+  },
+
+  broadcastDataChange: (payload) => {
+//    console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
+    Dispatcher.trigger(ActionTypes.BROADCAST_DATA_CHANGE, payload);
+  },
+
+  broadcastConnectionStatus: (payload) => {
+    Dispatcher.trigger(ActionTypes.CONNECTION_STATUS_CHANGED, payload);
   }
 };

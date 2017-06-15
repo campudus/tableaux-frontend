@@ -1,8 +1,7 @@
 const Collection = require("ampersand-rest-collection");
 const _ = require("lodash");
-const apiUrl = require("../helpers/apiUrl");
+import apiUrl from "../helpers/apiUrl";
 const Row = require("./Row");
-import * as f from "lodash/fp";
 
 export const INITIAL_PAGE_SIZE = 30;
 export const PAGE_SIZE = 500;

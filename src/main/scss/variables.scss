@@ -44,16 +44,31 @@ $color-red: #D86357;
 $dark-blue-grey-background: #3C4246;
 $color-background-disabled: #FAFAFA;
 $color-foreground-disabled: $color-text-medium-grey;
-$color-needs-translation: #FFA64F;
+$color-needs-translation: #ff9600;
+$color-needs-translation-dark: darken(#ff9600, 5);
 $color-fully-translated: lighten($color-green, 30);
+$color-hover-background: $color-light-link-color;
+$color-hover-foreground: $color-primary;
+
+$color-black: black;
+$color-white: white;
+
+$color-overlay-header: #3c4246;
+$color-overlay-background: #e9e9e9;
+$color-overlay-background-even: #dfdfdf;
+$color-overlay-footer: #fff;
+$color-overlay-question: #fb4;
+$color-overlay-success: #6ec;
+$color-overlay-warning: #f55;
 
 // Fonts ----------------------------------- //
-$font-main: 'Lato', Helvetica Neue, Helvetica, Arial, sans-serif;
-$font-sec: 'Montserrat', Helvetica Neue, Helvetica, Arial, sans-serif;
+$font-main: 'Roboto', Helvetica Neue, Helvetica, Arial, sans-serif;
+$font-sec: $font-main;
 
 // Font sizes ----------------------------------- //
 $font-size-base: 10px;
-$font-size-standard: 1.4rem;
+$font-size-standard: 1.3rem;
+$line-height-standard: 14px;
 
 // Spaces ----------------------------------- //
 $space-padding-header: 5%;
@@ -68,4 +83,20 @@ $space-inner-height-table-header: $space-height-table-header -$space-border-size
 $space-height-cell-content: 25px;
 $space-height-link-delete-button: 23px;
 
+// Button look helpers ---------------------- //
+@mixin rounded-lower-borders {
+  border-radius: 0 0 3px 3px;
+}
 
+@mixin rounded-upper-borders {
+  border-radius: 3px 3px 0 0;
+}
+
+@mixin button-with-icon {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}

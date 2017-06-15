@@ -1,71 +1,36 @@
 import React from "react";
-import {translate} from "react-i18next";
-import {openOverlay, closeOverlay} from "../../actions/ActionCreator";
+import {showDialog} from "./GenericOverlay";
 import i18n from "i18next";
 
-let ConfirmationOverlay = (props) => {
-  const {onYes, onOk, onCancel, content, autoFocus} = props;
-  const onYesOrOk = onOk || onYes;
-  const cancelButton = onCancel
-    ? <button onClick={onCancel} className="button cancel">{i18n.t("common:no")}</button> : null;
-
-  let preventKeyDownOnce = true;
-
-  const onKeyDownHandler = (event) => {
-    console.log("onKeyDownHandler");
-    if (preventKeyDownOnce) {
-      preventKeyDownOnce = !preventKeyDownOnce;
-      event.preventDefault();
+export function confirmDeleteFile(fileName, onYes) {
+  showDialog({
+    type: "question",
+    context: fileName,
+    title: i18n.t("media:delete_file_headline"),
+    heading: <p>{i18n.t("media:confirm_delete_file", {fileName})}</p>,
+    actions: {
+      negative: [i18n.t("common:yes"), onYes],
+      neutral: [i18n.t("common:no"), null]
     }
-  };
-
-  return (
-    <div className="ask confirmation-overlay">
-      {content}
-      <button autoFocus={autoFocus !== false} onClick={onYesOrOk}
-              className="button yes">{onOk ? "Ok" : i18n.t("common:yes")}</button>
-      {cancelButton}
-    </div>
-  );
-};
-
-ConfirmationOverlay.propTypes = {
-  onYes: React.PropTypes.func,
-  onOk: React.PropTypes.func,
-  onCancel: React.PropTypes.func,
-  content: React.PropTypes.element.isRequired,
-  autoFocus: React.PropTypes.bool
-};
-
-export function confirmDeleteFile(fileName, onYes, onNo) {
-  const question = <p>{i18n.t("media:confirm_delete_file", {fileName})}</p>;
-  const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
-                                                   onCancel={onNo} autoFocus={false}/>;
-  openOverlay({
-    head: <span>{i18n.t("media:delete_file_headline")}</span>,
-    body: confirmationOverlay,
-    type: "flexible"
   });
 }
 
-export function confirmDeleteFolder(folderName, onYes, onNo) {
-  const question = <p>{i18n.t("media:confirm_delete_folder_question", {folderName})}</p>;
-  const confirmationOverlay = <ConfirmationOverlay content={question} onYes={onYes}
-                                                   onCancel={onNo} autoFocus={false}/>;
-  openOverlay({
-    head: <span>{i18n.t("media:confirm_delete_folder_headline")}</span>,
-    body: confirmationOverlay,
-    type: "flexible"
+export function confirmDeleteFolder(folderName, onYes) {
+  showDialog({
+    type: "question",
+    context: folderName,
+    title: i18n.t("media:confirm_delete_folder_headline"),
+    heading: <p>{i18n.t("media:confirm_delete_folder_question", {folderName})}</p>,
+    actions: {
+      negative: [i18n.t("common:yes"), onYes],
+      neutral: [i18n.t("common:no"), null]
+    }
   });
 }
 
 export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries) {
-  let totalError,
-    confirmationOverlay,
-    onOk = () => {
-      closeOverlay();
-    },
-    userError = `${i18n.t("common:access_management.no_permission_saving_language_description")}:`;
+  let totalError;
+  const userError = `${i18n.t("common:access_management.no_permission_saving_language_description")}:`;
 
   let allowedLangtagsMarkup, allowedCountriesMarkup;
   const allowedLanguagesLabel = <span>{i18n.t("common:access_management.languages")}:</span>;
@@ -92,12 +57,14 @@ export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries)
         className="allowed-countries">{allowedLangtagsMarkup ? allowedCountriesLabel : null}<span
         className="allowedValues">{allowedCountriesMarkup}</span></strong>
     </p></div>;
-  confirmationOverlay = <ConfirmationOverlay content={totalError} onOk={onOk} autoFocus={false}/>;
 
-  openOverlay({
-    head: <span>{i18n.t("common:access_management.permission_denied_headline")}</span>,
-    body: confirmationOverlay,
-    type: "flexible"
+  showDialog({
+    type: "warning",
+    context: i18n.t("common:error"),
+    title: i18n.t("common:access_management.permission_denied_headline"),
+    heading: i18n.t("table:error_occured_hl"),
+    message: totalError,
+    actions: {neutral: [i18n.t("common:ok"), null]}
   });
 
   console.warn("Access denied. User can not edit this language.");
@@ -106,35 +73,30 @@ export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries)
 export function cellModelSavingError(errorFromServer) {
   console.error("Cell model saved unsuccessfully!", errorFromServer, "error text:", errorFromServer.body);
 
-  let totalError,
-    confirmationOverlay,
-    techError = "Unspecified error",
-    userError = i18n.t("table:error_saving_cell"),
-    onYes = () => {
-      location.reload(true);
-    };
+  const userError = i18n.t("table:error_saving_cell");
+  const techError = (errorFromServer && errorFromServer.body)
+    ? errorFromServer.body
+    : "Unspecified error";
 
-  if (errorFromServer && errorFromServer.body) {
-    techError = errorFromServer.body;
-  }
+  const totalError = <p><strong>Server error:</strong> {techError}</p>;
 
-  totalError = <div><p>{userError}</p><p><strong>Server error:</strong> {techError}</p></div>;
-  confirmationOverlay = <ConfirmationOverlay content={totalError} onYes={onYes}/>;
-
-  openOverlay({
-    head: <span>{i18n.t("table:error_occured_hl")}</span>,
-    body: confirmationOverlay,
-    type: "flexible"
+  showDialog({
+    type: "warning",
+    context: i18n.t("common:error"),
+    title: i18n.t("table:error_occured_hl"),
+    heading: userError,
+    message: totalError,
+    actions: {neutral: [i18n.t("common:ok"), null]}
   });
 }
 
 export function simpleError(errorMsg, errorHead) {
-  const completeErrorMsg = <p>{errorMsg}</p>;
-  const confirmationOverlay = <ConfirmationOverlay content={completeErrorMsg} onOk={() => closeOverlay()}/>;
-
-  openOverlay({
-    head: <span>{errorHead || i18n.t("common:error")}</span>,
-    body: confirmationOverlay,
-    type: "flexible"
+  showDialog({
+    type: "warning",
+    context: i18n.t("common:error"),
+    title: i18n.t("table:error_occured_hl"),
+    heading: errorHead || i18n.t("table:error_occured_hl"),
+    message: errorMsg,
+    actions: {neutral: [i18n.t("common:ok"), null]}
   });
 }

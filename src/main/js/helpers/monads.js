@@ -1,4 +1,4 @@
-import {prop, isFunction} from "lodash/fp";
+import {curryN, isFunction, map, prop, range} from "lodash/fp";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -39,10 +39,30 @@ class Just extends Maybe {
     this._value = value;
   }
 
-  exec(fname, args) {
-    if (isFunction(prop(fname, this._value))) {
-      prop(fname, this._value).apply(this._value, args);
-      return this;
+  exec(fname) {
+    const fn = prop(fname, this._value);
+    if (isFunction(fn)) {
+      try {
+        const args = map(n => arguments[n], range(1, arguments.length));
+        return Maybe.fromNullable(fn.apply(this._value, args));
+      } catch (e) {
+        return Maybe.none();
+      }
+    } else {
+      return Maybe.none();
+    }
+  }
+
+  method(fname) {
+    const fn = prop(fname, this._value);
+    if (isFunction(fn)) {
+      try {
+        const args = map(n => arguments[n], range(1, arguments.length));
+        fn.apply(this._value, args);
+        return this;
+      } catch (e) {
+        return Maybe.none();
+      }
     } else {
       return Maybe.none();
     }
@@ -75,6 +95,14 @@ class Just extends Maybe {
 
 class None extends Maybe {
   map(f) {
+    return this;
+  }
+
+  exec() {
+    return this;
+  }
+
+  method() {
     return this;
   }
 
@@ -230,4 +258,16 @@ const fspy = info => x => {
   return x;
 };
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy};
+const logged = curryN(2)(
+  (msg, fn) => function () {
+    console.log("Logging:", msg);
+    return fn.apply(null, arguments);
+  }
+);
+
+const tests = {
+  title: "Monads",
+  tests: [["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]]]
+};
+
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, tests};

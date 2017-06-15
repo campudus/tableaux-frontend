@@ -135,7 +135,7 @@ const mkClosures = (table, langtag, rowsFilter) => {
   const sortColumnIdx = getColumnIndex(rowsFilter.sortColumnId);
   const isOfKind = kind => f.matchesProperty("kind", kind);
   const getConcatString = cell => {
-    const str = cell.rowConcatString(langtag);
+    const str = cell.displayValue[langtag];
     return (str === RowConcatHelper.NOVALUE) ? "" : cleanString(str);
   };
   const joinLinkStrings = f.compose(
@@ -143,7 +143,7 @@ const mkClosures = (table, langtag, rowsFilter) => {
     f.map(f.defaultTo("")),
     f.map(f.trim),
     f.map(f.prop([langtag])),
-    f.prop("linkStringLanguages")
+    f.prop("displayValue")
   );
   const getSortableCellValue = cell => {
     const rawValue = f.cond([

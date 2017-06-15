@@ -2,9 +2,9 @@ import React from "react";
 import DateTimeEditCell from "./DateTimeEditCell.jsx";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
-import {DateTimeFormats, FallbackLanguage} from "../../../constants/TableauxConstants";
+import {DateTimeFormats} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/monads";
-import {prop, identity} from "lodash/fp";
+import {identity, prop} from "lodash/fp";
 
 class DateTimeCell extends React.Component {
 
@@ -88,7 +88,7 @@ class DateTimeCell extends React.Component {
                                   formatForUser={DateTimeFormats.formatForUser}
                                   formatForServer={DateTimeFormats.formatForServer}
                                   handleEditDone={this.handleEditDone}
-                                  setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
+                                  setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts} />;
     }
 
     return (

@@ -3,6 +3,7 @@ import * as f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
+import {maybe} from "./monads";
 
 const extractAnnotations = obj => {
   const findAnnotationType = typeStr => f.filter(f.matchesProperty("type", typeStr));
@@ -153,6 +154,7 @@ const setCellAnnotation = (annotation, cell) => {
 };
 
 const addTranslationNeeded = (langtags, cell) => {
+  if (!f.isArray(langtags)) console.warn("addTranslationNeeded: array expected, got", langtags);
   const oldCellAnnotations = f.prop("annotations", cell) || {};
   const finishTransaction = (f.isEmpty(f.prop("translationNeeded", oldCellAnnotations)))
     ? (response) => {
@@ -294,15 +296,37 @@ const setRowAnnotation = (annotation, target) => {
 };
 
 // Stateful variable!
-let unlockedRow = null;
-
-const unlockRow = (row, unlockState) => {
-  const unlock = f.isNil(unlockState) || unlockState === true;
-  if (unlockedRow) {
-    unlockedRow.set({unlocked: false});
+class UnlockedRowManager {
+  static unlockedRow = null;
+  static getUnlocked() {
+    return UnlockedRowManager.unlockedRow;
   }
-  row.set({unlocked: unlock});
-  unlockedRow = (unlock) ? row : null;
+  static unlock(row) {
+    UnlockedRowManager.relock();
+    UnlockedRowManager.unlockedRow = row;
+    row.set({unlocked: true});
+  }
+  static relock() {
+    maybe(UnlockedRowManager.getUnlocked())
+      .method("set", {unlocked: false});
+    UnlockedRowManager.unlockedRow = null;
+  }
+}
+
+const unlockRow = (row, unlockState = true) => {
+  if (!unlockState) {
+    UnlockedRowManager.relock();
+  } else {
+    UnlockedRowManager.unlock(row);
+  }
+};
+
+const isTranslationNeeded = langtag => cell => {
+  const langtags = f.prop(["annotations", "translationNeeded", "langtags"], cell);
+
+  return (f.isString(langtag))
+    ? f.contains(langtag, langtags)
+    : !f.isEmpty(langtags);
 };
 
 const isLocked = row => row.final && !row.unlocked;
@@ -316,6 +340,7 @@ export {
   refreshAnnotations,
   setRowAnnotation,
   unlockRow,
-  isLocked
+  isLocked,
+  isTranslationNeeded
 };
 export default setCellAnnotation;

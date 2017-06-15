@@ -33,7 +33,7 @@ class FilterRow extends Component {
   getKeyboardShortcuts = (event) => {
     return {
       enter: (event) => {
-        this.applyFilters(event);
+        this.props.applyFilters(event);
       },
       escape: event => {
         this.filterInput.value = "";
@@ -96,7 +96,7 @@ class FilterRow extends Component {
         {(filter.columnKind === BOOL)
           ? this.boolInput()
           : <span className="filter-mode-wrapper">
-                  <input value={filter.value}
+                  <input value={filter.value || ""}
                          type="text"
                          className="filter-input"
                          disabled={!filterColumnSelected}

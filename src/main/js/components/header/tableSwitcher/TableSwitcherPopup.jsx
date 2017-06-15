@@ -142,7 +142,7 @@ class SwitcherPopup extends React.Component {
 
   getFilteredTables = (filterGroupId, filterTableName) => {
     const self = this;
-    const tables = this.props.tables.models;
+    const tables = _.filter(this.props.tables.models, table => !table.hidden);
 
     // filter tables step 1: only tables in selected group
     const filteredTablesByGroup = _.filter(tables, (table) => {

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
-import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
+import {ColumnKinds, FallBackLanguage, Langtags} from "../../constants/TableauxConstants";
 import TextCell from "./text/TextCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
@@ -47,7 +47,11 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
       : () => {
       };
     if (translationsExist) {
-      openTranslationDialog(flagAllTranslations, flagEmptyTranslations);
+      const column = cell.column;
+      const columnName = f.prop(["displayName", langtag], column)
+        || f.prop(["displayName", FallBackLanguage], column)
+        || f.prop(["displayName"], column);
+      openTranslationDialog(columnName, flagAllTranslations, flagEmptyTranslations);
     } else {
       flagEmptyTranslations();
     }
@@ -69,9 +73,7 @@ class Cell extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      keyboardShortcuts: {}
-    };
+    this.keyboardShortcuts = {};
     this.props.watch(this.props.cell,
       {
         event: "change:value",
@@ -99,13 +101,11 @@ class Cell extends React.Component {
   };
 
   getKeyboardShortcuts = (event) => {
-    return this.state.keyboardShortcuts;
+    return this.keyboardShortcuts;
   };
 
   setKeyboardShortcutsForChildren = (childrenEvents) => {
-    this.setState({
-      keyboardShortcuts: childrenEvents
-    });
+    this.keyboardShortcuts = childrenEvents;
   };
 
   checkFocus = () => {
@@ -115,7 +115,6 @@ class Cell extends React.Component {
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
       if (!focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
-        console.log("Cell will force focus");
         cellDOMNode.focus();
       }
     }
@@ -123,7 +122,9 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
-    console.log("cell clicked: ", cell, "value: ", cell.value);
+    if (process.env.NODE_ENV !== "production") {
+      console.log((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked: ", cell, "value: ", cell.value, cell.displayValue);
+    }
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -164,7 +165,7 @@ class Cell extends React.Component {
 
   render = () => {
     const {cell, langtag, selected, editing} = this.props;
-    const {link, attachment, numeric, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
+    const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
     // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
 
@@ -179,7 +180,8 @@ class Cell extends React.Component {
       [concat]: IdentifierCell,
       [currency]: CurrencyCell,
       [text]: TextCell,
-      [richtext]: TextCell
+      [richtext]: TextCell,
+      [group]: IdentifierCell
     };
 
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";
@@ -212,7 +214,12 @@ class Cell extends React.Component {
 
     const expandCorner = (needsTranslationOtherLanguages)
       ? <div className="needs-translation-other-language"
-             onClick={evt => { evt.stopPropagation(); ActionCreator.toggleRowExpand(cell.row.getId()) } }
+             onClick={
+               evt => {
+                 evt.stopPropagation();
+                 ActionCreator.toggleRowExpand(cell.row.getId());
+               }
+             }
       />
       : null;
 

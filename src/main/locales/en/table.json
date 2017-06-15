@@ -10,8 +10,8 @@
   "copy_cell": "Copy cell contents",
   "paste_cell": "Paste cell contents",
   "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed.",
-  "show_entity_view": "Show preview",
-  "entity_view": "Preview",
+  "show_entity_view": "Show details",
+  "entity_view": "Details",
   "no_dependent_text": "Data record is not linked anywhere.",
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
@@ -37,8 +37,10 @@
   "no_results_found": "No matching columns found",
   "hide_unhide": "Hide/unhide columns",
   "set_header_level": "Heading:",
-  "edit_links": "Link/unlink items",
+  "edit_links": "Add {{title}}",
   "edit_attachments": "Link/unlink files",
+  "show_all_items": "Show all {{nItems}} items",
+  "show_less": "Show less",
   "final": {
     "set_final": "Mark as \"final\"",
     "set_not_final": "Remove \"final\" mark",
@@ -54,7 +56,10 @@
     "translation_needed": "Translation necessary",
     "this_translation_needed": "Translation to \"{{langtag}}\" necessary",
     "no_translation_needed": "No translation needed",
-    "no_such_translation_needed": "No translation to \"{{langtag}}\" necessary"
+    "no_such_translation_needed": "No translation to \"{{langtag}}\" necessary",
+    "expand_all": "Expand all translations",
+    "collapse_all": "Collapse all translations",
+    "is_single_language": "Value can't be localized"
   },
   "jump": {
     "no_such_row": "No row with ID {{row}} in this table",
@@ -83,5 +88,25 @@
   "confirm_copy": {
     "header": "Proceed pasting multi language cell contents?",
     "info": "You copied a multi language cell. By pasting you will overwrite all existing values in the respective languages like this:"
-  }
+  },
+  "menus": {
+    "information": "Information",
+    "edit": "Edit",
+    "data_set": "Data set",
+    "translation": "Translation"
+  },
+  "empty": {
+    "text": "No text has been entered yet",
+    "number": "No number has been entered yet",
+    "links": "No data has been linked yet",
+    "attachments": "No files have been linked yet",
+    "date": "No date has been chosen yet"
+  },
+  "link-overlay-empty": "Nothing linked yet. You can choose data from the following list.",
+  "link-overlay-items-title": "Linked data from table {{name}}",
+  "link-overlay-add-new-row": "Create a new entry in table {{tableName}}",
+  "row-is-locked": "Data is read only",
+  "unlock-row": "Unlock",
+  "clear-date": "No date / time",
+  "entity-view-search-placeholder": "Search for column title or content"
 }

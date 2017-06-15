@@ -84,7 +84,20 @@ var TableauxConstant = {
     SET_COLUMNS_VISIBILITY: null,
 
     COPY_CELL_CONTENT: null,
-    PASTE_CELL_CONTENT: null
+    PASTE_CELL_CONTENT: null,
+    BROADCAST_DATA_CHANGE: null,
+
+    CONNECTION_STATUS_CHANGED: null,
+
+    SWITCH_ENTITY_VIEW_LANGUAGE: null,
+    ENTITY_VIEW_ROW_LOADED: null,
+    SET_TRANSLATION_VIEW: null,
+    FILTER_ENTITY_VIEW: null,
+    FILTER_LINKS: null,
+    PASS_ON_KEYSTROKES: null,
+    CHANGE_ENTITY_VIEW_ROW: null,
+    CHANGE_HEADER_TITLE: null,
+    UPDATE_OVERLAY: null
   }),
 
   Directions: keyMirror({
@@ -106,7 +119,8 @@ var TableauxConstant = {
     attachment: null,
     datetime: null,
     currency: null,
-    date: null
+    date: null,
+    group: null
   }),
 
   LanguageType: keyMirror({
@@ -138,7 +152,7 @@ var TableauxConstant = {
   // Fixed pixel height of a single row including border
   RowHeight: 46,
 
-  PageTitle: "DataCenter",
+  PageTitle: "GRUD",
 
   get Langtags() {
     return languagetags || null;

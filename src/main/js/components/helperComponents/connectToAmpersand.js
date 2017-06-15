@@ -16,16 +16,19 @@ const connectToAmpersand = (Component) => class extends React.Component {
     Object.assign(this, Events);
   }
 
-  watch = (model, {events, force} = {}) => {
+  watch = (model, {events, force, callback} = {}) => {
     if (!model || !(model.isCollection || model.isState || model.isModel)) {
-      // if it isn't a ampersand state/model or collection
+      // if it isn't an ampersand state/model or collection
       // ... don't watch for changes
       return;
     }
 
-    const _events = events || (model.isCollection ? "add remove reset" : "change");
+    const _events = events || (model.isCollection ? "add remove reset change" : "change");
 
     this.listenTo(model, _events, () => {
+      if (callback) {
+        callback(model);
+      }
       if (force && this._Component) {  // avoid problems during unmounting
         this._Component.forceUpdate(); // skip Component's shouldComponentUpdate
       } else {
@@ -36,14 +39,14 @@ const connectToAmpersand = (Component) => class extends React.Component {
 
   componentDidMount = () => {
     fp.values(this.props).forEach(model => this.watch(model));
-  }
+  };
 
   componentWillUnmount = () => {
     this.stopListening();
   };
 
   render() {
-    return <Component ref={comp => this._Component = comp} {...this.props} watch={this.watch} />;
+    return <Component ref={comp => { this._Component = comp; }} {...this.props} watch={this.watch} />;
   }
 };
 

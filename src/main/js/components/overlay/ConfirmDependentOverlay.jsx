@@ -1,88 +1,89 @@
-import React from "react";
-import {translate} from "react-i18next";
-import ActionCreator, {openOverlay, closeOverlay, removeRow} from "../../actions/ActionCreator";
+import React, {Component, PropTypes} from "react";
+import ActionCreator, {openOverlay, removeRow} from "../../actions/ActionCreator";
 import RowConcatHelper from "../../helpers/RowConcatHelper";
 import i18n from "i18next";
 import DependentRowsList from "../../components/rows/DependentRowsList";
-let DeleteRowOverlayFooter = (props) => {
-  return (
-    <div className="button-wrapper">
-      <button className="button negative" onClick={props.onYes}>{i18n.t("common:delete_yes_explicit")}</button>
-      <button className="button neutral" onClick={closeOverlay}>{i18n.t("common:cancel")}</button>
-    </div>
-  );
-};
-DeleteRowOverlayFooter.propTypes = {
-  onYes: React.PropTypes.func.isRequired
-};
+import Header from "./Header";
+import Footer from "./Footer";
+import InfoBox from "./InfoBox";
 
-let DeleteRowOverlayBody = (props) => {
-  const {row, langtag} = props;
-  const firstCell = row.cells.at(0);
-  const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
-  const hasDependencyText = () => <p>{i18n.t("table:delete_row_dependent_text")}</p>;
-  const hasNoDependencyText = <p>{i18n.t("table:no_dependent_text")}</p>;
+class RowsOverlay extends Component {
+  static propTypes = {
+    row: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    deleteInfo: PropTypes.bool
+  };
 
-  const builtDependentView = <DependentRowsList row={row} langtag={langtag}
-                                                textHasDependency={hasDependencyText}
-                                                textHasNoDependency={hasNoDependencyText} />;
-  return (
-    <div className="delete-row-confirmation">
-      <div className="delete-row-question">
-        <h1>{i18n.t("table:confirm_delete_row", {rowName: rowDisplayLabel})}</h1>
+  constructor(props) {
+    super(props);
+    this.state = {depMessage: <p>{i18n.t("table:fetching_dependent_rows")}</p>};
+  }
+
+  hasDependencies = n => {
+    this.setState({depMessage: <p>{i18n.t("table:delete_row_dependent_text")}</p>});
+  };
+
+  hasNoDependencies = () => {
+    this.setState({depMessage: <p>{i18n.t("table:no_dependent_text")}</p>});
+  };
+
+  render() {
+    const {depMessage} = this.state;
+    const {row, langtag, deleteInfo} = this.props;
+    const firstCell = row.cells.at(0);
+    const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
+
+    return (
+      <div className="delete-row-confirmation">
+        {(deleteInfo)
+          ? (<InfoBox className="item"
+                      type="warning"
+                      heading={i18n.t("table:confirm_delete_row", {rowName: rowDisplayLabel})}
+                      message={depMessage}
+            />
+          )
+          : null
+        }
+        <DependentRowsList className="item"
+                           row={row} langtag={langtag}
+                           hasDependency={this.hasDependencies}
+                           hasNoDependency={this.hasNoDependencies}
+        />
       </div>
-      {builtDependentView}
-    </div>
-  );
-};
-DeleteRowOverlayBody.propTypes = {
-  dependency: React.PropTypes.array
-};
+    );
+  }
+}
 
 export function confirmDeleteRow(row, langtag) {
   const onYesRowDelete = () => {
     removeRow(row.tableId, row.getId());
     ActionCreator.resetTableURL();
-    closeOverlay();
   };
 
+  const buttons = {
+    negative: [i18n.t("common:delete_yes_explicit"), onYesRowDelete],
+    neutral: [i18n.t("common:cancel"), null]
+  };
+
+  const cell = row.cells.at(0);
+  const itemName = RowConcatHelper.getCellAsStringWithFallback(cell.value, cell.column, langtag);
+
   openOverlay({
-    head: <span>{i18n.t("table:delete_row")}</span>,
-    body: <DeleteRowOverlayBody row={row} langtag={langtag} />,
-    footer: <DeleteRowOverlayFooter onYes={onYesRowDelete} />,
-    type: "normal"
+    head: <Header context={i18n.t("table:delete_row")} title={itemName} />,
+    body: <RowsOverlay row={row} langtag={langtag} deleteInfo={true} />,
+    footer: <Footer actions={buttons} />,
+    type: "full-height"
   });
 }
 
 export function openShowDependency(row, langtag) {
-  const ShowDependencyOverlayFooter = (props) => {
-    return (
-      <div className="button-wrapper">
-        <button className="button neutral" onClick={() => {
-          closeOverlay();
-        }}>{i18n.t("common:close")}</button>
-      </div>
-    );
-  };
-
-  const ShowDependencyOverlayBody = (props) => {
-    const hasDependencyText = (count) => <p>{i18n.t("table:show_dependency_text", {count: count})}</p>;
-    const hasNoDependencyText = <p>{i18n.t("table:no_dependent_text")}</p>;
-
-    return (
-      <div className="show-dependency">
-        <DependentRowsList row={row} langtag={langtag}
-                           textHasDependency={hasDependencyText}
-                           textHasNoDependency={hasNoDependencyText} />
-      </div>
-    );
-  };
+  const cell = row.cells.at(0);
+  const itemName = RowConcatHelper.getCellAsStringWithFallback(cell.value, cell.column, langtag);
 
   openOverlay({
-    head: <span>{i18n.t("table:dependencies")}</span>,
-    body: <ShowDependencyOverlayBody />,
-    footer: <ShowDependencyOverlayFooter />,
-    type: "normal"
+    head: <Header context={i18n.t("table:dependencies")} title={itemName} />,
+    body: <RowsOverlay row={row} langtag={langtag} />,
+    type: "full-height"
   });
 }
 

@@ -1,6 +1,6 @@
 import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
-import {ColumnKinds, Lanagtags} from "../../constants/TableauxConstants";
+import {ColumnKinds} from "../../constants/TableauxConstants";
 import {convert, canConvert} from "../../helpers/cellValueConverter";
 import React from "react";
 import i18n from "i18next";
@@ -8,12 +8,15 @@ import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
 import {hasUserAccessToLanguage, isUserAdmin, getUserLanguageAccess} from "../../helpers/accessManagementHelper";
 import {isLocked} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
+import Header from "../overlay/Header";
+import Footer from "../overlay/Footer";
 
 const showErrorToast = msg => {
   ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg)}</div>, 3000);
 };
 
-const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage);
+const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage)
+  || (dst.isMultiLanguage && f.every(v => f.isEmpty(v) && !f.isNumber(v), f.values(f.prop("value", dst))));
 const canCopyLinks = (src, dst) => dst.column.id === src.column.id && dst.tableId === src.tableId;
 
 const calcNewValue = function (src, srcLang, dst, dstLang) {
@@ -82,37 +85,26 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
       showErrorToast("table:copy_kind_error");
       return;
     }
-    const saveAndClose = (event) => {
+    const save = (event) => {
       if (event) {
         event.preventDefault();
       }
       ActionCreator.changeCell(dst, newValue);
-      ActionCreator.closeOverlay();
+    };
+    const buttons = {
+      positive: [i18n.t("common:save"), save],
+      neutral: [i18n.t("common:cancel"), null]
     };
     ActionCreator.openOverlay({
-      keyboardShortcuts: {enter: saveAndClose},
-      head: <div className="overlay-header">{i18n.t("table:confirm_copy.header")}</div>,
+      head: <Header title={i18n.t("table:copy_cell")} />,
       body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
                                         oldVals={dst.value}
                                         newVals={newValue}
-                                        saveAndClose={saveAndClose}
+                                        saveAndClose={save}
                                         kind={dst.kind}
       />,
-      footer: (
-        <div className="button-wrapper">
-          <a href="#" className="button positive"
-             onClick={saveAndClose}
-          >
-            {i18n.t("common:save")}
-          </a>
-          <a href="#" className="button neutral"
-             onClick={() => ActionCreator.closeOverlay()}
-          >
-            {i18n.t("common:cancel")}
-          </a>
-        </div>
-      ),
-      type: "flexible"
+      footer: <Footer actions={buttons} />,
+      keyboardShortcuts: {enter: event => { save(event); ActionCreator.closeOverlay(); }}
     });
   }
 };

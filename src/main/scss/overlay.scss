@@ -1,12 +1,111 @@
-$overlay-headline-height: 50px;
+@import "variables";
 
-#overlay {
-  display: none;
+$overlay-headline-height: 110px;
+$overlay-footer-height: 50px;
+$overlay-border-radius: 5px;
 
-  #link-select-list {
-    outline: none;
+.overlay {
+  .overlay-wrapper {
+    &.full-height {
+      left: 20vw;
+      width: 60vw;
+      height: 100vh;
+      max-height: 100vh;
+      margin: 0;
+      transition: transform 0.4s;
+      border-radius: 0;
+
+      .header-wrapper {
+        border-radius: 0;
+      }
+
+      .overlay-content {
+        max-height: none;
+      }
+
+      &.is-left {
+        transition: transform 0.5s;
+        transform: translateX(-20vw);
+      }
+      &.is-right {
+        &:not(.is-left) {
+          transition: transform 0.4s;
+          transform: translateX(20vw);
+
+          &.is-new {
+            animation: from-right 0.4s 1;
+          }
+
+          &.is-exiting {
+            transform: translateX(80vw);
+            transition: transform 0.4s;
+          }
+        }
+      }
+    }
   }
 
+  @keyframes from-right {
+    from {
+      transform: translateX(80vw)
+    }
+    to {
+      transform: translateX(20vw)
+    }
+  }
+}
+
+//--------------------------------------------------------------------------------
+// Animation fix for IE
+//--------------------------------------------------------------------------------
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .overlay {
+    .overlay-wrapper {
+      &.full-height {
+        transition: left 0.4s;
+
+        &.is-left {
+          transition: left 0.5s;
+          transform: none;
+          left: 0vw; // redundant unit is required here
+        }
+        &.is-right {
+          &:not(.is-left) {
+            transition: left 0.4s;
+            transform: none;
+            left: 40vw;
+
+            &.is-new {
+              animation: ie-from-right 0.4s 1;
+            }
+
+            &.is-exiting {
+              left: 100vw;
+              transform: none;
+              transition: left 0.4s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes ie-from-right {
+  from {
+    left: 100vw;
+  }
+  to {
+    left: 40vw;
+  }
+}
+
+//--------------------------------------------------------------------------------
+// Now back for real browsers
+//--------------------------------------------------------------------------------
+
+$dist-from-top: 20px;
+.overlay {
   &.open {
     display: block;
     position: fixed;
@@ -17,422 +116,452 @@ $overlay-headline-height: 50px;
     z-index: 99;
   }
 
-  &.flexible {
-    display: block;
-
-    #overlay-wrapper {
-      top: 35%;
-      height: auto;
-
-      .content-scroll {
-        position: static;
-
-        div:last-of-type {
-          margin-bottom: 25px;
-        }
-      }
-    }
-  }
-
-  &.crop {
-
-  }
-
-  .overlay-header {
-    padding: 0 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  display: none;
+  background-color: transparentize($color-text-medium-grey, 1);
 
   .background {
-    z-index: 1;
-    background-color: black;
     position: absolute;
-    top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    @include opacity(0.75);
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
   }
 
-  #overlay-wrapper {
-    max-width: 800px;
-    width: 100%;
-    background-color: $color-background-very-light-grey;
-    z-index: 2;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 70%;
-    overflow: hidden;
-    @include transform(translate(-50%, -50%));
-    @include border-radius(5px);
+  &.active {
+    background-color: transparentize($color-text-medium-grey, 0.3);
   }
-
-  .content-scroll {
-    overflow-y: auto;
-    top: $overlay-headline-height;
-    bottom: 0px;
-    position: absolute;
-    left: 0px;
-    width: 100%;
-    z-index: 0;
-  }
-
-  #confirm-copy-overlay-content {
-    padding: 35px;
-    padding-bottom: 75px;
-    text-align: center;
-
-    .details-container {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      margin-top: 20px;
-      max-height: 250px;
-      overflow-y: auto;
-
-      .details {
-        flex: 1;
-        padding: 10px;
-
-        .entry {
-          padding: 5px 0;
-          width: 100%;
-
-          .icon {
-            display: inline-block;
-            font-weight: bold;
-            width: 50px;
-
-            img{
-              padding-right: 5px;
-            }
-          }
-
-          .text {
-            display: inline;
-          }
-        }
-
-        &.left {
-          text-align: left;
-          .text {
-            text-decoration-color: $color-text-light-grey;
-            text-decoration: line-through;
-          }
-
-          .entry {
-            &::after {
-              font-family: FontAwesome;
-              content: "\f178";
-              float: right;
-            }
-          }
-        }
-
-        &.right {
-         text-align: left;
-        }
-      }
-    }
-  }
-
-  #overlay-content {
-    padding: 3.5rem;
-    overflow-y: auto;
-    box-sizing: border-box;
-    height: 100%;
+  .overlay-wrapper {
     position: relative;
+    max-width: 70vw;
+    min-width: 40vw;
+    max-height: 70vh;
+    margin: auto;
+    margin-top: 150px;
+    border-radius: $overlay-border-radius;
+    display: flex;
+    flex-flow: column nowrap;
 
-    p {
-      line-height: 1.5em;
-    }
-
-    p + p {
-      margin-top: 1em;
-      margin-bottom: 1em;
-    }
-
-    strong {
-      font-weight: bold;
-    }
-
-
-    .context-menu {
-      right: 3.5rem;
-      top: 77px;
-
-      .active {
-        background-color: $color-border-grey;
-      }
-    }
-
-    .search-input-wrapper2 {
-      height: 70px;
-      overflow: hidden;
-
-      .search-input-wrapper {
-        position: relative;
-        height: auto;
-      }
-
-      i:first-of-type {
-        position: absolute;
-        right: 1.8em;
-        top: 50%;
-        margin-top: -0.5em;
-      }
-
-      i:last-of-type {
-        position: absolute;
-        right: 1em;
-        top: 50%;
-        margin-top: -0.5em;
-      }
-    }
-
-    .search-input {
-      font: inherit;
-      width: 100%;
-      padding: 0.8em 1.5em;
-      margin: 0;
-      border-radius: 2em;
-      cursor: pointer;
-      background-color: white;
-
-      border: 1px solid $color-grey-dark;
-
-      box-sizing: border-box;
-      outline: none;
+    background-color: $color-overlay-background;
+    .header-wrapper {
+      $vspacing: 50px;
+      height: $overlay-headline-height;
+      background-color: $color-overlay-header;
+      border-top-left-radius: $overlay-border-radius;
+      border-top-right-radius: $overlay-border-radius;
       position: relative;
 
-      &:focus {
-        background-color: #fff;
+      display: grid;
+      display: -ms-grid;
+      grid-template-columns: $vspacing 1fr 2*$vspacing $vspacing $vspacing;
+      -ms-grid-columns: $vspacing 1fr 2*$vspacing $vspacing $vspacing;
+      grid-template-rows: $vspacing 1fr;
+      -ms-grid-rows: $vspacing 1fr;
+
+      a {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .close-button:hover svg {
+        fill: $color-text-medium-grey;
+      }
+
+      .labels {
+        -ms-grid-column: 2;
+        -ms-grid-column-span: 3;
+        grid-column-start: 2;
+        grid-column-end: 5;
+        -ms-grid-row: 2;
+        grid-row-start: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        .context-info {
+          color: $color-text-medium-grey;
+          font-size: 14px;
+        }
+        .title {
+          color: $color-primary-contrast-text;
+          font-size: 20px;
+
+          .column-name {
+            font-weight: 500;
+          }
+        }
+      }
+
+      &.with-components {
+        height: $overlay-headline-height + 40px;
+        grid-template-rows: $vspacing 1fr 1fr;
+        -ms-grid-rows: $vspacing 1fr 1fr;
+      }
+    }
+  }
+
+  .overlay-content {
+    max-height: 60vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1;
+
+    .content-items {
+      .item-header {
+        font-weight: bold;
+        text-transform: uppercase;
+        padding-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+
+        .svg-icon {
+          height: 1em;
+          max-width: 2em;
+        }
+
+        i {
+          color: $color-primary;
+          margin-left: 10px;
+        }
+
+        .column-icon {
+          color: $color-text-medium-grey;
+
+          &.button {
+            @include button-look();
+            text-transform: none;
+          }
+
+          .svg-icon {
+            padding: 0 8px 0 0;
+            width: 0.8em;
+            max-width: 0.8em;
+          }
+        }
+      }
+
+      .item {
+        width: 100%;
+        padding: 30px 50px;
+        box-sizing: border-box;
+        border-color: transparent;
+
+        &:hover {
+          border-color: $color-primary;
+        }
+
+        &:nth-child(even) {
+          background-color: $color-overlay-background-even;
+        }
+
+        &:nth-child(odd) {
+          background-color: $color-overlay-background;
+        }
+
+        .item-description {
+          padding: 5px 0;
+          color: $color-text-medium-grey;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          i {
+            margin-right: 10px;
+          }
+        }
+
+        .item-content {
+          border-color: inherit;
+
+          .langtag-label {
+            margin-left: 5px;
+            font-weight: 500;
+          }
+        }
       }
     }
 
-    .input {
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .info {
       box-sizing: border-box;
-      padding: 10px;
-      font: inherit;
-      height: 90%;
-      width: 100%;
-      max-width: 100%;
-      display: block;
-      resize: none;
-      line-height: 1.5em;
+      width: 90%;
+      margin-left: 5%;
+      border-left: $overlay-border-radius solid $color-text-light-grey;
+      color: $color-text-light-grey;
+      border-top-left-radius: $overlay-border-radius;
+      border-bottom-left-radius: $overlay-border-radius;
+      background-color: $color-primary-contrast-text;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
 
+      &.important {
+        border-left-color: $color-very-dark;
+        color: $color-very-dark;
+      }
+
+      &.question {
+        border-left-color: $color-overlay-question;
+        color: $color-overlay-question;
+      }
+
+      &.success {
+        border-left-color: $color-overlay-success;
+        color: $color-overlay-success;
+      }
+
+      &.warning {
+        border-left-color: $color-overlay-warning;
+        color: $color-overlay-warning;
+      }
+
+      .info-icon {
+        padding: 20px 0 20px 20px;
+      }
+
+      .message-content {
+        padding: 20px;
+
+        .headline {
+          color: $color-very-dark;
+          font-size: larger;
+
+          &:not(:last-child) {
+            margin-bottom: 15px;
+          }
+        }
+        .message {
+          font-size: small;
+          color: $color-text-medium-grey;
+        }
+      }
+    }
+
+    input[type=text], input[type=numeric], textarea {
+      background-color: transparent;
       outline: none;
-      background-color: white;
-
-      border: 1px solid $color-text-medium-grey;
+      width: 100%;
+      margin-top: 5px;
+      border: none;
+      border-color: inherit !important; // TODO: Remove important once media styles are done
+      border-bottom: 1px solid;
+      transition: border 0.3s;
 
       &:focus {
-        border: 1px solid $color-primary;
-        @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
+        border-color: $color-primary !important;
+      }
+    }
+
+    .checkbox {
+      background-color: $color-background-very-light-grey;
+      border: 2px solid $color-text-light-grey;
+      border-radius: 3px;
+      width: 23px;
+      height: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    & > :first-child {
+      margin-top: 20px;
+    }
+    & > :last-child {
+      margin-bottom: 20px;
+    }
+  }
+
+  footer {
+    width: 100%;
+    box-sizing: border-box;
+    bottom: 0;
+    height: $overlay-footer-height;
+    border-bottom-right-radius: $overlay-border-radius;
+    border-bottom-left-radius: $overlay-border-radius;
+    background-color: $color-overlay-footer;
+    border-top: 2px solid $color-border-grey;
+
+    .action-buttons {
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      .button {
+        @include button-look();
+        margin: 0 10px;
       }
     }
   }
 
-  .button {
-    @include button-look();
-    margin: 20px 10px 0 10px;
+  .link-list {
+    max-height: 430px;
+    & > .can-expand {
+      .link-label-wrapper-2:last-of-type .link-label-wrapper {
+        background: linear-gradient($color-primary-contrast-text, transparent);
+        color: $color-text-light-grey;
+        &:hover {
+          background: linear-gradient($color-hover-background, transparent);
+        }
+      }
+    }
+
+    div {
+      max-height: 430px;
+    }
+
+    .link-label-wrapper-2 {
+      position: relative;
+      height: 42px;
+      .link-label-wrapper {
+        width: 100%;
+        background-color: $color-primary-contrast-text;
+        color: $color-primary-text;
+        border-radius: 3px;
+        padding: 12px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        position: absolute;
+        height: 37px;
+
+        &:hover {
+          background-color: $color-hover-background;
+        }
+
+        .text-wrapper {
+          max-width: 90%;
+          overflow: hidden;
+          height: $line-height-standard;
+        }
+
+        .link-label {
+          display: block;
+          i {
+            float: right;
+          }
+        }
+
+        &.has-buttons {
+          padding: 0;
+          background-color: transparent;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          & > div {
+            background-color: $color-white;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            height: 37px;
+            border-radius: 3px;
+
+            i {
+              color: $color-primary;
+            }
+
+            &:hover {
+              background-color: $color-hover-background;
+              color: $color-hover-foreground;
+            }
+          }
+
+          .main-button {
+            flex: 1;
+            justify-content: space-between;
+
+            a {
+              width: 100%;
+            }
+          }
+
+          .unlink-button {
+            width: 16px;
+            margin-left: 2px;
+            justify-content: center;
+          }
+        }
+      }
+
+    }
+
+    .expand-button {
+      display: block;
+      text-align: center;
+      text-transform: uppercase;
+      color: $color-primary;
+      i {
+        margin-right: 5px;
+      }
+    }
   }
+}
 
-  h2 {
-    text-align: center;
-    background-color: $color-light-link-color;
-    border-bottom: 2px solid $color-darker-link-color;
-    color: $color-text-link-color;
-    font-size: 1.4rem;
-    font-weight: normal;
-    height: $overlay-headline-height;
-    line-height: $overlay-headline-height;
-    white-space: nowrap;
-    position: relative;
-    z-index: 2;
-  }
-
-  .column-name.with-link {
-    cursor: pointer;
-    padding: 2px 8px;
-    @include border-radius(3px);
-    margin-right: 10px;
-    border: 2px solid $color-darker-link-color;
-
-    &:hover {
-      //color: white;
-      background-color: $color-darker-link-color;
+#confirm-copy-overlay-content {
+  .item {
+    display: flex;
+    justify-content: space-between;
+    .country-icon {
+      flex: 3;
+      .langtag-label {
+        font-weight: 500;
+        margin-left: 5px;
+      }
+    }
+    .old {
+      flex: 10;
+      .text {
+        text-decoration: line-through;
+      }
     }
 
     i {
-      margin-right: 5px;
+      flex: 1;
+    }
+
+    .new {
+      float: right;
+      flex: 10;
     }
   }
+}
 
-  .overlay-table-row {
-    margin-right: 25px;
+.breadcrumb-wrapper {
+  position: absolute;
+  left: 0;
+  bottom: 2vh;
+  z-index: 100;
+  max-width: 35vw;
+  background-color: $color-overlay-header;
+  border-bottom-right-radius: $overlay-border-radius;
+  border-top-right-radius: $overlay-border-radius;
+  padding: 20px;
+
+  a {
     display: block;
-    padding: 0 0.8em;
-    background-color: white;
-    margin-bottom: 10px;
-    @include border-radius(3px);
-    cursor: pointer;
-    border: 1px solid $color-grey-dark;
-    border-bottom: 3px solid $color-grey-dark;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 40px;
-    line-height: 40px;
-    @include box-sizing(border-box);
-
-    &.selected {
-      border-color: $color-darker-link-color;
-      background-color: $color-light-link-color;
-    }
-
-    &.isLinked {
-
-      background-color: $color-primary;
-      color: $color-primary-contrast-text;
-      border-color: $color-primary-darker;
-
-      &.selected {
-        display: block;
-
-        border-color: $color-red;
-        background-color: $color-light-link-color;
-        color: $color-primary-text;
-
-        &::after {
-          color: lightcoral;
-          font-weight: bold;
-          content: "\f057";
-          font-family: FontAwesome;
-          font-size: larger;
-          float: right;
-          text-align: right;
-        }
-      }
-    }
-  }
-
-  &.full-flex {
-    display: block;
-
-    #overlay-wrapper {
-      min-width: 600px;
-      width: 90%;
-      max-width: none;
-      min-height: 520px;
-      height: 80%;
-      max-height: none;
-    }
-
-    .content-scroll {
-      text-align: center;
-
-      #overlay-content {
-        height: auto;
-      }
-    }
-
-  }
-
-  &.no-scroll {
-    #overlay-content, .content-scroll {
-      overflow: hidden;
-    }
-  }
-
-  &.has-footer {
-    footer {
-      height: 50px;
-      width: 100%;
-      position: absolute;
-      bottom: 0;
-      border-top: 1px solid $color-grey-dark;
-      background-color: darken($color-background-very-light-grey, 2);
-    }
-
-    .content-scroll {
-      bottom: 50px;
-    }
-
-    .button-wrapper {
-      text-align: center;
-
-      .button {
-        margin-top: 10px;
-      }
-    }
-
-  }
-
-  #overlay-content h1 {
-    font-family: $font-main;
-    font-size: 20px;
-  }
-
-  //Overlay for kind text
-  #overlay-content textarea.text-editor {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    padding: 20px;
-    left: 0px;
-    bottom: 0px;
     height: 100%;
-    border: 0;
-    overflow-y: auto;
+    width: 100%;
 
-    &:focus {
-      border: 0;
-      border-bottom: 1px solid $color-grey-dark;
+    .context {
+      //font-size: smaller;
+      font-weight: 500;
+      color: $color-text-medium-grey;
     }
-  }
-
-  //Overlay for smaller confirmation popups
-
-  .confirmation-overlay {
-    text-align: center;
-    p {
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 450px;
-    }
-  }
-
-  .allowed-languages, .allowed-countries {
-    display: block;
-
-    .allowedValues {
-      display: inline-block;
-      margin-left: 5px;
-
-      span {
-        font-weight: bold;
-        display: inline-block;
-        margin: 0 0.2em;
-
-        &:first-child {
-          margin-left: 0;
-        }
-
-        &:after {
-          content: ",";
-        }
-        &:last-child:after {
-          content: "";
-        }
+    .title {
+      font-size: medium;
+      color: $color-primary-contrast-text;
+      i {
+        margin-right: 5px;
       }
     }
   }
-
-  .VirtualScroll {
-    outline-style: none;
-  }
-
 }

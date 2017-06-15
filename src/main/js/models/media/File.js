@@ -1,6 +1,6 @@
 var AmpersandModel = require("ampersand-model");
 
-var apiUrl = require("../../helpers/apiUrl");
+import apiUrl from "../../helpers/apiUrl";
 
 var File = AmpersandModel.extend({
   idAttribute: "uuid",

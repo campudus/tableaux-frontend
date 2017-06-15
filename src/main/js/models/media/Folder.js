@@ -1,11 +1,9 @@
-var AmpersandModel = require("ampersand-model");
+import AmpersandModel from "ampersand-model";
+import apiUrl from "../../helpers/apiUrl";
+import FoldersCollection from "./FoldersCollection";
+import FilesCollection from "./FilesCollection";
 
-var apiUrl = require("../../helpers/apiUrl");
-
-var FoldersCollection = require("./FoldersCollection");
-var FilesCollection = require("./FilesCollection");
-
-var Folder = AmpersandModel.extend({
+const Folder = AmpersandModel.extend({
   props: {
     id: {
       type: "number",
@@ -32,7 +30,7 @@ var Folder = AmpersandModel.extend({
   },
 
   url: function () {
-    var base = this.urlRoot();
+    const base = this.urlRoot();
 
     if (this.isNew() || isNaN(this.getId())) {
       return base;

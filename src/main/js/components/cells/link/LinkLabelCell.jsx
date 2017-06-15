@@ -1,81 +1,45 @@
-import React, {Component, PropTypes} from "react";
+import React, {PropTypes} from "react";
+import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
+import * as f from "lodash/fp";
+import {DefaultLangtag} from "../../../constants/TableauxConstants";
 
-export default class LinkLabelCell extends Component {
-
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    linkElement: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-
-    // Used for performance reason to get cached derived value from the cell model
-    linkIndexAt: PropTypes.number.isRequired,
-
-    // clickable label with delete button (optional)
-    deletable: PropTypes.bool.isRequired,
-    onDelete: PropTypes.func,
-
-    // clickable label (optional)
-    clickable: PropTypes.bool
+const LinkLabelCell = props => {
+  const {cell, clickable, langtag, linkElement, linkIndexAt} = props;
+  const getLinkName = () => {
+    return f.find( // first truthy value
+      f.isString,
+      [...f.props([[linkIndexAt, langtag], [linkIndexAt, DefaultLangtag]], cell.displayValue), ""]
+    );
   };
 
-  getLinkName = () => {
-    const {cell, langtag, linkIndexAt} = this.props;
-    return cell.linkString(linkIndexAt, langtag);
+  const tableId = cell.column.toTable;
+  const rowId = linkElement.id;
+
+  const clickFn = evt => {
+    loadAndOpenEntityView({
+      tables: cell.tables,
+      tableId,
+      rowId
+    }, langtag);
+    evt.stopPropagation();
   };
 
-  removeLinkHandler = (event) => {
-    event.preventDefault();
-    this.props.onDelete(this.props.linkElement.id);
-  };
+  return <a href="#" onClick={(clickable) ? clickFn : () => {
+  }} className="link-label">
+    <div className="label-text">{getLinkName()}</div>
+  </a>;
+};
 
-  renderDeletable = () => {
-    const {langtag, cell, onDelete} = this.props;
+LinkLabelCell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  linkElement: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
 
-    if (!onDelete) {
-      throw new Error("onDelete property required is deletable");
-    }
+  // Used for performance reason to get cached derived value from the cell model
+  linkIndexAt: PropTypes.number.isRequired,
 
-    const tableId = cell.column.toTable;
-    const rowId = this.props.linkElement.id;
-
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
-
-    return <a href={href} target="_blank" className="link-label delete">
-      {this.getLinkName()}
-      <i onClick={this.removeLinkHandler} className="fa fa-times" />
-    </a>;
-  };
-
-  renderClickable = () => {
-    const {langtag, cell} = this.props;
-
-    const tableId = cell.column.toTable;
-    const rowId = this.props.linkElement.id;
-
-    const href = `/${langtag}/tables/${tableId}/rows/${rowId}?filter`;
-
-    return <a href={href} target="_blank" className="link-label delete">
-      {this.getLinkName()}
-    </a>;
-  };
-
-  renderLabel = () => {
-    return <span className="link-label">
-        {this.getLinkName()}
-      </span>;
-  };
-
-  render() {
-    const {clickable, deletable, cell} = this.props;
-
-    if (deletable) {
-      return this.renderDeletable();
-    } else if (clickable) {
-      return this.renderClickable();
-    } else {
-      return this.renderLabel();
-    }
-  }
-}
+  // clickable label (optional)
+  clickable: PropTypes.bool
+};
 
 module.exports = LinkLabelCell;

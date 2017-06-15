@@ -1,8 +1,9 @@
-var React = require("react");
-var Dispatcher = require("../../../dispatcher/Dispatcher");
-var ActionTypes = require("../../../constants/TableauxConstants").ActionTypes;
+import React from "react";
+import _ from "lodash";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../../constants/TableauxConstants";
 
-var TextArea = React.createClass({
+const TextArea = React.createClass({
 
   propTypes: {
     initialContent: React.PropTypes.string,
@@ -14,8 +15,8 @@ var TextArea = React.createClass({
   content: null,
 
   componentDidMount: function () {
-    var inputArea = this.refs.inputArea;
-    var text = inputArea.value;
+    const inputArea = this.refs.inputArea;
+    const text = inputArea.value;
     // Sets cursor to end of input field
     inputArea.value = ""; // textarea must be empty first to jump to end of text
     inputArea.value = text;
@@ -51,12 +52,18 @@ var TextArea = React.createClass({
     if (_.isNil(this.content)) {
       this.content = this.props.initialContent;
     }
+    // TODO change to new refs handling
     return (
       <div>
-        <textarea autoFocus className="input text-editor" type="text" defaultValue={this.content} onChange={this.onChangeHandler} ref="inputArea"></textarea>
+        <textarea autoFocus
+                  className="input text-editor"
+                  type="text"
+                  defaultValue={this.content}
+                  onChange={this.onChangeHandler}
+                  ref="inputArea"></textarea>
       </div>
     );
   }
 });
 
-module.exports = TextArea;
+export default TextArea;

@@ -1,11 +1,9 @@
 import React, {Component, PropTypes} from "react";
-import * as _ from "lodash";
-import LinkOverlay from "./LinkOverlay.jsx";
+import {openLinkOverlay} from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
-import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
+import {isUserAdmin} from "../../../helpers/accessManagementHelper";
 
 @connectToAmpersand
 class LinkEditCell extends Component {
@@ -18,7 +16,11 @@ class LinkEditCell extends Component {
 
   constructor(props) {
     super(props);
-    this.props.watch(props.cell.row, {events: "change:unlocked", force: true});
+    this.props.watch(props.cell.row,
+      {
+        events: "change:unlocked",
+        force: true
+      });
   }
 
   componentDidMount = () => {
@@ -34,37 +36,33 @@ class LinkEditCell extends Component {
   };
 
   componentWillUnmount = () => {
-      // Important to clean up the keyboard shortcuts
     this.props.setCellKeyboardShortcuts({});
-  };
-
-  removeLink = (idx) => {
-    const {cell} = this.props;
-    const newValue = _.filter(cell.value, (element) => element.id !== idx);
-    ActionCreator.changeCell(cell, newValue);
   };
 
   openOverlay = () => {
     const {cell, langtag} = this.props;
-    ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />,
-      body: <LinkOverlay cell={cell} langtag={langtag} />,
-      type: "no-scroll"
-    });
+    if (isUserAdmin() && !isLocked(cell.row)) {
+      openLinkOverlay(cell, langtag);
+    }
   };
 
   render() {
     const {cell, langtag} = this.props;
-    const links = cell.value.map((element, index) => {
-      return <LinkLabelCell key={element.id} deletable={!isLocked(cell.row)} linkElement={element}
-                              cell={cell} langtag={langtag} onDelete={this.removeLink}
-                              linkIndexAt={index}/>;
-    });
+    const links = cell.value.map(
+      (element, index) => (
+        <LinkLabelCell key={element.id} clickable={true} linkElement={element}
+                       cell={cell} langtag={langtag}
+                       linkIndexAt={index}
+        />
+      )
+    );
 
     return (
-        <div className={"cell-content"} onScroll={event => { event.stopPropagation(); }}>
-          {[...links, <button key={"add-btn"} className="add" onClick={this.openOverlay}>+</button>]}
-        </div>
+      <div className={"cell-content"} onScroll={event => {
+        event.stopPropagation();
+      }}>
+        {[...links, <button key={"add-btn"} className="edit" onClick={this.openOverlay}><span className="fa fa-pencil"></span></button>]}
+      </div>
     );
   }
 

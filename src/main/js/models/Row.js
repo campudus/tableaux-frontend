@@ -1,11 +1,11 @@
 const AmpersandModel = require("ampersand-model");
-const apiUrl = require("../helpers/apiUrl");
-const Cells = require("./Cells");
+import apiUrl from "../helpers/apiUrl";
 import request from "superagent";
 import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
 import {getUserLanguageAccess, isUserAdmin} from "../helpers/accessManagementHelper";
 import * as f from "lodash/fp";
 import {extractAnnotations} from "../helpers/annotationHelper";
+const Cells = require("./Cells");
 
 const Row = AmpersandModel.extend({
   props: {
@@ -69,16 +69,17 @@ const Row = AmpersandModel.extend({
 
     console.log("url is:", this.url() + "/dependent");
     const req = request.get(this.url() + "/dependent")
-      .end((error, result) => {
-        if (error) {
-          console.warn("error getting row dependent from server:", error);
-          onError(error);
-        } else {
-          console.log("row dependent response:", result);
-          onSuccess(result.body.dependentRows);
-        }
-      }
-      );
+                       .end(
+                         (error, result) => {
+                           if (error) {
+                             console.warn("error getting row dependent from server:", error);
+                             onError(error);
+                           } else {
+                             console.log("row dependent response:", result);
+                             onSuccess(result.body.dependentRows);
+                           }
+                         }
+                       );
 
     return req;
   },
@@ -95,10 +96,7 @@ const Row = AmpersandModel.extend({
         };
       });
       return attrs;
-    }
-
-    // When adding a new row attrs has correct values
-    else {
+    } else { // When adding a new row attrs has correct values
       return attrs;
     }
   },

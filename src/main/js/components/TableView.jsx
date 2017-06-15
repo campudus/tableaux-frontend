@@ -21,6 +21,7 @@ import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "./cells/cellCopyHelper";
+import {openEntityView} from "./overlay/EntityViewOverlay";
 
 // hardcode all the stuffs!
 const ID_CELL_W = 80;
@@ -44,14 +45,15 @@ class TableView extends React.Component {
       pasteOriginCellLang: props.langtag
     };
 
-    const {columnId, rowId} = props;
-    const {filter} = props || {};
+    const {columnId, rowId} = this.props;
+    const {filter, entityView} = this.props.urlOptions || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
-        rowId: rowId,
-        columnId: columnId,
-        filter: filter
+        rowId,
+        columnId,
+        filter,
+        entityView
       };
     }
   };
@@ -115,10 +117,19 @@ class TableView extends React.Component {
       .getOrElse(null);
 
     if (savedView) {
-      cols.map(col => { col.visible = savedView[col.id]; });
+      cols.map(col => {
+        col.visible = savedView[col.id];
+      });
     } else {
-      cols.forEach(x => { x.visible = false; });
-      f.map(x => { x.visible = true; }, f.take(DEFAULT_VISIBLE_COLUMS, cols));
+      cols.forEach(x => {
+        x.visible = false;
+      });
+      f.compose(
+        f.map(x => { x.visible = true; }),
+        f.take(DEFAULT_VISIBLE_COLUMS),
+        f.drop(1),
+        f.reject(f.get("isGroupMember"))
+      )(cols);
     }
   };
 
@@ -175,7 +186,7 @@ class TableView extends React.Component {
 
   estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH"}, nPagesLoaded = 0) => {
+  gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH", entityView}, nPagesLoaded = 0) => {
     const colId = columnId || f.first(this.getCurrentTable().columns.models).getId();
     ActionCreator.jumpSpinnerOn();
     if (!this.checkIfColExists(this.getCurrentTable().columns.models, colId)) {
@@ -214,6 +225,9 @@ class TableView extends React.Component {
       scrollContainer.scrollTop = yOffs;
 
       ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
+      if (entityView) {
+        openEntityView(rows[rowIndex], this.props.langtag, cellId);
+      }
       return cell;
     };
 
@@ -358,7 +372,9 @@ class TableView extends React.Component {
     const columns = this.tables.get(this.state.currentTableId).columns;
     columns
       .filter(x => f.contains(x.id, coll))
-      .forEach(x => { x.visible = val; });
+      .forEach(x => {
+        x.visible = val;
+      });
     this.saveView();
     if (cb) {
       cb();
@@ -501,7 +517,7 @@ class TableView extends React.Component {
 
 TableView.propTypes = {
   langtag: React.PropTypes.string.isRequired,
-  overlayOpen: React.PropTypes.bool.isRequired,
+  overlayOpen: React.PropTypes.bool,
   tableId: React.PropTypes.number
 };
 

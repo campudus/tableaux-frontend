@@ -1,9 +1,9 @@
-var React = require("react");
-var Dropzone = require("react-dropzone");
-var request = require("superagent");
-var apiUrl = require("../../../helpers/apiUrl");
-var ActionCreator = require("../../../actions/ActionCreator");
-var ProgressBar = require("../ProgressBar.jsx");
+import ProgressBar from "../ProgressBar.jsx";
+import ActionCreator from "../../../actions/ActionCreator";
+import apiUrl from "../../../helpers/apiUrl";
+import request from "superagent";
+import Dropzone from "react-dropzone";
+import React from "react";
 import {translate} from "react-i18next";
 import TableauxConstants from "../../../constants/TableauxConstants";
 

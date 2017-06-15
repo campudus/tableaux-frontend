@@ -1,60 +1,64 @@
-var React = require("react");
-var ReactDOM = require("react-dom");
-var Dispatcher = require("../../dispatcher/Dispatcher");
-var ActionCreator = require("../../actions/ActionCreator");
-var LinkOverlay = require("../../components/cells/link/LinkOverlay");
-import {merge} from "lodash/fp";
+import React, {Component, PropTypes} from "react";
+import ReactDOM from "react-dom";
+import ActionCreator from "../../actions/ActionCreator";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import classNames from "classnames";
+import Header from "./Header";
+import Footer from "./Footer";
+import InfoBox from "./InfoBox";
+import * as f from "lodash/fp";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../constants/TableauxConstants";
 
-// TODO: Callback before closing overlay
-var GenericOverlay = React.createClass({
+const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
-  propTypes: {
-    // body : React.PropTypes.element.isRequired,
-    head: React.PropTypes.element,
-    footer: React.PropTypes.element,
-    type: React.PropTypes.string,
-    keyboardShortcuts: React.PropTypes.object,
-    closeOnBackgroundClicked: React.PropTypes.bool
-  },
+class GenericOverlay extends Component {
 
-  getInitialState: function () {
-    return {
+  static propTypes = {
+    head: PropTypes.element.isRequired,
+    body: PropTypes.element.isRequired,
+    footer: PropTypes.element,
+    type: PropTypes.string,
+    isOnTop: PropTypes.bool.isRequired,
+    keyboardShortcuts: PropTypes.object,
+    specialClass: PropTypes.string,
+    preferRight: PropTypes.bool,
+    id: PropTypes.number.isRequired,
+    classes: PropTypes.string
+  };
+
+  constructor(props) {
+    super(props);
+
+    const sharedProps = {
+      id: props.id,
+      registerForEvent: this.registerChildForEvent
+    };
+
+    this.state = {
       contentHeight: 0,
-      contentWidth: 0
+      contentWidth: 0,
+      overlayIsNew: true,
+      childrenProps: {
+        head: f.merge(f.get("props", props.head), sharedProps),
+        body: f.merge(f.get("props", props.body), sharedProps),
+        footer: f.assoc(f.get(["footer", "props"], props), sharedProps)
+      }
     };
-  },
 
-  getDefaultProps: function () {
-    return {
-      closeOnBackgroundClicked: true
-    };
-  },
+    this.allowedTypes = ["normal", "full-height"];
+    this.focusedElementBeforeOverlayOpens = null;
+    this.childrenEventHandlers = {};
 
-  allowedTypes: ["full-flex", "flexible", "normal", "no-scroll"],
-  focusedElementBeforeOverlayOpens: null,
+    window.setTimeout(() => this.setState({overlayIsNew: false}), 400);
+  }
 
-  componentWillMount: function () {
+  componentWillMount = () => {
     this.focusedElementBeforeOverlayOpens = document.activeElement;
-  },
+  };
 
-  recalculateContentDimensions: function () {
-    console.log("recalculate");
-    const overlayContent = ReactDOM.findDOMNode(this.refs.overlayContent);
-    const style = window.getComputedStyle(overlayContent, null);
-    const innerWidth = overlayContent.clientWidth - parseInt(style.getPropertyValue("padding-left")) - parseInt(style.getPropertyValue("padding-right"));
-    const innerHeight = overlayContent.clientHeight - parseInt(style.getPropertyValue("padding-top")) - parseInt(style.getPropertyValue("padding-bottom"));
-
-    this.setState({
-      contentHeight: innerHeight,
-      contentWidth: innerWidth
-    });
-  },
-
-  componentDidMount: function () {
-    document.getElementsByTagName("body")[0].style.overflow = "hidden";
-
-    const overlayDOMNode = ReactDOM.findDOMNode(this);
+  componentDidMount = () => {
+    const overlayDOMNode = ReactDOM.findDOMNode(f.last(document.getElementsByClassName("overlay")));
     const focusedElement = document.activeElement;
 
     // Is current focus is this overlay or inside of overlay don't change the focus.
@@ -62,88 +66,146 @@ var GenericOverlay = React.createClass({
       overlayDOMNode.focus();
     }
 
-    window.addEventListener("resize", this.handleResize);
-    this.handleResize();
-  },
+    Dispatcher.on(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
+  };
 
-  componentWillUnmount: function () {
+  componentWillUnmount = () => {
     // Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    window.removeEventListener("resize", this.handleResize);
+    Dispatcher.off(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
 
     // Reset active element before overlay opened
     if (this.focusedElementBeforeOverlayOpens) {
       this.focusedElementBeforeOverlayOpens.focus();
     }
-  },
+  };
 
-  handleResize: function (event) {
-    this.recalculateContentDimensions();
-  },
-
-  closeOverlay: function (event) {
-    if (this.props.closeOnBackgroundClicked) {
-      ActionCreator.closeOverlay();
-    }
-  },
+  backgroundClick = (event) => {
+    event.stopPropagation();
+    ActionCreator.closeOverlay();
+  };
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
-  getKeyboardShortcuts: function (event) {
-    var self = this;
-    return merge(
+  getKeyboardShortcuts = (event) => {
+    return f.merge(
       {
-        escape: function (event) {
-          if (self.props.closeOnBackgroundClicked) {
-            event.preventDefault();
-            ActionCreator.closeOverlay();
-          }
+        escape: (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          ActionCreator.closeOverlay();
         },
-        always: function (event) {
+        always: (event) => {
           event.stopPropagation();
         }
       },
       this.props.keyboardShortcuts
     );
-  },
+  };
 
-  renderChildren(props) {
-    let {contentHeight, contentWidth} = this.state;
-    return React.Children.map(props.children, child => {
-      return React.cloneElement(child, {contentHeight, contentWidth});
+  registerChildForEvent = ({type, handler}) => {
+    const handlersForType = f.defaultTo([], this.childrenEventHandlers[type]);
+    this.childrenEventHandlers[type] = [...handlersForType, handler];
+  };
+
+  passOnEvents = type => event => {
+    const handlersForType = f.defaultTo([], this.childrenEventHandlers[type]);
+    f.map(handler => handler(event), handlersForType);
+  };
+
+  updateChildrenProps = ({id, props}) => {
+    if (id !== this.props.id) {
+      return;
+    }
+    const modifiedProps = f.keys(props);
+    const updatedProps = childIdString => {
+      const existingProps = f.get(childIdString, this.state.childrenProps);
+      const existingKeys = f.intersection(modifiedProps, existingProps);
+      return f.merge(
+        existingProps,
+        f.fromPairs(
+          f.zip(existingKeys, f.props(existingKeys, props))
+        )
+      );
+    };
+
+    this.setState({childrenProps: {
+      head: updatedProps("head"),
+      body: updatedProps("body"),
+      footer: updatedProps("footer")
+    }}, () => console.log("updated children props to", this.state.childrenProps));
+  };
+
+  render() {
+    const overlayType = (f.contains(this.props.type, this.allowedTypes))
+      ? this.props.type
+      : "normal";
+
+    const {footer, head, body, isOnTop, specialClass} = this.props;
+    const {childrenProps} = this.state;
+    const overlayWrapperClass = classNames("overlay open", {
+      "has-footer": footer,
+      "active": isOnTop,
+      "header-components": head.props.components,
+      "header-buttons": head.props.actions,
+      [this.props.classNames]: this.props.classNames
     });
-  },
-
-  render: function () {
-    var overlayType = this.props.type || "normal"; // default to normal
-    var footer = this.props.footer;
-    var hasFooterClass = "";
-    if (footer) {
-      footer = <footer>{footer}</footer>;
-      hasFooterClass = " has-footer";
-    }
-    var overlayWrapperClass = "ignore-react-onclickoutside open " + overlayType + hasFooterClass;
-
-    if (this.allowedTypes.indexOf(overlayType) === -1) {
-      console.error("GenericOverlay type is not valid! Given type is:", overlayType, "Check GenericOverlay.");
-      return null;
-    }
+    const wrapperClass = classNames(`overlay-wrapper ${overlayType} ${this.props.classes || ""} ${specialClass || ""}`, {
+      "is-new": this.state.overlayIsNew,
+      "is-right": this.props.preferRight,
+      "header-components": head.props.components,
+      "header-buttons": head.props.actions
+    });
 
     return (
-      <div id="overlay" className={overlayWrapperClass} tabIndex="1"
-           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
-        <div id="overlay-wrapper">
-          <h2 className="overlay-header">{this.props.head}</h2>
-          <div className="content-scroll">
-            <div id="overlay-content" ref="overlayContent">
-              {this.renderChildren(this.props)}
-            </div>
+      <div className={overlayWrapperClass} tabIndex="1"
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+      >
+        <div className={wrapperClass}
+             onClick={event => {
+               event.stopPropagation();
+               event.preventDefault();
+             }}
+             onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
+        >
+          {React.cloneElement(head, childrenProps.head)}
+          <div className="overlay-content">
+            {React.cloneElement(body, childrenProps.body)}
           </div>
-          {footer}
+          {(footer) ? <footer>{React.cloneElement(footer, childrenProps.footer)}</footer> : null}
         </div>
-        <div ref="overlayBackground" onClick={this.closeOverlay} className="background"></div>
+        <div ref="overlayBackground" onClick={this.backgroundClick} className="background" />
       </div>
     );
   }
-});
+}
 
-module.exports = GenericOverlay;
+const showDialog = ({type = "default", context = "Action", title, heading = "", message = "", actions = {}, name}) => {
+  const enterKeyFn = f.nth(1)(f.prop("positive", actions)) || f.nth(1)(f.prop("negative", actions)) || f.prop("neutral", actions);
+  const escKeyFn = f.nth(1)(f.prop("neutral", actions));
+  const keyShortcuts = {
+    enter: event => {
+      event.preventDefault();
+      (enterKeyFn || f.noop)();
+      ActionCreator.closeOverlay();
+      event.stopPropagation();
+    },
+    escape: event => {
+      event.preventDefault();
+      (escKeyFn || f.noop)();
+      ActionCreator.closeOverlay();
+      event.stopPropagation();
+    }
+  };
+  ActionCreator.openOverlay(
+    {
+      head: <Header context={context} title={title} />,
+      body: <InfoBox heading={heading} message={message} type={type} />,
+      footer: <Footer actions={actions} />,
+      keyboardShortcuts: keyShortcuts,
+      name
+    }
+  );
+};
+
+export default GenericOverlay;
+export {showDialog};

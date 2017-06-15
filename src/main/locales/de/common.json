@@ -14,5 +14,8 @@
   "yes": "Ja",
   "ok": "Ok",
   "close": "Schließen",
-  "edit": "Bearbeiten"
+  "edit": "Bearbeiten",
+  "current_selection": "Aktuelle Auswahl",
+  "empty": "Leer",
+  "loading": "Lade..."
 }

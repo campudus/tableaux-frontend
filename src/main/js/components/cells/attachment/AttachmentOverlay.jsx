@@ -1,65 +1,67 @@
-var React = require("react");
-var _ = require("lodash");
-var AmpersandMixin = require("ampersand-react-mixin");
-var ActionCreator = require("../../../actions/ActionCreator");
-var Folder = require("../../../models/media/Folder");
-var multiLanguage = require("../../../helpers/multiLanguage");
-import TableauxConstants from "../../../constants/TableauxConstants";
+import multiLanguage from "../../../helpers/multiLanguage";
+import Folder from "../../../models/media/Folder";
+import ActionCreator from "../../../actions/ActionCreator";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import _ from "lodash";
+import React, {Component, PropTypes} from "react";
+import TableauxConstants, {ColumnKinds} from "../../../constants/TableauxConstants";
 import apiUrl from "../../../helpers/apiUrl";
-const {ColumnKinds} = TableauxConstants;
 import {translate} from "react-i18next";
+import Spinner from "../../header/Spinner";
+import SvgIcon from "../../helperComponents/SvgIcon";
 
-var AttachmentOverlay = React.createClass({
-  mixins: [AmpersandMixin],
+@connectToAmpersand
+class AttachmentOverlay extends Component {
 
-  propTypes: {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
-  },
+  static propTypes = {
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    folderId: PropTypes.any
+  };
 
-  getInitialState: function () {
-    return {
-      folder: null
-    };
-  },
+  constructor(props) {
+    super(props);
+    this.state = {folder: null};
+  }
 
-  componentWillMount: function () {
+  componentWillMount() {
     if (this.props.cell.column.kind !== ColumnKinds.attachment) {
       console.error("Couldn't open AttachmentOverlay for this column type.");
       return;
     }
+    const {folderId} = this.props;
 
-    this.navigateFolder(null)();
-  },
+    this.navigateFolder(_.isNumber(folderId) ? folderId : null)();
+  }
 
-  componentWillUnmount: function () {
+  componentWillUnmount() {
     this.props.cell.fetch();
-  },
+  }
 
-  navigateFolder: function (folderId) {
-    var self = this;
+  navigateFolder = (folderId) => () => {
+    // TODO View creates Model instance
+    if (this.state.folder) {
+      this.setState({folder: null});
+    }
+    const folder = new Folder({id: folderId});
 
-    return function () {
-      // TODO View creates Model instance
-      if (self.state.folder) {
-        self.setState({folder: null});
+    folder.fetch({
+      data: {langtag: this.props.langtag},
+      success: (collection, response) => {
+        this.setState({folder: response});
+      },
+      error: function (e) {
+        throw new Error(e);
       }
-      var folder = new Folder({id: folderId});
+    });
+  };
 
-      folder.fetch({
-        data: {langtag: self.props.langtag},
-        success: function (err, result) {
-          self.setState({folder: result});
-        }
-      });
-    };
-  },
+  toggleAttachments = (isLinked, file) => {
+    const cell = this.props.cell;
 
-  toggleAttachments: function (isLinked, file) {
-    var cell = this.props.cell;
-
-    return function () {
-      var attachments = _.clone(cell.value);
+    return event => {
+      event.stopPropagation();
+      let attachments = _.clone(cell.value);
 
       if (isLinked) {
         _.remove(attachments, function (attachment) {
@@ -71,80 +73,73 @@ var AttachmentOverlay = React.createClass({
 
       ActionCreator.changeCell(cell, attachments);
     };
-  },
+  };
 
-  getMediaFolderUrl(folderId) {
+  getMediaFolderUrl = (folderId) => {
     return `/${this.props.langtag}/media/${folderId}`;
-  },
+  };
 
-  render: function () {
-    var self = this;
-    var fallbackLang = TableauxConstants.DefaultLangtag;
-    var retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-    var listDisplay = "Loading...";
+  render() {
+    const fallbackLang = TableauxConstants.DefaultLangtag;
+    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
     const {langtag, t} = this.props;
 
-    // check for empty obj or map fails
-    if (this.state.folder) {
-      // render back button
-      var backButton = null;
-      if (this.state.folder && this.state.folder.name !== "root") {
-        backButton = (
-          <div className="back active" key={this.state.folder.id}>
-            <a onClick={self.navigateFolder(this.state.folder.parent)}><i
-              className="fa fa-chevron-left"></i>{t("folder_back")} </a>
-            <span className="folder-name">{this.state.folder.name}</span>
-          </div>);
-      } else {
-        backButton = (
-          <div className="back" key={this.state.folder.id}><span className="folder-name">{t("root_folder_name")}</span>
-          </div>);
-      }
+    const backButton = (this.state.folder && this.state.folder.name !== "root")
+      ? (
+        <div className="back active" key={this.state.folder.id}>
+          <a onClick={this.navigateFolder(this.state.folder.parent)}>
+            <i className="fa fa-chevron-left" />
+            {t("folder_back")}
+          </a>
+          <span className="folder-name">{this.state.folder.name}</span>
+        </div>
+      )
+      : (this.state.folder)
+        ? (
+          <div className="back" key={this.state.folder.id}><div/>
+            <span className="folder-name">{t("root_folder_name")}</span>
+          </div>
+        )
+        : null;
 
-      listDisplay = (
+    // check for empty obj or map fails
+    const listDisplay = (this.state.folder)
+      ? (
         <div className="folder-file-list">
           <div className="folder-navigation">
             {backButton}
             <ul className="folder-list">
-              {this.state.folder.subfolders.map(function (subfolder) {
-                return <li key={subfolder.id} onClick={self.navigateFolder(subfolder.id)}>
+              {this.state.folder.subfolders.map((subfolder) => {
+                return <li className="" key={subfolder.id} onClick={this.navigateFolder(subfolder.id)}>
                   <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
                 </li>;
               })}
             </ul>
           </div>
           <ul className="file-list">
-            {this.state.folder.files.map(function (file) {
-              const folderId = file.folder;
-              var currentCellValue = self.props.cell.value;
+            {this.state.folder.files.map((file) => {
+              const currentCellValue = this.props.cell.value;
               const imageUrl = apiUrl(retrieveTranslation(file.fileUrl, langtag));
 
-              var linked = _.find(currentCellValue, function (linkedFile) {
+              const linked = _.find(currentCellValue, (linkedFile) => {
                 return file.uuid === linkedFile.uuid;
               });
 
-              var isLinked = !!linked;
-              var fileTitle = retrieveTranslation(file.title, self.props.langtag);
+              const isLinked = !!linked;
+              const fileTitle = retrieveTranslation(file.title, this.props.langtag);
 
-              return <li key={file.uuid}>
-                <a onClick={self.toggleAttachments(isLinked, file)}
-                   className={isLinked ? "overlay-table-row isLinked" : "overlay-table-row"}>
-                  <i className="icon fa fa-file"></i><span>{fileTitle}</span>
-                </a>
-                <div className="media-options">
-                  <a className="file-link" target="_blank" href={imageUrl}>
-                    <i className="icon fa fa-external-link"></i>{t("show_file")}
-                  </a>
-                  <a className="change-file" alt="edit" target="_blank" href={self.getMediaFolderUrl(folderId)}>
-                    <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
-                  </a>
-                </div>
-              </li>;
+              return <FileItem key={file.uuid}
+                               isLinked={isLinked}
+                               toggleAttachment={this.toggleAttachments(isLinked, file)}
+                               title={fileTitle}
+                               url={imageUrl}
+                               editorUrl={this.getMediaFolderUrl(file.folder)}
+              />;
             })}
           </ul>
         </div>
-      );
-    }
+      )
+      : <Spinner isLoading={true} />;
 
     return (
       <div className="attachment-overlay-wrapper">
@@ -152,7 +147,30 @@ var AttachmentOverlay = React.createClass({
       </div>
     );
   }
+}
 
-});
+const FileItem = translate(["media", "common"])(
+  (props) => {
+    const {isLinked, toggleAttachment, title, url, editorUrl, t} = props;
 
-module.exports = translate(["media"])(AttachmentOverlay);
+    return (
+      <li className={isLinked ? "file is-linked" : "file"}>
+        <a onClick={toggleAttachment}
+           className={"overlay-table-row"}>
+          <i className="icon fa fa-file"></i><span>{title}</span>
+          {(isLinked) ? <SvgIcon icon="cross"/> : <SvgIcon icon="check"/>}
+        </a>
+        <div className="media-options">
+          <a className="file-link" href="#" onClick={() => window.open(url)}>
+            <i className="icon fa fa-external-link"></i>{t("show_file")}
+          </a>
+          <a className="change-file" alt="edit" href="#" onClick={() => window.open(editorUrl)}>
+            <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
+          </a>
+        </div>
+      </li>
+    );
+  }
+);
+
+module.exports = translate(["media", "common"])(AttachmentOverlay);

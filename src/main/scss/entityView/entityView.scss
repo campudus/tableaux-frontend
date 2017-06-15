@@ -1,127 +1,815 @@
-.entityView {
-  display: table;
-  table-layout: fixed;
-  border-collapse: collapse;
-  text-align: left;
-  position: relative;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-  -moz-transform: translateX(-50%);
-  -ms-transform: translateX(-50%);
-  -o-transform: translateX(-50%);
-  transform: translateX(-50%);
+@import "../variables";
+@import "../helper";
 
-  .view {
-    display: table-row;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid $color-grey-dark;
+// EntityView-specific items
+.overlay .entity-view.content-items {
+  margin-bottom: 40px;
+  .item {
+    position: relative;
+    &.disabled {
+      cursor: not-allowed;
     }
 
-    .row-headline {
-      display: table-cell;
-      text-transform: uppercase;
-      font-weight: bold;
-      vertical-align: middle;
-      white-space: nowrap;
-      padding-right: 20px;
-
-      a {
-        border: 1px solid $color-subtle-grey;
-        border-radius: 3px;
-        padding: 3px 10px;
-        vertical-align: middle;
-
-        .fa {
-          color: $color-text-medium-grey;
-          margin-left: 5px;
-        }
+    &:hover {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-left: 3px solid $color-text-medium-grey;
       }
+    }
 
-      span {
-        padding-left: 11px;
+    &.has-focused-child {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-left: 3px solid $color-primary;
       }
+    }
+  }
+}
 
-      > .fa {
+.action-tags {
+  padding-top: 10px;
+  display: flex;
+
+  .action-item {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: $color-text-light-grey;
+    border-radius: 10px;
+    border: 1px solid $color-text-light-grey;
+    text-transform: uppercase;
+    color: $color-primary-contrast-text;
+    padding: 4px 10px 3px 10px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: normal;
+    margin-right: 1em;
+    cursor: pointer;
+
+    a {
+      @include button-with-icon();
+    }
+
+    &.translation {
+      background-color: $color-needs-translation;
+      border-color: $color-needs-translation;
+    }
+
+    &:hover {
+      background-color: $color-needs-translation-dark;
+      border-color: $color-needs-translation-dark;
+    }
+  }
+}
+
+.overlay .entity-view {
+  .rich-text-wrapper {
+    overflow: hidden;
+  }
+  .rich-text-component {
+    position: relative;
+    .content-pane {
+      max-height: 250px;
+    }
+  }
+}
+
+.overlay .entity-view .item {
+  &:nth-child(even) .rich-text-component.preview {
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 250px;
+      background: -webkit-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      background: -moz-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      background: -ms-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      z-index: 1;
+    }
+  }
+
+  &:nth-child(odd) .rich-text-component.preview {
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 250px;
+      background: -webkit-linear-gradient(top, transparent 80%, $color-overlay-background);
+      background: -moz-linear-gradient(top, transparent 80%, $color-overlay-background);
+      background: -ms-linear-gradient(top, transparent 80%, $color-overlay-background);
+      z-index: 1;
+    }
+  }
+}
+
+.currency {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+
+  .currency-item {
+    position: relative;
+    width: 33%;
+    padding: 7px 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    border: none;
+    border-color: transparent;
+
+    &.not-set {
+      .currency-string, .langtag-label, .currency-code {
         color: $color-text-medium-grey;
-        margin-right: 5px;
       }
     }
-  }
 
-  .view-column {
-    display: table-cell;
-    padding-top: 12px;
-    min-width: 200px;
-  }
-
-  .view-content {
-    min-height: 1em;
-
-    &:empty {
-      padding: 12px 0;
+    &:hover {
+      border-color: $color-primary-lighter;
     }
-  }
-
-  .view-shorttext, .view-text, .view-richtext, .view-numeric, .view-boolean, .view-datetime {
-    .view-content {
-      background-color: white;
-      border: 1px solid $color-grey-dark;
-      padding: 12px;
-      margin-bottom: 12px;
+    &.editing {
+      border-color: transparent;
     }
-  }
 
-  .view-link, .view-attachment {
-    .view-content {
-
-      .link-label {
-        display: inline-block;
-        box-sizing: border-box;
-
-        padding: 6px;
-        margin: 0 12px 12px 0;
-
-        color: $color-primary-contrast-text;
-        background-color: $color-primary;
-
-        border: 1px solid $color-primary;
-
-        @include border-radius(3px);
-        @include box-shadow(0 2px 1px $color-text-medium-grey);
-
-        &:hover {
-          cursor: pointer;
-
-          color: $color-primary;
-          background-color: $color-primary-contrast-text;
-
-          border: 1px solid $color-primary;
-        }
-      }
-    }
-  }
-
-  .view-currency {
-    .currency-item {
-      display: inline-block;
-      background-color: white;
-      padding: 8px;
-      @include border-radius(3px);
-      @include box-shadow(0 2px 1px $color-text-medium-grey);
-      margin: 0 12px 12px 0;
+    div, span {
+      @include flex-centered();
+      height: 100%;
+      margin: 0 0.5px;
+      flex-direction: column;
+      padding: 5px 0;
     }
 
     .langtag {
-      vertical-align: middle;
-      display: inline-block;
-      text-align: center;
-      margin-right: 5px;
-
+      flex: 1;
+      @include flex-centered();
+      background-color: $color-white;
       .langtag-label {
-        display: block;
+        font-weight: normal;
+        padding: 0;
+        margin: 0;
+        height: $font-size-standard;
+      }
+    }
+
+    .value {
+      flex: 2;
+      background-color: $color-white;
+      border-color: inherit;
+
+      .currency-string {
+        border-bottom: 1px solid;
+        border-color: inherit;
+        height: $font-size-standard;
+        width: 80%;
+      }
+
+      .currency-input {
+        @include flex-centered();
+        flex-flow: row nowrap;
+        padding: 0;
+        margin: 0;
+        input {
+          border: none;
+          border-bottom: 1px solid transparent;
+          width: 45%;
+          color: $color-text-medium-grey;
+          &.left {
+            text-align: right;
+          }
+          &.right {
+            width: 20%;
+          }
+          &:focus {
+            border-bottom: 1px solid $color-primary-lighter;
+            color: $color-primary-text;
+          }
+        }
+      }
+    }
+
+    .currency-code {
+      flex: 1;
+      background-color: $color-background-very-light-grey;
+    }
+  }
+}
+
+.boolean {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  .value {
+    margin-left: 10px;
+    color: $color-text-medium-grey;
+    pointer-events: none;
+  }
+}
+
+.datetime {
+  border-color: inherit;
+  border-bottom: 1px solid;
+  padding-bottom: 2px;
+  transition: border 0.3s;
+
+  i {
+    margin-right: 5px;
+  }
+
+  .content-wrapper {
+    .content {
+      display: flex;
+      div {
+        margin-right: 10px;
       }
     }
   }
 
+  .datetime-popup {
+    position: absolute;
+    top: calc(100% - 0.7em);
+    z-index: 1;
+    box-shadow: 0 0 15px 0 $color-text-medium-grey;
+    .clear-datetime {
+      display: flex;
+      justify-content: center;
+      color: $color-primary-contrast-text;
+      background-color: $color-overlay-header;
+      align-items: center;
+      height: 3em;
+    }
+  }
+}
+
+// Language and row switchers
+.eev-language-switcher-wrapper {
+  grid-column-start: 3;
+  -ms-grid-column: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .eev-language-switcher {
+    height: 28px;
+    width: 80px;
+    background-color: transparent;
+    border-radius: 3px;
+    color: $color-primary-contrast-text;
+    outline: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 1px solid transparentize($color-text-medium-grey, 0.5);
+
+    .langtag {
+      min-width: 36px;
+    }
+
+    &:hover, &.open {
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+
+    &.open {
+      @include rounded-upper-borders();
+    }
+
+    img {
+      margin-right: 5px;
+    }
+
+    .eev-label {
+      white-space: nowrap;
+      position: relative;
+      display: block;
+      line-height: 26px;
+
+      i {
+        font-size: 16px;
+        position: absolute;
+        right: 0;
+        top: 5px;
+      }
+    }
+
+    .eev-dropdown {
+      position: absolute;
+      top: 38px;
+      width: 80px;
+      right: 110px;
+      box-shadow: 0 2px 2px $color-text-medium-grey;
+      z-index: 5;
+
+      .menu-item {
+        background-color: $color-white;
+        color: $color-text-medium-grey;
+        height: 24px;
+        padding: 0;
+        &.active {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
+        }
+        position: relative;
+
+        a {
+          position: absolute;
+          right: 0;
+          padding: 5px 10px;
+          width: 100%;
+          height: 100%;
+          display: block;
+          box-sizing: border-box;
+
+          i {
+            position: absolute;
+            right: 0;
+            padding-right: 8px;
+          }
+        }
+
+        &:hover {
+          background-color: $color-hover-background;
+          color: $color-hover-foreground;
+        }
+      }
+    }
+  }
+}
+
+.row-switcher {
+  -ms-grid-column: 4;
+  -ms-grid-column-span: 2;
+  grid-column-start: 4;
+  grid-column-end: 6;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  .button {
+    display: contents;
+    color: $color-primary-contrast-text;
+    font-size: 16px;
+    font-weight: bold;
+    flex: 1;
+    height: 100%;
+    position: relative;
+    border-radius: 3px;
+    &.clickable:hover {
+      color: $color-text-medium-grey;
+    }
+
+    a {
+      @include button-with-icon();
+    }
+  }
+}
+
+// Entry popup
+.overlay .overlay-content .content-items .item.has-mouse-pointer .entry-popup-wrapper .popup-button { // stack all the selectors!
+  a {
+    border: 1px solid transparentize($color-primary, 0.5);
+    .svg-icon {
+      svg {
+        fill: $color-primary;
+      }
+    }
+  }
+}
+
+.overlay .overlay-content .content-items .item-header .title-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  .svg-icon {
+    height: 12px;
+    vertical-align: middle;
+    margin-left: 0.1em;
+  }
+
+  .entry-popup-wrapper {
+    text-transform: none;
+    font-weight: normal;
+    position: absolute;
+    left: -40px;
+
+    .popup-button {
+      position: relative;
+      height: 30px;
+      width: 30px;
+
+      a {
+        position: absolute;
+        background-color: transparent;
+        color: $color-primary;
+        border-radius: 3px;
+        @include button-with-icon();
+
+        div {
+          flex: 1;
+        }
+
+        svg {
+          fill: transparent;
+        }
+      }
+
+      &:hover, &.is-open {
+        a {
+          background-color: $color-primary;
+          svg {
+            fill: $color-white;
+          }
+        }
+      }
+
+      &.is-open {
+        a {
+          @include rounded-upper-borders;
+        }
+        &.menu-is-right {
+          a {
+            border-radius: 3px 0 0 3px;
+          }
+        }
+      }
+    }
+
+    .entry-popup {
+      @include popup-menu();
+      z-index: 5;
+      width: 25vw;
+      top: 30px;
+
+      &.inverse {
+        bottom: 0;
+        left: 29px;
+        top: auto;
+        border-top: none;
+        border-radius: 0 3px 3px 0;
+        border-left: 3px solid $color-primary;
+      }
+    }
+  }
+}
+
+// Row-is-locked bottom bar
+.overlay .entity-view .unlock-bar {
+  z-index: 2;
+  position: fixed;
+  bottom: 0;
+  width: 60vw;
+  background-color: $color-overlay-header;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $color-primary-contrast-text;
+  font-size: small;
+  padding: 0.5em 0;
+  .text {
+    margin-right: 2em;
+    i {
+      color: $color-text-medium-grey;
+      margin-right: 1em;
+    }
+    span {
+      font-weight: bold;
+    }
+  }
+  .button {
+    padding: 0.5em 1em;
+    border: 1px solid $color-text-light-grey;
+    border-radius: 3px;
+    position: relative;
+    display: block;
+    a {
+      @include button-with-icon();
+    }
+    &:hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+    &.shake {
+      animation: do-the-shake 200ms 2 alternate;
+    }
+  }
+}
+
+// Translation popup
+$arrow-height: 50px;
+.overlay .entity-view {
+  $pseudo-header-height: 50px;
+
+  .translation-arrow {
+    position: fixed;
+    left: -$arrow-height * 0.3 + 1px;
+    top: 0;
+    border-top: 0.50*$arrow-height solid transparent;
+    border-bottom: 0.5*$arrow-height solid transparent;
+    border-right: $arrow-height/10*3 solid $color-primary;
+    z-index: 2;
+  }
+
+  .translation-view {
+    position: absolute;
+    left: -40vw;
+    width: 40vw;
+    top: 0;
+    height: 100vh;
+    background-color: $color-overlay-background;
+    display: flex;
+    flex-direction: column;
+    transform: translate3d(0,0,0); // Stop OSX+Chrome from having strange depth-buffer issues
+
+    .content-items {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      overflow-y: auto;
+      margin: 0;
+    }
+
+    .toggle-button {
+      height: 30px;
+      width: 30px;
+      border-radius: 3px;
+      color: $color-text-light-grey;
+      a {
+        @include button-with-icon();
+        color: inherit;
+        i {
+          margin: 0;
+          color: inherit;
+        }
+      }
+      &:hover {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+    }
+
+    .item-header {
+      padding-bottom: 0;
+      .switch-language-icon {
+        display: flex;
+        justify-content: space-between;
+        width: 70px;
+        color: $color-text-medium-grey;
+        border-radius: 3px;
+        padding: 8px 5px;
+        padding-left: 12px;
+
+        .label {
+          font-weight: normal;
+          img {
+            margin-right: 5px;
+          }
+        }
+
+        svg {
+          fill: transparent;
+        }
+
+        &:hover {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
+
+          svg {
+            fill: $color-primary-contrast-text;
+          }
+        }
+      }
+    }
+
+    .item-content {
+      padding-top: 10px;
+    }
+
+    .item.needs-translation {
+      .label:before {
+        position: absolute;
+        left: -15px;
+        content: "";
+        width: 0;
+        height: 0;
+        border: 3px solid $color-needs-translation;
+        border-radius: 3px;
+      }
+    }
+
+    .pseudo-header {
+      flex: 0 0 auto;
+      display: flex;
+      height: $pseudo-header-height;
+      align-items: center;
+      font-weight: bold;
+      justify-content: space-between;
+      background-color: $color-overlay-header;
+      color: $color-primary-contrast-text;
+      padding-right: 10px;
+
+      // Cast a shadow inwards over the translation view
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        box-shadow: inset -10px 0 40px -10px $color-very-dark;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .title {
+        flex: 1;
+        text-transform: uppercase;
+      }
+
+      .toggle-all-button {
+        font-weight: normal;
+        padding: 5px;
+        border-radius: 3px;
+        color: transparent;
+
+        &.is-multi-lang {
+          color: $color-primary;
+          &:hover {
+            background-color: $color-primary;
+            color: $color-primary-contrast-text;
+          }
+        }
+      }
+
+      svg {
+        fill: $color-primary-contrast-text;
+      }
+
+      a {
+        padding: 8px 8px;
+      }
+
+      div {
+        padding-right: 20px;
+      }
+    }
+
+    .single-value {
+      width: 100%;
+      height: 80%;
+      margin-top: 10%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+  }
+}
+
+// Header elements
+.overlay {
+  .separator {
+    padding: 10px 20px;
+    color: $color-text-medium-grey;
+    border-top: 1px solid $color-border-grey;
+    text-transform: uppercase;
+  }
+
+  .header-wrapper {
+    .header-filter-bar-wrapper {
+      grid-column-start: 2;
+      grid-column-end: 4;
+      grid-row-start: 3;
+      -ms-grid-column: 2;
+      -ms-grid-column-span: 2;
+      -ms-grid-row: 3;
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+
+      .header-filter-bar {
+        flex: 1;
+        padding: 8px 15px;
+        border-radius: 3px;
+        border: none;
+      }
+
+      // https://stackoverflow.com/questions/2610497/change-an-html5-inputs-placeholder-color-with-css#2610741
+      *::-webkit-input-placeholder {
+        color: $color-text-medium-grey;
+      }
+      *::-moz-placeholder {
+        color: $color-text-medium-grey;
+      }
+      *:-ms-input-placeholder {
+        color: $color-text-medium-grey;
+      }
+
+      .icon-wrapper {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 31px;
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $color-text-light-grey;
+      }
+    }
+
+    .header-popup-wrapper {
+      position: relative;
+      grid-column-start: 4;
+      grid-row-start: 3;
+      -ms-grid-column: 4;
+      -ms-grid-row: 3;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+
+      .popup-button {
+        position: relative;
+        width: 31px;
+        height: 31px;
+
+        a {
+          @include button-with-icon();
+          background-color: transparent;
+          color: $color-primary-contrast-text;
+          border: 1px solid transparentize($color-text-medium-grey, 0.5);
+          border-radius: 3px;
+
+          .svg-icon {
+            flex: 1;
+            max-width: none;
+          }
+        }
+
+        &:hover, &.is-open {
+          a {
+            border-color: $color-primary;
+            background-color: $color-primary;
+            color: $color-primary-contrast-text;
+          }
+        }
+
+        &.is-open {
+          a {
+            @include rounded-upper-borders;
+          }
+        }
+      }
+
+      .popup-wrapper {
+        @include popup-menu();
+        right: 10px;
+        top: 31px;
+        width: 25vw;
+
+        .entry {
+          left: 1px;
+        }
+      }
+    }
+
+  }
+}
+
+@keyframes do-the-shake {
+  from {
+    transform: scale(1);
+    background-color: transparent;
+    border-color: transparent;
+  }
+  to {
+    transform: scale(1.1);
+    background-color: $color-primary;
+    border-color: transparent;
+  }
+}
+
+//--------------------------------------------
+// IE places "fixed" elements more naturally
+//--------------------------------------------
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .overlay .entity-view .translation-arrow {
+    left: calc(40vw - 0.3 * 50px); // arrow-height
+  }
+  .overlay .unlock-bar {
+    left: 40vw;
+  }
 }

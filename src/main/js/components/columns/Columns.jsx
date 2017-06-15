@@ -1,11 +1,12 @@
 import React from "react";
 import {translate} from "react-i18next";
 import {getLanguageOfLangtag} from "../../helpers/multiLanguage";
-import {ColumnKinds, FallbackLanguage, LanguageType, ActionTypes} from "../../constants/TableauxConstants";
+import {ActionTypes, ColumnKinds, FallbackLanguage, LanguageType} from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import {maybe} from "../../helpers/monads";
 
 @translate(["table"])
 @connectToAmpersand
@@ -14,7 +15,11 @@ class Columns extends React.Component {
   constructor(props) {
     super(props);
     this.props.columns.forEach((column) => {
-      this.props.watch(column, {event: "change", force: true});
+      this.props.watch(column,
+        {
+          event: "change",
+          force: true
+        });
     });
   };
 
@@ -41,7 +46,8 @@ class Columns extends React.Component {
       return;
     }
 
-    let name, columnContent = [];
+    let name = [];
+    let columnContent = [];
     const {t, table} = this.props;
     const description = column.description[langtag];
 
@@ -65,7 +71,17 @@ class Columns extends React.Component {
       name = typeof columnDisplayName === "undefined" ? fallbackColumnDisplayName : columnDisplayName;
     }
 
-    if (column.kind === ColumnKinds.link) {
+    const toTableHidden = maybe(table)
+      .map(f.get("rows"))            // catch rows not loaded yet
+      .exec("at", 0)
+      .map(f.get("cells"))           // catch cells not loaded yet
+      .exec("at", 0)
+      .map(f.get("tables"))
+      .exec("get", column.toTable)   // only with link columns
+      .map(f.get("hidden"))
+      .getOrElse("false");
+
+    if (column.kind === ColumnKinds.link && !toTableHidden) {
       name =
         <a className="column-table-link" target="_blank" href={`/${langtag}/tables/${column.toTable}`}>
           <i className="fa fa-columns" />
@@ -123,14 +139,13 @@ class Columns extends React.Component {
   };
 
   render = () => {
-    const self = this;
     return (
       <div id="tableHeader" ref="tableHeader" className="heading">
         <div className="tableHeader-inner">
           <div className="column-head meta-cell" key="-1">ID</div>
           {
             this.props.columns.map((column, index) => {
-              return self.renderColumn(self.props.langtag, column, index);
+              return this.renderColumn(this.props.langtag, column, index);
             })
           }
         </div>
@@ -138,7 +153,6 @@ class Columns extends React.Component {
     );
   }
 }
-;
 
 Columns.propTypes = {
   langtag: React.PropTypes.string.isRequired,

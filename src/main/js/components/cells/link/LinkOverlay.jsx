@@ -1,30 +1,39 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import _ from "lodash";
-import RowConcatHelper from "../../../helpers/RowConcatHelper.js";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
-import {List} from "react-virtualized";
+import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
-import {FilterModes, Directions} from "../../../constants/TableauxConstants";
-import {either} from "../../../helpers/monads";
+import {ActionTypes, DefaultLangtag, Directions, FilterModes} from "../../../constants/TableauxConstants";
+import {either, maybe} from "../../../helpers/monads";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import FilterModePopup from "../../header/filter/FilterModePopup";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import classNames from "classnames";
-import apiUrl from "../../../helpers/apiUrl";
+import apiUrl, {openInNewTab} from "../../../helpers/apiUrl";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
+import Header from "../../overlay/Header";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
+import SvgIcon from "../../helperComponents/SvgIcon";
+import ReactDOM from "react-dom";
+import SearchBar from "./LinkOverlaySearchBar";
+import DragSortList from "./DragSortList";
+import {changeCell} from "../../../models/Tables";
+import LinkItem from "./LinkItem";
+import Spinner from "../../header/Spinner";
 
-// we use this value to get the exact offset for the link list
-const CSS_SEARCH_HEIGHT = 70;
+const MAIN_BUTTON = 0;
+const LINK_BUTTON = 1;
+const LINKED_ITEMS = 0;
+const UNLINKED_ITEMS = 1;
 
 @translate(["table"])
 @withAbortableXhrRequests
-class LinkOverlay extends React.Component {
+class LinkOverlay extends Component {
 
   constructor(props) {
-    console.log("LinkOverlay.props:", props);
     super(props);
     this.allRowResults = {};
     this.state = {
@@ -32,56 +41,138 @@ class LinkOverlay extends React.Component {
       loading: true,
       filterMode: FilterModes.CONTAINS,
       filterModePopupOpen: false,
-      selectedId: 0
+      popupOpen: false,
+      selectedId: {
+        linked: 0,
+        unlinked: 0
+      },
+      selectedMode: 0,
+      activeBox: UNLINKED_ITEMS
     };
   }
 
   static propTypes = {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    tableId: React.PropTypes.number,
-    contentHeight: React.PropTypes.number.isRequired,
-    contentWidth: React.PropTypes.number.isRequired
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    tableId: PropTypes.number
+  };
+
+  componentDidMount = () => { // why is componentWillMount never called?
+    Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
+    Dispatcher.on(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
+    Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
+    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
+  };
+
+  handleMyKeys = ({id, event}) => {
+    if (id === this.props.id) {
+      KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)(event);
+    }
   };
 
   getKeyboardShortcuts = () => {
-    const rows = this.state.rowResults;
+    const {selectedMode, activeBox} = this.state;
+    const rows = f.get((activeBox === UNLINKED_ITEMS) ? "unlinked" : "linked", this.state.rowResults);
     const selectNext = (dir) => {
-      const {selectedId} = this.state;
+      const selectedId = this.getSelectedId();
       const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
-      this.setState({selectedId: nextIdx});
+      this.setSelectedId(nextIdx);
     };
     return {
       enter: event => {
-        const row = this.state.rowResults[this.state.selectedId];
-        this.addLinkValue.call(this, this.isRowLinked(row), row, event);
+        const {activeBox, rowResults} = this.state;
+        const activeBoxIDString = (activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
+        const row = f.get([activeBoxIDString, this.getSelectedId()], rowResults);
+        if (selectedMode === MAIN_BUTTON) {
+          this.addLinkValue(activeBox === LINKED_ITEMS, row, event);
+        } else {
+          const {cell} = this.props;
+          const target = {
+            tables: cell.tables,
+            tableId: cell.column.toTable,
+            rowId: row.id
+          };
+          loadAndOpenEntityView(target, this.props.langtag);
+        }
       },
       escape: event => {
         event.preventDefault();
         event.stopPropagation();
-        if (this.refs.search.value === "") {
-          this.closeOverlay();
-        } else {
-          this.refs.search.value = "";
-          this.onSearch();
-        }
+        ActionCreator.closeOverlay();
       },
       up: event => {
         event.preventDefault();
         event.stopPropagation();
         selectNext(Directions.UP);
+        if (this.state.activeBox === LINKED_ITEMS && event.shiftKey) {
+          const selectedId = this.getSelectedId();
+          if (selectedId > 0) {
+            this.swapLinkedItems(selectedId - 1, selectedId);
+          }
+        }
       },
       down: event => {
         event.preventDefault();
         event.stopPropagation();
         selectNext(Directions.DOWN);
+        if (this.state.activeBox === LINKED_ITEMS && event.shiftKey) {
+          const selectedId = this.getSelectedId();
+          if (selectedId < f.size(this.state.rowResults.linked)) {
+            this.swapLinkedItems(selectedId, selectedId + 1);
+          }
+        }
+      },
+      right: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.setState({selectedMode: LINK_BUTTON});
+      },
+      left: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.setState({selectedMode: MAIN_BUTTON});
+      },
+      tab: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.shiftKey) {
+          this.setState({selectedMode: (selectedMode + 1) % 2});
+        } else {
+          this.setState({activeBox: (activeBox + 1) % 2});
+        }
       }
     };
   };
 
+  setSelectedId = id => {
+    const activeBox = (this.state.activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
+    const idToSet = f.clamp(0, f.size(f.get(activeBox, this.state.rowResults)) - 1, id);
+    const andFocusIfLinked = () => {
+      if (activeBox !== "linked") {
+        return;
+      }
+      const domNode = ReactDOM.findDOMNode(f.get(this.state.selectedId.linked, this.elements));
+      const focused = (f.get("tagName", document.activeElement) === "INPUT") ? document.activeElement : null;
+      maybe(domNode).method("focus");   // scroll link item into view
+      maybe(focused).method("focus");   // restore search box focus
+    };
+    this.setState({selectedId: f.assoc(activeBox, idToSet, this.state.selectedId)}, andFocusIfLinked);
+  };
+
+  getSelectedId = () => {
+    const activeBox = (this.state.activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
+    return f.get(activeBox, this.state.selectedId);
+  };
+
   componentWillMount = () => {
-    let toTableId = this.props.cell.column.toTable;
-    let toTable = this.props.cell.tables.get(toTableId);
+    const toTableId = this.props.cell.column.toTable;
+    const toTable = this.props.cell.tables.get(toTableId);
+    const {cell} = this.props;
 
     // Data already fetched, show it instantly and update it in the background
     if (toTable.rows.length > 0) {
@@ -98,12 +189,18 @@ class LinkOverlay extends React.Component {
       }
     );
 
-    const fetchRows = new Promise(
+    const fetchForeignRows = new Promise(
       (resolve, reject) => {
         const rowXhr = toTable.rows.fetch({
-          url: apiUrl("/tables/" + toTableId + "/columns/first/rows"),
+          url: apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`),
           success: () => {
-            this.setRowResult(toTable.rows, true);
+            this.setRowResult(
+              f.map(row => ({
+                id: row.id,
+                value: row.cells.at(0).value,
+                displayValue: row.cells.at(0).displayValue
+              }), toTable.rows.models),
+              true);
             resolve();
           },
           error: reject
@@ -112,39 +209,43 @@ class LinkOverlay extends React.Component {
       }
     );
 
-    fetchColumns.then(fetchRows);
+    fetchColumns
+      .then(fetchForeignRows);
   };
 
-  /**
-   * Get the input string of the search field
-   * @returns {Object} Search value lowercased and trimmed, current filter mode
-   */
   getCurrentSearchValue = () => {
-    const searchVal = either(this.refs)
-      .map(f.prop(["search", "value"]))
-      .map(f.trim)
-      .map(f.toLower)
-      .map(f.toString)
-      .getOrElse("");
+    const {filterValue, filterMode} = this.state;
     return {
-      searchVal: searchVal,
-      filterMode: this.state.filterMode
+      filterMode,
+      filterValue
     };
   };
 
   onSearch = (event) => {
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
-      selectedId: 0
+      selectedId: {
+        linked: this.state.selectedId.linked,
+        unlinked: 0
+      },
+      activeBox: UNLINKED_ITEMS
     });
   };
 
   // we set the row result depending if a search value is set
   setRowResult = (rowResult, fromServer) => {
     // just set the models, because we filter it later which also returns the models.
-    this.allRowResults = rowResult.models;
+    const {cell} = this.props;
+    const linkedRows = f.map(
+      ([cellValue, cellDisplayValue]) => ({
+        id: cellValue.id,
+        value: cellValue.value,
+        displayValue: cellDisplayValue
+      }),
+      f.zip(cell.value, cell.displayValue)
+    );
+    this.allRowResults = [...linkedRows, ...rowResult];
     // we always rebuild the row names, also to prevent wrong display names when switching languages
-    this.buildRowConcatString();
     this.setState({
       // we show all the rows
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
@@ -152,183 +253,298 @@ class LinkOverlay extends React.Component {
     });
   };
 
-  // Extends the model by a cached row name string
-  buildRowConcatString = () => {
-    const {allRowResults, props: {cell: {column: {toColumn}}}} = this;
-    _.forEach(allRowResults, (row) => {
-      row["cachedRowName"] = RowConcatHelper.getCellAsStringWithFallback(this.getRowValues(row),
-        toColumn,
-        this.props.langtag);
+  updateLinkValues = ({cell, row}) => {
+    const thisCell = this.props.cell;
+    if (cell.column.id !== thisCell.column.toColumn.id || cell.tableId !== thisCell.column.toTable) {
+      return;
+    }
+    const linkedRows = f.map(f.get("id"), thisCell.value);
+    if (!f.contains(row.id, linkedRows)) {
+      return;
+    }
+    const oldValueIdx = f.findIndex(f.matchesProperty("id", row.id), this.allRowResults);
+    const newLink = f.assoc("id", row.id, f.pick(["value", "displayValue"], cell));
+    this.allRowResults = f.assoc(oldValueIdx, newLink, this.allRowResults);
+    this.setState({
+      rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
     });
   };
 
-  getRowValues = (row) => {
-    const {toColumn, toTable} = this.props.cell.column;
-    const toTableObj = this.props.cell.tables.get(toTable);
-    const toTableColumns = toTableObj.columns;
-    const toIdColumnIndex = toTableColumns.indexOf(toTableColumns.get(toColumn.id)); // This is the index of the
-                                                                                     // identifier / concat column 
-    return row.values[toIdColumnIndex];
+  setFilterMode = ({filterMode = FilterModes.CONTAINS, filterValue = ""}) => {
+    this.setState(
+      {
+        filterMode,
+        filterValue
+      },
+      () => this.onSearch());
   };
 
-  toggleFilterModesPopup = () => {
-    this.setState({filterModePopupOpen: !this.state.filterModePopupOpen});
-  };
-
-  setFilterMode = (modeString) => {
-    this.setState({filterMode: modeString}, this.onSearch);
-  };
-
-  renderFilterModePopup = () => {
-    const active = (this.state.filterMode === FilterModes.CONTAINS) ? 0 : 1;
-    return (
-      <FilterModePopup x={0} y={0}
-                       active={active}
-                       setFilterMode={this.setFilterMode}
-                       close={this.toggleFilterModesPopup}
-      />);
-  };
-
-  // searchval is already trimmed and to lowercase
   filterRowsBySearch = (searchParams) => {
-    const {searchVal, filterMode} = searchParams;
+    const {langtag} = this.props;
+    const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
-
-    if (searchVal !== "" && allRowResults.length > 0) {
-      const byCachedRowName = f.compose(searchFunction(searchVal), f.prop("cachedRowName"));
-      return allRowResults.filter(byCachedRowName);
-    } else {
-      return allRowResults;
-    }
-  };
-
-  addLinkValue = (isLinked, row, event) => {
-    event.preventDefault();
-    const cell = this.props.cell;
-    const rowCellIdValue = this.getRowValues(row);
-    const link = {
-      id: row.id,
-      value: rowCellIdValue
+    const linkPosition = f.reduce(
+      f.merge, {}, this.props.cell.value.map((row, idx) => ({[row.id]: idx}))
+    );
+    const linkedRows = f.compose(
+      f.sortBy(link => f.get(link.id, linkPosition)),
+      f.filter(this.isRowLinked)
+    )(allRowResults);
+    const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
+    const byDisplayValues = f.compose(
+      searchFunction(filterValue),
+      f.get(["displayValue", langtag])
+    );
+    return {
+      linked: linkedRows,
+      unlinked: (filterValue !== "") ? f.filter(byDisplayValues, unlinkedRows) : unlinkedRows
     };
-    let links = _.clone(cell.value);
-
-    if (isLinked) {
-      _.remove(links, function (linked) {
-        return row.id === linked.id;
-      });
-    } else {
-      links.push(link);
-    }
-    ActionCreator.changeCell(cell, links);
-
-    // tell the virtual scroller to redraw
-    this.refs.OverlayScroll.forceUpdateGrid();
   };
 
-  closeOverlay = () => {
-    ActionCreator.closeOverlay();
+  addLinkValue = (isAlreadyLinked, link, event) => {
+    maybe(event).method("preventDefault");
+    const cell = this.props.cell;
+    const withoutLink = f.remove(f.matchesProperty("id", link.id));
+    const links = (isAlreadyLinked)
+      ? withoutLink(cell.value)
+      : [...cell.value, link];
+
+    if (isAlreadyLinked && f.get(["constraint", "deleteCascade"], cell.column)) {
+      this.allRowResults = withoutLink(this.allRowResults);
+    }
+
+    ActionCreator.changeCell(cell, links);
+    this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
   };
 
   isRowLinked = (row) => {
     const currentCellValue = either(this.props.cell)
       .map(f.prop(["value"]))
       .getOrElse(null);
-    return !!_.find(currentCellValue, link => link.id === row.id);
+    return !!_.find(currentCellValue, link => f.get("id", link) === f.get("id", row));
   };
 
-  getOverlayItem = (
-    {
-      key,         // Unique key within array of rows
-      index,       // Index of row within collection
-      style        // Style object to be applied to row (to position it)
-    }
-  ) => {
-    const {rowResults, selectedId} = this.state;
+  setActiveBox = (val) => (e) => {
+    this.setState({activeBox: val});
+    e.stopPropagation();
+    this.background.focus();
+  };
+
+  renderListItem = ({isLinked}) => ({key, index, style = {}}) => {
+    const {selectedMode, activeBox} = this.state;
+    const rowResults = f.get((isLinked) ? "linked" : "unlinked", this.state.rowResults);
     const row = rowResults[index];
 
-    if (!_.isEmpty(rowResults) && !_.isEmpty(row)) {
-      const isLinked = this.isRowLinked(row);
-      const rowName = row["cachedRowName"];
-      const rowCssClass = classNames("overlay-table-row",
-        {
-          "isLinked": isLinked,
-          "selected": selectedId === index
-        });
-
-      return <div style={style} key={key}>
-        <a href="#"
-           className={rowCssClass}
-           onClick={this.addLinkValue.bind(this, isLinked, row)}
-           onMouseEnter={() => this.setState({selectedId: index})}
-        >
-          {rowName}
-        </a>
-      </div>;
+    if (_.isEmpty(rowResults) || _.isEmpty(row)) {
+      return null;
     }
+
+    const isSelected = this.getSelectedId() === index && activeBox === ((isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS);
+    const {langtag, cell} = this.props;
+
+    const refIfLinked = el => {
+      if (isLinked) {
+        this.elements = f.assoc(index, el, this.elements || {});
+      }
+    };
+
+    const mouseOverBoxHandler = val => e => {
+      this.setState({
+        selectedMode: val,
+        activeBox: (isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS
+      });
+      e.stopPropagation();
+      this.background.focus();
+    };
+
+    const mouseOverItemHandler = index => e => {
+      this.setSelectedId(index);
+      this.setState({activeBox: (isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS});
+      e.stopPropagation();
+      this.background.focus();
+    };
+
+    return (
+      <LinkItem
+        key={key}
+        mouseOverHandler={{
+          box: mouseOverBoxHandler,
+          item: mouseOverItemHandler(index)
+        }}
+        refIfLinked={refIfLinked}
+        clickHandler={this.addLinkValue}
+        isLinked={isLinked}
+        isSelected={isSelected}
+        row={row}
+        cell={cell}
+        langtag={langtag}
+        style={style}
+        selectedMode={selectedMode}
+      />
+    );
   };
 
   noRowsRenderer = () => {
     const {t} = this.props;
     return (
-      <div className="error">
+      <div className="empty">
         {this.getCurrentSearchValue().length > 0 ? t("search_no_results") : t("overlay_no_rows_in_table")}
       </div>);
   };
 
+  swapLinkedItems = (a, b) => {
+    const linkedItems = f.get(["rowResults", "linked"], this.state) || [];
+    const {cell} = this.props;
+    const rearranged = f.compose(
+      f.assoc(a, f.get(b, linkedItems)),
+      f.assoc(b, f.get(a, linkedItems)),
+    )(linkedItems);
+
+    changeCell({
+      cell,
+      value: rearranged
+    })
+      .catch(
+        error => {
+          console.error("Error changing cell, restoring original data:", error);
+          this.setState({rowResults: f.assoc("linked", linkedItems, this.state.rowResults)});
+        });
+    this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
+  };
+
+  renderRowCreator = () => {
+    const {cell, cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
+    const addAndLinkRow = () => {
+      const linkNewRow = row => {
+        const link = {
+          id: row.id,
+          value: null,
+          displayValue: {}
+        };
+        this.allRowResults = [...this.allRowResults, link];
+        this.addLinkValue(false, link);
+
+        loadAndOpenEntityView({tables: cell.tables, tableId: toTable, rowId: row.id}, langtag);
+      };
+      ActionCreator.addRow(toTable, linkNewRow);
+    };
+
+    const linkTableName = displayName[langtag] || displayName[DefaultLangtag] || "";
+    const linked = f.size(this.state.rowResults.linked);
+    const cardinalityTo = f.get(["cardinality", "to"], constraint) || 0;
+    const allowed = (cardinalityTo > 0) ? cardinalityTo : Number.POSITIVE_INFINITY;
+
+    return (linked < allowed)
+      ? (
+        <div className="row-creator-button" onClick={addAndLinkRow}>
+          <SvgIcon icon="plus" containerClasses="color-primary" />
+          <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>
+        </div>
+      )
+      : null;
+  };
+
   render = () => {
-    let listDisplay;
     const {rowResults, loading} = this.state;
-    const {contentHeight, contentWidth} = this.props;
-    const rowsCount = rowResults.length || 0;
+    const {cell, cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
+    const targetTable = {
+      tableId: column.toTable,
+      langtag
+    };
 
-    if (loading) {
-      listDisplay = "Loading...";
-    } else {
-      listDisplay = (
-        <List
+    const unlinkedRows = (loading)
+      ? <Spinner isLoading={true} />
+      : <AutoSizer>
+        {({width, height}) => <List
           ref="OverlayScroll"
-          width={contentWidth}
-          height={contentHeight - CSS_SEARCH_HEIGHT}
-          rowCount={rowsCount}
-          rowHeight={50}
-          rowRenderer={this.getOverlayItem}
-          scrollToIndex={this.state.selectedId}
+          width={width}
+          height={height}
+          rowCount={rowResults.unlinked.length || 0}
+          rowHeight={40}
+          rowRenderer={this.renderListItem({isLinked: false})}
+          scrollToIndex={this.state.selectedId.unlinked}
           noRowsRenderer={this.noRowsRenderer}
-        />
-      );
-    }
+        />}
+      </AutoSizer>;
 
-    const placeholder = (this.state.filterMode === FilterModes.CONTAINS)
-      ? "table:filter.contains"
-      : "table:filter.starts_with";
+    // because keeping track of multiple partial localisation strings gets more tiresome...
+    const linkEmptyLines = i18n.t("table:link-overlay-empty").split(".");
 
-    const popupOpen = this.state.filterModePopupOpen;
-    return (
-      <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}>
-        {(popupOpen)
-          ? this.renderFilterModePopup()
-          : null
-        }
-        <div className="search-input-wrapper2" style={{height: CSS_SEARCH_HEIGHT}} >
-          <div className="search-input-wrapper">
-            <input type="text"
-                   className="search-input"
-                   placeholder={i18n.t(placeholder) + "..."}
-                   onChange={this.onSearch}
-                   ref="search"
-                   autoFocus />
-            <a href="#" className={"ignore-react-onclickoutside" + ((popupOpen) ? " active" : "")}
-               onClick={this.toggleFilterModesPopup}>
-              <i className="fa fa-search"></i>
-              <i className="fa fa-angle-down"></i>
-            </a>
+    const linkedRows = (f.isEmpty(f.get("linked", rowResults)) && !loading)
+      ? (
+        <div className="link-list empty-info">
+          <i className="fa fa-chain-broken" />
+          <div className="text">
+            <span>
+              {linkEmptyLines[0]}.
+            </span>
+            <span>
+              {linkEmptyLines[1]}.
+            </span>
           </div>
         </div>
-        {listDisplay}
+      )
+      : (
+        <DragSortList renderListItem={this.renderListItem({isLinked: true})}
+                      items={f.defaultTo([])(rowResults.linked).map(
+                        (row, index) => {
+                          return {
+                            index,
+                            id: row.id
+                          };
+                        }
+                      )}
+                      swapItems={this.swapLinkedItems}
+        />
+      );
+
+    return (
+      <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+           className="link-overlay"
+           tabIndex={1}
+           onMouseOver={e => e.target.focus()}
+           ref={el => {
+             this.background = el;
+           }}
+      >
+        <div className="linked-items" onMouseEnter={this.setActiveBox(LINKED_ITEMS)}>
+          <span className="items-title">
+            <span>{i18n.t("table:link-overlay-items-title")}
+              {(cell.tables.get(cell.column.toTable).hidden)
+                ? displayName[langtag] || displayName[DefaultLangtag]
+                : (
+                  <a className="table-link" href="#" onClick={() => openInNewTab(targetTable)}>
+                    {displayName[langtag] || displayName[DefaultLangtag]}
+                  </a>
+                )
+              }
+            </span>
+          </span>
+          {linkedRows}
+        </div>
+        <div className="unlinked-items" onMouseEnter={this.setActiveBox(UNLINKED_ITEMS)}>
+          {unlinkedRows}
+        </div>
+        {this.renderRowCreator()}
       </div>
     );
   }
 }
+
+export const openLinkOverlay = (cell, langtag) => {
+  const table = cell.tables.get(cell.tableId);
+  const tableName = table.displayName[langtag] || table.displayName[DefaultLangtag];
+  const overlayContent = <LinkOverlay cell={cell} langtag={langtag} />;
+  ActionCreator.openOverlay({
+    head: <Header context={tableName}
+                  title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
+                  components={<SearchBar langtag={langtag} />}
+    />,
+    body: overlayContent,
+    type: "full-height",
+    classes: "link-overlay"
+  });
+};
 
 export default LinkOverlay;

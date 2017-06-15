@@ -10,8 +10,8 @@
   "copy_cell": "Zellinhalt kopieren",
   "paste_cell": "Zellinhalt einfügen",
   "delete_row_dependent_text": "Dieser Datensatz ist bereits in folgenden Tabellen verknüpft. Die Verknüpfung wird automatisch gelöscht.",
-  "show_entity_view": "Zeige Vorschau",
-  "entity_view": "Vorschau",
+  "show_entity_view": "Zeige Details",
+  "entity_view": "Details",
   "no_dependent_text": "Dieser Datensatz ist bisher nicht verknüpft.",
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
@@ -37,8 +37,10 @@
   "no_results_found": "Keine entsprechenden Spalten gefunden",
   "hide_unhide": "Spalten zeigen/verbergen",
   "set_header_level": "Überschrift:",
-  "edit_links": "Einträge verlinken/entfernen",
-  "edit_attachments": "Dateien verlinken/entfernen",
+  "edit_links": "{{title}} hinzufügen",
+  "edit_attachments": "Dateien hinzufügen/entfernen",
+  "show_all_items": "Alle {{nItems}} anzeigen",
+  "show_less": "weniger anzeigen",
   "final": {
     "set_final": "Markierung \"Final\" setzen",
     "set_not_final": "Markierung \"Final\" entfernen",
@@ -54,7 +56,10 @@
     "translation_needed": "Übersetzung nötig",
     "this_translation_needed": "Übersetzung nötig für \"{{langtag}}\"",
     "no_translation_needed": "Keine Übersetzung nötig",
-    "no_such_translation_needed": "Keine Übersetzung nötig für \"{{langtag}}\""
+    "no_such_translation_needed": "Keine Übersetzung nötig für \"{{langtag}}\"",
+    "expand_all": "Alle Übersetzungen aufklappen",
+    "collapse_all": "Alle Übersetzungen einklappen",
+    "is_single_language": "Wert ist nicht mehrsprachig"
   },
   "jump": {
     "no_such_row": "Diese Tabelle enthält keine Zeile mit ID {{row}}",
@@ -83,5 +88,25 @@
   "confirm_copy": {
     "header": "Mehrsprachigen Inhalt einfügen?",
     "info": "Sie haben eine mehrsprachige Zelle kopiert. Durch das Einfügen überschreiben Sie alle bestehenden Werte in den jeweiligen Sprachen wie folgt:"
-  }
+  },
+  "menus": {
+    "information": "Informationen",
+    "edit": "Bearbeiten",
+    "data_set": "Datensatz",
+    "translation": "Übersetzung"
+  },
+  "empty": {
+    "text": "Es wurde noch kein Text hinterlegt",
+    "number": "Es wurde noch keine Zahl hinterlegt",
+    "links": "Es wurden noch keine Datensätze verknüpft",
+    "attachments": "Es wurden noch keine Dateien verknüpft",
+    "date": "Es wurde noch kein Datum gewählt"
+  },
+  "link-overlay-empty": "Keine Verknüpfungen bisher. Sie können aus der folgenden Liste Datensätze wählen.",
+  "link-overlay-items-title": "Verknüpfte Datensätze aus der Tabelle {{name}}",
+  "link-overlay-add-new-row": "Neuen Datensatz in Tabelle {{tableName}} erstellen",
+  "row-is-locked": "Datensatz ist schreibgeschützt",
+  "unlock-row": "Entsperren",
+  "clear-date": "Kein Datum / Zeit",
+  "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt"
 }

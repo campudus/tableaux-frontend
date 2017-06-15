@@ -180,14 +180,14 @@ class SingleFileEdit extends React.Component {
 
     return (
       <div className="singlefile-edit">
-        <div className="cover-wrapper">
+        <div className="item cover-wrapper">
           <div className="cover">
             <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
                               uuid={uuid}/>
           </div>
           <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>{t("open_file")}</a></span>
         </div>
-        <div className="properties-wrapper">
+        <div className="properties-wrapper content-items">
           <SingleFileTextInput name="fileTitle"
                                labelText={t("file_title_label")}
                                originalValue={this.props.file.title}
@@ -216,8 +216,8 @@ class SingleFileEdit extends React.Component {
                                onChange={this.onExternalnameChange}/>
         </div>
 
-        <div className="multifile-wrapper">
-          <Dropzone onDrop={this.onMultilangDrop} className="dropzone" multiple={false}>
+        <div className="multifile-wrapper item">
+          <Dropzone onDrop={this.onMultilangDrop} className="item dropzone" multiple={false}>
             <div className="convert-multilanguage-note">
               <h4>{t("convert_multilanguage_hl")}</h4>
               <p>{t("convert_multilanguage_description")}</p>

@@ -1,44 +1,77 @@
-import React, {Component, PropTypes} from "react";
+import React, {PropTypes} from "react";
 import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
-import AttachmentEditCell from "./AttachmentEditCell.jsx";
 import * as f from "lodash/fp";
+import classNames from "classnames";
+import ActionCreator from "../../../actions/ActionCreator";
+import Header from "../../overlay/Header";
+import AttachmentOverlay from "./AttachmentOverlay.jsx";
+import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
+import {FallbackLanguage} from "../../../constants/TableauxConstants";
+import {isLocked} from "../../../helpers/annotationHelper";
 
-class AttachmentCell extends Component {
+const AttachmentCell = props => {
+  const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = props;
+  const cellClass = classNames("cell-content", {
+    "editing": editing,
+    "selected": selected
+  });
 
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    selected: PropTypes.bool.isRequired,
-    editing: PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: PropTypes.func
+  const openOverlay = folderId => {
+    const columnName = cell.column.displayName[langtag] || cell.column.displayName[FallbackLanguage];
+    ActionCreator.openOverlay({
+      head: <Header title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} context={columnName} />,
+      body: <AttachmentOverlay cell={cell} langtag={langtag} folderId={folderId} />,
+      type: "full-height",
+      preferRight: true
+    });
   };
 
-  render() {
-    const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = this.props;
+  const attachments = ((editing || selected) ? cell.value : f.take(3)(cell.value))
+    .map(
+      (element, idx) => (
+        <AttachmentLabelCell
+          key={idx}
+          attachmentElement={element}
+          cell={cell}
+          langtag={langtag}
+          openOverlay={openOverlay}
+          selected={selected}
+        />
+      ),
+    );
 
-    if (selected) {
-      return <AttachmentEditCell cell={cell} langtag={langtag}
-                                 editing={editing}
-                                 setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-      />;
-    } else {
-      // Show an attachment preview for performance
-      const tooManyAttachments = cell.value.length > 3;
-      const attachments = f.take(3, cell.value)
-                           .map((element, id) => {
-                             return <AttachmentLabelCell key={id} attachmentElement={element} cell={cell}
-                                                         langtag={langtag}
-                                                         deletable={false}
-                             />;
-                           });
-      return (
-        <div className={"cell-content"}>
-          {(tooManyAttachments) ? [...attachments, <span key={"more"} className="more">&hellip;</span>] : attachments}
-        </div>
-      );
+  setCellKeyboardShortcuts(
+    {
+      enter: (event) => {
+        if (!isLocked(cell.row)) {
+          event.stopPropagation();
+          event.preventDefault();
+          openOverlay();
+        }
+      }
     }
-  }
+  );
 
-}
+  return (
+    <div className={cellClass}>
+      {(f.size(attachments) === f.size(cell.value))
+        ? attachments
+        : [...attachments, <span key={"more"} className="more">&hellip;</span>]
+      }
+      {(editing || selected)
+        ? <button key={"add-btn"} className="edit" onClick={openOverlay}><span className="fa fa-pencil"></span></button>
+        : null
+      }
+    </div>
+  );
+};
+
+AttachmentCell.propTypes = {
+  editing: PropTypes.bool,
+  selected: PropTypes.bool,
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func.isRequired
+};
 
 module.exports = AttachmentCell;

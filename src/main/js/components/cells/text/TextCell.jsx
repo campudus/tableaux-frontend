@@ -1,13 +1,16 @@
 import React, {Component, PropTypes} from "react";
-import TextEditCell from "./TextEditCell.jsx";
-import TextArea from "./TextArea.jsx";
+import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
-import TextOverlayFooter from "./TextOverlayFooter.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import {isEmpty} from "lodash/fp";
+import {compose, isEmpty} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
+import {FallbackLanguage} from "../../../constants/TableauxConstants";
+import Header from "../../overlay/Header";
+import i18n from "i18next";
+import {maybe} from "../../../helpers/monads";
+import {changeCell} from "../../../models/Tables";
 
 class TextCell extends Component {
 
@@ -28,7 +31,7 @@ class TextCell extends Component {
     const valueToSave = (cell.isMultiLanguage)
     ? {[langtag]: newValue}
     : newValue;
-    cell.save({value: valueToSave}, {patch: true, success: contentChanged});
+    changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
     ActionCreator.toggleCellEditing({editing: false});
   };
 
@@ -38,15 +41,31 @@ class TextCell extends Component {
       return;
     }
     const textValue = withContent || this.getValue();
-    event.stopPropagation();
-    event.preventDefault();
+    maybe(event)
+      .method("stopPropagation")
+      .method("preventDefault");
+
+    const {cell, langtag} = this.props;
+    const table = cell.tables.get(cell.tableId);
+    const context = table.displayName[langtag] || table.displayName[FallbackLanguage];
+
+    const Wrapper = props => <div>{props.children}</div>;
 
     ActionCreator.openOverlay({
-      head: <OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />,
-      body: <TextArea initialContent={textValue} onClose={this.closeOverlay} onSave={this.saveOverlay} />,
-      footer: <TextOverlayFooter />,
-      type: "normal",
-      closeOnBackgroundClicked: false
+      head: <Header context={context}
+                    title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
+                    actions={{positive: [i18n.t("common:save"), this.saveCell]}}
+      />,
+      body: (
+        <Wrapper>
+          <div className="content-items">
+            <div className="item">
+              <RichTextComponent value={textValue} langtag={langtag} saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}/>
+            </div>
+          </div>
+        </Wrapper>
+      ),
+      type: "full-height"
     });
   };
 
@@ -63,34 +82,30 @@ class TextCell extends Component {
   getValue = () => {
     const {cell, langtag} = this.props;
     const value = (cell.isMultiLanguage)
-    ? cell.value[langtag]
+      ? cell.value[langtag]
       : cell.value;
     return value || "";
   };
 
-  renderTextCell = (cell, value) => {
-    const expandButton = (this.props.selected)
+  componentWillReceiveProps = (nextProps) => {
+    if (!this.props.editing && nextProps.editing) {
+      this.openOverlay();
+    }
+  };
+
+  render() {
+    const {selected} = this.props;
+
+    const expandButton = (selected)
       ? <ExpandButton onTrigger={this.openOverlay} />
       : null;
 
     return (
       <div className='cell-content' onClick={this.handleClick}>
-        {value.split("\n")[0]}
+        {this.getValue().split("\n")[0]}
         {expandButton}
       </div>
     );
-  };
-
-  render() {
-    const {cell, langtag, editing} = this.props;
-    if (!editing) {
-      return this.renderTextCell(cell, this.getValue());
-    } else {
-      return <TextEditCell cell={cell} defaultText={this.getValue()} langtag={langtag}
-                           onBlur={this.saveCell}
-                           openOverlay={this.openOverlay} closeOverlay={this.closeOverlay}
-                           saveOverlay={this.saveOverlay} />;
-    }
   }
 }
 

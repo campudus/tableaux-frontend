@@ -5,7 +5,7 @@ import i18n from "i18next";
 import {either} from "../../helpers/monads";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
-import {FilterModes, Directions, FallbackLanguage} from "../../constants/TableauxConstants";
+import {Directions, FallbackLanguage, FilterModes} from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
@@ -37,7 +37,7 @@ class ColumnFilterPopup extends React.Component {
   // returns a true/false filter function accepting one argument
   buildFilter = filter => {
     const {columns: {models}} = this.props;
-    const lvl1 = col => col != f.first(models); // ignore ID column
+    const lvl1 = col => col !== f.first(models); // ignore ID column
     const lvl2 = (filter)
       ? f.compose(SearchFunctions[filter.type](filter.value), this.getColName)
       : f.stubTrue;                                // ...or pass all
@@ -55,8 +55,8 @@ class ColumnFilterPopup extends React.Component {
 
   setAll = val => () => {
     const models = this.props.columns.models;
-    const toggle_ids = f.drop(1, models).map(x => x.id); // get ids of all but first column
-    this.setVisibilityAndUpdateGrid(val, toggle_ids);
+    const toggleIds = f.drop(1, models).map(x => x.id); // get ids of all but first column
+    this.setVisibilityAndUpdateGrid(val, toggleIds);
   };
 
   getKeyboardShortcuts = () => {
@@ -96,16 +96,16 @@ class ColumnFilterPopup extends React.Component {
   toggleCol = index => event => {
     event.stopPropagation();
     const {columns: {models}} = this.props;
-    const the_column = f.first(f.filter(x => x.id === index, models));
-    this.setVisibilityAndUpdateGrid(!the_column.visible, [index]);
+    const theColumn = f.first(f.filter(x => x.id === index, models));
+    this.setVisibilityAndUpdateGrid(!theColumn.visible, [index]);
     this.forceUpdate();
   };
 
   getColName = col => either(col)
-      .map(f.prop(["displayName", this.props.langtag]))
-      .orElse(f.prop(["displayName", FallbackLanguage]))
-      .orElse(f.prop(["name"]))
-      .getOrElseThrow("Could not extract displayName or name from" + col);
+    .map(f.prop(["displayName", this.props.langtag]))
+    .orElse(f.prop(["displayName", FallbackLanguage]))
+    .orElse(f.prop(["name"]))
+    .getOrElseThrow("Could not extract displayName or name from" + col);
 
   renderCheckboxItems = ({key, index, style}) => {
     const {models} = this.state;
@@ -127,7 +127,8 @@ class ColumnFilterPopup extends React.Component {
       >
         <input type="checkbox"
                checked={col.visible}
-               onChange={() => {}} // to avoid React warning "unmanaged input"
+               onChange={() => {
+               }} // to avoid React warning "unmanaged input"
         />
         {name}
       </div>
@@ -143,7 +144,11 @@ class ColumnFilterPopup extends React.Component {
 
   render = () => {
     const {columns} = this.props;
-    const n_hidden = columns.filter(x => !x.visible).length;
+    const nHidden = f.compose(
+      f.size,
+      f.reject(f.get("visible")),
+      f.drop(1)
+    )(columns.models);
     const {models} = this.state;
 
     return (
@@ -161,13 +166,13 @@ class ColumnFilterPopup extends React.Component {
                    className="input"
                    placeholder={i18n.t("table:filter_columns")}
                    onChange={this.handleFilterChange}
-                   ref={input => this.searchBar = input}
+                   ref={input => { this.searchBar = input; }}
                    autoFocus
             />
           </div>
         </div>
         <List className="column-checkbox-list"
-              ref={list => this.list = list}
+              ref={list => { this.list = list; }}
               width={440}
               height={300}
               rowCount={models.length}
@@ -178,7 +183,7 @@ class ColumnFilterPopup extends React.Component {
         />
 
         <div className="row infotext">
-          <text>{n_hidden + " " + i18n.t("table:hidden_items")}</text>
+          <text>{nHidden + " " + i18n.t("table:hidden_items")}</text>
         </div>
         <div className="wrap-me-grey">
           <div className="row">

@@ -22,4 +22,6 @@ const SearchFunctions = {
 SearchFunctions[FilterModes.CONTAINS].displayName = "table:filter.contains";
 SearchFunctions[FilterModes.STARTS_WITH].displayName = "table:filter.starts_with";
 
+export const SEARCH_FUNCTION_IDS = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
+
 export default SearchFunctions;

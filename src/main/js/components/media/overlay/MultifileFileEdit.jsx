@@ -1,11 +1,11 @@
-var React = require("react");
-var FileChangeUpload = require("./FileChangeUpload.jsx");
-var LanguageSwitcher = require("../../header/LanguageSwitcher.jsx");
-var apiUrl = require("../../../helpers/apiUrl");
-import {isUserAdmin, hasUserAccessToLanguage, getUserLanguageAccess} from "../../../helpers/accessManagementHelper";
+import apiUrl from "../../../helpers/apiUrl";
+import LanguageSwitcher from "../../header/LanguageSwitcher.jsx";
+import FileChangeUpload from "./FileChangeUpload.jsx";
+import React from "react";
+import {getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
 
-var MultifileFileEdit = React.createClass({
+const MultifileFileEdit = React.createClass({
 
   propTypes: {
     langtag: React.PropTypes.string.isRequired,
@@ -56,13 +56,13 @@ var MultifileFileEdit = React.createClass({
       ? <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>{t("open_file")}</a></span> : null;
 
     return (
-      <div className="multifile-file-edit">
+      <div className="multifile-file-edit item">
         <div className="cover-wrapper">
           <div className="cover">
             <FileChangeUpload
               langtag={langtag}
               internalFileName={internalName}
-              uuid={uuid}/>
+              uuid={uuid} />
           </div>
           {openFileLink}
         </div>
@@ -73,29 +73,23 @@ var MultifileFileEdit = React.createClass({
             disabled={!permissionToChange}
             limitLanguages={getUserLanguageAccess()}
           />
-          <div className='field-item'>
-            <label htmlFor={this.titleId} className="field-label">{t("file_title_label")}</label>
-            <div className="field-input">
-              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.titleId}
-                     value={title}
-                     onChange={this.onTitleChange}/>
-            </div>
+          <div className="item">
+            <div className="item-header">{t("file_title_label")}</div>
+            <input disabled={!permissionToChange} type="text" id={this.titleId}
+                   value={title}
+                   onChange={this.onTitleChange} />
           </div>
-          <div className='field-item'>
-            <label htmlFor={this.descId} className="field-label">{t("file_description_label")}</label>
-            <div className="field-input">
-              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.descId}
-                     value={description}
-                     onChange={this.onDescriptionChange}/>
-            </div>
+          <div className="item">
+            <div className="item-header">{t("file_description_label")}</div>
+            <input disabled={!permissionToChange} type="text" id={this.descId}
+                   value={description}
+                   onChange={this.onDescriptionChange} />
           </div>
-          <div className='field-item'>
-            <label htmlFor={this.externalNameId} className="field-label">{t("file_link_name_label")}</label>
-            <div className="field-input">
-              <input disabled={!permissionToChange} type="text" className="field-text-input" id={this.externalNameId}
-                     value={externalName}
-                     onChange={this.onExternalNameChange}/>
-            </div>
+          <div className="item">
+            <div className="item-header">{t("file_link_name_label")}</div>
+            <input disabled={!permissionToChange} type="text" id={this.externalNameId}
+                   value={externalName}
+                   onChange={this.onExternalNameChange} />
           </div>
         </div>
       </div>

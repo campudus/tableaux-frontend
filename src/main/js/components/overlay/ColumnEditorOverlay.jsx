@@ -17,30 +17,30 @@ class ColumnEditorOverlay extends React.Component {
 
   modify = key => evt => {
     if (evt && evt.target) {
-      const new_state = {[key]: evt.target.value};
-      this.setState(new_state);
-      this.props.handleInput(new_state);
+      const newState = {[key]: evt.target.value};
+      this.setState(newState);
+      this.props.handleInput(newState);
     }
   };
 
   render = () => {
     return (
-      <span id="column-editor">
-        <div className="column-editor-item">
-          <h1 className="editor-big-text">{i18n.t("table:editor.colname")}</h1>
-          <text>({i18n.t("table:editor.sanity_info")})</text>
-          <input type="text" autoFocus className="input"
+      <div className="content-items">
+        <div className="item">
+          <div className="item-header">{i18n.t("table:editor.colname")}</div>
+          <div className="item-description">({i18n.t("table:editor.sanity_info")})</div>
+          <input type="text" autoFocus className="item-content"
                  onChange={this.modify("name")}
                  value={this.state.name} />
         </div>
-        <div className="column-editor-item">
-          <h1 className="editor-big-text">{i18n.t("table:editor.description")}</h1>
-          <textarea type="text" className="input"
+        <div className="item">
+          <div className="item-header">{i18n.t("table:editor.description")}</div>
+          <textarea type="text" className="item-content"
                     rows="6"
                     onChange={this.modify("description")}
                     value={this.state.description} />
         </div>
-        </span>
+        </div>
     );
   };
 }
@@ -52,4 +52,4 @@ ColumnEditorOverlay.propTypes = {
   handleInput: React.PropTypes.func.isRequired
 };
 
-module.exports = ColumnEditorOverlay;
+export default ColumnEditorOverlay;

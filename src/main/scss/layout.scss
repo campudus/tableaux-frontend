@@ -7,6 +7,11 @@ body {
   background-color: $color-body-background;
 }
 
+body * {
+  outline: none;
+  outline-style: none;
+}
+
 header {
   @include user-select(none);
 }
@@ -22,4 +27,15 @@ header {
 
 .clearfix {
   clear: both;
+}
+
+input, textarea {
+  font-family: $font-main;
+  font-size: $font-size-standard;
+}
+
+.empty-item {
+  text-transform: uppercase;
+  font-style: italic;
+  font-weight: lighter;
 }

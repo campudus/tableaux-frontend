@@ -53,42 +53,48 @@ export function getKeyboardShortcuts() {
   return {
     left: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.LEFT);
         }
       );
     },
     right: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.RIGHT);
         }
       );
     },
     tab: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
         }
       );
     },
     up: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.UP);
         }
       );
     },
     down: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           setNextSelectedCell.call(this, Directions.DOWN);
         }
       );
     },
     enter: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           if (selectedCell && !selectedCellEditing) {
             toggleCellEditing.call(this,
               {
@@ -101,7 +107,8 @@ export function getKeyboardShortcuts() {
     },
     escape: (event) => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this, () => {
+      preventSleepingOnTheKeyboard.call(this,
+        () => {
           if (selectedCell && selectedCellEditing) {
             toggleCellEditing.call(this,
               {
@@ -125,7 +132,6 @@ export function getKeyboardShortcuts() {
       const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
       if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
-        // event.preventDefault();
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!_.isEmpty(this.props.pasteOriginCell)
@@ -157,7 +163,6 @@ export function updateScrollViewToSelectedCell() {
   // Are there any selected cells?
   const cellsDom = tableRowsDom.getElementsByClassName("cell selected");
   if (cellsDom.length > 0) {
-    console.log("Scroll View Update happens.");
     // Get the first selected cell
     const cell = cellsDom[0];
     // Cell DOM position and dimensions
@@ -210,7 +215,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
     const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
     App.router.navigate(cellURL, {trigger: false});
   }
-  if (!f.isNil(this.state.selectedCell) && !f.eq(this.state.selectedCell.row, cell.row)) {
+  if (!f.isNil(this.state.selectedCell) && !f.equals(this.state.selectedCell.row, cell.row)) {
     unlockRow(this.state.selectedCell.row, false);
   }
   this.setState({
@@ -321,14 +326,10 @@ export function getNextRowCell(currentRowId, getPrev) {
       nextIndex = indexCurrentRow;
       // set new language
       nextSelectedCellExpandedRow = Langtags[nextLangtagIndex];
-    }
-    // jump from expanded row to next / or previous cell (completely new row)
-    else {
+    } else {
       jumpToNextRow = true;
     }
-  }
-  // current row is not expanded so jump to next row
-  else {
+  } else {
     jumpToNextRow = true;
   }
 
@@ -342,14 +343,10 @@ export function getNextRowCell(currentRowId, getPrev) {
       // Multilanguage cell
       if (selectedCell.isMultiLanguage) {
         nextSelectedCellExpandedRow = getPrev ? Langtags[Langtags.length - 1] : DefaultLangtag;
-      }
-      // Skip single language cell to next editable cell - by default the first language
-      else {
+      } else {
         nextSelectedCellExpandedRow = DefaultLangtag;
       }
-    }
-    // Next row is closed row. Set default language
-    else {
+    } else {
       nextSelectedCellExpandedRow = langtag;
     }
   }
@@ -398,7 +395,6 @@ export function getPreviousColumn(currentColumnId) {
  * @param cb
  */
 export function preventSleepingOnTheKeyboard(cb) {
-  console.log("preventSleepingOnTheKeyboard:", this);
   if (this.keyboardRecentlyUsedTimer === null) {
     this.keyboardRecentlyUsedTimer = setTimeout(() => {
       this.keyboardRecentlyUsedTimer = null;
@@ -429,13 +425,13 @@ export function scrollToLeftStart(e) {
 function scrollToLeftLinear(element, scrollDuration) {
   const scrollStep = element.scrollLeft / (scrollDuration / 15);
   if (requestAnimationFrame !== "undefined") {
-    requestAnimationFrame(step);
-    function step() {
+    const step = () => {
       if (element.scrollLeft > 0) {
         requestAnimationFrame(step);
         element.scrollLeft -= scrollStep;
       }
-    }
+    };
+    requestAnimationFrame(step);
   } else {
     element.scrollLeft = 0;
   }

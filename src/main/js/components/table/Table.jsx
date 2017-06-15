@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import Columns from "./../columns/Columns.jsx";
 import Rows from "./../rows/Rows.jsx";
-import {ActionTypes, Directions, ColumnKinds, RowHeight} from "../../constants/TableauxConstants";
+import {ActionTypes} from "../../constants/TableauxConstants";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import * as tableRowsWorker from "./tableRowsWorker";
 import * as tableNavigationWorker from "./tableNavigationWorker";
@@ -144,14 +144,14 @@ class Table extends React.Component {
 
   handleScroll = (e) => {
     // only when horizontal scroll changed
-    if (e.target.scrollLeft != this.scrolledXBefore) {
+    if (e.target.scrollLeft !== this.scrolledXBefore) {
       var scrolledX = e.target.scrollLeft;
       // Don't change this to state, its more performant during scroll
       this.headerDOMElement.style.left = -scrolledX + "px";
       this.scrolledXBefore = scrolledX;
 
       // update the scroll to left button when necessary
-      if (scrolledX != 0 && !this.state.showScrollToLeftButton) {
+      if (scrolledX !== 0 && !this.state.showScrollToLeftButton) {
         this.setState({
           showScrollToLeftButton: true,
           shouldCellFocus: false
@@ -211,7 +211,7 @@ class Table extends React.Component {
 Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   table: React.PropTypes.object.isRequired,
-  overlayOpen: React.PropTypes.bool.isRequired,
+  overlayOpen: React.PropTypes.bool,
   rows: React.PropTypes.object
 };
 

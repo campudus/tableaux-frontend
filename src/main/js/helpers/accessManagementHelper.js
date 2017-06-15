@@ -1,5 +1,5 @@
 import _ from "lodash";
-import TableauxConstants, {ColumnKinds, Langtags} from "../constants/TableauxConstants";
+import TableauxConstants, {ColumnKinds} from "../constants/TableauxConstants";
 import Keks from "js-cookie";
 
 // overwrite converter so we can parse express-cookies
@@ -28,7 +28,7 @@ const Cookies = Keks.withConverter({
 
 // Just for development
 export function initDevelopmentAccessCookies() {
-  if (process.env.NODE_ENV != "production") {
+  if (process.env.NODE_ENV !== "production") {
     Cookies.set("userAdmin", true);
     Cookies.set("userLangtagsAccess", 'j:["en"]');
     Cookies.set("userCountryCodesAccess", 'j:["GB"]');

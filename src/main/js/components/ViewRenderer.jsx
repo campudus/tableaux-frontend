@@ -1,7 +1,5 @@
 import React from "react";
-import Dispatcher from "../dispatcher/Dispatcher";
 import TableauxConstants from "../constants/TableauxConstants";
-
 import TableView from "../components/TableView.jsx";
 import MediaView from "../components/media/MediaView.jsx";
 
@@ -24,18 +22,15 @@ export default class ViewRenderer extends React.Component {
     this.views = {};
     this.views[ViewNames.TABLE_VIEW] = () => {
       return (
-        <TableView langtag={this.props.params.langtag}
-                   tableId={this.props.params.tableId}
-                   columnId={this.props.params.columnId}
-                   rowId={this.props.params.rowId}
-                   filter={this.props.params.filter}
-                   overlayOpen={!!this.props.params.overlayOpen}
+        <TableView {...this.props.params}
         />
       );
     };
 
     this.views[ViewNames.MEDIA_VIEW] = () => {
-      return <MediaView langtag={this.props.params.langtag} folderId={this.props.params.folderId} overlayOpen={!!this.props.params.overlayOpen}/>;
+      return <MediaView langtag={this.props.params.langtag}
+                        folderId={this.props.params.folderId}
+                        overlayOpen={!!this.props.params.overlayOpen} />;
     };
   }
 

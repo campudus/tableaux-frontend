@@ -1,12 +1,12 @@
 const AmpersandModel = require("ampersand-model");
-const Dispatcher = require("../dispatcher/Dispatcher");
 const TableauxConstants = require("./../constants/TableauxConstants");
 const {ColumnKinds} = TableauxConstants;
-const RowConcatHelper = require("../helpers/RowConcatHelper");
-const _ = require("lodash");
+import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
+import getDisplayValue from "./getDisplayValue";
+import ActionCreator from "../actions/ActionCreator.js";
+import {clearCallbacks, listenForCellChange} from "../dispatcher/GlobalCellChangeListener";
 
-// FIXME: Handle Concat synch more elegant the Ampersand way
 const Cell = AmpersandModel.extend({
   modelType: "Cell",
 
@@ -84,70 +84,6 @@ const Cell = AmpersandModel.extend({
       }
     },
 
-    linkString: {
-      deps: ["linkStringLanguages"],
-      fn: function () {
-        return function (linkIndexAt, langtag) {
-          const linkElemValue = this.linkStringLanguages[linkIndexAt];
-          if (linkElemValue) {
-            return linkElemValue[langtag] || "";
-          } else {
-            return null;
-          }
-        };
-      }
-    },
-
-    linkStringLanguages: {
-      deps: ["value"],
-      fn: function () {
-        if (!this.isLink) {
-          return null;
-        }
-        const linksWithLangtags = [];
-        const linkValues = this.value;
-        const linkToColumn = this.column.toColumn;
-        _.forEach(linkValues, function (linkElement) {
-          const linkWithLangtag = {};
-          _.forEach(TableauxConstants.Langtags, (langtag, idx) => {
-            linkWithLangtag[langtag] = RowConcatHelper.getCellAsStringWithFallback(linkElement.value,
-              linkToColumn,
-              langtag);
-          });
-          linksWithLangtags.push(linkWithLangtag);
-        });
-
-        return linksWithLangtags;
-      }
-    },
-
-    rowConcatLanguages: {
-      deps: ["value"],
-      fn: function () {
-        if (!this.isConcatCell) {
-          return null;
-        }
-        const rowConcatAllLangs = {};
-        const self = this;
-        _.forEach(TableauxConstants.Langtags, function (langtag, idx) {
-          // not really nice I think the Cell should replace
-          // an empty concat value with "- NO VALUE -" and not
-          // the model itself!
-          rowConcatAllLangs[langtag] = RowConcatHelper.getCellAsStringWithFallback(self.value, self.column, langtag);
-        });
-        return rowConcatAllLangs;
-      }
-    },
-
-    rowConcatString: {
-      deps: ["rowConcatLanguages"],
-      fn: function () {
-        return function (langtag) {
-          return this.rowConcatLanguages[langtag] || "";
-        };
-      }
-    },
-
     isEditable: {
       deps: ["tables", "tableId", "column"],
       fn: function () {
@@ -159,58 +95,110 @@ const Cell = AmpersandModel.extend({
         // the cell is not editable.
         return !(table.type === "settings" && (column.id === 1 || column.id === 2));
       }
+    },
+
+    linkIds: {
+      deps: ["value"],
+      fn: function () {
+        return (this.isLink)
+          ? f.reduce(f.merge, {}, (this.value || []).map(
+            (link, idx) => ({
+              [link.id]: idx
+            })
+          ))
+          : null;
+      }
+    },
+
+    displayValue: {
+      deps: ["value", "column", "tables"],
+      fn: function () {
+        return getDisplayValue(this.column, this.value);
+      }
     }
   },
 
   initialize: function (attrs, options) {
-    this.initConcatEvents();
+    if (f.contains(f.get(["column", "kind"], attrs), [ColumnKinds.concat, ColumnKinds.group])) {
+      this.initConcatEvents(attrs);
+    } else if (this.isLink) {
+      this.initLinkEvents(attrs);
+    }
   },
 
-  initConcatEvents: function () {
-    const self = this;
+  initConcatEvents: function (attrs) {
+    const concats = (attrs.column.kind === ColumnKinds.concat) ? attrs.column.concats : attrs.column.groups;
+    const calcId = ({id}) => `cell-${attrs.tableId}-${id}-${attrs.row.id}`;
 
-    const changedCellListener = function (changedCell) {
-      // find the index value of the concat obj to update
-      const concatIndexToUpdate = _.findIndex(self.column.concats, function (column) {
-        return column.id === changedCell.column.id;
-      });
-      // we update the value with a new object to force derived attributes to be refreshed
-      const tmpValue = _.cloneDeep(this.value);
-      tmpValue[concatIndexToUpdate] = changedCell.value;
-      this.value = tmpValue;
+    this.concatIds = f.reduce(f.merge, {}, concats.map((c, idx) => ({[calcId(c)]: idx})));
+    const handleDataChange = function ({cell}) {
+      if (!cell.id || !f.contains(cell.id, f.keys(this.concatIds))) {
+        return;
+      }
+      const newValue = f.assoc(
+        f.get(cell.id, this.concatIds),
+        cell.value,
+        this.value
+      );
+      if (!f.equals(newValue, this.value)) {
+        this.value = newValue;
+        const self = this;
+        ActionCreator.broadcastDataChange({
+          cell: self,
+          row: self.row,
+          triggeredFrom: self
+        });
+      }
     };
 
-    // debugger;
-    // This cell is a concat cell and listens to its identifier cells
-    if (this.isConcatCell) {
-      this.column.concats.forEach(function (columnObj) {
-        const changedEvent = "changed-cell:" + self.tableId + ":" + columnObj.id + ":" + self.rowId;
-        const handler = changedCellListener.bind(self);
+    f.keys(this.concatIds).forEach(
+      key => listenForCellChange(this.id, key, handleDataChange.bind(this))
+    );
+  },
 
-        Dispatcher.on(changedEvent, handler);
+  initLinkEvents: function (attrs) {
+    const handleDataChange = function ({row, cell}) {
+      if (row.tableId !== attrs.column.toTable || cell.column.id !== attrs.column.toColumn.id
+        || !f.contains(row.id.toString(), f.keys(this.linkIds))
+      ) {
+        return;
+      }
 
-        if (!self.changedHandler) {
-          self.changedHandler = [];
+      const newValue = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
+      if (!f.equals(newValue, this.value)) {
+        const sortedIds = f.compose(
+          f.sortBy(f.identity),
+          f.map(f.get("id"))
+        );
+        const oldIds = sortedIds(this.value);
+        const newIds = sortedIds(newValue);
+        if (!f.equals(oldIds, newIds)) {
+          clearCallbacks(this.id);
+          newValue.forEach(
+            ({id}) => {
+              listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
+            }
+          );
         }
-        self.changedHandler.push({
-          name: changedEvent,
-          handler: handler
-        }); // save reference
-      });
-    }
+        this.value = newValue;
+        const self = this;
+        ActionCreator.broadcastDataChange({
+          cell: self,
+          row: self.row,
+          triggeredFrom: self
+        });
+      }
+    };
+
+    this.value.forEach(
+      ({id}) => {
+        listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
+      }
+    );
   },
 
   // Delete all cell attrs and event listeners
   cleanupCell: function () {
-    // We need to remove multiple dependant changed id cell events
-    if (this.isConcatCell) {
-      if (this.changedHandler && this.changedHandler.length > 0) {
-        this.changedHandler.forEach(function (event) {
-          // removes all callbacks
-          Dispatcher.off(event.name, event.handler);
-        });
-      }
-    }
   },
 
   url: function () {
