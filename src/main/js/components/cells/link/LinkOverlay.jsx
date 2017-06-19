@@ -179,6 +179,8 @@ class LinkOverlay extends Component {
       this.setRowResult(toTable.rows);
     }
 
+    // TODO: Page me!
+
     const fetchColumns = new Promise(
       (resolve, reject) => {
         const colXhr = toTable.columns.fetch({

@@ -39,11 +39,8 @@ class ShortTextView extends React.Component {
     };
 
     return {
-      escape: captureEventAnd(() => {
-        console.log("Focussing:", this.background)
-        this.background.focus()
-        console.log("Now active:", document.activeElement)
-      }),
+//      escape: captureEventAnd(() => { this.background.focus() }),
+      escape: captureEventAnd(this.saveEditsAndClose),
       enter: captureEventAnd(this.saveEditsAndClose)
     };
   };
