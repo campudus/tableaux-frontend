@@ -20,7 +20,6 @@ class RichTextComponent extends React.Component {
     close: React.PropTypes.func,
     saveAndClose: React.PropTypes.func,
     readOnly: React.PropTypes.bool,
-    hideEditorSymbols: React.PropTypes.bool,
     handleContent: React.PropTypes.func
   };
 
@@ -41,7 +40,7 @@ class RichTextComponent extends React.Component {
     return {
       escape: event => {
         event.stopPropagation();
-        this.props.close();
+        this.props.saveAndClose();
       }
     };
   };
@@ -74,11 +73,32 @@ class RichTextComponent extends React.Component {
     const valueToSet = value || "";
     const html = markdown.toHTML(valueToSet);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
+    const l = value.length;
     contentDOMNode.innerHTML = html;
-    contentDOMNode.focus();
+    this.positionCaret(contentDOMNode);
+  };
+
+  positionCaret = (domNode) => {
+    if (!domNode) {
+      return;
+    }
+
+    const lastEntry = domNode.lastChild || domNode;
+    const range = document.createRange();
+    const l = lastEntry.textContent.length;
+    range.setStart(lastEntry, 1);
+    range.setEnd(lastEntry, 1);
+
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    lastEntry.focus();
   };
 
   componentWillUnmount = () => {
+    if (this.props.saveAndClose) {
+      this.props.saveAndClose(this.getMarkdown());
+    }
   };
 
   getMarkdown = inValue => {

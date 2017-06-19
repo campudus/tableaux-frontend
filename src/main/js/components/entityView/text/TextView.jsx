@@ -3,6 +3,7 @@ import RichTextComponent from "../../RichTextComponent";
 import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {contentChanged} from "../../cells/Cell";
+import {ColumnKinds} from "../../../constants/TableauxConstants";
 
 class TextView extends Component {
 
@@ -78,6 +79,7 @@ class TextView extends Component {
                              className="item-content text-editor"
                              close={this.setEditing(false)}
                              saveAndClose={this.saveAndClose}
+                             hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
                              langtag={langtag}
           />
         )

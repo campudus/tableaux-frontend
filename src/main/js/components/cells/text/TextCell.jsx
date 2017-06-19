@@ -6,7 +6,7 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {compose, isEmpty} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
-import {FallbackLanguage} from "../../../constants/TableauxConstants";
+import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
 import Header from "../../overlay/Header";
 import i18n from "i18next";
 import {maybe} from "../../../helpers/monads";
@@ -60,7 +60,11 @@ class TextCell extends Component {
         <Wrapper>
           <div className="content-items">
             <div className="item">
-              <RichTextComponent value={textValue} langtag={langtag} saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}/>
+              <RichTextComponent value={textValue} langtag={langtag}
+                                 saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
+                                 hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
+                                 disableOnClickOutside={true}
+              />
             </div>
           </div>
         </Wrapper>
@@ -90,6 +94,12 @@ class TextCell extends Component {
   componentWillReceiveProps = (nextProps) => {
     if (!this.props.editing && nextProps.editing) {
       this.openOverlay();
+    }
+  };
+
+  handleClick = (evt) => {
+    if (this.props.selected || this.props.editing) {
+      this.openOverlay(evt);
     }
   };
 
