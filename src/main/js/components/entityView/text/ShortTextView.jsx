@@ -39,7 +39,11 @@ class ShortTextView extends React.Component {
     };
 
     return {
-      escape: captureEventAnd(() => {}),
+      escape: captureEventAnd(() => {
+        console.log("Focussing:", this.background)
+        this.background.focus()
+        console.log("Now active:", document.activeElement)
+      }),
       enter: captureEventAnd(this.saveEditsAndClose)
     };
   };
@@ -73,7 +77,7 @@ class ShortTextView extends React.Component {
   render() {
     const {funcs, thisUserCantEdit} = this.props;
     return (
-      <div className="item-content shorttext">
+      <div className="item-content shorttext" ref={el => { this.background = el; }} tabIndex={1}>
         <input type="text" value={this.state.value || ""}
                placeholder={i18n.t("table:empty.text")}
                disabled={thisUserCantEdit}

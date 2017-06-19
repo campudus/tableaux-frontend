@@ -1,45 +1,52 @@
-import React, {Component, PropTypes} from "react";
+import React, {PropTypes} from "react";
 import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import {isLocked} from "../../../helpers/annotationHelper";
+import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 
-@connectToAmpersand
-class BooleanCell extends Component {
+const BooleanCell = (props) => {
+  const {cell, langtag, selected, setCellKeyboardShortcuts} = props;
 
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    selected: PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: PropTypes.func
-  };
-
-  handleEditDone = (newValue) => {
-    const {cell, langtag} = this.props;
+  const handleEditDone = (newValue) => {
     const valueToSave = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
     ActionCreator.changeCell(cell, valueToSave);
   };
 
-  getCheckboxValue = () => {
-    const {cell, langtag} = this.props;
+  const getCheckboxValue = () => {
     return !!((cell.isMultiLanguage) ? cell.value[langtag] : cell.value);
   };
 
-  toggleCheckboxValue = () => {
-    if (this.props.selected) {
-      this.handleEditDone(!this.getCheckboxValue());
+  const toggleCheckboxValue = () => {
+    if (isLocked(cell.row)) {
+      askForSessionUnlock(cell.row);
+      return;
+    } else if (selected) {
+      handleEditDone(!getCheckboxValue());
     }
   };
 
-  render() {
-    return (
-      <div className={"cell-content"} onClick={this.toggleCheckboxValue}>
-        <input className="checkbox" type="checkbox"
-               checked={this.getCheckboxValue()}
-               readOnly="readOnly" />
-      </div>
-    );
-  }
-}
+  setCellKeyboardShortcuts({
+    enter: evt => {
+      toggleCheckboxValue();
+    }
+  });
+  
+  return (
+    <div className={"cell-content"} onClick={toggleCheckboxValue} >
+      <input className="checkbox" type="checkbox"
+             checked={getCheckboxValue()}
+             readOnly="readOnly" />
+    </div>
+  );
+};
 
-module.exports = BooleanCell;
+BooleanCell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  selected: PropTypes.bool.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func
+};
+
+export default connectToAmpersand(BooleanCell);

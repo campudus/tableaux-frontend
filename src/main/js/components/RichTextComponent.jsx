@@ -85,14 +85,18 @@ class RichTextComponent extends React.Component {
 
     const lastEntry = domNode.lastChild || domNode;
     const range = document.createRange();
-    const l = lastEntry.textContent.length;
-    range.setStart(lastEntry, 1);
-    range.setEnd(lastEntry, 1);
+    try {
+      const l = lastEntry.textContent.length;
+      range.setStart(lastEntry, 1);
+      range.setEnd(lastEntry, 1);
 
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    lastEntry.focus();
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      lastEntry.focus();
+    } catch(e) {
+      // Text is empty, so can't set caret
+    }
   };
 
   componentWillUnmount = () => {
