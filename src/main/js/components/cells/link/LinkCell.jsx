@@ -6,7 +6,7 @@ import * as f from "lodash/fp";
 const LinkCell = props => {
   const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = props;
 
-  if (selected) {
+  if (selected || editing) {
     return <LinkEditCell cell={cell} langtag={langtag}
                          editing={editing}
                          setCellKeyboardShortcuts={setCellKeyboardShortcuts}

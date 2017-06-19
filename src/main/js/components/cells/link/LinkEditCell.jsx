@@ -50,7 +50,7 @@ class LinkEditCell extends Component {
     const {cell, langtag} = this.props;
     const links = cell.value.map(
       (element, index) => (
-        <LinkLabelCell key={element.id} clickable={true} linkElement={element}
+        <LinkLabelCell key={element.id} clickable={false} linkElement={element}
                        cell={cell} langtag={langtag}
                        linkIndexAt={index}
         />
@@ -58,10 +58,10 @@ class LinkEditCell extends Component {
     );
 
     return (
-      <div className={"cell-content"} onScroll={event => {
-        event.stopPropagation();
-      }}>
-        {[...links, <button key={"add-btn"} className="edit" onClick={this.openOverlay}><span className="fa fa-pencil"></span></button>]}
+      <div className={"cell-content"} onScroll={event => { event.stopPropagation(); }}
+           onClick={this.openOverlay}
+      >
+        {[...links, <button key={"add-btn"} className="edit"><span className="fa fa-pencil"></span></button>]}
       </div>
     );
   }

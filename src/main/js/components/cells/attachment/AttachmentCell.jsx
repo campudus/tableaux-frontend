@@ -52,8 +52,14 @@ const AttachmentCell = props => {
     }
   );
 
+  const handleClick = () => {
+    if (editing || selected) {
+      openOverlay();
+    }
+  };
+
   return (
-    <div className={cellClass}>
+    <div className={cellClass} onClick={handleClick}>
       {(f.size(attachments) === f.size(cell.value))
         ? attachments
         : [...attachments, <span key={"more"} className="more">&hellip;</span>]
