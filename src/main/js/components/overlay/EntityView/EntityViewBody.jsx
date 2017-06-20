@@ -43,7 +43,8 @@ class EntityViewBody extends Component {
   static PropTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
-    registerForEvent: PropTypes.func.isRequired
+    registerForEvent: PropTypes.func.isRequired,
+    filterColumn: PropTypes.object
   };
 
   getKeyboardShortcuts = () => {
@@ -87,7 +88,8 @@ class EntityViewBody extends Component {
       }
       const viewId = `view-${cell.column.id}-${cell.rowId}`;
       const element = f.first(document.getElementsByClassName(viewId));
-      this.getScroller().center(element, 1);
+      maybe(this.getScroller())
+        .exec("center", element, 1);
       this.setState({focused: focusElementId});
     } else {
       const firstCell = row.cells.at(0);
@@ -157,20 +159,15 @@ class EntityViewBody extends Component {
 
   changeFocus = dir => {
     const numericDir = (dir === Directions.UP) ? -1 : +1;
-    const {focused} = this.state;
-    const {langtag, filter} = this.state;
-    const visibleCells = this.state.row.cells.models.filter(columnFilter(langtag, filter));
+    const {focused, langtag, filter} = this.state;
+    const visibleCells = this.state.row.cells.models
+                             .filter(this.groupFilter(this.props.filterColumn))
+                             .filter(columnFilter(langtag, filter));
     const selectedIdx = f.findIndex(f.matchesProperty("id", focused), visibleCells);
     const {focusElements} = this;
     const toFocus = f.cond([
-      [
-        d => f.contains(d, [Directions.UP, Directions.DOWN]),
-        d => f.prop([selectedIdx + numericDir, "id"], visibleCells)
-      ],
-      [
-        f.stubTrue,
-        f.identity
-      ]
+      [d => f.contains(d, [Directions.UP, Directions.DOWN]), d => f.prop([selectedIdx + numericDir, "id"], visibleCells)],
+      [f.stubTrue, f.identity]
     ])(dir);
 
     maybe(focusElements[toFocus])
@@ -286,6 +283,13 @@ class EntityViewBody extends Component {
     );
   };
 
+  groupFilter = (filterColumn) => (cell) => {
+    const prefilteredIds = (filterColumn) ? f.map(f.get("id"), filterColumn.concats || filterColumn.groups) : null;
+    return (filterColumn)
+      ? f.contains(f.get(["column", "id"], cell), prefilteredIds)
+      : !cell.column.isGroupMember;
+  };
+
   render() {
     const cells = this.state.row.cells.models;
     const {langtag, filter, focused} = this.state;
@@ -294,10 +298,6 @@ class EntityViewBody extends Component {
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
       "is-locked": isLocked(this.state.row)
     });
-    const prefilteredIds = (filterColumn) ? f.map(f.get("id"), filterColumn.concats || filterColumn.groups) : null;
-    const preFilter = (filterColumn)
-      ? cell => f.contains(f.get(["column", "id"], cell), prefilteredIds)
-      : cell => !cell.column.isGroupMember;
 
     return (
       <div className={evbClass}
@@ -305,7 +305,7 @@ class EntityViewBody extends Component {
       >
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
-          .filter(preFilter)
+          .filter(this.groupFilter(filterColumn))
           .filter(columnFilter(filter.langtag, filter))
           .map(
             (cell, idx) => {
