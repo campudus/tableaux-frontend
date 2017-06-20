@@ -105,6 +105,7 @@ class Columns extends React.Component {
                    description={description}
                    langtag={langtag}
                    isId={column === f.first(this.props.columns.models)}
+                   tables={this.props.tables}
       />
     );
   };
@@ -158,6 +159,7 @@ Columns.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   columns: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
+  tables: React.PropTypes.object.isRequired,
   t: React.PropTypes.func
 };
 

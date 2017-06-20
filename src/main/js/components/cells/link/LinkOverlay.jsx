@@ -260,10 +260,10 @@ class LinkOverlay extends Component {
     if (cell.column.id !== thisCell.column.toColumn.id || cell.tableId !== thisCell.column.toTable) {
       return;
     }
-    const linkedRows = f.map(f.get("id"), thisCell.value);
-    if (!f.contains(row.id, linkedRows)) {
-      return;
-    }
+//    const linkedRows = f.map(f.get("id"), thisCell.value);
+//    if (!f.contains(row.id, linkedRows)) { // why was this ever included? safe to delete?
+//      return;
+//    }
     const oldValueIdx = f.findIndex(f.matchesProperty("id", row.id), this.allRowResults);
     const newLink = f.assoc("id", row.id, f.pick(["value", "displayValue"], cell));
     this.allRowResults = f.assoc(oldValueIdx, newLink, this.allRowResults);

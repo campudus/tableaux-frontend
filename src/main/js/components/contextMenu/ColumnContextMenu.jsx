@@ -34,7 +34,12 @@ class ColumnContextMenu extends React.Component {
   };
 
   render = () => {
-    const {x, y, column, closeHandler, editHandler, langtag} = this.props;
+    const {x, y, column, closeHandler, editHandler, langtag, tables} = this.props;
+    const toTable = (column.isLink)
+      ? tables.get(column.toTable)
+      : {};
+
+    console.log("toTable:", toTable, "of", tables)
 
     const canEdit =
       AccessControl.isUserAdmin() && !contains(column.kind, PROTECTED_CELL_KINDS);
@@ -46,7 +51,7 @@ class ColumnContextMenu extends React.Component {
       </div>
       : null;
 
-    const follow_link_item = (column.isLink)
+    const follow_link_item = (column.isLink && !toTable.hidden)
       ? <div>
         <a href="#"
            onClick={compose(
@@ -95,7 +100,8 @@ ColumnContextMenu.propTypes = {
   editHandler: React.PropTypes.func.isRequired,
   langtag: React.PropTypes.string.isRequired,
   popupToggleButtonId: React.PropTypes.string.isRequired,
-  offset: React.PropTypes.number
+  offset: React.PropTypes.number,
+  tables: React.PropTypes.object.isRequired
 };
 
 module.exports = ColumnContextMenu;

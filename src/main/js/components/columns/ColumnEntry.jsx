@@ -93,6 +93,7 @@ class ColumnEntry extends React.Component {
                          langtag={this.props.langtag}
                          popupToggleButtonId={this.calcId()}
                          isId={this.props.isId}
+                         tables={this.props.tables}
       />
     );
   };
@@ -132,7 +133,8 @@ ColumnEntry.PropTypes = {
   langtag: React.PropTypes.string.isRequired,
   column: React.PropTypes.object.isRequired,
   name: React.PropTypes.string.isRequired,
-  isId: React.PropTypes.bool.isRequired
+  isId: React.PropTypes.bool.isRequired,
+  tables: React.PropTypes.object.isRequired
 };
 
 module.exports = ColumnEntry;

@@ -470,6 +470,7 @@ class TableView extends React.Component {
           table = <Table key={this.state.currentTableId} table={currentTable}
                          langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
                          pasteOriginCell={this.state.pasteOriginCell}
+                         tables={tables}
           />;
         } else {
           // TODO show error to user

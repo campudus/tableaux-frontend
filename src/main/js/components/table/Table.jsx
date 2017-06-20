@@ -174,7 +174,7 @@ class Table extends React.Component {
   };
 
   render() {
-    const {langtag, table: {columns}, rows, table} = this.props;
+    const {langtag, table: {columns}, rows, table, tables} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
     return (
@@ -186,6 +186,7 @@ class Table extends React.Component {
           <JumpSpinner />
           <Columns ref="columns" table={table} langtag={langtag}
                    columns={columns}
+                   tables={tables}
           />
           <Rows ref="tableRows"
                 rowsHeight={this.tableDataHeight()}
@@ -212,7 +213,8 @@ Table.propTypes = {
   langtag: React.PropTypes.string.isRequired,
   table: React.PropTypes.object.isRequired,
   overlayOpen: React.PropTypes.bool,
-  rows: React.PropTypes.object
+  rows: React.PropTypes.object,
+  tables: React.PropTypes.object.isRequired
 };
 
 module.exports = Table;
