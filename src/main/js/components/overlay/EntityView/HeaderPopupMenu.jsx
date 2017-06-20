@@ -100,7 +100,7 @@ class HeaderPopupMenu extends Component {
   };
 
   render() {
-    const {langtag} = this.props;
+    const {langtag, hasMeaningfulLinks} = this.props;
     const {open, row} = this.state;
     const buttonClass = classNames("popup-button", {"is-open": open});
     const translationInfo = {
@@ -129,11 +129,14 @@ class HeaderPopupMenu extends Component {
                    onMouseEnter={this.handleMouseEnter}
               >
                 <div className="separator">{i18n.t("table:menus.information")}</div>
-                {this.mkEntry(0,
-                  {
-                    title: "table:show_dependency",
-                    fn: () => openShowDependency(row, langtag)
-                  })}
+                {(hasMeaningfulLinks)
+                  ? this.mkEntry(0,
+                    {
+                      title: "table:show_dependency",
+                      fn: () => openShowDependency(row, langtag)
+                    })
+                  : null
+                }
                 {this.mkEntry(1,
                   {
                     title: "table:show_translation",

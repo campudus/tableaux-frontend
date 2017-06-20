@@ -6,7 +6,7 @@ import {LoadingEntityViewBodyWrapper, LoadingEntityViewHeaderWrapper} from "./En
 
 export function openEntityView(row, langtag, focusElementId, rows, filterColumn) {
   openOverlay({
-    head: <EntityViewHeader row={row} rows={rows} langtag={langtag} canSwitchRows={true} />,
+    head: <EntityViewHeader row={row} rows={rows} langtag={langtag} canSwitchRows={true} hasMeaningfulLinks={!filterColumn} />,
     body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} filterColumn={filterColumn} />,
     type: "full-height",
     preferRight: true

@@ -157,7 +157,7 @@ class RowSwitcher extends Component {
 }
 
 const EntityViewHeader = props => {
-  const {row, langtag} = props;
+  const {canSwitchRows, hasMeaningfulLinks, row, langtag} = props;
   const rowDisplayLabel = getDisplayLabel(row, langtag);
 
   const title = rowDisplayLabel === RowConcatHelper.NOVALUE
@@ -168,9 +168,9 @@ const EntityViewHeader = props => {
   const components = (
     <div className="header-components">
       <LanguageSwitcher langtag={props.langtag} />
-      {(props.canSwitchRows) ? <RowSwitcher {...props} /> : null}
+      {(canSwitchRows) ? <RowSwitcher {...props} /> : null}
       <FilterBar id={props.id} />
-      <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} />
+      <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} hasMeaningfulLinks={hasMeaningfulLinks} />
     </div>
   );
   return <Header {...props} context={tableName} title={title} components={components} />;
