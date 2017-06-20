@@ -71,7 +71,7 @@ class NumericView extends React.Component {
     const nextVal = (cell.isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
-    if ((parseFloat(nextVal) || 0) !== this.originalValue) {
+    if ((parseFloat(nextVal) || 0) !== this.originalValue || np.cell !== this.cell) {
       this.setState({value: nextVal});
     }
   }
