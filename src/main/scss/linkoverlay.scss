@@ -202,7 +202,9 @@
         span {
           padding-top: 20px;
           padding-left: 50px;
-
+          // fixed height prevents LinkOverlay from infinitely jumping between different line breaks when linking to table with
+          // titles containing long words (eg. "Sicherheitsbekleidungsvarianten")
+          height: 32px;
           font-size: large;
         }
 

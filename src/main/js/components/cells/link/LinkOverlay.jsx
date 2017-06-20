@@ -462,7 +462,7 @@ class LinkOverlay extends Component {
           ref="OverlayScroll"
           width={width}
           height={height}
-          rowCount={rowResults.unlinked.length || 0}
+          rowCount={f.add(1, rowResults.unlinked.length)}
           rowHeight={40}
           rowRenderer={this.renderListItem({isLinked: false})}
           scrollToIndex={this.state.selectedId.unlinked}
