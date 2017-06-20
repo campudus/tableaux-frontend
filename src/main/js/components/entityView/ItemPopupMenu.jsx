@@ -154,7 +154,7 @@ class ItemPopupMenu extends Component {
 
   render() {
     const {isOffScreen} = this.state;
-    const {cell: {row}, cell, langtag, popupOpen, thisUserCantEdit} = this.props;
+    const {cell: {row}, cell, langtag, popupOpen, thisUserCantEdit, hasMeaningfulLinks} = this.props;
     const buttonClass = classNames("popup-button", {
       "is-open": popupOpen,
       "menu-is-right": isOffScreen
@@ -187,11 +187,14 @@ class ItemPopupMenu extends Component {
               <div className="separator">
                 {i18n.t("table:menus.data_set")}
               </div>
-              {this.mkEntry(0,
-                {
-                  title: "table:show_dependency",
-                  fn: () => openShowDependency(row, langtag)
-                })}
+              {(hasMeaningfulLinks)
+                ? this.mkEntry(0,
+                  {
+                    title: "table:show_dependency",
+                    fn: () => openShowDependency(row, langtag)
+                  })
+                : null
+              }
               {this.mkEntry(1,
                 {
                   title: "table:copy_cell",

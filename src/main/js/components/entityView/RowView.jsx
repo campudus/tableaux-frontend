@@ -150,6 +150,7 @@ class View extends Component {
                      funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
                      thisUserCantEdit={isDisabled}
                      popupOpen={this.props.popupOpen}
+                     hasMeaningfulLinks={this.props.hasMeaningfulLinks}
         />
         {(!f.isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle" />
           <div>{description}</div>

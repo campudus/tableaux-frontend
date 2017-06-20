@@ -63,6 +63,7 @@ class RowHeadline extends React.Component {
                          funcs={this.props.funcs}
                          popupOpen={this.props.popupOpen}
                          thisUserCantEdit={thisUserCantEdit}
+                         hasMeaningfulLinks={this.props.hasMeaningfulLinks}
           />
           <a className="title-wrapper" href="#" onClick={(toTableVisible) ? () => window.open(url, "_blank") : f.noop}>
             {colName}

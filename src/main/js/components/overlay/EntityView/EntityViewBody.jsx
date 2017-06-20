@@ -312,6 +312,7 @@ class EntityViewBody extends Component {
               return <View key={idx} cell={cell} langtag={langtag}
                            setTranslationView={this.setTranslationView}
                            hasFocusedChild={f.eq(cell.id, focused)}
+                           hasMeaningfulLinks={!filterColumn}
                            popupOpen={this.state.itemWithPopup === idx}
                            funcs={{
                              setTranslationItem: this.setTranslationItem,
