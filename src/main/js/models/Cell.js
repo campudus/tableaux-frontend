@@ -113,6 +113,11 @@ const Cell = AmpersandModel.extend({
     displayValue: {
       deps: ["value", "column"],
       fn: function () {
+        if (this.kind === ColumnKinds.link) { // re-register listeners for needed dependencies
+          const self = this;
+          clearCallbacks(self.id);
+          this.initLinkEvents.call(self, self);
+        }
         return getDisplayValue(this.column, this.value);
       }
     }
@@ -158,28 +163,8 @@ const Cell = AmpersandModel.extend({
 
   initLinkEvents: function (attrs) {
     const handleDataChange = function ({row, cell}) {
-      if (row.tableId !== attrs.column.toTable || cell.column.id !== attrs.column.toColumn.id
-        || !f.contains(row.id.toString(), f.keys(this.linkIds))
-      ) {
-        return;
-      }
-
       const newValue = f.assoc([this.linkIds[row.id.toString()], "value"], cell.value, this.value);
       if (!f.equals(newValue, this.value)) {
-        const sortedIds = f.compose(
-          f.sortBy(f.identity),
-          f.map(f.get("id"))
-        );
-        const oldIds = sortedIds(this.value);
-        const newIds = sortedIds(newValue);
-        if (!f.equals(oldIds, newIds)) {
-          clearCallbacks(this.id);
-          newValue.forEach(
-            ({id}) => {
-              listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
-            }
-          );
-        }
         this.value = newValue;
         const self = this;
         ActionCreator.broadcastDataChange({
@@ -192,7 +177,7 @@ const Cell = AmpersandModel.extend({
 
     this.value.forEach(
       ({id}) => {
-        listenForCellChange(this.id, `cell-${attrs.column.toTable}-${attrs.column.toColumn.id}-${id}`, handleDataChange.bind(this));
+        listenForCellChange(this.id, `cell-${this.column.toTable}-${this.column.toColumn.id}-${id}`, handleDataChange.bind(this));
       }
     );
   },
