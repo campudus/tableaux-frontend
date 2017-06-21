@@ -11,7 +11,8 @@ class NumericView extends React.Component {
     super(props);
     this.originalValue = parseFloat(this.getValue()) || 0;
     this.state = {
-      value: this.originalValue
+      value: this.originalValue,
+      dirty: false
     };
   };
 
@@ -34,7 +35,7 @@ class NumericView extends React.Component {
     const normalised = (inputString.split(".").length > 2)
       ? inputString.substr(0, inputString.length - 1)
       : inputString;
-    this.setState({value: normalised});
+    this.setState({value: normalised, dirty: true});
   };
 
   handleKeyPress = event => {
@@ -62,7 +63,7 @@ class NumericView extends React.Component {
     };
 
     return {
-      enter: captureEventAnd(this.saveEditsAndClose)
+      enter: captureEventAnd(this.saveEdits)
     };
   };
 
@@ -71,12 +72,12 @@ class NumericView extends React.Component {
     const nextVal = (cell.isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
-    if ((parseFloat(nextVal) || 0) !== this.originalValue || np.cell !== this.cell) {
+    if ((!this.state.dirty && (parseFloat(nextVal) || 0) !== this.originalValue) || np.cell !== this.cell) {
       this.setState({value: nextVal});
     }
   }
 
-  saveEditsAndClose = () => {
+  saveEdits = () => {
     const value = parseFloat(this.state.value);
     if (value === this.originalValue) {
       return;
@@ -88,17 +89,18 @@ class NumericView extends React.Component {
       () => contentChanged(cell, langtag, this.originalValue)
     );
     this.originalValue = value;
+    this.setState({dirty: false});
   };
 
   render() {
     const {funcs, thisUserCantEdit} = this.props;
     return (
-      <div className="item-content numeric">
+      <div className="item-content numeric" onMouseOut={this.saveEdits}>
         <input type="text" value={this.state.value || ""}
                disabled={thisUserCantEdit}
                onChange={this.normaliseNumberFormat}
                onKeyDown={this.handleKeyPress}
-               onBlur={this.saveEditsAndClose}
+               onBlur={this.saveEdits}
                placeholder={i18n.t("table:empty.number")}
                ref={el => { funcs.register(el); }}
         />
