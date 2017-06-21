@@ -70,7 +70,14 @@ class LoadingEntityViewBodyWrapper extends Component {
 
     if (toLoad) {
       this.state = {row: null};
-      this.loadRow(toLoad)
+    } else {
+      this.state = {row: props.row};
+    }
+  }
+
+  componentWillMount = () => {
+    if (!this.state.row) {
+      this.loadRow(this.props.toLoad)
           .then(this.setLoadedRow)
           .catch(
             error => {
@@ -84,10 +91,8 @@ class LoadingEntityViewBodyWrapper extends Component {
                 actions: {neutral: ["Ok", null]}
               });
             });
-    } else {
-      this.state = {row: props.row};
     }
-  }
+  };
 
   setLoadedRow = row => {
     this.setState({row});

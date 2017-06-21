@@ -42,6 +42,12 @@ class Header extends Component {
     this.setState({title: newTitle, context: newContext});
   };
 
+  componentWillReceiveProps(next) {
+    if (next.title !== this.props.title) {
+      this.setState({title: next.title});
+    }
+  }
+
   render() {
     const {actions, components} = this.props;
     const {title, context} = this.state;

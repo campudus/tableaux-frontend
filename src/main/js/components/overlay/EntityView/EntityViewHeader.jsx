@@ -5,13 +5,13 @@ import listensToClickOutside from "react-onclickoutside";
 import HeaderPopupMenu from "./HeaderPopupMenu";
 import FilterBar from "./FilterBar";
 import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
-import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import * as f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
-import i18n from "i18next";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import Empty from "../../helperComponents/emptyEntry";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -158,11 +158,10 @@ class RowSwitcher extends Component {
 
 const EntityViewHeader = props => {
   const {canSwitchRows, hasMeaningfulLinks, row, langtag} = props;
-  const rowDisplayLabel = getDisplayLabel(row, langtag);
+  const rowDisplayLabel = row.cells.at(0).displayValue[langtag];
+  const title = (f.isEmpty(f.trim(rowDisplayLabel))) ? <Empty /> : rowDisplayLabel;
 
-  const title = rowDisplayLabel === RowConcatHelper.NOVALUE
-    ? <span className="empty-item">({i18n.t("common:empty")})</span>
-    : rowDisplayLabel;
+  props.watch(row.cells.at(0), {force: true});
 
   const tableName = getTableName(row, langtag);
   const components = (
@@ -184,8 +183,8 @@ const getTableName = (row, langtag) => {
 
 const getDisplayLabel = (row, langtag) => {
   const firstCell = row.cells.at(0);
-  return RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
+  return firstCell.displayValue[langtag];
 };
 
 export {getTableName, getDisplayLabel};
-export default EntityViewHeader;
+export default connectToAmpersand(EntityViewHeader);
