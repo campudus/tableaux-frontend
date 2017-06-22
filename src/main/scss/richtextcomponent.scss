@@ -66,6 +66,7 @@
 .content-pane.input, .content-box { // the latter is for react-markdown components
   overflow-y: auto;
   color: $color-primary-text;
+  background-color: transparent;
 
   i, em {
     font-style: italic;

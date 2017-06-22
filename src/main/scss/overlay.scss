@@ -166,8 +166,14 @@ $dist-from-top: 20px;
         align-items: center;
       }
 
-      .close-button:hover svg {
-        fill: $color-text-medium-grey;
+
+      .close-button {
+        .svg-icon {
+          width: 1em;
+        }
+        &:hover svg {
+          fill: $color-text-medium-grey;
+        }
       }
 
       .labels {
