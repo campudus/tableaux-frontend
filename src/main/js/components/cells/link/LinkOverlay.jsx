@@ -23,6 +23,10 @@ import DragSortList from "./DragSortList";
 import {changeCell} from "../../../models/Tables";
 import LinkItem from "./LinkItem";
 import Spinner from "../../header/Spinner";
+import Request from "superagent";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+
+import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -185,13 +189,14 @@ class LinkOverlay extends Component {
       (resolve, reject) => {
         const colXhr = toTable.columns.fetch({
           success: resolve,
-          error: reject
+          error: reject,
+          reset: false
         });
         this.props.addAbortableXhrRequest(colXhr);
       }
     );
 
-    const fetchForeignRows = new Promise(
+/*    const fetchForeignRows = new Promise(
       (resolve, reject) => {
         const rowXhr = toTable.rows.fetch({
           url: apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`),
@@ -209,10 +214,29 @@ class LinkOverlay extends Component {
         });
         this.props.addAbortableXhrRequest(rowXhr);
       }
+    ); */
+
+    const fetchForeignRowsJson = new Promise(
+      (resolve, reject) => {
+        const rowXhr = Request
+          .get(apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`))
+          .end(
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                const obj = JSON.parse(response.text);
+                const rows = f.map(mkLinkDisplayItem(toTable), obj.rows);
+                this.setRowResult(rows, true);
+              }
+            }
+          );
+        this.props.addAbortableXhrRequest(rowXhr);
+      }
     );
 
-    fetchColumns
-      .then(fetchForeignRows);
+    fetchColumns // columns still needed to create display strings
+      .then(fetchForeignRowsJson);
   };
 
   getCurrentSearchValue = () => {
@@ -260,10 +284,6 @@ class LinkOverlay extends Component {
     if (cell.column.id !== thisCell.column.toColumn.id || cell.tableId !== thisCell.column.toTable) {
       return;
     }
-//    const linkedRows = f.map(f.get("id"), thisCell.value);
-//    if (!f.contains(row.id, linkedRows)) { // why was this ever included? safe to delete?
-//      return;
-//    }
     const oldValueIdx = f.findIndex(f.matchesProperty("id", row.id), this.allRowResults);
     const newLink = f.assoc("id", row.id, f.pick(["value", "displayValue"], cell));
     this.allRowResults = f.assoc(oldValueIdx, newLink, this.allRowResults);
@@ -538,11 +558,22 @@ export const openLinkOverlay = (cell, langtag) => {
   const table = cell.tables.get(cell.tableId);
   const tableName = table.displayName[langtag] || table.displayName[DefaultLangtag];
   const overlayContent = <LinkOverlay cell={cell} langtag={langtag} />;
+
+  const LinkOverlayHeader = connectToAmpersand(
+    (props) => {
+      const {langtag, cell, watch} = props;
+      watch(cell.row.cells.at(0), {force: true});
+      return (
+        <Header context={tableName}
+                title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
+                components={<SearchBar langtag={langtag} />}
+        />
+      );
+    }
+  );
+
   ActionCreator.openOverlay({
-    head: <Header context={tableName}
-                  title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
-                  components={<SearchBar langtag={langtag} />}
-    />,
+    head: <LinkOverlayHeader langtag={langtag} cell={cell} />,
     body: overlayContent,
     type: "full-height",
     classes: "link-overlay"
