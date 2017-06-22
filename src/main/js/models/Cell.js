@@ -147,11 +147,9 @@ const Cell = AmpersandModel.extend({
       );
       if (!f.equals(newValue, this.value)) {
         this.value = newValue;
-        const self = this;
         ActionCreator.broadcastDataChange({
-          cell: self,
-          row: self.row,
-          triggeredFrom: self
+          cell: this,
+          row: this.row
         });
       }
     };
@@ -169,8 +167,7 @@ const Cell = AmpersandModel.extend({
         const self = this;
         ActionCreator.broadcastDataChange({
           cell: self,
-          row: self.row,
-          triggeredFrom: self
+          row: self.row
         });
       }
     };

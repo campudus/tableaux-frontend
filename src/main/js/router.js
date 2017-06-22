@@ -24,7 +24,7 @@ const parseOptions = optString => {
   };
   const getOptions = f.cond([
     [f.startsWith("filter"), parseFilter],
-    [f.startsWith("overlay"), parseEntityView]
+    [f.startsWith("details"), parseEntityView]
   ]);
   return f.reduce(f.merge, {}, f.map(getOptions, opts));
 };

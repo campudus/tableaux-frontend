@@ -10,7 +10,6 @@ import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Empty from "../../helperComponents/emptyEntry";
 
 @listensToClickOutside
@@ -139,7 +138,7 @@ class RowSwitcher extends Component {
               </a>
             </div>
           )
-          : <div className="button dummy"/>
+          : <div className="button dummy" />
         }
         {(this.getNextRow(Directions.DOWN))
           ? (
@@ -156,24 +155,44 @@ class RowSwitcher extends Component {
   }
 }
 
-const EntityViewHeader = props => {
-  const {canSwitchRows, hasMeaningfulLinks, row, langtag} = props;
-  const rowDisplayLabel = row.cells.at(0).displayValue[langtag];
-  const title = (f.isEmpty(f.trim(rowDisplayLabel))) ? <Empty /> : rowDisplayLabel;
+class EntityViewHeader extends Component {
+  constructor(props) {
+    super(props);
+    const firstCell = props.row.cells.at(0);
+    this.cellId = firstCell.id;
+    this.state = {title: firstCell.displayValue[props.langtag]};
+  }
 
-  props.watch(row.cells.at(0), {force: true});
+  componentWillMount() {
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
+  }
 
-  const tableName = getTableName(row, langtag);
-  const components = (
-    <div className="header-components">
-      <LanguageSwitcher langtag={props.langtag} />
-      {(canSwitchRows) ? <RowSwitcher {...props} /> : null}
-      <FilterBar id={props.id} />
-      <HeaderPopupMenu langtag={props.langtag} row={props.row} id={props.id} hasMeaningfulLinks={hasMeaningfulLinks} />
-    </div>
-  );
-  return <Header {...props} context={tableName} title={title} components={components} />;
-};
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
+  }
+
+  updateHeader = ({cell}) => {
+    if (cell.id === this.cellId) {
+      this.setState({title: cell.displayValue[this.props.langtag]});
+    }
+  };
+
+  render() {
+    const {canSwitchRows, hasMeaningfulLinks, row, langtag} = this.props;
+    const {title} = this.state;
+    const titleElement = (f.isEmpty(f.trim(title))) ? <Empty /> : title;
+    const tableName = getTableName(row, langtag);
+    const components = (
+      <div className="header-components">
+        <LanguageSwitcher langtag={langtag} />
+        {(canSwitchRows) ? <RowSwitcher {...this.props} /> : null}
+        <FilterBar id={this.props.id} />
+        <HeaderPopupMenu langtag={langtag} row={row} id={this.props.id} hasMeaningfulLinks={hasMeaningfulLinks} />
+      </div>
+    );
+    return <Header {...this.props} context={tableName} title={titleElement} components={components} />;
+  }
+}
 
 const getTableName = (row, langtag) => {
   const firstCell = row.cells.at(0);
@@ -187,4 +206,4 @@ const getDisplayLabel = (row, langtag) => {
 };
 
 export {getTableName, getDisplayLabel};
-export default connectToAmpersand(EntityViewHeader);
+export default EntityViewHeader;

@@ -1,62 +1,47 @@
-import React, {Component} from "react";
-import i18n from "i18next";
-import RowConcatHelper from "../../helpers/RowConcatHelper";
+import React, {PropTypes} from "react";
+import Empty from "../helperComponents/emptyEntry";
+import * as f from "lodash/fp";
 
-export default class OverlayHeadRowIdentificator extends Component {
-
-  static propTypes = {
-    cell: React.PropTypes.object,
-    langtag: React.PropTypes.string
-  };
-
-  constructor(props) {
-    super(props);
-    this.rowIdentifierString = "";
+const OverlayHeadRowIdentificator = (props) => {
+  const {cell, cell: {column}, langtag} = props;
+  if (!cell) {
+    return null;
   }
 
-  componentWillMount = () => {
-    const {cell, cell: {tableId}} = this.props;
-    const table = cell.tables.get(tableId);
-    const tableColumns = table.columns;
-    const tableRows = table.rows;
-    const currentRow = tableRows.get(cell.rowId);
-    const idColumn = tableColumns.at(0);
-    const idCellValue = currentRow.values[0];
-    this.rowIdentifierString = RowConcatHelper.getCellAsStringWithFallback(idCellValue, idColumn, this.props.langtag);
-  };
+  const identifierCell = cell.row.cells.at(0);
+  const rowIdentifierString = identifierCell.displayValue[langtag];
 
-  render() {
-    const {cell, langtag} = this.props;
-    if (!cell) {
-      return null;
-    }
+  const rowIdentification = (f.isEmpty(rowIdentifierString))
+    ? <Empty />
+    : <span className="row-identification-value">{rowIdentifierString}</span>;
 
-    const rowIdentification = (this.rowIdentifierString === "" || this.rowIdentifierString === RowConcatHelper.NOVALUE)
-      ? <span className="row-identification-value empty-item">({i18n.t("common:empty")})</span>
-      : <span className="row-identification-value">{this.rowIdentifierString}</span>;
+  const columnDisplayName = column.displayName[langtag] || column.name;
 
-    const {column} = cell;
-    const columnDisplayName = column.displayName[langtag] || column.name;
-
-    if (this.props.cell.isLink) {
-      // TODO link to table?
-      return (
-        <span>
+  if (cell.isLink) {
+    // TODO link to table?
+    return (
+      <span>
           <span className="column-name">
             {columnDisplayName}:{" "}
           </span>
-          {rowIdentification}
+        {rowIdentification}
         </span>
-      );
-    } else {
-      return (
-        <span>
+    );
+  } else {
+    return (
+      <span>
           <span className="column-name">
             {columnDisplayName}:{" "}
           </span>
-          {rowIdentification}
+        {rowIdentification}
         </span>
-      );
-    }
+    );
   }
-}
+};
+
+OverlayHeadRowIdentificator.propTypes = {
+  cell: PropTypes.object,
+  langtag: PropTypes.string.isRequired
+};
+
+export default OverlayHeadRowIdentificator;

@@ -22,6 +22,10 @@ import * as f from "lodash/fp";
 const changeLinkCell = ({cell, value}) => {
   const curValue = cell.value;
 
+  if (process.env.NODE_ENV !== "production") {
+    console.log("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", value);
+  }
+
   if (f.size(value) > 1
     && f.size(curValue) === f.size(value)
     && f.size(f.intersection(value.map(f.get("id")), curValue.map(f.get("id")))) === f.size(curValue)
@@ -163,7 +167,7 @@ export const changeCell = payload => {
          */
 
         if (process.env.NODE_ENV !== "production") {
-          console.log("Cell Model: saving cell with value:", newValue.value, "from", cell.value);
+          console.log("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", newValue.value);
         }
         // we give direct feedback for user
         cell.value = mergedValue;
