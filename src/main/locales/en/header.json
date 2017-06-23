@@ -8,9 +8,12 @@
     "tables": "Tables"
   },
   "tableSwitcher": {
-    "nogroup": "without group...",
+    "nogroup": "Show all tables...",
     "groups": "Groups",
     "tables": "Tables",
-    "search": "Search for table..."
+    "search": "Search for table...",
+    "no-group-results": "Query \"{{query}}\" couldn't be found in group {{group}}",
+    "no-results": "Query \"{{query}}\" couldn't be found at all",
+    "in-all-tables": "Results from all tables"
   }
 }

@@ -6,6 +6,7 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {translate} from "react-i18next";
 import * as AccessControl from "../../../helpers/accessManagementHelper";
 import Dispatcher from "../../../dispatcher/Dispatcher";
+import classNames from "classnames";
 
 @translate(["header"])
 class TableSwitcherButton extends React.Component {
@@ -38,7 +39,6 @@ class TableSwitcherButton extends React.Component {
   };
 
   onClickedTable = (table) => {
-    console.log("onClickedTable", table);
     this.onClickedOutside({});
     ActionCreator.switchTable(table.id, this.props.langtag);
   };
@@ -76,7 +76,7 @@ class TableSwitcherButton extends React.Component {
       return group.displayName[this.props.langtag] || group.displayName[TableauxConstants.FallbackLanguage];
     });
 
-    return <TableSwitcherPopup langtag={this.props.langtag} groups={[...sortedGroups, noGroup]}
+    return <TableSwitcherPopup langtag={this.props.langtag} groups={[noGroup, ...sortedGroups]}
                                tables={this.props.tables} currentTable={this.props.currentTable}
                                onClickedOutside={this.onClickedOutside}
                                onClickedTable={this.onClickedTable}
@@ -99,11 +99,14 @@ class TableSwitcherButton extends React.Component {
     // Show display name with fallback to machine name
     const table = this.props.currentTable;
     const tableDisplayName = table.displayName[this.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
-    const open_class = (this.state.isOpen) ? "active" : "";
-    const admin_class = (AccessControl.isUserAdmin()) ? " admin-mode" : "";
-    const css_class = open_class + admin_class;
+    const cssClass = classNames("",
+      {
+        "active": this.state.isOpen,
+        "admin-mode": AccessControl.isUserAdmin()
+      })
+      ;
     return (
-      <div id="tableswitcher-wrapper" className={open_class + admin_class}>
+      <div id="tableswitcher-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.togglePopup}>
           <i className="fa fa-columns"></i>{tableDisplayName}</a>
         {this.state.isOpen ? this.renderPopup() : null}

@@ -169,10 +169,27 @@
       height: auto;
       width: 100%;
       left: 0;
+
+      i {
+        right: 20px;
+      }
     }
 
     .tableswitcher-tables-search {
       height: 86px;
+    }
+
+    .separator {
+      padding: 15px 20px;
+      .no-results {
+        color: $color-text-medium-grey;
+        padding-bottom: 20px
+      }
+      .in-all-tables {
+        border-top: 1px solid $color-text-light-grey;
+        padding-top: 20px;
+        font-weight: bold;
+      }
     }
   }
 
@@ -192,7 +209,7 @@
       overflow-y: auto;
 
       .nogroup {
-        font-style: italic;
+        font-weight: bold;
       }
     }
   }

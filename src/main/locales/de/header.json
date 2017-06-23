@@ -8,9 +8,12 @@
     "tables": "Tabellen"
   },
   "tableSwitcher": {
-    "nogroup": "ohne Gruppe...",
+    "nogroup": "Alle Tabellen anzeigen...",
     "groups": "Gruppen",
     "tables": "Tabellen",
-    "search": "Nach Tabelle suchen..."
+    "search": "Nach Tabelle suchen...",
+    "no-group-results": "Suchbegriff \"{{query}}\" wurde in Gruppe {{group}} nicht gefunden",
+    "no-results": "Suchbegriff \"{{query}}\" wurde nirgendwo gefunden",
+    "in-all-tables": "Ergebnisse in allen Tabellen"
   }
 }

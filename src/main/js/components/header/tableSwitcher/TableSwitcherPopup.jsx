@@ -1,10 +1,12 @@
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import {FallbackLanguage, FilterModes} from "../../../constants/TableauxConstants";
 import * as _ from "lodash";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ReactDOM from "react-dom";
 import {translate} from "react-i18next";
+import * as f from "lodash/fp";
+import SearchFunctions from "../../../helpers/searchFunctions";
 
 @translate(["header"])
 @listensToClickOutside
@@ -50,7 +52,7 @@ class SwitcherPopup extends React.Component {
     this.props.onClickedOutside(event);
   };
 
-  onClickGroup = (group) => {
+  onClickGroup = (group) => () => {
     const groupId = group && group.id ? group.id : null;
 
     this.props.onClickedGroup(groupId);
@@ -65,7 +67,7 @@ class SwitcherPopup extends React.Component {
     filterInput.focus();
   };
 
-  onClickTable = (table) => {
+  onClickTable = (table) => () => {
     this.props.onClickedTable(table);
     this.setState({
       focusTableId: table.id
@@ -74,7 +76,8 @@ class SwitcherPopup extends React.Component {
 
   filterInputChange = (event) => {
     const filteredTables = this.getFilteredTables(this.state.filterGroupId, event.target.value);
-    const focusTableId = (filteredTables.length > 0) ? filteredTables[0].id : this.props.currentTable.id;
+    const allResults = [...filteredTables.inGroup, ...filteredTables.notInGroup];
+    const focusTableId = (allResults.length > 0) ? f.first(allResults).id : this.props.currentTable.id;
 
     this.setState({
       focusTableId: focusTableId,
@@ -84,25 +87,18 @@ class SwitcherPopup extends React.Component {
 
   onUpDownNavigation = (nextFocusTableIndexFn) => {
     const filteredTables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
-    const focusTableIndex = _.findIndex(filteredTables, (table) => {
-      return table.id === this.state.focusTableId;
-    });
-
-    var nextFocusTableIndex = nextFocusTableIndexFn(focusTableIndex);
-
-    if (nextFocusTableIndex >= filteredTables.length) {
-      // overflow
-      nextFocusTableIndex = 0;
-    } else if (nextFocusTableIndex < 0) {
-      // underflow
-      nextFocusTableIndex = filteredTables.length - 1;
+    const allResults = [...(filteredTables.inGroup || []), ...(filteredTables.notInGroup || [])];
+    if (f.isEmpty(allResults)) {
+      return;
     }
 
-    if (filteredTables.length > nextFocusTableIndex) {
-      this.setState({
-        focusTableId: filteredTables[nextFocusTableIndex].id
-      });
-    }
+    const focusTableIndex = f.compose(
+      idx => Math.max(idx, 0),
+      f.defaultTo(0),
+      f.findIndex(f.matchesProperty("id", this.state.focusTableId))
+    )(allResults);
+    const nextFocusTableIndex = (nextFocusTableIndexFn(focusTableIndex) + f.size(allResults)) % f.size(allResults);
+    this.setState({focusTableId: allResults[nextFocusTableIndex].id});
   };
 
   getKeyboardShortcutsFilterTable = (event) => {
@@ -110,8 +106,8 @@ class SwitcherPopup extends React.Component {
       // enter on input
       enter: (event) => {
         const filteredTables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
-        if (filteredTables.length > 0) {
-          this.onClickTable({id: this.state.focusTableId});
+        if (f.size(filteredTables.inGroup) + f.size(filteredTables.notInGroup) > 0) {
+          this.onClickTable({id: this.state.focusTableId})();
         }
       },
       // clear input
@@ -125,67 +121,54 @@ class SwitcherPopup extends React.Component {
         // Cursor jumps around. Silly cursor stop doing that!
         event.preventDefault();
 
-        this.onUpDownNavigation((focusTableIndex) => {
-          return focusTableIndex - 1;
-        });
+        this.onUpDownNavigation(f.add(-1));
       },
       down: (event) => {
         // Cursor jumps around. Silly cursor stop doing that!
         event.preventDefault();
 
-        this.onUpDownNavigation((focusTableIndex) => {
-          return focusTableIndex + 1;
-        });
+        this.onUpDownNavigation(f.add(1));
       }
     };
   };
 
   getFilteredTables = (filterGroupId, filterTableName) => {
-    const self = this;
-    const tables = _.filter(this.props.tables.models, table => !table.hidden);
+    const {langtag, tables} = this.props;
 
-    // filter tables step 1: only tables in selected group
-    const filteredTablesByGroup = _.filter(tables, (table) => {
-      if (filterGroupId !== null) {
-        return table.group.id === filterGroupId;
-      } else {
-        return true;
-      }
-    });
+    const matchesQuery = (query) => f.compose(
+      SearchFunctions[FilterModes.CONTAINS](query),
+      f.find(f.identity),
+      f.props([["displayName", langtag], ["displayName", FallbackLanguage], "name"])
+    );
 
-    // filter tables step 2: only tables with name which contains current filter
-    const filteredTablesByName = _.filter(filteredTablesByGroup, (table) => {
-      const tableDisplayName = table.displayName[self.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
+    const isInGroup = f.matchesProperty(["group", "id"], filterGroupId);
 
-      const filter = filterTableName ? filterTableName.toLowerCase() : null;
-      return _.every(_.words(filter), function (word) {
-        return tableDisplayName.toLowerCase().indexOf(word) > -1 || table.name.toLowerCase().indexOf(word) > -1;
-      });
-    });
+    const tableResults = f.compose(
+      f.filter(matchesQuery(filterTableName)),
+      f.reject(f.get("hidden")),
+    )(tables.models);
 
-    return filteredTablesByName;
+    return {
+      inGroup: f.filter(isInGroup, tableResults),
+      notInGroup: f.reject(isInGroup, tableResults)
+    };
   };
 
   renderGroups = (groups) => {
-    const self = this;
     const {t, langtag} = this.props;
 
-    const renderedGroups = _.map(groups, function (group, index) {
-      const groupDisplayName = group.displayName[langtag] || group.displayName[TableauxConstants.FallbackLanguage];
+    const renderedGroups = _.map(groups, (group, index) => {
+      const groupDisplayName = group.displayName[langtag] || group.displayName[FallbackLanguage];
 
       const isNoGroupGroup = group.id === 0;
-      const isActive = self.state.filterGroupId === group.id;
-
-      const onClickFn = () => {
-        self.onClickGroup(group);
-      };
+      const isActive = this.state.filterGroupId === group.id;
 
       let className = "";
       className += isNoGroupGroup ? " nogroup" : "";
       className += isActive ? " active" : "";
 
       return (
-        <li key={"group" + index} onClick={onClickFn} className={className}>
+        <li key={"group" + index} onClick={this.onClickGroup(group)} className={className}>
           {groupDisplayName}
           {isActive ? <i className="fa fa-times-circle"></i> : ""}
         </li>
@@ -210,37 +193,73 @@ class SwitcherPopup extends React.Component {
   };
 
   renderTables = (groups, tables) => {
-    const self = this;
     const {t, langtag} = this.props;
+    const groupId = this.state.filterGroupId;
+    const queryStr = this.state.filterTableName;
+    const isGroupSelected = f.isNumber(groupId);
+    const isSearchEntered = !f.isEmpty(queryStr);
+    const hasGroupResults = !f.isEmpty(tables.inGroup);
+    const hasOtherResults = !f.isEmpty(tables.notInGroup);
+    const hasResults = hasGroupResults || hasOtherResults;
 
-    const renderedTables = _.map(tables, (table, index) => {
-      const tableDisplayName = table.displayName[self.props.langtag] || (table.displayName[TableauxConstants.FallbackLanguage] || table.name);
-
-      const isActive = self.state.focusTableId !== null && self.state.focusTableId === table.id;
-
-      const onClickFn = () => {
-        self.onClickTable(table);
-      };
-
-      const onKeyDownFn = () => {
-        return {
-          enter: () => {
-            self.onClickTable(table);
-          }
-        };
-      };
-
+    const renderTable = (table, index) => {
+      const displayName = table.displayName[langtag] || table.displayName[FallbackLanguage] || table.name;
+      const isActive = f.every(f.identity, [
+        f.matchesProperty("id", groupId)(table),
+        f.isInteger(groupId)
+      ]);
+      const onKeyDownFn = f.always({enter: this.onClickTable(table)});
       return (
-        <li key={"table" + index} className={isActive ? "active" : ""}
-            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)} tabIndex="0"
-            ref={"table" + table.id}>
-          <div onClick={onClickFn}>{tableDisplayName}</div>
-          <a target="_blank" href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link"></i></a>
+        <li key={`table${index}`} className={(isActive) ? "active" : ""}
+            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)}
+            tabIndex={0}
+            ref={`table${table.id}`}
+        >
+          <div onClick={this.onClickTable(table)}>
+            {displayName}
+          </div>
+          <a target="_blank" href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
         </li>
       );
-    });
+    };
 
     const style = groups.length <= 1 ? {width: "100%"} : {};
+
+    const separator = (!hasResults)
+      ? (
+        <div className="separator">
+          <div className="no-results">
+            {t("tableSwitcher.no-results", {query: queryStr})}
+          </div>
+        </div>
+      )
+      : (
+        <div className="separator">
+          {(!hasGroupResults && (isSearchEntered && groupId > 0))
+            ? (
+              <div className="no-results">
+                {t("tableSwitcher.no-group-results", {
+                  query: this.state.filterTableName,
+                  group: f.compose(
+                    f.find(f.identity),
+                    f.props([["displayName", langtag], ["displayName", FallbackLanguage]]),
+                    f.find(f.matchesProperty("id", groupId))
+                  )(groups)
+                })}
+              </div>
+            )
+            : null
+          }
+          {(hasOtherResults && isGroupSelected && isSearchEntered)
+            ? (
+              <div className="in-all-tables">
+                {t("tableSwitcher.in-all-tables")}
+              </div>
+            )
+            : null
+          }
+        </div>
+      );
 
     return (
       <div className="tableswitcher-tables" style={style}>
@@ -249,7 +268,7 @@ class SwitcherPopup extends React.Component {
 
           <div className="tableswitcher-input-wrapper2">
             <div className="tableswitcher-input-wrapper">
-              <input value={this.state.filterTableName} placeholder={t("tableSwitcher.search")} type="text"
+              <input value={queryStr} placeholder={t("tableSwitcher.search")} type="text"
                      className="tableswitcher-input"
                      ref="filterInput" onChange={this.filterInputChange}
                      onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcutsFilterTable)}
@@ -261,16 +280,22 @@ class SwitcherPopup extends React.Component {
 
         <div className="tableswitcher-tables-list">
           <ul>
-            {renderedTables}
+            {tables.inGroup.map(renderTable)}
           </ul>
+          {(f.every(f.isNil, separator.props.children)) // Only render messages when there are any
+            ? null
+            : separator
+          }
+          {(isSearchEntered || !isGroupSelected)
+            ? <ul>{tables.notInGroup.map(renderTable)}</ul>
+            : null
+          }
         </div>
       </div>
     );
   };
 
   render() {
-    console.log("TableSwitcherPopup.render()");
-
     const groups = this.props.groups;
     const tables = this.getFilteredTables(this.state.filterGroupId, this.state.filterTableName);
 
