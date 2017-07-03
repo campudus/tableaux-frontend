@@ -11,7 +11,8 @@ const extractAnnotations = obj => {
     f.first,
     f.filter(f.matchesProperty("value", flagStr, findAnnotationType("flag")))
   )(obj);
-  const getTextAnnotation = name => obj => {
+
+/*  const getTextAnnotation = name => obj => {
     const annotationOfType = f.first(findAnnotationType(name)(obj));
     return (annotationOfType)
       ? {
@@ -22,6 +23,8 @@ const extractAnnotations = obj => {
       }
       : {};
   };
+  */
+
   const getNeededTranslations = obj => {
     const neededTranslations = findAnnotationFlag("needs_translation", obj);
     return (neededTranslations)
@@ -33,7 +36,10 @@ const extractAnnotations = obj => {
       }
       : {};
   };
-  return f.reduce(
+
+  return getNeededTranslations(obj);
+
+/*  return f.reduce(
     f.merge,
     {},
     f.juxt(  // array of results after applying all functions to obj
@@ -45,6 +51,7 @@ const extractAnnotations = obj => {
       ]
     )(obj)
   );
+  */
 };
 
 const cellAnnotationUrl = cell => {
