@@ -103,10 +103,10 @@ class CurrencyItem extends Component {
 
   handleChange = place => event => {
     const value = event.target.value;
-    const preComma = (place === PRE_COMMA) ? value : this.state.preComma;
+    const preComma = (place === PRE_COMMA) ? f.trimCharsStart("0", value) : this.state.preComma;
     const postComma = (place === POST_COMMA) ? value : this.state.postComma;
     this.setState({
-      preComma,
+      preComma: (f.isEmpty(preComma)) ? "0" : preComma,
       postComma,
       currencyValue: parseInt(preComma) + parseInt(postComma) / 100
     });
