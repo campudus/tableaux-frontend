@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === "production") {
 
         console.log("Sentry initialized for:", userName);
 
-        Raven.captureMessage("Sentry initialized for: " + userName, {
+        Raven.captureMessage("Sentry initialized", {
           level: "info"
         });
       } else {
