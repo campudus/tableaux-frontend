@@ -43,7 +43,8 @@ class RowHeadline extends React.Component {
       [ColumnKinds.boolean]: "check-square-o",
       [ColumnKinds.datetime]: "calendar",
       [ColumnKinds.date]: "calendar",
-      [ColumnKinds.currency]: "money"
+      [ColumnKinds.currency]: "money",
+      [ColumnKinds.group]: "cubes"
     };
     return <i className={`column-icon fa fa-${columnIcons[column.kind] || "question"}`} />;
   };

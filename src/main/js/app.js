@@ -9,6 +9,8 @@ import "../scss/main.scss";
 import "./watchers/watchConnection";
 import "./dispatcher/GlobalCellChangeListener";
 
+import Cookies from "js-cookie";
+
 if (process.env.NODE_ENV === "production") {
   getSentryUrlFromServer(
     () => {
@@ -16,17 +18,19 @@ if (process.env.NODE_ENV === "production") {
     },
     (sentryUrl) => {
       if (sentryUrl && sentryUrl.length > 5) {
+        const userName = Cookies.get("userName") || "Unknown user";
         Raven
           .config(sentryUrl)
+          .setUserContext({id: userName})
           .install();
 
-        console.log("Sentry initialized");
+        console.log("Sentry initialized for:", userName);
 
-        // Raven.captureMessage("Sentry initialized", {
-        //   level: "info"
-        // });
+        Raven.captureMessage("Sentry initialized for: " + userName, {
+          level: "info"
+        });
       } else {
-        console.warn("Sentry not enabled");
+        console.warn("Could not get Sentry url, Sentry not enabled");
       }
     });
 } else {

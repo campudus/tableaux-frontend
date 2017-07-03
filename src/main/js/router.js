@@ -8,6 +8,7 @@ const Dispatcher = require("./dispatcher/Dispatcher");
 const TableauxConstants = require("./constants/TableauxConstants");
 const ActionTypes = TableauxConstants.ActionTypes;
 const ActionCreator = require("./actions/ActionCreator");
+import Raven from "raven-js";
 
 export let currentLangtag = null;
 
@@ -81,10 +82,14 @@ const TableauxRouter = Router.extend({
 
   switchTableHandler: function (payload) {
     const langtag = payload.langtag;
+    Raven.captureBreadcrumb({message: "Switch table", data: payload});
+    Raven.captureMessage("Switch table", {level: "info"});
     App.router.history.navigate(langtag + "/tables/" + payload.id, {trigger: true});
   },
 
   switchFolderHandler: function (payload) {
+    Raven.captureBreadcrumb({message: "Switch folder", data: payload});
+    Raven.captureMessage("MediaView folder switch", {level: "info"});
     const langtag = payload.langtag;
     if (payload.id) {
       App.router.history.navigate(langtag + "/media/" + payload.id, {trigger: true});

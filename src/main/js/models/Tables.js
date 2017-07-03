@@ -17,6 +17,7 @@ import {
 import request from "superagent";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
+import Raven from "raven-js";
 
 // sets or removes a *single* link to/from a link cell
 const changeLinkCell = ({cell, value}) => {
@@ -111,6 +112,8 @@ const changeLinkCell = ({cell, value}) => {
 };
 
 export const changeCell = payload => {
+  Raven.captureBreadcrumb({message: "Cell modified", data: {cell: payload.cell.id}});
+  Raven.captureMessage("Cell edited", {level: "info"});
   if (payload.cell.isLink) {
     return changeLinkCell(payload);
   }
