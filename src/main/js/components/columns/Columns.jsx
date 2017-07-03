@@ -89,7 +89,12 @@ class Columns extends React.Component {
         </a>;
     }
 
-    columnContent.push(<span key="column-name" title={description}>{name}</span>);
+    columnContent.push(
+      <span key="column-name" title={description}>
+        {name}
+        {(f.isEmpty(description)) ? null : <i className="description-hint fa fa-info-circle" /> }
+      </span>
+    );
 
     if (column.languageType && column.languageType === LanguageType.country) {
       columnIcon = <span className="column-kind-icon"><i className="fa fa-globe" /><span

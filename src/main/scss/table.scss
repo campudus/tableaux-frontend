@@ -75,7 +75,7 @@
     &.sticky {
       position: fixed;
       z-index: 9;
-      top: 0px;
+      top: 0;
       left: 50px;
     }
 
@@ -99,6 +99,11 @@
       width: 85%;
       overflow: hidden;
       text-overflow: ellipsis;
+
+      .description-hint {
+        color: $color-text-light-grey;
+        margin-left: 6px;
+      }
     }
 
     .column-link-wrapper {
