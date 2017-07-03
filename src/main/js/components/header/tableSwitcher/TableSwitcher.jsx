@@ -1,5 +1,6 @@
 import React from "react";
 import _ from "lodash";
+import * as f from "lodash/fp";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import TableSwitcherPopup from "./TableSwitcherPopup";
 import ActionCreator from "../../../actions/ActionCreator";
@@ -54,16 +55,13 @@ class TableSwitcherButton extends React.Component {
   renderPopup = () => {
     const {t} = this.props;
 
-    const groups = _.uniqBy(_.filter(this.props.tables.map((table) => {
-      // map ampersand model to plain group object
-      return table && table.group ? table.group : {id: 0};
-    }), (group) => {
-      // filter all empty groups
-      return group.id !== 0;
-    }), (group) => {
-      // unique by group id
-      return group.id;
-    });
+    const groups = f.compose(
+      f.uniqBy(f.get("id")),                 // unique set of groups
+      f.reject(f.matchesProperty("id", 0)),  //   ...with valid ids
+      f.filter(f.identity),                  //   ...of non-null groups
+      f.map(f.get("group")),                 //   ...from group data
+      f.reject(f.get("hidden"))              //   ...of visible tables
+    )(this.props.tables.models);
 
     const noGroupDisplayName = {};
     noGroupDisplayName[this.props.langtag] = t("tableSwitcher.nogroup");

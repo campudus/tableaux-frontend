@@ -53,18 +53,33 @@ class SwitcherPopup extends React.Component {
   };
 
   onClickGroup = (group) => () => {
-    const groupId = group && group.id ? group.id : null;
-
-    this.props.onClickedGroup(groupId);
+    const groupId = f.get("id", group);
+    const isDeselection = groupId === 0
+      || (f.isInteger(groupId) && groupId === this.state.filterGroupId);
 
     this.setState({
-      filterGroupId: this.state.filterGroupId === groupId ? null : groupId,
+      filterGroupId: (isDeselection) ? null : groupId,
       filterTableName: ""
     });
 
     // focus on filter input
     const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
     filterInput.focus();
+
+    const tableResults = this.getFilteredTables(group.id, "");
+    // on click search gets cleared, so only matching tables are visible
+    const tableIds = f.map(f.get("id"), tableResults.inGroup);
+    const {currentTable} = this.props;
+    const {focusTableId} = this.state;
+    const currentTableId = f.get("id", currentTable);
+    if (isDeselection && currentTable) {
+      this.setState({focusTableId: currentTableId});
+    } else {
+      this.setState({focusTableId: (f.contains(currentTableId, tableIds))
+        ? currentTableId
+        : (f.contains(focusTableId, tableIds)) ? focusTableId : f.first(tableIds)
+      });
+    }
   };
 
   onClickTable = (table) => () => {
@@ -92,13 +107,18 @@ class SwitcherPopup extends React.Component {
       return;
     }
 
+    // If no search happened and a group is selected, only .inGroup tables are displayed
+    const N = (f.isEmpty(this.state.filterTableName) && f.isInteger(this.state.filterGroupId))
+      ? f.size(filteredTables.inGroup)
+      : f.size(allResults);
+
     const focusTableIndex = f.compose(
       idx => Math.max(idx, 0),
       f.defaultTo(0),
       f.findIndex(f.matchesProperty("id", this.state.focusTableId))
     )(allResults);
-    const nextFocusTableIndex = (nextFocusTableIndexFn(focusTableIndex) + f.size(allResults)) % f.size(allResults);
-    this.setState({focusTableId: allResults[nextFocusTableIndex].id});
+    const nextFocusTableIndex = (nextFocusTableIndexFn(focusTableIndex) + N) % N;
+    this.setState({focusTableId: f.get([nextFocusTableIndex, "id"], allResults)});
   };
 
   getKeyboardShortcutsFilterTable = (event) => {
@@ -120,13 +140,11 @@ class SwitcherPopup extends React.Component {
       up: (event) => {
         // Cursor jumps around. Silly cursor stop doing that!
         event.preventDefault();
-
         this.onUpDownNavigation(f.add(-1));
       },
       down: (event) => {
         // Cursor jumps around. Silly cursor stop doing that!
         event.preventDefault();
-
         this.onUpDownNavigation(f.add(1));
       }
     };
@@ -134,7 +152,6 @@ class SwitcherPopup extends React.Component {
 
   getFilteredTables = (filterGroupId, filterTableName) => {
     const {langtag, tables} = this.props;
-
     const matchesQuery = (query) => f.compose(
       SearchFunctions[FilterModes.CONTAINS](query),
       f.find(f.identity),
@@ -195,6 +212,7 @@ class SwitcherPopup extends React.Component {
   renderTables = (groups, tables) => {
     const {t, langtag} = this.props;
     const groupId = this.state.filterGroupId;
+    const {focusTableId} = this.state;
     const queryStr = this.state.filterTableName;
     const isGroupSelected = f.isNumber(groupId);
     const isSearchEntered = !f.isEmpty(queryStr);
@@ -205,8 +223,8 @@ class SwitcherPopup extends React.Component {
     const renderTable = (table, index) => {
       const displayName = table.displayName[langtag] || table.displayName[FallbackLanguage] || table.name;
       const isActive = f.every(f.identity, [
-        f.matchesProperty("id", groupId)(table),
-        f.isInteger(groupId)
+        f.matchesProperty("id", focusTableId)(table),
+        f.isInteger(focusTableId)
       ]);
       const onKeyDownFn = f.always({enter: this.onClickTable(table)});
       return (
