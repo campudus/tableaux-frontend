@@ -22,7 +22,8 @@ class FilterRow extends Component {
     onChangeMode: PropTypes.func.isRequired,
     filter: PropTypes.object.isRequired,
     onAddFilter: PropTypes.func,
-    onRemoveFilter: PropTypes.func
+    onRemoveFilter: PropTypes.func,
+    applyFilters: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -31,9 +32,10 @@ class FilterRow extends Component {
   }
 
   getKeyboardShortcuts = (event) => {
+    const {applyFilters} = this.props;
     return {
       enter: (event) => {
-        this.props.applyFilters(event);
+        applyFilters();
       },
       escape: event => {
         this.filterInput.value = "";

@@ -2,6 +2,7 @@ const Collection = require("ampersand-rest-collection");
 const _ = require("lodash");
 import apiUrl from "../helpers/apiUrl";
 const Row = require("./Row");
+import * as f from "lodash/fp";
 
 export const INITIAL_PAGE_SIZE = 30;
 export const PAGE_SIZE = 500;
@@ -14,11 +15,11 @@ const Rows = Collection.extend({
     const tableId = options.collection.parent.getId();
     const columns = options.collection.parent.columns;
     const json = {
-      id: attrs.id,
+      id: f.get("id", attrs),
       tableId: tableId,
-      values: attrs.values,
-      annotations: attrs.annotations || [],
-      final: !!attrs.final,
+      values: f.get("values", attrs),
+      annotations: f.get("annotations", attrs) || [],
+      final: !!(f.get("final", attrs)),
       columns: columns
     };
 

@@ -85,7 +85,7 @@ const Row = AmpersandModel.extend({
   },
 
   parse: function (attrs, options) {
-    if (attrs.values) {
+    if (attrs && attrs.values) {
       const values = f.zip(attrs.values, attrs.annotations);
       attrs.cells = values.map(function ([value, annotations], idx) {
         return {

@@ -8,7 +8,6 @@ import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
 import Header from "../../overlay/Header";
-import i18n from "i18next";
 import {maybe} from "../../../helpers/monads";
 import {changeCell} from "../../../models/Tables";
 
@@ -54,7 +53,6 @@ class TextCell extends Component {
     ActionCreator.openOverlay({
       head: <Header context={context}
                     title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
-                    actions={{positive: [i18n.t("common:save"), this.saveCell]}}
       />,
       body: (
         <Wrapper>

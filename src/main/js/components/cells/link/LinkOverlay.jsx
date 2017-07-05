@@ -327,7 +327,7 @@ class LinkOverlay extends Component {
   addLinkValue = (isAlreadyLinked, link, event) => {
     maybe(event).method("preventDefault");
     const cell = this.props.cell;
-    const withoutLink = f.remove(f.matchesProperty("id", link.id));
+    const withoutLink = f.remove(f.matchesProperty("id", f.get("id", link)));
     const links = (isAlreadyLinked)
       ? withoutLink(cell.value)
       : [...cell.value, link];
@@ -525,7 +525,7 @@ class LinkOverlay extends Component {
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
            className="link-overlay"
            tabIndex={1}
-           onMouseOver={e => e.target.focus()}
+           onMouseOver={e => maybe(e.target).method("focus")}
            ref={el => {
              this.background = el;
            }}

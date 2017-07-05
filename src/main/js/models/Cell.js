@@ -100,7 +100,7 @@ const Cell = AmpersandModel.extend({
     linkIds: {
       deps: ["value"],
       fn: function () {
-        return (this.isLink)
+        return (f.get("isLink", this))
           ? f.reduce(f.merge, {}, (this.value || []).map(
             (link, idx) => ({
               [link.id]: idx
@@ -126,7 +126,7 @@ const Cell = AmpersandModel.extend({
   initialize: function (attrs, options) {
     if (f.contains(f.get(["column", "kind"], attrs), [ColumnKinds.concat, ColumnKinds.group])) {
       this.initConcatEvents(attrs);
-    } else if (this.isLink) {
+    } else if (f.get("isLink", this)) {
       this.initLinkEvents(attrs);
     }
   },

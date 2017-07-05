@@ -108,7 +108,7 @@ class RichTextComponent extends React.Component {
   getMarkdown = inValue => {
     const value = inValue || this.getValue();
     const markdown = toMarkdown(value);
-    const allTags = new RegExp(/<.*?>/, "g");
+    const allTags = /<.*?>/g;
     return markdown.replace(allTags, "");
   };
 
