@@ -6,52 +6,24 @@ import Row from "../models/Row";
 import {maybe} from "./monads";
 
 const extractAnnotations = obj => {
-  const findAnnotationType = typeStr => f.filter(f.matchesProperty("type", typeStr));
-  const findAnnotationFlag = (flagStr, obj) => f.compose(
-    f.first,
-    f.filter(f.matchesProperty("value", flagStr, findAnnotationType("flag")))
-  )(obj);
-
-/*  const getTextAnnotation = name => obj => {
-    const annotationOfType = f.first(findAnnotationType(name)(obj));
-    return (annotationOfType)
-      ? {
-        [name]: {
-          text: annotationOfType.value,
-          uuid: annotationOfType.uuid
-        }
-      }
-      : {};
-  };
-  */
-
-  const getNeededTranslations = obj => {
-    const neededTranslations = findAnnotationFlag("needs_translation", obj);
-    return (neededTranslations)
-      ? {
-        translationNeeded: {
-          langtags: neededTranslations.langtags,
-          uuid: neededTranslations.uuid
-        }
-      }
-      : {};
-  };
-
-  return getNeededTranslations(obj);
-
-/*  return f.reduce(
-    f.merge,
-    {},
-    f.juxt(  // array of results after applying all functions to obj
-      [
-        getTextAnnotation("warning"),
-        getTextAnnotation("error"),
-        getTextAnnotation("info"),
-        getNeededTranslations
-      ]
-    )(obj)
+  const kvPairs = (obj || []).map(
+    f.cond([
+      [({type, value}) => type === "flag" && value === "needs_translation", ({langtags, uuid}) => ["translationNeeded", {langtags, uuid}]],
+      [f.stubTrue, ({type, value, uuid}) => [type, value, uuid]]
+    ])
   );
-  */
+
+  return kvPairs.reduce(
+    (result, [type, value]) => {
+      if (type === "translationNeeded") {
+        result[type] = value;
+      } else {
+        result[type] = (result[type] || []).push(value)
+      }
+      return result;
+    },
+    {}
+  );
 };
 
 const cellAnnotationUrl = cell => {
