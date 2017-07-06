@@ -113,7 +113,7 @@ class TableView extends React.Component {
     const savedView = either(localStorage)
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
-      .map(f.prop([tableId, name]))
+      .map(f.get([tableId, "visibleColumns", name]))
       .getOrElse(null);
 
     if (savedView) {
@@ -146,7 +146,7 @@ class TableView extends React.Component {
       .map(f.prop(["tableViews"]))
       .map(JSON.parse)
       .getOrElse({});
-    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name], view, savedViews));
+    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, "visibleColumns", name], view, savedViews));
   };
 
   cellJumpError = msg => {
@@ -271,6 +271,8 @@ class TableView extends React.Component {
     this.tableFullyLoaded = false;
     ActionCreator.spinnerOn();
 
+    const start = performance.now();
+
     // We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => {
       return new Promise((resolve, reject) => {
@@ -293,58 +295,36 @@ class TableView extends React.Component {
 
     const fetchPages = ({table, page}) => {
       ActionCreator.spinnerOn();
-      const total = table.rows.pageCount();
-      if (page > table.rows.pageCount()) { // we're done
-        console.log("Done fetching", total, "pages");
-        if (total === 0) { // Special case: empty table
-          this.setState({
-            initialLoading: false,
-            rowsCollection: table.rows,
-            currentTableId: tableId,
-            rowsFilter: null
-          });
-          ActionCreator.spinnerOff();
-        }
-        this.tableFullyLoaded = true;
-        this.checkGotoCellRequest(page, table.rows.pageCount());
-        ActionCreator.spinnerOff();
-        return;
-      }
-      new Promise((resolve, reject) => {
+
+      return new Promise((resolve, reject) => {
         table.rows.fetchPage(page,
           {
-            reset: page === 1,
             success: () => {
-              console.log("Table page number", page, ((page > 1) ? "of " + total + " " : "") + "successfully fetched");
-
-              if (page === 1) {
-                this.setState({
-                  initialLoading: false,
-                  rowsCollection: table.rows,
-                  currentTableId: tableId,
-                  rowsFilter: null
-                });
-              }
-
-              this.checkGotoCellRequest(page);
-
-              resolve({ // return information about next page to be fetched
-                table: table,
-                page: page + 1
+              this.setState({
+                initialLoading: false,
+                rowsCollection: table.rows,
+                currentTableId: tableId
+                // rowsFilter: null
               });
+              ActionCreator.spinnerOff();
+              this.tableFullyLoaded = true;
+              this.checkGotoCellRequest();
+              resolve();
             },
             error: e => {
               ActionCreator.spinnerOff();
               reject("Error fetching page number " + page + ":" + JSON.stringify(e));
             }
           });
-      }).then(fetchPages); // recur with page number increased
+      });
     };
 
     // spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
     // in the middle, and gets displayed only on the first startup
     ActionCreator.spinnerOn();
-    fetchColumns(currentTable).then(fetchPages);
+    fetchColumns(currentTable)
+      .then(fetchPages)
+      .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -404,7 +384,8 @@ class TableView extends React.Component {
     });
   };
 
-  changeFilter = ({filters, sorting}) => {
+  changeFilter = ({filters = [], sorting = {}}) => {
+    console.log("Setting filter:", filters, sorting)
     const isFilterEmpty = filter => _.isEmpty(filter.value) && !_.isString(filter.mode);
     const isSortingEmpty = !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
     const areAllFiltersEmpty = f.compose(

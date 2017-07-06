@@ -88,6 +88,7 @@
     "sass-loader": "4.1.1",
     "style-loader": "0.13.1",
     "superagent": "3.3.2",
+    "superagent-throttle": "0.2.5",
     "to-markdown": "3.0.3",
     "url-loader": "0.5.7",
     "webpack": "1.14.0",

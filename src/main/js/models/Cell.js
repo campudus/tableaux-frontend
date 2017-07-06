@@ -45,7 +45,7 @@ const Cell = AmpersandModel.extend({
     isLink: {
       deps: ["column"],
       fn: function () {
-        return this.column.isLink;
+        return f.get(["column", "isLink"], this);
       }
     },
 

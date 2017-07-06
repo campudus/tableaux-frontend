@@ -3,9 +3,12 @@ const _ = require("lodash");
 import apiUrl from "../helpers/apiUrl";
 const Row = require("./Row");
 import * as f from "lodash/fp";
+import Request from "superagent";
+import Throttle from "superagent-throttle";
 
 export const INITIAL_PAGE_SIZE = 30;
 export const PAGE_SIZE = 500;
+const MAX_CONCURRENT_PAGES = 2;
 
 const Rows = Collection.extend({
 
@@ -23,7 +26,7 @@ const Rows = Collection.extend({
       columns: columns
     };
 
-    return new Row(json, options);
+    return new Row(json, {...options, parse: true});
   },
 
   isModel: function (model) {
@@ -44,7 +47,7 @@ const Rows = Collection.extend({
   },
 
   pageCount: function () {
-    return this.totalSize > 0
+    return (this.totalSize > 0)
       ? 1 + _.ceil((this.totalSize - INITIAL_PAGE_SIZE) / PAGE_SIZE)
       : 0;
   },
@@ -79,7 +82,55 @@ const Rows = Collection.extend({
     // don't merge, or models are broken when duplicating while fetching the tail
     options = _.assign(options, {merge: false, add: true, remove: false});
     options.data = _.assign({}, options.data, page);
-    this.fetch(options);
+
+    const success = options.success;
+
+    const addRows = (n, data) => {
+      this.set(data.rows, {remove: false, merge: false, add: true});
+      console.log("Page", n, "loaded");
+    };
+
+    const fetchPage = (n) => new Promise(
+      (resolve, reject) => {
+        const pageLimits = this.calculatePage(n);
+        const url = this.url();
+        Request
+          .get(`${url}?offset=${pageLimits.offset}&limit=${pageLimits.limit}`)
+          .use(throttle.plugin())
+          .end(
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                addRows(n, JSON.parse(response.text));
+                resolve();
+              }
+            }
+          );
+      }
+    );
+
+    const throttle = new Throttle({
+      active: true,
+      concurrent: MAX_CONCURRENT_PAGES
+    });
+
+    const firstRowLoaded = (ignore, response) => {
+      this.totalSize = f.get(["page", "totalSize"], response) || 0;
+      const pages = this.pageCount();
+      console.log("Table has", pages, "total pages");
+      console.log("Page 1 loaded");
+      if (pages > 1) {
+        const pageNums = f.range(2, pages + 1);
+        Promise.all(
+          f.map(fetchPage, pageNums)
+        ).then(success);
+      } else {
+        success();
+      }
+    };
+
+    this.fetch({...options, success: firstRowLoaded});
   }
 });
 
