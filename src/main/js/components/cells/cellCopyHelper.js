@@ -1,6 +1,6 @@
 import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
-import {ColumnKinds} from "../../constants/TableauxConstants";
+import {ColumnKinds, DefaultLangtag} from "../../constants/TableauxConstants";
 import {convert, canConvert} from "../../helpers/cellValueConverter";
 import React from "react";
 import i18n from "i18next";
@@ -11,13 +11,13 @@ import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Header from "../overlay/Header";
 import Footer from "../overlay/Footer";
 
-const showErrorToast = msg => {
-  ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg)}</div>, 3000);
+const showErrorToast = (msg, data = {}) => {
+  ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg, data)}</div>, 3000);
 };
 
 const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage)
   || (dst.isMultiLanguage && f.every(v => f.isEmpty(v) && !f.isNumber(v), f.values(f.prop("value", dst))));
-const canCopyLinks = (src, dst) => dst.column.id === src.column.id && dst.tableId === src.tableId;
+const canCopyLinks = (src, dst) => dst.column.toTable === src.column.toTable;
 
 const calcNewValue = function (src, srcLang, dst, dstLang) {
   const untranslated = f.prop(["annotations", "translationNeeded", "langtags"]);
@@ -60,7 +60,9 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
     if (canCopyLinks(src, dst)) {
       ActionCreator.changeCell(dst, src.value);
     } else {
-      showErrorToast("table:copy_links_error");
+      const srcTable = this.tables.get(src.column.toTable);
+      const srcTableName = f.find(f.identity, f.props([this.props.langtag, DefaultLangtag], srcTable.displayName));
+      showErrorToast("table:copy_links_error", {table: srcTableName});
     }
     return;
   }

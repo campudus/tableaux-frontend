@@ -83,7 +83,7 @@
     "title": "Gleich am Ziel!",
     "subtitle": "Weitere Daten werden angefragt."
   },
-  "copy_links_error": "Links können nur innerhalb derselben Spalte kopiert und eingefügt werden.",
+  "copy_links_error": "Der kopierte Link kann hier nicht eingefügt werden, er verweist auf die Tabelle {{table}}.",
   "copy_kind_error": "Der kopierte Wert kann hier nicht eingefügt werden.",
   "confirm_copy": {
     "header": "Mehrsprachigen Inhalt einfügen?",

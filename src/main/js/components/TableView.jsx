@@ -414,14 +414,7 @@ class TableView extends React.Component {
 
   doSwitchTable = () => {
     if (this.nextTableId) {
-      if (either(this.state.pasteOriginCell.cell)
-          .map(f.prop("kind"))
-          .map(f.eq(ColumnKinds.link))
-          .getOrElse(false)) {
-        this.setState({pasteOriginCell: {}});
-      }
       this.pendingCellGoto = null;
-      console.log("doSwitchTable with id:", this.nextTableId);
       this.fetchTable(this.nextTableId);
       this.loadView(this.nextTableId);
     }
