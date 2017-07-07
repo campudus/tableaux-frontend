@@ -5,6 +5,7 @@ import NewRow from "./NewRow.jsx";
 import {RowHeight} from "../../constants/TableauxConstants";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
+import Spinner from "../header/Spinner";
 
 @connectToAmpersand
 class Rows extends React.Component {
@@ -93,16 +94,20 @@ class Rows extends React.Component {
 
   render() {
     return (
-      <Infinite className="data-wrapper"
-                containerHeight={this.props.rowsHeight}
-                elementHeight={RowHeight}
-                preloadBatchSize={Infinite.containerHeightScaleFactor(0.1)}
-                preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
-                handleScroll={undefined}
-                timeScrollStateLastsForAfterUserScrolls={10}
-                scrollDelayTime={100}>
-        {this.getRows()}
-      </Infinite>
+      (this.props.fullyLoaded)
+        ? (
+          <Infinite className="data-wrapper"
+                    containerHeight={this.props.rowsHeight}
+                    elementHeight={RowHeight}
+                    preloadBatchSize={Infinite.containerHeightScaleFactor(0.1)}
+                    preloadAdditionalHeight={Infinite.containerHeightScaleFactor(1)}
+                    handleScroll={undefined}
+                    timeScrollStateLastsForAfterUserScrolls={10}
+                    scrollDelayTime={100}>
+            {this.getRows()}
+          </Infinite>
+        )
+        : <Spinner isLoading />
     );
   }
 }
@@ -116,7 +121,8 @@ Rows.propTypes = {
   selectedCellExpandedRow: React.PropTypes.string,
   rowsHeight: React.PropTypes.number,
   shouldCellFocus: React.PropTypes.bool,
-  table: React.PropTypes.object.isRequired
+  table: React.PropTypes.object.isRequired,
+  fullyLoaded: React.PropTypes.bool.isRequired
 };
 
 export default Rows;

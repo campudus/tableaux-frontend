@@ -115,7 +115,7 @@ const Rows = Collection.extend({
       concurrent: MAX_CONCURRENT_PAGES
     });
 
-    const firstRowLoaded = (ignore, response) => {
+    const fetchTail = (ignore, response) => {
       this.totalSize = f.get(["page", "totalSize"], response) || 0;
       const pages = this.pageCount();
       console.log("Table has", pages, "total pages");
@@ -130,7 +130,7 @@ const Rows = Collection.extend({
       }
     };
 
-    this.fetch({...options, success: firstRowLoaded});
+    this.fetch({...options, success: fetchTail});
   }
 });
 

@@ -59,7 +59,6 @@ class Table extends React.Component {
     Dispatcher.on(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
 
     window.addEventListener("resize", this.windowResize);
-    this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
   }
 
   componentWillUnmount() {
@@ -97,6 +96,12 @@ class Table extends React.Component {
 
     // save a reference globally for children. Cells use this.
     window.GLOBAL_TABLEAUX.tableRowsDom = this.tableRowsDom = tableRowsDom;
+  }
+
+  componentWillReceiveProps(np) {
+    if (!this.props.fullyLoaded && np.fullyLoaded) {
+      this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
+    }
   }
 
   componentDidUpdate() {
@@ -189,6 +194,7 @@ class Table extends React.Component {
                    tables={tables}
           />
           <Rows ref="tableRows"
+                fullyLoaded={this.props.fullyLoaded}
                 rowsHeight={this.tableDataHeight()}
                 rows={rows}
                 langtag={langtag}
@@ -214,7 +220,8 @@ Table.propTypes = {
   table: React.PropTypes.object.isRequired,
   overlayOpen: React.PropTypes.bool,
   rows: React.PropTypes.object,
-  tables: React.PropTypes.object.isRequired
+  tables: React.PropTypes.object.isRequired,
+  fullyLoaded: React.PropTypes.bool.isRequired
 };
 
 module.exports = Table;

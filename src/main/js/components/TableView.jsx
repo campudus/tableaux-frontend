@@ -35,14 +35,14 @@ class TableView extends React.Component {
     super(props);
     this.nextTableId = null;
     this.pendingCellGoto = null;
-    this.tableFullyLoaded = false;
     this.state = {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
       rowsFilter: null,
       pasteOriginCell: {},
-      pasteOriginCellLang: props.langtag
+      pasteOriginCellLang: props.langtag,
+      tableFullyLoaded: false
     };
 
     const {columnId, rowId} = this.props;
@@ -160,14 +160,13 @@ class TableView extends React.Component {
     if (!this.pendingCellGoto) {
       return;
     }
-    ActionCreator.jumpSpinnerOn();
     const columns = this.getCurrentTable().columns.models;
     const columnId = this.pendingCellGoto.columnId || f.first(columns).getId();
     if (!this.checkIfColExists(columns, columnId)) {
       return;
     }
     const {page} = this.pendingCellGoto;
-    if (loaded >= page || this.tableFullyLoaded) {
+    if (loaded >= page || this.state.tableFullyLoaded) {
       this.gotoCell(this.pendingCellGoto, loaded);
     }
   };
@@ -175,7 +174,6 @@ class TableView extends React.Component {
   // needs the columns.models as argument, else won't find correct column
   checkIfColExists = (columns, colId) => {
     if (f.findIndex(f.matchesProperty("id", colId), columns) < 0) {
-      ActionCreator.jumpSpinnerOff();
       this.cellJumpError(i18n.t("table:jump.no_such_column", {col: colId}));
       this.pendingCellGoto = null;
       return false;
@@ -188,7 +186,6 @@ class TableView extends React.Component {
 
   gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH", entityView}, nPagesLoaded = 0) => {
     const colId = columnId || f.first(this.getCurrentTable().columns.models).getId();
-    ActionCreator.jumpSpinnerOn();
     if (!this.checkIfColExists(this.getCurrentTable().columns.models, colId)) {
       return;
     }
@@ -231,7 +228,7 @@ class TableView extends React.Component {
       return cell;
     };
 
-    if (nPagesLoaded >= page || this.tableFullyLoaded) {
+    if (nPagesLoaded >= page || this.state.tableFullyLoaded) {
       either(this.getCurrentTable().rows)
         .map(rows => rows.get(rowId).cells)
         .map(cells => cells.get(cellId))
@@ -268,18 +265,18 @@ class TableView extends React.Component {
 
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
-    this.tableFullyLoaded = false;
-    ActionCreator.spinnerOn();
-
-    const start = performance.now();
+    this.setState({tableFullyLoaded: false});
 
     // We need to fetch columns first, since rows has Cells that depend on the column model
-    const fetchColumns = table => {
-      return new Promise((resolve, reject) => {
+    const fetchColumns = table => new Promise(
+      (resolve, reject) => {
         table.columns.fetch({
           reset: true,
           success: () => {
-            this.loadView(table.id);
+            this.setState({
+              currentTableId: tableId,
+              initialLoading: false
+            }, () => this.loadView(table.id));
             resolve({ // return information about first page to be fetched
               table: table,
               page: 1
@@ -290,29 +287,24 @@ class TableView extends React.Component {
             reject("Error fetching table columns:" + JSON.stringify(e));
           }
         });
-      });
-    };
+      }
+    );
 
-    const fetchPages = ({table, page}) => {
-      ActionCreator.spinnerOn();
-
+    const fetchPages = () => {
       return new Promise((resolve, reject) => {
-        table.rows.fetchPage(page,
+        currentTable.rows.fetchPage(1,
           {
             success: () => {
               this.setState({
-                initialLoading: false,
-                rowsCollection: table.rows,
-                currentTableId: tableId
+                rowsCollection: currentTable.rows,
+                currentTableId: tableId,
+                tableFullyLoaded: true
                 // rowsFilter: null
               });
-              ActionCreator.spinnerOff();
-              this.tableFullyLoaded = true;
               this.checkGotoCellRequest();
               resolve();
             },
             error: e => {
-              ActionCreator.spinnerOff();
               reject("Error fetching page number " + page + ":" + JSON.stringify(e));
             }
           });
@@ -321,8 +313,10 @@ class TableView extends React.Component {
 
     // spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
     // in the middle, and gets displayed only on the first startup
-    ActionCreator.spinnerOn();
+
+    const start = performance.now();
     fetchColumns(currentTable)
+ //     .then(fetchHead)
       .then(fetchPages)
       .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
   };
@@ -441,22 +435,13 @@ class TableView extends React.Component {
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
-      let tables = this.tables;
-      let rowsCollection = this.state.rowsCollection;
-      let currentTable = this.getCurrentTable();
+      const tables = this.tables;
+      const {rowsCollection, tableFullyLoaded, pasteOriginCell, rowsFilter} = this.state;
+      const {langtag, overlayOpen} = this.props;
+      const currentTable = this.getCurrentTable();
 
-      let table = "";
-      if (this.state.currentTableId) {
-        if (typeof tables.get(this.state.currentTableId) !== "undefined") {
-          table = <Table key={this.state.currentTableId} table={currentTable}
-                         langtag={this.props.langtag} rows={rowsCollection} overlayOpen={this.props.overlayOpen}
-                         pasteOriginCell={this.state.pasteOriginCell}
-                         tables={tables}
-          />;
-        } else {
-          // TODO show error to user
-          console.error("No table found with id " + this.state.currentTableId);
-        }
+      if (f.isNil(currentTable)) {
+        console.error("No table found with id " + this.state.currentTableId);
       }
 
       return (
@@ -464,7 +449,7 @@ class TableView extends React.Component {
           <header>
             <Navigation langtag={this.props.langtag} />
             <div id="clipboard-icon">
-              {(!f.isEmpty(this.state.pasteOriginCell))
+              {(!f.isEmpty(pasteOriginCell))
                 ? (
                   <a href="#" className="button" onClick={this.clearCellClipboard}>
                     <i className="fa fa-clipboard" />
@@ -473,13 +458,13 @@ class TableView extends React.Component {
                 : null
               }
             </div>
-            <TableSwitcher langtag={this.props.langtag}
+            <TableSwitcher langtag={langtag}
                            currentTable={currentTable}
                            tables={tables} />
-            <TableSettings langtag={this.props.langtag} table={currentTable} />
-            <Filter langtag={this.props.langtag} table={currentTable} currentFilter={this.state.rowsFilter} />
+            <TableSettings langtag={langtag} table={currentTable} />
+            <Filter langtag={langtag} table={currentTable} currentFilter={rowsFilter} />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
-              ? <ColumnFilter langtag={this.props.langtag}
+              ? <ColumnFilter langtag={langtag}
                               columns={currentTable.columns}
               />
               : null
@@ -489,7 +474,13 @@ class TableView extends React.Component {
             <Spinner />
           </header>
           <div className="wrapper">
-            {table}
+            <Table key={`${this.state.currentTableId}-${(tableFullyLoaded) ? "finished" : "loading"}`} table={currentTable}
+                   fullyLoaded={tableFullyLoaded}
+                   langtag={langtag} rows={rowsCollection || {}} overlayOpen={overlayOpen}
+                   pasteOriginCell={pasteOriginCell}
+                   tables={tables}
+            />
+            }
           </div>
         </div>
       );
