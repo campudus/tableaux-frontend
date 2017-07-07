@@ -3,7 +3,7 @@ import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import {compose, isEmpty} from "lodash/fp";
+import {compose, isEmpty, isString} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
@@ -105,6 +105,7 @@ class TextCell extends Component {
 
   render() {
     const {selected} = this.props;
+    const value = this.getValue();
 
     const expandButton = (selected)
       ? <ExpandButton onTrigger={this.openOverlay} />
@@ -112,7 +113,7 @@ class TextCell extends Component {
 
     return (
       <div className='cell-content' onClick={this.handleClick}>
-        {this.getValue().split("\n")[0]}
+        {(isString(value)) ? value.split("\n")[0] : ""}
         {expandButton}
       </div>
     );
