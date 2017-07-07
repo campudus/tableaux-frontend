@@ -90,7 +90,7 @@ class Columns extends React.Component {
     }
 
     columnContent.push(
-      <span key="column-name" title={description}>
+      <span key="column-name">
         {name}
         {(f.isEmpty(description)) ? null : <i className="description-hint fa fa-info-circle" /> }
       </span>

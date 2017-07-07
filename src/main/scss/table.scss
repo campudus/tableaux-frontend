@@ -106,6 +106,31 @@
       }
     }
 
+    .description-tooltip {
+      position: relative;
+      top: 100%;
+      left: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      padding: 10px;
+      background-color: transparentize($color-primary-text, 0.2);
+      color: $color-text-light-grey;
+      .description-tooltip-text {
+        white-space: normal;
+        font-weight: normal;
+      }
+      &:before {
+        content: "";
+        position: absolute;
+        left: 7%;
+        top: -15px;
+        border-left: 5px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 15px solid transparentize($color-primary-text, 0.2)
+      }
+    }
+
     .column-link-wrapper {
       overflow: visible;
 

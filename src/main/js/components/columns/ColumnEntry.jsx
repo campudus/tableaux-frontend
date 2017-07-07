@@ -11,6 +11,7 @@ import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 import classNames from "classnames";
 import Header from "../overlay/Header";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
+import * as f from "lodash/fp";
 
 class ColumnEntry extends React.Component {
 
@@ -19,7 +20,8 @@ class ColumnEntry extends React.Component {
     this.state = {
       name: this.props.name,
       description: this.props.description,
-      contextMenu: null
+      contextMenu: null,
+      showDescription: false
     };
   }
 
@@ -98,9 +100,14 @@ class ColumnEntry extends React.Component {
     );
   };
 
+  showDescription = (show) => () => {
+    this.setState({showDescription: show && !f.isEmpty(this.props.description)});
+  };
+
   render = () => {
-    const {column: {kind, id}, columnContent, columnIcon} = this.props;
+    const {column: {kind, id}, columnContent, columnIcon, description} = this.props;
     const menuOpen = this.state.ctxCoords;
+    const showDescription = !f.isEmpty(description) && this.state.showDescription && !menuOpen;
     const contextMenuClass = classNames(
       "column-contextmenu-button fa ", {
         "fa-angle-up": menuOpen,
@@ -109,11 +116,23 @@ class ColumnEntry extends React.Component {
     classNames("column-head", {"context-menu-open": menuOpen});
     return (
       <div className={classNames("column-head", {"context-menu-open": menuOpen})}
-           key={id}>
-        <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}>
+           key={id}
+      >
+        <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
+             onMouseEnter={this.showDescription(true)}
+             onMouseLeave={this.showDescription(false)}
+        >
           {columnContent}
           {columnIcon}
         </div>
+        {(showDescription)
+          ? (
+            <div className="description-tooltip"
+            >
+              <div className="description-tooltip-text">{description}</div>
+            </div>
+          )
+          : null}
         {(kind !== "concat")
           ? <a href="#" className={contextMenuClass} id={this.calcId()}
                onClick={this.toggleContextMenu}>
