@@ -28,6 +28,7 @@ class RichTextComponent extends React.Component {
     if ((!!props.readOnly ^ !!props.saveAndClose) !== 1) {
       console.error("RichTextComponent: Component should receive either a \"readOnly\" XOR a \"saveAndClose\" property.");
     }
+    this.state = {focused: false};
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -73,7 +74,6 @@ class RichTextComponent extends React.Component {
     const valueToSet = value || "";
     const html = markdown.toHTML(valueToSet);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
-    const l = value.length;
     contentDOMNode.innerHTML = html;
     this.positionCaret(contentDOMNode);
   };
@@ -86,7 +86,6 @@ class RichTextComponent extends React.Component {
     const lastEntry = domNode.lastChild || domNode;
     const range = document.createRange();
     try {
-      const l = lastEntry.textContent.length;
       range.setStart(lastEntry, 1);
       range.setEnd(lastEntry, 1);
 
@@ -94,7 +93,7 @@ class RichTextComponent extends React.Component {
       sel.removeAllRanges();
       sel.addRange(range);
       lastEntry.focus();
-    } catch(e) {
+    } catch (e) {
       // Text is empty, so can't set caret
     }
   };
@@ -128,10 +127,14 @@ class RichTextComponent extends React.Component {
   };
 
   render = () => {
-    const {hideEditorSymbols, readOnly, onClick, tabIdx} = this.props;
+    const {hideEditorSymbols, readOnly, onClick, tabIdx, placeholder} = this.props;
     const clickHandler = onClick || function () {};
     const contentClass = classNames("content-pane", {"input": !readOnly});
     const cssClass = classNames("rich-text-component", {"editing": !readOnly, "preview": readOnly});
+
+    const contentEmpty = !this.content
+      || this.content && f.isEmpty(this.content.textContent) && f.isEmpty(this.content.children);
+
     return (
       <div className="rich-text-wrapper">
         <div className={cssClass} onClick={clickHandler} tabIndex={tabIdx} onKeyDown={this.handleInput} >
@@ -161,12 +164,17 @@ class RichTextComponent extends React.Component {
             )
             : null
           }
+          {(contentEmpty && !this.state.focused)
+            ? <div onClick={() => { this.content && this.content.focus(); }}>{placeholder}</div>
+            : null}
           <div className={contentClass}
                contentEditable={!readOnly}
                ref={cp => { this.content = cp; }}
                onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
-          >
-          </div>
+               onKeyDown={this.handleKeyPress}
+               onFocus={() => this.setState({focused: true})}
+               onBlur={() => this.setState({focused: false})}
+          />
         </div>
       </div>
     );

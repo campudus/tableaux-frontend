@@ -1,65 +1,79 @@
 @import "variables";
 
-.rich-text-component {
-  width: 100%;
-  min-height: 30px;
-  background-color: transparent;
-  box-sizing: border-box;
-  padding-bottom: 4px;
-  border-bottom: 1px solid transparent;
-  margin-bottom: 5px;
-  transition: border 0.3s;
-
-  &:hover, &:focus {
-    border-bottom: 1px solid $color-primary;
+.richtext-cell-editor .rich-text-wrapper {
+  height: calc(100vw - 321px);
+  .rich-text-component .content-pane {
+    height: 100%;
+    max-height: none;
   }
+}
 
-  .symbol-bar {
+.rich-text-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  .rich-text-component {
+    flex: 1;
     width: 100%;
-    padding: 10px 0;
-    margin-bottom: 10px;
-    border-bottom: 1px solid $color-text-light-grey;
+    min-height: 30px;
+    background-color: transparent;
+    box-sizing: border-box;
+    padding-bottom: 4px;
+    border-bottom: 1px solid transparent;
+    margin-bottom: 5px;
+    transition: border 0.3s;
 
-    .action-group {
-      margin-right: 1em;
-      display: inline-flex;
-      align-items: baseline;
-      vertical-align: bottom;
-      color: $color-text-medium-grey;
+    &:hover, &:focus {
+      border-bottom: 1px solid $color-primary;
+    }
 
-      .description {
-        padding-right: 10px;
+    .symbol-bar {
+      width: 100%;
+      padding: 10px 0;
+      margin-bottom: 10px;
+      border-bottom: 1px solid $color-text-light-grey;
+
+      .action-group {
+        margin-right: 1em;
+        display: inline-flex;
+        align-items: baseline;
+        vertical-align: bottom;
+        color: $color-text-medium-grey;
+
+        .description {
+          padding-right: 10px;
+        }
+      }
+
+      a {
+        padding: 4px;
+        background-color: $color-text-light-grey;
+        color: $color-border-grey;
+        margin-right: 5px;
+        text-align: center;
+        border-radius: 3px;
+
+        i {
+          width: 1em;
+        }
+
+        &:hover {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
+        }
       }
     }
 
-    a {
-      padding: 4px;
-      background-color: $color-text-light-grey;
-      color: $color-border-grey;
-      margin-right: 5px;
-      text-align: center;
-      border-radius: 3px;
-
-      i {
-        width: 1em;
-      }
-
-      &:hover {
-        background-color: $color-primary;
-        color: $color-primary-contrast-text;
-      }
+    .button-area {
+      text-align: right;
     }
-  }
 
-  .button-area {
-    text-align: right;
-  }
-
-  .content-pane {
-    width: 100%;
-    max-height: 70vh;
-    overflow: hidden;
-    line-height: 1.5em;
+    .content-pane {
+      width: 100%;
+      max-height: 70vh;
+      overflow: hidden;
+      line-height: 1.5em;
+    }
   }
 }
 

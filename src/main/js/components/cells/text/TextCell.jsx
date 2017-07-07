@@ -10,6 +10,7 @@ import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstant
 import Header from "../../overlay/Header";
 import {maybe} from "../../../helpers/monads";
 import {changeCell} from "../../../models/Tables";
+import i18n from "i18next";
 
 class TextCell extends Component {
 
@@ -57,11 +58,12 @@ class TextCell extends Component {
       body: (
         <Wrapper>
           <div className="content-items">
-            <div className="item">
+            <div className="item richtext-cell-editor">
               <RichTextComponent value={textValue} langtag={langtag}
                                  saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
                                  hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
                                  disableOnClickOutside={true}
+                                 placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
               />
             </div>
           </div>

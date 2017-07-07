@@ -4,6 +4,8 @@ import {changeCell} from "../../../models/Tables.js";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {contentChanged} from "../../cells/Cell";
 import {ColumnKinds} from "../../../constants/TableauxConstants";
+import i18n from "i18next";
+import * as f from "lodash/fp";
 
 class TextView extends Component {
 
@@ -84,13 +86,20 @@ class TextView extends Component {
           />
         )
         : (
-          <RichTextComponent value={value}
-                             className="item-content text"
-                             langtag={langtag}
-                             readOnly={true}
-                             onClick={(isRowLocked) ? function () {
-                             } : this.setEditing(true)}
-          />
+          (f.isEmpty(f.trim(value)))
+            ? (
+              <div className="item-description"
+                   onClick={(isRowLocked) ? function () {} : this.setEditing(true)}
+              >
+                {i18n.t("table:empty.text")}
+              </div>
+            )
+            : <RichTextComponent value={value}
+                                 className="item-content text"
+                                 langtag={langtag}
+                                 readOnly={true}
+                                 onClick={(isRowLocked) ? function () {} : this.setEditing(true)}
+            />
         )
       }
       {this.props.children}
