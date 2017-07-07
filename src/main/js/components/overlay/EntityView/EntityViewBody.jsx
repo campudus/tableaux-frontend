@@ -12,6 +12,8 @@ import classNames from "classnames";
 import {isLocked, unlockRow} from "../../../helpers/annotationHelper";
 import i18n from "i18next";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import {showToast} from "../../../actions/ActionCreator";
+import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
@@ -135,6 +137,13 @@ class EntityViewBody extends Component {
   };
 
   switchLang = ({langtag}) => {
+    const oldLang = getLanguageOrCountryIcon(this.state.langtag);
+    const newLang = getLanguageOrCountryIcon(langtag);
+    showToast(<div className="language-info-toast">
+      <div className="new-lang"><i className="fa fa-long-arrow-right"/>{newLang}</div>
+      <div className="old-lang">{oldLang}<i className="fa fa-long-arrow-left"/></div>
+    </div>,
+    3000);
     this.setState({langtag});
   };
 

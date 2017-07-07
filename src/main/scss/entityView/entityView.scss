@@ -679,6 +679,19 @@ $arrow-height: 50px;
   }
 }
 
+.language-info-toast {
+  padding: 0 50px;
+  div {
+    margin: 50px 0;
+    i {
+      margin: 0 30px;
+    }
+    .langtag-label {
+      margin-left: 10px;
+    }
+  }
+}
+
 // Header elements
 .overlay {
   .separator {
