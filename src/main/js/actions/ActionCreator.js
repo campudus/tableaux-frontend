@@ -1,5 +1,6 @@
 const Dispatcher = require("../dispatcher/Dispatcher");
 const ActionTypes = require("../constants/TableauxConstants").ActionTypes;
+import Raven from "raven-js";
 
 module.exports = {
 
@@ -58,10 +59,20 @@ module.exports = {
   },
 
   openOverlay: function (overlayContent) {
+    Raven.captureBreadcrumb({
+      message: "open overlay",
+      data: {
+        context: overlayContent.head.props.context,
+        title: overlayContent.head.props.title
+      }
+    });
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);
   },
 
   closeOverlay: function (name = null) {
+    Raven.captureBreadcrumb({
+      message: "CloseOverlay"
+    });
     Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY, name);
   },
 
