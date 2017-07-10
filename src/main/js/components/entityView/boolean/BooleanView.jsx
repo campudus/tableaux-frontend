@@ -62,7 +62,7 @@ class BooleanView extends Component {
               : ""
             }
           </div>
-          <div className="value">{`${t("current_selection")}: `}{selected ? t("yes") : t("no")}</div>
+          <div className="value">{`${t("current_selection")}: `}<div>{selected ? t("yes") : t("no")}</div></div>
           {this.props.children}
         </div>
     );

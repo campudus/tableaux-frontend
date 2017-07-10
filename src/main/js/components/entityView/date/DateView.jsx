@@ -130,7 +130,7 @@ class DateView extends Component {
               }
             </div>
           )
-            : i18n.t("table:empty.date")
+            : <div className="item-description">{i18n.t("table:empty.date")}</div>
         }</div>
         {(editing && !thisUserCantEdit)
           ? (

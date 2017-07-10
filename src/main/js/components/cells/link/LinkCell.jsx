@@ -13,7 +13,7 @@ const LinkCell = props => {
     />;
   } else {
     // Show a link preview for performance
-    const tooManyLinks = cell.value.length > 3;
+    const tooManyLinks = f.size(cell.value) > 3;
     const links = f.take(3, cell.value)
                    .map(
                      (element, index) => (
