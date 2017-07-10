@@ -18,7 +18,11 @@ const extractAnnotations = obj => {
       if (type === "translationNeeded") {
         result[type] = value;
       } else {
-        result[type] = (result[type] || []).push(value)
+        if (!result[type]) {
+          result[type] = [value];
+        } else {
+          result[type].push(value);
+        }
       }
       return result;
     },
