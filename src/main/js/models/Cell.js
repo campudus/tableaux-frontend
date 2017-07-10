@@ -52,35 +52,35 @@ const Cell = AmpersandModel.extend({
     isMultiLanguage: {
       deps: ["column"],
       fn: function () {
-        return this.column.multilanguage;
+        return f.get(["column", "multilanguage"], this);
       }
     },
 
     isIdentifier: {
       deps: ["column"],
       fn: function () {
-        return this.column.identifier;
+        return f.get(["column", "identifier"], this);
       }
     },
 
     isMultiCountry: {
       deps: ["column"],
       fn: function () {
-        return this.column.languageType === "country";
+        return f.matchesProperty(["column", "languageType"], "country", this);
       }
     },
 
     kind: {
       deps: ["column"],
       fn: function () {
-        return this.column.kind;
+        return (this.column && this.column.kind) || "uninitialized";
       }
     },
 
     isConcatCell: {
       deps: ["kind"],
       fn: function () {
-        return this.kind === ColumnKinds.concat;
+        return f.matchesProperty("kind", ColumnKinds.concat, this);
       }
     },
 
@@ -113,6 +113,9 @@ const Cell = AmpersandModel.extend({
     displayValue: {
       deps: ["value", "column"],
       fn: function () {
+        if (f.isNil(this)) {
+          return "";
+        }
         if (this.kind === ColumnKinds.link) { // re-register listeners for needed dependencies
           const self = this;
           clearCallbacks(self.id);
