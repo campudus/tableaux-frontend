@@ -275,11 +275,8 @@
 
           .svg-icon {
             cursor: pointer;
-
-            padding-right: 20px;
             width: 1em;
             height: 1em;
-            font-size: medium;
           }
         }
 
@@ -289,12 +286,12 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          width: 29px;
+          width: 40px;
           height: 100%;
           border-radius: 0 3px 3px 0;
           background-color: $color-white;
           color: $color-primary;
-          position: absolute;
+          margin-left: 3px;
 
           &.linked {
             background-color: $color-primary;
