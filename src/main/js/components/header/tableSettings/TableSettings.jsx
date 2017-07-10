@@ -27,12 +27,11 @@ class TableSettings extends React.Component {
 
   render = () => {
     const {open} = this.state;
-    const css_class = (open) ? "button active" : "button";
     return (
       <div id="table-settings-wrapper"
            onClick={this.toggleSettingsPopup}>
         <a id="table-settings"
-           className={css_class}
+           className={(open) ? "button active" : "button"}
            ref={tableSettings => {
              this.tableSettings = tableSettings;
            }}

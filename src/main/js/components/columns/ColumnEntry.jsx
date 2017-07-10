@@ -6,7 +6,6 @@
 import React from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
-import {trim} from "lodash/fp";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 import classNames from "classnames";
 import Header from "../overlay/Header";
@@ -34,8 +33,8 @@ class ColumnEntry extends React.Component {
   saveEdit = () => {
     const {langtag, column: {id}} = this.props;
     const {name, description} = this.state;
-    const newName = (name !== this.props.name) ? trim(name) : null;
-    const newDesc = (description !== this.props.description) ? trim(description) : null;
+    const newName = (name !== this.props.name) ? f.trim(name) : null;
+    const newDesc = (description !== this.props.description) ? f.trim(description) : null;
     ActionCreator.editColumnHeaderDone(id, langtag, newName, newDesc);
   };
 

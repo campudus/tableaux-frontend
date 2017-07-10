@@ -39,11 +39,9 @@ class ColumnContextMenu extends React.Component {
       ? tables.get(column.toTable)
       : {};
 
-    console.log("toTable:", toTable, "of", tables)
-
     const canEdit =
       AccessControl.isUserAdmin() && !contains(column.kind, PROTECTED_CELL_KINDS);
-    const editor_item = (canEdit)
+    const editorItem = (canEdit)
       ? <div>
         <a href="#" onClick={compose(closeHandler, editHandler)}>
           {i18n.t("table:editor.edit_column")}
@@ -51,7 +49,7 @@ class ColumnContextMenu extends React.Component {
       </div>
       : null;
 
-    const follow_link_item = (column.isLink && !toTable.hidden)
+    const followLinkItem = (column.isLink && !toTable.hidden)
       ? <div>
         <a href="#"
            onClick={compose(
@@ -64,7 +62,7 @@ class ColumnContextMenu extends React.Component {
       </div>
       : null;
 
-    const hide_column_item = (this.props.isId)
+    const hideColumnItem = (this.props.isId)
       ? null
       : (
         <div>
@@ -84,9 +82,9 @@ class ColumnContextMenu extends React.Component {
                           clickOutsideHandler={this.closeContextMenu}
                           menuItems={
                             <div>
-                              {editor_item}
-                              {follow_link_item}
-                              {hide_column_item}
+                              {editorItem}
+                              {followLinkItem}
+                              {hideColumnItem}
                             </div>
                           }
                           align={Alignments.UPPER_RIGHT} />

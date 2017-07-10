@@ -2,7 +2,6 @@ import * as f from "lodash/fp";
 import getDisplayValue from "../../../models/getDisplayValue";
 import Request from "superagent";
 import apiUrl from "../../../helpers/apiUrl";
-import {fspy} from "../../../helpers/monads"
 
 const mkLinkDisplayItem = f.curry(
   function (table, row) {
