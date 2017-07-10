@@ -4,9 +4,9 @@ import {getUserLanguageAccess, isUserAdmin} from "./accessManagementHelper";
 import {openEntityView} from "../components/overlay/EntityViewOverlay";
 import ActionCreator from "../actions/ActionCreator";
 
-export function initiateDeleteRow(row, langtag) {
+export function initiateDeleteRow(row, langtag, overlayToCloseId) {
   if (isUserAdmin()) {
-    confirmDeleteRow(row, langtag);
+    confirmDeleteRow(row, langtag, overlayToCloseId);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
   }

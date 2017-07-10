@@ -54,9 +54,12 @@ class RowsOverlay extends Component {
   }
 }
 
-export function confirmDeleteRow(row, langtag) {
+export function confirmDeleteRow(row, langtag, overlayToCloseId) {
   const onYesRowDelete = () => {
     removeRow(row.tableId, row.getId());
+    if (overlayToCloseId) {
+      ActionCreator.closeOverlay(overlayToCloseId);
+    }
     ActionCreator.resetTableURL();
   };
 

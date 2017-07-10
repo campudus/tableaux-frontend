@@ -8,7 +8,7 @@ import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
-import TableauxConstants, {ActionTypes, ColumnKinds, FilterModes} from "../constants/TableauxConstants";
+import TableauxConstants, {ActionTypes, FilterModes} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
 import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
@@ -225,6 +225,7 @@ class TableView extends React.Component {
       if (entityView) {
         openEntityView(rows[rowIndex], this.props.langtag, cellId);
       }
+      this.pendingCellGoto = null;
       return cell;
     };
 
@@ -305,7 +306,7 @@ class TableView extends React.Component {
               resolve();
             },
             error: e => {
-              reject("Error fetching page number " + page + ":" + JSON.stringify(e));
+              reject("Error fetching pages:" + e);
             }
           });
       });

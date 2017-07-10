@@ -96,8 +96,9 @@ export default class Tableaux extends React.Component {
   openOverlay(content) {
     const {currentViewParams, activeOverlays} = this.state;
     const timestamp = new Date().getTime();
+    const namedContent = (f.isNil(content.name)) ? f.assoc("name", timestamp, content) : content;
     this.setState({
-      activeOverlays: [...activeOverlays, f.assoc("id", timestamp, content)],
+      activeOverlays: [...activeOverlays, f.assoc("id", timestamp, namedContent)],
       currentViewParams: f.assoc("overlayOpen", true, currentViewParams)
     });
   }
