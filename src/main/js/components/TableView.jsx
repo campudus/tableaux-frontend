@@ -99,22 +99,33 @@ class TableView extends React.Component {
     App.router.navigate(`${this.props.langtag}/tables/${this.state.currentTableId}`);
   };
 
+  getStoredViewObject = (tableId = null, name = "default") => {
+    if (tableId) {
+      return either(localStorage)
+        .map(f.get("tableViews"))
+        .map(JSON.parse)
+        .map(f.get([tableId, name]))
+        .getOrElse(null);
+    } else {
+      return either(localStorage)
+        .map(f.get("tableViews"))
+        .map(JSON.parse)
+        .getOrElse({});
+    }
+  };
+
   // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
   loadView = (tableId, name = "default") => {
     const table = this.tables.get(tableId);
     const DEFAULT_VISIBLE_COLUMS = 10;
     if (!table) {
-      console.log("Could not access table ID", tableId, "of", this.tables);
+      console.warn("Could not access table ID", tableId, "of", this.tables);
       return;
     }
 
     const cols = table.columns.models;
-
-    const savedView = either(localStorage)
-      .map(f.prop(["tableViews"]))
-      .map(JSON.parse)
-      .map(f.get([tableId, "visibleColumns", name]))
-      .getOrElse(null);
+    const storedViewObject = this.getStoredViewObject(tableId);
+    const savedView = f.get("visibleColumns", storedViewObject);
 
     if (savedView) {
       cols.map(col => {
@@ -131,6 +142,7 @@ class TableView extends React.Component {
         f.reject(f.get("isGroupMember"))
       )(cols);
     }
+    this.setState({rowsFilter: f.get("rowsFilter", storedViewObject)});
   };
 
   // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
@@ -142,11 +154,19 @@ class TableView extends React.Component {
     const {currentTableId} = this.state;
     const cols = this.tables.get(currentTableId).columns.models;
     const view = cols.reduce((a, b) => f.merge({[b.id]: b.visible}, a), {});
-    const savedViews = either(localStorage)
-      .map(f.prop(["tableViews"]))
-      .map(JSON.parse)
-      .getOrElse({});
-    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, "visibleColumns", name], view, savedViews));
+    const savedViews = this.getStoredViewObject(null, name);
+    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name, "visibleColumns"], view, savedViews));
+  };
+
+  saveFilterSettings = (name = "default") => {
+    if (!localStorage) {
+      return;
+    }
+
+    const {currentTableId, rowsFilter} = this.state;
+    const savedViews = this.getStoredViewObject(null, name);
+    const newViewsObj = f.set([currentTableId, name, "rowsFilter"], rowsFilter, savedViews);
+    localStorage["tableViews"] = JSON.stringify(newViewsObj);
   };
 
   cellJumpError = msg => {
@@ -291,8 +311,8 @@ class TableView extends React.Component {
       }
     );
 
-    const fetchPages = () => {
-      return new Promise((resolve, reject) => {
+    const fetchPages = () => new Promise(
+      (resolve, reject) => {
         currentTable.rows.fetchPage(1,
           {
             success: () => {
@@ -309,16 +329,26 @@ class TableView extends React.Component {
               reject("Error fetching pages:" + e);
             }
           });
-      });
-    };
+      }
+    );
+
+    const applyStoredViews = () => new Promise(
+      (resolve) => {
+        const {rowsFilter} = this.state;
+        if (!f.isEmpty(rowsFilter)) {
+          this.changeFilter(rowsFilter, false);
+        }
+        resolve();
+      }
+    );
 
     // spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
     // in the middle, and gets displayed only on the first startup
 
     const start = performance.now();
     fetchColumns(currentTable)
- //     .then(fetchHead)
       .then(fetchPages)
+      .then(applyStoredViews)
       .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
   };
 
@@ -376,11 +406,10 @@ class TableView extends React.Component {
     this.setState({
       rowsCollection: this.getCurrentTable().rows,
       rowsFilter: null
-    });
+    }, this.saveFilterSettings);
   };
 
-  changeFilter = ({filters = [], sorting = {}}) => {
-    console.log("Setting filter:", filters, sorting)
+  changeFilter = ({filters = [], sorting = {}}, store = true) => {
     const isFilterEmpty = filter => _.isEmpty(filter.value) && !_.isString(filter.mode);
     const isSortingEmpty = !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
     const areAllFiltersEmpty = f.compose(
@@ -388,25 +417,35 @@ class TableView extends React.Component {
       f.map(isFilterEmpty)
     )(filters);
 
-    if (areAllFiltersEmpty && isSortingEmpty) {
-      this.setState({
-        rowsFilter: null,
-        rowsCollection: this.getCurrentTable().rows
-      });
-    } else {
-      const rowsFilter = {
-        sortColumnId: sorting.columnId,
-        sortValue: sorting.value,
-        filters: f.reject(isFilterEmpty, filters)
-      };
-      this.setState({
-        rowsFilter,
-        rowsCollection: getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter)
-      });
-      if (f.get([0, "mode"], filters) !== FilterModes.ID_ONLY) {
-        this.resetURL();
+    const storeFilterSettingsIfRequested = (rowsFilter) => {
+      if (store) {
+        this.saveFilterSettings();
       }
-    }
+    };
+
+    new Promise(
+      (resolve) => {
+        if (areAllFiltersEmpty && isSortingEmpty) {
+          this.setState({
+            rowsFilter: null,
+            rowsCollection: this.getCurrentTable().rows
+          }, resolve(null));
+        } else {
+          const rowsFilter = {
+            sortColumnId: sorting.columnId,
+            sortValue: sorting.value,
+            filters: f.reject(isFilterEmpty, filters)
+          };
+          if (f.get([0, "mode"], filters) !== FilterModes.ID_ONLY) {
+            this.resetURL();
+          }
+          this.setState({
+            rowsFilter,
+            rowsCollection: getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter)
+          }, resolve(rowsFilter));
+        }
+      }
+    ).then(storeFilterSettingsIfRequested);
   };
 
   getCurrentTable = () => {
