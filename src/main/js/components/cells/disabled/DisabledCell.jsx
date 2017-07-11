@@ -1,16 +1,10 @@
-import React from "react";
+import React, {PropTypes} from "react";
 
-class DisabledCell extends React.Component {
+const DisabledCell = (props) => {
 
-  static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    selected: React.PropTypes.bool.isRequired
-  };
+  const {cell, langtag, selected} = this.props;
 
-  getValue = () => {
-    const {cell, langtag} = this.props;
-
+  const getValue = () => {
     let value;
     if (cell.isMultiLanguage) {
       value = cell.value[langtag];
@@ -21,15 +15,19 @@ class DisabledCell extends React.Component {
     return typeof value === "undefined" ? "" : value;
   };
 
-  render = () => {
-    const value = this.getValue();
+  const value = getValue();
 
-    return (
-      <div className='cell-content'>
-        {value === null ? "" : value}
-      </div>
-    );
-  };
-}
+  return (
+    <div className='cell-content'>
+      {value === null ? "" : value}
+    </div>
+  );
+};
+
+DisabledCell.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  cell: PropTypes.object.isRequired,
+  selected: PropTypes.bool.isRequired
+};
 
 export default DisabledCell;

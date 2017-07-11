@@ -2,38 +2,36 @@ import React, {Component, PropTypes} from "react";
 import multiLanguage from "../../../helpers/multiLanguage";
 import TableauxConstants from "../../../constants/TableauxConstants";
 
-class AttachmentLabelCell extends Component {
+const AttachmentLabelCell = (props) => {
 
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    attachmentElement: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    openOverlay: PropTypes.func.isRequired,
-    selected: PropTypes.bool.isRequired
-  };
+  const {attachmentElement, langtag, selected, openOverlay} = props;
 
-  handleClick = evt => {
-    if (this.props.selected) {
+  const handleClick = evt => {
+    if (selected) {
       evt.stopPropagation();
-      this.props.openOverlay(this.props.attachmentElement.folder);
+      openOverlay(attachmentElement.folder);
     }
   };
 
-  render() {
-    const {attachmentElement, langtag} = this.props;
-    const fallbackLang = TableauxConstants.DefaultLangtag;
-    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-    const attachmentTitle = retrieveTranslation(attachmentElement.title, langtag);
+  const fallbackLang = TableauxConstants.DefaultLangtag;
+  const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
+  const attachmentTitle = retrieveTranslation(attachmentElement.title, langtag);
 
-    return (
-      <div className="link-label" onClick={this.handleClick}>
-        <div className="label-text">
-          {attachmentTitle}
-        </div>
+  return (
+    <div className="link-label" onClick={handleClick}>
+      <div className="label-text">
+        {attachmentTitle}
       </div>
-    );
-  }
+    </div>
+  );
+};
 
-}
+AttachmentLabelCell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  attachmentElement: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  openOverlay: PropTypes.func.isRequired,
+  selected: PropTypes.bool.isRequired
+};
 
 module.exports = AttachmentLabelCell;

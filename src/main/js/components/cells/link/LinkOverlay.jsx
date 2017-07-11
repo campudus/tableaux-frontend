@@ -92,6 +92,9 @@ class LinkOverlay extends Component {
         const {activeBox, rowResults} = this.state;
         const activeBoxIDString = (activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
         const row = f.get([activeBoxIDString, this.getSelectedId()], rowResults);
+        if (f.isEmpty(row)) {
+          return;
+        }
         if (selectedMode === MAIN_BUTTON) {
           this.addLinkValue(activeBox === LINKED_ITEMS, row, event);
         } else {
@@ -196,26 +199,6 @@ class LinkOverlay extends Component {
       }
     );
 
-/*    const fetchForeignRows = new Promise(
-      (resolve, reject) => {
-        const rowXhr = toTable.rows.fetch({
-          url: apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`),
-          success: () => {
-            this.setRowResult(
-              f.map(row => ({
-                id: row.id,
-                value: row.cells.at(0).value,
-                displayValue: row.cells.at(0).displayValue
-              }), toTable.rows.models),
-              true);
-            resolve();
-          },
-          error: reject
-        });
-        this.props.addAbortableXhrRequest(rowXhr);
-      }
-    ); */
-
     const fetchForeignRowsJson = new Promise(
       (resolve, reject) => {
         const rowXhr = Request
@@ -279,7 +262,7 @@ class LinkOverlay extends Component {
     });
   };
 
-  updateLinkValues = ({cell, row}) => {
+  updateLinkValues = ({cell, row = {}}) => {
     const thisCell = this.props.cell;
     if (cell.column.id !== thisCell.column.toColumn.id || cell.tableId !== thisCell.column.toTable) {
       return;
@@ -307,7 +290,7 @@ class LinkOverlay extends Component {
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
     const linkPosition = f.reduce(
-      f.merge, {}, this.props.cell.value.map((row, idx) => ({[row.id]: idx}))
+      f.merge, {}, this.props.cell.value.map((row, idx) => ({[f.get("id", row)]: idx}))
     );
     const linkedRows = f.compose(
       f.sortBy(link => f.get(link.id, linkPosition)),
@@ -438,7 +421,7 @@ class LinkOverlay extends Component {
   renderRowCreator = () => {
     const {cell, cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
     const addAndLinkRow = () => {
-      const linkNewRow = row => {
+      const linkNewRow = (row = {}) => {
         const link = {
           id: row.id,
           value: null,
@@ -510,7 +493,7 @@ class LinkOverlay extends Component {
       : (
         <DragSortList renderListItem={this.renderListItem({isLinked: true})}
                       items={f.defaultTo([])(rowResults.linked).map(
-                        (row, index) => {
+                        (row = {}, index) => {
                           return {
                             index,
                             id: row.id

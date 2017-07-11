@@ -4,27 +4,15 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {isEmpty} from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
 
-class ShortTextCell extends Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired,
-    editing: PropTypes.bool.isRequired,
-    contentChanged: PropTypes.func.isRequired,
-    setCellKeyboardShortcuts: PropTypes.func
-  };
+const ShortTextCell = (props) => {
+  const {cell, cell: {isMultiLanguage}, contentChanged, editing, langtag, setCellKeyboardShortcuts} = props;
 
-  constructor(props) {
-    super(props);
-    this.displayName = "ShortTextEditCell";
-  }
-
-  handleEditDone = (newValue) => {
-    const oldValue = this.getValue();
+  const handleEditDone = (newValue) => {
+    const oldValue = getValue();
     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
       ActionCreator.toggleCellEditing({editing: false});
       return;
     }
-    const {cell, cell: {isMultiLanguage}, langtag, contentChanged} = this.props;
     const valueToSave = (isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
@@ -33,14 +21,13 @@ class ShortTextCell extends Component {
     ActionCreator.toggleCellEditing({editing: false});
   };
 
-  getValue = () => {
-    const {cell, cell: {isMultiLanguage}, langtag} = this.props;
+  const getValue = () => {
     return (isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
   };
 
-  renderTextCell = (cell, value) => {
+  const renderTextCell = (cell, value) => {
     return (
       <div className="cell-content">
         {(value === null) ? "" : value}
@@ -48,16 +35,20 @@ class ShortTextCell extends Component {
     );
   };
 
-  render() {
-    const {cell, editing} = this.props;
-
-    if (!editing) {
-      return this.renderTextCell(cell, this.getValue());
-    } else {
-      return <ShortTextEditCell cell={cell} langtag={this.props.langtag} onBlur={this.handleEditDone}
-                                setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}/>;
-    }
+  if (!editing) {
+    return renderTextCell(cell, getValue());
+  } else {
+    return <ShortTextEditCell cell={cell} langtag={langtag} onBlur={handleEditDone}
+                              setCellKeyboardShortcuts={setCellKeyboardShortcuts}/>;
   }
-}
+};
+
+ShortTextCell.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  cell: PropTypes.object.isRequired,
+  editing: PropTypes.bool.isRequired,
+  contentChanged: PropTypes.func.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func
+};
 
 export default ShortTextCell;
