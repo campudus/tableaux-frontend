@@ -4,7 +4,8 @@ import apiUrl from "../helpers/apiUrl";
 const Row = require("./Row");
 import * as f from "lodash/fp";
 import Request from "superagent";
-import Throttle from "superagent-throttle";
+import {Promise} from "es6-promise";       // explicitly import the polyfill for IE to recognise Promise.all
+const throat = require("throat")(Promise); // throat ignores the global Promise polyfill, so pass it
 
 export const INITIAL_PAGE_SIZE = 30;
 export const PAGE_SIZE = 500;
@@ -96,7 +97,6 @@ const Rows = Collection.extend({
         const url = this.url();
         Request
           .get(`${url}?offset=${pageLimits.offset}&limit=${pageLimits.limit}`)
-          .use(throttle.plugin())
           .end(
             (err, response) => {
               if (err) {
@@ -110,11 +110,6 @@ const Rows = Collection.extend({
       }
     );
 
-    const throttle = new Throttle({
-      active: true,
-      concurrent: MAX_CONCURRENT_PAGES
-    });
-
     const fetchTail = (ignore, response) => {
       this.totalSize = f.get(["page", "totalSize"], response) || 0;
       const pages = this.pageCount();
@@ -123,7 +118,7 @@ const Rows = Collection.extend({
       if (pages > 1) {
         const pageNums = f.range(2, pages + 1);
         Promise.all(
-          f.map(fetchPage, pageNums)
+          pageNums.map(throat(MAX_CONCURRENT_PAGES, fetchPage))
         ).then(success);
       } else {
         success();
