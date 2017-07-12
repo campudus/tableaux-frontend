@@ -226,7 +226,8 @@ class TableView extends React.Component {
             }
           ],
           sorting: {columnId: 0}
-        });
+        },
+        false);
       }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
@@ -335,7 +336,7 @@ class TableView extends React.Component {
     const applyStoredViews = () => new Promise(
       (resolve) => {
         const {rowsFilter} = this.state;
-        if (!f.isEmpty(rowsFilter)) {
+        if (!f.get(["urlOptions", "filter"], this.props) && !f.isEmpty(rowsFilter)) {
           this.changeFilter(rowsFilter, false);
         }
         resolve();
@@ -417,7 +418,7 @@ class TableView extends React.Component {
       f.map(isFilterEmpty)
     )(filters);
 
-    const storeFilterSettingsIfRequested = (rowsFilter) => {
+    const storeFilterSettingsIfRequested = () => {
       if (store) {
         this.saveFilterSettings();
       }

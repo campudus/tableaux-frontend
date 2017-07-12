@@ -515,8 +515,13 @@ $dist-from-top: 20px;
 
           .unlink-button {
             width: 16px;
-            margin-left: 2px;
+            margin-left: 3px;
             justify-content: center;
+            border-radius: 0 3px 3px 0;
+          }
+
+          &.show-buttons .main-button {
+            border-radius: 3px 0 0 3px;
           }
         }
       }
