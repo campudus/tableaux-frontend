@@ -5,6 +5,7 @@ import {translate} from "react-i18next";
 import Spinner from "../header/Spinner";
 import LinkList from "../helperComponents/LinkList";
 import SvgIcon from "../helperComponents/SvgIcon";
+import i18n from "i18next";
 
 // Builds the actual dependent tables/rows DOM elements
 @translate("table")
@@ -105,7 +106,9 @@ export default class DependentRowsList extends React.Component {
     return (
       <div className="dependent-wrapper">
         <div className="content-items">
-          {dependentTables}
+          {(dependentTables.length < 1)
+            ? <div className="item">{i18n.t("table:no_dependent_text")}</div>
+            : dependentTables}
         </div>
       </div>
     );
