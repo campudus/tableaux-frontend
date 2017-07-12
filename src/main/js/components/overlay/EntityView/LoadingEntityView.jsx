@@ -43,6 +43,7 @@ class LoadingEntityViewHeaderWrapper extends Component {
       ? <EntityViewHeader row={row}
                           langtag={langtag}
                           id={id}
+                          hasMeaningfulLinks={true}
       />
       : <Header context=""
                 title={i18n.t("common:loading")}

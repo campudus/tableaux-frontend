@@ -156,6 +156,13 @@ class RowSwitcher extends Component {
 }
 
 class EntityViewHeader extends Component {
+  static propTypes = {
+    canSwitchRows: PropTypes.bool,
+    hasMeaningfulLinks: PropTypes.any,
+    row: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired
+  };
+
   constructor(props) {
     super(props);
     const firstCell = props.row.cells.at(0);
