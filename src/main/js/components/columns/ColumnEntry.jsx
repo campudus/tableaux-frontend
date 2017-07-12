@@ -4,6 +4,7 @@
  * on click, second click sends Action event to open overlay to edit current header's title and description.
  */
 import React from "react";
+import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
 import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
@@ -103,6 +104,24 @@ class ColumnEntry extends React.Component {
     this.setState({showDescription: show && !f.isEmpty(this.props.description)});
   };
 
+  componentDidUpdate() {
+    console.log("Updated")
+    if (!this.tooltip) {
+      return;
+    }
+
+    const domNode = ReactDOM.findDOMNode(this.tooltip);
+    const nodeRect = domNode.getBoundingClientRect();
+    const nodeRight = nodeRect.right;
+    const windowWidth = window.innerWidth;
+
+    if (nodeRight > (windowWidth - 10)) {
+//      domNode.style.left = `${-(nodeRect.width)}px`;
+      domNode.classList.add("shift-left");
+      console.log("LEFT:", domNode.style.left, windowWidth, nodeRect.width)
+    }
+  }
+
   render = () => {
     const {column: {kind, id}, columnContent, columnIcon, description} = this.props;
     const menuOpen = this.state.ctxCoords;
@@ -127,6 +146,7 @@ class ColumnEntry extends React.Component {
         {(showDescription)
           ? (
             <div className="description-tooltip"
+                 ref={el => { this.tooltip = el; }}
             >
               <div className="description-tooltip-text">{description}</div>
             </div>

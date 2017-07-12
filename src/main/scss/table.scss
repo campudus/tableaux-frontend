@@ -116,6 +116,7 @@
       padding: 10px;
       background-color: transparentize($color-primary-text, 0.1);
       color: $color-text-light-grey;
+
       .description-tooltip-text {
         white-space: normal;
         font-weight: normal;
@@ -128,6 +129,17 @@
         border-left: 5px solid transparent;
         border-right: 8px solid transparent;
         border-bottom: 15px solid transparentize($color-primary-text, 0.1)
+      }
+
+      &.shift-left {
+        left: -90%;
+
+        &:before {
+          left: auto;
+          right: 4%;
+          border-left: 8px solid transparent;
+          border-right: 5px solid transparent;
+        }
       }
     }
 
