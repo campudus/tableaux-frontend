@@ -2,25 +2,28 @@ import React from "react";
 import _ from "lodash";
 import CurrencyRow from "./CurrencyRow";
 import {getCurrencyWithCountry} from "./currencyHelper";
+import * as f from "lodash/fp";
 
 export default class CurrencyEditCell extends React.Component {
 
-  // holds all the ref names of the currency row children
-  currencyRowNames = null;
-
   static propTypes = {
     cell: React.PropTypes.object.isRequired,
-    currencies: React.PropTypes.object.isRequired,
     saveCell: React.PropTypes.func.isRequired,
     exitCell: React.PropTypes.func.isRequired,
     onClickOutside: React.PropTypes.func.isRequired,
     setCellKeyboardShortcuts: React.PropTypes.func.isRequired
   };
 
-  handleClickOutside = evt => this.props.onClickOutside(evt);
+  handleClickOutside = (evt) => this.props.onClickOutside(evt);
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      currencyValues: props.cell.value
+    };
+  }
 
   componentDidMount() {
-    this.buildCurrencyRowRefNames();
     this.props.setCellKeyboardShortcuts({
       always: (event) => {
         event.stopPropagation();
@@ -38,17 +41,18 @@ export default class CurrencyEditCell extends React.Component {
   }
 
   saveCell = () => {
-    let valuesToSave = {};
-    _.forEach(this.currencyRowNames, (refName) => {
-      const currencyRowValue = this.refs[refName].saveThisCurrency();
-      if (currencyRowValue !== null) {
-        _.assign(valuesToSave, currencyRowValue);
-      }
-    });
+    const {cell, saveCell} = this.props;
+    const {currencyValues} = this.state;
 
-    if (!_.isEmpty(valuesToSave)) {
-      this.props.saveCell(valuesToSave);
+    if (f.equals(cell.value, currencyValues)) {
+      return;
     }
+
+    const updateObj = f.pickBy(
+      (val, ctry) => val !== cell.value[ctry],
+      currencyValues
+    );
+    saveCell(updateObj);
   };
 
   componentWillUnmount() {
@@ -58,30 +62,30 @@ export default class CurrencyEditCell extends React.Component {
     this.saveCell();
   }
 
-  buildCurrencyRowRefNames() {
-    const countryCodes = this.props.cell.column.countryCodes;
-    this.currencyRowNames = [];
-    _.forEach(countryCodes, (countryCode, index) => {
-      this.currencyRowNames.push(this.getCurrencyRowName(countryCode));
-    });
-  }
-
-  getCurrencyRowName(countryCode) {
-    return "currency-" + countryCode;
-  }
+  updateCurrencyValue = (country) => value => {
+    console.log("Changing value for", country, "to", value)
+    const {currencyValues} = this.state;
+    const newValue = f.assoc(country, value, currencyValues);
+    this.setState({currencyValues: newValue}, () => console.log(this.state));
+  };
 
   render() {
-    const {cell, currencies} = this.props;
+    const {cell} = this.props;
     const {column} = cell;
     const {countryCodes} = column;
+    const {currencyValues} = this.state;
 
-    console.log("currencyEditcell currencies: ", currencies, "countryCodes:", countryCodes);
-
-    const currencyRows = countryCodes.map((countryCode, index) => {
-      const currencyValue = getCurrencyWithCountry(currencies, countryCode);
-      return <CurrencyRow ref={this.getCurrencyRowName(countryCode)} key={index} country={countryCode}
-                          countryCurrencyValue={currencyValue}/>;
-    });
+    const currencyRows = countryCodes.map(
+      (countryCode, index) => {
+        const currencyValue = getCurrencyWithCountry(currencyValues, countryCode, "withFallback");
+        return <CurrencyRow key={index}
+                            country={countryCode}
+                            isFallbackValue={!f.get(["value", countryCode], cell)}
+                            countryCurrencyValue={currencyValue}
+                            updateValue={this.updateCurrencyValue(countryCode)}
+        />;
+      }
+    );
 
     return (
       <div className="cell-currency-rows" onClick={e => { e.stopPropagation(); }}>

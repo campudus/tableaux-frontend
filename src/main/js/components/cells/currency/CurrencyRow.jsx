@@ -1,17 +1,22 @@
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import {splitPriceDecimals} from "./currencyHelper";
 import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";
 import {maybe} from "../../../helpers/monads";
 
-export default class CurrencyRow extends React.Component {
-
-  currencyInputTouched = false;
+export default class CurrencyRow extends Component {
 
   static propTypes = {
-    country: React.PropTypes.string.isRequired,
-    countryCurrencyValue: React.PropTypes.number
+    country: PropTypes.string.isRequired,
+    countryCurrencyValue: PropTypes.number,
+    isFallbackValue: PropTypes.bool.isRequired,
+    updateValue: PropTypes.func.isRequired
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {modified: false};
+  }
 
   // returns float 0 when nothing has ever been entered for this country
   mergeSplittedCurrencyValues() {
@@ -21,23 +26,6 @@ export default class CurrencyRow extends React.Component {
     return parseFloat(mergedVal);
   }
 
-  // Gets called from parent component when unmounting to save the values
-  saveThisCurrency = () => {
-    const {country} = this.props;
-    const newCurrencyFloatValue = this.mergeSplittedCurrencyValues();
-    const oldCurrencyFloatValue = this.props.countryCurrencyValue;
-
-    // User has changed nothing for this country and there's never been a value set
-    if (oldCurrencyFloatValue === null && !this.currencyInputTouched) {
-      return null;
-    }
-    // we just want to save this cell when value has changed
-    if (newCurrencyFloatValue !== oldCurrencyFloatValue) {
-      return {[country]: newCurrencyFloatValue};
-    }
-    return null;
-  };
-
   onKeyDownInput = (e) => {
     if (!isAllowedForNumberInput(e)) {
       e.preventDefault();
@@ -45,10 +33,11 @@ export default class CurrencyRow extends React.Component {
   };
 
   currencyInputChanged = (e) => {
-    this.currencyInputTouched = true;
+    this.setState({modified: true});
+    this.props.updateValue(this.mergeSplittedCurrencyValues());
   };
 
-  handleFocus = selector => () => {
+  handleFocus = (selector) => () => {
     const el = this[selector];
     const l = maybe(el).map(x => x.value.length).getOrElse(0);
     maybe(el).method("setSelectionRange", l, l);
@@ -57,18 +46,17 @@ export default class CurrencyRow extends React.Component {
   renderCurrencyValue(value) {
     const splittedValue = splitPriceDecimals(value);
 
-    // TODO change to new refs handling
     return (
       <div>
         <input ref={ el => { this.currencyInteger = el; this.handleFocus("currencyInteger")(); }}
-               className="currency-input integer" type="text" defaultValue={splittedValue[0]}
+               className="currency-input integer" type="text" value={splittedValue[0]}
                onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged}
                onFocus={this.handleFocus("currencyInteger")}
         />
         <span className="delimiter">,</span>
         <input ref={ el => { this.currencyDecimals = el; this.handleFocus("currencyDecimals")(); }}
                onChange={this.currencyInputChanged} className="currency-input decimals"
-               type="text" defaultValue={splittedValue[1]}
+               type="text" value={splittedValue[1]}
                onKeyDown={this.onKeyDownInput}
                onFocus={this.handleFocus("currencyDecimals")}
         />
@@ -77,12 +65,12 @@ export default class CurrencyRow extends React.Component {
   }
 
   render() {
-    const {country, countryCurrencyValue} = this.props;
+    const {country, countryCurrencyValue, isFallbackValue} = this.props;
     const currencyCode = getCurrencyCode(country);
     let currencyValue = this.renderCurrencyValue(countryCurrencyValue);
 
     return (
-      <div className="currency-row">
+      <div className={`currency-row${(isFallbackValue && !this.state.modified) ? " grey-out" : ""}`}>
         <div className="country-code">{getLanguageOrCountryIcon(country)}</div>
         <div className="currency-value">{currencyValue}</div>
         <div className="currency-code">{currencyCode}</div>

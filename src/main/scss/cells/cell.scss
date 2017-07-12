@@ -64,6 +64,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
+    .grey-out, .grey-out input {
+      color: $color-text-medium-grey;
+    }
+
     input, textarea {
       outline: none;
       padding: 0;

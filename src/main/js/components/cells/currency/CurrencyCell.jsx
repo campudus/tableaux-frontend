@@ -28,13 +28,12 @@ export default class CurrencyCell extends React.Component {
     this.CurrencyCellDOMNode = ReactDOM.findDOMNode(this);
   }
 
-  scrollHandler(event) {
+  static scrollHandler(event) {
     // prevents the table scroll event
     event.stopPropagation();
   }
 
   saveCurrencyCell = (valuesToSave) => {
-    console.log("----> i want to save currency values: ", valuesToSave);
     ActionCreator.changeCell(this.props.cell, valuesToSave);
   };
 
@@ -51,10 +50,10 @@ export default class CurrencyCell extends React.Component {
   };
 
   renderPrice(currencyValues, country) {
-    const currencyValue = getCurrencyWithCountry(currencyValues, country);
+    const currencyValue = getCurrencyWithCountry(currencyValues, country, "withFallback");
     const splittedValueAsString = splitPriceDecimals(currencyValue);
     const currencyCode = getCurrencyCode(country);
-    const {t} = this.props;
+    const {cell, t} = this.props;
     if (!currencyCode) {
       return (
         <div className="currency-wrapper">
@@ -67,7 +66,7 @@ export default class CurrencyCell extends React.Component {
     }
 
     return (
-      <div className="currency-wrapper">
+      <div className={`currency-wrapper${(cell.value[country]) ? "" : " grey-out"}`}>
         <span className="currency-value">
           {splittedValueAsString[0]}
         </span>
@@ -86,19 +85,17 @@ export default class CurrencyCell extends React.Component {
     const {langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
     const currencyValues = cell.value;
     const country = getCountryOfLangtag(langtag);
-    let currencyCellMarkup;
-
-    if (editing) {
-      currencyCellMarkup = <CurrencyEditCellWithClickOutside
-        currencies={currencyValues} cell={cell}
-        setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-        onClickOutside={this.handleClickOutside}
-        saveCell={this.saveCurrencyCell}
-        exitCell={this.exitCurrencyCell}
-      />;
-    } else {
-      currencyCellMarkup = this.renderPrice(currencyValues, country);
-    }
+    const currencyCellMarkup = (editing)
+      ? (
+        <CurrencyEditCellWithClickOutside
+          cell={cell}
+          setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+          onClickOutside={this.handleClickOutside}
+          saveCell={this.saveCurrencyCell}
+          exitCell={this.exitCurrencyCell}
+        />
+      )
+      : this.renderPrice(currencyValues, country);
 
     return (
       <div className="cell-content" onScroll={this.scrollHandler}>
