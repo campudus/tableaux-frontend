@@ -20,11 +20,11 @@ if (process.env.NODE_ENV === "production") {
       if (sentryUrl && sentryUrl.length > 5) {
         const userName = Cookies.get("userName") || "Unknown user";
         Raven
-          .config(sentryUrl)
+          .config(sentryUrl, {
+            release: "master.2017-07-12.945"
+          })
           .setUserContext({id: userName})
           .install();
-
-        console.log("Sentry initialized for:", userName);
 
         Raven.captureMessage("Sentry initialized", {
           level: "info"

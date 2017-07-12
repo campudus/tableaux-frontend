@@ -108,5 +108,6 @@
   "row-is-locked": "Datensatz ist schreibgeschützt",
   "unlock-row": "Entsperren",
   "clear-date": "Kein Datum / Zeit",
-  "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt"
+  "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt",
+  "cant-add-row": "Es existiert schon eine leere Zeile"
 }

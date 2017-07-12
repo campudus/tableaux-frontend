@@ -108,5 +108,6 @@
   "row-is-locked": "Data is read only",
   "unlock-row": "Unlock",
   "clear-date": "No date / time",
-  "entity-view-search-placeholder": "Search for column title or content"
+  "entity-view-search-placeholder": "Search for column title or content",
+  "cant-add-row": "An empty row already exists"
 }

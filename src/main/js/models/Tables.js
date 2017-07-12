@@ -2,7 +2,7 @@ import Collection from "ampersand-rest-collection";
 import apiUrl from "../helpers/apiUrl";
 import Table from "./Table";
 import Dispatcher from "../dispatcher/Dispatcher";
-import {ActionTypes} from "../constants/TableauxConstants";
+import {ActionTypes, ColumnKinds} from "../constants/TableauxConstants";
 import ActionCreator from "../actions/ActionCreator";
 import Row from "./Row";
 import {cellModelSavingError, noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
@@ -18,6 +18,8 @@ import request from "superagent";
 import * as _ from "lodash";
 import * as f from "lodash/fp";
 import Raven from "raven-js";
+import i18n from "i18next";
+import React from "react";
 
 // sets or removes a *single* link to/from a link cell
 const changeLinkCell = ({cell, value}) => {
@@ -266,6 +268,20 @@ const Tables = Collection.extend({
     const {tableId, cb} = payload;
     const table = this.get(tableId);
     const rows = table.rows;
+
+    const isEmptyOrConcat = cell => (f.isEmpty(cell.value) && !f.isNumber(cell.value) && cell.value !== true)
+      || f.matchesProperty(["column", "kind"], ColumnKinds.concat)(cell)
+      || f.matchesProperty(["column", "kind"], ColumnKinds.group)(cell);
+
+    const lastRowIsEmpty = f.compose(
+      f.every(isEmptyOrConcat),
+      f.get(["cells", "models"]),
+      f.last,
+    )(table.rows.models);
+    if (lastRowIsEmpty && table.rows.models.length > 0) {
+      ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:cant-add-row")}</div>, 2000);
+      return;
+    }
 
     /**
      * Basic language access management
