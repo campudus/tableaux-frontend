@@ -3,6 +3,7 @@ import {getCurrencyWithCountry} from "../../cells/currency/currencyHelper";
 import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 import {hasUserAccessToCountryCode} from "../../../helpers/accessManagementHelper";
 import {Directions} from "../../../constants/TableauxConstants";
@@ -10,6 +11,7 @@ import {Directions} from "../../../constants/TableauxConstants";
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
 
+@connectToAmpersand
 @listensToClickOutside
 class CurrencyItem extends Component {
   static propTypes = {
@@ -24,21 +26,30 @@ class CurrencyItem extends Component {
   constructor(props) {
     super(props);
     const {countryCode, cell} = this.props;
-    const cellValue = (getCurrencyWithCountry(cell.value, countryCode) || "0.0").toString();
+    this.state = this.getCellValue(countryCode, cell);
+    props.watch(props.cell, {events: "change:value", callback: this.resetValue});
+  }
+
+  getCellValue = (countryCode, cell) => {
+    const cellValue = (getCurrencyWithCountry(cell.value, countryCode, "withFallback") || "0.0").toString();
     const currencyValue = parseFloat(cellValue) || 0;
-    const preComma = cellValue.split(".")[0] || "";
-    const postComma = cellValue.split(".")[1] || "";
-    this.state = {
+    const preComma = cellValue.split(".")[0] || "0";
+    const postComma = cellValue.split(".")[1] || "00";
+    return {
       preComma,
       postComma,
       currencyValue
     };
-  }
+  };
+
+  resetValue = (cell) => {
+    this.setState(this.getCellValue(this.props.countryCode, cell));
+  };
 
   handleClickOutside = event => {
     const {editing, toggleEdit, countryCode, cell} = this.props;
     const {currencyValue} = this.state;
-    const updateObject = (editing && currencyValue !== getCurrencyWithCountry(cell.value, countryCode))
+    const updateObject = (editing && currencyValue !== getCurrencyWithCountry(cell.value, countryCode, "withFallback"))
       ? [countryCode, Math.max(currencyValue, 0)]
       : [];
     toggleEdit(false, updateObject);
@@ -107,7 +118,7 @@ class CurrencyItem extends Component {
     const postComma = (place === POST_COMMA) ? value : this.state.postComma;
     this.setState({
       preComma: (f.isEmpty(preComma)) ? "0" : preComma,
-      postComma,
+      postComma: (f.isEmpty(postComma)) ? "00" : postComma,
       currencyValue: parseInt(preComma) + parseInt(postComma) / 100
     });
   };
@@ -118,15 +129,15 @@ class CurrencyItem extends Component {
   };
 
   render() {
-    const {countryCode, editing} = this.props;
+    const {cell, countryCode, editing} = this.props;
     const isDisabled = this.props.isDisabled || !hasUserAccessToCountryCode(countryCode);
-    const {preComma, postComma, currencyValue} = this.state;
+    const {preComma, postComma} = this.state;
     const currencyString = this.valueToString(preComma, postComma);
     const currencyCode = getCurrencyCode(countryCode);
     const cssClass = classNames(
       "currency-item",
       {
-        "not-set": !currencyValue && !editing,
+        "not-set": !cell.value[countryCode] && !editing,
         "editing": editing && !isDisabled,
         "disabled": isDisabled
       }

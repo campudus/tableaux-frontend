@@ -1,6 +1,7 @@
 import TableauxConstants from "../constants/TableauxConstants";
 import React from "react";
 import _ from "lodash";
+import * as f from "lodash/fp";
 
 const langtagSeparatorRegex = /[-_]/;
 
@@ -51,21 +52,48 @@ function getLanguageOrCountryIcon(langtag) {
   );
 }
 
+const currencyCodeMap = {
+  DE: "EUR",
+  FR: "EUR",
+  US: "USD",
+  GB: "GBP",
+  IT: "EUR",
+  PL: "PLN",
+  NL: "EUR",
+  ES: "EUR",
+  AT: "EUR",
+  CH: "SFR",
+  CZ: "CZK",
+  DK: "DKK"
+};
+
+const reverseCurrencyCodeMap = f.keys(currencyCodeMap).reduce(
+  (aggregator, country) => {
+    const key = currencyCodeMap[country];
+    if (!aggregator[key]) {
+      aggregator[key] = [country];
+      return aggregator;
+    } else {
+      aggregator[key].push(country);
+      return aggregator;
+    }
+  },
+  {}
+);
+
+const getFallbackCurrencyValue = f.curry(
+  ({country, fromLangtag = false}, value = {}) => {
+    const _country = (fromLangtag) ? getCountryOfLangtag(country) : country;
+    const currency = getCurrencyCode(_country);
+    const fallbackEntry = f.compose(
+      f.find(ctry => !f.isEmpty(value[ctry]) || f.isNumber(value[ctry])),
+      f.reject(f.eq(_country)),
+    )(reverseCurrencyCodeMap[currency]);
+    return f.get(fallbackEntry, value);
+  }
+);
+
 function getCurrencyCode(country) {
-  const currencyCodeMap = {
-    DE: "EUR",
-    FR: "EUR",
-    US: "USD",
-    GB: "GBP",
-    IT: "EUR",
-    PL: "PLN",
-    NL: "EUR",
-    ES: "EUR",
-    AT: "EUR",
-    CH: "SFR",
-    CZ: "CZK",
-    DK: "DKK"
-  };
   return currencyCodeMap[country] || null;
 }
 
@@ -104,6 +132,19 @@ function getTableDisplayName(table, langtag) {
  * // will print "Deutscher Inhalt" b/c of default language
  * Console.println(translation);
  */
+
+const tests = {
+  title: "MultiLanguage helper",
+  tests: [
+    ["is", 6, f.size, [reverseCurrencyCodeMap["EUR"]]],
+    ["is", "SFR", getCurrencyCode, [getCountryOfLangtag("de-CH")]],
+    ["is", 42, getFallbackCurrencyValue, [{country: "IT"}, {DE: 42}]],
+    ["is", 42, getFallbackCurrencyValue, [{country: "de-DE", fromLangtag: true}, {IT: 42}]],
+    ["conformsTo", f.isNil, getFallbackCurrencyValue, [{country: "US"}, {GB: 1, DE: 2, CH: 3}]],
+    ["is", "Deutscher Inhalt", retrieveTranslation, [{"de_DE": "Deutscher Inhalt", "en_GB": null}, "en_GB", "de_DE"]]
+  ]
+};
+
 module.exports = {
   retrieveTranslation: function (defaultLanguage) {
     return function (json, language) {
@@ -114,5 +155,7 @@ module.exports = {
   getLanguageOfLangtag,
   getTableDisplayName,
   getCountryOfLangtag,
-  getCurrencyCode
+  getCurrencyCode,
+  getFallbackCurrencyValue,
+  tests
 };
