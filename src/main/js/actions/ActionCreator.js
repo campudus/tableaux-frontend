@@ -59,11 +59,12 @@ module.exports = {
   },
 
   openOverlay: function (overlayContent) {
+    const {context, title} = (overlayContent.head.props || {});
     Raven.captureBreadcrumb({
-      message: "open overlay",
+      message: "open overlay: " + context + " of " + title,
       data: {
-        context: overlayContent.head.props.context,
-        title: overlayContent.head.props.title
+        context: context,
+        title: title
       }
     });
     Dispatcher.trigger(ActionTypes.OPEN_OVERLAY, overlayContent);

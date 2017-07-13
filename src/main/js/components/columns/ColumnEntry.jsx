@@ -105,7 +105,6 @@ class ColumnEntry extends React.Component {
   };
 
   componentDidUpdate() {
-    console.log("Updated")
     if (!this.tooltip) {
       return;
     }
@@ -116,9 +115,7 @@ class ColumnEntry extends React.Component {
     const windowWidth = window.innerWidth;
 
     if (nodeRight > (windowWidth - 10)) {
-//      domNode.style.left = `${-(nodeRect.width)}px`;
       domNode.classList.add("shift-left");
-      console.log("LEFT:", domNode.style.left, windowWidth, nodeRect.width)
     }
   }
 

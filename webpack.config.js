@@ -1,6 +1,6 @@
-var path = require("path");
-var webpack = require("webpack");
-var config = {
+const path = require("path");
+const webpack = require("webpack");
+let config = {
   "outDir": "out"
 };
 try {
@@ -9,16 +9,25 @@ try {
   // ignore
 }
 
-var plugins = [
+let plugins = [
   new webpack.HotModuleReplacementPlugin()
 ];
+
+const shell = require("child_process");
+const branch = shell.execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
+const commitHash = shell.execSync("git rev-parse HEAD").toString().trim();
+const d = new Date();
+const padded = str => (str.toString().length < 2) ? "0" + str : str;
+const today = `${d.getYear() + 1900}-${padded(d.getMonth())}-${padded(d.getDay())}`;
+const BUILD_VERSION = `GRUD.${branch}.${today}.${commitHash}`;
 
 if (process.env.NODE_ENV === "production") {
   plugins = [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       "process.env": {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        BUILD_VERSION: JSON.stringify(BUILD_VERSION)
       }
     }),
     new webpack.optimize.DedupePlugin(),
@@ -39,6 +48,13 @@ if (process.env.NODE_ENV === "production") {
       }
     })
   ];
+} else {
+  plugins.push(new webpack.DefinePlugin({
+    "process.env": {
+      NODE_ENV: JSON.stringify("devel"),
+      BUILD_VERSION: JSON.stringify(`${BUILD_VERSION}-devel`)
+    }
+  }));
 }
 
 module.exports = {

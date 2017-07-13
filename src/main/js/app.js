@@ -11,6 +11,7 @@ import "./dispatcher/GlobalCellChangeListener";
 
 import Cookies from "js-cookie";
 
+console.log("GRUD version", process.env.BUILD_VERSION);
 if (process.env.NODE_ENV === "production") {
   getSentryUrlFromServer(
     () => {
@@ -21,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
         const userName = Cookies.get("userName") || "Unknown user";
         Raven
           .config(sentryUrl, {
-            release: "master.2017-07-12.945"
+            release: process.env.BUILD_VERSION
           })
           .setUserContext({id: userName})
           .install();
