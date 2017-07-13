@@ -171,17 +171,25 @@ class ColumnFilterPopup extends React.Component {
             />
           </div>
         </div>
-        <List className="column-checkbox-list"
-              ref={list => { this.list = list; }}
-              width={440}
-              height={300}
-              rowCount={models.length}
-              rowHeight={30}
-              scrollToIndex={this.state.selectedId}
-              rowRenderer={this.renderCheckboxItems}
-              style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
-        />
-
+        {f.isEmpty(models)
+          ? (
+            <div className="no-column-search-result">
+              {i18n.t("table:no-column-search-result")}
+            </div>
+          )
+          : <List className="column-checkbox-list"
+                  ref={list => {
+                    this.list = list;
+                  }}
+                  width={440}
+                  height={300}
+                  rowCount={models.length}
+                  rowHeight={30}
+                  scrollToIndex={this.state.selectedId}
+                  rowRenderer={this.renderCheckboxItems}
+                  style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
+          />
+        }
         <div className="row infotext">
           <text>{nHidden + " " + i18n.t("table:hidden_items")}</text>
         </div>

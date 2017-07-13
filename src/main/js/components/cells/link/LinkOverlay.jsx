@@ -394,7 +394,7 @@ class LinkOverlay extends Component {
     const {t} = this.props;
     return (
       <div className="empty">
-        {this.getCurrentSearchValue().length > 0 ? t("search_no_results") : t("overlay_no_rows_in_table")}
+        {t("search_no_results")}
       </div>);
   };
 
@@ -418,7 +418,7 @@ class LinkOverlay extends Component {
     this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
   };
 
-  renderRowCreator = () => {
+  renderRowCreator = (shiftUp = false) => {
     const {cell, cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
     const addAndLinkRow = () => {
       const linkNewRow = (row = {}) => {
@@ -442,7 +442,9 @@ class LinkOverlay extends Component {
 
     return (linked < allowed)
       ? (
-        <div className="row-creator-button" onClick={addAndLinkRow}>
+        <div className={`row-creator-button${(shiftUp) ? " shift-up" : ""}`}
+             onClick={addAndLinkRow}
+        >
           <SvgIcon icon="plus" containerClasses="color-primary" />
           <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>
         </div>
@@ -457,6 +459,9 @@ class LinkOverlay extends Component {
       tableId: column.toTable,
       langtag
     };
+
+    const noForeignRows = f.isEmpty(rowResults.unlinked)           // there are no unlinked rows
+      && f.size(this.allRowResults) === f.size(rowResults.linked); // and all existing rows are linked (else no filter results)
 
     const unlinkedRows = (loading)
       ? <Spinner isLoading={true} />
@@ -513,7 +518,9 @@ class LinkOverlay extends Component {
              this.background = el;
            }}
       >
-        <div className="linked-items" onMouseEnter={this.setActiveBox(LINKED_ITEMS)}>
+        <div className={`linked-items${(noForeignRows) ? " no-unlinked" : ""}`}
+             onMouseEnter={this.setActiveBox(LINKED_ITEMS)}
+        >
           <span className="items-title">
             <span>{i18n.t("table:link-overlay-items-title")}
               {(cell.tables.get(cell.column.toTable).hidden)
@@ -528,10 +535,14 @@ class LinkOverlay extends Component {
           </span>
           {linkedRows}
         </div>
-        <div className="unlinked-items" onMouseEnter={this.setActiveBox(UNLINKED_ITEMS)}>
-          {unlinkedRows}
-        </div>
-        {this.renderRowCreator()}
+        {(noForeignRows)
+          ? null
+          : (
+            <div className="unlinked-items" onMouseEnter={this.setActiveBox(UNLINKED_ITEMS)}>
+              {unlinkedRows}
+            </div>
+          )}
+        {this.renderRowCreator(noForeignRows && !loading)}
       </div>
     );
   }

@@ -259,6 +259,13 @@
     }
   }
 
+  .table-has-no-rows {
+    width: 100vw;
+    padding-top: 30px;
+    text-align: center;
+    font-weight: bold;
+  }
+
 }
 
 #cell-jump-toast {

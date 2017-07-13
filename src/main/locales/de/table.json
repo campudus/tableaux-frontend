@@ -109,5 +109,7 @@
   "unlock-row": "Entsperren",
   "clear-date": "Kein Datum / Zeit",
   "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt",
-  "cant-add-row": "Es existiert schon eine leere Zeile"
+  "cant-add-row": "Es existiert schon eine leere Zeile",
+  "no-column-search-result": "Keine Spalte entspricht Ihrer Suche",
+  "has-no-rows": "Diese Tabelle ist leer."
 }

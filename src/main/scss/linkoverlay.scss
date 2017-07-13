@@ -16,6 +16,11 @@
         background-color: $color-white;
         border-bottom: 3px solid $color-text-light-grey;
 
+        &.no-unlinked {
+          max-height: none;
+          flex: 1;
+        }
+
         .link-list {
           padding: 20px 0 20px 25px;
         }
@@ -38,9 +43,7 @@
       position: absolute;
       left: 50%;
       bottom: 5px;
-
       transform: translateX(-50%);
-
       padding-right: 15px;
 
       border: 1px solid $color-primary;
@@ -48,6 +51,11 @@
 
       display: flex;
       align-items: center;
+
+      &.shift-up {
+        top: 40vh;
+        padding: 30px 30px;
+      }
 
       div {
         padding: 0 10px;

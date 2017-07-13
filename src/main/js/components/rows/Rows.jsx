@@ -6,6 +6,7 @@ import {RowHeight} from "../../constants/TableauxConstants";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 import Spinner from "../header/Spinner";
+import i18n from "i18next";
 
 @connectToAmpersand
 class Rows extends React.Component {
@@ -81,6 +82,14 @@ class Rows extends React.Component {
                     shouldCellFocus={shouldCellFocusVal}
         />;
       });
+
+      if (f.isEmpty(rows.models)) {
+        renderedRows.push(
+          <div key="empty-text" className="table-has-no-rows">
+            {i18n.t((f.isEmpty(table.rows.models)) ? "table:has-no-rows" : "table:search_no_results")}
+          </div>
+        );
+      }
 
       if (table.type !== "settings") {
         renderedRows.push(<NewRow key="new-row" table={table} langtag={langtag} />);
