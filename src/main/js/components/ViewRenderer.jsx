@@ -23,6 +23,7 @@ export default class ViewRenderer extends React.Component {
     this.views[ViewNames.TABLE_VIEW] = () => {
       return (
         <TableView {...this.props.params}
+          overlayOpen={!!this.props.params.overlayOpen}
         />
       );
     };

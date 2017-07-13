@@ -513,6 +513,7 @@ class TableView extends React.Component {
                    langtag={langtag} rows={rowsCollection || {}} overlayOpen={overlayOpen}
                    pasteOriginCell={pasteOriginCell}
                    tables={tables}
+                   disableOnClickOutside={this.props.overlayOpen}
             />
             }
           </div>
@@ -524,7 +525,7 @@ class TableView extends React.Component {
 
 TableView.propTypes = {
   langtag: React.PropTypes.string.isRequired,
-  overlayOpen: React.PropTypes.bool,
+  overlayOpen: React.PropTypes.bool.isRequired,
   tableId: React.PropTypes.number
 };
 

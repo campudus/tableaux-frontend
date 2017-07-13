@@ -222,6 +222,7 @@ export default class Tableaux extends React.Component {
 
   render() {
     const {activeOverlays, currentView, currentViewParams, isLoading} = this.state;
+    console.log(currentViewParams)
     if (isLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
