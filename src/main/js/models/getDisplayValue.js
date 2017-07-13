@@ -9,7 +9,7 @@ import Moment from "moment";
 //
 // return value: object-map of {langtag: string} for all langtag in {Langtags}
 const getDisplayValue = f.curryN(2)(
-  (column, value) => {
+  (column = {}, value) => {
     const retrieveDisplayValue = f.cond([
       [f.eq(ColumnKinds.link), f.always(getLinkValue)],
       [f.eq(ColumnKinds.concat), f.always(getConcatValue("concats"))],
