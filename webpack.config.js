@@ -13,13 +13,16 @@ let plugins = [
   new webpack.HotModuleReplacementPlugin()
 ];
 
-const shell = require("child_process");
-const branch = shell.execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
-const commitHash = shell.execSync("git rev-parse HEAD").toString().trim();
-const d = new Date();
-const padded = str => (str.toString().length < 2) ? "0" + str : str;
-const today = `${d.getYear() + 1900}-${padded(d.getMonth())}-${padded(d.getDay())}`;
-const BUILD_VERSION = `GRUD.${branch}.${today}.${commitHash}`;
+let BUILD_VERSION = "GRUD.local-build";
+try {
+  const shell = require("child_process");
+  const branch = shell.execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
+  const commitHash = shell.execSync("git rev-parse HEAD").toString().trim();
+  const commitDate = shell.execSync("git show -s --format=%ci HEAD").toString().trim().replace(/ /g, "_");
+  BUILD_VERSION = `GRUD.${branch}.${commitDate}.${commitHash}`;
+} catch (e) {
+  // Either we have no git or we're on Windows
+}
 
 if (process.env.NODE_ENV === "production") {
   plugins = [
@@ -51,7 +54,7 @@ if (process.env.NODE_ENV === "production") {
 } else {
   plugins.push(new webpack.DefinePlugin({
     "process.env": {
-      NODE_ENV: JSON.stringify("devel"),
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV || "devel"),
       BUILD_VERSION: JSON.stringify(`${BUILD_VERSION}-devel`)
     }
   }));
