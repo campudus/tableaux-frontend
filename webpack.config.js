@@ -15,13 +15,12 @@ let plugins = [
   new webpack.HotModuleReplacementPlugin()
 ];
 
-let BUILD_VERSION = "GRUD.local-build";
+let BUILD_VERSION = "local-build";
 try {
   const shell = require("child_process");
-  const branch = shell.execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
-  const commitHash = shell.execSync("git rev-parse HEAD").toString().trim();
+  const commitHash = shell.execSync("git rev-parse --short HEAD").toString().trim();
   const commitDate = shell.execSync("git show -s --format=%ci HEAD").toString().trim().replace(/ /g, "_");
-  BUILD_VERSION = `GRUD.${branch}.${commitDate}.${commitHash}`;
+  BUILD_VERSION = `${commitDate}.${commitHash}`;
 } catch (e) {
   // Either we have no git or we're on Windows
 }
