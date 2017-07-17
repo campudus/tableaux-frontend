@@ -8,6 +8,7 @@ import "../index.html";
 import "../scss/main.scss";
 import "./watchers/watchConnection";
 import "./dispatcher/GlobalCellChangeListener";
+import "dom4";
 
 import Cookies from "js-cookie";
 

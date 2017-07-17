@@ -112,8 +112,16 @@ class SvgIcon extends Component {
   };
 
   processImage = () => {
+    const addClass = (element, className) => {
+      try {
+        element.classList.add(className);
+      } catch (e) {
+        const classNames = ` ${(element.classNames || "").toString()} ${className}`;
+        element.setAttribute("class", classNames.toString());
+      }
+    };
     const {fillColor, center, svgClasses, title} = this.props;
-    this.svgData.classList.add("svg-icon-content");
+    addClass(this.svgData, "svg-icon-content");
     f.map(t => {
       t.innerHTML = f.defaultTo("", title);
     }, this.svgData.getElementsByTagName("title"));
@@ -124,7 +132,7 @@ class SvgIcon extends Component {
       this.svgData.setAttribute("preserveAspectRatio", "xMidYMid meet");
     }
     if (svgClasses) {
-      " ".split(svgClasses).forEach(c => this.svgData.classList.add(c));
+      " ".split(svgClasses).forEach(c => addClass(this.svgData, c));
     }
   };
 

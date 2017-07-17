@@ -12,7 +12,10 @@ try {
 }
 
 let plugins = [
-  new webpack.HotModuleReplacementPlugin()
+  new webpack.HotModuleReplacementPlugin(),
+  new webpack.ProvidePlugin({
+    "dom4": "imports-loader?this=>global?dom4"
+  })
 ];
 
 let BUILD_VERSION = "local-build";
@@ -50,6 +53,9 @@ if (process.env.NODE_ENV === "production") {
         join_vars: true,
         drop_console: false
       }
+    }),
+    new webpack.ProvidePlugin({
+      "dom4": "imports-loader?this=>global?dom4"
     })
   ];
 } else {
@@ -63,7 +69,7 @@ if (process.env.NODE_ENV === "production") {
 
 module.exports = {
   entry: {
-    app: [path.resolve(__dirname, "src/main/js/app.js")]
+    app: ["babel-polyfill", path.resolve(__dirname, "src/main/js/app.js")]
   },
   output: {
     path: path.resolve(config.outDir),

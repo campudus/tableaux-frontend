@@ -50,6 +50,7 @@
     "compass-mixins": "0.12.10",
     "css-loader": "0.26.1",
     "del": "2.2.2",
+    "dom4": "1.8.3",
     "es6-promise": "4.0.5",
     "eslint": "3.16.1",
     "eslint-plugin-promise": "3.5.0",
@@ -96,6 +97,7 @@
     "zenscroll": "3.3.0"
   },
   "dependencies": {
+    "babel-polyfill": "6.23.0",
     "raven-js": "3.15.0"
   }
 }

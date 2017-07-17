@@ -418,7 +418,7 @@ class TableView extends React.Component {
         this.saveFilterSettings(settings);
       }
     };
-    
+
     new Promise(
       (resolve) => {
         if (areAllFiltersEmpty && isSortingEmpty) {
