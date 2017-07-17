@@ -31,14 +31,7 @@ const Cell = AmpersandModel.extend({
     id: {
       deps: ["tableId", "column", "rowId"],
       fn: function () {
-        return "cell-" + this.tableId + "-" + this.column.getId() + "-" + this.rowId;
-      }
-    },
-
-    changedCellEvent: {
-      deps: ["tableId", "column", "rowId"],
-      fn: function () {
-        return "changed-cell:" + this.tableId + ":" + this.column.getId() + ":" + this.rowId;
+        return "cell-" + this.tableId + "-" + (this.column && this.column.getId()) + "-" + this.rowId;
       }
     },
 
