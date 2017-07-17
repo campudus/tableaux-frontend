@@ -238,7 +238,17 @@ class FilterPopup extends React.Component {
 
   render() {
     const {t} = this.props;
-    const {filters, sorting} = this.state;
+    const {sorting} = this.state;
+
+    const filters = f.isEmpty(this.state.filters)
+      ? [
+        {
+          mode: FilterModes.CONTAINS,
+          value: null,
+          columnId: null
+        }
+      ]
+      : this.state.filters;
 
     const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
     const hasFilterValue =
@@ -265,7 +275,7 @@ class FilterPopup extends React.Component {
     return (
       <div id="filter-popup">
         <div className="filter-options">
-          {this.state.filters.map(
+          {filters.map(
             (filter, idx) => {
               const isIDFilter = either(filter).map(f.matchesProperty("mode", FilterModes.ID_ONLY)).getOrElse(false);
               return (isIDFilter)

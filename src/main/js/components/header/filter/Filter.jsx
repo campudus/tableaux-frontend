@@ -56,7 +56,7 @@ class FilterButton extends React.Component {
 
     const cssClass = classNames({
       "active": this.state.open,
-      "has-filter": this.props.currentFilter && !this.state.open
+      "has-filter": !f.isEmpty(this.props.currentFilter) && !this.state.open
     });
 
     return (

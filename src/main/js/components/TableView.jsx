@@ -158,14 +158,14 @@ class TableView extends React.Component {
     localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name, "visibleColumns"], view, savedViews));
   };
 
-  saveFilterSettings = (name = "default") => {
+  saveFilterSettings = (settings = {}, name = "default") => {
     if (!localStorage) {
       return;
     }
 
-    const {currentTableId, rowsFilter} = this.state;
+    const {currentTableId} = this.state;
     const savedViews = this.getStoredViewObject(null, name);
-    const newViewsObj = f.set([currentTableId, name, "rowsFilter"], rowsFilter, savedViews);
+    const newViewsObj = f.set([currentTableId, name, "rowsFilter"], settings, savedViews);
     localStorage["tableViews"] = JSON.stringify(newViewsObj);
   };
 
@@ -343,9 +343,6 @@ class TableView extends React.Component {
       }
     );
 
-    // spinner for the table switcher. Not the initial loading! Initial loading spinner is globally and centered
-    // in the middle, and gets displayed only on the first startup
-
     const start = performance.now();
     fetchColumns(currentTable)
       .then(fetchPages)
@@ -410,20 +407,18 @@ class TableView extends React.Component {
     }, this.saveFilterSettings);
   };
 
-  changeFilter = ({filters = [], sorting = {}}, store = true) => {
+  changeFilter = (settings = {}, store = true) => {
+    const {filters = [], sorting = {}} = settings;
     const isFilterEmpty = filter => _.isEmpty(filter.value) && !_.isString(filter.mode);
     const isSortingEmpty = !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
-    const areAllFiltersEmpty = f.compose(
-      f.any(f.identity),
-      f.map(isFilterEmpty)
-    )(filters);
+    const areAllFiltersEmpty = f.every(isFilterEmpty, filters);
 
     const storeFilterSettingsIfRequested = () => {
       if (store) {
-        this.saveFilterSettings();
+        this.saveFilterSettings(settings);
       }
     };
-
+    
     new Promise(
       (resolve) => {
         if (areAllFiltersEmpty && isSortingEmpty) {
