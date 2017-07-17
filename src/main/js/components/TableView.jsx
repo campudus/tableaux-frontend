@@ -287,6 +287,12 @@ class TableView extends React.Component {
 
   fetchTable = (tableId) => {
     const currentTable = this.tables.get(tableId);
+    if (f.isNil(currentTable)) {
+      const here = window.location.href.toString();
+      const firstTable = here.replace(/\/tables.*/, "");
+      window.location = firstTable;
+      return;
+    }
     this.setState({tableFullyLoaded: false});
 
     // We need to fetch columns first, since rows has Cells that depend on the column model
