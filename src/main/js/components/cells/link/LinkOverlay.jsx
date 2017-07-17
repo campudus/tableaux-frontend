@@ -17,7 +17,6 @@ import Header from "../../overlay/Header";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import ReactDOM from "react-dom";
 import SearchBar from "./LinkOverlaySearchBar";
 import DragSortList from "./DragSortList";
 import {changeCell} from "../../../models/Tables";
@@ -25,7 +24,6 @@ import LinkItem from "./LinkItem";
 import Spinner from "../../header/Spinner";
 import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
-
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 
 const MAIN_BUTTON = 0;
@@ -159,16 +157,7 @@ class LinkOverlay extends Component {
   setSelectedId = id => {
     const activeBox = (this.state.activeBox === LINKED_ITEMS) ? "linked" : "unlinked";
     const idToSet = f.clamp(0, f.size(f.get(activeBox, this.state.rowResults)) - 1, id);
-    const andFocusIfLinked = () => {
-      if (activeBox !== "linked") {
-        return;
-      }
-      const domNode = ReactDOM.findDOMNode(f.get(this.state.selectedId.linked, this.elements));
-      const focused = (f.get("tagName", document.activeElement) === "INPUT") ? document.activeElement : null;
-      maybe(domNode).method("focus");   // scroll link item into view
-      maybe(focused).method("focus");   // restore search box focus
-    };
-    this.setState({selectedId: f.assoc(activeBox, idToSet, this.state.selectedId)}, andFocusIfLinked);
+    this.setState({selectedId: f.assoc(activeBox, idToSet, this.state.selectedId)});
   };
 
   getSelectedId = () => {
@@ -333,7 +322,6 @@ class LinkOverlay extends Component {
   setActiveBox = (val) => (e) => {
     this.setState({activeBox: val});
     e.stopPropagation();
-    this.background.focus();
   };
 
   renderListItem = ({isLinked}) => ({key, index, style = {}}) => {
@@ -360,14 +348,12 @@ class LinkOverlay extends Component {
         activeBox: (isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS
       });
       e.stopPropagation();
-      this.background.focus();
     };
 
     const mouseOverItemHandler = index => e => {
       this.setSelectedId(index);
       this.setState({activeBox: (isLinked) ? LINKED_ITEMS : UNLINKED_ITEMS});
       e.stopPropagation();
-      this.background.focus();
     };
 
     return (
@@ -513,7 +499,6 @@ class LinkOverlay extends Component {
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
            className="link-overlay"
            tabIndex={1}
-           onMouseOver={e => maybe(e.target).method("focus")}
            ref={el => {
              this.background = el;
            }}
@@ -558,7 +543,7 @@ export const openLinkOverlay = (cell, langtag) => {
       const {langtag, cell, watch} = props;
       watch(cell.row.cells.at(0), {force: true});
       return (
-        <Header context={tableName}
+        <Header context={tableName} id={props.id}
                 title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
                 components={<SearchBar langtag={langtag} />}
         />
