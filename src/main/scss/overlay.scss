@@ -146,6 +146,7 @@ $dist-from-top: 20px;
     .header-wrapper {
       $vspacing: 50px;
       height: $overlay-headline-height;
+      min-height: $overlay-headline-height;
       background-color: $color-overlay-header;
       border-top-left-radius: $overlay-border-radius;
       border-top-right-radius: $overlay-border-radius;
@@ -201,8 +202,14 @@ $dist-from-top: 20px;
         }
       }
 
+      &.with-buttons {
+        height: $overlay-headline-height + 40px;
+        min-height: $overlay-headline-height + 40px;
+      }
+
       &.with-components {
         height: $overlay-headline-height + 40px;
+        min-height: $overlay-headline-height + 40px;
         grid-template-rows: $vspacing 1fr 1fr;
         -ms-grid-rows: $vspacing 1fr 1fr;
       }

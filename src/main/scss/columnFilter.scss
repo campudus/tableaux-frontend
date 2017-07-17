@@ -45,8 +45,8 @@
 
     .no-column-search-result {
       width: 100%;
-      padding-top: 50px;
-      padding-bottom: 25px;
+      padding: 25px 0;
+      font-weight: bold;
       text-align: center;
     }
 
@@ -91,6 +91,7 @@
       padding: 15px 0;
 
       &.infotext {
+        border-top: 1px solid $color-border-grey;
         padding: 15px 20px;
         font-size: $font-size-standard;
       }
