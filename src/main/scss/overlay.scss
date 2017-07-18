@@ -188,9 +188,15 @@ $dist-from-top: 20px;
         flex-direction: column;
         align-items: flex-start;
         justify-content: flex-start;
+        overflow: hidden;
+        max-height: 55px;
+        max-width: 100%;
         .context-info {
           color: $color-text-medium-grey;
           font-size: 14px;
+        }
+        &>div {
+          max-width: 100%;
         }
         .title {
           color: $color-primary-contrast-text;
@@ -241,7 +247,7 @@ $dist-from-top: 20px;
     max-height: 60vh;
     overflow-x: hidden;
     overflow-y: auto;
-    flex: 1;
+    flex: 1 1 auto;
 
     .content-items {
       .item-header {
