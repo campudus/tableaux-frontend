@@ -39,6 +39,11 @@ class Just extends Maybe {
     this._value = value;
   }
 
+  spy(text) {
+    console.log("text", this.toString());
+    return this;
+  }
+
   exec(fname) {
     const fn = prop(fname, this._value);
     if (isFunction(fn)) {
@@ -95,6 +100,11 @@ class Just extends Maybe {
 
 class None extends Maybe {
   map(f) {
+    return this;
+  }
+
+  spy() {
+    console.log(this.toString());
     return this;
   }
 
@@ -169,6 +179,11 @@ class Left extends Either {
     return this;
   }
 
+  spy() {
+    console.log(this.toString());
+    return this;
+  }
+
   get value() {
     throw new TypeError("Can't extract value of Left.");
   }
@@ -211,6 +226,11 @@ class Right extends Either {
     } catch (e) {
       return Either.left(e);
     }
+  }
+
+  spy(text) {
+    console.log(text, this.toString());
+    return this;
   }
 
   getOrElse(other) {
