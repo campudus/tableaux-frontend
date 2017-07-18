@@ -10,6 +10,7 @@ class ConnectionWatcher {
   static connected = true; // hope for the best
   static since = Moment();
   static LOST_DIALOG_NAME = "connection-lost-dialog";
+  static RECONNECTED_DIALOG_NAME = "reconnected-dialog";
 
   static watchConnection(connected) {
     if (connected !== ConnectionWatcher.connected) {
@@ -49,11 +50,12 @@ class ConnectionWatcher {
     console.warn(`Connection status changed to ${(newState) ? "connected" : "disconnected"} at ${((newState)
       ? now
       : lastSeen).toString()}`);
-    if (newState) {
-      ActionCreator.closeOverlay(ConnectionWatcher.LOST_DIALOG_NAME);
-    }
+
+    ActionCreator.closeOverlay(ConnectionWatcher.LOST_DIALOG_NAME);
+    ActionCreator.closeOverlay(ConnectionWatcher.RECONNECTED_DIALOG_NAME);
+
     showDialog({
-      name: (newState) ? null : ConnectionWatcher.LOST_DIALOG_NAME,
+      name: (newState) ? ConnectionWatcher.RECONNECTED_DIALOG_NAME : ConnectionWatcher.LOST_DIALOG_NAME,
       type: (newState) ? "important" : "warning",
       context: "Server connection",
       title: (newState) ? "Reconnected" : "Disconnected",
