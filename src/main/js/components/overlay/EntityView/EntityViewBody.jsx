@@ -61,11 +61,13 @@ class EntityViewBody extends Component {
         this.changeFocus(dir);
       },
       up: event => {
+        console.log("up")
         event.preventDefault();
         event.stopPropagation();
         this.changeFocus(Directions.UP);
       },
       down: event => {
+        console.log("down")
         event.preventDefault();
         event.stopPropagation();
         this.changeFocus(Directions.DOWN);
@@ -83,20 +85,13 @@ class EntityViewBody extends Component {
   componentDidMount() {
     const {focusElementId} = this.props;
     const {row} = this.state;
-    if (focusElementId) {
-      const cell = row.cells.get(focusElementId);
-      if (cell.kind === ColumnKinds.concat) {
-        return; // concat elements are omitted from EntityView and are first anyway
-      }
-      const viewId = `view-${cell.column.id}-${cell.rowId}`;
-      const element = f.first(document.getElementsByClassName(viewId));
-      maybe(this.getScroller())
-        .exec("center", element, 1);
-      this.setState({focused: focusElementId});
-    } else {
-      const firstCell = row.cells.at(0);
-      this.changeFocus(firstCell.id);
-    }
+    const cellToFocus = (focusElementId)
+      ? row.cells.get(focusElementId)
+      : null;
+    const focusTarget = (cellToFocus && cellToFocus.kind !== ColumnKinds.concat)
+      ? cellToFocus.id
+      : row.cells.at(0);
+    this.changeFocus(focusTarget);
   }
 
   componentWillUnmount = () => {
@@ -112,11 +107,22 @@ class EntityViewBody extends Component {
     if (this.props.id !== id) {
       return;
     }
+
+    const selectedIndex = f.findIndex(f.matchesProperty("id", this.state.focused), this.getVisibleCells());
+
+    const restoreFocus = () => {
+      if (selectedIndex < 0) {
+        return;
+      }
+      // visibleCells changed meanwhile
+      this.changeFocus(f.get([selectedIndex, "id"], this.getVisibleCells()));
+    };
+
     this.setState({
       row,
       focused: null,
       itemWithPopup: null
-    });
+    }, restoreFocus);
     this.props.watch(row);
     this.translationItem = null;
     this.cancelClosingTimer();
@@ -156,22 +162,21 @@ class EntityViewBody extends Component {
     this.setState({translationView: newItem});
   };
 
-  getScroller = () => {
-    const {id} = this.props;
-    const container = f.first(document.getElementsByClassName(id.toString())).parentElement;
-    return zenscroll.createScroller(container);
-  };
-
   registerFocusable = id => el => {
     this.focusElements = f.assoc(id, el, this.focusElements);
   };
 
+  getVisibleCells = () => {
+    const {filter, langtag, row} = this.state;
+    return row.cells.models
+              .filter(this.groupFilter(this.props.filterColumn))
+              .filter(columnFilter(langtag, filter));
+  };
+
   changeFocus = dir => {
     const numericDir = (dir === Directions.UP) ? -1 : +1;
-    const {focused, langtag, filter} = this.state;
-    const visibleCells = this.state.row.cells.models
-                             .filter(this.groupFilter(this.props.filterColumn))
-                             .filter(columnFilter(langtag, filter));
+    const {focused} = this.state;
+    const visibleCells = this.getVisibleCells();
     const selectedIdx = f.findIndex(f.matchesProperty("id", focused), visibleCells);
     const {focusElements} = this;
     const toFocus = f.cond([
