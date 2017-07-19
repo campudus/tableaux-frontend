@@ -247,7 +247,11 @@ $dist-from-top: 20px;
     max-height: 60vh;
     overflow-x: hidden;
     overflow-y: auto;
-    flex: 1 1 auto;
+    flex: 1;
+
+    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+      flex: 1 1 auto;
+    }
 
     .content-items {
       .item-header {
