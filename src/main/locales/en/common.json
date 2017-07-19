@@ -9,6 +9,8 @@
   "cancel": "Cancel",
   "delete_yes_explicit": "Yes, delete",
   "error": "Error",
+  "info": "Info",
+  "warning": "Warning",
   "no": "No",
   "save": "Save",
   "yes": "Yes",

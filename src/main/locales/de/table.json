@@ -111,5 +111,6 @@
   "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt",
   "cant-add-row": "Es existiert schon eine leere Zeile",
   "no-column-search-result": "Keine Spalte mit diesem Namen vorhanden",
-  "has-no-rows": "Diese Tabelle ist leer."
+  "has-no-rows": "Diese Tabelle ist leer.",
+  "cell": "Zelle"
 }

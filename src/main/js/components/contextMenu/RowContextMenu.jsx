@@ -68,11 +68,7 @@ class RowContextMenu extends React.Component {
   copyItem = () => {
     const {cell, table, t, langtag} = this.props;
     return (table.type !== "settings" && cell.kind !== ColumnKinds.concat)
-      ? (
-        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.copyCellContent(cell, langtag))}>
-          {t("copy_cell")}
-        </a>
-      )
+      ? this.mkItem(() => ActionCreator.copyCellContent(cell, langtag), "copy_cell", "files-o")
       : null;
   };
 
@@ -83,11 +79,7 @@ class RowContextMenu extends React.Component {
     && canConvert(pasteFrom.kind, cell.kind)
     && !isEmpty(pasteFrom)
     && !eq(cell, pasteFrom))
-      ? (
-        <a href="#" onClick={compose(this.closeRowContextMenu, () => ActionCreator.pasteCellContent(cell, langtag))}>
-          {t("paste_cell")}
-        </a>
-      )
+      ? this.mkItem(() => ActionCreator.pasteCellContent(cell, langtag), "paste_cell", "clipboard")
       : null;
   };
 
@@ -103,15 +95,15 @@ class RowContextMenu extends React.Component {
       ? drop(1)(Langtags)
       : [langtag];
     const fn = () => addTranslationNeeded(neededTranslations, cell);
-    return (
-      <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
-        {(isPrimaryLanguage) ? t("translations.translation_needed") : t("translations.this_translation_needed",
-          {langtag})}
-      </a>
+    return this.mkItem(
+      fn,
+      (isPrimaryLanguage) ? "translations.translation_needed" : t("translations.this_translation_needed", {langtag}),
+      "circle",
+      "translation dot"
     );
   };
 
-  removeTranslationNeeded = () => {
+  removeTranslationNeededItem = () => {
     const {langtag, cell, t} = this.props;
     const isPrimaryLanguage = langtag === first(Langtags);
     const neededTranslations = prop(["annotations", "translationNeeded", "langtags"], cell);
@@ -127,11 +119,11 @@ class RowContextMenu extends React.Component {
     const fn = (isPrimaryLanguage || isEmpty(remainingLangtags))
       ? () => deleteCellAnnotation(translationNeeded, cell, true)
       : () => removeTranslationNeeded(langtag, cell);
-    return (
-      <a href="#" onClick={compose(this.closeRowContextMenu, fn)}>
-        {(isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed",
-          {langtag})}
-      </a>
+    return this.mkItem(
+      fn,
+      (isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed", {langtag}),
+      "circle",
+      "dot no-translation"
     );
   };
 
@@ -146,7 +138,18 @@ class RowContextMenu extends React.Component {
     }
     const {t, cell: {row: {final}}} = this.props;
     const label = (final) ? t("final.set_not_final") : t("final.set_final");
-    return <a href="#" onClick={compose(this.closeRowContextMenu, this.setFinal(!final))}>{label}</a>;
+    return this.mkItem(this.setFinal(!final), label, "lock");
+  };
+
+  mkItem = (action, label, icon, classes = "") => {
+    return (
+      <a href="#" onClick={compose(this.closeRowContextMenu, action)}>
+        <i className={`fa fa-${icon} ${classes}`} />
+        <div className="item-label">
+          {this.props.t(label)}
+        </div>
+      </a>
+    );
   };
 
   render = () => {
@@ -156,19 +159,25 @@ class RowContextMenu extends React.Component {
                           y={this.props.y - this.props.offsetY}
                           offset={CLICK_OFFSET} menuItems=
                             {<div>
-                              {this.props.table.type === "settings" ? "" : <a href="#" onClick={duplicateRow}>{t(
-                                "duplicate_row")}</a>}
+                              <div className="separator">{t("cell")}</div>
                               {this.copyItem()}
                               {this.pasteItem()}
-                              <a href="#" onClick={showTranslations}>{t("show_translation")}</a>
-                              <a href="#" onClick={showDependency}>{t("show_dependency")}</a>
-                              {this.props.table.type === "settings" ? "" : <a href="#" onClick={deleteRow}>{t(
-                                "delete_row")}</a>}
                               {this.requestTranslationsItem()}
-                              {this.removeTranslationNeeded()}
+                              {this.removeTranslationNeededItem()}
+
+                              <div className="separator with-line">{t("menus.data_set")}</div>
+                              {this.props.table.type === "settings"
+                                ? ""
+                                : this.mkItem(showEntityView, "show_entity_view", "server")}
+                              {this.props.table.type === "settings"
+                                ? ""
+                                : this.mkItem(duplicateRow, "duplicate_row", "clone")}
+                              {this.props.table.type === "settings"
+                                ? ""
+                                : this.mkItem(deleteRow, "delete_row", "trash-o")}
+                              {this.mkItem(showDependency, "show_dependency", "code-fork")}
+                              {this.mkItem(showTranslations, "show_translation", "flag")}
                               {this.setFinalItem()}
-                              {this.props.table.type === "settings" ? "" : <a href="#" onClick={showEntityView}>{t(
-                                "show_entity_view")}</a>}
                             </div>
                             }
       />

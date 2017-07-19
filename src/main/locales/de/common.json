@@ -9,6 +9,8 @@
   "cancel" : "Abbrechen",
   "delete_yes_explicit": "Ja, löschen",
   "error": "Fehler",
+  "info": "Hinweis",
+  "warning": "Warnung",
   "no" : "Nein",
   "save" : "Speichern",
   "yes": "Ja",
