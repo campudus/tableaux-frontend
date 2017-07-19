@@ -32,21 +32,21 @@ class RowHeadline extends React.Component {
       || column.name;
   };
 
-  getColumnIcon = column => {
+  getColumnIcon = (column) => {
     const columnIcons = {
-      [ColumnKinds.text]: "paragraph",
-      [ColumnKinds.richtext]: "paragraph",
-      [ColumnKinds.shorttext]: "font",
-      [ColumnKinds.link]: "link",
-      [ColumnKinds.numeric]: "hashtag",
-      [ColumnKinds.attachment]: "files",
-      [ColumnKinds.boolean]: "check-square-o",
-      [ColumnKinds.datetime]: "calendar",
-      [ColumnKinds.date]: "calendar",
-      [ColumnKinds.currency]: "money",
-      [ColumnKinds.group]: "cubes"
+      [ColumnKinds.text]: <i className="column-icon fa fa-paragraph" />,
+      [ColumnKinds.richtext]: <i className="column-icon fa fa-paragraph" />,
+      [ColumnKinds.shorttext]: <i className="column-icon fa fa-font" />,
+      [ColumnKinds.link]: <i className="column-icon fa fa-link" />,
+      [ColumnKinds.numeric]: <i className="column-icon fa fa-hashtag" />,
+      [ColumnKinds.attachment]: <i className="column-icon fa fa-files" />,
+      [ColumnKinds.boolean]: <i className="column-icon fa fa-check-square-o" />,
+      [ColumnKinds.datetime]: <i className="column-icon fa fa-calendar" />,
+      [ColumnKinds.date]: <i className="column-icon fa fa-calendar" />,
+      [ColumnKinds.currency]: <i className="column-icon fa fa-money" />,
+      [ColumnKinds.group]: <SvgIcon icon="/img/icons/column-group.svg" containerClasses={"column-icon"} />
     };
-    return <i className={`column-icon fa fa-${columnIcons[column.kind] || "question"}`} />;
+    return columnIcons[column.kind] || <i className="column-icon fa fa-question" />;
   };
 
   mkLinkHeader = column => {

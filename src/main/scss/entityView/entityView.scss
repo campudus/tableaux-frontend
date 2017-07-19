@@ -389,6 +389,10 @@
   }
 }
 
+.overlay .item-header .column-icon .svg-icon-content {
+  fill: $color-text-medium-grey;
+}
+
 .overlay .overlay-content .content-items .item-header .title-wrapper {
   position: relative;
   display: inline-flex;
