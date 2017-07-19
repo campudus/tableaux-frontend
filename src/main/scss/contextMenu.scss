@@ -3,7 +3,7 @@
   z-index: 2;
   max-height: none;
 
-  background-color: transparentize($color-overlay-header, 0.1);
+  background-color: $color-overlay-header;
   border-radius: 4px;
   padding: 20px 0;
 
@@ -48,7 +48,7 @@
     font-weight: bold;
 
     &.with-line {
-      border-top: 1px solid $color-text-medium-grey;
+      border-top: 1px solid transparentize($color-text-medium-grey, 0.5);
       padding-top: 25px;
       margin-top: 15px;
     }
@@ -62,8 +62,6 @@
   right: 0;
   top: 40px;
   z-index: 2;
-  right: 0;
-  top: 40px;
 
   a {
     border: none;
