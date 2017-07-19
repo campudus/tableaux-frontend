@@ -59,13 +59,19 @@ class Header extends Component {
       }
     );
     const [pos, neg, ntr] = f.props(["positive", "negative", "neutral"], actions);
-    const makeButton = (className, [text, fn]) => (
-      <a className={"button " + className}
-         onClick={f.compose(ActionCreator.closeOverlay, fn || f.noop)}
-      >
-        {text}
-      </a>
-    );
+    const makeButton = (className, [text, fn, dontClose]) => {
+      if (!f.isFunction(fn)) {
+        console.error("Action for button", text, "is not a function");
+        return;
+      }
+      return (
+        <a className={"button " + className}
+           onClick={(dontClose) ? (fn || f.noop) : f.compose(ActionCreator.closeOverlay, fn || f.noop)}
+        >
+          {text}
+        </a>
+      );
+    };
     const buttonsItem = (f.isEmpty(actions))
       ? null
       : (

@@ -36,6 +36,7 @@ class GenericOverlay extends Component {
     };
 
     this.state = {
+      sharedDataContainer: {},
       contentHeight: 0,
       contentWidth: 0,
       overlayIsNew: true,
@@ -135,13 +136,17 @@ class GenericOverlay extends Component {
     }}, () => console.log("updated children props to", this.state.childrenProps));
   };
 
+  updateSharedData = (fn) => {
+    this.setState(({sharedDataContainer}) => ({sharedDataContainer: fn(sharedDataContainer)}));
+  };
+
   render() {
     const overlayType = (f.contains(this.props.type, this.allowedTypes))
       ? this.props.type
       : "normal";
 
     const {footer, head, body, isOnTop, specialClass} = this.props;
-    const {childrenProps} = this.state;
+    const {childrenProps, sharedDataContainer} = this.state;
     const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
       "active": isOnTop,
@@ -156,6 +161,11 @@ class GenericOverlay extends Component {
       "header-buttons": head.props.actions
     });
 
+    const dataShare = {
+      sharedData: sharedDataContainer,
+      updateSharedData: this.updateSharedData
+    };
+
     return (
       <div className={overlayWrapperClass} tabIndex="1"
            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
@@ -167,11 +177,14 @@ class GenericOverlay extends Component {
              }}
              onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
-          {React.cloneElement(head, childrenProps.head)}
+          {React.cloneElement(head, {...childrenProps.head, ...dataShare})}
           <div className="overlay-content">
-            {React.cloneElement(body, childrenProps.body)}
+            {React.cloneElement(body, {...childrenProps.body, ...dataShare})}
           </div>
-          {(footer) ? <footer>{React.cloneElement(footer, childrenProps.footer)}</footer> : null}
+          {(footer)
+            ? <footer>{React.cloneElement(footer, {...childrenProps.footer, ...dataShare})}</footer>
+            : null
+          }
         </div>
         <div ref="overlayBackground" onClick={this.backgroundClick} className="background" />
       </div>
