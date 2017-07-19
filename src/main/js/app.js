@@ -12,8 +12,28 @@ import "dom4";
 
 import Cookies from "js-cookie";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+window.devLog = (isProduction)
+  ? function () {}
+  : function () {
+    console.log.apply(this, ["devel:", ...arguments]);
+  };
+
+window.devWarn = (isProduction)
+  ? function () {}
+  : function () {
+    console.warn.apply(this, ["devel:", ...arguments]);
+  };
+
+window.devErr = (isProduction)
+  ? function () {}
+  : function () {
+    console.error.apply(this, ["devel:", ...arguments]);
+  };
+
 console.log("GRUD version", process.env.BUILD_VERSION);
-if (process.env.NODE_ENV === "production") {
+if (isProduction) {
   getSentryUrlFromServer(
     () => {
       console.warn("Sentry not enabled");
