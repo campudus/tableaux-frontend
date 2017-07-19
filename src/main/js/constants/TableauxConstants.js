@@ -97,7 +97,10 @@ var TableauxConstant = {
     PASS_ON_KEYSTROKES: null,
     CHANGE_ENTITY_VIEW_ROW: null,
     CHANGE_HEADER_TITLE: null,
-    UPDATE_OVERLAY: null
+    UPDATE_OVERLAY: null,
+
+    OPEN_ANNOTATIONS_VIEWER: null,
+    CLOSE_ANNOTATIONS_VIEWER: null
   }),
 
   Directions: keyMirror({

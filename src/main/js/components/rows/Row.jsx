@@ -40,6 +40,7 @@ class Row extends React.Component {
     if (this.props.langtag !== nextProps.langtag
       || this.props.row !== nextProps.row
       || this.props.isRowExpanded !== nextProps.isRowExpanded
+      || this.props.cellWithOpenAnnotations !== nextProps.cellWithOpenAnnotations
     ) {
       return true;
     } else if (!this.props.isRowSelected && (nextProps.selectedCell && (this.props.row.getId() !== nextProps.selectedCell.rowId))) {
@@ -71,6 +72,7 @@ class Row extends React.Component {
   };
 
   renderCells = (langtag, isRowSelected) => {
+    const {cellWithOpenAnnotations} = this.props;
     return this.props.row.cells.map((cell, idx) => {
       // Skip cells in hidden columns
       const cols = this.props.table.columns.models;
@@ -89,18 +91,23 @@ class Row extends React.Component {
       // we want to pass shouldFocus just when the cell is selected or in editing mode to prevent spamming all cells
       // with props changes
       const shouldFocus = selected || editing ? this.props.shouldCellFocus : false;
+      const areAnnotationsOpen = cell.id === cellWithOpenAnnotations;
 
       // We want to see single-language value even if not expanded
       if (!cell.isMultiLanguage && !this.props.isRowExpanded) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
+                     shouldFocus={shouldFocus} row={this.props.row} table={this.props.table}
+                     annotationsOpen={areAnnotationsOpen}
+        />;
       }
 
       // We don't want to repeat our self if expanded
       if (!cell.isMultiLanguage && this.props.isRowExpanded) {
         if (langtag === TableauxConstants.DefaultLangtag) {
           return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                       shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
+                       shouldFocus={shouldFocus} row={this.props.row} table={this.props.table}
+                       annotationsOpen={areAnnotationsOpen}
+          />;
         } else {
           return this.renderSingleLanguageCell(cell, idx);
         }
@@ -109,7 +116,9 @@ class Row extends React.Component {
       // If value is multi-language just render cell
       if (cell.isMultiLanguage) {
         return <Cell key={idx} cell={cell} langtag={langtag} selected={selected} editing={editing}
-                     shouldFocus={shouldFocus} row={this.props.row} table={this.props.table} />;
+                     shouldFocus={shouldFocus} row={this.props.row} table={this.props.table}
+                     annotationsOpen={areAnnotationsOpen}
+        />;
       }
     });
   };
@@ -189,7 +198,8 @@ Row.propTypes = {
   selectedCellExpandedRow: React.PropTypes.string,
   isRowExpanded: React.PropTypes.bool.isRequired,
   isRowSelected: React.PropTypes.bool,
-  shouldCellFocus: React.PropTypes.bool
+  shouldCellFocus: React.PropTypes.bool,
+  cellWithOpenAnnotations: React.PropTypes.string
 };
 
 export default Row;

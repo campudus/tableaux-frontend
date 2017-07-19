@@ -112,5 +112,8 @@
   "cant-add-row": "An empty row already exists",
   "no-column-search-result": "No columns match your search",
   "has-no-rows": "This table is empty.",
-  "cell": "Cell"
+  "cell": "Cell",
+  "new-comment": "New comment",
+  "add-comment": "Add comment",
+  "cell-comments": "Cell comments"
 }

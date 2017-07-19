@@ -21,6 +21,7 @@ import * as f from "lodash/fp";
 import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/monads";
+import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
 // used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first
 // visible row)
@@ -93,11 +94,12 @@ class Cell extends React.Component {
 
   // Dont update when cell is not editing or selected
   shouldComponentUpdate = (nextProps, nextState) => {
-    const {selected, editing, langtag, shouldFocus} = this.props;
+    const {annotationsOpen, selected, editing, langtag, shouldFocus} = this.props;
     return (editing !== nextProps.editing
     || selected !== nextProps.selected
     || langtag !== nextProps.langtag
-    || shouldFocus !== nextProps.shouldFocus);
+    || shouldFocus !== nextProps.shouldFocus)
+    || annotationsOpen !== nextProps.annotationsOpen;
   };
 
   getKeyboardShortcuts = (event) => {
@@ -164,7 +166,7 @@ class Cell extends React.Component {
   };
 
   render = () => {
-    const {cell, langtag, selected, editing} = this.props;
+    const {cell, cell: {annotations}, langtag, selected, editing} = this.props;
     const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
     // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
@@ -223,6 +225,16 @@ class Cell extends React.Component {
       />
       : null;
 
+    const hasTextAnnotations = annotations
+      && f.any(f.complement(f.isEmpty), [annotations.info, annotations.warning, annotations.error]);
+    const textAnnotationsCorner = (hasTextAnnotations || this.props.annotationsOpen)
+      ? <TextAnnotationButton cell={cell}
+                              row={cell.row}
+                              langtag={langtag}
+                              open={this.props.annotationsOpen}
+      />
+      : null;
+
     // onKeyDown event just for selected components
     if (selected) {
       const firstCell = cell.collection.at(0);
@@ -247,7 +259,8 @@ class Cell extends React.Component {
              onMouseDown={this.onMouseDownHandler}>
           {cellItem}
           {expandCorner}
-          {rowDisplayLabelElement}
+          {textAnnotationsCorner}
+          {(this.props.annotationsOpen) ? null : rowDisplayLabelElement}
         </div>
       );
     } else {
@@ -256,6 +269,7 @@ class Cell extends React.Component {
              tabIndex="-1">
           {cellItem}
           {expandCorner}
+          {textAnnotationsCorner}
         </div>
       );
     }
@@ -270,7 +284,8 @@ Cell.propTypes = {
   row: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool,
-  showTranslationStatus: React.PropTypes.bool
+  showTranslationStatus: React.PropTypes.bool,
+  annotationsOpen: React.PropTypes.bool.isRequired
 };
 
 export default Cell;

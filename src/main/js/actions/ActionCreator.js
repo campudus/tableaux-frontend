@@ -333,5 +333,13 @@ module.exports = {
 
   broadcastConnectionStatus: (payload) => {
     Dispatcher.trigger(ActionTypes.CONNECTION_STATUS_CHANGED, payload);
+  },
+
+  openAnnotationsPopup: (cell = {}) => {
+    Dispatcher.trigger(ActionTypes.OPEN_ANNOTATIONS_VIEWER, {cellId: cell.id, rowId: (cell.row || {}).id});
+  },
+
+  closeAnnotationsPopup: () => {
+    Dispatcher.trigger(ActionTypes.CLOSE_ANNOTATIONS_VIEWER);
   }
 };

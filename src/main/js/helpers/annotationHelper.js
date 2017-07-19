@@ -8,12 +8,15 @@ import {maybe} from "./monads";
 const extractAnnotations = obj => {
   const kvPairs = (obj || []).map(
     f.cond([
+      [f.isNil, f.noop],
       [({type, value}) => type === "flag" && value === "needs_translation", ({langtags, uuid}) => ["translationNeeded", {langtags, uuid}]],
-      [f.stubTrue, ({type, value, uuid}) => [type, value, uuid]]
+      [f.stubTrue, ({type, value, uuid, createdAt}) => [type, {type, value, uuid, createdAt}]]
     ])
   );
 
-  return kvPairs.reduce(
+  return kvPairs
+    .filter(f.identity)
+    .reduce(
     (result, [type, value]) => {
       if (type === "translationNeeded") {
         result[type] = value;
@@ -116,7 +119,7 @@ const getAnnotation = (annotation, cell) => {
 
 const setCellAnnotation = (annotation, cell) => {
   const r = request
-    .patch(cellAnnotationUrl(cell))
+    .post(cellAnnotationUrl(cell))
     .send(annotation);
   if (getAnnotation(annotation, cell)) {
     deleteCellAnnotation(annotation, cell)
@@ -217,6 +220,7 @@ const removeTranslationNeeded = (langtag, cell) => {
 
 const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   if (!annotation || !annotation.uuid) {
+    console.warn("Trying to delete invalid annotation:", annotation);
     return;
   }
   const {uuid, type, value} = annotation;
@@ -224,10 +228,20 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   const {row} = cell;
   const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
   const cellAnnotations = f.prop(["annotations", cellIdx]);
-  const newAnnotations = f.assocPath([cellIdx],
+  const newRowAnnotations = f.assocPath([cellIdx],
     f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)),
     f.prop("annotations", row));
-  row.set({annotations: newAnnotations});
+  row.set({annotations: newRowAnnotations});
+
+  const annotationKeys = f.compose(
+    f.reject(f.eq("translationNeeded")),
+    f.keys
+  )(cell.annotations);
+  const newCellAnnotations = f.reduce(
+    (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
+    cell.annotations,
+    annotationKeys
+  );
 
   if (fireAndForget) {
     r.end(
@@ -235,7 +249,7 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
         if (error) {
           console.error(`Error deleting ${type} annotation ${value}:`, error);
         } else {
-          cell.set({annotations: extractAnnotations(newAnnotations)});
+          cell.set({annotations: newCellAnnotations});
         }
       }
     );
@@ -322,6 +336,7 @@ export {
   extractAnnotations,
   refreshAnnotations,
   setRowAnnotation,
+  setCellAnnotation,
   unlockRow,
   isLocked,
   isTranslationNeeded

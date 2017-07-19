@@ -66,14 +66,14 @@ class RowContextMenu extends React.Component {
   };
 
   copyItem = () => {
-    const {cell, table, t, langtag} = this.props;
+    const {cell, table, langtag} = this.props;
     return (table.type !== "settings" && cell.kind !== ColumnKinds.concat)
       ? this.mkItem(() => ActionCreator.copyCellContent(cell, langtag), "copy_cell", "files-o")
       : null;
   };
 
   pasteItem = () => {
-    const {cell, table, t, pasteFrom, langtag} = this.props;
+    const {cell, table, pasteFrom, langtag} = this.props;
     return (table.type !== "settings"
     && pasteFrom
     && canConvert(pasteFrom.kind, cell.kind)
@@ -153,7 +153,7 @@ class RowContextMenu extends React.Component {
   };
 
   render = () => {
-    const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props: {t}} = this;
+    const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props: {cell, t}} = this;
     return (
       <GenericContextMenu x={this.props.x}
                           y={this.props.y - this.props.offsetY}
@@ -162,6 +162,7 @@ class RowContextMenu extends React.Component {
                               <div className="separator">{t("cell")}</div>
                               {this.copyItem()}
                               {this.pasteItem()}
+                              {this.mkItem(() => ActionCreator.openAnnotationsPopup(cell), "add-comment", "commenting-o")}
                               {this.requestTranslationsItem()}
                               {this.removeTranslationNeededItem()}
 

@@ -2,11 +2,12 @@ import React from "react";
 import Infinite from "../../thirdparty/react-infinite/react-infinite.js";
 import Row from "./Row.jsx";
 import NewRow from "./NewRow.jsx";
-import {RowHeight} from "../../constants/TableauxConstants";
+import {ActionTypes, RowHeight} from "../../constants/TableauxConstants";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 import Spinner from "../header/Spinner";
 import i18n from "i18next";
+import Dispatcher from "../../dispatcher/Dispatcher";
 
 @connectToAmpersand
 class Rows extends React.Component {
@@ -15,9 +16,10 @@ class Rows extends React.Component {
     super(props);
     this.numberOfRows = 0;
     this.displayName = "Rows";
+    this.state = {openAnnotations: {}};
   }
 
-  shouldComponentUpdate(nP) {
+  shouldComponentUpdate(nP, nS) {
     const {selectedCell, selectedCellEditing, shouldCellFocus, langtag, rows, expandedRowIds, selectedCellExpandedRow, rowsHeight} = this.props;
     if (nP.rows.length !== this.numberOfRows) { // forcing update on rows.onAdd leads to exponential render calls
       this.numberOfRows = nP.rows.length;
@@ -43,6 +45,31 @@ class Rows extends React.Component {
     return false;
   };
 
+  componentDidMount = () => {
+    Dispatcher.on(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+    Dispatcher.on(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+    Dispatcher.off(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+  };
+
+  setOpenAnnotations = (cellInfo) => {
+    if (f.isNil(cellInfo) && !f.isEmpty(this.state.openAnnotations)) {
+      this.setState({openAnnotations: {}}, this.forceUpdate);
+    } else if (!f.isNil(cellInfo)) {
+      this.setState({openAnnotations: cellInfo}, this.forceUpdate);
+    }
+  };
+
+  getCellWithOpenAnnotations = (row) => {
+    const openAnnotations = this.state.openAnnotations || {};
+    return (row.id === openAnnotations.rowId)
+      ? openAnnotations.cellId
+      : null;
+  };
+
   isRowExpanded(rowId) {
     const {expandedRowIds} = this.props;
     return (expandedRowIds && expandedRowIds.indexOf(rowId) > -1) || false;
@@ -59,18 +86,17 @@ class Rows extends React.Component {
   };
 
   getRows() {
-    const self = this;
     const {table, rows, langtag} = this.props;
 
     if (rows) {
-      const renderedRows = rows.map(function (row, idx) {
-        const isRowSelected = self.isRowSelected(row);
-        const isRowExpanded = self.isRowExpanded(row.id);
+      const renderedRows = rows.map((row, idx) => {
+        const isRowSelected = this.isRowSelected(row);
+        const isRowExpanded = this.isRowExpanded(row.id);
 
-        const selectedCellVal = isRowSelected ? self.props.selectedCell : null;
-        const selectedCellEditingVal = isRowSelected ? self.props.selectedCellEditing : null;
-        const selectedCellExpandedRowVal = isRowSelected ? self.props.selectedCellExpandedRow : null;
-        const shouldCellFocusVal = isRowSelected ? self.props.shouldCellFocus : false;
+        const selectedCellVal = isRowSelected ? this.props.selectedCell : null;
+        const selectedCellEditingVal = isRowSelected ? this.props.selectedCellEditing : null;
+        const selectedCellExpandedRowVal = isRowSelected ? this.props.selectedCellExpandedRow : null;
+        const shouldCellFocusVal = isRowSelected ? this.props.shouldCellFocus : false;
 
         return <Row key={idx} row={row} selectedCell={selectedCellVal}
                     selectedCellEditing={selectedCellEditingVal}
@@ -80,6 +106,7 @@ class Rows extends React.Component {
                     isRowExpanded={isRowExpanded}
                     isRowSelected={isRowSelected}
                     shouldCellFocus={shouldCellFocusVal}
+                    cellWithOpenAnnotations={this.getCellWithOpenAnnotations(row)}
         />;
       });
 
