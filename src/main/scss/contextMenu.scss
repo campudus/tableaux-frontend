@@ -11,19 +11,43 @@
     display: flex;
     padding: 10px 25px;
     align-items: center;
+    $dot-color: $color-text-medium-grey;
 
     i {
       width: 20px;
       color: $color-text-medium-grey;
+      position: relative;
 
       &.translation {
-        color: $color-needs-translation;
+        $dot-color: $color-needs-translation;
       }
-      &.no-translation {
-        color: darken($color-needs-translation, 10);
-      }
+
       &.dot {
-        font-size: xx-small;
+        &:before {
+          $diameter: 6px;
+          position: absolute;
+          content: "";
+          width: $diameter;
+          height: $diameter;
+          border-radius: $diameter;
+          top: -$diameter / 2 - 2px;
+          background: $dot-color;
+          padding: 1px;
+          border: 1px solid $color-overlay-header;
+        }
+      }
+
+      &.inactive {
+        &:before {
+          background: darken($dot-color, 10);
+        }
+      }
+
+      &.active {
+        &:before {
+          background: $dot-color;
+          box-shadow: 0 0 0 1px $dot-color;
+        }
       }
     }
 
@@ -34,7 +58,23 @@
     &:hover {
       background-color: $color-primary;
       i {
-        color: $color-text-light-grey;
+        color: $color-primary-contrast-text;
+      }
+
+      .dot.active {
+        &:before {
+          background: darken($dot-color, 10);
+          box-shadow: none;
+          border-color: $color-primary;
+        }
+      }
+
+      .dot {
+        &:before {
+          background: $dot-color;
+          box-shadow: 0 0 0 1px $dot-color;
+          border-color: $color-primary;
+        }
       }
     }
   }

@@ -10,7 +10,7 @@ import {
 } from "../../helpers/rowHelper";
 import GenericContextMenu from "./GenericContextMenu";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {compose, contains, drop, eq, first, isEmpty, merge, prop, remove} from "lodash/fp";
+import f, {compose, contains, drop, eq, first, isEmpty, merge, prop, remove} from "lodash/fp";
 import {canConvert} from "../../helpers/cellValueConverter";
 import {
   addTranslationNeeded,
@@ -87,19 +87,25 @@ class RowContextMenu extends React.Component {
 
   requestTranslationsItem = () => {
     const {langtag, cell, t} = this.props;
-    if (!this.canTranslate(cell) || contains(langtag, prop(["annotations", "translationNeeded", "langtags"], cell))) {
+    const translationNeededLangtags = f.get(["annotations", "translationNeeded", "langtags"], cell);
+    if (!this.canTranslate(cell) || contains(langtag, translationNeededLangtags)) {
       return null;
     }
     const isPrimaryLanguage = langtag === first(Langtags);
     const neededTranslations = (isPrimaryLanguage)
       ? drop(1)(Langtags)
       : [langtag];
+    if (isPrimaryLanguage && f.isEmpty(f.xor(neededTranslations, translationNeededLangtags))) { // all langs need translation
+      return null;
+    }
     const fn = () => addTranslationNeeded(neededTranslations, cell);
     return this.mkItem(
       fn,
       (isPrimaryLanguage) ? "translations.translation_needed" : t("translations.this_translation_needed", {langtag}),
-      "circle",
-      "translation dot"
+      "",
+      (isPrimaryLanguage && !f.isEmpty(translationNeededLangtags))
+        ? "dot translation"
+        : "dot translation inactive"
     );
   };
 
@@ -107,7 +113,9 @@ class RowContextMenu extends React.Component {
     const {langtag, cell, t} = this.props;
     const isPrimaryLanguage = langtag === first(Langtags);
     const neededTranslations = prop(["annotations", "translationNeeded", "langtags"], cell);
-    if (!this.canTranslate(cell) || (!contains(langtag, neededTranslations) && !isPrimaryLanguage)) {
+    if (!this.canTranslate(cell) || (!contains(langtag, neededTranslations) && !isPrimaryLanguage)
+      || (isPrimaryLanguage && !f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))))
+    ) {
       return null;
     }
     const translationNeeded = merge({
@@ -121,9 +129,9 @@ class RowContextMenu extends React.Component {
       : () => removeTranslationNeeded(langtag, cell);
     return this.mkItem(
       fn,
-      (isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.no_such_translation_needed", {langtag}),
-      "circle",
-      "dot no-translation"
+      (isPrimaryLanguage) ? t("translations.no_translation_needed") : t("translations.this_translation_needed", {langtag}),
+      "",
+      "dot translation active"
     );
   };
 
