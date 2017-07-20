@@ -110,11 +110,12 @@ class AnnotationPopup extends Component {
           }
         </div>
         <div className="annotation-popup-list">
-          {(annotations || []).map(
+          {f.reverse(annotations).map(
             (ann, idx) => (
               <AnnotationEntry annotation={ann}
                                key={ann.uuid}
                                cell={cell}
+                               idx={f.size(annotations) - idx}
               />
             )
           )}
@@ -125,8 +126,9 @@ class AnnotationPopup extends Component {
           <input type="text"
                  onChange={this.handleInputChange}
                  autoFocus
-                 value={this.state.comment}
+                 placeholder={i18n.t("table:new-comment")}
                  onKeyDown={this.handleInputKeys}
+                 value={this.state.comment}
           />
           <div className="button"
                onClick={this.saveComment}

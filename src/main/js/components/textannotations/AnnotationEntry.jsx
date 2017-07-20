@@ -1,7 +1,6 @@
 import React, {PropTypes, PureComponent} from "react";
-import i18n from "i18next";
 import {deleteCellAnnotation} from "../../helpers/annotationHelper";
-import {DateFormats} from "../../constants/TableauxConstants";
+import {DateTimeFormats} from "../../constants/TableauxConstants";
 import Moment from "moment";
 import f from "lodash/fp";
 
@@ -10,7 +9,8 @@ const FADE_OUT_TIME = 200; // milliseconds
 export default class AnnotationEntry extends PureComponent {
   static PropTypes = {
     annotation: PropTypes.object.isRequired,
-    cell: PropTypes.object.isRequired
+    cell: PropTypes.object.isRequired,
+    idx: PropTypes.number.isRequired
   };
 
   constructor(props) {
@@ -47,17 +47,29 @@ export default class AnnotationEntry extends PureComponent {
       [f.eq("error"), f.always("fa-exclamation-triangle")]
     ])(annotation.type);
 
+    const timeString = new Moment(annotation.createdAt)
+      .utcOffset(new Date().getTimezoneOffset())
+      .format(DateTimeFormats.formatForUser);
+
     return (
       <div className={`annotation-item ${annotation.type}`}
            style={style}
-           onClick={this.confirm}
       >
         <i className={`fa ${messageIcon} message-icon`} />
         <div className="message">
           <div className="text-label">{annotation.value || "nachricht"}</div>
-          <div className="date-label">{new Moment(annotation.createdAt).format(DateFormats.formatForUser)}</div>
+          <div className="date-label">{timeString}</div>
         </div>
-        <i className="fa fa-trash delete-icon" />
+        <div className="info-column">
+          <a href="#" className="delete-button"
+             onClick={this.confirm}
+          >
+            <i className="fa fa-trash delete-icon" />
+          </a>
+          <div className="number-label">
+            {`#${this.props.idx}`}
+          </div>
+        </div>
       </div>
     );
   }

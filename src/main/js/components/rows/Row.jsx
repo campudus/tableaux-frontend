@@ -91,7 +91,7 @@ class Row extends React.Component {
       // we want to pass shouldFocus just when the cell is selected or in editing mode to prevent spamming all cells
       // with props changes
       const shouldFocus = selected || editing ? this.props.shouldCellFocus : false;
-      const areAnnotationsOpen = cell.id === cellWithOpenAnnotations;
+      const areAnnotationsOpen = cell.id === cellWithOpenAnnotations && langtag === this.props.langtag;
 
       // We want to see single-language value even if not expanded
       if (!cell.isMultiLanguage && !this.props.isRowExpanded) {
