@@ -3,7 +3,7 @@
  * If readOnly is not set, it works as a simple rich text editor.
  * The saveAndClose function will receive the visible content converted to markdown as argument.
  */
-import React from "react";
+import React, {Component, PropTypes} from "react";
 import ReactDOM from "react-dom";
 import {markdown} from "markdown";
 import toMarkdown from "to-markdown";
@@ -13,14 +13,16 @@ import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 
 @listensToClickOutside
-class RichTextComponent extends React.Component {
+class RichTextComponent extends Component {
   static propTypes = {
-    value: React.PropTypes.string.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    close: React.PropTypes.func,
-    saveAndClose: React.PropTypes.func,
-    readOnly: React.PropTypes.bool,
-    handleContent: React.PropTypes.func
+    value: PropTypes.string.isRequired,
+    langtag: PropTypes.string.isRequired,
+    close: PropTypes.func,
+    saveAndClose: PropTypes.func,
+    readOnly: PropTypes.bool,
+    handleContent: PropTypes.func,
+    hideEditorSymbols: PropTypes.bool,
+    placeholder: PropTypes.element
   };
 
   constructor(props) {
@@ -63,7 +65,7 @@ class RichTextComponent extends React.Component {
 
   saveAndClose = event => {
     event.stopPropagation();
-    this.props.saveAndClose(this.getMarkdown());
+    this.props.saveAndClose(this.toCellValue());
   };
 
   componentDidMount = () => {
@@ -72,9 +74,13 @@ class RichTextComponent extends React.Component {
 
   resetValue = (value) => {
     const valueToSet = value || "";
-    const html = markdown.toHTML(valueToSet);
     const contentDOMNode = ReactDOM.findDOMNode(this.content);
-    contentDOMNode.innerHTML = html;
+    if (!this.props.hideEditorSymbols) {
+      const html = markdown.toHTML(valueToSet);
+      contentDOMNode.innerHTML = html;
+    } else {
+      contentDOMNode.innerText = value;
+    }
     this.positionCaret(contentDOMNode);
   };
 
@@ -100,15 +106,21 @@ class RichTextComponent extends React.Component {
 
   componentWillUnmount = () => {
     if (this.props.saveAndClose) {
-      this.props.saveAndClose(this.getMarkdown());
+      this.props.saveAndClose(this.toCellValue());
     }
   };
 
-  getMarkdown = inValue => {
+  toCellValue = (inValue) => {
     const value = inValue || this.getValue();
-    const markdown = toMarkdown(value);
     const allTags = /<.*?>/g;
-    return markdown.replace(allTags, "");
+    if (!this.props.hideEditorSymbols) {
+      const markdown = toMarkdown(value);
+      return markdown.replace(allTags, "");
+    } else {
+      const withTextLineBreaks = value.replace(/<br>|<\/div><div>|<div>/g, "\n");
+      const withoutHtml = withTextLineBreaks.replace(allTags, "");
+      return withoutHtml.trim();
+    }
   };
 
   handleInput = event => {
@@ -121,7 +133,7 @@ class RichTextComponent extends React.Component {
     if (f.get("target", event)) {
       const {handleContent} = this.props;
       if (handleContent) {
-        handleContent(this.getMarkdown(event.target.value));
+        handleContent(this.toCellValue(event.target.value));
       }
     }
   };
