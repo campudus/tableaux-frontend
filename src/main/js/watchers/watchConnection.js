@@ -4,7 +4,7 @@ import ActionCreator from "../actions/ActionCreator";
 import Moment from "moment";
 import {showDialog} from "../components/overlay/GenericOverlay";
 
-const PING_TIME = 10; // seconds
+const PING_TIME = 20; // seconds
 
 class ConnectionWatcher {
   static connected = true; // hope for the best
@@ -22,7 +22,7 @@ class ConnectionWatcher {
           .ping()
           .then(ConnectionWatcher.watchConnection);
       },
-      (connected) ? (PING_TIME * 0.5 + (PING_TIME * Math.random()) * 1000) : PING_TIME * 500);
+      (connected) ? (PING_TIME * 0.75 + (PING_TIME * Math.random()) * 500) : PING_TIME * 500);
   };
 
   static ping() {
