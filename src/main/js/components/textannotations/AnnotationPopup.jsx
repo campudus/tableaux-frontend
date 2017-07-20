@@ -5,7 +5,6 @@ import {DefaultLangtag} from "../../constants/TableauxConstants";
 import Empty from "../helperComponents/emptyEntry";
 import AnnotationEntry from "./AnnotationEntry";
 import {setCellAnnotation} from "../../helpers/annotationHelper";
-import openAnnotationCreator from "./AnnotationCreator";
 import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
 import SvgIcon from "../helperComponents/SvgIcon";
@@ -69,11 +68,6 @@ class AnnotationPopup extends Component {
       this.setState({needsLeftShift: true});
     }
   }
-
-  addNewAnnotation = () => {
-    const {cell, langtag} = this.props;
-    openAnnotationCreator(cell, langtag);
-  };
 
   handleClick = (event) => {
     event.stopPropagation();
