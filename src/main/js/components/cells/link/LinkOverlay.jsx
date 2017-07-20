@@ -25,6 +25,7 @@ import Spinner from "../../header/Spinner";
 import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
+import Raven from "raven-js";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -166,9 +167,9 @@ class LinkOverlay extends Component {
   };
 
   componentWillMount = () => {
-    const toTableId = this.props.cell.column.toTable;
-    const toTable = this.props.cell.tables.get(toTableId);
     const {cell} = this.props;
+    const toTableId = cell.column.toTable;
+    const toTable = cell.tables.get(toTableId);
 
     // Data already fetched, show it instantly and update it in the background
     if (toTable.rows.length > 0) {
@@ -188,28 +189,33 @@ class LinkOverlay extends Component {
       }
     );
 
-    const fetchForeignRowsJson = new Promise(
-      (resolve, reject) => {
-        const rowXhr = Request
-          .get(apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`))
-          .end(
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                const obj = JSON.parse(response.text);
-                const rows = f.map(mkLinkDisplayItem(toTable), obj.rows);
-                this.setRowResult(rows, true);
-              }
-            }
-          );
-        this.props.addAbortableXhrRequest(rowXhr);
-      }
-    );
-
     fetchColumns // columns still needed to create display strings
-      .then(fetchForeignRowsJson);
+      .then(this.fetchForeignRowsJson);
   };
+
+  fetchForeignRowsJson = () => new Promise(
+    (resolve, reject) => {
+      this.setState({loading: true});
+      const {cell} = this.props;
+      const toTableId = cell.column.toTable;
+      const toTable = cell.tables.get(toTableId);
+
+      const rowXhr = Request
+        .get(apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`))
+        .end(
+          (err, response) => {
+            if (err) {
+              reject(err);
+            } else {
+              const obj = JSON.parse(response.text);
+              const rows = f.map(mkLinkDisplayItem(toTable), obj.rows);
+              this.setRowResult(rows, true);
+            }
+          }
+        );
+      this.props.addAbortableXhrRequest(rowXhr);
+    }
+  );
 
   getCurrentSearchValue = () => {
     const {filterValue, filterMode} = this.state;
@@ -296,19 +302,49 @@ class LinkOverlay extends Component {
     };
   };
 
+  getToCardinality = () => {
+    const {cell: {column: {constraint}}} = this.props;
+    const cardinalityTo = f.get(["cardinality", "to"], constraint);
+    return (cardinalityTo > 0) ? cardinalityTo : Number.POSITIVE_INFINITY;
+  };
+
+  canAddLink = () => {
+    return f.size(this.state.rowResults.linked) < this.getToCardinality();
+  };
+
   addLinkValue = (isAlreadyLinked, link, event) => {
     maybe(event).method("preventDefault");
+    const shouldLink = !isAlreadyLinked;
+    const maxLinks = this.getToCardinality();
+
+    if (shouldLink && !this.canAddLink()) {
+      ActionCreator.showToast(
+        <div id="cell-jump-toast">
+          {i18n.t("table:cardinality-reached", {maxLinks})}
+        </div>
+      );
+      Raven.captureMessage("Tried to add link with wrong cardinality", {level: "warning"});
+      return;
+    }
+
     const cell = this.props.cell;
+
     const withoutLink = f.remove(f.matchesProperty("id", f.get("id", link)));
-    const links = (isAlreadyLinked)
+    const links = (!shouldLink)
       ? withoutLink(cell.value)
       : [...cell.value, link];
 
-    if (isAlreadyLinked && f.get(["constraint", "deleteCascade"], cell.column)) {
+    if (!shouldLink && f.get(["constraint", "deleteCascade"], cell.column)) {
       this.allRowResults = withoutLink(this.allRowResults);
     }
 
-    ActionCreator.changeCell(cell, links);
+    ActionCreator.changeCell(cell, links,
+      () => {
+        if (f.isFinite(maxLinks)) {
+          this.fetchForeignRowsJson();
+        }
+      }
+    );
     this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
   };
 
@@ -422,11 +458,8 @@ class LinkOverlay extends Component {
     };
 
     const linkTableName = displayName[langtag] || displayName[DefaultLangtag] || "";
-    const linked = f.size(this.state.rowResults.linked);
-    const cardinalityTo = f.get(["cardinality", "to"], constraint) || 0;
-    const allowed = (cardinalityTo > 0) ? cardinalityTo : Number.POSITIVE_INFINITY;
 
-    return (linked < allowed)
+    return (this.canAddLink())
       ? (
         <div className={`row-creator-button${(shiftUp) ? " shift-up" : ""}`}
              onClick={addAndLinkRow}

@@ -116,5 +116,6 @@
   "new-comment": "New comment",
   "add-comment": "Add comments",
   "show-comments": "Show comments",
-  "cell-comments": "Cell comments"
+  "cell-comments": "Cell comments",
+  "cardinaliy-reachted": "An item  may not have no more than {{maxLink}} link to that table."
 }
