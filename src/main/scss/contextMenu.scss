@@ -56,16 +56,13 @@
     }
 
     &:hover {
-      background-color: $color-primary;
-      i {
-        color: $color-primary-contrast-text;
-      }
+      background-color: $color-hover-dark;
 
       .dot.active {
         &:before {
           background: darken($dot-color, 10);
           box-shadow: none;
-          border-color: $color-primary;
+          border-color: $color-hover-dark;
         }
       }
 
@@ -73,7 +70,7 @@
         &:before {
           background: $dot-color;
           box-shadow: 0 0 0 1px $dot-color;
-          border-color: $color-primary;
+          border-color: $color-hover-dark;
         }
       }
     }

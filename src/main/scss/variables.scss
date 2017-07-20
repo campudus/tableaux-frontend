@@ -44,7 +44,7 @@ $color-red: #D86357;
 $dark-blue-grey-background: #3C4246;
 $color-background-disabled: #FAFAFA;
 $color-foreground-disabled: $color-text-medium-grey;
-$color-needs-translation: #ff9600;
+$color-needs-translation: #FB9429;
 $color-needs-translation-dark: darken(#ff9600, 5);
 $color-fully-translated: lighten($color-green, 30);
 $color-hover-background: $color-light-link-color;
@@ -60,6 +60,8 @@ $color-overlay-footer: #fff;
 $color-overlay-question: #fb4;
 $color-overlay-success: #6ec;
 $color-overlay-warning: #f55;
+
+$color-hover-dark: #4a4f53;
 
 // Fonts ----------------------------------- //
 $font-main: 'Roboto', Helvetica Neue, Helvetica, Arial, sans-serif;

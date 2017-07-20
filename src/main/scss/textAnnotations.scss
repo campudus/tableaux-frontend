@@ -101,7 +101,7 @@ $annotation-popup-width: 300px;
   }
 
   footer {
-    background-color: lighten(transparentize($color-overlay-header, 0.1), 12);
+    background-color: $color-hover-dark;
     padding: 15px;
     border-radius: 0 0 3px 3px;
 
@@ -187,7 +187,7 @@ $annotation-popup-width: 300px;
         font-weight: bold;
         margin-bottom: 8px;
         white-space: normal;
-        word-wrap: break-word;
+        word-break: break-word;
       }
     }
   }
