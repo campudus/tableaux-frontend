@@ -86,7 +86,7 @@ const refreshCellAnnotations = cell => {
 
 const refreshRowAnnotations = row => {
   request
-    .get(apiUrl(`tables/${row.tableId}/rows/${row.id}`))
+    .get(apiUrl(`/tables/${row.tableId}/rows/${row.id}`))
     .end(
       (error, response) => {
         if (error) {
