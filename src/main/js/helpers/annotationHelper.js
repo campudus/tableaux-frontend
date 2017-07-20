@@ -237,11 +237,13 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
     f.reject(f.eq("translationNeeded")),
     f.keys
   )(cell.annotations);
-  const newCellAnnotations = f.reduce(
-    (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
-    cell.annotations,
-    annotationKeys
-  );
+  const newCellAnnotations = (annotation.value = "translationNeeded" && annotation.type === "flag")
+    ? f.dissoc("translationNeeded", cell.annotations)
+    : f.reduce(
+      (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
+      cell.annotations,
+      annotationKeys
+    );
 
   if (fireAndForget) {
     r.end(
