@@ -114,6 +114,7 @@
   "has-no-rows": "This table is empty.",
   "cell": "Cell",
   "new-comment": "New comment",
-  "add-comment": "Comments",
+  "add-comment": "Add comments",
+  "show-comments": "Show comments",
   "cell-comments": "Cell comments"
 }

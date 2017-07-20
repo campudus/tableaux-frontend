@@ -88,6 +88,7 @@ $annotation-popup-width: 300px;
     }
     .annotation-label {
       color: $color-primary-contrast-text;
+      overflow: hidden;
     }
   }
 
@@ -109,7 +110,7 @@ $annotation-popup-width: 300px;
       outline: none;
       border: none;
       border-radius: 3px;
-      padding: 5px 15px;
+      padding: 5px 10px;
       width: 100%;
     }
     .button {
@@ -128,14 +129,14 @@ $annotation-popup-width: 300px;
     flex-direction: row;
     align-items: flex-start;
     color: $color-text-medium-grey;
-    border: 1px solid transparent;
+    border-left: 3px solid transparent;
 
     &:not(:first-of-type) {
       border-top: 1px solid transparentize($color-text-medium-grey, 0.5);
     }
 
     &:hover {
-      border-color: transparentize($color-primary, 0.5);
+      border-left: 3px solid transparentize($color-primary, 0.3);
     }
 
     &>i, .info-column {
@@ -186,6 +187,7 @@ $annotation-popup-width: 300px;
         font-weight: bold;
         margin-bottom: 8px;
         white-space: normal;
+        word-wrap: break-word;
       }
     }
   }

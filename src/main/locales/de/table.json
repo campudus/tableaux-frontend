@@ -114,6 +114,7 @@
   "has-no-rows": "Diese Tabelle ist leer.",
   "cell": "Zelle",
   "new-comment": "Neuer Kommentar",
-  "add-comment": "Kommentare",
+  "add-comment": "Kommentar hinzufügen",
+  "show-comments": "Kommentare anzeigen",
   "cell-comments": "Zellenkomentare"
 }

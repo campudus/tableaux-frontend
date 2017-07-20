@@ -30,7 +30,6 @@ const translationNeverNeeded = cell => contains(cell.kind, [
 ]);
 
 class RowContextMenu extends React.Component {
-
   closeRowContextMenu = () => {
     ActionCreator.closeRowContextMenu();
   };
@@ -170,7 +169,11 @@ class RowContextMenu extends React.Component {
                               <div className="separator">{t("cell")}</div>
                               {this.copyItem()}
                               {this.pasteItem()}
-                              {this.mkItem(() => ActionCreator.openAnnotationsPopup(cell), "add-comment", "commenting-o")}
+                              {this.mkItem(() => ActionCreator.openAnnotationsPopup(cell), "add-comment", "commenting")}
+                              {(f.any(f.complement(f.isEmpty), f.props(["info", "error", "warning"], cell.annotations)))
+                                ? this.mkItem(() => ActionCreator.openAnnotationsPopup(cell), "show-comments", "commenting-o")
+                                : null
+                              }
                               {this.requestTranslationsItem()}
                               {this.removeTranslationNeededItem()}
 

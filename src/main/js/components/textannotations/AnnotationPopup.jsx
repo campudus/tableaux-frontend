@@ -92,6 +92,7 @@ class AnnotationPopup extends Component {
     return (
       <div className={popupCssClass}
            onClick={this.handleClick}
+           onContextMenu={this.handleClick}
            ref={node => { this.domNode = node; }}
       >
         <div className="close-icon"

@@ -227,7 +227,7 @@ class Cell extends React.Component {
 
     const hasTextAnnotations = annotations
       && f.any(f.complement(f.isEmpty), [annotations.info, annotations.warning, annotations.error]);
-    const textAnnotationsCorner = (hasTextAnnotations || this.props.annotationsOpen)
+    const textAnnotationsCorner = (!this.props.isExpandedCell && (hasTextAnnotations || this.props.annotationsOpen))
       ? <TextAnnotationButton cell={cell}
                               row={cell.row}
                               langtag={langtag}
@@ -285,7 +285,8 @@ Cell.propTypes = {
   table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool,
   showTranslationStatus: React.PropTypes.bool,
-  annotationsOpen: React.PropTypes.bool.isRequired
+  annotationsOpen: React.PropTypes.bool.isRequired,
+  isExpandedCell: React.PropTypes.bool.isRequired
 };
 
 export default Cell;
