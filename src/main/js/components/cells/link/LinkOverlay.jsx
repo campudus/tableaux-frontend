@@ -167,6 +167,7 @@ class LinkOverlay extends Component {
   };
 
   componentWillMount = () => {
+    this.setState({loading: true});
     const {cell} = this.props;
     const toTableId = cell.column.toTable;
     const toTable = cell.tables.get(toTableId);
@@ -441,7 +442,7 @@ class LinkOverlay extends Component {
   };
 
   renderRowCreator = (shiftUp = false) => {
-    const {cell, cell: {column: {displayName, toTable, constraint}}, langtag} = this.props;
+    const {cell, cell: {column: {displayName, toTable}}, langtag} = this.props;
     const addAndLinkRow = () => {
       const linkNewRow = (row = {}) => {
         const link = {
@@ -536,7 +537,7 @@ class LinkOverlay extends Component {
              this.background = el;
            }}
       >
-        <div className={`linked-items${(noForeignRows) ? " no-unlinked" : ""}`}
+        <div className={`linked-items${(!loading && noForeignRows) ? " no-unlinked" : ""}`}
              onMouseEnter={this.setActiveBox(LINKED_ITEMS)}
         >
           <span className="items-title">
@@ -553,7 +554,7 @@ class LinkOverlay extends Component {
           </span>
           {linkedRows}
         </div>
-        {(noForeignRows)
+        {(!loading && noForeignRows)
           ? null
           : (
             <div className="unlinked-items" onMouseEnter={this.setActiveBox(UNLINKED_ITEMS)}>

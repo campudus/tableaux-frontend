@@ -395,12 +395,13 @@
 }
 
 .overlay .entity-view .item-header .column-icon.svg-icon {
-  flex: 1;
-  padding-right: 20px;
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    flex: 1;
+    padding-right: 20px;
+  }
 
   svg {
     fill: $color-text-medium-grey;
-    float: right;
   }
 }
 
