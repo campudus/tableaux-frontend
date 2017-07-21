@@ -19,6 +19,11 @@
         height: 100%;
         border-left: 3px solid $color-text-medium-grey;
       }
+
+      .toggle-button {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
     }
 
     &.has-focused-child {
