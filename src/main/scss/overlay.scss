@@ -201,6 +201,9 @@ $dist-from-top: 20px;
         .title {
           color: $color-primary-contrast-text;
           font-size: 20px;
+          height: 21px;
+          overflow: hidden;
+          text-overflow: ellipsis;
 
           .column-name {
             font-weight: 500;

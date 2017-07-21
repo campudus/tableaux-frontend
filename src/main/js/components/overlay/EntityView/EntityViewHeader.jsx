@@ -71,10 +71,11 @@ class LanguageSwitcher extends Component {
           {(open)
             ? (
               <div className="eev-dropdown">
-                {Langtags.map(
+                {Langtags
+                  .filter(lt => lt !== langtag)
+                  .map(
                   lt => {
-                    const cssClass = classNames("menu-item", {"active": lt === langtag});
-                    return <div key={lt} className={cssClass}>
+                    return <div key={lt} className="menu-item">
                       <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt)}</a>
                     </div>;
                   }

@@ -72,8 +72,10 @@ class NumericView extends React.Component {
     const nextVal = (cell.isMultiLanguage)
       ? cell.value[langtag]
       : cell.value;
-    if ((!this.state.dirty && (parseFloat(nextVal) || 0) !== this.originalValue) || np.cell !== this.cell) {
-      this.setState({value: nextVal});
+    if ((!this.state.dirty && (parseFloat(nextVal) || 0) !== this.originalValue)
+      || np.cell !== this.props.cell || langtag !== this.props.langtag
+    ) {
+      this.setState({value: nextVal, dirty: false});
     }
   }
 
@@ -95,7 +97,7 @@ class NumericView extends React.Component {
   render() {
     const {funcs, thisUserCantEdit} = this.props;
     return (
-      <div className="item-content numeric" onMouseOut={this.saveEdits}>
+      <div className="item-content numeric" onMouseLeave={this.saveEdits}>
         <input type="text" value={this.state.value || ""}
                disabled={thisUserCantEdit}
                onChange={this.normaliseNumberFormat}

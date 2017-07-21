@@ -10,9 +10,10 @@ class ShortTextView extends React.Component {
 
   constructor(props) {
     super(props);
-    this.originalValue = this.getValue();
+    this.originalValue = this.getValue().trim();
     this.state = {
-      value: this.originalValue
+      value: this.originalValue,
+      dirty: false
     };
   };
 
@@ -40,14 +41,14 @@ class ShortTextView extends React.Component {
 
     return {
 //      escape: captureEventAnd(() => { this.background.focus() }),
-      escape: captureEventAnd(this.saveEditsAndClose),
-      enter: captureEventAnd(this.saveEditsAndClose)
+      escape: captureEventAnd(this.saveEdits),
+      enter: captureEventAnd(this.saveEdits)
     };
   };
 
-  saveEditsAndClose = () => {
-    const {value} = this.state;
-    if (f.isNil(value) || value.trim() === this.originalValue) {
+  saveEdits = () => {
+    const {dirty, value} = this.state;
+    if (!dirty || f.isNil(value) || value.trim() === this.originalValue) {
       return;
     }
     const {cell, langtag} = this.props;
@@ -57,6 +58,7 @@ class ShortTextView extends React.Component {
       () => contentChanged(cell, langtag, this.originalValue)
     );
     this.originalValue = value.trim();
+    this.setState({dirty: false});
   };
 
   componentWillReceiveProps(np) {
@@ -66,21 +68,32 @@ class ShortTextView extends React.Component {
         ? cell.value[langtag]
         : cell.value
     );
-    if (nextVal !== this.originalValue) {
-      this.setState({value: nextVal});
+    if ((!this.state.dirty && nextVal !== this.originalValue)
+      || cell !== this.props.cell || langtag !== this.props.langtag
+    ) {
+      this.setState({value: nextVal, dirty: false});
     }
   }
+
+  handleChange = (event) => {
+    this.setState({
+      value: event.target.value,
+      dirty: true
+    });
+  };
 
   render() {
     const {funcs, thisUserCantEdit} = this.props;
     return (
-      <div className="item-content shorttext" ref={el => { this.background = el; }} tabIndex={1}>
+      <div className="item-content shorttext" ref={el => { this.background = el; }} tabIndex={1}
+           onMouseLeave={this.saveEdits}
+      >
         <input type="text" value={this.state.value || ""}
                placeholder={i18n.t("table:empty.text")}
                disabled={thisUserCantEdit}
-               onChange={event => { this.setState({value: event.target.value}); }}
+               onChange={this.handleChange}
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-               onBlur={this.saveEditsAndClose}
+               onBlur={this.saveEdits}
                ref={el => { funcs.register(el); }}
         />
         {this.props.children}

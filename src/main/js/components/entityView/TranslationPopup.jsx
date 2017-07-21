@@ -26,7 +26,7 @@ const displayCell = (cell, langtag) => {
   );
 
   const hasArrayValue = () => f.isArray(value);
-  const hasMarkdownValue = () => f.contains(f.get("kind", cell), ["text", "richtext"]);
+  const hasMarkdownValue = () => f.matchesProperty("kind", "richtext", cell);
 
   const result = f.cond([
     [hasArrayValue, displayArray],
@@ -179,13 +179,11 @@ class TranslationPopup extends Component {
         <div className="content-items">
           {(!cell.isMultiLanguage)
             ? <SingleLanguageWithAmpersand cell={cell} langtag={langtag} />
-            : f.compose(
-              f.map(lt => <MultiLanguageWithAmpersand key={lt} cell={cell} langtag={lt}
+            : f.map(lt => <MultiLanguageWithAmpersand key={lt} cell={cell} langtag={lt}
                                                       isExpanded={this.isExpanded(lt)}
                                                       toggleExpand={this.toggleTranslation(lt)}
-              />),
-              f.reject(f.eq(langtag))
-            )(Langtags)
+              />,
+              Langtags)
           }
         </div>
       </div>

@@ -143,13 +143,11 @@ class EntityViewBody extends Component {
   };
 
   switchLang = ({langtag}) => {
-    const oldLang = getLanguageOrCountryIcon(this.state.langtag);
     const newLang = getLanguageOrCountryIcon(langtag);
     showToast(<div className="language-info-toast">
-      <div className="new-lang"><i className="fa fa-long-arrow-right"/>{newLang}</div>
-      <div className="old-lang">{oldLang}<i className="fa fa-long-arrow-left"/></div>
+      <div className="new-lang">{newLang}</div>
     </div>,
-    3000);
+    2000);
     this.setState({langtag});
   };
 
@@ -341,6 +339,8 @@ class EntityViewBody extends Component {
                            }}
                            lockStatus={cell.row.unlocked}
                            final={cell.row.final}
+                           value={JSON.stringify(cell.value)}
+                           annotations={JSON.stringify(cell.annotations)}
               />;
             })
         }

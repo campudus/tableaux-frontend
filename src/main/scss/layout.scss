@@ -32,6 +32,10 @@ header {
 input, textarea {
   font-family: $font-main;
   font-size: $font-size-standard;
+
+  &::-ms-clear {
+    display: none;
+  }
 }
 
 .empty-item {

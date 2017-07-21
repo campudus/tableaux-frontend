@@ -105,7 +105,7 @@
     display: block;
     padding: 10px 10px;
 
-    &.hover {
+    &:hover {
       background-color: $color-select-list-selected;
     }
   }
