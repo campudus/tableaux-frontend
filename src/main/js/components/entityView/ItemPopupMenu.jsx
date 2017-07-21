@@ -88,20 +88,19 @@ class ItemPopupMenu extends Component {
 
   needsTranslation = () => {
     const {cell, langtag} = this.props;
-    return f.contains(
-      langtag,
-      f.prop(["annotation", "needsTranslation", "langtags"], cell)
-    );
+    const neededTranslations = f.get(["annotations", "translationNeeded", "langtags"], cell);
+    return f.contains(langtag, neededTranslations)
+      || (this.isPrimaryLanguage() && f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))));
   };
 
   mkAddTranslationEntry = () => {
     const {cell, langtag} = this.props;
-    if (f.contains(langtag, f.prop(["annotations", "translationNeeded", "langtags"]))) {
+    if (this.needsTranslation()) {
       return null;
     }
     const neededTranslation = (this.isPrimaryLanguage())
       ? f.drop(1, Langtags)
-      : [...(f.prop(["annotation", "needsTranslation", "langtags"], cell) || []), langtag];
+      : [...(f.prop(["annotation", "translationNeeded", "langtags"], cell) || []), langtag];
     const text = (this.isPrimaryLanguage())
       ? "table:translations.translation_needed"
       : "table:translations.this_translation_needed";
@@ -117,7 +116,7 @@ class ItemPopupMenu extends Component {
     const {cell, langtag} = this.props;
     const cellTranslationAnnotation = f.prop(["annotations", "translationNeeded"], cell);
     const untranslated = f.prop("langtags", cell);
-    if (!this.isPrimaryLanguage() && !f.contains(langtag, untranslated)) {
+    if (!this.needsTranslation()) {
       return null;
     }
     const remaining = f.remove(f.eq(langtag), untranslated);
