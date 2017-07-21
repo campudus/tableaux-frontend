@@ -114,6 +114,16 @@
   }
 }
 
+.view-text, .view-richtext {
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 350px;
+  }
+}
+
 .currency {
   display: flex;
   flex-flow: row wrap;

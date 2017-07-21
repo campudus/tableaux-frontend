@@ -1,16 +1,16 @@
 import React from "react";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import ActionCreator from "../../../actions/ActionCreator";
+import KeyboardShortcutsHelper from "../helpers/KeyboardShortcutsHelper";
+import ActionCreator from "../actions/ActionCreator";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 
-import {contentChanged} from "../../cells/Cell";
+import {contentChanged} from "./cells/Cell";
 
-class TextView extends React.Component {
+class PoorTextComponent extends React.Component {
 
   constructor(props) {
     super(props);
-    devLog("TextView", props)
+    devLog("PoorTextComponent", props)
     this.originalValue = this.getValue().trim();
     this.state = {
       value: this.originalValue,
@@ -43,9 +43,7 @@ class TextView extends React.Component {
     return {
 //      escape: captureEventAnd(() => { this.background.focus() }),
       escape: captureEventAnd(this.saveEdits),
-      enter: (event) => event.stopPropagation(),
-      up: (event) => event.stopPropagation(),
-      down: (event) => event.stopPropagation()
+      enter: captureEventAnd(this.saveEdits)
     };
   };
 
@@ -89,28 +87,20 @@ class TextView extends React.Component {
     this.saveEdits();
   };
 
-  setRef = (node) => {
-    const {funcs} = this.props;
-    if (funcs && funcs.register) {
-      funcs.register(node);
-    }
-    this.textAreaNode = node;
-  };
-
   render() {
-    const {thisUserCantEdit} = this.props;
+    const {funcs, thisUserCantEdit} = this.props;
     return (
       <div className="item-content shorttext"
            ref={el => { this.background = el; }}
            tabIndex={1}
       >
         <textarea value={this.state.value || ""}
-                  placeholder={i18n.t("table:empty.text")}
-                  disabled={thisUserCantEdit}
-                  onChange={this.handleChange}
-                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-                  onBlur={this.saveEdits}
-                  ref={this.setRef}
+               placeholder={i18n.t("table:empty.text")}
+               disabled={thisUserCantEdit}
+               onChange={this.handleChange}
+               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+               onBlur={this.saveEdits}
+               ref={(funcs && funcs.register) ? el => { funcs.register(el); } : f.noop()}
         />
         {this.props.children}
       </div>
@@ -118,4 +108,4 @@ class TextView extends React.Component {
   }
 }
 
-export default TextView;
+export default PoorTextComponent;

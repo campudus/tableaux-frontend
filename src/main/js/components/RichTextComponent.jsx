@@ -12,6 +12,8 @@ import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 
+import TextView from "./entityView/text/TextView";
+
 @listensToClickOutside
 class RichTextComponent extends Component {
   static propTypes = {
@@ -114,6 +116,10 @@ class RichTextComponent extends Component {
     const value = inValue || this.getValue();
     const allTags = /<.*?>/g;
     if (!this.props.hideEditorSymbols) {
+      const escaped = new Map([
+        []
+      ]);
+
       const markdown = toMarkdown(value);
       return markdown.replace(allTags, "");
     } else {
@@ -193,4 +199,5 @@ class RichTextComponent extends Component {
   }
 }
 
-export default RichTextComponent;
+// export default RichTextComponent;
+export default TextView;

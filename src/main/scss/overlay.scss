@@ -589,6 +589,17 @@ $dist-from-top: 20px;
   }
 }
 
+.overlay .content-items.richtext-cell-editor {
+  height: 100%;
+  margin: 0;
+  .item, .item-content, textarea {
+    height: 100%;
+  }
+  textarea {
+    resize: none;
+  }
+}
+
 .breadcrumb-wrapper {
   position: absolute;
   left: 0;
