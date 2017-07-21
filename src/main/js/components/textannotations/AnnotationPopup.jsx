@@ -53,7 +53,7 @@ class AnnotationPopup extends Component {
     evt.stopPropagation();
     if (evt.key === "Escape") {
       if (f.isEmpty(this.state.comment)) {
-        ActionCreator.closeCommentPopup();
+        ActionCreator.closeAnnotationsPopup();
       } else {
         this.setState({comment: ""});
       }
