@@ -321,7 +321,7 @@ class EntityViewBody extends Component {
           .filter(columnFilter(filter.langtag, filter))
           .map(
             (cell, idx) => {
-              return <View key={idx} cell={cell} langtag={langtag}
+              return <View key={cell.id} cell={cell} langtag={langtag}
                            setTranslationView={this.setTranslationView}
                            hasFocusedChild={f.eq(cell.id, focused)}
                            hasMeaningfulLinks={!filterColumn}

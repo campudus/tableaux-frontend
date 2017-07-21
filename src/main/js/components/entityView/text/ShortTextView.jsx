@@ -82,11 +82,16 @@ class ShortTextView extends React.Component {
     });
   };
 
+  componentWillUnmount() {
+    this.saveEdits();
+  };
+
   render() {
     const {funcs, thisUserCantEdit} = this.props;
     return (
-      <div className="item-content shorttext" ref={el => { this.background = el; }} tabIndex={1}
-           onMouseLeave={this.saveEdits}
+      <div className="item-content shorttext"
+           ref={el => { this.background = el; }}
+           tabIndex={1}
       >
         <input type="text" value={this.state.value || ""}
                placeholder={i18n.t("table:empty.text")}
