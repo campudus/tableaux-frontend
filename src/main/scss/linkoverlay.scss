@@ -177,9 +177,7 @@
         .draggable {
           .drag-handle {
             cursor: pointer;
-
-            position: absolute;
-            left: 0;
+            margin-right: 5px;
 
             svg {
               fill: transparent;

@@ -234,8 +234,11 @@
     bottom: auto;
     top: 50%;
     margin-top: -15px;
+    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+      margin-top: 0;
+    }
 
-    &:after {
+      &:after {
       top: 50%;
       left: 100%;
       border-top-color: transparent;
