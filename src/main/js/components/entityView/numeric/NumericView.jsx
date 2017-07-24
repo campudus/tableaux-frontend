@@ -81,7 +81,7 @@ class NumericView extends React.Component {
 
   saveEdits = () => {
     const value = parseFloat(this.state.value);
-    if (value === this.originalValue) {
+    if (value === this.originalValue || !this.state.dirty) {
       return;
     }
     const {cell, langtag} = this.props;
