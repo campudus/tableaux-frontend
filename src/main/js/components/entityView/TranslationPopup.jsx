@@ -43,8 +43,8 @@ const LanguageView = (props) => {
   const {cell, langtag, isExpanded, toggleExpand} = props;
   const value = f.get(["value", langtag], cell);
   const buttonClass = classNames("fa", {
-    "fa-plus": !isExpanded,
-    "fa-minus": isExpanded
+    "fa-angle-down": !isExpanded,
+    "fa-angle-up": isExpanded
   });
   const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
 
@@ -63,22 +63,28 @@ const LanguageView = (props) => {
           <SvgIcon icon="compareTranslation" />
         </a>
 
-        {(f.isEmpty(value)) ? <div><Empty /></div> : null}
         <div className="toggle-button">
           <a href="#">
             <i className={buttonClass} />
           </a>
         </div>
       </div>
-      {(value && isExpanded)
-        ? (
-          <div className="item-content">
-            <div className="content-box">
-              {displayCell(cell, langtag)}
-            </div>
-          </div>
-        )
-        : null
+      {
+        (isExpanded)
+          ? (
+            f.isEmpty(f.trim(value))
+              ? <div className="item-content">
+                <div className="content-box">
+                  <Empty />
+                </div>
+              </div>
+              : <div className="item-content">
+                <div className="content-box">
+                  {displayCell(cell, langtag)}
+                </div>
+              </div>
+          )
+          : null
       }
     </div>
   );

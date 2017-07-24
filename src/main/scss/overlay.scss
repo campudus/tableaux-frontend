@@ -295,7 +295,7 @@ $dist-from-top: 20px;
 
       .item {
         width: 100%;
-        padding: 30px 50px;
+        padding: 20px 50px;
         box-sizing: border-box;
         border-color: transparent;
 
@@ -324,6 +324,10 @@ $dist-from-top: 20px;
 
         .item-content {
           border-color: inherit;
+
+          .empty-item {
+            margin: 5px;
+          }
 
           .langtag-label {
             margin-left: 5px;
