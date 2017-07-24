@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
-import {maybe} from "../../helpers/monads";
-import {FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
+import {maybe, logged} from "../../helpers/monads";
+import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import SvgIcon from "../helperComponents/SvgIcon";
@@ -15,23 +15,25 @@ import ReactMarkdown from "react-markdown";
 const KEY = "translations";
 
 const displayCell = (cell, langtag) => {
-  const value = f.get("displayValue", cell);
+  const displayValue = f.get("displayValue", cell);
   const displayArray = () => (
     <ul>
-      {value.map((v, idx) => <li key={idx}>{f.get(langtag, v)}</li>)}
+      {displayValue.map((v, idx) => <li key={`${cell.id}-${langtag}-${idx}`}>
+        {f.get(langtag, v)}
+      </li>)}
     </ul>
   );
   const displayMarkdown = () => (
-    <ReactMarkdown source={f.get(langtag, value)}/>
+    <ReactMarkdown source={f.get(langtag, displayValue)}/>
   );
 
-  const hasArrayValue = () => f.isArray(value);
-  const hasMarkdownValue = () => f.matchesProperty("kind", "richtext", cell);
+  const hasArrayValue = () => f.contains(cell.kind, [ColumnKinds.attachment, ColumnKinds.link]);
+  const hasMarkdownValue = () => cell.kind === ColumnKinds.richtext;
 
   const result = f.cond([
-    [hasArrayValue, displayArray],
-    [hasMarkdownValue, displayMarkdown],
-    [f.stubTrue, f.always(f.get(langtag, value))]
+    [hasArrayValue, logged("array", displayArray)],
+    [hasMarkdownValue, logged("markdown", displayMarkdown)],
+    [f.stubTrue, logged("default", f.always(f.get(langtag, displayValue)))]
   ])(cell);
 
   return (f.isEmpty(result))
@@ -41,7 +43,7 @@ const displayCell = (cell, langtag) => {
 
 const LanguageView = (props) => {
   const {cell, langtag, isExpanded, toggleExpand} = props;
-  const value = f.get(["value", langtag], cell);
+  const value = f.get(["displayValue", langtag], cell);
   const buttonClass = classNames("fa", {
     "fa-angle-down": !isExpanded,
     "fa-angle-up": isExpanded
@@ -72,7 +74,7 @@ const LanguageView = (props) => {
       {
         (isExpanded)
           ? (
-            f.isEmpty(f.trim(value))
+            (f.isEmpty(f.trim(value)) && !f.isArray(cell.value))
               ? <div className="item-content">
                 <div className="content-box">
                   <Empty />
@@ -183,9 +185,9 @@ class TranslationPopup extends Component {
           }
         </div>
         <div className="content-items">
-          {(!cell.isMultiLanguage)
+          {(!cell.isMultiLanguage || f.contains(cell.kind, [ColumnKinds.attachment, ColumnKinds.link]))
             ? <SingleLanguageWithAmpersand cell={cell} langtag={langtag} />
-            : f.map(lt => <MultiLanguageWithAmpersand key={lt} cell={cell} langtag={lt}
+            : f.map(lt => <MultiLanguageWithAmpersand key={`${cell.id}-${lt}`} cell={cell} langtag={lt}
                                                       isExpanded={this.isExpanded(lt)}
                                                       toggleExpand={this.toggleTranslation(lt)}
               />,
