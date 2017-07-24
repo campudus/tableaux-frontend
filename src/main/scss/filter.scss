@@ -64,22 +64,6 @@
           color: darkgrey;
         }
       }
-
-      .context-menu.row-context-menu {
-        background-color: $color-primary-contrast-text;
-
-        .filter-mode-popup .item, .item a {
-          &.active {
-            color: $color-primary-contrast-text;
-            background-color: $color-primary;
-          }
-
-          &:hover {
-            color: $color-hover-foreground;
-            background-color: $color-hover-background;
-          }
-        }
-      }
     }
 
     .bool-input {
@@ -106,7 +90,7 @@
     .context-menu {
       position: absolute;
       right: 0;
-      top: 32px;
+      top: 100%;
       width: 220px;
       color: black;
       border: 1px solid lightgrey;
@@ -115,8 +99,19 @@
       border-bottom-right-radius: 3px;
       @include box-shadow(0px 0px 50px rgba(black, 0.2));
 
-      .active {
-        background-color: $color-border-grey;
+      background-color: $color-primary-contrast-text;
+      padding: 0;
+
+      .filter-mode-popup .item, .item a {
+        &.active {
+          color: $color-primary-contrast-text;
+          background-color: $color-primary;
+        }
+
+        &:hover {
+          color: $color-hover-foreground;
+          background-color: $color-hover-background;
+        }
       }
     }
   }
