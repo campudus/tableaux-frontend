@@ -27,12 +27,12 @@ class FilterModePopup extends React.Component {
       <GenericContextMenu x={x} y={y} align={Alignments.UPPER_RIGHT} noClampX={true}
                           menuItems={
                             <div className="filter-mode-popup">
-                              <div className={(active === 0) ? "active" : ""} >
+                              <div className={(active === 0) ? "item active" : "item"} >
                                 <a href="#" onClick={this.setFilterMode(FilterModes.CONTAINS)}>
                                   {i18n.t("table:filter.contains")}
                                 </a>
                               </div>
-                              <div className={(active === 1) ? "active" : ""}>
+                              <div className={(active === 1) ? "item active" : "item"}>
                                 <a href="#" onClick={this.setFilterMode(FilterModes.STARTS_WITH)}>
                                   {i18n.t("table:filter.starts_with")}
                                 </a>

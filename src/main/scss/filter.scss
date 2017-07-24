@@ -64,6 +64,22 @@
           color: darkgrey;
         }
       }
+
+      .context-menu.row-context-menu {
+        background-color: $color-primary-contrast-text;
+
+        .filter-mode-popup .item, .item a {
+          &.active {
+            color: $color-primary-contrast-text;
+            background-color: $color-primary;
+          }
+
+          &:hover {
+            color: $color-hover-foreground;
+            background-color: $color-hover-background;
+          }
+        }
+      }
     }
 
     .bool-input {
