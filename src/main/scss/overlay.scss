@@ -204,6 +204,7 @@ $dist-from-top: 20px;
           height: 21px;
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
 
           .column-name {
             font-weight: 500;
