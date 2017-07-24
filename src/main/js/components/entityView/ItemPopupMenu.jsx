@@ -115,7 +115,7 @@ class ItemPopupMenu extends Component {
   mkRemoveTranslationEntry = () => {
     const {cell, langtag} = this.props;
     const cellTranslationAnnotation = f.prop(["annotations", "translationNeeded"], cell);
-    const untranslated = f.prop("langtags", cell);
+    const untranslated = f.get(["langtags"], cellTranslationAnnotation);
     if (!this.needsTranslation()) {
       return null;
     }
