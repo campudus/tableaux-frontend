@@ -33,9 +33,17 @@ $arrow-height: 50px;
       }
     }
 
+    .translation-select {
+      background-color: $color-overlay-background-even;
+    }
+
     .content-items {
       overflow: hidden;
       overflow-y: auto;
+    }
+
+    .content-box {
+      overflow-y: hidden;
     }
 
     .item-header {
@@ -54,20 +62,14 @@ $arrow-height: 50px;
         }
       }
 
-      .svg-icon {
-        padding-top: 5px;
-      }
-
-      svg {
-        fill: transparent;
+      &.main {
+        background-color: $color-primary-lighter;
+        color: $color-primary-contrast-text;
       }
 
       &:hover {
-        background-color: $color-primary;
-        color: $color-primary-contrast-text;
-        svg {
-          fill: $color-primary-contrast-text;
-        }
+        background-color: $color-hover-background;
+        color: $color-hover-foreground;
       }
     }
 
@@ -76,7 +78,7 @@ $arrow-height: 50px;
     }
 
     .toggle-button {
-      font-size: xx-small;
+      font-size: 7px;
       a {
         @include button-with-icon();
       }
@@ -135,14 +137,11 @@ $arrow-height: 50px;
         font-weight: normal;
         padding: 5px;
         border-radius: 3px;
-        color: transparent;
+        color: $color-primary;
 
-        &.is-multi-lang {
-          color: $color-primary;
-          &:hover {
-            background-color: $color-primary;
-            color: $color-primary-contrast-text;
-          }
+        &:hover {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
         }
       }
 

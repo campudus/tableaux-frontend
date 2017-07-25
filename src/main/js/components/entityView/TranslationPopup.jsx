@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
-import {maybe, logged} from "../../helpers/monads";
+import {maybe} from "../../helpers/monads";
 import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
@@ -11,6 +11,7 @@ import Empty from "../helperComponents/emptyEntry";
 import {switchEntityViewLanguage} from "../../actions/ActionCreator";
 import i18n from "i18next";
 import ReactMarkdown from "react-markdown";
+import MultiselectArea from "../MultiselectArea";
 
 const KEY = "translations";
 
@@ -31,9 +32,9 @@ const displayCell = (cell, langtag) => {
   const hasMarkdownValue = () => cell.kind === ColumnKinds.richtext;
 
   const result = f.cond([
-    [hasArrayValue, logged("array", displayArray)],
-    [hasMarkdownValue, logged("markdown", displayMarkdown)],
-    [f.stubTrue, logged("default", f.always(f.get(langtag, displayValue)))]
+    [hasArrayValue, displayArray],
+    [hasMarkdownValue, displayMarkdown],
+    [f.stubTrue, f.always(f.get(langtag, displayValue))]
   ])(cell);
 
   return (f.isEmpty(result))
@@ -42,52 +43,48 @@ const displayCell = (cell, langtag) => {
 };
 
 const LanguageView = (props) => {
-  const {cell, langtag, isExpanded, toggleExpand} = props;
+  const {cell, isMain, langtag, toggleExpand} = props;
   const value = f.get(["displayValue", langtag], cell);
-  const buttonClass = classNames("fa", {
-    "fa-angle-down": !isExpanded,
-    "fa-angle-up": isExpanded
-  });
   const wrapperClass = classNames("item translation-item", {"needs-translation": isTranslationNeeded(langtag)(cell)});
 
+  const switchLanguage = (event) => {
+    event.stopPropagation();
+    switchEntityViewLanguage({langtag});
+  };
+
   return (
-    <div className={wrapperClass} onClick={toggleExpand}>
-      <div className="item-header">
-        <a className="switch-language-icon" href="#"
-           onClick={evt => {
-             evt.stopPropagation();
-             switchEntityViewLanguage({langtag});
-           }}
+    <div className={wrapperClass} >
+      <div className={`item-header ${(isMain) ? "main" : ""}`}>
+        <a className="switch-language-icon"
+           href="#"
+           onClick={switchLanguage}
         >
           <div className="label">
             {getLanguageOrCountryIcon(langtag)}
           </div>
-          <SvgIcon icon="compareTranslation" />
         </a>
-
-        <div className="toggle-button">
-          <a href="#">
-            <i className={buttonClass} />
-          </a>
-        </div>
       </div>
-      {
-        (isExpanded)
-          ? (
-            (f.isEmpty(f.trim(value)) && !f.isArray(cell.value))
-              ? <div className="item-content">
-                <div className="content-box">
-                  <Empty />
-                </div>
-              </div>
-              : <div className="item-content">
-                <div className="content-box">
-                  {displayCell(cell, langtag)}
-                </div>
-              </div>
-          )
-          : null
+      {(f.isEmpty(f.trim(value)) && !f.isArray(cell.value))
+        ? (
+          <div className="item-content">
+            <div className="content-box">
+              <Empty />
+            </div>
+          </div>
+        )
+        : (
+          <div className="item-content">
+            <div className="content-box">
+              {displayCell(cell, langtag)}
+            </div>
+          </div>
+        )
       }
+      <div className="toggle-button">
+        <a href="#" onClick={toggleExpand} >
+          <SvgIcon icon="cross"/>
+        </a>
+      </div>
     </div>
   );
 };
@@ -149,11 +146,52 @@ class TranslationPopup extends Component {
 
   isExpanded = langtag => f.prop(["translations", langtag], this.state) || false;
 
+  handleSelection = (selected) => {
+    const translations = f.reduce(
+      (obj, lt) => f.assoc(lt, f.contains(lt, selected), obj),
+      {},
+      Langtags
+    );
+    this.setState({translations});
+    this.storeTranslations(translations);
+  };
+
+  renderLangSelector = () => {
+    const {cell, langtag} = this.props;
+    const {translations} = this.state;
+    const mkLanguageIcon = (langtag) => {
+      const wrapperClass = classNames("translation-tag", {"needs-translation": isTranslationNeeded(langtag)(cell)});
+      return (
+        <div className={wrapperClass}>
+          {getLanguageOrCountryIcon(langtag)}
+        </div>
+      );
+    };
+    const selectedLangs = f.keys(translations)
+                           .filter((lt) => translations[lt]);
+
+    return (
+      <div className="translation-select">
+        <MultiselectArea
+          langtag={langtag}
+          options={Langtags}
+          onChange={this.handleSelection}
+          tagRenderer={mkLanguageIcon}
+          listItemRenderer={mkLanguageIcon}
+          selection={selectedLangs}
+          placeholder="common:multiselect.select-translation"
+          allSelected="common:multiselect.all-translations-open"
+        />
+      </div>
+    );
+  };
+
   render() {
     const {cell, langtag, setTranslationView} = this.props;
     const title = f.prop(["column", "displayName", langtag], cell)
       || f.prop(["column", "displayName", FallbackLanguage], cell)
       || "";
+    const {translations} = this.state;
 
     const isAnyCollapsed = f.compose(
       f.any(f.complement(f.identity)),           // any not truthy
@@ -162,8 +200,6 @@ class TranslationPopup extends Component {
       f.entries                                  // of tuples [langtag, "display"]
     )(this.state.translations);                  // of saved translations
 
-    const toggleButtonClass = classNames("toggle-all-button", {"is-multi-lang": cell.isMultiLanguage});
-
     return (
       <div className="translation-view">
         <div className="pseudo-header">
@@ -171,27 +207,29 @@ class TranslationPopup extends Component {
             <SvgIcon icon="cross" />
           </a>
           <div className="title">{title}</div>
-          {(cell.isMultiLanguage)
-            ? (
-              <div className={toggleButtonClass}
-                   onClick={this.setAllTranslations(isAnyCollapsed)}
-              >
-                <a href="#">
-                  {i18n.t((isAnyCollapsed) ? "table:translations.expand_all" : "table:translations.collapse_all")}
-                </a>
-              </div>
-            )
-            : <div className="toggle-all-button">{i18n.t("table:translations.is_single_language")}</div>
-          }
+          <div className="toggle-all-button"
+               onClick={this.setAllTranslations(isAnyCollapsed)}
+          >
+            <a href="#">
+              {i18n.t((isAnyCollapsed) ? "table:translations.expand_all" : "table:translations.collapse_all")}
+            </a>
+          </div>
         </div>
+        {this.renderLangSelector()}
         <div className="content-items">
           {(!cell.isMultiLanguage || f.contains(cell.kind, [ColumnKinds.attachment, ColumnKinds.link]))
             ? <SingleLanguageWithAmpersand cell={cell} langtag={langtag} />
-            : f.map(lt => <MultiLanguageWithAmpersand key={`${cell.id}-${lt}`} cell={cell} langtag={lt}
-                                                      isExpanded={this.isExpanded(lt)}
-                                                      toggleExpand={this.toggleTranslation(lt)}
-              />,
-              Langtags)
+            : Langtags
+              .filter(
+                (lt) => translations[lt]
+              )
+              .map(
+                lt => <MultiLanguageWithAmpersand key={`${cell.id}-${lt}`} cell={cell} langtag={lt}
+                                                  isExpanded={this.isExpanded(lt)}
+                                                  toggleExpand={this.toggleTranslation(lt)}
+                                                  isMain={langtag === lt}
+                />
+              )
           }
         </div>
       </div>
