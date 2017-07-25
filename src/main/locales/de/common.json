@@ -20,5 +20,11 @@
   "current_selection": "Aktuelle Auswahl",
   "empty": "Leer",
   "loading": "Lade...",
-  "add": "Hinzufügen"
+  "add": "Hinzufügen",
+  "multiselect": {
+    "no-selection": "Klicken zum auswählen...",
+    "all-selected": "Nichts auszuwählen",
+    "select-translation": "Klicken um Übersetzungen anzuzeigen",
+    "all-translations-open": "Es werden schon alle Übersetzungen angezeigt"
+  }
 }
