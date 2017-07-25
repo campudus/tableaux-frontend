@@ -31,23 +31,37 @@ function retrieveTranslation(json, language, defaultLanguage) {
   return content;
 }
 
-function getLanguageOrCountryIcon(langtag) {
+function getLanguageOrCountryIcon(langtag, specific = "") {
   // we try to split on "-" (dash) character
   const langtagSplitted = langtag.split(langtagSeparatorRegex);
 
   // check if we got a full langtag, e.g. de-CH
   // ... if so return only the country
   // ... otherwise return just the language
+  // unless asked for "language" or "country"
+  // ... in that case we return either language or country from full langtag
+  // ... or we expect the country to be expandable like de -> de_DE, it -> it_IT etc.
   const countryOrLanguage = langtagSplitted.length > 1
     ? langtagSplitted[1]
     : langtagSplitted[0];
 
+  const getResult = ([lang]) => {
+    if (specific.startsWith("c")) {
+      return getCountryOfLangtag(langtag);
+    } else if (specific.startsWith("l")) {
+      return lang;
+    } else {
+      return countryOrLanguage;
+    }
+  };
+
   const icon = countryOrLanguage.toLowerCase() + ".png";
+  const result = getResult(langtagSplitted);
 
   return (
     <span className="langtag">
-      <img src={"/img/flags/" + icon} alt={countryOrLanguage} /><span
-      className="langtag-label">{countryOrLanguage}</span>
+      <img src={"/img/flags/" + icon} alt={result} /><span
+      className="langtag-label">{result}</span>
     </span>
   );
 }
