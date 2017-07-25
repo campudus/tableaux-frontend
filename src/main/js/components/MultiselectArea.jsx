@@ -13,8 +13,8 @@ class MultiselectArea extends PureComponent {
     options: PropTypes.array.isRequired,  // items to display
     tagRenderer: PropTypes.func,          // receives one item to render a selected tag, default: use label property
     listItemRenderer: PropTypes.func,     // receives one item to render an entry in the select-dropdown, default: use label property
-    placeholder: PropTypes.oneOf(PropTypes.element, PropTypes.string), // if nothing selected
-    allSelected: PropTypes.oneOf(PropTypes.element, PropTypes.string), // if dropdown list is empty
+    placeholder: PropTypes.any,           // if nothing selected
+    allSelected: PropTypes.any,           // if dropdown list is empty
     selection: PropTypes.array,           // array of selected items
     onChange: PropTypes.func,             // receives array of selected items
     onSelect: PropTypes.func,             // receives single item
@@ -39,7 +39,7 @@ class MultiselectArea extends PureComponent {
   getPlaceholder = () => {
     const placeHolder = this.props.placeholder || "common:multiselect.no-selection";
     return (f.isString(placeHolder))
-      ? i18n.t(placeHolder)
+      ? <span>{i18n.t(placeHolder)}</span>
       : placeHolder;
   };
   getEmptyListPlaceholder = () => {

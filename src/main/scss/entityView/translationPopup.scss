@@ -34,7 +34,8 @@ $arrow-height: 50px;
     }
 
     .translation-select {
-      background-color: $color-overlay-background-even;
+      background-color: darken($color-overlay-background-even, 10);
+      border-bottom: 1px solid transparentize($color-text-medium-grey, 0.4);
     }
 
     .content-items {
@@ -93,7 +94,7 @@ $arrow-height: 50px;
     .item.needs-translation {
       .label:before {
         position: absolute;
-        left: -15px;
+        left: 4px;
         content: "";
         width: 0;
         height: 0;

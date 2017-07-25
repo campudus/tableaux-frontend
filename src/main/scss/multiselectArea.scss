@@ -8,8 +8,10 @@
 
   &.no-selection {
     justify-content: center;
-    align-items: center;
     color: $color-text-medium-grey;
+    &>span {
+      margin-top: 10px;
+    }
   }
 
   &:hover {
