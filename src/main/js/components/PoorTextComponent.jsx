@@ -10,7 +10,6 @@ class PoorTextComponent extends React.Component {
 
   constructor(props) {
     super(props);
-    devLog("PoorTextComponent", props)
     this.originalValue = this.getValue().trim();
     this.state = {
       value: this.originalValue,

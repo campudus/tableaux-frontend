@@ -10,7 +10,6 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {either} from "../../../helpers/monads";
 
 class DateCell extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {value: this.getSavedMoment()};

@@ -116,10 +116,6 @@ class RichTextComponent extends Component {
     const value = inValue || this.getValue();
     const allTags = /<.*?>/g;
     if (!this.props.hideEditorSymbols) {
-      const escaped = new Map([
-        []
-      ]);
-
       const markdown = toMarkdown(value);
       return markdown.replace(allTags, "");
     } else {
@@ -199,5 +195,5 @@ class RichTextComponent extends Component {
   }
 }
 
-// export default RichTextComponent;
+export {RichTextComponent};
 export default TextView;

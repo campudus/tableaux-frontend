@@ -1,8 +1,7 @@
 import React, {PropTypes} from "react";
 
 const DisabledCell = (props) => {
-
-  const {cell, langtag, selected} = props;
+  const {cell, langtag} = props;
 
   const getValue = () => {
     let value;

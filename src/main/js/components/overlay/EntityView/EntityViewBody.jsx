@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from "react";
 import View from "../../entityView/RowView";
 import {ActionTypes, ColumnKinds, Directions, FilterModes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
-import zenscroll from "zenscroll";
 import {maybe} from "../../../helpers/monads";
 import TranslationPopup from "../../entityView/TranslationPopup";
 import * as f from "lodash/fp";
@@ -61,13 +60,11 @@ class EntityViewBody extends Component {
         this.changeFocus(dir);
       },
       up: event => {
-        console.log("up")
         event.preventDefault();
         event.stopPropagation();
         this.changeFocus(Directions.UP);
       },
       down: event => {
-        console.log("down")
         event.preventDefault();
         event.stopPropagation();
         this.changeFocus(Directions.DOWN);

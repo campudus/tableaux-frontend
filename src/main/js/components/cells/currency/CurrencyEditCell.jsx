@@ -1,5 +1,4 @@
 import React from "react";
-import _ from "lodash";
 import CurrencyRow from "./CurrencyRow";
 import {getCurrencyWithCountry} from "./currencyHelper";
 import * as f from "lodash/fp";
@@ -63,7 +62,7 @@ export default class CurrencyEditCell extends React.Component {
   }
 
   updateCurrencyValue = (country) => value => {
-    console.log("Changing value for", country, "to", value)
+    window.devLog(console.log("Changing value for", country, "to", value));
     const {currencyValues} = this.state;
     const newValue = f.assoc(country, value, currencyValues);
     this.setState({currencyValues: newValue}, () => console.log(this.state));

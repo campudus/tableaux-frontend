@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from "react";
+import React, {PropTypes} from "react";
 import NumericEditCell from "./NumericEditCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import {prop, isNil} from "lodash/fp";

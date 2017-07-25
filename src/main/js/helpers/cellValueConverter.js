@@ -2,7 +2,7 @@ import {ColumnKinds, DateFormats, DateTimeFormats} from "../constants/TableauxCo
 import * as f from "lodash/fp";
 import Moment from "moment";
 
-const {shorttext, richtext, text, link, numeric, boolean, concat, attachment, datetime, currency, date} = ColumnKinds;
+const {shorttext, richtext, text, numeric, datetime, date} = ColumnKinds;
 
 // (string, string) -> bool
 const canConvert = (from, to) => {

@@ -23,7 +23,7 @@ class MultiselectArea extends PureComponent {
     labelProperty: PropTypes.string,      // default: "label", define text fallback
     deleteTagIcon: PropTypes.element,     // instead of svg-cross
     keepSelectedInList: PropTypes.bool,   // don't remove selected items from dropdown
-    order: PropTypes.func,                // gets passed an item, returns a value to compare
+    order: PropTypes.func                 // gets passed an item, returns a value to compare
   };
 
   constructor(props) {

@@ -10,7 +10,6 @@ class TextView extends React.Component {
 
   constructor(props) {
     super(props);
-    devLog("TextView", props)
     this.originalValue = this.getValue().trim();
     this.state = {
       value: this.originalValue,

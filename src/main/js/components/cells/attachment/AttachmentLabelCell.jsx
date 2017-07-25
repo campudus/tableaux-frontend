@@ -1,9 +1,8 @@
-import React, {Component, PropTypes} from "react";
+import React, {PropTypes} from "react";
 import multiLanguage from "../../../helpers/multiLanguage";
 import TableauxConstants from "../../../constants/TableauxConstants";
 
 const AttachmentLabelCell = (props) => {
-
   const {attachmentElement, langtag, selected, openOverlay} = props;
 
   const handleClick = evt => {
