@@ -27,7 +27,7 @@ const LanguageSwitcher = React.createClass({
   },
 
   renderOption: function (option) {
-    return getLanguageOrCountryIcon(option.value);
+    return getLanguageOrCountryIcon(option.value, "language");
   },
 
   render: function () {

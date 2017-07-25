@@ -22,7 +22,8 @@ class MultiselectArea extends PureComponent {
     idProperty: PropTypes.string,         // default: "id", for comparisons and keys
     labelProperty: PropTypes.string,      // default: "label", define text fallback
     deleteTagIcon: PropTypes.element,     // instead of svg-cross
-    keepSelectedInList: PropTypes.bool    // don't remove selected items from dropdown
+    keepSelectedInList: PropTypes.bool,   // don't remove selected items from dropdown
+    order: PropTypes.func,                // gets passed an item, returns a value to compare
   };
 
   constructor(props) {
@@ -54,6 +55,7 @@ class MultiselectArea extends PureComponent {
       </div>
     );
   };
+  getOrderFn = () => this.props.order || this.getId;
 
   getId = (item) => f.get(this.getIdProperty(), item) || item;
   getLabel = (item) => f.get(this.getLabelProperty(), item) || this.getId(item);
@@ -72,7 +74,7 @@ class MultiselectArea extends PureComponent {
     event.stopPropagation();
     this.props.onSelect && this.props.onSelect(item);
     const oldSelection = this.state.selection;
-    const selection = f.uniqBy(this.getId, [...oldSelection, item]);
+    const selection = [...oldSelection, item];
     this.handleChange(selection);
   };
 
@@ -152,7 +154,7 @@ class MultiselectArea extends PureComponent {
         {
           (f.isEmpty(listItems))
             ? this.getEmptyListPlaceholder()
-            : f.sortBy(this.getId, listItems)
+            : f.sortBy(this.getOrderFn(), listItems)
                .map(this.renderListItem)
         }
       </ul>
@@ -173,7 +175,7 @@ class MultiselectArea extends PureComponent {
         {
           (f.isEmpty(selection))
             ? this.getPlaceholder()
-            : f.sortBy(this.getId, selection)
+            : f.sortBy(this.getOrderFn(), selection)
                .map(this.renderTag)
         }
         <div className={`multiselect-list-wrapper ${(listOpen) ? "open" : ""}`}>
@@ -182,6 +184,9 @@ class MultiselectArea extends PureComponent {
               ? this.renderList()
               : null
           }
+        </div>
+        <div className="multiselect-drop-icon">
+          <i className={`fa fa-${(listOpen) ? "angle-up" : "angle-down"}`} />
         </div>
       </div>
     );

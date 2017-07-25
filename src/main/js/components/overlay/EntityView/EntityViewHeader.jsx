@@ -76,7 +76,7 @@ class LanguageSwitcher extends Component {
                   .map(
                   lt => {
                     return <div key={lt} className="menu-item">
-                      <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt)}</a>
+                      <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt, "language")}</a>
                     </div>;
                   }
                 )}

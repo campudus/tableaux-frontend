@@ -60,7 +60,7 @@ const LanguageView = (props) => {
            onClick={switchLanguage}
         >
           <div className="label">
-            {getLanguageOrCountryIcon(langtag)}
+            {getLanguageOrCountryIcon(langtag, "language")}
           </div>
         </a>
       </div>
@@ -163,12 +163,14 @@ class TranslationPopup extends Component {
       const wrapperClass = classNames("translation-tag", {"needs-translation": isTranslationNeeded(langtag)(cell)});
       return (
         <div className={wrapperClass}>
-          {getLanguageOrCountryIcon(langtag)}
+          {getLanguageOrCountryIcon(langtag, "language")}
         </div>
       );
     };
     const selectedLangs = f.keys(translations)
                            .filter((lt) => translations[lt]);
+
+    const primaryFirst = (langtag) => (langtag === f.first(Langtags)) ? "0" : langtag;
 
     return (
       <div className="translation-select">
@@ -181,6 +183,7 @@ class TranslationPopup extends Component {
           selection={selectedLangs}
           placeholder="common:multiselect.select-translation"
           allSelected="common:multiselect.all-translations-open"
+          order={primaryFirst}
         />
       </div>
     );

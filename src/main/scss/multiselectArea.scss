@@ -18,6 +18,13 @@
     background-color: transparentize($color-hover-background, .3);
   }
 
+  .multiselect-drop-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   .langtag {
     display: flex;
     align-items: center;
