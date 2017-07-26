@@ -56,7 +56,7 @@ function getLanguageOrCountryIcon(langtag, specific = "") {
   };
 
   const icon = countryOrLanguage.toLowerCase() + ".png";
-  const result = getResult(langtagSplitted);
+  const result = countryOrLanguage || getResult(langtagSplitted);
 
   return (
     <span className="langtag">
