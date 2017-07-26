@@ -185,7 +185,7 @@ class SingleFileEdit extends React.Component {
             <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
                               uuid={uuid}/>
           </div>
-          <span className="open-file"><a target="_blank" href={fileUrlOfThisLanguage}>{t("open_file")}</a></span>
+          <span className="open-file"><a target="_blank" rel="noopener" href={fileUrlOfThisLanguage}>{t("open_file")}</a></span>
         </div>
         <div className="properties-wrapper content-items">
           <SingleFileTextInput name="fileTitle"

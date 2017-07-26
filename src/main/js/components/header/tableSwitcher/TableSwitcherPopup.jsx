@@ -236,7 +236,7 @@ class SwitcherPopup extends React.Component {
           <div onClick={this.onClickTable(table)}>
             {displayName}
           </div>
-          <a target="_blank" href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
+          <a target="_blank" rel="noopener" href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
         </li>
       );
     };

@@ -89,7 +89,7 @@ class File extends Component {
           <span onClick={this.onEdit} className="button" alt="edit">
           <i className="icon fa fa-pencil-square-o" />{t("change_file")}
         </span>
-        <a href={imageUrl} target="_blank" className="button">
+        <a href={imageUrl} target="_blank" rel="noopener" className="button">
           <i className="icon fa fa-external-link" />{t("show_file")}
         </a>
         {isUserAdmin() ? (
@@ -99,7 +99,7 @@ class File extends Component {
 
     return (
       <div key={"file" + this.props.file.uuid} className="file">
-        <a className="file-link" onClick={this.onEdit} target="_blank">
+        <a className="file-link" onClick={this.onEdit} rel="noopener" target="_blank">
           <i className="icon fa fa-file" /><span>{title}</span></a>
         {mediaOptions}
       </div>

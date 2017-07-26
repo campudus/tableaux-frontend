@@ -53,7 +53,7 @@ const MultifileFileEdit = React.createClass({
     const permissionToChange = hasUserAccessToLanguage(langtag);
 
     const openFileLink = internalName && fileUrl
-      ? <span className="open-file"><a target="_blank" href={apiUrl(fileUrl)}>{t("open_file")}</a></span> : null;
+      ? <span className="open-file"><a target="_blank" rel="noopener" href={apiUrl(fileUrl)}>{t("open_file")}</a></span> : null;
 
     return (
       <div className="multifile-file-edit item">

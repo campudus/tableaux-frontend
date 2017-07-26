@@ -83,7 +83,7 @@ class Columns extends React.Component {
 
     if (column.kind === ColumnKinds.link && !toTableHidden) {
       name =
-        <a className="column-table-link" target="_blank" href={`/${langtag}/tables/${column.toTable}`}>
+        <a className="column-table-link" target="_blank" rel="noopener" href={`/${langtag}/tables/${column.toTable}`}>
           <i className="fa fa-columns" />
           {name}
         </a>;
