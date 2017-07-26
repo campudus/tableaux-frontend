@@ -26,7 +26,6 @@ class HeaderPopupMenu extends Component {
     super(props);
     this.state = {
       open: false,
-      active: null,
       row: props.row
     };
   }
@@ -46,21 +45,19 @@ class HeaderPopupMenu extends Component {
     }
   };
 
-  mkEntry = (id, {title, fn}) => {
-    const entryClass = classNames("entry", {"active": id === this.state.active});
+  mkEntry = (id, {title, fn, icon}) => {
     const clickHandler = f.compose(
       () => this.setState({open: false}),
       fn
     );
     return (
-      <div className={entryClass}
-           onMouseEnter={() => this.setState({active: id})}
-           onClick={clickHandler}
+      <a className="entry"
+         onClick={clickHandler}
+         href="#"
       >
-        <a href="#">
-          {i18n.t(title)}
-        </a>
-      </div>
+        <i className={`fa fa-${icon}`} />
+        <div>{i18n.t(title)}</div>
+      </a>
     );
   };
 
@@ -134,14 +131,16 @@ class HeaderPopupMenu extends Component {
                   ? this.mkEntry(0,
                     {
                       title: "table:show_dependency",
-                      fn: () => openShowDependency(row, langtag)
+                      fn: () => openShowDependency(row, langtag),
+                      icon: "code-fork"
                     })
                   : null
                 }
                 {this.mkEntry(1,
                   {
                     title: "table:show_translation",
-                    fn: () => ActionCreator.setTranslationView(translationInfo)
+                    fn: () => ActionCreator.setTranslationView(translationInfo),
+                    icon: "flag"
                   })}
                 <div className="separator">{i18n.t("table:menus.edit")}</div>
                 {(isLocked(row))
@@ -149,18 +148,21 @@ class HeaderPopupMenu extends Component {
                   : this.mkEntry(2,
                     {
                       title: "table:delete_row",
-                      fn: () => initiateDeleteRow(row, langtag, id)
+                      fn: () => initiateDeleteRow(row, langtag, id),
+                      icon: "trash"
                     })
                 }
                 {this.mkEntry(3,
                   {
                     title: "table:duplicate_row",
-                    fn: () => initiateDuplicateRow(row, langtag)
+                    fn: () => initiateDuplicateRow(row, langtag),
+                    icon: "clone"
                   })}
                 {this.mkEntry(4,
                   {
                     title: (row.final) ? "table:final.set_not_final" : "table:final.set_final",
-                    fn: () => setRowAnnotation({final: !row.final}, row)
+                    fn: () => setRowAnnotation({final: !row.final}, row),
+                    icon: "lock"
                   })}
               </div>
             </div>

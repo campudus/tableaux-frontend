@@ -5,7 +5,12 @@ import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
-import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
+import {
+  addTranslationNeeded,
+  deleteCellAnnotation,
+  setCellAnnotation,
+  removeTranslationNeeded
+} from "../../helpers/annotationHelper";
 import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
 import {canConvert} from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
@@ -49,7 +54,6 @@ class ItemPopupMenu extends Component {
     super(props);
     this.state = {
       open: false,
-      active: null,
       isOffScreen: false
     };
     this.nodeRef = null;
@@ -60,8 +64,7 @@ class ItemPopupMenu extends Component {
     this.props.funcs.closeItemPopup();
   };
 
-  mkEntry = (idx, {title, fn, value}) => {
-    const entryClass = classNames("entry", {"active": this.state.active === idx});
+  mkEntry = (idx, {title, fn, value, icon, classes}) => {
     const clickHandler = f.compose(
       this.closePopup,
       fn,
@@ -70,14 +73,29 @@ class ItemPopupMenu extends Component {
       }
     );
     return (
-      <div className={entryClass}
-           onMouseEnter={() => this.setState({active: idx})}
-           onClick={clickHandler}
+      <a className="entry"
+         href="#"
+         onClick={clickHandler}
       >
-        <a href="#">
-          {(value) ? i18n.t(title, {langtag: value}) : i18n.t(title)}
-        </a>
-      </div>
+        <i className={classes || `fa fa-${icon}`} />
+        <div>{(value) ? i18n.t(title, {langtag: value}) : i18n.t(title)}</div>
+      </a>
+    );
+  };
+
+  mkToggleFlagItem = (flag) => {
+    const {cell} = this.props;
+    const flagValue = f.get(["annotations", flag], cell);
+    const toggleFn = (flagValue)
+      ? () => deleteCellAnnotation({type: "flag", value: flag, uuid: flagValue}, cell, "do-it!")
+      : () => setCellAnnotation({type: "flag", value: flag}, cell);
+    return this.mkEntry(
+      flag,
+      {
+        fn: toggleFn,
+        title: `table:${flag}`,
+        classes: `dot ${flag} ${(flagValue) ? "active" : "inactive"}`
+      }
     );
   };
 
@@ -108,7 +126,8 @@ class ItemPopupMenu extends Component {
       {
         title: text,
         value: (!this.isPrimaryLanguage()) ? langtag : null,
-        fn: () => addTranslationNeeded(neededTranslation, cell)
+        fn: () => addTranslationNeeded(neededTranslation, cell),
+        classes: "dot translation inactive"
       });
   };
 
@@ -129,12 +148,13 @@ class ItemPopupMenu extends Component {
       : f.noop;
     return this.mkEntry(4, {
       title: (this.isPrimaryLanguage())
-        ? "table:translations.no_translation_needed"
-        : "table:translations.no_such_translation_needed",
+        ? "table:translations.translation_needed"
+        : "table:translations.this_translation_needed",
       value: langtag,
       fn: (this.isPrimaryLanguage() || f.isEmpty(remaining))
         ? deleteAnnotationFn
-        : () => removeTranslationNeeded(langtag, cell)
+        : () => removeTranslationNeeded(langtag, cell),
+      classes: "dot translation active"
     });
   };
 
@@ -190,23 +210,29 @@ class ItemPopupMenu extends Component {
                 ? this.mkEntry(0,
                   {
                     title: "table:show_dependency",
-                    fn: () => openShowDependency(row, langtag)
+                    fn: () => openShowDependency(row, langtag),
+                    icon: "code-fork"
                   })
                 : null
               }
               {this.mkEntry(1,
                 {
                   title: "table:copy_cell",
-                  fn: () => ActionCreator.copyCellContent(cell, langtag)
+                  fn: () => ActionCreator.copyCellContent(cell, langtag),
+                  icon: "files-o"
                 })}
               {(thisUserCantEdit)
                 ? null
                 : this.mkEntry(2,
                   {
                     title: "table:paste_cell",
-                    fn: () => ActionCreator.pasteCellContent(cell, langtag)
+                    fn: () => ActionCreator.pasteCellContent(cell, langtag),
+                    icon: "clipboard"
                   })
               }
+              {this.mkToggleFlagItem("important")}
+              {this.mkToggleFlagItem("check-me")}
+              {this.mkToggleFlagItem("postpone")}
               {(cell.isMultiLanguage && canConvert(cell.kind, ColumnKinds.text))
                 ? (
                   <div>
@@ -224,7 +250,8 @@ class ItemPopupMenu extends Component {
                             cell
                           });
                           this.props.funcs.setTranslationItem(this.props.funcs.viewElement);
-                        }
+                        },
+                        icon: "flag"
                       })
                     }
                   </div>

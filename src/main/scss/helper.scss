@@ -129,21 +129,36 @@
   z-index: 6;
 
   .entry {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
     padding: 10px 20px;
     z-index: 100;
+    box-sizing: border-box;
     &:last-of-type {
       @include rounded-lower-borders();
     }
 
-    a {
-      display: block;
-      width: 100%;
-      height: 100%;
+    i {
+      color: $color-text-medium-grey;
+      width: 25px;
+      position: relative;
+      
+      &.dot.important { @include status-dot($color-important, $color-primary-contrast-text); }
+      &.dot.translation { @include status-dot($color-needs-translation, $color-primary-contrast-text); }
+      &.dot.postpone { @include status-dot($color-postpone, $color-primary-contrast-text); }
+      &.dot.check-me { @include status-dot($color-checkme, $color-primary-contrast-text); }
     }
 
-    &.active {
+    &:hover, &.active {
       background-color: $color-hover-background;
       color: $color-hover-foreground;
+
+      .dot.important { @include status-dot-hovered($color-important, $color-hover-background); }
+      .dot.translation { @include status-dot-hovered($color-needs-translation, $color-hover-background); }
+      .dot.postpone { @include status-dot-hovered($color-postpone, $color-hover-background); }
+      .dot.check-me { @include status-dot-hovered($color-checkme, $color-hover-background); }
     }
   }
 }
