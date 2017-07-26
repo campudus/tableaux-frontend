@@ -49,6 +49,9 @@ $color-needs-translation-dark: darken(#ff9600, 5);
 $color-fully-translated: lighten($color-green, 30);
 $color-hover-background: $color-light-link-color;
 $color-hover-foreground: $color-primary;
+$color-important: #ed475e;
+$color-checkme: #66d6b0;
+$color-postpone: #999999;
 
 $color-black: black;
 $color-white: white;
@@ -101,4 +104,48 @@ $space-height-link-delete-button: 23px;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+}
+
+@mixin status-dot($dot-color, $background-color, $diameter: 6px, $yoffset: -2px) {
+  &:before {
+    position: absolute;
+    content: "";
+    width: $diameter;
+    height: $diameter;
+    border-radius: $diameter;
+    top: -$diameter / 2 + $yoffset;
+    padding: 1px;
+    border: 1px solid $background-color;
+    background: $dot-color;
+    box-shadow: none;
+  }
+
+  &.active:before {
+    box-shadow: 0 0 0 1px $dot-color;
+  }
+
+  &.inactive:before {
+    box-shadow: none;
+    background: darken($dot-color, 10);
+  }
+}
+
+@mixin status-dot-hovered($dot-color, $background-color, $diameter: 6px, $yoffset: -2px) {
+  &:before, &.inactive:before {
+    position: absolute;
+    content: "";
+    width: $diameter;
+    height: $diameter;
+    border-radius: $diameter;
+    top: -$diameter / 2 + $yoffset;
+    padding: 1px;
+    border: 1px solid $background-color;
+    background: $dot-color;
+    box-shadow: 0 0 0 1px $dot-color;
+  }
+
+  &.active:before {
+    box-shadow: none;
+    background: darken($dot-color, 10);
+  }
 }

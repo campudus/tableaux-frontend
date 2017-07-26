@@ -11,43 +11,26 @@
     display: flex;
     padding: 10px 25px;
     align-items: center;
-    $dot-color: $color-text-medium-grey;
 
     i {
       width: 20px;
       color: $color-text-medium-grey;
       position: relative;
 
-      &.translation {
-        $dot-color: $color-needs-translation;
+      &.dot.translation {
+        @include status-dot($color-needs-translation, $color-overlay-header)
       }
-
-      &.dot {
-        &:before {
-          $diameter: 6px;
-          position: absolute;
-          content: "";
-          width: $diameter;
-          height: $diameter;
-          border-radius: $diameter;
-          top: -$diameter / 2 - 2px;
-          background: $dot-color;
-          padding: 1px;
-          border: 1px solid $color-overlay-header;
-        }
+      
+      &.dot.important {
+        @include status-dot($color-important, $color-overlay-header);
       }
-
-      &.inactive {
-        &:before {
-          background: darken($dot-color, 10);
-        }
+      
+      &.dot.check-me {
+        @include status-dot($color-checkme, $color-overlay-header);
       }
-
-      &.active {
-        &:before {
-          background: $dot-color;
-          box-shadow: 0 0 0 1px $dot-color;
-        }
+      
+      &.dot.postpone {
+        @include status-dot($color-postpone, $color-overlay-header);
       }
     }
 
@@ -58,20 +41,20 @@
     &:hover {
       background-color: $color-hover-dark;
 
-      .dot.active {
-        &:before {
-          background: darken($dot-color, 10);
-          box-shadow: none;
-          border-color: $color-hover-dark;
-        }
+      .dot.translation {
+        @include status-dot-hovered($color-needs-translation, $color-hover-dark)
       }
 
-      .dot {
-        &:before {
-          background: $dot-color;
-          box-shadow: 0 0 0 1px $dot-color;
-          border-color: $color-hover-dark;
-        }
+      .dot.important {
+        @include status-dot-hovered($color-important, $color-hover-dark);
+      }
+
+      .dot.check-me {
+        @include status-dot-hovered($color-checkme, $color-hover-dark);
+      }
+
+      .dot.postpone {
+        @include status-dot-hovered($color-postpone, $color-hover-dark);
       }
     }
   }

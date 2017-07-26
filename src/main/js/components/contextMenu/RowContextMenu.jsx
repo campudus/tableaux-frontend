@@ -17,6 +17,7 @@ import {
   deleteCellAnnotation,
   getAnnotation,
   removeTranslationNeeded,
+  setCellAnnotation,
   setRowAnnotation
 } from "../../helpers/annotationHelper";
 
@@ -134,6 +135,20 @@ class RowContextMenu extends React.Component {
     );
   };
 
+  toggleFlagItem = (flag) => {
+    const {cell} = this.props;
+    const flagValue = f.get(["annotations", flag], cell);
+    const toggleFn = (flagValue)
+      ? () => deleteCellAnnotation({type: "flag", value: flag, uuid: flagValue}, cell, "do-it!")
+      : () => setCellAnnotation({type: "flag", value: flag}, cell);
+    return this.mkItem(
+      toggleFn,
+      flag,
+      "",
+      `dot ${flag} ${(flagValue) ? "active" : "inactive"}`
+    );
+  };
+
   setFinal = isFinal => () => {
     const {cell: {row}} = this.props;
     setRowAnnotation({final: isFinal}, row);
@@ -176,6 +191,9 @@ class RowContextMenu extends React.Component {
                               }
                               {this.requestTranslationsItem()}
                               {this.removeTranslationNeededItem()}
+                              {this.toggleFlagItem("important")}
+                              {this.toggleFlagItem("check-me")}
+                              {this.toggleFlagItem("postpone")}
 
                               <div className="separator with-line">{t("menus.data_set")}</div>
                               {this.props.table.type === "settings"

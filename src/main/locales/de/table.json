@@ -117,5 +117,8 @@
   "add-comment": "Kommentar hinzufügen",
   "show-comments": "Kommentare anzeigen",
   "cell-comments": "Zellenkomentare",
-  "cardinality-reached": "Ein Datensatz darf zu dieser Tabell hüchstens {{maxLink}} Verknüpfungen haben."
+  "cardinality-reached": "Ein Datensatz darf zu dieser Tabell hüchstens {{maxLink}} Verknüpfungen haben.",
+  "important": "Wichtig",
+  "check-me": "Bitte überprüfen",
+  "postpone": "Später"
 }

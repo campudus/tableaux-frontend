@@ -10,6 +10,7 @@ const extractAnnotations = obj => {
     f.cond([
       [f.isNil, f.noop],
       [({type, value}) => type === "flag" && value === "needs_translation", ({langtags, uuid}) => ["translationNeeded", {langtags, uuid}]],
+      [({type}) => type === "flag", ({value, uuid}) => ["flag", [value, uuid]]],
       [f.stubTrue, ({type, value, uuid, createdAt}) => [type, {type, value, uuid, createdAt}]]
     ])
   );
@@ -20,6 +21,9 @@ const extractAnnotations = obj => {
     (result, [type, value]) => {
       if (type === "translationNeeded") {
         result[type] = value;
+      } else if (type === "flag") {
+        const [flag, uuid] = value;
+        result[flag] = uuid;
       } else {
         if (!result[type]) {
           result[type] = [value];
@@ -237,13 +241,19 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
     f.reject(f.eq("translationNeeded")),
     f.keys
   )(cell.annotations);
-  const newCellAnnotations = (annotation.value = "translationNeeded" && annotation.type === "flag")
-    ? f.dissoc("translationNeeded", cell.annotations)
-    : f.reduce(
-      (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
-      cell.annotations,
-      annotationKeys
-    );
+  const newCellAnnotations = (() => {
+    if (annotation.value === "translationNeeded" && annotation.type === "flag") {
+      return f.dissoc("translationNeeded", cell.annotations);
+    } else if (annotation.type === "flag") {
+      return f.dissoc(annotation.value, cell.annotations);
+    } else {
+      return f.reduce(
+        (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
+        cell.annotations,
+        annotationKeys
+      );
+    }
+  })();
 
   if (fireAndForget) {
     r.end(
