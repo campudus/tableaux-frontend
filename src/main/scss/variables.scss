@@ -149,3 +149,20 @@ $space-height-link-delete-button: 23px;
     background: darken($dot-color, 10);
   }
 }
+
+@mixin cell-flag-dot($dot-color, $size: 5px) {
+  height: $size;
+  margin-top: 2px;
+  position: relative;
+  width: 100%;
+  &:before {
+    content: "";
+    width: $size;
+    height: $size;
+    border-radius: $size;
+    background: $dot-color;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

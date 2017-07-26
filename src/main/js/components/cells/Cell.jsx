@@ -80,6 +80,11 @@ class Cell extends React.Component {
         event: "change:value",
         force: true
       });
+    this.props.watch(this.props.cell,
+      {
+        event: "change:annotations",
+        force: true
+      });
   };
 
   componentDidMount = () => {
@@ -165,8 +170,39 @@ class Cell extends React.Component {
     e.stopPropagation();
   };
 
+  flagIconRenderer = () => {
+    const {cell, cell: {annotations}, langtag} = this.props;
+    const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
+    if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity))) {
+      return null;
+    }
+    const mkDot = (flag) => <div className={flag}/>;
+
+    const hasTextAnnotations = f.any(
+      f.complement(f.isEmpty),
+      [annotations.info, annotations.warning, annotations.error]
+    );
+    const commentBubble = (!this.props.isExpandedCell && (hasTextAnnotations || this.props.annotationsOpen))
+      ? <TextAnnotationButton cell={cell}
+                              row={cell.row}
+                              langtag={langtag}
+                              open={this.props.annotationsOpen}
+      />
+      : null;
+
+    return (
+      <div className="annotation-flag-icons">
+        {commentBubble}
+        {annotations.translationNeeded && langtag !== Langtags[0] && mkDot("translation")}
+        {annotations.important && mkDot("important")}
+        {annotations["check-me"] && mkDot("check-me")}
+        {annotations.postpone && mkDot("postpone")}
+      </div>
+    );
+  };
+
   render = () => {
-    const {cell, cell: {annotations}, langtag, selected, editing} = this.props;
+    const {cell, langtag, selected, editing} = this.props;
     const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
     // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
@@ -189,14 +225,11 @@ class Cell extends React.Component {
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";
     const {translationNeeded} = cell.annotations;
     const isPrimaryLanguage = langtag === f.first(Langtags);
-    const cellNeedsTranslation = translationNeeded && f.contains(langtag,
-        translationNeeded.langtags) && !isPrimaryLanguage;
     const needsTranslationOtherLanguages = !f.isEmpty(f.prop("langtags", translationNeeded)) && isPrimaryLanguage;
     const cssClass = classNames(`cell cell-${kind} cell-${cell.column.getId()}-${cell.rowId}`,
       {
         "selected": selected,
-        "editing": cell.isEditable && editing,
-        "needs-translation": cellNeedsTranslation
+        "editing": cell.isEditable && editing
       }
     );
 
@@ -225,16 +258,6 @@ class Cell extends React.Component {
       />
       : null;
 
-    const hasTextAnnotations = annotations
-      && f.any(f.complement(f.isEmpty), [annotations.info, annotations.warning, annotations.error]);
-    const textAnnotationsCorner = (!this.props.isExpandedCell && (hasTextAnnotations || this.props.annotationsOpen))
-      ? <TextAnnotationButton cell={cell}
-                              row={cell.row}
-                              langtag={langtag}
-                              open={this.props.annotationsOpen}
-      />
-      : null;
-
     // onKeyDown event just for selected components
     if (selected) {
       const firstCell = cell.collection.at(0);
@@ -258,8 +281,8 @@ class Cell extends React.Component {
              tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
           {cellItem}
+          {this.flagIconRenderer()}
           {expandCorner}
-          {textAnnotationsCorner}
           {(this.props.annotationsOpen) ? null : rowDisplayLabelElement}
         </div>
       );
@@ -268,8 +291,8 @@ class Cell extends React.Component {
         <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1">
           {cellItem}
+          {this.flagIconRenderer()}
           {expandCorner}
-          {textAnnotationsCorner}
         </div>
       );
     }
