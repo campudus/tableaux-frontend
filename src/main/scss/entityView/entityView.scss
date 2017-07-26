@@ -61,11 +61,25 @@
     &.translation {
       background-color: $color-needs-translation;
       border-color: $color-needs-translation;
+      &:hover {
+        background-color: $color-needs-translation-dark;
+        border-color: $color-needs-translation-dark;
+      }
     }
 
-    &:hover {
-      background-color: $color-needs-translation-dark;
-      border-color: $color-needs-translation-dark;
+    &.important {
+      background-color: $color-important;
+      border-color: $color-important;
+    }
+
+    &.check-me {
+      background-color: $color-checkme;
+      border-color: $color-checkme;
+    }
+
+    &.postpone {
+      background-color: $color-postpone;
+      border-color: $color-postpone;
     }
   }
 }

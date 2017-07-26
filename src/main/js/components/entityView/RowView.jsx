@@ -136,6 +136,14 @@ class View extends Component {
       )
       : null;
 
+    const tagList = ["important", "check-me", "postpone"]
+      .map(
+        (tagName) => (cell.annotations && cell.annotations[tagName])
+          ? <span key={tagName} className={`action-item ${tagName}`}>{i18n.t(`table:${tagName}`)}</span>
+          : null
+      )
+      .filter(f.identity);
+
     return (
       <div className={viewClass}
            onClick={this.clickHandler}
@@ -162,6 +170,7 @@ class View extends Component {
         >
           <div className="action-tags">
             {translationTag}
+            {tagList}
           </div>
         </CellKind>
       </div>

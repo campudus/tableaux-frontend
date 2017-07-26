@@ -153,6 +153,9 @@ $arrow-height: 50px;
 
       a {
         padding: 8px 8px;
+        &:hover svg {
+          fill: $color-text-medium-grey;
+        }
       }
 
       div {

@@ -170,10 +170,11 @@ class Cell extends React.Component {
     e.stopPropagation();
   };
 
-  flagIconRenderer = () => {
+  flagIconRenderer = (annotationsOpen) => {
+    devLog("flagIconRenderer", annotationsOpen)
     const {cell, cell: {annotations}, langtag} = this.props;
     const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
-    if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity))) {
+    if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity)) && !annotationsOpen) {
       return null;
     }
     const mkDot = (flag) => <div className={flag}/>;
@@ -182,11 +183,11 @@ class Cell extends React.Component {
       f.complement(f.isEmpty),
       [annotations.info, annotations.warning, annotations.error]
     );
-    const commentBubble = (!this.props.isExpandedCell && (hasTextAnnotations || this.props.annotationsOpen))
+    const commentBubble = (!this.props.isExpandedCell && (hasTextAnnotations || annotationsOpen))
       ? <TextAnnotationButton cell={cell}
                               row={cell.row}
                               langtag={langtag}
-                              open={this.props.annotationsOpen}
+                              open={annotationsOpen}
       />
       : null;
 
@@ -202,7 +203,7 @@ class Cell extends React.Component {
   };
 
   render = () => {
-    const {cell, langtag, selected, editing} = this.props;
+    const {annotationsOpen, cell, langtag, selected, editing} = this.props;
     const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
     // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
@@ -281,9 +282,9 @@ class Cell extends React.Component {
              tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
           {cellItem}
-          {this.flagIconRenderer()}
+          {this.flagIconRenderer(annotationsOpen)}
           {expandCorner}
-          {(this.props.annotationsOpen) ? null : rowDisplayLabelElement}
+          {(annotationsOpen) ? null : rowDisplayLabelElement}
         </div>
       );
     } else {
@@ -291,7 +292,7 @@ class Cell extends React.Component {
         <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1">
           {cellItem}
-          {this.flagIconRenderer()}
+          {this.flagIconRenderer(annotationsOpen)}
           {expandCorner}
         </div>
       );
