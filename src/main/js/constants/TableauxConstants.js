@@ -184,7 +184,10 @@ var TableauxConstant = {
       ID_ONLY: null,
       UNTRANSLATED: null,
       ANY_UNTRANSLATED: null,
-      FINAL: null
+      FINAL: null,
+      IMPORTANT: null,
+      CHECK_ME: null,
+      POSTPONE: null
     }
   )
 };

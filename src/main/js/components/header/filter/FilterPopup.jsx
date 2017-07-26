@@ -11,7 +11,14 @@ import {either} from "../../../helpers/monads";
 import FilterRow, {BOOL, TEXT} from "./FilterRow";
 import {FilterableCellKinds, SortableCellKinds} from "../../table/RowFilters";
 
-const SPECIAL_SEARCHES = [FilterModes.ANY_UNTRANSLATED, FilterModes.UNTRANSLATED, FilterModes.FINAL];
+const SPECIAL_SEARCHES = [
+  FilterModes.ANY_UNTRANSLATED,
+  FilterModes.UNTRANSLATED,
+  FilterModes.FINAL,
+  FilterModes.IMPORTANT,
+  FilterModes.CHECK_ME,
+  FilterModes.POSTPONE
+];
 
 @translate(["filter", "table"])
 @listensToClickOutside
@@ -94,6 +101,21 @@ class FilterPopup extends React.Component {
       {
         label: this.props.t("filter.is_final"),
         value: FilterModes.FINAL,
+        kind: BOOL
+      },
+      {
+        label: this.props.t("important"),
+        value: FilterModes.IMPORTANT,
+        kind: BOOL
+      },
+      {
+        label: this.props.t("check-me"),
+        value: FilterModes.CHECK_ME,
+        kind: BOOL
+      },
+      {
+        label: this.props.t("postpone"),
+        value: FilterModes.POSTPONE,
         kind: BOOL
       },
       ...searchableColumns

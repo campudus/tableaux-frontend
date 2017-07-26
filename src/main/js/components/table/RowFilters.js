@@ -27,6 +27,8 @@ export const SortableCellKinds = [
   ColumnKinds.datetime
 ];
 
+const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.POSTPONE];
+
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
   const allFilters = f.map(mkFilterFn(closures), filterSettings.filters || []);
@@ -47,6 +49,7 @@ const mkFilterFn = closures => (settings) => {
     [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
+    [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(mode, value)],
     [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
     [f.stubTrue, f.stubTrue]
   ])(settings);
@@ -91,6 +94,23 @@ const mkTranslationStatusFilter = closures => ({value}) => {
     f.prop("annotations"),
   );
   return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
+};
+
+const mkFlagFilter = (mode, value) => {
+  const flag = {
+    [FilterModes.IMPORTANT]: "important",
+    [FilterModes.POSTPONE]: "postpone",
+    [FilterModes.CHECK_ME]: "check-me"
+  }[mode];
+  const isAsRequired = (value) ? f.complement(f.isEmpty) : f.isEmpty;
+  return f.compose(
+    isAsRequired,
+    f.filter(f.matchesProperty("value", flag)),
+    f.filter(f.matchesProperty("type", "flag")),
+    f.flatten,
+    f.filter(f.identity),
+    f.get("annotations")
+  );
 };
 
 const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
