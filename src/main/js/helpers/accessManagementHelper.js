@@ -7,7 +7,7 @@ const Cookies = Keks.withConverter({
   "read": function (rawValue, name) {
     const value = decodeURIComponent(rawValue);
     if (typeof value === "string" && _.startsWith(value, "j:")) {
-      var result = value;
+      let result = value;
 
       try {
         // remove j:
@@ -103,19 +103,15 @@ export function canUserChangeCell(cell) {
 
   // User is not admin
   // Links and attachments are considered single language
-  if (cell.isMultiLanguage && (
-      cell.kind === ColumnKinds.text
-      || cell.kind === ColumnKinds.shorttext
-      || cell.kind === ColumnKinds.richtext
-      || cell.kind === ColumnKinds.numeric
-      || cell.kind === ColumnKinds.boolean
-      || cell.kind === ColumnKinds.datetime
-      || cell.kind === ColumnKinds.currency
-    )) {
-    return true;
-  } else {
-    return false;
-  }
+  return !!(cell.isMultiLanguage && (
+    cell.kind === ColumnKinds.text
+    || cell.kind === ColumnKinds.shorttext
+    || cell.kind === ColumnKinds.richtext
+    || cell.kind === ColumnKinds.numeric
+    || cell.kind === ColumnKinds.boolean
+    || cell.kind === ColumnKinds.datetime
+    || cell.kind === ColumnKinds.currency
+  ));
 }
 
 // Reduce the value object before sending to server, so that just allowed languages gets sent

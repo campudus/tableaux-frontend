@@ -25,9 +25,7 @@ import React from "react";
 const changeLinkCell = ({cell, value}) => {
   const curValue = cell.value;
 
-  if (process.env.NODE_ENV !== "production") {
-    console.log("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", value);
-  }
+  window.devLog("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", value);
 
   if (f.size(value) > 1
     && f.size(curValue) === f.size(value)
@@ -149,7 +147,7 @@ export const changeCell = payload => {
             noPermissionAlertWithLanguage(getUserLanguageAccess());
             return;
           } else {
-            if (cell.isMultiCountry) {
+            if (cell.isMultiCountry()) {
               newValue = reduceValuesToAllowedCountries(newValue);
               if (_.isEmpty(newValue.value)) {
                 // The user tried to change a multilanguage cell without language permission
@@ -171,9 +169,7 @@ export const changeCell = payload => {
          * End basic language access management
          */
 
-        if (process.env.NODE_ENV !== "production") {
-          console.log("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", newValue.value);
-        }
+        window.devLog("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", newValue.value);
         // we give direct feedback for user
         cell.value = mergedValue;
 
@@ -192,8 +188,8 @@ export const changeCell = payload => {
           success(model, data, options) {
             ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
             // is there new data from the server?
-            if (!_.isEqual(data.value, mergedValue) && (process.env.NODE_ENV !== "production")) {
-              console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
+            if (!_.isEqual(data.value, mergedValue)) {
+              window.devLog("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
               cell.value = data.value;
             }
             resolve();
@@ -205,7 +201,7 @@ export const changeCell = payload => {
           }
         });
       } else {
-        console.log("No update required");
+        window.devLog("No update required");
         resolve(newValue);
       }
     });
