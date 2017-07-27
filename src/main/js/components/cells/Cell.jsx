@@ -121,7 +121,7 @@ class Cell extends React.Component {
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
-      if (!focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
+      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
         cellDOMNode.focus();
       }
     }
@@ -129,9 +129,7 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
-    if (process.env.NODE_ENV !== "production") {
-      console.log((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked: ", cell, "value: ", cell.value, cell.displayValue);
-    }
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked: ", cell, "value: ", cell.value, cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -171,7 +169,6 @@ class Cell extends React.Component {
   };
 
   flagIconRenderer = (annotationsOpen) => {
-    devLog("flagIconRenderer", annotationsOpen)
     const {cell, cell: {annotations}, langtag} = this.props;
     const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
     if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity)) && !annotationsOpen) {

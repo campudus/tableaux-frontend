@@ -40,7 +40,6 @@ class PoorTextComponent extends React.Component {
     };
 
     return {
-//      escape: captureEventAnd(() => { this.background.focus() }),
       escape: captureEventAnd(this.saveEdits),
       enter: captureEventAnd(this.saveEdits)
     };

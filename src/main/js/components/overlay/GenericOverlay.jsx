@@ -9,6 +9,7 @@ import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
+import {maybe} from "../../helpers/monads";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
@@ -64,7 +65,7 @@ class GenericOverlay extends Component {
 
     // Is current focus is this overlay or inside of overlay don't change the focus.
     if (!focusedElement || !overlayDOMNode.contains(focusedElement) || focusedElement.isEqualNode(overlayDOMNode)) {
-      overlayDOMNode.focus();
+      maybe(overlayDOMNode).method("focus");
     }
 
     Dispatcher.on(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
@@ -76,9 +77,7 @@ class GenericOverlay extends Component {
     Dispatcher.off(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
 
     // Reset active element before overlay opened
-    if (this.focusedElementBeforeOverlayOpens) {
-      this.focusedElementBeforeOverlayOpens.focus();
-    }
+    maybe(this.focusedElementBeforeOverlayOpens).method("focus");
   };
 
   backgroundClick = (event) => {
@@ -133,7 +132,7 @@ class GenericOverlay extends Component {
       head: updatedProps("head"),
       body: updatedProps("body"),
       footer: updatedProps("footer")
-    }}, () => console.log("updated children props to", this.state.childrenProps));
+    }}, () => window.devLog("updated children props to", this.state.childrenProps));
   };
 
   updateSharedData = (fn) => {

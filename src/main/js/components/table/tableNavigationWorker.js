@@ -6,6 +6,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {maybe} from "../../helpers/monads";
 
 export function shouldCellFocus() {
   // we dont want to force cell focus when overlay is open
@@ -20,8 +21,8 @@ export function checkFocusInsideTable() {
     let focusedElement = document.activeElement;
     // happens in IE
     if (focusedElement === null) {
-      tableDOMNode.focus();
-    } else if (!tableDOMNode.contains(focusedElement)) {
+      maybe(tableDOMNode).method("focus");
+    } else if (tableDOMNode && !tableDOMNode.contains(focusedElement)) {
       // Is the focus outside the table or is body selected
       // force table to be focused to get keyboard events
       tableDOMNode.focus();
@@ -31,14 +32,14 @@ export function checkFocusInsideTable() {
 
 export function disableShouldCellFocus() {
   if (this.state.shouldCellFocus) {
-    console.log("Table.disableShouldCellFocus");
+    window.devLog("Table.disableShouldCellFocus");
     this.setState({shouldCellFocus: false});
   }
 }
 
 export function enableShouldCellFocus() {
   if (!this.state.shouldCellFocus) {
-    console.log("Table.enableShouldCellFocus");
+    window.devLog("Table.enableShouldCellFocus");
     this.setState({shouldCellFocus: true});
   }
 }
