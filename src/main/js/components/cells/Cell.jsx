@@ -188,7 +188,8 @@ class Cell extends React.Component {
       />
       : null;
 
-    const isTranslationNeeded = f.contains(langtag, annotations.translationNeeded.langtags) && langtag !== Langtags[0];
+    const isTranslationNeeded = f.contains(langtag, f.get(["translationNeeded", "langtags"], annotations))
+      && langtag !== Langtags[0];
 
     return (
       <div className="annotation-flag-icons">
