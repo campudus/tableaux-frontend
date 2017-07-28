@@ -188,10 +188,12 @@ class Cell extends React.Component {
       />
       : null;
 
+    const isTranslationNeeded = f.contains(langtag, annotations.translationNeeded.langtags) && langtag !== Langtags[0];
+
     return (
       <div className="annotation-flag-icons">
         {commentBubble}
-        {annotations.translationNeeded && langtag !== Langtags[0] && mkDot("translation")}
+        {isTranslationNeeded && mkDot("translation")}
         {annotations.important && mkDot("important")}
         {annotations["check-me"] && mkDot("check-me")}
         {annotations.postpone && mkDot("postpone")}
