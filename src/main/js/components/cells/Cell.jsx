@@ -22,12 +22,10 @@ import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} fro
 import openTranslationDialog from "../overlay/TranslationDialog";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
-// used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first
-// visible row)
-const CELL_HINT_PADDING = 40;
-
-export const contentChanged = (cell, langtag, oldValue) => {
-  if (!cell.isMultiLanguage || cell.value[langtag] === oldValue) {
+export const contentChanged = (cell, langtag, oldValue) => () => {
+  if (!cell.isMultiLanguage || either(cell)
+      .map(f.prop(["value", langtag]))
+      .orElse(f.prop("value")).value === oldValue) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -133,13 +131,7 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
-      cell.kind,
-      "cell clicked: ",
-      cell,
-      "value: ",
-      cell.value,
-      cell.displayValue);
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked: ", cell, "value: ", cell.value, cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -270,44 +262,17 @@ class Cell extends React.Component {
       : null;
 
     // onKeyDown event just for selected components
-    if (selected) {
-      const indexOfCell = cell.collection.indexOf(cell);
-      // get global so not every single cell needs to look fo the table rows dom element
-      const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
-      //const difference = this.cellOffset - tableRowsDom.scrollTop;
-      const rowDisplayLabelClass = classNames(
-        "row-display-label",
-
-      );
-
-      // We just show the info starting at the fourth column
-      const rowDisplayLabelElement = indexOfCell >= 3 ? (
-        <div className={rowDisplayLabelClass}><span className="content">{langtag} | <RowConcat row={cell.row}
-                                                                                               langtag={langtag} /></span>
-        </div>) : null;
-
-      return (
-        <div style={this.props.style}
-             className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
-             tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-             onMouseDown={this.onMouseDownHandler}>
-          {cellItem}
-          {this.flagIconRenderer(annotationsOpen)}
-          {expandCorner}
-          {(annotationsOpen) ? null : rowDisplayLabelElement}
-        </div>
-      );
-    } else {
-      return (
-        <div style={this.props.style}
-             className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
-             tabIndex="-1">
-          {cellItem}
-          {this.flagIconRenderer(annotationsOpen)}
-          {expandCorner}
-        </div>
-      );
-    }
+    return (
+      <div style={this.props.style}
+           className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+           tabIndex="-1"
+           onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
+           onMouseDown={this.onMouseDownHandler}>
+        {cellItem}
+        {this.flagIconRenderer(annotationsOpen)}
+        {expandCorner}
+      </div>
+    );
   }
 }
 

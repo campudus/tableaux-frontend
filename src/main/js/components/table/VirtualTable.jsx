@@ -16,6 +16,7 @@ import {maybe} from "../../helpers/monads";
 import Dispatcher from "../../dispatcher/Dispatcher";
 
 const META_CELL_WIDTH = 80;
+const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
@@ -25,6 +26,15 @@ const cache = new CellMeasurerCache({
   minHeight: ROW_HEIGHT,
   fixedWidth: true
 });
+
+// Modify cache as the default test rendering returns invalid height for column headers
+// Maybe replacing test rendering with expansion check will speed up rendering even more?
+cache.__rowHeight = cache.rowHeight;
+cache.rowHeight = (params) => {
+  return (params && params.index === 0)
+    ? HEADER_HEIGHT
+    : cache.__rowHeight(params);
+};
 
 export default class VirtualTable extends PureComponent {
   static propTypes = {
@@ -62,13 +72,6 @@ export default class VirtualTable extends PureComponent {
     } else if (!f.isNil(cellInfo)) {
       this.setState({openAnnotations: cellInfo});
     }
-  };
-
-  getCellWithOpenAnnotations = (row) => {
-    const openAnnotations = this.state.openAnnotations || {};
-    return (row.id === openAnnotations.rowId)
-      ? openAnnotations.cellId
-      : null;
   };
 
   calcColWidth = ({index}) => (index === 0) ? META_CELL_WIDTH : CELL_WIDTH;
@@ -124,7 +127,7 @@ export default class VirtualTable extends PureComponent {
       );
   };
 
-  renderColumnHeader = ({columnIndex, key, style}) => {
+  renderColumnHeader = ({columnIndex, key}) => {
     const column = this.props.columns.at(columnIndex);
     const firstCell = this.props.rows.at(0).cells.at(0);
     return (
@@ -137,9 +140,9 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  renderMetaCell = ({rowIndex, columnIndex, key, style}) => {
+  renderMetaCell = ({rowIndex, key, style}) => {
     if (rowIndex < 0) {
-      return <div key="id-cell" style={style}>ID</div>;
+      return <div className="id-meta-cell" key="id-cell" >ID</div>;
     }
 
     const {langtag, rows, expandedRowIds} = this.props;

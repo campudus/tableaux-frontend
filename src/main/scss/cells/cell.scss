@@ -218,60 +218,6 @@
   }
 }
 
-.row-display-label {
-  & {
-    position: absolute;
-    background: $dark-blue-grey-background;
-    top: -40px;
-    width: 285px;
-    padding: 0 10px;
-    left: 5px;
-    box-sizing: border-box;
-    height: 30px;
-    line-height: 30px;
-    color: $color-text-light-grey;
-    font-size: 12px;
-    pointer-events: none;
-    border-radius: 5px;
-    z-index: 2;
-  }
-
-  &:after {
-    top: 100%;
-    left: 10px;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-    border: 6px solid transparent;
-    border-top-color: $dark-blue-grey-background;
-  }
-
-  .content {
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  //left of cell, right arrow
-  &.flip {
-    left: -295px;
-    top: 0;
-    margin-top: 15px;
-    transform: translateY(-25%);
-
-    &:after {
-      top: 50%;
-      left: 100%;
-      border-top-color: transparent;
-      border-left-color: $dark-blue-grey-background;
-      margin-top: -6px;
-    }
-  }
-}
-
 .cell.editing .row-display-label.below {
   display: none;
 }

@@ -29,17 +29,11 @@
   height: 100%;
   position: relative;
 
-  .data {
-
-  }
-
   .data-wrapper {
-    overflow-x: auto !important;
     position: absolute;
     width: 100%;
     height: 85%;
     @include box-sizing(border-box);
-    top: $space-height-table-header;
 
     > div {
       background: transparent url("../img/row-grid.gif") repeat;
@@ -60,10 +54,9 @@
   display: block;
 
   .heading {
-    border-bottom: $space-border-size-table-header solid $color-border-grey;
+
     @include box-sizing(border-box);
-    font-weight: bold;
-    background-color: #F9F9F9;
+
     position: relative;
     min-width: 100%;
     left: 0px;
@@ -84,21 +77,35 @@
     }
   }
 
-  .column-head {
+  .column-head, .id-meta-cell {
     border-right: 1px solid $color-border-grey;
     overflow: visible;
     white-space: nowrap;
     position: relative;
-    height: $space-inner-height-table-header;
-
-    a {
-      outline: none;
-    }
+    height: $space-inner-height-table-header !important;
+    border-bottom: $space-border-size-table-header solid $color-border-grey;
+    font-weight: bold;
+    background-color: #F9F9F9;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
 
     .column-name-wrapper {
       width: 85%;
       overflow: hidden;
       text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+
+      .tableHeader-inner {
+        padding: 4px 8px;
+        border: 1px solid transparentize($color-text-light-grey, 0.5);
+        border-radius: 3px;
+        i {
+          color: $color-text-light-grey;
+        }
+      }
 
       .description-hint {
         color: $color-text-light-grey;
