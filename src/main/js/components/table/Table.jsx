@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Dispatcher from "../../dispatcher/Dispatcher";
-import Columns from "./../columns/Columns.jsx";
-import Rows from "./../rows/Rows.jsx";
 import {ActionTypes} from "../../constants/TableauxConstants";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import * as tableRowsWorker from "./tableRowsWorker";
@@ -110,6 +108,8 @@ class Table extends React.Component {
   }
 
   componentDidUpdate() {
+    return
+    window.devLog("Table did update.");
     // When overlay is open we don't want anything to force focus inside the table
     if (!this.props.overlayOpen) {
       // Just update when used with keyboard or when clicking explicitly on a cell
@@ -178,10 +178,6 @@ class Table extends React.Component {
 
   windowResize = () => {
     this.setState({windowHeight: window.innerHeight});
-  };
-
-  tableDataHeight = () => {
-    return (this.state.windowHeight - this.state.offsetTableData);
   };
 
   render() {

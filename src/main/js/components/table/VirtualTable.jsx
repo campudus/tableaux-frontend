@@ -11,8 +11,9 @@ import CellStack from "../cells/CellStack";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import {MultiGrid, AutoSizer, CellMeasurer, CellMeasurerCache} from "react-virtualized";
-import {Langtags} from "../../constants/TableauxConstants";
+import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
 import {maybe} from "../../helpers/monads";
+import Dispatcher from "../../dispatcher/Dispatcher";
 
 const META_CELL_WIDTH = 80;
 const CELL_WIDTH = 300;
@@ -42,7 +43,33 @@ export default class VirtualTable extends PureComponent {
     super(props);
     cache.columnWidth = this.calcColWidth;
     this.updateSelectedCellId();
+    this.state = {openAnnotations: {}};
   }
+
+  componentDidMount = () => {
+    Dispatcher.on(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+    Dispatcher.on(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+  };
+
+  componentWillUnmount = () => {
+    Dispatcher.off(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+    Dispatcher.off(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+  };
+
+  setOpenAnnotations = (cellInfo) => {
+    if (f.isNil(cellInfo) && !f.isEmpty(this.state.openAnnotations)) {
+      this.setState({openAnnotations: {}});
+    } else if (!f.isNil(cellInfo)) {
+      this.setState({openAnnotations: cellInfo});
+    }
+  };
+
+  getCellWithOpenAnnotations = (row) => {
+    const openAnnotations = this.state.openAnnotations || {};
+    return (row.id === openAnnotations.rowId)
+      ? openAnnotations.cellId
+      : null;
+  };
 
   calcColWidth = ({index}) => (index === 0) ? META_CELL_WIDTH : CELL_WIDTH;
 
@@ -161,6 +188,7 @@ export default class VirtualTable extends PureComponent {
 
   renderSingleCell = ({columnIndex, rowIndex, key, measure, style}) => {
     const {rows, table, langtag, columns} = this.props;
+    const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
@@ -174,7 +202,7 @@ export default class VirtualTable extends PureComponent {
             langtag={langtag}
             row={row}
             table={table}
-            annotationsOpen={false}
+            annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
             isExpandedCell={false}
             selected={isSelected}
             inSelectedRow={isInSelectedRow}
@@ -186,6 +214,7 @@ export default class VirtualTable extends PureComponent {
 
   renderExpandedRowCell = ({columnIndex, rowIndex, key, measure, style}) => {
     const {rows, columns, table} = this.props;
+    const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
@@ -196,6 +225,7 @@ export default class VirtualTable extends PureComponent {
         {
           Langtags.map(
             (langtag) => {
+              const isPrimaryLang = langtag === f.first(Langtags);
               const isSelected = isRowSelected
                 && column.id === this.selectedIds.column
                 && langtag === this.selectedIds.langtag;
@@ -206,8 +236,8 @@ export default class VirtualTable extends PureComponent {
                       langtag={langtag}
                       row={row}
                       table={table}
-                      annotationsOpen={false}
-                      isExpandedCell={langtag !== f.first(Langtags)}
+                      annotationsOpen={isPrimaryLang && openAnnotations.cellId && cell.id === openAnnotations.cellId}
+                      isExpandedCell={!isPrimaryLang}
                       selected={isSelected}
                       inSelectedRow={isRowSelected}
                       editing={isEditing}
@@ -249,6 +279,7 @@ export default class VirtualTable extends PureComponent {
 
   render() {
     const {table, expandedRowIds, columns, selectedCell, selectedCellEditing, rows} = this.props;
+    const {openAnnotations} = this.state;
     const columnCount = columns
       .filter(f.get("visible"))
       .length + 1;
@@ -282,6 +313,7 @@ export default class VirtualTable extends PureComponent {
                 scrollingResetTimeInterval={16}
                 scrollToRow={selectedRow}
                 scrollToColumn={selectedCol}
+                openAnnotations={openAnnotations}
               />
             );
           }

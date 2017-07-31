@@ -320,7 +320,7 @@ Cell.propTypes = {
   row: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool,
-  annotationsOpen: React.PropTypes.bool.isRequired,
+  annotationsOpen: React.PropTypes.bool,
   isExpandedCell: React.PropTypes.bool.isRequired,
   measure: React.PropTypes.func
 };
