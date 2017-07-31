@@ -14,7 +14,7 @@ import {MultiGrid, AutoSizer, CellMeasurer, CellMeasurerCache} from "react-virtu
 import {Langtags} from "../../constants/TableauxConstants";
 import {maybe} from "../../helpers/monads";
 
-const META_CELL_WIDTH = 100;
+const META_CELL_WIDTH = 80;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
@@ -41,7 +41,7 @@ export default class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
     cache.columnWidth = this.calcColWidth;
-    this.updateSelectedCellIndex();
+    this.updateSelectedCellId();
   }
 
   calcColWidth = ({index}) => (index === 0) ? META_CELL_WIDTH : CELL_WIDTH;
@@ -74,7 +74,12 @@ export default class VirtualTable extends PureComponent {
   renderGridCell = (gridData) => {
     const {rowIndex, columnIndex} = gridData;
     if (columnIndex === 0) {
-      return this.renderMetaCell(f.update("key", (key) => `meta-${key}`, gridData));
+      return this.renderMetaCell(
+        f.compose(
+          f.update("key", (key) => `meta-${key}`),
+          f.update("rowIndex", f.add(-1))
+        )(gridData)
+      );
     }
     return (rowIndex === 0)
       ? this.renderColumnHeader(
@@ -106,23 +111,41 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderMetaCell = ({rowIndex, columnIndex, key, style}) => {
-    if (rowIndex === 0) {
-      return <div key="id-cell" style={style}>ID</div>
+    if (rowIndex < 0) {
+      return <div key="id-cell" style={style}>ID</div>;
     }
 
     const {langtag, rows, expandedRowIds} = this.props;
-    const row = rows.get(rowIndex - 1) || {};
+    const row = rows.at(rowIndex) || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
+    const isRowSelected = !!(this.selectedIds && row.id === this.selectedIds.row);
 
-    return (
-      <MetaCell key={key}
-                style={style}
-                langtag={langtag}
-                rowId={row.id || -1}
-                onClick={f.noop}
-                rowExpanded={isRowExpanded}
-      />
-    );
+    return (isRowExpanded)
+      ? (
+        <div key={key}
+             className="cell-stack"
+        >
+          {Langtags.map(
+            (lt) => (
+              <MetaCell key={`${key}-${lt}`}
+                        langtag={lt}
+                        expanded={true}
+                        selected={isRowSelected}
+                        row={row}
+              />
+            )
+          )}
+        </div>
+      )
+      : (
+        <MetaCell key={key}
+                  style={style}
+                  langtag={langtag}
+                  row={row}
+                  selected={isRowSelected}
+                  expanded={false}
+        />
+      );
   };
 
   renderCell = (gridData) => {
@@ -207,10 +230,10 @@ export default class VirtualTable extends PureComponent {
   filterVisibleCells = (cell, columnId) => columnId === 0 || this.props.columns.at(columnId).visible;
 
   componentWillReceiveProps(next) {
-    !f.isNil(next.selectedCell) && this.updateSelectedCellIndex(next.selectedCell.id);
+    !f.isNil(next.selectedCell) && this.updateSelectedCellId(next.selectedCell.id);
   }
 
-  updateSelectedCellIndex = (idString) => {
+  updateSelectedCellId = (idString) => {
     if (f.isEmpty(idString) || !f.isString(idString)) {
       this.selectedIds = {};
       return;
@@ -235,8 +258,6 @@ export default class VirtualTable extends PureComponent {
 
     const selectedRow = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows.models));
     const selectedCol = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns.models));
-
-    devLog("selected:", selectedRow, selectedCol)
 
     return this.props.fullyLoaded ? (
       <AutoSizer>

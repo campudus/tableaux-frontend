@@ -11,15 +11,17 @@
   white-space: nowrap;
   display: flex;
   align-items: center;
-  padding: 0 15px;
+  padding: 0 9px;
   overflow: visible;
   text-overflow: ellipsis;
-//  border: 1px solid transparent;
-//  border-right: 1px solid $color-border-grey;
+  border: 1px solid transparent;
+  border-right: 1px solid $color-border-grey;
+  border-bottom: 1px solid $color-border-grey;
   outline: none;
   box-sizing: border-box;
-  height: 43px;
-  width: 298px;
+  height: 45px;
+  width: 300px;
+  background-color: white;
 
   button {
     outline: none;
@@ -184,7 +186,7 @@
   }
 
   &.in-selected-row {
-    background-color: $color-hover-background;
+    background-color: $color-selected-row;
   }
 
   &.editing {
@@ -272,9 +274,4 @@
 
 .cell.editing .row-display-label.below {
   display: none;
-}
-
-.meta-cell {
-  width: 100px !important;
-  background-color: $color-border-grey;
 }
