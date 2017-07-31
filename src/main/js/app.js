@@ -13,6 +13,10 @@ import Cookies from "js-cookie";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+if (isProduction) {
+  require("./watchers/watchConnection");
+}
+
 window.devLog = (isProduction)
   ? function () {}
   : function () {

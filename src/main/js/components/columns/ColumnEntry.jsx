@@ -130,7 +130,8 @@ class ColumnEntry extends React.Component {
       });
     classNames("column-head", {"context-menu-open": menuOpen});
     return (
-      <div className={classNames("column-head", {"context-menu-open": menuOpen})}
+      <div style={this.props.style}
+           className={classNames("column-head", {"context-menu-open": menuOpen})}
            key={id}
       >
         <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}

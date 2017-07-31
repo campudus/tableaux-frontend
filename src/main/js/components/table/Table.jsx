@@ -10,6 +10,9 @@ import * as tableNavigationWorker from "./tableNavigationWorker";
 import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import JumpSpinner from "./JumpSpinner";
+import f from "lodash/fp";
+
+import VirtualTable from "./VirtualTable";
 
 // Worker
 @listensToClickOutside
@@ -79,15 +82,17 @@ class Table extends React.Component {
   }
 
   componentDidMount() {
-    let {tableRowsDom, columnsDom, headerDOMElement, tableHeaderId, tableDOMNode, tableDOMOffsetY} = this;
-    let {tableRows, columns} = this.refs;
+    let {tableRowsDom, columnsDom, headerDOMElement, tableHeaderId, tableDOMOffsetY} = this;
+    let {tableRows, columns, tableDOMNode} = this.refs;
 
     tableRowsDom = ReactDOM.findDOMNode(tableRows);
     columnsDom = ReactDOM.findDOMNode(columns);
+    this.tableDOMNode = tableDOMNode;
+    return;
     this.setState({offsetTableData: tableRowsDom.getBoundingClientRect().top});
     // Don't change this to state, its more performant during scroll
     headerDOMElement = document.getElementById(tableHeaderId);
-    tableDOMNode = ReactDOM.findDOMNode(this);
+    // tableDOMNode = ReactDOM.findDOMNode(this);
     tableDOMOffsetY = tableDOMNode.getBoundingClientRect().top;
     this.columnsDom = columnsDom;
     this.headerDOMElement = headerDOMElement;
@@ -130,6 +135,7 @@ class Table extends React.Component {
   onMouseDownHandler = (e) => {
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
     // in the header
+    return
     if (this.tableDOMNode.contains(document.activeElement)) {
       // deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
       // can't differentiate between clicking the scrollbar or content
@@ -147,6 +153,7 @@ class Table extends React.Component {
   };
 
   handleScroll = (e) => {
+    return;
     // only when horizontal scroll changed
     if (e.target.scrollLeft !== this.scrolledXBefore) {
       var scrolledX = e.target.scrollLeft;
@@ -182,31 +189,23 @@ class Table extends React.Component {
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
 
     return (
-      <section id="table-wrapper" ref="tableWrapper" tabIndex="-1" onScroll={this.handleScroll}
+      <section id="table-wrapper" ref="tableWrapper" tabIndex="-1"
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
                  this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
           <JumpSpinner />
-          <Columns ref="columns" table={table} langtag={langtag}
-                   columns={columns}
-                   tables={tables}
+          <VirtualTable columns={columns} ref="tableDOMNode"
+                        rows={rows}
+                        table={table}
+                        langtag={langtag}
+                        selectedCell={selectedCell}
+                        selectedCellEditing={selectedCellEditing}
+                        selectedCellExpandedRow={selectedCellExpandedRow}
+                        expandedRowIds={expandedRowIds}
+                        visibleColumns={f.map(f.get("visible"), columns.models)}
+                        fullyLoaded={this.props.fullyLoaded}
           />
-          <Rows ref="tableRows"
-                fullyLoaded={this.props.fullyLoaded}
-                rowsHeight={this.tableDataHeight()}
-                rows={rows}
-                langtag={langtag}
-                selectedCell={selectedCell}
-                selectedCellEditing={selectedCellEditing}
-                expandedRowIds={expandedRowIds}
-                selectedCellExpandedRow={selectedCellExpandedRow}
-                table={table}
-                shouldCellFocus={tableNavigationWorker.shouldCellFocus.call(this)}
-          />
-          <span id="scrollToLeftStart" className={!showScrollToLeftButton ? "hide" : null}
-                title="scroll to the beginning of table."
-                onClick={tableNavigationWorker.scrollToLeftStart.bind(this)}><i className="fa fa-chevron-left" /></span>
         </div>
         {tableContextMenu.getRowContextMenu.call(this)}
       </section>

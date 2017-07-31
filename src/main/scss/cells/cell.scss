@@ -1,15 +1,25 @@
 @import "../variables";
 
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  height: 8 * 45px;
+}
+
 .cell {
-  position: relative;
-  vertical-align: top;
+  position: initial;
   white-space: nowrap;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
   overflow: visible;
   text-overflow: ellipsis;
-  border: 1px solid transparent;
-  border-right: 1px solid $color-border-grey;
+//  border: 1px solid transparent;
+//  border-right: 1px solid $color-border-grey;
   outline: none;
+  box-sizing: border-box;
+  height: 43px;
+  width: 298px;
 
   button {
     outline: none;
@@ -99,19 +109,6 @@
     }
   }
 
-  &.needs-translation {
-    &:before {
-      content: '';
-      position: absolute;
-      left: 3px;
-      top: 4px;
-      width: 0;
-      height: 0;
-      border: 2px solid $color-needs-translation;
-      border-radius: 2px;
-    }
-  }
-
   .annotation-flag-icons {
     position: absolute;
     right: 3px;
@@ -184,6 +181,10 @@
       }
     }
 
+  }
+
+  &.in-selected-row {
+    background-color: $color-hover-background;
   }
 
   &.editing {
@@ -271,4 +272,9 @@
 
 .cell.editing .row-display-label.below {
   display: none;
+}
+
+.meta-cell {
+  width: 100px !important;
+  background-color: $color-border-grey;
 }

@@ -101,12 +101,13 @@ class Cell extends React.Component {
 
   // Dont update when cell is not editing or selected
   shouldComponentUpdate = (nextProps, nextState) => {
-    const {annotationsOpen, selected, editing, langtag, shouldFocus} = this.props;
+    const {annotationsOpen, selected, editing, langtag, shouldFocus, inSelectedRow} = this.props;
     return (editing !== nextProps.editing
-      || selected !== nextProps.selected
-      || langtag !== nextProps.langtag
-      || shouldFocus !== nextProps.shouldFocus)
-      || annotationsOpen !== nextProps.annotationsOpen;
+    || selected !== nextProps.selected
+    || inSelectedRow !== nextProps.inSelectedRow
+    || langtag !== nextProps.langtag
+    || shouldFocus !== nextProps.shouldFocus)
+    || annotationsOpen !== nextProps.annotationsOpen;
   };
 
   getKeyboardShortcuts = (event) => {
@@ -212,7 +213,7 @@ class Cell extends React.Component {
   };
 
   render = () => {
-    const {annotationsOpen, cell, langtag, selected, editing} = this.props;
+    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
     const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
     // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
@@ -239,7 +240,8 @@ class Cell extends React.Component {
     const cssClass = classNames(`cell cell-${kind} cell-${cell.column.getId()}-${cell.rowId}`,
       {
         "selected": selected,
-        "editing": cell.isEditable && editing
+        "editing": cell.isEditable && editing,
+        "in-selected-row": inSelectedRow
       }
     );
 
@@ -249,10 +251,10 @@ class Cell extends React.Component {
 
     const cellItem = (
       <CellKind cell={cell} langtag={langtag}
-                selected={selected}
+                selected={selected} inSelectedRow={inSelectedRow}
                 editing={cell.isEditable && editing}
-                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {
-                } : this.setKeyboardShortcutsForChildren}
+                contentChanged={contentChanged(cell, langtag)}
+                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
       />
     );
 
@@ -272,10 +274,10 @@ class Cell extends React.Component {
       const indexOfCell = cell.collection.indexOf(cell);
       // get global so not every single cell needs to look fo the table rows dom element
       const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
-      const difference = this.cellOffset - tableRowsDom.scrollTop;
+      //const difference = this.cellOffset - tableRowsDom.scrollTop;
       const rowDisplayLabelClass = classNames(
         "row-display-label",
-        {"flip": -CELL_HINT_PADDING < difference && difference < CELL_HINT_PADDING}
+
       );
 
       // We just show the info starting at the fourth column
@@ -285,7 +287,8 @@ class Cell extends React.Component {
         </div>) : null;
 
       return (
-        <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+        <div style={this.props.style}
+             className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
              onMouseDown={this.onMouseDownHandler}>
           {cellItem}
@@ -296,7 +299,8 @@ class Cell extends React.Component {
       );
     } else {
       return (
-        <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+        <div style={this.props.style}
+             className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
              tabIndex="-1">
           {cellItem}
           {this.flagIconRenderer(annotationsOpen)}
@@ -311,13 +315,14 @@ Cell.propTypes = {
   cell: React.PropTypes.object.isRequired,
   langtag: React.PropTypes.string.isRequired,
   selected: React.PropTypes.bool,
+  inSelectedRow: React.PropTypes.bool,
   editing: React.PropTypes.bool,
   row: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool,
-  showTranslationStatus: React.PropTypes.bool,
   annotationsOpen: React.PropTypes.bool.isRequired,
-  isExpandedCell: React.PropTypes.bool.isRequired
+  isExpandedCell: React.PropTypes.bool.isRequired,
+  measure: React.PropTypes.func
 };
 
 export default Cell;

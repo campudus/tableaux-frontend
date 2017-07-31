@@ -159,6 +159,7 @@ export function getKeyboardShortcuts() {
  * This enhances the default browser behaviour because it checks if the selected cell is completely visible.
  */
 export function updateScrollViewToSelectedCell() {
+  return
   // Scrolling container
   let tableRowsDom = this.tableRowsDom;
   // Are there any selected cells?
