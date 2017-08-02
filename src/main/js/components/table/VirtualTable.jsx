@@ -139,7 +139,7 @@ export default class VirtualTable extends PureComponent {
       return <div className="id-meta-cell" key="id-cell" >ID</div>;
     }
 
-    const {langtag, rows, expandedRowIds} = this.props;
+    const {langtag, rows, expandedRowIds, selectedCellExpandedRow} = this.props;
     const row = rows.at(rowIndex) || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const isRowSelected = !!(this.selectedIds && row.id === this.selectedIds.row);
@@ -154,7 +154,7 @@ export default class VirtualTable extends PureComponent {
               <MetaCell key={`${key}-${lt}`}
                         langtag={lt}
                         expanded={true}
-                        selected={isRowSelected}
+                        selected={isRowSelected && lt === selectedCellExpandedRow}
                         row={row}
               />
             )
@@ -204,7 +204,6 @@ export default class VirtualTable extends PureComponent {
             selected={isSelected}
             inSelectedRow={isInSelectedRow}
             editing={isEditing}
-            measure={measure}
       />
     );
   };
@@ -215,7 +214,6 @@ export default class VirtualTable extends PureComponent {
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
-    const isRowSelected = row.id === this.selectedIds.row;
 
     return (
       <div className="cell-stack" key={cell.id} >
@@ -223,10 +221,12 @@ export default class VirtualTable extends PureComponent {
           Langtags.map(
             (langtag) => {
               const isPrimaryLang = langtag === f.first(Langtags);
-              const isSelected = isRowSelected
-                && column.id === this.selectedIds.column
+              const isRowSelected = row.id === this.selectedIds.row
                 && langtag === this.selectedIds.langtag;
+              const isSelected = isRowSelected
+                && column.id === this.selectedIds.column;
               const isEditing = isSelected && this.props.selectedCellEditing;
+              devLog("cell:", cell.id, "row:", row.id, this.selectedIds)
               return (
                 <Cell key={`${langtag}-${key}`}
                       cell={cell}
@@ -254,7 +254,11 @@ export default class VirtualTable extends PureComponent {
         <AddNewRowButton table={table} />
       );
     }
-    return null;
+    return <div style={{
+      height: "100%",
+      width: "100%",
+      backgroundColor: "white"
+    }} />;
   };
 
   getCell = (rowIndex, columnIndex) => {
@@ -268,25 +272,23 @@ export default class VirtualTable extends PureComponent {
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
-    console.log("modified Props:", newPropKeys.filter((k) => next[k] !== this.props[k]))
     if (f.contains("selectedCell", newPropKeys)) {
-      this.scrollToCell((next.selectedCell || {}).id);
+      this.scrollToCell((next.selectedCell || {}).id, next.selectedCellExpandedRow);
     }
-    if (f.contains("expandedRowIds", newPropKeys)) {
+    if (f.contains("expandedRowIds", newPropKeys)
+      && !f.isEmpty(f.xor(next.expandedRowIds, this.expandedRowIds))
+    ) {
       this.expandedRowIds = next.expandedRowIds;
       maybe(this.multiGrid)
-        .method("invalidateCellSizeAfterRender")
-        .map(() => console.log("Reset cell size!"));
-
+        .method("invalidateCellSizeAfterRender");
     }
   }
 
-  updateSelectedCellId = (idString) => {
+  updateSelectedCellId = (idString, selectedLang = this.props.selectedCellExpandedRow) => {
     if (f.isEmpty(idString) || !f.isString(idString)) {
       this.selectedIds = {};
       return;
     }
-    const selectedLang = this.props.selectedCellExpandedRow;
     const [colId, rowId] = f.takeRight(2, idString.split("-"));
     this.selectedIds = {
       row: parseInt(rowId),
@@ -295,9 +297,9 @@ export default class VirtualTable extends PureComponent {
     };
   };
 
-  scrollToCell = (cellId) => {
-    console.log("Scrolling to", cellId)
-    this.updateSelectedCellId(cellId);
+  scrollToCell = (cellId, langtag = this.props.selectedCellExpandedRow) => {
+    devLog("Scrolling to", cellId, langtag)
+    this.updateSelectedCellId(cellId, langtag);
     if (!cellId) {  // when called by cell deselection
       return false;
     }
@@ -306,10 +308,7 @@ export default class VirtualTable extends PureComponent {
     const columnIndex = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns.models));
     this.setState({
       scrolledCell: {columnIndex, rowIndex}
-    },
-      () => console.log(this.state));
-
-    console.log(this.multiGrid)
+    });
   };
 
   storeGridElement = (node) => {
@@ -341,16 +340,17 @@ export default class VirtualTable extends PureComponent {
   };
 
   render() {
-    const {table, expandedRowIds, columns, selectedCell, selectedCellEditing} = this.props;
+    const {table, expandedRowIds, columns, selectedCell, selectedCellEditing, selectedCellExpandedRow} = this.props;
     const {openAnnotations, scrolledCell: {columnIndex, rowIndex}, scrollLeft} = this.state;
     const columnCount = columns
-      .filter(f.get("visible"))
+      .filter(this.filterVisibleCells)
       .length + 1;
     const rowCount = (this.props.fullyLoaded) ? f.size(table.rows.models) + 2 : 1;
 
-    devLog(`Virtual table: ${rowCount} rows, ${columnCount} columns, expanded Rows: ${this.props.expandedRowIds}, selectedCell: ${f.get("id", this.props.selectedCell)} ${this.props.selectedCellEditing}`)
-
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
+    const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
+
+    devLog(`Virtual table: ${rowCount} rows, ${columnCount} columns, expanded Rows: ${this.props.expandedRowIds}, selectedCell: ${selectedCellKey}`)
 
     return this.props.fullyLoaded ? (
       <AutoSizer>
@@ -370,7 +370,7 @@ export default class VirtualTable extends PureComponent {
                 fixedRowCount={1}
                 width={width}
                 height={height}
-                selectedCell={f.get("id", selectedCell) + selectedCellEditing.toString()}
+                selectedCell={selectedCellKey}
                 expandedRows={expandedRowIds}
                 scrollingResetTimeInterval={150}
                 openAnnotations={openAnnotations}

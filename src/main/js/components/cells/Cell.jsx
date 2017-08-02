@@ -131,7 +131,7 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked: ", cell, "value: ", cell.value, cell.displayValue);
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked", langtag, ":", cell, "value: ", cell.value, cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -287,7 +287,6 @@ Cell.propTypes = {
   shouldFocus: React.PropTypes.bool,
   annotationsOpen: React.PropTypes.bool,
   isExpandedCell: React.PropTypes.bool.isRequired,
-  measure: React.PropTypes.func
 };
 
 export default Cell;

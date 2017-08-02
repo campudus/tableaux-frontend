@@ -150,14 +150,15 @@
   &.selected {
     border: 1px solid $color-primary;
 
+    &.cell-link, &.cell-attachment {
+      padding: 0;
+    }
+
     &.cell-link, &.cell-text, &.cell-attachment, &.cell-richtext, &.cell-currency {
       border: 0;
 
       .cell-content {
         @include box-sizing(border-box);
-        position: absolute;
-        top: 0;
-        left: 0;
         padding: 9px;
         height: auto;
         min-height: $space-height-cell;
