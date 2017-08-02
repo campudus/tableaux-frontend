@@ -83,7 +83,7 @@ export default class ColumnHeader extends PureComponent {
 
   saveEdits = (payload) => {
     const {langtag, colId, newName, newDescription} = payload;
-    const {columns} = this.props;
+    const {column} = this.props;
     const modifications =
       f.compose(
         m => (newName)
@@ -94,8 +94,7 @@ export default class ColumnHeader extends PureComponent {
           : m
       )({});
 
-    columns
-      .get(colId)
+    column
       .save(modifications, {
         patch: true,
         wait: true,
@@ -104,8 +103,8 @@ export default class ColumnHeader extends PureComponent {
   };
 
   getDescription = () => {
-    const {column, column: {displayName}, langtag} = this.props;
-    return displayName[langtag] || displayName[DefaultLangtag] || column.name;
+    const {column, column: {description}, langtag} = this.props;
+    return description[langtag] || description[DefaultLangtag];
   };
 
   render() {
@@ -123,7 +122,7 @@ export default class ColumnHeader extends PureComponent {
                    columnContent={columnContent}
                    name={this.getDisplayName()}
                    column={column}
-                   description={this.getDisplayName()}
+                   description={this.getDescription()}
                    langtag={langtag}
                    isId={column.identifier}
                    tables={tables}

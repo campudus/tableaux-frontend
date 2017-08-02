@@ -90,6 +90,10 @@ body div div.column-header-context-menu {
     }
   }
 
+  .id-meta-cell {
+    justify-content: flex-end;
+  }
+
   .column-head, .id-meta-cell {
     border-right: 1px solid $color-border-grey;
     overflow: visible;
@@ -123,43 +127,6 @@ body div div.column-header-context-menu {
       .description-hint {
         color: $color-text-light-grey;
         margin-left: 6px;
-      }
-    }
-
-    .description-tooltip {
-      position: relative;
-      top: 100%;
-      left: 0;
-      max-width: 100%;
-      box-sizing: border-box;
-      border-radius: 6px;
-      padding: 10px;
-      background-color: transparentize($color-primary-text, 0.1);
-      color: $color-text-light-grey;
-
-      .description-tooltip-text {
-        white-space: normal;
-        font-weight: normal;
-      }
-      &:before {
-        content: "";
-        position: absolute;
-        left: 7%;
-        top: -15px;
-        border-left: 5px solid transparent;
-        border-right: 8px solid transparent;
-        border-bottom: 15px solid transparentize($color-primary-text, 0.1)
-      }
-
-      &.shift-left {
-        left: -90%;
-
-        &:before {
-          left: auto;
-          right: 4%;
-          border-left: 8px solid transparent;
-          border-right: 5px solid transparent;
-        }
       }
     }
 
@@ -216,7 +183,6 @@ body div div.column-header-context-menu {
         vertical-align: top;
       }
     }
-
   }
 
   .column-selected {
@@ -299,6 +265,42 @@ body div div.column-header-context-menu {
     &.is-disabled {
       background-color: $color-background-disabled;
       color: $color-foreground-disabled;
+    }
+  }
+}
+
+.description-tooltip {
+  position: absolute;
+  z-index: 50;
+  max-width: 250px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: transparentize($color-primary-text, 0.1);
+  color: $color-text-light-grey;
+
+  .description-tooltip-text {
+    white-space: normal;
+    font-weight: normal;
+  }
+  &:before {
+    content: "";
+    position: absolute;
+    left: 7%;
+    top: -15px;
+    border-left: 5px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 15px solid transparentize($color-primary-text, 0.1)
+  }
+
+  &.shift-left {
+    transform: translateX(-90%);
+
+    &:before {
+      left: auto;
+      right: 4%;
+      border-left: 8px solid transparent;
+      border-right: 5px solid transparent;
     }
   }
 }

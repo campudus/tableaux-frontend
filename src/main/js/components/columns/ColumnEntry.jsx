@@ -101,8 +101,12 @@ class ColumnEntry extends React.Component {
     );
   };
 
-  showDescription = (show) => () => {
-    this.setState({showDescription: show && !f.isEmpty(this.props.description)});
+  showDescription = (show) => (event) => {
+    const headerNode = ReactDOM.findDOMNode(event.target);
+    this.setState({
+      showDescription: show && !f.isEmpty(this.props.description),
+      descriptionCoords: (show) ? headerNode.getBoundingClientRect() : null
+    });
   };
 
   componentDidUpdate() {
@@ -124,6 +128,7 @@ class ColumnEntry extends React.Component {
     const {column: {kind, id}, columnContent, columnIcon, description} = this.props;
     const menuOpen = this.state.ctxCoords;
     const showDescription = !f.isEmpty(description) && this.state.showDescription && !menuOpen;
+    const {left, bottom} = (showDescription) ? this.state.descriptionCoords : {};
     const contextMenuClass = classNames(
       "column-contextmenu-button fa ", {
         "fa-angle-up ignore-react-onclickoutside": menuOpen,
@@ -140,15 +145,22 @@ class ColumnEntry extends React.Component {
              onMouseLeave={this.showDescription(false)}
         >
           {columnContent}
+          {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle"/> : null }
           {columnIcon}
         </div>
         {(showDescription)
           ? (
-            <div className="description-tooltip"
-                 ref={el => { this.tooltip = el; }}
-            >
-              <div className="description-tooltip-text">{description}</div>
-            </div>
+            <Portal isOpened>
+              <div className="description-tooltip"
+                   ref={el => { this.tooltip = el; }}
+                   style={{ // align top left corner at bottom left corner of opening div
+                     left: left,
+                     top: bottom + 10
+                   }}
+              >
+                <div className="description-tooltip-text">{description}</div>
+              </div>
+            </Portal>
           )
           : null}
         {(kind !== "concat")
