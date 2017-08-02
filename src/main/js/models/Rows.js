@@ -103,6 +103,7 @@ const Rows = Collection.extend({
                 reject(err);
               } else {
                 addRows(n, JSON.parse(response.text));
+                success(this.totalSize);
                 resolve();
               }
             }
@@ -112,6 +113,7 @@ const Rows = Collection.extend({
 
     const fetchTail = (ignore, response) => {
       this.totalSize = f.get(["page", "totalSize"], response) || 0;
+      success(this.totalSize);
       const pages = this.pageCount();
       console.log("Table has", pages, "total pages");
       console.log("Page 1 loaded");

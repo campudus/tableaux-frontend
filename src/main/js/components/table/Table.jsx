@@ -7,14 +7,18 @@ import * as tableRowsWorker from "./tableRowsWorker";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import JumpSpinner from "./JumpSpinner";
 import f from "lodash/fp";
+import {maybe} from "../../helpers/monads";
 
 import VirtualTable from "./VirtualTable";
 
 // Worker
+
+@connectToAmpersand
 @listensToClickOutside
-class Table extends React.Component {
+class Table extends React.PureComponent {
 
   /**
    * This is an anti-pattern on purpose
@@ -23,8 +27,6 @@ class Table extends React.Component {
   constructor(props) {
     super(props);
     this.headerDOMElement = null;
-    this.scrolledXBefore = 0;
-    this.selectNewCreatedRow = false;
     this.keyboardRecentlyUsedTimer = null;
     this.tableHeaderId = "tableHeader";
     this.tableDOMNode = null;
@@ -79,28 +81,6 @@ class Table extends React.Component {
     window.GLOBAL_TABLEAUX.tableRowsDom = null;
   }
 
-  componentDidMount() {
-    let {tableRowsDom, columnsDom, headerDOMElement, tableHeaderId, tableDOMOffsetY} = this;
-    let {tableRows, columns, tableDOMNode} = this.refs;
-
-    tableRowsDom = ReactDOM.findDOMNode(tableRows);
-    columnsDom = ReactDOM.findDOMNode(columns);
-    this.tableDOMNode = tableDOMNode;
-    return;
-    this.setState({offsetTableData: tableRowsDom.getBoundingClientRect().top});
-    // Don't change this to state, its more performant during scroll
-    headerDOMElement = document.getElementById(tableHeaderId);
-    // tableDOMNode = ReactDOM.findDOMNode(this);
-    tableDOMOffsetY = tableDOMNode.getBoundingClientRect().top;
-    this.columnsDom = columnsDom;
-    this.headerDOMElement = headerDOMElement;
-    this.tableDOMNode = tableDOMNode;
-    this.tableDOMOffsetY = tableDOMOffsetY;
-
-    // save a reference globally for children. Cells use this.
-    window.GLOBAL_TABLEAUX.tableRowsDom = this.tableRowsDom = tableRowsDom;
-  }
-
   componentWillReceiveProps(np) {
     if (!this.props.fullyLoaded && np.fullyLoaded) {
       this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
@@ -108,14 +88,9 @@ class Table extends React.Component {
   }
 
   componentDidUpdate() {
-    return
     window.devLog("Table did update.");
     // When overlay is open we don't want anything to force focus inside the table
     if (!this.props.overlayOpen) {
-      // Just update when used with keyboard or when clicking explicitly on a cell
-      if (tableNavigationWorker.shouldCellFocus.call(this)) {
-        tableNavigationWorker.updateScrollViewToSelectedCell.call(this);
-      }
       tableNavigationWorker.checkFocusInsideTable.call(this);
     }
   }
@@ -125,54 +100,36 @@ class Table extends React.Component {
      Prevent to render when clicking on already selected cell and don't clear when some cell is editing. This way cells
      like shorttext will be saved on the first click outside and on the second click it gets deselected.
      */
+    devLog("handleClickOutside")
     if (this.state.selectedCell && !this.state.selectedCellEditing) {
       this.setState({
         selectedCell: null
-      });
+      }, () => devLog("Deselected cell"));
     }
   };
 
   onMouseDownHandler = (e) => {
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
     // in the header
-    return
-    if (this.tableDOMNode.contains(document.activeElement)) {
+    if (maybe(this.tableDOMNode)
+        .exec("contains", document.activeElement)
+        .getOrElse(false)
+    ) {
       // deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
       // can't differentiate between clicking the scrollbar or content
-      if (this.columnsDom.contains(e.target)) {
+      if (maybe(this.headerDOMElement)
+          .exec("contains", e.target)
+          .getOrElse(false)
+      ) {
         this.handleClickOutside(e);
         e.preventDefault();
       }
 
       /*
-       Important: prevents loosing the focus of a cell when clicking something.
+       Important: prevents losing the focus of a cell when clicking something.
        When a child component inside of the Table needs focus attach a "onMouseDown" event to it and
        call "event.stopPropagation()". This prevents calling this function and enables the standard browser behaviour
        */
-    }
-  };
-
-  handleScroll = (e) => {
-    return;
-    // only when horizontal scroll changed
-    if (e.target.scrollLeft !== this.scrolledXBefore) {
-      var scrolledX = e.target.scrollLeft;
-      // Don't change this to state, its more performant during scroll
-      this.headerDOMElement.style.left = -scrolledX + "px";
-      this.scrolledXBefore = scrolledX;
-
-      // update the scroll to left button when necessary
-      if (scrolledX !== 0 && !this.state.showScrollToLeftButton) {
-        this.setState({
-          showScrollToLeftButton: true,
-          shouldCellFocus: false
-        });
-      } else if (scrolledX === 0 && this.state.showScrollToLeftButton) {
-        this.setState({
-          showScrollToLeftButton: false,
-          shouldCellFocus: false
-        });
-      }
     }
   };
 
@@ -180,9 +137,15 @@ class Table extends React.Component {
     this.setState({windowHeight: window.innerHeight});
   };
 
+  findAndStoreTableDiv = (virtualDOMNode) => {
+    this.tableDOMNode = ReactDOM.findDOMNode(virtualDOMNode);
+  };
+
   render() {
-    const {langtag, table: {columns}, rows, table, tables} = this.props;
-    const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow, showScrollToLeftButton} = this.state;
+    const {langtag, table: {columns}, rows, table, rowKeys} = this.props;
+    const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
+
+    devLog("table.render")
 
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1"
@@ -191,15 +154,16 @@ class Table extends React.Component {
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
           <JumpSpinner />
-          <VirtualTable columns={columns} ref="tableDOMNode"
+          <VirtualTable columns={columns} ref={this.findAndStoreTableDiv}
                         rows={rows}
+                        rowIdKey={rowKeys}
                         table={table}
                         langtag={langtag}
                         selectedCell={selectedCell}
                         selectedCellEditing={selectedCellEditing}
                         selectedCellExpandedRow={selectedCellExpandedRow}
                         expandedRowIds={expandedRowIds}
-                        visibleColumns={f.map(f.get("visible"), columns.models)}
+                        visibleColumns={f.map(f.get("visible"), columns.models).toString()}
                         fullyLoaded={this.props.fullyLoaded}
           />
         </div>
@@ -214,6 +178,7 @@ Table.propTypes = {
   table: React.PropTypes.object.isRequired,
   overlayOpen: React.PropTypes.bool,
   rows: React.PropTypes.object,
+  rowKeys: React.PropTypes.string.isRequired,
   tables: React.PropTypes.object.isRequired,
   fullyLoaded: React.PropTypes.bool.isRequired
 };

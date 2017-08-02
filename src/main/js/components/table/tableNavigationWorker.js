@@ -22,7 +22,11 @@ export function checkFocusInsideTable() {
     // happens in IE
     if (focusedElement === null) {
       maybe(tableDOMNode).method("focus");
-    } else if (tableDOMNode && !tableDOMNode.contains(focusedElement)) {
+    } else if (maybe(tableDOMNode)
+        .exec("contains", focusedElement)
+        .map((boolVal) => !boolVal)
+        .getOrElse(false)
+    ) {
       // Is the focus outside the table or is body selected
       // force table to be focused to get keyboard events
       tableDOMNode.focus();
@@ -152,49 +156,6 @@ export function getKeyboardShortcuts() {
       }
     }
   };
-}
-
-/**
- * Checks if selected cell is overflowing and adjusts the scroll position
- * This enhances the default browser behaviour because it checks if the selected cell is completely visible.
- */
-export function updateScrollViewToSelectedCell() {
-  return
-  // Scrolling container
-  let tableRowsDom = this.tableRowsDom;
-  // Are there any selected cells?
-  const cellsDom = tableRowsDom.getElementsByClassName("cell selected");
-  if (cellsDom.length > 0) {
-    // Get the first selected cell
-    const cell = cellsDom[0];
-    // Cell DOM position and dimensions
-    const targetY = cell.offsetTop;
-    const targetX = cell.offsetLeft;
-    const cellWidth = cell.offsetWidth;
-    const cellHeight = cell.offsetHeight;
-    // Scroll container position and dimensions
-    const currentScrollPositionX = tableRowsDom.scrollLeft;
-    const currentScrollPositionY = tableRowsDom.scrollTop;
-    const containerWidth = tableRowsDom.clientWidth;
-    const containerHeight = tableRowsDom.clientHeight;
-
-    // Check if cell is outside the view. Cell has to be completely visible
-    if (targetX < currentScrollPositionX) {
-      // Overflow Left
-      tableRowsDom.scrollLeft = targetX;
-    } else if (targetX + cellWidth > currentScrollPositionX + containerWidth) {
-      // Overflow Right
-      tableRowsDom.scrollLeft = targetX - (containerWidth - cellWidth);
-    }
-
-    if (targetY < currentScrollPositionY) {
-      // Overflow Top
-      tableRowsDom.scrollTop = targetY;
-    } else if (targetY + cellHeight > currentScrollPositionY + containerHeight) {
-      // Overflow Bottom
-      tableRowsDom.scrollTop = targetY - (containerHeight - cellHeight);
-    }
-  }
 }
 
 export function isLastRowSelected() {

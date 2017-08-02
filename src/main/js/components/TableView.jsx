@@ -491,6 +491,16 @@ class TableView extends React.Component {
         console.error("No table found with id " + this.state.currentTableId);
       }
 
+      const rows = rowsCollection || {};
+      // pass concatenated row ids on, so children can decide whether they should re-render
+      const rowKeys = f.compose(
+        f.toString,
+        f.map(f.get("id")),
+        f.get("models")
+      )(rowsCollection);
+
+        devLog("Tableview.render")
+
       return (
         <div>
           <header>
@@ -523,7 +533,8 @@ class TableView extends React.Component {
           <div className="wrapper">
             <Table key={`${this.state.currentTableId}-${(tableFullyLoaded) ? "finished" : "loading"}`} table={currentTable}
                    fullyLoaded={tableFullyLoaded}
-                   langtag={langtag} rows={rowsCollection || {}} overlayOpen={overlayOpen}
+                   langtag={langtag} rows={rows} overlayOpen={overlayOpen}
+                   rowKeys={rowKeys}
                    pasteOriginCell={pasteOriginCell}
                    tables={tables}
                    disableOnClickOutside={this.props.overlayOpen}

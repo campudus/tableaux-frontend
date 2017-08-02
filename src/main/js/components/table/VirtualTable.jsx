@@ -7,34 +7,20 @@
 import React, {PropTypes, PureComponent} from "react";
 import f from "lodash/fp";
 import Cell from "../cells/Cell";
-import CellStack from "../cells/CellStack";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
-import {MultiGrid, AutoSizer, CellMeasurer, CellMeasurerCache} from "react-virtualized";
+import {MultiGrid, AutoSizer} from "react-virtualized";
 import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
 import {maybe} from "../../helpers/monads";
 import Dispatcher from "../../dispatcher/Dispatcher";
+import AddNewRowButton from "../rows/NewRow";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
-// Needed to recalculate cell heights when opening/closing an item's translations
-const cache = new CellMeasurerCache({
-  defaultHeight: ROW_HEIGHT,
-  minHeight: ROW_HEIGHT,
-  fixedWidth: true
-});
-
-// Modify cache as the default test rendering returns invalid height for column headers
-// Maybe replacing test rendering with expansion check will speed up rendering even more?
-cache.__rowHeight = cache.rowHeight;
-cache.rowHeight = (params) => {
-  return (params && params.index === 0)
-    ? HEADER_HEIGHT
-    : cache.__rowHeight(params);
-};
+const SCROLL_TIME = 500; // ms; time to scroll back to left when button is clicked
 
 export default class VirtualTable extends PureComponent {
   static propTypes = {
@@ -46,15 +32,33 @@ export default class VirtualTable extends PureComponent {
     selectedCell: PropTypes.object,
     selectedCellEditing: PropTypes.bool,
     selectedCellExpandedRow: PropTypes.string,
-    visibleColumns: PropTypes.array.isRequired
+    visibleColumns: PropTypes.string.isRequired
   };
 
   constructor(props) {
     super(props);
-    cache.columnWidth = this.calcColWidth;
     this.updateSelectedCellId();
-    this.state = {openAnnotations: {}};
+    this.state = {
+      openAnnotations: {},
+      scrolledCell: {}
+    };
+    this.expandedRowIds = props.expandedRowIds;
   }
+
+  calcRowHeight = ({index}) => {
+    if (index === 0) {
+      return HEADER_HEIGHT;
+    }
+    const row = this.props.rows.at(index - 1);
+    const rowId = f.get("id", row);
+    return (f.contains(rowId, this.expandedRowIds))
+      ? f.size(Langtags) * ROW_HEIGHT
+      : ROW_HEIGHT;
+  };
+
+  calcColWidth = ({index}) => {
+    return (index === 0) ? META_CELL_WIDTH : CELL_WIDTH;
+  };
 
   componentDidMount = () => {
     Dispatcher.on(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
@@ -74,35 +78,23 @@ export default class VirtualTable extends PureComponent {
     }
   };
 
-  calcColWidth = ({index}) => (index === 0) ? META_CELL_WIDTH : CELL_WIDTH;
-
   renderEmptyTable = () => null;
 
   cellRenderer = (gridData) => (
-    <CellMeasurer
-      cache={cache}
-      {...f.pick(["columnIndex", "rowIndex", "key", "parent"], gridData)}
+    <div {...f.pick(["style", "key"], gridData)}
     >
-      {
-        ({measure}) => {
-          // Measure only first cells' height (measure count is O(n^2)) to update row height cache
-          const measureFn = (gridData.columnIndex < 2) ? measure : f.noop;
-          return (
-            <div style={{
-              ...gridData.style,
-              width: this.calcColWidth(gridData.columnIndex)
-            }}
-            >
-              {this.renderGridCell(f.assoc("measure", measureFn, gridData))}
-            </div>
-          );
-        }
-      }
-    </CellMeasurer>
+      {this.renderGridCell(gridData)}
+    </div>
   );
 
   renderGridCell = (gridData) => {
     const {rowIndex, columnIndex} = gridData;
+    // if we're below all rows, render buttons
+    if (rowIndex > f.size(this.props.rows.models)) {
+      return this.renderButton(gridData);
+    }
+
+    // if we're in the first column, render meta cells
     if (columnIndex === 0) {
       return this.renderMetaCell(
         f.compose(
@@ -111,6 +103,8 @@ export default class VirtualTable extends PureComponent {
         )(gridData)
       );
     }
+
+    // else render either column headers or boring normal cells
     return (rowIndex === 0)
       ? this.renderColumnHeader(
         f.compose(
@@ -189,7 +183,7 @@ export default class VirtualTable extends PureComponent {
       : this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({columnIndex, rowIndex, key, measure, style}) => {
+  renderSingleCell = ({columnIndex, rowIndex, measure}) => {
     const {rows, table, langtag, columns} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
@@ -200,7 +194,7 @@ export default class VirtualTable extends PureComponent {
     const isEditing = isSelected && this.props.selectedCellEditing;
 
     return (
-      <Cell key={key}
+      <Cell key={cell.id}
             cell={cell}
             langtag={langtag}
             row={row}
@@ -215,7 +209,7 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  renderExpandedRowCell = ({columnIndex, rowIndex, key, measure, style}) => {
+  renderExpandedRowCell = ({columnIndex, rowIndex, key, measure}) => {
     const {rows, columns, table} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
@@ -224,7 +218,7 @@ export default class VirtualTable extends PureComponent {
     const isRowSelected = row.id === this.selectedIds.row;
 
     return (
-      <CellStack key={key} measure={measure} >
+      <div className="cell-stack" key={cell.id} >
         {
           Langtags.map(
             (langtag) => {
@@ -249,8 +243,18 @@ export default class VirtualTable extends PureComponent {
             }
           )
         }
-      </CellStack>
+      </div>
     );
+  };
+
+  renderButton = ({columnIndex, style}) => {
+    const {table} = this.props;
+    if (columnIndex === 1) {
+      return (
+        <AddNewRowButton table={table} />
+      );
+    }
+    return null;
   };
 
   getCell = (rowIndex, columnIndex) => {
@@ -263,7 +267,18 @@ export default class VirtualTable extends PureComponent {
   filterVisibleCells = (cell, columnId) => columnId === 0 || this.props.columns.at(columnId).visible;
 
   componentWillReceiveProps(next) {
-    !f.isNil(next.selectedCell) && this.updateSelectedCellId(next.selectedCell.id);
+    const newPropKeys = f.keys(next);
+    console.log("modified Props:", newPropKeys.filter((k) => next[k] !== this.props[k]))
+    if (f.contains("selectedCell", newPropKeys)) {
+      this.scrollToCell((next.selectedCell || {}).id);
+    }
+    if (f.contains("expandedRowIds", newPropKeys)) {
+      this.expandedRowIds = next.expandedRowIds;
+      maybe(this.multiGrid)
+        .method("invalidateCellSizeAfterRender")
+        .map(() => console.log("Reset cell size!"));
+
+    }
   }
 
   updateSelectedCellId = (idString) => {
@@ -280,18 +295,62 @@ export default class VirtualTable extends PureComponent {
     };
   };
 
+  scrollToCell = (cellId) => {
+    console.log("Scrolling to", cellId)
+    this.updateSelectedCellId(cellId);
+    if (!cellId) {  // when called by cell deselection
+      return false;
+    }
+    const {columns, rows} = this.props;
+    const rowIndex = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows.models));
+    const columnIndex = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns.models));
+    this.setState({
+      scrolledCell: {columnIndex, rowIndex}
+    },
+      () => console.log(this.state));
+
+    console.log(this.multiGrid)
+  };
+
+  storeGridElement = (node) => {
+    this.multiGrid = node;
+  };
+
+  componentDidUpdate() {
+    // Release control of scolling position once cell has been focused
+    // Has to be done this way as Grid.scrollToCell() is not exposed properly
+    // by MultiGrid
+    if (!f.isEmpty(this.state.scrolledCell)) {
+      devLog("resetting scroll control")
+      this.setState({scrolledCell: {}});
+    }
+  }
+
+  scrollToLeft = () => {
+    const framesToScroll = SCROLL_TIME / 60; // ms / FPS = number of frames
+    const xStart = this.multiGrid.state.scrollLeft;
+    const dx = xStart / framesToScroll;
+    const scrollStep = () => {
+      const x = (this.state.scrollLeft || xStart) - dx;
+      this.setState(
+        {scrollLeft: (x > 0) ? x : null},
+        () => requestAnimationFrame((x > 0) ? scrollStep : f.noop)
+        );
+    };
+    scrollStep();
+  };
+
   render() {
-    const {table, expandedRowIds, columns, selectedCell, selectedCellEditing, rows} = this.props;
-    const {openAnnotations} = this.state;
+    const {table, expandedRowIds, columns, selectedCell, selectedCellEditing} = this.props;
+    const {openAnnotations, scrolledCell: {columnIndex, rowIndex}, scrollLeft} = this.state;
     const columnCount = columns
       .filter(f.get("visible"))
       .length + 1;
-    const rowCount = (this.props.fullyLoaded) ? f.size(table.rows.models) + 1 : 1;
+    const rowCount = (this.props.fullyLoaded) ? f.size(table.rows.models) + 2 : 1;
 
     devLog(`Virtual table: ${rowCount} rows, ${columnCount} columns, expanded Rows: ${this.props.expandedRowIds}, selectedCell: ${f.get("id", this.props.selectedCell)} ${this.props.selectedCellEditing}`)
 
-    const selectedRow = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows.models));
-    const selectedCol = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns.models));
+    const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
 
     return this.props.fullyLoaded ? (
       <AutoSizer>
@@ -299,24 +358,25 @@ export default class VirtualTable extends PureComponent {
           ({height, width}) => {
             return (
               <MultiGrid
-                deferredMeasurementCache={cache}
+                ref={this.storeGridElement}
                 className="data-wrapper"
                 cellRenderer={this.cellRenderer}
                 columnCount={columnCount}
                 columnWidth={this.calcColWidth}
                 noContentRenderer={this.renderEmptyTable}
                 rowCount={rowCount}
-                rowHeight={cache.rowHeight}
+                rowHeight={this.calcRowHeight}
                 fixedColumnCount={f.min([columnCount, 2])}
                 fixedRowCount={1}
                 width={width}
                 height={height}
                 selectedCell={f.get("id", selectedCell) + selectedCellEditing.toString()}
                 expandedRows={expandedRowIds}
-                scrollingResetTimeInterval={16}
-                scrollToRow={selectedRow}
-                scrollToColumn={selectedCol}
+                scrollingResetTimeInterval={150}
                 openAnnotations={openAnnotations}
+                scrollToRow={rowIndex}
+                scrollToColumn={columnIndex}
+                scrollLeft={scrollPosition}
               />
             );
           }
