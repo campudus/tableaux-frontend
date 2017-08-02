@@ -12,6 +12,7 @@ import classNames from "classnames";
 import Header from "../overlay/Header";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import * as f from "lodash/fp";
+import Portal from "react-portal";
 
 class ColumnEntry extends React.Component {
 
@@ -24,8 +25,6 @@ class ColumnEntry extends React.Component {
       showDescription: false
     };
   }
-
-  calcId = () => "column-context-menu-" + JSON.stringify(this.props.column.id);
 
   handleInput = (inputState) => {
     this.setState(inputState);
@@ -89,14 +88,16 @@ class ColumnEntry extends React.Component {
     const {column} = this.props;
 
     return (
-      <ColumnContextMenu closeHandler={this.closeContextMenu}
-                         editHandler={this.editColumn}
-                         column={column}
-                         langtag={this.props.langtag}
-                         popupToggleButtonId={this.calcId()}
-                         isId={this.props.isId}
-                         tables={this.props.tables}
-      />
+      <Portal closeOnOutsideClick isOpened >
+        <ColumnContextMenu closeHandler={this.closeContextMenu}
+                           editHandler={this.editColumn}
+                           column={column}
+                           langtag={this.props.langtag}
+                           isId={this.props.isId}
+                           tables={this.props.tables}
+                           rect={this.state.ctxCoords}
+        />
+      </Portal>
     );
   };
 
@@ -125,7 +126,7 @@ class ColumnEntry extends React.Component {
     const showDescription = !f.isEmpty(description) && this.state.showDescription && !menuOpen;
     const contextMenuClass = classNames(
       "column-contextmenu-button fa ", {
-        "fa-angle-up": menuOpen,
+        "fa-angle-up ignore-react-onclickoutside": menuOpen,
         "fa-angle-down": !menuOpen
       });
     classNames("column-head", {"context-menu-open": menuOpen});
@@ -151,9 +152,9 @@ class ColumnEntry extends React.Component {
           )
           : null}
         {(kind !== "concat")
-          ? <a href="#" className={contextMenuClass} id={this.calcId()}
-               onClick={this.toggleContextMenu}>
-          </a>
+          ? <a href="#" className={contextMenuClass}
+               onClick={this.toggleContextMenu}
+          />
           : null}
         {(menuOpen) ? this.renderContextMenu() : null}
       </div>
