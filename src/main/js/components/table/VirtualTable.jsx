@@ -340,12 +340,12 @@ export default class VirtualTable extends PureComponent {
   };
 
   render() {
-    const {table, expandedRowIds, columns, selectedCell, selectedCellEditing, selectedCellExpandedRow} = this.props;
+    const {rows, expandedRowIds, columns, rowKeys, selectedCell, selectedCellEditing, selectedCellExpandedRow} = this.props;
     const {openAnnotations, scrolledCell: {columnIndex, rowIndex}, scrollLeft} = this.state;
     const columnCount = columns
       .filter(this.filterVisibleCells)
       .length + 1;
-    const rowCount = (this.props.fullyLoaded) ? f.size(table.rows.models) + 2 : 1;
+    const rowCount = (this.props.fullyLoaded) ? f.size(rows.models) + 2 : 1;
 
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
@@ -377,6 +377,7 @@ export default class VirtualTable extends PureComponent {
                 scrollToRow={rowIndex}
                 scrollToColumn={columnIndex}
                 scrollLeft={scrollPosition}
+                rowKeys={rowKeys}
               />
             );
           }
