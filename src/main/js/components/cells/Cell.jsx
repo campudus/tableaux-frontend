@@ -286,7 +286,7 @@ Cell.propTypes = {
   table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool,
   annotationsOpen: React.PropTypes.bool,
-  isExpandedCell: React.PropTypes.bool.isRequired,
+  isExpandedCell: React.PropTypes.bool.isRequired
 };
 
 export default Cell;

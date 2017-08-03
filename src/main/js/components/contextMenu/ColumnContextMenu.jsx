@@ -2,14 +2,11 @@
  * Context menu for column options. Opened by ColumnEntry.
  */
 import React from "react";
-import GenericContextMenu from "./GenericContextMenu";
-import TableauxConstants from "../../constants/TableauxConstants";
 import listensToClickOutside from "react-onclickoutside";
 import * as AccessControl from "../../helpers/accessManagementHelper";
 import {compose, contains} from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
-const Alignments = TableauxConstants.Alignments;
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 

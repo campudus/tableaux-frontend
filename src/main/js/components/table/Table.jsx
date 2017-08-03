@@ -145,8 +145,6 @@ class Table extends React.PureComponent {
       f.get("models")
     )(rows);
 
-    devLog("table.render")
-
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1"
                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(

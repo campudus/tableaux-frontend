@@ -233,7 +233,7 @@ RowContextMenu.propTypes = {
   x: React.PropTypes.number.isRequired,
   y: React.PropTypes.number.isRequired,
   row: React.PropTypes.object.isRequired,
-  offsetY: React.PropTypes.number.isRequired,
+  offsetY: React.PropTypes.number,
   langtag: React.PropTypes.string.isRequired,
   table: React.PropTypes.object.isRequired,
   cell: React.PropTypes.object.isRequired

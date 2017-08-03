@@ -327,7 +327,6 @@ class TableView extends React.Component {
           {
             success: (totalPages) => {
               ++fetchedPages;
-              devLog(`Page: ${fetchedPages} (of ${totalPages})`);
               this.setState({
                 currentTableId: tableId,
                 tableFullyLoaded: fetchedPages >= totalPages

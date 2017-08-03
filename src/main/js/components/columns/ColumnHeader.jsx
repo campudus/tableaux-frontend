@@ -82,7 +82,7 @@ export default class ColumnHeader extends PureComponent {
   };
 
   saveEdits = (payload) => {
-    const {langtag, colId, newName, newDescription} = payload;
+    const {langtag, newName, newDescription} = payload;
     const {column} = this.props;
     const modifications =
       f.compose(
@@ -103,7 +103,7 @@ export default class ColumnHeader extends PureComponent {
   };
 
   getDescription = () => {
-    const {column, column: {description}, langtag} = this.props;
+    const {column: {description}, langtag} = this.props;
     return description[langtag] || description[DefaultLangtag];
   };
 
