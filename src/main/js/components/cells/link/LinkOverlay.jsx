@@ -82,8 +82,9 @@ class LinkOverlay extends Component {
     const {selectedMode, activeBox} = this.state;
     const rows = f.get((activeBox === UNLINKED_ITEMS) ? "unlinked" : "linked", this.state.rowResults);
     const selectNext = (dir) => {
+      const N = f.size(rows);
       const selectedId = this.getSelectedId();
-      const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + rows.length) % rows.length;
+      const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + N) % N;
       this.setSelectedId(nextIdx);
     };
     return {
@@ -173,7 +174,7 @@ class LinkOverlay extends Component {
     const toTable = cell.tables.get(toTableId);
 
     // Data already fetched, show it instantly and update it in the background
-    if (toTable.rows.length > 0) {
+    if (f.size(toTable.rows) > 0) {
       this.setRowResult(toTable.rows);
     }
 
@@ -490,7 +491,7 @@ class LinkOverlay extends Component {
           ref="OverlayScroll"
           width={width}
           height={height}
-          rowCount={f.add(1, rowResults.unlinked.length)}
+          rowCount={f.add(1, f.size(rowResults.unlinked))}
           rowHeight={40}
           rowRenderer={this.renderListItem({isLinked: false})}
           scrollToIndex={this.state.selectedId.unlinked}
