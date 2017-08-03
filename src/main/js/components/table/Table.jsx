@@ -142,7 +142,7 @@ class Table extends React.PureComponent {
   };
 
   render() {
-    const {langtag, table: {columns}, rows, table, rowKeys} = this.props;
+    const {langtag, table: {columns}, rows, table, tables, rowKeys} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
 
     devLog("table.render")
@@ -158,6 +158,7 @@ class Table extends React.PureComponent {
                         rows={rows}
                         rowIdKey={rowKeys}
                         table={table}
+                        tables={tables}
                         langtag={langtag}
                         selectedCell={selectedCell}
                         selectedCellEditing={selectedCellEditing}

@@ -27,6 +27,7 @@ export default class VirtualTable extends PureComponent {
     columns: PropTypes.object.isRequired,
     rows: PropTypes.object.isRequired,
     table: PropTypes.object.isRequired,
+    tables: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
     expandedRowIds: PropTypes.array,
     selectedCell: PropTypes.object,
@@ -49,7 +50,7 @@ export default class VirtualTable extends PureComponent {
     if (index === 0) {
       return HEADER_HEIGHT;
     }
-    const row = this.props.rows.at(index - 1);
+    const row = maybe(this.props.rows).exec("at", index - 1);
     const rowId = f.get("id", row);
     return (f.contains(rowId, this.expandedRowIds))
       ? f.size(Langtags) * ROW_HEIGHT
@@ -123,13 +124,13 @@ export default class VirtualTable extends PureComponent {
 
   renderColumnHeader = ({columnIndex, key}) => {
     const column = this.props.columns.at(columnIndex);
-    const firstCell = this.props.rows.at(0).cells.at(0);
+    const {table, tables} = this.props;
     return (
       <ColumnHeader key={key}
                     column={column}
                     langtag={this.props.langtag}
-                    tables={firstCell.tables}
-                    tableId={firstCell.tableId}
+                    tables={tables}
+                    tableId={table.id}
       />
     );
   };
@@ -345,14 +346,14 @@ export default class VirtualTable extends PureComponent {
     const columnCount = columns
       .filter(this.filterVisibleCells)
       .length + 1;
-    const rowCount = (this.props.fullyLoaded) ? f.size(rows.models) + 2 : 1;
+    const rowCount = f.size(rows.models) + 2;
 
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
 
     devLog(`Virtual table: ${rowCount} rows, ${columnCount} columns, expanded Rows: ${this.props.expandedRowIds}, selectedCell: ${selectedCellKey}`)
 
-    return this.props.fullyLoaded ? (
+    return this.props.fullyLoaded || true ? (
       <AutoSizer>
         {
           ({height, width}) => {

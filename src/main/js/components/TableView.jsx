@@ -301,11 +301,18 @@ class TableView extends React.Component {
       window.location = firstTable;
       return;
     }
-    this.setState({tableFullyLoaded: false});
+    this.setState({
+      initialLoading: true,
+      tableFullyLoaded: false
+    });
+
+    ActionCreator.spinnerOn();
+    let fetchedPages = 0;
 
     // We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => new Promise(
       (resolve, reject) => {
+        ActionCreator.spinnerOn();
         table.columns.fetch({
           reset: true,
           success: () => {
@@ -328,19 +335,24 @@ class TableView extends React.Component {
 
     const fetchPages = () => new Promise(
       (resolve, reject) => {
+        ActionCreator.spinnerOn();
         currentTable.rows.fetchPage(1,
           {
-            success: () => {
+            success: (totalPages) => {
+              ++fetchedPages;
+              devLog(`Page: ${fetchedPages} (of ${totalPages})`);
               this.setState({
-                rowsCollection: currentTable.rows,
                 currentTableId: tableId,
-                tableFullyLoaded: true
-                // rowsFilter: null
-              });
+                tableFullyLoaded: fetchedPages >= totalPages
+              }, ((fetchedPages === 1) ? applyStoredViews : f.noop));
               this.checkGotoCellRequest();
-              resolve();
+              if (fetchedPages >= totalPages) {
+                ActionCreator.spinnerOff();
+                resolve();
+              }
             },
             error: e => {
+              ActionCreator.spinnerOff();
               reject("Error fetching pages:" + e);
             }
           });
@@ -491,15 +503,13 @@ class TableView extends React.Component {
         console.error("No table found with id " + this.state.currentTableId);
       }
 
-      const rows = rowsCollection || {};
+      const rows = rowsCollection || currentTable.rows || {};
       // pass concatenated row ids on, so children can decide whether they should re-render
       const rowKeys = f.compose(
         f.toString,
         f.map(f.get("id")),
         f.get("models")
-      )(rowsCollection);
-
-        devLog("Tableview.render")
+      )(rows);
 
       return (
         <div>
@@ -531,8 +541,8 @@ class TableView extends React.Component {
             <Spinner />
           </header>
           <div className="wrapper">
-            <Table key={`${this.state.currentTableId}-${(tableFullyLoaded) ? "finished" : "loading"}`} table={currentTable}
-                   fullyLoaded={tableFullyLoaded}
+            <Table fullyLoaded={tableFullyLoaded}
+                   table={currentTable}
                    langtag={langtag} rows={rows} overlayOpen={overlayOpen}
                    rowKeys={rowKeys}
                    pasteOriginCell={pasteOriginCell}
