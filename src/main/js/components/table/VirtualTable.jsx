@@ -51,7 +51,9 @@ export default class VirtualTable extends PureComponent {
     if (index === 0) {
       return HEADER_HEIGHT;
     }
-    const row = maybe(this.props.rows).exec("at", index - 1);
+    const row = maybe(this.props.rows)
+      .exec("at", index - 1)
+      .getOrElse({});
     const rowId = f.get("id", row);
     return (f.contains(rowId, this.expandedRowIds))
       ? f.size(Langtags) * ROW_HEIGHT
