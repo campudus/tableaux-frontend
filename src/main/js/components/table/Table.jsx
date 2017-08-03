@@ -8,7 +8,6 @@ import * as tableNavigationWorker from "./tableNavigationWorker";
 import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
-import JumpSpinner from "./JumpSpinner";
 import f from "lodash/fp";
 import {maybe} from "../../helpers/monads";
 
@@ -28,11 +27,8 @@ class Table extends React.PureComponent {
     super(props);
     this.headerDOMElement = null;
     this.keyboardRecentlyUsedTimer = null;
-    this.tableHeaderId = "tableHeader";
     this.tableDOMNode = null;
-    this.tableDOMOffsetY = 0;
     this.tableRowsDom = null; // scrolling rows container
-    this.columnsDom = null;
 
     this.state = {
       offsetTableData: 0,
@@ -100,11 +96,10 @@ class Table extends React.PureComponent {
      Prevent to render when clicking on already selected cell and don't clear when some cell is editing. This way cells
      like shorttext will be saved on the first click outside and on the second click it gets deselected.
      */
-    devLog("handleClickOutside")
     if (this.state.selectedCell && !this.state.selectedCellEditing) {
       this.setState({
         selectedCell: null
-      }, () => devLog("Deselected cell"));
+      });
     }
   };
 
@@ -142,8 +137,13 @@ class Table extends React.PureComponent {
   };
 
   render() {
-    const {langtag, table: {columns}, rows, table, tables, rowKeys} = this.props;
+    const {langtag, table: {columns}, rows, table, tables} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
+    const rowKeys = f.compose(
+      f.toString,
+      f.map(f.get("id")),
+      f.get("models")
+    )(rows);
 
     devLog("table.render")
 
@@ -153,7 +153,6 @@ class Table extends React.PureComponent {
                  this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <JumpSpinner />
           <VirtualTable columns={columns} ref={this.findAndStoreTableDiv}
                         rows={rows}
                         rowIdKey={rowKeys}

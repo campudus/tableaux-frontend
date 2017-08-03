@@ -22,11 +22,8 @@ import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "./cells/cellCopyHelper";
 import {openEntityView} from "./overlay/EntityViewOverlay";
-
-// hardcode all the stuffs!
-const ID_CELL_W = 80;
-const CELL_W = 300;
-const CELL_H = 46;
+import Portal from "react-portal";
+import JumpSpinner from "./table/JumpSpinner";
 
 @connectToAmpersand
 class TableView extends React.Component {
@@ -239,20 +236,10 @@ class TableView extends React.Component {
       }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
-      const columns = this.getCurrentTable().columns.models;
-      const visibleColumns = columns.filter(x => x.visible);
-      const colIndex = f.findIndex(f.matchesProperty("id", colId), visibleColumns);
-      const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
-      const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
-      const yOffs = (filter)
-        ? 0
-        : CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
-      scrollContainer.scrollLeft = xOffs;
-      scrollContainer.scrollTop = yOffs;
 
-      ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
+      ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       if (entityView) {
-        openEntityView(rows[rowIndex], this.props.langtag, cellId);
+        openEntityView(rows.at(rowIndex), this.props.langtag, cellId);
       }
       this.pendingCellGoto = null;
       return cell;
@@ -345,7 +332,7 @@ class TableView extends React.Component {
                 currentTableId: tableId,
                 tableFullyLoaded: fetchedPages >= totalPages
               }, ((fetchedPages === 1) ? applyStoredViews : f.noop));
-              this.checkGotoCellRequest();
+              this.checkGotoCellRequest(fetchedPages);
               if (fetchedPages >= totalPages) {
                 ActionCreator.spinnerOff();
                 resolve();
@@ -504,7 +491,8 @@ class TableView extends React.Component {
       }
 
       const rows = rowsCollection || currentTable.rows || {};
-      // pass concatenated row ids on, so children can decide whether they should re-render
+      // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
+      // without adding event listeners
       const rowKeys = f.compose(
         f.toString,
         f.map(f.get("id")),
@@ -551,6 +539,14 @@ class TableView extends React.Component {
             />
             }
           </div>
+          {(this.pendingCellGoto)
+            ? (
+              <Portal isOpened>
+                <JumpSpinner />
+              </Portal>
+            )
+            : null
+          }
         </div>
       );
     }

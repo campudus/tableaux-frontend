@@ -26,6 +26,7 @@ export default class VirtualTable extends PureComponent {
   static propTypes = {
     columns: PropTypes.object.isRequired,
     rows: PropTypes.object.isRequired,
+    rowKeys: PropTypes.string, // re-render hint
     table: PropTypes.object.isRequired,
     tables: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
@@ -227,7 +228,6 @@ export default class VirtualTable extends PureComponent {
               const isSelected = isRowSelected
                 && column.id === this.selectedIds.column;
               const isEditing = isSelected && this.props.selectedCellEditing;
-              devLog("cell:", cell.id, "row:", row.id, this.selectedIds)
               return (
                 <Cell key={`${langtag}-${key}`}
                       cell={cell}
@@ -299,7 +299,6 @@ export default class VirtualTable extends PureComponent {
   };
 
   scrollToCell = (cellId, langtag = this.props.selectedCellExpandedRow) => {
-    devLog("Scrolling to", cellId, langtag)
     this.updateSelectedCellId(cellId, langtag);
     if (!cellId) {  // when called by cell deselection
       return false;
@@ -321,7 +320,6 @@ export default class VirtualTable extends PureComponent {
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
     if (!f.isEmpty(this.state.scrolledCell)) {
-      devLog("resetting scroll control")
       this.setState({scrolledCell: {}});
     }
   }
@@ -353,7 +351,7 @@ export default class VirtualTable extends PureComponent {
 
     devLog(`Virtual table: ${rowCount} rows, ${columnCount} columns, expanded Rows: ${this.props.expandedRowIds}, selectedCell: ${selectedCellKey}`)
 
-    return this.props.fullyLoaded || true ? (
+    return (
       <AutoSizer>
         {
           ({height, width}) => {
@@ -384,6 +382,6 @@ export default class VirtualTable extends PureComponent {
           }
         }
       </AutoSizer>
-    ) : null;
+    );
   }
 }
