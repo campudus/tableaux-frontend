@@ -61,7 +61,7 @@ export default class ColumnHeader extends PureComponent {
     const {langtag, column} = this.props;
     const key = `${column.id}-display-name`;
     return (this.isToTableHidden())
-      ? <div key={key}>this.getDisplayName()</div>
+      ? <div key={key}>{this.getDisplayName()}</div>
       : (
         <a key={key} className="tableHeader-inner"
            href={`/${langtag}/tables/${column.toTable}`}
