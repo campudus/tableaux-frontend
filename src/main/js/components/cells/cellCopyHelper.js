@@ -42,6 +42,22 @@ const calcNewValue = function (src, srcLang, dst, dstLang) {
   }
 };
 
+const copyGroupColumn = (src, srcLang, dst, dstLang) => {
+  if (src.column.id !== dst.column.id || src.tableId !== dst.tableId) {
+    showErrorToast("table:copy_kind_error");
+    return;
+  }
+  const groupIds = src.column.groups.map(f.get("id"));
+  const getCell = (row) => (colId) => row.cells.get(`cell-${row.tableId}-${colId}-${row.id}`);
+  const cellTuples = f.zip(
+    groupIds.map(getCell(src.row)),
+    groupIds.map(getCell(dst.row))
+  );
+  cellTuples.forEach(
+    ([srcCell, dstCell]) => pasteCellValue(srcCell, srcLang, dstCell, dstLang, true)
+  );
+};
+
 // (cell, cell) -> nil
 const copyLinks = (src, dst) => {
   const cardinality = f.get(["column", "constraint", "cardinality"], dst);
@@ -154,7 +170,7 @@ const createEntriesAndCopy = (src, dst, constrainedValue) => {
   );
 };
 
-const pasteCellValue = function (src, srcLang, dst, dstLang) {
+const pasteCellValue = function (src, srcLang, dst, dstLang, skipDialogs = false) {
   const canOverrideLock = () => {
     const untranslated = f.prop(["annotations", "translationNeeded", "langtags"]);
     const canTranslate = f.intersection(untranslated, getUserLanguageAccess());
@@ -183,12 +199,16 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
     return;
   }
 
+  if (dst.kind === ColumnKinds.group && src.kind === ColumnKinds.group) {
+    return copyGroupColumn(src, srcLang, dst, dstLang);
+  }
+
   if (!canConvert(src.kind, dst.kind)) {
     showErrorToast("table:copy_kind_error");
     return;
   }
 
-  if (canCopySafely(src, dst)) {
+  if (canCopySafely(src, dst) || skipDialogs) {
     const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
     if (!newValue) {
       showErrorToast("table:copy_kind_error");
@@ -196,9 +216,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
     }
     ActionCreator.changeCell(dst, newValue);
   } else {
-    const newValue = (dst.kind === "link")
-        ? src.value
-        : calcNewValue.call(this, src, srcLang, dst, dstLang);
+    const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
     if (!newValue) {
       showErrorToast("table:copy_kind_error");
       return;
