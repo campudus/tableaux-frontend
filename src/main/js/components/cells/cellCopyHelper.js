@@ -10,6 +10,10 @@ import {isLocked} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Header from "../overlay/Header";
 import Footer from "../overlay/Footer";
+import {Promise} from "es6-promise";
+const throat = require("throat")(Promise); // throat ignores the global Promise polyfill, so pass it
+
+const MAX_CONCURRENT_REQUESTS = 3;         // retrieve row or copy cell
 
 const showErrorToast = (msg, data = {}) => {
   ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg, data)}</div>, 3000);
@@ -38,6 +42,118 @@ const calcNewValue = function (src, srcLang, dst, dstLang) {
   }
 };
 
+// (cell, cell) -> nil
+const copyLinks = (src, dst) => {
+  const cardinality = f.get(["column", "constraint", "cardinality"], dst);
+  if (f.isEmpty(cardinality)) {
+    ActionCreator.changeCell(dst, src.value);
+  } else {
+    // Cardinality constraints do exist
+    const cardinalityFrom = (f.gt(cardinality.from, 0)) ? cardinality.from : 0; // set zero or undefined to 0
+    const cardinalityTo = (f.gt(cardinality.to, 0)) ? cardinality.to : Number.POSITIVE_INFINITY;
+    const constrainedValue = f.take(cardinalityTo, src.value); // take the first allowed number of links to copy
+    if (cardinalityFrom === 0) {
+      // No constrained to the left => just set values
+      ActionCreator.changeCell(dst, constrainedValue);
+    } else {
+      // Link constrained to left, too => create new rows in toTable, link and fill them
+      createEntriesAndCopy(src, dst, constrainedValue);
+    }
+  }
+};
+
+const createEntriesAndCopy = (src, dst, constrainedValue) => {
+  const toTable = src.tables.get(src.column.toTable);
+
+  const initTable = new Promise(
+    (resolve, reject) => {
+      toTable.columns.fetch({
+        success: resolve,
+        error: reject
+      });
+    }
+  ).catch(e => {
+    // Populate log then rethrow for sentry
+    console.error("cellCopy: duplicateRow", e);
+    throw (e);
+  });
+
+  // id -> toTable.rows.get(id)
+  const requestRow = (rowId) => new Promise(
+    (resolve, reject) => {
+      toTable.rows.fetchById(
+        rowId,
+        (err, row) => {
+          if (err) {
+            console.error("cellCopy: request Row", err);
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        }
+      );
+    }
+  );
+
+  // row -> duplicatedRow
+  const duplicateRow = (srcRow) => new Promise(
+    (resolve, reject) => {
+      try {
+        srcRow.duplicate(resolve);
+      } catch (e) {
+        reject(e);
+      }
+    }
+  ).catch(e => console.error("cellCopy: duplicateRow", e));
+
+  // row -> {id, value}
+  const removeBacklink = (remoteRow) => new Promise(
+    (resolve, reject) => {
+      const backLinkCell = remoteRow.cells.models.filter(
+        (cell) => cell.kind === ColumnKinds.link && cell.column.toTable === dst.tableId
+      )[0];
+      if (!f.isNil(backLinkCell)) {
+        ActionCreator.changeCell(
+          backLinkCell,
+          [],
+          () => resolve({
+            id: remoteRow.id,
+            value: remoteRow.cells.at(0).value
+          })
+        );
+      } else {
+        resolve(
+          {
+            id: remoteRow.id,
+            value: remoteRow.cells.at(0).value
+          }
+        );
+      }
+    }
+  ).catch(e => {
+    console.error("cellCopy: removeBacklink", e);
+    throw (e);
+  });
+
+  // rowId -> LinkValue {id, value}
+  const copyOneLink = ({id}) => (
+    requestRow(id)
+      .then(duplicateRow)
+      .then(removeBacklink)
+  );
+
+  initTable.then(
+    () => Promise.all(
+      constrainedValue.map(
+        throat(MAX_CONCURRENT_REQUESTS, copyOneLink)
+      )
+                 )
+                 .then((linkValues) => {
+                   ActionCreator.changeCell(dst, linkValues);
+                 })
+  );
+};
+
 const pasteCellValue = function (src, srcLang, dst, dstLang) {
   const canOverrideLock = () => {
     const untranslated = f.prop(["annotations", "translationNeeded", "langtags"]);
@@ -58,7 +174,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang) {
 
   if (dst.kind === ColumnKinds.link && src.kind === ColumnKinds.link) {
     if (canCopyLinks(src, dst)) {
-      ActionCreator.changeCell(dst, src.value);
+      copyLinks(src, dst);
     } else {
       const srcTable = this.tables.get(src.column.toTable);
       const srcTableName = f.find(f.identity, f.props([this.props.langtag, DefaultLangtag], srcTable.displayName));

@@ -68,20 +68,18 @@ const Row = AmpersandModel.extend({
     console.log("this row id:", this.getId(), " this: ", this);
 
     console.log("url is:", this.url() + "/dependent");
-    const req = request.get(this.url() + "/dependent")
-                       .end(
-                         (error, result) => {
-                           if (error) {
-                             console.warn("error getting row dependent from server:", error);
-                             onError(error);
-                           } else {
-                             console.log("row dependent response:", result);
-                             onSuccess(result.body.dependentRows);
-                           }
-                         }
-                       );
-
-    return req;
+    return request.get(this.url() + "/dependent")
+                  .end(
+                    (error, result) => {
+                      if (error) {
+                        console.warn("error getting row dependent from server:", error);
+                        onError(error);
+                      } else {
+                        console.log("row dependent response:", result);
+                        onSuccess(result.body.dependentRows);
+                      }
+                    }
+                  );
   },
 
   parse: function (attrs, options) {
