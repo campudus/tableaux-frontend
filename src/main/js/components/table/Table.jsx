@@ -84,7 +84,6 @@ class Table extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    window.devLog("Table did update.");
     // When overlay is open we don't want anything to force focus inside the table
     if (!this.props.overlayOpen) {
       tableNavigationWorker.checkFocusInsideTable.call(this);
@@ -154,6 +153,7 @@ class Table extends React.PureComponent {
           <VirtualTable columns={columns} ref={this.findAndStoreTableDiv}
                         rows={rows}
                         rowIdKey={rowKeys}
+                        columnKeys={this.props.columnKeys}
                         table={table}
                         tables={tables}
                         langtag={langtag}
@@ -177,6 +177,7 @@ Table.propTypes = {
   overlayOpen: React.PropTypes.bool,
   rows: React.PropTypes.object,
   rowKeys: React.PropTypes.string.isRequired,
+  columnKeys: React.PropTypes.string,
   tables: React.PropTypes.object.isRequired,
   fullyLoaded: React.PropTypes.bool.isRequired
 };

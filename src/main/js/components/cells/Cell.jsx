@@ -67,8 +67,9 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   }
 };
 
+// @withPreview
 @connectToAmpersand
-class Cell extends React.Component {
+class Cell extends React.PureComponent {
 
   cellDOMNode = null;
 
@@ -95,17 +96,6 @@ class Cell extends React.Component {
 
   componentDidUpdate = () => {
     this.checkFocus();
-  };
-
-  // Dont update when cell is not editing or selected
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const {annotationsOpen, selected, editing, langtag, shouldFocus, inSelectedRow} = this.props;
-    return (editing !== nextProps.editing
-    || selected !== nextProps.selected
-    || inSelectedRow !== nextProps.inSelectedRow
-    || langtag !== nextProps.langtag
-    || shouldFocus !== nextProps.shouldFocus)
-    || annotationsOpen !== nextProps.annotationsOpen;
   };
 
   getKeyboardShortcuts = (event) => {

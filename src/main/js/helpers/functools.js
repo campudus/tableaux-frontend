@@ -58,6 +58,15 @@ class Just extends Maybe {
     }
   }
 
+  set(field, value) {
+    try {
+      this._value[field] = value;
+      return this;
+    } catch (e) {
+      return Maybe.none();
+    }
+  }
+
   method(fname) {
     const fn = prop(fname, this._value);
     if (isFunction(fn)) {
@@ -105,6 +114,10 @@ class None extends Maybe {
 
   spy() {
     console.log(this.toString());
+    return this;
+  }
+
+  set() {
     return this;
   }
 

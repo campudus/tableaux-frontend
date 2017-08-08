@@ -359,7 +359,7 @@ class TableView extends React.Component {
     fetchColumns(currentTable)
       .then(fetchPages)
       .then(applyStoredViews)
-      .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
+      .then(() => window.devLog("Loading took", (performance.now() - start) / 1000, "s"));
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -394,6 +394,7 @@ class TableView extends React.Component {
     if (cb) {
       cb();
     }
+    this.forceUpdate();
   };
 
   setDocumentTitleToTableName = () => {
@@ -497,6 +498,12 @@ class TableView extends React.Component {
         f.map(f.get("id")),
         f.get("models")
       )(rows);
+      const columnKeys = f.compose(
+        f.toString,
+        f.map(f.get("id")),
+        f.filter((col, idx) => col.visible || idx === 0),
+        f.get("models")
+      )(currentTable.columns);
 
       return (
         <div>
@@ -532,6 +539,7 @@ class TableView extends React.Component {
                    table={currentTable}
                    langtag={langtag} rows={rows} overlayOpen={overlayOpen}
                    rowKeys={rowKeys}
+                   columnKeys={columnKeys}
                    pasteOriginCell={pasteOriginCell}
                    tables={tables}
                    disableOnClickOutside={this.props.overlayOpen}

@@ -9,11 +9,12 @@ import f from "lodash/fp";
 import Cell from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
-import {MultiGrid, AutoSizer} from "react-virtualized";
+import {AutoSizer} from "react-virtualized";
 import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
 import {maybe} from "../../helpers/monads";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
+import GrudGrid from "./GrudGrid";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -25,6 +26,7 @@ const SCROLL_TIME = 500; // ms; time to scroll back to left when button is click
 export default class VirtualTable extends PureComponent {
   static propTypes = {
     columns: PropTypes.object.isRequired,
+    columnKeys: PropTypes.string,
     rows: PropTypes.object.isRequired,
     rowKeys: PropTypes.string, // re-render hint
     table: PropTypes.object.isRequired,
@@ -129,7 +131,7 @@ export default class VirtualTable extends PureComponent {
     const column = this.props.columns.at(columnIndex);
     const {table, tables} = this.props;
     return (
-      <ColumnHeader key={key}
+      <ColumnHeader key={`column-header-${column.id}-${column.kind}`}
                     column={column}
                     langtag={this.props.langtag}
                     tables={tables}
@@ -150,7 +152,7 @@ export default class VirtualTable extends PureComponent {
 
     return (isRowExpanded)
       ? (
-        <div key={key}
+        <div key={`${key}-${row.id}`}
              className="cell-stack"
         >
           {Langtags.map(
@@ -166,7 +168,7 @@ export default class VirtualTable extends PureComponent {
         </div>
       )
       : (
-        <MetaCell key={key}
+        <MetaCell key={`${key}-${row.id}`}
                   style={style}
                   langtag={langtag}
                   row={row}
@@ -187,7 +189,7 @@ export default class VirtualTable extends PureComponent {
       : this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({columnIndex, rowIndex, measure}) => {
+  renderSingleCell = ({columnIndex, rowIndex, isScrolling, isVisible}) => {
     const {rows, table, langtag, columns} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
@@ -196,6 +198,7 @@ export default class VirtualTable extends PureComponent {
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = isInSelectedRow && column.id === this.selectedIds.column;
     const isEditing = isSelected && this.props.selectedCellEditing;
+    const showPreview = columnIndex > 2 && (isScrolling || !isVisible);
 
     return (
       <Cell key={cell.id}
@@ -208,16 +211,18 @@ export default class VirtualTable extends PureComponent {
             selected={isSelected}
             inSelectedRow={isInSelectedRow}
             editing={isEditing}
+            preview={showPreview}
       />
     );
   };
 
-  renderExpandedRowCell = ({columnIndex, rowIndex, key, measure}) => {
+  renderExpandedRowCell = ({columnIndex, rowIndex, key, isScrolling, isVisible}) => {
     const {rows, columns, table} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
+    const showPreview = columnIndex > 0 && (isScrolling || !isVisible);
 
     return (
       <div className="cell-stack" key={cell.id} >
@@ -241,6 +246,7 @@ export default class VirtualTable extends PureComponent {
                       selected={isSelected}
                       inSelectedRow={isRowSelected}
                       editing={isEditing}
+                      preview={showPreview}
                 />
               );
             }
@@ -257,11 +263,14 @@ export default class VirtualTable extends PureComponent {
         <AddNewRowButton table={table} />
       );
     }
-    return <div style={{
-      height: "100%",
-      width: "100%",
-      backgroundColor: "white"
-    }} />;
+    return (
+      <div style={{
+        height: "100%",
+        width: "100%",
+        backgroundColor: "white"
+      }}
+      />
+    );
   };
 
   getCell = (rowIndex, columnIndex) => {
@@ -341,44 +350,49 @@ export default class VirtualTable extends PureComponent {
   };
 
   render() {
-    const {rows, expandedRowIds, columns, rowKeys, selectedCell, selectedCellEditing, selectedCellExpandedRow} = this.props;
+    const {
+      rows,
+      expandedRowIds,
+      columns,
+      rowKeys,
+      columnKeys,
+      selectedCell,
+      selectedCellEditing,
+      selectedCellExpandedRow
+    } = this.props;
     const {openAnnotations, scrolledCell: {columnIndex, rowIndex}, scrollLeft} = this.state;
-    const columnCount = columns
-      .filter(this.filterVisibleCells)
-      .length + 1;
+    const visibleColumns = columns.filter(this.filterVisibleCells);
+    const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows.models) + 2;
 
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
-
-    devLog(`Virtual table: ${rowCount} rows, ${columnCount} columns, expanded Rows: ${this.props.expandedRowIds}, selectedCell: ${selectedCellKey}`)
 
     return (
       <AutoSizer>
         {
           ({height, width}) => {
             return (
-              <MultiGrid
-                ref={this.storeGridElement}
-                className="data-wrapper"
-                cellRenderer={this.cellRenderer}
-                columnCount={columnCount}
-                columnWidth={this.calcColWidth}
-                noContentRenderer={this.renderEmptyTable}
-                rowCount={rowCount}
-                rowHeight={this.calcRowHeight}
-                fixedColumnCount={f.min([columnCount, 2])}
-                fixedRowCount={1}
-                width={width}
-                height={height}
-                selectedCell={selectedCellKey}
-                expandedRows={expandedRowIds}
-                scrollingResetTimeInterval={150}
-                openAnnotations={openAnnotations}
-                scrollToRow={rowIndex}
-                scrollToColumn={columnIndex}
-                scrollLeft={scrollPosition}
-                rowKeys={rowKeys}
+              <GrudGrid ref={this.storeGridElement}
+                        className="data-wrapper"
+                        cellRenderer={this.cellRenderer}
+                        columnCount={columnCount}
+                        columnWidth={this.calcColWidth}
+                        noContentRenderer={this.renderEmptyTable}
+                        rowCount={rowCount}
+                        rowHeight={this.calcRowHeight}
+                        fixedColumnCount={f.min([columnCount, 2])}
+                        fixedRowCount={1}
+                        width={width}
+                        height={height}
+                        selectedCell={selectedCellKey}
+                        expandedRows={expandedRowIds}
+                        openAnnotations={openAnnotations}
+                        scrollToRow={rowIndex}
+                        scrollToColumn={columnIndex}
+                        scrollLeft={scrollPosition}
+                        rowKeys={rowKeys}
+                        columnKeys={columnKeys}
               />
             );
           }

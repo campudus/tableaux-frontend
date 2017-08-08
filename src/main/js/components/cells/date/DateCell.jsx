@@ -9,7 +9,7 @@ import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
 import {either} from "../../../helpers/functools";
 
-class DateCell extends React.Component {
+class DateCell extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {value: this.getSavedMoment()};

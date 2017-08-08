@@ -6,7 +6,7 @@ import {DateTimeFormats} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/functools";
 import {identity, prop} from "lodash/fp";
 
-class DateTimeCell extends React.Component {
+class DateTimeCell extends React.PureComponent {
 
   static propTypes = {
     cell: React.PropTypes.object.isRequired,
