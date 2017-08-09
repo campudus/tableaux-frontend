@@ -4,7 +4,7 @@ import RowConcatHelper from "../../helpers/RowConcatHelper";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import * as _ from "lodash";
-import {either} from "../../helpers/monads";
+import {either} from "../../helpers/functools";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,

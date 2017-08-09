@@ -15,7 +15,7 @@ import PageTitle from "./header/PageTitle.jsx";
 import Spinner from "./header/Spinner.jsx";
 import TableSettings from "./header/tableSettings/TableSettings";
 import ColumnFilter from "./header/ColumnFilter";
-import {either} from "../helpers/monads";
+import {either} from "../helpers/functools";
 import {INITIAL_PAGE_SIZE, PAGE_SIZE} from "../models/Rows";
 import getFilteredRows from "./table/RowFilters";
 import i18n from "i18next";

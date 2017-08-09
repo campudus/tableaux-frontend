@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from "react";
 import View from "../../entityView/RowView";
 import {ActionTypes, ColumnKinds, Directions, FilterModes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
-import {maybe} from "../../../helpers/monads";
+import {maybe} from "../../../helpers/functools";
 import TranslationPopup from "../../entityView/TranslationPopup";
 import * as f from "lodash/fp";
 import columnFilter from "./columnFilter";

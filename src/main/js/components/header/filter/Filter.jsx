@@ -3,7 +3,7 @@ import FilterPopup from "./FilterPopup.jsx";
 import {translate} from "react-i18next";
 import {FilterModes} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
-import {either} from "../../../helpers/monads";
+import {either} from "../../../helpers/functools";
 import * as f from "lodash/fp";
 
 class FilterButton extends React.Component {

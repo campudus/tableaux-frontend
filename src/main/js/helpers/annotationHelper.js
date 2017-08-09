@@ -3,7 +3,7 @@ import * as f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
-import {maybe} from "./monads";
+import {maybe} from "./functools";
 
 const extractAnnotations = obj => {
   const kvPairs = (obj || []).map(

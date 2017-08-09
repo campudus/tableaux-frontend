@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from "react";
 import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import {splitPriceDecimals} from "./currencyHelper";
 import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";
-import {maybe} from "../../../helpers/monads";
+import {maybe} from "../../../helpers/functools";
 
 export default class CurrencyRow extends Component {
 

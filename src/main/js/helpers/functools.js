@@ -285,9 +285,18 @@ const logged = curryN(2)(
   }
 );
 
+const forkJoin = curryN(4,
+  function (combine, f, g, x) {
+    return combine(f(x), g(x));
+  }
+);
+
 const tests = {
   title: "Monads",
-  tests: [["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]]]
+  tests: [
+    ["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]],
+    ["is", "FOOfoo", forkJoin, [(a, b) => a + b, (x) => x.toUpperCase(), (x) => x.toLowerCase(), "Foo"]]
+  ]
 };
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, tests};
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, forkJoin, tests};

@@ -20,7 +20,7 @@ import classNames from "classnames";
 import * as f from "lodash/fp";
 import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
-import {either} from "../../helpers/monads";
+import {either} from "../../helpers/functools";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
 // used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first

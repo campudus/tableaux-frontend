@@ -6,7 +6,7 @@ import ColumnEntry from "./ColumnEntry.jsx";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 
 @translate(["table"])
 @connectToAmpersand

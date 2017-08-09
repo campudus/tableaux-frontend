@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import * as f from "lodash/fp";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";

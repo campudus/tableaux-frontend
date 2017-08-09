@@ -4,7 +4,7 @@ import i18n from "i18next";
 import classNames from "classnames";
 import * as f from "lodash/fp";
 import {openShowDependency} from "../ConfirmDependentOverlay";
-import {maybe} from "../../../helpers/monads";
+import {maybe} from "../../../helpers/functools";
 import {initiateDeleteRow, initiateDuplicateRow} from "../../../helpers/rowHelper";
 import {isLocked, setRowAnnotation} from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";

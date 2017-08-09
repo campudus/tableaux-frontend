@@ -111,51 +111,24 @@ const createEntriesAndCopy = (src, dst, constrainedValue) => {
     }
   );
 
-  // row -> duplicatedRow
-  const duplicateRow = (srcRow) => new Promise(
-    (resolve, reject) => {
-      try {
-        srcRow.duplicate(resolve);
-      } catch (e) {
-        reject(e);
-      }
-    }
-  ).catch(e => console.error("cellCopy: duplicateRow", e));
+  const duplicateRow = (row) => row.safelyDuplicate();
 
-  // row -> {id, value}
-  const removeBacklink = (remoteRow) => new Promise(
-    (resolve, reject) => {
-      const backLinkCell = remoteRow.cells.models.filter(
-        (cell) => cell.kind === ColumnKinds.link && cell.column.toTable === dst.tableId
-      )[0];
-      if (!f.isNil(backLinkCell)) {
-        ActionCreator.changeCell(
-          backLinkCell,
-          [],
-          () => resolve({
-            id: remoteRow.id,
-            value: remoteRow.cells.at(0).value
-          })
-        );
-      } else {
-        resolve(
-          {
-            id: remoteRow.id,
-            value: remoteRow.cells.at(0).value
-          }
-        );
-      }
+  const toLinkValue = (row) => new Promise(
+    (resolve) => {
+      resolve(
+        {
+          id: row.id,
+          value: row.cells.at(0).value
+        }
+      );
     }
-  ).catch(e => {
-    console.error("cellCopy: removeBacklink", e);
-    throw (e);
-  });
+  );
 
   // rowId -> LinkValue {id, value}
   const copyOneLink = ({id}) => (
     requestRow(id)
       .then(duplicateRow)
-      .then(removeBacklink)
+      .then(toLinkValue)
   );
 
   initTable.then(

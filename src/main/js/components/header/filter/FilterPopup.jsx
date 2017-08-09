@@ -7,7 +7,7 @@ import Select from "react-select";
 import {translate} from "react-i18next";
 import TableauxConstants, {ColumnKinds, FilterModes, Langtags, SortValues} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
-import {either} from "../../../helpers/monads";
+import {either} from "../../../helpers/functools";
 import FilterRow, {BOOL, TEXT} from "./FilterRow";
 import {FilterableCellKinds, SortableCellKinds} from "../../table/RowFilters";
 

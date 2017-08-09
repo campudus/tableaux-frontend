@@ -6,7 +6,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 
 export function shouldCellFocus() {
   // we dont want to force cell focus when overlay is open

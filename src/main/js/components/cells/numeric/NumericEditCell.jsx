@@ -2,7 +2,7 @@ import {Directions} from "../../../constants/TableauxConstants";
 import ActionCreator from "../../../actions/ActionCreator";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
-import {maybe} from "../../../helpers/monads";
+import {maybe} from "../../../helpers/functools";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {

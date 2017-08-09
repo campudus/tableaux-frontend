@@ -4,7 +4,7 @@ import {ActionTypes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import Header from "../Header";
 import {showDialog} from "../GenericOverlay";
-import {maybe} from "../../../helpers/monads";
+import {maybe} from "../../../helpers/functools";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 import EntityViewBody from "./EntityViewBody";

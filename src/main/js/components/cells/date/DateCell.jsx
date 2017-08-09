@@ -7,7 +7,7 @@ import DateEditCell from "./DateEditCell";
 import {DateFormats} from "../../../constants/TableauxConstants";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
-import {either} from "../../../helpers/monads";
+import {either} from "../../../helpers/functools";
 
 class DateCell extends React.Component {
   constructor(props) {

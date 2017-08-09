@@ -3,7 +3,7 @@ import DateTimeEditCell from "./DateTimeEditCell.jsx";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
 import {DateTimeFormats} from "../../../constants/TableauxConstants";
-import {either} from "../../../helpers/monads";
+import {either} from "../../../helpers/functools";
 import {identity, prop} from "lodash/fp";
 
 class DateTimeCell extends React.Component {

@@ -24,7 +24,7 @@ export function duplicateRow(payload) {
   const {rows} = this.props;
   const {rowId} = payload;
   const rowToCopy = rows.get(rowId);
-  rowToCopy.duplicate((row) => {
+  rowToCopy.safelyDuplicate((row) => {
     ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={scrollToRow.bind(this)} />, 3000, true);
   });
 }

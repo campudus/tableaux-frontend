@@ -6,7 +6,6 @@ import TableauxConstants from "./constants/TableauxConstants";
 import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";
 import "../scss/main.scss";
-import "./watchers/watchConnection";
 import "./dispatcher/GlobalCellChangeListener";
 import "dom4";
 
@@ -34,6 +33,7 @@ window.devErr = (isProduction)
 
 console.log("GRUD version", process.env.BUILD_VERSION);
 if (isProduction) {
+  require("./watchers/watchConnection");
   getSentryUrlFromServer(
     () => {
       console.warn("Sentry not enabled");

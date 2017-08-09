@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from "react";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import {either} from "../../../helpers/monads";
+import {either} from "../../../helpers/functools";
 import Select from "react-select";
 import {translate} from "react-i18next";
 import classNames from "classnames";

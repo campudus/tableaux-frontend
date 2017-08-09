@@ -9,7 +9,7 @@ import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 

@@ -6,7 +6,7 @@ import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {ActionTypes, DefaultLangtag, Directions, FilterModes} from "../../../constants/TableauxConstants";
-import {either, maybe} from "../../../helpers/monads";
+import {either, maybe} from "../../../helpers/functools";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
