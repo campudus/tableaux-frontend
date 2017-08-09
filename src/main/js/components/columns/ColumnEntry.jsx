@@ -24,6 +24,9 @@ class ColumnEntry extends React.Component {
       contextMenu: null,
       showDescription: false
     };
+
+    this.dragging = false;
+    this.oldX = 0;
   }
 
   handleInput = (inputState) => {
@@ -124,6 +127,34 @@ class ColumnEntry extends React.Component {
     }
   }
 
+  renderDragHandle = () => (
+    <div className="drag-handle"
+         draggable
+         onDragStart={this.startDragging}
+         onDragEnd={this.finishDragging}
+         onDrag={(this.dragging) ? this.resizeColumn : f.noop}
+    />
+  );
+
+  startDragging = (event) => {
+    devLog("Starting to draaaag", event.clientX)
+    event.dataTransfer.setData("text/html", this.props.index);
+    this.oldX = event.clientX;
+  };
+
+  resizeColumn = (event, done = false) => {
+    devLog("Draggedy-drag", event.clientX)
+    const {index, dragHandler} = this.props;
+    dragHandler(index, event.clientX - this.oldX, done);
+  };
+
+  finishDragging = (event) => {
+    devLog("me dun' draggin'", event.clientX)
+    this.dragging = false;
+    this.resizeColumn(event, true);
+    this.oldX = event.clientX;
+  };
+
   render = () => {
     const {column: {kind, id}, columnContent, columnIcon, description} = this.props;
     const menuOpen = this.state.ctxCoords;
@@ -169,6 +200,7 @@ class ColumnEntry extends React.Component {
           />
           : null}
         {(menuOpen) ? this.renderContextMenu() : null}
+        {this.renderDragHandle()}
       </div>
     );
   }
@@ -183,7 +215,8 @@ ColumnEntry.PropTypes = {
   column: React.PropTypes.object.isRequired,
   name: React.PropTypes.string.isRequired,
   isId: React.PropTypes.bool.isRequired,
-  tables: React.PropTypes.object.isRequired
+  tables: React.PropTypes.object.isRequired,
+  dragHandler: React.PropTypes.func.isRequired
 };
 
 module.exports = ColumnEntry;

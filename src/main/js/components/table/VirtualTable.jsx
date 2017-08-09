@@ -21,8 +21,6 @@ const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
-const SCROLL_TIME = 500; // ms; time to scroll back to left when button is clicked
-
 export default class VirtualTable extends PureComponent {
   static propTypes = {
     columns: PropTypes.object.isRequired,
@@ -49,6 +47,8 @@ export default class VirtualTable extends PureComponent {
     this.expandedRowIds = props.expandedRowIds;
   }
 
+  rowWidths = new Map([[0, META_CELL_WIDTH]]);
+
   calcRowHeight = ({index}) => {
     if (index === 0) {
       return HEADER_HEIGHT;
@@ -63,7 +63,26 @@ export default class VirtualTable extends PureComponent {
   };
 
   calcColWidth = ({index}) => {
-    return (index === 0) ? META_CELL_WIDTH : CELL_WIDTH;
+    const result = this.rowWidths.get(index) || CELL_WIDTH;
+    devLog("column width", index, result)
+    return result
+  };
+
+  updateColWidth = (index, dx, done = false) => {
+    const oldWidth = this.calcColWidth(index);
+    const newWidth = oldWidth + dx;
+    devLog("Resizing column", index, "to", newWidth)
+    if (newWidth === CELL_WIDTH) {
+      this.rowWidths.delete(index);
+    } else {
+      this.rowWidths.set(index, newWidth);
+    }
+    if (done) {
+      maybe(this.multiGrid)
+        .method("recomputeGridSize")
+        .method("forceUpdateGrids")
+      devLog("Row widths:", this.rowWidths)
+    }
   };
 
   componentDidMount = () => {
@@ -136,6 +155,8 @@ export default class VirtualTable extends PureComponent {
                     langtag={this.props.langtag}
                     tables={tables}
                     tableId={table.id}
+                    dragHandler={this.updateColWidth}
+                    index={columnIndex + 1}
       />
     );
   };
@@ -334,20 +355,6 @@ export default class VirtualTable extends PureComponent {
       this.setState({scrolledCell: {}});
     }
   }
-
-  scrollToLeft = () => {
-    const framesToScroll = SCROLL_TIME / 60; // ms / FPS = number of frames
-    const xStart = this.multiGrid.state.scrollLeft;
-    const dx = xStart / framesToScroll;
-    const scrollStep = () => {
-      const x = (this.state.scrollLeft || xStart) - dx;
-      this.setState(
-        {scrollLeft: (x > 0) ? x : null},
-        () => requestAnimationFrame((x > 0) ? scrollStep : f.noop)
-        );
-    };
-    scrollStep();
-  };
 
   render() {
     const {

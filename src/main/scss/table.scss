@@ -108,6 +108,13 @@ body div div.column-header-context-menu {
     align-items: center;
     padding: 0 10px;
 
+    .drag-handle {
+      width: 10px;
+      height: 100%;
+      background-color: red;
+      cursor: ew-resize;
+    }
+
     .column-name-wrapper {
       width: 85%;
       overflow: hidden;
