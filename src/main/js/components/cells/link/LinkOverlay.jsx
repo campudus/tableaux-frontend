@@ -250,7 +250,7 @@ class LinkOverlay extends Component {
       }),
       f.zip(cell.value, cell.displayValue)
     );
-    this.allRowResults = [...linkedRows, ...rowResult];
+    this.allRowResults = f.uniqBy(f.get("id"), [...linkedRows, ...rowResult]);
     // we always rebuild the row names, also to prevent wrong display names when switching languages
     this.setState({
       // we show all the rows
@@ -396,7 +396,7 @@ class LinkOverlay extends Component {
 
     return (
       <LinkItem
-        key={key}
+        key={`${key}-${row.id}`}
         mouseOverHandler={{
           box: mouseOverBoxHandler,
           item: mouseOverItemHandler(index)
