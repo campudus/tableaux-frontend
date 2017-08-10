@@ -1,6 +1,5 @@
 import FilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
-import RowConcatHelper from "../../helpers/RowConcatHelper";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import * as _ from "lodash";
@@ -153,31 +152,21 @@ const mkClosures = (table, langtag, rowsFilter) => {
   const {sortValue} = rowsFilter;
 
   const sortColumnIdx = getColumnIndex(rowsFilter.sortColumnId);
-  const isOfKind = kind => f.matchesProperty("kind", kind);
-  const getConcatString = cell => {
-    const str = cell.displayValue[langtag];
-    return (str === RowConcatHelper.NOVALUE) ? "" : cleanString(str);
-  };
-  const joinLinkStrings = f.compose(
-    f.join(":"),
-    f.map(f.defaultTo("")),
-    f.map(f.trim),
-    f.map(f.prop([langtag])),
-    f.prop("displayValue")
-  );
-  const getSortableCellValue = cell => {
+  const isOfKind = (kind) => f.matchesProperty("kind", kind);
+
+  const getSortableCellValue = (cell) => {
+    const getField = (field) => (cell) => (cell.isMultiLanguage)
+      ? f.get([field, langtag], cell)
+      : f.get([field, cell]);
     const rawValue = f.cond([
-      [f.prop("isLink"), joinLinkStrings],
-      [isOfKind(ColumnKinds.concat), getConcatString],
-      [f.prop("isMultiLanguage"), f.prop(["value", langtag])],
-      [f.stubTrue, f.prop(["value"])]
+      [isOfKind(ColumnKinds.boolean), getField("value")],
+      [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
-    const fixedValue = f.cond([
-      [isOfKind(ColumnKinds.number), f.always(f.toNumber(rawValue))],
+    return f.cond([
+      [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
       [isOfKind(ColumnKinds.boolean), f.always(!!rawValue)],
-      [f.stubTrue, f.always(cleanString(rawValue))]
+      [f.stubTrue, f.always(rawValue.toLowerCase() || "")]
     ])(cell);
-    return (fixedValue || cell.kind === ColumnKinds.boolean) ? fixedValue : "";
   };
 
   const comparator = (a, b) => {
@@ -192,17 +181,20 @@ const mkClosures = (table, langtag, rowsFilter) => {
     };
     const compareRowIds = (a, b) => {
       const idOf = f.prop("id");
-      return f.eq(idOf(a), idOf(b)) ? equal : idOf(a) - idOf(b);
+      return (idOf(a) === idOf(b))
+        ? equal
+        : idOf(a) - idOf(b);
     };
-    const compareValues = (a, b) => (f.gt(a, b)) ? gt : lt;
+    const compareValues = (a, b) => (a > b) ? gt : lt;
+    const isEmpty = (x) => !x && x !== 0 && x !== !!x;
 
     return (sortColumnIdx >= 0)
       ? f.cond([
-        [(vals) => f.every(f.identity, f.map(f.isEmpty, vals)), f.always(equal)],
-        [([A, dummy]) => f.isEmpty(A), f.always(bFirst)],
-        [([dummy, B]) => f.isEmpty(B), f.always(aFirst)],
-        [f.stubTrue, ([A, B]) => (f.equals(A, B)) ? compareRowIds(a, b) : compareValues(A, B)]
-      ])(f.map(getSortValue, [a, b]))
+        [(vals) => f.every(isEmpty, vals), f.always(equal)],
+        [([A, dummy]) => isEmpty(A), f.always(bFirst)],
+        [([dummy, B]) => isEmpty(B), f.always(aFirst)],
+        [f.stubTrue, ([A, B]) => (f.eq(A, B)) ? compareRowIds(a, b) : compareValues(A, B)]
+      ])(([a, b].map(getSortValue)))
       : compareRowIds(a, b);
   };
 

@@ -212,7 +212,7 @@ class Left extends Either {
   }
 
   toString() {
-    return `Either.Left(${this.value})`;
+    return `Either.Left()`;
   }
 }
 
