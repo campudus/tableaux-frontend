@@ -610,19 +610,20 @@ $dist-from-top: 20px;
   left: 0;
   bottom: 2vh;
   z-index: 100;
+  min-width: 65px;
+  height: 60px;
   max-width: 35vw;
   background-color: $color-overlay-header;
   border-bottom-right-radius: $overlay-border-radius;
   border-top-right-radius: $overlay-border-radius;
-  padding: 20px;
 
   a {
+    padding: 20px;
     display: block;
     height: 100%;
     width: 100%;
 
     .context {
-      //font-size: smaller;
       font-weight: 500;
       color: $color-text-medium-grey;
     }
