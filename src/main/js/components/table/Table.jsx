@@ -9,7 +9,7 @@ import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import f from "lodash/fp";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 
 import VirtualTable from "./VirtualTable";
 

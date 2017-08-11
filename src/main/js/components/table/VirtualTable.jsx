@@ -11,7 +11,7 @@ import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import {AutoSizer} from "react-virtualized";
 import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 import GrudGrid from "./GrudGrid";

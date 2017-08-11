@@ -1,7 +1,7 @@
 import React, {PropTypes, PureComponent} from "react";
 import {ActionTypes, ColumnKinds, DefaultLangtag} from "../../constants/TableauxConstants";
 import f from "lodash/fp";
-import {maybe} from "../../helpers/monads";
+import {maybe} from "../../helpers/functools";
 import i18n from "i18next";
 import ColumnEntry from "./ColumnEntry";
 import Dispatcher from "../../dispatcher/Dispatcher";
