@@ -482,7 +482,7 @@ class LinkOverlay extends Component {
     };
 
     const noForeignRows = f.isEmpty(rowResults.unlinked)           // there are no unlinked rows
-      && f.size(this.allRowResults) === f.size(rowResults.linked); // and all existing rows are linked (else no filter results)
+      || !this.canAddLink();                                       // or link cardinality reached
 
     const unlinkedRows = (loading)
       ? <Spinner isLoading={true} />
@@ -562,7 +562,10 @@ class LinkOverlay extends Component {
               {unlinkedRows}
             </div>
           )}
-        {this.renderRowCreator(noForeignRows && !loading)}
+        {(this.canAddLink())
+          ? this.renderRowCreator(noForeignRows && !loading)
+          : null
+        }
       </div>
     );
   }
