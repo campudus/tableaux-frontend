@@ -3,7 +3,7 @@ import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxCons
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import * as _ from "lodash";
-import {either} from "../../helpers/functools";
+import {either, fspy} from "../../helpers/functools";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -66,15 +66,15 @@ const mkIDFilter = closures => ({value}) => {
 const mkOthersTranslationStatusFilter = closures => ({value}) => {
   const needsTranslation = f.compose(
     f.complement(f.isEmpty),
-    f.prop("langtags"),
-    f.first,
-    f.filter(f.matchesProperty("value", "needs_translation")),
-    f.filter(f.matchesProperty("type", "flag"))
+    fspy("langtags"),
+    f.get(["annotations", "translationNeeded", "langtags"]),
+    fspy("cell")
   );
   const hasUntranslatedCells = f.compose(
-    f.any(f.identity),
-    f.map(needsTranslation),
-    f.prop("annotations"),
+    f.any(needsTranslation),
+    fspy("cells"),
+    f.get(["cells", "models"]),
+    fspy("row")
   );
   return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
@@ -82,15 +82,11 @@ const mkOthersTranslationStatusFilter = closures => ({value}) => {
 const mkTranslationStatusFilter = closures => ({value}) => {
   const needsTranslation = f.compose(
     f.contains(closures.langtag),
-    f.prop("langtags"),
-    f.first,
-    f.filter(f.matchesProperty("value", "needs_translation")),
-    f.filter(f.matchesProperty("type", "flag")),
+    f.get(["annotations", "translationNeeded", "langtags"]),
   );
   const hasUntranslatedCells = f.compose(
-    f.any(f.identity),
-    f.map(needsTranslation),
-    f.prop("annotations"),
+    f.any(needsTranslation),
+    f.get(["cells", "models"])
   );
   return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
@@ -101,14 +97,13 @@ const mkFlagFilter = (mode, value) => {
     [FilterModes.POSTPONE]: "postpone",
     [FilterModes.CHECK_ME]: "check-me"
   }[mode];
-  const isAsRequired = (value) ? f.complement(f.isEmpty) : f.isEmpty;
+  const isAsRequired = (value)
+    ? f.any((v) => v)
+    : f.every((v) => !v);
   return f.compose(
     isAsRequired,
-    f.filter(f.matchesProperty("value", flag)),
-    f.filter(f.matchesProperty("type", "flag")),
-    f.flatten,
-    f.filter(f.identity),
-    f.get("annotations")
+    f.map(f.get(["annotations", flag])),
+    f.get(["cells", "models"])
   );
 };
 
