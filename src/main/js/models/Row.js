@@ -4,7 +4,8 @@ import Request from "superagent";
 import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
 import {getUserLanguageAccess, isUserAdmin} from "../helpers/accessManagementHelper";
 import * as f from "lodash/fp";
-import {extractAnnotations} from "../helpers/annotationHelper";
+import {extractAnnotations, setCellAnnotation} from "../helpers/annotationHelper";
+import ActionCreator from "../actions/ActionCreator";
 import {ColumnKinds} from "../constants/TableauxConstants";
 import {forkJoin} from "../helpers/functools";
 
@@ -133,6 +134,15 @@ const Row = AmpersandModel.extend({
                   reject(err);
                 } else {
                   row.recentlyDuplicated = true;
+                  const cellsWithCardinality = row.cells.models.filter(hasCardinality);
+                  if (!f.isEmpty(cellsWithCardinality)) {
+                    ActionCreator.showDefaultToast("table:check-columns");
+                    cellsWithCardinality.forEach(
+                      (cell) => {
+                        setCellAnnotation({type: "flag", value: "check-me"}, cell);
+                      }
+                    );
+                  }
                   f.isFunction(cb) && cb(row);
                   resolve(row);
                 }

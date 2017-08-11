@@ -1,6 +1,8 @@
 const Dispatcher = require("../dispatcher/Dispatcher");
 const ActionTypes = require("../constants/TableauxConstants").ActionTypes;
 import Raven from "raven-js";
+import React from "react";
+import i18n from "i18next";
 
 module.exports = {
 
@@ -248,6 +250,10 @@ module.exports = {
         content,
         milliseconds
       });
+  },
+
+  showDefaultToast: function (content, moustaches) {
+    this.showToast(<div id="cell-jump-toast">{i18n.t(content, moustaches)}</div>, 2700);
   },
 
   editColumnHeaderDone: (colId, langtag, newName, newDescription) => {

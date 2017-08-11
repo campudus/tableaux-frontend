@@ -120,5 +120,6 @@
   "cardinality-reached": "Ein Datensatz darf zu dieser Tabell hüchstens {{maxLink}} Verknüpfungen haben.",
   "important": "Wichtig",
   "check-me": "Bitte überprüfen",
-  "postpone": "Später"
+  "postpone": "Später",
+  "check-columns": "Nicht alle Einträge konnten kopiert werden. Bitte überprüfen Sie den Datensatz."
 }
