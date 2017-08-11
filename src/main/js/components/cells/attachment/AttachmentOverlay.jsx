@@ -9,6 +9,8 @@ import apiUrl from "../../../helpers/apiUrl";
 import {translate} from "react-i18next";
 import Spinner from "../../header/Spinner";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import {List, AutoSizer, CellMeasurerCache, CellMeasurer} from "react-virtualized";
+import f from "lodash/fp";
 
 @connectToAmpersand
 class AttachmentOverlay extends Component {
@@ -22,7 +24,14 @@ class AttachmentOverlay extends Component {
   constructor(props) {
     super(props);
     this.state = {folder: null};
+    this._cache = new CellMeasurerCache({
+      fixedWidth: true,
+      minHeight: 57,
+      defaultHeight: 57
+    });
   }
+
+  retrieveTranslation = multiLanguage.retrieveTranslation(TableauxConstants.FallbackLanguage);
 
   componentWillMount() {
     if (this.props.cell.column.kind !== ColumnKinds.attachment) {
@@ -79,10 +88,40 @@ class AttachmentOverlay extends Component {
     return `/${this.props.langtag}/media/${folderId}`;
   };
 
+  renderFileItem = ({index, style, parent}) => {
+    const file = f.get(["folder", "files", index], this.state);
+    const {langtag, cell} = this.props;
+    const currentCellValue = cell.value;
+    const imageUrl = apiUrl(this.retrieveTranslation(file.fileUrl, langtag));
+
+    const linked = _.find(currentCellValue, (linkedFile) => {
+      return file.uuid === linkedFile.uuid;
+    });
+
+    const isLinked = !!linked;
+    const fileTitle = this.retrieveTranslation(file.title, langtag);
+
+    return (file)
+      ? (
+        <CellMeasurer key={file.uuid}
+                      cache={this._cache}
+                      rowIndex={index}
+                      parent={parent}
+        >
+          <FileItem style={style}
+                    isLinked={isLinked}
+                    toggleAttachment={this.toggleAttachments(isLinked, file)}
+                    title={fileTitle}
+                    url={imageUrl}
+                    editorUrl={this.getMediaFolderUrl(file.folder)}
+          />
+        </CellMeasurer>
+      )
+      : null;
+  };
+
   render() {
-    const fallbackLang = TableauxConstants.DefaultLangtag;
-    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-    const {langtag, t} = this.props;
+    const {t} = this.props;
 
     const backButton = (this.state.folder && this.state.folder.name !== "root")
       ? (
@@ -116,27 +155,19 @@ class AttachmentOverlay extends Component {
               })}
             </ul>
           </div>
-          <ul className="file-list">
-            {this.state.folder.files.map((file) => {
-              const currentCellValue = this.props.cell.value;
-              const imageUrl = apiUrl(retrieveTranslation(file.fileUrl, langtag));
-
-              const linked = _.find(currentCellValue, (linkedFile) => {
-                return file.uuid === linkedFile.uuid;
-              });
-
-              const isLinked = !!linked;
-              const fileTitle = retrieveTranslation(file.title, this.props.langtag);
-
-              return <FileItem key={file.uuid}
-                               isLinked={isLinked}
-                               toggleAttachment={this.toggleAttachments(isLinked, file)}
-                               title={fileTitle}
-                               url={imageUrl}
-                               editorUrl={this.getMediaFolderUrl(file.folder)}
-              />;
-            })}
-          </ul>
+          <div className="file-list">
+            <AutoSizer>
+              {({width, height}) => (
+                <List height={height}
+                      deferredMeasurementCache={this._cache}
+                      rowHeight={this._cache.rowHeight}
+                      rowRenderer={this.renderFileItem}
+                      rowCount={f.size(this.state.folder.files)}
+                      width={width}
+                />
+              )}
+            </AutoSizer>
+          </div>
         </div>
       )
       : <Spinner isLoading={true} />;
@@ -151,24 +182,28 @@ class AttachmentOverlay extends Component {
 
 const FileItem = translate(["media", "common"])(
   (props) => {
-    const {isLinked, toggleAttachment, title, url, editorUrl, t} = props;
+    const {isLinked, toggleAttachment, title, url, editorUrl, t, style} = props;
 
     return (
-      <li className={isLinked ? "file is-linked" : "file"}>
-        <a onClick={toggleAttachment}
-           className={"overlay-table-row"}>
-          <i className="icon fa fa-file"></i><span>{title}</span>
-          {(isLinked) ? <SvgIcon icon="cross"/> : <SvgIcon icon="check"/>}
-        </a>
-        <div className="media-options">
-          <a className="file-link" href="#" onClick={() => window.open(url)}>
-            <i className="icon fa fa-external-link"></i>{t("show_file")}
+      <div className="file-wrapper"
+           style={style}
+      >
+        <div className={isLinked ? "file is-linked" : "file"}>
+          <a onClick={toggleAttachment}
+             className={"overlay-table-row"}>
+            <i className="icon fa fa-file" /><span>{title}</span>
+            {(isLinked) ? <SvgIcon icon="cross"/> : <SvgIcon icon="check"/>}
           </a>
-          <a className="change-file" alt="edit" href="#" onClick={() => window.open(editorUrl)}>
-            <i className="icon fa fa-pencil-square-o"></i>{t("change_file")}
-          </a>
+          <div className="media-options">
+            <a className="file-link" href="#" onClick={() => window.open(url)}>
+              <i className="icon fa fa-external-link" />{t("show_file")}
+            </a>
+            <a className="change-file" alt="edit" href="#" onClick={() => window.open(editorUrl)}>
+              <i className="icon fa fa-pencil-square-o" />{t("change_file")}
+            </a>
+          </div>
         </div>
-      </li>
+      </div>
     );
   }
 );

@@ -491,20 +491,20 @@
 
     .file-list {
       flex: 2;
-      padding: 15px;
+      padding: 0;
       height: 100%;
-      overflow: hidden;
-      overflow-y: auto;
+      box-sizing: border-box;
 
-      li {
+      .file-wrapper {
+        padding: 3px 15px;
+      }
+
+      .file {
         width: 100%;
-        box-sizing: border-box;
-        position: relative;
         padding: 8px;
         border-radius: 3px;
         background-color: $color-primary-contrast-text;
         color: $color-primary;
-        margin-bottom: 5px;
 
         svg {
           fill: transparent;
