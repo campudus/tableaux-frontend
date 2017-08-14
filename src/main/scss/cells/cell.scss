@@ -51,6 +51,18 @@
     }
   }
 
+  .cell-content.is-multiline {
+    display: flex;
+    align-items: center;
+    div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    i {
+      margin-left: 5px;
+      color: $color-text-medium-grey;
+    }
+  }
   .cell-content {
     overflow: hidden;
     height: $space-height-cell-content;

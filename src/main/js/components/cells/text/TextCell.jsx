@@ -1,9 +1,9 @@
-import React, {Component, PropTypes} from "react";
+import React, {PureComponent, PropTypes} from "react";
 import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import {compose, isEmpty, isString} from "lodash/fp";
+import f, {compose, isEmpty, isString} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
@@ -12,7 +12,7 @@ import {maybe} from "../../../helpers/functools";
 import {changeCell} from "../../../models/Tables";
 import i18n from "i18next";
 
-class TextCell extends Component {
+class TextCell extends PureComponent {
 
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -29,8 +29,8 @@ class TextCell extends Component {
     }
     const {cell, langtag, contentChanged} = this.props;
     const valueToSave = (cell.isMultiLanguage)
-    ? {[langtag]: newValue}
-    : newValue;
+      ? {[langtag]: newValue}
+      : newValue;
     changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
     ActionCreator.toggleCellEditing({editing: false});
   };
@@ -54,17 +54,17 @@ class TextCell extends Component {
                     title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
       />,
       body: (
-          <div className="content-items richtext-cell-editor">
-            <div className="item">
-              <RichTextComponent value={textValue} langtag={langtag}
-                                 saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
-                                 hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
-                                 disableOnClickOutside={true}
-                                 placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
-                                 cell={this.props.cell}
-              />
-            </div>
+        <div className="content-items richtext-cell-editor">
+          <div className="item">
+            <RichTextComponent value={textValue} langtag={langtag}
+                               saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
+                               hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
+                               disableOnClickOutside={true}
+                               placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
+                               cell={this.props.cell}
+            />
           </div>
+        </div>
       ),
       type: "full-height"
     });
@@ -103,15 +103,23 @@ class TextCell extends Component {
   render() {
     const {selected} = this.props;
     const value = this.getValue();
+    const isMultiLine = f.contains("\n", value);
 
     const expandButton = (selected)
       ? <ExpandButton onTrigger={this.openOverlay} />
       : null;
 
+    const multiLineIndicator = (isMultiLine)
+      ? <i className="fa fa-paragraph multiline-indicator" />
+      : null;
+
     return (
-      <div className='cell-content' onClick={this.handleClick}>
-        {(isString(value)) ? value.split("\n")[0] : ""}
+      <div className={`cell-content ${(isMultiLine) ? "is-multiline" : ""}`}
+           onClick={this.handleClick}
+      >
+        <div>{(isString(value)) ? value.split("\n")[0] : ""}</div>
         {expandButton}
+        {multiLineIndicator}
       </div>
     );
   }

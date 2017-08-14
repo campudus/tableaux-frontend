@@ -1,11 +1,12 @@
 import React, {PropTypes} from "react";
 import ShortTextEditCell from "./ShortTextEditCell";
 import ActionCreator from "../../../actions/ActionCreator";
-import {isEmpty} from "lodash/fp";
+import f, {isEmpty} from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
+import TextCell from "./TextCell";
 
 const ShortTextCell = (props) => {
-  const {cell, cell: {isMultiLanguage}, contentChanged, editing, langtag, setCellKeyboardShortcuts} = props;
+  const {cell, cell: {isMultiLanguage}, contentChanged, editing, selected, langtag, setCellKeyboardShortcuts} = props;
 
   const handleEditDone = (newValue) => {
     const oldValue = getValue();
@@ -35,11 +36,23 @@ const ShortTextCell = (props) => {
     );
   };
 
-  if (!editing) {
+  if (f.contains("\n", getValue())) {
+    // If someone managed to put multiline text here, fallback to a multiline text cell
+    return (
+      <TextCell langtag={langtag}
+                cell={cell}
+                editing={editing}
+                selected={selected}
+      />
+    );
+  } else if (!editing) {
     return renderTextCell(cell, getValue());
   } else {
-    return <ShortTextEditCell cell={cell} langtag={langtag} onBlur={handleEditDone}
-                              setCellKeyboardShortcuts={setCellKeyboardShortcuts}/>;
+    return (
+      <ShortTextEditCell cell={cell} langtag={langtag} onBlur={handleEditDone}
+                         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+      />
+    );
   }
 };
 
@@ -47,6 +60,7 @@ ShortTextCell.propTypes = {
   langtag: PropTypes.string.isRequired,
   cell: PropTypes.object.isRequired,
   editing: PropTypes.bool.isRequired,
+  selected: PropTypes.bool,
   contentChanged: PropTypes.func.isRequired,
   setCellKeyboardShortcuts: PropTypes.func
 };
