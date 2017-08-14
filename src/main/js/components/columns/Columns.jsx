@@ -117,7 +117,7 @@ class Columns extends React.Component {
 
   stopEditing = (payload) => {
     if (payload
-      && (payload.newName || payload.newDescription)) {
+      && (f.any(f.isString, [payload.newName, payload.newDescription]))) {
       this.saveEdits(payload);
     }
   };
@@ -127,10 +127,10 @@ class Columns extends React.Component {
     const {columns} = this.props;
     const modifications =
       f.compose(
-        m => (newName)
+        m => (f.isString(newName))
           ? f.assign({"displayName": {[langtag]: newName}}, m)
           : m,
-        m => (newDescription)
+        m => (f.isString(newDescription))
           ? f.assign({"description": {[langtag]: newDescription}}, m)
           : m
       )({});
