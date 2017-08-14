@@ -49,22 +49,26 @@ class TextCell extends PureComponent {
     const table = cell.tables.get(cell.tableId);
     const context = table.displayName[langtag] || table.displayName[FallbackLanguage];
 
+    const Wrapper = (props) => props.children;
+
     ActionCreator.openOverlay({
       head: <Header context={context}
                     title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
       />,
       body: (
-        <div className="content-items richtext-cell-editor">
-          <div className="item">
-            <RichTextComponent value={textValue} langtag={langtag}
-                               saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
-                               hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
-                               disableOnClickOutside={true}
-                               placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
-                               cell={this.props.cell}
-            />
+        <Wrapper>
+          <div className="content-items richtext-cell-editor">
+            <div className="item">
+              <RichTextComponent value={textValue} langtag={langtag}
+                                 saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
+                                 hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
+                                 disableOnClickOutside={true}
+                                 placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
+                                 cell={this.props.cell}
+              />
+            </div>
           </div>
-        </div>
+        </Wrapper>
       ),
       type: "full-height"
     });
