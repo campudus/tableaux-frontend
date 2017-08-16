@@ -33,20 +33,22 @@ class TableView extends React.Component {
 
   constructor(props) {
     super(props);
+
+    const {columnId, rowId} = props;
+    const {filter, entityView} = props.urlOptions || {};
+
     this.nextTableId = null;
     this.pendingCellGoto = null;
     this.state = {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
-      rowsFilter: null,
+      rowsFilter: (f.isObject(filter) && !f.isEmpty(filter)) ? {filters: [filter]} : null,
       pasteOriginCell: {},
       pasteOriginCellLang: props.langtag,
       tableFullyLoaded: false
     };
 
-    const {columnId, rowId} = this.props;
-    const {filter, entityView} = this.props.urlOptions || {};
     if (rowId) {
       this.pendingCellGoto = {
         page: this.estimateCellPage(rowId),
@@ -142,7 +144,11 @@ class TableView extends React.Component {
         f.reject(f.get("isGroupMember"))
       )(cols);
     }
-    this.setState({rowsFilter: f.get("rowsFilter", storedViewObject)});
+
+    // don't override filters set by url
+    if (f.isEmpty(this.state.rowsFilter)) {
+      this.setState({rowsFilter: f.get("rowsFilter", storedViewObject)});
+    }
   };
 
   // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
@@ -220,10 +226,12 @@ class TableView extends React.Component {
       if (filter) {
         this.changeFilter({
           filters: [
-            {
-              mode: FilterModes.ID_ONLY,
-              value: rowId
-            }
+            (f.isObject(filter))
+              ? filter
+              : {
+                mode: FilterModes.ID_ONLY,
+                value: [rowId]
+              }
           ],
           sorting: {columnId: 0}
         },
@@ -342,7 +350,7 @@ class TableView extends React.Component {
     const applyStoredViews = () => new Promise(
       (resolve) => {
         const {rowsFilter} = this.state;
-        if (!f.get(["urlOptions", "filter"], this.props) && !f.isEmpty(rowsFilter)) {
+        if (!f.isEmpty(rowsFilter && rowsFilter.filters)) {
           this.changeFilter(rowsFilter, false);
         }
         resolve();

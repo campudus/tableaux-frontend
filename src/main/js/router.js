@@ -5,8 +5,7 @@ const ReactDOM = require("react-dom");
 import Tableaux from "./components/Tableaux.jsx";
 import * as f from "lodash/fp";
 const Dispatcher = require("./dispatcher/Dispatcher");
-const TableauxConstants = require("./constants/TableauxConstants");
-const ActionTypes = TableauxConstants.ActionTypes;
+import TableauxConstants, {ActionTypes, FilterModes} from "./constants/TableauxConstants";
 const ActionCreator = require("./actions/ActionCreator");
 import Raven from "raven-js";
 
@@ -18,7 +17,20 @@ const parseOptions = optString => {
   }
   const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
   const parseFilter = function (str) {
-    return {filter: true};
+    const els = str.split(":");
+    devLog("els", els)
+    if (f.size(els) > 1) {
+      if (els[1] === "id") {
+        return {
+          filter: {
+            mode: FilterModes.ID_ONLY,
+            value: f.map(f.toNumber, f.drop(2, els))
+          }
+        };
+      }
+    } else {
+      return {filter: true};
+    }
   }; // will get more complex once we implement filter routes
   const parseEntityView = function (str) {
     return {entityView: {focusElement: str.split(":").length > 1}};
@@ -133,7 +145,11 @@ const TableauxRouter = Router.extend({
         [columnid, rowid] = optionalArgs;
       }
     } else {
-      rowid = f.first(optionalArgs);
+      if (f.startsWith("filter", f.first(optionalArgs))) {
+        [optionStr] = optionalArgs;
+      } else {
+        [rowid] = optionalArgs;
+      }
     }
 
     const urlOptions = parseOptions(optionStr);

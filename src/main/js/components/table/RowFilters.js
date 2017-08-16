@@ -60,7 +60,10 @@ const mkFinalFilter = closures => ({value}) => {
 
 const mkIDFilter = closures => ({value}) => {
   console.log("ID filter");
-  return f.matchesProperty("id", value);
+  return f.compose(
+    (id) => f.contains(id, value),
+    f.get("id")
+  );
 };
 
 const mkOthersTranslationStatusFilter = closures => ({value}) => {
