@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import ActionCreator, {openOverlay, removeRow} from "../../actions/ActionCreator";
-import RowConcatHelper from "../../helpers/RowConcatHelper";
+import RowConcat, {rowConcatString} from "../../helpers/RowConcatHelper";
 import i18n from "i18next";
 import DependentRowsList from "../../components/rows/DependentRowsList";
 import Header from "./Header";
@@ -30,8 +30,7 @@ class RowsOverlay extends Component {
   render() {
     const {depMessage} = this.state;
     const {row, langtag, deleteInfo} = this.props;
-    const firstCell = row.cells.at(0);
-    const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
+    const rowDisplayLabel = rowConcatString(row, langtag);
 
     return (
       <div className="delete-row-confirmation">
@@ -68,8 +67,7 @@ export function confirmDeleteRow(row, langtag, overlayToCloseId) {
     neutral: [i18n.t("common:cancel"), null]
   };
 
-  const cell = row.cells.at(0);
-  const itemName = RowConcatHelper.getCellAsStringWithFallback(cell.value, cell.column, langtag);
+  const itemName = <RowConcat row={row} langtag={langtag} />;
 
   openOverlay({
     head: <Header context={i18n.t("table:delete_row")} title={itemName} />,
@@ -81,7 +79,7 @@ export function confirmDeleteRow(row, langtag, overlayToCloseId) {
 
 export function openShowDependency(row, langtag) {
   const cell = row.cells.at(0);
-  const itemName = RowConcatHelper.getCellAsStringWithFallback(cell.value, cell.column, langtag);
+  const itemName = <RowConcat row={row} langtag={langtag} /> ;
 
   openOverlay({
     head: <Header context={i18n.t("table:dependencies")} title={itemName} />,

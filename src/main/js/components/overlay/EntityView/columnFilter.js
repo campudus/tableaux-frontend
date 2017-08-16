@@ -1,5 +1,4 @@
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
-import RowConcatHelper from "../../../helpers/RowConcatHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 
@@ -20,11 +19,6 @@ const joinAttachmentFileNames = langtag => f.compose(
   f.prop("value")
 );
 
-const getConcatString = langtag => cell => {
-  const str = cell.displayValue[langtag];
-  return (str === RowConcatHelper.NOVALUE) ? "" : cleanString(str);
-};
-
 const cleanString = f.compose(f.trim, f.toLower, f.toString);
 
 const getSortableCellValue = langtag => cell => {
@@ -34,7 +28,8 @@ const getSortableCellValue = langtag => cell => {
     const rawValue = f.cond([
       [f.prop("isLink"), joinLinkStrings(langtag)],
       [isOfKind(ColumnKinds.attachment), joinAttachmentFileNames(langtag)],
-      [isOfKind(ColumnKinds.concat), getConcatString(langtag)],
+      [isOfKind(ColumnKinds.concat), f.get(["displayValue", langtag])],
+      [isOfKind(ColumnKinds.group), f.get(["displayValue", langtag])],
       [f.prop("isMultiLanguage"), f.prop(["value", langtag])],
       [f.stubTrue, f.prop(["value"])]
     ])(cell);

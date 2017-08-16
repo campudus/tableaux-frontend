@@ -10,7 +10,7 @@ import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell.jsx";
 import DateTimeCell from "./datetime/DateTimeCell.jsx";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
-import RowConcatHelper from "../../helpers/RowConcatHelper";
+import RowConcat, {rowConcatString} from "../../helpers/RowConcatHelper";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -261,9 +261,7 @@ class Cell extends React.Component {
 
     // onKeyDown event just for selected components
     if (selected) {
-      const firstCell = cell.collection.at(0);
       const indexOfCell = cell.collection.indexOf(cell);
-      const rowDisplayLabel = RowConcatHelper.getCellAsStringWithFallback(firstCell.value, firstCell.column, langtag);
       // get global so not every single cell needs to look fo the table rows dom element
       const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
       const difference = this.cellOffset - tableRowsDom.scrollTop;
@@ -274,7 +272,7 @@ class Cell extends React.Component {
 
       // We just show the info starting at the fourth column
       const rowDisplayLabelElement = indexOfCell >= 3 ? (
-        <div className={rowDisplayLabelClass}><span className="content">{langtag} | {rowDisplayLabel}</span>
+        <div className={rowDisplayLabelClass}><span className="content">{langtag} | <RowConcat row={cell.row} langtag={langtag}/></span>
         </div>) : null;
 
       return (

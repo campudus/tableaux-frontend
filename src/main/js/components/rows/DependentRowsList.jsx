@@ -1,5 +1,5 @@
 import React from "react";
-import RowConcatHelper from "../../helpers/RowConcatHelper";
+import getDisplayName from "../../models/getDisplayValue";
 import {getTableDisplayName} from "../../helpers/multiLanguage";
 import {translate} from "react-i18next";
 import Spinner from "../header/Spinner";
@@ -80,7 +80,7 @@ export default class DependentRowsList extends React.Component {
         const links = rows.map(
           (row) => {
             return {
-              displayName: RowConcatHelper.getCellAsStringWithFallback(row.value, column, langtag),
+              displayName: getDisplayName(column, row.value)[langtag],
               linkTarget: {tables, tableId, rowId: row.id}
             };
           }
