@@ -240,7 +240,7 @@ const Tables = Collection.extend({
 
   changeCellHandler(payload) {
     const cb = payload.cb || function () {};
-    changeCell(payload).then(cb());
+    changeCell(payload).then(cb);
   },
 
   removeRowHandler(payload) {
