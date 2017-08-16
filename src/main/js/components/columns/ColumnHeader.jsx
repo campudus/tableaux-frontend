@@ -109,7 +109,7 @@ export default class ColumnHeader extends PureComponent {
   };
 
   render() {
-    const {column, dragHandler, index, langtag, style, tables} = this.props;
+    const {column, dragHandler, index, langtag, style, tables, width} = this.props;
 
     const columnContent =
       [this.getIdentifierIcon(),
@@ -129,6 +129,7 @@ export default class ColumnHeader extends PureComponent {
                    tables={tables}
                    dragHandler={dragHandler}
                    index={index}
+                   width={width}
       />
     );
   }

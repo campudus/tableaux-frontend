@@ -62,16 +62,10 @@ export default class VirtualTable extends PureComponent {
       : ROW_HEIGHT;
   };
 
-  calcColWidth = ({index}) => {
-    const result = this.rowWidths.get(index) || CELL_WIDTH;
-    devLog("column width", index, result)
-    return result
-  };
+  calcColWidth = ({index}) => this.rowWidths.get(index) || CELL_WIDTH;
 
   updateColWidth = (index, dx, done = false) => {
-    const oldWidth = this.calcColWidth(index);
-    const newWidth = oldWidth + dx;
-    devLog("Resizing column", index, "to", newWidth)
+    const newWidth = CELL_WIDTH + dx;
     if (newWidth === CELL_WIDTH) {
       this.rowWidths.delete(index);
     } else {
@@ -80,8 +74,8 @@ export default class VirtualTable extends PureComponent {
     if (done) {
       maybe(this.multiGrid)
         .method("recomputeGridSize")
-        .method("forceUpdateGrids")
-      devLog("Row widths:", this.rowWidths)
+        .method("invalidateCellSizeAfterRender");
+      this.setState({rowWidths: this.rowWidths.values().toString()});
     }
   };
 
@@ -157,6 +151,7 @@ export default class VirtualTable extends PureComponent {
                     tableId={table.id}
                     dragHandler={this.updateColWidth}
                     index={columnIndex + 1}
+                    width={this.calcColWidth({index: columnIndex + 1})}
       />
     );
   };

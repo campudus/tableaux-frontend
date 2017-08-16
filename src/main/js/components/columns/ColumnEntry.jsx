@@ -13,6 +13,7 @@ import Header from "../overlay/Header";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import * as f from "lodash/fp";
 import Portal from "react-portal";
+import Rnd from "react-rnd";
 
 class ColumnEntry extends React.Component {
 
@@ -127,32 +128,13 @@ class ColumnEntry extends React.Component {
     }
   }
 
-  renderDragHandle = () => (
-    <div className="drag-handle"
-         draggable
-         onDragStart={this.startDragging}
-         onDragEnd={this.finishDragging}
-         onDrag={(this.dragging) ? this.resizeColumn : f.noop}
-    />
-  );
-
-  startDragging = (event) => {
-    devLog("Starting to draaaag", event.clientX)
-    event.dataTransfer.setData("text/html", this.props.index);
-    this.oldX = event.clientX;
+  startResizing = (event) => {
+    event.dataTransfer.effectAllowed = "nw-resize";
   };
 
-  resizeColumn = (event, done = false) => {
-    devLog("Draggedy-drag", event.clientX)
+  resize = (event, direction, ref, delta) => {
     const {index, dragHandler} = this.props;
-    dragHandler(index, event.clientX - this.oldX, done);
-  };
-
-  finishDragging = (event) => {
-    devLog("me dun' draggin'", event.clientX)
-    this.dragging = false;
-    this.resizeColumn(event, true);
-    this.oldX = event.clientX;
+    dragHandler(index, delta.width, true);
   };
 
   render = () => {
@@ -167,41 +149,63 @@ class ColumnEntry extends React.Component {
       });
     classNames("column-head", {"context-menu-open": menuOpen});
     return (
-      <div style={this.props.style}
-           className={classNames("column-head", {"context-menu-open": menuOpen})}
-           key={id}
+      <Rnd style={this.props.style}
+           default={{
+             x: 0,
+             y: 0,
+             width: this.props.width,
+             height: 45
+           }}
+           minWidth={100}
+           enableResizing={{
+             bottom: false,
+             bottomLeft: false,
+             bottomRight: false,
+             left: false,
+             right: this.props.index !== 1,
+             top: false,
+             topLeft: false,
+             topRight: false
+           }}
+           disableDragging
+           onStartResize={this.startResizing}
+           onResize={this.resize}
       >
-        <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
-             onMouseEnter={this.showDescription(true)}
-             onMouseLeave={this.showDescription(false)}
+        <div
+             className={classNames("column-head", {"context-menu-open": menuOpen})}
+             key={id}
         >
-          {columnContent}
-          {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle"/> : null }
-          {columnIcon}
+          <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
+               onMouseEnter={this.showDescription(true)}
+               onMouseLeave={this.showDescription(false)}
+          >
+            {columnContent}
+            {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle"/> : null }
+            {columnIcon}
+          </div>
+          {(showDescription)
+            ? (
+              <Portal isOpened>
+                <div className="description-tooltip"
+                     ref={el => { this.tooltip = el; }}
+                     style={{ // align top left corner at bottom left corner of opening div
+                       left: left,
+                       top: bottom + 10
+                     }}
+                >
+                  <div className="description-tooltip-text">{description}</div>
+                </div>
+              </Portal>
+            )
+            : null}
+          {(kind !== "concat")
+            ? <a href="#" className={contextMenuClass}
+                 onClick={this.toggleContextMenu}
+            />
+            : null}
+          {(menuOpen) ? this.renderContextMenu() : null}
         </div>
-        {(showDescription)
-          ? (
-            <Portal isOpened>
-              <div className="description-tooltip"
-                   ref={el => { this.tooltip = el; }}
-                   style={{ // align top left corner at bottom left corner of opening div
-                     left: left,
-                     top: bottom + 10
-                   }}
-              >
-                <div className="description-tooltip-text">{description}</div>
-              </div>
-            </Portal>
-          )
-          : null}
-        {(kind !== "concat")
-          ? <a href="#" className={contextMenuClass}
-               onClick={this.toggleContextMenu}
-          />
-          : null}
-        {(menuOpen) ? this.renderContextMenu() : null}
-        {this.renderDragHandle()}
-      </div>
+      </Rnd>
     );
   }
 }

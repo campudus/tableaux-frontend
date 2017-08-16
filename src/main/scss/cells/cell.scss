@@ -20,7 +20,7 @@
   outline: none;
   box-sizing: border-box;
   height: 45px;
-  width: 300px;
+  width: 100%;
   background-color: white;
 
   button {
@@ -150,12 +150,9 @@
   &.selected {
     border: 1px solid $color-primary;
 
-    &.cell-link, &.cell-attachment, &.cell-currency {
-      padding: 0;
-    }
-
     &.cell-link, &.cell-text, &.cell-attachment, &.cell-richtext, &.cell-currency {
       border: 0;
+      padding: 0;
 
       .cell-content {
         @include box-sizing(border-box);
