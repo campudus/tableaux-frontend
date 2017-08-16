@@ -163,6 +163,20 @@ class RowContextMenu extends React.Component {
     return this.mkItem(this.setFinal(!final), label, "lock");
   };
 
+  openLinksFilteredItem = () => {
+    const {cell, langtag} = this.props;
+    if (cell.kind !== ColumnKinds.link || f.isEmpty(cell.value)) {
+      return null;
+    }
+    const linkedIds = f.join(":", cell.value.map(f.get("id")));
+    const toTable = cell.column.toTable;
+    const url = `/${langtag}/tables/${toTable}?filter:id:${linkedIds}`;
+    const doOpen = () => {
+      window.open(url);
+    };
+    return this.mkItem(doOpen, "table:open-link-filtered", "external-link");
+  };
+
   mkItem = (action, label, icon, classes = "") => {
     return (
       <a href="#" onClick={compose(this.closeRowContextMenu, action)}>
@@ -182,6 +196,7 @@ class RowContextMenu extends React.Component {
                           offset={CLICK_OFFSET} menuItems=
                             {<div>
                               <div className="separator">{t("cell")}</div>
+                              {this.openLinksFilteredItem()}
                               {this.copyItem()}
                               {this.pasteItem()}
                               {this.mkItem(() => ActionCreator.openAnnotationsPopup(cell), "add-comment", "commenting")}

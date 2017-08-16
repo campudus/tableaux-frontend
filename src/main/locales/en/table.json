@@ -121,5 +121,6 @@
   "important": "Important",
   "check-me": "Please double-check",
   "postpone": "Later",
-  "check-column": "Could not copy all entries. Please double-check the data set."
+  "check-column": "Could not copy all entries. Please double-check the data set.",
+  "open-link-filtered": "Open linked data"
 }

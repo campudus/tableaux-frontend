@@ -121,5 +121,6 @@
   "important": "Wichtig",
   "check-me": "Bitte überprüfen",
   "postpone": "Später",
-  "check-columns": "Nicht alle Einträge konnten kopiert werden. Bitte überprüfen Sie den Datensatz."
+  "check-columns": "Nicht alle Einträge konnten kopiert werden. Bitte überprüfen Sie den Datensatz.",
+  "open-link-filtered": "Öffne verknüpfte Datensätze"
 }
