@@ -19,7 +19,9 @@ gulp.task("default", ["build"]);
 
 var config = {
   "outDir": "out",
-  "tableauxUrl": "http://localhost:8080/"
+  "host": "localhost",
+  "apiPort": 8080,
+  "serverPort": 3000
 };
 
 try {
@@ -27,6 +29,8 @@ try {
 } catch (e) {
   // ignore
 }
+
+var tableauxUrl = `http://${config.host}:${config.apiPort}`;
 
 function copyAssets() {
   return gulp.src(["src/main/@(img|locales)/**"])
@@ -56,7 +60,7 @@ function runWebpackServer(callback) {
   conf.devtool = "source-maps";
   // enable development mode
   conf.entry.app.unshift("webpack/hot/only-dev-server");
-  conf.entry.app.unshift("webpack-dev-server/client?http://localhost:3000");
+  conf.entry.app.unshift(`webpack-dev-server/client?http://${config.host}:${config.serverPort}`);
 
   const compiler = webpack(conf);
 
@@ -69,7 +73,7 @@ function runWebpackServer(callback) {
 
     proxy: {
       "/api/*": {
-        target: config.tableauxUrl,
+        target: tableauxUrl,
         pathRewrite: {"^/api": ""},
         xfwd: true,
         onProxyReq: function (proxyReq, req) {
@@ -80,9 +84,9 @@ function runWebpackServer(callback) {
 
     stats: {colors: true}
   });
-  server.listen(3000, "localhost", callback);
+  server.listen(config.serverPort, config.host, callback);
 }
 
 function clean(cb) {
-  del(["out/"], cb);
+  del([config.outDir], cb);
 }
