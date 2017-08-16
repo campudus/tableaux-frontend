@@ -237,11 +237,13 @@ class TableView extends React.Component {
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
 
+      this.pendingCellGoto = null;
       ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
       if (entityView) {
         openEntityView(rows.at(rowIndex), this.props.langtag, cellId);
+      } else {
+        this.forceUpdate();
       }
-      this.pendingCellGoto = null;
       return cell;
     };
 
