@@ -10,7 +10,7 @@ import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell.jsx";
 import DateTimeCell from "./datetime/DateTimeCell.jsx";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
-import RowConcat, {rowConcatString} from "../../helpers/RowConcatHelper";
+import RowConcat from "../../helpers/RowConcatHelper";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";

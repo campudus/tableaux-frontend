@@ -78,8 +78,7 @@ export function confirmDeleteRow(row, langtag, overlayToCloseId) {
 }
 
 export function openShowDependency(row, langtag) {
-  const cell = row.cells.at(0);
-  const itemName = <RowConcat row={row} langtag={langtag} /> ;
+  const itemName = <RowConcat row={row} langtag={langtag} />;
 
   openOverlay({
     head: <Header context={i18n.t("table:dependencies")} title={itemName} />,

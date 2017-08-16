@@ -7,7 +7,14 @@ const rowConcatString = (row, langtag) => {
     console.error("The object does not seem to be a valid row:", row);
   }
   const firstCell = row.cells.at(0);
-  return (firstCell.displayValue[langtag]);
+  const displayValue = firstCell.displayValue;
+  const arrayConcatForLang = (langtag) => f.compose(
+    f.join(" "),
+    f.map(f.get(langtag))
+  )(displayValue);
+  return (f.isArray(displayValue))
+    ? arrayConcatForLang(langtag)
+    : displayValue[langtag];
 };
 
 const RowConcat = (props) => {
