@@ -10,7 +10,6 @@ import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell.jsx";
 import DateTimeCell from "./datetime/DateTimeCell.jsx";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
-import RowConcat from "../../helpers/RowConcatHelper";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -90,7 +89,6 @@ class Cell extends React.PureComponent {
 
   componentDidMount = () => {
     this.cellDOMNode = ReactDOM.findDOMNode(this);
-    this.cellOffset = this.cellDOMNode.offsetTop;
     this.checkFocus();
   };
 

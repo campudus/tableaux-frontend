@@ -395,6 +395,8 @@ export default class VirtualTable extends PureComponent {
                         scrollLeft={scrollPosition}
                         rowKeys={rowKeys}
                         columnKeys={columnKeys}
+                        overscanColumnCount={5}
+                        overscanRowCount={6}
               />
             );
           }
