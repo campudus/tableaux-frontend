@@ -6,11 +6,13 @@
   height: 9 * 45px;
 
   .cell {
-    background-color: $color-background-very-light-grey;
+    background-color: lighten($color-background-very-light-grey, 1);
   }
 
   .repeat {
     justify-content: center;
+    background-color: $color-background-very-light-grey;
+    color: $color-text-medium-grey;
   }
 
   &>:first-child {
@@ -129,8 +131,9 @@
   .annotation-flag-icons {
     position: absolute;
     right: 3px;
-    top: 0;
-    bottom: 0;
+//    top: 0;
+//    bottom: 0;
+    height: 45px;
     width: 21px;
     display: flex;
     flex-direction: column;
@@ -146,15 +149,15 @@
   .needs-translation-other-language {
     position: absolute;
     right: 0;
-    bottom: 0;
+    top: 37px;
     padding: 8px;
     z-index: 1;
 
     &:before {
       content: '';
       position: absolute;
-      right: -1px;
-      bottom: -1px;
+      right: 0;
+      top: 0;
       width: 0;
       height: 0;
       border-bottom: 8px solid $color-needs-translation;
