@@ -48,6 +48,7 @@ export default class VirtualTable extends PureComponent {
   }
 
   colWidths = new Map([[0, META_CELL_WIDTH]]);
+  columnStartSize = null;
 
   getStoredView = () => either(localStorage)
     .map(f.get("tableViews"))
@@ -66,6 +67,7 @@ export default class VirtualTable extends PureComponent {
   }
 
   saveColWidths = () => {
+    this.columnStartSize = null;
     if (!localStorage) {
       return;
     }
@@ -100,7 +102,10 @@ export default class VirtualTable extends PureComponent {
   calcColWidth = ({index}) => this.colWidths.get(index) || CELL_WIDTH;
 
   updateColWidth = (index, dx) => {
-    const newWidth = Math.max(100, CELL_WIDTH + dx);
+    if (!this.columnStartSize) {
+      this.columnStartSize = this.calcColWidth({index});
+    }
+    const newWidth = Math.max(100, this.columnStartSize + dx);
     this.colWidths.set(index, newWidth);
     maybe(this.multiGrid)
       .method("recomputeGridSize")
