@@ -163,7 +163,7 @@ const mkClosures = (table, langtag, rowsFilter) => {
     return f.cond([
       [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
       [isOfKind(ColumnKinds.boolean), f.always(!!rawValue)],
-      [f.stubTrue, f.always(rawValue.toLowerCase() || "")]
+      [f.stubTrue, f.always(f.toLower(rawValue) || "")]
     ])(cell);
   };
 
