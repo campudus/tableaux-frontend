@@ -12,7 +12,8 @@ export default class ColumnHeader extends PureComponent {
     langtag: PropTypes.string.isRequired,
     tables: PropTypes.object.isRequired,
     tableId: PropTypes.number.isRequired,
-    dragHandler: PropTypes.func.isRequired
+    resizeHandler: PropTypes.func.isRequired,
+    resizeFinishedHandler: PropTypes.func.isRequired
   };
 
   componentWillMount = () => {
@@ -109,7 +110,7 @@ export default class ColumnHeader extends PureComponent {
   };
 
   render() {
-    const {column, dragHandler, index, langtag, style, tables, width} = this.props;
+    const {column, resizeHandler, resizeFinishedHandler, index, langtag, style, tables, width} = this.props;
 
     const columnContent =
       [this.getIdentifierIcon(),
@@ -127,7 +128,8 @@ export default class ColumnHeader extends PureComponent {
                    langtag={langtag}
                    isId={column.identifier}
                    tables={tables}
-                   dragHandler={dragHandler}
+                   resizeHandler={resizeHandler}
+                   resizeFinishedHandler={resizeFinishedHandler}
                    index={index}
                    width={width}
       />

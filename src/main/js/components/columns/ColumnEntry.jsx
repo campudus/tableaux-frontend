@@ -128,17 +128,13 @@ class ColumnEntry extends React.Component {
     }
   }
 
-  startResizing = (event) => {
-    event.dataTransfer.effectAllowed = "nw-resize";
-  };
-
   resize = (event, direction, ref, delta) => {
-    const {index, dragHandler} = this.props;
-    dragHandler(index, delta.width, true);
+    const {index, resizeHandler} = this.props;
+    resizeHandler(index, delta.width);
   };
 
   render = () => {
-    const {column: {kind, id}, columnContent, columnIcon, description} = this.props;
+    const {column: {kind, id}, columnContent, columnIcon, description, resizeFinishedHandler} = this.props;
     const menuOpen = this.state.ctxCoords;
     const showDescription = !f.isEmpty(description) && this.state.showDescription && !menuOpen;
     const {left, bottom} = (showDescription) ? this.state.descriptionCoords : {};
@@ -154,7 +150,7 @@ class ColumnEntry extends React.Component {
              x: 0,
              y: 0,
              width: this.props.width,
-             height: 45
+             height: 37
            }}
            minWidth={100}
            enableResizing={{
@@ -168,7 +164,7 @@ class ColumnEntry extends React.Component {
              topRight: false
            }}
            disableDragging
-           onStartResize={this.startResizing}
+           onResizeStop={resizeFinishedHandler}
            onResize={this.resize}
       >
         <div
@@ -199,7 +195,9 @@ class ColumnEntry extends React.Component {
             )
             : null}
           {(kind !== "concat")
-            ? <a href="#" className={contextMenuClass}
+            ? <a href="#"
+                 className={contextMenuClass}
+                 draggable={false}
                  onClick={this.toggleContextMenu}
             />
             : null}
@@ -220,7 +218,8 @@ ColumnEntry.PropTypes = {
   name: React.PropTypes.string.isRequired,
   isId: React.PropTypes.bool.isRequired,
   tables: React.PropTypes.object.isRequired,
-  dragHandler: React.PropTypes.func.isRequired
+  resizeHandler: React.PropTypes.func.isRequired,
+  resizeFinishedHandler: React.PropTypes.func.isRequired
 };
 
 module.exports = ColumnEntry;

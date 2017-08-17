@@ -11,7 +11,7 @@ import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import {AutoSizer} from "react-virtualized";
 import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
-import {maybe} from "../../helpers/functools";
+import {either, maybe} from "../../helpers/functools";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 import GrudGrid from "./GrudGrid";
@@ -47,7 +47,42 @@ export default class VirtualTable extends PureComponent {
     this.expandedRowIds = props.expandedRowIds;
   }
 
-  rowWidths = new Map([[0, META_CELL_WIDTH]]);
+  colWidths = new Map([[0, META_CELL_WIDTH]]);
+
+  getStoredView = () => either(localStorage)
+    .map(f.get("tableViews"))
+    .map(JSON.parse)
+    .map(f.get([this.props.table.id, "default"]))
+    .getOrElse({});
+
+  componentWillMount() {
+    f.compose(
+      f.map(
+        ([idx, width]) => this.colWidths.set(f.toNumber(idx), width)
+      ),
+      f.toPairs,
+      f.get("columnWidths")
+    )(this.getStoredView());
+  }
+
+  saveColWidths = () => {
+    if (!localStorage) {
+      return;
+    }
+    const widthObj = {};
+    this.colWidths.forEach(
+      (width, idx) => {
+        if (idx > 0 && width !== CELL_WIDTH) {
+          widthObj[idx] = width;
+        }
+      }
+    );
+
+    const views = this.getStoredView();
+    localStorage["tableViews"] = JSON.stringify(
+      f.assoc([this.props.table.id.toString(), "default", "columnWidths"], widthObj, views)
+    );
+  };
 
   calcRowHeight = ({index}) => {
     if (index === 0) {
@@ -62,21 +97,15 @@ export default class VirtualTable extends PureComponent {
       : ROW_HEIGHT;
   };
 
-  calcColWidth = ({index}) => this.rowWidths.get(index) || CELL_WIDTH;
+  calcColWidth = ({index}) => this.colWidths.get(index) || CELL_WIDTH;
 
-  updateColWidth = (index, dx, done = false) => {
-    const newWidth = CELL_WIDTH + dx;
-    if (newWidth === CELL_WIDTH) {
-      this.rowWidths.delete(index);
-    } else {
-      this.rowWidths.set(index, newWidth);
-    }
-    if (done) {
-      maybe(this.multiGrid)
-        .method("recomputeGridSize")
-        .method("invalidateCellSizeAfterRender");
-      this.setState({rowWidths: this.rowWidths.values().toString()});
-    }
+  updateColWidth = (index, dx) => {
+    const newWidth = Math.max(100, CELL_WIDTH + dx);
+    this.colWidths.set(index, newWidth);
+    maybe(this.multiGrid)
+      .method("recomputeGridSize")
+      .method("invalidateCellSizeAfterRender");
+    this.forceUpdate();
   };
 
   componentDidMount = () => {
@@ -100,8 +129,7 @@ export default class VirtualTable extends PureComponent {
   renderEmptyTable = () => null;
 
   cellRenderer = (gridData) => (
-    <div {...f.pick(["style", "key"], gridData)}
-    >
+    <div {...f.pick(["style", "key"], gridData)}>
       {this.renderGridCell(gridData)}
     </div>
   );
@@ -140,7 +168,7 @@ export default class VirtualTable extends PureComponent {
       );
   };
 
-  renderColumnHeader = ({columnIndex, key}) => {
+  renderColumnHeader = ({columnIndex}) => {
     const column = this.props.columns.at(columnIndex);
     const {table, tables} = this.props;
     return (
@@ -149,14 +177,15 @@ export default class VirtualTable extends PureComponent {
                     langtag={this.props.langtag}
                     tables={tables}
                     tableId={table.id}
-                    dragHandler={this.updateColWidth}
+                    resizeHandler={this.updateColWidth}
+                    resizeFinishedHandler={this.saveColWidths}
                     index={columnIndex + 1}
                     width={this.calcColWidth({index: columnIndex + 1})}
       />
     );
   };
 
-  renderMetaCell = ({rowIndex, key, style}) => {
+  renderMetaCell = ({rowIndex, key}) => {
     if (rowIndex < 0) {
       return <div className="id-meta-cell" key="id-cell" >ID</div>;
     }
@@ -231,13 +260,12 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  renderExpandedRowCell = ({columnIndex, rowIndex, key, isScrolling, isVisible}) => {
+  renderExpandedRowCell = ({columnIndex, rowIndex, key}) => {
     const {rows, columns, table} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
-    const showPreview = columnIndex > 0 && (isScrolling || !isVisible);
 
     return (
       <div className="cell-stack" key={cell.id} >
@@ -261,7 +289,6 @@ export default class VirtualTable extends PureComponent {
                       selected={isSelected}
                       inSelectedRow={isRowSelected}
                       editing={isEditing}
-                      preview={showPreview}
                 />
               );
             }
@@ -271,7 +298,7 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  renderButton = ({columnIndex, style}) => {
+  renderButton = ({columnIndex}) => {
     const {table} = this.props;
     if (columnIndex === 1) {
       return (

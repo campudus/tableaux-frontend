@@ -150,7 +150,8 @@ class Table extends React.PureComponent {
                  this))}
                onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <VirtualTable columns={columns} ref={this.findAndStoreTableDiv}
+          <VirtualTable key={`virtual-table-${table.id}`}
+                        columns={columns} ref={this.findAndStoreTableDiv}
                         rows={rows}
                         rowIdKey={rowKeys}
                         columnKeys={this.props.columnKeys}
