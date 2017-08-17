@@ -244,6 +244,10 @@ module.exports = {
       });
   },
 
+  jumpToDupe: function () {
+    Dispatcher.trigger(ActionTypes.JUMP_TO_DUPE);
+  },
+
   showToast: function (content, milliseconds) {
     Dispatcher.trigger(ActionTypes.SHOW_TOAST,
       {

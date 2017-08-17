@@ -26,6 +26,7 @@ var TableauxConstant = {
     CREATE_ROW: null,
     TOGGLE_ROW_EXPAND: null,
     DUPLICATE_ROW: null,
+    JUMP_TO_DUPE: null,
 
     CREATE_ROW_OR_SELECT_NEXT_CELL: null,
 

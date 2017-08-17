@@ -116,11 +116,13 @@ export default class VirtualTable extends PureComponent {
   componentDidMount = () => {
     Dispatcher.on(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
     Dispatcher.on(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+    Dispatcher.on(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
   };
 
   componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
     Dispatcher.off(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
+    Dispatcher.off(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
   };
 
   setOpenAnnotations = (cellInfo) => {
@@ -381,6 +383,13 @@ export default class VirtualTable extends PureComponent {
       this.setState({scrolledCell: {}});
     }
   }
+
+  jumpToLastRow = () => {
+    const {rows} = this.props;
+    this.setState({
+      scrolledCell: {rowIndex: f.size(rows)}
+    });
+  };
 
   render() {
     const {
