@@ -193,10 +193,22 @@ class Cell extends React.PureComponent {
   };
 
   render = () => {
-    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
+    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow, isExpandedCell} = this.props;
     const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
-    // const selectable = [link, attachment, boolean, concat, currency, text];
     const noKeyboard = [concat, "disabled", text, richtext];
+
+    if (isExpandedCell
+      && (
+        !cell.isMultiLanguage
+        || f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.boolean, ColumnKinds.attachment])
+      )
+    ) {
+      return (
+        <div className="cell repeat placeholder">
+          —.—
+        </div>
+      );
+    }
 
     const cellKinds = {
       [link]: LinkCell,

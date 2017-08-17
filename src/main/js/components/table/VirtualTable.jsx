@@ -185,7 +185,6 @@ export default class VirtualTable extends PureComponent {
       )
       : (
         <MetaCell key={`${key}-${row.id}`}
-                  style={style}
                   langtag={langtag}
                   row={row}
                   selected={isRowSelected}

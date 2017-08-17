@@ -4,6 +4,21 @@
   display: flex;
   flex-direction: column;
   height: 9 * 45px;
+
+  .cell {
+    background-color: $color-background-very-light-grey;
+  }
+
+  .repeat {
+    justify-content: center;
+  }
+
+  &>:first-child {
+    border-top: 1px solid $color-text-light-grey;
+  }
+  &>:last-child {
+    border-bottom: 1px solid $color-text-light-grey;
+  }
 }
 
 .cell {
@@ -211,9 +226,6 @@
     }
   }
 
-  &.repeat {
-    height: $space-height-cell;
-  }
 }
 
 .cell.editing .row-display-label.below {
