@@ -10,6 +10,8 @@ import listensToClickOutside from "react-onclickoutside";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import f from "lodash/fp";
 import {maybe} from "../../helpers/functools";
+import i18n from "i18next";
+import Portal from "react-portal";
 
 import VirtualTable from "./VirtualTable";
 
@@ -135,6 +137,23 @@ class Table extends React.PureComponent {
     this.tableDOMNode = ReactDOM.findDOMNode(virtualDOMNode);
   };
 
+  noRowsInfo = () => {
+    const {rows, table} = this.props;
+    return (f.isEmpty(rows.models))
+      ? (
+        <Portal isOpened>
+          <div className="table-has-no-rows">
+            {
+              (rows === table.rows)
+                ? i18n.t("table:has-no-rows")
+                : i18n.t("table:search_no_results")
+            }
+          </div>
+        </Portal>
+      )
+      : null;
+  };
+
   render() {
     const {langtag, table: {columns}, rows, table, tables} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
@@ -166,6 +185,7 @@ class Table extends React.PureComponent {
                         fullyLoaded={this.props.fullyLoaded}
           />
         </div>
+        {this.noRowsInfo()}
         {tableContextMenu.getRowContextMenu.call(this)}
       </section>
     );

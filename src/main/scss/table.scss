@@ -252,13 +252,16 @@ body div div.column-header-context-menu {
     }
   }
 
-  .table-has-no-rows {
-    width: 100vw;
-    padding-top: 29px;
-    text-align: center;
-    font-weight: bold;
-  }
+}
 
+.table-has-no-rows {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 108px;
+  text-align: center;
+  font-weight: bold;
+  z-index: 5000;
 }
 
 #cell-jump-toast {

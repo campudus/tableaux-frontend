@@ -397,7 +397,6 @@ export default class VirtualTable extends PureComponent {
     const visibleColumns = columns.filter(this.filterVisibleCells);
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows.models) + 2;
-
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
 
