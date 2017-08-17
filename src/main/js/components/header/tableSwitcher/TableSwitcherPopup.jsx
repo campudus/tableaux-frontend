@@ -10,7 +10,7 @@ import SearchFunctions from "../../../helpers/searchFunctions";
 
 @translate(["header"])
 @listensToClickOutside
-class SwitcherPopup extends React.Component {
+class SwitcherPopup extends React.PureComponent {
 
   static propTypes = {
     onClickedOutside: React.PropTypes.func.isRequired,
@@ -53,12 +53,15 @@ class SwitcherPopup extends React.Component {
   };
 
   onClickGroup = (group) => () => {
+    const clickGroupHandler = this.props.onClickedGroup;
     const groupId = f.get("id", group);
     const isDeselection = groupId === 0
       || (f.isInteger(groupId) && groupId === this.state.filterGroupId);
+    const newGroupId = (isDeselection) ? null : groupId;
+    clickGroupHandler(newGroupId);
 
     this.setState({
-      filterGroupId: (isDeselection) ? null : groupId,
+      filterGroupId: newGroupId,
       filterTableName: ""
     });
 
@@ -326,7 +329,6 @@ class SwitcherPopup extends React.Component {
       </div>
     );
   }
-
 }
 
 export default SwitcherPopup;
