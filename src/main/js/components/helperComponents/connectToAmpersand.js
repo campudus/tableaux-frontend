@@ -10,11 +10,13 @@ import React from "react";
 import Events from "ampersand-events";
 import * as fp from "lodash/fp";
 
-const connectToAmpersand = (Component) => class extends React.Component {
+const connectToAmpersand = (Component) => class extends React.PureComponent {
   constructor(props) {
     super(props);
     Object.assign(this, Events);
   }
+
+  displayName= "ConnectToAmpersand";
 
   watch = (model, {events, force, callback} = {}) => {
     if (!model || !(model.isCollection || model.isState || model.isModel)) {
@@ -45,8 +47,12 @@ const connectToAmpersand = (Component) => class extends React.Component {
     this.stopListening();
   };
 
+  keepRef = (node) => {
+    this._Component = node;
+  };
+
   render() {
-    return <Component ref={comp => { this._Component = comp; }} {...this.props} watch={this.watch} />;
+    return <Component ref={this.keepRef} {...this.props} watch={this.watch} />;
   }
 };
 
