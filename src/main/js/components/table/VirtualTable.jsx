@@ -176,7 +176,11 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderColumnHeader = ({columnIndex}) => {
-    const column = this.props.columns.at(columnIndex);
+    const visibleColumns = this.props.columns
+      .filter(
+        (col, idx) => idx === 0 || col.visible
+      );
+    const column = visibleColumns[columnIndex];
     const {table, tables} = this.props;
     return (
       <ColumnHeader key={`column-header-${column.id}-${column.kind}`}
