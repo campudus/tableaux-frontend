@@ -1,4 +1,4 @@
-import React, {PropTypes, Component} from "react";
+import React, {PropTypes, PureComponent} from "react";
 import listenToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
 import {DefaultLangtag} from "../../constants/TableauxConstants";
@@ -9,14 +9,16 @@ import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
 import SvgIcon from "../helperComponents/SvgIcon";
 import classNames from "classnames";
+import Portal from "react-portal";
 
 @listenToClickOutside
-
-class AnnotationPopup extends Component {
+class AnnotationPopup extends PureComponent {
   static PropTypes = {
     row: PropTypes.object.isRequired,
     cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired
+    langtag: PropTypes.string.isRequired,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired
   };
 
   constructor(props) {
@@ -62,13 +64,6 @@ class AnnotationPopup extends Component {
     }
   };
 
-  componentDidMount() {
-    const rect = this.domNode.getBoundingClientRect();
-    if (rect.right > window.innerWidth - 25) {
-      this.setState({needsLeftShift: true});
-    }
-  }
-
   handleClick = (event) => {
     event.stopPropagation();
   };
@@ -90,54 +85,59 @@ class AnnotationPopup extends Component {
     });
 
     return (
-      <div className={popupCssClass}
-           onClick={this.handleClick}
-           onContextMenu={this.handleClick}
-           ref={node => { this.domNode = node; }}
-      >
-        <div className="close-icon"
-             onClick={ActionCreator.closeAnnotationsPopup}
+      <Portal isOpened >
+        <div className={popupCssClass}
+             onClick={this.handleClick}
+             onContextMenu={this.handleClick}
+             style={{
+               "left": `${this.props.x - 5}px`,
+               "top": `${this.props.y - 16}px`
+             }}
         >
-          <SvgIcon icon="cross"/>
-        </div>
-        <div className="annotation-popup-header" ref={node => { this.header = node; }}>
-          <div className="annotation-header-title">
-            <i className="fa fa-commenting" />
-            {i18n.t("table:cell-comments")}
-          </div>
-          {(rowConcat)
-            ? <div className="annotation-label">{rowConcat}</div>
-            : <Empty/>
-          }
-        </div>
-        <div className="annotation-popup-list">
-          {f.reverse(annotations).map(
-            (ann, idx) => (
-              <AnnotationEntry annotation={ann}
-                               key={ann.uuid}
-                               cell={cell}
-                               idx={f.size(annotations) - idx}
-              />
-            )
-          )}
-        </div>
-        <footer ref={node => { this.footer = node; }}
-                tabIndex="1"
-        >
-          <input type="text"
-                 onChange={this.handleInputChange}
-                 autoFocus
-                 placeholder={i18n.t("table:new-comment")}
-                 onKeyDown={this.handleInputKeys}
-                 value={this.state.comment}
-          />
-          <div className="button"
-               onClick={this.saveComment}
+          <div className="close-icon"
+               onClick={ActionCreator.closeAnnotationsPopup}
           >
-            {i18n.t("common:add")}
+            <SvgIcon icon="cross"/>
           </div>
-        </footer>
-      </div>
+          <div className="annotation-popup-header" ref={node => { this.header = node; }}>
+            <div className="annotation-header-title">
+              <i className="fa fa-commenting" />
+              {i18n.t("table:cell-comments")}
+            </div>
+            {(rowConcat)
+              ? <div className="annotation-label">{rowConcat}</div>
+              : <Empty/>
+            }
+          </div>
+          <div className="annotation-popup-list">
+            {f.reverse(annotations).map(
+              (ann, idx) => (
+                <AnnotationEntry annotation={ann}
+                                 key={ann.uuid}
+                                 cell={cell}
+                                 idx={f.size(annotations) - idx}
+                />
+              )
+            )}
+          </div>
+          <footer ref={node => { this.footer = node; }}
+                  tabIndex="1"
+          >
+            <input type="text"
+                   onChange={this.handleInputChange}
+                   autoFocus
+                   placeholder={i18n.t("table:new-comment")}
+                   onKeyDown={this.handleInputKeys}
+                   value={this.state.comment}
+            />
+            <div className="button"
+                 onClick={this.saveComment}
+            >
+              {i18n.t("common:add")}
+            </div>
+          </footer>
+        </div>
+      </Portal>
     );
   }
 }

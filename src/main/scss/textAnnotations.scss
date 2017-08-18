@@ -7,7 +7,6 @@ $annotation-popup-width: 300px;
 
 .annotation-popup {
   position: absolute;
-  top: -10px;
   background-color: $color-overlay-header;
   z-index: 3;
   display: flex;
@@ -15,36 +14,17 @@ $annotation-popup-width: 300px;
   width: $annotation-popup-width;
   color: $color-text-light-grey;
   border-radius: 3px;
+  transform: translateX(-100%);
   &:before {
     content: "";
     width: 0;
     height: 0;
-    border-right: 10px solid $color-overlay-header;
+    border-left: 10px solid $color-overlay-header;
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
-    left: -10px;
+    left: 100%;
     top: 16px;
     position: absolute;
-  }
-
-  &:not(.shift-left) {
-    left: calc(100% + 6px);
-  }
-
-  &.shift-left {
-    right: 30px;
-    &:before {
-      left: 100%;
-      border-right: none;
-      border-left: 10px solid $color-overlay-header;
-    }
-  }
-
-  &.in-first-row {
-    top: 0;
-    &:before {
-      top: 6px;
-    }
   }
 
   .close-icon {

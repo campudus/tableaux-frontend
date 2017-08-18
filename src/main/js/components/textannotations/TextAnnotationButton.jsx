@@ -3,6 +3,7 @@ import AnnotationPopup from "./AnnotationPopup";
 import f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import {maybe} from "../../helpers/functools";
 
 @connectToAmpersand
 export default class TextAnnotationButton extends Component {
@@ -18,6 +19,10 @@ export default class TextAnnotationButton extends Component {
     props.watch(props.cell, {events: "annotations:change"});
   }
 
+  state = {
+    cbr: {}
+  };
+
   handleClick = (event) => {
     const {cell, open} = this.props;
     if (!open) {
@@ -25,6 +30,13 @@ export default class TextAnnotationButton extends Component {
     } else {
       ActionCreator.closeAnnotationsPopup();
     }
+  };
+
+  rememberNode = (node) => {
+    const cbr = maybe(node)
+      .exec("getBoundingClientRect")
+      .getOrElse({});
+    this.setState({cbr});
   };
 
   render() {
@@ -37,10 +49,13 @@ export default class TextAnnotationButton extends Component {
     return (
       <div className={`text-annotation-button ${(open) ? "ignore-react-onclickoutside" : ""}`}
            onClick={this.handleClick}
+           ref={this.rememberNode}
       >
         <i className="fa fa-commenting" />
         {(open)
           ? <AnnotationPopup nAnnotations={f.size(annotations)}
+                             x={this.state.cbr.left}
+                             y={this.state.cbr.top}
                              {...this.props}
           />
           : null

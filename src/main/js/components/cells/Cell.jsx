@@ -119,6 +119,7 @@ class Cell extends React.PureComponent {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
+    ActionCreator.closeAnnotationsPopup();
     window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked", langtag, ":", cell, "value: ", cell.value, cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
