@@ -24,7 +24,7 @@
 }
 
 .cell {
-  position: initial;
+  position: relative;
   white-space: nowrap;
   display: flex;
   align-items: center;
@@ -135,7 +135,8 @@
   .annotation-flag-icons {
     position: absolute;
     right: 3px;
-    height: 45px;
+    top: 0;
+    bottom: 0;
     width: 21px;
     display: flex;
     flex-direction: column;
@@ -150,8 +151,8 @@
 
   .needs-translation-other-language {
     position: absolute;
-    right: 0;
-    top: 37px;
+    right: -1px;
+    top: 36px;
     padding: 8px;
     z-index: 1;
 
