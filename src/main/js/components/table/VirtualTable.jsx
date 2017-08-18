@@ -241,13 +241,12 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderSingleCell = ({columnIndex, rowIndex, isScrolling, isVisible}) => {
-    const {rows, table, langtag, columns} = this.props;
+    const {rows, table, langtag} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
-    const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
     const isInSelectedRow = row.id === this.selectedIds.row;
-    const isSelected = isInSelectedRow && column.id === this.selectedIds.column;
+    const isSelected = !!this.props.selectedCell && cell.id === this.props.selectedCell.id;
     const isEditing = isSelected && this.props.selectedCellEditing;
     const showPreview = columnIndex > 2 && (isScrolling || !isVisible);
 
