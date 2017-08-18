@@ -73,7 +73,8 @@ class DateEditCell extends React.Component {
     return (
       <div className="cell-content">
         {this.props.toDisplayValue(moment)}
-        <i className="fa fa-ban cell-content" style={{float: "right"}}
+        <i className="fa fa-ban cell-content"
+           style={{float: "right"}}
            onClick={this.handleClickClearDate} />
         <Datetime onChange={this.handleChange}
                   open={true}

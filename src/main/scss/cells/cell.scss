@@ -214,6 +214,21 @@
       .cell-content {
         overflow: visible;
       }
+      i {
+        line-height: $space-height-cell-content;
+        margin-left: 5px;
+        cursor: pointer;
+
+        &:hover {
+          color: $color-primary;
+        }
+      }
+
+      &.editing {
+        .cell-content {
+          @include user-select(none);
+        }
+      }
     }
   }
 
