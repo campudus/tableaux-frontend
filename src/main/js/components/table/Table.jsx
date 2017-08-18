@@ -139,7 +139,7 @@ class Table extends React.PureComponent {
 
   noRowsInfo = () => {
     const {rows, table} = this.props;
-    return (f.isEmpty(rows.models))
+    return (this.props.fullyLoaded && f.isEmpty(rows.models))
       ? (
         <Portal isOpened>
           <div className="table-has-no-rows">
