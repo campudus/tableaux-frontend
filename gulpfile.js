@@ -26,6 +26,16 @@ var config = {
 
 try {
   config = require("./config.json");
+  if (!config.host || !config.apiPort || !config.serverPort || !config.outDir) {
+    console.error("Please adapt your config.json to contain\n" +
+      "{\n" +
+      "  outDir:     $dir                = out,\n" +
+      "  host:       $hostname           = localhost,\n" +
+      "  apiPort:    $apiRedirectionPort = 8080,\n" +
+      "  serverPort: $webServerPort      = 3000\n" +
+      "}"
+    );
+  }
 } catch (e) {
   // ignore
 }
