@@ -14,7 +14,8 @@ import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
 import {either, maybe} from "../../helpers/functools";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
-import GrudGrid from "./GrudGrid";
+
+import MultiGrid from "./GrudGrid";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -135,11 +136,21 @@ export default class VirtualTable extends PureComponent {
 
   renderEmptyTable = () => null;
 
-  cellRenderer = (gridData) => (
-    <div {...f.pick(["style", "key"], gridData)}>
-      {this.renderGridCell(gridData)}
-    </div>
-  );
+  cellRenderer = (gridData) => { /*
+    const columns = this.props.columns.filter((col, idx) => idx === 0 || col.visible);
+    const val = f.cond([
+      [({columnIndex, rowIndex}) => columnIndex === 0 && rowIndex === 0, f.always("ID")],
+      [f.matchesProperty("rowIndex", 0), ({columnIndex}) => columns[columnIndex - 1].displayName["de"]],
+      [({rowIndex}) => f.isNil(this.props.rows.at(rowIndex)), f.always("<loading>")],
+      [f.matchesProperty("columnIndex", 0), ({rowIndex}) => "row " + this.props.rows.at(rowIndex - 1).id],
+      [f.stubTrue, ({rowIndex, columnIndex}) => maybe(this.props.rows.at(rowIndex - 1).cells.models.filter(this.filterVisibleCells)[columnIndex - 1].displayValue["de"]).method("toString").getOrElse("<Link>")]
+    ])(gridData); */
+    return (
+      <div {...f.pick(["style", "key"], gridData)}>
+        {this.renderGridCell(gridData)}
+      </div>
+    );
+  };
 
   renderGridCell = (gridData) => {
     const {rowIndex, columnIndex} = gridData;
@@ -177,28 +188,29 @@ export default class VirtualTable extends PureComponent {
 
   renderColumnHeader = ({columnIndex}) => {
     const visibleColumns = this.props.columns
-      .filter(
-        (col, idx) => idx === 0 || col.visible
-      );
+                               .filter(
+                                 (col, idx) => idx === 0 || col.visible
+                               );
     const column = visibleColumns[columnIndex];
     const {table, tables} = this.props;
     return (
-      <ColumnHeader key={`column-header-${column.id}-${column.kind}`}
-                    column={column}
-                    langtag={this.props.langtag}
-                    tables={tables}
-                    tableId={table.id}
-                    resizeHandler={this.updateColWidth}
-                    resizeFinishedHandler={this.saveColWidths}
-                    index={columnIndex + 1}
-                    width={this.calcColWidth({index: columnIndex + 1})}
+      // key={`column-header-${column.id}-${column.kind}`}
+      <ColumnHeader
+        column={column}
+        langtag={this.props.langtag}
+        tables={tables}
+        tableId={table.id}
+        resizeHandler={this.updateColWidth}
+        resizeFinishedHandler={this.saveColWidths}
+        index={columnIndex + 1}
+        width={this.calcColWidth({index: columnIndex + 1})}
       />
     );
   };
 
   renderMetaCell = ({rowIndex, key}) => {
     if (rowIndex < 0) {
-      return <div className="id-meta-cell" key="id-cell" >ID</div>;
+      return <div className="id-meta-cell" key="id-cell">ID</div>;
     }
 
     const {langtag, rows, expandedRowIds, selectedCellExpandedRow} = this.props;
@@ -207,9 +219,10 @@ export default class VirtualTable extends PureComponent {
     const isRowSelected = !!(this.selectedIds && row.id === this.selectedIds.row);
 
     return (isRowExpanded)
+      // key={`${key}-${row.id}`}
       ? (
-        <div key={`${key}-${row.id}`}
-             className="cell-stack"
+        <div
+          className="cell-stack"
         >
           {Langtags.map(
             (lt) => (
@@ -231,6 +244,7 @@ export default class VirtualTable extends PureComponent {
                   expanded={false}
         />
       );
+    // key={`${key}-${row.id}`}
   };
 
   renderCell = (gridData) => {
@@ -244,7 +258,7 @@ export default class VirtualTable extends PureComponent {
       : this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({columnIndex, rowIndex, isScrolling, isVisible}) => {
+  renderSingleCell = ({columnIndex, rowIndex}) => {
     const {rows, table, langtag} = this.props;
     const {openAnnotations} = this.state;
     const row = rows.at(rowIndex);
@@ -252,20 +266,19 @@ export default class VirtualTable extends PureComponent {
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = !!this.props.selectedCell && cell.id === this.props.selectedCell.id;
     const isEditing = isSelected && this.props.selectedCellEditing;
-    const showPreview = columnIndex > 2 && (isScrolling || !isVisible);
 
+    // key={cell.id}
     return (
-      <Cell key={cell.id}
-            cell={cell}
-            langtag={langtag}
-            row={row}
-            table={table}
-            annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
-            isExpandedCell={false}
-            selected={isSelected}
-            inSelectedRow={isInSelectedRow}
-            editing={isEditing}
-            preview={showPreview}
+      <Cell
+        cell={cell}
+        langtag={langtag}
+        row={row}
+        table={table}
+        annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
+        isExpandedCell={false}
+        selected={isSelected}
+        inSelectedRow={isInSelectedRow}
+        editing={isEditing}
       />
     );
   };
@@ -278,7 +291,8 @@ export default class VirtualTable extends PureComponent {
     const cell = this.getCell(rowIndex, columnIndex);
 
     return (
-      <div className="cell-stack" key={cell.id} >
+      // key={cell.id}
+      <div className="cell-stack">
         {
           Langtags.map(
             (langtag) => {
@@ -326,10 +340,21 @@ export default class VirtualTable extends PureComponent {
   };
 
   getCell = (rowIndex, columnIndex) => {
-    const {rows} = this.props;
-    const cells = rows.at(rowIndex).cells;
-    const visibleCells = cells.models.filter(this.filterVisibleCells);
-    return visibleCells[columnIndex];
+    const {columns, rows} = this.props;
+    const cells = rows.at(rowIndex).cells.models;
+    let i = 0;
+    let j = 0;
+    for (; j < cells.length; ++j) {
+      if (i === columnIndex) {
+        break;
+      }
+      if (columns.models[j].visible || j === 0) {
+        ++i;
+      }
+    }
+    return cells[j];
+//    const visibleCells = cells.models.filter(this.filterVisibleCells);
+//    return visibleCells[columnIndex];
   };
 
   filterVisibleCells = (cell, columnId) => columnId === 0 || this.props.columns.at(columnId).visible;
@@ -370,7 +395,10 @@ export default class VirtualTable extends PureComponent {
     const rowIndex = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows.models));
     const columnIndex = f.add(1, f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns.models));
     this.setState({
-      scrolledCell: {columnIndex, rowIndex}
+      scrolledCell: {
+        columnIndex,
+        rowIndex
+      }
     });
   };
 
@@ -379,7 +407,7 @@ export default class VirtualTable extends PureComponent {
   };
 
   componentDidUpdate() {
-    // Release control of scolling position once cell has been focused
+    // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
     if (!f.isEmpty(this.state.scrolledCell)) {
@@ -415,33 +443,34 @@ export default class VirtualTable extends PureComponent {
     return (
       <AutoSizer>
         {
-          ({height, width}) => {
-            return (
-              <GrudGrid ref={this.storeGridElement}
-                        className="data-wrapper"
-                        cellRenderer={this.cellRenderer}
-                        columnCount={columnCount}
-                        columnWidth={this.calcColWidth}
-                        noContentRenderer={this.renderEmptyTable}
-                        rowCount={rowCount}
-                        rowHeight={this.calcRowHeight}
-                        fixedColumnCount={f.min([columnCount, 2])}
-                        fixedRowCount={1}
-                        width={width}
-                        height={height}
-                        selectedCell={selectedCellKey}
-                        expandedRows={expandedRowIds}
-                        openAnnotations={openAnnotations}
-                        scrollToRow={rowIndex}
-                        scrollToColumn={columnIndex}
-                        scrollLeft={scrollPosition}
-                        rowKeys={rowKeys}
-                        columnKeys={columnKeys}
-                        overscanColumnCount={5}
-                        overscanRowCount={6}
-              />
-            );
-          }
+          ({height, width}) => (
+            <MultiGrid ref={this.storeGridElement}
+                       className="data-wrapper"
+                       cellRenderer={this.cellRenderer}
+                       columnCount={columnCount}
+                       columnWidth={this.calcColWidth}
+                       noContentRenderer={this.renderEmptyTable}
+                       rowCount={rowCount}
+                       rowHeight={this.calcRowHeight}
+                       fixedColumnCount={f.min([columnCount, 2])}
+                       fixedRowCount={1}
+                       width={width}
+                       height={height}
+                       selectedCell={selectedCellKey}
+                       expandedRows={expandedRowIds}
+                       openAnnotations={openAnnotations}
+                       scrollToRow={rowIndex}
+                       scrollToColumn={columnIndex}
+                       scrollLeft={scrollPosition}
+                       rowKeys={rowKeys}
+                       columnKeys={columnKeys}
+                       overscanColumnCount={5}
+                       overscanRowCount={6}
+                       classNameBottomRightGrid={"multigrid-bottom-right"}
+                       classNameTopRightGrid={"multigrid-top-right"}
+                       classNameBottomLeftGrid={"multigrid-bottom-left"}
+            />
+          )
         }
       </AutoSizer>
     );

@@ -1,49 +1,75 @@
-import {MultiGrid, Grid} from "react-virtualized";
-import {debounce, throttle} from "lodash/fp";
+/**
+ * Some hacks into react-virtualized.Grid to delay rendering of grid elements after scrolling, as only
+ * Chromium-based browsers are fast enough to handle scrolling the whole content.
+ * Debouncing the scroll handler also debounces rendering. The downside of this is that syncing of fixed
+ * rows and columns also gets debounced.
+ */
+
+import {Grid, MultiGrid} from "react-virtualized";
+import {debounce} from "lodash/fp";
 import ReactDOM from "react-dom";
 
-Grid.prototype._originalScrollHandler = Grid.prototype.handleScrollEvent;
-Grid.handleScrollEvent = throttle(20,
-  function (scrollInfo) {
-    this._originalScrollHandler(scrollInfo);
+const handleScrollLater = debounce(
+  50,
+  function (self, scrollPosition) {
+    self._originalScrollHandler(scrollPosition);
   }
 );
 
-export default class GrudGrid extends MultiGrid {
-  constructor(props) {
-    super(props);
-    this._originalScrollHandler = this._onScroll;
-    this.scrollInfo = {};
-  }
+Grid.prototype._originalScrollHandler = Grid.prototype.handleScrollEvent;
 
-  componentWillMount() {
-    this._onScroll = this.smoothScrollHandler;
-    super.componentWillMount();
+Grid.prototype.handleScrollEvent = function (trigger) {
+  if (!this._mainGridNode) {
+    this._mainGridNode = document.getElementsByClassName("ReactVirtualized__Grid")[3];
   }
-
-  quicklyUpdateScrollPosition = () => {
-    if (!this.blgNode || !this.brgNode || !this.trgNode) {
-      this.blgNode = ReactDOM.findDOMNode(this._bottomLeftGrid);
-      this.brgNode = ReactDOM.findDOMNode(this._bottomRightGrid);
-      this.trgNode = ReactDOM.findDOMNode(this._topRightGrid);
-    }
-    const {scrollLeft, scrollTop} = this.scrollInfo;
-    if (this.blgNode.scrollTop !== scrollTop) this.blgNode.scrollTop = scrollTop;
-    if (this.trgNode.scrollLeft !== scrollLeft) this.trgNode.scrollLeft = scrollLeft;
+  const scrollInfo = {
+    scrollTop: trigger.scrollTop,
+    scrollLeft: trigger.scrollLeft
   };
+  if (trigger === this._mainGridNode) {
+    this.props.onScroll(scrollInfo);
+    const self = this;
+    handleScrollLater(self, scrollInfo);
+  } else {
+    this._originalScrollHandler(trigger);
+  }
+};
 
-  updateScrollPosition = debounce(50,
-    () => {
-      this._originalScrollHandler(this.scrollInfo);
+export default class GrudGrid extends MultiGrid {
+
+  blgParent = null;
+  trgParent = null;
+  brgParent = null;
+
+  recalculateScrollPosition = debounce(
+    50,
+    (newPosition) => {
+      this.setState(
+        newPosition,
+        () => {
+          this.translateElement(this.blgParent, "");
+          this.translateElement(this.trgParent, "");
+        }
+      );
     }
   );
 
-  _onScrollLeft() {}
-  _onScrollTop() {}
+  translateElement(element, position) {
+    if (element && element.firstChild) {
+      element.firstChild.style.transform = position;
+    }
+  }
 
-  smoothScrollHandler = (scrollInfo) => {
-    this.scrollInfo = scrollInfo;
-    window.requestAnimationFrame(this.quicklyUpdateScrollPosition);
-    this.updateScrollPosition();
+  _onScroll(scrollInfo) {
+    if (!this._tlgParent) {
+      this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
+      this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
+      this._brgParent = ReactDOM.findDOMNode(this._bottomRightGrid);
+    }
+
+    const {scrollLeft, scrollTop} = scrollInfo;
+    this.translateElement(this._blgParent, `translateY(-${scrollTop - this.state.scrollTop}px)`);
+    this.translateElement(this._trgParent, `translateX(-${scrollLeft - this.state.scrollLeft}px)`);
+    this.recalculateScrollPosition({scrollLeft, scrollTop});
   }
 }
