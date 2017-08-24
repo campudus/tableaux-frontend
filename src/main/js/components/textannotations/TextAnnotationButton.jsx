@@ -6,11 +6,9 @@ import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {maybe} from "../../helpers/functools";
 
 @connectToAmpersand
-export default class TextAnnotationButton extends Component {
+class TextAnnotationButton extends Component {
   static PropTypes = {
-    row: PropTypes.object.isRequired,
     cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
     open: PropTypes.bool
   };
 
@@ -64,3 +62,5 @@ export default class TextAnnotationButton extends Component {
     );
   }
 }
+
+export default TextAnnotationButton;

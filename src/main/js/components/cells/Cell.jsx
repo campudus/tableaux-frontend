@@ -19,7 +19,8 @@ import classNames from "classnames";
 import * as f from "lodash/fp";
 import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
-import TextAnnotationButton from "../textannotations/TextAnnotationButton";
+import {either} from "../../helpers/functools";
+import FlagIconRenderer from "./FlagIconRenderer";
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
   if (!cell.isMultiLanguage || either(cell)
@@ -66,7 +67,6 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   }
 };
 
-// @withPreview
 @connectToAmpersand
 class Cell extends React.PureComponent {
 
@@ -110,8 +110,7 @@ class Cell extends React.PureComponent {
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
-      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(
-          cellDOMNode)) {
+      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
         cellDOMNode.focus();
       }
     }
@@ -270,7 +269,11 @@ class Cell extends React.PureComponent {
            onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
            onMouseDown={this.onMouseDownHandler}>
         {cellItem}
-        {this.flagIconRenderer(annotationsOpen)}
+        <FlagIconRenderer cell={cell}
+                          annotations={cell.annotations}
+                          langtag={langtag}
+                          annotationsOpen={annotationsOpen}
+        />
         {expandCorner}
       </div>
     );
