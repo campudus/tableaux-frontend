@@ -4,9 +4,10 @@ import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
 import TextCell from "./TextCell";
+import {contentChanged} from "../Cell";
 
 const ShortTextCell = (props) => {
-  const {cell, cell: {isMultiLanguage}, contentChanged, editing, selected, langtag, setCellKeyboardShortcuts} = props;
+  const {cell, cell: {isMultiLanguage}, editing, selected, langtag, setCellKeyboardShortcuts} = props;
 
   const handleEditDone = (newValue) => {
     const oldValue = getValue();
@@ -18,7 +19,8 @@ const ShortTextCell = (props) => {
       ? {[langtag]: newValue}
       : newValue;
 
-    changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
+    changeCell({cell, value: valueToSave})
+      .then(() => contentChanged(cell, langtag, oldValue));
     ActionCreator.toggleCellEditing({editing: false});
   };
 
@@ -61,7 +63,6 @@ ShortTextCell.propTypes = {
   cell: PropTypes.object.isRequired,
   editing: PropTypes.bool.isRequired,
   selected: PropTypes.bool,
-  contentChanged: PropTypes.func.isRequired,
   setCellKeyboardShortcuts: PropTypes.func
 };
 

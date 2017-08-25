@@ -53,6 +53,10 @@ class TextView extends React.Component {
     if (!dirty || f.isNil(value) || value.trim() === this.originalValue) {
       return;
     }
+    if (this.props.saveCell) {
+      this.props.saveCell(value);
+      return;
+    }
     const {cell, langtag} = this.props;
     ActionCreator.changeCell(
       cell,
@@ -93,14 +97,13 @@ class TextView extends React.Component {
     if (funcs && funcs.register) {
       funcs.register(node);
     }
-    this.textAreaNode = node;
   };
 
   render() {
     const {thisUserCantEdit} = this.props;
+
     return (
       <div className="item-content shorttext"
-           ref={el => { this.background = el; }}
            tabIndex={1}
       >
         <textarea value={this.state.value || ""}

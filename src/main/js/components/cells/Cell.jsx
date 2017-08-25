@@ -20,17 +20,14 @@ import classNames from "classnames";
 import * as f from "lodash/fp";
 import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
-import {either} from "../../helpers/functools";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
 // used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first
 // visible row)
 const CELL_HINT_PADDING = 40;
 
-export const contentChanged = (cell, langtag, oldValue) => () => {
-  if (!cell.isMultiLanguage || either(cell)
-      .map(f.prop(["value", langtag]))
-      .orElse(f.prop("value")).value === oldValue) {
+export const contentChanged = (cell, langtag, oldValue) => {
+  if (!cell.isMultiLanguage || cell.value[langtag] === oldValue) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -101,10 +98,10 @@ class Cell extends React.Component {
   shouldComponentUpdate = (nextProps, nextState) => {
     const {annotationsOpen, selected, editing, langtag, shouldFocus} = this.props;
     return (editing !== nextProps.editing
-    || selected !== nextProps.selected
-    || langtag !== nextProps.langtag
-    || shouldFocus !== nextProps.shouldFocus)
-    || annotationsOpen !== nextProps.annotationsOpen;
+      || selected !== nextProps.selected
+      || langtag !== nextProps.langtag
+      || shouldFocus !== nextProps.shouldFocus)
+      || annotationsOpen !== nextProps.annotationsOpen;
   };
 
   getKeyboardShortcuts = (event) => {
@@ -121,7 +118,8 @@ class Cell extends React.Component {
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
-      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
+      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(
+          cellDOMNode)) {
         cellDOMNode.focus();
       }
     }
@@ -129,7 +127,13 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked: ", cell, "value: ", cell.value, cell.displayValue);
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
+      cell.kind,
+      "cell clicked: ",
+      cell,
+      "value: ",
+      cell.value,
+      cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -174,7 +178,7 @@ class Cell extends React.Component {
     if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity)) && !annotationsOpen) {
       return null;
     }
-    const mkDot = (flag) => <div className={flag}/>;
+    const mkDot = (flag) => <div className={flag} />;
 
     const hasTextAnnotations = f.any(
       f.complement(f.isEmpty),
@@ -242,7 +246,6 @@ class Cell extends React.Component {
       <CellKind cell={cell} langtag={langtag}
                 selected={selected}
                 editing={cell.isEditable && editing}
-                contentChanged={contentChanged(cell, langtag)}
                 setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {
                 } : this.setKeyboardShortcutsForChildren}
       />
@@ -272,7 +275,8 @@ class Cell extends React.Component {
 
       // We just show the info starting at the fourth column
       const rowDisplayLabelElement = indexOfCell >= 3 ? (
-        <div className={rowDisplayLabelClass}><span className="content">{langtag} | <RowConcat row={cell.row} langtag={langtag}/></span>
+        <div className={rowDisplayLabelClass}><span className="content">{langtag} | <RowConcat row={cell.row}
+                                                                                               langtag={langtag} /></span>
         </div>) : null;
 
       return (

@@ -1,9 +1,9 @@
-import React, {PureComponent, PropTypes} from "react";
+import React, {PropTypes, PureComponent} from "react";
 import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
-import f, {compose, isEmpty, isString} from "lodash/fp";
+import f, {isEmpty, isString} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
@@ -11,6 +11,7 @@ import Header from "../../overlay/Header";
 import {maybe} from "../../../helpers/functools";
 import {changeCell} from "../../../models/Tables";
 import i18n from "i18next";
+import {contentChanged} from "../Cell";
 
 class TextCell extends PureComponent {
 
@@ -27,11 +28,15 @@ class TextCell extends PureComponent {
       ActionCreator.toggleCellEditing({editing: false});
       return;
     }
-    const {cell, langtag, contentChanged} = this.props;
+    const {cell, langtag} = this.props;
     const valueToSave = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
+    changeCell({
+      cell,
+      value: valueToSave
+    })
+      .then(() => contentChanged(cell, langtag, oldValue));
     ActionCreator.toggleCellEditing({editing: false});
   };
 
@@ -60,7 +65,7 @@ class TextCell extends PureComponent {
           <div className="content-items richtext-cell-editor">
             <div className="item">
               <RichTextComponent value={textValue} langtag={langtag}
-                                 saveAndClose={compose(ActionCreator.closeOverlay, this.saveCell)}
+                                 saveCell={this.saveCell}
                                  hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
                                  disableOnClickOutside={true}
                                  placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
