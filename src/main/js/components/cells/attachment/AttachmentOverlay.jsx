@@ -9,7 +9,7 @@ import apiUrl from "../../../helpers/apiUrl";
 import {translate} from "react-i18next";
 import Spinner from "../../header/Spinner";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import {List, AutoSizer, CellMeasurerCache, CellMeasurer} from "react-virtualized";
+import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
 import f from "lodash/fp";
 
 @connectToAmpersand
@@ -135,7 +135,8 @@ class AttachmentOverlay extends Component {
       )
       : (this.state.folder)
         ? (
-          <div className="back" key={this.state.folder.id}><div/>
+          <div className="back" key={this.state.folder.id}>
+            <div />
             <span className="folder-name">{t("root_folder_name")}</span>
           </div>
         )
@@ -147,13 +148,15 @@ class AttachmentOverlay extends Component {
         <div className="folder-file-list">
           <div className="folder-navigation">
             {backButton}
-            <ul className="folder-list">
-              {this.state.folder.subfolders.map((subfolder) => {
-                return <li className="" key={subfolder.id} onClick={this.navigateFolder(subfolder.id)}>
-                  <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
-                </li>;
-              })}
-            </ul>
+            <div className="folder-list-wrapper">
+              <ul className="folder-list">
+                {this.state.folder.subfolders.map((subfolder) => {
+                  return <li className="" key={subfolder.id} onClick={this.navigateFolder(subfolder.id)}>
+                    <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
+                  </li>;
+                })}
+              </ul>
+            </div>
           </div>
           <div className="file-list">
             <AutoSizer>
@@ -192,7 +195,7 @@ const FileItem = translate(["media", "common"])(
           <a onClick={toggleAttachment}
              className={"overlay-table-row"}>
             <i className="icon fa fa-file" /><span>{title}</span>
-            {(isLinked) ? <SvgIcon icon="cross"/> : <SvgIcon icon="check"/>}
+            {(isLinked) ? <SvgIcon icon="cross" /> : <SvgIcon icon="check" />}
           </a>
           <div className="media-options">
             <a className="file-link" href="#" onClick={() => window.open(url)}>

@@ -440,50 +440,71 @@
       height: 100%;
 
       .back {
-        padding: 3px 8px 10px 3px;
+        padding: 5px 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         width: 100%;
         box-sizing: border-box;
+        border-bottom: 1px solid $color-border-grey;
+        height: 35px;
 
         a {
           padding: 4px 8px;
           border-radius: 3px;
           color: $color-text-medium-grey;
 
+          width: 58px;
+          display: inline-block;
+
           &:hover {
             color: $color-primary-contrast-text;
             background-color: $color-primary;
           }
         }
-      }
 
-      .folder-name {
-        color: $color-primary-text;
-      }
+        .folder-name {
+          color: $color-primary-text;
+          font-weight: bold;
+          padding: 4px 8px;
 
-      ul li {
-        padding: 5px 20px;
-        width: 100%;
-        position: relative;
-        box-sizing: border-box;
-        color: $color-primary-text;
-
-        a {
-          display: block;
-          width: 100%;
-          height: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
+      }
 
-        &:hover {
-          color: $color-hover-foreground;
-          background-color: $color-hover-background;
-          &:before {
-            font-family: FontAwesome;
-            content: "\f178";
-            position: absolute;
-            right: 10px;
+      .folder-list-wrapper {
+        overflow-y: auto;
+        height: calc(100% - 35px);
+
+        padding-top: 1em;
+        padding-bottom: 1em;
+
+        box-sizing: border-box;
+
+        ul li {
+          padding: 5px 20px;
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          color: $color-primary-text;
+
+          a {
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+
+          &:hover {
+            color: $color-hover-foreground;
+            background-color: $color-hover-background;
+            &:before {
+              font-family: FontAwesome;
+              content: "\f178";
+              position: absolute;
+              right: 10px;
+            }
           }
         }
       }
