@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import {translate} from "react-i18next";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
+import {forkJoin} from "../../../helpers/functools";
 
 @translate(["header"])
 @listensToClickOutside
@@ -78,9 +79,10 @@ class SwitcherPopup extends React.PureComponent {
     if (isDeselection && currentTable) {
       this.setState({focusTableId: currentTableId});
     } else {
-      this.setState({focusTableId: (f.contains(currentTableId, tableIds))
-        ? currentTableId
-        : (f.contains(focusTableId, tableIds)) ? focusTableId : f.first(tableIds)
+      this.setState({
+        focusTableId: (f.contains(currentTableId, tableIds))
+          ? currentTableId
+          : (f.contains(focusTableId, tableIds)) ? focusTableId : f.first(tableIds)
       });
     }
   };
@@ -157,8 +159,11 @@ class SwitcherPopup extends React.PureComponent {
     const {langtag, tables} = this.props;
     const matchesQuery = (query) => f.compose(
       SearchFunctions[FilterModes.CONTAINS](query),
-      f.find(f.identity),
-      f.props([["displayName", langtag], ["displayName", FallbackLanguage], "name"])
+      forkJoin(
+        (a, b) => a + " " + b,
+        f.compose(f.find(f.identity), f.props([["displayName", langtag], ["displayName", FallbackLanguage], " "])),
+        f.get("name")
+      ),
     );
 
     const isInGroup = f.matchesProperty(["group", "id"], filterGroupId);
@@ -239,7 +244,9 @@ class SwitcherPopup extends React.PureComponent {
           <div onClick={this.onClickTable(table)}>
             {displayName}
           </div>
-          <a target="_blank" rel="noopener" href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
+          <a target="_blank"
+             rel="noopener"
+             href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
         </li>
       );
     };
@@ -293,7 +300,7 @@ class SwitcherPopup extends React.PureComponent {
                      className="tableswitcher-input"
                      ref="filterInput" onChange={this.filterInputChange}
                      onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcutsFilterTable)}
-                     autoFocus="true"/>
+                     autoFocus="true" />
               <i className="fa fa-search"></i>
             </div>
           </div>
