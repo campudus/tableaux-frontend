@@ -44,8 +44,8 @@
   "final": {
     "set_final": "Markierung \"Final\" setzen",
     "set_not_final": "Markierung \"Final\" entfernen",
-    "unlock_header": "Zeile vor Änderungen geschützt",
-    "unlock_toast": "Zum entsperren 2x Klicken/Eingabetaste",
+    "unlock_header": "Datensatz ist vor Änderungen geschützt",
+    "unlock_toast": "Zum Entsperren 2x klicken/Enter",
     "set_all_rows_final": "Ganze Tabelle \"Final\" markieren"
   },
   "translations": {
@@ -75,7 +75,7 @@
   "filter": {
     "contains": "enthält",
     "starts_with": "beginnt mit",
-    "rows_hidden": "Es wird nur Zeile {{rowId}} angezeigt",
+    "rows_hidden": "Es werden nur bestimmte Datensätze angezeigt",
     "needs_translation": "Übersetzung benötigt",
     "is_final": "Als freigegeben markiert"
   },
@@ -117,7 +117,7 @@
   "add-comment": "Kommentar hinzufügen",
   "show-comments": "Kommentare anzeigen",
   "cell-comments": "Zellenkomentare",
-  "cardinality-reached": "Ein Datensatz darf zu dieser Tabell hüchstens {{maxLink}} Verknüpfungen haben.",
+  "cardinality-reached": "Ein Datensatz darf zu dieser Tabelle höchstens {{maxLink}} Verknüpfungen haben.",
   "important": "Wichtig",
   "check-me": "Bitte überprüfen",
   "postpone": "Später",

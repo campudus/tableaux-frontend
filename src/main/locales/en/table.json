@@ -75,7 +75,7 @@
   "filter": {
     "contains": "contains",
     "starts_with": "starts with",
-    "rows_hidden": "Hiding all except row {{rowId}}",
+    "rows_hidden": "Only displaying specific rows",
     "needs_translation": "Needs translation",
     "is_final": "Is marked as final"
   },
@@ -117,7 +117,7 @@
   "add-comment": "Add comments",
   "show-comments": "Show comments",
   "cell-comments": "Cell comments",
-  "cardinaliy-reachted": "An item  may not have no more than {{maxLink}} link to that table.",
+  "cardinality-reached": "An item  may not have no more than {{maxLink}} link to that table.",
   "important": "Important",
   "check-me": "Please double-check",
   "postpone": "Later",
