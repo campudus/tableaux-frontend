@@ -136,7 +136,8 @@ export default class VirtualTable extends PureComponent {
 
   renderEmptyTable = () => null;
 
-  cellRenderer = (gridData) => { /*
+  cellRenderer = (gridData) => {
+    /*
     const columns = this.props.columns.filter((col, idx) => idx === 0 || col.visible);
     const val = f.cond([
       [({columnIndex, rowIndex}) => columnIndex === 0 && rowIndex === 0, f.always("ID")],

@@ -1,8 +1,7 @@
 /**
  * Some hacks into react-virtualized.Grid to delay rendering of grid elements after scrolling, as only
  * Chromium-based browsers are fast enough to handle scrolling the whole content.
- * Debouncing the scroll handler also debounces rendering. The downside of this is that syncing of fixed
- * rows and columns also gets debounced.
+ * Debouncing the scroll handler also debounces rendering.
  */
 
 import {Grid, MultiGrid} from "react-virtualized";
@@ -39,18 +38,13 @@ export default class GrudGrid extends MultiGrid {
 
   blgParent = null;
   trgParent = null;
-  brgParent = null;
 
   recalculateScrollPosition = debounce(
     50,
     (newPosition) => {
-      this.setState(
-        newPosition,
-        () => {
-          this.translateElement(this.blgParent, "");
-          this.translateElement(this.trgParent, "");
-        }
-      );
+      this.translateElement(this.blgParent, "");
+      this.translateElement(this.trgParent, "");
+      this.setState(newPosition);
     }
   );
 
@@ -60,16 +54,21 @@ export default class GrudGrid extends MultiGrid {
     }
   }
 
-  _onScroll(scrollInfo) {
-    if (!this._tlgParent) {
+  _onScroll({scrollLeft, scrollTop}) {
+    if (!this._trgParent) {
       this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
-      this._brgParent = ReactDOM.findDOMNode(this._bottomRightGrid);
     }
 
-    const {scrollLeft, scrollTop} = scrollInfo;
-    this.translateElement(this._blgParent, `translateY(-${scrollTop - this.state.scrollTop}px)`);
-    this.translateElement(this._trgParent, `translateX(-${scrollLeft - this.state.scrollLeft}px)`);
+    const y = this.state.scrollTop - scrollTop;
+    const x = this.state.scrollLeft - scrollLeft;
+    devLog("Scroll event: X:",
+      scrollLeft, "-", this.state.scrollLeft, "=", x, "Y:",
+      scrollTop, "-", this.state.scrollTop, "=", y
+    )
+
+    this.translateElement(this._blgParent, `translateY(${y}px)`);
+    this.translateElement(this._trgParent, `translateX(${x}px)`);
     this.recalculateScrollPosition({scrollLeft, scrollTop});
   }
 }
