@@ -8,15 +8,20 @@ import AttachmentOverlay from "./AttachmentOverlay.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import {isLocked} from "../../../helpers/annotationHelper";
+import {maybe} from "../../../helpers/functools";
 
-const AttachmentCell = props => {
+const AttachmentCell = (props) => {
   const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = props;
   const cellClass = classNames("cell-content", {
     "editing": editing,
     "selected": selected
   });
 
-  const openOverlay = folderId => {
+  const openOverlay = (event, folderId) => {
+    if (isLocked(cell.row)) {
+      return;
+    }
+    maybe(event).method("stopPropagation");
     const columnName = cell.column.displayName[langtag] || cell.column.displayName[FallbackLanguage];
     ActionCreator.openOverlay({
       head: <Header title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} context={columnName} />,

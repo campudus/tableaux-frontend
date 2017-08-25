@@ -5,10 +5,10 @@ import TableauxConstants from "../../../constants/TableauxConstants";
 const AttachmentLabelCell = (props) => {
   const {attachmentElement, langtag, selected, openOverlay} = props;
 
-  const handleClick = evt => {
+  const handleClick = (evt) => {
     if (selected) {
       evt.stopPropagation();
-      openOverlay(attachmentElement.folder);
+      openOverlay(evt, attachmentElement.folder);
     }
   };
 

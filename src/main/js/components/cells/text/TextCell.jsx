@@ -36,14 +36,14 @@ class TextCell extends PureComponent {
   };
 
   openOverlay = (event, withContent) => {
+    maybe(event)
+      .method("stopPropagation")
+      .method("preventDefault");
     if (isLocked(this.props.cell.row)) {
       askForSessionUnlock(this.props.cell.row);
       return;
     }
     const textValue = withContent || this.getValue();
-    maybe(event)
-      .method("stopPropagation")
-      .method("preventDefault");
 
     const {cell, langtag} = this.props;
     const table = cell.tables.get(cell.tableId);
