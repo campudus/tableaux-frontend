@@ -59,7 +59,6 @@ const mkFinalFilter = closures => ({value}) => {
 };
 
 const mkIDFilter = closures => ({value}) => {
-  console.log("ID filter");
   return f.compose(
     (id) => f.contains(id, value),
     f.get("id")
@@ -69,15 +68,11 @@ const mkIDFilter = closures => ({value}) => {
 const mkOthersTranslationStatusFilter = closures => ({value}) => {
   const needsTranslation = f.compose(
     f.complement(f.isEmpty),
-    fspy("langtags"),
-    f.get(["annotations", "translationNeeded", "langtags"]),
-    fspy("cell")
+    f.get(["annotations", "translationNeeded", "langtags"])
   );
   const hasUntranslatedCells = f.compose(
     f.any(needsTranslation),
-    fspy("cells"),
     f.get(["cells", "models"]),
-    fspy("row")
   );
   return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
@@ -85,7 +80,7 @@ const mkOthersTranslationStatusFilter = closures => ({value}) => {
 const mkTranslationStatusFilter = closures => ({value}) => {
   const needsTranslation = f.compose(
     f.contains(closures.langtag),
-    f.get(["annotations", "translationNeeded", "langtags"]),
+    f.get(["annotations", "translationNeeded", "langtags"])
   );
   const hasUntranslatedCells = f.compose(
     f.any(needsTranslation),
@@ -151,6 +146,11 @@ const mkClosures = (table, langtag, rowsFilter) => {
 
   const sortColumnIdx = getColumnIndex(rowsFilter.sortColumnId);
   const isOfKind = (kind) => f.matchesProperty("kind", kind);
+  const joinStrings = f.compose(
+    f.join("::"),
+    f.map(f.get(langtag)),
+    f.get("displayValue")
+  );
 
   const getSortableCellValue = (cell) => {
     const getField = (field) => (cell) => (cell.isMultiLanguage)
@@ -158,6 +158,8 @@ const mkClosures = (table, langtag, rowsFilter) => {
       : f.get([field, cell]);
     const rawValue = f.cond([
       [isOfKind(ColumnKinds.boolean), getField("value")],
+      [isOfKind(ColumnKinds.link), joinStrings],
+      [isOfKind(ColumnKinds.attachment), joinStrings],
       [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
     return f.cond([
