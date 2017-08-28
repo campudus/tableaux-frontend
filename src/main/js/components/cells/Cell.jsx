@@ -125,7 +125,7 @@ class Cell extends React.PureComponent {
   };
 
   checkFocus = () => {
-    if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
+    if (this.props.selected && !this.props.editing) {
       const cellDOMNode = this.cellDOMNode;
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
@@ -220,7 +220,7 @@ class Cell extends React.PureComponent {
            className={cssClass}
            onClick={this.cellClicked}
            onContextMenu={this.rightClicked}
-           tabIndex="-1"
+           tabIndex="1"
            onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
            onMouseDown={this.onMouseDownHandler}>
         <CellKind cell={cell} langtag={langtag}

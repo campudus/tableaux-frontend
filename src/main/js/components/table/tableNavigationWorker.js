@@ -8,11 +8,6 @@ import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {maybe} from "../../helpers/functools";
 
-export function shouldCellFocus() {
-  // we dont want to force cell focus when overlay is open
-  return this.state.shouldCellFocus && !this.props.overlayOpen;
-}
-
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
@@ -34,27 +29,8 @@ export function checkFocusInsideTable() {
   }
 }
 
-export function disableShouldCellFocus() {
-  if (this.state.shouldCellFocus) {
-    window.devLog("Table.disableShouldCellFocus");
-    this.setState({shouldCellFocus: false});
-  }
-}
-
-export function enableShouldCellFocus() {
-  if (!this.state.shouldCellFocus) {
-    window.devLog("Table.enableShouldCellFocus");
-    this.setState({shouldCellFocus: true});
-  }
-}
-
 export function getKeyboardShortcuts() {
   const {selectedCell, selectedCellEditing} = this.state;
-
-  // Force the next selected cell to be focused
-  if (!shouldCellFocus.call(this)) {
-    enableShouldCellFocus.call(this);
-  }
   return {
     left: (event) => {
       event.preventDefault();
@@ -374,28 +350,4 @@ export function getCurrentSelectedRowId() {
 export function getCurrentSelectedColumnId() {
   const {selectedCell} = this.state;
   return selectedCell ? selectedCell.column.getId() : 0;
-}
-
-export function scrollToLeftStart(e) {
-  scrollToLeftLinear(this.tableRowsDom, 250);
-}
-
-/** Helper function to scroll to the left.
- * TODO: Improve with ease out function. Great article about it:
- * https://www.kirupa.com/html5/animating_with_easing_functions_in_javascript.htm *
- * **/
-
-function scrollToLeftLinear(element, scrollDuration) {
-  const scrollStep = element.scrollLeft / (scrollDuration / 15);
-  if (requestAnimationFrame !== "undefined") {
-    const step = () => {
-      if (element.scrollLeft > 0) {
-        requestAnimationFrame(step);
-        element.scrollLeft -= scrollStep;
-      }
-    };
-    requestAnimationFrame(step);
-  } else {
-    element.scrollLeft = 0;
-  }
 }
