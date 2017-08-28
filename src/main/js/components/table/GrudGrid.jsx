@@ -8,6 +8,12 @@ import {Grid, MultiGrid} from "react-virtualized";
 import {debounce} from "lodash/fp";
 import ReactDOM from "react-dom";
 
+console.warn(
+  "Importing this file will change the behaviour of \"react-virtualize\"'s Grid component by monkey-patching " +
+  "its prototype.\n" +
+  "For an unaltered version, don't import react-virtualize.Grid, but GrudGrid.Grid."
+);
+
 const handleScrollLater = debounce(
   50,
   function (self, scrollPosition) {
@@ -72,3 +78,9 @@ export default class GrudGrid extends MultiGrid {
     this.recalculateScrollPosition({scrollLeft, scrollTop});
   }
 }
+
+class VanillaGrid extends Grid {
+  handleScrollEvent = this._originalScrollHandler;
+}
+
+export {VanillaGrid as Grid};

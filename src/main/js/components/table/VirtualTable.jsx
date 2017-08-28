@@ -343,17 +343,22 @@ export default class VirtualTable extends PureComponent {
   getCell = (rowIndex, columnIndex) => {
     const {columns, rows} = this.props;
     const cells = rows.at(rowIndex).cells.models;
-    let i = 0;
-    let j = 0;
-    for (; j < cells.length; ++j) {
-      if (i === columnIndex) {
+
+    // This hideous C-style loop avoids allocating and garbage-collecting
+    // (visibleCols + overscanCol) * (visibleRows + overscanRows) arrays in
+    // a performance-critical section, thus considerably speeding up rendering.
+    let visibleColIdx = 0;
+    let totalColIdx = 0;
+    for (; totalColIdx < cells.length; ++totalColIdx) {
+      if (visibleColIdx === columnIndex) {
         break;
       }
-      if (columns.models[j].visible || j === 0) {
-        ++i;
+      if (columns.models[totalColIdx].visible || totalColIdx === 0) {
+        ++visibleColIdx;
       }
     }
-    return cells[j];
+    return cells[totalColIdx];
+    // Original implementation which eats too much CPU-time
 //    const visibleCells = cells.models.filter(this.filterVisibleCells);
 //    return visibleCells[columnIndex];
   };
