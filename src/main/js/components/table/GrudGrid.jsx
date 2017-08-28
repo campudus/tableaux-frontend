@@ -5,7 +5,7 @@
  */
 
 import {Grid, MultiGrid} from "react-virtualized";
-import {add, compose, debounce, update} from "lodash/fp";
+import {add, compose, debounce, noop, update} from "lodash/fp";
 import ReactDOM from "react-dom";
 import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
 
@@ -43,18 +43,35 @@ Grid.prototype.handleScrollEvent = function (trigger) {
 
 export default class GrudGrid extends MultiGrid {
 
-  blgParent = null;
-  trgParent = null;
+  _blgParent = null;
+  _trgParent = null;
+  correctionStep = false;
 
   recalculateScrollPosition = debounce(
     50,
     (newPosition) => {
+      this.correctionStep = !this.correctionStep;
+      const maybeCorrectScrollPos = (this.correctionStep)
+        ? noop
+        : () => {
+          requestAnimationFrame(
+            () => {
+              this.setState(
+                compose(
+                  update("scrollTop", add(-1)),
+                  update("scrollLeft", add(-1))
+                )
+              );
+            }
+          );
+        };
       this.translateElement(this._blgParent, null);
       this.translateElement(this._trgParent, null);
       this.setState(
         newPosition,
         () => {
           this.props.fullyLoaded && spinnerOff();
+          maybeCorrectScrollPos();
         }
       );
     }
@@ -63,10 +80,8 @@ export default class GrudGrid extends MultiGrid {
   translateElement(element, position) {
     if (element && element.firstChild) {
       if (position) {
-        devLog("Setting fake scroll")
         element.firstChild.style.transform = position;
       } else {
-        devLog("Deleting fake scroll")
         element.firstChild.style.removeProperty("transform");
       }
     }
