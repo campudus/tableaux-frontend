@@ -35,27 +35,32 @@ export const contentChanged = (cell, langtag, oldValue) => {
     f.filter(lt => f.isEmpty(f.prop(["value", lt], cell))),
     f.drop(1)
   )(Langtags);
-  const translationAnnotation = f.prop(["annotations", "translationNeeded"], cell);
+
+  const translationAnnotation = f.get(["annotations", "translationNeeded"], cell) || {};
   const translationsExist = untranslated.length !== Langtags.length - 1;
+  const allFlaggedForTranslation = f.size(translationAnnotation.langtags) === Langtags.length - 1;
+
+  if (isPrimaryLanguage && allFlaggedForTranslation) { // no need to ask for further flagging
+    return;
+  }
 
   if (isPrimaryLanguage) {
     const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
     const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
       ? addTranslationNeeded(untranslated, cell)
-      : () => {
-      };
+      : f.noop;
     if (translationsExist) {
       const column = cell.column;
-      const columnName = f.prop(["displayName", langtag], column)
-        || f.prop(["displayName", FallBackLanguage], column)
-        || f.prop(["displayName"], column);
+      const columnName = f.get(["displayName", langtag], column)
+        || f.get(["displayName", FallBackLanguage], column)
+        || f.get(["displayName"], column);
       openTranslationDialog(columnName, flagAllTranslations, flagEmptyTranslations);
     } else {
       flagEmptyTranslations();
     }
   } else {
-    const remainingTranslations = f.remove(f.equals(langtag), f.prop("langtags", translationAnnotation));
-    if (f.contains(langtag, f.prop("langtags", translationAnnotation))) {
+    const remainingTranslations = f.remove(f.equals(langtag), f.get("langtags", translationAnnotation));
+    if (f.contains(langtag, f.get("langtags", translationAnnotation))) {
       removeTranslationNeeded(langtag, cell);
       if (f.isEmpty(remainingTranslations)) {
         deleteCellAnnotation(translationAnnotation, cell);
