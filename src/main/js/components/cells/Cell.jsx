@@ -21,6 +21,26 @@ import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} fro
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/functools";
 import FlagIconRenderer from "./FlagIconRenderer";
+import {branch, compose, renderNothing, withHandlers} from "recompose";
+
+const ExpandCorner = compose(
+  branch(
+    ({show}) => !show,
+    renderNothing
+  ),
+  withHandlers({
+    onClick: (props) => (event) => {
+      event.stopPropagation();
+      ActionCreator.toggleRowExpand(props.cell.row.getId());
+    }
+  })
+)(
+  (props) => (
+    <div className="needs-translation-other-language"
+         onClick={props.onClick}
+    />
+  )
+);
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
   if (!cell.isMultiLanguage || either(cell)
@@ -170,7 +190,9 @@ class Cell extends React.PureComponent {
       )
     ) {
       return (
-        <div className="cell repeat placeholder">
+        <div className="cell repeat placeholder"
+             onContextMenu={this.rightClicked}
+        >
           —.—
         </div>
       );
@@ -207,26 +229,6 @@ class Cell extends React.PureComponent {
       ? DisabledCell
       : (cellKinds[kind] || TextCell);
 
-    const cellItem = (
-      <CellKind cell={cell} langtag={langtag}
-                selected={selected} inSelectedRow={inSelectedRow}
-                editing={cell.isEditable && editing}
-                contentChanged={contentChanged(cell, langtag)}
-                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
-      />
-    );
-
-    const expandCorner = (needsTranslationOtherLanguages)
-      ? <div className="needs-translation-other-language"
-             onClick={
-               evt => {
-                 evt.stopPropagation();
-                 ActionCreator.toggleRowExpand(cell.row.getId());
-               }
-             }
-      />
-      : null;
-
     // onKeyDown event just for selected components
     return (
       <div style={this.props.style}
@@ -234,13 +236,20 @@ class Cell extends React.PureComponent {
            tabIndex="-1"
            onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
            onMouseDown={this.onMouseDownHandler}>
-        {cellItem}
+        <CellKind cell={cell} langtag={langtag}
+                  selected={selected} inSelectedRow={inSelectedRow}
+                  editing={cell.isEditable && editing}
+                  contentChanged={contentChanged(cell, langtag)}
+                  setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
+        />
         <FlagIconRenderer cell={cell}
                           annotations={cell.annotations}
                           langtag={langtag}
                           annotationsOpen={annotationsOpen}
         />
-        {expandCorner}
+        <ExpandCorner show={needsTranslationOtherLanguages}
+                      cell={cell}
+        />
       </div>
     );
   }
