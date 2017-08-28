@@ -157,41 +157,7 @@ class Cell extends React.PureComponent {
     // Prevents table mousedown handler, so we can select
     e.stopPropagation();
   };
-
-  flagIconRenderer = (annotationsOpen) => {
-    const {cell, cell: {annotations}, langtag} = this.props;
-    const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
-    if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity)) && !annotationsOpen) {
-      return null;
-    }
-    const mkDot = (flag) => <div className={flag} />;
-
-    const hasTextAnnotations = f.any(
-      f.complement(f.isEmpty),
-      [annotations.info, annotations.warning, annotations.error]
-    );
-    const commentBubble = (!this.props.isExpandedCell && (hasTextAnnotations || annotationsOpen))
-      ? <TextAnnotationButton cell={cell}
-                              row={cell.row}
-                              langtag={langtag}
-                              open={annotationsOpen}
-      />
-      : null;
-
-    const isTranslationNeeded = f.contains(langtag, f.get(["translationNeeded", "langtags"], annotations))
-      && langtag !== Langtags[0];
-
-    return (
-      <div className="annotation-flag-icons">
-        {commentBubble}
-        {isTranslationNeeded && mkDot("translation")}
-        {annotations.important && mkDot("important")}
-        {annotations["check-me"] && mkDot("check-me")}
-        {annotations.postpone && mkDot("postpone")}
-      </div>
-    );
-  };
-
+  
   render = () => {
     const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow, isExpandedCell} = this.props;
     const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
