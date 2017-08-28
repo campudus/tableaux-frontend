@@ -5,8 +5,9 @@
  */
 
 import {Grid, MultiGrid} from "react-virtualized";
-import {debounce} from "lodash/fp";
+import {add, compose, debounce, update} from "lodash/fp";
 import ReactDOM from "react-dom";
+import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
 
 console.warn(
   "Importing this file will change the behaviour of \"react-virtualize\"'s Grid component by monkey-patching " +
@@ -48,19 +49,31 @@ export default class GrudGrid extends MultiGrid {
   recalculateScrollPosition = debounce(
     50,
     (newPosition) => {
-      this.translateElement(this.blgParent, "");
-      this.translateElement(this.trgParent, "");
-      this.setState(newPosition);
+      this.translateElement(this._blgParent, null);
+      this.translateElement(this._trgParent, null);
+      this.setState(
+        newPosition,
+        () => {
+          this.props.fullyLoaded && spinnerOff();
+        }
+      );
     }
   );
 
   translateElement(element, position) {
     if (element && element.firstChild) {
-      element.firstChild.style.transform = position;
+      if (position) {
+        devLog("Setting fake scroll")
+        element.firstChild.style.transform = position;
+      } else {
+        devLog("Deleting fake scroll")
+        element.firstChild.style.removeProperty("transform");
+      }
     }
   }
 
   _onScroll({scrollLeft, scrollTop}) {
+    spinnerOn();
     if (!this._trgParent) {
       this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
@@ -68,10 +81,6 @@ export default class GrudGrid extends MultiGrid {
 
     const y = this.state.scrollTop - scrollTop;
     const x = this.state.scrollLeft - scrollLeft;
-    devLog("Scroll event: X:",
-      scrollLeft, "-", this.state.scrollLeft, "=", x, "Y:",
-      scrollTop, "-", this.state.scrollTop, "=", y
-    )
 
     this.translateElement(this._blgParent, `translateY(${y}px)`);
     this.translateElement(this._trgParent, `translateX(${x}px)`);

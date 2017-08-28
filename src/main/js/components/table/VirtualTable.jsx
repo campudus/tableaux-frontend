@@ -475,6 +475,7 @@ export default class VirtualTable extends PureComponent {
                        classNameBottomRightGrid={"multigrid-bottom-right"}
                        classNameTopRightGrid={"multigrid-top-right"}
                        classNameBottomLeftGrid={"multigrid-bottom-left"}
+                       fullyLoaded={this.props.fullyLoaded}
             />
           )
         }
