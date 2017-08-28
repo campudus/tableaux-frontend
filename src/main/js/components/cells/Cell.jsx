@@ -21,7 +21,7 @@ import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} fro
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/functools";
 import FlagIconRenderer from "./FlagIconRenderer";
-import {branch, compose, renderNothing, withHandlers} from "recompose";
+import {branch, compose, renderComponent, renderNothing, withHandlers} from "recompose";
 
 const ExpandCorner = compose(
   branch(
@@ -177,41 +177,26 @@ class Cell extends React.PureComponent {
     // Prevents table mousedown handler, so we can select
     e.stopPropagation();
   };
+
+  static cellKinds = {
+    [ColumnKinds.link]: LinkCell,
+    [ColumnKinds.attachment]: AttachmentCell,
+    [ColumnKinds.numeric]: NumericCell,
+    [ColumnKinds.boolean]: BooleanCell,
+    [ColumnKinds.date]: DateCell,
+    [ColumnKinds.datetime]: DateTimeCell,
+    [ColumnKinds.shorttext]: ShortTextCell,
+    [ColumnKinds.concat]: IdentifierCell,
+    [ColumnKinds.currency]: CurrencyCell,
+    [ColumnKinds.text]: TextCell,
+    [ColumnKinds.richtext]: TextCell,
+    [ColumnKinds.group]: IdentifierCell
+  };
   
   render = () => {
-    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow, isExpandedCell} = this.props;
-    const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
+    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
+    const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
-
-    if (isExpandedCell
-      && (
-        !cell.isMultiLanguage
-        || f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.boolean, ColumnKinds.attachment])
-      )
-    ) {
-      return (
-        <div className="cell repeat placeholder"
-             onContextMenu={this.rightClicked}
-        >
-          —.—
-        </div>
-      );
-    }
-
-    const cellKinds = {
-      [link]: LinkCell,
-      [attachment]: AttachmentCell,
-      [numeric]: NumericCell,
-      [boolean]: BooleanCell,
-      [date]: DateCell,
-      [datetime]: DateTimeCell,
-      [shorttext]: ShortTextCell,
-      [concat]: IdentifierCell,
-      [currency]: CurrencyCell,
-      [text]: TextCell,
-      [richtext]: TextCell,
-      [group]: IdentifierCell
-    };
 
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";
     const {translationNeeded} = cell.annotations;
@@ -227,12 +212,14 @@ class Cell extends React.PureComponent {
 
     const CellKind = (kind === "disabled")
       ? DisabledCell
-      : (cellKinds[kind] || TextCell);
+      : (Cell.cellKinds[kind] || TextCell);
 
     // onKeyDown event just for selected components
     return (
       <div style={this.props.style}
-           className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
+           className={cssClass}
+           onClick={this.cellClicked}
+           onContextMenu={this.rightClicked}
            tabIndex="-1"
            onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
            onMouseDown={this.onMouseDownHandler}>
@@ -268,4 +255,30 @@ Cell.propTypes = {
   isExpandedCell: React.PropTypes.bool.isRequired
 };
 
-export default Cell;
+const isRepeaterCell = ({cell, isExpandedCell}) => isExpandedCell
+  && (
+    !cell.isMultiLanguage
+    || f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.boolean, ColumnKinds.attachment])
+  );
+
+const RepeaterCell = withHandlers(
+  {
+    onContextMenu: ({row, langtag, table, cell}) => (event) => {
+      event.preventDefault();
+      ActionCreator.showRowContextMenu(row, langtag, event.pageX, event.pageY, table, cell);
+    }
+  }
+)(
+  (props) => (
+    <div className="cell repeat placeholder"
+         onContextMenu={props.onContextMenu}
+    >
+      —.—
+    </div>
+  )
+);
+
+export default branch(
+  isRepeaterCell,
+  renderComponent(RepeaterCell)
+)(Cell);
