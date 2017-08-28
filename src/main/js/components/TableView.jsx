@@ -419,6 +419,10 @@ class TableView extends React.Component {
       rowsCollection: this.getCurrentTable().rows,
       rowsFilter: null
     }, this.saveFilterSettings);
+    const clearedUrl = window.location.href
+                             .replace(/http:\/\/.*?\//, "")
+                             .replace(/\?.*/, "");
+    App.router.navigate(clearedUrl, {trigger: false});
   };
 
   changeFilter = (settings = {}, store = true) => {
