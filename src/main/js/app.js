@@ -31,6 +31,14 @@ window.devErr = (isProduction)
     console.error.apply(this, ["devel:", ...arguments]);
   };
 
+window.logIf = (isProduction)
+  ? function () {}
+  : function (test, ...params) {
+    if (test) {
+      console.log(...params);
+    }
+  };
+
 console.log("GRUD version", process.env.BUILD_VERSION);
 if (isProduction) {
   require("./watchers/watchConnection");
