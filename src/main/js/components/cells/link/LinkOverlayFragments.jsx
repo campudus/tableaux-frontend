@@ -43,6 +43,7 @@ const UnlinkedRowsFrag = (
     rowCount,
     rowHeight,
     rowRenderer,
+    noRowsRenderer,
     scrollToIndex,
     selectedMode
   }
@@ -83,3 +84,21 @@ export const UnlinkedRows = branch(
   ({loading, noForeignRows}) => !loading && noForeignRows,
   renderNothing
 )(UnlinkedRowsOrSpinner);
+
+// ---------------------------------------------------------------------------------------
+// Link count
+
+const LinkStatusCountFrag = ({rowResults, maxLinks}) => (
+  <span>
+    (
+    {f.size(rowResults.linked)}
+    /
+    {maxLinks}
+    )
+  </span>
+);
+
+export const LinkStatus = branch(
+  ({maxLinks}) => !isFinite(maxLinks),
+  renderNothing
+)(LinkStatusCountFrag);

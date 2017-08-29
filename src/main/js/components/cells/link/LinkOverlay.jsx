@@ -23,7 +23,7 @@ import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 import Raven from "raven-js";
-import {LinkedRows, UnlinkedRows} from "./LinkOverlayFragments";
+import {LinkedRows, LinkStatus, UnlinkedRows} from "./LinkOverlayFragments";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -412,14 +412,6 @@ class LinkOverlay extends Component {
     );
   };
 
-  noRowsRenderer = () => {
-    const {t} = this.props;
-    return (
-      <div className="empty">
-        {t("search_no_results")}
-      </div>);
-  };
-
   swapLinkedItems = (a, b) => {
     const linkedItems = f.get(["rowResults", "linked"], this.state) || [];
     const {cell} = this.props;
@@ -511,6 +503,9 @@ class LinkOverlay extends Component {
                 )
               }
             </span>
+            <LinkStatus rowResults={rowResults}
+                        maxLinks={this.getToCardinality()}
+            />
           </span>
           <LinkedRows loading={loading}
                       linkEmptyLines={linkEmptyLines}
