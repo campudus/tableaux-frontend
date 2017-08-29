@@ -26,7 +26,7 @@ class GenericContextMenu extends React.Component {
     const dataWrapper = f.first(document.getElementsByClassName("data-wrapper"));
     
     if (x) {
-      const w = el.offsetWidth;
+      const w = Math.max(this.props.minWidth || 1, el.offsetWidth);
       const xShift = ((f.endsWith("RIGHT", align)) ? w : 0); // shift to align corner at (x,y)
       const xPos = (noClampX)
         ? x + offset - xShift
@@ -55,7 +55,7 @@ class GenericContextMenu extends React.Component {
     );
     return (
       <div className="context-menu row-context-menu" style={cssStyle}>
-        {this.props.menuItems}
+        {this.props.menuItems || this.props.children}
       </div>
     );
   }
@@ -66,7 +66,8 @@ GenericContextMenu.propTypes = {
   y: React.PropTypes.number,
   menuItems: React.PropTypes.element.isRequired,
   offset: React.PropTypes.number,
-  alignment: React.PropTypes.string
+  alignment: React.PropTypes.string,
+  minWidth: React.PropTypes.number
 };
 
 module.exports = GenericContextMenu;
