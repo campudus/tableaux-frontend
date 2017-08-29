@@ -4,6 +4,7 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 import {DragDropContext, DragSource, DropTarget} from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import classNames from "classnames";
+import f from "lodash/fp";
 
 const ItemType = "item-type";
 
@@ -61,13 +62,21 @@ class DragItem extends Component {
 @DragDropContext(HTML5Backend)
 class DragSortList extends Component {
   static propTypes = {
-    items: PropTypes.array.isRequired,
-    renderListItem: PropTypes.func,
-    swapItems: PropTypes.func
+    rowResults: PropTypes.object.isRequired,
+    renderListItem: PropTypes.func.isRequired,
+    swapItems: PropTypes.func.isRequired
   };
 
   render() {
-    const {renderListItem, swapItems, items} = this.props;
+    const {renderListItem, swapItems, rowResults} = this.props;
+    const items = f.defaultTo([])(rowResults.linked).map(
+      (row = {}, index) => {
+        return {
+          index,
+          id: row.id
+        };
+      }
+    );
     return (
       <div className="link-list">
         {

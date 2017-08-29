@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from "react";
 import _ from "lodash";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
-import {AutoSizer, List} from "react-virtualized";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {ActionTypes, DefaultLangtag, Directions, FilterModes} from "../../../constants/TableauxConstants";
@@ -18,14 +17,13 @@ import Dispatcher from "../../../dispatcher/Dispatcher";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import SearchBar from "./LinkOverlaySearchBar";
-import DragSortList from "./DragSortList";
 import {changeCell} from "../../../models/Tables";
 import LinkItem from "./LinkItem";
-import Spinner from "../../header/Spinner";
 import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 import Raven from "raven-js";
+import {LinkedRows, UnlinkedRows} from "./LinkOverlayFragments";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -454,7 +452,11 @@ class LinkOverlay extends Component {
         this.allRowResults = [...this.allRowResults, link];
         this.addLinkValue(false, link);
 
-        loadAndOpenEntityView({tables: cell.tables, tableId: toTable, rowId: row.id}, langtag);
+        loadAndOpenEntityView({
+          tables: cell.tables,
+          tableId: toTable,
+          rowId: row.id
+        }, langtag);
       };
       ActionCreator.addRow(toTable, linkNewRow);
     };
@@ -484,51 +486,8 @@ class LinkOverlay extends Component {
     const noForeignRows = f.isEmpty(rowResults.unlinked)           // there are no unlinked rows
       || !this.canAddLink();                                       // or link cardinality reached
 
-    const unlinkedRows = (loading)
-      ? <Spinner isLoading={true} />
-      : <AutoSizer>
-        {({width, height}) => <List
-          ref="OverlayScroll"
-          width={width}
-          height={height}
-          rowCount={f.add(1, f.size(rowResults.unlinked))}
-          rowHeight={40}
-          rowRenderer={this.renderListItem({isLinked: false})}
-          scrollToIndex={this.state.selectedId.unlinked}
-          noRowsRenderer={this.noRowsRenderer}
-        />}
-      </AutoSizer>;
-
     // because keeping track of multiple partial localisation strings gets more tiresome...
     const linkEmptyLines = i18n.t("table:link-overlay-empty").split(".");
-
-    const linkedRows = (f.isEmpty(f.get("linked", rowResults)) && !loading)
-      ? (
-        <div className="link-list empty-info">
-          <i className="fa fa-chain-broken" />
-          <div className="text">
-            <span>
-              {linkEmptyLines[0]}.
-            </span>
-            <span>
-              {linkEmptyLines[1]}.
-            </span>
-          </div>
-        </div>
-      )
-      : (
-        <DragSortList renderListItem={this.renderListItem({isLinked: true})}
-                      items={f.defaultTo([])(rowResults.linked).map(
-                        (row = {}, index) => {
-                          return {
-                            index,
-                            id: row.id
-                          };
-                        }
-                      )}
-                      swapItems={this.swapLinkedItems}
-        />
-      );
 
     return (
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
@@ -553,15 +512,22 @@ class LinkOverlay extends Component {
               }
             </span>
           </span>
-          {linkedRows}
+          <LinkedRows loading={loading}
+                      linkEmptyLines={linkEmptyLines}
+                      listItemRenderer={this.renderListItem}
+                      swapItems={this.swapLinkedItems}
+                      rowResults={rowResults}
+          />
         </div>
-        {(!loading && noForeignRows)
-          ? null
-          : (
-            <div className="unlinked-items" onMouseEnter={this.setActiveBox(UNLINKED_ITEMS)}>
-              {unlinkedRows}
-            </div>
-          )}
+        <UnlinkedRows loading={loading}
+                      noForeignRows={noForeignRows}
+                      rowCount={f.size(rowResults.unlinked) + 1}
+                      renderRows={this.renderListItem}
+                      scrollToIndex={this.state.selectedId.unlinked}
+                      setActiveBox={this.setActiveBox}
+                      activeBox={UNLINKED_ITEMS}
+                      selectedMode={this.state.selectedMode}
+        />
         {(this.canAddLink())
           ? this.renderRowCreator(noForeignRows && !loading)
           : null
