@@ -15,7 +15,6 @@ import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificat
 import Header from "../../overlay/Header";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
-import SvgIcon from "../../helperComponents/SvgIcon";
 import SearchBar from "./LinkOverlaySearchBar";
 import {changeCell} from "../../../models/Tables";
 import LinkItem from "./LinkItem";
@@ -23,7 +22,7 @@ import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 import Raven from "raven-js";
-import {LinkedRows, LinkStatus, UnlinkedRows} from "./LinkOverlayFragments";
+import {LinkedRows, LinkStatus, RowCreator, UnlinkedRows} from "./LinkOverlayFragments";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -248,7 +247,7 @@ class LinkOverlay extends Component {
       }),
       f.zip(cell.value, cell.displayValue)
     );
-    this.allRowResults = f.uniqBy(f.get("id"), [...linkedRows, ...rowResult]);
+    this.updateRowResults(() => f.uniqBy(f.get("id"), [...linkedRows, ...rowResult]));
     // we always rebuild the row names, also to prevent wrong display names when switching languages
     this.setState({
       // we show all the rows
@@ -264,7 +263,7 @@ class LinkOverlay extends Component {
     }
     const oldValueIdx = f.findIndex(f.matchesProperty("id", row.id), this.allRowResults);
     const newLink = f.assoc("id", row.id, f.pick(["value", "displayValue"], cell));
-    this.allRowResults = f.assoc(oldValueIdx, newLink, this.allRowResults);
+    this.updateRowResults(f.assoc(oldValueIdx, newLink));
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
     });
@@ -335,7 +334,7 @@ class LinkOverlay extends Component {
       : [...cell.value, link];
 
     if (!shouldLink && f.get(["constraint", "deleteCascade"], cell.column)) {
-      this.allRowResults = withoutLink(this.allRowResults);
+      this.updateRowResults(withoutLink);
     }
 
     ActionCreator.changeCell(cell, links,
@@ -432,39 +431,8 @@ class LinkOverlay extends Component {
     this.setState({rowResults: f.assoc("linked", rearranged, this.state.rowResults)});
   };
 
-  renderRowCreator = (shiftUp = false) => {
-    const {cell, cell: {column: {displayName, toTable}}, langtag} = this.props;
-    const addAndLinkRow = () => {
-      const linkNewRow = (row = {}) => {
-        const link = {
-          id: row.id,
-          value: null,
-          displayValue: {}
-        };
-        this.allRowResults = [...this.allRowResults, link];
-        this.addLinkValue(false, link);
-
-        loadAndOpenEntityView({
-          tables: cell.tables,
-          tableId: toTable,
-          rowId: row.id
-        }, langtag);
-      };
-      ActionCreator.addRow(toTable, linkNewRow);
-    };
-
-    const linkTableName = displayName[langtag] || displayName[DefaultLangtag] || "";
-
-    return (this.canAddLink())
-      ? (
-        <div className={`row-creator-button${(shiftUp) ? " shift-up" : ""}`}
-             onClick={addAndLinkRow}
-        >
-          <SvgIcon icon="plus" containerClasses="color-primary" />
-          <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>
-        </div>
-      )
-      : null;
+  updateRowResults = (fn) => {
+    this.allRowResults = fn(this.allRowResults);
   };
 
   render = () => {
@@ -523,10 +491,13 @@ class LinkOverlay extends Component {
                       activeBox={UNLINKED_ITEMS}
                       selectedMode={this.state.selectedMode}
         />
-        {(this.canAddLink())
-          ? this.renderRowCreator(noForeignRows && !loading)
-          : null
-        }
+        <RowCreator langtag={langtag}
+                    canAddLinks={this.canAddLink()}
+                    cell={cell}
+                    shiftUp={noForeignRows && !loading}
+                    updateRowResults={this.updateRowResults}
+                    addLink={this.addLinkValue}
+        />
       </div>
     );
   }
