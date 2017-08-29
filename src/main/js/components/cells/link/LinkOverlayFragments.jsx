@@ -62,7 +62,7 @@ const UnlinkedRowsFrag = (
               height={height}
               rowCount={rowCount}
               rowHeight={40}
-              scrollToInex={scrollToIndex}
+              scrollToIndex={scrollToIndex}
               rowRenderer={rowRenderer}
               selectedMode={selectedMode}
         />
