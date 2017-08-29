@@ -137,17 +137,10 @@ export default class VirtualTable extends PureComponent {
   renderEmptyTable = () => null;
 
   cellRenderer = (gridData) => {
-    /*
-    const columns = this.props.columns.filter((col, idx) => idx === 0 || col.visible);
-    const val = f.cond([
-      [({columnIndex, rowIndex}) => columnIndex === 0 && rowIndex === 0, f.always("ID")],
-      [f.matchesProperty("rowIndex", 0), ({columnIndex}) => columns[columnIndex - 1].displayName["de"]],
-      [({rowIndex}) => f.isNil(this.props.rows.at(rowIndex)), f.always("<loading>")],
-      [f.matchesProperty("columnIndex", 0), ({rowIndex}) => "row " + this.props.rows.at(rowIndex - 1).id],
-      [f.stubTrue, ({rowIndex, columnIndex}) => maybe(this.props.rows.at(rowIndex - 1).cells.models.filter(this.filterVisibleCells)[columnIndex - 1].displayValue["de"]).method("toString").getOrElse("<Link>")]
-    ])(gridData); */
     return (
-      <div {...f.pick(["style", "key"], gridData)}>
+      <div style={gridData.style}
+           key={gridData.key}
+      >
         {this.renderGridCell(gridData)}
       </div>
     );
@@ -267,19 +260,16 @@ export default class VirtualTable extends PureComponent {
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = !!this.props.selectedCell && cell.id === this.props.selectedCell.id;
     const isEditing = isSelected && this.props.selectedCellEditing;
-
-    // key={cell.id}
     return (
-      <Cell
-        cell={cell}
-        langtag={langtag}
-        row={row}
-        table={table}
-        annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
-        isExpandedCell={false}
-        selected={isSelected}
-        inSelectedRow={isInSelectedRow}
-        editing={isEditing}
+      <Cell cell={cell}
+            langtag={langtag}
+            row={row}
+            table={table}
+            annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
+            isExpandedCell={false}
+            selected={isSelected}
+            inSelectedRow={isInSelectedRow}
+            editing={isEditing}
       />
     );
   };
@@ -347,17 +337,17 @@ export default class VirtualTable extends PureComponent {
     // This hideous C-style loop avoids allocating and garbage-collecting
     // (visibleCols + overscanCol) * (visibleRows + overscanRows) arrays in
     // a performance-critical section, thus considerably speeding up rendering.
-    let visibleColIdx = 0;
-    let totalColIdx = 0;
-    for (; totalColIdx < cells.length; ++totalColIdx) {
-      if (visibleColIdx === columnIndex) {
+    this.getCell.visibleColIdx = -1;
+    this.getCell.totalColIdx = 0;
+    for (; this.getCell.totalColIdx < cells.length; ++this.getCell.totalColIdx) {
+      if (columns.models[this.getCell.totalColIdx].visible || this.getCell.totalColIdx === 0) {
+        ++this.getCell.visibleColIdx;
+      }
+      if (this.getCell.visibleColIdx === columnIndex) {
         break;
       }
-      if (columns.models[totalColIdx].visible || totalColIdx === 0) {
-        ++visibleColIdx;
-      }
     }
-    return cells[totalColIdx];
+    return cells[this.getCell.totalColIdx];
     // Original implementation which eats too much CPU-time
 //    const visibleCells = cells.models.filter(this.filterVisibleCells);
 //    return visibleCells[columnIndex];
