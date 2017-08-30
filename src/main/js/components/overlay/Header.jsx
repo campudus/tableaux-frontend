@@ -55,7 +55,7 @@ class Header extends Component {
       "header-wrapper",
       {
         "with-buttons": actions,
-        "with-components": components
+        "with-components": components || this.props.children
       }
     );
     const [pos, neg, ntr] = f.props(["positive", "negative", "neutral"], actions);
@@ -102,6 +102,7 @@ class Header extends Component {
         {buttonsItem}
         {children
           .map((el, idx) => React.cloneElement(el, {id: this.props.id, key: idx}))}
+        {this.props.children}
       </div>
     );
   }
