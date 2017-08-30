@@ -64,7 +64,7 @@ class GenericContextMenu extends React.Component {
 GenericContextMenu.propTypes = {
   x: React.PropTypes.number,
   y: React.PropTypes.number,
-  menuItems: React.PropTypes.element.isRequired,
+  menuItems: React.PropTypes.element,
   offset: React.PropTypes.number,
   alignment: React.PropTypes.string,
   minWidth: React.PropTypes.number
