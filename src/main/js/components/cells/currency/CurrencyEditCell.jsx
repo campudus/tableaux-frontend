@@ -3,7 +3,7 @@ import CurrencyRow from "./CurrencyRow";
 import {getCurrencyWithCountry} from "./currencyHelper";
 import * as f from "lodash/fp";
 
-export default class CurrencyEditCell extends React.Component {
+export default class CurrencyEditCell extends React.PureComponent {
 
   static propTypes = {
     cell: React.PropTypes.object.isRequired,
@@ -61,11 +61,10 @@ export default class CurrencyEditCell extends React.Component {
     this.saveCell();
   }
 
-  updateCurrencyValue = (country) => value => {
-    window.devLog(console.log("Changing value for", country, "to", value));
+  updateCurrencyValue = (country, value) => {
     const {currencyValues} = this.state;
     const newValue = f.assoc(country, value, currencyValues);
-    this.setState({currencyValues: newValue}, () => console.log(this.state));
+    this.setState({currencyValues: newValue});
   };
 
   render() {
@@ -81,7 +80,7 @@ export default class CurrencyEditCell extends React.Component {
                             country={countryCode}
                             isFallbackValue={!f.get(["value", countryCode], cell)}
                             countryCurrencyValue={currencyValue}
-                            updateValue={this.updateCurrencyValue(countryCode)}
+                            updateValue={this.updateCurrencyValue}
         />;
       }
     );

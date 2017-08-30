@@ -1,10 +1,11 @@
-import React, {Component, PropTypes} from "react";
+import React, {PureComponent, PropTypes} from "react";
 import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import {splitPriceDecimals} from "./currencyHelper";
 import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";
 import {maybe} from "../../../helpers/functools";
+import f from "lodash/fp";
 
-export default class CurrencyRow extends Component {
+export default class CurrencyRow extends PureComponent {
 
   static propTypes = {
     country: PropTypes.string.isRequired,
@@ -15,7 +16,11 @@ export default class CurrencyRow extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {modified: false};
+    this.state = {
+      modified: false,
+      caretPosition: null,
+      caretElement: null
+    };
   }
 
   // returns float 0 when nothing has ever been entered for this country
@@ -28,13 +33,34 @@ export default class CurrencyRow extends Component {
 
   onKeyDownInput = (e) => {
     if (!isAllowedForNumberInput(e)) {
+      this.setState({caretPosition: null});
       e.preventDefault();
+    } else {
+      const input = e.target;
+      const modifier = f.cond([
+        [f.eq("Backspace"), f.always(-1)],
+        [f.eq("Delete"), f.always(0)],
+        [f.inRange("0", "9"), f.always(1)],
+        [f.stubTrue, f.always(null)]
+      ])(e.key);
+      const caretPosition = (f.isNil(modifier))
+        ? null
+        : input.selectionStart + modifier;
+      this.setState({
+        caretPosition,
+        caretElement: input
+      });
     }
   };
 
   currencyInputChanged = (e) => {
     this.setState({modified: true});
-    this.props.updateValue(this.mergeSplittedCurrencyValues());
+    this.props.updateValue(this.props.country, this.mergeSplittedCurrencyValues());
+    const {caretElement, caretPosition} = this.state;
+    if (!f.isNil(caretPosition)) {
+      console.log("Setting caret to", caretPosition)
+      caretElement.setSelectionRange(caretPosition, caretPosition);
+    }
   };
 
   handleFocus = (selector) => () => {
@@ -43,18 +69,26 @@ export default class CurrencyRow extends Component {
     maybe(el).method("setSelectionRange", l, l);
   };
 
+  inputRef = (id, el) => {
+    this[id] = el;
+    this.handleFocus(id);
+  };
+
+  currencyIntegerRef = (node) => this.inputRef("currencyInteger", node);
+  currencyDecimalsRef = (node) => this.inputRef("currencyDecimals", node);
+
   renderCurrencyValue(value) {
     const splittedValue = splitPriceDecimals(value);
 
     return (
       <div>
-        <input ref={ el => { this.currencyInteger = el; this.handleFocus("currencyInteger")(); }}
+        <input ref={this.currencyIntegerRef}
                className="currency-input integer" type="text" value={splittedValue[0]}
                onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged}
                onFocus={this.handleFocus("currencyInteger")}
         />
         <span className="delimiter">,</span>
-        <input ref={ el => { this.currencyDecimals = el; this.handleFocus("currencyDecimals")(); }}
+        <input ref={this.currencyDecimalsRef}
                onChange={this.currencyInputChanged} className="currency-input decimals"
                type="text" value={splittedValue[1]}
                onKeyDown={this.onKeyDownInput}
