@@ -204,7 +204,7 @@ const FileItem = translate(["media", "common"])(
 
     return (
       <div className="file-wrapper"
-           style={style}
+           style={f.assoc("width", "calc(100% - 20px)", style)}
       >
         <div className={isLinked ? "file is-linked" : "file"}>
           <a onClick={toggleAttachment}
