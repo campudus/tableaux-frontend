@@ -120,22 +120,36 @@ class AttachmentOverlay extends Component {
       : null;
   };
 
+  isLinked = (file) => {
+    f.compose(
+      f.contains(file.uuid),
+      f.map(f.get("uuid"))
+    )(this.props.cell.value);
+  };
+
   render() {
     const {t} = this.props;
+    const {folder} = this.state;
 
-    const backButton = (this.state.folder && this.state.folder.name !== "root")
+    const linkedFiles = f.compose(
+      f.join(";"),
+      f.map((str) => str.substr(0, 8)),
+      f.map(f.get("uuid"))
+    )(this.props.cell.value);
+
+    const backButton = (folder && folder.name !== "root")
       ? (
-        <div className="back active" key={this.state.folder.id}>
-          <a onClick={this.navigateFolder(this.state.folder.parent)}>
+        <div className="back active" key={folder.id}>
+          <a onClick={this.navigateFolder(folder.parent)}>
             <i className="fa fa-chevron-left" />
             {t("folder_back")}
           </a>
-          <span className="folder-name">{this.state.folder.name}</span>
+          <span className="folder-name">{folder.name}</span>
         </div>
       )
-      : (this.state.folder)
+      : (folder)
         ? (
-          <div className="back" key={this.state.folder.id}>
+          <div className="back" key={folder.id}>
             <div />
             <span className="folder-name">{t("root_folder_name")}</span>
           </div>
@@ -143,14 +157,14 @@ class AttachmentOverlay extends Component {
         : null;
 
     // check for empty obj or map fails
-    const listDisplay = (this.state.folder)
+    const listDisplay = (folder)
       ? (
         <div className="folder-file-list">
           <div className="folder-navigation">
             {backButton}
             <div className="folder-list-wrapper">
               <ul className="folder-list">
-                {this.state.folder.subfolders.map((subfolder) => {
+                {folder.subfolders.map((subfolder) => {
                   return <li className="" key={subfolder.id} onClick={this.navigateFolder(subfolder.id)}>
                     <a><i className="icon fa fa-folder-open"></i> {subfolder.name}</a>
                   </li>;
@@ -165,8 +179,9 @@ class AttachmentOverlay extends Component {
                       deferredMeasurementCache={this._cache}
                       rowHeight={this._cache.rowHeight}
                       rowRenderer={this.renderFileItem}
-                      rowCount={f.size(this.state.folder.files)}
+                      rowCount={f.size(folder.files)}
                       width={width}
+                      linkedFiles={linkedFiles}
                 />
               )}
             </AutoSizer>
