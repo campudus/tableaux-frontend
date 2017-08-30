@@ -23,6 +23,9 @@ import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 import Raven from "raven-js";
 import {LinkedRows, LinkStatus, RowCreator, UnlinkedRows} from "./LinkOverlayFragments";
+import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../models/Rows";
+import {Promise} from "es6-promise";
+const throat = require("throat")(Promise);
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -192,29 +195,74 @@ class LinkOverlay extends Component {
       .then(this.fetchForeignRowsJson);
   };
 
-  fetchForeignRowsJson = () => new Promise(
-    (resolve, reject) => {
-      this.setState({loading: true});
-      const {cell} = this.props;
-      const toTableId = cell.column.toTable;
-      const toTable = cell.tables.get(toTableId);
+  fetchForeignRowsJson = () => {
+    this.setState({loading: true});
+    const {cell} = this.props;
+    const toTableId = cell.column.toTable;
+    const toTable = cell.tables.get(toTableId);
+    const tableUrl = apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`);
 
-      const rowXhr = Request
-        .get(apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/foreignRows`))
-        .end(
-          (err, response) => {
-            if (err) {
-              reject(err);
-            } else {
-              const obj = JSON.parse(response.text);
-              const rows = f.map(mkLinkDisplayItem(toTable), obj.rows);
-              this.setRowResult(rows, true);
-            }
+    const processHead = (response, err) => new Promise(
+      (resolve, reject) => {
+        if (err) {
+          reject(err);
+        } else {
+          const obj = JSON.parse(response.text);
+          const rows = f.map(mkLinkDisplayItem(toTable), obj.rows);
+          this.setRowResult(rows, true);
+          const pages = (obj.page.totalSize > INITIAL_PAGE_SIZE)
+            ? 1 + Math.ceil((obj.page.totalSize - INITIAL_PAGE_SIZE) / PAGE_SIZE)
+            : 1;
+          resolve({pages});
+        }
+      }
+    );
+
+    const fetchTail = ({pages}) => {
+      if (pages === 1) {
+        return;
+      }
+
+      const processPage = f.compose(
+        this.addRowResults,
+        f.map(mkLinkDisplayItem(toTable)),
+        f.get("rows"),
+        JSON.parse,
+        f.get("text")
+      );
+
+      const fetchPage = throat(
+        MAX_CONCURRENT_PAGES,
+        (page) => new Promise(
+          (resolve, reject) => {
+            const xhr = Request
+              .get(tableUrl)
+              .query({
+                offset: INITIAL_PAGE_SIZE + (page - 2) * PAGE_SIZE,
+                limit: PAGE_SIZE
+              });
+            this.props.addAbortableXhrRequest(xhr);
+            xhr.then(processPage)
+               .then(resolve);
           }
-        );
-      this.props.addAbortableXhrRequest(rowXhr);
-    }
-  );
+        )
+      );
+
+      Promise.all(
+        f.range(2, pages + 1).map(fetchPage)
+      );
+    };
+
+    const rowXhr = Request
+      .get(tableUrl)
+      .query({
+        offset: 0,
+        limit: INITIAL_PAGE_SIZE
+      })
+      .then(processHead)
+      .then(fetchTail);
+    this.props.addAbortableXhrRequest(rowXhr);
+  };
 
   getCurrentSearchValue = () => {
     const {filterValue, filterMode} = this.state;
@@ -235,9 +283,7 @@ class LinkOverlay extends Component {
     });
   };
 
-  // we set the row result depending if a search value is set
-  setRowResult = (rowResult, fromServer) => {
-    // just set the models, because we filter it later which also returns the models.
+  setRowResult = (rowResult) => {
     const {cell} = this.props;
     const linkedRows = f.map(
       ([cellValue, cellDisplayValue]) => ({
@@ -248,13 +294,21 @@ class LinkOverlay extends Component {
       f.zip(cell.value, cell.displayValue)
     );
     this.updateRowResults(() => f.uniqBy(f.get("id"), [...linkedRows, ...rowResult]));
-    // we always rebuild the row names, also to prevent wrong display names when switching languages
     this.setState({
-      // we show all the rows
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       loading: false
     });
   };
+
+  addRowResults = (rows) => new Promise(
+    (resolve) => {
+      this.updateRowResults((knownRows) => f.uniqBy(f.get("id"), [...knownRows, ...rows]));
+      this.setState({
+        rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
+      });
+      resolve();
+    }
+  );
 
   updateLinkValues = ({cell, row = {}}) => {
     const thisCell = this.props.cell;

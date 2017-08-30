@@ -9,7 +9,7 @@ const throat = require("throat")(Promise); // throat ignores the global Promise 
 
 export const INITIAL_PAGE_SIZE = 30;
 export const PAGE_SIZE = 500;
-const MAX_CONCURRENT_PAGES = 2;
+export const MAX_CONCURRENT_PAGES = 2;
 
 const Rows = Collection.extend({
 
@@ -94,9 +94,9 @@ const Rows = Collection.extend({
     const fetchPage = (n) => new Promise(
       (resolve, reject) => {
         const pageLimits = this.calculatePage(n);
-        const url = this.url();
         Request
-          .get(`${url}?offset=${pageLimits.offset}&limit=${pageLimits.limit}`)
+          .get(this.url())
+          .query(pageLimits)
           .end(
             (err, response) => {
               if (err) {
