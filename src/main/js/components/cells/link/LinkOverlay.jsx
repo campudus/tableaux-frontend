@@ -25,6 +25,7 @@ import Raven from "raven-js";
 import {LinkedRows, LinkStatus, RowCreator, UnlinkedRows} from "./LinkOverlayFragments";
 import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../models/Rows";
 import {Promise} from "es6-promise";
+import Spinner from "../../header/Spinner";
 const throat = require("throat")(Promise);
 
 const MAIN_BUTTON = 0;
@@ -222,7 +223,7 @@ class LinkOverlay extends Component {
       if (pages === 1) {
         return;
       }
-
+      this.props.updateSharedData(f.always({loading: true}));
       const processPage = f.compose(
         this.addRowResults,
         f.map(mkLinkDisplayItem(toTable)),
@@ -250,7 +251,9 @@ class LinkOverlay extends Component {
 
       Promise.all(
         f.range(2, pages + 1).map(fetchPage)
-      );
+      )
+             .then(() => this.props.updateSharedData(f.always({loading: false})))
+             .catch(() => this.props.updateSharedData(f.always({loading: false})));
     };
 
     const rowXhr = Request
@@ -564,13 +567,15 @@ export const openLinkOverlay = (cell, langtag) => {
 
   const LinkOverlayHeader = connectToAmpersand(
     (props) => {
-      const {langtag, cell, watch} = props;
+      const {langtag, cell, watch, sharedData: {loading}} = props;
       watch(cell.row.cells.at(0), {force: true});
       return (
         <Header context={tableName} id={props.id}
                 title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
-                components={<SearchBar langtag={langtag} />}
-        />
+        >
+          <SearchBar langtag={langtag} />,
+          <Spinner isLoading={loading} />
+        </Header>
       );
     }
   );

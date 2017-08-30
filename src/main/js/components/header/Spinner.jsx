@@ -41,7 +41,7 @@ export default class Spinner extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    var shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading;
+    const shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading;
     return shouldRenderStateUpdate;
   }
 
@@ -56,6 +56,12 @@ export default class Spinner extends React.Component {
 
   spinnerOff() {
     this.setState({isLoading: false});
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isLoading !== this.props.isLoading) {
+      this.setState({isLoading: nextProps.isLoading});
+    }
   }
 
   renderSpinner() {

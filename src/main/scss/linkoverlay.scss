@@ -4,6 +4,12 @@
 
   .overlay-wrapper.link-overlay {
 
+    .header-wrapper .Tableaux-Spinner {
+      grid-column: 5;
+      -ms-grid-column: 5;
+      position: relative;
+    }
+
     .link-overlay {
       display: flex;
       height: 100%;
