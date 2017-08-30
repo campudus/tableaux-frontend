@@ -105,7 +105,6 @@ class Table extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log("Table did update.");
     // When overlay is open we don't want anything to force focus inside the table
     if (!this.props.overlayOpen) {
       // Just update when used with keyboard or when clicking explicitly on a cell

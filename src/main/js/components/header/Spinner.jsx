@@ -3,6 +3,7 @@ import Loader from "react-loader";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import TableauxConstants from "../../constants/TableauxConstants";
 import ReactCSSTransitionGroup from "react-addons-css-transition-group";
+import {merge} from "lodash/fp";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -66,8 +67,13 @@ export default class Spinner extends React.Component {
 
   renderSpinner() {
     if (this.state.isLoading) {
+      const {customOptions} = this.props;
+      const options = (customOptions)
+      ? merge(Spinner.spinnerOptions, customOptions)
+      : Spinner.spinnerOptions;
+      devLog("Spinner options:", options, customOptions)
       this.spinnerElement = this.spinnerElement
-        || <Loader loaded={false} options={Spinner.spinnerOptions} className="actual-spinner"/>;
+        || <Loader loaded={false} options={options} className="actual-spinner"/>;
       return (
         <div key="spinnerWrapper" className="spinner">
           {this.spinnerElement}
@@ -89,5 +95,8 @@ export default class Spinner extends React.Component {
   }
 }
 
-Spinner.propTypes = {isLoading: React.PropTypes.bool};
+Spinner.propTypes = {
+  isLoading: React.PropTypes.bool,
+  customOptions: React.PropTypes.object
+};
 Spinner.defaultProps = {isLoading: false};

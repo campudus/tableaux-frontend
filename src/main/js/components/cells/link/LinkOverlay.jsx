@@ -574,7 +574,7 @@ export const openLinkOverlay = (cell, langtag) => {
                 title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
         >
           <SearchBar langtag={langtag} />,
-          <Spinner isLoading={loading} />
+          <Spinner isLoading={loading} customOptions={{color: "#fff"}} />
         </Header>
       );
     }
