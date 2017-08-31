@@ -19,7 +19,7 @@ import VirtualTable from "./VirtualTable";
 
 @connectToAmpersand
 @listensToClickOutside
-class Table extends React.PureComponent {
+class Table extends React.Component { // PureComponent will not react to updates called from connectToAmpersand
 
   /**
    * This is an anti-pattern on purpose
