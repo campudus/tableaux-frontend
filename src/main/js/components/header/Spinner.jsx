@@ -71,7 +71,6 @@ export default class Spinner extends React.Component {
       const options = (customOptions)
       ? merge(Spinner.spinnerOptions, customOptions)
       : Spinner.spinnerOptions;
-      devLog("Spinner options:", options, customOptions)
       this.spinnerElement = this.spinnerElement
         || <Loader loaded={false} options={options} className="actual-spinner"/>;
       return (
