@@ -546,6 +546,7 @@ class LinkOverlay extends Component {
                       scrollToIndex={this.state.selectedId.unlinked}
                       setActiveBox={this.setActiveBox}
                       activeBox={UNLINKED_ITEMS}
+                      selectedBox={this.state.activeBox}
                       selectedMode={this.state.selectedMode}
         />
         <RowCreator langtag={langtag}

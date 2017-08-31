@@ -50,7 +50,8 @@ const UnlinkedRowsFrag = (
     rowRenderer,
     noRowsRenderer,
     scrollToIndex,
-    selectedMode
+    selectedMode,
+    selectedBox
   }
 ) => (
   <div className="unlinked-items"
@@ -65,6 +66,7 @@ const UnlinkedRowsFrag = (
               scrollToIndex={scrollToIndex}
               rowRenderer={rowRenderer}
               selectedMode={selectedMode}
+              selectedBox={selectedBox}
         />
       )
       }
