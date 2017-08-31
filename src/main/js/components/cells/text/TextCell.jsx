@@ -36,7 +36,7 @@ class TextCell extends PureComponent {
       cell,
       value: valueToSave
     })
-      .then(() => contentChanged(cell, langtag, oldValue));
+      .then(contentChanged(cell, langtag, oldValue));
     ActionCreator.toggleCellEditing({editing: false});
   };
 

@@ -4,10 +4,9 @@ import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
 import TextCell from "./TextCell";
-import {contentChanged} from "../Cell";
 
 const ShortTextCell = (props) => {
-  const {cell, cell: {isMultiLanguage}, editing, selected, langtag, setCellKeyboardShortcuts} = props;
+  const {cell, cell: {isMultiLanguage}, contentChanged, editing, selected, langtag, setCellKeyboardShortcuts} = props;
 
   const handleEditDone = (newValue) => {
     const oldValue = getValue();
@@ -20,7 +19,7 @@ const ShortTextCell = (props) => {
       : newValue;
 
     changeCell({cell, value: valueToSave})
-      .then(() => contentChanged(cell, langtag, oldValue));
+      .then(contentChanged(cell, langtag, oldValue));
     ActionCreator.toggleCellEditing({editing: false});
   };
 

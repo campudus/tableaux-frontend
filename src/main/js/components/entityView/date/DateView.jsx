@@ -90,7 +90,7 @@ class DateView extends Component {
       ? {[langtag]: value}
       : value;
     changeCell({cell, value: changes})
-      .then(() => contentChanged(cell, langtag, oldValue));
+      .then(contentChanged(cell, langtag, oldValue));
   };
 
   handleChange = moment => {

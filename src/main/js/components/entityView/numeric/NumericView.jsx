@@ -88,7 +88,7 @@ class NumericView extends React.Component {
     ActionCreator.changeCell(
       cell,
       ((cell.isMultiLanguage) ? {[langtag]: value} : value),
-      () => contentChanged(cell, langtag, this.originalValue)
+      contentChanged(cell, langtag, this.originalValue)
     );
     this.originalValue = value;
     this.setState({dirty: false});
