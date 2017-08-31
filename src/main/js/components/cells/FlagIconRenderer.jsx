@@ -48,7 +48,7 @@ const FlagIconRenderer = onlyUpdateForKeys(["langtags", ...knownFlags, "langtag"
         <FlagDot flag="translation" show={isTranslationNeeded} />
         <FlagDot flag="important" show={annotations.important} />
         <FlagDot flag="check-me" show={annotations["check-me"]} />
-        <FlagDot flag="postpone" show={annotations.postopne} />
+        <FlagDot flag="postpone" show={annotations.postpone} />
       </div>
     );
   }
