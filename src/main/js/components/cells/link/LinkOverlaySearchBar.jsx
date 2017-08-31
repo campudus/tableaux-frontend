@@ -11,7 +11,8 @@ import listensToClickOutside from "react-onclickoutside";
 @listensToClickOutside
 class SearchBar extends Component {
   static propTypes = {
-    langtag: PropTypes.string.isRequired
+    langtag: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired
   };
 
   constructor(props) {

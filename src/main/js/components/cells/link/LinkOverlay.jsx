@@ -567,13 +567,13 @@ export const openLinkOverlay = (cell, langtag) => {
 
   const LinkOverlayHeader = connectToAmpersand(
     (props) => {
-      const {langtag, cell, watch, sharedData: {loading}} = props;
+      const {langtag, cell, watch, sharedData: {loading}, id} = props;
       watch(cell.row.cells.at(0), {force: true});
       return (
         <Header context={tableName} id={props.id}
                 title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
         >
-          <SearchBar langtag={langtag} />,
+          <SearchBar langtag={langtag} id={id} />,
           <Spinner isLoading={loading} customOptions={{color: "#eee"}} />
         </Header>
       );
