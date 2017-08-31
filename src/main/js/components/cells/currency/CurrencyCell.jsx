@@ -6,12 +6,10 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {getCurrencyWithCountry, splitPriceDecimals} from "./currencyHelper";
 import onClickOutside from "react-onclickoutside";
 import {translate} from "react-i18next";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
 @translate(["table"])
-@connectToAmpersand
 export default class CurrencyCell extends React.PureComponent {
 
   static propTypes = {

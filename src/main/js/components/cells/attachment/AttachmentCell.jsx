@@ -9,6 +9,7 @@ import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificat
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {maybe} from "../../../helpers/functools";
+import {pure} from "recompose";
 
 const AttachmentCell = (props) => {
   const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = props;
@@ -85,4 +86,4 @@ AttachmentCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func.isRequired
 };
 
-module.exports = AttachmentCell;
+export default pure(AttachmentCell);

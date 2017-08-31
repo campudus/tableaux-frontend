@@ -3,6 +3,7 @@ import NumericEditCell from "./NumericEditCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import {prop, isNil} from "lodash/fp";
 import {changeCell} from "../../../models/Tables";
+import {pure} from "recompose";
 
 const NumericCell = (props) => {
   const {cell, langtag, contentChanged, editing, setCellKeyboardShortcuts} = props;
@@ -16,7 +17,7 @@ const NumericCell = (props) => {
     const valueToSave = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    changeCell({cell, value: valueToSave}).then(() => contentChanged(cell, langtag));
+    changeCell({cell, value: valueToSave}).then(contentChanged(cell, langtag, oldValue));
     ActionCreator.toggleCellEditing({editing: false});
   };
 
@@ -41,4 +42,4 @@ NumericCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-export default NumericCell;
+export default pure(NumericCell);

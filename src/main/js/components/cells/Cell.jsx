@@ -21,7 +21,7 @@ import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} fro
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/functools";
 import FlagIconRenderer from "./FlagIconRenderer";
-import {branch, compose, renderComponent, renderNothing, withHandlers} from "recompose";
+import {branch, compose, pure, renderComponent, renderNothing, withHandlers} from "recompose";
 
 const ExpandCorner = compose(
   branch(
@@ -226,7 +226,8 @@ class Cell extends React.PureComponent {
         <CellKind cell={cell} langtag={langtag}
                   selected={selected} inSelectedRow={inSelectedRow}
                   editing={cell.isEditable && editing}
-                  contentChanged={contentChanged(cell, langtag)}
+                  value={(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
+                  contentChanged={contentChanged}
                   setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
         />
         <FlagIconRenderer cell={cell}
@@ -280,5 +281,5 @@ const RepeaterCell = withHandlers(
 
 export default branch(
   isRepeaterCell,
-  renderComponent(RepeaterCell)
+  renderComponent(pure(RepeaterCell))
 )(Cell);
