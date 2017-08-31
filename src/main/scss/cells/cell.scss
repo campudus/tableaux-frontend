@@ -132,6 +132,10 @@
     flex: 1;
   }
 
+  &.editing.cell-currency, &.cell-attachment.selected, &.cell-link.selected {
+      height: auto;
+  }
+
   .annotation-flag-icons {
     position: absolute;
     right: 3px;
