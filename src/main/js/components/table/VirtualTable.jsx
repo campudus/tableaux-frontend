@@ -317,7 +317,7 @@ export default class VirtualTable extends PureComponent {
     const {table} = this.props;
     if (columnIndex === 1) {
       return (
-        <AddNewRowButton table={table} />
+        <AddNewRowButton table={table} onAdd={this.jumpToLastRow}/>
       );
     }
     return (

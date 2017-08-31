@@ -1,30 +1,38 @@
-import React from "react";
+import React, {PropTypes} from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import {translate} from "react-i18next";
+import {compose, pure, withHandlers, setPropTypes} from "recompose";
 
-class NewRow extends React.Component {
+const withFunctionality = compose(
+  pure,
+  setPropTypes(
+    {
+      table: PropTypes.object.isRequired,
+      onAdd: PropTypes.func
+    }
+  ),
+  withHandlers(
+    {
+      addNewRow: (props) => () => {
+        const tableId = props.table.getId();
+        ActionCreator.addRow(tableId, props.onAdd);
+      }
+    }
+  ),
+  translate(["table"])
+);
 
-  addRow = () => {
-    var tableId = this.props.table.getId();
-    ActionCreator.addRow(tableId);
-  };
-
-  render = () => {
-    var t = this.props.t;
-    return (
-      <div className="new-row">
-        <a href="#" className="button new-row-inner" onClick={this.addRow}>
-          <i className="fa fa-plus-circle">
-          </i>
-          <span>{t("add_new_row")}</span>
-        </a>
-      </div>
-    );
-  }
+const NewRowButton = (props) => {
+  const {t, addNewRow} = props;
+  return (
+    <div className="new-row">
+      <a href="#" className="button new-row-inner" onClick={addNewRow}>
+        <i className="fa fa-plus-circle">
+        </i>
+        <span>{t("add_new_row")}</span>
+      </a>
+    </div>
+  );
 };
 
-NewRow.propTypes = {
-  table: React.PropTypes.object.isRequired
-};
-
-module.exports = translate(["table"])(NewRow);
+export default withFunctionality(NewRowButton);
