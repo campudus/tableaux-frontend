@@ -15,7 +15,7 @@ import {either, maybe} from "../../helpers/functools";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 
-import MultiGrid from "./GrudGrid";
+import MultiGrid, {Grid} from "./GrudGrid";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -436,11 +436,13 @@ export default class VirtualTable extends PureComponent {
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
 
+    const GridType = (columnCount < 3) ? Grid : MultiGrid;
+
     return (
       <AutoSizer>
         {
           ({height, width}) => (
-            <MultiGrid ref={this.storeGridElement}
+            <GridType ref={this.storeGridElement}
                        className="data-wrapper"
                        cellRenderer={this.cellRenderer}
                        columnCount={columnCount}
