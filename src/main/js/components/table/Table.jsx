@@ -172,7 +172,7 @@ class Table extends React.Component { // PureComponent will not react to updates
           <VirtualTable key={`virtual-table-${table.id}`}
                         columns={columns} ref={this.findAndStoreTableDiv}
                         rows={rows}
-                        rowIdKey={rowKeys}
+                        rowKeys={rowKeys}
                         columnKeys={this.props.columnKeys}
                         table={table}
                         tables={tables}
