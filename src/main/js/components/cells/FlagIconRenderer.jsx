@@ -3,7 +3,6 @@ import {Langtags} from "../../constants/TableauxConstants";
 import {branch, compose, flattenProp, onlyUpdateForKeys, pure, renderNothing} from "recompose";
 import f from "lodash/fp";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
-import {spy} from "../../helpers/functools";
 
 const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
 
@@ -54,7 +53,7 @@ const FlagIconRenderer = onlyUpdateForKeys(["langtags", ...knownFlags, "langtag"
   }
 );
 
-const enhance = compose(
+const spreadProps = compose(
   flattenProp("annotations"),
   flattenProp("translationNeeded"),
   branch(
@@ -63,4 +62,4 @@ const enhance = compose(
   )
 );
 
-export default spy(enhance(FlagIconRenderer), "<FlagIconRenderer>");
+export default spreadProps(FlagIconRenderer);

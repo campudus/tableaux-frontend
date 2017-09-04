@@ -19,7 +19,6 @@ console.warn(
 const handleScrollLater = debounce(
   50,
   function (self, scrollPosition) {
-    devLog("Debounced scroll handler executing...")
     self._originalScrollHandler(scrollPosition);
   }
 );
@@ -59,14 +58,7 @@ scrollingEvents
     }
   );
 
-Grid.prototype.__originalScrollHandler = Grid.prototype.handleScrollEvent;
-
-Grid.prototype._originalScrollHandler = function (...params) {
-  if (ReactDOM.findDOMNode(this._scrollingContainer) === this._mainGridNode) {
-    console.log("OriginalScrollHandler")
-  }
-  this.__originalScrollHandler(...params);
-};
+Grid.prototype._originalScrollHandler = Grid.prototype.handleScrollEvent;
 
 Grid.prototype.handleScrollEvent = function (trigger) {
   if (!this._mainGridNode) {
@@ -154,4 +146,15 @@ class VanillaGrid extends Grid {
   handleScrollEvent = this._originalScrollHandler;
 }
 
-export {VanillaGrid as Grid};
+const tests = {
+  title: "React Virtualized hacks",
+  tests: [
+    ["is", 5, getScrollingVelocity, [[[0, 3], [4, 0]]]],
+    ["is", false, isDecelerating, [[1, 2]]],
+    ["is", true, isDecelerating, [[7, 5]]],
+    ["is", false, isDecelerating, [[15, 14]]],
+    ["is", true, isDecelerating, [[5, 5]]]
+  ]
+};
+
+export {VanillaGrid as Grid, tests};
