@@ -8,7 +8,7 @@ import {Grid, MultiGrid} from "react-virtualized";
 import f, {add, compose, debounce, noop, update} from "lodash/fp";
 import ReactDOM from "react-dom";
 import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
-import Bacon from "baconjs";
+import Rx from "rxjs";
 
 console.warn(
   "Importing this file will change the behaviour of \"react-virtualize\"'s Grid component by monkey-patching " +
@@ -24,48 +24,40 @@ const handleScrollLater = debounce(
   }
 );
 
-const scrollingEvents = new Bacon.Bus();
+const scrollingEvents = new Rx.Subject();
 const IMMEDIATE_RENDER_SPEED = 8;   // px/scroll event
-const IMMEDIATE_RENDER_FRAMES = 3;  // minimum number of frames with speed <= IMMEDIATE_RENDER_SPEED and speed not increasing
+const IMMEDIATE_RENDER_FRAMES = 3;  // minimum number of frames
 
-// Stream: scroll positions [x, y] -> combined scroll speed |[dx, dy]|
-const dx = scrollingEvents.diff(
-  [0, 0, performance.now()],
-  ([x1, y1, t1], [x2, y2, t2]) => {
-    const xx = [(x2 - x1), (y2 - y1)]
-      .map((x) => x * x)
-      .reduce(f.add);
-    return Math.sqrt(xx);
-  }
+const getScrollingVelocity = ([[x1, y1], [x2, y2]]) => { // implicit differentiation of position to velocity
+  const xx = [(x2 - x1), (y2 - y1)]
+    .map((x) => x * x)
+    .reduce(f.add);
+  return Math.sqrt(xx);
+};
+
+// implicitly differentiate velocity to get current scrolling acceleration, then
+// simultaneously test if velocity is below threshold and acceleration <= 0
+const isDecelerating = ([v1, v2]) => (
+  v2 <= v1
+  && v1 <= IMMEDIATE_RENDER_SPEED
+  && v2 <= IMMEDIATE_RENDER_SPEED
 );
 
-// Stream: scroll speed -> Bool: is speed decreasing?
-const decel = dx.diff(
-  0,
-  (v1, v2) => v2 <= v1
-);
-
-// Stream: (scroll speed x Bool: decrasing) -> void
-// Side effect: Immediately render when speed decreasing and total speed < 8px
-dx.sampledBy(
-    decel,
-    (v, decelerating) => decel && v < IMMEDIATE_RENDER_SPEED
-  )
-  .slidingWindow(IMMEDIATE_RENDER_FRAMES, IMMEDIATE_RENDER_FRAMES)
-  .onValue(
+// If during the last IMMEDIATE_RENDER_FRAMES scroll events scrolling speed was lower than IMMEDIATE_RENDER_SPEED
+// and no positive acceleration occurred, immediately render the visible portion of the table.
+scrollingEvents
+  .bufferCount(2, 1)
+  .map(getScrollingVelocity)
+  .bufferCount(2, 1)
+  .map(isDecelerating)
+  .bufferCount(IMMEDIATE_RENDER_FRAMES, 1)
+  .subscribe(
     (history) => {
       if (f.every(f.identity, history)) {
-        handleScrollNow();
+        handleScrollLater.flush();
       }
     }
   );
-
-const handleScrollNow = f.throttle(
-  500,
-  function () {
-    handleScrollLater.flush();
-  }
-);
 
 Grid.prototype.__originalScrollHandler = Grid.prototype.handleScrollEvent;
 
@@ -89,7 +81,9 @@ Grid.prototype.handleScrollEvent = function (trigger) {
     this.props.onScroll(scrollInfo);
     const self = this;
     handleScrollLater(self, scrollInfo);
-    scrollingEvents.push([trigger.scrollLeft, trigger.scrollTop]);
+    // Cannot directly subscribe to event stream, as React hijacks this and delivers React.VirtualEvents instead,
+    // so manually push data into RxJS stream
+    scrollingEvents.next([trigger.scrollLeft, trigger.scrollTop]);
   } else {
     this._originalScrollHandler(trigger);
   }
