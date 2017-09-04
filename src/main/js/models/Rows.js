@@ -86,10 +86,29 @@ const Rows = Collection.extend({
 
     const success = options.success;
 
-    const addRows = (n, data) => {
-      this.set(data.rows, {remove: false, merge: false, add: true});
+    const addPage = (n, rows) => {
+      this.set(rows,
+        {
+          remove: false,
+          merge: false,
+          add: true
+        });
       console.log("Page", n, "loaded");
+      success(this.pageCount());
     };
+
+    const rowsBuffer = {};
+    const addBufferedRows = () => {
+      f.range(addedPages + 1, this.pageCount() + 1)
+        .forEach((n) => {
+          if (f.isNil(rowsBuffer[n])) {
+            return;
+          }
+          addPage(n, rowsBuffer[n]);
+        });
+    };
+
+    let addedPages = 1;
 
     const fetchPage = (n) => new Promise(
       (resolve, reject) => {
@@ -102,8 +121,18 @@ const Rows = Collection.extend({
               if (err) {
                 reject(err);
               } else {
-                addRows(n, JSON.parse(response.text));
-                success(this.pageCount());
+                const rows = JSON.parse(response.text).rows;
+                if (addedPages === n - 1) {
+                  // n-1 pages loaded => add this page's rows immediately to collection.
+                  // This is the ideal case, when all pages get loaded in order so we can profit from real time
+                  // gained by parallel requests.
+                  addPage(++addedPages, rows);
+                } else {
+                  // Pages aren't loaded in order => buffer them and finish adding later.
+                  // This loses some of the speed benefits from immediately adding data fetched in parallel,
+                  // but is **much** faster than sorting all rows after each successful page request.
+                  rowsBuffer[n] = rows;
+                }
                 resolve();
               }
             }
@@ -121,7 +150,7 @@ const Rows = Collection.extend({
         const pageNums = f.range(2, pages + 1);
         Promise.all(
           pageNums.map(throat(MAX_CONCURRENT_PAGES, fetchPage))
-        );
+        ).then(addBufferedRows);
       }
     };
 
