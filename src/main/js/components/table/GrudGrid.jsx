@@ -5,9 +5,10 @@
  */
 
 import {Grid, MultiGrid} from "react-virtualized";
-import {add, compose, debounce, noop, update} from "lodash/fp";
+import f, {add, compose, debounce, noop, update} from "lodash/fp";
 import ReactDOM from "react-dom";
 import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
+import Bacon from "baconjs";
 
 console.warn(
   "Importing this file will change the behaviour of \"react-virtualize\"'s Grid component by monkey-patching " +
@@ -18,11 +19,62 @@ console.warn(
 const handleScrollLater = debounce(
   50,
   function (self, scrollPosition) {
+    devLog("Debounced scroll handler executing...")
     self._originalScrollHandler(scrollPosition);
   }
 );
 
-Grid.prototype._originalScrollHandler = Grid.prototype.handleScrollEvent;
+const scrollingEvents = new Bacon.Bus();
+const IMMEDIATE_RENDER_SPEED = 8;   // px/scroll event
+const IMMEDIATE_RENDER_FRAMES = 3;  // minimum number of frames with speed <= IMMEDIATE_RENDER_SPEED and speed not increasing
+
+// Stream: scroll positions [x, y] -> combined scroll speed |[dx, dy]|
+const dx = scrollingEvents.diff(
+  [0, 0, performance.now()],
+  ([x1, y1, t1], [x2, y2, t2]) => {
+    const xx = [(x2 - x1), (y2 - y1)]
+      .map((x) => x * x)
+      .reduce(f.add);
+    return Math.sqrt(xx);
+  }
+);
+
+// Stream: scroll speed -> Bool: is speed decreasing?
+const decel = dx.diff(
+  0,
+  (v1, v2) => v2 <= v1
+);
+
+// Stream: (scroll speed x Bool: decrasing) -> void
+// Side effect: Immediately render when speed decreasing and total speed < 8px
+dx.sampledBy(
+    decel,
+    (v, decelerating) => decel && v < IMMEDIATE_RENDER_SPEED
+  )
+  .slidingWindow(IMMEDIATE_RENDER_FRAMES, IMMEDIATE_RENDER_FRAMES)
+  .onValue(
+    (history) => {
+      if (f.every(f.identity, history)) {
+        handleScrollNow();
+      }
+    }
+  );
+
+const handleScrollNow = f.throttle(
+  500,
+  function () {
+    handleScrollLater.flush();
+  }
+);
+
+Grid.prototype.__originalScrollHandler = Grid.prototype.handleScrollEvent;
+
+Grid.prototype._originalScrollHandler = function (...params) {
+  if (ReactDOM.findDOMNode(this._scrollingContainer) === this._mainGridNode) {
+    console.log("OriginalScrollHandler")
+  }
+  this.__originalScrollHandler(...params);
+};
 
 Grid.prototype.handleScrollEvent = function (trigger) {
   if (!this._mainGridNode) {
@@ -32,17 +84,18 @@ Grid.prototype.handleScrollEvent = function (trigger) {
     scrollTop: trigger.scrollTop,
     scrollLeft: trigger.scrollLeft
   };
+
   if (trigger === this._mainGridNode) {
     this.props.onScroll(scrollInfo);
     const self = this;
     handleScrollLater(self, scrollInfo);
+    scrollingEvents.push([trigger.scrollLeft, trigger.scrollTop]);
   } else {
     this._originalScrollHandler(trigger);
   }
 };
 
 export default class GrudGrid extends MultiGrid {
-
   _blgParent = null;
   _trgParent = null;
   correctionStep = false;
