@@ -15,7 +15,7 @@ import {either, maybe} from "../../helpers/functools";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 
-import MultiGrid, {Grid} from "./GrudGrid";
+import MultiGrid from "./GrudGrid";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -436,40 +436,39 @@ export default class VirtualTable extends PureComponent {
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
 
-    const GridType = (columnCount < 3) ? Grid : MultiGrid;
-
     return (
       <AutoSizer>
         {
           ({height, width}) => (
-            <GridType ref={this.storeGridElement}
-                      className="data-wrapper"
-                      cellRenderer={this.cellRenderer}
-                      columnCount={columnCount}
-                      columnWidth={this.calcColWidth}
-                      noContentRenderer={this.renderEmptyTable}
-                      rowCount={rowCount}
-                      rowHeight={this.calcRowHeight}
-                      fixedColumnCount={f.min([columnCount, 2])}
-                      fixedRowCount={1}
-                      width={width}
-                      height={height}
-                      selectedCell={selectedCellKey}
-                      expandedRows={expandedRowIds}
-                      openAnnotations={openAnnotations}
-                      scrollToRow={rowIndex}
-                      scrollToColumn={columnIndex}
-                      scrollLeft={scrollPosition}
-                      rowKeys={rowKeys}
-                      columnKeys={columnKeys}
-                      overscanColumnCount={5}
-                      overscanRowCount={6}
-                      classNameBottomRightGrid={"multigrid-bottom-right"}
-                      classNameTopRightGrid={"multigrid-top-right"}
-                      classNameBottomLeftGrid={"multigrid-bottom-left"}
-                      fullyLoaded={this.props.fullyLoaded}
-                      styleTopRightGrid={{backgroundColor: "#f9f9f9"}}
-                      styleBottomLeftGrid={{backgroundColor: "#f9f9f9"}}
+            <MultiGrid ref={this.storeGridElement}
+                       key={(columnCount < 3) ? "no-fixed-rows" : "with-fixed-rows"}
+                       className="data-wrapper"
+                       cellRenderer={this.cellRenderer}
+                       columnCount={columnCount}
+                       columnWidth={this.calcColWidth}
+                       noContentRenderer={this.renderEmptyTable}
+                       rowCount={rowCount}
+                       rowHeight={this.calcRowHeight}
+                       fixedColumnCount={(columnCount < 3) ? 0 : f.min([columnCount, 2])}
+                       fixedRowCount={1}
+                       width={width}
+                       height={height}
+                       selectedCell={selectedCellKey}
+                       expandedRows={expandedRowIds}
+                       openAnnotations={openAnnotations}
+                       scrollToRow={rowIndex}
+                       scrollToColumn={columnIndex}
+                       scrollLeft={scrollPosition}
+                       rowKeys={rowKeys}
+                       columnKeys={columnKeys}
+                       overscanColumnCount={5}
+                       overscanRowCount={6}
+                       classNameBottomRightGrid={"multigrid-bottom-right"}
+                       classNameTopRightGrid={"multigrid-top-right"}
+                       classNameBottomLeftGrid={"multigrid-bottom-left"}
+                       fullyLoaded={this.props.fullyLoaded}
+                       styleTopRightGrid={{backgroundColor: "#f9f9f9", borderBottom: "3px solid #eee"}}
+                       styleBottomLeftGrid={{backgroundColor: "#f9f9f9"}}
             />
           )
         }
