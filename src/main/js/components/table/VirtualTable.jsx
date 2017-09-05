@@ -317,7 +317,7 @@ export default class VirtualTable extends PureComponent {
     const {table} = this.props;
     if (columnIndex === 1) {
       return (
-        <AddNewRowButton table={table} onAdd={this.jumpToLastRow}/>
+        <AddNewRowButton table={table} onAdd={this.jumpToLastRow} />
       );
     }
     return (
@@ -443,31 +443,33 @@ export default class VirtualTable extends PureComponent {
         {
           ({height, width}) => (
             <GridType ref={this.storeGridElement}
-                       className="data-wrapper"
-                       cellRenderer={this.cellRenderer}
-                       columnCount={columnCount}
-                       columnWidth={this.calcColWidth}
-                       noContentRenderer={this.renderEmptyTable}
-                       rowCount={rowCount}
-                       rowHeight={this.calcRowHeight}
-                       fixedColumnCount={f.min([columnCount, 2])}
-                       fixedRowCount={1}
-                       width={width}
-                       height={height}
-                       selectedCell={selectedCellKey}
-                       expandedRows={expandedRowIds}
-                       openAnnotations={openAnnotations}
-                       scrollToRow={rowIndex}
-                       scrollToColumn={columnIndex}
-                       scrollLeft={scrollPosition}
-                       rowKeys={rowKeys}
-                       columnKeys={columnKeys}
-                       overscanColumnCount={5}
-                       overscanRowCount={6}
-                       classNameBottomRightGrid={"multigrid-bottom-right"}
-                       classNameTopRightGrid={"multigrid-top-right"}
-                       classNameBottomLeftGrid={"multigrid-bottom-left"}
-                       fullyLoaded={this.props.fullyLoaded}
+                      className="data-wrapper"
+                      cellRenderer={this.cellRenderer}
+                      columnCount={columnCount}
+                      columnWidth={this.calcColWidth}
+                      noContentRenderer={this.renderEmptyTable}
+                      rowCount={rowCount}
+                      rowHeight={this.calcRowHeight}
+                      fixedColumnCount={f.min([columnCount, 2])}
+                      fixedRowCount={1}
+                      width={width}
+                      height={height}
+                      selectedCell={selectedCellKey}
+                      expandedRows={expandedRowIds}
+                      openAnnotations={openAnnotations}
+                      scrollToRow={rowIndex}
+                      scrollToColumn={columnIndex}
+                      scrollLeft={scrollPosition}
+                      rowKeys={rowKeys}
+                      columnKeys={columnKeys}
+                      overscanColumnCount={5}
+                      overscanRowCount={6}
+                      classNameBottomRightGrid={"multigrid-bottom-right"}
+                      classNameTopRightGrid={"multigrid-top-right"}
+                      classNameBottomLeftGrid={"multigrid-bottom-left"}
+                      fullyLoaded={this.props.fullyLoaded}
+                      styleTopRightGrid={{backgroundColor: "#f9f9f9"}}
+                      styleBottomLeftGrid={{backgroundColor: "#f9f9f9"}}
             />
           )
         }
