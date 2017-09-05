@@ -10,7 +10,7 @@ import Cell from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import {AutoSizer} from "react-virtualized";
-import {ActionTypes, Langtags} from "../../constants/TableauxConstants";
+import {ActionTypes, ColumnKinds, Langtags} from "../../constants/TableauxConstants";
 import {either, maybe} from "../../helpers/functools";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
@@ -435,6 +435,8 @@ export default class VirtualTable extends PureComponent {
     const rowCount = f.size(rows.models) + 2;
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
+    const shouldIDColBeGrey = columns.at(0).kind === ColumnKinds.concat
+      && rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) > window
 
     return (
       <AutoSizer>
@@ -467,8 +469,13 @@ export default class VirtualTable extends PureComponent {
                        classNameTopRightGrid={"multigrid-top-right"}
                        classNameBottomLeftGrid={"multigrid-bottom-left"}
                        fullyLoaded={this.props.fullyLoaded}
-                       styleTopRightGrid={{backgroundColor: "#f9f9f9", borderBottom: "3px solid #eee"}}
-                       styleBottomLeftGrid={{backgroundColor: "#f9f9f9"}}
+                       styleTopRightGrid={{
+                         backgroundColor: "#f9f9f9",
+                         borderBottom: "3px solid #eee"
+                       }}
+                       styleBottomLeftGrid={{
+                         backgroundColor: (shouldIDColBeGrey) ? "#f9f9f9" : "white"
+                       }}
             />
           )
         }
