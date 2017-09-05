@@ -160,6 +160,8 @@ const mkClosures = (table, langtag, rowsFilter) => {
       [isOfKind(ColumnKinds.boolean), getField("value")],
       [isOfKind(ColumnKinds.link), joinStrings],
       [isOfKind(ColumnKinds.attachment), joinStrings],
+      [isOfKind(ColumnKinds.date), getField("value")],
+      [isOfKind(ColumnKinds.datetime, getField("value"))],
       [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
     return f.cond([
