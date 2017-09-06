@@ -420,7 +420,7 @@ class TableView extends React.Component {
       rowsFilter: null
     }, this.saveFilterSettings);
     const clearedUrl = window.location.href
-                             .replace(/http:\/\/.*?\//, "")
+                             .replace(/https?:\/\/.*?\//, "")
                              .replace(/\?.*/, "");
     App.router.navigate(clearedUrl, {trigger: false});
   };
