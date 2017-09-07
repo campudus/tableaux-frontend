@@ -59,12 +59,12 @@ export default class VirtualTable extends PureComponent {
 
   componentWillMount() {
     f.compose(
-      f.map(
-        ([idx, width]) => this.colWidths.set(f.toNumber(idx), width)
-      ),
       f.toPairs,
       f.get("columnWidths")
-    )(this.getStoredView());
+    )(this.getStoredView())
+      .forEach(
+        ([idx, width]) => this.colWidths.set(f.toNumber(idx), width)
+      );
   }
 
   saveColWidths = () => {

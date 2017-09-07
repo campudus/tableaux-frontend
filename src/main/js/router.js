@@ -18,7 +18,6 @@ const parseOptions = optString => {
   const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
   const parseFilter = function (str) {
     const els = str.split(":");
-    devLog("els", els)
     if (f.size(els) > 1) {
       if (els[1] === "id") {
         return {

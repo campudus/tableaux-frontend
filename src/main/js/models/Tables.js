@@ -15,7 +15,6 @@ import {
   reduceValuesToAllowedLanguages
 } from "../helpers/accessManagementHelper";
 import request from "superagent";
-import * as _ from "lodash";
 import * as f from "lodash/fp";
 import Raven from "raven-js";
 import i18n from "i18next";
@@ -63,8 +62,8 @@ const changeLinkCell = ({cell, value}) => {
     );
   }
 
-  const rowDiff = _.xor(curValue.map(link => link.id), value.map(link => link.id));
-  if (_.size(rowDiff) > 1) { // multiple new values, set new array
+  const rowDiff = f.xor(curValue.map(link => link.id), value.map(link => link.id));
+  if (f.size(rowDiff) > 1) { // multiple new values, set new array
     return new Promise(
       (resolve, reject) => {
         cell.save({value}, {
@@ -126,12 +125,12 @@ export const changeCell = payload => {
 
   // Setup for saving the cell
   if (cell.isMultiLanguage) {
-    mergedValue = _.assign({}, oldValue, newValue);
+    mergedValue = f.merge(oldValue, newValue);
     newValue = {value: newValue};
-    updateNecessary = !_.isEqual(oldValue, mergedValue);
+    updateNecessary = !f.equals(oldValue, mergedValue);
     isPatch = true;
   } else {
-    updateNecessary = !_.isEqual(oldValue, newValue);
+    updateNecessary = !f.equals(oldValue, newValue);
     mergedValue = newValue;
     newValue = {value: newValue};
   }
@@ -149,7 +148,7 @@ export const changeCell = payload => {
           } else {
             if (cell.isMultiCountry()) {
               newValue = reduceValuesToAllowedCountries(newValue);
-              if (_.isEmpty(newValue.value)) {
+              if (f.isEmpty(newValue.value)) {
                 // The user tried to change a multilanguage cell without language permission
                 noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
                 return;
@@ -157,7 +156,7 @@ export const changeCell = payload => {
             } else {
               // reduce values to send just authorized language values to server
               newValue = reduceValuesToAllowedLanguages(newValue);
-              if (_.isEmpty(newValue.value)) {
+              if (f.isEmpty(newValue.value)) {
                 // The user tried to change a multilanguage cell without language permission
                 noPermissionAlertWithLanguage(getUserLanguageAccess(), getUserCountryCodesAccess());
                 return;
@@ -188,7 +187,7 @@ export const changeCell = payload => {
           success(model, data, options) {
             ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
             // is there new data from the server?
-            if (!_.isEqual(data.value, mergedValue)) {
+            if (!f.equals(data.value, mergedValue)) {
               window.devLog("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
               cell.value = data.value;
             }

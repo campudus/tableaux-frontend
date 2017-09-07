@@ -6,7 +6,7 @@
  */
 
 "use strict";
-const _ = require("lodash");
+import f from "lodash/fp";
 const KEYS = {
   enter: 13,
   left: 37,
@@ -36,29 +36,31 @@ const KeyboardShortcutsHelper = {
 };
 
 function _onKeyboardShortcut(event, keyboardShortcutsFn) {
-  if (!_.isFunction(keyboardShortcutsFn)) {
+  if (!f.isFunction(keyboardShortcutsFn)) {
     throw new Error("Define function keyboardShortcutsFn in order to use KeyboardShortcutsMixin.");
   }
 
   let shortcuts = keyboardShortcutsFn();
   let shortcutFound = false;
 
-  if (!_.isObject(shortcuts)) {
+  if (!f.isObject(shortcuts)) {
     throw new Error("Return type of keyboardShortcutsFn must be an object.");
   }
 
-  if (_.isEmpty(shortcuts)) {
+  if (f.isEmpty(shortcuts)) {
     return;
   }
 
-  _.forEach(shortcuts, function (handler, key) {
-    let keyCode = KEYS[key] || key;
+  (shortcuts || []).map(
+    function (handler, key) {
+      let keyCode = KEYS[key] || key;
 
-    if (keyCode === event.keyCode) {
-      shortcutFound = true;
-      handler(event);
+      if (keyCode === event.keyCode) {
+        shortcutFound = true;
+        handler(event);
+      }
     }
-  });
+  );
 
   // no shortcut found - check for general letters and call 'text' listener
   if (!shortcutFound && shortcuts.text && isText(event.keyCode)) {

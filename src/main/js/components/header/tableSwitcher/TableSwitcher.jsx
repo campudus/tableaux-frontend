@@ -1,6 +1,5 @@
 import React from "react";
-import _ from "lodash";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import TableSwitcherPopup from "./TableSwitcherPopup";
 import ActionCreator from "../../../actions/ActionCreator";
@@ -53,29 +52,34 @@ class TableSwitcherButton extends React.Component {
   };
 
   renderPopup = () => {
-    const {t} = this.props;
+    const {t, langtag, tables, currentTable} = this.props;
 
     const groups = f.compose(
-      f.uniqBy(f.get("id")),                 // unique set of groups
+      f.uniqBy("id"),                        // unique set of groups
       f.reject(f.matchesProperty("id", 0)),  //   ...with valid ids
-      f.compact,                  //   ...of non-null groups
-      f.map(f.get("group")),                 //   ...from group data
-      f.reject(f.get("hidden"))              //   ...of visible tables
-    )(this.props.tables.models);
+      f.compact,                             //   ...of non-null groups
+      f.map("group"),                        //   ...from group data
+      f.reject("hidden")                     //   ...of visible tables
+    )(tables.models);
 
     const noGroupDisplayName = {};
-    noGroupDisplayName[this.props.langtag] = t("tableSwitcher.nogroup");
+    noGroupDisplayName[langtag] = t("tableSwitcher.nogroup");
     const noGroup = {
       id: 0,
       displayName: noGroupDisplayName
     };
 
-    const sortedGroups = _.sortBy(groups, (group) => {
-      return group.displayName[this.props.langtag] || group.displayName[TableauxConstants.FallbackLanguage];
-    });
+    const sortedGroups = f.sortBy(
+      f.compose(
+        f.find(f.identity),
+        f.props(["langtags", TableauxConstants.FallbackLanguage]),
+        f.get("displayName")
+      ),
+      groups
+    );
 
-    return <TableSwitcherPopup langtag={this.props.langtag} groups={[noGroup, ...sortedGroups]}
-                               tables={this.props.tables} currentTable={this.props.currentTable}
+    return <TableSwitcherPopup langtag={langtag} groups={[noGroup, ...sortedGroups]}
+                               tables={tables} currentTable={currentTable}
                                onClickedOutside={this.onClickedOutside}
                                onClickedTable={this.onClickedTable}
                                onClickedGroup={this.onClickedGroup}

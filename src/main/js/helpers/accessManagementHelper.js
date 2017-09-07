@@ -1,12 +1,12 @@
-import _ from "lodash";
 import TableauxConstants, {ColumnKinds} from "../constants/TableauxConstants";
 import Keks from "js-cookie";
+import f from "lodash/fp";
 
 // overwrite converter so we can parse express-cookies
 const Cookies = Keks.withConverter({
   "read": function (rawValue, name) {
     const value = decodeURIComponent(rawValue);
-    if (typeof value === "string" && _.startsWith(value, "j:")) {
+    if (typeof value === "string" && f.startsWith("j:", value)) {
       let result = value;
 
       try {
@@ -35,7 +35,7 @@ export function initDevelopmentAccessCookies() {
   }
 }
 
-export const getUserLanguageAccess = _.memoize(
+export const getUserLanguageAccess = f.memoize(
   function () {
     if (isUserAdmin()) {
       return TableauxConstants.Langtags;
@@ -45,7 +45,7 @@ export const getUserLanguageAccess = _.memoize(
   }
 );
 
-export const getUserCountryCodesAccess = _.memoize(
+export const getUserCountryCodesAccess = f.memoize(
   function () {
     if (isUserAdmin()) {
       return []; // there's no "all available country codes" because it's bound to a column
@@ -55,13 +55,13 @@ export const getUserCountryCodesAccess = _.memoize(
   }
 );
 
-export const hasUserAccessToCountryCode = _.memoize(
+export const hasUserAccessToCountryCode = f.memoize(
   function (countryCode) {
     if (isUserAdmin()) {
       return true;
     }
 
-    if (_.isString(countryCode)) {
+    if (f.isString(countryCode)) {
       const userCountryCodes = getUserCountryCodesAccess();
       return (userCountryCodes && userCountryCodes.length > 0)
         ? userCountryCodes.indexOf(countryCode) > -1 : false;
@@ -72,23 +72,23 @@ export const hasUserAccessToCountryCode = _.memoize(
   }
 );
 
-export const isUserAdmin = _.memoize(
+export const isUserAdmin = f.memoize(
   function () {
     const isAdminFromCookie = Cookies.getJSON("userAdmin");
-    if (!_.isNil(isAdminFromCookie)) {
+    if (!f.isNil(isAdminFromCookie)) {
       return isAdminFromCookie;
     } else return false;
   }
 );
 
 // Can a user edit the given langtag
-export const hasUserAccessToLanguage = _.memoize(
+export const hasUserAccessToLanguage = f.memoize(
   function (langtag) {
     if (isUserAdmin()) {
       return true;
     }
 
-    if (_.isString(langtag)) {
+    if (f.isString(langtag)) {
       const userLanguages = getUserLanguageAccess();
       return (userLanguages && userLanguages.length > 0)
         ? userLanguages.indexOf(langtag) > -1 : false;
@@ -130,7 +130,7 @@ export function reduceValuesToAllowedLanguages(valueToChange) {
   if (isUserAdmin()) {
     return valueToChange;
   } else {
-    return {value: _.pick(valueToChange.value, getUserLanguageAccess())};
+    return {value: f.pick(getUserLanguageAccess(), valueToChange.value)};
   }
 }
 
@@ -139,7 +139,7 @@ export function reduceValuesToAllowedCountries(valueToChange) {
   if (isUserAdmin()) {
     return valueToChange;
   } else {
-    return {value: _.pick(valueToChange.value, getUserCountryCodesAccess())};
+    return {value: f.pick(getUserCountryCodesAccess(), valueToChange.value)};
   }
 }
 
@@ -148,11 +148,14 @@ export function reduceMediaValuesToAllowedLanguages(fileInfos) {
     return fileInfos;
   }
   console.log("fileInfos:", fileInfos);
-  return _.map(fileInfos, (fileInfo, key) => {
-    if (_.isObject(fileInfo)) {
-      return _.pick(fileInfo, getUserLanguageAccess());
-    } else {
-      return fileInfo;
-    }
-  });
+  return f.map(
+    (fileInfo) => {
+      if (f.isObject(fileInfo)) {
+        return f.pick(getUserLanguageAccess(), fileInfo);
+      } else {
+        return fileInfo;
+      }
+    },
+    fileInfos
+  );
 };

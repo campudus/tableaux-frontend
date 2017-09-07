@@ -1,4 +1,4 @@
-import _ from "lodash";
+import f from "lodash/fp";
 import {getFallbackCurrencyValue} from "../../../helpers/multiLanguage";
 
 export function getCurrencyWithCountry(currencyObj, country, withFallback = false) {
@@ -10,7 +10,7 @@ export function getCurrencyWithCountry(currencyObj, country, withFallback = fals
 }
 
 export function splitPriceDecimals(priceValue) {
-  if (!_.isFinite(priceValue)) {
+  if (!f.isFinite(priceValue)) {
     return ["0", "00"];
   }
   let priceValueAsArray = String(priceValue).split(".");

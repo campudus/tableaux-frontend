@@ -1,7 +1,7 @@
 import React from "react";
-import _ from "lodash";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
+import f from "lodash/fp";
 
 const TextArea = React.createClass({
 
@@ -49,7 +49,7 @@ const TextArea = React.createClass({
   },
 
   render: function () {
-    if (_.isNil(this.content)) {
+    if (f.isNil(this.content)) {
       this.content = this.props.initialContent;
     }
     // TODO change to new refs handling

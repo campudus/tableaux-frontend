@@ -1,5 +1,4 @@
 const Collection = require("ampersand-rest-collection");
-const _ = require("lodash");
 import apiUrl from "../helpers/apiUrl";
 const Row = require("./Row");
 import * as f from "lodash/fp";
@@ -42,14 +41,14 @@ const Rows = Collection.extend({
 
   parse: function (resp) {
     // set totalSize for calculating pagination
-    this.totalSize = _.get(resp, ["page", "totalSize"], 0);
+    this.totalSize = f.get(["page", "totalSize"], resp) || 0;
     // do real parsing
     return resp.rows;
   },
 
   pageCount: function () {
     return (this.totalSize > 0)
-      ? 1 + _.ceil((this.totalSize - INITIAL_PAGE_SIZE) / PAGE_SIZE)
+      ? 1 + f.ceil((this.totalSize - INITIAL_PAGE_SIZE) / PAGE_SIZE)
       : 0;
   },
 
@@ -77,12 +76,17 @@ const Rows = Collection.extend({
     }
   },
 
-  fetchPage(pageNumber, options) {
+  fetchPage(pageNumber, optionsObj) {
     const page = this.calculatePage(pageNumber);
 
     // don't merge, or models are broken when duplicating while fetching the tail
-    options = _.assign(options, {merge: false, add: true, remove: false});
-    options.data = _.assign({}, options.data, page);
+//    options = _.assign(options, {merge: false, add: true, remove: false});
+//    options.data = _.assign({}, options.data, page);
+
+    const options = f.compose(
+      f.update("data", f.merge(page)),
+      f.merge({merge: false, add: true, remove: false})
+    )(optionsObj);
 
     const success = options.success;
 

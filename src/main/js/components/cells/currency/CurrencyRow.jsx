@@ -58,7 +58,6 @@ export default class CurrencyRow extends PureComponent {
     this.props.updateValue(this.props.country, this.mergeSplittedCurrencyValues());
     const {caretElement, caretPosition} = this.state;
     if (!f.isNil(caretPosition)) {
-      console.log("Setting caret to", caretPosition)
       caretElement.setSelectionRange(caretPosition, caretPosition);
     }
   };

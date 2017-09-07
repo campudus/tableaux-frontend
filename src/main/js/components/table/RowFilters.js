@@ -2,8 +2,7 @@ import FilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
-import * as _ from "lodash";
-import {either, fspy} from "../../helpers/functools";
+import {either} from "../../helpers/functools";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -110,7 +109,7 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
   const toFilterValue = closures.cleanString(value);
   const getSortableCellValue = closures.getSortableCellValue;
 
-  if (_.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
+  if (f.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
     return f.stubTrue;
   }
 
@@ -120,8 +119,8 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
 
     // Always return true for rows with empty first value.
     // This should allow to add new rows while filtered.
-    // _.isEmpty(123) returns TRUE, so we check for number (int & float)
-    if (_.isEmpty(firstCellValue) && !_.isNumber(firstCellValue)) {
+    // f.isEmpty(123) returns TRUE, so we check for number (int & float)
+    if (f.isEmpty(firstCellValue) && !f.isNumber(firstCellValue)) {
       return true;
     }
 

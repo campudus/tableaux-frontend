@@ -1,11 +1,10 @@
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import {FallbackLanguage, FilterModes} from "../../../constants/TableauxConstants";
-import * as _ from "lodash";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ReactDOM from "react-dom";
 import {translate} from "react-i18next";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import {forkJoin} from "../../../helpers/functools";
 
@@ -28,7 +27,7 @@ class SwitcherPopup extends React.PureComponent {
     super(props);
 
     this.state = {
-      filterGroupId: props.currentGroupId !== null && _.isFinite(props.currentGroupId) ? props.currentGroupId : null,
+      filterGroupId: props.currentGroupId !== null && f.isFinite(props.currentGroupId) ? props.currentGroupId : null,
       filterTableName: "",
       focusTableId: props.currentTable ? props.currentTable.id : null
     };
@@ -72,7 +71,7 @@ class SwitcherPopup extends React.PureComponent {
 
     const tableResults = this.getFilteredTables(group.id, "");
     // on click search gets cleared, so only matching tables are visible
-    const tableIds = f.map(f.get("id"), tableResults.inGroup);
+    const tableIds = f.map("id", tableResults.inGroup);
     const {currentTable} = this.props;
     const {focusTableId} = this.state;
     const currentTableId = f.get("id", currentTable);
@@ -170,7 +169,7 @@ class SwitcherPopup extends React.PureComponent {
 
     const tableResults = f.compose(
       f.filter(matchesQuery(filterTableName)),
-      f.reject(f.get("hidden")),
+      f.reject("hidden"),
     )(tables.models);
 
     return {
@@ -182,23 +181,26 @@ class SwitcherPopup extends React.PureComponent {
   renderGroups = (groups) => {
     const {t, langtag} = this.props;
 
-    const renderedGroups = _.map(groups, (group, index) => {
-      const groupDisplayName = group.displayName[langtag] || group.displayName[FallbackLanguage];
+    const renderedGroups = (groups || []).map(
+      (group, index) => {
+        const groupDisplayName = group.displayName[langtag] || group.displayName[FallbackLanguage];
 
-      const isNoGroupGroup = group.id === 0;
-      const isActive = this.state.filterGroupId === group.id;
+        const isNoGroupGroup = group.id === 0;
+        const isActive = this.state.filterGroupId === group.id;
 
-      let className = "";
-      className += isNoGroupGroup ? " nogroup" : "";
-      className += isActive ? " active" : "";
+        let className = "";
+        className += isNoGroupGroup ? " nogroup" : "";
+        className += isActive ? " active" : "";
 
-      return (
-        <li key={"group" + index} onClick={this.onClickGroup(group)} className={className}>
-          {groupDisplayName}
-          {isActive ? <i className="fa fa-times-circle"></i> : ""}
-        </li>
-      );
-    });
+        return (
+          <li key={"group" + index} onClick={this.onClickGroup(group)} className={className}>
+            {groupDisplayName}
+            {isActive ? <i className="fa fa-times-circle"></i> : ""}
+          </li>
+        );
+      },
+      groups
+    );
 
     if (groups.length <= 1) {
       return "";

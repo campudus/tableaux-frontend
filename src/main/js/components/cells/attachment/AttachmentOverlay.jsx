@@ -2,7 +2,6 @@ import multiLanguage from "../../../helpers/multiLanguage";
 import Folder from "../../../models/media/Folder";
 import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
-import _ from "lodash";
 import React, {Component, PropTypes} from "react";
 import TableauxConstants, {ColumnKinds} from "../../../constants/TableauxConstants";
 import apiUrl from "../../../helpers/apiUrl";
@@ -40,7 +39,7 @@ class AttachmentOverlay extends Component {
     }
     const {folderId} = this.props;
 
-    this.navigateFolder(_.isNumber(folderId) ? folderId : null)();
+    this.navigateFolder(f.isNumber(folderId) ? folderId : null)();
   }
 
   componentWillUnmount() {
@@ -70,15 +69,11 @@ class AttachmentOverlay extends Component {
 
     return event => {
       event.stopPropagation();
-      let attachments = _.clone(cell.value);
+      const {value} = cell;
 
-      if (isLinked) {
-        _.remove(attachments, function (attachment) {
-          return file.uuid === attachment.uuid;
-        });
-      } else {
-        attachments.push(file);
-      }
+      const attachments = (isLinked)
+        ? f.remove(f.matchesProperty("uuid", file.uuid), value)
+        : [...value, file];
 
       ActionCreator.changeCell(cell, attachments);
     };
@@ -90,15 +85,10 @@ class AttachmentOverlay extends Component {
 
   renderFileItem = ({index, style, parent}) => {
     const file = f.get(["folder", "files", index], this.state);
-    const {langtag, cell} = this.props;
-    const currentCellValue = cell.value;
+    const {langtag} = this.props;
     const imageUrl = apiUrl(this.retrieveTranslation(file.fileUrl, langtag));
 
-    const linked = _.find(currentCellValue, (linkedFile) => {
-      return file.uuid === linkedFile.uuid;
-    });
-
-    const isLinked = !!linked;
+    const isLinked = this.isLinked(file);
     const fileTitle = this.retrieveTranslation(file.title, langtag);
 
     return (file)
@@ -120,12 +110,10 @@ class AttachmentOverlay extends Component {
       : null;
   };
 
-  isLinked = (file) => {
-    f.compose(
-      f.contains(file.uuid),
-      f.map(f.get("uuid"))
-    )(this.props.cell.value);
-  };
+  isLinked = (file) => f.compose(
+    f.contains(file.uuid),
+    f.map("uuid")
+  )(this.props.cell.value);
 
   render() {
     const {t} = this.props;
@@ -133,8 +121,7 @@ class AttachmentOverlay extends Component {
 
     const linkedFiles = f.compose(
       f.join(";"),
-      f.map((str) => str.substr(0, 8)),
-      f.map(f.get("uuid"))
+      f.map(f.flow(f.get("uuid"), (str) => str.substr(0, 8)))
     )(this.props.cell.value);
 
     const backButton = (folder && folder.name !== "root")

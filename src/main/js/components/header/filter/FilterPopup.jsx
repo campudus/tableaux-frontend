@@ -1,5 +1,4 @@
 import React from "react";
-import * as _ from "lodash";
 import * as f from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
 import listensToClickOutside from "react-onclickoutside";
@@ -125,7 +124,7 @@ class FilterPopup extends React.Component {
   buildColumnOptions(filterFn) {
     const {t, columns, langtag} = this.props;
 
-    return _.map(columns.models, (column) => {
+    return columns.models.map((column) => {
       // Show display name with fallback to machine name
       const columnDisplayName = column.displayName[langtag] || column.name;
       // ID Column gets translated name

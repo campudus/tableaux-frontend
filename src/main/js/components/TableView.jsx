@@ -6,7 +6,6 @@ import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
 import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
-import * as _ from "lodash";
 import * as f from "lodash/fp";
 import TableauxConstants, {ActionTypes, FilterModes} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
@@ -138,7 +137,7 @@ class TableView extends React.Component {
         f.map(x => { x.visible = true; }),
         f.take(DEFAULT_VISIBLE_COLUMS),
         f.drop(1),
-        f.reject(f.get("isGroupMember"))
+        f.reject("isGroupMember")
       )(cols);
     }
 
@@ -428,8 +427,8 @@ class TableView extends React.Component {
 
   changeFilter = (settings = {}, store = true) => {
     const {filters = [], sorting = {}} = settings;
-    const isFilterEmpty = filter => _.isEmpty(filter.value) && !_.isString(filter.mode);
-    const isSortingEmpty = !_.isFinite(sorting.columnId) && _.isEmpty(sorting.value);
+    const isFilterEmpty = filter => f.isEmpty(filter.value) && !f.isString(filter.mode);
+    const isSortingEmpty = !f.isFinite(sorting.columnId) && f.isEmpty(sorting.value);
     const areAllFiltersEmpty = f.every(isFilterEmpty, filters);
 
     const storeFilterSettingsIfRequested = () => {

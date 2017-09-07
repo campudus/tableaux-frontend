@@ -14,9 +14,9 @@ var Columns = Collection.extend({
   parse: function (resp) {
     const cols = resp.columns;
     const groupMemberIds = f.compose(
-      f.map(f.get("id")),
+      f.map("id"),
       f.flatten,
-      f.map(f.get("groups")),
+      f.map("groups"),
       f.filter(f.matchesProperty("kind", ColumnKinds.group))
     )(cols);
     return cols.map(

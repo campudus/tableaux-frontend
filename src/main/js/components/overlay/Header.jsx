@@ -48,12 +48,6 @@ class Header extends PureComponent {
     }
   }
 
-  componentWillUpdate(next, nextState) {
-    const stateKeys = f.uniq([...f.keys(nextState), ...f.keys(this.state)]).filter((key) => nextState[key] !== this.state[key])
-    const propKeys = f.uniq([...f.keys(next), ...f.keys(this.props)]).filter((key) => next[key] !== this.props[key])
-    devLog(propKeys, stateKeys)
-  }
-
   render() {
     const {actions, components} = this.props;
     const {title, context} = this.state;

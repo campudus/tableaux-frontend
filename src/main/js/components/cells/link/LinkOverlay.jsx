@@ -493,7 +493,6 @@ class LinkOverlay extends PureComponent {
   };
 
   render = () => {
-    devLog("LinkOverlay.render()")
     const {rowResults, loading} = this.state;
     const {cell, cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
     const targetTable = {
@@ -569,7 +568,7 @@ export const openLinkOverlay = (cell, langtag) => {
 
   const LinkOverlayHeader = connectToAmpersand(
     (props) => {
-      const {langtag, cell, watch, sharedData: {loading}, id} = props;
+      const {langtag, cell, sharedData: {loading}, id} = props;
       return (
         <Header context={tableName} id={props.id}
                 title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}

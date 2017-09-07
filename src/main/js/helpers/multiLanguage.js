@@ -1,7 +1,6 @@
 import TableauxConstants from "../constants/TableauxConstants";
 import React from "react";
-import _ from "lodash";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 
 const langtagSeparatorRegex = /[-_]/;
 
@@ -14,7 +13,7 @@ const langtagSeparatorRegex = /[-_]/;
  * @returns any
  */
 function retrieveTranslation(json, language, defaultLanguage) {
-  if (!_.isPlainObject(json)) {
+  if (!f.isPlainObject(json)) {
     console.error("json is not a plain object", json);
     throw new Error("json is not a plain object");
   }
@@ -128,7 +127,7 @@ function getTableDisplayName(table, langtag) {
   } else {
     const tableDisplayName = table.displayName[langtag];
     const fallbackTableDisplayName = table.displayName[TableauxConstants.FallbackLanguage] || table.name;
-    return _.isNil(tableDisplayName) ? fallbackTableDisplayName : tableDisplayName;
+    return f.isNil(tableDisplayName) ? fallbackTableDisplayName : tableDisplayName;
   }
 }
 

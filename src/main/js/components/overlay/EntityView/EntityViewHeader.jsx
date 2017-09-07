@@ -5,7 +5,7 @@ import listensToClickOutside from "react-onclickoutside";
 import HeaderPopupMenu from "./HeaderPopupMenu";
 import FilterBar from "./FilterBar";
 import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";

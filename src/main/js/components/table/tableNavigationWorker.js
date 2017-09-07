@@ -1,5 +1,4 @@
-import * as _ from "lodash";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import {ColumnKinds, DefaultLangtag, Directions, Langtags} from "../../constants/TableauxConstants";
 import App from "ampersand-app";
 import ActionCreator from "../../actions/ActionCreator";
@@ -115,8 +114,8 @@ export function getKeyboardShortcuts() {
         && selectedCell.kind !== ColumnKinds.concat) {
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
-      } else if (!_.isEmpty(this.props.pasteOriginCell)
-        && !_.eq(this.props.pasteOriginCell, selectedCell)
+      } else if (!f.isEmpty(this.props.pasteOriginCell)
+        && !f.eq(this.props.pasteOriginCell, selectedCell)
         && f.prop(actionKey, event) && event.key === "v"
         && !systemPaste) {  // Cell paste
         event.preventDefault();
@@ -166,7 +165,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
 
 export function toggleCellEditing(params = {}) {
   const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
-  const editVal = (_.isBoolean(params.editing)) ? params.editing : true;
+  const editVal = (f.isBoolean(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
   const needsTranslation = f.contains(
     params.langtag,

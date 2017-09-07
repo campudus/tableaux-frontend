@@ -30,7 +30,7 @@ class ColumnFilter extends React.Component {
     const {open} = this.state;
     const nHidden = f.compose(
       f.size,
-      f.reject(f.get("visible")),
+      f.reject("visible"),
       f.drop(1)
     )(columns.models);
     const message = nHidden + " " + i18n.t("table:hidden_items");

@@ -3,7 +3,7 @@ import React from "react";
 import {Directions} from "../../constants/TableauxConstants";
 import {isLastRowSelected, setNextSelectedCell} from "./tableNavigationWorker";
 import {translate} from "react-i18next";
-import _ from "lodash";
+import f from "lodash/fp";
 
 const DuplicatedMessage = (props) => {
   const {row, t, onJumpToRow} = props;
@@ -47,7 +47,7 @@ export function createRowOrSelectNext() {
 
 export function toggleRowExpand(payload) {
   const toggleRowId = payload.rowId;
-  const newExpandedRowIds = _.clone(this.state.expandedRowIds) || [];
+  const newExpandedRowIds = f.clone(this.state.expandedRowIds) || [];
   let rowIdExists = false;
 
   newExpandedRowIds.forEach((rowId, index) => {

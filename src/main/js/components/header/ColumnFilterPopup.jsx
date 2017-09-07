@@ -146,7 +146,7 @@ class ColumnFilterPopup extends React.Component {
     const {columns} = this.props;
     const nHidden = f.compose(
       f.size,
-      f.reject(f.get("visible")),
+      f.reject("visible"),
       f.drop(1)
     )(columns.models);
     const {models} = this.state;

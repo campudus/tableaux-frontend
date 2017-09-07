@@ -47,7 +47,7 @@ const copyGroupColumn = (src, srcLang, dst, dstLang) => {
     showErrorToast("table:copy_kind_error");
     return;
   }
-  const groupIds = src.column.groups.map(f.get("id"));
+  const groupIds = src.column.groups.map("id");
   const getCell = (row) => (colId) => row.cells.get(`cell-${row.tableId}-${colId}-${row.id}`);
   const cellTuples = f.zip(
     groupIds.map(getCell(src.row)),

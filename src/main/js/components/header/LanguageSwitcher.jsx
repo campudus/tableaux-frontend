@@ -1,4 +1,4 @@
-import _ from "lodash";
+import f from "lodash/fp";
 import Select from "react-select";
 import React from "react";
 
@@ -18,7 +18,7 @@ const LanguageSwitcher = React.createClass({
 
   onChange: function (langObj) {
     // prevents undefined language tag: we just want to switch the language when there is actually something selected
-    if (!_.isEmpty(langObj)) {
+    if (!f.isEmpty(langObj)) {
       const langtag = langObj.value;
       if (this.props.onChange) {
         this.props.onChange(langtag);

@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import multiLanguage, {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
-import _ from "lodash";
+import f from "lodash/fp";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
 import {DefaultLangtag, Langtags} from "../../../constants/TableauxConstants";
@@ -61,9 +61,9 @@ class SingleFileTextInput extends Component {
   };
 
   onToggle = () => {
-    var valueObj = {};
+    const valueObj = {};
     Langtags.map((langtag) => {
-      var id = this.generateId(this.props.name, langtag);
+      const id = this.generateId(this.props.name, langtag);
       if (this.refs[id]) {
         valueObj[langtag] = this.refs[id].value;
       }
@@ -73,13 +73,11 @@ class SingleFileTextInput extends Component {
 
   render() {
     function generateValue(originalValue, editedValue) {
-      return _.merge({}, originalValue, editedValue);
+      return f.merge(originalValue, editedValue);
     }
 
-    var labelText = this.props.labelText;
-    var langtag = this.props.langtag;
-    var value = generateValue(this.props.originalValue, this.props.editedValue);
-// ???    var id = this.generateId(this.props.name, langtag);
+    const {labelText, langtag} = this.props;
+    const value = generateValue(this.props.originalValue, this.props.editedValue);
     return (
       <div className="item-contents">
         <div className="item-header">{labelText}</div>

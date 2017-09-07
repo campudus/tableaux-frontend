@@ -293,7 +293,7 @@ class EntityViewBody extends Component {
   };
 
   groupFilter = (filterColumn) => (cell) => {
-    const prefilteredIds = (filterColumn) ? f.map(f.get("id"), filterColumn.concats || filterColumn.groups) : null;
+    const prefilteredIds = (filterColumn) ? f.map("id", filterColumn.concats || filterColumn.groups) : null;
     return (filterColumn)
       ? f.contains(f.get(["column", "id"], cell), prefilteredIds)
       : !cell.column.isGroupMember;
