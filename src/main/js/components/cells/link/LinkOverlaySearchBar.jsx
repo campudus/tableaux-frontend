@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from "react";
+import React, {PureComponent, PropTypes} from "react";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import i18n from "i18next";
@@ -9,7 +9,7 @@ import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 
 @listensToClickOutside
-class SearchBar extends Component {
+class SearchBar extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired

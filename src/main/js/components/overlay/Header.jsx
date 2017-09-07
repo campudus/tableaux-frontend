@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from "react";
+import React, {PureComponent, PropTypes} from "react";
 import classNames from "classnames";
 import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
@@ -6,7 +6,7 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
 
-class Header extends Component {
+class Header extends PureComponent {
   static propTypes = {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,  // main headline
     context: PropTypes.string,           // additional context info
@@ -46,6 +46,12 @@ class Header extends Component {
     if (next.title !== this.props.title) {
       this.setState({title: next.title});
     }
+  }
+
+  componentWillUpdate(next, nextState) {
+    const stateKeys = f.uniq([...f.keys(nextState), ...f.keys(this.state)]).filter((key) => nextState[key] !== this.state[key])
+    const propKeys = f.uniq([...f.keys(next), ...f.keys(this.props)]).filter((key) => next[key] !== this.props[key])
+    devLog(propKeys, stateKeys)
   }
 
   render() {

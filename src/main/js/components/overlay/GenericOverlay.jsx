@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from "react";
+import React, {PureComponent, PropTypes} from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
@@ -13,7 +13,7 @@ import {maybe} from "../../helpers/functools";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
-class GenericOverlay extends Component {
+class GenericOverlay extends PureComponent {
 
   static propTypes = {
     head: PropTypes.element.isRequired,

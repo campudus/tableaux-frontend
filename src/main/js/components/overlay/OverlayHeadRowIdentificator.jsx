@@ -1,5 +1,7 @@
 import React, {PropTypes} from "react";
 import RowConcat from "../../helpers/RowConcatHelper";
+import {pure} from "recompose";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
 
 const OverlayHeadRowIdentificator = (props) => {
   const {cell, cell: {column}, langtag} = props;
@@ -36,4 +38,4 @@ OverlayHeadRowIdentificator.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default OverlayHeadRowIdentificator;
+export default pure(connectToAmpersand(OverlayHeadRowIdentificator));

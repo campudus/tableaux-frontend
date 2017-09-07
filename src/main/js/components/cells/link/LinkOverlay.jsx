@@ -1,5 +1,4 @@
-import React, {Component, PropTypes} from "react";
-import _ from "lodash";
+import React, {PureComponent, PropTypes} from "react";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import {translate} from "react-i18next";
@@ -35,7 +34,7 @@ const UNLINKED_ITEMS = 1;
 
 @translate(["table"])
 @withAbortableXhrRequests
-class LinkOverlay extends Component {
+class LinkOverlay extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -296,7 +295,7 @@ class LinkOverlay extends Component {
       }),
       f.zip(cell.value, cell.displayValue)
     );
-    this.updateRowResults(() => f.uniqBy(f.get("id"), [...linkedRows, ...rowResult]));
+    this.updateRowResults(() => f.uniqBy("id", [...linkedRows, ...rowResult]));
     this.setState({
       rowResults: this.filterRowsBySearch(this.getCurrentSearchValue()),
       loading: false
@@ -305,7 +304,7 @@ class LinkOverlay extends Component {
 
   addRowResults = (rows) => new Promise(
     (resolve) => {
-      this.updateRowResults((knownRows) => f.uniqBy(f.get("id"), [...knownRows, ...rows]));
+      this.updateRowResults((knownRows) => f.uniqBy("id", [...knownRows, ...rows]));
       this.setState({
         rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
       });
@@ -406,9 +405,10 @@ class LinkOverlay extends Component {
 
   isRowLinked = (row) => {
     const currentCellValue = either(this.props.cell)
-      .map(f.prop(["value"]))
+      .map(f.get(["value"]))
       .getOrElse(null);
-    return !!_.find(currentCellValue, link => f.get("id", link) === f.get("id", row));
+    const rowId = f.get("id", row);
+    return !!f.find(f.matchesProperty("id", rowId), currentCellValue);
   };
 
   setActiveBox = (val) => (e) => {
@@ -421,7 +421,7 @@ class LinkOverlay extends Component {
     const rowResults = f.get((isLinked) ? "linked" : "unlinked", this.state.rowResults);
     const row = rowResults[index];
 
-    if (_.isEmpty(rowResults) || _.isEmpty(row)) {
+    if (f.isEmpty(rowResults) || f.isEmpty(row)) {
       return null;
     }
 
@@ -493,6 +493,7 @@ class LinkOverlay extends Component {
   };
 
   render = () => {
+    devLog("LinkOverlay.render()")
     const {rowResults, loading} = this.state;
     const {cell, cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
     const targetTable = {
@@ -569,7 +570,6 @@ export const openLinkOverlay = (cell, langtag) => {
   const LinkOverlayHeader = connectToAmpersand(
     (props) => {
       const {langtag, cell, watch, sharedData: {loading}, id} = props;
-      watch(cell.row.cells.at(0), {force: true});
       return (
         <Header context={tableName} id={props.id}
                 title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
