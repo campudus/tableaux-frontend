@@ -2,30 +2,12 @@ import React, {PropTypes} from "react";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import * as f from "lodash/fp";
 import {DefaultLangtag} from "../../../constants/TableauxConstants";
+import {compose, pure, withHandlers} from "recompose";
 
-const LinkLabelCell = props => {
-  const {cell, clickable, langtag, linkElement, linkIndexAt} = props;
-  const getLinkName = () => {
-    return f.find( // first truthy value
-      f.isString,
-      [...f.props([[linkIndexAt, langtag], [linkIndexAt, DefaultLangtag]], cell.displayValue), ""]
-    );
-  };
+const LinkLabelCell = (props) => {
+  const {onClick, getLinkName} = props;
 
-  const tableId = cell.column.toTable;
-  const rowId = linkElement.id;
-
-  const clickFn = evt => {
-    loadAndOpenEntityView({
-      tables: cell.tables,
-      tableId,
-      rowId
-    }, langtag);
-    evt.stopPropagation();
-  };
-
-  return <a href="#" onClick={(clickable) ? clickFn : () => {
-  }} className="link-label">
+  return <a href="#" onClick={onClick} className="link-label">
     <div className="label-text">{getLinkName()}</div>
   </a>;
 };
@@ -34,12 +16,30 @@ LinkLabelCell.propTypes = {
   cell: PropTypes.object.isRequired,
   linkElement: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-
-  // Used for performance reason to get cached derived value from the cell model
   linkIndexAt: PropTypes.number.isRequired,
-
-  // clickable label (optional)
   clickable: PropTypes.bool
 };
 
-module.exports = LinkLabelCell;
+const enhance = compose(
+  withHandlers({
+    onClick: ({cell, clickable, langtag, linkElement}) => (event) => {
+      if (clickable) {
+        event.stopPropagation();
+        loadAndOpenEntityView(
+          {
+            tables: cell.tables,
+            tableId: cell.column.toTable,
+            rowId: linkElement.id
+          },
+          langtag);
+      }
+    },
+    getLinkName: ({langtag, cell, linkIndexAt}) => () => f.find( // first truthy value
+      f.isString,
+      [...f.props([langtag, DefaultLangtag], cell.displayValue[linkIndexAt]), ""]
+    )
+  }),
+  pure
+);
+
+module.exports = enhance(LinkLabelCell);

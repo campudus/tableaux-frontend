@@ -2,14 +2,11 @@
  * Context menu for column options. Opened by ColumnEntry.
  */
 import React from "react";
-import GenericContextMenu from "./GenericContextMenu";
-import TableauxConstants from "../../constants/TableauxConstants";
 import listensToClickOutside from "react-onclickoutside";
 import * as AccessControl from "../../helpers/accessManagementHelper";
 import {compose, contains} from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
-const Alignments = TableauxConstants.Alignments;
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
@@ -34,7 +31,7 @@ class ColumnContextMenu extends React.Component {
   };
 
   render = () => {
-    const {x, y, column, closeHandler, editHandler, langtag, tables} = this.props;
+    const {column, closeHandler, editHandler, langtag, tables, rect} = this.props;
     const toTable = (column.isLink)
       ? tables.get(column.toTable)
       : {};
@@ -78,16 +75,17 @@ class ColumnContextMenu extends React.Component {
       );
 
     return (
-      <GenericContextMenu x={x - 1} y={y - 1}
-                          clickOutsideHandler={this.closeContextMenu}
-                          menuItems={
-                            <div>
-                              {editorItem}
-                              {followLinkItem}
-                              {hideColumnItem}
-                            </div>
-                          }
-                          align={Alignments.UPPER_RIGHT} />
+      <div className="column-header-context-menu context-menu"
+           style={{
+             left: rect.x,
+             top: rect.y,
+             transform: "translateX(-100%)"
+           }}
+      >
+          {editorItem}
+          {followLinkItem}
+          {hideColumnItem}
+      </div>
     );
   }
 }
@@ -97,9 +95,9 @@ ColumnContextMenu.propTypes = {
   closeHandler: React.PropTypes.func.isRequired,
   editHandler: React.PropTypes.func.isRequired,
   langtag: React.PropTypes.string.isRequired,
-  popupToggleButtonId: React.PropTypes.string.isRequired,
   offset: React.PropTypes.number,
-  tables: React.PropTypes.object.isRequired
+  tables: React.PropTypes.object.isRequired,
+  rect: React.PropTypes.object.isRequired
 };
 
 module.exports = ColumnContextMenu;

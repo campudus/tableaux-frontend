@@ -103,8 +103,8 @@ const Cell = AmpersandModel.extend({
       }
     },
 
-    displayValue: {
-      deps: ["value", "column"],
+    __updateDisplayValue: {
+      deps: ["value"],
       fn: function () {
         if (f.isNil(this)) {
           return "";
@@ -114,7 +114,16 @@ const Cell = AmpersandModel.extend({
           clearCallbacks(self.id);
           this.initLinkEvents.call(self, self);
         }
-        return getDisplayValue(this.column, this.value);
+        const dv = getDisplayValue(this.column, this.value);
+        this.__displayValue = dv;
+        return dv;
+      }
+    },
+
+    displayValue: {
+      deps: ["value"],
+      fn: function () {
+        return f.get("__displayValue", this) || this.__updateDisplayValue;
       }
     }
   },

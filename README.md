@@ -27,7 +27,9 @@ Project configuration is done via a `config.json` in the base directory.
 
 ```
 {
-  "outDir" : "out",
-  "tableauxUrl" : "http://localhost:8080/"
+  "outDir": "out",
+  "host": "localhost",
+  "apiPort": 8080,     // port of the backend service
+  "serverPort": 3000   // port for the http frontend
 }
 ```

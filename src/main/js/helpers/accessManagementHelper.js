@@ -35,59 +35,69 @@ export function initDevelopmentAccessCookies() {
   }
 }
 
-export function getUserLanguageAccess() {
-  if (isUserAdmin()) {
-    return TableauxConstants.Langtags;
-  } else {
-    return Cookies.getJSON("userLangtagsAccess") || [];
+export const getUserLanguageAccess = _.memoize(
+  function () {
+    if (isUserAdmin()) {
+      return TableauxConstants.Langtags;
+    } else {
+      return Cookies.getJSON("userLangtagsAccess") || [];
+    }
   }
-}
+);
 
-export function getUserCountryCodesAccess() {
-  if (isUserAdmin()) {
-    return []; // there's no "all available country codes" because it's bound to a column
-  } else {
-    return Cookies.getJSON("userCountryCodesAccess") || [];
+export const getUserCountryCodesAccess = _.memoize(
+  function () {
+    if (isUserAdmin()) {
+      return []; // there's no "all available country codes" because it's bound to a column
+    } else {
+      return Cookies.getJSON("userCountryCodesAccess") || [];
+    }
   }
-}
+);
 
-export function hasUserAccessToCountryCode(countryCode) {
-  if (isUserAdmin()) {
-    return true;
+export const hasUserAccessToCountryCode = _.memoize(
+  function (countryCode) {
+    if (isUserAdmin()) {
+      return true;
+    }
+
+    if (_.isString(countryCode)) {
+      const userCountryCodes = getUserCountryCodesAccess();
+      return (userCountryCodes && userCountryCodes.length > 0)
+        ? userCountryCodes.indexOf(countryCode) > -1 : false;
+    } else {
+      console.error("hasUserAccessToCountryCode() has been called with unknown parameter countryCode:", countryCode);
+      return false;
+    }
   }
+);
 
-  if (_.isString(countryCode)) {
-    const userCountryCodes = getUserCountryCodesAccess();
-    return (userCountryCodes && userCountryCodes.length > 0)
-    ? userCountryCodes.indexOf(countryCode) > -1 : false;
-  } else {
-    console.error("hasUserAccessToCountryCode() has been called with unknown parameter countryCode:", countryCode);
-    return false;
+export const isUserAdmin = _.memoize(
+  function () {
+    const isAdminFromCookie = Cookies.getJSON("userAdmin");
+    if (!_.isNil(isAdminFromCookie)) {
+      return isAdminFromCookie;
+    } else return false;
   }
-}
-
-export function isUserAdmin() {
-  const isAdminFromCookie = Cookies.getJSON("userAdmin");
-  if (!_.isNil(isAdminFromCookie)) {
-    return isAdminFromCookie;
-  } else return false;
-}
+);
 
 // Can a user edit the given langtag
-export function hasUserAccessToLanguage(langtag) {
-  if (isUserAdmin()) {
-    return true;
-  }
+export const hasUserAccessToLanguage = _.memoize(
+  function (langtag) {
+    if (isUserAdmin()) {
+      return true;
+    }
 
-  if (_.isString(langtag)) {
-    const userLanguages = getUserLanguageAccess();
-    return (userLanguages && userLanguages.length > 0)
-    ? userLanguages.indexOf(langtag) > -1 : false;
-  } else {
-    console.error("hasUserAccessToLanguage() has been called with unknown parameter langtag:", langtag);
-    return false;
+    if (_.isString(langtag)) {
+      const userLanguages = getUserLanguageAccess();
+      return (userLanguages && userLanguages.length > 0)
+        ? userLanguages.indexOf(langtag) > -1 : false;
+    } else {
+      console.error("hasUserAccessToLanguage() has been called with unknown parameter langtag:", langtag);
+      return false;
+    }
   }
-}
+);
 
 // Is the user allowed to change this cell in general? Is it multilanguage and no link or attachment?
 export function canUserChangeCell(cell) {

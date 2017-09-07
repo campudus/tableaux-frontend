@@ -1,15 +1,44 @@
 @import "../variables";
 
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  height: 9 * 45px;
+
+  .cell {
+    background-color: lighten($color-background-very-light-grey, 1);
+  }
+
+  .repeat {
+    justify-content: center;
+    background-color: $color-background-very-light-grey;
+    color: $color-text-medium-grey;
+  }
+
+  &>:first-child {
+    border-top: 1px solid $color-text-light-grey;
+  }
+  &>:last-child {
+    border-bottom: 1px solid $color-text-light-grey;
+  }
+}
+
 .cell {
   position: relative;
-  vertical-align: top;
   white-space: nowrap;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
   overflow: visible;
   text-overflow: ellipsis;
   border: 1px solid transparent;
   border-right: 1px solid $color-border-grey;
+  border-bottom: 1px solid $color-border-grey;
   outline: none;
+  box-sizing: border-box;
+  height: 45px;
+  width: 100%;
+  background-color: white;
 
   button {
     outline: none;
@@ -99,17 +128,12 @@
     }
   }
 
-  &.needs-translation {
-    &:before {
-      content: '';
-      position: absolute;
-      left: 3px;
-      top: 4px;
-      width: 0;
-      height: 0;
-      border: 2px solid $color-needs-translation;
-      border-radius: 2px;
-    }
+  &.cell-boolean .cell-content {
+    flex: 1;
+  }
+
+  &.editing.cell-currency, &.cell-attachment.selected, &.cell-link.selected {
+      height: auto;
   }
 
   .annotation-flag-icons {
@@ -131,16 +155,16 @@
 
   .needs-translation-other-language {
     position: absolute;
-    right: 0;
-    bottom: 0;
+    right: -1px;
+    top: 36px;
     padding: 8px;
     z-index: 1;
 
     &:before {
       content: '';
       position: absolute;
-      right: -1px;
-      bottom: -1px;
+      right: 0;
+      top: 0;
       width: 0;
       height: 0;
       border-bottom: 8px solid $color-needs-translation;
@@ -153,12 +177,10 @@
 
     &.cell-link, &.cell-text, &.cell-attachment, &.cell-richtext, &.cell-currency {
       border: 0;
+      padding: 0;
 
       .cell-content {
         @include box-sizing(border-box);
-        position: absolute;
-        top: 0;
-        left: 0;
         padding: 9px;
         height: auto;
         min-height: $space-height-cell;
@@ -186,12 +208,31 @@
 
   }
 
+  &.in-selected-row {
+    background-color: $color-selected-row;
+  }
+
   &.editing {
 
     //Important for datepicker
     &.cell-datetime, &.cell-date {
       .cell-content {
         overflow: visible;
+      }
+      i {
+        line-height: $space-height-cell-content;
+        margin-left: 5px;
+        cursor: pointer;
+
+        &:hover {
+          color: $color-primary;
+        }
+      }
+
+      &.editing {
+        .cell-content {
+          @include user-select(none);
+        }
       }
     }
   }
@@ -210,63 +251,6 @@
     }
   }
 
-  &.repeat {
-    height: $space-height-cell;
-  }
-}
-
-.row-display-label {
-  & {
-    position: absolute;
-    background: $dark-blue-grey-background;
-    top: -40px;
-    width: 285px;
-    padding: 0 10px;
-    left: 5px;
-    box-sizing: border-box;
-    height: 30px;
-    line-height: 30px;
-    color: $color-text-light-grey;
-    font-size: 12px;
-    pointer-events: none;
-    border-radius: 5px;
-    z-index: 2;
-  }
-
-  &:after {
-    top: 100%;
-    left: 10px;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-    border: 6px solid transparent;
-    border-top-color: $dark-blue-grey-background;
-  }
-
-  .content {
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  //left of cell, right arrow
-  &.flip {
-    left: -295px;
-    top: 0;
-    margin-top: 15px;
-    transform: translateY(-25%);
-
-    &:after {
-      top: 50%;
-      left: 100%;
-      border-top-color: transparent;
-      border-left-color: $dark-blue-grey-background;
-      margin-top: -6px;
-    }
-  }
 }
 
 .cell.editing .row-display-label.below {

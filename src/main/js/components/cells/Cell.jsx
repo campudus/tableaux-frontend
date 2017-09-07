@@ -10,7 +10,6 @@ import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell.jsx";
 import DateTimeCell from "./datetime/DateTimeCell.jsx";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
-import RowConcat from "../../helpers/RowConcatHelper";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -20,14 +19,33 @@ import classNames from "classnames";
 import * as f from "lodash/fp";
 import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
-import TextAnnotationButton from "../textannotations/TextAnnotationButton";
+import {either} from "../../helpers/functools";
+import FlagIconRenderer from "./FlagIconRenderer";
+import {branch, compose, pure, renderComponent, renderNothing, withHandlers} from "recompose";
 
-// used to measure when the the cell hint is shown below the selected cell (useful when selecting the very first
-// visible row)
-const CELL_HINT_PADDING = 40;
+const ExpandCorner = compose(
+  branch(
+    ({show}) => !show,
+    renderNothing
+  ),
+  withHandlers({
+    onClick: (props) => (event) => {
+      event.stopPropagation();
+      ActionCreator.toggleRowExpand(props.cell.row.getId());
+    }
+  })
+)(
+  (props) => (
+    <div className="needs-translation-other-language"
+         onClick={props.onClick}
+    />
+  )
+);
 
-export const contentChanged = (cell, langtag, oldValue) => {
-  if (!cell.isMultiLanguage || cell.value[langtag] === oldValue) {
+export const contentChanged = (cell, langtag, oldValue) => () => {
+  if (!cell.isMultiLanguage || either(cell)
+      .map(f.prop(["value", langtag]))
+      .orElse(f.prop("value")).value === oldValue) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -70,7 +88,7 @@ export const contentChanged = (cell, langtag, oldValue) => {
 };
 
 @connectToAmpersand
-class Cell extends React.Component {
+class Cell extends React.PureComponent {
 
   cellDOMNode = null;
 
@@ -91,22 +109,11 @@ class Cell extends React.Component {
 
   componentDidMount = () => {
     this.cellDOMNode = ReactDOM.findDOMNode(this);
-    this.cellOffset = this.cellDOMNode.offsetTop;
     this.checkFocus();
   };
 
   componentDidUpdate = () => {
     this.checkFocus();
-  };
-
-  // Dont update when cell is not editing or selected
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const {annotationsOpen, selected, editing, langtag, shouldFocus} = this.props;
-    return (editing !== nextProps.editing
-      || selected !== nextProps.selected
-      || langtag !== nextProps.langtag
-      || shouldFocus !== nextProps.shouldFocus)
-      || annotationsOpen !== nextProps.annotationsOpen;
   };
 
   getKeyboardShortcuts = (event) => {
@@ -118,13 +125,12 @@ class Cell extends React.Component {
   };
 
   checkFocus = () => {
-    if (this.props.selected && !this.props.editing && this.props.shouldFocus) {
+    if (this.props.selected && !this.props.editing) {
       const cellDOMNode = this.cellDOMNode;
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
-      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(
-          cellDOMNode)) {
+      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
         cellDOMNode.focus();
       }
     }
@@ -132,13 +138,8 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
-      cell.kind,
-      "cell clicked: ",
-      cell,
-      "value: ",
-      cell.value,
-      cell.displayValue);
+    ActionCreator.closeAnnotationsPopup();
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked", langtag, ":", cell, "value: ", cell.value, cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -177,60 +178,25 @@ class Cell extends React.Component {
     e.stopPropagation();
   };
 
-  flagIconRenderer = (annotationsOpen) => {
-    const {cell, cell: {annotations}, langtag} = this.props;
-    const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
-    if (f.isEmpty(f.props(knownFlags, annotations).filter(f.identity)) && !annotationsOpen) {
-      return null;
-    }
-    const mkDot = (flag) => <div className={flag} />;
-
-    const hasTextAnnotations = f.any(
-      f.complement(f.isEmpty),
-      [annotations.info, annotations.warning, annotations.error]
-    );
-    const commentBubble = (!this.props.isExpandedCell && (hasTextAnnotations || annotationsOpen))
-      ? <TextAnnotationButton cell={cell}
-                              row={cell.row}
-                              langtag={langtag}
-                              open={annotationsOpen}
-      />
-      : null;
-
-    const isTranslationNeeded = f.contains(langtag, f.get(["translationNeeded", "langtags"], annotations))
-      && langtag !== Langtags[0];
-
-    return (
-      <div className="annotation-flag-icons">
-        {commentBubble}
-        {isTranslationNeeded && mkDot("translation")}
-        {annotations.important && mkDot("important")}
-        {annotations["check-me"] && mkDot("check-me")}
-        {annotations.postpone && mkDot("postpone")}
-      </div>
-    );
+  static cellKinds = {
+    [ColumnKinds.link]: LinkCell,
+    [ColumnKinds.attachment]: AttachmentCell,
+    [ColumnKinds.numeric]: NumericCell,
+    [ColumnKinds.boolean]: BooleanCell,
+    [ColumnKinds.date]: DateCell,
+    [ColumnKinds.datetime]: DateTimeCell,
+    [ColumnKinds.shorttext]: ShortTextCell,
+    [ColumnKinds.concat]: IdentifierCell,
+    [ColumnKinds.currency]: CurrencyCell,
+    [ColumnKinds.text]: TextCell,
+    [ColumnKinds.richtext]: TextCell,
+    [ColumnKinds.group]: IdentifierCell
   };
-
+  
   render = () => {
-    const {annotationsOpen, cell, langtag, selected, editing} = this.props;
-    const {link, attachment, numeric, group, boolean, date, datetime, shorttext, concat, currency, text, richtext} = ColumnKinds;
-    // const selectable = [link, attachment, boolean, concat, currency, text];
+    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
+    const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
-
-    const cellKinds = {
-      [link]: LinkCell,
-      [attachment]: AttachmentCell,
-      [numeric]: NumericCell,
-      [boolean]: BooleanCell,
-      [date]: DateCell,
-      [datetime]: DateTimeCell,
-      [shorttext]: ShortTextCell,
-      [concat]: IdentifierCell,
-      [currency]: CurrencyCell,
-      [text]: TextCell,
-      [richtext]: TextCell,
-      [group]: IdentifierCell
-    };
 
     const kind = cell.isEditable ? this.props.cell.kind : "disabled";
     const {translationNeeded} = cell.annotations;
@@ -239,71 +205,41 @@ class Cell extends React.Component {
     const cssClass = classNames(`cell cell-${kind} cell-${cell.column.getId()}-${cell.rowId}`,
       {
         "selected": selected,
-        "editing": cell.isEditable && editing
+        "editing": cell.isEditable && editing,
+        "in-selected-row": inSelectedRow
       }
     );
 
     const CellKind = (kind === "disabled")
       ? DisabledCell
-      : (cellKinds[kind] || TextCell);
-
-    const cellItem = (
-      <CellKind cell={cell} langtag={langtag}
-                selected={selected}
-                editing={cell.isEditable && editing}
-                setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? function () {
-                } : this.setKeyboardShortcutsForChildren}
-      />
-    );
-
-    const expandCorner = (needsTranslationOtherLanguages)
-      ? <div className="needs-translation-other-language"
-             onClick={
-               evt => {
-                 evt.stopPropagation();
-                 ActionCreator.toggleRowExpand(cell.row.getId());
-               }
-             }
-      />
-      : null;
+      : (Cell.cellKinds[kind] || TextCell);
 
     // onKeyDown event just for selected components
-    if (selected) {
-      const indexOfCell = cell.collection.indexOf(cell);
-      // get global so not every single cell needs to look fo the table rows dom element
-      const tableRowsDom = window.GLOBAL_TABLEAUX.tableRowsDom;
-      const difference = this.cellOffset - tableRowsDom.scrollTop;
-      const rowDisplayLabelClass = classNames(
-        "row-display-label",
-        {"flip": -CELL_HINT_PADDING < difference && difference < CELL_HINT_PADDING}
-      );
-
-      // We just show the info starting at the fourth column
-      const rowDisplayLabelElement = indexOfCell >= 3 ? (
-        <div className={rowDisplayLabelClass}><span className="content">{langtag} | <RowConcat row={cell.row}
-                                                                                               langtag={langtag} /></span>
-        </div>) : null;
-
-      return (
-        <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
-             tabIndex="-1" onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-             onMouseDown={this.onMouseDownHandler}>
-          {cellItem}
-          {this.flagIconRenderer(annotationsOpen)}
-          {expandCorner}
-          {(annotationsOpen) ? null : rowDisplayLabelElement}
-        </div>
-      );
-    } else {
-      return (
-        <div className={cssClass} onClick={this.cellClicked} onContextMenu={this.rightClicked}
-             tabIndex="-1">
-          {cellItem}
-          {this.flagIconRenderer(annotationsOpen)}
-          {expandCorner}
-        </div>
-      );
-    }
+    return (
+      <div style={this.props.style}
+           className={cssClass}
+           onClick={this.cellClicked}
+           onContextMenu={this.rightClicked}
+           tabIndex="1"
+           onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
+           onMouseDown={this.onMouseDownHandler}>
+        <CellKind cell={cell} langtag={langtag}
+                  selected={selected} inSelectedRow={inSelectedRow}
+                  editing={cell.isEditable && editing}
+                  value={(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
+                  contentChanged={contentChanged}
+                  setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
+        />
+        <FlagIconRenderer cell={cell}
+                          annotations={cell.annotations}
+                          langtag={langtag}
+                          annotationsOpen={annotationsOpen}
+        />
+        <ExpandCorner show={needsTranslationOtherLanguages}
+                      cell={cell}
+        />
+      </div>
+    );
   }
 }
 
@@ -311,13 +247,39 @@ Cell.propTypes = {
   cell: React.PropTypes.object.isRequired,
   langtag: React.PropTypes.string.isRequired,
   selected: React.PropTypes.bool,
+  inSelectedRow: React.PropTypes.bool,
   editing: React.PropTypes.bool,
   row: React.PropTypes.object.isRequired,
   table: React.PropTypes.object.isRequired,
   shouldFocus: React.PropTypes.bool,
-  showTranslationStatus: React.PropTypes.bool,
-  annotationsOpen: React.PropTypes.bool.isRequired,
+  annotationsOpen: React.PropTypes.bool,
   isExpandedCell: React.PropTypes.bool.isRequired
 };
 
-export default Cell;
+const isRepeaterCell = ({cell, isExpandedCell}) => isExpandedCell
+  && (
+    !cell.isMultiLanguage
+    || f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.boolean, ColumnKinds.attachment])
+  );
+
+const RepeaterCell = withHandlers(
+  {
+    onContextMenu: ({row, langtag, table, cell}) => (event) => {
+      event.preventDefault();
+      ActionCreator.showRowContextMenu(row, langtag, event.pageX, event.pageY, table, cell);
+    }
+  }
+)(
+  (props) => (
+    <div className="cell repeat placeholder"
+         onContextMenu={props.onContextMenu}
+    >
+      —.—
+    </div>
+  )
+);
+
+export default branch(
+  isRepeaterCell,
+  renderComponent(pure(RepeaterCell))
+)(Cell);

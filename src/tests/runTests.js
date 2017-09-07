@@ -1,11 +1,12 @@
 import unitTests from "./simpleTests";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 
 const modulesWithTests = [
   require("./simpleTests"),
   require("../main/js/helpers/functools"),
   require("../main/js/models/getDisplayValue"),
-  require("../main/js/helpers/multiLanguage")
+  require("../main/js/helpers/multiLanguage"),
+  require("../main/js/components/table/GrudGrid")
 ];
 
 const runTest = testObj => (f.isArray(testObj))

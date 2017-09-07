@@ -40,7 +40,7 @@ class Just extends Maybe {
   }
 
   spy(text) {
-    console.log("text", this.toString());
+    console.log(text, this.toString(), this._value);
     return this;
   }
 
@@ -54,6 +54,15 @@ class Just extends Maybe {
         return Maybe.none();
       }
     } else {
+      return Maybe.none();
+    }
+  }
+
+  set(field, value) {
+    try {
+      this._value[field] = value;
+      return this;
+    } catch (e) {
       return Maybe.none();
     }
   }
@@ -94,7 +103,7 @@ class Just extends Maybe {
   }
 
   toString() {
-    return `Maybe.Just(${this.value})`;
+    return `Maybe.Just(${typeof this.value}, ${this._value})`;
   }
 }
 
@@ -105,6 +114,10 @@ class None extends Maybe {
 
   spy() {
     console.log(this.toString());
+    return this;
+  }
+
+  set() {
     return this;
   }
 
@@ -280,8 +293,9 @@ const fspy = info => x => {
 
 const logged = curryN(2)(
   (msg, fn) => function () {
-    console.log("Logging:", msg);
-    return fn.apply(null, arguments);
+    const result = fn.apply(null, arguments);
+    console.log("Logging:", msg, "=>", result);
+    return result;
   }
 );
 

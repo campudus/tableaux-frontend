@@ -23,7 +23,7 @@ export function getRowContextMenu() {
       {...rowContextMenu}
       handleClickOutside={() => { this.setState({rowContextMenu: null}); }}
       pasteFrom={this.props.pasteOriginCell}
-      offsetY={this.tableDOMOffsetY}
+      offsetY={30}
       rows={this.props.rows}
     />;
   } else {

@@ -1,5 +1,18 @@
 .meta-cell {
-  text-align: right;
+  width: 80px !important;
+  background-color: white;
+  height: 45px;
+  box-sizing: border-box;
+  border-bottom: 1px solid $color-border-grey;
+  border-right: 1px solid $color-border-grey;
+
+  .cell-content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 7px;
+    justify-content: flex-end;
+  }
 
   &:hover {
     cursor: pointer;
@@ -24,7 +37,39 @@
     }
   }
 
+  .access-denied-icon {
+    color: $color-button-grey;
+    flex: 1;
+    margin-left: 3px;
+  }
+
+  .delete-row {
+    padding: 0;
+    flex: 1;
+
+    .button {
+      width: 35px;
+      height: 35px;
+
+      font-size: 1em;
+
+      border-radius: 35px;
+
+      display: block;
+
+      background-color: white;
+      border: 1px solid $color-border-grey;
+
+      &:hover {
+        color: $color-primary-contrast-text;
+        background-color: $color-primary;
+        border-color: $color-primary;
+      }
+    }
+  }
+
   &.row-expanded {
+    background-color: $color-background-very-light-grey;
     .cell-content {
       overflow: visible;
 
@@ -38,5 +83,9 @@
         display: block;
       }
     }
+  }
+
+  &.in-selected-row {
+    background-color: $color-selected-row;
   }
 }

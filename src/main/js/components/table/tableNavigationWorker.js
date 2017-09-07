@@ -8,11 +8,6 @@ import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {maybe} from "../../helpers/functools";
 
-export function shouldCellFocus() {
-  // we dont want to force cell focus when overlay is open
-  return this.state.shouldCellFocus && !this.props.overlayOpen;
-}
-
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
@@ -22,7 +17,11 @@ export function checkFocusInsideTable() {
     // happens in IE
     if (focusedElement === null) {
       maybe(tableDOMNode).method("focus");
-    } else if (tableDOMNode && !tableDOMNode.contains(focusedElement)) {
+    } else if (maybe(tableDOMNode)
+        .exec("contains", focusedElement)
+        .map((boolVal) => !boolVal)
+        .getOrElse(false)
+    ) {
       // Is the focus outside the table or is body selected
       // force table to be focused to get keyboard events
       tableDOMNode.focus();
@@ -30,27 +29,8 @@ export function checkFocusInsideTable() {
   }
 }
 
-export function disableShouldCellFocus() {
-  if (this.state.shouldCellFocus) {
-    window.devLog("Table.disableShouldCellFocus");
-    this.setState({shouldCellFocus: false});
-  }
-}
-
-export function enableShouldCellFocus() {
-  if (!this.state.shouldCellFocus) {
-    window.devLog("Table.enableShouldCellFocus");
-    this.setState({shouldCellFocus: true});
-  }
-}
-
 export function getKeyboardShortcuts() {
   const {selectedCell, selectedCellEditing} = this.state;
-
-  // Force the next selected cell to be focused
-  if (!shouldCellFocus.call(this)) {
-    enableShouldCellFocus.call(this);
-  }
   return {
     left: (event) => {
       event.preventDefault();
@@ -154,48 +134,6 @@ export function getKeyboardShortcuts() {
   };
 }
 
-/**
- * Checks if selected cell is overflowing and adjusts the scroll position
- * This enhances the default browser behaviour because it checks if the selected cell is completely visible.
- */
-export function updateScrollViewToSelectedCell() {
-  // Scrolling container
-  let tableRowsDom = this.tableRowsDom;
-  // Are there any selected cells?
-  const cellsDom = tableRowsDom.getElementsByClassName("cell selected");
-  if (cellsDom.length > 0) {
-    // Get the first selected cell
-    const cell = cellsDom[0];
-    // Cell DOM position and dimensions
-    const targetY = cell.offsetTop;
-    const targetX = cell.offsetLeft;
-    const cellWidth = cell.offsetWidth;
-    const cellHeight = cell.offsetHeight;
-    // Scroll container position and dimensions
-    const currentScrollPositionX = tableRowsDom.scrollLeft;
-    const currentScrollPositionY = tableRowsDom.scrollTop;
-    const containerWidth = tableRowsDom.clientWidth;
-    const containerHeight = tableRowsDom.clientHeight;
-
-    // Check if cell is outside the view. Cell has to be completely visible
-    if (targetX < currentScrollPositionX) {
-      // Overflow Left
-      tableRowsDom.scrollLeft = targetX;
-    } else if (targetX + cellWidth > currentScrollPositionX + containerWidth) {
-      // Overflow Right
-      tableRowsDom.scrollLeft = targetX - (containerWidth - cellWidth);
-    }
-
-    if (targetY < currentScrollPositionY) {
-      // Overflow Top
-      tableRowsDom.scrollTop = targetY;
-    } else if (targetY + cellHeight > currentScrollPositionY + containerHeight) {
-      // Overflow Bottom
-      tableRowsDom.scrollTop = targetY - (containerHeight - cellHeight);
-    }
-  }
-}
-
 export function isLastRowSelected() {
   const rows = this.props.rows;
   const numberOfRows = rows.length;
@@ -228,7 +166,7 @@ export function toggleCellSelection({selected, cell, langtag}) {
 
 export function toggleCellEditing(params = {}) {
   const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
-  const editVal = (!_.isUndefined(params) && !_.isUndefined(params.editing)) ? params.editing : true;
+  const editVal = (_.isBoolean(params.editing)) ? params.editing : true;
   const selectedCell = this.state.selectedCell;
   const needsTranslation = f.contains(
     params.langtag,
@@ -412,28 +350,4 @@ export function getCurrentSelectedRowId() {
 export function getCurrentSelectedColumnId() {
   const {selectedCell} = this.state;
   return selectedCell ? selectedCell.column.getId() : 0;
-}
-
-export function scrollToLeftStart(e) {
-  scrollToLeftLinear(this.tableRowsDom, 250);
-}
-
-/** Helper function to scroll to the left.
- * TODO: Improve with ease out function. Great article about it:
- * https://www.kirupa.com/html5/animating_with_easing_functions_in_javascript.htm *
- * **/
-
-function scrollToLeftLinear(element, scrollDuration) {
-  const scrollStep = element.scrollLeft / (scrollDuration / 15);
-  if (requestAnimationFrame !== "undefined") {
-    const step = () => {
-      if (element.scrollLeft > 0) {
-        requestAnimationFrame(step);
-        element.scrollLeft -= scrollStep;
-      }
-    };
-    requestAnimationFrame(step);
-  } else {
-    element.scrollLeft = 0;
-  }
 }

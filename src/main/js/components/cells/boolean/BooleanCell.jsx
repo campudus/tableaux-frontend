@@ -1,8 +1,8 @@
 import React, {PropTypes} from "react";
 import ActionCreator from "../../../actions/ActionCreator";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
+import {pure} from "recompose";
 
 const BooleanCell = (props) => {
   const {cell, langtag, selected, setCellKeyboardShortcuts} = props;
@@ -21,7 +21,6 @@ const BooleanCell = (props) => {
   const toggleCheckboxValue = () => {
     if (isLocked(cell.row)) {
       askForSessionUnlock(cell.row);
-      return;
     } else if (selected) {
       handleEditDone(!getCheckboxValue());
     }
@@ -49,4 +48,4 @@ BooleanCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-export default connectToAmpersand(BooleanCell);
+export default pure(BooleanCell);

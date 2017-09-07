@@ -22,11 +22,8 @@ import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "./cells/cellCopyHelper";
 import {openEntityView} from "./overlay/EntityViewOverlay";
-
-// hardcode all the stuffs!
-const ID_CELL_W = 80;
-const CELL_W = 300;
-const CELL_H = 46;
+import Portal from "react-portal";
+import JumpSpinner from "./table/JumpSpinner";
 
 @connectToAmpersand
 class TableView extends React.Component {
@@ -239,22 +236,14 @@ class TableView extends React.Component {
       }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
-      const columns = this.getCurrentTable().columns.models;
-      const visibleColumns = columns.filter(x => x.visible);
-      const colIndex = f.findIndex(f.matchesProperty("id", colId), visibleColumns);
-      const scrollContainer = f.first(document.getElementsByClassName("data-wrapper"));
-      const xOffs = ID_CELL_W + (colIndex) * CELL_W - (window.innerWidth - CELL_W) / 2;
-      const yOffs = (filter)
-        ? 0
-        : CELL_H * rowIndex - (scrollContainer.getBoundingClientRect().height - CELL_H) / 2;
-      scrollContainer.scrollLeft = xOffs;
-      scrollContainer.scrollTop = yOffs;
 
-      ActionCreator.toggleCellSelection(cell, ignore, this.props.langtag);
-      if (entityView) {
-        openEntityView(rows[rowIndex], this.props.langtag, cellId);
-      }
       this.pendingCellGoto = null;
+      ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
+      if (entityView) {
+        openEntityView(rows.at(rowIndex), this.props.langtag, cellId);
+      } else {
+        this.forceUpdate();
+      }
       return cell;
     };
 
@@ -301,11 +290,18 @@ class TableView extends React.Component {
       window.location = firstTable;
       return;
     }
-    this.setState({tableFullyLoaded: false});
+    this.setState({
+      initialLoading: true,
+      tableFullyLoaded: false
+    });
+
+    ActionCreator.spinnerOn();
+    let fetchedPages = 0;
 
     // We need to fetch columns first, since rows has Cells that depend on the column model
     const fetchColumns = table => new Promise(
       (resolve, reject) => {
+        ActionCreator.spinnerOn();
         table.columns.fetch({
           reset: true,
           success: () => {
@@ -328,19 +324,23 @@ class TableView extends React.Component {
 
     const fetchPages = () => new Promise(
       (resolve, reject) => {
+        ActionCreator.spinnerOn();
         currentTable.rows.fetchPage(1,
           {
-            success: () => {
+            success: (totalPages) => {
+              ++fetchedPages;
               this.setState({
-                rowsCollection: currentTable.rows,
                 currentTableId: tableId,
-                tableFullyLoaded: true
-                // rowsFilter: null
-              });
-              this.checkGotoCellRequest();
-              resolve();
+                tableFullyLoaded: fetchedPages >= totalPages
+              }, ((fetchedPages === 1) ? applyStoredViews : f.noop));
+              this.checkGotoCellRequest(fetchedPages);
+              if (fetchedPages >= totalPages) {
+                ActionCreator.spinnerOff();
+                resolve();
+              }
             },
             error: e => {
+              ActionCreator.spinnerOff();
               reject("Error fetching pages:" + e);
             }
           });
@@ -361,7 +361,7 @@ class TableView extends React.Component {
     fetchColumns(currentTable)
       .then(fetchPages)
       .then(applyStoredViews)
-      .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
+      .then(() => window.devLog("Loading took", (performance.now() - start) / 1000, "s"));
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -396,6 +396,7 @@ class TableView extends React.Component {
     if (cb) {
       cb();
     }
+    this.forceUpdate();
   };
 
   setDocumentTitleToTableName = () => {
@@ -491,6 +492,21 @@ class TableView extends React.Component {
         console.error("No table found with id " + this.state.currentTableId);
       }
 
+      const rows = rowsCollection || currentTable.rows || {};
+      // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
+      // without adding event listeners
+      const rowKeys = f.compose(
+        f.toString,
+        f.map(f.get("id")),
+        f.get("models")
+      )(rows);
+      const columnKeys = f.compose(
+        f.toString,
+        f.map(f.get("id")),
+        f.filter((col, idx) => col.visible || idx === 0),
+        f.get("models")
+      )(currentTable.columns);
+
       return (
         <div>
           <header>
@@ -521,15 +537,25 @@ class TableView extends React.Component {
             <Spinner />
           </header>
           <div className="wrapper">
-            <Table key={`${this.state.currentTableId}-${(tableFullyLoaded) ? "finished" : "loading"}`} table={currentTable}
-                   fullyLoaded={tableFullyLoaded}
-                   langtag={langtag} rows={rowsCollection || {}} overlayOpen={overlayOpen}
+            <Table fullyLoaded={tableFullyLoaded}
+                   table={currentTable}
+                   langtag={langtag} rows={rows} overlayOpen={overlayOpen}
+                   rowKeys={rowKeys}
+                   columnKeys={columnKeys}
                    pasteOriginCell={pasteOriginCell}
                    tables={tables}
                    disableOnClickOutside={this.props.overlayOpen}
             />
             }
           </div>
+          {(this.pendingCellGoto)
+            ? (
+              <Portal isOpened>
+                <JumpSpinner />
+              </Portal>
+            )
+            : null
+          }
         </div>
       );
     }

@@ -1,7 +1,7 @@
 import ActionCreator from "../../actions/ActionCreator";
 import React from "react";
-import {Directions, RowHeight} from "../../constants/TableauxConstants";
-import {disableShouldCellFocus, isLastRowSelected, setNextSelectedCell} from "./tableNavigationWorker";
+import {Directions} from "../../constants/TableauxConstants";
+import {isLastRowSelected, setNextSelectedCell} from "./tableNavigationWorker";
 import {translate} from "react-i18next";
 import _ from "lodash";
 
@@ -25,25 +25,8 @@ export function duplicateRow(payload) {
   const {rowId} = payload;
   const rowToCopy = rows.get(rowId);
   rowToCopy.safelyDuplicate((row) => {
-    ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={scrollToRow.bind(this)} />, 3000, true);
+    ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={ActionCreator.jumpToDupe} />, 3000, true);
   });
-}
-
-// TODO: Move all this to rows component, with props/actions.
-// TODO: Problem is, this executes faster, than the row added to dom, so we get old height.
-// TODO: Scroll to row, not just to the bottom
-export function scrollToRow(row) {
-  const {tableRowsDom} = this;
-  const {rows} = this.props;
-  const indexOfRow = rows.indexOf(row);
-  const yPositionRow = RowHeight * indexOfRow;
-  const rowsDomHeight = tableRowsDom.scrollHeight;
-  // const rowsDomScrollTop = tableRowsDom.scrollTop;
-  const rowsViewportHeight = tableRowsDom.clientHeight;
-  console.log("row added at index:", indexOfRow, ". jump to bottom at y:", yPositionRow + RowHeight - rowsViewportHeight, ", new row:", row, " is duplicated", row.recentlyDuplicated);
-
-  disableShouldCellFocus.call(this);
-  tableRowsDom.scrollTop = rowsDomHeight - rowsViewportHeight;
 }
 
 export function rowAdded() {

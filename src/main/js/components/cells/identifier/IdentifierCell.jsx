@@ -1,22 +1,33 @@
-import React, {PropTypes} from "react";
+import React, {PropTypes, PureComponent} from "react";
 import {openEntityView} from "../../overlay/EntityViewOverlay";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
 
-const IdentifierCell = (props) => {
-  const {cell, editing, langtag, selected, setCellKeyboardShortcuts} = props;
-  const openEditor = () => ((selected || editing) && !isLocked(cell.row))
-    ? openEntityView(cell.row, langtag, null, null, cell.column)
-    : function () {};
-  setCellKeyboardShortcuts({
-    enter: openEditor
-  });
-  return (
-    <div className='cell-content' onClick={openEditor}>
-      {cell.displayValue[langtag]}
-    </div>
-  );
-};
+class IdentifierCell extends PureComponent {
+
+  openEditor = () => {
+    const {cell, editing, langtag, selected} = this.props;
+    ((selected || editing) && !isLocked(cell.row))
+      ? openEntityView(cell.row, langtag, null, null, cell.column)
+      : function () {};
+  };
+
+  componentWillMount() {
+    const {setCellKeyboardShortcuts} = this.props;
+    setCellKeyboardShortcuts({
+      enter: this.openEditor
+    });
+  }
+
+  render() {
+    const {cell, langtag} = this.props;
+    return (
+      <div className='cell-content' onClick={this.openEditor}>
+        {cell.displayValue[langtag]}
+      </div>
+    );
+  }
+}
 
 IdentifierCell.propTypes = {
   langtag: PropTypes.string.isRequired,
