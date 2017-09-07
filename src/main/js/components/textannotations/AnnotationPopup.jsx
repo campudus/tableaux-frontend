@@ -77,7 +77,7 @@ class AnnotationPopup extends Component {
     const {cell, row, langtag} = this.props;
     const annotations = f.compose(
       f.sortBy(f.get("createdAt")),
-      f.filter(f.identity),
+      f.compact,
       f.flatten,
       f.props(["info", "warning", "error"])
     )(cell.annotations);

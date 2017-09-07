@@ -83,7 +83,7 @@ class Header extends Component {
       );
 
     const children = f.compose(
-      f.filter(f.identity),
+      f.compact,
       f.defaultTo([components]),
       f.get(["props", "children"])
     )(components);

@@ -32,7 +32,7 @@ const momentFromString = str => { // this is more robust downstream than just Mo
     createMoment(str),
     [DateTimeFormats.formatForUser, DateFormats.formatForUser, DateTimeFormats.formatForServer]
   );
-  return f.first(f.filter(f.identity, values));
+  return f.first(f.compact, values);
 };
 
 // string -> value

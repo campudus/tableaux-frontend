@@ -31,7 +31,7 @@ export default class TextAnnotationButton extends Component {
     const {cell, open} = this.props;
     const annotations = f.compose(
       f.flatten,
-      f.filter(f.identity),
+      f.compact,
       f.props(["info", "warning", "error"])
     )(cell.annotations);
     return (

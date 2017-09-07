@@ -58,7 +58,7 @@ class TableSwitcherButton extends React.Component {
     const groups = f.compose(
       f.uniqBy(f.get("id")),                 // unique set of groups
       f.reject(f.matchesProperty("id", 0)),  //   ...with valid ids
-      f.filter(f.identity),                  //   ...of non-null groups
+      f.compact,                  //   ...of non-null groups
       f.map(f.get("group")),                 //   ...from group data
       f.reject(f.get("hidden"))              //   ...of visible tables
     )(this.props.tables.models);
