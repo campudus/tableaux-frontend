@@ -210,6 +210,7 @@
 
       .items-title {
         display: flex;
+        flex-wrap: wrap;
 
         span {
           padding-top: 20px;
@@ -218,6 +219,25 @@
           // titles containing long words (eg. "Sicherheitsbekleidungsvarianten")
           height: 32px;
           font-size: large;
+        }
+
+        .link-status-count {
+          width: 100%;
+          padding-top: 0;
+          span {
+            padding: 0;
+          }
+
+          .text {
+            font-size: smaller;
+            color: $color-text-medium-grey;
+          }
+
+          .number {
+            padding: 0 5px;
+            font-size: smaller;
+            font-weight: bold;
+          }
         }
 
         .table-link {

@@ -95,15 +95,18 @@ export const UnlinkedRows = branch(
 // ---------------------------------------------------------------------------------------
 // Link count
 
-const LinkStatusCountFrag = ({rowResults, maxLinks}) => (
-  <span>
-    (
-    {f.size(rowResults.linked)}
-    /
-    {maxLinks}
-    )
-  </span>
-);
+const LinkStatusCountFrag = ({rowResults, maxLinks}) => {
+  const [pre, middle, post] = i18n.t("table:link-overlay-count").split("|");
+  return (
+    <span className="link-status-count">
+      <span className="text">{pre}</span>
+      <span className="number">{f.size(rowResults.linked)}</span>
+      <span className="text">{middle}</span>
+      <span className="number">{maxLinks}</span>
+      <span className="text">{post}</span>
+    </span>
+  );
+};
 
 export const LinkStatus = branch(
   ({maxLinks}) => !isFinite(maxLinks),

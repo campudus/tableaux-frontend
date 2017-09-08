@@ -105,6 +105,7 @@
   "link-overlay-empty": "Nothing linked yet. You can choose data from the following list.",
   "link-overlay-items-title": "Linked data from table {{name}}",
   "link-overlay-add-new-row": "Create a new entry in table {{tableName}}",
+  "link-overlay-count": "You selected|datasets, max is|.",
   "row-is-locked": "Data is read only",
   "unlock-row": "Unlock",
   "clear-date": "No date / time",

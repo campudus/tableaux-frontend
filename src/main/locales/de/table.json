@@ -105,6 +105,7 @@
   "link-overlay-empty": "Keine Verknüpfungen bisher. Sie können aus der folgenden Liste Datensätze wählen.",
   "link-overlay-items-title": "Verknüpfte Datensätze aus der Tabelle {{name}}",
   "link-overlay-add-new-row": "Neuen Datensatz in Tabelle {{tableName}} erstellen",
+  "link-overlay-count": "Sie haben|von maximal|möglichen Datensätzen ausgewählt.",
   "row-is-locked": "Datensatz ist schreibgeschützt",
   "unlock-row": "Entsperren",
   "clear-date": "Kein Datum / Zeit",
