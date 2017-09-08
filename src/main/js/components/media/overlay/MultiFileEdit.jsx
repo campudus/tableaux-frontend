@@ -6,7 +6,7 @@ import {translate} from "react-i18next";
 import TableauxConstants, {Langtags} from "../../../constants/TableauxConstants";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import f from "lodash/fp";
-import {merge} from "lodash";
+import MultifileFileEdit from "./MultifileFileEdit";
 
 @connectToAmpersand
 class MultiFileEdit extends Component {
@@ -36,7 +36,7 @@ class MultiFileEdit extends Component {
   }
 
   onSave = () => {
-    const {t, editedLanguage, hasChanged} = this.props;
+    const {t, editedLanguage, file, hasChanged} = this.props;
     if (hasChanged) {
       const langDuplicates = f.compose(
         f.pickBy(f.lt(1)),                       // Select keys with 1 < N for any
@@ -50,21 +50,22 @@ class MultiFileEdit extends Component {
         alert(multiLanguageError);
         return;
       } else {
-        var file = this.props.file;
-        merge(file.title, this.props.editedTitleValue);
-        merge(file.description, this.props.editedDescValue);
-        merge(file.externalName, this.props.editedExternalnameValue);
+        const fileFromProps = f.flow(
+          f.update("title", this.props.editedTitleValue),
+          f.update("description", this.props.editedDescValue),
+          f.update("externalName", this.props.editedExternalnameValue)
+        )(file);
 
-        var changedFile = {
+        let changedFile = {
           title: {},
           description: {},
           externalName: {},
           internalName: {},
           mimeType: {}
         };
-        for (var langToSwap in editedLanguage) {
-          if (this.props.editedLanguage.hasOwnProperty(langToSwap)) {
-            const langToSwapTo = this.props.editedLanguage[langToSwap];
+        for (let langToSwap in editedLanguage) {
+          if (editedLanguage.hasOwnProperty(langToSwap)) {
+            const langToSwapTo = editedLanguage[langToSwap];
             changedFile.title[langToSwapTo] = file.title[langToSwap] || null;
             changedFile.description[langToSwapTo] = file.description[langToSwap] || null;
             changedFile.externalName[langToSwapTo] = file.externalName[langToSwap] || null;
@@ -72,23 +73,18 @@ class MultiFileEdit extends Component {
             changedFile.mimeType[langToSwapTo] = file.mimeType[langToSwap] || null;
           }
         }
+        
+        const resultFile = f.flow(
+          f.pick(["title", "description", "externalName", "internalName", "mimeType"]),
+          f.merge(fileFromProps)
+        )(changedFile);
 
-        merge(file.title, changedFile.title);
-        merge(file.description, changedFile.description);
-        merge(file.externalName, changedFile.externalName);
-        merge(file.internalName, changedFile.internalName);
-        merge(file.mimeType, changedFile.mimeType);
-
-        const changeFileParams = reduceMediaValuesToAllowedLanguages([
-          file.uuid,
-          file.title,
-          file.description,
-          file.externalName,
-          file.internalName,
-          file.mimeType,
-          file.folder,
-          file.fileUrl
-        ]);
+        const changeFileParams = reduceMediaValuesToAllowedLanguages(
+          f.pick(
+            ["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "fileUrl"],
+            resultFile
+          )
+        );
         ActionCreator.changeFile(...changeFileParams);
       }
     }
@@ -124,7 +120,7 @@ class MultiFileEdit extends Component {
 
   render() {
     const files = TableauxConstants.Langtags.map(function (langtag) {
-      const {file, editedTitleValue, editedDescValue, editedExternalnameValue, editedLanguage} = self.props;
+      const {file, editedTitleValue, editedDescValue, editedExternalnameValue, editedLanguage} = this.props;
       const {title, internalName, externalName, description, uuid, fileUrl} = file;
 
       const fileData = {
@@ -141,10 +137,10 @@ class MultiFileEdit extends Component {
                            originalLangtag={langtag}
                            langtag={language}
                            fileData={fileData}
-                           onTitleChange={self.onTitleChange}
-                           onDescriptionChange={self.onDescriptionChange}
-                           onExternalnameChange={self.onExternalnameChange}
-                           onLangChange={self.onLangChange} />
+                           onTitleChange={this.onTitleChange}
+                           onDescriptionChange={this.onDescriptionChange}
+                           onExternalnameChange={this.onExternalnameChange}
+                           onLangChange={this.onLangChange} />
       );
     });
 

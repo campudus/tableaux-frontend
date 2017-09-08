@@ -51,7 +51,7 @@ function _onKeyboardShortcut(event, keyboardShortcutsFn) {
     return;
   }
 
-  (shortcuts || []).map(
+  f.keys(shortcuts).map(
     function (handler, key) {
       let keyCode = KEYS[key] || key;
 

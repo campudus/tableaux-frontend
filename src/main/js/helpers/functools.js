@@ -1,3 +1,5 @@
+/* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
+
 import {curryN, isFunction, map, prop, range} from "lodash/fp";
 
 /* Maybe monad.
