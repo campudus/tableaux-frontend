@@ -1,24 +1,20 @@
-var React = require("react");
-var ActionCreator = require("../../../actions/ActionCreator");
+import React from "react";
+import ActionCreator from "../../../actions/ActionCreator";
+import {pure, withHandlers, compose} from "recompose";
 
-var TextOverlayFooter = React.createClass({
-
-  onSaveHandler: function () {
-    ActionCreator.saveOverlayTypeText();
-  },
-
-  onCancelHandler: function () {
-    ActionCreator.closeOverlayTypeText();
-  },
-
-  render: function () {
-    return (
-      <div className="button-wrapper">
-        <button className="button positive" onClick={this.onSaveHandler}>Speichern</button>
-        <button className="button neutral" onClick={this.onCancelHandler}>Abbrechen</button>
-      </div>
-    );
-  }
+const withButtonHandlers = withHandlers({
+  onSave: (props) => ActionCreator.saveOverlayTypeText(),
+  onCancel: (props) => ActionCreator.closeOverlayTypeText()
 });
 
-module.exports = TextOverlayFooter;
+const TextOverlayFooter = props => (
+  <div className="button-wrapper">
+    <button className="button positive" onClick={this.onSaveHandler}>Speichern</button>
+    <button className="button neutral" onClick={this.onCancelHandler}>Abbrechen</button>
+  </div>
+);
+
+export default compose(
+  withButtonHandlers,
+  pure
+)(TextOverlayFooter);

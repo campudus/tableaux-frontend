@@ -1,31 +1,26 @@
-var React = require("react");
+import React from "react";
+import PropTypes from "prop-types";
+import f from "lodash/fp";
+import {pure} from "recompose";
 
-var ProgressBar = React.createClass({
+const ProgressBar = ({progress}) => {
+  const completed = f.clamp(0, 100, progress);
 
-  propTypes: {
-    progress: React.PropTypes.number.isRequired
-  },
+  const style = {
+    width: `{completed}%`,
+    transition: "width 100ms"
+  };
 
-  render: function () {
-    var completed = this.props.progress;
-    if (completed < 0) {
-      completed = 0;
-    }
-    if (completed > 100) {
-      completed = 100;
-    }
+  return (
+    <div className="progressbar-container">
+      <div className="progressbar-progress" style={style}>{completed + "%"}</div>
+    </div>
+  );
+};
 
-    var style = {
-      width: completed + "%",
-      transition: "width 100ms"
-    };
+ProgressBar.propTypes = {
+  progress: PropTypes.number.isRequired
+};
 
-    return (
-      <div className="progressbar-container">
-        <div className="progressbar-progress" style={style}>{completed + "%"}</div>
-      </div>
-    );
-  }
-});
+export default pure(ProgressBar);
 
-module.exports = ProgressBar;

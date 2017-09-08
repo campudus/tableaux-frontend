@@ -1,54 +1,59 @@
-import React from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import f from "lodash/fp";
 
-const TextArea = React.createClass({
+class TextArea extends Component {
 
-  propTypes: {
-    initialContent: React.PropTypes.string,
-    onClose: React.PropTypes.func.isRequired,
-    onSave: React.PropTypes.func.isRequired
-  },
+  static propTypes = {
+    initialContent: PropTypes.string,
+    onClose: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
+  };
 
   // We save the current text value
-  content: null,
+  content = null;
 
-  componentDidMount: function () {
-    const inputArea = this.refs.inputArea;
+  componentDidMount() {
+    const {inputArea} = this;
     const text = inputArea.value;
     // Sets cursor to end of input field
     inputArea.value = ""; // textarea must be empty first to jump to end of text
     inputArea.value = text;
-  },
+  }
 
-  closeOverlayHander: function (event) {
+  closeOverlayHander = (event) => {
     this.props.onClose(event);
-  },
+  };
 
-  saveOverlayHander: function (event) {
+  saveOverlayHander = (event) => {
     this.props.onSave(this.content, event);
-  },
+  };
 
-  componentWillMount: function () {
+  componentWillMount() {
     Dispatcher.on(ActionTypes.OVERLAY_TYPE_TEXT_CLOSE, this.closeOverlayHander);
     Dispatcher.on(ActionTypes.OVERLAY_TYPE_TEXT_SAVE, this.saveOverlayHander);
-  },
+  }
 
-  componentWillUnmount: function () {
+  componentWillUnmount() {
     Dispatcher.off(ActionTypes.OVERLAY_TYPE_TEXT_CLOSE, this.closeOverlayHander);
     Dispatcher.off(ActionTypes.OVERLAY_TYPE_TEXT_SAVE, this.saveOverlayHander);
-  },
+  }
 
-  getContent: function (event) {
-    return this.refs.inputArea.value;
-  },
+  getContent = (event) => {
+    return this.inputArea.value;
+  };
 
-  onChangeHandler: function (event) {
+  onChangeHandler = (event) => {
     this.content = this.getContent(event);
-  },
+  };
 
-  render: function () {
+  setInputAreaRef = (node) => {
+    this.inputArea = node;
+  };
+
+  render() {
     if (f.isNil(this.content)) {
       this.content = this.props.initialContent;
     }
@@ -60,10 +65,11 @@ const TextArea = React.createClass({
                   type="text"
                   defaultValue={this.content}
                   onChange={this.onChangeHandler}
-                  ref="inputArea"></textarea>
+                  ref={this.setInputAreaRef}
+        />
       </div>
     );
   }
-});
+};
 
 export default TextArea;

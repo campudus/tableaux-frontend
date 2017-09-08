@@ -1,70 +1,73 @@
-var React = require("react");
-var AmpersandMixin = require("ampersand-react-mixin");
-var ActionCreator = require("../../../actions/ActionCreator");
-var SubfolderView = require("./SubfolderView.jsx");
+import React from "react";
+import PropTypes from "prop-types";
+import ActionCreator from "../../../actions/ActionCreator";
+import SubfolderView from "./SubfolderView";
 import {translate} from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
 import {confirmDeleteFolder, simpleError} from "../../../components/overlay/ConfirmationOverlay";
+import {branch, compose, pure, renderComponent, withHandlers, withState} from "recompose";
+import f from "lodash/fp";
 
-var Subfolder = React.createClass({
-  mixins: [AmpersandMixin],
+const withToggleableEditState = compose(
+  withState("edit", "updateEditState", f.constant(false)),
+  withHandlers({
+    onEdit: ({updateEditState}) => () => updateEditState((editing) => !editing)
+  })
+);
 
-  propTypes: {
-    folder: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
-  },
-
-  getInitialState: function () {
-    return {
-      edit: false
-    };
-  },
-
-  onEdit: function () {
-    this.setState({
-      edit: !this.state.edit
-    });
-  },
-
-  onSave: function (folderId, folderName, folderDescription, folderParent) {
-    const {t} = this.props;
-    this.onEdit();
-    console.log("Folder.changed", folderId, folderName, folderDescription, folderParent);
-    ActionCreator.changeFolder(folderId, folderName, folderDescription, folderParent,
+const withButtonHandlers = withHandlers({
+  onSave: (props) => (folderId, folderName, folderDescription, folderParent) => {
+    const {t} = props;
+    props.onEdit();
+    window.devLog("Folder.changed", folderId, folderName, folderDescription, folderParent);
+    ActionCreator.changeFolder(
+      folderId, folderName, folderDescription, folderParent,
       () => simpleError(t("error_folder_exists_already")));
   },
-
-  onRemove: function () {
+  onCancel: (props) => props.onEdit,
+  onRemove: (props) => () => {
     confirmDeleteFolder(
-      this.props.folder.name,
+      props.folder.name,
       () => {
-        console.log("Folder.onRemove", this.props.folder.getId());
-        ActionCreator.removeFolder(this.props.folder.id);
+        console.log("Folder.onRemove", props.folder.getId());
+        ActionCreator.removeFolder(props.folder.id);
         ActionCreator.closeOverlay();
       },
       () => {
         ActionCreator.closeOverlay();
       }
     );
-  },
-
-  render: function () {
-    var subfolder;
-    if (this.state.edit) {
-      subfolder = <SubfolderEdit folder={this.props.folder} onSave={this.onSave} onCancel={this.onEdit}/>;
-    } else {
-      subfolder = <SubfolderView folder={this.props.folder}
-                                 langtag={this.props.langtag}
-                                 onRemove={this.onRemove}
-                                 onEdit={this.onEdit}/>;
-    }
-
-    return (
-      <div className="subfolder">
-        {subfolder}
-      </div>
-    );
   }
 });
 
-module.exports = translate(["media"])(Subfolder);
+const withEditMode = branch(
+  (props) => props.edit,
+  renderComponent(SubfolderEdit)
+);
+
+const ViewComponent = compose(
+  withToggleableEditState,
+  withButtonHandlers,
+  withEditMode,
+  pure
+)(
+  (props) => <SubfolderView {...props} />
+);
+
+const Subfolder = (props) => {
+  return (
+    <div className="subfolder">
+      <ViewComponent {...props} />
+    </div>
+  );
+};
+
+Subfolder.propTypes = {
+  folder: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired
+};
+
+module.exports = compose(
+  translate(["media"]),
+  pure
+)(Subfolder);

@@ -5,33 +5,50 @@ import request from "superagent";
 import Dropzone from "react-dropzone";
 import React from "react";
 import {translate} from "react-i18next";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import {DefaultLangtag} from "../../../constants/TableauxConstants";
+import PropTypes from "prop-types";
+import f from "lodash/fp";
+import {branch, compose, pure, renderNothing, withHandlers, withState} from "recompose";
 
-var FileUpload = React.createClass({
+const withUploadHandlers = compose(
+  withState("runningUploads", "applyUploadUpdater", {}),
+  withHandlers({
+    updateUploads: ({applyUploadUpdater}) => (fn) => applyUploadUpdater(fn)
+  }),
+  withHandlers({
+    uploadCallback: (props) => (err, res, uuid) => {
+      const {updateUploads} = props;
+      updateUploads(f.omit(uuid));
 
-  propTypes: {
-    folder: React.PropTypes.object.isRequired
-  },
+      if (err) {
+        console.error("FileUpload.uploadCallback", err);
+        return;
+      }
 
-  getInitialState: function () {
-    return {
-      runningUploads: {}
-    };
-  },
+      if (res) {
+        const file = res.body;
+        ActionCreator.addFile(
+          ...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
+        );
+      }
+    }
+  })
+);
 
-  onDrop: function (files) {
-    var self = this;
+const withDropHandlers = withHandlers({
+  onDrop: (props) => (files) => {
     // upload with default language
-    var langtag = TableauxConstants.DefaultLangtag;
+    files.forEach((file) => {
+      // upload each file on its own
 
-    files.forEach(function (file) {
-      // upload each file for it's own
+      const json = f.flow(
+        f.assoc(["title", DefaultLangtag], file.title),
+        f.assoc(["description", DefaultLangtag], ""),
+        f.assoc("folder", props.folder.id)
+      )({});
 
-      var json = {title: {}, description: {}, folder: self.props.folder.id};
-      json.title[langtag] = file.name;
-      json.description[langtag] = "";
-
-      request.post(apiUrl("/files"))
+      request
+        .post(apiUrl("/files"))
         .send(json)
         .end(function (err, res) {
           if (err) {
@@ -39,80 +56,75 @@ var FileUpload = React.createClass({
             return;
           }
 
-          var result = res.body;
-          var uuid = result.uuid;
+          const result = res.body;
+          const uuid = result.uuid;
+          const uploadUrl = apiUrl("/files/" + uuid + "/" + DefaultLangtag);
 
-          var uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
-
-          request.put(uploadUrl)
-            .on("progress", function (e) {
-              var runningUploads = self.state.runningUploads;
-              runningUploads[uuid] = {
-                progress: parseInt(e.percent),
-                name: file.name
-              };
-              self.setState({
-                runningUploads: runningUploads
-              });
-            })
+          request
+            .put(uploadUrl)
+            .on("progress",
+              (e) => props.updateUploads(f.assoc(uuid,
+                {
+                  progress: parseInt(e.percent),
+                  name: file.name
+                })))
             .attach("file", file, file.name)
             .end(function (err, res) {
-              self.uploadCallback(err, res, uuid);
+              props.uploadCallback(err, res, uuid);
             });
         });
     });
-  },
-
-  uploadCallback: function (err, res, uuid) {
-    var runningUploads = this.state.runningUploads;
-    delete runningUploads[uuid];
-    this.setState({
-      runningUploads: runningUploads
-    });
-
-    if (err) {
-      console.error("FileUpload.uploadCallback", err);
-      return;
-    }
-
-    if (res) {
-      var file = res.body;
-      ActionCreator.addFile(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
-    }
-  },
-
-  render: function () {
-    const {t} = this.props;
-    var uploads = [];
-    var runningUploads = this.state.runningUploads;
-    for (var uploadUuid in runningUploads) {
-      if (runningUploads.hasOwnProperty(uploadUuid)) {
-        uploads.push(<div className="file-upload" key={uploadUuid}>
-            <span>{runningUploads[uploadUuid].name}</span><ProgressBar progress={runningUploads[uploadUuid].progress}/>
-          </div>
-        ); 
-      }
-    }
-
-    var runningUploadsPanel = null;
-    if (uploads.length > 0) {
-      runningUploadsPanel = (
-        <div className="running-uploads">
-          <span className="uploads-text">{t("current_uploads")}:</span>
-          {uploads}
-        </div>
-      );
-    }
-
-    return (
-      <div className="file-uploads">
-        {runningUploadsPanel}
-        <Dropzone onDrop={this.onDrop} className="dropzone">
-          <a>{t("upload_click_or_drop")}</a>
-        </Dropzone>
-      </div>
-    );
   }
 });
 
-module.exports = translate(["media"])(FileUpload);
+const RunningUploadPanel = compose(
+  branch(
+    (props) => f.size(props.uploads) < 1,
+    renderNothing
+  ),
+  pure
+)(
+  (props) => (
+    <div className="running-uploads">
+      <span className="uploads-text">
+        {props.t("current_uploads")}:
+      </span>
+      {props.uploads}
+    </div>
+  )
+);
+
+const FileUpload = (props) => {
+  let uploads = [];
+  const {runningUploads, t, onDrop} = props;
+  for (let uploadUuid in runningUploads) {
+    if (runningUploads.hasOwnProperty(uploadUuid)) {
+      uploads.push(<div className="file-upload" key={uploadUuid}>
+          <span>{runningUploads[uploadUuid].name}</span><ProgressBar progress={runningUploads[uploadUuid].progress} />
+        </div>
+      );
+    }
+  }
+
+  return (
+    <div className="file-uploads">
+      <RunningUploadPanel uploads={uploads}
+                          t={props.t}
+      />
+      <Dropzone onDrop={onDrop} className="dropzone">
+        <a>{t("upload_click_or_drop")}</a>
+      </Dropzone>
+    </div>
+  );
+};
+
+FileUpload.propTypes = {
+  folder: PropTypes.object.isRequired
+};
+
+export default compose(
+  withUploadHandlers,
+  withDropHandlers,
+  pure,
+  translate(["media"])
+)(FileUpload);

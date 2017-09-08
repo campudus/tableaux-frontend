@@ -1,23 +1,23 @@
-var React = require("react");
-var AmpersandMixin = require("ampersand-react-mixin");
+import React from "react";
+import PropTypes from "prop-types";
 import {translate} from "react-i18next";
+import {compose} from "recompose";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
-var NewFolderActionView = React.createClass({
-  mixins: [AmpersandMixin],
+const NewFolderActionView = (props) => (
+  <div className="new-folder-button" onClick={props.callback}>
+    <i className="icon fa fa-plus" />
+    <span>
+      {props.t("create_new_folder")}
+    </span>
+  </div>
+);
 
-  propTypes: {
-    callback: React.PropTypes.func.isRequired
-  },
+NewFolderActionView.propTypes = {
+  callback: PropTypes.func.isRequired
+};
 
-  render: function () {
-    const {t} = this.props;
-
-    return (
-      <div className="new-folder-button" onClick={this.props.callback}>
-        <i className="icon fa fa-plus"></i><span>{t("create_new_folder")}</span>
-      </div>
-    );
-  }
-});
-
-module.exports = translate(["media"])(NewFolderActionView);
+export default compose(
+  translate(["media"]),
+  connectToAmpersand
+)(NewFolderActionView);

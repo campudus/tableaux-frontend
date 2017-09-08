@@ -1,67 +1,63 @@
 import f from "lodash/fp";
 import Select from "react-select";
 import React from "react";
+import PropTypes from "prop-types";
+import {compose, withHandlers, pure, setPropTypes} from "recompose";
 
 import TableauxConstants from "./../../constants/TableauxConstants";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 
-const LanguageSwitcher = React.createClass({
-
-  propTypes: {
-    langtag: React.PropTypes.string.isRequired,
-    onChange: React.PropTypes.func,
-    openOnTop: React.PropTypes.bool,
-    options: React.PropTypes.array,
-    disabled: React.PropTypes.bool,
-    limitLanguages: React.PropTypes.array
-  },
-
-  onChange: function (langObj) {
-    // prevents undefined language tag: we just want to switch the language when there is actually something selected
-    if (!f.isEmpty(langObj)) {
-      const langtag = langObj.value;
-      if (this.props.onChange) {
-        this.props.onChange(langtag);
+const enhance = compose(
+  setPropTypes({
+    langtag: PropTypes.string.isRequired,
+    onChange: PropTypes.func,
+    openOnTop: PropTypes.bool,
+    options: PropTypes.array,
+    disabled: PropTypes.bool,
+    limitLanguages: PropTypes.array
+  }),
+  withHandlers({
+    onChange: (props) => (langObj) => {
+      // prevents undefined language tag: we just want to switch the language when there is actually something selected
+      if (!f.isEmpty(langObj)) {
+        const langtag = langObj.value;
+        if (props.onChange) {
+          props.onChange(langtag);
+        }
       }
-    }
-  },
+    },
+    renderOption: (props) => (option) => getLanguageOrCountryIcon(option.value, "language")
+  }),
+  pure
+);
 
-  renderOption: function (option) {
-    return getLanguageOrCountryIcon(option.value, "language");
-  },
+const LanguageSwitcher = (props) => {
+  const {limitLanguages, disabled, langtag, onChange, renderOption, openOnTop} = props;
+  // Inside select box show user just the languages he has access to
+  const languagesToDisplay = (!disabled && limitLanguages) ? limitLanguages : TableauxConstants.Langtags;
 
-  render: function () {
-    const {limitLanguages, disabled} = this.props;
-    // Inside select box show user just the languages he has access to
-    const languagesToDisplay = !disabled && limitLanguages ? limitLanguages : TableauxConstants.Langtags;
-
-    const options = this.props.options
-      || languagesToDisplay.reduce(
-        function (res, langtag) {
-          res.push({
-            value: langtag,
-            label: langtag
-          });
-          return res;
-        },
-        []
-      );
-
-    return (
-      <div className="language-switcher">
-        <Select className={this.props.openOnTop ? "open-on-top" : ""}
-                options={options}
-                searchable
-                clearable={false}
-                value={this.props.langtag}
-                onChange={this.onChange}
-                optionRenderer={this.renderOption}
-                valueRenderer={this.renderOption}
-                disabled={this.props.disabled}
-        />
-      </div>
+  const options = props.options
+    || languagesToDisplay.map(
+      (langtag) => ({
+        value: langtag,
+        label: langtag
+      })
     );
-  }
-});
 
-export default LanguageSwitcher;
+  return (
+    <div className="language-switcher">
+      <Select className={(openOnTop) ? "open-on-top" : ""}
+              options={options}
+              searchable
+              clearable={false}
+              value={langtag}
+              onChange={onChange}
+              optionRenderer={renderOption}
+              valueRenderer={renderOption}
+              disabled={disabled}
+      />
+    </div>
+  );
+};
+
+export default enhance(LanguageSwitcher);

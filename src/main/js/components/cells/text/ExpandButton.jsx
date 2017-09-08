@@ -1,19 +1,23 @@
-var React = require("react");
+import React from "react";
+import PropTypes from "prop-types";
+import {withHandlers, pure, compose} from "recompose";
 
-var ExpandButton = React.createClass({
+const withFunctionality = compose(
+  withHandlers({
+    onClick: (props) => (event) => props.onTrigger(event)
+  }),
+  pure
+);
 
-  propTypes: {
-    onTrigger: React.PropTypes.func.isRequired
-  },
+const ExpandButton = (props) => (
+  <button className="expand"
+          onClick={props.onClick}>
+    <span className="fa fa-expand" />
+  </button>
+);
 
-  // We need this wrapper function. React passes an id as second parameter we don't want
-  onClick: function (event) {
-    this.props.onTrigger(event);
-  },
+ExpandButton.propTypes = {
+  onTrigger: PropTypes.func.isRequired
+};
 
-  render: function () {
-    return <button className="expand" onClick={this.onClick}><span className="fa fa-expand"></span></button>;
-  }
-});
-
-module.exports = ExpandButton;
+export default withFunctionality(ExpandButton);

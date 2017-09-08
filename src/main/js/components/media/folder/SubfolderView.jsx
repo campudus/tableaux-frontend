@@ -1,47 +1,58 @@
-var React = require("react");
-var AmpersandMixin = require("ampersand-react-mixin");
-var ActionCreator = require("../../../actions/ActionCreator");
+import React from "react";
+import PropTypes from "prop-types";
+import ActionCreator from "../../../actions/ActionCreator";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
+import {branch, compose, pure, renderNothing, withHandlers} from "recompose";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
-var SubfolderView = React.createClass({
-  mixins: [AmpersandMixin],
-
-  propTypes: {
-    folder: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    onRemove: React.PropTypes.func.isRequired,
-    onEdit: React.PropTypes.func.isRequired
-  },
-
-  folderClickHandler: function (event) {
-    event.preventDefault();
-    ActionCreator.switchFolder(this.props.folder.id, this.props.langtag);
-  },
-
-  render: function () {
-    const name = this.props.folder.name;
-    const {t} = this.props;
-    const mediaOptions = isUserAdmin() ? (
-      <div className="media-options">
-          <span className="button" onClick={this.props.onEdit} alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i>{t("rename_folder")}
+const MediaOptions = compose(
+  branch(
+    () => !isUserAdmin(),
+    renderNothing
+  ),
+  pure
+)(
+  (props) => (
+    <div className="media-options">
+          <span className="button" onClick={props.onEdit} alt="edit">
+          <i className="icon fa fa-pencil-square-o"></i>{props.t("rename_folder")}
         </span>
-        <span className="button" onClick={this.props.onRemove} alt={t("delete_folder")}>
+      <span className="button" onClick={props.onRemove} alt={props.t("delete_folder")}>
           <i className="fa fa-trash"></i>
         </span>
-      </div>
-    ) : null;
+    </div>
+  )
+);
 
-    return (
-      <div>
-        <a className="folder-link" onClick={this.folderClickHandler}>
-          <i className="icon fa fa-folder-open"></i><span>{name}</span>
-        </a>
-        {mediaOptions}
-      </div>
-    );
-  }
-});
+const enhance = compose(
+  withHandlers({
+    onFolderClick: (props) => (event) => {
+      event.preventDefault();
+      ActionCreator.switchFolder(props.folder.id, props.langtag);
+    }
+  }),
+  pure,
+  translate(["media"]),
+  connectToAmpersand
+);
 
-module.exports = translate(["media"])(SubfolderView);
+const SubfolderView = (props) => {
+  return (
+    <div>
+      <a className="folder-link" onClick={props.onFolderClick}>
+        <i className="icon fa fa-folder-open"></i><span>{props.folder.name}</span>
+      </a>
+      <MediaOptions {...props} />
+    </div>
+  );
+};
+
+SubfolderView.propTypes = {
+  folder: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired
+};
+
+export default enhance(SubfolderView);

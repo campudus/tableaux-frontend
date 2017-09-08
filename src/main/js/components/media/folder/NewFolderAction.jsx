@@ -1,10 +1,10 @@
-var React = require("react");
-var NewFolderActionView = require("./NewFolderActionView.jsx");
+import NewFolderActionView from "./NewFolderActionView.jsx";
 var SimpleFolder = require("../../../models/media/SimpleFolder");
-var ActionCreator = require("../../../actions/ActionCreator");
 import SubfolderEdit from "./SubfolderEdit";
 import {translate} from "react-i18next";
 import {simpleError} from "../../../components/overlay/ConfirmationOverlay";
+import React from "react";
+import ActionCreator from "../../../actions/ActionCreator";
 
 @translate(["media"])
 class NewFolderAction extends React.Component {
