@@ -41,7 +41,6 @@ function _onKeyboardShortcut(event, keyboardShortcutsFn) {
   }
 
   let shortcuts = keyboardShortcutsFn();
-  let shortcutFound = false;
 
   if (!f.isObject(shortcuts)) {
     throw new Error("Return type of keyboardShortcutsFn must be an object.");
@@ -51,16 +50,16 @@ function _onKeyboardShortcut(event, keyboardShortcutsFn) {
     return;
   }
 
-  f.keys(shortcuts).map(
-    function (handler, key) {
-      let keyCode = KEYS[key] || key;
+  const handler = f.flow(
+    f.keys,
+    f.find((key) => KEYS[key] === event.keyCode)
+  )(KEYS);
 
-      if (keyCode === event.keyCode) {
-        shortcutFound = true;
-        handler(event);
-      }
-    }
-  );
+  const shortcutFound = f.contains(handler, f.keys(shortcuts));
+
+  if (shortcutFound) {
+    shortcuts[handler](event);
+  }
 
   // no shortcut found - check for general letters and call 'text' listener
   if (!shortcutFound && shortcuts.text && isText(event.keyCode)) {
