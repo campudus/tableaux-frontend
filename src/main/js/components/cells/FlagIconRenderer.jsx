@@ -41,8 +41,8 @@ const FlagIconRenderer = onlyUpdateForKeys(["langtags", ...knownFlags, "langtag"
     return (
       <div className="annotation-flag-icons">
         <AnnotationBubble hasTextAnnotations={hasTextAnnotations}
-                          isOpen={annotationsOpen}
-                          cell={cell}
+          isOpen={annotationsOpen}
+          cell={cell}
         />
         <FlagDot flag="translation" show={isTranslationNeeded} />
         <FlagDot flag="important" show={annotations.important} />

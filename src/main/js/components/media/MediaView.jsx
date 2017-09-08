@@ -1,17 +1,16 @@
-import React from "react";
+import React, {PureComponent} from "react";
 import ActionCreator from "../../actions/ActionCreator";
-
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
 import LanguageSwitcher from "../../components/header/LanguageSwitcher.jsx";
-
 import FolderModel from "../../models/media/Folder";
 import Folder from "./folder/Folder.jsx";
+import PropTypes from "prop-types";
 
-export default class MediaView extends React.Component {
+export default class MediaView extends PureComponent {
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    folderId: React.PropTypes.number
+    langtag: PropTypes.string.isRequired,
+    folderId: PropTypes.number
   };
 
   state = {

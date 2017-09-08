@@ -3,10 +3,11 @@
  * handler passed from the current table's Columns instance, which created the ColumnEntry which in turn opened
  * the overlay.
  */
-import React from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import i18n from "i18next";
 
-class ColumnEditorOverlay extends React.Component {
+class ColumnEditorOverlay extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,26 +31,26 @@ class ColumnEditorOverlay extends React.Component {
           <div className="item-header">{i18n.t("table:editor.colname")}</div>
           <div className="item-description">({i18n.t("table:editor.sanity_info")})</div>
           <input type="text" autoFocus className="item-content"
-                 onChange={this.modify("name")}
-                 value={this.state.name} />
+            onChange={this.modify("name")}
+            value={this.state.name} />
         </div>
         <div className="item">
           <div className="item-header">{i18n.t("table:editor.description")}</div>
           <textarea type="text" className="item-content"
-                    rows="6"
-                    onChange={this.modify("description")}
-                    value={this.state.description} />
+            rows="6"
+            onChange={this.modify("description")}
+            value={this.state.description} />
         </div>
-        </div>
+      </div>
     );
   };
 }
 
 ColumnEditorOverlay.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  description: React.PropTypes.string,
-  index: React.PropTypes.number.isRequired,
-  handleInput: React.PropTypes.func.isRequired
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  index: PropTypes.number.isRequired,
+  handleInput: PropTypes.func.isRequired
 };
 
 export default ColumnEditorOverlay;

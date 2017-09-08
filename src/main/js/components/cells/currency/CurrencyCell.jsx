@@ -6,18 +6,18 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {getCurrencyWithCountry, splitPriceDecimals} from "./currencyHelper";
 import onClickOutside from "react-onclickoutside";
 import {translate} from "react-i18next";
+import PropTypes from "prop-types";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
 @translate(["table"])
 export default class CurrencyCell extends React.PureComponent {
-
   static propTypes = {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    selected: React.PropTypes.bool.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    selected: PropTypes.bool.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
   };
 
   CurrencyCellDOMNode = null;
@@ -100,5 +100,4 @@ export default class CurrencyCell extends React.PureComponent {
       </div>
     );
   }
-
 }

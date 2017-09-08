@@ -10,7 +10,6 @@ import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
 
 const subscribeToTable = ({cellToWatch, rowToWatch} = {}) => (WrappedComponent) => class extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -58,8 +57,8 @@ const subscribeToTable = ({cellToWatch, rowToWatch} = {}) => (WrappedComponent) 
   render() {
     return (
       <WrappedComponent {...this.props}
-                        cellData={this.state.cellData}
-                        rowData={this.state.rowData}
+        cellData={this.state.cellData}
+        rowData={this.state.rowData}
       />
     );
   }

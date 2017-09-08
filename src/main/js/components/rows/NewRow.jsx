@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import ActionCreator from "../../actions/ActionCreator";
 import {translate} from "react-i18next";

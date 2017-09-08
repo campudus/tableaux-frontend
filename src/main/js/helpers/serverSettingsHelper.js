@@ -14,7 +14,7 @@ function requestEndHelper(errorMsg, onError, onOk) {
 
 function requestSettingFromServer(key, onError, onOk) {
   return request.get(apiUrl(`/system/settings/${key}`))
-                .end(requestEndHelper(`error fetching ${key} from server:`, onError, onOk));
+    .end(requestEndHelper(`error fetching ${key} from server:`, onError, onOk));
 }
 
 export const getAllLangtagsFromServer = (onError, onOk) => requestSettingFromServer("langtags", onError, onOk);

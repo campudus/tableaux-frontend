@@ -91,7 +91,7 @@ const unitTestFunction = (process.env.NODE_ENV !== "production")
 const tests = {
   title: "Tests functions self-test",
   tests: [
-      ["throws", null, conformsTo, ["generated throwing test", -1, null, f.noop, []]],
+    ["throws", null, conformsTo, ["generated throwing test", -1, null, f.noop, []]],
     ["is", true, conformsTo, ["generated true test", -1, f.isEmpty, f.identity, []]],
     ["not", true, conformsTo, ["generated false test", -1, f.isEmpty, f.identity, ["no-number"]]],
     ["not", true, f.equals, [1, 2]],

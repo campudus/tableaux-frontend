@@ -53,8 +53,8 @@ class HeaderPopupMenu extends Component {
     );
     return (
       <a className="entry"
-         onClick={clickHandler}
-         href="#"
+        onClick={clickHandler}
+        href="#"
       >
         <i className={`fa fa-${icon}`} />
         <div>{i18n.t(title)}</div>
@@ -110,7 +110,7 @@ class HeaderPopupMenu extends Component {
     return (
       <div className="header-popup-wrapper">
         <div className={buttonClass}
-             onMouseLeave={this.handleMouseLeave}
+          onMouseLeave={this.handleMouseLeave}
         >
           <a href="#" onClick={event => {
             event.stopPropagation();
@@ -124,8 +124,8 @@ class HeaderPopupMenu extends Component {
           ? (
             <div className="popup-wrapper">
               <div className="popup"
-                   onMouseLeave={this.handleMouseLeave}
-                   onMouseEnter={this.handleMouseEnter}
+                onMouseLeave={this.handleMouseLeave}
+                onMouseEnter={this.handleMouseEnter}
               >
                 <div className="separator">{i18n.t("table:menus.information")}</div>
                 {(hasMeaningfulLinks)

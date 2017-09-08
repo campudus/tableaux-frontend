@@ -1,4 +1,4 @@
-import React from "react";
+import React, {PureComponent} from "react";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 import Dropzone from "react-dropzone";
@@ -13,23 +13,23 @@ import LanguageSwitcher from "../../header/LanguageSwitcher.jsx";
 import {hasUserAccessToLanguage, reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
 import {DefaultLangtag, Langtags} from "../../../constants/TableauxConstants";
 import {translate} from "react-i18next";
+import PropTypes from "prop-types";
 
 @translate(["media"])
 @withAbortableXhrRequests
 @connectToAmpersand
-class SingleFileEdit extends React.Component {
-
+class SingleFileEdit extends PureComponent {
   static propTypes = {
-    file: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    onClose: React.PropTypes.func.isRequired,
-    editedTitleValue: React.PropTypes.object.isRequired,
-    editedDescValue: React.PropTypes.object.isRequired,
-    editedExternalnameValue: React.PropTypes.object.isRequired,
-    hasChanged: React.PropTypes.bool.isRequired,
-    onTitleChange: React.PropTypes.func.isRequired,
-    onDescriptionChange: React.PropTypes.func.isRequired,
-    onExternalnameChange: React.PropTypes.func.isRequired
+    file: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
+    editedTitleValue: PropTypes.object.isRequired,
+    editedDescValue: PropTypes.object.isRequired,
+    editedExternalnameValue: PropTypes.object.isRequired,
+    hasChanged: PropTypes.bool.isRequired,
+    onTitleChange: PropTypes.func.isRequired,
+    onDescriptionChange: PropTypes.func.isRequired,
+    onExternalnameChange: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -183,37 +183,37 @@ class SingleFileEdit extends React.Component {
         <div className="item cover-wrapper">
           <div className="cover">
             <FileChangeUpload isSingleFile={true} langtag={fileLangtag} internalFileName={fileInternalName}
-                              uuid={uuid}/>
+              uuid={uuid}/>
           </div>
           <span className="open-file"><a target="_blank" rel="noopener" href={fileUrlOfThisLanguage}>{t("open_file")}</a></span>
         </div>
         <div className="properties-wrapper content-items">
           <SingleFileTextInput name="fileTitle"
-                               labelText={t("file_title_label")}
-                               originalValue={this.props.file.title}
-                               editedValue={this.props.editedTitleValue}
-                               langtag={this.props.langtag}
-                               isOpen={this.state.isTitleOpen}
-                               onToggle={this.toggleTitle}
-                               onChange={this.onTitleChange}/>
+            labelText={t("file_title_label")}
+            originalValue={this.props.file.title}
+            editedValue={this.props.editedTitleValue}
+            langtag={this.props.langtag}
+            isOpen={this.state.isTitleOpen}
+            onToggle={this.toggleTitle}
+            onChange={this.onTitleChange}/>
 
           <SingleFileTextInput name="fileDescription"
-                               labelText={t("file_description_label")}
-                               originalValue={this.props.file.description}
-                               editedValue={this.props.editedDescValue}
-                               langtag={this.props.langtag}
-                               isOpen={this.state.isDescriptionOpen}
-                               onToggle={this.toggleDesc}
-                               onChange={this.onDescChange}/>
+            labelText={t("file_description_label")}
+            originalValue={this.props.file.description}
+            editedValue={this.props.editedDescValue}
+            langtag={this.props.langtag}
+            isOpen={this.state.isDescriptionOpen}
+            onToggle={this.toggleDesc}
+            onChange={this.onDescChange}/>
 
           <SingleFileTextInput name="fileLinkName"
-                               labelText={t("file_link_name_label")}
-                               originalValue={this.props.file.externalName}
-                               editedValue={this.props.editedExternalnameValue}
-                               langtag={this.props.langtag}
-                               isOpen={this.state.isExternalnameOpen}
-                               onToggle={this.toggleExternalname}
-                               onChange={this.onExternalnameChange}/>
+            labelText={t("file_link_name_label")}
+            originalValue={this.props.file.externalName}
+            editedValue={this.props.editedExternalnameValue}
+            langtag={this.props.langtag}
+            isOpen={this.state.isExternalnameOpen}
+            onToggle={this.toggleExternalname}
+            onChange={this.onExternalnameChange}/>
         </div>
 
         <div className="multifile-wrapper item">

@@ -4,7 +4,7 @@ import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 
 class Footer extends Component {
-  static PropTypes = {            // compare OverlayHeader
+  static PropTypes = { // compare OverlayHeader
     actions: PropTypes.object
   };
 
@@ -16,7 +16,7 @@ class Footer extends Component {
       const [pos, neg, ntr] = f.props(["positive", "negative", "neutral"], actions);
       const makeButton = (className, [text, fn]) => (
         <a className={"button " + className}
-           onClick={f.compose(ActionCreator.closeOverlay, fn || f.noop)}
+          onClick={f.compose(ActionCreator.closeOverlay, fn || f.noop)}
         >
           {text}
         </a>

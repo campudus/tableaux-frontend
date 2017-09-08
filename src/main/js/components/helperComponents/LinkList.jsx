@@ -72,12 +72,12 @@ class LinkList extends Component {
     return (
       <div className="link-label-wrapper-2" style={style} key={key}>
         <div className={cssClass}
-             onMouseEnter={setHoverState}
-             onMouseLeave={() => {
-               if (hovered) {
-                 this.setState({hovered: null});
-               }
-             }}
+          onMouseEnter={setHoverState}
+          onMouseLeave={() => {
+            if (hovered) {
+              this.setState({hovered: null});
+            }
+          }}
         >
           <div className="main-button" onClick={this.proceedTo(linkTarget)}>
             <a href="#">
@@ -87,10 +87,10 @@ class LinkList extends Component {
           </div>
           {(hovered)
             ? (<div className="unlink-button" onClick={unlink(index)}>
-                <a href="#">
-                  <SvgIcon icon="cross" containerClasses="color-primary" />
-                </a>
-              </div>
+              <a href="#">
+                <SvgIcon icon="cross" containerClasses="color-primary" />
+              </a>
+            </div>
             )
             : null }
         </div>
@@ -119,11 +119,11 @@ class LinkList extends Component {
 
     return (
       <List width={window.innerWidth * 0.6 - 100}
-            height={430}
-            rowCount={nLinks}
-            rowHeight={42}
-            rowRenderer={(unlink) ? this.renderInteractiveLink : this.renderLink}
-            hovered={this.state.hovered}
+        height={430}
+        rowCount={nLinks}
+        rowHeight={42}
+        rowRenderer={(unlink) ? this.renderInteractiveLink : this.renderLink}
+        hovered={this.state.hovered}
       />
     );
   };
@@ -142,12 +142,12 @@ class LinkList extends Component {
         }
         {(canExpand)
           ? (<a className="expand-button" href="#" onClick={this.toggleExpand}>
-              <i className={(expanded) ? "fa fa-angle-up" : "fa fa-angle-down"} />
-              {(expanded)
-                ? i18n.t("table:show_less")
-                : i18n.t("table:show_all_items", {nItems: nLinks})
-              }
-            </a>
+            <i className={(expanded) ? "fa fa-angle-up" : "fa fa-angle-down"} />
+            {(expanded)
+              ? i18n.t("table:show_less")
+              : i18n.t("table:show_all_items", {nItems: nLinks})
+            }
+          </a>
           )
           : null
         }

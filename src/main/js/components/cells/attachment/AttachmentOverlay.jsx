@@ -14,7 +14,6 @@ import f from "lodash/fp";
 
 @connectToAmpersand
 class AttachmentOverlay extends Component {
-
   static propTypes = {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
@@ -95,16 +94,16 @@ class AttachmentOverlay extends Component {
     return (file)
       ? (
         <CellMeasurer key={file.uuid}
-                      cache={this._cache}
-                      rowIndex={index}
-                      parent={parent}
+          cache={this._cache}
+          rowIndex={index}
+          parent={parent}
         >
           <FileItem style={style}
-                    isLinked={isLinked}
-                    toggleAttachment={this.toggleAttachments(isLinked, file)}
-                    title={fileTitle}
-                    url={imageUrl}
-                    editorUrl={this.getMediaFolderUrl(file.folder)}
+            isLinked={isLinked}
+            toggleAttachment={this.toggleAttachments(isLinked, file)}
+            title={fileTitle}
+            url={imageUrl}
+            editorUrl={this.getMediaFolderUrl(file.folder)}
           />
         </CellMeasurer>
       )
@@ -164,12 +163,12 @@ class AttachmentOverlay extends Component {
             <AutoSizer>
               {({width, height}) => (
                 <List height={height}
-                      deferredMeasurementCache={this._cache}
-                      rowHeight={this._cache.rowHeight}
-                      rowRenderer={this.renderFileItem}
-                      rowCount={f.size(folder.files)}
-                      width={width}
-                      linkedFiles={linkedFiles}
+                  deferredMeasurementCache={this._cache}
+                  rowHeight={this._cache.rowHeight}
+                  rowRenderer={this.renderFileItem}
+                  rowCount={f.size(folder.files)}
+                  width={width}
+                  linkedFiles={linkedFiles}
                 />
               )}
             </AutoSizer>
@@ -192,11 +191,11 @@ const FileItem = translate(["media", "common"])(
 
     return (
       <div className="file-wrapper"
-           style={f.assoc("width", "calc(100% - 20px)", style)}
+        style={f.assoc("width", "calc(100% - 20px)", style)}
       >
         <div className={isLinked ? "file is-linked" : "file"}>
           <a onClick={toggleAttachment}
-             className={"overlay-table-row"}>
+            className={"overlay-table-row"}>
             <i className="icon fa fa-file" /><span>{title}</span>
             {(isLinked) ? <SvgIcon icon="cross" /> : <SvgIcon icon="check" />}
           </a>

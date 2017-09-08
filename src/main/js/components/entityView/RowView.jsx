@@ -21,7 +21,6 @@ import i18n from "i18next";
 
 @connectToAmpersand
 class View extends Component {
-
   static propTypes = {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
@@ -29,7 +28,7 @@ class View extends Component {
     hasFocusedChild: PropTypes.bool.isRequired,
     funcs: PropTypes.object.isRequired,
     popupOpen: PropTypes.bool.isRequired,
-    lockStatus: PropTypes.any          // just to signal a neccessary re-render when row (un-)locked
+    lockStatus: PropTypes.any // just to signal a neccessary re-render when row (un-)locked
   };
 
   shouldComponentUpdate(nextProps, nextState) { // don't re-render when only functions changed
@@ -72,7 +71,7 @@ class View extends Component {
       && f.cond([
         [() => cell.isMultiLanguage, f.always(Access.hasUserAccessToLanguage(langtag))],
         [() => cell.isMultiCountry, f.always(Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag)))],
-        [f.stubTrue, f.always(false)]                // Non-admins can't change single-value items
+        [f.stubTrue, f.always(false)] // Non-admins can't change single-value items
       ])());
     return (theoretically)
       ? canEditUnlocked
@@ -147,27 +146,27 @@ class View extends Component {
 
     return (
       <div className={viewClass}
-           onClick={this.clickHandler}
-           onMouseEnter={() => this.setState({hovered: true})}
-           onMouseLeave={() => this.setState({hovered: false})}
-           ref={el => {
-             this.viewElement = el;
-           }}
+        onClick={this.clickHandler}
+        onMouseEnter={() => this.setState({hovered: true})}
+        onMouseLeave={() => this.setState({hovered: false})}
+        ref={el => {
+          this.viewElement = el;
+        }}
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}
-                     setTranslationView={setTranslationView}
-                     funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
-                     thisUserCantEdit={isDisabled}
-                     popupOpen={this.props.popupOpen}
-                     hasMeaningfulLinks={this.props.hasMeaningfulLinks}
+          setTranslationView={setTranslationView}
+          funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
+          thisUserCantEdit={isDisabled}
+          popupOpen={this.props.popupOpen}
+          hasMeaningfulLinks={this.props.hasMeaningfulLinks}
         />
         {(!f.isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle" />
           <div>{description}</div>
         </div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
-                  setTranslationView={setTranslationView}
-                  funcs={this.props.funcs}
-                  thisUserCantEdit={isDisabled}
+          setTranslationView={setTranslationView}
+          funcs={this.props.funcs}
+          thisUserCantEdit={isDisabled}
         >
           <div className="action-tags">
             {translationTag}

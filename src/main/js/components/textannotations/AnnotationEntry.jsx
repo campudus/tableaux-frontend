@@ -54,7 +54,7 @@ export default class AnnotationEntry extends PureComponent {
 
     return (
       <div className={`annotation-item ${annotation.type}`}
-           style={style}
+        style={style}
       >
         <i className={`fa ${messageIcon} message-icon`} />
         <div className="message">
@@ -63,7 +63,7 @@ export default class AnnotationEntry extends PureComponent {
         </div>
         <div className="info-column">
           <a href="#" className="delete-button"
-             onClick={this.confirm}
+            onClick={this.confirm}
           >
             <i className="fa fa-trash delete-icon" />
           </a>

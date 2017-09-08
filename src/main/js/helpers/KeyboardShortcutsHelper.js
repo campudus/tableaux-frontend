@@ -105,15 +105,15 @@ export function isUsefulInputControls(event) {
   return (
     // backspace
     k === 8
-      // entf
+  // entf
     || k === 46
-      // ctrl + a
+  // ctrl + a
     || (k === 65 && ctrlKey)
-      // ctrl +c
+  // ctrl +c
     || (k === 67 && ctrlKey)
-      // ctrl + x
+  // ctrl + x
     || (k === 88 && ctrlKey)
-      // ctrl + v
+  // ctrl + v
     || (k === 86 && ctrlKey)
   );
 }

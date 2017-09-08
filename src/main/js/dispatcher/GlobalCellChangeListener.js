@@ -9,7 +9,7 @@ const listenForCellChange = (subscriberId, interestedIn, callback) => {
     providers.set(interestedIn, new Map());
   }
   providers.get(interestedIn)
-           .set(subscriberId, callback);
+    .set(subscriberId, callback);
 };
 
 const clearCallbacks = (subscriberId) => {

@@ -6,9 +6,9 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import {Directions} from "../../../constants/TableauxConstants";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
+import PropTypes from "prop-types";
 
 class CurrencyView extends Component {
-
   constructor(props) {
     super(props);
     const {countryCodes} = props.cell.column;
@@ -16,10 +16,10 @@ class CurrencyView extends Component {
   };
 
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    funcs: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    funcs: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   getCurrencyValues = (cell) => {
@@ -29,12 +29,12 @@ class CurrencyView extends Component {
 
     return countryCodes.map((countryCode, index) => {
       return <CurrencyItem key={index}
-                           cell={cell}
-                           countryCode={countryCode}
-                           editing={editing[index]}
-                           toggleEdit={this.setEditing(index)}
-                           isDisabled={this.props.thisUserCantEdit}
-                           changeActive={this.changeActive(index)}
+        cell={cell}
+        countryCode={countryCode}
+        editing={editing[index]}
+        toggleEdit={this.setEditing(index)}
+        isDisabled={this.props.thisUserCantEdit}
+        changeActive={this.changeActive(index)}
       />;
     });
   };
@@ -93,9 +93,9 @@ class CurrencyView extends Component {
     return (
       <div>
         <div className="item-content currency"
-             ref={el => { funcs.register(el); }}
-             tabIndex={1}
-             onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
+          ref={el => { funcs.register(el); }}
+          tabIndex={1}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyCommands)}
         >
           {currencyRows}
         </div>

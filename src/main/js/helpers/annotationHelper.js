@@ -18,23 +18,23 @@ const extractAnnotations = obj => {
   return kvPairs
     .filter(f.identity)
     .reduce(
-    (result, [type, value]) => {
-      if (type === "translationNeeded") {
-        result[type] = value;
-      } else if (type === "flag") {
-        const [flag, uuid] = value;
-        result[flag] = uuid;
-      } else {
-        if (!result[type]) {
-          result[type] = [value];
+      (result, [type, value]) => {
+        if (type === "translationNeeded") {
+          result[type] = value;
+        } else if (type === "flag") {
+          const [flag, uuid] = value;
+          result[flag] = uuid;
         } else {
-          result[type].push(value);
+          if (!result[type]) {
+            result[type] = [value];
+          } else {
+            result[type].push(value);
+          }
         }
-      }
-      return result;
-    },
-    {}
-  );
+        return result;
+      },
+      {}
+    );
 };
 
 const cellAnnotationUrl = cell => {
@@ -78,7 +78,7 @@ const refreshCellAnnotations = cell => {
             f.prop("text")
           )(response);
           const updatedAnnotations = f.merge(
-            f.mapValues(f.stubFalse, cell.annotations),   // clear old annotations, as empty ones only get ignored
+            f.mapValues(f.stubFalse, cell.annotations), // clear old annotations, as empty ones only get ignored
             cellAnnotations
           );
           cell.set({annotations: updatedAnnotations});

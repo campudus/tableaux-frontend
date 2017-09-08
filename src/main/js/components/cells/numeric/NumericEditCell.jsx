@@ -3,10 +3,10 @@ import ActionCreator from "../../../actions/ActionCreator";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import {maybe} from "../../../helpers/functools";
+import PropTypes from "prop-types";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
-
   constructor(props) {
     super(props);
     this.MAX_DIGIT_LENGTH = 15;
@@ -104,22 +104,22 @@ class NumericEditCell extends React.Component {
     return (
       <div className={"cell-content editing"}>
         <input autoFocus type="number"
-               onFocus={this.handleFocus}
-               className="input"
-               name={this.inputName}
-               defaultValue={this.getValue()}
-               onChange={this.onChangeHandler}
-               ref={input => { this.input = input; this.handleFocus(); }}
+          onFocus={this.handleFocus}
+          className="input"
+          name={this.inputName}
+          defaultValue={this.getValue()}
+          onChange={this.onChangeHandler}
+          ref={input => { this.input = input; this.handleFocus(); }}
         />
       </div>
     );
   }
 }
 NumericEditCell.propTypes = {
-  cell: React.PropTypes.object.isRequired,
-  langtag: React.PropTypes.string.isRequired,
-  onSave: React.PropTypes.func.isRequired,
-  setCellKeyboardShortcuts: React.PropTypes.func
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  onSave: PropTypes.func.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func
 };
 
 module.exports = NumericEditCell;

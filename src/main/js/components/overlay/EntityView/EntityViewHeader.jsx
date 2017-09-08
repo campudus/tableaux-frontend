@@ -75,12 +75,12 @@ class LanguageSwitcher extends Component {
                 {Langtags
                   .filter(lt => lt !== langtag)
                   .map(
-                  lt => {
-                    return <div key={lt} className="menu-item">
-                      <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt, "language")}</a>
-                    </div>;
-                  }
-                )}
+                    lt => {
+                      return <div key={lt} className="menu-item">
+                        <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt, "language")}</a>
+                      </div>;
+                    }
+                  )}
               </div>
             )
             : null

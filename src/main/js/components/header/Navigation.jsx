@@ -1,43 +1,39 @@
 import React from "react";
 import NavigationPopup from "./NavigationPopup";
-import onClickOutside from "react-onclickoutside";
-const NavigationPopupWithClickOutside = onClickOutside(NavigationPopup);
+import PropTypes from "prop-types";
+import {withState, withHandlers, compose, pure} from "recompose";
+import f from "lodash/fp";
 
-class Navigation extends React.Component {
+const withPopupChild = compose(
+  withState("navigationOpen", "setPopup", false),
+  withHandlers({
+    onButtonClicked: ({setPopup}) => (event) => {
+      event.preventDefault();
+      setPopup(open => !open);
+    },
+    onClickOutside: ({setPopup}) => () => setPopup(f.always(false))
+  }),
+  pure
+);
 
-  static propTypes = {
-    langtag: React.PropTypes.string.isRequired
-  };
+const Navigation = (props) => {
+  const {langtag, navigationOpen, onButtonClicked, onClickOutside} = props;
 
-  state = {
-    navigationOpen: false
-  };
+  return (
+    <nav id="main-navigation-wrapper" className={navigationOpen ? "active" : ""}>
+      <a id="burger" className="ignore-react-onclickoutside" href="#" onClick={onButtonClicked}>
+        <i className="fa fa-bars"></i>
+      </a>
+      <NavigationPopup langtag={langtag}
+        handleClickOutside={onClickOutside}
+        navigationOpen={navigationOpen}
+      />
+    </nav>
+  );
+};
 
-  handleClickOutside = (event) => {
-    this.setState({navigationOpen: false});
-  };
+Navigation.propTypes = {
+  langtag: PropTypes.string.isRequired
+};
 
-  mainNavButtonClicked = (e) => {
-    e.preventDefault();
-    this.setState({navigationOpen: !this.state.navigationOpen});
-  };
-
-  render = () => {
-    const {navigationOpen} = this.state;
-    const {langtag} = this.props;
-
-    return (
-      <nav id="main-navigation-wrapper" className={navigationOpen ? "active" : ""}>
-        <a id="burger" className="ignore-react-onclickoutside" href="#" onClick={this.mainNavButtonClicked}>
-          <i className="fa fa-bars"></i>
-        </a>
-        {navigationOpen
-          ? <NavigationPopupWithClickOutside
-            langtag={langtag}
-            handleClickOutside={this.handleClickOutside}/> : null}
-      </nav>
-    );
-  }
-}
-
-export default Navigation;
+export default withPopupChild(Navigation);

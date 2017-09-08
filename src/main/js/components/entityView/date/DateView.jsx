@@ -12,7 +12,6 @@ import {contentChanged} from "../../cells/Cell";
 
 @listensToClickOutside
 class DateView extends Component {
-
   constructor(props) {
     super(props);
     this.displayName = (props.time) ? "DateTimeView" : "DateView";
@@ -116,10 +115,10 @@ class DateView extends Component {
     const cssClass = classNames("item-content datetime", {"disabled": thisUserCantEdit});
     return (
       <div className={cssClass}
-           onClick={this.setEditing(true)}
-           tabIndex={1}
-           onKeyDown={this.openOnEnter}
-           ref={el => { funcs.register(el); }}
+        onClick={this.setEditing(true)}
+        tabIndex={1}
+        onKeyDown={this.openOnEnter}
+        ref={el => { funcs.register(el); }}
       >
         <div className="content-wrapper">{
           (value)
@@ -130,16 +129,16 @@ class DateView extends Component {
                 : null
               }
             </div>
-          )
+            )
             : <div className="item-description">{i18n.t("table:empty.date")}</div>
         }</div>
         {(editing && !thisUserCantEdit)
           ? (
             <div className="datetime-popup">
               <Datetime onBlur={this.saveEditsAndClose}
-                        onChange={this.handleChange}
-                        value={this.state.moment || Moment()}
-                        input={false}
+                onChange={this.handleChange}
+                value={this.state.moment || Moment()}
+                input={false}
               />
               <div className="clear-datetime" onClick={() => this.handleChange(null)}>
                 <i className="fa fa-ban"/>

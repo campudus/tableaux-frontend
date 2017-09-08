@@ -13,7 +13,7 @@ import Footer from "../overlay/Footer";
 import {Promise} from "es6-promise";
 const throat = require("throat")(Promise); // throat ignores the global Promise polyfill, so pass it
 
-const MAX_CONCURRENT_REQUESTS = 3;         // retrieve row or copy cell
+const MAX_CONCURRENT_REQUESTS = 3; // retrieve row or copy cell
 
 const showErrorToast = (msg, data = {}) => {
   ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg, data)}</div>, 3000);
@@ -136,10 +136,10 @@ const createEntriesAndCopy = (src, dst, constrainedValue) => {
       constrainedValue.map(
         throat(MAX_CONCURRENT_REQUESTS, copyOneLink)
       )
-                 )
-                 .then((linkValues) => {
-                   ActionCreator.changeCell(dst, linkValues);
-                 })
+    )
+      .then((linkValues) => {
+        ActionCreator.changeCell(dst, linkValues);
+      })
   );
 };
 
@@ -207,10 +207,10 @@ const pasteCellValue = function (src, srcLang, dst, dstLang, skipDialogs = false
     ActionCreator.openOverlay({
       head: <Header title={i18n.t("table:copy_cell")} />,
       body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
-                                        oldVals={dst.value}
-                                        newVals={newValue}
-                                        saveAndClose={save}
-                                        kind={dst.kind}
+        oldVals={dst.value}
+        newVals={newValue}
+        saveAndClose={save}
+        kind={dst.kind}
       />,
       footer: <Footer actions={buttons} />,
       keyboardShortcuts: {enter: event => { save(event); ActionCreator.closeOverlay(); }}

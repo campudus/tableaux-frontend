@@ -31,7 +31,7 @@ const connectToAmpersand = (Component) => class extends React.PureComponent {
       if (callback) {
         callback(model);
       }
-      if (force && this._Component) {  // avoid problems during unmounting
+      if (force && this._Component) { // avoid problems during unmounting
         this._Component.forceUpdate(); // skip Component's shouldComponentUpdate
       } else {
         this.forceUpdate(); // make normal update

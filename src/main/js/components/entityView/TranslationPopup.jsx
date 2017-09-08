@@ -57,8 +57,8 @@ const LanguageView = (props) => {
     <div className={wrapperClass} >
       <div className={`item-header ${(isMain) ? "main" : ""}`}>
         <a className="switch-language-icon"
-           href="#"
-           onClick={switchLanguage}
+          href="#"
+          onClick={switchLanguage}
         >
           <div className="label">
             {getLanguageOrCountryIcon(langtag, "language")}
@@ -169,7 +169,7 @@ class TranslationPopup extends Component {
       );
     };
     const selectedLangs = f.keys(translations)
-                           .filter((lt) => translations[lt]);
+      .filter((lt) => translations[lt]);
 
     const primaryFirst = (langtag) => (langtag === f.first(Langtags)) ? "0" : langtag;
 
@@ -198,11 +198,11 @@ class TranslationPopup extends Component {
     const {translations} = this.state;
 
     const isAnyCollapsed = f.compose(
-      f.any(f.complement(f.identity)),           // any not truthy
-      f.map(f.last),                             // of "display" values
-      f.reject(f.matchesProperty(0, langtag)),   // of elements without langtag === current langtag
-      f.entries                                  // of tuples [langtag, "display"]
-    )(this.state.translations);                  // of saved translations
+      f.any(f.complement(f.identity)), // any not truthy
+      f.map(f.last), // of "display" values
+      f.reject(f.matchesProperty(0, langtag)), // of elements without langtag === current langtag
+      f.entries // of tuples [langtag, "display"]
+    )(this.state.translations); // of saved translations
 
     return (
       <div className="translation-view">
@@ -212,7 +212,7 @@ class TranslationPopup extends Component {
           </a>
           <div className="title">{title}</div>
           <div className="toggle-all-button"
-               onClick={this.setAllTranslations(isAnyCollapsed)}
+            onClick={this.setAllTranslations(isAnyCollapsed)}
           >
             <a href="#">
               {i18n.t((isAnyCollapsed) ? "table:translations.expand_all" : "table:translations.collapse_all")}
@@ -229,9 +229,9 @@ class TranslationPopup extends Component {
               )
               .map(
                 lt => <MultiLanguageWithAmpersand key={`${cell.id}-${lt}`} cell={cell} langtag={lt}
-                                                  isExpanded={this.isExpanded(lt)}
-                                                  toggleExpand={this.toggleTranslation(lt)}
-                                                  isMain={langtag === lt}
+                  isExpanded={this.isExpanded(lt)}
+                  toggleExpand={this.toggleTranslation(lt)}
+                  isMain={langtag === lt}
                 />
               )
           }

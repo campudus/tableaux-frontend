@@ -79,12 +79,12 @@ class ImageCache {
 
 class SvgIcon extends Component {
   static propTypes = {
-    icon: PropTypes.string.isRequired,   // url or key for iconUrls map
-    containerClasses: PropTypes.string,  // classes added to the container element
-    svgClasses: PropTypes.string,        // classes added to the svg element
-    fillColor: PropTypes.string,         // html-string, fill property of top svg element
-    center: PropTypes.bool,              // apply "preserveAspectRadio: xMidyMid meet" to svg?
-    title: PropTypes.string              // svg title, displayed on hover by e.g. firefox (default: empty)
+    icon: PropTypes.string.isRequired, // url or key for iconUrls map
+    containerClasses: PropTypes.string, // classes added to the container element
+    svgClasses: PropTypes.string, // classes added to the svg element
+    fillColor: PropTypes.string, // html-string, fill property of top svg element
+    center: PropTypes.bool, // apply "preserveAspectRadio: xMidyMid meet" to svg?
+    title: PropTypes.string // svg title, displayed on hover by e.g. firefox (default: empty)
   };
 
   constructor(props) {
@@ -97,7 +97,7 @@ class SvgIcon extends Component {
     ImageCache
       .getOrFetch(fileName)
       .then(svg => {
-        if (!this.containerElement) {    // Icon unmounted before svg was loaded
+        if (!this.containerElement) { // Icon unmounted before svg was loaded
           return;
         }
         this.containerElement.innerHTML = svg;
@@ -140,9 +140,9 @@ class SvgIcon extends Component {
   render() {
     return (
       <div className={"svg-icon " + (this.props.containerClasses || "")}
-           ref={el => {
-             this.containerElement = el;
-           }}
+        ref={el => {
+          this.containerElement = el;
+        }}
       />
     );
   }

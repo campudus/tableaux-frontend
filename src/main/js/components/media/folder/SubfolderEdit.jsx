@@ -1,14 +1,15 @@
-var React = require("react");
-var ReactDOM = require("react-dom");
+import React, {PureComponent} from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import listensToClickOutside from "react-onclickoutside";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 
 @listensToClickOutside
-class SubfolderEdit extends React.Component {
+class SubfolderEdit extends PureComponent {
   static propTypes = {
-    folder: React.PropTypes.object.isRequired,
-    onSave: React.PropTypes.func.isRequired,
-    onCancel: React.PropTypes.func.isRequired
+    folder: PropTypes.object.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
   };
 
   handleClickOutside = (event) => {
@@ -56,7 +57,7 @@ class SubfolderEdit extends React.Component {
       <div className="create-new-folder">
         <i className="icon fa fa-folder-open"></i>
         <input ref="nameInput" type="text" defaultValue={placeHolderName}
-               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
       </div>
     );
   }

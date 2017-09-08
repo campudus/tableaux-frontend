@@ -1,15 +1,15 @@
-import React from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import TableauxConstants from "../constants/TableauxConstants";
 import TableView from "../components/TableView.jsx";
 import MediaView from "../components/media/MediaView.jsx";
 
 const ViewNames = TableauxConstants.ViewNames;
 
-export default class ViewRenderer extends React.Component {
-
+export default class ViewRenderer extends PureComponent {
   static propTypes = {
-    viewName: React.PropTypes.string.isRequired,
-    params: React.PropTypes.object.isRequired
+    viewName: PropTypes.string.isRequired,
+    params: PropTypes.object.isRequired
   };
 
   shouldComponentUpdate(nextProps) {
@@ -30,8 +30,8 @@ export default class ViewRenderer extends React.Component {
 
     this.views[ViewNames.MEDIA_VIEW] = () => {
       return <MediaView langtag={this.props.params.langtag}
-                        folderId={this.props.params.folderId}
-                        overlayOpen={!!this.props.params.overlayOpen} />;
+        folderId={this.props.params.folderId}
+        overlayOpen={!!this.props.params.overlayOpen} />;
     };
   }
 
@@ -47,5 +47,4 @@ export default class ViewRenderer extends React.Component {
   render() {
     return this.getView(this.props.viewName);
   }
-
 }

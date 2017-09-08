@@ -7,7 +7,6 @@ import {maybe} from "../../../helpers/functools";
 import f from "lodash/fp";
 
 export default class CurrencyRow extends PureComponent {
-
   static propTypes = {
     country: PropTypes.string.isRequired,
     countryCurrencyValue: PropTypes.number,
@@ -83,16 +82,16 @@ export default class CurrencyRow extends PureComponent {
     return (
       <div>
         <input ref={this.currencyIntegerRef}
-               className="currency-input integer" type="text" value={splittedValue[0]}
-               onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged}
-               onFocus={this.handleFocus("currencyInteger")}
+          className="currency-input integer" type="text" value={splittedValue[0]}
+          onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged}
+          onFocus={this.handleFocus("currencyInteger")}
         />
         <span className="delimiter">,</span>
         <input ref={this.currencyDecimalsRef}
-               onChange={this.currencyInputChanged} className="currency-input decimals"
-               type="text" value={splittedValue[1]}
-               onKeyDown={this.onKeyDownInput}
-               onFocus={this.handleFocus("currencyDecimals")}
+          onChange={this.currencyInputChanged} className="currency-input decimals"
+          type="text" value={splittedValue[1]}
+          onKeyDown={this.onKeyDownInput}
+          onFocus={this.handleFocus("currencyDecimals")}
         />
       </div>
     );
@@ -111,5 +110,4 @@ export default class CurrencyRow extends PureComponent {
       </div>
     );
   }
-
 }

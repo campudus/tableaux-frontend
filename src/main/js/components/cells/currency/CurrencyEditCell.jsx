@@ -2,15 +2,15 @@ import React from "react";
 import CurrencyRow from "./CurrencyRow";
 import {getCurrencyWithCountry} from "./currencyHelper";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
 
 export default class CurrencyEditCell extends React.PureComponent {
-
   static propTypes = {
-    cell: React.PropTypes.object.isRequired,
-    saveCell: React.PropTypes.func.isRequired,
-    exitCell: React.PropTypes.func.isRequired,
-    onClickOutside: React.PropTypes.func.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func.isRequired
+    cell: PropTypes.object.isRequired,
+    saveCell: PropTypes.func.isRequired,
+    exitCell: PropTypes.func.isRequired,
+    onClickOutside: PropTypes.func.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func.isRequired
   };
 
   handleClickOutside = (evt) => this.props.onClickOutside(evt);
@@ -77,10 +77,10 @@ export default class CurrencyEditCell extends React.PureComponent {
       (countryCode, index) => {
         const currencyValue = getCurrencyWithCountry(currencyValues, countryCode, "withFallback");
         return <CurrencyRow key={index}
-                            country={countryCode}
-                            isFallbackValue={!f.get(["value", countryCode], cell)}
-                            countryCurrencyValue={currencyValue}
-                            updateValue={this.updateCurrencyValue}
+          country={countryCode}
+          isFallbackValue={!f.get(["value", countryCode], cell)}
+          countryCurrencyValue={currencyValue}
+          updateValue={this.updateCurrencyValue}
         />;
       }
     );
@@ -91,5 +91,4 @@ export default class CurrencyEditCell extends React.PureComponent {
       </div>
     );
   }
-
 }

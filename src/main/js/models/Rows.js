@@ -3,7 +3,7 @@ import apiUrl from "../helpers/apiUrl";
 const Row = require("./Row");
 import * as f from "lodash/fp";
 import Request from "superagent";
-import {Promise} from "es6-promise";       // explicitly import the polyfill for IE to recognise Promise.all
+import {Promise} from "es6-promise"; // explicitly import the polyfill for IE to recognise Promise.all
 const throat = require("throat")(Promise); // throat ignores the global Promise polyfill, so pass it
 
 export const INITIAL_PAGE_SIZE = 30;
@@ -80,8 +80,8 @@ const Rows = Collection.extend({
     const page = this.calculatePage(pageNumber);
 
     // don't merge, or models are broken when duplicating while fetching the tail
-//    options = _.assign(options, {merge: false, add: true, remove: false});
-//    options.data = _.assign({}, options.data, page);
+    //    options = _.assign(options, {merge: false, add: true, remove: false});
+    //    options.data = _.assign({}, options.data, page);
 
     const options = f.compose(
       f.update("data", f.merge(page)),

@@ -1,12 +1,15 @@
-var React = require("react");
-var Datetime = require("react-datetime");
-var ActionCreator = require("../../../actions/ActionCreator");
-var Directions = require("../../../constants/TableauxConstants").Directions;
+import React from "react";
 import listensToClickOutside from "react-onclickoutside";
+import PropTypes from "prop-types";
+
+import Datetime from "react-datetime";
+
+import ActionCreator from "../../../actions/ActionCreator";
+
+import {Directions} from "../../../constants/TableauxConstants";
 
 @listensToClickOutside
 class DateTimeEditCell extends React.Component {
-
   componentDidMount = () => {
     this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
   };
@@ -60,22 +63,22 @@ class DateTimeEditCell extends React.Component {
         {this.showDateTimeValue()}
         <i className="fa fa-ban" onClick={this.handleClickClearDate}></i>
         <Datetime onChange={this.props.onDateTimeUpdate}
-                  open={true}
-                  input={false}
-                  value={this.props.dateTimeValue}/>
+          open={true}
+          input={false}
+          value={this.props.dateTimeValue}/>
       </div>
     );
   }
 };
 
 DateTimeEditCell.propTypes = {
-  formatForUser: React.PropTypes.string,
-  formatForServer: React.PropTypes.string,
-  dateTimeValue: React.PropTypes.object,
-  onDateTimeUpdate: React.PropTypes.func,
-  handleEditDone: React.PropTypes.func,
-  noDateTimeText: React.PropTypes.string,
-  setCellKeyboardShortcuts: React.PropTypes.func
+  formatForUser: PropTypes.string,
+  formatForServer: PropTypes.string,
+  dateTimeValue: PropTypes.object,
+  onDateTimeUpdate: PropTypes.func,
+  handleEditDone: PropTypes.func,
+  noDateTimeText: PropTypes.string,
+  setCellKeyboardShortcuts: PropTypes.func
 };
 
 module.exports = DateTimeEditCell;

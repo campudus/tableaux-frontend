@@ -60,7 +60,7 @@ function getLanguageOrCountryIcon(langtag, specific = "") {
   return (
     <span className="langtag">
       <img src={"/img/flags/" + icon} alt={result} /><span
-      className="langtag-label">{result}</span>
+        className="langtag-label">{result}</span>
     </span>
   );
 }

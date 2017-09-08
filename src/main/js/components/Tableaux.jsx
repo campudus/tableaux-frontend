@@ -1,4 +1,5 @@
-import React from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import Dispatcher from "../dispatcher/Dispatcher";
 import TableauxConstants from "../constants/TableauxConstants";
 import GenericOverlay from "./overlay/GenericOverlay.jsx";
@@ -14,10 +15,10 @@ import RootButton from "./RootButton";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
-export default class Tableaux extends React.Component {
+export default class Tableaux extends PureComponent {
   static propTypes = {
-    initialViewName: React.PropTypes.string.isRequired,
-    initialParams: React.PropTypes.object.isRequired
+    initialViewName: PropTypes.string.isRequired,
+    initialParams: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -182,9 +183,9 @@ export default class Tableaux extends React.Component {
     return overlays.map((overlayParams, idx) => {
       return (
         <GenericOverlay {...overlayParams}
-                        key={`overlay-${idx}`}
-                        isOnTop={idx === topIndex}
-                        specialClass={getSpecialClass(idx)}
+          key={`overlay-${idx}`}
+          isOnTop={idx === topIndex}
+          specialClass={getSpecialClass(idx)}
         />
       );
     });
@@ -230,7 +231,7 @@ export default class Tableaux extends React.Component {
           <ViewRenderer viewName={currentView} params={currentViewParams} />
           {this.renderActiveOverlays()}
           <RootButton closeOverlay={this.closeOverlay}
-                      activeOverlays={activeOverlays}
+            activeOverlays={activeOverlays}
           />
           {this.renderToast()}
         </div>

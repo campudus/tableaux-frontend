@@ -7,14 +7,14 @@ import {translate} from "react-i18next";
 import * as AccessControl from "../../../helpers/accessManagementHelper";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import classNames from "classnames";
+import PropTypes from "prop-types";
 
 @translate(["header"])
-class TableSwitcherButton extends React.Component {
-
+class TableSwitcherButton extends React.PureComponent {
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    tables: React.PropTypes.object.isRequired,
-    currentTable: React.PropTypes.object.isRequired
+    langtag: PropTypes.string.isRequired,
+    tables: PropTypes.object.isRequired,
+    currentTable: PropTypes.object.isRequired
   };
 
   state = {
@@ -55,11 +55,11 @@ class TableSwitcherButton extends React.Component {
     const {t, langtag, tables, currentTable} = this.props;
 
     const groups = f.compose(
-      f.uniqBy("id"),                        // unique set of groups
-      f.reject(f.matchesProperty("id", 0)),  //   ...with valid ids
-      f.compact,                             //   ...of non-null groups
-      f.map("group"),                        //   ...from group data
-      f.reject("hidden")                     //   ...of visible tables
+      f.uniqBy("id"), // unique set of groups
+      f.reject(f.matchesProperty("id", 0)), //   ...with valid ids
+      f.compact, //   ...of non-null groups
+      f.map("group"), //   ...from group data
+      f.reject("hidden") //   ...of visible tables
     )(tables.models);
 
     const noGroupDisplayName = {};
@@ -79,11 +79,11 @@ class TableSwitcherButton extends React.Component {
     );
 
     return <TableSwitcherPopup langtag={langtag} groups={[noGroup, ...sortedGroups]}
-                               tables={tables} currentTable={currentTable}
-                               onClickedOutside={this.onClickedOutside}
-                               onClickedTable={this.onClickedTable}
-                               onClickedGroup={this.onClickedGroup}
-                               currentGroupId={this.state.currentGroupId} />;
+      tables={tables} currentTable={currentTable}
+      onClickedOutside={this.onClickedOutside}
+      onClickedTable={this.onClickedTable}
+      onClickedGroup={this.onClickedGroup}
+      currentGroupId={this.state.currentGroupId} />;
   };
 
   togglePopup = (event) => {
@@ -115,7 +115,6 @@ class TableSwitcherButton extends React.Component {
       </div>
     );
   }
-
 }
 
 module.exports = TableSwitcherButton;

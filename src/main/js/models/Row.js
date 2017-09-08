@@ -168,17 +168,17 @@ const Row = AmpersandModel.extend({
 
     console.log("url is:", this.url() + "/dependent");
     return Request.get(this.url() + "/dependent")
-                  .end(
-                    (error, result) => {
-                      if (error) {
-                        console.warn("error getting row dependent from server:", error);
-                        onError(error);
-                      } else {
-                        console.log("row dependent response:", result);
-                        onSuccess(result.body.dependentRows);
-                      }
-                    }
-                  );
+      .end(
+        (error, result) => {
+          if (error) {
+            console.warn("error getting row dependent from server:", error);
+            onError(error);
+          } else {
+            console.log("row dependent response:", result);
+            onSuccess(result.body.dependentRows);
+          }
+        }
+      );
   },
 
   parse: function (attrs, options) {

@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import * as f from "lodash/fp";

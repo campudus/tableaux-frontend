@@ -183,12 +183,12 @@ class RichTextComponent extends Component {
             ? <div onClick={() => { this.content && this.content.focus(); }}>{placeholder}</div>
             : null}
           <div className={contentClass}
-               contentEditable={!readOnly}
-               ref={cp => { this.content = cp; }}
-               onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
-               onKeyDown={this.handleKeyPress}
-               onFocus={() => this.setState({focused: true})}
-               onBlur={() => this.setState({focused: false})}
+            contentEditable={!readOnly}
+            ref={cp => { this.content = cp; }}
+            onChange={evt => (readOnly) ? f.noop : this.handleChange(evt)}
+            onKeyDown={this.handleKeyPress}
+            onFocus={() => this.setState({focused: true})}
+            onBlur={() => this.setState({focused: false})}
           />
         </div>
       </div>

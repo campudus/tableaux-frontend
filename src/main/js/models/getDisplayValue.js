@@ -103,7 +103,7 @@ const getConcatValue = (selector) => (column) => value => {
 };
 
 const moustache = f.memoize(
-  (n) => new RegExp(`\\{\\{${n}\\}\\}`, "g")  // double-escape regex generator string to get single-escaped regex-braces
+  (n) => new RegExp(`\\{\\{${n}\\}\\}`, "g") // double-escape regex generator string to get single-escaped regex-braces
 );
 
 // Replace all moustache expressions "{{i}}" of the column's format string where i in [1,..,N], N = displayValue.length,

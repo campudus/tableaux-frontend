@@ -84,8 +84,8 @@ class DragSortList extends Component {
           items.map(
             (item, idx) => (
               <DragItem key={idx}
-                        index={idx}
-                        swapItems={swapItems}
+                index={idx}
+                swapItems={swapItems}
               >
                 {renderListItem({
                   index: item.index,

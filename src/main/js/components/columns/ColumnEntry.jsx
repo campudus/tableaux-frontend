@@ -14,9 +14,9 @@ import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import * as f from "lodash/fp";
 import Portal from "react-portal";
 import Rnd from "react-rnd";
+import PropTypes from "prop-types";
 
 class ColumnEntry extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -48,18 +48,18 @@ class ColumnEntry extends React.Component {
 
     const buttons = {
       positive: [i18n.t("common:save"), this.saveEdit],
-      neutral: [i18n.t("common:cancel"), null]
+      neutral: [i18n.t("common:cancel"), f.noop]
     };
 
     ActionCreator.openOverlay({
       head: <Header context={i18n.t("table:editor.edit_column")}
-                    title={name}
-                    actions={buttons}
+        title={name}
+        actions={buttons}
       />,
       body: <ColumnEditorOverlay name={name}
-                                 handleInput={this.handleInput}
-                                 description={description}
-                                 index={id}
+        handleInput={this.handleInput}
+        description={description}
+        index={id}
       />,
       type: "normal"
     });
@@ -94,12 +94,12 @@ class ColumnEntry extends React.Component {
     return (
       <Portal closeOnOutsideClick isOpened >
         <ColumnContextMenu closeHandler={this.closeContextMenu}
-                           editHandler={this.editColumn}
-                           column={column}
-                           langtag={this.props.langtag}
-                           isId={this.props.isId}
-                           tables={this.props.tables}
-                           rect={this.state.ctxCoords}
+          editHandler={this.editColumn}
+          column={column}
+          langtag={this.props.langtag}
+          isId={this.props.isId}
+          tables={this.props.tables}
+          rect={this.state.ctxCoords}
         />
       </Portal>
     );
@@ -146,34 +146,34 @@ class ColumnEntry extends React.Component {
     classNames("column-head", {"context-menu-open": menuOpen});
     return (
       <Rnd style={this.props.style}
-           default={{
-             x: 0,
-             y: 0,
-             width: this.props.width,
-             height: 37
-           }}
-           minWidth={100}
-           enableResizing={{
-             bottom: false,
-             bottomLeft: false,
-             bottomRight: false,
-             left: false,
-             right: this.props.index !== 1,
-             top: false,
-             topLeft: false,
-             topRight: false
-           }}
-           disableDragging
-           onResizeStop={resizeFinishedHandler}
-           onResize={this.resize}
+        default={{
+          x: 0,
+          y: 0,
+          width: this.props.width,
+          height: 37
+        }}
+        minWidth={100}
+        enableResizing={{
+          bottom: false,
+          bottomLeft: false,
+          bottomRight: false,
+          left: false,
+          right: this.props.index !== 1,
+          top: false,
+          topLeft: false,
+          topRight: false
+        }}
+        disableDragging
+        onResizeStop={resizeFinishedHandler}
+        onResize={this.resize}
       >
         <div
-             className={classNames("column-head", {"context-menu-open": menuOpen})}
-             key={id}
+          className={classNames("column-head", {"context-menu-open": menuOpen})}
+          key={id}
         >
           <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
-               onMouseEnter={this.showDescription(true)}
-               onMouseLeave={this.showDescription(false)}
+            onMouseEnter={this.showDescription(true)}
+            onMouseLeave={this.showDescription(false)}
           >
             {columnContent}
             {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle"/> : null }
@@ -183,11 +183,11 @@ class ColumnEntry extends React.Component {
             ? (
               <Portal isOpened>
                 <div className="description-tooltip"
-                     ref={el => { this.tooltip = el; }}
-                     style={{ // align top left corner at bottom left corner of opening div
-                       left: left,
-                       top: bottom + 10
-                     }}
+                  ref={el => { this.tooltip = el; }}
+                  style={{ // align top left corner at bottom left corner of opening div
+                    left: left,
+                    top: bottom + 10
+                  }}
                 >
                   <div className="description-tooltip-text">{description}</div>
                 </div>
@@ -196,9 +196,9 @@ class ColumnEntry extends React.Component {
             : null}
           {(kind !== "concat")
             ? <a href="#"
-                 className={contextMenuClass}
-                 draggable={false}
-                 onClick={this.toggleContextMenu}
+              className={contextMenuClass}
+              draggable={false}
+              onClick={this.toggleContextMenu}
             />
             : null}
           {(menuOpen) ? this.renderContextMenu() : null}
@@ -209,17 +209,17 @@ class ColumnEntry extends React.Component {
 }
 
 ColumnEntry.PropTypes = {
-  description: React.PropTypes.string.isRequired,
-  columnContent: React.PropTypes.array.isRequired,
-  selected: React.PropTypes.number.isRequired,
-  cancelEdit: React.PropTypes.func.isRequired,
-  langtag: React.PropTypes.string.isRequired,
-  column: React.PropTypes.object.isRequired,
-  name: React.PropTypes.string.isRequired,
-  isId: React.PropTypes.bool.isRequired,
-  tables: React.PropTypes.object.isRequired,
-  resizeHandler: React.PropTypes.func.isRequired,
-  resizeFinishedHandler: React.PropTypes.func.isRequired
+  description: PropTypes.string.isRequired,
+  columnContent: PropTypes.array.isRequired,
+  selected: PropTypes.number.isRequired,
+  cancelEdit: PropTypes.func.isRequired,
+  langtag: PropTypes.string.isRequired,
+  column: PropTypes.object.isRequired,
+  name: PropTypes.string.isRequired,
+  isId: PropTypes.bool.isRequired,
+  tables: PropTypes.object.isRequired,
+  resizeHandler: PropTypes.func.isRequired,
+  resizeFinishedHandler: PropTypes.func.isRequired
 };
 
 module.exports = ColumnEntry;

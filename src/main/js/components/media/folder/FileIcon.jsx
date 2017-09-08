@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+import {pure} from "recompose";
 
 function FileIcon(props) {
   const {internalFileName} = props;
@@ -8,15 +10,15 @@ function FileIcon(props) {
     fileIcon = <img src={"/img/filetypes/" + fileExtension + "-icon-128x128.png"} alt={fileExtension}/>;
   } else {
     fileIcon = <span className="fa-stack empty-icon">
-                  <i className="fa fa-file-o fa-stack-2x"></i>
-                  <i className="fa fa-plus fa-stack-1x"></i>
-                </span>;
+      <i className="fa fa-file-o fa-stack-2x"></i>
+      <i className="fa fa-plus fa-stack-1x"></i>
+    </span>;
   }
   return <span className="file-icon">{fileIcon}</span>;
 };
 
 FileIcon.propTypes = {
-  internalFileName: React.PropTypes.string
+  internalFileName: PropTypes.string
 };
 
-export default FileIcon;
+export default pure(FileIcon);

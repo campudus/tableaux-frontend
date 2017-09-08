@@ -100,8 +100,8 @@ const FileUpload = (props) => {
   for (let uploadUuid in runningUploads) {
     if (runningUploads.hasOwnProperty(uploadUuid)) {
       uploads.push(<div className="file-upload" key={uploadUuid}>
-          <span>{runningUploads[uploadUuid].name}</span><ProgressBar progress={runningUploads[uploadUuid].progress} />
-        </div>
+        <span>{runningUploads[uploadUuid].name}</span><ProgressBar progress={runningUploads[uploadUuid].progress} />
+      </div>
       );
     }
   }
@@ -109,7 +109,7 @@ const FileUpload = (props) => {
   return (
     <div className="file-uploads">
       <RunningUploadPanel uploads={uploads}
-                          t={props.t}
+        t={props.t}
       />
       <Dropzone onDrop={onDrop} className="dropzone">
         <a>{t("upload_click_or_drop")}</a>

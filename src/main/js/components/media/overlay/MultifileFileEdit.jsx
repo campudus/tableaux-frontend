@@ -7,7 +7,6 @@ import {getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/a
 import {translate} from "react-i18next";
 
 class MultifileFileEdit extends PureComponent {
-
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     originalLangtag: PropTypes.string.isRequired,
@@ -49,8 +48,8 @@ class MultifileFileEdit extends PureComponent {
       ? (
         <span className="open-file">
           <a target="_blank"
-             rel="noopener"
-             href={apiUrl(fileUrl)}
+            rel="noopener"
+            href={apiUrl(fileUrl)}
           >
             {t("open_file")}
           </a>
@@ -79,20 +78,20 @@ class MultifileFileEdit extends PureComponent {
           <div className="item">
             <div className="item-header">{t("file_title_label")}</div>
             <input disabled={!permissionToChange} type="text" id={this.titleId}
-                   value={title}
-                   onChange={this.onTitleChange} />
+              value={title}
+              onChange={this.onTitleChange} />
           </div>
           <div className="item">
             <div className="item-header">{t("file_description_label")}</div>
             <input disabled={!permissionToChange} type="text" id={this.descId}
-                   value={description}
-                   onChange={this.onDescriptionChange} />
+              value={description}
+              onChange={this.onDescriptionChange} />
           </div>
           <div className="item">
             <div className="item-header">{t("file_link_name_label")}</div>
             <input disabled={!permissionToChange} type="text" id={this.externalNameId}
-                   value={externalName}
-                   onChange={this.onExternalNameChange} />
+              value={externalName}
+              onChange={this.onExternalNameChange} />
           </div>
         </div>
       </div>

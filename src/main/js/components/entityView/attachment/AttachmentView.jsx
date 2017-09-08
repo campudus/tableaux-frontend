@@ -9,7 +9,6 @@ import apiUrl from "../../../helpers/apiUrl";
 import * as f from "lodash/fp";
 
 class AttachmentView extends Component {
-
   constructor(props) {
     super(props);
     this.displayName = "AttachmentView";

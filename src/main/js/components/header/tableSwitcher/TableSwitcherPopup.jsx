@@ -7,20 +7,20 @@ import {translate} from "react-i18next";
 import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import {forkJoin} from "../../../helpers/functools";
+import PropTypes from "prop-types";
 
 @translate(["header"])
 @listensToClickOutside
 class SwitcherPopup extends React.PureComponent {
-
   static propTypes = {
-    onClickedOutside: React.PropTypes.func.isRequired,
-    onClickedTable: React.PropTypes.func.isRequired,
-    onClickedGroup: React.PropTypes.func.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    tables: React.PropTypes.object.isRequired,
-    groups: React.PropTypes.array.isRequired,
-    currentTable: React.PropTypes.object.isRequired,
-    currentGroupId: React.PropTypes.number
+    onClickedOutside: PropTypes.func.isRequired,
+    onClickedTable: PropTypes.func.isRequired,
+    onClickedGroup: PropTypes.func.isRequired,
+    langtag: PropTypes.string.isRequired,
+    tables: PropTypes.object.isRequired,
+    groups: PropTypes.array.isRequired,
+    currentTable: PropTypes.object.isRequired,
+    currentGroupId: PropTypes.number
   };
 
   constructor(props) {
@@ -239,16 +239,16 @@ class SwitcherPopup extends React.PureComponent {
       const onKeyDownFn = f.always({enter: this.onClickTable(table)});
       return (
         <li key={`table${index}`} className={(isActive) ? "active" : ""}
-            onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)}
-            tabIndex={0}
-            ref={`table${table.id}`}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)}
+          tabIndex={0}
+          ref={`table${table.id}`}
         >
           <div onClick={this.onClickTable(table)}>
             {displayName}
           </div>
           <a target="_blank"
-             rel="noopener"
-             href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
+            rel="noopener"
+            href={`/${langtag}/tables/${table.id}`}><i className="fa fa-external-link" /></a>
         </li>
       );
     };
@@ -299,10 +299,10 @@ class SwitcherPopup extends React.PureComponent {
           <div className="tableswitcher-input-wrapper2">
             <div className="tableswitcher-input-wrapper">
               <input value={queryStr} placeholder={t("tableSwitcher.search")} type="text"
-                     className="tableswitcher-input"
-                     ref="filterInput" onChange={this.filterInputChange}
-                     onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcutsFilterTable)}
-                     autoFocus="true" />
+                className="tableswitcher-input"
+                ref="filterInput" onChange={this.filterInputChange}
+                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcutsFilterTable)}
+                autoFocus="true" />
               <i className="fa fa-search"></i>
             </div>
           </div>

@@ -1,8 +1,11 @@
 import React from "react";
 import {translate} from "react-i18next";
 import SvgIcon from "../helperComponents/SvgIcon";
+import PropTypes from "prop-types";
+import {branch, compose, pure, renderNothing} from "recompose";
+import handleClickOutside from "react-onclickoutside";
 
-let NavigationPopup = (props) => {
+const NavigationPopup = (props) => {
   const {langtag, t} = props;
   return (
     <div id="main-navigation">
@@ -20,7 +23,15 @@ let NavigationPopup = (props) => {
 };
 
 NavigationPopup.propTypes = {
-  langtag: React.PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired
 };
 
-export default translate(["header"])(NavigationPopup);
+export default compose(
+  branch(
+    (props) => !props.navigationOpen,
+    renderNothing
+  ),
+  pure,
+  translate(["header"]),
+  handleClickOutside
+)(NavigationPopup);

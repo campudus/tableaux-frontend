@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import LinkEditCell from "./LinkEditCell.jsx";
@@ -11,17 +11,17 @@ const LinkCell = (props) => {
   // Show a link preview for performance
   const tooManyLinks = f.size(cell.value) > 3;
   const links = f.take(3, cell.value)
-                 .map(
-                   (element, index) => (
-                     <LinkLabelCell key={element.id}
-                                    linkElement={element}
-                                    linkIndexAt={index}
-                                    cell={cell}
-                                    langtag={langtag}
-                                    clickable={false}
-                     />
-                   )
-                 );
+    .map(
+      (element, index) => (
+        <LinkLabelCell key={element.id}
+          linkElement={element}
+          linkIndexAt={index}
+          cell={cell}
+          langtag={langtag}
+          clickable={false}
+        />
+      )
+    );
   return (
     <div className={"cell-content"}>
       {(tooManyLinks) ? [...links, <span key={"more"} className="more">&hellip;</span>] : links}

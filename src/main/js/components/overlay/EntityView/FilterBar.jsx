@@ -48,10 +48,10 @@ class FilterBar extends Component {
     return (
       <div className="header-filter-bar-wrapper">
         <input className="header-filter-bar"
-               onChange={this.handleChange}
-               onKeyDown={this.handleInput}
-               value={value}
-               placeholder={i18n.t("table:entity-view-search-placeholder") + "..."}
+          onChange={this.handleChange}
+          onKeyDown={this.handleInput}
+          value={value}
+          placeholder={i18n.t("table:entity-view-search-placeholder") + "..."}
         />
         <div className="icon-wrapper">
           <i className="fa fa-search" />

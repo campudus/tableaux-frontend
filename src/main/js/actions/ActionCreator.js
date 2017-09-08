@@ -28,7 +28,7 @@ module.exports = {
     });
   },
 
-    // An event just for ShortTextEditCell to create a new Row when last is editing
+  // An event just for ShortTextEditCell to create a new Row when last is editing
   addRowOrSelectNextCell: function () {
     Dispatcher.trigger(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL);
   },
@@ -110,8 +110,8 @@ module.exports = {
 
   selectNextCell: function (direction) {
     Dispatcher.trigger(ActionTypes.SELECT_NEXT_CELL,
-        direction
-      );
+      direction
+    );
   },
 
   cleanupTable: function (tableId) {
@@ -337,7 +337,7 @@ module.exports = {
   },
 
   broadcastDataChange: (payload) => {
-//    console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
+    //    console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
     Dispatcher.trigger(ActionTypes.BROADCAST_DATA_CHANGE, payload);
   },
 

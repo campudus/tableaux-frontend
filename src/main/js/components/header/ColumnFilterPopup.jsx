@@ -9,10 +9,10 @@ import {Directions, FallbackLanguage, FilterModes} from "../../constants/Tableau
 import SearchFunctions from "../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
+import PropTypes from "prop-types";
 
 @listensToClickOutside
 class ColumnFilterPopup extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -40,7 +40,7 @@ class ColumnFilterPopup extends React.Component {
     const lvl1 = col => col !== f.first(models); // ignore ID column
     const lvl2 = (filter)
       ? f.compose(SearchFunctions[filter.type](filter.value), this.getColName)
-      : f.stubTrue;                                // ...or pass all
+      : f.stubTrue; // ...or pass all
     return f.allPass([lvl1, lvl2]);
   };
 
@@ -120,15 +120,15 @@ class ColumnFilterPopup extends React.Component {
 
     return (
       <div className={cssClass}
-           key={key}
-           style={style}
-           onClick={this.toggleCol(col.id)}
-           onMouseEnter={() => this.setState({selectedId: index})}
+        key={key}
+        style={style}
+        onClick={this.toggleCol(col.id)}
+        onMouseEnter={() => this.setState({selectedId: index})}
       >
         <input type="checkbox"
-               checked={col.visible}
-               onChange={() => {
-               }} // to avoid React warning "unmanaged input"
+          checked={col.visible}
+          onChange={() => {
+          }} // to avoid React warning "unmanaged input"
         />
         {name}
       </div>
@@ -153,7 +153,7 @@ class ColumnFilterPopup extends React.Component {
 
     return (
       <div id="column-filter-popup-wrapper"
-           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
         <div className="row infotext header-text">
           <i className="fa fa-eye" />
@@ -163,11 +163,11 @@ class ColumnFilterPopup extends React.Component {
 
           <div className="filter-input row">
             <input type="text"
-                   className="input"
-                   placeholder={i18n.t("table:filter_columns")}
-                   onChange={this.handleFilterChange}
-                   ref={input => { this.searchBar = input; }}
-                   autoFocus
+              className="input"
+              placeholder={i18n.t("table:filter_columns")}
+              onChange={this.handleFilterChange}
+              ref={input => { this.searchBar = input; }}
+              autoFocus
             />
           </div>
         </div>
@@ -178,16 +178,16 @@ class ColumnFilterPopup extends React.Component {
             </div>
           )
           : <List className="column-checkbox-list"
-                  ref={list => {
-                    this.list = list;
-                  }}
-                  width={440}
-                  height={300}
-                  rowCount={models.length}
-                  rowHeight={30}
-                  scrollToIndex={this.state.selectedId}
-                  rowRenderer={this.renderCheckboxItems}
-                  style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
+            ref={list => {
+              this.list = list;
+            }}
+            width={440}
+            height={300}
+            rowCount={models.length}
+            rowHeight={30}
+            scrollToIndex={this.state.selectedId}
+            rowRenderer={this.renderCheckboxItems}
+            style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
           />
         }
         <div className="row infotext">
@@ -196,10 +196,10 @@ class ColumnFilterPopup extends React.Component {
         <div className="wrap-me-grey">
           <div className="row">
             <a href="#" className="button positive"
-               onClick={this.setAll(true)}
+              onClick={this.setAll(true)}
             >{i18n.t("table:show_all_columns")}</a>
             <a href="#" className="button neutral"
-               onClick={this.setAll(false)}
+              onClick={this.setAll(false)}
             >{i18n.t("table:hide_all_columns")}</a>
           </div>
         </div>
@@ -209,9 +209,9 @@ class ColumnFilterPopup extends React.Component {
 }
 
 ColumnFilterPopup.propTypes = {
-  close: React.PropTypes.func.isRequired,
-  langtag: React.PropTypes.string.isRequired,
-  columns: React.PropTypes.object.isRequired
+  close: PropTypes.func.isRequired,
+  langtag: PropTypes.string.isRequired,
+  columns: PropTypes.object.isRequired
 };
 
 export default ColumnFilterPopup;

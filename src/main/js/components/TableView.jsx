@@ -1,4 +1,5 @@
-import React from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import connectToAmpersand from "./helperComponents/connectToAmpersand";
 import Dispatcher from "../dispatcher/Dispatcher";
 import Table from "./table/Table.jsx";
@@ -25,8 +26,7 @@ import Portal from "react-portal";
 import JumpSpinner from "./table/JumpSpinner";
 
 @connectToAmpersand
-class TableView extends React.Component {
-
+class TableView extends Component {
   constructor(props) {
     super(props);
 
@@ -420,8 +420,8 @@ class TableView extends React.Component {
       rowsFilter: null
     }, this.saveFilterSettings);
     const clearedUrl = window.location.href
-                             .replace(/https?:\/\/.*?\//, "")
-                             .replace(/\?.*/, "");
+      .replace(/https?:\/\/.*?\//, "")
+      .replace(/\?.*/, "");
     App.router.navigate(clearedUrl, {trigger: false});
   };
 
@@ -521,13 +521,13 @@ class TableView extends React.Component {
               }
             </div>
             <TableSwitcher langtag={langtag}
-                           currentTable={currentTable}
-                           tables={tables} />
+              currentTable={currentTable}
+              tables={tables} />
             <TableSettings langtag={langtag} table={currentTable} />
             <Filter langtag={langtag} table={currentTable} currentFilter={rowsFilter} />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
               ? <ColumnFilter langtag={langtag}
-                              columns={currentTable.columns}
+                columns={currentTable.columns}
               />
               : null
             }
@@ -537,13 +537,13 @@ class TableView extends React.Component {
           </header>
           <div className="wrapper">
             <Table fullyLoaded={tableFullyLoaded}
-                   table={currentTable}
-                   langtag={langtag} rows={rows} overlayOpen={overlayOpen}
-                   rowKeys={rowKeys}
-                   columnKeys={columnKeys}
-                   pasteOriginCell={pasteOriginCell}
-                   tables={tables}
-                   disableOnClickOutside={this.props.overlayOpen}
+              table={currentTable}
+              langtag={langtag} rows={rows} overlayOpen={overlayOpen}
+              rowKeys={rowKeys}
+              columnKeys={columnKeys}
+              pasteOriginCell={pasteOriginCell}
+              tables={tables}
+              disableOnClickOutside={this.props.overlayOpen}
             />
             }
           </div>
@@ -562,9 +562,9 @@ class TableView extends React.Component {
 }
 
 TableView.propTypes = {
-  langtag: React.PropTypes.string.isRequired,
-  overlayOpen: React.PropTypes.bool.isRequired,
-  tableId: React.PropTypes.number
+  langtag: PropTypes.string.isRequired,
+  overlayOpen: PropTypes.bool.isRequired,
+  tableId: PropTypes.number
 };
 
 export default TableView;

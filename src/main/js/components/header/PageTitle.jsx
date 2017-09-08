@@ -1,17 +1,20 @@
 import React from "react";
 import {translate} from "react-i18next";
+import PropTypes from "prop-types";
+import {compose, pure} from "recompose";
 
-@translate(["header"])
-export default class PageTitle extends React.Component {
+const PageTitle = (props) => {
+  const {t, titleKey} = props;
+  return (
+    <div id="header-pagename">{t(titleKey)}</div>
+  );
+};
 
-  static propTypes = {
-    titleKey: React.PropTypes.string.isRequired
-  };
+PageTitle.propTypes = {
+  titleKey: PropTypes.string.isRequired
+};
 
-  render() {
-    let {t} = this.props;
-    return (
-      <div id="header-pagename">{t(this.props.titleKey)}</div>
-    );
-  }
-}
+export default compose(
+  pure,
+  translate(["header"])
+)(PageTitle);

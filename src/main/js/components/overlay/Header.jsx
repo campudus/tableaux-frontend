@@ -9,10 +9,10 @@ import {ActionTypes} from "../../constants/TableauxConstants";
 
 class Header extends PureComponent {
   static propTypes = {
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,  // main headline
-    context: PropTypes.string,           // additional context info
-    actions: PropTypes.object,           // map: {[positive|negative|neutral]: [text, function]} for buttons
-    components: PropTypes.element,       // more components to display, e.g. search bar
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired, // main headline
+    context: PropTypes.string, // additional context info
+    actions: PropTypes.object, // map: {[positive|negative|neutral]: [text, function]} for buttons
+    components: PropTypes.element, // more components to display, e.g. search bar
     id: PropTypes.number
   };
 
@@ -67,7 +67,7 @@ class Header extends PureComponent {
       }
       return (
         <a className={"button " + className}
-           onClick={(dontClose) ? (fn || f.noop) : f.compose(ActionCreator.closeOverlay, fn || f.noop)}
+          onClick={(dontClose) ? (fn || f.noop) : f.compose(ActionCreator.closeOverlay, fn || f.noop)}
         >
           {text}
         </a>

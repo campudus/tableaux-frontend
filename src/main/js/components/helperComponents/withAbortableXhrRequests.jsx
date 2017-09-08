@@ -2,7 +2,6 @@ import React from "react";
 import {remove, eq} from "lodash/fp";
 
 const withAbortableXhrRequests = (Component) => class extends React.Component {
-
   addAbortableXhrRequest(xhr) {
     if (!(xhr instanceof window.XMLHttpRequest)) {
       return;

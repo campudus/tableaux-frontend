@@ -71,7 +71,7 @@ const TableauxRouter = Router.extend({
       this.alreadyRendered = true;
       ReactDOM.render(
         <Tableaux initialViewName={viewName}
-                  initialParams={params} />, document.getElementById("tableaux")
+          initialParams={params} />, document.getElementById("tableaux")
       );
     }
   },

@@ -39,12 +39,12 @@ export default class ColumnHeader extends PureComponent {
     const {column, tableId, tables} = this.props;
     const table = tables.get(tableId);
     return maybe(table)
-      .map(f.get("rows"))            // catch rows not loaded yet
+      .map(f.get("rows")) // catch rows not loaded yet
       .exec("at", 0)
-      .map(f.get("cells"))           // catch cells not loaded yet
+      .map(f.get("cells")) // catch cells not loaded yet
       .exec("at", 0)
       .map(f.get("tables"))
-      .exec("get", column.toTable)   // only with link columns
+      .exec("get", column.toTable) // only with link columns
       .map(f.get("hidden"))
       .getOrElse("false");
   };
@@ -67,9 +67,9 @@ export default class ColumnHeader extends PureComponent {
       ? <div key={key}>{this.getDisplayName()}</div>
       : (
         <a key={key} className="tableHeader-inner"
-           href={`/${langtag}/tables/${column.toTable}`}
-           target="_blank"
-           rel="noopener"
+          href={`/${langtag}/tables/${column.toTable}`}
+          target="_blank"
+          rel="noopener"
         >
           <i className="fa fa-columns" />
           {this.getDisplayName()}
@@ -122,17 +122,17 @@ export default class ColumnHeader extends PureComponent {
 
     return (
       <ColumnEntry style={style}
-                   columnContent={columnContent}
-                   name={this.getDisplayName()}
-                   column={column}
-                   description={this.getDescription()}
-                   langtag={langtag}
-                   isId={column.identifier}
-                   tables={tables}
-                   resizeHandler={resizeHandler}
-                   resizeFinishedHandler={resizeFinishedHandler}
-                   index={index}
-                   width={width}
+        columnContent={columnContent}
+        name={this.getDisplayName()}
+        column={column}
+        description={this.getDescription()}
+        langtag={langtag}
+        isId={column.identifier}
+        tables={tables}
+        resizeHandler={resizeHandler}
+        resizeFinishedHandler={resizeFinishedHandler}
+        index={index}
+        width={width}
       />
     );
   }

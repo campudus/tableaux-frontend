@@ -5,7 +5,6 @@ import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
 
 class IdentifierCell extends PureComponent {
-
   openEditor = () => {
     const {cell, editing, langtag, selected} = this.props;
     ((selected || editing) && !isLocked(cell.row))

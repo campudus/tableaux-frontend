@@ -4,13 +4,14 @@
  * Input value gets saved as current locale display name when input loses focus or recieves "Enter" key.
  * Aborts input on "Escape" key.
  */
-import React from "react";
+import React, {PureComponent} from "react";
 import i18n from "i18next";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import * as f from "lodash/fp";
 import ActionCreator from "../../../actions/ActionCreator";
+import PropTypes from "prop-types";
 
-class NameEditor extends React.Component {
+class NameEditor extends PureComponent {
   constructor(props) {
     super(props);
     this.saveAndClose = f.compose(this.saveTableName, this.stopEditing);
@@ -66,20 +67,20 @@ class NameEditor extends React.Component {
     const patchObj = {"displayName": {[langtag]: name}};
     table
       .save(patchObj,
-      {
-        patch: true,
-        wait: true,
-        success: () => ActionCreator.refreshTableNames()
-      });
+        {
+          patch: true,
+          wait: true,
+          success: () => ActionCreator.refreshTableNames()
+        });
   };
 
   renderOpenInput = () => {
     return (
       <input type="text" className="input" autoFocus
-             onChange={this.handleTextChange}
-             onKeyDown={this.handleInput}
-             value={this.state.name}
-             onBlur={this.saveAndClose}
+        onChange={this.handleTextChange}
+        onKeyDown={this.handleInput}
+        value={this.state.name}
+        onBlur={this.saveAndClose}
       />
     );
   };
@@ -88,8 +89,8 @@ class NameEditor extends React.Component {
     const {active} = this.state;
     return (
       <a href="#" id="table-rename-wrapper"
-         className={active ? "active" : ""}
-         onClick={this.startEditing}>
+        className={active ? "active" : ""}
+        onClick={this.startEditing}>
         {(active)
           ? this.renderOpenInput()
           : <span> {i18n.t("table:editor.rename_table")} </span>
@@ -100,8 +101,8 @@ class NameEditor extends React.Component {
 }
 
 NameEditor.propTypes = {
-  table: React.PropTypes.object.isRequired,
-  langtag: React.PropTypes.string.isRequired
+  table: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired
 };
 
 module.exports = NameEditor;

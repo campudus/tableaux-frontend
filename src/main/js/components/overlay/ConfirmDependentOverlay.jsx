@@ -37,17 +37,17 @@ class RowsOverlay extends Component {
       <div className="delete-row-confirmation">
         {(deleteInfo)
           ? (<InfoBox className="item"
-                      type="warning"
-                      heading={i18n.t("table:confirm_delete_row", {rowName: rowDisplayLabel})}
-                      message={depMessage}
-            />
+            type="warning"
+            heading={i18n.t("table:confirm_delete_row", {rowName: rowDisplayLabel})}
+            message={depMessage}
+          />
           )
           : null
         }
         <DependentRowsList className="item"
-                           row={row} langtag={langtag}
-                           hasDependency={this.hasDependencies}
-                           hasNoDependency={this.hasNoDependencies}
+          row={row} langtag={langtag}
+          hasDependency={this.hasDependencies}
+          hasNoDependency={this.hasNoDependencies}
         />
       </div>
     );

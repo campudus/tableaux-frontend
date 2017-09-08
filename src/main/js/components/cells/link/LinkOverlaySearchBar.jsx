@@ -102,12 +102,12 @@ class SearchBar extends PureComponent {
     return (
       <div className="filter-bar">
         <input type="text"
-               className="header-input"
-               autoFocus
-               value={filterValue}
-               placeholder={filterName}
-               onKeyDown={this.handleInputKeys}
-               onChange={event => this.updateFilter({value: event.target.value})}
+          className="header-input"
+          autoFocus
+          value={filterValue}
+          placeholder={filterName}
+          onKeyDown={this.handleInputKeys}
+          onChange={event => this.updateFilter({value: event.target.value})}
         />
         <a href="#" className="popup-button" onClick={() => this.setState({popupOpen: !popupOpen})}>
           <i className="fa fa-search" />

@@ -11,7 +11,7 @@ const withFunctionality = compose(
 
 const ExpandButton = (props) => (
   <button className="expand"
-          onClick={props.onClick}>
+    onClick={props.onClick}>
     <span className="fa fa-expand" />
   </button>
 );

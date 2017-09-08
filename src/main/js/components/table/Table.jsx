@@ -1,4 +1,5 @@
-import React from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
@@ -15,12 +16,9 @@ import Portal from "react-portal";
 
 import VirtualTable from "./VirtualTable";
 
-// Worker
-
 @connectToAmpersand
 @listensToClickOutside
-class Table extends React.Component { // PureComponent will not react to updates called from connectToAmpersand
-
+class Table extends Component { // PureComponent will not react to updates called from connectToAmpersand
   /**
    * This is an anti-pattern on purpose
    * Don't change this, its more performant than using this.state !
@@ -108,14 +106,14 @@ class Table extends React.Component { // PureComponent will not react to updates
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
     // in the header
     if (maybe(this.tableDOMNode)
-        .exec("contains", document.activeElement)
-        .getOrElse(false)
+      .exec("contains", document.activeElement)
+      .getOrElse(false)
     ) {
       // deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
       // can't differentiate between clicking the scrollbar or content
       if (maybe(this.headerDOMElement)
-          .exec("contains", e.target)
-          .getOrElse(false)
+        .exec("contains", e.target)
+        .getOrElse(false)
       ) {
         this.handleClickOutside(e);
         e.preventDefault();
@@ -165,24 +163,24 @@ class Table extends React.Component { // PureComponent will not react to updates
 
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1"
-               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
-                 this))}
-               onMouseDown={this.onMouseDownHandler}>
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
+          this))}
+        onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
           <VirtualTable key={`virtual-table-${table.id}`}
-                        columns={columns} ref={this.findAndStoreTableDiv}
-                        rows={rows}
-                        rowKeys={rowKeys}
-                        columnKeys={this.props.columnKeys}
-                        table={table}
-                        tables={tables}
-                        langtag={langtag}
-                        selectedCell={selectedCell}
-                        selectedCellEditing={selectedCellEditing}
-                        selectedCellExpandedRow={selectedCellExpandedRow}
-                        expandedRowIds={expandedRowIds}
-                        visibleColumns={f.map(f.get("visible"), columns.models).toString()}
-                        fullyLoaded={this.props.fullyLoaded}
+            columns={columns} ref={this.findAndStoreTableDiv}
+            rows={rows}
+            rowKeys={rowKeys}
+            columnKeys={this.props.columnKeys}
+            table={table}
+            tables={tables}
+            langtag={langtag}
+            selectedCell={selectedCell}
+            selectedCellEditing={selectedCellEditing}
+            selectedCellExpandedRow={selectedCellExpandedRow}
+            expandedRowIds={expandedRowIds}
+            visibleColumns={f.map(f.get("visible"), columns.models).toString()}
+            fullyLoaded={this.props.fullyLoaded}
           />
         </div>
         {this.noRowsInfo()}
@@ -193,14 +191,14 @@ class Table extends React.Component { // PureComponent will not react to updates
 }
 
 Table.propTypes = {
-  langtag: React.PropTypes.string.isRequired,
-  table: React.PropTypes.object.isRequired,
-  overlayOpen: React.PropTypes.bool,
-  rows: React.PropTypes.object,
-  rowKeys: React.PropTypes.string.isRequired,
-  columnKeys: React.PropTypes.string,
-  tables: React.PropTypes.object.isRequired,
-  fullyLoaded: React.PropTypes.bool.isRequired
+  langtag: PropTypes.string.isRequired,
+  table: PropTypes.object.isRequired,
+  overlayOpen: PropTypes.bool,
+  rows: PropTypes.object,
+  rowKeys: PropTypes.string.isRequired,
+  columnKeys: PropTypes.string,
+  tables: PropTypes.object.isRequired,
+  fullyLoaded: PropTypes.bool.isRequired
 };
 
 module.exports = Table;

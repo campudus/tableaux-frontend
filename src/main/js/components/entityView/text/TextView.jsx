@@ -3,11 +3,11 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
 
 import {contentChanged} from "../../cells/Cell";
 
 class TextView extends React.Component {
-
   constructor(props) {
     super(props);
     this.originalValue = this.getValue().trim();
@@ -18,9 +18,9 @@ class TextView extends React.Component {
   };
 
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   getValue = () => {
@@ -40,7 +40,7 @@ class TextView extends React.Component {
     };
 
     return {
-//      escape: captureEventAnd(() => { this.background.focus() }),
+      //      escape: captureEventAnd(() => { this.background.focus() }),
       escape: captureEventAnd(this.saveEdits),
       enter: (event) => event.stopPropagation(),
       up: (event) => event.stopPropagation(),
@@ -104,15 +104,15 @@ class TextView extends React.Component {
 
     return (
       <div className="item-content shorttext"
-           tabIndex={1}
+        tabIndex={1}
       >
         <textarea value={this.state.value || ""}
-                  placeholder={i18n.t("table:empty.text")}
-                  disabled={thisUserCantEdit}
-                  onChange={this.handleChange}
-                  onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-                  onBlur={this.saveEdits}
-                  ref={this.setRef}
+          placeholder={i18n.t("table:empty.text")}
+          disabled={thisUserCantEdit}
+          onChange={this.handleChange}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+          onBlur={this.saveEdits}
+          ref={this.setRef}
         />
         {this.props.children}
       </div>

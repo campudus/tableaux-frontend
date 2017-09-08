@@ -4,11 +4,11 @@ import Dispatcher from "../../dispatcher/Dispatcher";
 import TableauxConstants from "../../constants/TableauxConstants";
 import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import {merge} from "lodash/fp";
+import PropTypes from "prop-types";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
 export default class Spinner extends React.Component {
-
   static spinnerOptions = {
     lines: 11, // The number of lines to draw
     length: 5, // The length of each line
@@ -69,8 +69,8 @@ export default class Spinner extends React.Component {
     if (this.state.isLoading) {
       const {customOptions} = this.props;
       const options = (customOptions)
-      ? merge(Spinner.spinnerOptions, customOptions)
-      : Spinner.spinnerOptions;
+        ? merge(Spinner.spinnerOptions, customOptions)
+        : Spinner.spinnerOptions;
       this.spinnerElement = this.spinnerElement
         || <Loader loaded={false} options={options} className="actual-spinner"/>;
       return (
@@ -95,7 +95,7 @@ export default class Spinner extends React.Component {
 }
 
 Spinner.propTypes = {
-  isLoading: React.PropTypes.bool,
-  customOptions: React.PropTypes.object
+  isLoading: PropTypes.bool,
+  customOptions: PropTypes.object
 };
 Spinner.defaultProps = {isLoading: false};

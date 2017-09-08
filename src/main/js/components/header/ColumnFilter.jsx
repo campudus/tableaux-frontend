@@ -4,10 +4,10 @@ import i18n from "i18next";
 import classNames from "classnames";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
 
 @connectToAmpersand
 class ColumnFilter extends React.Component {
-
   state = {open: false};
 
   constructor(props) {
@@ -54,8 +54,8 @@ class ColumnFilter extends React.Component {
         </a>
         {(open)
           ? <ColumnFilterPopup langtag={langtag}
-                               close={this.handleClickedOutside}
-                               columns={this.props.columns}
+            close={this.handleClickedOutside}
+            columns={this.props.columns}
           />
           : null
         }
@@ -65,8 +65,8 @@ class ColumnFilter extends React.Component {
 }
 
 ColumnFilter.propTypes = {
-  langtag: React.PropTypes.string.isRequired,
-  columns: React.PropTypes.object.isRequired
+  langtag: PropTypes.string.isRequired,
+  columns: PropTypes.object.isRequired
 };
 
 export default ColumnFilter;

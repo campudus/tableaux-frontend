@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import KeyboardShortcutsHelper from "../helpers/KeyboardShortcutsHelper";
 import ActionCreator from "../actions/ActionCreator";
 import i18n from "i18next";
@@ -7,7 +8,6 @@ import * as f from "lodash/fp";
 import {contentChanged} from "./cells/Cell";
 
 class PoorTextComponent extends React.Component {
-
   constructor(props) {
     super(props);
     this.originalValue = this.getValue().trim();
@@ -18,9 +18,9 @@ class PoorTextComponent extends React.Component {
   };
 
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   getValue = () => {
@@ -89,16 +89,16 @@ class PoorTextComponent extends React.Component {
     const {funcs, thisUserCantEdit} = this.props;
     return (
       <div className="item-content shorttext"
-           ref={el => { this.background = el; }}
-           tabIndex={1}
+        ref={el => { this.background = el; }}
+        tabIndex={1}
       >
         <textarea value={this.state.value || ""}
-               placeholder={i18n.t("table:empty.text")}
-               disabled={thisUserCantEdit}
-               onChange={this.handleChange}
-               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-               onBlur={this.saveEdits}
-               ref={(funcs && funcs.register) ? el => { funcs.register(el); } : f.noop()}
+          placeholder={i18n.t("table:empty.text")}
+          disabled={thisUserCantEdit}
+          onChange={this.handleChange}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+          onBlur={this.saveEdits}
+          ref={(funcs && funcs.register) ? el => { funcs.register(el); } : f.noop()}
         />
         {this.props.children}
       </div>

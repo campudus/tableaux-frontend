@@ -52,10 +52,10 @@ export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries)
     <div><p>{userError}</p><p>
       <strong
         className="allowed-languages">{allowedLangtagsMarkup ? allowedLanguagesLabel : null}<span
-        className="allowedValues">{allowedLangtagsMarkup}</span> </strong>
+          className="allowedValues">{allowedLangtagsMarkup}</span> </strong>
       <strong
         className="allowed-countries">{allowedLangtagsMarkup ? allowedCountriesLabel : null}<span
-        className="allowedValues">{allowedCountriesMarkup}</span></strong>
+          className="allowedValues">{allowedCountriesMarkup}</span></strong>
     </p></div>;
 
   showDialog({

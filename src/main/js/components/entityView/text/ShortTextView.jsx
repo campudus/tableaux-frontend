@@ -3,11 +3,11 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
 
 import {contentChanged} from "../../cells/Cell";
 
 class ShortTextView extends React.Component {
-
   constructor(props) {
     super(props);
     this.originalValue = this.getValue().trim();
@@ -18,9 +18,9 @@ class ShortTextView extends React.Component {
   };
 
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   getValue = () => {
@@ -40,7 +40,7 @@ class ShortTextView extends React.Component {
     };
 
     return {
-//      escape: captureEventAnd(() => { this.background.focus() }),
+      //      escape: captureEventAnd(() => { this.background.focus() }),
       escape: captureEventAnd(this.saveEdits),
       enter: captureEventAnd(this.saveEdits)
     };
@@ -90,16 +90,16 @@ class ShortTextView extends React.Component {
     const {funcs, thisUserCantEdit} = this.props;
     return (
       <div className="item-content shorttext"
-           ref={el => { this.background = el; }}
-           tabIndex={1}
+        ref={el => { this.background = el; }}
+        tabIndex={1}
       >
         <input type="text" value={this.state.value || ""}
-               placeholder={i18n.t("table:empty.text")}
-               disabled={thisUserCantEdit}
-               onChange={this.handleChange}
-               onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-               onBlur={this.saveEdits}
-               ref={el => { funcs.register(el); }}
+          placeholder={i18n.t("table:empty.text")}
+          disabled={thisUserCantEdit}
+          onChange={this.handleChange}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+          onBlur={this.saveEdits}
+          ref={el => { funcs.register(el); }}
         />
         {this.props.children}
       </div>

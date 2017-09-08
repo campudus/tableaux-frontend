@@ -4,9 +4,9 @@ import ActionCreator from "../../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 import {contentChanged} from "../../cells/Cell";
+import PropTypes from "prop-types";
 
 class NumericView extends React.Component {
-
   constructor(props) {
     super(props);
     this.originalValue = parseFloat(this.getValue()) || 0;
@@ -17,9 +17,9 @@ class NumericView extends React.Component {
   };
 
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool
+    langtag: PropTypes.string.isRequired,
+    cell: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool
   };
 
   getValue = () => {
@@ -103,12 +103,12 @@ class NumericView extends React.Component {
     return (
       <div className="item-content numeric" >
         <input type="text" value={this.state.value || ""}
-               disabled={thisUserCantEdit}
-               onChange={this.normaliseNumberFormat}
-               onKeyDown={this.handleKeyPress}
-               onBlur={this.saveEdits}
-               placeholder={i18n.t("table:empty.number")}
-               ref={el => { funcs.register(el); }}
+          disabled={thisUserCantEdit}
+          onChange={this.normaliseNumberFormat}
+          onKeyDown={this.handleKeyPress}
+          onBlur={this.saveEdits}
+          placeholder={i18n.t("table:empty.number")}
+          ref={el => { funcs.register(el); }}
         />
         {this.props.children}
       </div>

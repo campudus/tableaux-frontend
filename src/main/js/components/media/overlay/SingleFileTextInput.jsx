@@ -7,7 +7,6 @@ import {translate} from "react-i18next";
 import {DefaultLangtag, Langtags} from "../../../constants/TableauxConstants";
 
 class SingleFileTextInput extends Component {
-
   static propTypes = {
     name: PropTypes.string.isRequired,
     labelText: PropTypes.string.isRequired,
@@ -52,7 +51,7 @@ class SingleFileTextInput extends Component {
         <div className="item-content" key={id}>
           <div onClick={this.onToggle}>{this.renderLangtag(langtag)}</div>
           <input disabled={disabled} type="text" ref={id} id={id} value={value}
-                 onChange={this.onChange.bind(this, langtag)} />
+            onChange={this.onChange.bind(this, langtag)} />
         </div>
       </div>);
   };

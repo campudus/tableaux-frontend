@@ -42,15 +42,15 @@ class LoadingEntityViewHeaderWrapper extends Component {
     const {row} = this.state;
     return (row)
       ? <EntityViewHeader row={row}
-                          langtag={langtag}
-                          id={id}
-                          hasMeaningfulLinks={true}
+        langtag={langtag}
+        id={id}
+        hasMeaningfulLinks={true}
       />
       : <Header context=""
-                title={i18n.t("common:loading")}
-                components={<div />}
-                langtag={langtag}
-                id={id}
+        title={i18n.t("common:loading")}
+        components={<div />}
+        langtag={langtag}
+        id={id}
       />;
   }
 }
@@ -80,19 +80,19 @@ class LoadingEntityViewBodyWrapper extends Component {
   componentWillMount = () => {
     if (!this.state.row) {
       this.loadRow(this.props.toLoad)
-          .then(this.setLoadedRow)
-          .catch(
-            error => {
-              console.error(error);
-              showDialog({
-                type: "warning",
-                context: "Error",
-                title: "Could not load row",
-                heading: "An error occured while fetching row from database",
-                message: error.toString(),
-                actions: {neutral: ["Ok", null]}
-              });
+        .then(this.setLoadedRow)
+        .catch(
+          error => {
+            console.error(error);
+            showDialog({
+              type: "warning",
+              context: "Error",
+              title: "Could not load row",
+              heading: "An error occured while fetching row from database",
+              message: error.toString(),
+              actions: {neutral: ["Ok", null]}
             });
+          });
     }
   };
 
@@ -152,7 +152,7 @@ class LoadingEntityViewBodyWrapper extends Component {
     const {row} = this.state;
     return (row)
       ? <EntityViewBody row={row} langtag={this.props.langtag} id={this.props.id}
-                        registerForEvent={this.props.registerForEvent} filterColumn={this.props.toLoad.filterColumn}
+        registerForEvent={this.props.registerForEvent} filterColumn={this.props.toLoad.filterColumn}
       />
       : null;
   }

@@ -19,7 +19,6 @@ import i18n from "i18next";
 @translate(["media"])
 @connectToAmpersand
 class File extends Component {
-
   static propTypes = {
     file: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired
@@ -58,7 +57,7 @@ class File extends Component {
     const {FallbackLanguage} = TableauxConstants;
     ActionCreator.openOverlay({
       head: <Header context={t("change_file")}
-                    title={multiLanguage.retrieveTranslation(FallbackLanguage)(file.title, langtag)}
+        title={multiLanguage.retrieveTranslation(FallbackLanguage)(file.title, langtag)}
       />,
       body: <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose} />,
       footer: (
@@ -87,7 +86,7 @@ class File extends Component {
     // delete and edit file
     let mediaOptions = (
       <div className="media-options">
-          <span onClick={this.onEdit} className="button" alt="edit">
+        <span onClick={this.onEdit} className="button" alt="edit">
           <i className="icon fa fa-pencil-square-o" />{t("change_file")}
         </span>
         <a href={imageUrl} target="_blank" rel="noopener" className="button">

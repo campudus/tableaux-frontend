@@ -88,15 +88,15 @@ class AnnotationPopup extends PureComponent {
     return (
       <Portal isOpened >
         <div className={popupCssClass}
-             onClick={this.handleClick}
-             onContextMenu={this.handleClick}
-             style={{
-               "left": `${this.props.x - 5}px`,
-               "top": `${this.props.y - 16}px`
-             }}
+          onClick={this.handleClick}
+          onContextMenu={this.handleClick}
+          style={{
+            "left": `${this.props.x - 5}px`,
+            "top": `${this.props.y - 16}px`
+          }}
         >
           <div className="close-icon"
-               onClick={ActionCreator.closeAnnotationsPopup}
+            onClick={ActionCreator.closeAnnotationsPopup}
           >
             <SvgIcon icon="cross"/>
           </div>
@@ -114,25 +114,25 @@ class AnnotationPopup extends PureComponent {
             {f.reverse(annotations).map(
               (ann, idx) => (
                 <AnnotationEntry annotation={ann}
-                                 key={ann.uuid}
-                                 cell={cell}
-                                 idx={f.size(annotations) - idx}
+                  key={ann.uuid}
+                  cell={cell}
+                  idx={f.size(annotations) - idx}
                 />
               )
             )}
           </div>
           <footer ref={node => { this.footer = node; }}
-                  tabIndex="1"
+            tabIndex="1"
           >
             <input type="text"
-                   onChange={this.handleInputChange}
-                   autoFocus
-                   placeholder={i18n.t("table:new-comment")}
-                   onKeyDown={this.handleInputKeys}
-                   value={this.state.comment}
+              onChange={this.handleInputChange}
+              autoFocus
+              placeholder={i18n.t("table:new-comment")}
+              onKeyDown={this.handleInputKeys}
+              value={this.state.comment}
             />
             <div className="button"
-                 onClick={this.saveComment}
+              onClick={this.saveComment}
             >
               {i18n.t("common:add")}
             </div>

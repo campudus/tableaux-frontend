@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import {openEntityView} from "../../overlay/EntityViewOverlay";
 import Empty from "../../helperComponents/emptyEntry";
@@ -19,13 +19,13 @@ const GroupView = (props) => {
 
   return (
     <div className="item-content group"
-         tabIndex="1"
-         ref={el => { funcs.register(el); }}
-         onClick={clickHandler}
+      tabIndex="1"
+      ref={el => { funcs.register(el); }}
+      onClick={clickHandler}
     >
       {(isEmpty(value)
-      ? <Empty/>
-      : value)}
+        ? <Empty/>
+        : value)}
       {props.children}
     </div>
   );

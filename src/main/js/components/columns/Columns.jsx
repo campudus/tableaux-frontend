@@ -7,11 +7,11 @@ import Dispatcher from "../../dispatcher/Dispatcher";
 import * as f from "lodash/fp";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {maybe} from "../../helpers/functools";
+import PropTypes from "prop-types";
 
 @translate(["table"])
 @connectToAmpersand
 class Columns extends React.Component {
-
   constructor(props) {
     super(props);
     this.props.columns.forEach((column) => {
@@ -72,12 +72,12 @@ class Columns extends React.Component {
     }
 
     const toTableHidden = maybe(table)
-      .map(f.get("rows"))            // catch rows not loaded yet
+      .map(f.get("rows")) // catch rows not loaded yet
       .exec("at", 0)
-      .map(f.get("cells"))           // catch cells not loaded yet
+      .map(f.get("cells")) // catch cells not loaded yet
       .exec("at", 0)
       .map(f.get("tables"))
-      .exec("get", column.toTable)   // only with link columns
+      .exec("get", column.toTable) // only with link columns
       .map(f.get("hidden"))
       .getOrElse("false");
 
@@ -103,14 +103,14 @@ class Columns extends React.Component {
 
     return (
       <ColumnEntry key={index}
-                   columnContent={columnContent}
-                   columnIcon={columnIcon}
-                   name={name}
-                   column={column}
-                   description={description}
-                   langtag={langtag}
-                   isId={column === f.first(this.props.columns.models)}
-                   tables={this.props.tables}
+        columnContent={columnContent}
+        columnIcon={columnIcon}
+        name={name}
+        column={column}
+        description={description}
+        langtag={langtag}
+        isId={column === f.first(this.props.columns.models)}
+        tables={this.props.tables}
       />
     );
   };
@@ -161,11 +161,11 @@ class Columns extends React.Component {
 }
 
 Columns.propTypes = {
-  langtag: React.PropTypes.string.isRequired,
-  columns: React.PropTypes.object.isRequired,
-  table: React.PropTypes.object.isRequired,
-  tables: React.PropTypes.object.isRequired,
-  t: React.PropTypes.func
+  langtag: PropTypes.string.isRequired,
+  columns: PropTypes.object.isRequired,
+  table: PropTypes.object.isRequired,
+  tables: PropTypes.object.isRequired,
+  t: PropTypes.func
 };
 
 export default Columns;

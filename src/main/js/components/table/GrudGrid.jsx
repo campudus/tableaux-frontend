@@ -24,8 +24,8 @@ const handleScrollLater = debounce(
 );
 
 const scrollingEvents = new Rx.Subject();
-const IMMEDIATE_RENDER_SPEED = 8;   // px/scroll event
-const IMMEDIATE_RENDER_FRAMES = 3;  // minimum number of frames
+const IMMEDIATE_RENDER_SPEED = 8; // px/scroll event
+const IMMEDIATE_RENDER_FRAMES = 3; // minimum number of frames
 
 const getScrollingVelocity = ([[x1, y1], [x2, y2]]) => { // implicit differentiation of position to velocity
   const xx = [(x2 - x1), (y2 - y1)]

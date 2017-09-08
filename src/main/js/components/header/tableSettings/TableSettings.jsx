@@ -2,6 +2,7 @@
 import React from "react";
 import TableSettingsPopup from "./TableSettingsPopup";
 import {contains} from "lodash/fp";
+import PropTypes from "prop-types";
 
 class TableSettings extends React.Component {
   constructor(props) {
@@ -29,20 +30,20 @@ class TableSettings extends React.Component {
     const {open} = this.state;
     return (
       <div id="table-settings-wrapper"
-           onClick={this.toggleSettingsPopup}>
+        onClick={this.toggleSettingsPopup}>
         <a id="table-settings"
-           className={(open) ? "button active" : "button"}
-           ref={tableSettings => {
-             this.tableSettings = tableSettings;
-           }}
-           href="#">
+          className={(open) ? "button active" : "button"}
+          ref={tableSettings => {
+            this.tableSettings = tableSettings;
+          }}
+          href="#">
           <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"}>
           </i>
         </a>
         {(open)
           ? <TableSettingsPopup table={this.props.table}
-                                langtag={this.props.langtag}
-                                outsideClickHandler={this.onClickOutside} />
+            langtag={this.props.langtag}
+            outsideClickHandler={this.onClickOutside} />
           : null
         }
       </div>
@@ -51,8 +52,8 @@ class TableSettings extends React.Component {
 }
 
 TableSettings.propTypes = {
-  table: React.PropTypes.object.isRequired,
-  langtag: React.PropTypes.string.isRequired
+  table: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired
 };
 
 module.exports = TableSettings;

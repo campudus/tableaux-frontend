@@ -140,7 +140,7 @@ export default class VirtualTable extends PureComponent {
   cellRenderer = (gridData) => {
     return (
       <div style={gridData.style}
-           key={gridData.key}
+        key={gridData.key}
       >
         {this.renderGridCell(gridData)}
       </div>
@@ -183,9 +183,9 @@ export default class VirtualTable extends PureComponent {
 
   renderColumnHeader = ({columnIndex}) => {
     const visibleColumns = this.props.columns
-                               .filter(
-                                 (col, idx) => idx === 0 || col.visible
-                               );
+      .filter(
+        (col, idx) => idx === 0 || col.visible
+      );
     const column = visibleColumns[columnIndex];
     const {table, tables} = this.props;
     return (
@@ -222,10 +222,10 @@ export default class VirtualTable extends PureComponent {
           {Langtags.map(
             (lt) => (
               <MetaCell key={`${key}-${lt}`}
-                        langtag={lt}
-                        expanded={true}
-                        selected={isRowSelected && lt === selectedCellExpandedRow}
-                        row={row}
+                langtag={lt}
+                expanded={true}
+                selected={isRowSelected && lt === selectedCellExpandedRow}
+                row={row}
               />
             )
           )}
@@ -233,10 +233,10 @@ export default class VirtualTable extends PureComponent {
       )
       : (
         <MetaCell key={`${key}-${row.id}`}
-                  langtag={langtag}
-                  row={row}
-                  selected={isRowSelected}
-                  expanded={false}
+          langtag={langtag}
+          row={row}
+          selected={isRowSelected}
+          expanded={false}
         />
       );
     // key={`${key}-${row.id}`}
@@ -263,14 +263,14 @@ export default class VirtualTable extends PureComponent {
     const isEditing = isSelected && this.props.selectedCellEditing;
     return (
       <Cell cell={cell}
-            langtag={langtag}
-            row={row}
-            table={table}
-            annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
-            isExpandedCell={false}
-            selected={isSelected}
-            inSelectedRow={isInSelectedRow}
-            editing={isEditing}
+        langtag={langtag}
+        row={row}
+        table={table}
+        annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
+        isExpandedCell={false}
+        selected={isSelected}
+        inSelectedRow={isInSelectedRow}
+        editing={isEditing}
       />
     );
   };
@@ -296,15 +296,15 @@ export default class VirtualTable extends PureComponent {
               const isEditing = isSelected && this.props.selectedCellEditing;
               return (
                 <Cell key={`${langtag}-${key}`}
-                      cell={cell}
-                      langtag={langtag}
-                      row={row}
-                      table={table}
-                      annotationsOpen={isPrimaryLang && openAnnotations.cellId && cell.id === openAnnotations.cellId}
-                      isExpandedCell={!isPrimaryLang}
-                      selected={isSelected}
-                      inSelectedRow={isRowSelected}
-                      editing={isEditing}
+                  cell={cell}
+                  langtag={langtag}
+                  row={row}
+                  table={table}
+                  annotationsOpen={isPrimaryLang && openAnnotations.cellId && cell.id === openAnnotations.cellId}
+                  isExpandedCell={!isPrimaryLang}
+                  selected={isSelected}
+                  inSelectedRow={isRowSelected}
+                  editing={isEditing}
                 />
               );
             }
@@ -350,8 +350,8 @@ export default class VirtualTable extends PureComponent {
     }
     return cells[this.getCell.totalColIdx];
     // Original implementation which eats too much CPU-time
-//    const visibleCells = cells.models.filter(this.filterVisibleCells);
-//    return visibleCells[columnIndex];
+    //    const visibleCells = cells.models.filter(this.filterVisibleCells);
+    //    return visibleCells[columnIndex];
   };
 
   filterVisibleCells = (cell, columnId) => columnId === 0 || this.props.columns.at(columnId).visible;
@@ -385,7 +385,7 @@ export default class VirtualTable extends PureComponent {
 
   scrollToCell = (cellId, langtag = this.props.selectedCellExpandedRow) => {
     this.updateSelectedCellId(cellId, langtag);
-    if (!cellId) {  // when called by cell deselection
+    if (!cellId) { // when called by cell deselection
       return false;
     }
     const {columns, rows} = this.props;
@@ -444,39 +444,39 @@ export default class VirtualTable extends PureComponent {
         {
           ({height, width}) => (
             <MultiGrid ref={this.storeGridElement}
-                       key={(columnCount < 3) ? "no-fixed-rows" : "with-fixed-rows"}
-                       className="data-wrapper"
-                       cellRenderer={this.cellRenderer}
-                       columnCount={columnCount}
-                       columnWidth={this.calcColWidth}
-                       noContentRenderer={this.renderEmptyTable}
-                       rowCount={rowCount}
-                       rowHeight={this.calcRowHeight}
-                       fixedColumnCount={(columnCount < 3) ? 0 : f.min([columnCount, 2])}
-                       fixedRowCount={1}
-                       width={width}
-                       height={height}
-                       selectedCell={selectedCellKey}
-                       expandedRows={expandedRowIds}
-                       openAnnotations={openAnnotations}
-                       scrollToRow={rowIndex}
-                       scrollToColumn={columnIndex}
-                       scrollLeft={scrollPosition}
-                       rowKeys={rowKeys}
-                       columnKeys={columnKeys}
-                       overscanColumnCount={5}
-                       overscanRowCount={6}
-                       classNameBottomRightGrid={"multigrid-bottom-right"}
-                       classNameTopRightGrid={"multigrid-top-right"}
-                       classNameBottomLeftGrid={"multigrid-bottom-left"}
-                       fullyLoaded={this.props.fullyLoaded}
-                       styleTopRightGrid={{
-                         backgroundColor: "#f9f9f9",
-                         borderBottom: "3px solid #eee"
-                       }}
-                       styleBottomLeftGrid={{
-                         backgroundColor: (shouldIDColBeGrey) ? "#f9f9f9" : "white"
-                       }}
+              key={(columnCount < 3) ? "no-fixed-rows" : "with-fixed-rows"}
+              className="data-wrapper"
+              cellRenderer={this.cellRenderer}
+              columnCount={columnCount}
+              columnWidth={this.calcColWidth}
+              noContentRenderer={this.renderEmptyTable}
+              rowCount={rowCount}
+              rowHeight={this.calcRowHeight}
+              fixedColumnCount={(columnCount < 3) ? 0 : f.min([columnCount, 2])}
+              fixedRowCount={1}
+              width={width}
+              height={height}
+              selectedCell={selectedCellKey}
+              expandedRows={expandedRowIds}
+              openAnnotations={openAnnotations}
+              scrollToRow={rowIndex}
+              scrollToColumn={columnIndex}
+              scrollLeft={scrollPosition}
+              rowKeys={rowKeys}
+              columnKeys={columnKeys}
+              overscanColumnCount={5}
+              overscanRowCount={6}
+              classNameBottomRightGrid={"multigrid-bottom-right"}
+              classNameTopRightGrid={"multigrid-top-right"}
+              classNameBottomLeftGrid={"multigrid-bottom-left"}
+              fullyLoaded={this.props.fullyLoaded}
+              styleTopRightGrid={{
+                backgroundColor: "#f9f9f9",
+                borderBottom: "3px solid #eee"
+              }}
+              styleBottomLeftGrid={{
+                backgroundColor: (shouldIDColBeGrey) ? "#f9f9f9" : "white"
+              }}
             />
           )
         }

@@ -11,7 +11,6 @@ import MultifileFileEdit from "./MultifileFileEdit";
 
 @connectToAmpersand
 class MultiFileEdit extends Component {
-
   static propTypes = {
     file: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
@@ -40,10 +39,10 @@ class MultiFileEdit extends Component {
     const {t, editedLanguage, file, hasChanged} = this.props;
     if (hasChanged) {
       const langDuplicates = f.compose(
-        f.pickBy(f.lt(1)),                       // Select keys with 1 < N for any
-        f.mapValues(f.size),                     //    cardinality of
-        f.groupBy(f.identity),                   //    occurences within
-        f.map((lt) => editedLanguage[lt] || lt)  //    langtags or edited languages
+        f.pickBy(f.lt(1)), // Select keys with 1 < N for any
+        f.mapValues(f.size), //    cardinality of
+        f.groupBy(f.identity), //    occurences within
+        f.map((lt) => editedLanguage[lt] || lt) //    langtags or edited languages
       )(Langtags);
 
       if (!f.isEmpty(langDuplicates)) {
@@ -135,13 +134,13 @@ class MultiFileEdit extends Component {
       const language = editedLanguage[langtag] ? editedLanguage[langtag] : langtag;
       return (
         <MultifileFileEdit key={langtag}
-                           originalLangtag={langtag}
-                           langtag={language}
-                           fileData={fileData}
-                           onTitleChange={this.onTitleChange}
-                           onDescriptionChange={this.onDescriptionChange}
-                           onExternalnameChange={this.onExternalnameChange}
-                           onLangChange={this.onLangChange} />
+          originalLangtag={langtag}
+          langtag={language}
+          fileData={fileData}
+          onTitleChange={this.onTitleChange}
+          onDescriptionChange={this.onDescriptionChange}
+          onExternalnameChange={this.onExternalnameChange}
+          onLangChange={this.onLangChange} />
       );
     });
 

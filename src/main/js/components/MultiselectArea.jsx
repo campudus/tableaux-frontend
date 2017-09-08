@@ -8,23 +8,22 @@ import classNames from "classnames";
 
 @listenToClickOutside
 class MultiselectArea extends PureComponent {
-
   static propTypes = {
     langtag: PropTypes.string.isRequired,
-    options: PropTypes.array.isRequired,  // items to display
-    tagRenderer: PropTypes.func,          // receives one item to render a selected tag, default: use label property
-    listItemRenderer: PropTypes.func,     // receives one item to render an entry in the select-dropdown, default: use label property
-    placeholder: PropTypes.any,           // if nothing selected
-    allSelected: PropTypes.any,           // if dropdown list is empty
-    selection: PropTypes.array,           // array of selected items
-    onChange: PropTypes.func,             // receives array of selected items
-    onSelect: PropTypes.func,             // receives single item
-    onDeselect: PropTypes.func,           // receives single item
-    idProperty: PropTypes.string,         // default: "id", for comparisons and keys
-    labelProperty: PropTypes.string,      // default: "label", define text fallback
-    deleteTagIcon: PropTypes.element,     // instead of svg-cross
-    keepSelectedInList: PropTypes.bool,   // don't remove selected items from dropdown
-    order: PropTypes.func                 // gets passed an item, returns a value to compare
+    options: PropTypes.array.isRequired, // items to display
+    tagRenderer: PropTypes.func, // receives one item to render a selected tag, default: use label property
+    listItemRenderer: PropTypes.func, // receives one item to render an entry in the select-dropdown, default: use label property
+    placeholder: PropTypes.any, // if nothing selected
+    allSelected: PropTypes.any, // if dropdown list is empty
+    selection: PropTypes.array, // array of selected items
+    onChange: PropTypes.func, // receives array of selected items
+    onSelect: PropTypes.func, // receives single item
+    onDeselect: PropTypes.func, // receives single item
+    idProperty: PropTypes.string, // default: "id", for comparisons and keys
+    labelProperty: PropTypes.string, // default: "label", define text fallback
+    deleteTagIcon: PropTypes.element, // instead of svg-cross
+    keepSelectedInList: PropTypes.bool, // don't remove selected items from dropdown
+    order: PropTypes.func // gets passed an item, returns a value to compare
   };
 
   constructor(props) {
@@ -105,8 +104,8 @@ class MultiselectArea extends PureComponent {
 
     return (
       <div key={this.getId(item)}
-           className="multiselect-tag"
-           onClick={this.handleDeselect(item)}
+        className="multiselect-tag"
+        onClick={this.handleDeselect(item)}
       >
         {tagElement}
         <div className="multiselect-tag-deselect-icon"
@@ -124,8 +123,8 @@ class MultiselectArea extends PureComponent {
       : this.getLabel(item);
     return (
       <li className="multiselect-list-item"
-          key={this.getId(item)}
-          onClick={this.handleSelect(item)}
+        key={this.getId(item)}
+        onClick={this.handleSelect(item)}
       >
         {listItem}
       </li>
@@ -156,7 +155,7 @@ class MultiselectArea extends PureComponent {
           (f.isEmpty(listItems))
             ? this.getEmptyListPlaceholder()
             : f.sortBy(this.getOrderFn(), listItems)
-               .map(this.renderListItem)
+              .map(this.renderListItem)
         }
       </ul>
     );
@@ -171,13 +170,13 @@ class MultiselectArea extends PureComponent {
 
     return (
       <div className={areaClass}
-           onClick={this.openList(!listOpen)}
+        onClick={this.openList(!listOpen)}
       >
         {
           (f.isEmpty(selection))
             ? this.getPlaceholder()
             : f.sortBy(this.getOrderFn(), selection)
-               .map(this.renderTag)
+              .map(this.renderTag)
         }
         <div className={`multiselect-list-wrapper ${(listOpen) ? "open" : ""}`}>
           {

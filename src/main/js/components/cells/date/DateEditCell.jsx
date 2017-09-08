@@ -6,10 +6,10 @@ import listensToClickOutside from "react-onclickoutside";
 import ActionCreator from "../../../actions/ActionCreator";
 import Datetime from "react-datetime";
 import {Directions} from "../../../constants/TableauxConstants";
+import PropTypes from "prop-types";
 
 @listensToClickOutside
 class DateEditCell extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -74,25 +74,25 @@ class DateEditCell extends React.Component {
       <div className="cell-content">
         {this.props.toDisplayValue(moment)}
         <i className="fa fa-ban cell-content"
-           style={{float: "right"}}
-           onClick={this.handleClickClearDate} />
+          style={{float: "right"}}
+          onClick={this.handleClickClearDate} />
         <Datetime onChange={this.handleChange}
-                  open={true}
-                  input={false}
-                  value={moment}
-                  timeFormat={false} />
+          open={true}
+          input={false}
+          value={moment}
+          timeFormat={false} />
       </div>
     );
   }
 }
 
 DateEditCell.propTypes = {
-  setCellKeyboardShortcuts: React.PropTypes.func.isRequired,
-  handleDateUpdate: React.PropTypes.func.isRequired,
-  toDisplayValue: React.PropTypes.func.isRequired,
-  handleEditFinished: React.PropTypes.func.isRequired,
-  cell: React.PropTypes.object.isRequired,
-  value: React.PropTypes.object.isRequired
+  setCellKeyboardShortcuts: PropTypes.func.isRequired,
+  handleDateUpdate: PropTypes.func.isRequired,
+  toDisplayValue: PropTypes.func.isRequired,
+  handleEditFinished: PropTypes.func.isRequired,
+  cell: PropTypes.object.isRequired,
+  value: PropTypes.object.isRequired
 };
 
 module.exports = DateEditCell;

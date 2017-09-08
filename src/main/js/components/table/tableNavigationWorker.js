@@ -17,9 +17,9 @@ export function checkFocusInsideTable() {
     if (focusedElement === null) {
       maybe(tableDOMNode).method("focus");
     } else if (maybe(tableDOMNode)
-        .exec("contains", focusedElement)
-        .map((boolVal) => !boolVal)
-        .getOrElse(false)
+      .exec("contains", focusedElement)
+      .map((boolVal) => !boolVal)
+      .getOrElse(false)
     ) {
       // Is the focus outside the table or is body selected
       // force table to be focused to get keyboard events
@@ -110,18 +110,18 @@ export function getKeyboardShortcuts() {
       && f.contains(selectedCell.kind,
         [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
       const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
-      if (f.prop(actionKey, event) && event.key === "c"  // Cell copy
+      if (f.prop(actionKey, event) && event.key === "c" // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!f.isEmpty(this.props.pasteOriginCell)
         && !f.eq(this.props.pasteOriginCell, selectedCell)
         && f.prop(actionKey, event) && event.key === "v"
-        && !systemPaste) {  // Cell paste
+        && !systemPaste) { // Cell paste
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
-      } else if (!selectedCellEditing  // Other keypress
+      } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
         || selectedCell.kind === ColumnKinds.shorttext
@@ -174,7 +174,7 @@ export function toggleCellEditing(params = {}) {
   if (selectedCell && canEdit) {
     const noEditingModeNeeded = (f.contains(selectedCell.kind, [ColumnKinds.boolean, ColumnKinds.link, ColumnKinds.attachment]));
     if ((!this.state.selectedCellEditing || !noEditingModeNeeded) // Editing requested or unnecessary
-      && isLocked(selectedCell.row) && !needsTranslation) {       // needs_translation overrules final
+      && isLocked(selectedCell.row) && !needsTranslation) { // needs_translation overrules final
       askForSessionUnlock(selectedCell.row, f.prop(["event", "key"], params));
       return;
     }

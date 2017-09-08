@@ -33,8 +33,8 @@ class MenuPopup extends Component {
   render() {
     return (
       <div className={this.props.popupClass}
-           onMouseEnter={this.props.handleMouseEnter}
-           onMouseLeave={this.props.handleMouseLeave}
+        onMouseEnter={this.props.handleMouseEnter}
+        onMouseLeave={this.props.handleMouseLeave}
       >
         {this.props.children}
       </div>
@@ -75,8 +75,8 @@ class ItemPopupMenu extends Component {
     );
     return (
       <a className="entry"
-         href="#"
-         onClick={clickHandler}
+        href="#"
+        onClick={clickHandler}
       >
         <i className={classes || `fa fa-${icon}`} />
         <div>{(value) ? i18n.t(title, {langtag: value}) : i18n.t(title)}</div>
@@ -186,8 +186,8 @@ class ItemPopupMenu extends Component {
     return (
       <div className={wrapperClass}>
         <div className={buttonClass}
-             onMouseLeave={leaveItemPopupButton}
-             onMouseDown={(popupOpen) ? f.noop : this.props.funcs.openItemPopup}
+          onMouseLeave={leaveItemPopupButton}
+          onMouseDown={(popupOpen) ? f.noop : this.props.funcs.openItemPopup}
         >
           <a href="#">
             <SvgIcon icon="vdots" />

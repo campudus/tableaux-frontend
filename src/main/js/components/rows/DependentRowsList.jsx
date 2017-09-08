@@ -1,4 +1,5 @@
-import React from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import getDisplayName from "../../models/getDisplayValue";
 import {getTableDisplayName} from "../../helpers/multiLanguage";
 import {translate} from "react-i18next";
@@ -9,13 +10,12 @@ import i18n from "i18next";
 
 // Builds the actual dependent tables/rows DOM elements
 @translate("table")
-export default class DependentRowsList extends React.Component {
-
+export default class DependentRowsList extends Component {
   static propTypes = {
-    row: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    hasDependency: React.PropTypes.func.isRequired,
-    hasNoDependency: React.PropTypes.func.isRequired
+    row: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    hasDependency: PropTypes.func.isRequired,
+    hasNoDependency: PropTypes.func.isRequired
   };
 
   state = {
@@ -95,8 +95,8 @@ export default class DependentRowsList extends React.Component {
               </a>
             </div>
             <LinkList langtag={langtag}
-                      key={table.id}
-                      links={links}
+              key={table.id}
+              links={links}
             />
           </div>
         );

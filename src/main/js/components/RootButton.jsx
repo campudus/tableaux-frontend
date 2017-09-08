@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 
@@ -12,7 +12,7 @@ const RootButton = (props) => {
   // => first overlay must be the root
   const closeAllButRoot = () => {
     const closeNOverlays = n => {
-      closeOverlay().then(() => {   // wait for setState to finish, to avoid messing with outdated transient data
+      closeOverlay().then(() => { // wait for setState to finish, to avoid messing with outdated transient data
         if (n > 1) {
           closeNOverlays(n - 1);
         }

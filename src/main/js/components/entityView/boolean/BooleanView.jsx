@@ -8,7 +8,6 @@ import {contentChanged} from "../../cells/Cell";
 
 @translate(["common"])
 class BooleanView extends Component {
-
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
@@ -52,20 +51,20 @@ class BooleanView extends Component {
     const checkboxCss = classNames("checkbox", {"checked": selected, "disabled": thisUserCantEdit});
 
     return (
-        <div className="item-content boolean" onClick={this.toggleValue}
-             onKeyDown={this.toggleOnEnter}
-             tabIndex={1}
-             ref={el => { funcs.register(el); }}
-        >
-          <div className={checkboxCss}>
-            {(selected)
-              ? <SvgIcon icon="check"/>
-              : ""
-            }
-          </div>
-          <div className="value">{`${t("current_selection")}: `}<div>{selected ? t("yes") : t("no")}</div></div>
-          {this.props.children}
+      <div className="item-content boolean" onClick={this.toggleValue}
+        onKeyDown={this.toggleOnEnter}
+        tabIndex={1}
+        ref={el => { funcs.register(el); }}
+      >
+        <div className={checkboxCss}>
+          {(selected)
+            ? <SvgIcon icon="check"/>
+            : ""
+          }
         </div>
+        <div className="value">{`${t("current_selection")}: `}<div>{selected ? t("yes") : t("no")}</div></div>
+        {this.props.children}
+      </div>
     );
   }
 }

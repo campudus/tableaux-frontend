@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import NumericEditCell from "./NumericEditCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
@@ -30,9 +30,9 @@ const NumericCell = (props) => {
     );
   } else {
     return <NumericEditCell cell={cell}
-                            langtag={langtag}
-                            onSave={handleEditDone}
-                            setCellKeyboardShortcuts={setCellKeyboardShortcuts} />;
+      langtag={langtag}
+      onSave={handleEditDone}
+      setCellKeyboardShortcuts={setCellKeyboardShortcuts} />;
   }
 };
 

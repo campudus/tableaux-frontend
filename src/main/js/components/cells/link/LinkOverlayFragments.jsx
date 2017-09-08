@@ -17,12 +17,12 @@ const NoLinkedRows = ({linkEmptyLines}) => (
   <div className="link-list empty-info">
     <i className="fa fa-chain-broken" />
     <div className="text">
-            <span>
-              {linkEmptyLines[0]}.
-            </span>
       <span>
-              {linkEmptyLines[1]}.
-            </span>
+        {linkEmptyLines[0]}.
+      </span>
+      <span>
+        {linkEmptyLines[1]}.
+      </span>
     </div>
   </div>
 );
@@ -55,18 +55,18 @@ const UnlinkedRowsFrag = (
   }
 ) => (
   <div className="unlinked-items"
-       onMouseEnter={onMouseEnter}
+    onMouseEnter={onMouseEnter}
   >
     <AutoSizer>
       {({width, height}) => (
         <List width={width}
-              height={height}
-              rowCount={rowCount}
-              rowHeight={40}
-              scrollToIndex={scrollToIndex}
-              rowRenderer={rowRenderer}
-              selectedMode={selectedMode}
-              selectedBox={selectedBox}
+          height={height}
+          rowCount={rowCount}
+          rowHeight={40}
+          scrollToIndex={scrollToIndex}
+          rowRenderer={rowRenderer}
+          selectedMode={selectedMode}
+          selectedBox={selectedBox}
         />
       )
       }
@@ -118,7 +118,7 @@ const RowCreatorFrag = (props) => {
   const linkTableName = displayName[langtag] || displayName[DefaultLangtag] || "";
   return (
     <div className={`row-creator-button${(shiftUp) ? " shift-up" : ""}`}
-         onClick={addAndLinkRow}
+      onClick={addAndLinkRow}
     >
       <SvgIcon icon="plus" containerClasses="color-primary" />
       <span>{i18n.t("table:link-overlay-add-new-row", {tableName: linkTableName})}</span>

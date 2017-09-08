@@ -1,4 +1,5 @@
-import React from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import SingleFileEdit from "./SingleFileEdit";
 import MultiFileEdit from "./MultiFileEdit.jsx";
@@ -6,12 +7,11 @@ import {translate} from "react-i18next";
 
 @translate(["media"])
 @connectToAmpersand
-class FileEdit extends React.Component {
-
+class FileEdit extends PureComponent {
   static propTypes = {
-    file: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    onClose: React.PropTypes.func.isRequired
+    file: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -66,28 +66,28 @@ class FileEdit extends React.Component {
     let overlayBody;
     if (file.internalName && Object.keys(file.internalName).length > 1) {
       overlayBody = <MultiFileEdit file={this.props.file}
-                                   langtag={this.props.langtag}
-                                   onClose={this.props.onClose}
-                                   editedTitleValue={this.state.editedTitleValue}
-                                   editedDescValue={this.state.editedDescValue}
-                                   editedExternalnameValue={this.state.editedExternalnameValue}
-                                   editedLanguage={this.state.editedLanguage}
-                                   hasChanged={this.state.hasChanged}
-                                   onTitleChange={this.onTitleChange}
-                                   onDescriptionChange={this.onDescriptionChange}
-                                   onExternalnameChange={this.onExternalnameChange}
-                                   onLangChange={this.onLangChange}/>;
+        langtag={this.props.langtag}
+        onClose={this.props.onClose}
+        editedTitleValue={this.state.editedTitleValue}
+        editedDescValue={this.state.editedDescValue}
+        editedExternalnameValue={this.state.editedExternalnameValue}
+        editedLanguage={this.state.editedLanguage}
+        hasChanged={this.state.hasChanged}
+        onTitleChange={this.onTitleChange}
+        onDescriptionChange={this.onDescriptionChange}
+        onExternalnameChange={this.onExternalnameChange}
+        onLangChange={this.onLangChange}/>;
     } else {
       overlayBody = <SingleFileEdit file={this.props.file}
-                                    langtag={this.props.langtag}
-                                    onClose={this.props.onClose}
-                                    editedTitleValue={this.state.editedTitleValue}
-                                    editedDescValue={this.state.editedDescValue}
-                                    editedExternalnameValue={this.state.editedExternalnameValue}
-                                    hasChanged={this.state.hasChanged}
-                                    onTitleChange={this.onTitleChange}
-                                    onDescriptionChange={this.onDescriptionChange}
-                                    onExternalnameChange={this.onExternalnameChange}/>;
+        langtag={this.props.langtag}
+        onClose={this.props.onClose}
+        editedTitleValue={this.state.editedTitleValue}
+        editedDescValue={this.state.editedDescValue}
+        editedExternalnameValue={this.state.editedExternalnameValue}
+        hasChanged={this.state.hasChanged}
+        onTitleChange={this.onTitleChange}
+        onDescriptionChange={this.onDescriptionChange}
+        onExternalnameChange={this.onExternalnameChange}/>;
     }
 
     return overlayBody;

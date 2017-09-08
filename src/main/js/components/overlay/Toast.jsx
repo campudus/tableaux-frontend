@@ -1,7 +1,8 @@
 import React from "react";
 import {translate} from "react-i18next";
+import PropTypes from "prop-types";
 
-let Toast = (props) => {
+const Toast = (props) => {
   const {content} = props;
   return (
     <div className="toast-wrapper">
@@ -11,7 +12,7 @@ let Toast = (props) => {
 };
 
 Toast.propTypes = {
-  content: React.PropTypes.any.isRequired
+  content: PropTypes.any.isRequired
 };
 
 export default translate(["table"])(Toast);

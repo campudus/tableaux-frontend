@@ -8,6 +8,7 @@ import {DateFormats} from "../../../constants/TableauxConstants";
 import Moment from "moment";
 import ActionCreator from "../../../actions/ActionCreator";
 import {either} from "../../../helpers/functools";
+import PropTypes from "prop-types";
 
 class DateCell extends React.PureComponent {
   constructor(props) {
@@ -68,20 +69,20 @@ class DateCell extends React.PureComponent {
     } else {
       return (
         <DateEditCell setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts}
-                      toDisplayValue={this.momentToString}
-                      handleDateUpdate={this.handleDateUpdate}
-                      handleEditFinished={this.finishedEditing}
-                      value={this.state.value || new Moment()}
-                      cell={cell} />
+          toDisplayValue={this.momentToString}
+          handleDateUpdate={this.handleDateUpdate}
+          handleEditFinished={this.finishedEditing}
+          value={this.state.value || new Moment()}
+          cell={cell} />
       );
     }
   }
 }
 
 DateCell.propTypes = {
-  editing: React.PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: React.PropTypes.func.isRequired,
-  langtag: React.PropTypes.string.isRequired
+  editing: PropTypes.bool.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func.isRequired,
+  langtag: PropTypes.string.isRequired
 };
 
 module.exports = DateCell;

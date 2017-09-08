@@ -15,12 +15,12 @@ const MediaOptions = compose(
 )(
   (props) => (
     <div className="media-options">
-          <span className="button" onClick={props.onEdit} alt="edit">
-          <i className="icon fa fa-pencil-square-o"></i>{props.t("rename_folder")}
-        </span>
+      <span className="button" onClick={props.onEdit} alt="edit">
+        <i className="icon fa fa-pencil-square-o"></i>{props.t("rename_folder")}
+      </span>
       <span className="button" onClick={props.onRemove} alt={props.t("delete_folder")}>
-          <i className="fa fa-trash"></i>
-        </span>
+        <i className="fa fa-trash"></i>
+      </span>
     </div>
   )
 );

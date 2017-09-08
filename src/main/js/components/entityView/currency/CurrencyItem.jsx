@@ -60,20 +60,20 @@ class CurrencyItem extends Component {
     return (
       <div className="currency-input ignore-react-onclickoutside">
         <input className="left"
-               onChange={this.handleChange(PRE_COMMA)}
-               value={this.state.preComma}
-               autoFocus
-               onKeyDown={this.filterKeyEvents(PRE_COMMA)}
-               placeholder="0"
-               onClick={e => e.stopPropagation()}
+          onChange={this.handleChange(PRE_COMMA)}
+          value={this.state.preComma}
+          autoFocus
+          onKeyDown={this.filterKeyEvents(PRE_COMMA)}
+          placeholder="0"
+          onClick={e => e.stopPropagation()}
         />
         ,
         <input className="right"
-               onChange={this.handleChange(POST_COMMA)}
-               value={this.state.postComma}
-               onKeyDown={this.filterKeyEvents(POST_COMMA)}
-               placeholder="00"
-               onClick={e => e.stopPropagation()}
+          onChange={this.handleChange(POST_COMMA)}
+          value={this.state.postComma}
+          onKeyDown={this.filterKeyEvents(POST_COMMA)}
+          placeholder="00"
+          onClick={e => e.stopPropagation()}
         />
       </div>
     );

@@ -5,13 +5,13 @@ import {FilterModes} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import {either} from "../../../helpers/functools";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
 
 class FilterButton extends React.Component {
-
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    table: React.PropTypes.object.isRequired,
-    currentFilter: React.PropTypes.object
+    langtag: PropTypes.string.isRequired,
+    table: PropTypes.object.isRequired,
+    currentFilter: PropTypes.object
   };
 
   state = {
@@ -35,7 +35,7 @@ class FilterButton extends React.Component {
     if (this.state.open) {
       return (
         <FilterPopup langtag={langtag} onClickedOutside={this.handleClickedOutside}
-                     columns={columns} currentFilter={currentFilter} />
+          columns={columns} currentFilter={currentFilter} />
       );
     } else {
       return null;

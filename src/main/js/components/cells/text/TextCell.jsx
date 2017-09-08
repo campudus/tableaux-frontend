@@ -15,7 +15,6 @@ import i18n from "i18next";
 import {contentChanged} from "../Cell";
 
 class TextCell extends PureComponent {
-
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
@@ -59,18 +58,18 @@ class TextCell extends PureComponent {
 
     ActionCreator.openOverlay({
       head: <Header context={context}
-                    title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
+        title={<OverlayHeadRowIdentificator cell={this.props.cell} langtag={this.props.langtag} />}
       />,
       body: (
         <Wrapper>
           <div className="content-items richtext-cell-editor">
             <div className="item">
               <RichTextComponent value={textValue} langtag={langtag}
-                                 saveCell={this.saveCell}
-                                 hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
-                                 disableOnClickOutside={true}
-                                 placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
-                                 cell={this.props.cell}
+                saveCell={this.saveCell}
+                hideEditorSymbols={cell.kind !== ColumnKinds.richtext}
+                disableOnClickOutside={true}
+                placeholder={<div className="item-description">{i18n.t("table:empty.text")}</div>}
+                cell={this.props.cell}
               />
             </div>
           </div>
@@ -125,7 +124,7 @@ class TextCell extends PureComponent {
 
     return (
       <div className={`cell-content ${(isMultiLine) ? "is-multiline" : ""}`}
-           onClick={this.handleClick}
+        onClick={this.handleClick}
       >
         <div>{(isString(value)) ? value.split("\n")[0] : ""}</div>
         {expandButton}

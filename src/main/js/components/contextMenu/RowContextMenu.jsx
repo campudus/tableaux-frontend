@@ -20,6 +20,7 @@ import {
   setCellAnnotation,
   setRowAnnotation
 } from "../../helpers/annotationHelper";
+import PropTypes from "prop-types";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -192,9 +193,9 @@ class RowContextMenu extends React.Component {
     const {duplicateRow, showTranslations, deleteRow, showDependency, showEntityView, props: {cell, t}} = this;
     return (
       <GenericContextMenu x={this.props.x}
-                          y={this.props.y - 60}
-                          offset={CLICK_OFFSET}
-                          minWidth={230}
+        y={this.props.y - 60}
+        offset={CLICK_OFFSET}
+        minWidth={230}
       >
         <div className="separator">{t("cell")}</div>
         {this.openLinksFilteredItem()}
@@ -230,13 +231,13 @@ class RowContextMenu extends React.Component {
 }
 
 RowContextMenu.propTypes = {
-  x: React.PropTypes.number.isRequired,
-  y: React.PropTypes.number.isRequired,
-  row: React.PropTypes.object.isRequired,
-  offsetY: React.PropTypes.number,
-  langtag: React.PropTypes.string.isRequired,
-  table: React.PropTypes.object.isRequired,
-  cell: React.PropTypes.object.isRequired
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  row: PropTypes.object.isRequired,
+  offsetY: PropTypes.number,
+  langtag: PropTypes.string.isRequired,
+  table: PropTypes.object.isRequired,
+  cell: PropTypes.object.isRequired
 };
 
 export default translate(["table"])(RowContextMenu);

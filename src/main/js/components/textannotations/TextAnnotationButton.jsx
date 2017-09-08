@@ -47,15 +47,15 @@ class TextAnnotationButton extends Component {
     )(cell.annotations);
     return (
       <div className={`text-annotation-button ${(open) ? "ignore-react-onclickoutside" : ""}`}
-           onClick={this.handleClick}
-           ref={this.rememberNode}
+        onClick={this.handleClick}
+        ref={this.rememberNode}
       >
         <i className="fa fa-commenting" />
         {(open)
           ? <AnnotationPopup nAnnotations={f.size(annotations)}
-                             x={this.state.cbr.left}
-                             y={this.state.cbr.top}
-                             {...this.props}
+            x={this.state.cbr.left}
+            y={this.state.cbr.top}
+            {...this.props}
           />
           : null
         }

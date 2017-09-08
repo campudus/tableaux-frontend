@@ -1,4 +1,5 @@
-import React from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
 import request from "superagent";
 import withAbortableXhrRequest from "../../helperComponents/withAbortableXhrRequests";
@@ -12,12 +13,12 @@ import {translate} from "react-i18next";
 
 @translate(["media"])
 @withAbortableXhrRequest
-class FileChangeUpload extends React.Component {
+class FileChangeUpload extends PureComponent {
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    internalFileName: React.PropTypes.string,
-    uuid: React.PropTypes.string.isRequired,
-    isSingleFile: React.PropTypes.bool
+    langtag: PropTypes.string.isRequired,
+    internalFileName: PropTypes.string,
+    uuid: PropTypes.string.isRequired,
+    isSingleFile: PropTypes.bool
   };
 
   constructor(props) {

@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import ActionCreator from "../../../actions/ActionCreator";
 import {isLocked} from "../../../helpers/annotationHelper";
@@ -36,8 +36,8 @@ const BooleanCell = (props) => {
   return (
     <div className={"cell-content"} onClick={toggleCheckboxValue} >
       <input className="checkbox" type="checkbox"
-             checked={getCheckboxValue()}
-             readOnly="readOnly" />
+        checked={getCheckboxValue()}
+        readOnly="readOnly" />
     </div>
   );
 };

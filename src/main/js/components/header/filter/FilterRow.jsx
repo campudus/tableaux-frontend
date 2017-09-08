@@ -55,8 +55,8 @@ class FilterRow extends Component {
       ? 0
       : 1;
     return <FilterModePopup active={active}
-                            close={this.toggleFilterModePopup}
-                            setFilterMode={this.props.onChangeMode}
+      close={this.toggleFilterModePopup}
+      setFilterMode={this.props.onChangeMode}
     />;
   };
 
@@ -99,23 +99,23 @@ class FilterRow extends Component {
         {(filter.columnKind === BOOL)
           ? this.boolInput()
           : <span className="filter-mode-wrapper">
-                  <input value={filter.value || ""}
-                         type="text"
-                         className="filter-input"
-                         disabled={!filterColumnSelected}
-                         ref={fi => {
-                           this.filterInput = fi;
-                         }}
-                         onChange={onChangeValue}
-                         onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-                         onClick={x => this.filterInput.focus()}
-                  />
+            <input value={filter.value || ""}
+              type="text"
+              className="filter-input"
+              disabled={!filterColumnSelected}
+              ref={fi => {
+                this.filterInput = fi;
+              }}
+              onChange={onChangeValue}
+              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+              onClick={x => this.filterInput.focus()}
+            />
             <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
               {(filterColumnSelected)
                 ? (
                   <a href="#"
-                     className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
-                     onMouseDown={this.toggleFilterModePopup}>
+                    className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
+                    onMouseDown={this.toggleFilterModePopup}>
                     <i className="fa fa-search" />
                     <i className="fa fa-caret-down" />
                   </a>

@@ -15,7 +15,6 @@ import {maybe} from "../../helpers/functools";
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
 class GenericOverlay extends PureComponent {
-
   static propTypes = {
     head: PropTypes.element.isRequired,
     body: PropTypes.element.isRequired,
@@ -168,14 +167,14 @@ class GenericOverlay extends PureComponent {
 
     return (
       <div className={overlayWrapperClass} tabIndex="1"
-           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
         <div className={wrapperClass}
-             onClick={event => {
-               event.stopPropagation();
-               event.preventDefault();
-             }}
-             onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
+          onClick={event => {
+            event.stopPropagation();
+            event.preventDefault();
+          }}
+          onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
           {React.cloneElement(head, {...childrenProps.head, ...dataShare})}
           <div className="overlay-content">

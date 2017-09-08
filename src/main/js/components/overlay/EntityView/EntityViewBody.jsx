@@ -165,8 +165,8 @@ class EntityViewBody extends Component {
   getVisibleCells = () => {
     const {filter, langtag, row} = this.state;
     return row.cells.models
-              .filter(this.groupFilter(this.props.filterColumn))
-              .filter(columnFilter(langtag, filter));
+      .filter(this.groupFilter(this.props.filterColumn))
+      .filter(columnFilter(langtag, filter));
   };
 
   changeFocus = dir => {
@@ -194,8 +194,8 @@ class EntityViewBody extends Component {
       ? (
         <div>
           <TranslationPopup cell={translationView.cell || {}}
-                            langtag={langtag}
-                            setTranslationView={this.setTranslationView}
+            langtag={langtag}
+            setTranslationView={this.setTranslationView}
           />
           {arrow}
         </div>
@@ -311,7 +311,7 @@ class EntityViewBody extends Component {
 
     return (
       <div className={evbClass}
-           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
@@ -320,25 +320,25 @@ class EntityViewBody extends Component {
           .map(
             (cell, idx) => {
               return <View key={cell.id} cell={cell} langtag={langtag}
-                           setTranslationView={this.setTranslationView}
-                           hasFocusedChild={f.eq(cell.id, focused)}
-                           hasMeaningfulLinks={!filterColumn}
-                           popupOpen={this.state.itemWithPopup === idx}
-                           funcs={{
-                             setTranslationItem: this.setTranslationItem,
-                             register: this.registerFocusable(cell.id),
-                             focus: this.changeFocus,
-                             id: cell.id,
-                             enterItemPopupButton: enterItemPopupButton(idx),
-                             leaveItemPopupButton: leaveItemPopupButton(idx),
-                             openItemPopup: openItemPopup(idx),
-                             closeItemPopup: closeItemPopup(idx),
-                             hintUnlockButton: this.shakeBar
-                           }}
-                           lockStatus={cell.row.unlocked}
-                           final={cell.row.final}
-                           value={JSON.stringify(cell.value)}
-                           annotations={JSON.stringify(cell.annotations)}
+                setTranslationView={this.setTranslationView}
+                hasFocusedChild={f.eq(cell.id, focused)}
+                hasMeaningfulLinks={!filterColumn}
+                popupOpen={this.state.itemWithPopup === idx}
+                funcs={{
+                  setTranslationItem: this.setTranslationItem,
+                  register: this.registerFocusable(cell.id),
+                  focus: this.changeFocus,
+                  id: cell.id,
+                  enterItemPopupButton: enterItemPopupButton(idx),
+                  leaveItemPopupButton: leaveItemPopupButton(idx),
+                  openItemPopup: openItemPopup(idx),
+                  closeItemPopup: closeItemPopup(idx),
+                  hintUnlockButton: this.shakeBar
+                }}
+                lockStatus={cell.row.unlocked}
+                final={cell.row.final}
+                value={JSON.stringify(cell.value)}
+                annotations={JSON.stringify(cell.annotations)}
               />;
             })
         }

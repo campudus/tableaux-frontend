@@ -47,14 +47,14 @@ const LanguageSwitcher = (props) => {
   return (
     <div className="language-switcher">
       <Select className={(openOnTop) ? "open-on-top" : ""}
-              options={options}
-              searchable
-              clearable={false}
-              value={langtag}
-              onChange={onChange}
-              optionRenderer={renderOption}
-              valueRenderer={renderOption}
-              disabled={disabled}
+        options={options}
+        searchable
+        clearable={false}
+        value={langtag}
+        onChange={onChange}
+        optionRenderer={renderOption}
+        valueRenderer={renderOption}
+        disabled={disabled}
       />
     </div>
   );

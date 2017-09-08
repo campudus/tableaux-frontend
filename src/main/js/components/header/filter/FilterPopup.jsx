@@ -9,6 +9,7 @@ import i18n from "i18next";
 import {either} from "../../../helpers/functools";
 import FilterRow, {BOOL, TEXT} from "./FilterRow";
 import {FilterableCellKinds, SortableCellKinds} from "../../table/RowFilters";
+import PropTypes from "prop-types";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -22,12 +23,11 @@ const SPECIAL_SEARCHES = [
 @translate(["filter", "table"])
 @listensToClickOutside
 class FilterPopup extends React.Component {
-
   static propTypes = {
-    langtag: React.PropTypes.string.isRequired,
-    onClickedOutside: React.PropTypes.func.isRequired,
-    columns: React.PropTypes.object,
-    currentFilter: React.PropTypes.object
+    langtag: PropTypes.string.isRequired,
+    onClickedOutside: PropTypes.func.isRequired,
+    columns: PropTypes.object,
+    currentFilter: PropTypes.object
   };
 
   static isSortableColumn = (column) => f.contains(column.kind, SortableCellKinds);
@@ -284,7 +284,7 @@ class FilterPopup extends React.Component {
 
     const allColumns = this.getSearchableColumns();
     const selectedByOtherFilters = idx => f.compose(
-      f.pull(filters[idx].columnId),       // remove element selected by this filter
+      f.pull(filters[idx].columnId), // remove element selected by this filter
       f.map(f.get(["columnId"]))
     )(filters);
     const isSelectedByOtherFilter = idx => f.compose(
@@ -306,16 +306,16 @@ class FilterPopup extends React.Component {
                   </div>
                 )
                 : <FilterRow searchableColumns={availableColumns(idx)}
-                             valueRenderer={this.selectFilterValueRenderer}
-                             onChangeColumn={this.onChangeFilterColumn(idx)}
-                             onChangeValue={this.changeFilterValue(idx)}
-                             onChangeMode={this.changeFilterMode(idx)}
-                             onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
-                             onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
-                             filter={filter}
-                             applyFilters={this.applyFilters}
-                             key={idx}
-                             t={t}
+                  valueRenderer={this.selectFilterValueRenderer}
+                  onChangeColumn={this.onChangeFilterColumn(idx)}
+                  onChangeValue={this.changeFilterValue(idx)}
+                  onChangeMode={this.changeFilterMode(idx)}
+                  onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
+                  onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
+                  filter={filter}
+                  applyFilters={this.applyFilters}
+                  key={idx}
+                  t={t}
                 />;
             }
           )}
@@ -353,11 +353,11 @@ class FilterPopup extends React.Component {
           <p className="info">
             <span className="text">{t("help.note")}</span></p>
           <button tabIndex="1" className="neutral"
-                  onClick={this.clearFilter}>{t("button.clearFilter")}</button>
+            onClick={this.clearFilter}>{t("button.clearFilter")}</button>
           <button tabIndex="0"
-                  className={(canApplyFilter) ? "filter-go" : "filter-go neutral"}
-                  disabled={!canApplyFilter}
-                  onClick={this.applyFilters}>{t("button.doFilter")}</button>
+            className={(canApplyFilter) ? "filter-go" : "filter-go neutral"}
+            disabled={!canApplyFilter}
+            onClick={this.applyFilters}>{t("button.doFilter")}</button>
         </div>
       </div>
     );

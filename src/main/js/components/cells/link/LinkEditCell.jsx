@@ -52,21 +52,20 @@ class LinkEditCell extends PureComponent {
     const links = cell.value.map(
       (element, index) => (
         <LinkLabelCell key={element.id} clickable={false} linkElement={element}
-                       cell={cell} langtag={langtag}
-                       linkIndexAt={index}
+          cell={cell} langtag={langtag}
+          linkIndexAt={index}
         />
       )
     );
 
     return (
       <div className={"cell-content"} onScroll={event => { event.stopPropagation(); }}
-           onClick={this.openOverlay}
+        onClick={this.openOverlay}
       >
         {[...links, <button key={"add-btn"} className="edit"><span className="fa fa-pencil"></span></button>]}
       </div>
     );
   }
-
 }
 
 export default LinkEditCell;

@@ -5,14 +5,14 @@ import ActionCreator from "../../../actions/ActionCreator";
 import {DateTimeFormats} from "../../../constants/TableauxConstants";
 import {either} from "../../../helpers/functools";
 import {identity, prop} from "lodash/fp";
+import PropTypes from "prop-types";
 
 class DateTimeCell extends React.PureComponent {
-
   static propTypes = {
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    editing: React.PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: React.PropTypes.func
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    editing: PropTypes.bool.isRequired,
+    setCellKeyboardShortcuts: PropTypes.func
   };
 
   constructor(props) {
@@ -83,12 +83,12 @@ class DateTimeCell extends React.PureComponent {
         .getOrElse(this.noDateTimeText);
     } else {
       content = <DateTimeEditCell dateTimeValue={this.state.currentDateTimeValue}
-                                  noDateTimeText={this.noDateTimeText}
-                                  onDateTimeUpdate={this.onDateTimeUpdate}
-                                  formatForUser={DateTimeFormats.formatForUser}
-                                  formatForServer={DateTimeFormats.formatForServer}
-                                  handleEditDone={this.handleEditDone}
-                                  setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts} />;
+        noDateTimeText={this.noDateTimeText}
+        onDateTimeUpdate={this.onDateTimeUpdate}
+        formatForUser={DateTimeFormats.formatForUser}
+        formatForServer={DateTimeFormats.formatForServer}
+        handleEditDone={this.handleEditDone}
+        setCellKeyboardShortcuts={this.props.setCellKeyboardShortcuts} />;
     }
 
     return (

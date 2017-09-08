@@ -1,62 +1,55 @@
 import NewFolderActionView from "./NewFolderActionView.jsx";
-var SimpleFolder = require("../../../models/media/SimpleFolder");
 import SubfolderEdit from "./SubfolderEdit";
-import {translate} from "react-i18next";
 import {simpleError} from "../../../components/overlay/ConfirmationOverlay";
 import React from "react";
 import ActionCreator from "../../../actions/ActionCreator";
+import SimpleFolder from "../../../models/media/SimpleFolder";
+import PropTypes from "prop-types";
+import {pure, compose, withHandlers, withState} from "recompose";
+import f from "lodash/fp";
+import {translate} from "react-i18next";
 
-@translate(["media"])
-class NewFolderAction extends React.Component {
-
-  static propTypes = {
-    parentFolder: React.PropTypes.object.isRequired
-  };
-
-  constructor(props) {
-    console.log("constructor of newfolder action");
-    super(props);
-    this.state = {
-      edit: false
-    };
-  }
-
-  onEdit = () => {
-    console.log("onEdit");
-    this.setState({
-      edit: !this.state.edit
-    });
-  };
-
-  onSave = (folderId, folderName, folderDescription, folderParent) => {
-    const {t} = this.props;
-    this.onEdit();
-    console.log("Folder.added", folderId, folderName, folderDescription, folderParent);
-    ActionCreator.addFolder(folderName, folderDescription, folderParent,
-      () => simpleError(t("error_folder_exists_already")));
-  };
-
-  render() {
-    var newFolderAction;
-    const {t} = this.props;
-
-    if (this.state.edit) {
-      var folder = new SimpleFolder({
-        name: t("new_folder"),
-        description: "",
-        parent: this.props.parentFolder.getId()
-      });
-      newFolderAction = <SubfolderEdit folder={folder} onSave={this.onSave} onCancel={this.onEdit}/>;
-    } else {
-      newFolderAction = <NewFolderActionView callback={this.onEdit}/>;
+const withEditMode = compose(
+  withState("edit", "updateEdit", false),
+  withHandlers({
+    toggleEdit: ({updateEdit}) => () => updateEdit(f.negate),
+    onSave: ({t, updateEdit}) => (folderId, folderName, folderDescription, folderParent) => {
+      updateEdit(f.always(false));
+      ActionCreator.addFolder(folderName, folderDescription, folderParent,
+        () => simpleError(t("error_folder_exists_already")));
     }
+  })
+);
 
-    return (
-      <div className="media-switcher new-folder-action">
-        {newFolderAction}
-      </div>
-    );
+const NewFolderAction = (props) => {
+  let newFolderAction;
+  const {t, onSave, toggleEdit, edit} = props;
+
+  if (edit) {
+    let folder = new SimpleFolder({
+      name: t("new_folder"),
+      description: "",
+      parent: props.parentFolder.getId()
+    });
+    newFolderAction = <SubfolderEdit folder={folder} onSave={onSave} onCancel={toggleEdit} />;
+  } else {
+    newFolderAction = <NewFolderActionView callback={toggleEdit} />;
   }
-}
 
-export default NewFolderAction;
+  return (
+    <div className="media-switcher new-folder-action">
+      {newFolderAction}
+    </div>
+  );
+};
+
+NewFolderAction.propTypes = {
+  parentFolder: PropTypes.object,
+  folder: PropTypes.object
+};
+
+export default compose(
+  pure,
+  withEditMode,
+  translate(["media"])
+)(NewFolderAction);

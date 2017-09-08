@@ -36,7 +36,6 @@ const UNLINKED_ITEMS = 1;
 @translate(["table"])
 @withAbortableXhrRequests
 class LinkOverlay extends PureComponent {
-
   constructor(props) {
     super(props);
     this.allRowResults = {};
@@ -244,7 +243,7 @@ class LinkOverlay extends PureComponent {
               });
             this.props.addAbortableXhrRequest(xhr);
             xhr.then(processPage)
-               .then(resolve);
+              .then(resolve);
           }
         )
       );
@@ -252,8 +251,8 @@ class LinkOverlay extends PureComponent {
       Promise.all(
         f.range(2, pages + 1).map(fetchPage)
       )
-             .then(() => this.props.updateSharedData(f.always({loading: false})))
-             .catch(() => this.props.updateSharedData(f.always({loading: false})));
+        .then(() => this.props.updateSharedData(f.always({loading: false})))
+        .catch(() => this.props.updateSharedData(f.always({loading: false})));
     };
 
     const rowXhr = Request
@@ -501,22 +500,22 @@ class LinkOverlay extends PureComponent {
       langtag
     };
 
-    const noForeignRows = f.isEmpty(rowResults.unlinked)           // there are no unlinked rows
-      || !this.canAddLink();                                       // or link cardinality reached
+    const noForeignRows = f.isEmpty(rowResults.unlinked) // there are no unlinked rows
+      || !this.canAddLink(); // or link cardinality reached
 
     // because keeping track of multiple partial localisation strings gets more tiresome...
     const linkEmptyLines = i18n.t("table:link-overlay-empty").split(".");
 
     return (
       <div onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-           className="link-overlay"
-           tabIndex={1}
-           ref={el => {
-             this.background = el;
-           }}
+        className="link-overlay"
+        tabIndex={1}
+        ref={el => {
+          this.background = el;
+        }}
       >
         <div className={`linked-items${(!loading && noForeignRows) ? " no-unlinked" : ""}`}
-             onMouseEnter={this.setActiveBox(LINKED_ITEMS)}
+          onMouseEnter={this.setActiveBox(LINKED_ITEMS)}
         >
           <span className="items-title">
             <span>{i18n.t("table:link-overlay-items-title")}
@@ -530,32 +529,32 @@ class LinkOverlay extends PureComponent {
               }
             </span>
             <LinkStatus rowResults={rowResults}
-                        maxLinks={this.getToCardinality()}
+              maxLinks={this.getToCardinality()}
             />
           </span>
           <LinkedRows loading={loading}
-                      linkEmptyLines={linkEmptyLines}
-                      listItemRenderer={this.renderListItem}
-                      swapItems={this.swapLinkedItems}
-                      rowResults={rowResults}
+            linkEmptyLines={linkEmptyLines}
+            listItemRenderer={this.renderListItem}
+            swapItems={this.swapLinkedItems}
+            rowResults={rowResults}
           />
         </div>
         <UnlinkedRows loading={loading}
-                      noForeignRows={noForeignRows}
-                      rowCount={f.size(rowResults.unlinked) + 1}
-                      renderRows={this.renderListItem}
-                      scrollToIndex={this.state.selectedId.unlinked}
-                      setActiveBox={this.setActiveBox}
-                      activeBox={UNLINKED_ITEMS}
-                      selectedBox={this.state.activeBox}
-                      selectedMode={this.state.selectedMode}
+          noForeignRows={noForeignRows}
+          rowCount={f.size(rowResults.unlinked) + 1}
+          renderRows={this.renderListItem}
+          scrollToIndex={this.state.selectedId.unlinked}
+          setActiveBox={this.setActiveBox}
+          activeBox={UNLINKED_ITEMS}
+          selectedBox={this.state.activeBox}
+          selectedMode={this.state.selectedMode}
         />
         <RowCreator langtag={langtag}
-                    canAddLinks={this.canAddLink()}
-                    cell={cell}
-                    shiftUp={noForeignRows && !loading}
-                    updateRowResults={this.updateRowResults}
-                    addLink={this.addLinkValue}
+          canAddLinks={this.canAddLink()}
+          cell={cell}
+          shiftUp={noForeignRows && !loading}
+          updateRowResults={this.updateRowResults}
+          addLink={this.addLinkValue}
         />
       </div>
     );
@@ -572,7 +571,7 @@ export const openLinkOverlay = (cell, langtag) => {
       const {langtag, cell, sharedData: {loading}, id} = props;
       return (
         <Header context={tableName} id={props.id}
-                title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
+          title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
         >
           <SearchBar langtag={langtag} id={id} />,
           <Spinner isLoading={loading} customOptions={{color: "#eee"}} />

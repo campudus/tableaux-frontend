@@ -7,6 +7,7 @@ import * as AccessControl from "../../helpers/accessManagementHelper";
 import {compose, contains} from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
+import PropTypes from "prop-types";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
@@ -49,9 +50,9 @@ class ColumnContextMenu extends React.Component {
     const followLinkItem = (column.isLink && !toTable.hidden)
       ? <div>
         <a href="#"
-           onClick={compose(
-             closeHandler,
-             () => ActionCreator.switchTable(column.toTable, langtag))}
+          onClick={compose(
+            closeHandler,
+            () => ActionCreator.switchTable(column.toTable, langtag))}
         >
           {i18n.t("table:switch_table")}
           <i className="fa fa-angle-right" style={{float: "right"}}></i>
@@ -64,10 +65,10 @@ class ColumnContextMenu extends React.Component {
       : (
         <div>
           <a href="#"
-             onClick={compose(
-               closeHandler,
-               () => ActionCreator.setColumnsVisibility(false, [column.id])
-             )}
+            onClick={compose(
+              closeHandler,
+              () => ActionCreator.setColumnsVisibility(false, [column.id])
+            )}
           >
             {i18n.t("table:hide_column")}
           </a>
@@ -76,28 +77,28 @@ class ColumnContextMenu extends React.Component {
 
     return (
       <div className="column-header-context-menu context-menu"
-           style={{
-             left: rect.x,
-             top: rect.y,
-             transform: "translateX(-100%)"
-           }}
+        style={{
+          left: rect.x,
+          top: rect.y,
+          transform: "translateX(-100%)"
+        }}
       >
-          {editorItem}
-          {followLinkItem}
-          {hideColumnItem}
+        {editorItem}
+        {followLinkItem}
+        {hideColumnItem}
       </div>
     );
   }
 }
 
 ColumnContextMenu.propTypes = {
-  column: React.PropTypes.object.isRequired,
-  closeHandler: React.PropTypes.func.isRequired,
-  editHandler: React.PropTypes.func.isRequired,
-  langtag: React.PropTypes.string.isRequired,
-  offset: React.PropTypes.number,
-  tables: React.PropTypes.object.isRequired,
-  rect: React.PropTypes.object.isRequired
+  column: PropTypes.object.isRequired,
+  closeHandler: PropTypes.func.isRequired,
+  editHandler: PropTypes.func.isRequired,
+  langtag: PropTypes.string.isRequired,
+  offset: PropTypes.number,
+  tables: PropTypes.object.isRequired,
+  rect: PropTypes.object.isRequired
 };
 
 module.exports = ColumnContextMenu;

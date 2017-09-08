@@ -9,6 +9,7 @@
 import React from "react";
 import ReactDom from "react-dom";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
 
 class GenericContextMenu extends React.Component {
   constructor(props) {
@@ -62,12 +63,12 @@ class GenericContextMenu extends React.Component {
 }
 
 GenericContextMenu.propTypes = {
-  x: React.PropTypes.number,
-  y: React.PropTypes.number,
-  menuItems: React.PropTypes.element,
-  offset: React.PropTypes.number,
-  alignment: React.PropTypes.string,
-  minWidth: React.PropTypes.number
+  x: PropTypes.number,
+  y: PropTypes.number,
+  menuItems: PropTypes.element,
+  offset: PropTypes.number,
+  alignment: PropTypes.string,
+  minWidth: PropTypes.number
 };
 
 module.exports = GenericContextMenu;

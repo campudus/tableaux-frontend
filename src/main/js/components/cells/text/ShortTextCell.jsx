@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import ShortTextEditCell from "./ShortTextEditCell";
 import ActionCreator from "../../../actions/ActionCreator";
@@ -42,9 +42,9 @@ const ShortTextCell = (props) => {
     // If someone managed to put multiline text here, fallback to a multiline text cell
     return (
       <TextCell langtag={langtag}
-                cell={cell}
-                editing={editing}
-                selected={selected}
+        cell={cell}
+        editing={editing}
+        selected={selected}
       />
     );
   } else if (!editing) {
@@ -52,7 +52,7 @@ const ShortTextCell = (props) => {
   } else {
     return (
       <ShortTextEditCell cell={cell} langtag={langtag} onBlur={handleEditDone}
-                         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+        setCellKeyboardShortcuts={setCellKeyboardShortcuts}
       />
     );
   }

@@ -22,6 +22,7 @@ import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/functools";
 import FlagIconRenderer from "./FlagIconRenderer";
 import {branch, compose, pure, renderComponent, renderNothing, withHandlers} from "recompose";
+import PropTypes from "prop-types";
 
 const ExpandCorner = compose(
   branch(
@@ -37,15 +38,15 @@ const ExpandCorner = compose(
 )(
   (props) => (
     <div className="needs-translation-other-language"
-         onClick={props.onClick}
+      onClick={props.onClick}
     />
   )
 );
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
   if (!cell.isMultiLanguage || either(cell)
-      .map(f.prop(["value", langtag]))
-      .orElse(f.prop("value")).value === oldValue) {
+    .map(f.prop(["value", langtag]))
+    .orElse(f.prop("value")).value === oldValue) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -89,7 +90,6 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
 
 @connectToAmpersand
 class Cell extends React.PureComponent {
-
   cellDOMNode = null;
 
   constructor(props) {
@@ -217,26 +217,26 @@ class Cell extends React.PureComponent {
     // onKeyDown event just for selected components
     return (
       <div style={this.props.style}
-           className={cssClass}
-           onClick={this.cellClicked}
-           onContextMenu={this.rightClicked}
-           tabIndex="1"
-           onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
-           onMouseDown={this.onMouseDownHandler}>
+        className={cssClass}
+        onClick={this.cellClicked}
+        onContextMenu={this.rightClicked}
+        tabIndex="1"
+        onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
+        onMouseDown={this.onMouseDownHandler}>
         <CellKind cell={cell} langtag={langtag}
-                  selected={selected} inSelectedRow={inSelectedRow}
-                  editing={cell.isEditable && editing}
-                  value={(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
-                  contentChanged={contentChanged}
-                  setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
+          selected={selected} inSelectedRow={inSelectedRow}
+          editing={cell.isEditable && editing}
+          value={(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
+          contentChanged={contentChanged}
+          setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
         />
         <FlagIconRenderer cell={cell}
-                          annotations={cell.annotations}
-                          langtag={langtag}
-                          annotationsOpen={annotationsOpen}
+          annotations={cell.annotations}
+          langtag={langtag}
+          annotationsOpen={annotationsOpen}
         />
         <ExpandCorner show={needsTranslationOtherLanguages}
-                      cell={cell}
+          cell={cell}
         />
       </div>
     );
@@ -244,16 +244,16 @@ class Cell extends React.PureComponent {
 }
 
 Cell.propTypes = {
-  cell: React.PropTypes.object.isRequired,
-  langtag: React.PropTypes.string.isRequired,
-  selected: React.PropTypes.bool,
-  inSelectedRow: React.PropTypes.bool,
-  editing: React.PropTypes.bool,
-  row: React.PropTypes.object.isRequired,
-  table: React.PropTypes.object.isRequired,
-  shouldFocus: React.PropTypes.bool,
-  annotationsOpen: React.PropTypes.bool,
-  isExpandedCell: React.PropTypes.bool.isRequired
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  selected: PropTypes.bool,
+  inSelectedRow: PropTypes.bool,
+  editing: PropTypes.bool,
+  row: PropTypes.object.isRequired,
+  table: PropTypes.object.isRequired,
+  shouldFocus: PropTypes.bool,
+  annotationsOpen: PropTypes.bool,
+  isExpandedCell: PropTypes.bool.isRequired
 };
 
 const isRepeaterCell = ({cell, isExpandedCell}) => isExpandedCell
@@ -272,7 +272,7 @@ const RepeaterCell = withHandlers(
 )(
   (props) => (
     <div className="cell repeat placeholder"
-         onContextMenu={props.onContextMenu}
+      onContextMenu={props.onContextMenu}
     >
       —.—
     </div>

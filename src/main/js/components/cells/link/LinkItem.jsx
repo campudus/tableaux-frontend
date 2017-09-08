@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -36,8 +36,8 @@ const SelectedItem = props => {
     <div style={props.style} key={props.row.id} ref={props.refIfLinked} tabIndex={(props.isLinked) ? 1 : -1}>
       <div className={getCssClass(props)}>
         <div className={mainButtonClass}
-             onMouseEnter={props.mouseOverHandler.box(MAIN_BUTTON)}
-             onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
+          onMouseEnter={props.mouseOverHandler.box(MAIN_BUTTON)}
+          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
         >
           <a href="#" draggable={false}>
             {getLinkLabel(props.row, props.langtag)}
@@ -48,14 +48,14 @@ const SelectedItem = props => {
           }
         </div>
         <a href="#" className={linkButtonClass} draggable={false}
-           onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
-           onClick={() => {
-             loadAndOpenEntityView({
-               tables: props.cell.tables,
-               tableId: props.cell.column.toTable,
-               rowId: props.row.id
-             }, props.langtag);
-           }}
+          onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
+          onClick={() => {
+            loadAndOpenEntityView({
+              tables: props.cell.tables,
+              tableId: props.cell.column.toTable,
+              rowId: props.row.id
+            }, props.langtag);
+          }}
         >
           <i className="fa fa-long-arrow-right" />
         </a>
@@ -67,8 +67,8 @@ const SelectedItem = props => {
 const PlainItem = props => {
   return (
     <div style={props.style} key={props.row.id} tabIndex={1}
-         onMouseOver={props.mouseOverHandler.item}
-         ref={props.refIfLinked}
+      onMouseOver={props.mouseOverHandler.item}
+      ref={props.refIfLinked}
     >
       <div className={getCssClass(props)}>
         <div className="link-label">

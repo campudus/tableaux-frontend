@@ -7,7 +7,6 @@ import i18n from "i18next";
 import * as f from "lodash/fp";
 
 class LinkView extends Component {
-
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
@@ -48,20 +47,20 @@ class LinkView extends Component {
     const links = this.mkLinkList(cell, langtag);
 
     return (f.isEmpty(links)
-        ? (
-          <div className="item-description">
-            {i18n.t("table:empty.links")}
-            {this.props.children}
-          </div>
-        )
-        : (
-          <div><LinkList links={links}
-                         langtag={langtag}
-                         unlink={this.removeLink}
-          />
-            {this.props.children}
-          </div>
-        )
+      ? (
+        <div className="item-description">
+          {i18n.t("table:empty.links")}
+          {this.props.children}
+        </div>
+      )
+      : (
+        <div><LinkList links={links}
+          langtag={langtag}
+          unlink={this.removeLink}
+        />
+        {this.props.children}
+        </div>
+      )
     );
   }
 }

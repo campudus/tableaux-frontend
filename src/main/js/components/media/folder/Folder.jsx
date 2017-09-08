@@ -1,4 +1,4 @@
-import React from "react";
+import React, {PureComponent} from "react";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import NewFolderAction from "./NewFolderAction.jsx";
@@ -11,14 +11,14 @@ import Subfolder from "./Subfolder.jsx";
 import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
+import PropTypes from "prop-types";
 
 @translate(["media"])
 @connectToAmpersand
-class Folder extends React.Component {
-
+class Folder extends PureComponent {
   static propTypes = {
-    folder: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired
+    folder: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired
   };
 
   constructor(props) {
@@ -109,9 +109,9 @@ class Folder extends React.Component {
       map((file) => {
         return (
           <li key={file.uuid}
-              className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
+            className={(contains(file.uuid, modifiedFiles)) ? "modified-file" : ""}>
             <File key={file.uuid} file={file}
-                  langtag={langtag}/>
+              langtag={langtag}/>
           </li>
         );
       }),
@@ -144,7 +144,6 @@ class Folder extends React.Component {
       </div>
     );
   }
-
 }
 
 export default Folder;

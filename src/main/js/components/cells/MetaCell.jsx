@@ -94,7 +94,7 @@ class MetaCell extends PureComponent {
 
     return (
       <div className={cellClass}
-           onClick={this.handleClick}
+        onClick={this.handleClick}
       >
         <div className="cell-content">
           {this.mkDeleteRowButton()}
@@ -104,7 +104,6 @@ class MetaCell extends PureComponent {
       </div>
     );
   };
-
 }
 
 export default MetaCell;

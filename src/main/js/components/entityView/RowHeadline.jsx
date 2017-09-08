@@ -10,17 +10,17 @@ import {openLinkOverlay} from "../cells/link/LinkOverlay";
 import i18n from "i18next";
 import ItemPopupMenu from "./ItemPopupMenu";
 import SvgIcon from "../helperComponents/SvgIcon";
+import PropTypes from "prop-types";
 
 class RowHeadline extends React.Component {
-
   static propTypes = {
-    column: React.PropTypes.object.isRequired,
-    cell: React.PropTypes.object.isRequired,
-    langtag: React.PropTypes.string.isRequired,
-    setTranslationView: React.PropTypes.func.isRequired,
-    funcs: React.PropTypes.object.isRequired,
-    thisUserCantEdit: React.PropTypes.bool,
-    popupOpen: React.PropTypes.bool.isRequired
+    column: PropTypes.object.isRequired,
+    cell: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    setTranslationView: PropTypes.func.isRequired,
+    funcs: PropTypes.object.isRequired,
+    thisUserCantEdit: PropTypes.bool,
+    popupOpen: PropTypes.bool.isRequired
   };
 
   getDisplayName = column => {
@@ -59,12 +59,12 @@ class RowHeadline extends React.Component {
       <div className="item-header">
         <div className="title-wrapper">
           <ItemPopupMenu langtag={this.props.langtag}
-                         cell={this.props.cell}
-                         setTranslationView={this.props.setTranslationView}
-                         funcs={this.props.funcs}
-                         popupOpen={this.props.popupOpen}
-                         thisUserCantEdit={thisUserCantEdit}
-                         hasMeaningfulLinks={this.props.hasMeaningfulLinks}
+            cell={this.props.cell}
+            setTranslationView={this.props.setTranslationView}
+            funcs={this.props.funcs}
+            popupOpen={this.props.popupOpen}
+            thisUserCantEdit={thisUserCantEdit}
+            hasMeaningfulLinks={this.props.hasMeaningfulLinks}
           />
           <a className="title-wrapper" href="#" onClick={(toTableVisible) ? () => window.open(url, "_blank") : f.noop}>
             {colName}
@@ -73,13 +73,13 @@ class RowHeadline extends React.Component {
         </div>
         {(thisUserCantEdit)
           ? <a className="column-icon button neutral" href="#"
-               ref={el => { funcs.register(el); }}
+            ref={el => { funcs.register(el); }}
           >
             {i18n.t("table:edit_links", {title: colName})}
           </a>
           : <a className="column-icon button" href="#"
-               onClick={() => openLinkOverlay(cell, langtag)}
-               ref={el => { funcs.register(el); }}
+            onClick={() => openLinkOverlay(cell, langtag)}
+            ref={el => { funcs.register(el); }}
           >
             <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_links", {title: colName})}
@@ -106,23 +106,23 @@ class RowHeadline extends React.Component {
       <div className="item-header">
         <div className="title-wrapper">
           <ItemPopupMenu langtag={this.props.langtag}
-                         cell={this.props.cell}
-                         setTranslationView={this.props.setTranslationView}
-                         funcs={this.props.funcs}
-                         popupOpen={this.props.popupOpen}
-                         thisUserCantEdit={thisUserCantEdit}
+            cell={this.props.cell}
+            setTranslationView={this.props.setTranslationView}
+            funcs={this.props.funcs}
+            popupOpen={this.props.popupOpen}
+            thisUserCantEdit={thisUserCantEdit}
           />
           {this.getDisplayName(column)}
         </div>
         {(thisUserCantEdit)
           ? <a className="button neutral column-icon" href="#"
-               ref={el => { funcs.register(el); }}
+            ref={el => { funcs.register(el); }}
           >
             {i18n.t("table:edit_attachments")}
           </a>
           : <a className="button column-icon" href="#"
-               onClick={this.openAttachmentOverlay}
-               ref={el => { funcs.register(el); }}
+            onClick={this.openAttachmentOverlay}
+            ref={el => { funcs.register(el); }}
           >
             <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_attachments")}
@@ -136,11 +136,11 @@ class RowHeadline extends React.Component {
     <div className="item-header">
       <div className="title-wrapper">
         <ItemPopupMenu langtag={this.props.langtag}
-                       cell={this.props.cell}
-                       setTranslationView={this.props.setTranslationView}
-                       funcs={this.props.funcs}
-                       popupOpen={this.props.popupOpen}
-                       thisUserCantEdit={this.props.thisUserCantEdit}
+          cell={this.props.cell}
+          setTranslationView={this.props.setTranslationView}
+          funcs={this.props.funcs}
+          popupOpen={this.props.popupOpen}
+          thisUserCantEdit={this.props.thisUserCantEdit}
         />
         {this.getDisplayName(column)}
       </div>

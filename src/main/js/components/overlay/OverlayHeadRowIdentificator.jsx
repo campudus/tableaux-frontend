@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import RowConcat from "../../helpers/RowConcatHelper";
 import {pure} from "recompose";
@@ -16,11 +16,11 @@ const OverlayHeadRowIdentificator = (props) => {
     // TODO link to table?
     return (
       <span>
-          <span className="column-name">
-            {columnDisplayName}:{" "}
-          </span>
-        {rowIdentification}
+        <span className="column-name">
+          {columnDisplayName}:{" "}
         </span>
+        {rowIdentification}
+      </span>
     );
   } else {
     return (
