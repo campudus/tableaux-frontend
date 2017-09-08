@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import multiLanguage, {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";

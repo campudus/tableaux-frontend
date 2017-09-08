@@ -1,4 +1,5 @@
-import React, {PureComponent, PropTypes} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import i18n from "i18next";

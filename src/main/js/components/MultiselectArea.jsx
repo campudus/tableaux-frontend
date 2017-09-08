@@ -1,4 +1,5 @@
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import f from "lodash/fp";
 import SvgIcon from "./helperComponents/SvgIcon";
 import i18n from "i18next";

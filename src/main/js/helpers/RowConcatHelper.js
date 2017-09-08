@@ -1,6 +1,7 @@
 import Empty from "../components/helperComponents/emptyEntry";
 import f from "lodash/fp";
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 
 const rowConcatString = (row, langtag) => {
   if (!row.cells || !row.cells.at) {

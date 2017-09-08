@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";

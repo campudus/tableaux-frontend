@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import {getCurrencyWithCountry} from "../../cells/currency/currencyHelper";
 import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import classNames from "classnames";

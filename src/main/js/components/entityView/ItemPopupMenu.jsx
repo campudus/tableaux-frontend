@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import listenToClickOutside from "react-onclickoutside";
 import classNames from "classnames";
 import i18n from "i18next";

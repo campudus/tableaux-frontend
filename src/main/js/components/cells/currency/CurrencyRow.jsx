@@ -1,4 +1,5 @@
-import React, {PureComponent, PropTypes} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import {splitPriceDecimals} from "./currencyHelper";
 import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";

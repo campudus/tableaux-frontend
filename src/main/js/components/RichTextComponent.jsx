@@ -3,7 +3,8 @@
  * If readOnly is not set, it works as a simple rich text editor.
  * The saveAndClose function will receive the visible content converted to markdown as argument.
  */
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
 import {markdown} from "markdown";
 import toMarkdown from "to-markdown";

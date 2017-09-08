@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import ActionCreator from "../../../actions/ActionCreator";
 import {reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";

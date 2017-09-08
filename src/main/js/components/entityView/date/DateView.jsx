@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import Moment from "moment";
 import {DateFormats, DateTimeFormats} from "../../../constants/TableauxConstants";
 import Datetime from "react-datetime";

@@ -1,4 +1,5 @@
-import React, {PropTypes, Component} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import AnnotationPopup from "./AnnotationPopup";
 import f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";

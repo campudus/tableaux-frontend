@@ -1,4 +1,5 @@
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 import {openEntityView} from "../../overlay/EntityViewOverlay";
 import Empty from "../../helperComponents/emptyEntry";
 import {isEmpty, trim} from "lodash/fp";

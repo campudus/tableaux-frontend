@@ -1,4 +1,5 @@
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 import RowConcat from "../../helpers/RowConcatHelper";
 import {pure} from "recompose";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";

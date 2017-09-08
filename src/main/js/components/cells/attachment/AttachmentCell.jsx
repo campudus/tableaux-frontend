@@ -1,4 +1,5 @@
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
 import * as f from "lodash/fp";
 import classNames from "classnames";

@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
 import classNames from "classnames";

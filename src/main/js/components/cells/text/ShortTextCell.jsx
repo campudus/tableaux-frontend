@@ -1,4 +1,5 @@
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 import ShortTextEditCell from "./ShortTextEditCell";
 import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";

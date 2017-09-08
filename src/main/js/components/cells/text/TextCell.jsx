@@ -1,4 +1,5 @@
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";

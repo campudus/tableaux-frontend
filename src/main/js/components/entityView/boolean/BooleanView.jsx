@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import {translate} from "react-i18next";
 import classNames from "classnames";
 import {changeCell} from "../../../models/Tables";

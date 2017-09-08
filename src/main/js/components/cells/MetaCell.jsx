@@ -1,4 +1,5 @@
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {initiateDeleteRow} from "../../helpers/rowHelper";

@@ -1,4 +1,5 @@
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import {openEntityView} from "../../overlay/EntityViewOverlay";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";

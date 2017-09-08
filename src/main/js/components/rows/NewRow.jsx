@@ -1,4 +1,5 @@
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 import ActionCreator from "../../actions/ActionCreator";
 import {translate} from "react-i18next";
 import {compose, pure, withHandlers, setPropTypes} from "recompose";

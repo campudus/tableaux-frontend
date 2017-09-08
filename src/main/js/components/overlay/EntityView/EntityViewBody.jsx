@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import View from "../../entityView/RowView";
 import {ActionTypes, ColumnKinds, Directions, FilterModes} from "../../../constants/TableauxConstants";
 import Dispatcher from "../../../dispatcher/Dispatcher";

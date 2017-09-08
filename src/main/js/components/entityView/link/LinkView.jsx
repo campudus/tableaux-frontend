@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import {openLinkOverlay} from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
 import ActionCreator from "../../../actions/ActionCreator";

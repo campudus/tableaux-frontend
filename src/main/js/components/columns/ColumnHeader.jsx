@@ -1,4 +1,5 @@
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import {ActionTypes, ColumnKinds, DefaultLangtag} from "../../constants/TableauxConstants";
 import f from "lodash/fp";
 import {maybe} from "../../helpers/functools";

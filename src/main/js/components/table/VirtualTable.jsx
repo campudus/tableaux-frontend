@@ -4,7 +4,8 @@
  * cell position indices.
  */
 
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import f from "lodash/fp";
 import Cell from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";

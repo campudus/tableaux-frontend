@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import ActionCreator, {openOverlay, removeRow} from "../../actions/ActionCreator";
 import RowConcat, {rowConcatString} from "../../helpers/RowConcatHelper";
 import i18n from "i18next";

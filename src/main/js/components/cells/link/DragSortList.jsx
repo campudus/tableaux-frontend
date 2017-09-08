@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import "react-virtualized/styles.css";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import {DragDropContext, DragSource, DropTarget} from "react-dnd";

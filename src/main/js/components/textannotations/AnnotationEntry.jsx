@@ -1,4 +1,5 @@
-import React, {PropTypes, PureComponent} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import {deleteCellAnnotation} from "../../helpers/annotationHelper";
 import {DateTimeFormats} from "../../constants/TableauxConstants";
 import Moment from "moment";

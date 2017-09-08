@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 import {maybe} from "../../helpers/functools";
 import {ColumnKinds, FallbackLanguage, Langtags} from "../../constants/TableauxConstants";

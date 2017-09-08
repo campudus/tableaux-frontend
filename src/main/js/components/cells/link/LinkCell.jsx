@@ -1,4 +1,5 @@
-import React, {PropTypes} from "react";
+import React, {} from "react";
+import PropTypes from "prop-types";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import LinkEditCell from "./LinkEditCell.jsx";
 import * as f from "lodash/fp";

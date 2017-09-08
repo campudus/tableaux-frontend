@@ -1,4 +1,5 @@
-import React, {PureComponent, PropTypes} from "react";
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
 import {openLinkOverlay} from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";

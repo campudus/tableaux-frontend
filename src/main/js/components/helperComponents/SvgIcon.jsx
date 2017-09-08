@@ -11,7 +11,8 @@
  * containerClass="color-primary" are pre-defined.
  */
 
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 import request from "superagent";
 

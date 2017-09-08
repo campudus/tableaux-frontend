@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
 import {ActionTypes, Directions, FallbackLanguage, Langtags} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
