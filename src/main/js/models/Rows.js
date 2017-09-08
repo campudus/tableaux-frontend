@@ -137,7 +137,7 @@ const Rows = Collection.extend({
                   // but is **much** faster than sorting all rows after each successful page request.
                   rowsBuffer[n] = rows;
                 }
-                resolve();
+                window.requestAnimationFrame(resolve);
               }
             }
           );
