@@ -12,7 +12,7 @@ import {translate} from "react-i18next";
 const withEditMode = compose(
   withState("edit", "updateEdit", false),
   withHandlers({
-    toggleEdit: ({updateEdit}) => () => updateEdit(f.negate),
+    toggleEdit: ({updateEdit}) => () => updateEdit(edit => !edit),
     onSave: ({t, updateEdit}) => (folderId, folderName, folderDescription, folderParent) => {
       updateEdit(f.always(false));
       ActionCreator.addFolder(folderName, folderDescription, folderParent,
