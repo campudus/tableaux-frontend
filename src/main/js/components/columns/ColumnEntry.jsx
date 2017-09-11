@@ -2,16 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
-import ColumnContextMenu from "../../components/contextMenu/ColumnContextMenu";
 import classNames from "classnames";
 import Header from "../overlay/Header";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import * as f from "lodash/fp";
-import Portal from "react-portal";
 import Rnd from "react-rnd";
 import PropTypes from "prop-types";
+import {ContextMenu, ContextMenuButton, DescriptionTooltip} from "./ColumnHeaderFragments";
 
-class ColumnEntry extends React.Component {
+class ColumnEntry extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,11 +43,13 @@ class ColumnEntry extends React.Component {
     };
 
     ActionCreator.openOverlay({
-      head: <Header context={i18n.t("table:editor.edit_column")}
+      head: <Header
+        context={i18n.t("table:editor.edit_column")}
         title={name}
         actions={buttons}
       />,
-      body: <ColumnEditorOverlay name={name}
+      body: <ColumnEditorOverlay
+        name={name}
         handleInput={this.handleInput}
         description={description}
         index={id}
@@ -78,23 +79,6 @@ class ColumnEntry extends React.Component {
   toggleContextMenu = (evt) => {
     (this.state.ctxCoords) ? this.closeContextMenu() : this.openContextMenu(evt);
     evt.preventDefault();
-  };
-
-  renderContextMenu = () => {
-    const {column} = this.props;
-
-    return (
-      <Portal closeOnOutsideClick isOpened >
-        <ColumnContextMenu closeHandler={this.closeContextMenu}
-          editHandler={this.editColumn}
-          column={column}
-          langtag={this.props.langtag}
-          isId={this.props.isId}
-          tables={this.props.tables}
-          rect={this.state.ctxCoords}
-        />
-      </Portal>
-    );
   };
 
   showDescription = (show) => (event) => {
@@ -130,7 +114,7 @@ class ColumnEntry extends React.Component {
   };
 
   render = () => {
-    const {column: {kind, id}, columnContent, columnIcon, description, resizeFinishedHandler} = this.props;
+    const {column, langtag, column: {kind, id}, columnContent, columnIcon, description, resizeFinishedHandler} = this.props;
     const menuOpen = this.state.ctxCoords;
     const showDescription = !f.isEmpty(description) && this.state.showDescription && !menuOpen;
     const {left, bottom} = (showDescription) ? this.state.descriptionCoords : {};
@@ -141,7 +125,8 @@ class ColumnEntry extends React.Component {
       });
     classNames("column-head", {"context-menu-open": menuOpen});
     return (
-      <Rnd style={this.props.style}
+      <Rnd
+        style={this.props.style}
         default={{
           x: 0,
           y: 0,
@@ -167,37 +152,36 @@ class ColumnEntry extends React.Component {
           className={classNames("column-head", {"context-menu-open": menuOpen})}
           key={id}
         >
-          <div className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
+          <div
+            className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
             onMouseEnter={this.showDescription(true)}
             onMouseLeave={this.showDescription(false)}
           >
             {columnContent}
-            {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle"/> : null }
+            {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle" /> : null}
             {columnIcon}
           </div>
-          {(showDescription)
-            ? (
-              <Portal isOpened>
-                <div className="description-tooltip"
-                  ref={this.setToolTipRef}
-                  style={{ // align top left corner at bottom left corner of opening div
-                    left: left,
-                    top: bottom + 10
-                  }}
-                >
-                  <div className="description-tooltip-text">{description}</div>
-                </div>
-              </Portal>
-            )
-            : null}
-          {(kind !== "concat")
-            ? <a href="#"
-              className={contextMenuClass}
-              draggable={false}
-              onClick={this.toggleContextMenu}
-            />
-            : null}
-          {(menuOpen) ? this.renderContextMenu() : null}
+          <DescriptionTooltip
+            showDescription={showDescription}
+            description={description}
+            setToolTipRef={this.setToolTipRef}
+            left={left}
+            bottom={bottom}
+          />
+          <ContextMenuButton
+            contextMenuClass={contextMenuClass}
+            toggleContextMenu={this.toggleContextMenu}
+          />
+          <ContextMenu
+            menuOpen={menuOpen}
+            closeHandler={this.closeContextMenu}
+            editHandler={this.editColumn}
+            column={column}
+            langtag={langtag}
+            isId={this.props.isId}
+            tables={this.props.tables}
+            rect={this.state.ctxCoords}
+          />
         </div>
       </Rnd>
     );

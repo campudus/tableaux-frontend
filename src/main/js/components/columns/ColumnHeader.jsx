@@ -36,7 +36,7 @@ export default class ColumnHeader extends PureComponent {
   };
 
   isToTableHidden = () => {
-    const {column, tableId, tables} = this.props;
+    const {column, tables} = this.props;
     return f.flow(
       f.get("hidden"),
       f.defaultTo(false)
