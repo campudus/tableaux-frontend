@@ -254,6 +254,7 @@ class TableView extends Component {
         .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: rowId})));
       ActionCreator.jumpSpinnerOff();
       this.pendingCellGoto = null;
+      this.forceUpdate();
     } else {
       this.pendingCellGoto = {
         rowId: rowId,
