@@ -1,33 +1,40 @@
-import React, {PureComponent} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import {openEntityView} from "../../overlay/EntityViewOverlay";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
+import {compose, lifecycle, pure, withHandlers} from "recompose";
 
-class IdentifierCell extends PureComponent {
-  openEditor = () => {
-    const {cell, editing, langtag, selected} = this.props;
-    ((selected || editing) && !isLocked(cell.row))
-      ? openEntityView(cell.row, langtag, null, null, cell.column)
-      : function () {};
-  };
+const withFunctionality = compose(
+  withHandlers({
+    openEditor: (props) => () => {
+      const {cell, editing, langtag, selected} = props;
+      ((selected || editing) && !isLocked(cell.row))
+        ? openEntityView(cell.row, langtag, null, null, cell.column)
+        : function () {
+        };
+    }
+  }),
+  lifecycle({
+    componentDidMount() {
+      const {setCellKeyboardShortcuts} = this.props;
+      setCellKeyboardShortcuts({
+        enter: this.props.openEditor
+      });
+    }
+  }),
+  pure,
+  connectToAmpersand,
+);
 
-  componentWillMount() {
-    const {setCellKeyboardShortcuts} = this.props;
-    setCellKeyboardShortcuts({
-      enter: this.openEditor
-    });
-  }
-
-  render() {
-    const {cell, langtag} = this.props;
-    return (
-      <div className='cell-content' onClick={this.openEditor}>
-        {cell.displayValue[langtag]}
-      </div>
-    );
-  }
-}
+const IdentifierCell = (props) => {
+  const {cell, langtag, openEditor} = props;
+  return (
+    <div className="cell-content" onClick={openEditor}>
+      {cell.displayValue[langtag]}
+    </div>
+  );
+};
 
 IdentifierCell.propTypes = {
   langtag: PropTypes.string.isRequired,
@@ -37,4 +44,4 @@ IdentifierCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func.isRequired
 };
 
-module.exports = connectToAmpersand(IdentifierCell);
+export default withFunctionality(IdentifierCell);

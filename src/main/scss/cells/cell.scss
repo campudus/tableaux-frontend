@@ -136,6 +136,12 @@
       height: auto;
   }
 
+  &.cell-concat, &.cell-group {
+    .cell-content {
+      width: 100%;
+    }
+  }
+
   .annotation-flag-icons {
     position: absolute;
     right: 3px;
