@@ -1,8 +1,3 @@
-/*
- * Entries for the table header.
- * In non-admin mode displays the header text/icon representation. If user has admin rights, rows may be selected
- * on click, second click sends Action event to open overlay to edit current header's title and description.
- */
 import React from "react";
 import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
@@ -25,9 +20,6 @@ class ColumnEntry extends React.Component {
       contextMenu: null,
       showDescription: false
     };
-
-    this.dragging = false;
-    this.oldX = 0;
   }
 
   handleInput = (inputState) => {
@@ -133,6 +125,10 @@ class ColumnEntry extends React.Component {
     resizeHandler(index, delta.width);
   };
 
+  setToolTipRef = (node) => {
+    this.tooltip = node;
+  };
+
   render = () => {
     const {column: {kind, id}, columnContent, columnIcon, description, resizeFinishedHandler} = this.props;
     const menuOpen = this.state.ctxCoords;
@@ -183,7 +179,7 @@ class ColumnEntry extends React.Component {
             ? (
               <Portal isOpened>
                 <div className="description-tooltip"
-                  ref={el => { this.tooltip = el; }}
+                  ref={this.setToolTipRef}
                   style={{ // align top left corner at bottom left corner of opening div
                     left: left,
                     top: bottom + 10

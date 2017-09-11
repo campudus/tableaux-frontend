@@ -37,16 +37,10 @@ export default class ColumnHeader extends PureComponent {
 
   isToTableHidden = () => {
     const {column, tableId, tables} = this.props;
-    const table = tables.get(tableId);
-    return maybe(table)
-      .map(f.get("rows")) // catch rows not loaded yet
-      .exec("at", 0)
-      .map(f.get("cells")) // catch cells not loaded yet
-      .exec("at", 0)
-      .map(f.get("tables"))
-      .exec("get", column.toTable) // only with link columns
-      .map(f.get("hidden"))
-      .getOrElse("false");
+    return f.flow(
+      f.get("hidden"),
+      f.defaultTo(false)
+    )(tables.get(column.toTable));
   };
 
   getIdentifierIcon = () => {
