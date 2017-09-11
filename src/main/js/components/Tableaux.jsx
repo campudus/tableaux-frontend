@@ -95,6 +95,7 @@ export default class Tableaux extends PureComponent {
   }
 
   openOverlay(content) {
+    this.hideToast();
     const {currentViewParams, activeOverlays} = this.state;
     const timestamp = new Date().getTime();
     const namedContent = (f.isNil(content.name)) ? f.assoc("name", timestamp, content) : content;
@@ -200,8 +201,11 @@ export default class Tableaux extends PureComponent {
 
   // TODO: Stop hiding toast when user hovers over the toast message
   showToast(payload) {
-    // default 1000ms
-    const {content, milliseconds = 1000} = payload;
+    if (f.isEmpty(payload)) {
+      this.hideToast();
+    }
+    // default 2700ms
+    const {content, milliseconds = 2700} = payload;
 
     this.setState({
       toast: content
