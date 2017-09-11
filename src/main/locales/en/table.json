@@ -77,7 +77,8 @@
     "starts_with": "starts with",
     "rows_hidden": "Only displaying specific rows",
     "needs_translation": "Needs translation",
-    "is_final": "Is marked as final"
+    "is_final": "Is marked as final",
+    "row-contains": "Row contains"
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",

@@ -188,7 +188,9 @@ var TableauxConstant = {
       FINAL: null,
       IMPORTANT: null,
       CHECK_ME: null,
-      POSTPONE: null
+      POSTPONE: null,
+      ROW_CONTAINS: null,
+      TRANSLATOR_FILTER: null
     }
   )
 };

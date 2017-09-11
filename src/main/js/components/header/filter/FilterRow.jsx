@@ -54,10 +54,13 @@ class FilterRow extends Component {
       .getOrElse(true))
       ? 0
       : 1;
-    return <FilterModePopup active={active}
-      close={this.toggleFilterModePopup}
-      setFilterMode={this.props.onChangeMode}
-    />;
+    return (
+      <FilterModePopup
+        active={active}
+        close={this.toggleFilterModePopup}
+        setFilterMode={this.props.onChangeMode}
+      />
+    );
   };
 
   boolInput = () => {
@@ -80,7 +83,7 @@ class FilterRow extends Component {
     const filterInfoString = either(mode)
       .map(mode => f.prop([mode, "displayName"], SearchFunctions))
       .getOrElse("");
-    const filterColumnSelected = f.isInteger(parseInt(columnId));
+    const filterColumnSelected = f.isInteger(parseInt(columnId)) || f.isString(columnId);
     return (
       <div className="filter-row">
         <Select
@@ -98,50 +101,59 @@ class FilterRow extends Component {
 
         {(filter.columnKind === BOOL)
           ? this.boolInput()
-          : <span className="filter-mode-wrapper">
-            <input value={filter.value || ""}
-              type="text"
-              className="filter-input"
-              disabled={!filterColumnSelected}
-              ref={fi => {
-                this.filterInput = fi;
-              }}
-              onChange={onChangeValue}
-              onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-              onClick={x => this.filterInput.focus()}
-            />
-            <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
-              {(filterColumnSelected)
-                ? (
-                  <a href="#"
-                    className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
-                    onMouseDown={this.toggleFilterModePopup}>
-                    <i className="fa fa-search" />
-                    <i className="fa fa-caret-down" />
-                  </a>
-                )
-                : null}
-              {(this.state.filterModesOpen)
-                ? this.renderFilterModePopup()
-                : null
-              }
+          : (
+            <span className="filter-mode-wrapper">
+              <input
+                value={(f.isString(filter.value)) ? filter.value : ""}
+                type="text"
+                className="filter-input"
+                disabled={!filterColumnSelected}
+                ref={fi => {
+                  this.filterInput = fi;
+                }}
+                onChange={onChangeValue}
+                onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+                onClick={x => this.filterInput.focus()}
+              />
+              <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
+                {(filterColumnSelected)
+                  ? (
+                    <a
+                      href="#"
+                      className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
+                      onMouseDown={this.toggleFilterModePopup}
+                    >
+                      <i className="fa fa-search" />
+                      <i className="fa fa-caret-down" />
+                    </a>
+                  )
+                  : null}
+                {(this.state.filterModesOpen)
+                  ? this.renderFilterModePopup()
+                  : null
+                }
+              </span>
             </span>
-          </span>
+          )
         }
         {(onRemoveFilter)
-          ? <span className="filter-array-button" onClick={onRemoveFilter}>
-            <a href="#">
-              <i className="fa fa-minus" />
-            </a>
-          </span>
+          ? (
+            <span className="filter-array-button" onClick={onRemoveFilter}>
+              <a href="#">
+                <i className="fa fa-minus" />
+              </a>
+            </span>
+          )
           : <span className="filter-array-button empty" />
         }
         {(onAddFilter)
-          ? <span className="filter-array-button" onClick={onAddFilter}>
-            <a href="#">
-              <i className="fa fa-plus" />
-            </a>
-          </span>
+          ? (
+            <span className="filter-array-button" onClick={onAddFilter}>
+              <a href="#">
+                <i className="fa fa-plus" />
+              </a>
+            </span>
+          )
           : <span className="filter-array-button empty" />
         }
       </div>);

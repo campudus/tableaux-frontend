@@ -134,7 +134,9 @@ class TableView extends Component {
         x.visible = false;
       });
       f.compose(
-        f.map(x => { x.visible = true; }),
+        f.map(x => {
+          x.visible = true;
+        }),
         f.take(DEFAULT_VISIBLE_COLUMS),
         f.drop(1),
         f.reject("isGroupMember")
@@ -220,18 +222,19 @@ class TableView extends Component {
         coll: [colId]
       });
       if (filter) {
-        this.changeFilter({
-          filters: [
-            (f.isObject(filter))
-              ? filter
-              : {
-                mode: FilterModes.ID_ONLY,
-                value: [rowId]
-              }
-          ],
-          sorting: {columnId: 0}
-        },
-        false);
+        this.changeFilter(
+          {
+            filters: [
+              (f.isObject(filter))
+                ? filter
+                : {
+                  mode: FilterModes.ID_ONLY,
+                  value: [rowId]
+                }
+            ],
+            sorting: {columnId: 0}
+          },
+          false);
       }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
@@ -387,11 +390,21 @@ class TableView extends Component {
   // Set visibility of all columns in <coll> to <val>
   setColumnsVisibility = ({val, coll, cb}) => {
     const columns = this.tables.get(this.state.currentTableId).columns;
-    columns
-      .filter(x => f.contains(x.id, coll))
-      .forEach(x => {
-        x.visible = val;
-      });
+    if (f.isNil(coll)) {
+      columns.forEach(
+        (col, idx) => {
+          col.visible = (idx === 0 || !!val);
+        }
+      );
+    } else {
+      columns
+        .filter(x => f.contains(x.id, coll))
+        .forEach(
+          (x, idx) => {
+            x.visible = idx === 0 || !!val;
+          }
+        );
+    }
     this.saveView();
     if (cb) {
       cb();
@@ -421,8 +434,8 @@ class TableView extends Component {
       rowsFilter: null
     }, this.saveFilterSettings);
     const clearedUrl = window.location.href
-      .replace(/https?:\/\/.*?\//, "")
-      .replace(/\?.*/, "");
+                             .replace(/https?:\/\/.*?\//, "")
+                             .replace(/\?.*/, "");
     App.router.navigate(clearedUrl, {trigger: false});
   };
 
@@ -451,12 +464,20 @@ class TableView extends Component {
             sortValue: sorting.value,
             filters: f.reject(isFilterEmpty, filters)
           };
+
+          const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
+          devLog("Columns", rowsCollection.colsWithMatches)
+          if (!f.isEmpty(rowsCollection.colsWithMatches)) {
+            this.setColumnsVisibility({val: false});
+            this.setColumnsVisibility({val: true, coll: rowsCollection.colsWithMatches});
+          }
+
           if (f.get([0, "mode"], filters) !== FilterModes.ID_ONLY) {
             this.resetURL();
           }
           this.setState({
             rowsFilter,
-            rowsCollection: getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter)
+            rowsCollection
           }, resolve(rowsFilter));
         }
       }
@@ -521,15 +542,19 @@ class TableView extends Component {
                 : null
               }
             </div>
-            <TableSwitcher langtag={langtag}
+            <TableSwitcher
+              langtag={langtag}
               currentTable={currentTable}
               tables={tables} />
             <TableSettings langtag={langtag} table={currentTable} />
             <Filter langtag={langtag} table={currentTable} currentFilter={rowsFilter} />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
-              ? <ColumnFilter langtag={langtag}
-                columns={currentTable.columns}
-              />
+              ? (
+                <ColumnFilter
+                  langtag={langtag}
+                  columns={currentTable.columns}
+                />
+              )
               : null
             }
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
@@ -537,7 +562,8 @@ class TableView extends Component {
             <Spinner />
           </header>
           <div className="wrapper">
-            <Table fullyLoaded={tableFullyLoaded}
+            <Table
+              fullyLoaded={tableFullyLoaded}
               table={currentTable}
               langtag={langtag} rows={rows} overlayOpen={overlayOpen}
               rowKeys={rowKeys}

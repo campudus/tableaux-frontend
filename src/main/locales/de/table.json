@@ -77,7 +77,8 @@
     "starts_with": "beginnt mit",
     "rows_hidden": "Es werden nur bestimmte Datensätze angezeigt",
     "needs_translation": "Übersetzung benötigt",
-    "is_final": "Als freigegeben markiert"
+    "is_final": "Als freigegeben markiert",
+    "row-contains": "Datensatz enthält"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",

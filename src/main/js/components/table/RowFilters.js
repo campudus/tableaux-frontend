@@ -1,8 +1,14 @@
-import FilteredSubcollection from "ampersand-filtered-subcollection";
+import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
-import {either} from "../../helpers/functools";
+import {either, fspy} from "../../helpers/functools";
+
+const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
+  {
+    colsWithMatches: null
+  }
+);
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -34,10 +40,12 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
     f.every(f.identity),
     f.juxt(allFilters)
   );
-  return new FilteredSubcollection(currentTable.rows, {
+  const coll = new FilteredSubcollection(currentTable.rows, {
     filter: combinedFilter,
     comparator: closures.comparator
   });
+  coll.colsWithMatches = f.uniq(Array.from(closures.colsWithMatches.values()));
+  return coll;
 };
 
 const mkFilterFn = closures => (settings) => {
@@ -47,10 +55,39 @@ const mkFilterFn = closures => (settings) => {
     [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.ROW_CONTAINS), mkAnywhereFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER), mkTranslatorFilter(closures)],
     [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(mode, value)],
     [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
     [f.stubTrue, f.stubTrue]
   ])(settings);
+};
+
+const rememberColumnIds = (colSet) => f.tap(
+  (cell) => colSet.add(cell.column.id)
+);
+
+const mkAnywhereFilter = (closures) => ({value}) => {
+  return f.flow(
+    f.get(["cells", "models"]),
+    f.filter((cell) => f.contains(cell.kind, FilterableCellKinds)),
+    f.filter((cell) => searchFunctions[FilterModes.CONTAINS](value, closures.getSortableCellValue(cell))),
+    f.map(rememberColumnIds(closures.colsWithMatches)),
+    f.any(f.identity),
+  );
+};
+
+const mkTranslatorFilter = (closures) => () => (row) => {
+  if (f.isEmpty(closures.colsWithMatches)) {
+    row.columns
+       .filter(f.get("isMultilanguage"))
+       .forEach(rememberColumnIds(closures.colsWithMatches));
+  }
+  return f.flow(
+    f.get(["cells", "models"]),
+    f.map(["annotations", "translationNeeded", "langtags", closures.langtag]),
+    f.any(f.identity)
+  )(row);
 };
 
 const mkFinalFilter = closures => ({value}) => {
@@ -203,6 +240,7 @@ const mkClosures = (table, langtag, rowsFilter) => {
     getColumnIndex: getColumnIndex,
     getSortableCellValue: getSortableCellValue,
     rows: rows,
+    colsWithMatches: new Set(),
     cleanString: cleanString,
     comparator: comparator,
     langtag

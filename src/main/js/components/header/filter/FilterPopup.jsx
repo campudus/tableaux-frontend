@@ -17,7 +17,12 @@ const SPECIAL_SEARCHES = [
   FilterModes.FINAL,
   FilterModes.IMPORTANT,
   FilterModes.CHECK_ME,
-  FilterModes.POSTPONE
+  FilterModes.POSTPONE,
+  FilterModes.ROW_CONTAINS
+];
+
+const SPECIAL_TEXT_SEARCHES = [
+  FilterModes.ROW_CONTAINS
 ];
 
 @translate(["filter", "table"])
@@ -116,6 +121,11 @@ class FilterPopup extends React.Component {
         label: this.props.t("postpone"),
         value: FilterModes.POSTPONE,
         kind: BOOL
+      },
+      {
+        label: this.props.t("filter.row-contains"),
+        value: FilterModes.ROW_CONTAINS,
+        kind: TEXT
       },
       ...searchableColumns
     ];
@@ -222,7 +232,7 @@ class FilterPopup extends React.Component {
       const filter = {
         columnId: value,
         mode: value,
-        columnKind: BOOL,
+        columnKind: (f.contains(value, SPECIAL_TEXT_SEARCHES)) ? TEXT : BOOL,
         value: true
       };
       this.setState({filters: f.assoc([idx], filter, this.state.filters)});
@@ -274,10 +284,10 @@ class FilterPopup extends React.Component {
     const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
     const hasFilterValue =
       filter => (filter.columnKind === TEXT && f.isString(filter.value) && !f.isEmpty(filter.value))
-      || (filter.columnKind === BOOL && f.isBoolean(filter.value));
-    const anyFilterHasValue = f.compose(
-      f.any(f.identity),
-      f.map(hasFilterValue)
+        || (filter.columnKind === BOOL && f.isBoolean(filter.value));
+    const anyFilterHasValue = f.flow(
+      f.map(hasFilterValue),
+      f.any(f.identity)
     )(filters);
     const canApplyFilter = sortColumnSelected || anyFilterHasValue;
     const sortOptions = this.getSortOptions();
@@ -305,18 +315,21 @@ class FilterPopup extends React.Component {
                     {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
                   </div>
                 )
-                : <FilterRow searchableColumns={availableColumns(idx)}
-                  valueRenderer={this.selectFilterValueRenderer}
-                  onChangeColumn={this.onChangeFilterColumn(idx)}
-                  onChangeValue={this.changeFilterValue(idx)}
-                  onChangeMode={this.changeFilterMode(idx)}
-                  onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
-                  onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
-                  filter={filter}
-                  applyFilters={this.applyFilters}
-                  key={idx}
-                  t={t}
-                />;
+                : (
+                  <FilterRow
+                    searchableColumns={availableColumns(idx)}
+                    valueRenderer={this.selectFilterValueRenderer}
+                    onChangeColumn={this.onChangeFilterColumn(idx)}
+                    onChangeValue={this.changeFilterValue(idx)}
+                    onChangeMode={this.changeFilterMode(idx)}
+                    onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
+                    onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
+                    filter={filter}
+                    applyFilters={this.applyFilters}
+                    key={idx}
+                    t={t}
+                  />
+                );
             }
           )}
           <div className="sort-row">
@@ -352,9 +365,11 @@ class FilterPopup extends React.Component {
         <div className="description-row">
           <p className="info">
             <span className="text">{t("help.note")}</span></p>
-          <button tabIndex="1" className="neutral"
+          <button
+            tabIndex="1" className="neutral"
             onClick={this.clearFilter}>{t("button.clearFilter")}</button>
-          <button tabIndex="0"
+          <button
+            tabIndex="0"
             className={(canApplyFilter) ? "filter-go" : "filter-go neutral"}
             disabled={!canApplyFilter}
             onClick={this.applyFilters}>{t("button.doFilter")}</button>
