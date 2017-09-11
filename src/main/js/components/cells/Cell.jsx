@@ -97,12 +97,12 @@ class Cell extends React.PureComponent {
     this.keyboardShortcuts = {};
     this.props.watch(this.props.cell,
       {
-        event: "change:value",
+        event: "change:annotations",
         force: true
       });
     this.props.watch(this.props.cell,
       {
-        event: "change:annotations",
+        event: "change:displayValue",
         force: true
       });
   };
@@ -214,6 +214,8 @@ class Cell extends React.PureComponent {
       ? DisabledCell
       : (Cell.cellKinds[kind] || TextCell);
 
+    const displayValue = cell.displayValue[langtag] || "";
+
     // onKeyDown event just for selected components
     return (
       <div style={this.props.style}
@@ -226,7 +228,7 @@ class Cell extends React.PureComponent {
         <CellKind cell={cell} langtag={langtag}
           selected={selected} inSelectedRow={inSelectedRow}
           editing={cell.isEditable && editing}
-          value={(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
+          value={displayValue}
           contentChanged={contentChanged}
           setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
         />
