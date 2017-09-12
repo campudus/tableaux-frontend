@@ -47,9 +47,9 @@ class HeaderPopupMenu extends Component {
   };
 
   mkEntry = (id, {title, fn, icon}) => {
-    const clickHandler = f.compose(
-      () => this.setState({open: false}),
-      fn
+    const clickHandler = f.flow(
+      fn,
+      () => this.setState({open: false})
     );
     return (
       <a className="entry"

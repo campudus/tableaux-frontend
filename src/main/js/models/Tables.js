@@ -30,9 +30,9 @@ const changeLinkCell = ({cell, value}) => {
     && f.size(curValue) === f.size(value)
     && f.size(f.intersection(value.map(f.get("id")), curValue.map(f.get("id")))) === f.size(curValue)
   ) { // reordering happened
-    const swappers = f.compose(
-      f.map(f.get([0, "id"])),
-      f.reject(([a, b]) => f.get("id", a) === f.get("id", b))
+    const swappers = f.flow(
+      f.reject(([a, b]) => f.get("id", a) === f.get("id", b)),
+      f.map([0, "id"])
     )(f.zip(value, cell.value));
     cell.set({value: f.map(f.pick(["id", "value"]), value)}); // don't store LinkOverlay's display value
     const sortUrl = `/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/link/${f.first(swappers)}/order`;
@@ -268,10 +268,10 @@ const Tables = Collection.extend({
       || f.matchesProperty(["column", "kind"], ColumnKinds.concat)(cell)
       || f.matchesProperty(["column", "kind"], ColumnKinds.group)(cell);
 
-    const lastRowIsEmpty = f.compose(
-      f.every(isEmptyOrConcat),
-      f.get(["cells", "models"]),
+    const lastRowIsEmpty = f.flow(
       f.last,
+      f.get(["cells", "models"]),
+      f.every(isEmptyOrConcat)
     )(table.rows.models);
     if (lastRowIsEmpty && table.rows.models.length > 0) {
       ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t("table:cant-add-row")}</div>, 2000);

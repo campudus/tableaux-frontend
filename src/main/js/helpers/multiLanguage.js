@@ -98,9 +98,9 @@ const getFallbackCurrencyValue = f.curry(
   ({country, fromLangtag = false}, value = {}) => {
     const _country = (fromLangtag) ? getCountryOfLangtag(country) : country;
     const currency = getCurrencyCode(_country);
-    const fallbackEntry = f.compose(
-      f.find(ctry => !f.isEmpty(value[ctry]) || f.isNumber(value[ctry])),
+    const fallbackEntry = f.flow(
       f.reject(f.eq(_country)),
+      f.find(ctry => !f.isEmpty(value[ctry]) || f.isNumber(value[ctry]))
     )(reverseCurrencyCodeMap[currency]);
     return f.get(fallbackEntry, value);
   }

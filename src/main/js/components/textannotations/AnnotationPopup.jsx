@@ -71,11 +71,11 @@ class AnnotationPopup extends PureComponent {
 
   render() {
     const {cell, cell: {row}, langtag} = this.props;
-    const annotations = f.compose(
-      f.sortBy("createdAt"),
-      f.compact,
+    const annotations = f.flow(
+      f.props(["info", "warning", "error"]),
       f.flatten,
-      f.props(["info", "warning", "error"])
+      f.compact,
+      f.sortBy("createdAt")
     )(cell.annotations);
     const rowConcatObj = row.cells.at(0).displayValue;
     const rowConcat = rowConcatObj[langtag] || rowConcatObj[DefaultLangtag];

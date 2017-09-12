@@ -223,12 +223,12 @@ class LinkOverlay extends PureComponent {
         return;
       }
       this.props.updateSharedData(f.always({loading: true}));
-      const processPage = f.compose(
-        this.addRowResults,
-        f.map(mkLinkDisplayItem(toTable)),
-        f.get("rows"),
+      const processPage = f.flow(
+        f.get("text"),
         JSON.parse,
-        f.get("text")
+        f.get("rows"),
+        f.map(mkLinkDisplayItem(toTable)),
+        this.addRowResults
       );
 
       const fetchPage = throat(
@@ -342,14 +342,14 @@ class LinkOverlay extends PureComponent {
     const linkPosition = f.reduce(
       f.merge, {}, this.props.cell.value.map((row, idx) => ({[f.get("id", row)]: idx}))
     );
-    const linkedRows = f.compose(
-      f.sortBy(link => f.get(link.id, linkPosition)),
-      f.filter(this.isRowLinked)
+    const linkedRows = f.flow(
+      f.filter(this.isRowLinked),
+      f.sortBy(link => f.get(link.id, linkPosition))
     )(allRowResults);
     const unlinkedRows = f.reject(this.isRowLinked, allRowResults);
-    const byDisplayValues = f.compose(
-      searchFunction(filterValue),
-      f.get(["displayValue", langtag])
+    const byDisplayValues = f.flow(
+      f.get(["displayValue", langtag]),
+      searchFunction(filterValue)
     );
     return {
       linked: linkedRows,
@@ -471,9 +471,9 @@ class LinkOverlay extends PureComponent {
   swapLinkedItems = (a, b) => {
     const linkedItems = f.get(["rowResults", "linked"], this.state) || [];
     const {cell} = this.props;
-    const rearranged = f.compose(
-      f.assoc(a, f.get(b, linkedItems)),
+    const rearranged = f.flow(
       f.assoc(b, f.get(a, linkedItems)),
+      f.assoc(a, f.get(b, linkedItems))
     )(linkedItems);
 
     changeCell({

@@ -126,12 +126,12 @@ class Columns extends React.Component {
     const {langtag, colId, newName, newDescription} = payload;
     const {columns} = this.props;
     const modifications =
-      f.compose(
-        m => (f.isString(newName))
-          ? f.assign({"displayName": {[langtag]: newName}}, m)
-          : m,
+      f.flow(
         m => (f.isString(newDescription))
           ? f.assign({"description": {[langtag]: newDescription}}, m)
+          : m,
+        m => (f.isString(newName))
+          ? f.assign({"displayName": {[langtag]: newName}}, m)
           : m
       )({});
 

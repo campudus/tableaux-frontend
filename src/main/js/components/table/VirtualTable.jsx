@@ -59,9 +59,9 @@ export default class VirtualTable extends PureComponent {
     .getOrElse({});
 
   componentWillMount() {
-    f.compose(
-      f.toPairs,
-      f.get("columnWidths")
+    f.flow(
+      f.get("columnWidths"),
+      f.toPairs
     )(this.getStoredView())
       .forEach(
         ([idx, width]) => this.colWidths.set(f.toNumber(idx), width)
@@ -157,7 +157,7 @@ export default class VirtualTable extends PureComponent {
     // if we're in the first column, render meta cells
     if (columnIndex === 0) {
       return this.renderMetaCell(
-        f.compose(
+        f.flow(
           f.update("key", (key) => `meta-${key}`),
           f.update("rowIndex", f.add(-1))
         )(gridData)
@@ -167,13 +167,13 @@ export default class VirtualTable extends PureComponent {
     // else render either column headers or boring normal cells
     return (rowIndex === 0)
       ? this.renderColumnHeader(
-        f.compose(
+        f.flow(
           f.update("key", (key) => `col-${key}`),
           f.update("columnIndex", f.add(-1))
         )(gridData)
       )
       : this.renderCell(
-        f.compose(
+        f.flow(
           f.update("key", (key) => `cell-${key}`),
           f.update("rowIndex", f.add(-1)),
           f.update("columnIndex", f.add(-1))

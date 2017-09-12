@@ -36,9 +36,9 @@ const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.P
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
   const allFilters = f.map(mkFilterFn(closures), filterSettings.filters || []);
-  const combinedFilter = f.compose(
-    f.every(f.identity),
-    f.juxt(allFilters)
+  const combinedFilter = f.flow(
+    f.juxt(allFilters),
+    f.every(f.identity)
   );
   const coll = new FilteredSubcollection(currentTable.rows, {
     filter: combinedFilter,
@@ -95,32 +95,32 @@ const mkFinalFilter = closures => ({value}) => {
 };
 
 const mkIDFilter = closures => ({value}) => {
-  return f.compose(
-    (id) => f.contains(id, value),
-    f.get("id")
+  return f.flow(
+    f.get("id"),
+    (id) => f.contains(id, value)
   );
 };
 
 const mkOthersTranslationStatusFilter = closures => ({value}) => {
-  const needsTranslation = f.compose(
-    f.complement(f.isEmpty),
-    f.get(["annotations", "translationNeeded", "langtags"])
+  const needsTranslation = f.flow(
+    f.get(["annotations", "translationNeeded", "langtags"]),
+    f.complement(f.isEmpty)
   );
-  const hasUntranslatedCells = f.compose(
-    f.any(needsTranslation),
+  const hasUntranslatedCells = f.flow(
     f.get(["cells", "models"]),
+    f.any(needsTranslation)
   );
   return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
 
 const mkTranslationStatusFilter = closures => ({value}) => {
-  const needsTranslation = f.compose(
-    f.contains(closures.langtag),
-    f.get(["annotations", "translationNeeded", "langtags"])
+  const needsTranslation = f.flow(
+    f.get(["annotations", "translationNeeded", "langtags"]),
+    f.contains(closures.langtag)
   );
-  const hasUntranslatedCells = f.compose(
-    f.any(needsTranslation),
-    f.get(["cells", "models"])
+  const hasUntranslatedCells = f.flow(
+    f.get(["cells", "models"]),
+    f.any(needsTranslation)
   );
   return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
 };
@@ -134,10 +134,10 @@ const mkFlagFilter = (mode, value) => {
   const isAsRequired = (value)
     ? f.any((v) => v)
     : f.every((v) => !v);
-  return f.compose(
-    isAsRequired,
+  return f.flow(
+    f.get(["cells", "models"]),
     f.map(f.get(["annotations", flag])),
-    f.get(["cells", "models"])
+    isAsRequired
   );
 };
 
@@ -176,16 +176,16 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
 // Generate settings-specific helper functions needed by all filters
 const mkClosures = (table, langtag, rowsFilter) => {
   const {columns, rows} = table;
-  const cleanString = f.compose(f.trim, f.toLower, f.toString);
+  const cleanString = f.flow(f.toString, f.toLower, f.trim);
   const getColumnIndex = id => f.findIndex(f.matchesProperty("id", id), columns.models);
   const {sortValue} = rowsFilter;
 
   const sortColumnIdx = getColumnIndex(rowsFilter.sortColumnId);
   const isOfKind = (kind) => f.matchesProperty("kind", kind);
-  const joinStrings = f.compose(
-    f.join("::"),
+  const joinStrings = f.flow(
+    f.get("displayValue"),
     f.map(f.get(langtag)),
-    f.get("displayValue")
+    f.join("::")
   );
 
   const getSortableCellValue = (cell) => {

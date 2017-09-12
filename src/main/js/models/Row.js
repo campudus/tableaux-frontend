@@ -72,16 +72,17 @@ const Row = AmpersandModel.extend({
     const self = this;
     return new Promise(
       function (resolve, reject) {
-        const hasCardinality = f.compose(
-          f.any((n) => (n || 0) > 0),
-          f.props(["to", "from"]),
+        const hasCardinality = f.flow(
           f.get(["column", "constraint", "cardinality"]),
+          f.props(["to", "from"]),
+          f.any((n) => (n || 0) > 0)
         );
 
         const valueShouldBeCopied = (cell) => !f.contains(cell.kind, [ColumnKinds.concat, ColumnKinds.group])
           && !(cell.kind === ColumnKinds.link && hasCardinality(cell));
 
-        const valuesToCopy = f.compose(
+        const valuesToCopy = f.flow(
+          f.filter(valueShouldBeCopied),
           f.reduce(
             (coll, cell) => forkJoin(
               (id, val) => (
@@ -98,8 +99,7 @@ const Row = AmpersandModel.extend({
               id: [],
               value: []
             }
-          ),
-          f.filter(valueShouldBeCopied)
+          )
         )(self.cells.models);
 
         const rowsUrl = apiUrl(`/tables/${self.tableId}/rows`);

@@ -9,9 +9,9 @@ const rowConcatString = (row, langtag) => {
   }
   const firstCell = row.cells.at(0);
   const displayValue = firstCell.displayValue;
-  const arrayConcatForLang = (langtag) => f.compose(
-    f.join(" "),
-    f.map(f.get(langtag))
+  const arrayConcatForLang = (langtag) => f.flow(
+    f.map(f.get(langtag)),
+    f.join(" ")
   )(displayValue);
   return (f.isArray(displayValue))
     ? arrayConcatForLang(langtag)

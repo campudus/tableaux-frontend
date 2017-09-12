@@ -111,9 +111,9 @@ export default class Tableaux extends PureComponent {
         const {currentViewParams, activeOverlays} = this.state;
         const overlayToClose = (f.isString(name))
           ? f.find(f.matchesProperty("name", name), activeOverlays)
-          : f.compose(
-            f.last,
-            f.reject(ol => f.contains(ol.id, this.exitingOverlays))
+          : f.flow(
+            f.reject(ol => f.contains(ol.id, this.exitingOverlays)),
+            f.last
           )(activeOverlays);
         if (!overlayToClose) {
           resolve();
@@ -175,10 +175,10 @@ export default class Tableaux extends PureComponent {
       ])(idx);
     };
 
-    const topIndex = f.compose(
-      f.last,
+    const topIndex = f.flow(
+      f.range(0),
       f.reject(idx => f.contains(overlays[idx].id, this.exitingOverlays)),
-      f.range(0)
+      f.last
     )(overlays.length);
 
     return overlays.map((overlayParams, idx) => {

@@ -21,10 +21,10 @@ const mkLinkDisplayItem = f.curry(
       f.assoc("id", `cell-${tableId}-${f.get("id", cell.column)}-${f.get("id", rowData)}`, cell)
     );
 
-    const cell = f.compose(
-      addId,
+    const cell = f.f.flow(
+      f.first,
       mkCell,
-      f.first
+      addId
     )(combinedData);
 
     const displayValue = getDisplayValue(cell.column, cell.value);

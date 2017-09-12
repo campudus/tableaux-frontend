@@ -110,18 +110,18 @@ class AttachmentOverlay extends Component {
       : null;
   };
 
-  isLinked = (file) => f.compose(
-    f.contains(file.uuid),
-    f.map("uuid")
+  isLinked = (file) => f.flow(
+    f.map("uuid"),
+    f.contains(file.uuid)
   )(this.props.cell.value);
 
   render() {
     const {t} = this.props;
     const {folder} = this.state;
 
-    const linkedFiles = f.compose(
-      f.join(";"),
-      f.map(f.flow(f.get("uuid"), (str) => str.substr(0, 8)))
+    const linkedFiles = f.flow(
+      f.map(f.flow(f.get("uuid"), (str) => str.substr(0, 8))),
+      f.join(";")
     )(this.props.cell.value);
 
     const backButton = (folder && folder.name !== "root")

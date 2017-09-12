@@ -18,7 +18,7 @@ const canConvert = (from, to) => {
 };
 
 // string -> string
-const cleanString = f.compose(f.trim, f.replace("\n", " "));
+const cleanString = f.flow(f.replace("\n", " "), f.trim);
 
 const momentFromString = str => { // this is more robust downstream than just Moment(str, [formats], true)
   if (!f.isString(str)) {
@@ -39,7 +39,7 @@ const momentFromString = str => { // this is more robust downstream than just Mo
 const fromText = {
   [shorttext]: cleanString,
   [richtext]: f.identity,
-  [numeric]: f.compose(f.defaultTo(null), f.parseInt(10), cleanString),
+  [numeric]: f.flow(cleanString, f.parseInt(10), f.defaultTo(null)),
   [date]: str => {
     const mom = (f.isEmpty(str)) ? null : momentFromString(str);
     return (mom) ? mom.format(DateFormats.formatForServer) : null;
@@ -73,7 +73,7 @@ const convertSingleValue = f.curry(
     } else if (from === text) {
       return fromText[to](value);
     } else {
-      return f.compose(fromText[to], toText[from])(value);
+      return f.flow(toText[from], fromText[to])(value);
     }
   }
 );

@@ -50,9 +50,9 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
-  const untranslated = f.compose(
-    f.filter(lt => f.isEmpty(f.prop(["value", lt], cell))),
-    f.drop(1)
+  const untranslated = f.flow(
+    f.drop(1),
+    f.filter(lt => f.isEmpty(f.prop(["value", lt], cell)))
   )(Langtags);
 
   const translationAnnotation = f.get(["annotations", "translationNeeded"], cell) || {};

@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 class NameEditor extends PureComponent {
   constructor(props) {
     super(props);
-    this.saveAndClose = f.compose(this.saveTableName, this.stopEditing);
+    this.saveAndClose = f.flow(this.stopEditing, this.saveTableName);
     this.state = {
       active: false,
       name: null

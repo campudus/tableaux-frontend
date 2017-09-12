@@ -116,10 +116,10 @@ class SwitcherPopup extends React.PureComponent {
       ? f.size(filteredTables.inGroup)
       : f.size(allResults);
 
-    const focusTableIndex = f.compose(
-      idx => Math.max(idx, 0),
+    const focusTableIndex = f.flow(
+      f.findIndex(f.matchesProperty("id", this.state.focusTableId)),
       f.defaultTo(0),
-      f.findIndex(f.matchesProperty("id", this.state.focusTableId))
+      idx => Math.max(idx, 0)
     )(allResults);
     const nextFocusTableIndex = (nextFocusTableIndexFn(focusTableIndex) + N) % N;
     this.setState({focusTableId: f.get([nextFocusTableIndex, "id"], allResults)});
@@ -156,20 +156,20 @@ class SwitcherPopup extends React.PureComponent {
 
   getFilteredTables = (filterGroupId, filterTableName) => {
     const {langtag, tables} = this.props;
-    const matchesQuery = (query) => f.compose(
-      SearchFunctions[FilterModes.CONTAINS](query),
+    const matchesQuery = (query) => f.flow(
       forkJoin(
         (a, b) => a + " " + b,
-        f.compose(f.find(f.identity), f.props([["displayName", langtag], ["displayName", FallbackLanguage], " "])),
+        f.flow(f.props([["displayName", langtag], ["displayName", FallbackLanguage], " "]), f.find(f.identity)),
         f.get("name")
       ),
+      SearchFunctions[FilterModes.CONTAINS](query)
     );
 
     const isInGroup = f.matchesProperty(["group", "id"], filterGroupId);
 
-    const tableResults = f.compose(
-      f.filter(matchesQuery(filterTableName)),
+    const tableResults = f.flow(
       f.reject("hidden"),
+      f.filter(matchesQuery(filterTableName))
     )(tables.models);
 
     return {
@@ -270,10 +270,10 @@ class SwitcherPopup extends React.PureComponent {
               <div className="no-results">
                 {t("tableSwitcher.no-group-results", {
                   query: this.state.filterTableName,
-                  group: f.compose(
-                    f.find(f.identity),
+                  group: f.flow(
+                    f.find(f.matchesProperty("id", groupId)),
                     f.props([["displayName", langtag], ["displayName", FallbackLanguage]]),
-                    f.find(f.matchesProperty("id", groupId))
+                    f.find(f.identity)
                   )(groups)
                 })}
               </div>

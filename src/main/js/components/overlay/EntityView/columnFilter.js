@@ -4,22 +4,22 @@ import * as f from "lodash/fp";
 
 const isOfKind = kind => f.matchesProperty("kind", kind);
 
-const joinLinkStrings = langtag => f.compose(
-  f.join(":"),
-  f.map(f.defaultTo("")),
-  f.map(f.trim),
+const joinLinkStrings = langtag => f.flow(
+  f.get("displayValue"),
   f.map(f.get([langtag])),
-  f.prop("displayValue")
+  f.map(f.trim),
+  f.map(f.defaultTo("")),
+  f.join(":")
 );
 
-const joinAttachmentFileNames = langtag => f.compose(
-  f.defaultTo(""),
-  f.trim,
+const joinAttachmentFileNames = langtag => f.flow(
+  f.get("value"),
   f.map(v => f.prop(["title", langtag], v) || f.prop(["externalName", langtag], v) || f.prop(["externalName", FallbackLanguage], v)),
-  f.prop("value")
+  f.trim,
+  f.defaultTo("")
 );
 
-const cleanString = f.compose(f.trim, f.toLower, f.toString);
+const cleanString = f.flow(f.toString, f.toLower, f.trim);
 
 const getSortableCellValue = langtag => cell => {
   const columnName = cell.column.displayName[langtag] || cell.column.displayName[FallbackLanguage];

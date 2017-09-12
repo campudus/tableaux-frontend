@@ -39,7 +39,7 @@ class ColumnFilterPopup extends React.Component {
     const {columns: {models}} = this.props;
     const lvl1 = col => col !== f.first(models); // ignore ID column
     const lvl2 = (filter)
-      ? f.compose(SearchFunctions[filter.type](filter.value), this.getColName)
+      ? f.flow(this.getColName, SearchFunctions[filter.type](filter.value))
       : f.stubTrue; // ...or pass all
     return f.allPass([lvl1, lvl2]);
   };
@@ -144,10 +144,10 @@ class ColumnFilterPopup extends React.Component {
 
   render = () => {
     const {columns} = this.props;
-    const nHidden = f.compose(
-      f.size,
+    const nHidden = f.flow(
+      f.drop(1),
       f.reject("visible"),
-      f.drop(1)
+      f.size
     )(columns.models);
     const {models} = this.state;
 

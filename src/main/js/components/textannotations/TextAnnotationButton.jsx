@@ -40,10 +40,10 @@ class TextAnnotationButton extends Component {
 
   render() {
     const {cell, open} = this.props;
-    const annotations = f.compose(
-      f.flatten,
+    const annotations = f.flow(
+      f.props(["info", "warning", "error"]),
       f.compact,
-      f.props(["info", "warning", "error"])
+      f.flatten
     )(cell.annotations);
     return (
       <div className={`text-annotation-button ${(open) ? "ignore-react-onclickoutside" : ""}`}

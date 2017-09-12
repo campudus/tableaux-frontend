@@ -70,12 +70,12 @@ const refreshCellAnnotations = cell => {
           console.error("Could not refresh cell", cell.id, error);
         } else {
           const cellIdx = f.findIndex(f.equals(cell), cell.row.cells.models);
-          const cellAnnotations = f.compose(
-            extractAnnotations,
-            f.nth(cellIdx),
-            f.prop("annotations"),
+          const cellAnnotations = f.flow(
+            f.prop("text"),
             JSON.parse,
-            f.prop("text")
+            f.prop("annotations"),
+            f.nth(cellIdx),
+            extractAnnotations
           )(response);
           const updatedAnnotations = f.merge(
             f.mapValues(f.stubFalse, cell.annotations), // clear old annotations, as empty ones only get ignored
@@ -96,10 +96,10 @@ const refreshRowAnnotations = row => {
         if (error) {
           console.error(`Could not refresh row ${row.id}:`, error);
         } else {
-          const rowAnnotations = f.compose(
-            f.prop("annotations"),
+          const rowAnnotations = f.flow(
+            f.get("text"),
             JSON.parse,
-            f.prop("text")
+            f.get("annotations")
           )(response);
           row.set({annotations: rowAnnotations});
         }
@@ -148,10 +148,10 @@ const addTranslationNeeded = (langtags, cell) => {
   const oldCellAnnotations = f.prop("annotations", cell) || {};
   const finishTransaction = (f.isEmpty(f.prop("translationNeeded", oldCellAnnotations)))
     ? (response) => {
-      const uuid = f.compose(
-        f.prop("uuid"),
+      const uuid = f.flow(
+        f.get("text"),
         JSON.parse,
-        f.prop("text")
+        f.get("uuid")
       )(response);
       const newTranslationStatus = f.assoc(["translationNeeded", "uuid"], uuid, f.prop(["annotations"], cell));
       cell.set(
@@ -237,9 +237,9 @@ const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
     f.prop("annotations", row));
   row.set({annotations: newRowAnnotations});
 
-  const annotationKeys = f.compose(
-    f.reject(f.eq("translationNeeded")),
-    f.keys
+  const annotationKeys = f.flow(
+    f.keys,
+    f.reject(f.eq("translationNeeded"))
   )(cell.annotations);
   const newCellAnnotations = (() => {
     if (annotation.value === "translationNeeded" && annotation.type === "flag") {

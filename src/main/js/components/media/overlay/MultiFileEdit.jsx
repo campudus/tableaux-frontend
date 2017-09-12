@@ -38,11 +38,11 @@ class MultiFileEdit extends Component {
   onSave = () => {
     const {t, editedLanguage, file, hasChanged} = this.props;
     if (hasChanged) {
-      const langDuplicates = f.compose(
-        f.pickBy(f.lt(1)), // Select keys with 1 < N for any
-        f.mapValues(f.size), //    cardinality of
-        f.groupBy(f.identity), //    occurences within
-        f.map((lt) => editedLanguage[lt] || lt) //    langtags or edited languages
+      const langDuplicates = f.flow(
+        f.map((lt) => editedLanguage[lt] || lt), // select langtags or edited languages
+        f.groupBy(f.identity),                   // collect equal langatags
+        f.mapValues(f.size),                     // count occurence of langtags
+        f.pickBy(f.lt(1))                        // Select keys with 1 < N for any
       )(Langtags);
 
       if (!f.isEmpty(langDuplicates)) {

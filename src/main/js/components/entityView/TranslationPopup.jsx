@@ -137,9 +137,9 @@ class TranslationPopup extends Component {
   };
 
   setAllTranslations = status => () => {
-    const newLangState = f.compose(
-      f.reduce(f.merge, {}),
-      f.map(lt => ({[lt]: status}))
+    const newLangState = f.flow(
+      f.map(lt => ({[lt]: status})),
+      f.reduce(f.merge, {})
     )(Langtags);
     this.setState({translations: newLangState});
     this.storeTranslations(newLangState);
@@ -197,12 +197,12 @@ class TranslationPopup extends Component {
       || "";
     const {translations} = this.state;
 
-    const isAnyCollapsed = f.compose(
-      f.any(f.complement(f.identity)), // any not truthy
-      f.map(f.last), // of "display" values
-      f.reject(f.matchesProperty(0, langtag)), // of elements without langtag === current langtag
-      f.entries // of tuples [langtag, "display"]
-    )(this.state.translations); // of saved translations
+    const isAnyCollapsed = f.flow(
+      f.entries,                                 // of tuples [langtag, "display"]
+      f.reject(f.matchesProperty(0, langtag)),   // of elements without langtag === current langtag
+      f.map(f.last),                             // of "display" values
+      f.any(f.complement(f.identity)),           // any not truthy
+    )(this.state.translations);                  // of saved translations
 
     return (
       <div className="translation-view">

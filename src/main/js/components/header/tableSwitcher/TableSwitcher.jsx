@@ -54,12 +54,12 @@ class TableSwitcherButton extends React.PureComponent {
   renderPopup = () => {
     const {t, langtag, tables, currentTable} = this.props;
 
-    const groups = f.compose(
-      f.uniqBy("id"), // unique set of groups
+    const groups = f.flow(
+      f.reject("hidden"),                   //   ...of visible tables
+      f.map("group"),                       //   ...from group data
+      f.compact,                            //   ...of non-null groups
       f.reject(f.matchesProperty("id", 0)), //   ...with valid ids
-      f.compact, //   ...of non-null groups
-      f.map("group"), //   ...from group data
-      f.reject("hidden") //   ...of visible tables
+      f.uniqBy("id"),                       // unique set of groups
     )(tables.models);
 
     const noGroupDisplayName = {};
@@ -70,10 +70,10 @@ class TableSwitcherButton extends React.PureComponent {
     };
 
     const sortedGroups = f.sortBy(
-      f.compose(
-        f.find(f.identity),
+      f.flow(
+        f.get("displayName"),
         f.props(["langtags", TableauxConstants.FallbackLanguage]),
-        f.get("displayName")
+        f.find(f.identity)
       ),
       groups
     );

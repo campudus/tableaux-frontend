@@ -22,9 +22,9 @@ const subscribeToTable = ({cellToWatch, rowToWatch} = {}) => (WrappedComponent) 
     }
   }
 
-  getRowData = f.compose(
-    f.map(f.pick(["id", "value", "annotations"])),
-    f.get(["cells", "models"])
+  getRowData = f.flow(
+    f.get(["cells", "models"]),
+    f.map(f.pick(["id", "value", "annotations"]))
   );
 
   getCellData = f.get("value");

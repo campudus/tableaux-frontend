@@ -155,10 +155,10 @@ class Table extends Component { // PureComponent will not react to updates calle
   render() {
     const {langtag, table: {columns}, rows, table, tables} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
-    const rowKeys = f.compose(
-      f.toString,
+    const rowKeys = f.flow(
+      f.get("models"),
       f.map(f.get("id")),
-      f.get("models")
+      f.toString
     )(rows);
 
     return (

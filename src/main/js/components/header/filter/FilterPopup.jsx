@@ -52,7 +52,7 @@ class FilterPopup extends React.Component {
             const mode = f.get(["mode"], cf);
             return (f.contains(mode, SPECIAL_SEARCHES)) ? mode : null;
           })
-          .orElse(f.compose(f.toString, f.prop("columnId")))
+          .orElse(f.flow(f.get("columnId"), f.toString))
           .getOrElse(null),
         mode: f.get("mode", filter),
         value: f.get("value", filter),
@@ -301,13 +301,13 @@ class FilterPopup extends React.Component {
     const sortOptions = this.getSortOptions();
 
     const allColumns = this.getSearchableColumns();
-    const selectedByOtherFilters = idx => f.compose(
-      f.pull(filters[idx].columnId), // remove element selected by this filter
-      f.map(f.get(["columnId"]))
+    const selectedByOtherFilters = idx => f.flow(
+      f.map("columnId"),
+      f.pull(filters[idx].columnId) // remove element selected by this filter
     )(filters);
-    const isSelectedByOtherFilter = idx => f.compose(
-      v => f.contains(v, selectedByOtherFilters(idx)),
-      f.get("value")
+    const isSelectedByOtherFilter = idx => f.flow(
+      f.get("value"),
+      v => f.contains(v, selectedByOtherFilters(idx))
     );
     const availableColumns = idx => f.reject(isSelectedByOtherFilter(idx), allColumns);
 

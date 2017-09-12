@@ -83,9 +83,9 @@ const Rows = Collection.extend({
     //    options = _.assign(options, {merge: false, add: true, remove: false});
     //    options.data = _.assign({}, options.data, page);
 
-    const options = f.compose(
-      f.update("data", f.merge(page)),
-      f.merge({merge: false, add: true, remove: false})
+    const options = f.flow(
+      f.merge({merge: false, add: true, remove: false}),
+      f.update("data", f.merge(page))
     )(optionsObj);
 
     const success = options.success;

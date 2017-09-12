@@ -81,12 +81,12 @@ export default class ColumnHeader extends PureComponent {
     const {langtag, newName, newDescription} = payload;
     const {column} = this.props;
     const modifications =
-      f.compose(
-        m => (newName)
-          ? f.assign({"displayName": {[langtag]: newName}}, m)
-          : m,
+      f.flow(
         m => (newDescription)
           ? f.assign({"description": {[langtag]: newDescription}}, m)
+          : m,
+        m => (newName)
+          ? f.assign({"displayName": {[langtag]: newName}}, m)
           : m
       )({});
 

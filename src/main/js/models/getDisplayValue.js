@@ -66,21 +66,21 @@ const getDateValue = (column) => (value) => {
 };
 
 const getLinkValue = (column) => (links) => f.map(
-  f.compose(
-    getDisplayValue(column.toColumn),
-    f.get("value")
+  f.flow(
+    f.get("value"),
+    getDisplayValue(column.toColumn)
   ),
   links
 );
 
 const getAttachmentFileName = (column) => (links) => {
-  const getFileName = (lt, link) => f.compose(
-    f.defaultTo("unnamed file"),
-    f.find(f.identity),
+  const getFileName = (lt, link) => f.flow(
     f.props([
       ["title", lt], ["externalName", lt], ["internalName", lt],
       ["title", DefaultLangtag], ["externalName", DefaultLangtag], ["internalName", DefaultLangtag]
-    ])
+    ]),
+    f.find(f.identity),
+    f.defaultTo("unnamed file")
   )(link);
 
   return f.map(
@@ -112,9 +112,9 @@ const format = f.curryN(2)(
   (column, displayValue) => {
     if (f.isEmpty(f.get("format", column))) { // no or empty format string => simple concat
       return (f.isArray(displayValue))
-        ? f.compose(
-          f.join(" "),
-          f.map(f.trim)
+        ? f.flow(
+          f.map(f.trim),
+          f.join(" ")
         )(displayValue)
         : f.trim(displayValue);
     }

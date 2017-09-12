@@ -67,7 +67,7 @@ class Header extends PureComponent {
       }
       return (
         <a className={"button " + className}
-          onClick={(dontClose) ? (fn || f.noop) : f.compose(ActionCreator.closeOverlay, fn || f.noop)}
+          onClick={(dontClose) ? (fn || f.noop) : f.flow(fn || f.noop, ActionCreator.closeOverlay)}
         >
           {text}
         </a>
@@ -83,10 +83,10 @@ class Header extends PureComponent {
         </div>
       );
 
-    const children = f.compose(
-      f.compact,
+    const children = f.flow(
+      f.get(["props", "children"]),
       f.defaultTo([components]),
-      f.get(["props", "children"])
+      f.compact
     )(components);
 
     return (

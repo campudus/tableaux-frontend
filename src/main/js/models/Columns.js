@@ -13,11 +13,11 @@ var Columns = Collection.extend({
   },
   parse: function (resp) {
     const cols = resp.columns;
-    const groupMemberIds = f.compose(
-      f.map("id"),
-      f.flatten,
+    const groupMemberIds = f.flow(
+      f.filter(f.matchesProperty("kind", ColumnKinds.group)),
       f.map("groups"),
-      f.filter(f.matchesProperty("kind", ColumnKinds.group))
+      f.flatten,
+      f.map("id")
     )(cols);
     return cols.map(
       col => f.assoc("isGroupMember", f.contains(col.id, groupMemberIds), col)

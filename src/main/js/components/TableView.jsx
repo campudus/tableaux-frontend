@@ -133,13 +133,13 @@ class TableView extends Component {
       cols.forEach(x => {
         x.visible = false;
       });
-      f.compose(
+      f.flow(
+        f.reject("isGroupMember"),
+        f.drop(1),
+        f.take(DEFAULT_VISIBLE_COLUMS),
         f.map(x => {
           x.visible = true;
-        }),
-        f.take(DEFAULT_VISIBLE_COLUMS),
-        f.drop(1),
-        f.reject("isGroupMember")
+        })
       )(cols);
     }
 
@@ -515,16 +515,16 @@ class TableView extends Component {
       const rows = rowsCollection || currentTable.rows || {};
       // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
       // without adding event listeners
-      const rowKeys = f.compose(
-        f.toString,
+      const rowKeys = f.flow(
+        f.get("models"),
         f.map(f.get("id")),
-        f.get("models")
+        f.toString
       )(rows);
-      const columnKeys = f.compose(
-        f.toString,
-        f.map(f.get("id")),
+      const columnKeys = f.flow(
+        f.get("models"),
         f.filter((col, idx) => col.visible || idx === 0),
-        f.get("models")
+        f.map(f.get("id")),
+        f.toString
       )(currentTable.columns);
 
       return (

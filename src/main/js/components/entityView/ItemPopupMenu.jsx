@@ -66,12 +66,10 @@ class ItemPopupMenu extends Component {
   };
 
   mkEntry = (idx, {title, fn, value, icon, classes}) => {
-    const clickHandler = f.compose(
-      this.closePopup,
+    const clickHandler = f.flow(
+      e => { e.stopPropagation(); },
       fn,
-      e => {
-        e.stopPropagation();
-      }
+      this.closePopup,
     );
     return (
       <a className="entry"

@@ -1,7 +1,7 @@
 import * as f from "lodash/fp";
 import {FilterModes} from "../constants/TableauxConstants";
 
-const clean = f.compose(f.toLower, f.trim); // normalise string
+const clean = f.flow(f.toLower, f.trim); // normalise string
 
 // TODO: Filternamen in locale speichern, Schema: {filters: {[mode]: display name}}
 

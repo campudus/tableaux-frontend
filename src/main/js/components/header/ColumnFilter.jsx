@@ -28,10 +28,10 @@ class ColumnFilter extends React.Component {
   render = () => {
     const {langtag, columns} = this.props;
     const {open} = this.state;
-    const nHidden = f.compose(
-      f.size,
+    const nHidden = f.flow(
+      f.drop(1),
       f.reject("visible"),
-      f.drop(1)
+      f.size
     )(columns.models);
     const message = nHidden + " " + i18n.t("table:hidden_items");
     const cssClass = classNames({
