@@ -6,9 +6,8 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import {either} from "../../../helpers/functools";
 import Select from "react-select";
 import {translate} from "react-i18next";
-import classNames from "classnames";
-import FilterModePopup from "./FilterModePopup";
-import {FilterModes} from "../../../constants/TableauxConstants";
+import {BoolInput, FilterModeButton, FilterModePopupFrag} from "./FilterFragments";
+import {Popup} from "../../helperComponents/commonPatterns";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
@@ -45,36 +44,15 @@ class FilterRow extends Component {
   };
 
   toggleFilterModePopup = () => {
-    this.setState({filterModesOpen: !this.state.filterModesOpen});
+    this.setState({filterModesOpen: !this.state.filterModesOpen}, () => devLog("popup:", this.state.filterModesOpen));
   };
 
-  renderFilterModePopup = () => {
-    const active = (either(this.props.filter)
-      .map(f.matchesProperty("filterMode", FilterModes.CONTAINS))
-      .getOrElse(true))
-      ? 0
-      : 1;
-    return (
-      <FilterModePopup
-        active={active}
-        close={this.toggleFilterModePopup}
-        setFilterMode={this.props.onChangeMode}
-      />
-    );
+  setFilterInputRef = (node) => {
+    this.filterInput = node;
   };
 
-  boolInput = () => {
-    const isYesSelected = this.props.filter.value;
-    const checkboxCss = classNames("checkbox", {"checked": isYesSelected});
-    return (
-      <span className="bool-input" onClick={this.props.onChangeValue}>
-        <div className={checkboxCss}>
-        </div>
-        <div className="selection-text">
-          ({this.props.t((isYesSelected) ? "common:yes" : "common:no")})
-        </div>
-      </span>
-    );
+  focusFilterInput = (evt) => {
+    this.filterInput && this.filterInput.focus();
   };
 
   render() {
@@ -100,7 +78,12 @@ class FilterRow extends Component {
         <span className="separator">{t(filterInfoString)}</span>
 
         {(filter.columnKind === BOOL)
-          ? this.boolInput()
+          ? (
+            <BoolInput
+              value={this.props.filter.value}
+              onChangeValue={this.props.onChangeValue}
+            />
+          )
           : (
             <span className="filter-mode-wrapper">
               <input
@@ -108,31 +91,19 @@ class FilterRow extends Component {
                 type="text"
                 className="filter-input"
                 disabled={!filterColumnSelected}
-                ref={fi => {
-                  this.filterInput = fi;
-                }}
+                ref={this.setFilterInputRef}
                 onChange={onChangeValue}
                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-                onClick={x => this.filterInput.focus()}
+                onClick={this.focusFilterInput}
               />
-              <span className={"filter-mode-button" + ((this.state.filterModesOpen) ? " active" : "")}>
-                {(filterColumnSelected)
-                  ? (
-                    <a
-                      href="#"
-                      className={(this.state.filterModesOpen) ? "ignore-react-clickoutside" : ""}
-                      onMouseDown={this.toggleFilterModePopup}
-                    >
-                      <i className="fa fa-search" />
-                      <i className="fa fa-caret-down" />
-                    </a>
-                  )
-                  : null}
-                {(this.state.filterModesOpen)
-                  ? this.renderFilterModePopup()
-                  : null
-                }
-              </span>
+              <Popup
+                filterColumnSelected={filterColumnSelected}
+                filter={this.props.filter}
+                onChangeMode={this.props.onChangeMode}
+                containerClass={"filter-mode-button"}
+                container={FilterModeButton}
+                popup={FilterModePopupFrag}
+              />
             </span>
           )
         }
@@ -156,7 +127,8 @@ class FilterRow extends Component {
           )
           : <span className="filter-array-button empty" />
         }
-      </div>);
+      </div>
+    );
   }
 }
 

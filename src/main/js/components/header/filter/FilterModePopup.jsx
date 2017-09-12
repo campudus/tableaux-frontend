@@ -7,15 +7,9 @@ import React from "react";
 import GenericContextMenu from "../../contextMenu/GenericContextMenu";
 import {FilterModes, Alignments} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 
-@listensToClickOutside
 class FilterModePopup extends React.Component {
-  handleClickOutside() {
-    this.props.close();
-  };
-
   setFilterMode = modeString => () => {
     this.props.setFilterMode(modeString);
     this.props.close();
