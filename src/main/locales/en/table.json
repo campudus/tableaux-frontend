@@ -78,7 +78,9 @@
     "rows_hidden": "Only displaying specific rows",
     "needs_translation": "Needs translation",
     "is_final": "Is marked as final",
-    "row-contains": "Row contains"
+    "row-contains": "Any row contains...",
+    "generic": "Generic filters",
+    "specific": "Row values"
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",

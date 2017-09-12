@@ -91,6 +91,10 @@ class FilterPopup extends React.Component {
     const searchableColumns = this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
     const {langtag} = this.props;
     return [
+      {
+        label: f.toUpper(this.props.t("filter.generic")),
+        disabled: true
+      },
       (langtag !== f.first(Langtags))
         ? {
           label: this.props.t("translations.this_translation_needed", {langtag}),
@@ -121,6 +125,10 @@ class FilterPopup extends React.Component {
         label: this.props.t("postpone"),
         value: FilterModes.POSTPONE,
         kind: BOOL
+      },
+      {
+        label: f.toUpper(this.props.t("filter.specific")),
+        disabled: true
       },
       {
         label: this.props.t("filter.row-contains"),

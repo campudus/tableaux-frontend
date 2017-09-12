@@ -78,7 +78,9 @@
     "rows_hidden": "Es werden nur bestimmte Datensätze angezeigt",
     "needs_translation": "Übersetzung benötigt",
     "is_final": "Als freigegeben markiert",
-    "row-contains": "Datensatz enthält"
+    "row-contains": "Irgendeine Spalte enthält...",
+    "generic": "Allgemeine Filter",
+    "specific": "Spaltenwerte"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",
