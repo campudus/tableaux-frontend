@@ -43,10 +43,6 @@ class FilterRow extends Component {
     };
   };
 
-  toggleFilterModePopup = () => {
-    this.setState({filterModesOpen: !this.state.filterModesOpen}, () => devLog("popup:", this.state.filterModesOpen));
-  };
-
   setFilterInputRef = (node) => {
     this.filterInput = node;
   };

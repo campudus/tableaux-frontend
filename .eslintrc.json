@@ -45,7 +45,7 @@
     "eqeqeq": ["error", "allow-null"],
     "func-call-spacing": ["error", "never"],
     "handle-callback-err": ["error", "^(err|error)$" ],
-    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "indent": ["off", 2, { "SwitchCase": 1 }],
     "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
     "keyword-spacing": ["error", { "before": true, "after": true }],
     "lodash-fp/consistent-compose": "off",

@@ -1,4 +1,4 @@
-import React, {PureComponent} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import {openLinkOverlay} from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
