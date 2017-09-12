@@ -400,8 +400,8 @@ class TableView extends Component {
       columns
         .filter(x => f.contains(x.id, coll))
         .forEach(
-          (x, idx) => {
-            x.visible = idx === 0 || !!val;
+          (x) => {
+            x.visible = !!val;
           }
         );
     }
@@ -466,7 +466,6 @@ class TableView extends Component {
           };
 
           const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
-          devLog("Columns", rowsCollection.colsWithMatches)
           if (!f.isEmpty(rowsCollection.colsWithMatches)) {
             this.setColumnsVisibility({val: false});
             this.setColumnsVisibility({val: true, coll: rowsCollection.colsWithMatches});
