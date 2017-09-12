@@ -23,7 +23,7 @@ export const BoolInput = (props) => {
 };
 
 export const FilterModeButton = branch(
-  (props) => !props.filterColumnSelected || props.filter.filterMode === FilterModes.ROW_CONTAINS,
+  (props) => !props.filterColumnSelected || props.filter.mode === FilterModes.ROW_CONTAINS,
   renderNothing
 )(
   (props) => (

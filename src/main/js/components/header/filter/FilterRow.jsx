@@ -61,7 +61,7 @@ class FilterRow extends Component {
     const filterInfoString = either(mode)
       .map(mode => f.prop([mode, "displayName"], SearchFunctions))
       .getOrElse("");
-    const filterColumnSelected = f.isInteger(parseInt(columnId)) || f.isString(columnId);
+    const filterColumnSelected = f.isInteger(parseInt(columnId)) || (f.isString(columnId) && !f.isEmpty(columnId));
     return (
       <div className="filter-row">
         <Select
