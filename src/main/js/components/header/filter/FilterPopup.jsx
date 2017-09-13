@@ -345,6 +345,7 @@ class FilterPopup extends React.Component {
               className="filter-select"
               options={this.getSortableColumns()}
               searchable={true}
+              openOnFocus
               clearable={false}
               value={sorting.columnId}
               onChange={this.onChangeSelectSortColumn}
@@ -357,14 +358,14 @@ class FilterPopup extends React.Component {
               disabled={!sortColumnSelected}
               className="filter-select"
               options={sortOptions}
-              searchable={true}
+              searchable={false}
               clearable={false}
               value={(sortColumnSelected) ? sorting.value : ""}
               onChange={this.onChangeSelectSortValue}
               valueRenderer={this.selectSortValueRenderer}
               optionRenderer={this.selectSortValueRenderer}
               noResultsText={t("input.noResult")}
-              placeholder={""}
+              placeholder=""
             />
             <span className="filter-array-button empty" />
             <span className="filter-array-button empty" />

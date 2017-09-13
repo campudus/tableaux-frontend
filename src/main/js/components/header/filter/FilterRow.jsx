@@ -65,6 +65,7 @@ class FilterRow extends Component {
           options={searchableColumns}
           searchable={true}
           clearable={false}
+          openOnFocus
           value={columnId}
           onChange={onChangeColumn}
           placeholder={t("input.filter")}
