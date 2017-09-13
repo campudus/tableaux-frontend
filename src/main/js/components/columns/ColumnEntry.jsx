@@ -127,10 +127,12 @@ class ColumnEntry extends React.PureComponent {
     return (
       <Rnd
         style={this.props.style}
-        x={0}
-        y={0}
-        width={this.props.width}
-        height={37}
+        default={{
+          x: 0,
+          y: 0,
+          width: this.props.width,
+          height: 37
+        }}
         minWidth={100}
         enableResizing={{
           bottom: false,
