@@ -21,7 +21,7 @@ const mkLinkDisplayItem = f.curry(
       f.assoc("id", `cell-${tableId}-${f.get("id", cell.column)}-${f.get("id", rowData)}`, cell)
     );
 
-    const cell = f.f.flow(
+    const cell = f.flow(
       f.first,
       mkCell,
       addId
