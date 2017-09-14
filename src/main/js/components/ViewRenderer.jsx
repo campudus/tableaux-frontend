@@ -12,10 +12,6 @@ export default class ViewRenderer extends PureComponent {
     params: PropTypes.object.isRequired
   };
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.viewName !== this.props.viewName || nextProps.params !== this.props.params;
-  }
-
   constructor(props) {
     super(props);
 

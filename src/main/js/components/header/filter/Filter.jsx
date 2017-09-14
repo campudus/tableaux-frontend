@@ -48,15 +48,17 @@ class FilterButton extends React.Component {
   };
 
   render() {
-    let {t} = this.props;
+    const {t, currentFilter} = this.props;
+    const {open} = this.state;
+
     let buttonClass = "button";
-    if (this.state.open) {
+    if (open) {
       buttonClass += " ignore-react-onclickoutside";
     }
 
     const cssClass = classNames({
-      "active": this.state.open,
-      "has-filter": !f.isEmpty(this.props.currentFilter) && !this.state.open
+      "active": open,
+      "has-filter": !f.isEmpty(currentFilter) && !f.isEmpty(currentFilter.filters) && !open
     });
 
     return (

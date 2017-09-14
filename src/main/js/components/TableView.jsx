@@ -8,7 +8,7 @@ import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../actions/ActionCreator";
 import Tables from "../models/Tables";
 import * as f from "lodash/fp";
-import TableauxConstants, {ActionTypes, FilterModes} from "../constants/TableauxConstants";
+import TableauxConstants, {ActionTypes} from "../constants/TableauxConstants";
 import Filter from "./header/filter/Filter.jsx";
 import Navigation from "./header/Navigation.jsx";
 import PageTitle from "./header/PageTitle.jsx";
@@ -24,14 +24,16 @@ import pasteCellValue from "./cells/cellCopyHelper";
 import {openEntityView} from "./overlay/EntityViewOverlay";
 import Portal from "react-portal";
 import JumpSpinner from "./table/JumpSpinner";
+import withCustomProjection from "./helperComponents/withCustomProjection";
 
+@withCustomProjection
 @connectToAmpersand
 class TableView extends Component {
   constructor(props) {
     super(props);
 
     const {columnId, rowId} = props;
-    const {filter, entityView} = props.urlOptions || {};
+    const {entityView} = props.urlOptions || {};
 
     this.nextTableId = null;
     this.pendingCellGoto = null;
@@ -39,7 +41,6 @@ class TableView extends Component {
       initialLoading: true,
       currentTableId: this.props.tableId,
       rowsCollection: null,
-      rowsFilter: (f.isObject(filter) && !f.isEmpty(filter)) ? {filters: [filter]} : null,
       pasteOriginCell: {},
       pasteOriginCellLang: props.langtag,
       tableFullyLoaded: false
@@ -50,7 +51,6 @@ class TableView extends Component {
         page: this.estimateCellPage(rowId),
         rowId,
         columnId,
-        filter,
         entityView
       };
     }
@@ -97,82 +97,6 @@ class TableView extends Component {
     App.router.navigate(`${this.props.langtag}/tables/${this.state.currentTableId}`);
   };
 
-  getStoredViewObject = (tableId = null, name = "default") => {
-    if (tableId) {
-      return either(localStorage)
-        .map(f.get("tableViews"))
-        .map(JSON.parse)
-        .map(f.get([tableId, name]))
-        .getOrElse(null);
-    } else {
-      return either(localStorage)
-        .map(f.get("tableViews"))
-        .map(JSON.parse)
-        .getOrElse({});
-    }
-  };
-
-  // tries to extract [tableId][name] from views in memory, falls back to "first ten visible"
-  loadView = (tableId, name = "default") => {
-    const table = this.tables.get(tableId);
-    const DEFAULT_VISIBLE_COLUMS = 10;
-    if (!table) {
-      console.warn("Could not access table ID", tableId, "of", this.tables);
-      return;
-    }
-
-    const cols = table.columns.models;
-    const storedViewObject = this.getStoredViewObject(tableId);
-    const savedView = f.get("visibleColumns", storedViewObject);
-
-    if (savedView) {
-      cols.map(col => {
-        col.visible = savedView[col.id];
-      });
-    } else {
-      cols.forEach(x => {
-        x.visible = false;
-      });
-      f.flow(
-        f.reject("isGroupMember"),
-        f.drop(1),
-        f.take(DEFAULT_VISIBLE_COLUMS),
-        f.map(x => {
-          x.visible = true;
-        })
-      )(cols);
-    }
-
-    // don't override filters set by url
-    if (f.isEmpty(this.state.rowsFilter)) {
-      this.setState({rowsFilter: f.get("rowsFilter", storedViewObject)});
-    }
-  };
-
-  // receives an object of {[tableId]: {[viewname]: [bool, bool,...]}}
-  saveView = (name = "default") => {
-    if (!localStorage) {
-      return;
-    }
-
-    const {currentTableId} = this.state;
-    const cols = this.tables.get(currentTableId).columns.models;
-    const view = cols.reduce((a, b) => f.merge({[b.id]: b.visible}, a), {});
-    const savedViews = this.getStoredViewObject(null, name);
-    localStorage["tableViews"] = JSON.stringify(f.set([currentTableId, name, "visibleColumns"], view, savedViews));
-  };
-
-  saveFilterSettings = (settings = {}, name = "default") => {
-    if (!localStorage) {
-      return;
-    }
-
-    const {currentTableId} = this.state;
-    const savedViews = this.getStoredViewObject(null, name);
-    const newViewsObj = f.set([currentTableId, name, "rowsFilter"], settings, savedViews);
-    localStorage["tableViews"] = JSON.stringify(newViewsObj);
-  };
-
   cellJumpError = msg => {
     ActionCreator.showToast(
       <div id="cell-jump-toast">{msg}</div>,
@@ -208,7 +132,7 @@ class TableView extends Component {
 
   estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
 
-  gotoCell = ({rowId, columnId, page, filter, ignore = "NO_HISTORY_PUSH", entityView}, nPagesLoaded = 0) => {
+  gotoCell = ({rowId, columnId, page, ignore = "NO_HISTORY_PUSH", entityView}, nPagesLoaded = 0) => {
     const colId = columnId || f.first(this.getCurrentTable().columns.models).getId();
     if (!this.checkIfColExists(this.getCurrentTable().columns.models, colId)) {
       return;
@@ -221,21 +145,6 @@ class TableView extends Component {
         val: true,
         coll: [colId]
       });
-      if (filter) {
-        this.changeFilter(
-          {
-            filters: [
-              (f.isObject(filter))
-                ? filter
-                : {
-                  mode: FilterModes.ID_ONLY,
-                  value: [rowId]
-                }
-            ],
-            sorting: {columnId: 0}
-          },
-          false);
-      }
       const rows = this.getCurrentTable().rows.models;
       const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
 
@@ -311,7 +220,7 @@ class TableView extends Component {
             this.setState({
               currentTableId: tableId,
               initialLoading: false
-            }, () => this.loadView(table.id));
+            }, this.applyProjection);
             resolve({ // return information about first page to be fetched
               table: table,
               page: 1
@@ -333,7 +242,6 @@ class TableView extends Component {
             success: (totalPages) => {
               ++fetchedPages;
               this.setState({
-                currentTableId: tableId,
                 tableFullyLoaded: fetchedPages >= totalPages
               }, ((fetchedPages === 1) ? applyStoredViews : f.noop));
               this.checkGotoCellRequest(fetchedPages);
@@ -352,10 +260,7 @@ class TableView extends Component {
 
     const applyStoredViews = () => new Promise(
       (resolve) => {
-        const {rowsFilter} = this.state;
-        if (!f.isEmpty(rowsFilter && rowsFilter.filters)) {
-          this.changeFilter(rowsFilter, false);
-        }
+        this.applyProjection();
         resolve();
       }
     );
@@ -368,6 +273,15 @@ class TableView extends Component {
   };
 
   componentWillReceiveProps = (nextProps) => {
+    if ((f.isNil(nextProps.tableId) || nextProps.tableId === this.props.tableId)) {
+      // Table ID did not change, check independently for changes of row- and column projection
+      if (!f.equals(this.props.projection.rows, nextProps.projection.rows)) {
+        this.applyFilters(nextProps.projection);
+      }
+      if (!f.equals(this.props.projection.columns, nextProps.projection.columns)) {
+        this.applyColumnVisibility(nextProps.projection);
+      }
+    }
     if (nextProps.tableId !== this.props.tableId) {
       let oldTable = this.tables.get(this.state.currentTableId);
       this.nextTableId = nextProps.tableId;
@@ -381,35 +295,32 @@ class TableView extends Component {
       this.gotoCell({
         columnId: nextProps.columnId,
         rowId: nextProps.rowId,
-        filter: false,
         page: this.estimateCellPage(nextProps.rowId)
       });
     }
   };
 
   // Set visibility of all columns in <coll> to <val>
-  setColumnsVisibility = ({val, coll, cb}) => {
-    const columns = this.tables.get(this.state.currentTableId).columns;
-    if (f.isNil(coll)) {
-      columns.forEach(
-        (col, idx) => {
-          col.visible = (idx === 0 || !!val);
-        }
-      );
-    } else {
-      columns
-        .filter(x => f.contains(x.id, coll))
-        .forEach(
-          (x) => {
-            x.visible = !!val;
-          }
-        );
-    }
-    this.saveView();
-    if (cb) {
-      cb();
-    }
+  setColumnsVisibility = ({val, coll, cb}, shouldSave = true) => {
+    this.props.setColumnVisibility({val, colIds: coll, callback: cb}, shouldSave);
+  };
+
+  applyColumnVisibility = (projection = this.props.projection) => {
+    const DEFAULT_VISIBLE_COLUMNS = 10;
+    const columns = this.getCurrentTable().columns.models;
+    const visibleColIds = f.get("columns", projection)
+      || f.take(DEFAULT_VISIBLE_COLUMNS, columns.map(f.get("id")));
+    columns.forEach(
+      (col, idx) => {
+        col.visible = idx === 0 || f.contains(col.id, visibleColIds);
+      }
+    );
     this.forceUpdate();
+  };
+
+  applyProjection = (projection = this.props.projection) => {
+    this.applyFilters(projection);
+    this.applyColumnVisibility(projection);
   };
 
   setDocumentTitleToTableName = () => {
@@ -429,58 +340,34 @@ class TableView extends Component {
   };
 
   clearFilter = () => {
-    this.setState({
-      rowsCollection: this.getCurrentTable().rows,
-      rowsFilter: null
-    }, this.saveFilterSettings);
+    this.props.setFilter({}, true);
     const clearedUrl = window.location.href
                              .replace(/https?:\/\/.*?\//, "")
                              .replace(/\?.*/, "");
     App.router.navigate(clearedUrl, {trigger: false});
   };
 
+  applyFilters = (projection = this.props.projection) => {
+    const rowFilter = f.get("rows", projection);
+    const tableRows = this.getCurrentTable().rows;
+
+    if (f.isEmpty(rowFilter) || (f.isEmpty(rowFilter.filters) && f.isNil(rowFilter.sortColumnId))) {
+      this.setState({rowsCollection: tableRows});
+    } else {
+      const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowFilter);
+      if (!f.isEmpty(rowsCollection.colsWithMatches)) {
+        this.props.setColumnVisibility({val: false}, false);
+        this.props.setColumnVisibility({
+          val: true,
+          colIds: rowsCollection.colsWithMatches
+        });
+      }
+      this.setState({rowsCollection});
+    }
+  };
+
   changeFilter = (settings = {}, store = true) => {
-    const {filters = [], sorting = {}} = settings;
-    const isFilterEmpty = filter => f.isEmpty(filter.value) && !f.isString(filter.mode);
-    const isSortingEmpty = !f.isFinite(sorting.columnId) && f.isEmpty(sorting.value);
-    const areAllFiltersEmpty = f.every(isFilterEmpty, filters);
-
-    const storeFilterSettingsIfRequested = () => {
-      if (store) {
-        this.saveFilterSettings(settings);
-      }
-    };
-
-    new Promise(
-      (resolve) => {
-        if (areAllFiltersEmpty && isSortingEmpty) {
-          this.setState({
-            rowsFilter: null,
-            rowsCollection: this.getCurrentTable().rows
-          }, resolve(null));
-        } else {
-          const rowsFilter = {
-            sortColumnId: sorting.columnId,
-            sortValue: sorting.value,
-            filters: f.reject(isFilterEmpty, filters)
-          };
-
-          const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowsFilter);
-          if (!f.isEmpty(rowsCollection.colsWithMatches)) {
-            this.setColumnsVisibility({val: false});
-            this.setColumnsVisibility({val: true, coll: rowsCollection.colsWithMatches});
-          }
-
-          if (f.get([0, "mode"], filters) !== FilterModes.ID_ONLY) {
-            this.resetURL();
-          }
-          this.setState({
-            rowsFilter,
-            rowsCollection
-          }, resolve(rowsFilter));
-        }
-      }
-    ).then(storeFilterSettingsIfRequested);
+    this.props.setFilter(settings, store);
   };
 
   getCurrentTable = () => {
@@ -491,7 +378,6 @@ class TableView extends Component {
     if (this.nextTableId) {
       this.pendingCellGoto = null;
       this.fetchTable(this.nextTableId);
-      this.loadView(this.nextTableId);
     }
   };
 
@@ -504,7 +390,7 @@ class TableView extends Component {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       const tables = this.tables;
-      const {rowsCollection, tableFullyLoaded, pasteOriginCell, rowsFilter} = this.state;
+      const {rowsCollection, tableFullyLoaded, pasteOriginCell} = this.state;
       const {langtag, overlayOpen} = this.props;
       const currentTable = this.getCurrentTable();
 
@@ -546,7 +432,11 @@ class TableView extends Component {
               currentTable={currentTable}
               tables={tables} />
             <TableSettings langtag={langtag} table={currentTable} />
-            <Filter langtag={langtag} table={currentTable} currentFilter={rowsFilter} />
+            <Filter
+              langtag={langtag}
+              table={currentTable}
+              currentFilter={this.props.projection.rows}
+            />
             {(currentTable && currentTable.columns && currentTable.columns.length > 1)
               ? (
                 <ColumnFilter
@@ -590,7 +480,8 @@ class TableView extends Component {
 TableView.propTypes = {
   langtag: PropTypes.string.isRequired,
   overlayOpen: PropTypes.bool.isRequired,
-  tableId: PropTypes.number
+  tableId: PropTypes.number,
+  projection: PropTypes.object
 };
 
 export default TableView;
