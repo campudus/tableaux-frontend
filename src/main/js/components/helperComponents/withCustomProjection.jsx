@@ -20,7 +20,7 @@ const getStoredViewObject = (tableId = null, name = "default") => {
     return either(localStorage)
       .map(f.get("tableViews"))
       .map(JSON.parse)
-      .map(f.get([tableId, name]))
+      .map(f.get([tableId.toString(), name]))
       .getOrElse(null);
   } else {
     return either(localStorage)

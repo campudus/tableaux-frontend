@@ -310,6 +310,9 @@ class TableView extends Component {
     const columns = this.getCurrentTable().columns.models;
     const visibleColIds = f.get("columns", projection)
       || f.take(DEFAULT_VISIBLE_COLUMNS, columns.map(f.get("id")));
+    if (f.isNil(projection.columns)) {
+      this.setColumnsVisibility({val: true, coll: visibleColIds}, true);
+    }
     columns.forEach(
       (col, idx) => {
         col.visible = idx === 0 || f.contains(col.id, visibleColIds);
