@@ -28,8 +28,7 @@ const NewRowButton = (props) => {
   return (
     <div className="new-row">
       <a href="#" className="button new-row-inner" onClick={addNewRow}>
-        <i className="fa fa-plus-circle">
-        </i>
+        <i className="fa fa-plus-circle" />
         <span>{t("add_new_row")}</span>
       </a>
     </div>

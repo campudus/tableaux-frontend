@@ -255,13 +255,14 @@ body div div.column-header-context-menu {
 }
 
 .table-has-no-rows {
+  pointer-events: none;
   position: absolute;
   left: 0;
   right: 0;
   top: 108px;
   text-align: center;
   font-weight: bold;
-  z-index: 5000;
+  z-index: 1;
 }
 
 #cell-jump-toast {
