@@ -51,7 +51,7 @@ const loadProjection = (props) => {
 //       filter defined by urlOptions
 const parseUrlFilterProp = (props) => {
   const {filter} = props.urlOptions;
-  if (f.isNil(filter)) {
+  if (f.isEmpty(filter)) {
     return props;
   }
   const rowsFilter = {

@@ -377,6 +377,7 @@ class TableView extends Component {
   doSwitchTable = () => {
     if (this.nextTableId) {
       this.pendingCellGoto = null;
+      this.clearFilter();
       this.fetchTable(this.nextTableId);
     }
   };
