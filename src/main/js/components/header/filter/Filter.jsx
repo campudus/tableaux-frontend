@@ -58,7 +58,9 @@ class FilterButton extends React.Component {
 
     const cssClass = classNames({
       "active": open,
-      "has-filter": !f.isEmpty(currentFilter) && !f.isEmpty(currentFilter.filters) && !open
+      "has-filter": !f.isEmpty(currentFilter)
+        && (!f.isEmpty(currentFilter.filters) || f.isInteger(currentFilter.sortColumnId))
+        && !open
     });
 
     return (
