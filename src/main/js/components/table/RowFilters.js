@@ -2,7 +2,7 @@ import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import * as f from "lodash/fp";
-import {either} from "../../helpers/functools";
+import {either, withTryCatch} from "../../helpers/functools";
 
 const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
   {
@@ -35,7 +35,10 @@ const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.P
 
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
-  const allFilters = f.map(mkFilterFn(closures), filterSettings.filters || []);
+  const allFilters = f.flow(
+    f.map(mkFilterFn(closures)),
+    f.map(fn => withTryCatch(fn, f.always(false))) // to get errors, replace f.always(false) with eg. console.error
+  )(filterSettings.filters || []);
   const combinedFilter = f.flow(
     f.juxt(allFilters),
     f.every(f.identity)

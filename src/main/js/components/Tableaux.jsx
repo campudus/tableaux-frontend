@@ -83,7 +83,7 @@ export default class Tableaux extends PureComponent {
         this.changeView(payload);
       });
     } else {
-      this.changeView(payload);
+      this.changeView(f.update("params", f.omit("urlOptions"), payload));
     }
   }
 

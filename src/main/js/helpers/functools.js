@@ -1,6 +1,6 @@
 /* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
 
-import {curryN, isFunction, map, prop, range} from "lodash/fp";
+import {curryN, isFunction, map, noop, prop, range} from "lodash/fp";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -307,6 +307,14 @@ const forkJoin = curryN(4,
   }
 );
 
+const withTryCatch = (fn, onError = noop) => (...args) => {
+  try {
+    return fn(...args);
+  } catch (e) {
+    return onError(e);
+  }
+};
+
 const tests = {
   title: "Monads",
   tests: [
@@ -315,4 +323,4 @@ const tests = {
   ]
 };
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, forkJoin, tests};
+export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, forkJoin, withTryCatch, tests};
