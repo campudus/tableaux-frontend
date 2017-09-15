@@ -3,6 +3,7 @@ import {ActionTypes} from "../constants/TableauxConstants";
 import * as f from "lodash/fp";
 
 const providers = new Map();
+const knownSubscribers = new Set();
 
 const listenForCellChange = (subscriberId, interestedIn, callback) => {
   if (!providers.get(interestedIn)) {
@@ -10,14 +11,22 @@ const listenForCellChange = (subscriberId, interestedIn, callback) => {
   }
   providers.get(interestedIn)
     .set(subscriberId, callback);
+  knownSubscribers.add(subscriberId);
 };
 
-const clearCallbacks = (subscriberId) => {
+const clearCallbacks = (subscriberId, keepSubscriber) => {
+  if (!knownSubscribers.has(subscriberId)) {
+    return;
+  }
   providers.forEach(
     function (subscribers) {
       subscribers.delete(subscriberId);
     }
   );
+  // only delete subscriber if we don't want to immediately resubscribe
+  if (!keepSubscriber) {
+    knownSubscribers.delete(subscriberId);
+  }
 };
 
 const triggerCallbacks = (payload) => {

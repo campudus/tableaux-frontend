@@ -111,7 +111,9 @@ const Cell = AmpersandModel.extend({
         }
         if (this.kind === ColumnKinds.link) { // re-register listeners for needed dependencies
           const self = this;
-          clearCallbacks(self.id);
+          if (this.__displayValue) {
+            clearCallbacks(self.id);
+          }
           this.initLinkEvents.call(self, self);
         }
         const dv = getDisplayValue(this.column, this.value);

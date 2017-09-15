@@ -70,12 +70,11 @@ const getDateValue = (column) => (value) => {
   return applyToAllLangs(getDate);
 };
 
-const getLinkValue = (column) => (links) => f.map(
+const getLinkValue = (column) => f.map(
   f.flow(
     f.get("value"),
     getDisplayValue(column.toColumn)
-  ),
-  links
+  )
 );
 
 const getAttachmentFileName = (column) => (links) => {

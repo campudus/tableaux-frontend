@@ -45,7 +45,7 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
   );
   const coll = new FilteredSubcollection(currentTable.rows, {
     filter: combinedFilter,
-    comparator: closures.comparator
+    comparator: (f.isInteger(filterSettings.sortColumnId)) ? closures.comparator : null
   });
   coll.colsWithMatches = f.uniq(Array.from(closures.colsWithMatches.values()));
   return coll;
