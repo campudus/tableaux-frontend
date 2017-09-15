@@ -50,7 +50,7 @@ const loadProjection = (props) => {
 // ({urlOptions: object, projections: object}) -> props object with "projection" object replaced by
 //       filter defined by urlOptions
 const parseUrlFilterProp = (props) => {
-  const {filter} = props.urlOptions;
+  const filter = f.get(["urlOptions", "filter"], props);
   if (f.isEmpty(filter)) {
     return props;
   }
