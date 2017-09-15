@@ -23,11 +23,16 @@ const getDisplayValue = f.curryN(2)(
   }
 );
 
+const merge = (coll, [key, value]) => {
+  coll[key] = value;
+  return coll;
+};
+
 // Helper to build a multilang object
-const applyToAllLangs = fn => f.reduce(
-  f.merge,
-  {},
-  f.map(lt => ({[lt]: fn(lt)}), Langtags)
+const applyToAllLangs = fn => (
+  Langtags
+    .map(lt => [lt, fn(lt)])
+    .reduce(merge, {})
 );
 
 // To catch cases where (obj.langtag || obj.DefaultLangtag) is falsey, but obj still has langtag keys
@@ -112,10 +117,9 @@ const format = f.curryN(2)(
   (column, displayValue) => {
     if (f.isEmpty(f.get("format", column))) { // no or empty format string => simple concat
       return (f.isArray(displayValue))
-        ? f.flow(
-          f.map(f.trim),
-          f.join(" ")
-        )(displayValue)
+        ? displayValue
+          .map(str => str.trim())
+          .join(" ")
         : f.trim(displayValue);
     }
 

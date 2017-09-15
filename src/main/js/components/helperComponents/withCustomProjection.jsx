@@ -10,8 +10,8 @@
  * applying the requested projection to the displayed rows and columns.
  */
 
-import {compose, mapProps, withProps, withPropsOnChange, withStateHandlers} from "recompose";
-import {either, fspy} from "../../helpers/functools";
+import {compose, mapProps, withStateHandlers} from "recompose";
+import {either} from "../../helpers/functools";
 import f from "lodash/fp";
 import {FilterModes} from "../../constants/TableauxConstants";
 
@@ -138,10 +138,7 @@ const updateColumnVisibility = (tableId, state, {val, colIds}, shouldSave) => {
 const withPredefinedProjection = compose(
   // make sure we parse all options and trigger a re-render on table switch
   mapProps(loadProjection),
-  mapProps(fspy("from storage")),
   mapProps(parseUrlFilterProp),
-  mapProps(fspy("from URL")),
-//  withPropsOnChange(["tableId", "columnId", "rowId", "langtag"], parseUrlFilterProp),
   // add function props to modify session's projection on user input
   withStateHandlers(
     ({projection = {}}) => ({projection}),
@@ -156,7 +153,6 @@ const withPredefinedProjection = compose(
       resetStoredProjection: (_, {projection}) => f.assoc("projection", projection)
     },
   ),
-  mapProps(fspy("from state"))
 );
 
 export default withPredefinedProjection;
