@@ -140,6 +140,11 @@ export default class GrudGrid extends MultiGrid {
     this.translateElement(this._trgParent, `translateX(${x}px)`);
     this.recalculateScrollPosition({scrollLeft, scrollTop});
   }
+
+  componentWillUnmount() {
+    handleScrollLater.cancel();
+    this.recalculateScrollPosition.cancel();
+  }
 }
 
 class VanillaGrid extends Grid {
