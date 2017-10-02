@@ -23,7 +23,7 @@ const withFunctionality = compose(
           if (!isLocked(this.props.cell.row)) {
             event.stopPropagation();
             event.preventDefault();
-            this.openOverlay();
+            this.props.openOverlay();
           }
         }
       });
