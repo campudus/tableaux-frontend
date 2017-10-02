@@ -2,7 +2,7 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import {either} from "../../helpers/functools";
+import {either, maybe} from "../../helpers/functools";
 import ActionCreator from "../../actions/ActionCreator";
 import {List} from "react-virtualized";
 import {Directions, FallbackLanguage, FilterModes} from "../../constants/TableauxConstants";
@@ -50,7 +50,7 @@ class ColumnFilterPopup extends React.Component {
   };
 
   setVisibilityAndUpdateGrid(val, coll) {
-    ActionCreator.setColumnsVisibility(val, coll, () => this.list.forceUpdateGrid());
+    ActionCreator.setColumnsVisibility(val, coll, () => maybe(this.list).method("forceUpdateGrid"));
   };
 
   setAll = val => () => {
