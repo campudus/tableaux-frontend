@@ -2,6 +2,10 @@
 
 const path = require("path");
 const webpack = require("webpack");
+
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
+
 let config = {
   "outDir": "out"
 };
@@ -15,7 +19,18 @@ let plugins = [
   new webpack.HotModuleReplacementPlugin(),
   new webpack.ProvidePlugin({
     "dom4": "imports-loader?this=>global?dom4"
-  })
+  }),
+  new CleanWebpackPlugin([config.outDir]),
+  new CopyWebpackPlugin([
+    {
+      context: "src/main",
+      from: "img/**"
+    },
+    {
+      context: "src/main",
+      from: "locales/**"
+    }
+  ])
 ];
 
 let BUILD_VERSION = "local-build";
@@ -31,6 +46,20 @@ try {
 if (process.env.NODE_ENV === "production") {
   plugins = [
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.ProvidePlugin({
+      "dom4": "imports-loader?this=>global?dom4"
+    }),
+    new CleanWebpackPlugin([config.outDir]),
+    new CopyWebpackPlugin([
+      {
+        context: "src/main",
+        from: "img/**"
+      },
+      {
+        context: "src/main",
+        from: "locales/**"
+      }
+    ]),
     new webpack.DefinePlugin({
       "process.env": {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
@@ -53,9 +82,6 @@ if (process.env.NODE_ENV === "production") {
         join_vars: true,
         drop_console: false
       }
-    }),
-    new webpack.ProvidePlugin({
-      "dom4": "imports-loader?this=>global?dom4"
     })
   ];
 } else {
