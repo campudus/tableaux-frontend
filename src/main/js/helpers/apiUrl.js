@@ -18,9 +18,10 @@ const urlToTableDestination = ({tableId, table, column, columnId, row, rowId, fi
   const tablePart = `/tables/${targetTable}`;
   const columnPart = (f.isNumber(targetCol)) ? `/columns/${targetCol}` : "";
   const rowPart = (isFinite(targetRow)) ? `/rows/${targetRow}` : "";
+  const query = (filter) ? "?filter" : "";
   const url = (languagePart)
     ? languagePart + tablePart + columnPart + rowPart
-    : apiUrl(tablePart + columnPart + rowPart);
+    : apiUrl(tablePart + columnPart + rowPart + query);
   return (f.contains("undefined", url)) ? "/" : url;
 };
 
