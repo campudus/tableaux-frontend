@@ -12,6 +12,7 @@ import listenToClickOutside from "react-onclickoutside";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
+import {openInNewTab} from "../../../helpers/apiUrl";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -143,23 +144,34 @@ class HeaderPopupMenu extends Component {
                     fn: () => ActionCreator.setTranslationView(translationInfo),
                     icon: "flag"
                   })}
+                {this.mkEntry(2,
+                  {
+                    title: "table:open-dataset",
+                    fn: () => openInNewTab({
+                      tableId: row.tableId,
+                      row,
+                      langtag,
+                      filter: true
+                    }),
+                    icon: "external-link"
+                  })}
                 <div className="separator">{i18n.t("table:menus.edit")}</div>
                 {(isLocked(row))
                   ? null
-                  : this.mkEntry(2,
+                  : this.mkEntry(3,
                     {
                       title: "table:delete_row",
                       fn: () => initiateDeleteRow(row, langtag, id),
                       icon: "trash"
                     })
                 }
-                {this.mkEntry(3,
+                {this.mkEntry(4,
                   {
                     title: "table:duplicate_row",
                     fn: () => initiateDuplicateRow(row, langtag),
                     icon: "clone"
                   })}
-                {this.mkEntry(4,
+                {this.mkEntry(5,
                   {
                     title: (row.final) ? "table:final.set_not_final" : "table:final.set_final",
                     fn: () => setRowAnnotation({final: !row.final}, row),
