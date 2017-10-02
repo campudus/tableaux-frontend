@@ -25,6 +25,7 @@ import {openEntityView} from "./overlay/EntityViewOverlay";
 import Portal from "react-portal";
 import JumpSpinner from "./table/JumpSpinner";
 import withCustomProjection from "./helperComponents/withCustomProjection";
+import PasteCellIcon from "./header/PasteCellIcon";
 
 @withCustomProjection
 @connectToAmpersand
@@ -394,7 +395,7 @@ class TableView extends Component {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       const tables = this.tables;
-      const {rowsCollection, tableFullyLoaded, pasteOriginCell} = this.state;
+      const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang} = this.state;
       const {langtag, overlayOpen} = this.props;
       const currentTable = this.getCurrentTable();
 
@@ -421,16 +422,10 @@ class TableView extends Component {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
-            <div id="clipboard-icon">
-              {(!f.isEmpty(pasteOriginCell))
-                ? (
-                  <a href="#" className="button" onClick={this.clearCellClipboard}>
-                    <i className="fa fa-clipboard" />
-                  </a>
-                )
-                : null
-              }
-            </div>
+            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
+                           pasteOriginCell={pasteOriginCell}
+                           pasteOriginCellLang={pasteOriginCellLang}
+            />
             <TableSwitcher
               langtag={langtag}
               currentTable={currentTable}

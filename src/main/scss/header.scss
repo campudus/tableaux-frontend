@@ -140,10 +140,59 @@ header {
     }
   }
 
-  #clipboard-icon {
+  .clipboard-icon {
     margin-top: 10px;
     float: right;
     display: inline-flex;
+    position: relative;
+
+    @include header-button-look();
+    color: $color-text-medium-grey;
+
+    &.popup-open {
+      @include header-button-active();
+    }
+
+    .clipboard-popup {
+      @include header-panel-look();
+      color: $color-primary-text;
+      right: 0;
+      top: 40px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .buttons {
+        a {
+          color: $color-text-medium-grey;
+          border: 1px solid $color-border-grey;
+          border-radius: 3px;
+          padding: 5px;
+          margin-left: 3px;
+
+          &:hover {
+            color: $color-primary-contrast-text;
+            background-color: $color-primary;
+            border-color: $color-primary;
+          }
+        }
+      }
+    }
+
+    .cell-preview {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .cell {
+        border: none;
+      }
+
+      a {
+        padding: 0;
+      }
+    }
 
     a {
       padding: 10px;
