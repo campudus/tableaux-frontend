@@ -8,6 +8,7 @@ const Dispatcher = require("./dispatcher/Dispatcher");
 import TableauxConstants, {ActionTypes, FilterModes} from "./constants/TableauxConstants";
 const ActionCreator = require("./actions/ActionCreator");
 import Raven from "raven-js";
+import {AppContainer} from "react-hot-loader";
 
 export let currentLangtag = null;
 
@@ -69,10 +70,23 @@ const TableauxRouter = Router.extend({
       ActionCreator.switchView(viewName, params);
     } else {
       this.alreadyRendered = true;
+
       ReactDOM.render(
-        <Tableaux initialViewName={viewName}
-          initialParams={params} />, document.getElementById("tableaux")
+        <AppContainer><Tableaux initialViewName={viewName} initialParams={params} /></AppContainer>,
+        document.getElementById("tableaux")
       );
+
+      // Hot Module Replacement API
+      if (module.hot) {
+        module.hot.accept("./components/Tableaux.jsx", () => {
+          const TableauxNext = require("./components/Tableaux.jsx").default;
+
+          ReactDOM.render(
+            <AppContainer><TableauxNext initialViewName={viewName} initialParams={params} /></AppContainer>,
+            document.getElementById("tableaux")
+          );
+        });
+      }
     }
   },
 

@@ -30,7 +30,9 @@ let plugins = [
       context: "src/main",
       from: "locales/**"
     }
-  ])
+  ]),
+  new webpack.NamedModulesPlugin(),
+  new webpack.NoEmitOnErrorsPlugin()
 ];
 
 let BUILD_VERSION = "local-build";
@@ -44,22 +46,7 @@ try {
 }
 
 if (process.env.NODE_ENV === "production") {
-  plugins = [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.ProvidePlugin({
-      "dom4": "imports-loader?this=>global?dom4"
-    }),
-    new CleanWebpackPlugin([config.outDir]),
-    new CopyWebpackPlugin([
-      {
-        context: "src/main",
-        from: "img/**"
-      },
-      {
-        context: "src/main",
-        from: "locales/**"
-      }
-    ]),
+  plugins.push(
     new webpack.DefinePlugin({
       "process.env": {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
@@ -83,7 +70,7 @@ if (process.env.NODE_ENV === "production") {
         drop_console: false
       }
     })
-  ];
+  );
 } else {
   plugins.push(new webpack.DefinePlugin({
     "process.env": {
@@ -95,7 +82,11 @@ if (process.env.NODE_ENV === "production") {
 
 module.exports = {
   entry: {
-    app: ["babel-polyfill", path.resolve(__dirname, "src/main/js/app.js")]
+    app: [
+      "babel-polyfill",
+      "react-hot-loader/patch",
+      path.resolve(__dirname, "src/main/js/app.js")
+    ]
   },
   output: {
     path: path.resolve(config.outDir),
@@ -107,27 +98,26 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: "react-hot"
-      },
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: "babel",
-        query: {
-          plugins: ["transform-decorators-legacy", "es6-promise"],
-          presets: ["es2015", "react", "stage-0"]
-        }
-      },
-      { // required for react-markdown in webpack 1 (see https://github.com/rexxars/react-markdown)
-        test: /\.json$/,
-        loader: "json-loader"
+        loaders: ["react-hot-loader/webpack", "babel-loader"]
       },
       {
         test: /\.s?css$/,
-        loaders: ["style", "css", "sass"]
-      }, {
+        use: [
+          {
+            loader: "style-loader"
+          }, {
+            loader: "css-loader"
+          }, {
+            loader: "sass-loader",
+            options: {
+              includePaths: [path.resolve(__dirname, "./node_modules/compass-mixins/lib")]
+            }
+          }
+        ]
+      },
+      {
         test: /\.html$/,
-        loader: "file?name=[name].[ext]"
+        loader: "file-loader?name=[name].[ext]"
       },
       {
         test: /\.woff2(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -151,11 +141,8 @@ module.exports = {
       }
     ]
   },
-  sassLoader: {
-    includePaths: [path.resolve(__dirname, "./node_modules/compass-mixins/lib")]
-  },
   plugins: plugins,
   resolve: {
-    extensions: ["", ".js", ".jsx"]
+    extensions: [".json", ".js", ".jsx"]
   }
 };

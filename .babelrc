@@ -1,3 +1,13 @@
 {
-  plugins: ["transform-react-inline-elements"]
+  "plugins": [
+    "transform-react-inline-elements",
+    "transform-decorators-legacy",
+    "transform-runtime",
+    "es6-promise"
+  ],
+  "presets": [
+    "es2015",
+    "react",
+    "stage-0"
+  ]
 }
