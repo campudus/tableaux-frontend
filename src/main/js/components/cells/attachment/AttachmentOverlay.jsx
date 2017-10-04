@@ -84,7 +84,12 @@ class AttachmentOverlay extends Component {
   };
 
   renderFileItem = ({index, style, parent}) => {
-    const file = f.get(["folder", "files", index], this.state);
+    const files = f.flow(
+      f.get(["folder", "files"]),
+      f.sortBy(this.isLinked),
+      f.reverse
+    )(this.state);
+    const file = f.get(index, files);
     const {langtag} = this.props;
     const imageUrl = apiUrl(this.retrieveTranslation(file.fileUrl, langtag));
 
