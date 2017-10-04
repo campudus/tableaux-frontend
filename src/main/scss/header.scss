@@ -156,11 +156,28 @@ header {
     .clipboard-popup {
       @include header-panel-look();
       color: $color-primary-text;
+      padding: 8px;
       right: 0;
-      top: 40px;
+      top: 39px;
       display: flex;
       flex-direction: row;
       align-items: center;
+
+      .cell-preview {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .cell {
+          border: none;
+          max-width: 40vw;
+        }
+
+        a {
+          padding: 0;
+        }
+      }
 
       .buttons {
         a {
@@ -176,21 +193,6 @@ header {
             border-color: $color-primary;
           }
         }
-      }
-    }
-
-    .cell-preview {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-
-      .cell {
-        border: none;
-      }
-
-      a {
-        padding: 0;
       }
     }
 
