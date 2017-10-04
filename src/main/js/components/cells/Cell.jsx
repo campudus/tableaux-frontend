@@ -214,7 +214,12 @@ class Cell extends React.PureComponent {
       ? DisabledCell
       : (Cell.cellKinds[kind] || TextCell);
 
-    const displayValue = cell.displayValue[langtag] || "";
+    const displayValue = f.isArray(cell.displayValue)
+      ? f.flow(
+        f.map(f.get(langtag)),
+        f.join(";")
+      )(cell.displayValue) || ""
+      : f.get(langtag, cell.displayValue) || "";
 
     // onKeyDown event just for selected components
     return (
