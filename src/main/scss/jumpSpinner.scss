@@ -1,16 +1,19 @@
 @import "variables";
 
+@mixin full-screen() {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  background-color: white;
+  opacity: 0.95;
+}
+
 #jump-spinner-wrapper {
   .jump-spinner {
-
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    opacity: 0.95;
-    z-index: 3;
+    @include full-screen();
 
     .jump-spinner-content {
       display: flex;
@@ -33,5 +36,21 @@
         color: $color-text-medium-grey;
       }
     }
+  }
+}
+
+.search-overlay {
+  @include full-screen();
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .heading {
+    font-size: xx-large;
+    padding: 0.5em;
+  }
+  .message {
+    font-size: large;
+    color: $color-text-medium-grey;
   }
 }

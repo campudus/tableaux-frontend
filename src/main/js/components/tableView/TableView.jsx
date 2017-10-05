@@ -1,31 +1,35 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import connectToAmpersand from "./helperComponents/connectToAmpersand";
-import Dispatcher from "../dispatcher/Dispatcher";
-import Table from "./table/Table.jsx";
-import LanguageSwitcher from "./header/LanguageSwitcher.jsx";
-import TableSwitcher from "./header/tableSwitcher/TableSwitcher.jsx";
-import ActionCreator from "../actions/ActionCreator";
-import Tables from "../models/Tables";
-import * as f from "lodash/fp";
-import TableauxConstants, {ActionTypes} from "../constants/TableauxConstants";
-import Filter from "./header/filter/Filter.jsx";
-import Navigation from "./header/Navigation.jsx";
-import PageTitle from "./header/PageTitle.jsx";
-import Spinner from "./header/Spinner.jsx";
-import TableSettings from "./header/tableSettings/TableSettings";
-import ColumnFilter from "./header/ColumnFilter";
-import {either} from "../helpers/functools";
-import {INITIAL_PAGE_SIZE, PAGE_SIZE} from "../models/Rows";
-import getFilteredRows from "./table/RowFilters";
+import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import Dispatcher from "../../dispatcher/Dispatcher";
+import Table from "../table/Table.jsx";
+import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
+import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
+import ActionCreator from "../../actions/ActionCreator";
+import Tables from "../../models/Tables";
+import f from "lodash/fp";
+import TableauxConstants, {ActionTypes, FilterModes} from "../../constants/TableauxConstants";
+import Filter from "../header/filter/Filter.jsx";
+import Navigation from "../header/Navigation.jsx";
+import PageTitle from "../header/PageTitle.jsx";
+import Spinner from "../header/Spinner.jsx";
+import TableSettings from "../header/tableSettings/TableSettings";
+import ColumnFilter from "../header/ColumnFilter";
+import {either, logged} from "../../helpers/functools";
+import {INITIAL_PAGE_SIZE, PAGE_SIZE} from "../../models/Rows";
+import getFilteredRows from "../table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
-import pasteCellValue from "./cells/cellCopyHelper";
-import {openEntityView} from "./overlay/EntityViewOverlay";
+import pasteCellValue from "../cells/cellCopyHelper";
+import {openEntityView} from "../overlay/EntityViewOverlay";
 import Portal from "react-portal";
-import JumpSpinner from "./table/JumpSpinner";
-import withCustomProjection from "./helperComponents/withCustomProjection";
-import PasteCellIcon from "./header/PasteCellIcon";
+import JumpSpinner from "./JumpSpinner";
+import withCustomProjection from "../helperComponents/withCustomProjection";
+import PasteCellIcon from "../header/PasteCellIcon";
+import {showDialog} from "../overlay/GenericOverlay";
+import SearchOverlay from "./SearchOverlay";
+
+const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
 @withCustomProjection
 @connectToAmpersand
@@ -303,7 +307,11 @@ class TableView extends Component {
 
   // Set visibility of all columns in <coll> to <val>
   setColumnsVisibility = ({val, coll, cb}, shouldSave = true) => {
-    this.props.setColumnVisibility({val, colIds: coll, callback: cb}, shouldSave);
+    this.props.setColumnVisibility({
+      val,
+      colIds: coll,
+      callback: cb
+    }, shouldSave);
   };
 
   applyColumnVisibility = (projection = this.props.projection) => {
@@ -312,7 +320,10 @@ class TableView extends Component {
     const visibleColIds = f.get("columns", projection)
       || f.take(DEFAULT_VISIBLE_COLUMNS, columns.map(f.get("id")));
     if (f.isNil(projection.columns)) {
-      this.setColumnsVisibility({val: true, coll: visibleColIds}, true);
+      this.setColumnsVisibility({
+        val: true,
+        coll: visibleColIds
+      }, true);
     }
     columns.forEach(
       (col, idx) => {
@@ -358,20 +369,54 @@ class TableView extends Component {
     if (f.isEmpty(rowFilter) || (f.isEmpty(rowFilter.filters) && f.isNil(rowFilter.sortColumnId))) {
       this.setState({rowsCollection: tableRows});
     } else {
-      const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowFilter);
-      if (!f.isEmpty(rowsCollection.colsWithMatches)) {
-        this.props.setColumnVisibility({val: false}, false);
-        this.props.setColumnVisibility({
-          val: true,
-          colIds: rowsCollection.colsWithMatches
-        });
-      }
-      this.setState({rowsCollection});
+      const doApplyFilters = () => {
+        const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowFilter);
+        if (!f.isEmpty(rowsCollection.colsWithMatches)) {
+          this.props.setColumnVisibility({val: false}, false);
+          this.props.setColumnVisibility({
+            val: true,
+            colIds: rowsCollection.colsWithMatches
+          });
+        }
+        this.setState({rowsCollection});
+        if (this.state.tableFullyLoaded) {
+          this.displaySearchOverlay(false);
+        }
+      };
+      this.displaySearchOverlay(true, doApplyFilters);
     }
   };
 
+  displaySearchOverlay = (state = true, cb = f.noop) => {
+    this.setState({searchOverlayOpen: state}, () => window.setTimeout(cb, 250));
+  };
+
   changeFilter = (settings = {}, store = true) => {
-    this.props.setFilter(settings, store);
+    const currentTable = this.getCurrentTable();
+    const hasSlowFilters = f.flow(
+      f.get("filters"),
+      f.map(f.get("mode")),
+      f.any(f.contains(f, [FilterModes.ROW_CONTAINS]))
+    );
+
+    if (
+      hasSlowFilters(settings)
+      && currentTable.rows.length * currentTable.columns.length > BIG_TABLE_THRESHOLD
+    ) {
+      showDialog({
+        type: "question",
+        context: "Filter",
+        title: i18n.t("filter:large-table.title"),
+        message: i18n.t("filter:large-table.message"),
+        heading: i18n.t("filter:large-table.header"),
+        actions: {
+          "positive": [i18n.t("common:ok"), () => this.props.setFilter(settings, store)],
+          "neutral": [i18n.t("common:cancel"), this.clearFilter]
+        }
+      });
+    } else {
+      this.props.setFilter(settings, store);
+    }
   };
 
   getCurrentTable = () => {
@@ -413,7 +458,7 @@ class TableView extends Component {
       )(rows);
       const columnKeys = f.flow(
         f.get("models"),
-        f.filter((col, idx) => col.visible || idx === 0),
+        (models) => models.filter((col, idx) => col.visible || idx === 0),
         f.map(f.get("id")),
         f.toString
       )(currentTable.columns);
@@ -470,6 +515,7 @@ class TableView extends Component {
             )
             : null
           }
+          <SearchOverlay isOpen={this.state.searchOverlayOpen} />
         </div>
       );
     }

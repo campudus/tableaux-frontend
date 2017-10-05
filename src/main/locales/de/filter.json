@@ -15,5 +15,12 @@
     "filter": "Filtern nach...",
     "noResult": "Keine Spalte mit diesem Namen vorhanden",
     "sort": "Sortieren nach..."
-  }
+  },
+  "large-table": {
+    "title": "Komplexe Filterfunktion",
+    "header": "Fortfahren?.",
+    "message": "Das Filtern dieser Tabelle kann bis zu einigen Minuten dauern."
+  },
+  "searching": "Filtere Tabelleneinträge",
+  "searching-sub": "Einen Moment bitte..."
 }

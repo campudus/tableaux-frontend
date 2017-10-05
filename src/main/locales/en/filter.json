@@ -15,5 +15,12 @@
     "filter": "Filter for...",
     "noResult": "No columns with this name",
     "sort": "Sort by..."
-  }
+  },
+  "large-table": {
+    "title": "Apply a complex filter",
+    "header": "Proceed?",
+    "message": "Filtering this table might up to some minutes."
+  },
+  "searching": "Filtering data",
+  "searching-sub": "Please be patient..."
 }

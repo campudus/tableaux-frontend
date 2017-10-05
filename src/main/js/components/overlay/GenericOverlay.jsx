@@ -128,11 +128,13 @@ class GenericOverlay extends PureComponent {
       );
     };
 
-    this.setState({childrenProps: {
-      head: updatedProps("head"),
-      body: updatedProps("body"),
-      footer: updatedProps("footer")
-    }}, () => window.devLog("updated children props to", this.state.childrenProps));
+    this.setState({
+      childrenProps: {
+        head: updatedProps("head"),
+        body: updatedProps("body"),
+        footer: updatedProps("footer")
+      }
+    }, () => window.devLog("updated children props to", this.state.childrenProps));
   };
 
   updateSharedData = (fn) => {
@@ -153,12 +155,13 @@ class GenericOverlay extends PureComponent {
       "header-buttons": head.props.actions,
       [this.props.classNames]: this.props.classNames
     });
-    const wrapperClass = classNames(`overlay-wrapper ${overlayType} ${this.props.classes || ""} ${specialClass || ""}`, {
-      "is-new": this.state.overlayIsNew,
-      "is-right": this.props.preferRight,
-      "header-components": head.props.components,
-      "header-buttons": head.props.actions
-    });
+    const wrapperClass = classNames(`overlay-wrapper ${overlayType} ${this.props.classes || ""} ${specialClass || ""}`,
+      {
+        "is-new": this.state.overlayIsNew,
+        "is-right": this.props.preferRight,
+        "header-components": head.props.components,
+        "header-buttons": head.props.actions
+      });
 
     const dataShare = {
       sharedData: sharedDataContainer,
@@ -167,14 +170,14 @@ class GenericOverlay extends PureComponent {
 
     return (
       <div className={overlayWrapperClass} tabIndex="1"
-        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
       >
         <div className={wrapperClass}
-          onClick={event => {
-            event.stopPropagation();
-            event.preventDefault();
-          }}
-          onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
+             onClick={event => {
+               event.stopPropagation();
+               event.preventDefault();
+             }}
+             onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
           {React.cloneElement(head, {...childrenProps.head, ...dataShare})}
           <div className="overlay-content">
@@ -191,19 +194,33 @@ class GenericOverlay extends PureComponent {
   }
 }
 
-const showDialog = ({type = "default", context = "Action", title, heading = "", message = "", actions = {}, name}) => {
-  const enterKeyFn = f.nth(1)(f.prop("positive", actions)) || f.nth(1)(f.prop("negative", actions)) || f.prop("neutral", actions);
-  const escKeyFn = f.nth(1)(f.prop("neutral", actions));
+const showDialog = (
+  {
+    type = "default",
+    context = "Action",
+    title,
+    heading = "",
+    message = "",
+    actions = {},
+    name
+  }) => {
+  const enterKeyFn = f.flow(
+    f.props(["positive", "negative", "neutral"]),
+    f.find(f.identity),
+    f.nth(1),
+    f.defaultTo(f.noop)
+  )(actions);
+  const escKeyFn = f.get(["neutral", 1], actions);
   const keyShortcuts = {
     enter: event => {
       event.preventDefault();
-      (enterKeyFn || f.noop)();
+      enterKeyFn();
       ActionCreator.closeOverlay();
       event.stopPropagation();
     },
     escape: event => {
       event.preventDefault();
-      (escKeyFn || f.noop)();
+      escKeyFn();
       ActionCreator.closeOverlay();
       event.stopPropagation();
     }

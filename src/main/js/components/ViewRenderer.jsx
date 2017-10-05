@@ -1,7 +1,7 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import TableauxConstants from "../constants/TableauxConstants";
-import TableView from "../components/TableView.jsx";
+import TableView from "./tableView/TableView.jsx";
 import MediaView from "../components/media/MediaView.jsx";
 
 const ViewNames = TableauxConstants.ViewNames;
