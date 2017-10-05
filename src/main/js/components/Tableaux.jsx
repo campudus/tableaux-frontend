@@ -5,13 +5,13 @@ import TableauxConstants from "../constants/TableauxConstants";
 import GenericOverlay from "./overlay/GenericOverlay.jsx";
 import ViewRenderer from "./ViewRenderer.jsx";
 import i18n from "i18next";
-import XHR from "i18next-xhr-backend";
 import {I18nextProvider} from "react-i18next";
 import ActionCreator from "../actions/ActionCreator";
 import Spinner from "./header/Spinner.jsx";
 import Toast from "./overlay/Toast.jsx";
 import * as f from "lodash/fp";
 import RootButton from "./RootButton";
+import resources from "i18next-resource-store-loader!../../locales/index";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
@@ -31,8 +31,8 @@ export default class Tableaux extends PureComponent {
     Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
 
     i18n
-      .use(XHR)
       .init({
+        resources,
         // we need to define just 'en' otherwise fallback doesn't work correctly since i18next tries to load the
         // json only once with the exact fallbackLng Key. So 'en-GB' doesn't work because all
         fallbackLng: "en",
@@ -47,10 +47,6 @@ export default class Tableaux extends PureComponent {
         interpolation: {
           escapeValue: false // not needed for react!!
         }
-      }, () => {
-        this.setState({
-          isLoading: false
-        });
       });
 
     this.state = {
@@ -58,7 +54,7 @@ export default class Tableaux extends PureComponent {
       currentViewParams: this.props.initialParams,
       activeOverlays: [],
       exitingOverlays: false,
-      isLoading: true,
+      isLoading: false,
       toast: null
     };
 
