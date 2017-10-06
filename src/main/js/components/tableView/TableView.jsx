@@ -474,6 +474,7 @@ class TableView extends Component {
             <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
                            pasteOriginCell={pasteOriginCell}
                            pasteOriginCellLang={pasteOriginCellLang}
+                           tableId={currentTable.id}
             />
             <TableSwitcher
               langtag={langtag}

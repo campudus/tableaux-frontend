@@ -14,6 +14,7 @@ import TextCell from "../cells/text/TextCell";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
+import {openInNewTab} from "../../helpers/apiUrl";
 
 const ClearCellButton = (props) => (
   <div className="clear-pasted-button button neutral">
@@ -26,7 +27,16 @@ const ClearCellButton = (props) => (
 );
 
 const FocusCellButton = withHandlers({
-  focusCell: (props) => () => ActionCreator.toggleCellSelection(props.cell, true)
+  focusCell: (props) => () => {
+    const {cell, langtag, tableId} = props;
+    if (cell.tableId === tableId) {
+      ActionCreator.toggleCellSelection(props.cell, true);
+    } else {
+      const table = cell.tables.get(cell.tableId);
+      const {row, column} = cell;
+      openInNewTab({langtag, table, column, row});
+    }
+  }
 })(
   (props) => (
     <div className="focus-cell-button button positive">
@@ -77,14 +87,17 @@ const CellPreview = (props) => {
 };
 
 const PasteCellPreview = (props) => {
-  const {clearCellClipboard, pasteOriginCell} = props;
+  const {clearCellClipboard, pasteOriginCell, pasteOriginCellLang, tableId} = props;
 
   return (
     <div className={"clipboard-popup"}>
       <div className="heading">{i18n.t("header:clipboard.heading")}</div>
       <CellPreview {...props} />
       <div className="buttons">
-        <FocusCellButton cell={pasteOriginCell} />
+        <FocusCellButton cell={pasteOriginCell}
+                         langtag={pasteOriginCellLang}
+                         tableId={tableId}
+        />
         <ClearCellButton clearCellClipboard={clearCellClipboard} />
       </div>
     </div>
