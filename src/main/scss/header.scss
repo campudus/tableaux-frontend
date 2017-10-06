@@ -142,6 +142,7 @@ header {
 
   .clipboard-icon {
     margin-top: 10px;
+    margin-left: 15px;
     float: right;
     display: inline-flex;
     position: relative;
@@ -156,18 +157,25 @@ header {
     .clipboard-popup {
       @include header-panel-look();
       color: $color-primary-text;
-      padding: 8px;
       right: 0;
       top: 39px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+      padding: 0;
+      cursor: default;
+
+      &>* {
+        padding: 20px;
+      }
+
+      .heading {
+        font-weight: bold;
+        padding-bottom: 10px;
+        text-align: center;
+      }
 
       .cell-preview {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+        border-top: 1px solid $color-border-grey;
+        border-bottom: 1px solid $color-border-grey;
+        padding: 10px 20px;
 
         .cell {
           border: none;
@@ -180,17 +188,14 @@ header {
       }
 
       .buttons {
-        a {
-          color: $color-text-medium-grey;
-          border: 1px solid $color-border-grey;
-          border-radius: 3px;
-          padding: 5px;
-          margin-left: 3px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .button {
+          @include button-look();
 
-          &:hover {
-            color: $color-primary-contrast-text;
-            background-color: $color-primary;
-            border-color: $color-primary;
+          &.clear-pasted-button {
+            margin-left: 15px;
           }
         }
       }

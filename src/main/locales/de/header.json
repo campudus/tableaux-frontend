@@ -15,5 +15,10 @@
     "no-group-results": "Suchbegriff \"{{query}}\" wurde in Gruppe {{group}} nicht gefunden",
     "no-results": "Suchbegriff \"{{query}}\" wurde nirgendwo gefunden",
     "in-all-tables": "Ergebnisse in allen Tabellen"
+  },
+  "clipboard": {
+    "heading": "Kopierter Inhalt:",
+    "clear": "Inhalt vergessen",
+    "focus": "Zu Inhalt springen"
   }
 }

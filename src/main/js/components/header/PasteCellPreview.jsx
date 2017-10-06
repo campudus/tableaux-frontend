@@ -13,13 +13,14 @@ import CurrencyCell from "../cells/currency/CurrencyCell";
 import TextCell from "../cells/text/TextCell";
 import {ColumnKinds} from "../../constants/TableauxConstants";
 import ActionCreator from "../../actions/ActionCreator";
+import i18n from "i18next";
 
 const ClearCellButton = (props) => (
-  <div className="clear-pasted-button">
+  <div className="clear-pasted-button button neutral">
     <a href="#"
        onClick={props.clearCellClipboard}
     >
-      <i className="fa fa-times" />
+      {i18n.t("header:clipboard.clear")}
     </a>
   </div>
 );
@@ -28,11 +29,11 @@ const FocusCellButton = withHandlers({
   focusCell: (props) => () => ActionCreator.toggleCellSelection(props.cell, true)
 })(
   (props) => (
-    <div className="focus-cell-button">
+    <div className="focus-cell-button button positive">
       <a href="#"
          onClick={props.focusCell}
       >
-        <i className="fa fa-sign-in" />
+        {i18n.t("header:clipboard.focus")}
       </a>
     </div>
   )
@@ -80,6 +81,7 @@ const PasteCellPreview = (props) => {
 
   return (
     <div className={"clipboard-popup"}>
+      <div className="heading">{i18n.t("header:clipboard.heading")}</div>
       <CellPreview {...props} />
       <div className="buttons">
         <FocusCellButton cell={pasteOriginCell} />
