@@ -19,9 +19,20 @@ import * as f from "lodash/fp";
 import Raven from "raven-js";
 import i18n from "i18next";
 import React from "react";
+import {remember} from "../components/table/undo/undoer";
+
+const broadcastCellChange = (cell, oldValue, options) => {
+  ActionCreator.broadcastDataChange({
+    cell,
+    row: cell.row
+  });
+  if (!f.matchesProperty("type", "UNDO", options)) {
+    remember(cell, oldValue);
+  }
+};
 
 // sets or removes a *single* link to/from a link cell
-const changeLinkCell = ({cell, value}) => {
+const changeLinkCell = ({cell, value, options}) => {
   const curValue = cell.value;
 
   window.devLog("Cell Model: changing cell", cell.id, "value from:", cell.value, "to", value);
@@ -55,7 +66,7 @@ const changeLinkCell = ({cell, value}) => {
                 cell.set({value: curValue});
                 reject(err);
               } else {
-                ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
+                broadcastCellChange(cell, curValue, options);
                 resolve(response);
               }
             }
@@ -70,7 +81,7 @@ const changeLinkCell = ({cell, value}) => {
       (resolve, reject) => {
         cell.save({value}, {
           success: () => {
-            ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
+            broadcastCellChange(cell, curValue, options);
             resolve(cell.value);
           },
           error: err => reject("Could not set multiple link values:", err)
@@ -105,7 +116,7 @@ const changeLinkCell = ({cell, value}) => {
           cellModelSavingError(error); // this saves us from calculating and undoing diff ourselves
           reject(error);
         } else {
-          ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
+          broadcastCellChange(cell, curValue, options);
           resolve(value);
         }
       });
@@ -119,6 +130,7 @@ export const changeCell = payload => {
     return changeLinkCell(payload);
   }
   const {cell} = payload;
+  const actionOptions = payload.options;
   const oldValue = cell.value;
   let newValue = payload.value; // value we send to the server
   let mergedValue; // The value we display for the user
@@ -187,7 +199,7 @@ export const changeCell = payload => {
           patch: isPatch,
           wait: true,
           success(model, data, options) {
-            ActionCreator.broadcastDataChange({cell: cell, row: cell.row});
+            broadcastCellChange(cell, oldValue, actionOptions);
             // is there new data from the server?
             if (!f.equals(data.value, mergedValue)) {
               window.devLog("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
