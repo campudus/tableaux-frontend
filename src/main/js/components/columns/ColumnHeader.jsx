@@ -78,16 +78,15 @@ export default class ColumnHeader extends PureComponent {
   };
 
   saveEdits = (payload) => {
-    const {langtag, newName, newDescription} = payload;
+    const {langtag, newName, newDescription, colId} = payload;
     const {column} = this.props;
+    if (!f.matchesProperty("id", colId)(column)) {
+      return;
+    }
     const modifications =
       f.flow(
-        m => (newDescription)
-          ? f.assign({"description": {[langtag]: newDescription}}, m)
-          : m,
-        m => (newName)
-          ? f.assign({"displayName": {[langtag]: newName}}, m)
-          : m
+        m => (newDescription) ? f.assoc(["description", langtag], newDescription, m) : m,
+        m => (newName) ? f.assoc(["displayName", langtag], newName, m) : m
       )({});
 
     column
