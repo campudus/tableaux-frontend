@@ -39,6 +39,7 @@ async function changeCell({cell, value, options = {}}) {
     } else {
       await changeDefaultCell(changeObj);
     }
+    devLog("Success, now broadcasting change...")
     ActionCreator.broadcastDataChange({
       cell,
       row: cell.row
@@ -54,6 +55,14 @@ async function changeCell({cell, value, options = {}}) {
       value: oldValue
     });
   }
+  devLog("Success, checking to remember undo", options)
+  if (!f.matchesProperty("type", "UNDO")(options)) {
+    devLog("Trying to remember")
+    remember({
+      cell,
+      value: oldValue
+    });
+  } else devLog("Ignoring")
 }
 
 async function changeDefaultCell({cell, value, options}) {
