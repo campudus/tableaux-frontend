@@ -16,13 +16,14 @@ import Raven from "raven-js";
 import {remember} from "../../components/table/undo/undoer";
 
 async function changeCell({cell, value, options = {}}) {
-  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (value.value || value))
 
+  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (value.value || value));
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
     data: value,
     category: (f.matchesProperty("type", "UNDO") ? "undo" : "direct change")
   });
+
   const oldValue = f.clone(cell.value);
   const changeObj = {
     cell,
@@ -36,7 +37,6 @@ async function changeCell({cell, value, options = {}}) {
     } else {
       await changeDefaultCell(changeObj);
     }
-    devLog("Success, now broadcasting change...")
     ActionCreator.broadcastDataChange({
       cell,
       row: cell.row
@@ -46,14 +46,12 @@ async function changeCell({cell, value, options = {}}) {
     cell.set({value: oldValue});
     return;
   }
-  devLog("Success, checking to remember undo", options)
   if (!f.matchesProperty("type", "UNDO")(options)) {
-    devLog("Trying to remember")
     remember({
       cell,
       value: oldValue
     });
-  } else devLog("Ignoring")
+  }
 }
 
 async function changeDefaultCell({cell, value, options}) {

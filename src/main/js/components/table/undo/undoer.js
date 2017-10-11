@@ -15,7 +15,6 @@ let currentTable;
 Dispatcher.on(ActionTypes.SWITCH_TABLE, setCurrentTable);
 
 export const setCurrentTable = (tableId) => {
-  devLog("UNDO Setting table context to table", tableId)
   currentTable = tableId;
 };
 
@@ -39,16 +38,13 @@ export const peek = () => f.last(getCurrentStack());
 export async function undo() {
   const {cell, value} = peek() || {};
   if (f.any(f.isNil, [cell, value])) {
-    devLog("Undo stack empty");
     return;
   }
-  devLog("UNDO: resetting cell", cell.id, "to", value)
   await changeCell({cell, value, options: {type: "UNDO"}});
   return pop();
 }
 
 export const remember = ({cell, value}) => {
-  devLog("UNDO Remembering cell state:", cell.id, value)
   const {tableId} = cell;
   setCurrentTable(tableId);
   push({

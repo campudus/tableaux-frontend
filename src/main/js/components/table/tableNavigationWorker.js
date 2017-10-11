@@ -126,7 +126,6 @@ export function getKeyboardShortcuts() {
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
       } else if (hasActionKey && isKeyPressed("z")) {
-        devLog("UNDO!")
         Undo.undo()
           .then(
             (undoItem) => maybe(undoItem)
