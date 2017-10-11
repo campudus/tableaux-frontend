@@ -29,7 +29,7 @@ const withUploadHandlers = compose(
         const file = res.body;
         ActionCreator.addFile(
           // uuid, title, descr, extName, intName, mimeType, folder, url
-          ...f.props(["uuid", "externalName", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
+          ...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
         );
       }
     }
@@ -43,7 +43,7 @@ const withDropHandlers = withHandlers({
       // upload each file on its own
 
       const json = f.flow(
-        f.assoc(["title", DefaultLangtag], file.title),
+        f.assoc(["title", DefaultLangtag], file.name),
         f.assoc(["description", DefaultLangtag], ""),
         f.assoc("folder", props.folder.id)
       )({});

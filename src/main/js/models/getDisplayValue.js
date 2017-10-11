@@ -83,7 +83,7 @@ const getAttachmentFileName = (column) => (links) => {
       ["title", lt], ["externalName", lt], ["internalName", lt],
       ["title", DefaultLangtag], ["externalName", DefaultLangtag], ["internalName", DefaultLangtag]
     ]),
-    f.find(f.identity),
+    f.find(f.complement(f.isEmpty)),
     f.defaultTo("unnamed file")
   )(link);
 
