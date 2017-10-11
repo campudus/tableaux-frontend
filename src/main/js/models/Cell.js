@@ -3,7 +3,7 @@ const TableauxConstants = require("./../constants/TableauxConstants");
 const {ColumnKinds} = TableauxConstants;
 import * as f from "lodash/fp";
 import apiUrl from "../helpers/apiUrl";
-import getDisplayValue from "./getDisplayValue";
+import getDisplayValue from "./helpers/getDisplayValue";
 import ActionCreator from "../actions/ActionCreator.js";
 import {clearCallbacks, listenForCellChange} from "../dispatcher/GlobalCellChangeListener";
 
