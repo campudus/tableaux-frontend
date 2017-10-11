@@ -125,12 +125,9 @@ export function getKeyboardShortcuts() {
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
-      } else if (hasActionKey && isKeyPressed("z")) {
-        Undo.undo()
-          .then(
-            (undoItem) => maybe(undoItem)
-              .map(({cell}) => ActionCreator.toggleCellSelection(cell, true, thisLangtag))
-          );
+      } else if (hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
+        const undoFn = (isKeyPressed("Z")) ? Undo.redo : Undo.undo;
+        undoFn();
       } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
