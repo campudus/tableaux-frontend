@@ -16,7 +16,6 @@ import Raven from "raven-js";
 import {remember} from "../../components/table/undo/undoer";
 
 async function changeCell({cell, value, options = {}}) {
-
   window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (value.value || value));
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
