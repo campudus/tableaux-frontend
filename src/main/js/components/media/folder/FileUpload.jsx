@@ -28,7 +28,8 @@ const withUploadHandlers = compose(
       if (res) {
         const file = res.body;
         ActionCreator.addFile(
-          ...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
+          // uuid, title, descr, extName, intName, mimeType, folder, url
+          ...f.props(["uuid", "externalName", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
         );
       }
     }
