@@ -27,6 +27,7 @@ import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
+import * as Undo from "../table/undo/undoer";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
@@ -58,6 +59,8 @@ class TableView extends Component {
         entityView
       };
     }
+
+    Undo.setCurrentTable(this.props.tableId);
   };
 
   componentWillMount = () => {
@@ -301,6 +304,9 @@ class TableView extends Component {
         rowId: nextProps.rowId,
         page: this.estimateCellPage(nextProps.rowId)
       });
+    }
+    if (nextProps.tableId !== this.props.tableId && f.isInteger(nextProps.tableId) && f.isInteger(this.props.tableId)) {
+      Undo.setCurrentTable(nextProps.tableId);
     }
   };
 
