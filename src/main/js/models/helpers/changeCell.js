@@ -15,7 +15,9 @@ import * as f from "lodash/fp";
 import Raven from "raven-js";
 import {remember} from "../../components/table/undo/undoer";
 
-async function changeCell({cell, value, options}) {
+async function changeCell({cell, value, options = {}}) {
+  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (value.value || value))
+
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
     data: value,
@@ -34,20 +36,24 @@ async function changeCell({cell, value, options}) {
     } else {
       await changeDefaultCell(changeObj);
     }
+    devLog("Success, now broadcasting change...")
     ActionCreator.broadcastDataChange({
       cell,
       row: cell.row
     });
-    if (!f.matchesProperty("type", "UNDO", options)) {
-      remember({
-        cell,
-        value: oldValue
-      });
-    }
   } catch (err) {
     cellModelSavingError(err);
     cell.set({value: oldValue});
+    return;
   }
+  devLog("Success, checking to remember undo", options)
+  if (!f.matchesProperty("type", "UNDO")(options)) {
+    devLog("Trying to remember")
+    remember({
+      cell,
+      value: oldValue
+    });
+  } else devLog("Ignoring")
 }
 
 async function changeDefaultCell({cell, value, options}) {

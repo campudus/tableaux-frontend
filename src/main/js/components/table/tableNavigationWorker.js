@@ -6,6 +6,7 @@ import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {maybe} from "../../helpers/functools";
+import * as Undo from "./undo/undoer";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -30,6 +31,9 @@ export function checkFocusInsideTable() {
 
 export function getKeyboardShortcuts() {
   const {selectedCell, selectedCellEditing} = this.state;
+  const actionKey = (f.contains("Mac OS", navigator.userAgent))
+    ? "metaKey"
+    : "ctrlKey";
   return {
     left: (event) => {
       event.preventDefault();
@@ -103,24 +107,31 @@ export function getKeyboardShortcuts() {
       if (!selectedCell) {
         return;
       }
-      const actionKey = (f.contains("Mac OS", navigator.userAgent))
-        ? "metaKey"
-        : "ctrlKey";
+      const hasActionKey = !!f.get(actionKey, event);
+      const isKeyPressed = (k) => f.matchesProperty("key", k)(event);
+      const thisLangtag = this.props.langtag;
       const systemPaste = selectedCellEditing
       && f.contains(selectedCell.kind,
         [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
-      const langtag = this.state.selectedCellExpandedRow || this.props.langtag;
-      if (f.prop(actionKey, event) && event.key === "c" // Cell copy
+      const langtag = this.state.selectedCellExpandedRow || thisLangtag;
+      if (hasActionKey && isKeyPressed("c") // Cell copy
         && selectedCell.kind !== ColumnKinds.concat) {
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!f.isEmpty(this.props.pasteOriginCell)
         && !f.eq(this.props.pasteOriginCell, selectedCell)
-        && f.prop(actionKey, event) && event.key === "v"
+        && hasActionKey && isKeyPressed("v")
         && !systemPaste) { // Cell paste
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
+      } else if (hasActionKey && isKeyPressed("z")) {
+        devLog("UNDO!")
+        Undo.undo()
+          .then(
+            (undoItem) => maybe(undoItem)
+              .map(({cell}) => ActionCreator.toggleCellSelection(cell, true, thisLangtag))
+          );
       } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
