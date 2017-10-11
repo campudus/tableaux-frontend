@@ -1,4 +1,4 @@
-import React, {PureComponent} from "react";
+import React, {Component} from "react";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import NewFolderAction from "./NewFolderAction.jsx";
@@ -15,7 +15,7 @@ import PropTypes from "prop-types";
 
 @translate(["media"])
 @connectToAmpersand
-class Folder extends PureComponent {
+class Folder extends Component {
   static propTypes = {
     folder: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired
