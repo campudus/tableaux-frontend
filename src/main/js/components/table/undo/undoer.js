@@ -1,15 +1,17 @@
 /**
- * A LIFO event listener that watches cell changes
+ * A listener using two LIFO queues to watch cell changes and provide undo/redo
  */
 
 import f from "lodash/fp";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import {changeCell} from "../../../models/Tables";
+import * as ActionCreator from "../../../actions/ActionCreator";
 
 const MAX_UNDO_STEPS = 50;
 
 const undoStacks = {};
+const redoStacks = {};
 let currentTable;
 
 Dispatcher.on(ActionTypes.SWITCH_TABLE, setCurrentTable);
@@ -18,36 +20,55 @@ export const setCurrentTable = (tableId) => {
   currentTable = tableId;
 };
 
-const getCurrentStack = () => f.getOr([], currentTable, undoStacks);
+const getCurrentStack = (stacks) => f.getOr([], currentTable, stacks);
+const updateCurrentStack = (stacks, fn) => {
+  const stack = getCurrentStack(stacks);
+  stacks[currentTable] = fn(stack);
+};
 
-const push = (data) => {
-  undoStacks[currentTable] = f.flow(
+const push = (stacks, data) => {
+  const pushAndTrim = f.flow(
     (s) => [...s, data],
     f.takeRight(MAX_UNDO_STEPS)
-  )(getCurrentStack());
+  );
+  updateCurrentStack(stacks, pushAndTrim);
 };
 
-const pop = () => {
-  const stack = getCurrentStack();
-  undoStacks[currentTable] = f.dropRight(1, stack);
-  return f.last(stack);
+const pop = (stacks) => {
+  const stack = getCurrentStack(stacks);
+  const tail = f.last(stack);
+  updateCurrentStack(stacks, f.dropRight(1));
+  return tail;
 };
 
-export const peek = () => f.last(getCurrentStack());
+const peek = (stacks) => f.last(getCurrentStack(stacks));
 
 export async function undo() {
-  const {cell, value} = peek() || {};
-  if (f.any(f.isNil, [cell, value])) {
+  return popAndApply(undoStacks);
+}
+
+export async function redo() {
+  return popAndApply(redoStacks);
+}
+
+async function popAndApply(stacks) {
+  const item = peek(stacks);
+  if (f.isNil(item)) {
     return;
   }
+  const isUndo = stacks === undoStacks;
+  const {cell, value} = item;
+  ActionCreator.toggleCellSelection(cell, true); // do that here to feel more responsive
+  const complementaryStack = (isUndo) ? redoStacks : undoStacks;
+  push(complementaryStack, {cell, value: f.clone(cell.value)});
   await changeCell({cell, value, options: {type: "UNDO"}});
-  return pop();
+  return pop(stacks);
 }
 
 export const remember = ({cell, value}) => {
   const {tableId} = cell;
   setCurrentTable(tableId);
-  push({
+  push(undoStacks, {
     cell,
     value
   });
