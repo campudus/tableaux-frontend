@@ -7,6 +7,7 @@ import Spinner from "../header/Spinner";
 import LinkList from "../helperComponents/LinkList";
 import SvgIcon from "../helperComponents/SvgIcon";
 import i18n from "i18next";
+import f from "lodash/fp";
 
 // Builds the actual dependent tables/rows DOM elements
 @translate("table")
@@ -79,8 +80,12 @@ export default class DependentRowsList extends Component {
         const tables = this.props.row.cells.at(0).tables;
         const links = rows.map(
           (row) => {
+            const displayNameObj = getDisplayName(column, row.value);
+            const extractDisplayString = (f.isArray(displayNameObj))
+              ? f.compose(f.join(" "), f.map(langtag))
+              : f.get(langtag);
             return {
-              displayName: getDisplayName(column, row.value)[langtag],
+              displayName: extractDisplayString(displayNameObj),
               linkTarget: {tables, tableId, rowId: row.id}
             };
           }
