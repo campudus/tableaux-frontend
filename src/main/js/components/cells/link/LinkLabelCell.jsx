@@ -4,6 +4,7 @@ import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import * as f from "lodash/fp";
 import {DefaultLangtag} from "../../../constants/TableauxConstants";
 import {compose, pure, withHandlers} from "recompose";
+import Empty from "../../helperComponents/emptyEntry";
 
 const LinkLabelCell = (props) => {
   const {onClick, getLinkName} = props;
@@ -36,8 +37,8 @@ const enhance = compose(
       }
     },
     getLinkName: ({langtag, cell, linkIndexAt}) => () => f.find( // first truthy value
-      f.isString,
-      [...f.props([langtag, DefaultLangtag], cell.displayValue[linkIndexAt]), ""]
+      f.complement(f.isEmpty),
+      [...f.props([langtag, DefaultLangtag], cell.displayValue[linkIndexAt]), <Empty/>]
     )
   }),
   pure

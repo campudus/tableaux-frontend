@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import multiLanguage from "../../../helpers/multiLanguage";
 import TableauxConstants from "../../../constants/TableauxConstants";
+import Empty from "../../helperComponents/emptyEntry";
+import f from "lodash/fp";
 
 const AttachmentLabelCell = (props) => {
   const {attachmentElement, langtag, selected, openOverlay} = props;
@@ -20,7 +22,7 @@ const AttachmentLabelCell = (props) => {
   return (
     <div className="link-label" onClick={handleClick}>
       <div className="label-text">
-        {attachmentTitle}
+        {f.isEmpty(attachmentTitle) ? <Empty/> : attachmentTitle}
       </div>
     </div>
   );
