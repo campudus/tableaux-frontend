@@ -9,7 +9,7 @@ import apiUrl from "../../../helpers/apiUrl";
 import {translate} from "react-i18next";
 import Spinner from "../../header/Spinner";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
+import {AutoSizer, List} from "react-virtualized";
 import f from "lodash/fp";
 
 @connectToAmpersand
@@ -23,11 +23,6 @@ class AttachmentOverlay extends Component {
   constructor(props) {
     super(props);
     this.state = {folder: null};
-    this._cache = new CellMeasurerCache({
-      fixedWidth: true,
-      minHeight: 57,
-      defaultHeight: 57
-    });
   }
 
   retrieveTranslation = multiLanguage.retrieveTranslation(TableauxConstants.FallbackLanguage);
@@ -98,19 +93,14 @@ class AttachmentOverlay extends Component {
 
     return (file)
       ? (
-        <CellMeasurer key={file.uuid}
-          cache={this._cache}
-          rowIndex={index}
-          parent={parent}
-        >
-          <FileItem style={style}
-            isLinked={isLinked}
-            toggleAttachment={this.toggleAttachments(isLinked, file)}
-            title={fileTitle}
-            url={imageUrl}
-            editorUrl={this.getMediaFolderUrl(file.folder)}
+          <FileItem key={file.uuid}
+                    style={style}
+                    isLinked={isLinked}
+                    toggleAttachment={this.toggleAttachments(isLinked, file)}
+                    title={fileTitle}
+                    url={imageUrl}
+                    editorUrl={this.getMediaFolderUrl(file.folder)}
           />
-        </CellMeasurer>
       )
       : null;
   };
@@ -168,8 +158,7 @@ class AttachmentOverlay extends Component {
             <AutoSizer>
               {({width, height}) => (
                 <List height={height}
-                  deferredMeasurementCache={this._cache}
-                  rowHeight={this._cache.rowHeight}
+                  rowHeight={63}
                   rowRenderer={this.renderFileItem}
                   rowCount={f.size(folder.files)}
                   width={width}
@@ -196,7 +185,7 @@ const FileItem = translate(["media", "common"])(
 
     return (
       <div className="file-wrapper"
-        style={f.assoc("width", "calc(100% - 20px)", style)}
+        style={style}
       >
         <div className={isLinked ? "file is-linked" : "file"}>
           <a onClick={toggleAttachment}

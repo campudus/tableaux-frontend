@@ -513,15 +513,21 @@
     .file-list {
       flex: 2;
       padding: 0;
-      height: 100%;
-      box-sizing: border-box;
+      height: auto;
+      position: relative;
+
+      .ReactVirtualized__Grid__innerScrollContainer {
+        padding: 15px;
+        margin-top:  15px;
+      }
 
       .file-wrapper {
+        width: 100%;
         padding: 3px 15px;
+        box-sizing: border-box;
       }
 
       .file {
-        width: 100%;
         padding: 8px;
         border-radius: 3px;
         background-color: $color-primary-contrast-text;
@@ -538,9 +544,13 @@
           justify-content: space-between;
           padding: 5px;
           padding-bottom: 10px;
+          width: 100%;
 
           span {
-            flex: 1;
+            flex: 1 1 auto;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
           }
         }
 
@@ -569,11 +579,6 @@
 
         font-size: small;
         font-weight: bold;
-
-        .overlay-table-row {
-          display: block;
-          width: 100%;
-        }
 
         .media-options {
           color: transparent;
