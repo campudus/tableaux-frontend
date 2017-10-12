@@ -156,20 +156,25 @@ class SwitcherPopup extends React.PureComponent {
 
   getFilteredTables = (filterGroupId, filterTableName) => {
     const {langtag, tables} = this.props;
+    const getDisplayNameOrFallback = f.flow(
+      f.props([["displayName", langtag], ["displayName", FallbackLanguage], " "]),
+      f.find(f.identity)
+    );
     const matchesQuery = (query) => f.flow(
       forkJoin(
         (a, b) => a + " " + b,
-        f.flow(f.props([["displayName", langtag], ["displayName", FallbackLanguage], " "]), f.find(f.identity)),
+        getDisplayNameOrFallback,
         f.get("name")
       ),
-      SearchFunctions[FilterModes.CONTAINS](query)
+      SearchFunctions[FilterModes.CONTAINS](query),
     );
 
     const isInGroup = f.matchesProperty(["group", "id"], filterGroupId);
 
     const tableResults = f.flow(
       f.reject("hidden"),
-      f.filter(matchesQuery(filterTableName))
+      f.filter(matchesQuery(filterTableName)),
+      f.sortBy(getDisplayNameOrFallback)
     )(tables.models);
 
     return {
