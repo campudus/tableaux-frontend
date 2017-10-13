@@ -69,6 +69,9 @@ class EntityViewBody extends Component {
         event.preventDefault();
         event.stopPropagation();
         this.changeFocus(Directions.DOWN);
+      },
+      always: event => {
+        event.stopPropagation();
       }
     };
   };
