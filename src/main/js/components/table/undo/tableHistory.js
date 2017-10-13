@@ -32,6 +32,10 @@ let currentTable;
 Dispatcher.on(ActionTypes.SWITCH_TABLE, setCurrentTable);
 
 export const setCurrentTable = (tableId) => {
+  if (tableId !== currentTable) {
+    delete undoStacks[currentTable];
+    delete redoStacks[currentTable];
+  }
   currentTable = tableId;
 };
 
