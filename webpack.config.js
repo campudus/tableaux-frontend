@@ -66,7 +66,7 @@ if (isProductionBuild) {
   // development build
   plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
+    new webpack.NamedModulesPlugin()
   );
 }
 
