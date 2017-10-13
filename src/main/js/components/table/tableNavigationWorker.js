@@ -155,6 +155,7 @@ export function isLastRowSelected() {
 }
 
 export function toggleCellSelection({selected, cell, langtag}) {
+  ActionCreator.setColumnsVisibility(true, [f.get(["column", "id"], cell)]);
   const tableId = cell.tableId;
   const columnId = cell.column.id;
   const rowId = cell.row.id;
