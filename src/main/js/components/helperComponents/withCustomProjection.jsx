@@ -127,7 +127,7 @@ const updateColumnVisibility = (tableId, state, {val, colIds}, shouldSave) => {
     : (val)
       ? f.uniq([...currentVisibility, ...colIds])  // val == truthy -> add colIds to visibility array
       : f.without(colIds, currentVisibility);      // else remove colIds from visibility array
-  shouldSave && saveColumnVisibility(tableId, visibility);
+  shouldSave && !f.equals(visibility, currentVisibility) && saveColumnVisibility(tableId, visibility);
   return f.assoc(
     ["projection", "columns"],
     visibility,
