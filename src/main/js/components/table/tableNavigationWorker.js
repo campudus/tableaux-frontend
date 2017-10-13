@@ -6,7 +6,7 @@ import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {maybe} from "../../helpers/functools";
-import * as Undo from "./undo/undoer";
+import * as Undo from "./undo/tableHistory";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
