@@ -128,9 +128,11 @@ export function getKeyboardShortcuts() {
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
       } else if (hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
-        const undoFn = (isKeyPressed("Z")) ? TableHistory.redo : TableHistory.undo;
-        undoFn();
-      } else if (isKeyPressed("y") && event.ctrlKey) {
+        if (!selectedCellEditing) {
+          const undoFn = (isKeyPressed("Z")) ? TableHistory.redo : TableHistory.undo;
+          undoFn();
+        }
+      } else if (isKeyPressed("y") && event.ctrlKey && !selectedCellEditing) {
         TableHistory.redo();
       } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
