@@ -27,7 +27,7 @@ import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
-import * as Undo from "../table/undo/undoer";
+import * as Undo from "../table/undo/tableHistory";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 

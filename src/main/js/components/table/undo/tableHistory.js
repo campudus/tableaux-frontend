@@ -1,5 +1,20 @@
 /**
  * A listener using two LIFO queues to watch cell changes and provide undo/redo
+ *
+ * Exports functions
+ *
+ * remember: (cell: Cell, value: object) -> void
+ *     saves a cell state to undo history
+ * undo: (void) -> future({cell: Cell, value: object})
+ *     undoes the last cell change in the current table, up to MAX_UNDO_STEPS
+ *     returns the applied change
+ * redo: (void) -> future({cell: Cell, value: object})
+ *     redoes the last undone cell change in the current table, up to MAX_UNDO_STEPS
+ *     returns the applied change
+ * canUndo: (void) -> bool
+ *     checks if there are any elements on the current table's undo stack
+ * canRedo: (void) -> bool
+ *     checks if there are any elements on the current table's redo stack
  */
 
 import f from "lodash/fp";
@@ -42,6 +57,9 @@ const pop = (stacks) => {
 };
 
 const peek = (stacks) => f.last(getCurrentStack(stacks));
+
+export const canUndo = () => !!peek(undoStacks);
+export const canRedo = () => !!peek(redoStacks);
 
 export async function undo() {
   return popAndApply(undoStacks);
