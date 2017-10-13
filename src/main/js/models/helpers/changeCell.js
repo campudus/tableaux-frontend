@@ -156,10 +156,13 @@ async function changeLinkCell({cell, value}) {
 
 async function reorderLinks({cell, value}) {
   const swappers = f.flow(
-    f.reject(([a, b]) => f.get("id", a) === f.get("id", b)), // remove all elements which kept their position
-    f.map(f.dropRight(1)),                                   // reduce remaining tuples to single entries in two steps
-    f.flatten,                                               //   thus only the swapped elements remain
-    f.map("id"),                                             // retrieve ids of swapped elements in order after swap
+    // remove all elements which kept their position
+    f.reject(([a, b]) => f.get("id", a) === f.get("id", b)),
+    // reduce remaining tuples to single entries in two steps, so only the swapped elements remain
+    f.map(f.dropRight(1)),
+    f.flatten,
+    // retrieve ids of swapped elements in new order
+    f.map("id"),
   )(f.zip(value, cell.value)); // Input: tuples of element at index i before and after swap
   cell.set({value: f.map(f.pick(["id", "value"]), value)}); // don't store LinkOverlay's display value
   const sortUrl = `/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}/link/${f.first(swappers)}/order`;

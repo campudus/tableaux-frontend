@@ -8,7 +8,7 @@ import Row from "./Row";
 import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationOverlay.jsx";
 import {
   getUserLanguageAccess,
-  isUserAdmin,
+  isUserAdmin
 } from "../helpers/accessManagementHelper";
 import * as f from "lodash/fp";
 import i18n from "i18next";
