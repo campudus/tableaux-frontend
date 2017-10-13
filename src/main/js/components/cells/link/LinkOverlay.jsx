@@ -343,7 +343,6 @@ class LinkOverlay extends PureComponent {
     const thisCell = this.props.cell;
 
     if (cell === thisCell) {
-      devLog(this.allRowResults)
       this.setState({
         rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
       });

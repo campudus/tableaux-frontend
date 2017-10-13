@@ -6,7 +6,7 @@ import {isLocked, unlockRow} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {maybe} from "../../helpers/functools";
-import * as Undo from "./undo/tableHistory";
+import * as TableHistory from "./undo/tableHistory";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -128,8 +128,10 @@ export function getKeyboardShortcuts() {
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
       } else if (hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
-        const undoFn = (isKeyPressed("Z")) ? Undo.redo : Undo.undo;
+        const undoFn = (isKeyPressed("Z")) ? TableHistory.redo : TableHistory.undo;
         undoFn();
+      } else if (isKeyPressed("y") && event.ctrlKey) {
+        TableHistory.redo();
       } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text
