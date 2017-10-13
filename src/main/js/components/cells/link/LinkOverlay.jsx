@@ -26,7 +26,8 @@ import {LinkedRows, LinkStatus, RowCreator, SwitchSortingButton, UnlinkedRows} f
 import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../models/Rows";
 import {Promise} from "es6-promise";
 import Spinner from "../../header/Spinner";
-const throat = require("throat")(Promise);
+import Throat from "throat";
+const throat = Throat(Promise);
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -78,13 +79,13 @@ class LinkOverlay extends PureComponent {
   componentDidMount = () => {
     Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.on(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
+    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateValues);
   };
 
   componentWillUnmount = () => {
     Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
-    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
+    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateValue);
   };
 
   componentWillReceiveProps(nextProps) {
@@ -337,11 +338,21 @@ class LinkOverlay extends PureComponent {
     }
   );
 
-  updateLinkValues = ({cell, row = {}}) => {
+  updateValues = (data) => {
+    const {cell} = data;
     const thisCell = this.props.cell;
-    if (cell.column.id !== thisCell.column.toColumn.id || cell.tableId !== thisCell.column.toTable) {
-      return;
+
+    if (cell === thisCell) {
+      devLog(this.allRowResults)
+      this.setState({
+        rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())
+      });
+    } else if (cell.column.id === thisCell.column.toColumn.id && cell.tableId === thisCell.column.toTable) {
+      this.updateLinkValues(data);
     }
+  };
+
+  updateLinkValues = ({cell, row = {}}) => {
     const oldValueIdx = f.findIndex(f.matchesProperty("id", row.id), this.allRowResults);
     const newLink = f.assoc("id", row.id, f.pick(["value", "displayValue"], cell));
     this.updateRowResults(f.assoc(oldValueIdx, newLink));
