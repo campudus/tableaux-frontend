@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import {translate} from "react-i18next";
 import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import {forkJoin} from "../../../helpers/functools";
+import {forkJoin, fspy} from "../../../helpers/functools";
 import PropTypes from "prop-types";
 
 @translate(["header"])
@@ -174,7 +174,6 @@ class SwitcherPopup extends React.PureComponent {
     const tableResults = f.flow(
       f.reject("hidden"),
       f.filter(matchesQuery(filterTableName)),
-      f.sortBy(getDisplayNameOrFallback)
     )(tables.models);
 
     return {
@@ -186,26 +185,30 @@ class SwitcherPopup extends React.PureComponent {
   renderGroups = (groups) => {
     const {t, langtag} = this.props;
 
-    const renderedGroups = (groups || []).map(
-      (group, index) => {
-        const groupDisplayName = group.displayName[langtag] || group.displayName[FallbackLanguage];
+    const renderGroup = (group) => {
+      const groupDisplayName = group.displayName[langtag] || group.displayName[FallbackLanguage];
 
-        const isNoGroupGroup = group.id === 0;
-        const isActive = this.state.filterGroupId === group.id;
+      const isNoGroupGroup = group.id === 0;
+      const isActive = this.state.filterGroupId === group.id;
 
-        let className = "";
-        className += isNoGroupGroup ? " nogroup" : "";
-        className += isActive ? " active" : "";
+      let className = "";
+      className += isNoGroupGroup ? " nogroup" : "";
+      className += isActive ? " active" : "";
 
-        return (
-          <li key={"group" + index} onClick={this.onClickGroup(group)} className={className}>
-            {groupDisplayName}
-            {isActive ? <i className="fa fa-times-circle"></i> : ""}
-          </li>
-        );
-      },
-      groups
-    );
+      return (
+        <li key={"group" + group.id} onClick={this.onClickGroup(group)} className={className}>
+          {groupDisplayName}
+          {isActive ? <i className="fa fa-times-circle"></i> : ""}
+        </li>
+      );
+    };
+
+    const renderedGroups = f.flow(
+      f.drop(1),                                             // remove "show all tables" entry
+      f.sortBy(f.get(["displayName", langtag])),             // sort groups
+      (sortedGroups) => [f.first(groups), ...sortedGroups],  // recombine with "show all" entry
+      f.map(renderGroup)
+    )(groups);
 
     if (groups.length <= 1) {
       return "";
