@@ -1,5 +1,6 @@
 {
   "plugins": [
+    "react-hot-loader/babel",
     "transform-react-inline-elements",
     "transform-decorators-legacy",
     "transform-runtime",
