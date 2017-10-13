@@ -28,6 +28,7 @@ import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
 import * as Undo from "../table/undo/tableHistory";
+import HistoryButtons from "../table/undo/HistoryButtons";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
@@ -505,6 +506,7 @@ class TableView extends Component {
               )
               : <div/>
             }
+            <HistoryButtons/>
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables" />
             <Spinner />
