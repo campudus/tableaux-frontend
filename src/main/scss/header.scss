@@ -191,6 +191,8 @@ header {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        position: relative;
+
         .button {
           @include button-look();
 
@@ -203,6 +205,30 @@ header {
 
     a {
       padding: 10px;
+    }
+  }
+
+  .history-buttons {
+    display: block;
+    margin-top: 10px;
+    position: relative;
+    left: 20px;
+
+    .button {
+      @include header-button-look();
+
+      &:hover:not(.disabled) {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+
+      &.disabled {
+        color: $color-text-light-grey;
+      }
+
+      &.redo-button {
+        margin-left: 8px;
+      }
     }
   }
 }

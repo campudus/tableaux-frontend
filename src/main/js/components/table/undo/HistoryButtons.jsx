@@ -3,19 +3,20 @@ import * as TableHistory from "./tableHistory";
 import f from "lodash/fp";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
-import {compose, lifecycle} from "recompose";
+import {compose, lifecycle, pure, withHandlers, withState} from "recompose";
+import {fspy} from "../../../helpers/functools";
 
-const HistoryButtons = (props) => (
+const HistoryButtons = ({history: {canUndo, canRedo}}) => (
   <div className="history-buttons">
-    <a className={`button undo-button ${(TableHistory.canUndo()) ? "" : "disabled"}`}
-       onClick={(TableHistory.canUndo()) ? TableHistory.undo : f.noop}
+    <a className={`button undo-button ${(canUndo) ? "" : "disabled"}`}
+       onClick={(canUndo) ? TableHistory.undo : f.noop}
        href="#"
        draggable={false}
     >
       <i className="fa fa-undo" />
     </a>
-    <a className={`button redo-button ${(TableHistory.canRedo()) ? "" : "disabled"}`}
-       onClick={(TableHistory.canRedo()) ? TableHistory.redo : f.noop}
+    <a className={`button redo-button ${(canRedo) ? "" : "disabled"}`}
+       onClick={(canRedo) ? TableHistory.redo : f.noop}
        href="#"
        draggable={false}
     >
@@ -25,14 +26,21 @@ const HistoryButtons = (props) => (
 );
 
 export default compose(
+  withState("history", "setHistory", {canUndo: false, canRedo: false}),
+  withHandlers({
+    updateHistory: ({setHistory}) => () => window.requestAnimationFrame(() => setHistory(f.always({
+      canUndo: TableHistory.canUndo(),
+      canRedo: TableHistory.canRedo()
+    })))
+  }),
   lifecycle({
     componentDidMount() {
-      Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.forceUpdate);
-      Dispatcher.on(ActionTypes.SWITCH_TABLE, this.forceUpdate);
+      Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.props.updateHistory);
+      Dispatcher.on(ActionTypes.SWITCH_TABLE, this.props.updateHistory);
     },
     componentWillUnmount() {
-      Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.forceUpdate);
-      Dispatcher.off(ActionTypes.SWITCH_TABLE, this.forceUpdate);
+      Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.props.updateHistory);
+      Dispatcher.off(ActionTypes.SWITCH_TABLE, this.props.updateHistory);
     }
   })
 )(HistoryButtons);
