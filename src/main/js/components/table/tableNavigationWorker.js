@@ -108,7 +108,7 @@ export function getKeyboardShortcuts() {
         return;
       }
       const hasActionKey = !!f.get(actionKey, event);
-      const isKeyPressed = (k) => ("A" <= k && k <= "Z")
+      const isKeyPressed = (k) => (k >= "A" && k <= "Z")
         ? f.matchesProperty("key", k)(event) || (f.matchesProperty("key", f.toLower(k))(event) && f.get("shiftKey", event))
         : f.matchesProperty("key", k)(event);
       const thisLangtag = this.props.langtag;

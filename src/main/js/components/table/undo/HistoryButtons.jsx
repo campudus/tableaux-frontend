@@ -3,8 +3,7 @@ import * as TableHistory from "./tableHistory";
 import f from "lodash/fp";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
-import {compose, lifecycle, pure, withHandlers, withState} from "recompose";
-import {fspy} from "../../../helpers/functools";
+import {compose, lifecycle, withHandlers, withState} from "recompose";
 
 const HistoryButtons = ({history: {canUndo, canRedo}}) => (
   <div className="history-buttons">

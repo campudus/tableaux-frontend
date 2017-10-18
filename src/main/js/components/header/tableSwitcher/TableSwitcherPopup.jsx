@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import {translate} from "react-i18next";
 import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import {forkJoin, fspy} from "../../../helpers/functools";
+import {forkJoin} from "../../../helpers/functools";
 import PropTypes from "prop-types";
 
 @translate(["header"])
@@ -204,9 +204,9 @@ class SwitcherPopup extends React.PureComponent {
     };
 
     const renderedGroups = f.flow(
-      f.drop(1),                                             // remove "show all tables" entry
-      f.sortBy(f.get(["displayName", langtag])),             // sort groups
-      (sortedGroups) => [f.first(groups), ...sortedGroups],  // recombine with "show all" entry
+      f.drop(1), // remove "show all tables" entry
+      f.sortBy(f.get(["displayName", langtag])), // sort groups
+      (sortedGroups) => [f.first(groups), ...sortedGroups], // recombine with "show all" entry
       f.map(renderGroup)
     )(groups);
 

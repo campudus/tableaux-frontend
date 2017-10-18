@@ -55,11 +55,11 @@ class TableSwitcherButton extends React.PureComponent {
     const {t, langtag, tables, currentTable} = this.props;
 
     const groups = f.flow(
-      f.reject("hidden"),                   //   ...of visible tables
-      f.map("group"),                       //   ...from group data
-      f.compact,                            //   ...of non-null groups
+      f.reject("hidden"), //   ...of visible tables
+      f.map("group"), //   ...from group data
+      f.compact, //   ...of non-null groups
       f.reject(f.matchesProperty("id", 0)), //   ...with valid ids
-      f.uniqBy("id"),                       // unique set of groups
+      f.uniqBy("id"), // unique set of groups
     )(tables.models);
 
     const noGroupDisplayName = {};
