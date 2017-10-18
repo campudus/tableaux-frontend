@@ -40,9 +40,9 @@ class MultiFileEdit extends Component {
     if (hasChanged) {
       const langDuplicates = f.flow(
         f.map((lt) => editedLanguage[lt] || lt), // select langtags or edited languages
-        f.groupBy(f.identity),                   // collect equal langatags
-        f.mapValues(f.size),                     // count occurence of langtags
-        f.pickBy(f.lt(1))                        // Select keys with 1 < N for any
+        f.groupBy(f.identity), // collect equal langatags
+        f.mapValues(f.size), // count occurence of langtags
+        f.pickBy(f.lt(1)) // Select keys with 1 < N for any
       )(Langtags);
 
       if (!f.isEmpty(langDuplicates)) {
