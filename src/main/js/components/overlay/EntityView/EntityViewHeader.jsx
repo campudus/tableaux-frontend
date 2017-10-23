@@ -12,6 +12,7 @@ import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import Empty from "../../helperComponents/emptyEntry";
+import HistoryButtons from "../../table/undo/HistoryButtons";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -195,6 +196,7 @@ class EntityViewHeader extends Component {
       <div className="header-components">
         <LanguageSwitcher langtag={langtag} />
         {(canSwitchRows) ? <RowSwitcher {...this.props} /> : null}
+        <HistoryButtons />
         <FilterBar id={this.props.id} />
         <HeaderPopupMenu langtag={langtag} row={row} id={this.props.id} hasMeaningfulLinks={hasMeaningfulLinks} />
       </div>
