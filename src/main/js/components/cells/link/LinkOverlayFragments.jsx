@@ -1,5 +1,5 @@
 import React from "react";
-import {branch, compose, renderComponent, renderNothing, withHandlers, withProps} from "recompose";
+import {branch, compose, pure, renderComponent, renderNothing, withHandlers, withProps} from "recompose";
 import f from "lodash/fp";
 import DragSortList from "./DragSortList";
 import Spinner from "../../header/Spinner";
@@ -51,7 +51,8 @@ const UnlinkedRowsFrag = (
     noRowsRenderer,
     scrollToIndex,
     selectedMode,
-    selectedBox
+    selectedBox,
+    order
   }
 ) => (
   <div className="unlinked-items"
@@ -60,13 +61,14 @@ const UnlinkedRowsFrag = (
     <AutoSizer>
       {({width, height}) => (
         <List width={width}
-          height={height}
-          rowCount={rowCount}
-          rowHeight={40}
-          scrollToIndex={scrollToIndex}
-          rowRenderer={rowRenderer}
-          selectedMode={selectedMode}
-          selectedBox={selectedBox}
+              height={height}
+              rowCount={rowCount}
+              rowHeight={40}
+              scrollToIndex={scrollToIndex}
+              rowRenderer={rowRenderer}
+              selectedMode={selectedMode}
+              selectedBox={selectedBox}
+              sortBy={order}
         />
       )
       }
@@ -158,3 +160,26 @@ export const RowCreator = compose(
     }
   )
 )(RowCreatorFrag);
+
+export const SwitchSortingButton = compose(
+  pure,
+  withHandlers({
+    switchSortMode: ({unlinkedOrder, updateSharedData, sortIcons}) => () => updateSharedData(
+      f.update("unlinkedOrder", (n = 0) => {
+        return (n + 1) % f.size(sortIcons);
+      })
+    )
+  })
+)(
+  (props) => {
+    const {switchSortMode, sortIcons, unlinkedOrder} = props;
+    return (
+      <a href="#"
+         className="sort-mode-button"
+         onClick={switchSortMode}
+      >
+        <i className={sortIcons[unlinkedOrder]} />
+      </a>
+    );
+  }
+);
