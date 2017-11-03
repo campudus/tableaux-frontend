@@ -10,7 +10,7 @@ import i18n from "i18next";
 import ActionCreator from "../../actions/ActionCreator";
 import SvgIcon from "../helperComponents/SvgIcon";
 import classNames from "classnames";
-import Portal from "react-portal";
+import {Portal} from "react-portal";
 
 @listenToClickOutside
 class AnnotationPopup extends PureComponent {

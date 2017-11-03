@@ -12,7 +12,7 @@ import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import f from "lodash/fp";
 import {maybe} from "../../helpers/functools";
 import i18n from "i18next";
-import Portal from "react-portal";
+import {Portal} from "react-portal";
 
 import VirtualTable from "./VirtualTable";
 

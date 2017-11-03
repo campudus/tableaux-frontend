@@ -1,5 +1,5 @@
 import React from "react";
-import Portal from "react-portal";
+import {Portal} from "react-portal";
 import {branch, pure, renderNothing} from "recompose";
 import i18n from "i18next";
 

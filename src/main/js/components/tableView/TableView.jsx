@@ -22,7 +22,7 @@ import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "../cells/cellCopyHelper";
 import {openEntityView} from "../overlay/EntityViewOverlay";
-import Portal from "react-portal";
+import {Portal} from "react-portal";
 import JumpSpinner from "./JumpSpinner";
 import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
@@ -493,7 +493,7 @@ class TableView extends Component {
                   columns={currentTable.columns}
                 />
               )
-              : null
+              : <div/>
             }
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables" />

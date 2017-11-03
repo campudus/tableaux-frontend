@@ -48,7 +48,7 @@ class ColumnFilter extends React.Component {
         <a href="#" className={buttonClass} onClick={this.togglePopup}>
           <i className="fa fa-eye" />
           {(nHidden > 0)
-            ? <text className="infotext">{message}</text>
+            ? <span className="infotext">{message}</span>
             : null
           }
         </a>

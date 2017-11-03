@@ -16,7 +16,7 @@ const connectToAmpersand = (Component) => class extends React.PureComponent {
     Object.assign(this, Events);
   }
 
-  displayName = "ConnectToAmpersand";
+  static displayName = "ConnectToAmpersand";
 
   watch = (model, {events, force, callback} = {}) => {
     if (!model || !(model.isCollection || model.isState || model.isModel)) {
