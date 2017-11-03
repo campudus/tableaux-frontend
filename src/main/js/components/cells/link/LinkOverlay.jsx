@@ -5,7 +5,7 @@ import "react-virtualized/styles.css";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 import {ActionTypes, DefaultLangtag, Directions, FilterModes} from "../../../constants/TableauxConstants";
-import {either, fspy, maybe} from "../../../helpers/functools";
+import {either, maybe} from "../../../helpers/functools";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -85,6 +85,16 @@ class LinkOverlay extends PureComponent {
     Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
     Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
+  };
+
+  componentWillReceiveProps(nextProps) {
+    const curOrder = f.getOr(0, "unlinkedOrder", this.props.sharedData);
+    const nextOrder = nextProps.sharedData.unlinkedOrder;
+    if (!f.isNil(nextOrder) && curOrder !== nextOrder) {
+      this.setState({
+        rowResults: this.filterRowsBySearch(this.getCurrentSearchValue(), nextOrder)
+      });
+    }
   };
 
   handleMyKeys = ({id, event}) => {
@@ -349,8 +359,11 @@ class LinkOverlay extends PureComponent {
       () => this.onSearch());
   };
 
-  filterRowsBySearch = (searchParams) => {
-    const {langtag, sharedData} = this.props;
+  filterRowsBySearch = (
+    searchParams,
+    sortMode = f.getOr(0, "unlinkedOrder", this.props.sharedData)
+  ) => {
+    const {langtag} = this.props;
     const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
     const {allRowResults} = this;
@@ -367,7 +380,7 @@ class LinkOverlay extends PureComponent {
       searchFunction(filterValue)
     );
     const unlinked = (filterValue !== "") ? f.filter(byDisplayValues, unlinkedRows) : unlinkedRows;
-    const sortUnlinked = this.sortModes[f.getOr(0, "filterRowsunlinkedOrder", sharedData)];
+    const sortUnlinked = this.sortModes[sortMode];
     return {
       linked: linkedRows,
       unlinked: sortUnlinked(unlinked)
