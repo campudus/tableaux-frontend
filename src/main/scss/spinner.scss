@@ -19,14 +19,10 @@ header {
       }
     }
 
-    &.spinner-leave {
-
-      &.spinner-leave-active {
-        opacity: 0;
-        @include transition(opacity 300ms ease-in);
-      }
+    &.spinner-exit.spinner-exit-active {
+      opacity: 0;
+      @include transition(opacity 300ms ease-in);
     }
-
   }
 }
 
