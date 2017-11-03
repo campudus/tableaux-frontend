@@ -8,7 +8,7 @@
  */
 import React from "react";
 import Events from "ampersand-events";
-import * as fp from "lodash/fp";
+import f from "lodash/fp";
 
 const connectToAmpersand = (Component) => class extends React.PureComponent {
   constructor(props) {
@@ -40,7 +40,7 @@ const connectToAmpersand = (Component) => class extends React.PureComponent {
   };
 
   componentDidMount = () => {
-    fp.values(this.props).forEach(model => this.watch(model));
+    f.values(this.props).forEach(model => this.watch(model));
   };
 
   componentWillUnmount = () => {
@@ -52,7 +52,7 @@ const connectToAmpersand = (Component) => class extends React.PureComponent {
   };
 
   render() {
-    return <Component ref={this.keepRef} {...this.props} watch={this.watch} />;
+    return <Component ref={(f.isFunction(Component)) ? undefined : this.keepRef} {...this.props} watch={this.watch} />;
   }
 };
 
