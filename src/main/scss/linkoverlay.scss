@@ -10,6 +10,25 @@
       position: relative;
     }
 
+    .header-wrapper .sort-mode-button {
+      color: $color-text-medium-grey;
+      background-color: $color-primary-contrast-text;
+      border-radius: 3px;
+      height: 31px;
+      width: 31px;
+      margin-left: 8px;
+
+      grid-column: 4;
+      -ms-grid-column: 4;
+      grid-row: 3;
+      -ms-grid-row: 3;
+
+      &:hover {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+    }
+
     .link-overlay {
       display: flex;
       height: 100%;
@@ -80,9 +99,9 @@
 
   .filter-bar {
     grid-column-start: 2;
-    grid-column-end: 5;
+    grid-column-end: 4;
     -ms-grid-column: 2;
-    -ms-grid-column-span: 3;
+    -ms-grid-column-span: 2;
     grid-row-start: 3;
     -ms-grid-row: 3;
     position: relative;

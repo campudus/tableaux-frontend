@@ -22,7 +22,7 @@ import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 import Raven from "raven-js";
-import {LinkedRows, LinkStatus, RowCreator, UnlinkedRows} from "./LinkOverlayFragments";
+import {LinkedRows, LinkStatus, RowCreator, SwitchSortingButton, UnlinkedRows} from "./LinkOverlayFragments";
 import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../models/Rows";
 import {Promise} from "es6-promise";
 import Spinner from "../../header/Spinner";
@@ -32,6 +32,11 @@ const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
 const LINKED_ITEMS = 0;
 const UNLINKED_ITEMS = 1;
+
+const sortIcons = [
+  "fa fa-sort-numeric-asc",
+  "fa fa-sort-alpha-asc"
+];
 
 @translate(["table"])
 @withAbortableXhrRequests
@@ -60,7 +65,17 @@ class LinkOverlay extends PureComponent {
     tableId: PropTypes.number
   };
 
-  componentDidMount = () => { // why is componentWillMount never called?
+  sortModes = [
+    f.sortBy(f.get("id")),
+    f.sortBy(
+      f.flow(
+        f.get(["displayValue", this.props.langtag]),
+        f.toLower
+      )
+    )
+  ];
+
+  componentDidMount = () => {
     Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.on(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
     Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
@@ -70,6 +85,16 @@ class LinkOverlay extends PureComponent {
     Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
     Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
     Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateLinkValues);
+  };
+
+  componentWillReceiveProps(nextProps) {
+    const curOrder = f.getOr(0, "unlinkedOrder", this.props.sharedData);
+    const nextOrder = nextProps.sharedData.unlinkedOrder;
+    if (!f.isNil(nextOrder) && curOrder !== nextOrder) {
+      this.setState({
+        rowResults: this.filterRowsBySearch(this.getCurrentSearchValue(), nextOrder)
+      });
+    }
   };
 
   handleMyKeys = ({id, event}) => {
@@ -334,7 +359,10 @@ class LinkOverlay extends PureComponent {
       () => this.onSearch());
   };
 
-  filterRowsBySearch = (searchParams) => {
+  filterRowsBySearch = (
+    searchParams,
+    sortMode = f.getOr(0, "unlinkedOrder", this.props.sharedData)
+  ) => {
     const {langtag} = this.props;
     const {filterValue, filterMode} = searchParams;
     const searchFunction = SearchFunctions[filterMode];
@@ -351,9 +379,11 @@ class LinkOverlay extends PureComponent {
       f.get(["displayValue", langtag]),
       searchFunction(filterValue)
     );
+    const unlinked = (filterValue !== "") ? f.filter(byDisplayValues, unlinkedRows) : unlinkedRows;
+    const sortUnlinked = this.sortModes[sortMode];
     return {
       linked: linkedRows,
-      unlinked: (filterValue !== "") ? f.filter(byDisplayValues, unlinkedRows) : unlinkedRows
+      unlinked: sortUnlinked(unlinked)
     };
   };
 
@@ -494,7 +524,13 @@ class LinkOverlay extends PureComponent {
 
   render = () => {
     const {rowResults, loading} = this.state;
-    const {cell, cell: {column}, cell: {column: {displayName}}, langtag} = this.props;
+    const {
+      cell,
+      cell: {column},
+      cell: {column: {displayName}},
+      langtag,
+      sharedData: {unlinkedOrder}
+    } = this.props;
     const targetTable = {
       tableId: column.toTable,
       langtag
@@ -533,28 +569,29 @@ class LinkOverlay extends PureComponent {
             />
           </span>
           <LinkedRows loading={loading}
-            linkEmptyLines={linkEmptyLines}
-            listItemRenderer={this.renderListItem}
-            swapItems={this.swapLinkedItems}
-            rowResults={rowResults}
+                      linkEmptyLines={linkEmptyLines}
+                      listItemRenderer={this.renderListItem}
+                      swapItems={this.swapLinkedItems}
+                      rowResults={rowResults}
           />
         </div>
         <UnlinkedRows loading={loading}
-          noForeignRows={noForeignRows}
-          rowCount={f.size(rowResults.unlinked) + 1}
-          renderRows={this.renderListItem}
-          scrollToIndex={this.state.selectedId.unlinked}
-          setActiveBox={this.setActiveBox}
-          activeBox={UNLINKED_ITEMS}
-          selectedBox={this.state.activeBox}
-          selectedMode={this.state.selectedMode}
+                      order={unlinkedOrder}
+                      noForeignRows={noForeignRows}
+                      rowCount={f.size(rowResults.unlinked) + 1}
+                      renderRows={this.renderListItem}
+                      scrollToIndex={this.state.selectedId.unlinked}
+                      setActiveBox={this.setActiveBox}
+                      activeBox={UNLINKED_ITEMS}
+                      selectedBox={this.state.activeBox}
+                      selectedMode={this.state.selectedMode}
         />
         <RowCreator langtag={langtag}
-          canAddLinks={this.canAddLink()}
-          cell={cell}
-          shiftUp={noForeignRows && !loading}
-          updateRowResults={this.updateRowResults}
-          addLink={this.addLinkValue}
+                    canAddLinks={this.canAddLink()}
+                    cell={cell}
+                    shiftUp={noForeignRows && !loading}
+                    updateRowResults={this.updateRowResults}
+                    addLink={this.addLinkValue}
         />
       </div>
     );
@@ -568,12 +605,16 @@ export const openLinkOverlay = (cell, langtag) => {
 
   const LinkOverlayHeader = connectToAmpersand(
     (props) => {
-      const {langtag, cell, sharedData: {loading}, id} = props;
+      const {langtag, cell, sharedData: {loading, unlinkedOrder = 0}, updateSharedData, id} = props;
       return (
         <Header context={tableName} id={props.id}
           title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
         >
           <SearchBar langtag={langtag} id={id} />,
+          <SwitchSortingButton unlinkedOrder={unlinkedOrder}
+                               updateSharedData={updateSharedData}
+                               sortIcons={sortIcons}
+          />
           <Spinner isLoading={loading} customOptions={{color: "#eee"}} />
         </Header>
       );
