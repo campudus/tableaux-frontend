@@ -512,14 +512,9 @@ class TableView extends Component {
             />
             }
           </div>
-          {(this.pendingCellGoto)
-            ? (
-              <Portal isOpened>
-                <JumpSpinner />
-              </Portal>
-            )
-            : null
-          }
+          <Portal isOpened={!!this.pendingCellGoto && !this.state.searchOverlayOpen}>
+            <JumpSpinner />
+          </Portal>
           <SearchOverlay isOpen={this.state.searchOverlayOpen} />
         </div>
       );

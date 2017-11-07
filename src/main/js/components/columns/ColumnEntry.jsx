@@ -9,6 +9,7 @@ import * as f from "lodash/fp";
 import Rnd from "react-rnd";
 import PropTypes from "prop-types";
 import {ContextMenu, ContextMenuButton, DescriptionTooltip} from "./ColumnHeaderFragments";
+import {ColumnKinds} from "../../constants/TableauxConstants";
 
 class ColumnEntry extends React.PureComponent {
   constructor(props) {
@@ -169,6 +170,7 @@ class ColumnEntry extends React.PureComponent {
             bottom={bottom}
           />
           <ContextMenuButton
+            isConcat={column.kind === ColumnKinds.concat}
             contextMenuClass={contextMenuClass}
             toggleContextMenu={this.toggleContextMenu}
           />
