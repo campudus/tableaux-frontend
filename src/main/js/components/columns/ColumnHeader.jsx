@@ -72,7 +72,7 @@ export default class ColumnHeader extends PureComponent {
 
   stopEditing = (payload) => {
     if (payload
-      && (payload.newName || payload.newDescription)) {
+      && (f.isString(payload.newDescription) || !f.isEmpty(payload.newName))) {
       this.saveEdits(payload);
     }
   };
@@ -85,7 +85,7 @@ export default class ColumnHeader extends PureComponent {
     }
     const modifications =
       f.flow(
-        m => (newDescription) ? f.assoc(["description", langtag], newDescription, m) : m,
+        m => (f.isString(newDescription)) ? f.assoc(["description", langtag], newDescription, m) : m,
         m => (newName) ? f.assoc(["displayName", langtag], newName, m) : m
       )({});
 
