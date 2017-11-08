@@ -2,7 +2,7 @@ import React from "react";
 import Loader from "react-loader";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import TableauxConstants from "../../constants/TableauxConstants";
-import {CSSTransition, TransitionGroup} from "react-transition-group";
+import {CSSTransition} from "react-transition-group";
 import {merge} from "lodash/fp";
 import PropTypes from "prop-types";
 
@@ -86,11 +86,9 @@ export default class Spinner extends React.Component {
   render() {
     return (
       <div className="Tableaux-Spinner">
-        <TransitionGroup>
-          <CSSTransition classNames="spinner" timeout={{exit: 300, enter: 750}}>
-            {this.renderSpinner()}
-          </CSSTransition>
-        </TransitionGroup>
+        <CSSTransition classNames="spinner" timeout={{exit: 300, enter: 750}}>
+          {this.renderSpinner()}
+        </CSSTransition>
       </div>
     );
   }
