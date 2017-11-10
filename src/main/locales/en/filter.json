@@ -22,5 +22,6 @@
     "message": "Filtering this table might take some minutes."
   },
   "searching": "Filtering data",
-  "searching-sub": "Please be patient..."
+  "searching-sub": "Please be patient...",
+  "has-comments": "Has comments"
 }

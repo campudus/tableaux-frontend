@@ -1,7 +1,7 @@
 import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import {either, withTryCatch} from "../../helpers/functools";
 
 const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
@@ -31,7 +31,7 @@ export const SortableCellKinds = [
   ColumnKinds.datetime
 ];
 
-const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.POSTPONE];
+const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.POSTPONE, FilterModes.WITH_COMMENT];
 
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
@@ -73,8 +73,10 @@ const rememberColumnIds = (colSet) => f.tap(
 const mkAnywhereFilter = (closures) => ({value}) => {
   return f.flow(
     f.get(["cells", "models"]),
-    f.filter((cell) => f.contains(cell.kind, FilterableCellKinds)),
-    f.filter((cell) => searchFunctions[FilterModes.CONTAINS](value, closures.getSortableCellValue(cell))),
+    f.filter(f.overEvery([
+      (cell) => f.contains(cell.kind, FilterableCellKinds),
+      (cell) => searchFunctions[FilterModes.CONTAINS](value, closures.getSortableCellValue(cell))
+      ])),
     f.map(rememberColumnIds(closures.colsWithMatches)),
     f.any(f.identity),
   );
@@ -129,17 +131,25 @@ const mkTranslationStatusFilter = closures => ({value}) => {
 };
 
 const mkFlagFilter = (mode, value) => {
-  const flag = {
+  const flag = f.get(mode, {
     [FilterModes.IMPORTANT]: "important",
     [FilterModes.POSTPONE]: "postpone",
     [FilterModes.CHECK_ME]: "check-me"
-  }[mode];
+  });
   const isAsRequired = (value)
     ? f.any((v) => v)
     : f.every((v) => !v);
+  const findAnnotation = (flag)
+    ? f.get(["annotations", flag]) // search for flag
+    : f.flow( // else search for comment
+      f.get("annotations"),
+      f.keys,
+      f.intersection(["info", "warning", "error"]),
+      f.complement(f.isEmpty)
+    );
   return f.flow(
     f.get(["cells", "models"]),
-    f.map(f.get(["annotations", flag])),
+    f.map(findAnnotation),
     isAsRequired
   );
 };

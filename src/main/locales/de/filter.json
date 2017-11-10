@@ -22,5 +22,6 @@
     "message": "Das Filtern dieser Tabelle kann bis zu einigen Minuten dauern."
   },
   "searching": "Filtere Tabelleneinträge",
-  "searching-sub": "Einen Moment bitte..."
+  "searching-sub": "Einen Moment bitte...",
+  "has-comments": "Wurde kommentiert"
 }

@@ -18,7 +18,8 @@ const SPECIAL_SEARCHES = [
   FilterModes.IMPORTANT,
   FilterModes.CHECK_ME,
   FilterModes.POSTPONE,
-  FilterModes.ROW_CONTAINS
+  FilterModes.ROW_CONTAINS,
+  FilterModes.WITH_COMMENT
 ];
 
 const SPECIAL_TEXT_SEARCHES = [
@@ -124,6 +125,11 @@ class FilterPopup extends React.Component {
       {
         label: this.props.t("postpone"),
         value: FilterModes.POSTPONE,
+        kind: BOOL
+      },
+      {
+        label: this.props.t("has-comments"),
+        value: FilterModes.WITH_COMMENT,
         kind: BOOL
       },
       {
