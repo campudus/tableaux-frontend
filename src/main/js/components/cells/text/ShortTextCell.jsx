@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import ShortTextEditCell from "./ShortTextEditCell";
 import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";
-import {changeCell} from "../../../models/Tables";
 import TextCell from "./TextCell";
+import changeCell from "../../../models/helpers/changeCell";
 
 const ShortTextCell = (props) => {
   const {cell, cell: {isMultiLanguage}, contentChanged, editing, selected, langtag, setCellKeyboardShortcuts} = props;
