@@ -92,46 +92,46 @@ class FilterPopup extends React.Component {
     const {langtag} = this.props;
     return [
       {
-        label: f.toUpper(this.props.t("filter.generic")),
+        label: f.toUpper(this.props.t("table:filter.generic")),
         disabled: true
       },
       (langtag !== f.first(Langtags))
         ? {
-          label: this.props.t("translations.this_translation_needed", {langtag}),
+          label: this.props.t("table:translations.this_translation_needed", {langtag}),
           value: FilterModes.UNTRANSLATED,
           kind: BOOL
         }
         : {
-          label: this.props.t("filter.needs_translation"),
+          label: this.props.t("table:filter.needs_translation"),
           value: FilterModes.ANY_UNTRANSLATED,
           kind: BOOL
         },
       {
-        label: this.props.t("filter.is_final"),
+        label: this.props.t("table:filter.is_final"),
         value: FilterModes.FINAL,
         kind: BOOL
       },
       {
-        label: this.props.t("important"),
+        label: this.props.t("table:important"),
         value: FilterModes.IMPORTANT,
         kind: BOOL
       },
       {
-        label: this.props.t("check-me"),
+        label: this.props.t("table:check-me"),
         value: FilterModes.CHECK_ME,
         kind: BOOL
       },
       {
-        label: this.props.t("postpone"),
+        label: this.props.t("table:postpone"),
         value: FilterModes.POSTPONE,
         kind: BOOL
       },
       {
-        label: f.toUpper(this.props.t("filter.specific")),
+        label: f.toUpper(this.props.t("table:filter.specific")),
         disabled: true
       },
       {
-        label: this.props.t("filter.row-contains"),
+        label: this.props.t("table:filter.row-contains"),
         value: FilterModes.ROW_CONTAINS,
         kind: TEXT
       },
@@ -146,7 +146,7 @@ class FilterPopup extends React.Component {
       // Show display name with fallback to machine name
       const columnDisplayName = column.displayName[langtag] || column.name;
       // ID Column gets translated name
-      const labelName = column.id === 0 ? t("concat_column_name") : columnDisplayName;
+      const labelName = column.id === 0 ? t("table:concat_column_name") : columnDisplayName;
 
       return {
         label: labelName,
@@ -350,8 +350,8 @@ class FilterPopup extends React.Component {
               value={sorting.columnId}
               onChange={this.onChangeSelectSortColumn}
               valueRenderer={this.selectFilterValueRenderer}
-              noResultsText={t("input.noResult")}
-              placeholder={t("input.sort")}
+              noResultsText={t("filter:input.noResult")}
+              placeholder={t("filter:input.sort")}
             />
             <span className="separator">{t("help.sort")}</span>
             <Select
@@ -364,7 +364,7 @@ class FilterPopup extends React.Component {
               onChange={this.onChangeSelectSortValue}
               valueRenderer={this.selectSortValueRenderer}
               optionRenderer={this.selectSortValueRenderer}
-              noResultsText={t("input.noResult")}
+              noResultsText={t("filter:input.noResult")}
               placeholder=""
             />
             <span className="filter-array-button empty" />

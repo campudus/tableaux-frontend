@@ -191,7 +191,7 @@ class ColumnFilterPopup extends React.Component {
           />
         }
         <div className="row infotext">
-          <text>{nHidden + " " + i18n.t("table:hidden_items")}</text>
+          <span>{nHidden + " " + i18n.t("table:hidden_items")}</span>
         </div>
         <div className="wrap-me-grey">
           <div className="row">
