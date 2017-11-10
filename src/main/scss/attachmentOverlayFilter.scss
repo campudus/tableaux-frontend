@@ -1,9 +1,10 @@
 .attachment-overlay-filter-container {
-  height: 34px;
+  height: 40px;
   display: flex;
   align-items: center;
-  background-color: $color-overlay-background-even;
-  border-bottom: 1px solid $color-border-grey;
+  background-color: $color-overlay-background;
+  border-bottom: 1px solid lighten($color-text-light-grey, 5);
+  padding: 3px 7px;
 
   &>* {
     margin: 0 8px;
@@ -13,9 +14,10 @@
     flex: 1 1 auto;
     display: flex;
     align-items: center;
+    position: relative;
 
     .attachment-overlay-filter-input {
-      padding: 5px 10px;
+      padding: 8px;
       border-radius: 3px;
       border: none !important;
       background-color: white !important;
@@ -23,27 +25,23 @@
       flex: 1 1 auto;
     }
 
-    .popup-button {
-      @include flex-centered();
-      width: 30px;
-      height: 25px;
-      margin-left: 5px;
-      position: relative;
-      background-color: $color-primary-contrast-text;
-      color: $color-text-medium-grey;
-      border-radius: 3px;
+    .popup-wrapper {
+      position: absolute;
+      right: 0;
 
-      &.popup-open, &:hover {
-        background-color: $color-primary;
-        color: $color-primary-contrast-text;
-      }
+      .popup-button {
+        @include flex-centered();
+        width: 30px;
+        height: 25px;
+        margin-left: 5px;
+        position: relative;
+        background-color: $color-primary-contrast-text;
+        color: $color-text-medium-grey;
+        border-radius: 3px;
 
-      &.popup-open {
-        border-radius: 3px 3px 0 0;
-      }
-
-      i {
-        margin: 0 !important;
+        i {
+          margin: 0 !important;
+        }
       }
     }
 
@@ -80,7 +78,7 @@
   .attachment-overlay-sort-button {
     @include flex-centered();
     flex-direction: row;
-    height: 25px;
+    height: 31px;
     width: 35px;
     border-radius: 3px;
     margin-left: 0;

@@ -63,18 +63,23 @@ const AOFilterBar = compose(
 
 const AOFilterBarModeSwitcher = pure(
   (props) => (
-    <Popup container={AOFilterBarModePopupButton}
-           containerClass="popup-button"
-           popup={AOFilterBarModePopup}
-           filterMode={props.filterMode}
-           setFilterMode={props.setFilterMode}
-    />
+    <div className="popup-wrapper">
+      <Popup container={AOFilterBarModePopupButton}
+             containerClass="popup-button"
+             popup={AOFilterBarModePopup}
+             filterMode={props.filterMode}
+             setFilterMode={props.setFilterMode}
+      />
+    </div>
   )
 );
 
 const AOFilterBarModePopupButton = pure(
   ({popupOpen, togglePopup}) => (
-    <i className="fa fa-search" />
+    <i>
+      <i className="fa fa-search" />
+      <i className="fa fa-angle-down" />
+    </i>
   )
 );
 

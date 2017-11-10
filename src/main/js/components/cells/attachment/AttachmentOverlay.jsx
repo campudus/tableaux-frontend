@@ -189,17 +189,19 @@ class AttachmentOverlay extends Component {
                                      filterValue={filter.value}
                                      sortOrder={filter.sorting}
             />
-            <AutoSizer>
-              {({width, height}) => (
-                <List height={height}
-                  rowHeight={63}
-                  rowRenderer={this.renderFileItem}
-                  rowCount={f.size(this.state.filteredFileList)}
-                  width={width}
-                  filesKey={filesKey}
-                />
-              )}
-            </AutoSizer>
+            <div className="real-file-list">
+              <AutoSizer>
+                {({width, height}) => (
+                  <List height={height}
+                        rowHeight={63}
+                        rowRenderer={this.renderFileItem}
+                        rowCount={f.size(this.state.filteredFileList)}
+                        width={width}
+                        filesKey={filesKey}
+                  />
+                )}
+              </AutoSizer>
+            </div>
           </div>
         </div>
       )
