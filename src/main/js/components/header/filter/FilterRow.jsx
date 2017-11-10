@@ -68,7 +68,7 @@ class FilterRow extends Component {
           openOnFocus
           value={columnId}
           onChange={onChangeColumn}
-          placeholder={t("input.filter")}
+          placeholder={t("filter:input.filter")}
           valueRenderer={valueRenderer}
           noResultsText={t("input.noResult")}
         />
