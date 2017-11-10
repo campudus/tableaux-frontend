@@ -314,6 +314,11 @@ class TableView extends Component {
   };
 
   applyColumnVisibility = (projection = this.props.projection) => {
+    // TODO fix an issue where this.getCurrentTable can be null
+    if (f.isNil(this.getCurrentTable())) {
+      return;
+    }
+
     const DEFAULT_VISIBLE_COLUMNS = 10;
     const columns = this.getCurrentTable().columns.models;
     const colIds = columns.map(f.get("id"));
