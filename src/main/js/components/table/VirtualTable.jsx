@@ -358,12 +358,11 @@ export default class VirtualTable extends PureComponent {
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
-    if (f.contains("selectedCell", newPropKeys)) {
+    const changeInRowSelection = f.contains("expandedRowIds", newPropKeys)
+      && !f.isEmpty(f.xor(next.expandedRowIds, this.expandedRowIds));
+    if (f.contains("selectedCell", newPropKeys) && !changeInRowSelection) {
       this.scrollToCell((next.selectedCell || {}).id, next.selectedCellExpandedRow);
-    }
-    if (f.contains("expandedRowIds", newPropKeys)
-      && !f.isEmpty(f.xor(next.expandedRowIds, this.expandedRowIds))
-    ) {
+    } else if (changeInRowSelection) {
       this.expandedRowIds = next.expandedRowIds;
       maybe(this.multiGrid)
         .method("invalidateCellSizeAfterRender");

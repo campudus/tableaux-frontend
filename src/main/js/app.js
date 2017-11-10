@@ -64,7 +64,6 @@ if (isProduction) {
       }
     });
 } else {
-  window.Perf = require("react-addons-perf");
   require("../../tests/runTests");
 }
 

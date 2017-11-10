@@ -15,14 +15,13 @@ import PageTitle from "../header/PageTitle.jsx";
 import Spinner from "../header/Spinner.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import ColumnFilter from "../header/ColumnFilter";
-import {either, logged} from "../../helpers/functools";
+import {either} from "../../helpers/functools";
 import {INITIAL_PAGE_SIZE, PAGE_SIZE} from "../../models/Rows";
 import getFilteredRows from "../table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "../cells/cellCopyHelper";
 import {openEntityView} from "../overlay/EntityViewOverlay";
-import Portal from "react-portal";
 import JumpSpinner from "./JumpSpinner";
 import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
@@ -493,7 +492,7 @@ class TableView extends Component {
                   columns={currentTable.columns}
                 />
               )
-              : null
+              : <div/>
             }
             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
             <PageTitle titleKey="pageTitle.tables" />
@@ -512,9 +511,7 @@ class TableView extends Component {
             />
             }
           </div>
-          <Portal isOpened={!!this.pendingCellGoto && !this.state.searchOverlayOpen}>
-            <JumpSpinner />
-          </Portal>
+          <JumpSpinner isOpen={!!this.pendingCellGoto && !this.state.searchOverlayOpen} />
           <SearchOverlay isOpen={this.state.searchOverlayOpen} />
         </div>
       );

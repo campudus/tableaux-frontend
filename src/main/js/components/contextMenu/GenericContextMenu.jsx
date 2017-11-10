@@ -24,7 +24,7 @@ class GenericContextMenu extends React.Component {
     const {align, noClampX, noClampY, x, y} = this.props;
     const offset = this.props.offset || 0;
     const el = ReactDom.findDOMNode(this);
-    const dataWrapper = f.first(document.getElementsByClassName("data-wrapper"));
+    const dataWrapper = f.first(document.getElementsByClassName("ReactVirtualized__Grid"));
     
     if (x) {
       const w = Math.max(this.props.minWidth || 1, el.offsetWidth);
