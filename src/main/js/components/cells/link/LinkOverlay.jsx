@@ -16,7 +16,6 @@ import Header from "../../overlay/Header";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SearchBar from "./LinkOverlaySearchBar";
-import {changeCell} from "../../../models/Tables";
 import LinkItem from "./LinkItem";
 import Request from "superagent";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
@@ -27,6 +26,7 @@ import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../model
 import {Promise} from "es6-promise";
 import Spinner from "../../header/Spinner";
 import Throat from "throat";
+import changeCell from "../../../models/helpers/changeCell";
 const throat = Throat(Promise);
 
 const MAIN_BUTTON = 0;

@@ -20,8 +20,8 @@
 import f from "lodash/fp";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
-import {changeCell} from "../../../models/Tables";
 import * as ActionCreator from "../../../actions/ActionCreator";
+import changeCell from "../../../models/helpers/changeCell";
 
 const MAX_UNDO_STEPS = 50;
 
