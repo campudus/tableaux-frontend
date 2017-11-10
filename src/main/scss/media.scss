@@ -440,17 +440,17 @@
       height: 100%;
 
       .back {
-        padding: 5px 10px;
+        padding: 23px 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         width: 100%;
         box-sizing: border-box;
-        border-bottom: 1px solid $color-border-grey;
+        border-bottom: 1px solid lighten($color-text-light-grey, 5);
         height: 35px;
 
         a {
-          padding: 4px 8px;
+          padding: 10px 8px;
           border-radius: 3px;
           color: $color-text-medium-grey;
 
@@ -515,6 +515,13 @@
       padding: 0;
       height: auto;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid lighten($color-text-light-grey, 5);
+
+      .real-file-list {
+        flex: 1 1 auto;
+      }
 
       .ReactVirtualized__Grid__innerScrollContainer {
         padding: 15px;
