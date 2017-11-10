@@ -4,13 +4,15 @@ import ActionCreator from "../../../actions/ActionCreator";
 import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import TableauxConstants, {ColumnKinds} from "../../../constants/TableauxConstants";
+import TableauxConstants, {ColumnKinds, FilterModes} from "../../../constants/TableauxConstants";
 import apiUrl from "../../../helpers/apiUrl";
 import {translate} from "react-i18next";
 import Spinner from "../../header/Spinner";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import {AutoSizer, List} from "react-virtualized";
 import f from "lodash/fp";
+import AttachmentOverlayFilter from "./AttachmentOverlayFilter";
+import SearchFunctions from "../../../helpers/searchFunctions";
 
 @connectToAmpersand
 class AttachmentOverlay extends Component {
@@ -22,7 +24,11 @@ class AttachmentOverlay extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {folder: null};
+    this.state = {
+      folder: null,
+      filter: {sorting: 0},
+      filteredFileList: []
+    };
   }
 
   retrieveTranslation = multiLanguage.retrieveTranslation(TableauxConstants.FallbackLanguage);
@@ -51,7 +57,7 @@ class AttachmentOverlay extends Component {
     folder.fetch({
       data: {langtag: this.props.langtag},
       success: (collection, response) => {
-        this.setState({folder: response});
+        this.setState({folder: response}, () => this.setFilter({value: ""}));
       },
       error: function (e) {
         throw new Error(e);
@@ -79,11 +85,7 @@ class AttachmentOverlay extends Component {
   };
 
   renderFileItem = ({index, style, parent}) => {
-    const files = f.flow(
-      f.get(["folder", "files"]),
-      f.sortBy(this.isLinked),
-      f.reverse
-    )(this.state);
+    const files = this.state.filteredFileList;
     const file = f.get(index, files);
     const {langtag} = this.props;
     const imageUrl = apiUrl(this.retrieveTranslation(file.fileUrl, langtag));
@@ -105,6 +107,33 @@ class AttachmentOverlay extends Component {
       : null;
   };
 
+  setFilter = (
+    {
+      mode = this.state.filter.mode || FilterModes.CONTAINS,
+      value = this.state.filter.value || "",
+      sorting = this.state.filter.sorting || 0
+    }) => {
+    const getSortValue = (file) => (
+      ((this.isLinked(file)) ? "0_" : "1_") +
+      ((sorting === 0) ? this.retrieveTranslation(file.title, this.props.langtag) : file.createdAt)
+    );
+
+    const filterFn = (file) => (f.isEmpty(value))
+      ? true
+      : this.isLinked(file) || SearchFunctions[mode](value, this.retrieveTranslation(file.title, this.props.langtag));
+
+    this.setState(f.flow(
+      f.update(["filter", "mode"], f.always(mode)),
+      f.update(["filter", "value"], f.always(value)),
+      f.update(["filter", "sorting"], f.always(sorting)),
+      (state) => f.assoc("filteredFileList", f.flow(
+        f.get(["folder", "files"]),
+        f.filter(filterFn),
+        f.sortBy(getSortValue)
+      )(state), state)
+    ));
+  };
+
   isLinked = (file) => f.flow(
     f.map("uuid"),
     f.contains(file.uuid)
@@ -112,12 +141,12 @@ class AttachmentOverlay extends Component {
 
   render() {
     const {t} = this.props;
-    const {folder} = this.state;
+    const {folder, filter} = this.state;
 
-    const linkedFiles = f.flow(
+    const filesKey = f.flow(
       f.map(f.flow(f.get("uuid"), (str) => str.substr(0, 8))),
       f.join(";")
-    )(this.props.cell.value);
+    )(this.props.cell.value) + filter.mode + filter.value + filter.sorting;
 
     const backButton = (folder && folder.name !== "root")
       ? (
@@ -155,14 +184,19 @@ class AttachmentOverlay extends Component {
             </div>
           </div>
           <div className="file-list">
+            <AttachmentOverlayFilter setFilter={this.setFilter}
+                                     filterMode={filter.mode}
+                                     filterValue={filter.value}
+                                     sortOrder={filter.sorting}
+            />
             <AutoSizer>
               {({width, height}) => (
                 <List height={height}
                   rowHeight={63}
                   rowRenderer={this.renderFileItem}
-                  rowCount={f.size(folder.files)}
+                  rowCount={f.size(this.state.filteredFileList)}
                   width={width}
-                  linkedFiles={linkedFiles}
+                  filesKey={filesKey}
                 />
               )}
             </AutoSizer>
