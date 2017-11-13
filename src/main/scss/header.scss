@@ -11,6 +11,11 @@ header {
   position: fixed;
   z-index: 9;
   overflow: visible;
+  display: flex;
+
+  .header-separator {
+    flex: 1 1 auto;
+  }
 
   .Select {
 
@@ -119,7 +124,6 @@ header {
   }
 
   #header-pagename {
-    float: right;
     margin-right: 20px;
     font-weight: bold;
     text-transform: uppercase;
@@ -146,7 +150,6 @@ header {
   .clipboard-icon {
     margin-top: 10px;
     margin-left: 15px;
-    float: right;
     display: inline-flex;
     position: relative;
 

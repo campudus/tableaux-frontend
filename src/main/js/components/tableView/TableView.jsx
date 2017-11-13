@@ -482,11 +482,6 @@ class TableView extends Component {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
-            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
-                           pasteOriginCell={pasteOriginCell}
-                           pasteOriginCellLang={pasteOriginCellLang}
-                           tableId={currentTable.id}
-            />
             <TableSwitcher
               langtag={langtag}
               currentTable={currentTable}
@@ -507,9 +502,15 @@ class TableView extends Component {
               : <div/>
             }
             <HistoryButtons/>
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
-            <PageTitle titleKey="pageTitle.tables" />
+            <div className="header-separator" />
             <Spinner />
+            <PageTitle titleKey="pageTitle.tables" />
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
+            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
+                           pasteOriginCell={pasteOriginCell}
+                           pasteOriginCellLang={pasteOriginCellLang}
+                           tableId={currentTable.id}
+            />
           </header>
           <div className="wrapper">
             <Table
