@@ -51,12 +51,14 @@ const push = (stacks, data) => {
     f.takeRight(MAX_UNDO_STEPS)
   );
   updateCurrentStack(stacks, pushAndTrim);
+  reportStacks("push");
 };
 
 const pop = (stacks) => {
   const stack = getCurrentStack(stacks);
   const tail = f.last(stack);
   updateCurrentStack(stacks, f.dropRight(1));
+  reportStacks("pop");
   return tail;
 };
 
@@ -86,6 +88,16 @@ async function popAndApply(stacks) {
   await changeCell({cell, value, options: {type: "UNDO"}});
   return pop(stacks);
 }
+
+const reportStacks = (process.env.NODE_ENV === "production")
+  ? f.noop
+  : (action) => {
+    if (process.env.NODE_ENV !== "production") {
+      const undoVals = f.map("value", undoStacks[currentTable]);
+      const redoVals = f.map("value", redoStacks[currentTable]);
+      window.devLog(`After ${action}:\nUndoStack:`, undoVals, "\nRedoStack:", redoVals, "\n");
+    }
+  };
 
 export const remember = ({cell, value}) => {
   const {tableId} = cell;
