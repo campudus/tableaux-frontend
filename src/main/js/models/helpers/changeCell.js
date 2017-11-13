@@ -54,13 +54,6 @@ async function changeCell({cell, value, options = {}}) {
       value: oldValue
     });
   }
-  devLog("Success, checking to remember undo", options)
-  if (!f.matchesProperty("type", "UNDO")(options)) {
-    remember({
-      cell,
-      value: oldValue
-    });
-  }
 }
 
 async function changeDefaultCell({cell, value, options}) {
