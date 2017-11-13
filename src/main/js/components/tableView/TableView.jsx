@@ -314,13 +314,8 @@ class TableView extends Component {
   };
 
   applyColumnVisibility = (projection = this.props.projection) => {
-    // TODO fix an issue where this.getCurrentTable can be null
-    if (f.isNil(this.getCurrentTable())) {
-      return;
-    }
-
     const DEFAULT_VISIBLE_COLUMNS = 10;
-    const columns = this.getCurrentTable().columns.models;
+    const columns = f.getOr([], ["columns", "models"], this.getCurrentTable());
     const colIds = columns.map(f.get("id"));
     if (f.isEmpty(colIds)) {
       return; // don't try to sanitise visible columns when column data not yet loaded
@@ -372,7 +367,7 @@ class TableView extends Component {
 
   applyFilters = (projection = this.props.projection) => {
     const rowFilter = f.get("rows", projection);
-    const tableRows = this.getCurrentTable().rows;
+    const tableRows = f.getOr([], "rows", this.getCurrentTable());
 
     if (f.isEmpty(rowFilter) || (f.isEmpty(rowFilter.filters) && f.isNil(rowFilter.sortColumnId))) {
       this.setState({rowsCollection: tableRows});
