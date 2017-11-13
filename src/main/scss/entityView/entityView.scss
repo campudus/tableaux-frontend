@@ -294,9 +294,12 @@
   justify-content: center;
 
   .button {
-    padding: 8px;
+    padding: 0 8px;
+    height: 70% !important;
     color: $color-text-medium-grey;
     border-radius: 3px;
+    border: 1px solid transparentize($color-text-medium-grey, 0.5);
+    margin: 0 3px;
 
     &:hover:not(.disabled) {
       color: $color-primary-contrast-text;
