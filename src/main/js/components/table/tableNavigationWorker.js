@@ -8,6 +8,8 @@ import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagement
 import {maybe} from "../../helpers/functools";
 import * as TableHistory from "./undo/tableHistory";
 
+const KEYBOARD_TABLE_HISTORY = false;
+
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
@@ -127,12 +129,12 @@ export function getKeyboardShortcuts() {
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
-      } else if (hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
+      } else if (KEYBOARD_TABLE_HISTORY && hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
         if (!selectedCellEditing) {
           const undoFn = (isKeyPressed("Z")) ? TableHistory.redo : TableHistory.undo;
           undoFn();
         }
-      } else if (isKeyPressed("y") && event.ctrlKey && !selectedCellEditing) {
+      } else if (KEYBOARD_TABLE_HISTORY && isKeyPressed("y") && event.ctrlKey && !selectedCellEditing) {
         TableHistory.redo();
       } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
