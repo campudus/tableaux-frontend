@@ -27,6 +27,8 @@ import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
+import * as Undo from "../table/undo/tableHistory";
+import HistoryButtons from "../table/undo/HistoryButtons";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
@@ -58,6 +60,8 @@ class TableView extends Component {
         entityView
       };
     }
+
+    Undo.setCurrentTable(this.props.tableId);
   };
 
   componentWillMount = () => {
@@ -302,6 +306,9 @@ class TableView extends Component {
         page: this.estimateCellPage(nextProps.rowId)
       });
     }
+    if (nextProps.tableId !== this.props.tableId && f.isInteger(nextProps.tableId) && f.isInteger(this.props.tableId)) {
+      Undo.setCurrentTable(nextProps.tableId);
+    }
   };
 
   // Set visibility of all columns in <coll> to <val>
@@ -475,11 +482,6 @@ class TableView extends Component {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
-            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
-                           pasteOriginCell={pasteOriginCell}
-                           pasteOriginCellLang={pasteOriginCellLang}
-                           tableId={currentTable.id}
-            />
             <TableSwitcher
               langtag={langtag}
               currentTable={currentTable}
@@ -499,9 +501,16 @@ class TableView extends Component {
               )
               : <div/>
             }
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
-            <PageTitle titleKey="pageTitle.tables" />
+            <HistoryButtons/>
+            <div className="header-separator" />
             <Spinner />
+            <PageTitle titleKey="pageTitle.tables" />
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
+            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
+                           pasteOriginCell={pasteOriginCell}
+                           pasteOriginCellLang={pasteOriginCellLang}
+                           tableId={currentTable.id}
+            />
           </header>
           <div className="wrapper">
             <Table
