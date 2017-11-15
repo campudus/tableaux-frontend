@@ -38,15 +38,16 @@ const ExpandCorner = compose(
 )(
   (props) => (
     <div className="needs-translation-other-language"
-      onClick={props.onClick}
+         onClick={props.onClick}
     />
   )
 );
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
   if (!cell.isMultiLanguage || either(cell)
-    .map(f.prop(["value", langtag]))
-    .orElse(f.prop("value")).value === oldValue) {
+      .map(f.prop(["value", langtag]))
+      .orElse(f.prop("value")).value === oldValue
+  ) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -130,7 +131,8 @@ class Cell extends React.PureComponent {
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
-      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
+      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(
+          cellDOMNode)) {
         cellDOMNode.focus();
       }
     }
@@ -139,7 +141,15 @@ class Cell extends React.PureComponent {
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
     ActionCreator.closeAnnotationsPopup();
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked", langtag, ":", cell, "value: ", cell.value, cell.displayValue);
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
+      cell.kind,
+      "cell clicked",
+      langtag,
+      ":",
+      cell,
+      "value: ",
+      cell.value,
+      cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -192,7 +202,7 @@ class Cell extends React.PureComponent {
     [ColumnKinds.richtext]: TextCell,
     [ColumnKinds.group]: IdentifierCell
   };
-  
+
   render = () => {
     const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
     const {concat, text, richtext} = ColumnKinds;
@@ -216,34 +226,38 @@ class Cell extends React.PureComponent {
 
     const displayValue = f.isArray(cell.displayValue)
       ? f.flow(
-        f.map(f.get(langtag)),
-        f.join(";")
-      )(cell.displayValue) || ""
+      f.map(f.get(langtag)),
+      f.join(";")
+    )(cell.displayValue) || ""
       : f.get(langtag, cell.displayValue) || "";
 
     // onKeyDown event just for selected components
     return (
       <div style={this.props.style}
-        className={cssClass}
-        onClick={this.cellClicked}
-        onContextMenu={this.rightClicked}
-        tabIndex="1"
-        onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
-        onMouseDown={this.onMouseDownHandler}>
-        <CellKind cell={cell} langtag={langtag}
-          selected={selected} inSelectedRow={inSelectedRow}
-          editing={cell.isEditable && editing}
-          value={displayValue}
-          contentChanged={contentChanged}
-          setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
+           className={cssClass}
+           onClick={this.cellClicked}
+           onContextMenu={this.rightClicked}
+           tabIndex="1"
+           onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
+           onMouseDown={this.onMouseDownHandler}>
+        <CellKind cell={cell}
+                  langtag={langtag}
+                  selected={selected}
+                  inSelectedRow={inSelectedRow}
+                  editing={cell.isEditable && editing}
+                  value={displayValue}
+                  contentChanged={contentChanged}
+                  setCellKeyboardShortcuts={(f.contains(kind, noKeyboard))
+                    ? f.noop
+                    : this.setKeyboardShortcutsForChildren}
         />
         <FlagIconRenderer cell={cell}
-          annotations={cell.annotations}
-          langtag={langtag}
-          annotationsOpen={annotationsOpen}
+                          annotations={cell.annotations}
+                          langtag={langtag}
+                          annotationsOpen={annotationsOpen}
         />
         <ExpandCorner show={needsTranslationOtherLanguages}
-          cell={cell}
+                      cell={cell}
         />
       </div>
     );
@@ -279,7 +293,7 @@ const RepeaterCell = withHandlers(
 )(
   (props) => (
     <div className="cell repeat placeholder"
-      onContextMenu={props.onContextMenu}
+         onContextMenu={props.onContextMenu}
     >
       —.—
     </div>
