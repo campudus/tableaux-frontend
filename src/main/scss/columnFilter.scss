@@ -1,11 +1,12 @@
 @import "variables";
 
 #column-filter-wrapper {
-  margin-left: 20px;
+  display: inline-block;
+
   margin-top: 10px;
+  margin-right: 20px;
+
   outline-style: none;
-  float: left;
-  display: block;
 
   .button {
     @include header-button-look();
