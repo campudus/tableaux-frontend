@@ -4,7 +4,7 @@ import f from "lodash/fp";
 const modulesWithTests = [
   require("./simpleTests"),
   require("../main/js/helpers/functools"),
-  require("../main/js/models/getDisplayValue"),
+  require("../main/js/models/helpers/getDisplayValue"),
   require("../main/js/helpers/multiLanguage"),
   require("../main/js/components/table/GrudGrid")
 ];

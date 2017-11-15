@@ -1,4 +1,4 @@
-import {ColumnKinds, DateFormats, DateTimeFormats, DefaultLangtag, Langtags} from "../constants/TableauxConstants";
+import {ColumnKinds, DateFormats, DateTimeFormats, DefaultLangtag, Langtags} from "../../constants/TableauxConstants";
 import * as f from "lodash/fp";
 import Moment from "moment";
 

@@ -1,5 +1,5 @@
 import * as f from "lodash/fp";
-import getDisplayValue from "../../../models/getDisplayValue";
+import getDisplayValue from "../../../models/helpers/getDisplayValue";
 import Request from "superagent";
 import apiUrl from "../../../helpers/apiUrl";
 
