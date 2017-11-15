@@ -6,11 +6,12 @@ import i18n from "i18next";
 
 module.exports = {
 
-  changeCell: function (cell, newValue, cb) {
+  changeCell: function (cell, newValue, cb, options) {
     Dispatcher.trigger(ActionTypes.CHANGE_CELL, {
       cell,
       value: newValue,
-      cb
+      cb,
+      options
     });
   },
 

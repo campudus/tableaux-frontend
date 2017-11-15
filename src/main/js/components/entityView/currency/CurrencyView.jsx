@@ -1,12 +1,12 @@
 import React, {Component} from "react";
 import CurrencyItem from "./CurrencyItem";
 import * as f from "lodash/fp";
-import {changeCell} from "../../../models/Tables";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import {Directions} from "../../../constants/TableauxConstants";
 import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import PropTypes from "prop-types";
+import changeCell from "../../../models/helpers/changeCell";
 
 class CurrencyView extends Component {
   constructor(props) {

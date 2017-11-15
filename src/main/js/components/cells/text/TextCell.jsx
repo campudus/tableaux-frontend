@@ -10,9 +10,9 @@ import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
 import Header from "../../overlay/Header";
 import {maybe} from "../../../helpers/functools";
-import {changeCell} from "../../../models/Tables";
 import i18n from "i18next";
 import {contentChanged} from "../Cell";
+import changeCell from "../../../models/helpers/changeCell";
 
 class TextCell extends PureComponent {
   static propTypes = {
