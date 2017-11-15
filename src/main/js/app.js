@@ -15,7 +15,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const conditionalLogger = (logger) => (test, ...args) => {
   if (test) {
-    logger(args);
+    logger(...args);
   }
 };
 

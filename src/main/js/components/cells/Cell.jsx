@@ -16,8 +16,11 @@ import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
-import * as f from "lodash/fp";
-import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
+import f from "lodash/fp";
+import {
+  addTranslationNeeded, deleteCellAnnotation, isLocked,
+  removeTranslationNeeded
+} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/functools";
 import FlagIconRenderer from "./FlagIconRenderer";
@@ -42,6 +45,28 @@ const ExpandCorner = compose(
     />
   )
 );
+
+export const getAnnotationState = (cell) => {
+  const flags = f.flow(
+    f.keys,
+    f.filter(f.contains(f, ["important", "check-me", "postpone"])),
+    f.join(":")
+  )(cell.annotations);
+
+  const translations = f.flow(
+    f.get(["translationNeeded", "langtags"]),
+    f.join(":")
+  )(cell.annotations);
+
+  const comments = f.flow(
+    f.pick(["info", "error", "warning"]),
+    f.reduce(f.concat, []),
+    f.map(f.flow(f.get("uuid"), f.take(8), f.join(""))),
+    f.join(":")
+  )(cell.annotations);
+
+  return f.join("-", [flags, translations, comments, (isLocked(cell.row))]);
+};
 
 export const contentChanged = (cell, langtag, oldValue) => () => {
   if (!cell.isMultiLanguage || either(cell)
@@ -89,8 +114,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   }
 };
 
-@connectToAmpersand
-class Cell extends React.PureComponent {
+class Cell extends React.Component {
   cellDOMNode = null;
 
   constructor(props) {
@@ -203,7 +227,7 @@ class Cell extends React.PureComponent {
     [ColumnKinds.group]: IdentifierCell
   };
 
-  render = () => {
+  render() {
     const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
     const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
@@ -252,6 +276,7 @@ class Cell extends React.PureComponent {
                     : this.setKeyboardShortcutsForChildren}
         />
         <FlagIconRenderer cell={cell}
+                          annotationsState={getAnnotationState(cell)}
                           annotations={cell.annotations}
                           langtag={langtag}
                           annotationsOpen={annotationsOpen}
@@ -300,7 +325,17 @@ const RepeaterCell = withHandlers(
   )
 );
 
-export default branch(
-  isRepeaterCell,
-  renderComponent(pure(RepeaterCell))
+/**
+ * Placing pure HOC component around connectToAmpersand and making Cell itself a non-pure component
+ * gives us the best of two worlds:
+ * the pure HOC will avoid unneccessary re-renders, while a non-pure base component will not stop
+ * connectToAmpersand from triggering new render cycles on value changes.
+ */
+export default compose(
+  branch(
+    isRepeaterCell,
+    renderComponent(pure(RepeaterCell))
+  ),
+  pure,
+  connectToAmpersand
 )(Cell);

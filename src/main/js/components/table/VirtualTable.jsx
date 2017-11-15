@@ -7,7 +7,7 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
-import Cell from "../cells/Cell";
+import Cell, {getAnnotationState} from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import {AutoSizer} from "react-virtualized";
@@ -17,6 +17,7 @@ import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 
 import MultiGrid from "./GrudGrid";
+import {isLocked} from "../../helpers/annotationHelper";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -212,6 +213,7 @@ export default class VirtualTable extends PureComponent {
     const row = rows.at(rowIndex) || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const isRowSelected = !!(this.selectedIds && row.id === this.selectedIds.row);
+    const locked = isLocked(row);
 
     return (isRowExpanded)
       // key={`${key}-${row.id}`}
@@ -226,6 +228,7 @@ export default class VirtualTable extends PureComponent {
                         expanded={true}
                         selected={isRowSelected && lt === selectedCellExpandedRow}
                         row={row}
+                        isLocked={locked}
               />
             )
           )}
@@ -237,10 +240,13 @@ export default class VirtualTable extends PureComponent {
                   row={row}
                   selected={isRowSelected}
                   expanded={false}
+                  isLocked={locked}
         />
       );
     // key={`${key}-${row.id}`}
   };
+
+
 
   renderCell = (gridData) => {
     const {rows, expandedRowIds} = this.props;
@@ -271,6 +277,7 @@ export default class VirtualTable extends PureComponent {
 
     return (
       <Cell cell={cell}
+            annotationState={getAnnotationState(cell)}
             langtag={langtag}
             row={row}
             table={table}
@@ -290,6 +297,7 @@ export default class VirtualTable extends PureComponent {
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
+    const annotationsState = getAnnotationState(cell);
 
     return (
       // key={cell.id}
@@ -311,6 +319,7 @@ export default class VirtualTable extends PureComponent {
                 : f.get(langtag, cell.displayValue) || "";
               return (
                 <Cell key={`${langtag}-${key}`}
+                      annotationState={annotationsState}
                       cell={cell}
                       langtag={langtag}
                       row={row}
