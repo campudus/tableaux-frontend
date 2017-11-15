@@ -13,6 +13,7 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import {openInNewTab} from "../../../helpers/apiUrl";
+import * as TableHistory from "../../table/undo/tableHistory";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -164,6 +165,24 @@ class HeaderPopupMenu extends Component {
                       fn: () => initiateDeleteRow(row, langtag, id),
                       icon: "trash"
                     })
+                }
+                {(TableHistory.canUndo())
+                  ? this.mkEntry(3,
+                    {
+                      title: "table:undo",
+                      fn: TableHistory.undo,
+                      icon: "undo"
+                    })
+                  : null
+                }
+                {(TableHistory.canRedo())
+                  ? this.mkEntry(3,
+                    {
+                      title: "table:redo",
+                      fn: TableHistory.redo,
+                      icon: "repeat"
+                    })
+                  : null
                 }
                 {this.mkEntry(4,
                   {
