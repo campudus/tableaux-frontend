@@ -123,11 +123,11 @@ const saveColumnVisibility = (tableId, view, name = "default") => {
 const updateColumnVisibility = (tableId, state, {val, colIds}, shouldSave) => {
   const currentVisibility = f.get(["projection", "columns"], state) || [];
   const visibility = (f.isNil(colIds))
-    ? []                                           // no colIds given -> clear all
+    ? [] // no colIds given -> clear all
     : (val)
-      ? f.uniq([...currentVisibility, ...colIds])  // val == truthy -> add colIds to visibility array
-      : f.without(colIds, currentVisibility);      // else remove colIds from visibility array
-  shouldSave && saveColumnVisibility(tableId, visibility);
+      ? f.uniq([...currentVisibility, ...colIds]) // val == truthy -> add colIds to visibility array
+      : f.without(colIds, currentVisibility); // else remove colIds from visibility array
+  shouldSave && !f.equals(visibility, currentVisibility) && saveColumnVisibility(tableId, visibility);
   return f.assoc(
     ["projection", "columns"],
     visibility,
