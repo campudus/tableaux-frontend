@@ -338,7 +338,7 @@ module.exports = {
   },
 
   broadcastDataChange: (payload) => {
-    //    console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
+    // window.devLog("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
     Dispatcher.trigger(ActionTypes.BROADCAST_DATA_CHANGE, payload);
   },
 
@@ -355,7 +355,6 @@ module.exports = {
   },
 
   broadcastHistoryEvent: (canUndo, canRedo) => {
-    devLog("Table history event, canu ndo?", canUndo, "can redo?", canRedo)
     Dispatcher.trigger(ActionTypes.BROADCAST_UNDO_EVENT, {canUndo, canRedo});
   }
 };
