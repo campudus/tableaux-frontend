@@ -29,7 +29,6 @@ export default compose(
   withState("history", "setHistory", {canUndo: false, canRedo: false}),
   withHandlers({
       updateButtonState: ({setHistory, tableId, rowId}) => () => {
-        devLog("updateButtonState", tableId, rowId)
         setHistory(f.always({
           canUndo: TableHistory.canUndo({tableId, rowId}),
           canRedo: TableHistory.canRedo({tableId, rowId})
@@ -47,8 +46,7 @@ export default compose(
       Dispatcher.off(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
     },
     componentDidUpdate(prevProps) { // table switch
-      if (this.props.tableId !== prevProps.tableId) {
-        devLog("HistoryButtons: setting table to", prevProps.tableId)
+      if (this.props.tableId !== prevProps.tableId || this.props.rowId !== prevProps.rowId) {
         this.props.updateButtonState();
       }
     }
