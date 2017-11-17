@@ -27,19 +27,19 @@ const HistoryButtons = ({history: {canUndo, canRedo}}) => (
 export default compose(
   withState("history", "setHistory", {canUndo: false, canRedo: false}),
   withHandlers({
-    updateHistory: ({setHistory}) => () => window.requestAnimationFrame(() => setHistory(f.always({
-      canUndo: TableHistory.canUndo(),
-      canRedo: TableHistory.canRedo()
-    })))
+    updateButtonState: ({setHistory}) => ({canUndo, canRedo}) => setHistory(f.always({
+        canUndo,
+        canRedo
+      }))
   }),
   lifecycle({
     componentDidMount() {
-      Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.props.updateHistory);
-      Dispatcher.on(ActionTypes.SWITCH_TABLE, this.props.updateHistory);
+      Dispatcher.on(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
+      Dispatcher.on(ActionTypes.SWITCH_TABLE, this.props.updateButtonState);
     },
     componentWillUnmount() {
-      Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.props.updateHistory);
-      Dispatcher.off(ActionTypes.SWITCH_TABLE, this.props.updateHistory);
+      Dispatcher.off(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
+      Dispatcher.off(ActionTypes.SWITCH_TABLE, this.props.updateButtonState);
     }
   })
 )(HistoryButtons);

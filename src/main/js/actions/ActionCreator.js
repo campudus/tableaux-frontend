@@ -352,5 +352,10 @@ module.exports = {
 
   closeAnnotationsPopup: () => {
     Dispatcher.trigger(ActionTypes.CLOSE_ANNOTATIONS_VIEWER);
+  },
+
+  broadcastHistoryEvent: (canUndo, canRedo) => {
+    devLog("Table history event, canu ndo?", canUndo, "can redo?", canRedo)
+    Dispatcher.trigger(ActionTypes.BROADCAST_UNDO_EVENT, {canUndo, canRedo});
   }
 };

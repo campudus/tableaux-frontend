@@ -86,7 +86,9 @@ async function popAndApply(stacks) {
   const complementaryStack = (isUndo) ? redoStacks : undoStacks;
   push(complementaryStack, {cell, value: f.clone(cell.value)});
   await changeCell({cell, value, options: {type: "UNDO"}});
-  return pop(stacks);
+  const applied = pop(stacks);
+  ActionCreator.broadcastHistoryEvent(canUndo(), canRedo());
+  return applied;
 }
 
 const reportStacks = (process.env.NODE_ENV === "production")
@@ -106,4 +108,5 @@ export const remember = ({cell, value}) => {
     cell,
     value
   });
+  ActionCreator.broadcastHistoryEvent(canUndo(), canRedo());
 };
