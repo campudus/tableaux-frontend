@@ -354,7 +354,8 @@ export default class VirtualTable extends PureComponent {
     //    return visibleCells[columnIndex];
   };
 
-  filterVisibleCells = (cell, columnId) => columnId === 0 || this.props.columns.at(columnId).visible;
+  filterVisibleCells = (cell, columnIdx) => columnIdx === 0
+    || (f.get("visible", this.props.columns.at(columnIdx)) && this.props.columns.at(columnIdx) !== this.props.columns.at(0));
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
