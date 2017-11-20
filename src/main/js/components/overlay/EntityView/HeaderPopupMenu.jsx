@@ -100,6 +100,18 @@ class HeaderPopupMenu extends Component {
     }
   };
 
+  getHistoryView = () => {
+    const {row} = this.props;
+    const {tableId} = row.cells.at(0);
+    return {
+      tableId,
+      rowId: row.id
+    };
+  };
+
+  handleUndo = () => TableHistory.undo(this.getHistoryView());
+  handleRedo = () => TableHistory.redo(this.getHistoryView());
+
   render() {
     const {langtag, hasMeaningfulLinks, id} = this.props;
     const {open, row} = this.state;
@@ -108,6 +120,7 @@ class HeaderPopupMenu extends Component {
       show: true,
       cell: maybe(row.cells).exec("at", 0).getOrElse(null)
     };
+    const historyView = this.getHistoryView();
 
     return (
       <div className="header-popup-wrapper">
@@ -166,20 +179,20 @@ class HeaderPopupMenu extends Component {
                       icon: "trash"
                     })
                 }
-                {(TableHistory.canUndo())
+                {(TableHistory.canUndo(historyView))
                   ? this.mkEntry(3,
                     {
                       title: "table:undo",
-                      fn: TableHistory.undo,
+                      fn: this.handleUndo,
                       icon: "undo"
                     })
                   : null
                 }
-                {(TableHistory.canRedo())
+                {(TableHistory.canRedo(historyView))
                   ? this.mkEntry(3,
                     {
                       title: "table:redo",
-                      fn: TableHistory.redo,
+                      fn: this.handleRedo,
                       icon: "repeat"
                     })
                   : null
