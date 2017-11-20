@@ -221,7 +221,7 @@ export default class Tableaux extends PureComponent {
   };
 
   render() {
-    const {activeOverlays, currentView, currentViewParams, isLoading} = this.state;
+    const {activeOverlays, currentView, currentViewParams} = this.state;
     return (
       <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
