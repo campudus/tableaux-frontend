@@ -54,7 +54,6 @@ export default class Tableaux extends PureComponent {
       currentViewParams: this.props.initialParams,
       activeOverlays: [],
       exitingOverlays: false,
-      isLoading: false,
       toast: null
     };
 
@@ -222,20 +221,20 @@ export default class Tableaux extends PureComponent {
   };
 
   render() {
-    const {activeOverlays, currentView, currentViewParams, isLoading} = this.state;
-    if (isLoading) {
-      return <div className="initial-loader"><Spinner isLoading={true} /></div>;
-    } else {
-      return <I18nextProvider i18n={i18n}>
+    const {activeOverlays, currentView, currentViewParams} = this.state;
+    return (
+      <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
-          <ViewRenderer viewName={currentView} params={currentViewParams} />
+          <ViewRenderer viewName={currentView}
+                        params={currentViewParams}
+          />
           {this.renderActiveOverlays()}
           <RootButton closeOverlay={this.closeOverlay}
-            activeOverlays={activeOverlays}
+                      activeOverlays={activeOverlays}
           />
           {this.renderToast()}
         </div>
-      </I18nextProvider>;
-    }
+      </I18nextProvider>
+    );
   }
 }
