@@ -7,7 +7,6 @@ import ViewRenderer from "./ViewRenderer.jsx";
 import i18n from "i18next";
 import {I18nextProvider} from "react-i18next";
 import ActionCreator from "../actions/ActionCreator";
-import Spinner from "./header/Spinner.jsx";
 import Toast from "./overlay/Toast.jsx";
 import * as f from "lodash/fp";
 import RootButton from "./RootButton";

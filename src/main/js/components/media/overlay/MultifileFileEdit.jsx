@@ -2,8 +2,7 @@ import React from "react";
 import MediaLink from "../MediaLink";
 import f from "lodash/fp";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
-import {branch, compose, pure, renderNothing, withStateHandlers} from "recompose";
-import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import {branch, compose, renderNothing, withStateHandlers} from "recompose";
 import LanguageSwitcher from "../../header/LanguageSwitcher";
 import FileChangeUpload from "./FileChangeUpload";
 import {translate} from "react-i18next";
@@ -26,7 +25,7 @@ const enhance = compose(
 );
 
 const MultifileFileEdit = (props) => {
-  const {langtag, file, hasContent, file: {uuid, internalName}, fileAttributes, fileLangtag, unsetLangs, switchLang, t} = props;
+  const {langtag, file, hasContent, file: {uuid, internalName}, fileAttributes, fileLangtag, unsetLangs, t} = props;
   const mayChange = hasUserAccessToLanguage(langtag);
   return (
     <div className="multifile-file-edit item">

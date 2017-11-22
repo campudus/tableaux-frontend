@@ -6,7 +6,6 @@ import i18n from "i18next";
 import MediaLink from "../MediaLink";
 import f from "lodash/fp";
 import MultilangFileDropzone from "./MultilangFileDropzone";
-import {pure} from "recompose";
 
 const SingleFileEdit = ({file, langtag, fileAttributes, setFileAttribute}) => {
   const {internalName, uuid} = file;
