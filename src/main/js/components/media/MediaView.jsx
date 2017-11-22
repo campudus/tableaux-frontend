@@ -1,4 +1,4 @@
-import React, {PureComponent} from "react";
+import React, {Component} from "react";
 import ActionCreator from "../../actions/ActionCreator";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
@@ -7,7 +7,7 @@ import FolderModel from "../../models/media/Folder";
 import Folder from "./folder/Folder.jsx";
 import PropTypes from "prop-types";
 
-export default class MediaView extends PureComponent {
+export default class MediaView extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     folderId: PropTypes.number
@@ -79,8 +79,9 @@ export default class MediaView extends PureComponent {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
+            <div className="header-separator" />
             <PageTitle titleKey="pageTitle.media" />
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
           </header>
           <Folder folder={this.state.currentFolder} langtag={this.props.langtag} />
         </div>
