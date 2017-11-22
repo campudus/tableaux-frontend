@@ -243,6 +243,12 @@ header {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
       }
+
+      &.inactive {
+        background-color: $color-border-grey;
+        color: $color-primary-contrast-text;
+        cursor: wait;
+      }
     }
   }
 }
