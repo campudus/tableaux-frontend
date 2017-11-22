@@ -47,7 +47,13 @@ const MultifileFileEdit = (props) => {
 
       <div className="properties-wrapper">
         {(hasContent)
-          ? getLanguageOrCountryIcon(fileLangtag)
+          ? (
+            // use disabled language switcher for styling reasons
+            <LanguageSwitcher langtag={fileLangtag}
+                              disabled={true}
+                              options={[{value: fileLangtag, label: fileLangtag}]}
+            />
+          )
           : (
             <LanguageSwitcher langtag={fileLangtag}
                               onChange={props.switchLang}
