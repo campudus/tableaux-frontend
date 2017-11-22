@@ -27,7 +27,6 @@ import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
-import * as Undo from "../table/undo/tableHistory";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import {initHistoryOf} from "../table/undo/tableHistory";
 
