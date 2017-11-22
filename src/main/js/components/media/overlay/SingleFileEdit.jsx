@@ -22,14 +22,14 @@ const SingleFileEdit = ({file, langtag, fileAttributes, setFileAttribute}) => {
                             internalFileName={fileInternalName}
                             uuid={uuid}
           />
-          <span className="open-file">
-            <MediaLink langtag={langtag}
-                       file={file}
-            >
-              {i18n.t("media:open_file")}
-            </MediaLink>
-          </span>
         </div>
+        <span className="open-file">
+          <MediaLink langtag={langtag}
+                     file={file}
+          >
+            {i18n.t("media:open_file")}
+          </MediaLink>
+        </span>
       </div>
 
       <div className="properties-wrapper content-items">
