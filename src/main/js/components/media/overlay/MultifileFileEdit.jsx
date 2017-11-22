@@ -1,102 +1,91 @@
-import apiUrl from "../../../helpers/apiUrl";
-import LanguageSwitcher from "../../header/LanguageSwitcher.jsx";
-import FileChangeUpload from "./FileChangeUpload.jsx";
-import React, {PureComponent} from "react";
-import PropTypes from "prop-types";
-import {getUserLanguageAccess, hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+import React from "react";
+import MediaLink from "../MediaLink";
+import f from "lodash/fp";
+import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+import {branch, compose, pure, renderNothing, withStateHandlers} from "recompose";
+import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import LanguageSwitcher from "../../header/LanguageSwitcher";
+import FileChangeUpload from "./FileChangeUpload";
 import {translate} from "react-i18next";
 
-class MultifileFileEdit extends PureComponent {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    originalLangtag: PropTypes.string.isRequired,
-    fileData: PropTypes.object.isRequired,
-    onTitleChange: PropTypes.func.isRequired,
-    onDescriptionChange: PropTypes.func.isRequired,
-    onExternalnameChange: PropTypes.func.isRequired,
-    onLangChange: PropTypes.func.isRequired
-  };
+const enhance = compose(
+  branch(
+    (props) => !props.hasContent && f.isEmpty(props.unsetLangs),
+    renderNothing
+  ),
+  withStateHandlers(
+    ({fileLangtag, unsetLangs}) => ({fileLangtag: fileLangtag || f.first(unsetLangs)}),
+    {
+      setTitle: ({fileLangtag}, {setFileAttribute}) => (event) => setFileAttribute("title", fileLangtag, event.target.value),
+      setDescription: ({fileLangtag}, {setFileAttribute}) => (event) => setFileAttribute("description", fileLangtag, event.target.value),
+      setExternalName: ({fileLangtag}, {setFileAttribute}) => (event) => setFileAttribute("externalName", fileLangtag, event.target.value),
+      switchLang: () => (fileLangtag) => ({fileLangtag})
+    }
+  ),
+  translate(["media"])
+);
 
-  componentWillMount() {
-    this.titleId = "fileTitle_" + this.props.langtag;
-    this.descId = "fileDescription_" + this.props.langtag;
-    this.externalNameId = "fileLinkName" + this.props.langtag;
-  }
-
-  onTitleChange = (event) => {
-    this.props.onTitleChange(event.target.value, this.props.originalLangtag);
-  };
-
-  onDescriptionChange = (event) => {
-    this.props.onDescriptionChange(event.target.value, this.props.originalLangtag);
-  };
-
-  onExternalNameChange = (event) => {
-    this.props.onExternalnameChange(event.target.value, this.props.originalLangtag);
-  };
-
-  onLangChange = (lang) => {
-    this.props.onLangChange(lang, this.props.originalLangtag);
-  };
-
-  render() {
-    const {langtag, fileData, t} = this.props;
-    const {internalName, uuid, description, externalName, title, fileUrl} = fileData;
-    const permissionToChange = hasUserAccessToLanguage(langtag);
-
-    const openFileLink = (internalName && fileUrl)
-      ? (
+const MultifileFileEdit = (props) => {
+  const {langtag, file, hasContent, file: {uuid, internalName}, fileAttributes, fileLangtag, unsetLangs, switchLang, t} = props;
+  const mayChange = hasUserAccessToLanguage(langtag);
+  return (
+    <div className="multifile-file-edit item">
+      <div className="cover-wrapper">
+        <div className="cover">
+          <FileChangeUpload langtag={fileLangtag}
+                            internalFileName={internalName[fileLangtag]}
+                            uuid={uuid} />
+        </div>
         <span className="open-file">
-          <a target="_blank"
-            rel="noopener"
-            href={apiUrl(fileUrl)}
+          <MediaLink file={file}
+                     langtag={fileLangtag}
           >
             {t("open_file")}
-          </a>
+          </MediaLink>
         </span>
-      )
-      : null;
+      </div>
 
-    return (
-      <div className="multifile-file-edit item">
-        <div className="cover-wrapper">
-          <div className="cover">
-            <FileChangeUpload
-              langtag={langtag}
-              internalFileName={internalName}
-              uuid={uuid} />
-          </div>
-          {openFileLink}
+      <div className="properties-wrapper">
+        {(hasContent)
+          ? getLanguageOrCountryIcon(fileLangtag)
+          : (
+            <LanguageSwitcher langtag={fileLangtag}
+                              onChange={props.switchLang}
+                              options={unsetLangs
+                                .filter(hasUserAccessToLanguage)
+                                .map((lt) => ({value: lt, label: lt}))
+                              }
+            />
+          )
+        }
+
+        <div className="item">
+          <div className="item-header">{t("file_title_label")}</div>
+          <input disabled={!mayChange}
+                 type="text"
+                 value={f.getOr("", ["title", fileLangtag], fileAttributes)}
+                 onChange={props.setTitle} />
         </div>
-        <div className="properties-wrapper">
-          <LanguageSwitcher
-            langtag={langtag}
-            onChange={this.onLangChange}
-            disabled={!permissionToChange}
-            limitLanguages={getUserLanguageAccess()}
-          />
-          <div className="item">
-            <div className="item-header">{t("file_title_label")}</div>
-            <input disabled={!permissionToChange} type="text" id={this.titleId}
-              value={title}
-              onChange={this.onTitleChange} />
-          </div>
-          <div className="item">
-            <div className="item-header">{t("file_description_label")}</div>
-            <input disabled={!permissionToChange} type="text" id={this.descId}
-              value={description}
-              onChange={this.onDescriptionChange} />
-          </div>
-          <div className="item">
-            <div className="item-header">{t("file_link_name_label")}</div>
-            <input disabled={!permissionToChange} type="text" id={this.externalNameId}
-              value={externalName}
-              onChange={this.onExternalNameChange} />
-          </div>
+
+        <div className="item">
+          <div className="item-header">{t("file_description_label")}</div>
+          <input disabled={!mayChange}
+                 type="text"
+                 value={f.getOr("", ["description", fileLangtag], fileAttributes)}
+                 onChange={props.setDescription} />
+        </div>
+
+        <div className="item">
+          <div className="item-header">{t("file_link_name_label")}</div>
+          <input disabled={!mayChange}
+                 type="text"
+                 value={f.getOr("", ["externalName", fileLangtag], fileAttributes)}
+                 onChange={props.setExternalName} />
         </div>
       </div>
-    );
-  }
+
+    </div>
+  );
 };
 
-module.exports = translate(["media"])(MultifileFileEdit);
+export default enhance(MultifileFileEdit);
