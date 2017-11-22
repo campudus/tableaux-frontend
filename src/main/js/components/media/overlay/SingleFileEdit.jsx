@@ -34,21 +34,21 @@ const SingleFileEdit = ({file, langtag, fileAttributes, setFileAttribute}) => {
 
       <div className="properties-wrapper content-items">
         <SingleFileTextInput name="title"
-                             labelText="file_title_label"
+                             labelText={i18n.t("media:file_title_label")}
                              value={f.getOr("", "title", fileAttributes)}
                              langtag={langtag}
                              setFileAttribute={setFileAttribute}
         />
 
         <SingleFileTextInput name="description"
-                             labelText="file_description_label"
+                             labelText={i18n.t("media:file_description_label")}
                              value={f.getOr("", "description", fileAttributes)}
                              langtag={langtag}
                              setFileAttribute={setFileAttribute}
         />
 
         <SingleFileTextInput name="externalName"
-                             labelText="file_link_name_label"
+                             labelText={i18n.t("media:file_link_name_label")}
                              value={f.getOr("", "externalName", fileAttributes)}
                              langtag={langtag}
                              setFileAttribute={setFileAttribute}
