@@ -2,9 +2,10 @@
 @import "variables";
 
 #tableswitcher-wrapper {
-  float: left;
-  margin-left: 20px;
+  display: inline-block;
+
   margin-top: 10px;
+
   outline-style: none;
 
   .button {

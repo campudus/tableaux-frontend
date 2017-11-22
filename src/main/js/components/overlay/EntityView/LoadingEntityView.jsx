@@ -41,17 +41,22 @@ class LoadingEntityViewHeaderWrapper extends Component {
     const {id, langtag} = this.props;
     const {row} = this.state;
     return (row)
-      ? <EntityViewHeader row={row}
-        langtag={langtag}
-        id={id}
-        hasMeaningfulLinks={true}
-      />
-      : <Header context=""
-        title={i18n.t("common:loading")}
-        components={<div />}
-        langtag={langtag}
-        id={id}
-      />;
+      ? (
+        <EntityViewHeader row={row}
+                          langtag={langtag}
+                          id={id}
+                          hasMeaningfulLinks={true}
+                          {...f.pick(["sharedData", "updateSharedData"], this.props)}
+        />
+      )
+      : (
+        <Header context=""
+                title={i18n.t("common:loading")}
+                components={<div />}
+                langtag={langtag}
+                id={id}
+        />
+      );
   }
 }
 

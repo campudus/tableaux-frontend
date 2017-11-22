@@ -27,6 +27,8 @@ import withCustomProjection from "../helperComponents/withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
+import HistoryButtons from "../table/undo/HistoryButtons";
+import {initHistoryOf} from "../table/undo/tableHistory";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
@@ -188,6 +190,7 @@ class TableView extends Component {
       this.tables = new Tables();
       this.tables.fetch({
         success: (collection) => {
+          initHistoryOf(this.tables);
           if (this.props.tableId === null) {
             ActionCreator.switchTable(collection.at(0).getId(), this.props.langtag);
           } else {
@@ -443,7 +446,7 @@ class TableView extends Component {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
       const tables = this.tables;
-      const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang} = this.state;
+      const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang, currentTableId} = this.state;
       const {langtag, overlayOpen} = this.props;
       const currentTable = this.getCurrentTable();
 
@@ -470,11 +473,6 @@ class TableView extends Component {
         <div>
           <header>
             <Navigation langtag={this.props.langtag} />
-            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
-                           pasteOriginCell={pasteOriginCell}
-                           pasteOriginCellLang={pasteOriginCellLang}
-                           tableId={currentTable.id}
-            />
             <TableSwitcher
               langtag={langtag}
               currentTable={currentTable}
@@ -494,9 +492,16 @@ class TableView extends Component {
               )
               : <div/>
             }
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
-            <PageTitle titleKey="pageTitle.tables" />
+            <HistoryButtons tableId={currentTableId}/>
+            <div className="header-separator" />
             <Spinner />
+            <PageTitle titleKey="pageTitle.tables" />
+            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
+            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
+                           pasteOriginCell={pasteOriginCell}
+                           pasteOriginCellLang={pasteOriginCellLang}
+                           tableId={currentTable.id}
+            />
           </header>
           <div className="wrapper">
             <Table

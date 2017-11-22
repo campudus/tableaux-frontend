@@ -105,6 +105,13 @@ class View extends Component {
       [ColumnKinds.group]: GroupView
     };
 
+    const updateTrigger = (f.isArray(cell.value))
+      ? f.flow(
+        f.map(langtag),
+        f.join(":")
+      )(cell.displayValue)
+      : cell.displayValue[langtag];
+
     const isDisabled = !this.canEditValue();
     const isMyTranslationNeeded = langtag !== f.first(Langtags) && Annotations.isTranslationNeeded(langtag)(cell);
     const isAnyTranslationNeeded = langtag === f.first(Langtags)
@@ -146,27 +153,28 @@ class View extends Component {
 
     return (
       <div className={viewClass}
-        onClick={this.clickHandler}
-        onMouseEnter={() => this.setState({hovered: true})}
-        onMouseLeave={() => this.setState({hovered: false})}
-        ref={el => {
-          this.viewElement = el;
-        }}
+           onClick={this.clickHandler}
+           onMouseEnter={() => this.setState({hovered: true})}
+           onMouseLeave={() => this.setState({hovered: false})}
+           ref={el => {
+             this.viewElement = el;
+           }}
       >
         <RowHeadline column={column} langtag={langtag} cell={cell}
-          setTranslationView={setTranslationView}
-          funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
-          thisUserCantEdit={isDisabled}
-          popupOpen={this.props.popupOpen}
-          hasMeaningfulLinks={this.props.hasMeaningfulLinks}
+                     setTranslationView={setTranslationView}
+                     funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
+                     thisUserCantEdit={isDisabled}
+                     popupOpen={this.props.popupOpen}
+                     hasMeaningfulLinks={this.props.hasMeaningfulLinks}
         />
         {(!f.isEmpty(description)) ? <div className="item-description"><i className="fa fa-info-circle" />
           <div>{description}</div>
         </div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
-          setTranslationView={setTranslationView}
-          funcs={this.props.funcs}
-          thisUserCantEdit={isDisabled}
+                  setTranslationView={setTranslationView}
+                  funcs={this.props.funcs}
+                  thisUserCantEdit={isDisabled}
+                  updateTrigger={updateTrigger}
         >
           <div className="action-tags">
             {translationTag}

@@ -13,31 +13,33 @@ import Cookies from "js-cookie";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+const conditionalLogger = (logger) => (test, ...args) => {
+  if (test) {
+    logger(...args);
+  }
+};
+
 window.devLog = (isProduction)
   ? function () {}
-  : function () {
-    console.log.apply(this, ["devel:", ...arguments]);
+  : function (...args) {
+    console.log("devel:", ...args);
   };
 
 window.devWarn = (isProduction)
   ? function () {}
-  : function () {
-    console.warn.apply(this, ["devel:", ...arguments]);
+  : function (...args) {
+    console.warn("devel:", ...args);
   };
 
 window.devErr = (isProduction)
   ? function () {}
-  : function () {
-    console.error.apply(this, ["devel:", ...arguments]);
+  : function (...args) {
+    console.error("devel", ...args);
   };
 
-window.logIf = (isProduction)
-  ? function () {}
-  : function (test, ...params) {
-    if (test) {
-      console.log(...params);
-    }
-  };
+window.devLogIf = conditionalLogger(window.devLog);
+window.devWarnIf = conditionalLogger(window.devWarn);
+window.devErrorIf = conditionalLogger(window.devErr);
 
 console.log("GRUD version", process.env.BUILD_VERSION);
 if (isProduction) {

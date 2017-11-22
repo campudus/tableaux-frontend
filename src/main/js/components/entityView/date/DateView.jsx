@@ -5,10 +5,10 @@ import {DateFormats, DateTimeFormats} from "../../../constants/TableauxConstants
 import Datetime from "react-datetime";
 import listensToClickOutside from "react-onclickoutside";
 import i18n from "i18next";
-import {changeCell} from "../../../models/Tables";
 import classNames from "classnames";
 import * as f from "lodash/fp";
 import {contentChanged} from "../../cells/Cell";
+import changeCell from "../../../models/helpers/changeCell";
 
 @listensToClickOutside
 class DateView extends Component {

@@ -13,6 +13,7 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import {openInNewTab} from "../../../helpers/apiUrl";
+import * as TableHistory from "../../table/undo/tableHistory";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -99,6 +100,18 @@ class HeaderPopupMenu extends Component {
     }
   };
 
+  getHistoryView = () => {
+    const {row} = this.props;
+    const {tableId} = row.cells.at(0);
+    return {
+      tableId,
+      rowId: row.id
+    };
+  };
+
+  handleUndo = () => TableHistory.undo(this.getHistoryView());
+  handleRedo = () => TableHistory.redo(this.getHistoryView());
+
   render() {
     const {langtag, hasMeaningfulLinks, id} = this.props;
     const {open, row} = this.state;
@@ -107,6 +120,7 @@ class HeaderPopupMenu extends Component {
       show: true,
       cell: maybe(row.cells).exec("at", 0).getOrElse(null)
     };
+    const historyView = this.getHistoryView();
 
     return (
       <div className="header-popup-wrapper">
@@ -164,6 +178,24 @@ class HeaderPopupMenu extends Component {
                       fn: () => initiateDeleteRow(row, langtag, id),
                       icon: "trash"
                     })
+                }
+                {(TableHistory.canUndo(historyView))
+                  ? this.mkEntry(3,
+                    {
+                      title: "table:undo",
+                      fn: this.handleUndo,
+                      icon: "undo"
+                    })
+                  : null
+                }
+                {(TableHistory.canRedo(historyView))
+                  ? this.mkEntry(3,
+                    {
+                      title: "table:redo",
+                      fn: this.handleRedo,
+                      icon: "repeat"
+                    })
+                  : null
                 }
                 {this.mkEntry(4,
                   {

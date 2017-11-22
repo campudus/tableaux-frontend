@@ -9,10 +9,10 @@
   "delete_row": "Delete row",
   "copy_cell": "Copy cell contents",
   "paste_cell": "Paste cell contents",
-  "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed.",
+  "delete_row_dependent_text": "This data record is linked in the following tables. The links will be removed. This action cannot be undone.",
   "show_entity_view": "Show details",
   "entity_view": "Details",
-  "no_dependent_text": "Data record is not linked anywhere.",
+  "no_dependent_text": "Data record is not linked anywhere. Deleting it cannot be undone.",
   "duplicate_row": "Duplicate row",
   "error_occured_hl": "There was an error",
   "error_saving_cell": "The cell could not be saved. Refresh your browser now?",
@@ -127,5 +127,7 @@
   "postpone": "Later",
   "check-column": "Could not copy all entries. Please double-check the data set.",
   "open-link-filtered": "Open linked data",
-  "open-dataset": "Open table with this dataset"
+  "open-dataset": "Open table with this dataset",
+  "undo": "Undo last data change",
+  "redo": "Redo last data change"
 }

@@ -87,6 +87,7 @@ var TableauxConstant = {
     COPY_CELL_CONTENT: null,
     PASTE_CELL_CONTENT: null,
     BROADCAST_DATA_CHANGE: null,
+    BROADCAST_UNDO_EVENT: null,
 
     CONNECTION_STATUS_CHANGED: null,
 

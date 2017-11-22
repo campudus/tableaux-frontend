@@ -198,11 +198,11 @@ class TranslationPopup extends Component {
     const {translations} = this.state;
 
     const isAnyCollapsed = f.flow(
-      f.entries,                                 // of tuples [langtag, "display"]
-      f.reject(f.matchesProperty(0, langtag)),   // of elements without langtag === current langtag
-      f.map(f.last),                             // of "display" values
-      f.any(f.complement(f.identity)),           // any not truthy
-    )(this.state.translations);                  // of saved translations
+      f.entries, // of tuples [langtag, "display"]
+      f.reject(f.matchesProperty(0, langtag)), // of elements without langtag === current langtag
+      f.map(f.last), // of "display" values
+      f.any(f.complement(f.identity)), // any not truthy
+    )(this.state.translations); // of saved translations
 
     return (
       <div className="translation-view">

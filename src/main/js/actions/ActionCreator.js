@@ -6,11 +6,12 @@ import i18n from "i18next";
 
 module.exports = {
 
-  changeCell: function (cell, newValue, cb) {
+  changeCell: function (cell, newValue, cb, options) {
     Dispatcher.trigger(ActionTypes.CHANGE_CELL, {
       cell,
       value: newValue,
-      cb
+      cb,
+      options
     });
   },
 
@@ -337,7 +338,7 @@ module.exports = {
   },
 
   broadcastDataChange: (payload) => {
-    //    console.log("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
+    // window.devLog("Data changed in", `table${payload.cell.tableId}, ${payload.cell.id}`);
     Dispatcher.trigger(ActionTypes.BROADCAST_DATA_CHANGE, payload);
   },
 
@@ -351,5 +352,9 @@ module.exports = {
 
   closeAnnotationsPopup: () => {
     Dispatcher.trigger(ActionTypes.CLOSE_ANNOTATIONS_VIEWER);
+  },
+
+  broadcastHistoryEvent: (canUndo, canRedo) => {
+    Dispatcher.trigger(ActionTypes.BROADCAST_UNDO_EVENT, {canUndo, canRedo});
   }
 };

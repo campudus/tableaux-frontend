@@ -16,8 +16,11 @@ import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
 import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import classNames from "classnames";
-import * as f from "lodash/fp";
-import {addTranslationNeeded, deleteCellAnnotation, removeTranslationNeeded} from "../../helpers/annotationHelper";
+import f from "lodash/fp";
+import {
+  addTranslationNeeded, deleteCellAnnotation, isLocked,
+  removeTranslationNeeded
+} from "../../helpers/annotationHelper";
 import openTranslationDialog from "../overlay/TranslationDialog";
 import {either} from "../../helpers/functools";
 import FlagIconRenderer from "./FlagIconRenderer";
@@ -38,15 +41,38 @@ const ExpandCorner = compose(
 )(
   (props) => (
     <div className="needs-translation-other-language"
-      onClick={props.onClick}
+         onClick={props.onClick}
     />
   )
 );
 
+export const getAnnotationState = (cell) => {
+  const flags = f.flow(
+    f.keys,
+    f.filter(f.contains(f, ["important", "check-me", "postpone"])),
+    f.join(":")
+  )(cell.annotations);
+
+  const translations = f.flow(
+    f.get(["translationNeeded", "langtags"]),
+    f.join(":")
+  )(cell.annotations);
+
+  const comments = f.flow(
+    f.pick(["info", "error", "warning"]),
+    f.reduce(f.concat, []),
+    f.map(f.flow(f.get("uuid"), f.take(8), f.join(""))),
+    f.join(":")
+  )(cell.annotations);
+
+  return f.join("-", [flags, translations, comments, (isLocked(cell.row))]);
+};
+
 export const contentChanged = (cell, langtag, oldValue) => () => {
   if (!cell.isMultiLanguage || either(cell)
-    .map(f.prop(["value", langtag]))
-    .orElse(f.prop("value")).value === oldValue) {
+      .map(f.prop(["value", langtag]))
+      .orElse(f.prop("value")).value === oldValue
+  ) {
     return;
   }
   const isPrimaryLanguage = langtag === f.first(Langtags);
@@ -88,8 +114,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   }
 };
 
-@connectToAmpersand
-class Cell extends React.PureComponent {
+class Cell extends React.Component {
   cellDOMNode = null;
 
   constructor(props) {
@@ -130,7 +155,8 @@ class Cell extends React.PureComponent {
       const focusedElement = document.activeElement;
       // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
       // focus. (e.g. Links Component)
-      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(cellDOMNode)) {
+      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(
+          cellDOMNode)) {
         cellDOMNode.focus();
       }
     }
@@ -139,7 +165,15 @@ class Cell extends React.PureComponent {
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag, shouldFocus} = this.props;
     ActionCreator.closeAnnotationsPopup();
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "", cell.kind, "cell clicked", langtag, ":", cell, "value: ", cell.value, cell.displayValue);
+    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
+      cell.kind,
+      "cell clicked",
+      langtag,
+      ":",
+      cell,
+      "value: ",
+      cell.value,
+      cell.displayValue);
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -192,8 +226,8 @@ class Cell extends React.PureComponent {
     [ColumnKinds.richtext]: TextCell,
     [ColumnKinds.group]: IdentifierCell
   };
-  
-  render = () => {
+
+  render() {
     const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
     const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
@@ -216,34 +250,39 @@ class Cell extends React.PureComponent {
 
     const displayValue = f.isArray(cell.displayValue)
       ? f.flow(
-        f.map(f.get(langtag)),
-        f.join(";")
-      )(cell.displayValue) || ""
+      f.map(f.get(langtag)),
+      f.join(";")
+    )(cell.displayValue) || ""
       : f.get(langtag, cell.displayValue) || "";
 
     // onKeyDown event just for selected components
     return (
       <div style={this.props.style}
-        className={cssClass}
-        onClick={this.cellClicked}
-        onContextMenu={this.rightClicked}
-        tabIndex="1"
-        onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
-        onMouseDown={this.onMouseDownHandler}>
-        <CellKind cell={cell} langtag={langtag}
-          selected={selected} inSelectedRow={inSelectedRow}
-          editing={cell.isEditable && editing}
-          value={displayValue}
-          contentChanged={contentChanged}
-          setCellKeyboardShortcuts={(f.contains(kind, noKeyboard)) ? f.noop : this.setKeyboardShortcutsForChildren}
+           className={cssClass}
+           onClick={this.cellClicked}
+           onContextMenu={this.rightClicked}
+           tabIndex="1"
+           onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
+           onMouseDown={this.onMouseDownHandler}>
+        <CellKind cell={cell}
+                  langtag={langtag}
+                  selected={selected}
+                  inSelectedRow={inSelectedRow}
+                  editing={cell.isEditable && editing}
+                  value={displayValue}
+                  contentChanged={contentChanged}
+                  setCellKeyboardShortcuts={(f.contains(kind, noKeyboard))
+                    ? f.noop
+                    : this.setKeyboardShortcutsForChildren}
         />
         <FlagIconRenderer cell={cell}
-          annotations={cell.annotations}
-          langtag={langtag}
-          annotationsOpen={annotationsOpen}
+                          annotationsState={getAnnotationState(cell)}
+                          annotations={cell.annotations}
+                          langtag={langtag}
+                          annotationsOpen={annotationsOpen}
         />
         <ExpandCorner show={needsTranslationOtherLanguages}
-          cell={cell}
+                      cell={cell}
         />
       </div>
     );
@@ -279,14 +318,24 @@ const RepeaterCell = withHandlers(
 )(
   (props) => (
     <div className="cell repeat placeholder"
-      onContextMenu={props.onContextMenu}
+         onContextMenu={props.onContextMenu}
     >
       —.—
     </div>
   )
 );
 
-export default branch(
-  isRepeaterCell,
-  renderComponent(pure(RepeaterCell))
+/**
+ * Placing pure HOC component around connectToAmpersand and making Cell itself a non-pure component
+ * gives us the best of two worlds:
+ * the pure HOC will avoid unneccessary re-renders, while a non-pure base component will not stop
+ * connectToAmpersand from triggering new render cycles on value changes.
+ */
+export default compose(
+  branch(
+    isRepeaterCell,
+    renderComponent(pure(RepeaterCell))
+  ),
+  pure,
+  connectToAmpersand
 )(Cell);

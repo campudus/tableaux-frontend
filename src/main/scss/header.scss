@@ -1,3 +1,6 @@
+@import "helper";
+@import "variables";
+
 header {
   @include box-sizing(border-box);
   background-color: white;
@@ -8,6 +11,11 @@ header {
   position: fixed;
   z-index: 9;
   overflow: visible;
+  display: flex;
+
+  .header-separator {
+    flex: 1 1 auto;
+  }
 
   .Select {
 
@@ -65,10 +73,10 @@ header {
   }
 
   #main-navigation-wrapper {
-    float: left;
-    vertical-align: top;
-    margin-right: 20px;
+    display: inline-block;
+
     margin-top: 10px;
+    margin-right: 40px;
 
     &.active {
       #burger {
@@ -116,7 +124,6 @@ header {
   }
 
   #header-pagename {
-    float: right;
     margin-right: 20px;
     font-weight: bold;
     text-transform: uppercase;
@@ -143,7 +150,6 @@ header {
   .clipboard-icon {
     margin-top: 10px;
     margin-left: 15px;
-    float: right;
     display: inline-flex;
     position: relative;
 
@@ -162,7 +168,7 @@ header {
       padding: 0;
       cursor: default;
 
-      &>* {
+      & > * {
         padding: 20px;
       }
 
@@ -191,6 +197,8 @@ header {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        position: relative;
+
         .button {
           @include button-look();
 
@@ -203,6 +211,44 @@ header {
 
     a {
       padding: 10px;
+    }
+  }
+
+  .history-buttons {
+    display: inline-block;
+
+    margin-top: 10px;
+    margin-right: 20px;
+
+    .button {
+      @include header-button-look();
+
+      &:hover:not(.disabled) {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+
+      &.disabled {
+        color: $color-text-light-grey;
+      }
+
+      &.undo-button {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      &.redo-button {
+        margin-left: -1px;
+
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      &.inactive {
+        background-color: $color-border-grey;
+        color: $color-primary-contrast-text;
+        cursor: wait;
+      }
     }
   }
 }

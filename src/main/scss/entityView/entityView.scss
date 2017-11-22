@@ -283,6 +283,40 @@
   }
 }
 
+.header-wrapper .history-buttons {
+  grid-column-start: 4;
+  -ms-grid-column: 4;
+  grid-row-start: 2;
+  -ms-grid-row: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .button {
+    padding: 0 8px;
+    height: 70% !important;
+    color: $color-text-medium-grey;
+    border-radius: 3px;
+    border: 1px solid transparentize($color-text-medium-grey, 0.5);
+    margin: 0 3px;
+
+    &:hover:not(.disabled) {
+      color: $color-primary-contrast-text;
+    }
+
+    &.disabled {
+      color: darken($color-text-medium-grey, 25);
+    }
+
+    &.inactive {
+      background-color: $color-border-grey;
+      color: $color-primary-contrast-text;
+      cursor: wait;
+    }
+  }
+}
+
 // Language and row switchers
 .eev-language-switcher-wrapper {
   grid-column-start: 3;

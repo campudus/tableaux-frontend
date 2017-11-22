@@ -89,7 +89,10 @@ const updateFilter = (tableId, state, settings = {}, shouldSave) => {
   const areAllFiltersEmpty = f.isEmpty(filters) || f.every(isFilterEmpty, filters);
 
   if (areAllFiltersEmpty && isSortingEmpty) {
-    shouldSave && saveFilterSettings(tableId, {});
+    if (shouldSave) {
+      saveFilterSettings(tableId, {});
+    }
+    
     return f.assoc(
       ["projection", "rows"],
       {},
@@ -102,7 +105,9 @@ const updateFilter = (tableId, state, settings = {}, shouldSave) => {
       filters: f.reject(isFilterEmpty, filters)
     };
 
-    shouldSave && saveFilterSettings(tableId, rowsFilter);
+    if (shouldSave) {
+      saveFilterSettings(tableId, rowsFilter);
+    }
 
     return f.assoc(
       ["projection", "rows"],
@@ -123,11 +128,15 @@ const saveColumnVisibility = (tableId, view, name = "default") => {
 const updateColumnVisibility = (tableId, state, {val, colIds}, shouldSave) => {
   const currentVisibility = f.get(["projection", "columns"], state) || [];
   const visibility = (f.isNil(colIds))
-    ? []                                           // no colIds given -> clear all
+    ? [] // no colIds given -> clear all
     : (val)
-      ? f.uniq([...currentVisibility, ...colIds])  // val == truthy -> add colIds to visibility array
-      : f.without(colIds, currentVisibility);      // else remove colIds from visibility array
-  shouldSave && saveColumnVisibility(tableId, visibility);
+      ? f.uniq([...currentVisibility, ...colIds]) // val == truthy -> add colIds to visibility array
+      : f.without(colIds, currentVisibility); // else remove colIds from visibility array
+  
+  if (shouldSave && !f.equals(visibility, currentVisibility)) {
+    saveColumnVisibility(tableId, visibility);
+  }
+  
   return f.assoc(
     ["projection", "columns"],
     visibility,

@@ -3,59 +3,52 @@ import PropTypes from "prop-types";
 import ShortTextEditCell from "./ShortTextEditCell";
 import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";
-import {changeCell} from "../../../models/Tables";
 import TextCell from "./TextCell";
+import changeCell from "../../../models/helpers/changeCell";
+import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
 
-const ShortTextCell = (props) => {
-  const {cell, cell: {isMultiLanguage}, contentChanged, editing, selected, langtag, setCellKeyboardShortcuts} = props;
-
-  const handleEditDone = (newValue) => {
-    const oldValue = getValue();
+const withEditFn = withHandlers({
+  handleEditDone: (props) => (newValue) => {
+    const oldValue = props.value;
+    const {contentChanged, cell, langtag} = props;
     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
       ActionCreator.toggleCellEditing({editing: false});
       return;
     }
-    const valueToSave = (isMultiLanguage)
+    const valueToSave = (cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
 
-    changeCell({cell, value: valueToSave})
+    changeCell({
+      cell,
+      value: valueToSave
+    })
       .then(contentChanged(cell, langtag, oldValue));
     ActionCreator.toggleCellEditing({editing: false});
-  };
+  }
+});
 
-  const getValue = () => {
-    return (isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
-  };
+const withTextCellFallback = branch(
+  (props) => f.contains("\n", props.value),
+  renderComponent(TextCell)
+);
 
-  const renderTextCell = (cell, value) => {
-    return (
+const ShortTextCell = (props) => {
+  const {cell, handleEditDone, editing, langtag, setCellKeyboardShortcuts, value} = props;
+
+  return (editing)
+    ? (
+      <ShortTextEditCell cell={cell}
+                         langtag={langtag}
+                         onBlur={handleEditDone}
+                         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+      />
+    )
+    : (
       <div className="cell-content">
         {(value === null) ? "" : value}
       </div>
     );
-  };
-
-  if (f.contains("\n", getValue())) {
-    // If someone managed to put multiline text here, fallback to a multiline text cell
-    return (
-      <TextCell langtag={langtag}
-        cell={cell}
-        editing={editing}
-        selected={selected}
-      />
-    );
-  } else if (!editing) {
-    return renderTextCell(cell, getValue());
-  } else {
-    return (
-      <ShortTextEditCell cell={cell} langtag={langtag} onBlur={handleEditDone}
-        setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-      />
-    );
-  }
 };
 
 ShortTextCell.propTypes = {
@@ -63,7 +56,12 @@ ShortTextCell.propTypes = {
   cell: PropTypes.object.isRequired,
   editing: PropTypes.bool.isRequired,
   selected: PropTypes.bool,
-  setCellKeyboardShortcuts: PropTypes.func
+  setCellKeyboardShortcuts: PropTypes.func,
+  value: PropTypes.string
 };
 
-export default ShortTextCell;
+export default compose(
+  pure,
+  withTextCellFallback, // just in case someone put a linebreak into the backend
+  withEditFn
+)(ShortTextCell);

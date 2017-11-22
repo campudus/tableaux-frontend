@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import NumericEditCell from "./NumericEditCell.jsx";
 import ActionCreator from "../../../actions/ActionCreator";
 import {prop, isNil} from "lodash/fp";
-import {changeCell} from "../../../models/Tables";
 import {pure} from "recompose";
+import changeCell from "../../../models/helpers/changeCell";
 
 const NumericCell = (props) => {
   const {cell, langtag, contentChanged, editing, setCellKeyboardShortcuts} = props;

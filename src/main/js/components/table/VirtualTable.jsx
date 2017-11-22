@@ -7,7 +7,7 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
-import Cell from "../cells/Cell";
+import Cell, {getAnnotationState} from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import {AutoSizer} from "react-virtualized";
@@ -17,6 +17,7 @@ import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 
 import MultiGrid from "./GrudGrid";
+import {isLocked} from "../../helpers/annotationHelper";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -62,10 +63,10 @@ export default class VirtualTable extends PureComponent {
     f.flow(
       f.get("columnWidths"),
       f.toPairs
-    )(this.getStoredView())
-      .forEach(
-        ([idx, width]) => this.colWidths.set(f.toNumber(idx), width)
-      );
+     )(this.getStoredView())
+     .forEach(
+       ([idx, width]) => this.colWidths.set(f.toNumber(idx), width)
+     );
   }
 
   saveColWidths = () => {
@@ -140,7 +141,7 @@ export default class VirtualTable extends PureComponent {
   cellRenderer = (gridData) => {
     return (
       <div style={gridData.style}
-        key={gridData.key}
+           key={gridData.key}
       >
         {this.renderGridCell(gridData)}
       </div>
@@ -183,9 +184,9 @@ export default class VirtualTable extends PureComponent {
 
   renderColumnHeader = ({columnIndex}) => {
     const visibleColumns = this.props.columns
-      .filter(
-        (col, idx) => idx === 0 || col.visible
-      );
+                               .filter(
+                                 (col, idx) => idx === 0 || col.visible
+                               );
     const column = visibleColumns[columnIndex];
     const {table, tables} = this.props;
     return (
@@ -212,6 +213,7 @@ export default class VirtualTable extends PureComponent {
     const row = rows.at(rowIndex) || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const isRowSelected = !!(this.selectedIds && row.id === this.selectedIds.row);
+    const locked = isLocked(row);
 
     return (isRowExpanded)
       // key={`${key}-${row.id}`}
@@ -222,10 +224,11 @@ export default class VirtualTable extends PureComponent {
           {Langtags.map(
             (lt) => (
               <MetaCell key={`${key}-${lt}`}
-                langtag={lt}
-                expanded={true}
-                selected={isRowSelected && lt === selectedCellExpandedRow}
-                row={row}
+                        langtag={lt}
+                        expanded={true}
+                        selected={isRowSelected && lt === selectedCellExpandedRow}
+                        row={row}
+                        isLocked={locked}
               />
             )
           )}
@@ -233,14 +236,17 @@ export default class VirtualTable extends PureComponent {
       )
       : (
         <MetaCell key={`${key}-${row.id}`}
-          langtag={langtag}
-          row={row}
-          selected={isRowSelected}
-          expanded={false}
+                  langtag={langtag}
+                  row={row}
+                  selected={isRowSelected}
+                  expanded={false}
+                  isLocked={locked}
         />
       );
     // key={`${key}-${row.id}`}
   };
+
+
 
   renderCell = (gridData) => {
     const {rows, expandedRowIds} = this.props;
@@ -261,16 +267,26 @@ export default class VirtualTable extends PureComponent {
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = !!this.props.selectedCell && cell.id === this.props.selectedCell.id;
     const isEditing = isSelected && this.props.selectedCellEditing;
+
+    const displayValue = f.isArray(cell.displayValue)
+      ? f.flow(
+      f.map(f.get(langtag)),
+      f.join(";")
+    )(cell.displayValue) || ""
+      : f.get(langtag, cell.displayValue) || "";
+
     return (
       <Cell cell={cell}
-        langtag={langtag}
-        row={row}
-        table={table}
-        annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
-        isExpandedCell={false}
-        selected={isSelected}
-        inSelectedRow={isInSelectedRow}
-        editing={isEditing}
+            annotationState={getAnnotationState(cell)}
+            langtag={langtag}
+            row={row}
+            table={table}
+            annotationsOpen={openAnnotations.cellId && openAnnotations.cellId === cell.id}
+            isExpandedCell={false}
+            selected={isSelected}
+            inSelectedRow={isInSelectedRow}
+            editing={isEditing}
+            value={displayValue}
       />
     );
   };
@@ -281,6 +297,7 @@ export default class VirtualTable extends PureComponent {
     const row = rows.at(rowIndex);
     const column = columns.at(columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
+    const annotationsState = getAnnotationState(cell);
 
     return (
       // key={cell.id}
@@ -294,17 +311,25 @@ export default class VirtualTable extends PureComponent {
               const isSelected = isRowSelected
                 && column.id === this.selectedIds.column;
               const isEditing = isSelected && this.props.selectedCellEditing;
+              const displayValue = f.isArray(cell.displayValue)
+                ? f.flow(
+                f.map(f.get(langtag)),
+                f.join(";")
+              )(cell.displayValue) || ""
+                : f.get(langtag, cell.displayValue) || "";
               return (
                 <Cell key={`${langtag}-${key}`}
-                  cell={cell}
-                  langtag={langtag}
-                  row={row}
-                  table={table}
-                  annotationsOpen={isPrimaryLang && openAnnotations.cellId && cell.id === openAnnotations.cellId}
-                  isExpandedCell={!isPrimaryLang}
-                  selected={isSelected}
-                  inSelectedRow={isRowSelected}
-                  editing={isEditing}
+                      annotationState={annotationsState}
+                      cell={cell}
+                      langtag={langtag}
+                      row={row}
+                      table={table}
+                      annotationsOpen={isPrimaryLang && openAnnotations.cellId && cell.id === openAnnotations.cellId}
+                      isExpandedCell={!isPrimaryLang}
+                      selected={isSelected}
+                      inSelectedRow={isRowSelected}
+                      editing={isEditing}
+                      value={displayValue}
                 />
               );
             }
@@ -439,46 +464,47 @@ export default class VirtualTable extends PureComponent {
     const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
     const shouldIDColBeGrey = f.get("kind", columns.first) === ColumnKinds.concat
-      && rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) > window
+      && rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
+                                                  // window
 
     return (
       <AutoSizer>
         {
           ({height, width}) => (
             <MultiGrid ref={this.storeGridElement}
-              key={(columnCount < 3) ? "no-fixed-rows" : "with-fixed-rows"}
-              className="data-wrapper"
-              cellRenderer={this.cellRenderer}
-              columnCount={columnCount}
-              columnWidth={this.calcColWidth}
-              noContentRenderer={this.renderEmptyTable}
-              rowCount={rowCount}
-              rowHeight={this.calcRowHeight}
-              fixedColumnCount={(columnCount < 3) ? 0 : f.min([columnCount, 2])}
-              fixedRowCount={1}
-              width={width}
-              height={height}
-              selectedCell={selectedCellKey}
-              expandedRows={expandedRowIds}
-              openAnnotations={openAnnotations}
-              scrollToRow={rowIndex}
-              scrollToColumn={columnIndex}
-              scrollLeft={scrollPosition}
-              rowKeys={rowKeys}
-              columnKeys={columnKeys}
-              overscanColumnCount={5}
-              overscanRowCount={6}
-              classNameBottomRightGrid={"multigrid-bottom-right"}
-              classNameTopRightGrid={"multigrid-top-right"}
-              classNameBottomLeftGrid={"multigrid-bottom-left"}
-              fullyLoaded={this.props.fullyLoaded}
-              styleTopRightGrid={{
-                backgroundColor: "#f9f9f9",
-                borderBottom: "3px solid #eee"
-              }}
-              styleBottomLeftGrid={{
-                backgroundColor: (shouldIDColBeGrey) ? "#f9f9f9" : "white"
-              }}
+                       key={(columnCount < 3) ? "no-fixed-rows" : "with-fixed-rows"}
+                       className="data-wrapper"
+                       cellRenderer={this.cellRenderer}
+                       columnCount={columnCount}
+                       columnWidth={this.calcColWidth}
+                       noContentRenderer={this.renderEmptyTable}
+                       rowCount={rowCount}
+                       rowHeight={this.calcRowHeight}
+                       fixedColumnCount={(columnCount < 3) ? 0 : f.min([columnCount, 2])}
+                       fixedRowCount={1}
+                       width={width}
+                       height={height}
+                       selectedCell={selectedCellKey}
+                       expandedRows={expandedRowIds}
+                       openAnnotations={openAnnotations}
+                       scrollToRow={rowIndex}
+                       scrollToColumn={columnIndex}
+                       scrollLeft={scrollPosition}
+                       rowKeys={rowKeys}
+                       columnKeys={columnKeys}
+                       overscanColumnCount={5}
+                       overscanRowCount={6}
+                       classNameBottomRightGrid={"multigrid-bottom-right"}
+                       classNameTopRightGrid={"multigrid-top-right"}
+                       classNameBottomLeftGrid={"multigrid-bottom-left"}
+                       fullyLoaded={this.props.fullyLoaded}
+                       styleTopRightGrid={{
+                         backgroundColor: "#f9f9f9",
+                         borderBottom: "3px solid #eee"
+                       }}
+                       styleBottomLeftGrid={{
+                         backgroundColor: (shouldIDColBeGrey) ? "#f9f9f9" : "white"
+                       }}
             />
           )
         }

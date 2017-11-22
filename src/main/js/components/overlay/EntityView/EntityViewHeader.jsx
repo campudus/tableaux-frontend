@@ -7,11 +7,12 @@ import HeaderPopupMenu from "./HeaderPopupMenu";
 import FilterBar from "./FilterBar";
 import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-import {changeEntityViewRow, changeHeaderTitle, switchEntityViewLanguage} from "../../../actions/ActionCreator";
+import {changeEntityViewRow, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import Empty from "../../helperComponents/emptyEntry";
+import HistoryButtons from "../../table/undo/HistoryButtons";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -98,13 +99,8 @@ class RowSwitcher extends Component {
     langtag: PropTypes.string.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {row: props.row};
-  }
-
   getNextRow = dir => {
-    const {row} = this.state;
+    const {row} = this.props;
     const firstCell = row.cells.at(0);
     const table = firstCell.tables.get(firstCell.tableId);
     const rowsCollection = f.get("models", this.props.rows || table.rows);
@@ -117,15 +113,8 @@ class RowSwitcher extends Component {
     const nextRow = this.getNextRow(dir);
     if (nextRow) {
       unlockRow({}, false);
-      this.setState({row: nextRow});
-      changeEntityViewRow({
-        id: this.props.id,
-        row: nextRow
-      });
-      changeHeaderTitle({
-        id: this.props.id,
-        title: getDisplayLabel(nextRow, this.props.langtag)
-      });
+      this.props.updateSharedData(f.assoc("row", nextRow));
+      changeEntityViewRow({row: nextRow, id: this.props.id});
     }
   };
 
@@ -165,13 +154,6 @@ class EntityViewHeader extends Component {
     langtag: PropTypes.string.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    const firstCell = props.row.cells.at(0);
-    this.cellId = firstCell.id;
-    this.state = {title: firstCell.displayValue[props.langtag]};
-  }
-
   componentWillMount() {
     Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
   }
@@ -181,22 +163,29 @@ class EntityViewHeader extends Component {
   }
 
   updateHeader = ({cell}) => {
-    if (cell.id === this.cellId) {
-      this.setState({title: cell.displayValue[this.props.langtag]});
-    }
+    this.forceUpdate();
   };
 
   render() {
-    const {canSwitchRows, hasMeaningfulLinks, row, langtag} = this.props;
-    const {title} = this.state;
+    const {canSwitchRows, hasMeaningfulLinks, langtag} = this.props;
+    const row = this.props.sharedData.row || this.props.row;
+    const firstCell = row.cells.at(0);
+    const title = firstCell.displayValue[langtag];
     const titleElement = (f.isEmpty(f.trim(title))) ? <Empty /> : title;
     const tableName = getTableName(row, langtag);
     const components = (
       <div className="header-components">
         <LanguageSwitcher langtag={langtag} />
-        {(canSwitchRows) ? <RowSwitcher {...this.props} /> : null}
+        {(canSwitchRows) ? <RowSwitcher {...this.props} row={row}/> : null}
+        <HistoryButtons tableId={row.cells.at(0).tableId}
+                        rowId={row.id}
+        />
         <FilterBar id={this.props.id} />
-        <HeaderPopupMenu langtag={langtag} row={row} id={this.props.id} hasMeaningfulLinks={hasMeaningfulLinks} />
+        <HeaderPopupMenu langtag={langtag}
+                         row={row}
+                         id={this.props.id}
+                         hasMeaningfulLinks={hasMeaningfulLinks}
+        />
       </div>
     );
     return <Header {...this.props} context={tableName} title={titleElement} components={components} />;
