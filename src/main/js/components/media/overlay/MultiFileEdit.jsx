@@ -11,25 +11,30 @@ export default ({langtag, fileAttributes, file, setFileAttribute}) => {
       ["description", lt]]),
     f.any(f.complement(f.isEmpty))
   )(fileAttributes);
+
+  const unsetLangs = f.reject(langsWithFiles, Langtags);
+
   return (
     <div className="multifile-file-edit-wrapper content-items">
-      {Langtags
-        .filter(langsWithFiles)
-        .map(
-          (lt) => (
-            <MultifileFileEdit key={lt}
-                               langtag={langtag}
-                               fileLangtag={lt}
-                               file={file}
-                               fileAttributes={fileAttributes}
-                               setFileAttribute={setFileAttribute}
-                               hasContent={true}
-            />
+      {
+        Langtags
+          .filter(langsWithFiles)
+          .map(
+            (lt) => (
+              <MultifileFileEdit key={lt}
+                                 langtag={langtag}
+                                 fileLangtag={lt}
+                                 file={file}
+                                 fileAttributes={fileAttributes}
+                                 setFileAttribute={setFileAttribute}
+                                 hasContent={true}
+              />
+            )
           )
-        )
       }
-      <MultifileFileEdit unsetLangs={f.reject(langsWithFiles, Langtags)}
-                         langtag={langtag}
+      <MultifileFileEdit unsetLangs={unsetLangs}
+                         langtag={f.head(unsetLangs)}
+                         fileLangtag={f.head(unsetLangs)}
                          file={file}
                          fileAttributes={fileAttributes}
                          setFileAttribute={setFileAttribute}

@@ -10,10 +10,20 @@ import apiUrl from "../../../helpers/apiUrl";
 import Request from "superagent";
 import ActionCreator from "../../../actions/ActionCreator";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+import f from "lodash/fp";
 
 const enhance = compose(
   withStateHandlers(
-    () => ({langtag: DefaultLangtag}),
+    () => {
+      const langOptions = Langtags.filter(
+        (lt) => lt !== DefaultLangtag && hasUserAccessToLanguage(lt)
+      );
+
+      return ({
+        langtag: f.head(langOptions),
+        langOptions: langOptions
+      });
+    },
     {
       handleLanguageSwitch: () => (langtag) => ({langtag})
     }
@@ -47,10 +57,7 @@ const enhance = compose(
   })
 );
 
-const MultilangFileDropzone = ({langtag, file, handleDrop, handleLanguageSwitch, t}) => {
-  const langOptions = Langtags.filter(
-    (lt) => lt !== DefaultLangtag && hasUserAccessToLanguage(lt)
-  );
+const MultilangFileDropzone = ({langtag, langOptions, handleDrop, handleLanguageSwitch, t}) => {
   return (
     <div className="multifile-wrapper item">
       <Dropzone className="item dropzone"
