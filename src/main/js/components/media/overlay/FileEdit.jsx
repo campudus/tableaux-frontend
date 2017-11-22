@@ -1,97 +1,79 @@
-import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import f from "lodash/fp";
+import {branch, compose, lifecycle, renderComponent, withHandlers, withStateHandlers} from "recompose";
+import MultiFileEdit from "./MultiFileEdit";
 import SingleFileEdit from "./SingleFileEdit";
-import MultiFileEdit from "./MultiFileEdit.jsx";
-import {translate} from "react-i18next";
+import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import {reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
+import ActionCreator from "../../../actions/ActionCreator";
+import Dispatcher from "../../../dispatcher/Dispatcher";
+import {ActionTypes} from "../../../constants/TableauxConstants";
 
-@translate(["media"])
-@connectToAmpersand
-class FileEdit extends PureComponent {
-  static propTypes = {
-    file: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    onClose: PropTypes.func.isRequired
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      editedTitleValue: {},
-      editedDescValue: {},
-      editedExternalnameValue: {},
-      editedLanguage: {},
-      hasChanged: false
-    };
-  }
-
-  onTitleChange = (titleValue, langtag) => {
-    let editedValue = this.state.editedTitleValue;
-    editedValue[langtag] = titleValue;
-    this.setState({
-      hasChanged: true,
-      editedTitleValue: editedValue
-    });
-  };
-
-  onDescriptionChange = (descriptionValue, langtag) => {
-    let editedValue = this.state.editedDescValue;
-    editedValue[langtag] = descriptionValue;
-    this.setState({
-      hasChanged: true,
-      editedDescValue: editedValue
-    });
-  };
-
-  onExternalnameChange = (externalnameValue, langtag) => {
-    let editedValue = this.state.editedExternalnameValue;
-    editedValue[langtag] = externalnameValue;
-    this.setState({
-      hasChanged: true,
-      editedExternalnameValue: editedValue
-    });
-  };
-
-  onLangChange = (newLang, langtag) => {
-    let editedValue = this.state.editedLanguage;
-    editedValue[langtag] = newLang;
-    this.setState({
-      hasChanged: true,
-      editedLanguage: editedValue
-    });
-  };
-
-  render() {
-    const file = this.props.file;
-    let overlayBody;
-    if (file.internalName && Object.keys(file.internalName).length > 1) {
-      overlayBody = <MultiFileEdit file={this.props.file}
-        langtag={this.props.langtag}
-        onClose={this.props.onClose}
-        editedTitleValue={this.state.editedTitleValue}
-        editedDescValue={this.state.editedDescValue}
-        editedExternalnameValue={this.state.editedExternalnameValue}
-        editedLanguage={this.state.editedLanguage}
-        hasChanged={this.state.hasChanged}
-        onTitleChange={this.onTitleChange}
-        onDescriptionChange={this.onDescriptionChange}
-        onExternalnameChange={this.onExternalnameChange}
-        onLangChange={this.onLangChange}/>;
-    } else {
-      overlayBody = <SingleFileEdit file={this.props.file}
-        langtag={this.props.langtag}
-        onClose={this.props.onClose}
-        editedTitleValue={this.state.editedTitleValue}
-        editedDescValue={this.state.editedDescValue}
-        editedExternalnameValue={this.state.editedExternalnameValue}
-        hasChanged={this.state.hasChanged}
-        onTitleChange={this.onTitleChange}
-        onDescriptionChange={this.onDescriptionChange}
-        onExternalnameChange={this.onExternalnameChange}/>;
+const enhance = compose(
+  withStateHandlers(
+    ({file, langtag}) => ({
+      langtag,
+      fileAttributes: {
+        title: file.title,
+        description: file.description,
+        externalName: file.externalName
+      }
+    }),
+    {
+      setFileAttribute: ({fileAttributes}) => (name, langtag, value) => ({
+        fileAttributes: f.assoc([name, langtag], value, fileAttributes)
+      }),
+      resetFileAttributes: () => (fileInfo) => ({
+        fileAttributes: f.pick(["description", "title", "externalName"], fileInfo)
+      }),
+      onLangChange: () => (langtag) => ({langtag})
     }
+  ),
+  withHandlers({
+    onSave: ({file, onClose, fileAttributes}) => (event) => {
+      if (!f.equals(
+          fileAttributes,
+          f.pick(["title", "description", "externalName"], file))
+      ) {
+        const {title, description, externalName} = fileAttributes;
+        const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, title, description, externalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
+        ActionCreator.changeFile(...changeFileParams);
+      }
+      onClose(event);
+    }
+  }),
 
-    return overlayBody;
-  }
-}
+  lifecycle({
+    componentWillMount() {
+      Dispatcher.on("on-media-overlay-save", this.props.onSave);
+      Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+    },
+    componentWillUnmount() {
+      Dispatcher.off("on-media-overlay-save", this.props.onSave);
+      Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+    }
+  })
+);
 
-module.exports = FileEdit;
+const FileEdit = compose(
+  branch(
+    (props) => f.flow(
+      f.get("internalName"),
+      f.keys,
+      f.size,
+      f.gt(f, 1)
+    )(props.file),
+    renderComponent(MultiFileEdit)
+  )
+)(SingleFileEdit);
+
+FileEdit.propTypes = {
+  file: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired
+};
+
+export default compose(
+  enhance,
+  connectToAmpersand
+)(FileEdit);
