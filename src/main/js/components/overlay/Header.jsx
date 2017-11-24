@@ -2,10 +2,11 @@ import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import ActionCreator from "../../actions/ActionCreator";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
+import Raven from "raven-js";
 
 class Header extends PureComponent {
   static propTypes = {
@@ -49,6 +50,14 @@ class Header extends PureComponent {
     }
   }
 
+  wrapButtonFn = (value, fn) => (...args) => {
+    Raven.captureBreadcrumb({message: "Header button: " + value});
+    if (f.isFunction(fn)) {
+      fn(...args);
+    }
+    ActionCreator.closeOverlay();
+  };
+
   render() {
     const {actions, components} = this.props;
     const {title, context} = this.state;
@@ -61,13 +70,10 @@ class Header extends PureComponent {
     );
     const [pos, neg, ntr] = f.props(["positive", "negative", "neutral"], actions);
     const makeButton = (className, [text, fn, dontClose]) => {
-      if (!f.isFunction(fn)) {
-        console.error("Action for button", text, "is not a function");
-        return;
-      }
+      const execAndClose = this.wrapButtonFn(className, fn);
       return (
         <a className={"button " + className}
-          onClick={(dontClose) ? (fn || f.noop) : f.flow(fn || f.noop, ActionCreator.closeOverlay)}
+          onClick={(dontClose) ? (fn || f.noop) : execAndClose}
         >
           {text}
         </a>

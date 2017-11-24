@@ -11,6 +11,7 @@ import * as f from "lodash/fp";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
 import {maybe} from "../../helpers/functools";
+import Raven from "raven-js";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
@@ -204,24 +205,32 @@ const showDialog = (
     actions = {},
     name
   }) => {
+  const wrapActionFn = (fn) => (event) => {
+    Raven.captureBreadcrumb({message: "Keyboard dialog close: " + f.get("key", event)});
+    if (f.isFunction(fn)) {
+      fn(event);
+    }
+    ActionCreator.closeOverlay();
+  };
   const enterKeyFn = f.flow(
     f.props(["positive", "negative", "neutral"]),
     f.find(f.identity),
     f.nth(1),
-    f.defaultTo(f.noop)
+    wrapActionFn
   )(actions);
-  const escKeyFn = f.get(["neutral", 1], actions);
+  const escKeyFn = f.flow(
+    f.get(["neutral", 1]),
+    wrapActionFn
+  )(actions);
   const keyShortcuts = {
     enter: event => {
       event.preventDefault();
-      enterKeyFn();
-      ActionCreator.closeOverlay();
+      enterKeyFn(event);
       event.stopPropagation();
     },
     escape: event => {
       event.preventDefault();
-      escKeyFn();
-      ActionCreator.closeOverlay();
+      escKeyFn(event);
       event.stopPropagation();
     }
   };

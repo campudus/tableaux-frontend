@@ -2,10 +2,19 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
+import Raven from "raven-js";
 
 class Footer extends Component {
   static PropTypes = { // compare OverlayHeader
     actions: PropTypes.object
+  };
+
+  wrapButtonFn = (value, fn) => (...args) => {
+    Raven.captureBreadcrumb({message: "Footer button: " + value});
+    if (f.isFunction(fn)) {
+      fn(...args);
+    }
+    ActionCreator.closeOverlay();
   };
 
   render() {
@@ -16,7 +25,7 @@ class Footer extends Component {
       const [pos, neg, ntr] = f.props(["positive", "negative", "neutral"], actions);
       const makeButton = (className, [text, fn]) => (
         <a className={"button " + className}
-          onClick={f.flow(fn || f.noop, ActionCreator.closeOverlay)}
+          onClick={this.wrapButtonFn(className, fn)}
         >
           {text}
         </a>
