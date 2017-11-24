@@ -43,7 +43,7 @@ export default class ColumnHeader extends PureComponent {
   };
 
   getIdentifierIcon = () => {
-    const {column} = this.props;
+    const {column = {}} = this.props;
     const key = `${column.id}-id-icon`;
     if (column.kind === ColumnKinds.concat) {
       return <i key={key} className="fa fa-bookmark" />;
