@@ -44,6 +44,8 @@ async function changeCell({cell, value, options = {}}) {
       row: cell.row
     });
   } catch (err) {
+    Raven.captureBreadcrumb({message: "Error saving cell value to server"});
+    Raven.captureException(err);
     cellModelSavingError(err);
     cell.set({value: oldValue});
     return;
