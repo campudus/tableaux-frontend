@@ -6,6 +6,7 @@ import f, {isEmpty} from "lodash/fp";
 import TextCell from "./TextCell";
 import changeCell from "../../../models/helpers/changeCell";
 import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
+import SelectableShortText from "./SelectableShortText";
 
 const withEditFn = withHandlers({
   handleEditDone: (props) => (newValue) => {
@@ -38,10 +39,11 @@ const ShortTextCell = (props) => {
 
   return (editing)
     ? (
-      <ShortTextEditCell cell={cell}
-                         langtag={langtag}
-                         onBlur={handleEditDone}
-                         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+      <SelectableShortText cell={cell}
+                           langtag={langtag}
+                           value={value}
+                           onBlur={handleEditDone}
+                           setCellKeyboardShortcuts={setCellKeyboardShortcuts}
       />
     )
     : (

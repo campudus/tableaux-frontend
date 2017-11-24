@@ -1,0 +1,22 @@
+.completion-list {
+  z-index: 1;
+  position: absolute;
+  box-shadow: 0 5px 15px $color-text-medium-grey;
+
+  .completion-item-wrapper {
+    background-color: white;
+    height: 30px;
+
+    .completion-item {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      color: $color-primary-text;
+      padding: 0 10px;
+
+      &.selected {
+        background-color: $color-select-list-selected;
+      }
+    }
+  }
+}
