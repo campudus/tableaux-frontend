@@ -27,6 +27,11 @@ $annotation-popup-width: 300px;
     position: absolute;
   }
 
+  &.shift-up:before {
+    top: auto;
+    bottom: 8px;
+  }
+
   .close-icon {
     position: absolute;
     right: 0;

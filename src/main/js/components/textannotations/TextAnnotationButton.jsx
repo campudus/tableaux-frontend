@@ -19,10 +19,11 @@ class TextAnnotationButton extends Component {
   }
 
   state = {
-    cbr: {}
+    node: null
   };
 
   handleClick = (event) => {
+    this.setState({node: event.target});
     const {cell, open} = this.props;
     if (!open) {
       ActionCreator.openAnnotationsPopup(cell);
@@ -32,10 +33,9 @@ class TextAnnotationButton extends Component {
   };
 
   rememberNode = (node) => {
-    const cbr = maybe(node)
-      .exec("getBoundingClientRect")
-      .getOrElse({});
-    this.setState({cbr});
+    if (node) {
+      this.setState({node});
+    }
   };
 
   render() {
@@ -45,6 +45,8 @@ class TextAnnotationButton extends Component {
       f.compact,
       f.flatten
     )(cell.annotations);
+    const cbr = maybe(this.state.node).exec("getBoundingClientRect").getOrElse({});
+    devLogIf(open, "position:", cbr)
     return (
       <div className={`text-annotation-button ${(open) ? "ignore-react-onclickoutside" : ""}`}
         onClick={this.handleClick}
@@ -53,8 +55,8 @@ class TextAnnotationButton extends Component {
         <i className="fa fa-commenting" />
         {(open)
           ? <AnnotationPopup nAnnotations={f.size(annotations)}
-            x={this.state.cbr.left}
-            y={this.state.cbr.top}
+            x={cbr.left}
+            y={cbr.top}
             {...this.props}
           />
           : null
