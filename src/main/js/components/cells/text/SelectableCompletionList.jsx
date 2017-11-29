@@ -1,7 +1,7 @@
 import React from "react";
 import f from "lodash/fp";
 import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
-import Spinner from "../../header/Spinner";
+import {LoadingSpinner} from "../../header/Spinner";
 import {AutoSizer, List} from "react-virtualized";
 
 export const ROW_HEIGHT = 30;
@@ -10,7 +10,7 @@ const enhance = compose(
   pure,
   branch(
     (props) => f.isNil(props.requestedData),
-    renderComponent(Spinner)
+    renderComponent(LoadingSpinner)
   ),
 
   withHandlers({
@@ -56,7 +56,7 @@ const CompletionItem = compose(
   )
 );
 
-const SelectableCompletionList = ({completions, renderEntry, selected}) => {
+const SelectableCompletionList = ({completions, renderEntry, selected, _fixToScreen}) => {
   return (
     <AutoSizer>
       {({width, height}) => (

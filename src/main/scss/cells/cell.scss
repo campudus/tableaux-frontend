@@ -196,7 +196,7 @@
         z-index: 1;
         width: 100%;
         max-height: 170px;
-        overflow-y: auto;
+        overflow-y: visible;
         overflow-x: hidden;
       }
     }
@@ -241,6 +241,10 @@
           @include user-select(none);
         }
       }
+    }
+
+    &.cell-shorttext .cell-content {
+      overflow: visible;
     }
   }
 
