@@ -74,8 +74,8 @@ class AnnotationPopup extends PureComponent {
   };
 
   rememberInput = (node) => {
-    maybe(node).exec("focus");
-    this.setState({inputNode: node});
+    maybe(node).method("focus");
+    this.setState({input: node});
   };
 
   rememberContainer = (node) => {
@@ -83,6 +83,7 @@ class AnnotationPopup extends PureComponent {
   };
 
   render() {
+    maybe(this.state.input).method("focus");
     const {cell, cell: {row}, langtag, x = 0, y = 0} = this.props;
     const annotations = f.flow(
       f.props(["info", "warning", "error"]),

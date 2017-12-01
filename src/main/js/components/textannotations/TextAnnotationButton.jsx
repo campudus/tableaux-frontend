@@ -46,7 +46,6 @@ class TextAnnotationButton extends Component {
       f.flatten
     )(cell.annotations);
     const cbr = maybe(this.state.node).exec("getBoundingClientRect").getOrElse({});
-    devLogIf(open, "position:", cbr)
     return (
       <div className={`text-annotation-button ${(open) ? "ignore-react-onclickoutside" : ""}`}
         onClick={this.handleClick}
