@@ -4,7 +4,7 @@ import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
 import {LoadingSpinner} from "../../header/Spinner";
 import {AutoSizer, List} from "react-virtualized";
 
-export const ROW_HEIGHT = 30;
+export const ROW_HEIGHT = 40;
 
 const enhance = compose(
   pure,
