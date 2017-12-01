@@ -45,7 +45,8 @@ export default class VirtualTable extends PureComponent {
     this.updateSelectedCellId();
     this.state = {
       openAnnotations: {},
-      scrolledCell: {}
+      scrolledCell: {},
+      lastScrolledCell: null
     };
     this.expandedRowIds = props.expandedRowIds;
   }
@@ -190,7 +191,6 @@ export default class VirtualTable extends PureComponent {
     const column = visibleColumns[columnIndex];
     const {table, tables} = this.props;
     return (
-      // key={`column-header-${column.id}-${column.kind}`}
       <ColumnHeader
         column={column}
         langtag={this.props.langtag}
@@ -216,7 +216,6 @@ export default class VirtualTable extends PureComponent {
     const locked = isLocked(row);
 
     return (isRowExpanded)
-      // key={`${key}-${row.id}`}
       ? (
         <div
           className="cell-stack"
@@ -243,10 +242,7 @@ export default class VirtualTable extends PureComponent {
                   isLocked={locked}
         />
       );
-    // key={`${key}-${row.id}`}
   };
-
-
 
   renderCell = (gridData) => {
     const {rows, expandedRowIds} = this.props;
@@ -388,7 +384,8 @@ export default class VirtualTable extends PureComponent {
     const newPropKeys = f.keys(next);
     const changeInRowSelection = f.contains("expandedRowIds", newPropKeys)
       && !f.isEmpty(f.xor(next.expandedRowIds, this.expandedRowIds));
-    if (f.contains("selectedCell", newPropKeys) && !changeInRowSelection) {
+
+    if (f.contains("selectedCell", newPropKeys) && !changeInRowSelection && next.scrolledCell !== this.state.lastScrolledCell) {
       this.scrollToCell((next.selectedCell || {}).id, next.selectedCellExpandedRow);
     } else if (changeInRowSelection) {
       this.expandedRowIds = next.expandedRowIds;
@@ -412,7 +409,12 @@ export default class VirtualTable extends PureComponent {
 
   scrollToCell = (cellId, langtag = this.props.selectedCellExpandedRow) => {
     this.updateSelectedCellId(cellId, langtag);
-    if (!cellId) { // when called by cell deselection
+    const {scrolledCell, lastScrolledCell} = this.state;
+    if (!cellId || f.get("scrolledCell", scrolledCell) === lastScrolledCell) { // when called by cell deselection
+      this.setState({
+        scrolledCell: {},
+        lastScrolledCell
+      });
       return false;
     }
     const {columns, rows} = this.props;
@@ -421,7 +423,8 @@ export default class VirtualTable extends PureComponent {
     this.setState({
       scrolledCell: {
         columnIndex,
-        rowIndex
+        rowIndex,
+        scrolledCell: cellId
       }
     });
   };
@@ -435,7 +438,10 @@ export default class VirtualTable extends PureComponent {
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
     if (!f.isEmpty(this.state.scrolledCell)) {
-      this.setState({scrolledCell: {}});
+      this.setState({
+        scrolledCell: {},
+        lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
+      });
     }
   }
 
@@ -457,7 +463,10 @@ export default class VirtualTable extends PureComponent {
       selectedCellEditing,
       selectedCellExpandedRow
     } = this.props;
-    const {openAnnotations, scrolledCell: {columnIndex, rowIndex}, scrollLeft} = this.state;
+    const {openAnnotations, scrolledCell, lastScrolledCell, scrollLeft} = this.state;
+    const {columnIndex, rowIndex} = (!f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell)
+      ? scrolledCell
+      : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows.models) + 2;
