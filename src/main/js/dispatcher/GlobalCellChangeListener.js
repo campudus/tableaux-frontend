@@ -63,6 +63,7 @@ Dispatcher.on("all", (...args) => {
     triggerCallbacks(...rest);
   }
 });
+// https://app.activecollab.com/116706/projects/2/tasks/2843
 // Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, triggerCallbacks);
 
 export {listenForCellChange, clearCallbacks};
