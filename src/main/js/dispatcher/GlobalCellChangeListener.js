@@ -56,6 +56,14 @@ const triggerCallbacks = (payload) => {
   );
 };
 
-Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, triggerCallbacks);
+Dispatcher.on("all", (...args) => {
+  // window.devLog("An event was triggered:", ...args);
+  const [name, ...rest] = args;
+  if (name === ActionTypes.BROADCAST_DATA_CHANGE) {
+    triggerCallbacks(...rest);
+  }
+});
+// https://app.activecollab.com/116706/projects/2/tasks/2843
+// Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, triggerCallbacks);
 
 export {listenForCellChange, clearCallbacks};
