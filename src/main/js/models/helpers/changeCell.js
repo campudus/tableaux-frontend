@@ -16,7 +16,7 @@ import Raven from "raven-js";
 import {remember} from "../../components/table/undo/tableHistory";
 
 async function changeCell({cell, value, options = {}}) {
-  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (value.value || value));
+  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", f.getOr(value, "value", value));
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
     data: {
