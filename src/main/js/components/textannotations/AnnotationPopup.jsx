@@ -108,6 +108,9 @@ class AnnotationPopup extends PureComponent {
 
     return (
       <Portal isOpened >
+        <div className="disable-scrolling"
+             style={{left:0, right:0, top:"90px", bottom:0, zIndex:1, position:"fixed"}}
+        />
         <div className={popupCssClass}
              ref={this.rememberContainer}
              onClick={this.handleClick}
