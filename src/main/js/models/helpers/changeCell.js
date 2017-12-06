@@ -16,7 +16,7 @@ import Raven from "raven-js";
 import {remember} from "../../components/table/undo/tableHistory";
 
 async function changeCell({cell, value, options = {}}) {
-  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (f.isObject(value) ? value.value : value));
+  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", value);
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
     data: {
@@ -45,7 +45,7 @@ async function changeCell({cell, value, options = {}}) {
     });
   } catch (err) {
     Raven.captureBreadcrumb({message: "Error saving cell value to server"});
-    Raven.captureException(err);
+    Raven.captureException(err.toString());
     cellModelSavingError(err);
     cell.set({value: oldValue});
     return;
@@ -147,9 +147,12 @@ async function changeLinkCell({cell, value}) {
 
   const isMultiSet = () => f.size(rowDiff) > 1;
 
+  const needsNoChange = (v) => f.equals(f.map("id", cell.value), f.map("id", v));
+
   const changeFn = f.cond([
     [isReorder, f.always(reorderLinks)],
     [isMultiSet, f.always(() => changeDefaultCell({cell, value}))],
+    [needsNoChange, f.always(f.noop)],
     [f.stubTrue, f.always(toggleLink(rowDiff))]
   ])(value);
 
