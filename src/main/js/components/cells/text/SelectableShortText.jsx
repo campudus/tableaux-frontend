@@ -86,12 +86,18 @@ const enhance = compose(
           : { top: 35 };
 
         return {listStyle, invertList};
+      },
+      selectCompletionUnderMouse: ({invertList, completions}) => (index) => {
+        const selected = (invertList)
+          ? f.size(completions) - 1 - index
+          : index;
+        return {selected};
       }
     }
   ),
   withHandlers({
     selectNextCompletion: ({modifySelection}) => () => modifySelection(1),
-    selectPrevCompletion: ({modifySelection}) => () => modifySelection(-1)
+    selectPrevCompletion: ({modifySelection}) => () => modifySelection(-1),
   }),
   lifecycle({
     componentWillReceiveProps(nextProps) {
@@ -145,6 +151,7 @@ const SelectableShortText = (
     completions,
     selected,
     setSelectedCompletion,
+    selectCompletionUnderMouse,
     requestedData,
     placeCompletionList,
     listStyle,
@@ -170,7 +177,7 @@ const SelectableShortText = (
         <SelectableCompletionList completions={(invertList) ? f.reverse(completions) : completions}
                                   selected={(invertList) ? f.size(completions) - selected - 1 : selected}
                                   requestedData={requestedData}
-                                  handleSelection={setSelectedCompletion}
+                                  handleSelection={selectCompletionUnderMouse}
         />
       </div>
     </div>
