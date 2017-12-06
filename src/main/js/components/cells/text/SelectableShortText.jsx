@@ -69,10 +69,14 @@ const enhance = compose(
         selected: (index + f.size(completions)) % f.size(completions),
         completionSelected: true
       }),
-      applySelectedCompletion: ({selected, completions}) => () => ({
-        curValue: f.get(selected, completions),
-        completionSelected: false
-      }),
+      applySelectedCompletion: ({selected, completions}) => (event) => {
+        maybe(event).method("stopPropagation");
+        maybe(event).method("preventDefault");
+        return {
+          curValue: f.get(selected, completions),
+          completionSelected: false
+        };
+      },
       placeCompletionList: ({completions}) => (node) => {
         if (f.isNil(node)) {
           return;
@@ -97,7 +101,7 @@ const enhance = compose(
   ),
   withHandlers({
     selectNextCompletion: ({modifySelection}) => () => modifySelection(1),
-    selectPrevCompletion: ({modifySelection}) => () => modifySelection(-1),
+    selectPrevCompletion: ({modifySelection}) => () => modifySelection(-1)
   }),
   lifecycle({
     componentWillReceiveProps(nextProps) {
@@ -150,8 +154,8 @@ const SelectableShortText = (
     curValue,
     completions,
     selected,
-    setSelectedCompletion,
     selectCompletionUnderMouse,
+    applySelectedCompletion,
     requestedData,
     placeCompletionList,
     listStyle,
@@ -178,6 +182,7 @@ const SelectableShortText = (
                                   selected={(invertList) ? f.size(completions) - selected - 1 : selected}
                                   requestedData={requestedData}
                                   handleSelection={selectCompletionUnderMouse}
+                                  handleClick={applySelectedCompletion}
         />
       </div>
     </div>

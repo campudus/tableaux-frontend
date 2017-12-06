@@ -41,7 +41,7 @@ const CompletionItem = compose(
     }
   })
 )(
-  ({value, isSelected, virtualizedStyle, handleSelection}) => (
+  ({value, isSelected, virtualizedStyle, handleSelection, handleClick}) => (
     <div className="completion-item-wrapper"
          style={virtualizedStyle}
          onMouseEnter={handleSelection}
@@ -49,6 +49,7 @@ const CompletionItem = compose(
       <a href="#"
          className={`completion-item ${(isSelected) ? "selected" : ""}`}
          draggable={false}
+         onMouseDownCapture={handleClick}
       >
         <div className="completion-item-label">{value}</div>
       </a>
@@ -56,7 +57,7 @@ const CompletionItem = compose(
   )
 );
 
-const SelectableCompletionList = ({completions, renderEntry, selected, _fixToScreen}) => {
+const SelectableCompletionList = ({completions, renderEntry, selected}) => {
   return (
     <AutoSizer>
       {({width, height}) => (

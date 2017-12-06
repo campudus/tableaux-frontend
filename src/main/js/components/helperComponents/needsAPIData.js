@@ -18,7 +18,7 @@ export default compose(
       const {addAbortableXhrRequest, requestUrl} = this.props;
       window.devErrorIf(f.isEmpty(requestUrl),
         "needsAPIData HOC requires a prop \"requestUrl\" to send a GET request to");
-      window.devLog("needsAPIData: getting", requestUrl)
+      window.devLog("needsAPIData: getting", requestUrl);
       const req = Request
         .get(requestUrl)
         .end(
