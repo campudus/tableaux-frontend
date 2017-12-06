@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 
 const ActionTypes = TableauxConstants.ActionTypes;
 
-export default class Spinner extends React.Component {
+class Spinner extends React.Component {
   static spinnerOptions = {
     lines: 11, // The number of lines to draw
     length: 5, // The length of each line
@@ -93,6 +93,9 @@ export default class Spinner extends React.Component {
     );
   }
 }
+
+export default Spinner;
+export const LoadingSpinner = (props) => <Spinner {...props} isLoading />;
 
 Spinner.propTypes = {
   isLoading: PropTypes.bool,

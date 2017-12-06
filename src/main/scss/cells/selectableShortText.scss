@@ -1,0 +1,25 @@
+.completion-list {
+  z-index: 2;
+  position: absolute;
+  @include grud-shadow();
+  width: calc(100% + 20px);
+  left: -10px;
+
+  background-color: white;
+
+  .completion-item-wrapper {
+    height: 30px;
+
+    .completion-item {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      color: $color-primary-text;
+      padding: 0 10px;
+
+      &.selected {
+        background-color: $color-select-list-selected;
+      }
+    }
+  }
+}

@@ -10,6 +10,10 @@
   @include box-sizing(border-box);
 }
 
+@mixin grud-shadow($shiftX: 0, $shiftY: 0, $fade: 50px) {
+  box-shadow: $shiftX $shiftY $fade transparentize(black, 0.7);
+}
+
 @mixin header-button-active() {
   color: white;
   background-color: $color-very-dark;
@@ -19,7 +23,7 @@
   display: block;
   background-color: white;
   min-width: 200px;
-  @include box-shadow(0px 0px 50px 0px rgba(black, 0.3));
+  @include grud-shadow();
   max-height: 400px;
   overflow: hidden;
 }
@@ -81,7 +85,7 @@
   }
 
   &:active, &:focus {
-    box-shadow: 0px 5px 10px rgba(black, 0.4);
+    @include grud-shadow(0, 5px);
   }
 
 }
@@ -124,7 +128,7 @@
   @include rounded-lower-borders;
   background-color: $color-white;
   position: absolute;
-  box-shadow: 0 5px 15px $color-text-medium-grey;
+  @include grud-shadow(0, 5px, 15px);
   border-top: 3px solid $color-primary;
   z-index: 6;
 

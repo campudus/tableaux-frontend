@@ -315,3 +315,11 @@ body div div.column-header-context-menu {
     }
   }
 }
+
+.ReactVirtualized__Grid  {
+  &.multigrid-bottom-left, &.multigrid-bottom-right {
+    .ReactVirtualized__Grid__innerScrollContainer {
+      overflow: visible !important;
+    }
+  }
+}
