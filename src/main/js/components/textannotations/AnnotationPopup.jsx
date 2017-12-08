@@ -11,6 +11,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import SvgIcon from "../helperComponents/SvgIcon";
 import classNames from "classnames";
 import {Portal} from "react-portal";
+import {maybe} from "../../helpers/functools";
 
 @listenToClickOutside
 class AnnotationPopup extends PureComponent {
@@ -26,7 +27,9 @@ class AnnotationPopup extends PureComponent {
     super(props);
     this.state = {
       comment: "",
-      needsLeftShift: false
+      needsLeftShift: false,
+      input: null,
+      container: null
     };
   };
 
@@ -42,6 +45,7 @@ class AnnotationPopup extends PureComponent {
 
     setCellAnnotation(annotation, this.props.cell);
     this.setState({comment: ""});
+    maybe(this.state.input).exec("focus");
   };
 
   handleClickOutside = () => {
@@ -69,8 +73,22 @@ class AnnotationPopup extends PureComponent {
     event.stopPropagation();
   };
 
+  rememberInput = (node) => {
+    maybe(node).method("focus");
+    this.setState({input: node});
+  };
+
+  rememberContainer = (node) => {
+    this.setState({container: node});
+  };
+
+  focusInput = () => {
+    maybe(this.state.input).method("focus");
+  };
+
   render() {
-    const {cell, cell: {row}, langtag} = this.props;
+    this.focusInput();
+    const {cell, cell: {row}, langtag, x = 0, y = 0} = this.props;
     const annotations = f.flow(
       f.props(["info", "warning", "error"]),
       f.flatten,
@@ -80,27 +98,38 @@ class AnnotationPopup extends PureComponent {
     const rowConcatObj = row.cells.at(0).displayValue;
     const rowConcat = rowConcatObj[langtag] || rowConcatObj[DefaultLangtag];
 
-    const popupCssClass = classNames("annotation-popup", {
+    const rect = maybe(this.state.container).exec("getBoundingClientRect").getOrElse({bottom: 0, height: 0});
+    const needsShiftUp = y - 16 + rect.height >= window.innerHeight;
+    const top = (needsShiftUp)
+      ? y + 24 - rect.height
+      : y - 16;
+
+    const popupCssClass = classNames("annotation-popup ignore-react-onclickoutside", {
       "shift-left": this.state.needsLeftShift,
+      "shift-up": needsShiftUp,
       "in-first-row": row.id === cell.tables.get(cell.tableId).rows.at(0).id
     });
 
     return (
       <Portal isOpened >
+        <div className="disable-scrolling"
+             style={{left: 0, right: 0, top: "90px", bottom: 0, zIndex: 1, position: "fixed"}}
+        />
         <div className={popupCssClass}
-          onClick={this.handleClick}
-          onContextMenu={this.handleClick}
-          style={{
-            "left": `${this.props.x - 5}px`,
-            "top": `${this.props.y - 16}px`
-          }}
+             ref={this.rememberContainer}
+             onClick={this.handleClick}
+             onContextMenu={this.handleClick}
+             style={{
+               "left": `${x - 5}px`,
+               top
+             }}
         >
           <div className="close-icon"
-            onClick={ActionCreator.closeAnnotationsPopup}
+               onClick={ActionCreator.closeAnnotationsPopup}
           >
             <SvgIcon icon="cross"/>
           </div>
-          <div className="annotation-popup-header" ref={node => { this.header = node; }}>
+          <div className="annotation-popup-header">
             <div className="annotation-header-title">
               <i className="fa fa-commenting" />
               {i18n.t("table:cell-comments")}
@@ -114,25 +143,25 @@ class AnnotationPopup extends PureComponent {
             {f.reverse(annotations).map(
               (ann, idx) => (
                 <AnnotationEntry annotation={ann}
-                  key={ann.uuid}
-                  cell={cell}
-                  idx={f.size(annotations) - idx}
+                                 key={ann.uuid}
+                                 cell={cell}
+                                 idx={f.size(annotations) - idx}
                 />
               )
             )}
           </div>
-          <footer ref={node => { this.footer = node; }}
-            tabIndex="1"
-          >
+          <footer tabIndex="1">
             <input type="text"
-              onChange={this.handleInputChange}
-              autoFocus
-              placeholder={i18n.t("table:new-comment")}
-              onKeyDown={this.handleInputKeys}
-              value={this.state.comment}
+                   ref={this.rememberInput}
+                   onChange={this.handleInputChange}
+                   autoFocus
+                   placeholder={i18n.t("table:new-comment")}
+                   onKeyDown={this.handleInputKeys}
+                   value={this.state.comment}
+                   onBlur={this.focusInput}
             />
             <div className="button"
-              onClick={this.saveComment}
+                 onClick={this.saveComment}
             >
               {i18n.t("common:add")}
             </div>
