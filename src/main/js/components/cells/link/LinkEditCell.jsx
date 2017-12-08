@@ -5,6 +5,8 @@ import LinkLabelCell from "./LinkLabelCell.jsx";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
 import {compose, lifecycle, withHandlers} from "recompose";
+import f from "lodash/fp";
+import {spy} from "../../../helpers/functools";
 
 const withFunctionality = compose(
   withHandlers({
@@ -36,15 +38,17 @@ const withFunctionality = compose(
 
 const LinkEditCell = (props) => {
   const {cell, langtag} = props;
-  const links = cell.value.map(
-    (element, index) => (
-      <LinkLabelCell
-        key={element.id} clickable={false} linkElement={element}
-        cell={cell} langtag={langtag}
-        linkIndexAt={index}
-      />
+  const links = (f.isArray(cell.value))
+    ? cell.value.map(
+      (element, index) => (
+        <LinkLabelCell
+          key={element.id} clickable={false} linkElement={element}
+          cell={cell} langtag={langtag}
+          linkIndexAt={index}
+        />
+      )
     )
-  );
+    : spy([], "Cell value was not array but " + typeof cell.value + " " + JSON.stringify(cell.value));
 
   return (
     <div

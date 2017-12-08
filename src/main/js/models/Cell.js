@@ -6,6 +6,7 @@ import apiUrl from "../helpers/apiUrl";
 import getDisplayValue from "./helpers/getDisplayValue";
 import ActionCreator from "../actions/ActionCreator.js";
 import {clearCallbacks, listenForCellChange} from "../dispatcher/GlobalCellChangeListener";
+import {maybe, doto} from "../helpers/functools";
 
 const Cell = AmpersandModel.extend({
   modelType: "Cell",
@@ -94,11 +95,13 @@ const Cell = AmpersandModel.extend({
       deps: ["value"],
       fn: function () {
         return (f.get("isLink", this))
-          ? f.reduce(f.merge, {}, (this.value || []).map(
-            (link, idx) => ({
+          ? doto(this.value,
+            f.defaultTo([]),
+            f.map((link, idx) => ({
               [link.id]: idx
-            })
-          ))
+            })),
+            f.reduce(f.merge, {})
+          )
           : null;
       }
     },
@@ -179,7 +182,8 @@ const Cell = AmpersandModel.extend({
       }
     };
 
-    this.value.forEach(
+    maybe(this.value).method(
+      "forEach",
       ({id}) => {
         listenForCellChange(this.id, `cell-${this.column.toTable}-${this.column.toColumn.id}-${id}`, handleDataChange.bind(this));
       }

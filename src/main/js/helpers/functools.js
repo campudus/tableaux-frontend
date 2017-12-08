@@ -1,6 +1,6 @@
 /* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
 
-import {curryN, isFunction, map, noop, prop, range} from "lodash/fp";
+import {curryN, flow, identity, isEmpty, isFunction, map, noop, prop, range} from "lodash/fp";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -313,6 +313,12 @@ const withTryCatch = (fn, onError = noop) => (...args) => {
   } catch (e) {
     return onError(e);
   }
+};
+
+// threading macro to create more readable code
+export const doto = (initialValue, ...fns) => {
+  const fnArray = (isEmpty(fns)) ? [identity] : fns;
+  return flow(...fnArray)(initialValue);
 };
 
 const tests = {
