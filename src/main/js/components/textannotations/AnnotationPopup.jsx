@@ -82,8 +82,12 @@ class AnnotationPopup extends PureComponent {
     this.setState({container: node});
   };
 
-  render() {
+  focusInput = () => {
     maybe(this.state.input).method("focus");
+  };
+
+  render() {
+    this.focusInput();
     const {cell, cell: {row}, langtag, x = 0, y = 0} = this.props;
     const annotations = f.flow(
       f.props(["info", "warning", "error"]),
@@ -100,7 +104,7 @@ class AnnotationPopup extends PureComponent {
       ? y + 24 - rect.height
       : y - 16;
 
-    const popupCssClass = classNames("annotation-popup", {
+    const popupCssClass = classNames("annotation-popup ignore-react-onclickoutside", {
       "shift-left": this.state.needsLeftShift,
       "shift-up": needsShiftUp,
       "in-first-row": row.id === cell.tables.get(cell.tableId).rows.at(0).id
@@ -109,7 +113,7 @@ class AnnotationPopup extends PureComponent {
     return (
       <Portal isOpened >
         <div className="disable-scrolling"
-             style={{left:0, right:0, top:"90px", bottom:0, zIndex:1, position:"fixed"}}
+             style={{left: 0, right: 0, top: "90px", bottom: 0, zIndex: 1, position: "fixed"}}
         />
         <div className={popupCssClass}
              ref={this.rememberContainer}
@@ -154,6 +158,7 @@ class AnnotationPopup extends PureComponent {
                    placeholder={i18n.t("table:new-comment")}
                    onKeyDown={this.handleInputKeys}
                    value={this.state.comment}
+                   onBlur={this.focusInput}
             />
             <div className="button"
                  onClick={this.saveComment}
