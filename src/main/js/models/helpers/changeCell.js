@@ -16,7 +16,7 @@ import Raven from "raven-js";
 import {remember} from "../../components/table/undo/tableHistory";
 
 async function changeCell({cell, value, options = {}}) {
-  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", (f.isObject(value) ? value.value : value));
+  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", value);
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
     data: {
@@ -45,7 +45,7 @@ async function changeCell({cell, value, options = {}}) {
     });
   } catch (err) {
     Raven.captureBreadcrumb({message: "Error saving cell value to server"});
-    Raven.captureException(err);
+    Raven.captureException(err.toString());
     cellModelSavingError(err);
     cell.set({value: oldValue});
     return;
@@ -129,6 +129,7 @@ async function changeDefaultCell({cell, value, options}) {
             resolve();
           },
           error(error) {
+            console.error(error);
             throw error;
           }
         });
@@ -138,7 +139,7 @@ async function changeDefaultCell({cell, value, options}) {
 }
 
 async function changeLinkCell({cell, value}) {
-  const curValue = cell.value;
+  const curValue = f.getOr([], "value", cell);
   const rowDiff = f.xor(curValue.map(link => link.id), value.map(link => link.id));
 
   const isReorder = (value) => f.size(value) > 1
@@ -147,13 +148,27 @@ async function changeLinkCell({cell, value}) {
 
   const isMultiSet = () => f.size(rowDiff) > 1;
 
+  const needsNoChange = (v) => f.equals(f.map("id", cell.value), f.map("id", v));
+
   const changeFn = f.cond([
     [isReorder, f.always(reorderLinks)],
-    [isMultiSet, f.always(() => changeDefaultCell({cell, value}))],
+    [isMultiSet, f.always(resetLinkValue)],
+    [needsNoChange, f.always(f.noop)],
     [f.stubTrue, f.always(toggleLink(rowDiff))]
   ])(value);
 
   await changeFn({cell, value});
+}
+
+async function resetLinkValue({cell, value}) {
+  const cellUrl = apiUrl(`/tables/${cell.tableId}/columns/${cell.column.id}/rows/${cell.row.id}`);
+  const valueObj = {value: f.map("id", value)};
+
+  cell.set({value});
+
+  await request
+    .put(cellUrl)
+    .send(valueObj);
 }
 
 async function reorderLinks({cell, value}) {
@@ -180,7 +195,7 @@ function toggleLink(rowDiff) {
   return async function toggleLink({cell, value}) {
     const curValue = cell.value;
     const [toggledRowId] = rowDiff;
-    if (!toggledRowId) {
+    if (!f.isNumber(toggledRowId)) {
       return new Promise((resolve, reject) => {
         reject("Tried to toggle zero links");
       });

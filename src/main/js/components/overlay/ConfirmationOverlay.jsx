@@ -71,7 +71,7 @@ export function noPermissionAlertWithLanguage(allowedLangtags, allowedCountries)
 }
 
 export function cellModelSavingError(errorFromServer) {
-  console.error("Cell model saved unsuccessfully!", errorFromServer, "error text:", errorFromServer.body);
+  console.error("Cell model saved unsuccessfully!", errorFromServer, "error text:", errorFromServer.body || errorFromServer.toString());
 
   const userError = i18n.t("table:error_saving_cell");
   const techError = (errorFromServer && errorFromServer.body)
