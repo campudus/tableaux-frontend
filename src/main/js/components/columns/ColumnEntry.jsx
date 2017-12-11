@@ -190,11 +190,9 @@ class ColumnEntry extends React.PureComponent {
   }
 }
 
-ColumnEntry.PropTypes = {
-  description: PropTypes.string.isRequired,
+ColumnEntry.propTypes = {
+  description: PropTypes.string,
   columnContent: PropTypes.array.isRequired,
-  selected: PropTypes.number.isRequired,
-  cancelEdit: PropTypes.func.isRequired,
   langtag: PropTypes.string.isRequired,
   column: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,
