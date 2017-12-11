@@ -463,14 +463,13 @@ export default class VirtualTable extends PureComponent {
       selectedCellEditing,
       selectedCellExpandedRow
     } = this.props;
-    const {openAnnotations, scrolledCell, lastScrolledCell, scrollLeft} = this.state;
+    const {openAnnotations, scrolledCell, lastScrolledCell} = this.state;
     const {columnIndex, rowIndex} = (!f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell)
       ? scrolledCell
       : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows.models) + 2;
-    const scrollPosition = (f.isNumber(scrollLeft) && scrollLeft > 0 && scrollLeft) || null;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
     const shouldIDColBeGrey = f.get("kind", columns.first) === ColumnKinds.concat
       && rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
@@ -498,7 +497,6 @@ export default class VirtualTable extends PureComponent {
                        openAnnotations={openAnnotations}
                        scrollToRow={rowIndex}
                        scrollToColumn={columnIndex}
-                       scrollLeft={scrollPosition}
                        rowKeys={rowKeys}
                        columnKeys={columnKeys}
                        overscanColumnCount={5}
