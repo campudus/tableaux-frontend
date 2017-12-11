@@ -9,6 +9,7 @@ import f, {add, compose, debounce, noop, update} from "lodash/fp";
 import ReactDOM from "react-dom";
 import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
 import Rx from "rxjs";
+import DebouncedFunction from "../../helpers/DebouncedFunction";
 
 console.warn(
   "Importing this file will change the behaviour of \"react-virtualize\"'s Grid component by monkey-patching " +
@@ -16,9 +17,8 @@ console.warn(
   "For an unaltered version, don't import react-virtualize.Grid, but GrudGrid.Grid."
 );
 
-const handleScrollLater = debounce(
-  50,
-  function (self, scrollPosition) {
+const handleScrollLater = new DebouncedFunction(
+  function(self, scrollPosition) {
     self._originalScrollHandler(scrollPosition);
   }
 );
@@ -72,7 +72,7 @@ Grid.prototype.handleScrollEvent = function (trigger) {
   if (trigger === this._mainGridNode) {
     this.props.onScroll(scrollInfo);
     const self = this;
-    handleScrollLater(self, scrollInfo);
+    handleScrollLater.start(self, scrollInfo);
     // Cannot directly subscribe to event stream, as React hijacks this and delivers React.VirtualEvents instead,
     // so manually push data into RxJS stream
     scrollingEvents.next([trigger.scrollLeft, trigger.scrollTop]);
@@ -84,33 +84,17 @@ Grid.prototype.handleScrollEvent = function (trigger) {
 export default class GrudGrid extends MultiGrid {
   _blgParent = null;
   _trgParent = null;
-  correctionStep = false;
 
-  recalculateScrollPosition = debounce(
-    50,
+  recalculateScrollPosition = new DebouncedFunction(
     (newPosition) => {
-      this.correctionStep = !this.correctionStep;
-      const maybeCorrectScrollPos = (this.correctionStep)
-        ? noop
-        : () => {
-          requestAnimationFrame(
-            () => {
-              this.setState(
-                compose(
-                  update("scrollTop", add(-1)),
-                  update("scrollLeft", add(-1))
-                )
-              );
-            }
-          );
-        };
       this.translateElement(this._blgParent, null);
       this.translateElement(this._trgParent, null);
       this.setState(
         newPosition,
         () => {
-          this.props.fullyLoaded && spinnerOff();
-          maybeCorrectScrollPos();
+          if (this.props.fullyLoaded) {
+            spinnerOff();
+          }
         }
       );
     }
@@ -138,7 +122,7 @@ export default class GrudGrid extends MultiGrid {
 
     this.translateElement(this._blgParent, `translateY(${y}px)`);
     this.translateElement(this._trgParent, `translateX(${x}px)`);
-    this.recalculateScrollPosition({scrollLeft, scrollTop});
+    this.recalculateScrollPosition.start({scrollLeft, scrollTop});
   }
 
   componentWillUnmount() {
