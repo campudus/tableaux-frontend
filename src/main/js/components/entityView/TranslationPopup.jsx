@@ -100,7 +100,7 @@ const SingleLanguageView = props => {
     </div>
   );
 };
-SingleLanguageView.PropTypes = {
+SingleLanguageView.propTypes = {
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired
 };
