@@ -3,20 +3,13 @@ import PropTypes from "prop-types";
 import AnnotationPopup from "./AnnotationPopup";
 import f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
-import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import {maybe} from "../../helpers/functools";
 
-@connectToAmpersand
 class TextAnnotationButton extends Component {
-  static PropTypes = {
+  static propTypes = {
     cell: PropTypes.object.isRequired,
     open: PropTypes.bool
   };
-
-  constructor(props) {
-    super(props);
-    props.watch(props.cell, {events: "annotations:change"});
-  }
 
   state = {
     node: null
@@ -45,18 +38,19 @@ class TextAnnotationButton extends Component {
       f.compact,
       f.flatten
     )(cell.annotations);
+
     const cbr = maybe(this.state.node).exec("getBoundingClientRect").getOrElse({});
     return (
       <div className={`text-annotation-button ${(open) ? "ignore-react-onclickoutside" : ""}`}
-        onClick={this.handleClick}
-        ref={this.rememberNode}
+           onClick={this.handleClick}
+           ref={this.rememberNode}
       >
         <i className="fa fa-commenting" />
         {(open)
           ? <AnnotationPopup nAnnotations={f.size(annotations)}
-            x={cbr.left}
-            y={cbr.top}
-            {...this.props}
+                             x={cbr.left}
+                             y={cbr.top}
+                             {...this.props}
           />
           : null
         }

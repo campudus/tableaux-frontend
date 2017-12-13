@@ -23,7 +23,12 @@ const AnnotationBubble = compose(
   ),
   pure
 )(
-  ({isOpen, cell}) => <TextAnnotationButton open={isOpen} cell={cell} />
+  ({isOpen, cell, annotationState}) => (
+    <TextAnnotationButton open={isOpen}
+                          cell={cell}
+                          annotationState={annotationState}
+    />
+  )
 );
 
 const FlagIconRenderer = onlyUpdateForKeys(["langtags", ...knownFlags, "langtag", "annotationsOpen"])(
@@ -41,8 +46,9 @@ const FlagIconRenderer = onlyUpdateForKeys(["langtags", ...knownFlags, "langtag"
     return (
       <div className="annotation-flag-icons">
         <AnnotationBubble hasTextAnnotations={hasTextAnnotations}
-          isOpen={annotationsOpen}
-          cell={cell}
+                          isOpen={annotationsOpen}
+                          cell={cell}
+                          annotationState={props.annotationsState}
         />
         <FlagDot flag="translation" show={isTranslationNeeded} />
         <FlagDot flag="important" show={annotations.important} />
