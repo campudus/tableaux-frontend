@@ -172,19 +172,24 @@ const SelectableShortText = (
              onBlur={saveEdits}
              autoFocus
       />
-      <div className="completion-list"
-           style={{
-             ...listStyle,
-             height: f.clamp(ROW_HEIGHT, LIST_HEIGHT, ROW_HEIGHT * f.size(completions))
-           }}
-      >
-        <SelectableCompletionList completions={(invertList) ? f.reverse(completions) : completions}
-                                  selected={(invertList) ? f.size(completions) - selected - 1 : selected}
-                                  requestedData={requestedData}
-                                  handleSelection={selectCompletionUnderMouse}
-                                  handleClick={applySelectedCompletion}
-        />
-      </div>
+      {(!f.isNil(requestedData) && f.isEmpty(completions))
+        ? null
+        : (
+          <div className="completion-list"
+               style={{
+                 ...listStyle,
+                 height: f.clamp(ROW_HEIGHT, LIST_HEIGHT, ROW_HEIGHT * f.size(completions))
+               }}
+          >
+            <SelectableCompletionList completions={(invertList) ? f.reverse(completions) : completions}
+                                      selected={(invertList) ? f.size(completions) - selected - 1 : selected}
+                                      requestedData={requestedData}
+                                      handleSelection={selectCompletionUnderMouse}
+                                      handleClick={applySelectedCompletion}
+            />
+          </div>
+        )
+      }
     </div>
   );
 };
