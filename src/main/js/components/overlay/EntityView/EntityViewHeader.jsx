@@ -13,6 +13,7 @@ import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import Empty from "../../helperComponents/emptyEntry";
 import HistoryButtons from "../../table/undo/HistoryButtons";
+import RowConcat from "../../../helpers/RowConcatHelper";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -171,7 +172,7 @@ class EntityViewHeader extends Component {
     const row = this.props.sharedData.row || this.props.row;
     const firstCell = row.cells.at(0);
     const title = firstCell.displayValue[langtag];
-    const titleElement = (f.isEmpty(f.trim(title))) ? <Empty /> : title;
+    const titleElement = <RowConcat row={row} langtag={langtag}/>;
     const tableName = getTableName(row, langtag);
     const components = (
       <div className="header-components">

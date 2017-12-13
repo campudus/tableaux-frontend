@@ -1,10 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import RowConcat from "../../helpers/RowConcatHelper";
-import {compose, lifecycle, pure, withHandlers, withState} from "recompose";
+import {compose, lifecycle, pure, withStateHandlers} from "recompose";
 import Dispatcher from "../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../constants/TableauxConstants";
-import f from "lodash/fp";
 
 const OverlayHeadRowIdentificator = (props) => {
   const {cell, cell: {column}, langtag, rowIdentification} = props;
@@ -25,23 +24,28 @@ const OverlayHeadRowIdentificator = (props) => {
 
 const updateOnCellChange = compose(
   pure,
-  withState("rowIdentification", "setRowIdentification"),
-  withHandlers({
-    updateRowIdentification: ({setRowIdentification, cell, langtag}) => (msg) => {
-      if (cell === msg.cell) {
-        setRowIdentification(f.always(<RowConcat row={cell.row} langtag={langtag} />));
+  withStateHandlers(
+    (props) => ({
+      rowIdentification: <RowConcat row={props.cell.row} langtag={props.langtag}/>
+    }),
+    {
+      updateRowIdentification: (state, {cell, langtag}) => (evt, msg) => {
+        if (evt === ActionTypes.BROADCAST_DATA_CHANGE && cell === msg.cell) {
+          return {
+            rowIdentification: <RowConcat row={cell.row} langtag={langtag} />
+          };
+        }
       }
-    }
   }),
   lifecycle(
     {
       componentDidMount() {
         const {cell, updateRowIdentification} = this.props;
-        Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, updateRowIdentification);
+        Dispatcher.on("all", updateRowIdentification);
         updateRowIdentification({cell}); // set Initial value
       },
       componentWillUnmount() {
-        Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.props.updateRowIdentification);
+        Dispatcher.off("all", this.props.updateRowIdentification);
       }
     }
   )
