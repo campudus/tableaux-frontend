@@ -11,14 +11,12 @@ import ActionCreator from "../../actions/ActionCreator";
 import SvgIcon from "../helperComponents/SvgIcon";
 import classNames from "classnames";
 import {Portal} from "react-portal";
-import {maybe} from "../../helpers/functools";
+import {doto, either, maybe} from "../../helpers/functools";
 
 @listenToClickOutside
 class AnnotationPopup extends PureComponent {
-  static PropTypes = {
-    row: PropTypes.object.isRequired,
+  static propTypes = {
     cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired
   };
@@ -98,6 +96,31 @@ class AnnotationPopup extends PureComponent {
     }
   }
 
+  setArrowPosition = (fromBottom = 0) => {
+    const arrowSelector = ".annotation-popup.shift-up::before";
+
+    const arrowRule = doto(document.styleSheets,
+      f.map("cssRules"),
+      f.map(f.find(f.matchesProperty("selectorText", arrowSelector))),
+      f.flatten,
+      f.compact,
+      f.first
+    );
+
+    either(arrowRule)
+      .map(
+        (rule) => {
+          rule.style.bottom = (fromBottom - 15) + "px";
+          return true;
+        }
+      )
+      .orElse(
+        () => window.devError("The CSS selector for the annoations popup seems to have changed; adapt " +
+          "the arrowSelector constant in AnnotationPopup.jsx accordingly!"
+        )
+      );
+  };
+
   render() {
     this.focusInput();
     const {cell, cell: {row}, langtag, x = 0, y = 0} = this.props;
@@ -115,6 +138,10 @@ class AnnotationPopup extends PureComponent {
     const top = (needsShiftUp)
       ? Math.max(y + 24 - rect.height, 110)
       : y - 16;
+
+    if (needsShiftUp) {
+      this.setArrowPosition(top + rect.height - y);
+    }
 
     const popupCssClass = classNames("annotation-popup ignore-react-onclickoutside", {
       "shift-up": needsShiftUp,

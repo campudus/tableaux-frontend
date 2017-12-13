@@ -8,7 +8,7 @@ import f from "lodash/fp";
 const FADE_OUT_TIME = 200; // milliseconds
 
 export default class AnnotationEntry extends PureComponent {
-  static PropTypes = {
+  static propTypes = {
     annotation: PropTypes.object.isRequired,
     cell: PropTypes.object.isRequired,
     idx: PropTypes.number.isRequired
