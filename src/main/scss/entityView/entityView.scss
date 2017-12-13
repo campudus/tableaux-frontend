@@ -232,18 +232,20 @@
 }
 
 .boolean {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
   width: 100%;
-  .value {
-    margin-left: 10px;
-    color: $color-text-medium-grey;
-    pointer-events: none;
+  .content-wrapper {
     display: flex;
-    div {
-      margin-left: 5px;
-      color: $color-primary-text;
+    justify-content: flex-start;
+    align-items: center;
+    .value {
+      margin-left: 10px;
+      color: $color-text-medium-grey;
+      pointer-events: none;
+      display: flex;
+      div {
+        margin-left: 5px;
+        color: $color-primary-text;
+      }
     }
   }
 }
