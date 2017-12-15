@@ -201,21 +201,22 @@ const mkClosures = (table, langtag, rowsFilter) => {
     f.join("::")
   );
 
+  const getPlainValue = (cell) => (cell.isMultiLanguage)
+    ? cell.value[langtag]
+    : cell.value;
+
   const getSortableCellValue = (cell) => {
-    const getField = (field) => (cell) => (cell.isMultiLanguage)
-      ? f.get([field, langtag], cell)
-      : f.get([field, cell]);
     const rawValue = f.cond([
-      [isOfKind(ColumnKinds.boolean), getField("value")],
+      [isOfKind(ColumnKinds.boolean), getPlainValue],
       [isOfKind(ColumnKinds.link), joinStrings],
       [isOfKind(ColumnKinds.attachment), joinStrings],
-      [isOfKind(ColumnKinds.date), getField("value")],
-      [isOfKind(ColumnKinds.datetime), getField("value")],
+      [isOfKind(ColumnKinds.date), getPlainValue],
+      [isOfKind(ColumnKinds.datetime), getPlainValue],
       [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
     return f.cond([
       [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
-      [isOfKind(ColumnKinds.boolean), f.always(!!rawValue)],
+      [isOfKind(ColumnKinds.boolean), f.always((rawValue) ? "a" : "b")],
       [f.stubTrue, f.always(f.toLower(rawValue) || "")]
     ])(cell);
   };
