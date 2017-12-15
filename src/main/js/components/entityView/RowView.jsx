@@ -18,7 +18,6 @@ import * as Annotations from "../../helpers/annotationHelper";
 import {getCountryOfLangtag} from "../../helpers/multiLanguage";
 import classNames from "classnames";
 import i18n from "i18next";
-import {doto} from "../../helpers/functools";
 
 @connectToAmpersand
 class View extends Component {
