@@ -34,9 +34,6 @@ var TableauxConstant = {
     TOGGLE_CELL_EDITING: null,
     SELECT_NEXT_CELL: null,
 
-    DISABLE_SHOULD_CELL_FOCUS: null,
-    ENABLE_SHOULD_CELL_FOCUS: null,
-
     ADD_FOLDER: null,
     CHANGE_FOLDER: null,
     REMOVE_FOLDER: null,

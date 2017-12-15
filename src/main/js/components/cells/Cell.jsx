@@ -132,15 +132,6 @@ class Cell extends React.Component {
       });
   };
 
-  componentDidMount = () => {
-    this.cellDOMNode = ReactDOM.findDOMNode(this);
-    this.checkFocus();
-  };
-
-  componentDidUpdate = () => {
-    this.checkFocus();
-  };
-
   getKeyboardShortcuts = (event) => {
     return this.keyboardShortcuts;
   };
@@ -149,21 +140,8 @@ class Cell extends React.Component {
     this.keyboardShortcuts = childrenEvents;
   };
 
-  checkFocus = () => {
-    if (this.props.selected && !this.props.editing) {
-      const cellDOMNode = this.cellDOMNode;
-      const focusedElement = document.activeElement;
-      // Is current focus this cell or inside of cell don't change the focus. This way child components can force their
-      // focus. (e.g. Links Component)
-      if (cellDOMNode && !focusedElement || !cellDOMNode.contains(focusedElement) || focusedElement.isEqualNode(
-          cellDOMNode)) {
-        cellDOMNode.focus();
-      }
-    }
-  };
-
   cellClickedWorker = (event, withRightClick) => {
-    let {cell, editing, selected, langtag, shouldFocus} = this.props;
+    let {cell, editing, selected, langtag} = this.props;
     ActionCreator.closeAnnotationsPopup();
     window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
       cell.kind,
@@ -193,9 +171,6 @@ class Cell extends React.Component {
        the table view when clicking on an element other than the cell.
        */
       event.stopPropagation();
-    }
-    if (!shouldFocus) {
-      ActionCreator.enableShouldCellFocus();
     }
   };
 
@@ -298,7 +273,6 @@ Cell.propTypes = {
   editing: PropTypes.bool,
   row: PropTypes.object.isRequired,
   table: PropTypes.object.isRequired,
-  shouldFocus: PropTypes.bool,
   annotationsOpen: PropTypes.bool,
   isExpandedCell: PropTypes.bool.isRequired
 };

@@ -80,14 +80,6 @@ module.exports = {
     Dispatcher.trigger(ActionTypes.CLOSE_OVERLAY, name);
   },
 
-  enableShouldCellFocus: function () {
-    Dispatcher.trigger(ActionTypes.ENABLE_SHOULD_CELL_FOCUS);
-  },
-
-  disableShouldCellFocus: function () {
-    Dispatcher.trigger(ActionTypes.DISABLE_SHOULD_CELL_FOCUS);
-  },
-
   toggleRowExpand: function (rowId) {
     Dispatcher.trigger(ActionTypes.TOGGLE_ROW_EXPAND, {
       rowId
