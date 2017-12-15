@@ -1,110 +1,84 @@
 import React from "react";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import PropTypes from "prop-types";
+import {compose, lifecycle, pure, withHandlers, withStateHandlers} from "recompose";
+import f from "lodash/fp";
+import {contentChanged} from "../../cells/Cell";
 import ActionCreator from "../../../actions/ActionCreator";
 import i18n from "i18next";
-import * as f from "lodash/fp";
-import PropTypes from "prop-types";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 
-import {contentChanged} from "../../cells/Cell";
+const enhance = compose(
+  pure,
+  withStateHandlers(
+    ({value}) => {
+      return ({
+        value: f.defaultTo("", value)
+      });
+    },
+    {
+      registerInput: (state, {funcs}) => (node) => {
+        funcs.register(node);
+      },
+      handleChange: () => (event) => ({value: event.target.value}),
+      saveChanges: ({value}, props) => () => {
+        const origVal = props.value;
+        if (origVal === value) {
+          return;
+        }
 
-class ShortTextView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.originalValue = this.getValue().trim();
-    this.state = {
-      value: this.originalValue,
-      dirty: false
-    };
-  };
-
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired,
-    thisUserCantEdit: PropTypes.bool
-  };
-
-  getValue = () => {
-    const {cell, langtag} = this.props;
-    const value = (cell.isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
-    return value || "";
-  };
-
-  getKeyboardShortcuts = () => {
-    const captureEventAnd = fn => event => {
-      event.stopPropagation();
-      event.preventDefault();
-      (fn || function () {
-      })(event);
-    };
-
-    return {
-      //      escape: captureEventAnd(() => { this.background.focus() }),
-      escape: captureEventAnd(this.saveEdits),
-      enter: captureEventAnd(this.saveEdits)
-    };
-  };
-
-  saveEdits = () => {
-    const {dirty, value} = this.state;
-    if (!dirty || f.isNil(value) || value.trim() === this.originalValue) {
-      return;
+        const {cell, langtag} = props;
+        ActionCreator.changeCell(
+          cell,
+          ((cell.isMultiLanguage) ? {[langtag]: value} : value),
+          contentChanged(cell, langtag, origVal)
+        );
+      }
     }
-    const {cell, langtag} = this.props;
-    ActionCreator.changeCell(
-      cell,
-      ((cell.isMultiLanguage) ? {[langtag]: value} : value),
-      contentChanged(cell, langtag, this.originalValue)
-    );
-    this.originalValue = value.trim();
-    this.setState({dirty: false});
-  };
+  ),
+  withHandlers({
+    getKeyboardShortcuts: ({saveChanges}) => () => {
+      const captureEventAnd = fn => event => {
+        event.stopPropagation();
+        event.preventDefault();
+        (fn || function () {
+        })(event);
+      };
 
-  componentWillReceiveProps(np) {
-    const {cell, langtag} = np;
-    const nextVal = f.defaultTo("")(
-      (cell.isMultiLanguage)
-        ? cell.value[langtag]
-        : cell.value
-    );
-    if ((!this.state.dirty && nextVal !== this.originalValue)
-      || cell !== this.props.cell || langtag !== this.props.langtag
-    ) {
-      this.setState({value: nextVal, dirty: false});
+      return {
+        escape: captureEventAnd(saveChanges),
+        enter: captureEventAnd(saveChanges)
+      };
     }
-  }
+  }),
+  lifecycle({
+    componentWillUnmount() {
+      this.props.saveChanges();
+    }
+  })
+);
 
-  handleChange = (event) => {
-    this.setState({
-      value: event.target.value,
-      dirty: true
-    });
-  };
+const ShortTextView = ({value, registerInput, handleChange, thisUserCantEdit, children, getKeyboardShortcuts, saveChanges}) => (
+  <div className="item-content shorttext"
+       tabIndex={1}
+  >
+    <input type="text"
+           ref={registerInput}
+           disabled={thisUserCantEdit}
+           value={value}
+           placeholder={i18n.t("table:empty.text")}
+           onChange={handleChange}
+           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(getKeyboardShortcuts)}
+           onBlur={saveChanges}
+    />
+    {children}
+  </div>
+);
 
-  componentWillUnmount() {
-    this.saveEdits();
-  };
+export default enhance(ShortTextView);
 
-  render() {
-    const {funcs, thisUserCantEdit} = this.props;
-    return (
-      <div className="item-content shorttext"
-        ref={el => { this.background = el; }}
-        tabIndex={1}
-      >
-        <input type="text" value={this.state.value || ""}
-          placeholder={i18n.t("table:empty.text")}
-          disabled={thisUserCantEdit}
-          onChange={this.handleChange}
-          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}
-          onBlur={this.saveEdits}
-          ref={el => { funcs.register(el); }}
-        />
-        {this.props.children}
-      </div>
-    );
-  }
-}
-
-export default ShortTextView;
+ShortTextView.propTypes = {
+  cell: PropTypes.object.isRequired,
+  value: PropTypes.string,
+  langtag: PropTypes.string.isRequired,
+  thisUserCantEdit: PropTypes.bool
+};
