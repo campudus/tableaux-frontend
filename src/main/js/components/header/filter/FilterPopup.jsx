@@ -256,11 +256,14 @@ class FilterPopup extends React.Component {
       const filterMode = (oldFilter.columnKind === BOOL)
         ? defaultMode
         : oldFilter.mode || defaultMode;
+      const columnKind = this.filtersForKind(kind);
       const filter = {
-        mode: filterMode,
+        mode: (columnKind === ColumnKinds.boolean) ? BOOL : filterMode,
         columnId: value,
-        value: f.isString(oldValue) ? oldValue : "",
-        columnKind: this.filtersForKind(kind)
+        value: (columnKind === ColumnKinds.boolean)
+          ? true
+          : f.isString(oldValue) ? oldValue : "",
+        columnKind
       };
       this.setState({filters: f.assoc([idx], filter, this.state.filters)});
     }
@@ -286,13 +289,11 @@ class FilterPopup extends React.Component {
     const {sorting} = this.state;
 
     const filters = f.isEmpty(this.state.filters)
-      ? [
-        {
+      ? [{
           mode: FilterModes.CONTAINS,
           value: null,
           columnId: null
-        }
-      ]
+        }]
       : this.state.filters;
 
     const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
