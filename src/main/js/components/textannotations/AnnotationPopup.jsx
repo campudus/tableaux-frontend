@@ -11,14 +11,12 @@ import ActionCreator from "../../actions/ActionCreator";
 import SvgIcon from "../helperComponents/SvgIcon";
 import classNames from "classnames";
 import {Portal} from "react-portal";
-import {maybe} from "../../helpers/functools";
+import {doto, either, maybe} from "../../helpers/functools";
 
 @listenToClickOutside
 class AnnotationPopup extends PureComponent {
-  static PropTypes = {
-    row: PropTypes.object.isRequired,
+  static propTypes = {
     cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired
   };
@@ -27,7 +25,6 @@ class AnnotationPopup extends PureComponent {
     super(props);
     this.state = {
       comment: "",
-      needsLeftShift: false,
       input: null,
       container: null
     };
@@ -86,6 +83,44 @@ class AnnotationPopup extends PureComponent {
     maybe(this.state.input).method("focus");
   };
 
+  componentDidUpdate(prevProps) {
+    const {y = 0} = this.props;
+    const rect = maybe(this.state.container).exec("getBoundingClientRect").getOrElse({bottom: 0, height: 0});
+    const oldHeight = f.getOr(0, ["cbr", "height"], this.state);
+    const needsShiftUp = y - 16 + rect.height >= window.innerHeight;
+    if (this.state.needsShiftUp !== needsShiftUp || rect.height !== oldHeight) {
+      this.setState({
+        needsShiftUp,
+        cbr: rect
+      });
+    }
+  }
+
+  setArrowPosition = (fromBottom = 0) => {
+    const arrowSelector = ".annotation-popup.shift-up::before";
+
+    const arrowRule = doto(document.styleSheets,
+      f.map("cssRules"),
+      f.map(f.find(f.matchesProperty("selectorText", arrowSelector))),
+      f.flatten,
+      f.compact,
+      f.first
+    );
+
+    either(arrowRule)
+      .map(
+        (rule) => {
+          rule.style.bottom = (fromBottom - 15) + "px";
+          return true;
+        }
+      )
+      .orElse(
+        () => window.devError("The CSS selector for the annoations popup seems to have changed; adapt " +
+          "the arrowSelector constant in AnnotationPopup.jsx accordingly!"
+        )
+      );
+  };
+
   render() {
     this.focusInput();
     const {cell, cell: {row}, langtag, x = 0, y = 0} = this.props;
@@ -99,13 +134,16 @@ class AnnotationPopup extends PureComponent {
     const rowConcat = rowConcatObj[langtag] || rowConcatObj[DefaultLangtag];
 
     const rect = maybe(this.state.container).exec("getBoundingClientRect").getOrElse({bottom: 0, height: 0});
-    const needsShiftUp = y - 16 + rect.height >= window.innerHeight;
+    const {needsShiftUp} = this.state;
     const top = (needsShiftUp)
-      ? y + 24 - rect.height
+      ? Math.max(y + 24 - rect.height, 110)
       : y - 16;
 
+    if (needsShiftUp) {
+      this.setArrowPosition(top + rect.height - y);
+    }
+
     const popupCssClass = classNames("annotation-popup ignore-react-onclickoutside", {
-      "shift-left": this.state.needsLeftShift,
       "shift-up": needsShiftUp,
       "in-first-row": row.id === cell.tables.get(cell.tableId).rows.at(0).id
     });

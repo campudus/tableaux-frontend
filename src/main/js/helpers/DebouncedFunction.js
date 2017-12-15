@@ -18,12 +18,15 @@ export default class DebouncedFunction {
   start = (...args) => {
     this.args = args;
     this.time = performance.now();
-    requestAnimationFrame(this.run);
+    if (!this.animationFrameId) {
+      requestAnimationFrame(this.run);
+    }
   };
 
   run = () => {
     const now = performance.now();
     if (now - this.time >= this.delay) {
+      this.animationFrameId = null;
       if (this._fn) {
         this._fn(...this.args);
       }
@@ -34,10 +37,12 @@ export default class DebouncedFunction {
 
   cancel = () => {
     maybe(this.animationFrameId).map(cancelAnimationFrame);
+    this.animationFrameId = null;
   };
 
   flush = () => {
     maybe(this.animationFrameId).map(cancelAnimationFrame);
+    this.animationFrameId = null;
     this._fn(...this.args);
   };
 }
