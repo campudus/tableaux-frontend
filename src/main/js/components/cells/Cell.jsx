@@ -98,7 +98,7 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
       const column = cell.column;
       const columnName = f.get(["displayName", langtag], column)
         || f.get(["displayName", FallBackLanguage], column)
-        || f.get(["displayName"], column);
+        || f.get(["name"], column);
       openTranslationDialog(columnName, flagAllTranslations, flagEmptyTranslations);
     } else {
       flagEmptyTranslations();
