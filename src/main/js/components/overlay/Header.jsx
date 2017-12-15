@@ -20,29 +20,9 @@ class Header extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      title: props.title,
-      context: props.context
+      title: props.title
     };
   }
-
-  componentDidMount() {
-    if (f.isNumber(this.props.id)) {
-      Dispatcher.on(ActionTypes.CHANGE_HEADER_TITLE, this.changeTitle);
-    }
-  }
-
-  componentWillUnmount() {
-    Dispatcher.off(ActionTypes.CHANGE_HEADER_TITLE, this.changeTitle);
-  }
-
-  changeTitle = ({id, title, context}) => {
-    if (id !== this.props.id) {
-      return;
-    }
-    const newTitle = title || this.state.title;
-    const newContext = context || this.state.context;
-    this.setState({title: newTitle, context: newContext});
-  };
 
   componentWillReceiveProps(next) {
     if (next.title !== this.props.title) {
@@ -59,8 +39,8 @@ class Header extends PureComponent {
   };
 
   render() {
-    const {actions, components} = this.props;
-    const {title, context} = this.state;
+    const {actions, components, context} = this.props;
+    const {title} = this.state;
     const cssClass = classNames(
       "header-wrapper",
       {
