@@ -9,7 +9,7 @@ import {isLocked} from "../../../helpers/annotationHelper";
 import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
 import Header from "../../overlay/Header";
-import {maybe} from "../../../helpers/functools";
+import {doto, maybe} from "../../../helpers/functools";
 import i18n from "i18next";
 import {contentChanged} from "../Cell";
 import changeCell from "../../../models/helpers/changeCell";
@@ -52,7 +52,11 @@ class TextCell extends PureComponent {
 
     const {cell, langtag} = this.props;
     const table = cell.tables.get(cell.tableId);
-    const context = table.displayName[langtag] || table.displayName[FallbackLanguage];
+    const context = doto([table.displayName[langtag], table.displayName[FallbackLanguage], table.name],
+      f.compact,
+      f.first,
+      (ctx) => (f.isString(ctx)) ? ctx : f.toString(ctx)
+    );
 
     const Wrapper = (props) => props.children;
 
