@@ -18,6 +18,7 @@ import * as Annotations from "../../helpers/annotationHelper";
 import {getCountryOfLangtag} from "../../helpers/multiLanguage";
 import classNames from "classnames";
 import i18n from "i18next";
+import {doto} from "../../helpers/functools";
 
 @connectToAmpersand
 class View extends Component {
@@ -105,13 +106,6 @@ class View extends Component {
       [ColumnKinds.group]: GroupView
     };
 
-    const updateTrigger = (f.isArray(cell.value))
-      ? f.flow(
-        f.map(langtag),
-        f.join(":")
-      )(cell.displayValue)
-      : cell.displayValue[langtag];
-
     const isDisabled = !this.canEditValue();
     const isMyTranslationNeeded = langtag !== f.first(Langtags) && Annotations.isTranslationNeeded(langtag)(cell);
     const isAnyTranslationNeeded = langtag === f.first(Langtags)
@@ -171,10 +165,11 @@ class View extends Component {
           <div>{description}</div>
         </div> : null}
         <CellKind cell={cell} langtag={langtag} time={cell.kind === ColumnKinds.datetime}
+                  key={`${cell.id}-${(cell.isMultiLanguage) ? f.get(["value", langtag], cell) : cell.value}-${langtag}`}
                   setTranslationView={setTranslationView}
                   funcs={this.props.funcs}
                   thisUserCantEdit={isDisabled}
-                  updateTrigger={updateTrigger}
+                  value={(cell.isMultiLanguage) ? f.get(["value", langtag], cell) : cell.value}
         >
           <div className="action-tags">
             {translationTag}
