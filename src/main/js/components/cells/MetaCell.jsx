@@ -36,7 +36,6 @@ class MetaCell extends PureComponent {
 
   deleteRow = (event) => {
     event.stopPropagation();
-    ActionCreator.disableShouldCellFocus();
     const {row, langtag} = this.props;
     initiateDeleteRow(row, langtag);
   };

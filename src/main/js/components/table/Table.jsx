@@ -39,7 +39,6 @@ class Table extends Component { // PureComponent will not react to updates calle
       // needed for multilanguage cell selection
       expandedRowIds: null, // Array
       selectedCellExpandedRow: null,
-      shouldCellFocus: true,
       rowContextMenu: null,
       showScrollToLeftButton: false
     };
@@ -51,8 +50,6 @@ class Table extends Component { // PureComponent will not react to updates calle
     Dispatcher.on(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
     Dispatcher.on(ActionTypes.TOGGLE_ROW_EXPAND, tableRowsWorker.toggleRowExpand, this);
     Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
-    Dispatcher.on(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, tableNavigationWorker.disableShouldCellFocus, this);
-    Dispatcher.on(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, tableNavigationWorker.enableShouldCellFocus, this);
     Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     Dispatcher.on(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
@@ -66,8 +63,6 @@ class Table extends Component { // PureComponent will not react to updates calle
     Dispatcher.off(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
     Dispatcher.off(ActionTypes.TOGGLE_ROW_EXPAND, tableRowsWorker.toggleRowExpand, this);
     Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
-    Dispatcher.off(ActionTypes.DISABLE_SHOULD_CELL_FOCUS, tableNavigationWorker.disableShouldCellFocus, this);
-    Dispatcher.off(ActionTypes.ENABLE_SHOULD_CELL_FOCUS, tableNavigationWorker.enableShouldCellFocus, this);
     Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     Dispatcher.off(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
