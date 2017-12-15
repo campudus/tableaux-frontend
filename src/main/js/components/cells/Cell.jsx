@@ -265,11 +265,12 @@ class Cell extends React.Component {
            onKeyDown={(selected) ? KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts) : f.noop}
            onMouseDown={this.onMouseDownHandler}>
         <CellKind cell={cell}
+                  key={`${cell.id}-${langtag}-${displayValue}`}
                   langtag={langtag}
                   selected={selected}
                   inSelectedRow={inSelectedRow}
                   editing={cell.isEditable && editing}
-                  value={displayValue}
+                  value={(cell.isMultiLanguage) ? f.get(["value", langtag], cell) : cell.value}
                   contentChanged={contentChanged}
                   setCellKeyboardShortcuts={(f.contains(kind, noKeyboard))
                     ? f.noop
