@@ -1,119 +1,113 @@
 import React from "react";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import ActionCreator from "../../../actions/ActionCreator";
-import * as f from "lodash/fp";
-import i18n from "i18next";
-import {contentChanged} from "../../cells/Cell";
 import PropTypes from "prop-types";
+import {compose, lifecycle, pure, withHandlers, withStateHandlers} from "recompose";
+import f from "lodash/fp";
+import {contentChanged} from "../../cells/Cell";
+import ActionCreator from "../../../actions/ActionCreator";
+import i18n from "i18next";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import {maybe} from "../../../helpers/functools";
 
-class NumericView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.originalValue = parseFloat(this.getValue()) || 0;
-    this.state = {
-      value: this.originalValue,
-      dirty: false
-    };
-  };
+const enhance = compose(
+  pure,
+  withStateHandlers(
+    ({value}) => {
+      return ({
+        value: maybe(value).map(parseFloat).getOrElse(0)
+      });
+    },
+    {
+      registerInput: (state, {funcs}) => (node) => {
+        funcs.register(node);
+      },
+      handleChange: () => (event) => {
+        const inputString = event.target.value.replace(/,/g, ".");
+        const normalized = (inputString.split(".").length > 2)
+          ? inputString.substr(0, inputString.length - 1)
+          : inputString;
+        return {value: normalized};
+      },
+      saveChanges: (state, props) => () => {
+        const origVal = props.value;
+        // value might have been converted to string in the meantime; this is necessary to be able to
+        // add a decimal seperator with the editor still behaving naturally
+        const currVal = parseFloat(state.value);
+        if (origVal === currVal) {
+          return;
+        }
 
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired,
-    thisUserCantEdit: PropTypes.bool
-  };
-
-  getValue = () => {
-    const {cell, langtag} = this.props;
-    const value = (cell.isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
-    return value || 0;
-  };
-
-  normaliseNumberFormat = event => {
-    const inputString = event.target.value.replace(/,/g, ".");
-    const normalised = (inputString.split(".").length > 2)
-      ? inputString.substr(0, inputString.length - 1)
-      : inputString;
-    this.setState({value: normalised, dirty: true});
-  };
-
-  handleKeyPress = event => {
-    if (!this.isKeyAllowed(event)) {
-      return;
+        const {cell, langtag} = props;
+        ActionCreator.changeCell(
+          cell,
+          ((cell.isMultiLanguage) ? {[langtag]: currVal} : currVal),
+          contentChanged(cell, langtag, origVal)
+        );
+      }
     }
-    KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)(event);
-  };
+  ),
+  withHandlers({
+    getKeyboardShortcuts: ({saveChanges}) => () => {
+      const captureEventAnd = fn => event => {
+        event.stopPropagation();
+        event.preventDefault();
+        (fn || function () {
+        })(event);
+      };
 
-  isKeyAllowed = event => {
-    const numbers = f.map(f.toString, f.range(0, 10));
-    const allowedKeys = [...numbers, ".", ",", "ArrowLeft", "ArrowRight", "Enter", "Return", "Escape", "Backspace", "Delete", "Tab", "ArrowUp", "ArrowDown"];
-    if (!f.contains(event.key, allowedKeys)) {
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
+      return {
+        escape: captureEventAnd(saveChanges),
+        enter: captureEventAnd(saveChanges)
+      };
     }
-    return true;
-  };
-
-  getKeyboardShortcuts = () => {
-    const captureEventAnd = fn => event => {
-      event.stopPropagation();
-      (fn || function () {})();
-    };
-
-    return {
-      enter: captureEventAnd(this.saveEdits)
-    };
-  };
-
-  componentWillReceiveProps(np) {
-    const {cell, langtag} = np;
-    const nextVal = (cell.isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
-    if ((!this.state.dirty && (parseFloat(nextVal) || 0) !== this.originalValue)
-      || np.cell !== this.props.cell || langtag !== this.props.langtag
-    ) {
-      this.setState({value: nextVal, dirty: false});
+  }),
+  withHandlers({
+    isKeyAllowed: () => event => {
+      const numbers = f.map(f.toString, f.range(0, 10));
+      const allowedKeys = [...numbers, ".", ",", "ArrowLeft", "ArrowRight", "Enter", "Return", "Escape", "Backspace", "Delete", "Tab", "ArrowUp", "ArrowDown"];
+      if (!f.contains(event.key, allowedKeys)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+      return true;
     }
-  }
-
-  saveEdits = () => {
-    const value = parseFloat(this.state.value);
-    if (value === this.originalValue || !this.state.dirty) {
-      return;
+  }),
+  withHandlers({
+    handleKeyDown: ({isKeyAllowed, getKeyboardShortcuts}) => (event) => {
+      if (isKeyAllowed(event)) {
+        KeyboardShortcutsHelper.onKeyboardShortcut(getKeyboardShortcuts)(event);
+      }
     }
-    const {cell, langtag} = this.props;
-    ActionCreator.changeCell(
-      cell,
-      ((cell.isMultiLanguage) ? {[langtag]: value} : value),
-      contentChanged(cell, langtag, this.originalValue)
-    );
-    this.originalValue = value;
-    this.setState({dirty: false});
-  };
+  }),
+  lifecycle({
+    componentWillUnmount() {
+      this.props.saveChanges();
+    }
+  })
+);
 
-  componentWillUnmount() {
-    this.saveEdits();
-  }
+const NumericView = ({value, registerInput, handleChange, thisUserCantEdit, children, handleKeyDown, saveChanges}) => (
+  <div className="item-content shorttext"
+       tabIndex={1}
+  >
+    <input type="text"
+           ref={registerInput}
+           disabled={thisUserCantEdit}
+           value={value}
+           placeholder={i18n.t("table:empty.number")}
+           onChange={handleChange}
+           onKeyDown={handleKeyDown}
+           onBlur={saveChanges}
+    />
+    {children}
+  </div>
+);
 
-  render() {
-    const {funcs, thisUserCantEdit} = this.props;
-    return (
-      <div className="item-content numeric" >
-        <input type="text" value={this.state.value || ""}
-          disabled={thisUserCantEdit}
-          onChange={this.normaliseNumberFormat}
-          onKeyDown={this.handleKeyPress}
-          onBlur={this.saveEdits}
-          placeholder={i18n.t("table:empty.number")}
-          ref={el => { funcs.register(el); }}
-        />
-        {this.props.children}
-      </div>
-    );
-  }
-}
+export default enhance(NumericView);
 
-export default NumericView;
+NumericView.propTypes = {
+  cell: PropTypes.object.isRequired,
+  value: PropTypes.any,
+  langtag: PropTypes.string.isRequired,
+  thisUserCantEdit: PropTypes.bool
+};

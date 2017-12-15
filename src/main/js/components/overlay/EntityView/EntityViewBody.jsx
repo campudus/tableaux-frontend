@@ -126,6 +126,7 @@ class EntityViewBody extends Component {
     }, restoreFocus);
     this.props.watch(row);
     this.translationItem = null;
+    this.setTranslationView({cell: {}, show: false});
     this.cancelClosingTimer();
   };
 
