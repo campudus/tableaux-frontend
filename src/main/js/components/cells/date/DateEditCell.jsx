@@ -1,98 +1,36 @@
-/*
- * Allows to edit value of a DateCell in a Datetime date picker (react-datetime)
- */
 import React from "react";
-import listensToClickOutside from "react-onclickoutside";
-import ActionCreator from "../../../actions/ActionCreator";
+import f from "lodash/fp";
 import Datetime from "react-datetime";
-import {Directions} from "../../../constants/TableauxConstants";
-import PropTypes from "prop-types";
+import {compose, lifecycle, withStateHandlers} from "recompose";
 
-@listensToClickOutside
-class DateEditCell extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      moment: this.props.value
-    };
-  }
+const enhance = compose(
+  withStateHandlers(
+    () => ({
+      shiftUp: false
+    }),
+    {}
+  ),
+  lifecycle({
+    componentWillUnmount() {
+      this.props.saveChanges();
+    }
+  })
+);
 
-  componentDidMount = () => {
-    this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts);
-  };
+const DateEditCell = ({value, Formats, handleChange, clearDate, showTime}) => (
+  <React.Fragment>
+    {(f.isEmpty(value)) ? "" : value.format(Formats.formatForUser)}
+    <i className="fa fa-ban"
+       onClick={clearDate}
+    />
 
-  componentWillUnmount = () => {
-    this.props.setCellKeyboardShortcuts({});
-  };
+    <Datetime onChange={handleChange}
+              open
+              input={false}
+              value={value}
+              timeFormat={showTime}
+    />
+  </React.Fragment>
+);
 
-  handleClickOutside = () => {
-    this.props.handleEditFinished(true);
-    ActionCreator.toggleCellEditing(false);
-  };
-
-  handleClickClearDate = event => {
-    this.handleChange(null, () => this.props.handleEditFinished(true));
-    ActionCreator.toggleCellEditing(true);
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  handleChange = (moment, cb) => {
-    this.setState({moment});
-    this.props.handleDateUpdate(moment, cb);
-  };
-
-  getKeyboardShortcuts = () => {
-    const editFinished = this.props.handleEditFinished;
-    return {
-      tab: function () {
-        editFinished(true);
-        ActionCreator.toggleCellEditing(true);
-        ActionCreator.selectNextCell(Directions.RIGHT);
-      },
-      enter: function () {
-        editFinished(true);
-        ActionCreator.toggleCellEditing(false);
-        ActionCreator.selectNextCell(Directions.DOWN);
-      },
-      escape: function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        editFinished(true);
-        ActionCreator.toggleCellEditing(false);
-      },
-      always: function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    };
-  };
-
-  render = () => {
-    const {moment} = this.state;
-    return (
-      <div className="cell-content">
-        {this.props.toDisplayValue(moment)}
-        <i className="fa fa-ban cell-content"
-          style={{float: "right"}}
-          onClick={this.handleClickClearDate} />
-        <Datetime onChange={this.handleChange}
-          open={true}
-          input={false}
-          value={moment}
-          timeFormat={false} />
-      </div>
-    );
-  }
-}
-
-DateEditCell.propTypes = {
-  setCellKeyboardShortcuts: PropTypes.func.isRequired,
-  handleDateUpdate: PropTypes.func.isRequired,
-  toDisplayValue: PropTypes.func.isRequired,
-  handleEditFinished: PropTypes.func.isRequired,
-  cell: PropTypes.object.isRequired,
-  value: PropTypes.object.isRequired
-};
-
-module.exports = DateEditCell;
+export default enhance(DateEditCell);
