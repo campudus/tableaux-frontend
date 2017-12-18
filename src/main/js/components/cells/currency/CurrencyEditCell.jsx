@@ -1,7 +1,7 @@
 import React from "react";
 import CurrencyRow from "./CurrencyRow";
 import {getCurrencyWithCountry} from "./currencyHelper";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 export default class CurrencyEditCell extends React.PureComponent {
@@ -67,6 +67,10 @@ export default class CurrencyEditCell extends React.PureComponent {
     this.setState({currencyValues: newValue});
   };
 
+  catchEvent = (event) => {
+    event.stopPropagation();
+  };
+
   render() {
     const {cell} = this.props;
     const {column} = cell;
@@ -77,17 +81,21 @@ export default class CurrencyEditCell extends React.PureComponent {
       (countryCode, index) => {
         const currencyValue = getCurrencyWithCountry(currencyValues, countryCode, "withFallback");
         return <CurrencyRow key={index}
-          country={countryCode}
-          isFallbackValue={!f.get(["value", countryCode], cell)}
-          countryCurrencyValue={currencyValue}
-          updateValue={this.updateCurrencyValue}
+                            country={countryCode}
+                            isFallbackValue={!f.get(["value", countryCode], cell)}
+                            countryCurrencyValue={currencyValue}
+                            updateValue={this.updateCurrencyValue}
         />;
       }
     );
 
     return (
-      <div className="cell-currency-rows" onClick={e => { e.stopPropagation(); }}>
-        {currencyRows}
+      <div className="cell-currency-rows"
+           onClick={this.catchEvent}
+      >
+        <div className="rows-container">
+          {currencyRows}
+        </div>
       </div>
     );
   }
