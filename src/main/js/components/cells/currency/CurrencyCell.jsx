@@ -7,6 +7,7 @@ import {getCurrencyWithCountry, splitPriceDecimals} from "./currencyHelper";
 import onClickOutside from "react-onclickoutside";
 import {translate} from "react-i18next";
 import PropTypes from "prop-types";
+import f from "lodash/fp";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
@@ -19,6 +20,14 @@ export default class CurrencyCell extends React.PureComponent {
     editing: PropTypes.bool.isRequired,
     setCellKeyboardShortcuts: PropTypes.func
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      shiftUp: false,
+      domNode: null
+    };
+  }
 
   CurrencyCellDOMNode = null;
 
@@ -40,10 +49,7 @@ export default class CurrencyCell extends React.PureComponent {
   };
 
   handleClickOutside = (event) => {
-    // prevents from closing editCell when clicking on the scrollbar on windows
-    if (!this.CurrencyCellDOMNode.contains(event.target)) {
-      this.exitCurrencyCell();
-    }
+    this.exitCurrencyCell();
   };
 
   renderPrice(currencyValues, country) {
@@ -78,6 +84,50 @@ export default class CurrencyCell extends React.PureComponent {
     );
   }
 
+  getStyle = () => {
+    const {shiftUp} = this.state;
+    return (this.props.editing)
+      ? (
+        {
+          top: (shiftUp) ? -125 : 0,
+          bottom: (shiftUp) ? -45 : -170
+        }
+      )
+      : (
+        {
+          top: 0,
+          bottom: 0
+        }
+      );
+  };
+
+  checkPosition = (domNode = this.state.domNode) => {
+    if (f.isNil(domNode)) {
+      return;
+    }
+
+    if (f.isNil(this.state.domNode)) {
+      this.setState({domNode});
+    }
+
+    if (!this.props.editing) {
+      return;
+    }
+
+    const rect = domNode.getBoundingClientRect();
+    const unshiftedBottom = (this.state.shiftUp)
+      ? rect.bottom + 180
+      : rect.bottom + 10;
+    const needsShiftUp = this.props.editing && unshiftedBottom >= window.innerHeight;
+    if (needsShiftUp !== this.state.shiftUp) {
+      this.setState({shiftUp: needsShiftUp});
+    }
+  };
+
+  componentDidUpdate() {
+    this.checkPosition();
+  }
+
   render() {
     const {langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
     const currencyValues = cell.value;
@@ -95,7 +145,11 @@ export default class CurrencyCell extends React.PureComponent {
       : this.renderPrice(currencyValues, country);
 
     return (
-      <div className="cell-content" onScroll={this.scrollHandler}>
+      <div className="cell-content"
+           onScroll={this.scrollHandler}
+           ref={this.checkPosition}
+           style={this.getStyle()}
+      >
         {currencyCellMarkup}
       </div>
     );
