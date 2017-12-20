@@ -12,13 +12,14 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import classNames from "classnames";
 import {Portal} from "react-portal";
 import {doto, either, maybe} from "../../helpers/functools";
+import FocusTrap from "focus-trap-react";
 
 @listenToClickOutside
 class AnnotationPopup extends PureComponent {
   static propTypes = {
     cell: PropTypes.object.isRequired,
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired
+    x: PropTypes.number,
+    y: PropTypes.number
   };
 
   constructor(props) {
@@ -68,6 +69,7 @@ class AnnotationPopup extends PureComponent {
 
   handleClick = (event) => {
     event.stopPropagation();
+    this.focusInput();
   };
 
   rememberInput = (node) => {
@@ -150,61 +152,63 @@ class AnnotationPopup extends PureComponent {
 
     return (
       <Portal isOpened >
+        <FocusTrap>
         <div className="disable-scrolling"
              style={{left: 0, right: 0, top: "90px", bottom: 0, zIndex: 1, position: "fixed"}}
         />
-        <div className={popupCssClass}
-             ref={this.rememberContainer}
-             onClick={this.handleClick}
-             onContextMenu={this.handleClick}
-             style={{
-               "left": `${x - 5}px`,
-               top
-             }}
-        >
-          <div className="close-icon"
-               onClick={ActionCreator.closeAnnotationsPopup}
+          <div className={popupCssClass}
+               ref={this.rememberContainer}
+               onClick={this.handleClick}
+               onContextMenu={this.handleClick}
+               style={{
+                 "left": `${x - 5}px`,
+                 top
+               }}
           >
-            <SvgIcon icon="cross"/>
-          </div>
-          <div className="annotation-popup-header">
-            <div className="annotation-header-title">
-              <i className="fa fa-commenting" />
-              {i18n.t("table:cell-comments")}
-            </div>
-            {(rowConcat)
-              ? <div className="annotation-label">{rowConcat}</div>
-              : <Empty/>
-            }
-          </div>
-          <div className="annotation-popup-list">
-            {f.reverse(annotations).map(
-              (ann, idx) => (
-                <AnnotationEntry annotation={ann}
-                                 key={ann.uuid}
-                                 cell={cell}
-                                 idx={f.size(annotations) - idx}
-                />
-              )
-            )}
-          </div>
-          <footer tabIndex="1">
-            <input type="text"
-                   ref={this.rememberInput}
-                   onChange={this.handleInputChange}
-                   autoFocus
-                   placeholder={i18n.t("table:new-comment")}
-                   onKeyDown={this.handleInputKeys}
-                   value={this.state.comment}
-                   onBlur={this.focusInput}
-            />
-            <div className="button"
-                 onClick={this.saveComment}
+            <div className="close-icon"
+                 onClick={ActionCreator.closeAnnotationsPopup}
             >
-              {i18n.t("common:add")}
+              <SvgIcon icon="cross"/>
             </div>
-          </footer>
-        </div>
+            <div className="annotation-popup-header">
+              <div className="annotation-header-title">
+                <i className="fa fa-commenting" />
+                {i18n.t("table:cell-comments")}
+              </div>
+              {(rowConcat)
+                ? <div className="annotation-label">{rowConcat}</div>
+                : <Empty/>
+              }
+            </div>
+            <div className="annotation-popup-list">
+              {f.reverse(annotations).map(
+                (ann, idx) => (
+                  <AnnotationEntry annotation={ann}
+                                   key={ann.uuid}
+                                   cell={cell}
+                                   idx={f.size(annotations) - idx}
+                  />
+                )
+              )}
+            </div>
+            <footer tabIndex="1">
+              <input type="text"
+                     ref={this.rememberInput}
+                     onChange={this.handleInputChange}
+                     autoFocus
+                     placeholder={i18n.t("table:new-comment")}
+                     onKeyDown={this.handleInputKeys}
+                     value={this.state.comment}
+                     onBlur={this.focusInput}
+              />
+              <div className="button"
+                   onClick={this.saveComment}
+              >
+                {i18n.t("common:add")}
+              </div>
+            </footer>
+          </div>
+        </FocusTrap>
       </Portal>
     );
   }
