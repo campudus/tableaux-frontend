@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import ActionCreator from "../../actions/ActionCreator";
 import {ColumnKinds, FallBackLanguage, Langtags} from "../../constants/TableauxConstants";
 import TextCell from "./text/TextCell.jsx";
@@ -8,7 +7,6 @@ import NumericCell from "./numeric/NumericCell.jsx";
 import LinkCell from "./link/LinkCell.jsx";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell.jsx";
-import DateTimeCell from "./datetime/DateTimeCell.jsx";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
@@ -193,7 +191,7 @@ class Cell extends React.Component {
     [ColumnKinds.numeric]: NumericCell,
     [ColumnKinds.boolean]: BooleanCell,
     [ColumnKinds.date]: DateCell,
-    [ColumnKinds.datetime]: DateTimeCell,
+    [ColumnKinds.datetime]: DateCell,
     [ColumnKinds.shorttext]: ShortTextCell,
     [ColumnKinds.concat]: IdentifierCell,
     [ColumnKinds.currency]: CurrencyCell,

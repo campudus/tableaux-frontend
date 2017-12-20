@@ -5,7 +5,6 @@ import LinkCell from "../cells/link/LinkCell";
 import AttachmentCell from "../cells/attachment/AttachmentCell";
 import NumericCell from "../cells/numeric/NumericCell";
 import BooleanCell from "../cells/boolean/BooleanCell";
-import DateTimeCell from "../cells/datetime/DateTimeCell";
 import DateCell from "../cells/date/DateCell";
 import ShortTextCell from "../cells/text/ShortTextCell";
 import IdentifierCell from "../cells/identifier/IdentifierCell";
@@ -55,7 +54,7 @@ const cellRenderers = {
   [ColumnKinds.numeric]: NumericCell,
   [ColumnKinds.boolean]: BooleanCell,
   [ColumnKinds.date]: DateCell,
-  [ColumnKinds.datetime]: DateTimeCell,
+  [ColumnKinds.datetime]: DateCell,
   [ColumnKinds.shorttext]: ShortTextCell,
   [ColumnKinds.concat]: IdentifierCell,
   [ColumnKinds.currency]: CurrencyCell,
