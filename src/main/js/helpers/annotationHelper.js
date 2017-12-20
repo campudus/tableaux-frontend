@@ -224,7 +224,7 @@ const removeTranslationNeeded = (langtag, cell) => {
 
 const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   if (!annotation || !annotation.uuid) {
-    console.warn("Trying to delete invalid annotation:", annotation);
+    window.devWarn("Trying to delete invalid annotation:", annotation);
     return;
   }
   const {uuid, type, value} = annotation;
