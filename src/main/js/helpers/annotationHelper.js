@@ -3,7 +3,7 @@ import * as f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
-import {maybe} from "./functools";
+import {doto, maybe} from "./functools";
 
 const extractAnnotations = obj => {
   const kvPairs = (obj || []).map(
@@ -144,22 +144,26 @@ const setCellAnnotation = (annotation, cell) => {
 };
 
 const addTranslationNeeded = (langtags, cell) => {
-  if (!f.isArray(langtags)) console.warn("addTranslationNeeded: array expected, got", langtags);
+  if (!f.isArray(langtags)) {
+    console.warn("addTranslationNeeded: array expected, got", langtags);
+  }
   const oldCellAnnotations = f.prop("annotations", cell) || {};
   const finishTransaction = (f.isEmpty(f.prop("translationNeeded", oldCellAnnotations)))
     ? (response) => {
-      const uuid = f.flow(
+      const [uuid, langtags] = doto(response,
         f.get("text"),
         JSON.parse,
-        f.get("uuid")
-      )(response);
-      const newTranslationStatus = f.assoc(["translationNeeded", "uuid"], uuid, f.prop(["annotations"], cell));
+        f.props(["uuid", "langtags"])
+      );
+      const newTranslationStatus = doto(f.get("annotations", cell),
+        f.assoc(["translationNeeded", "uuid"], uuid),
+        f.assoc(["translationNeeded", "langtags"], langtags)
+      );
       cell.set(
         {annotations: newTranslationStatus}
       );
     }
-    : (response) => {
-    };
+    : f.noop;
   cell.set({
     annotations: f.assoc(
       ["translationNeeded", "langtags"],
@@ -224,7 +228,7 @@ const removeTranslationNeeded = (langtag, cell) => {
 
 const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
   if (!annotation || !annotation.uuid) {
-    console.warn("Trying to delete invalid annotation:", annotation);
+    window.devWarn("Trying to delete invalid annotation:", annotation);
     return;
   }
   const {uuid, type, value} = annotation;

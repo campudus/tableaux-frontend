@@ -1,16 +1,17 @@
 import * as f from "lodash/fp";
 import ActionCreator from "../../actions/ActionCreator";
 import {ColumnKinds, DefaultLangtag} from "../../constants/TableauxConstants";
-import {convert, canConvert} from "../../helpers/cellValueConverter";
+import {canConvert, convert} from "../../helpers/cellValueConverter";
 import React from "react";
 import i18n from "i18next";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
-import {hasUserAccessToLanguage, isUserAdmin, getUserLanguageAccess} from "../../helpers/accessManagementHelper";
-import {isLocked} from "../../helpers/annotationHelper";
+import {getUserLanguageAccess, hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {addTranslationNeeded, deleteCellAnnotation, isLocked} from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Header from "../overlay/Header";
 import Footer from "../overlay/Footer";
 import {Promise} from "es6-promise";
+
 const throat = require("throat")(Promise); // throat ignores the global Promise polyfill, so pass it
 
 const MAX_CONCURRENT_REQUESTS = 3; // retrieve row or copy cell
@@ -143,6 +144,21 @@ const createEntriesAndCopy = (src, dst, constrainedValue) => {
   );
 };
 
+async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
+  ActionCreator.changeCell(dst, reducedValue);
+  if (src.isMultiLanguage && dst.isMultiLanguage) {
+    const srcTranslation = f.get(["annotations", "translationNeeded"], src);
+    const dstTranslation = f.get(["annotations", "translationNeeded"], dst);
+    const srcLangtags = f.get("langtags", srcTranslation);
+
+    await deleteCellAnnotation(dstTranslation, dst);
+
+    if (!f.isEmpty(srcLangtags)) {
+      addTranslationNeeded(srcLangtags, dst);
+    }
+  }
+}
+
 const pasteCellValue = function (src, srcLang, dst, dstLang, skipDialogs = false) {
   const canOverrideLock = () => {
     const untranslated = f.prop(["annotations", "translationNeeded", "langtags"]);
@@ -187,7 +203,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang, skipDialogs = false
       showErrorToast("table:copy_kind_error");
       return;
     }
-    ActionCreator.changeCell(dst, newValue);
+    pasteValueAndTranslationStatus(src, dst, newValue);
   } else {
     const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
     if (!newValue) {
@@ -198,7 +214,7 @@ const pasteCellValue = function (src, srcLang, dst, dstLang, skipDialogs = false
       if (event) {
         event.preventDefault();
       }
-      ActionCreator.changeCell(dst, newValue);
+      pasteValueAndTranslationStatus(src, dst, newValue);
     };
     const buttons = {
       positive: [i18n.t("common:save"), save],
