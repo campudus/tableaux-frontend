@@ -115,11 +115,12 @@ export function getKeyboardShortcuts() {
         : f.matchesProperty("key", k)(event);
       const thisLangtag = this.props.langtag;
       const systemPaste = selectedCellEditing
-      && f.contains(selectedCell.kind,
-        [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
+        && f.contains(selectedCell.kind,
+          [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
       const langtag = this.state.selectedCellExpandedRow || thisLangtag;
+
       if (hasActionKey && isKeyPressed("c") // Cell copy
-        && selectedCell.kind !== ColumnKinds.concat) {
+        && selectedCell.kind !== ColumnKinds.concat && !isTextSelected()) {
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (!f.isEmpty(this.props.pasteOriginCell)
@@ -146,6 +147,15 @@ export function getKeyboardShortcuts() {
       }
     }
   };
+}
+
+export function isTextSelected() {
+  // should be supported above ie9?
+  const userSelection = maybe(window)
+    .exec("getSelection")
+    .map(f.get("type"))
+    .getOrElse("not supported");
+  return userSelection === "Range";
 }
 
 export function isLastRowSelected() {
