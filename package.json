@@ -11,7 +11,8 @@
     "build": "export NODE_ENV=production && webpack --progress --colors",
     "dev": "webpack-dev-server --progress --color --watch",
     "lint": "eslint --ext .jsx,.js src/**",
-    "lintFix": "eslint --fix --ext .jsx,.js src/**"
+    "lintFix": "eslint --fix --ext .jsx,.js src/**",
+    "storybook": "start-storybook -p 6006 -c .storybook"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/campudus/tableaux-frontend",
   "devDependencies": {
+    "@storybook/react": "^3.3.8",
     "ampersand-app": "2.0.0",
     "ampersand-collection": "2.0.1",
     "ampersand-events": "2.0.2",
