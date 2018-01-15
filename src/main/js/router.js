@@ -1,14 +1,15 @@
-const App = require("ampersand-app");
-const Router = require("ampersand-router");
-let React = require("react");
-const ReactDOM = require("react-dom");
+import * as ActionCreator from "./actions/ActionCreator";
+import React from "react";
+import ReactDOM from "react-dom";
 import Tableaux from "./components/Tableaux.jsx";
-import * as f from "lodash/fp";
-const Dispatcher = require("./dispatcher/Dispatcher");
+import f from "lodash/fp";
 import TableauxConstants, {ActionTypes, FilterModes} from "./constants/TableauxConstants";
-const ActionCreator = require("./actions/ActionCreator");
 import Raven from "raven-js";
 import {AppContainer} from "react-hot-loader";
+import Router from "ampersand-router";
+import App from "ampersand-app";
+import Dispatcher from "./dispatcher/Dispatcher";
+import Tables from "./models/Tables";
 
 export let currentLangtag = null;
 
@@ -41,6 +42,48 @@ const parseOptions = optString => {
   ]);
   return f.reduce(f.merge, {}, f.map(getOptions, opts));
 };
+
+let cachedTables = null;
+
+const getTables = () => new Promise(
+  (resolve, reject) => {
+    if (f.isNil(cachedTables)) {
+      const tables = new Tables();
+      tables.fetch({
+        success: () => {
+          cachedTables = tables;
+          resolve(cachedTables);
+        },
+        error: (err) => {
+          reject(err);
+        }
+      });
+    } else {
+      resolve(cachedTables);
+    }
+  }
+);
+
+const validateLangtag = (langtag) => {
+  return (f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags))
+    ? TableauxConstants.DefaultLangtag
+    : langtag;
+};
+
+async function getFirstTableId() {
+  const tables = await getTables();
+  return f.get("id", tables.first());
+}
+
+async function validateTableId(tableId) {
+  const tables = await getTables();
+  const firstTableId = f.always(await getFirstTableId());
+  return f.cond([
+    [f.isNil, firstTableId],
+    [(id) => f.isNil(tables.get(id)), firstTableId],
+    [f.stubTrue, f.identity]
+  ])(tableId);
+}
 
 const TableauxRouter = Router.extend({
   routes: {
@@ -105,11 +148,12 @@ const TableauxRouter = Router.extend({
     his.navigate(newPath, {trigger: true});
   },
 
-  switchTableHandler: function (payload) {
+  switchTableHandler: async function (payload) {
     const langtag = payload.langtag;
+    const tableId = await validateTableId(payload.id);
     Raven.captureBreadcrumb({message: "Switch table", data: payload});
     Raven.captureMessage("Switch table", {level: "info"});
-    App.router.history.navigate(langtag + "/tables/" + payload.id, {trigger: true});
+    App.router.navigate(langtag + "/tables/" + tableId);
   },
 
   switchFolderHandler: function (payload) {
@@ -129,23 +173,21 @@ const TableauxRouter = Router.extend({
     this.redirectTo(langtag + "/tables");
   },
 
-  noTable: function (langtag) {
+  noTable: async function (langtag) {
     console.log("TableauxRouter.noTable");
-    currentLangtag = langtag;
-    // TODO show error to user and refactor in function (DRY) see 'tableBrowser'
-    if (typeof langtag === "undefined" || TableauxConstants.Langtags.indexOf(langtag) === -1) {
-      console.error("path param 'langtag' is not valid");
-      return;
-    }
+    const tables = await getTables();
+    const tableId = await getFirstTableId();
 
     this.renderOrSwitchView(TableauxConstants.ViewNames.TABLE_VIEW, {
-      tableId: null,
-      langtag: langtag
+      tables,
+      table: tables.get(tableId),
+      langtag: validateLangtag(langtag)
     });
   },
 
-  tableBrowser: function (langtag, tableid, a, b, c) {
+  tableBrowser: async function (urlLangtag, tableid, a, b, c) {
     const optionalArgs = [a, b, c].filter(x => x);
+    const langtag = validateLangtag(urlLangtag);
 
     // sort optional args to values
     let columnid, rowid, optionStr;
@@ -183,10 +225,12 @@ const TableauxRouter = Router.extend({
       return;
     }
 
-    const tableId = parseInt(tableid);
+    const tables = await getTables();
+    const validTableId = await validateTableId(parseInt(tableid));
 
     this.renderOrSwitchView(TableauxConstants.ViewNames.TABLE_VIEW, {
-      tableId: tableId,
+      table: tables.get(validTableId),
+      tables: tables,
       langtag: langtag,
       columnId: (columnid) ? parseInt(columnid) : null,
       rowId: (rowid) ? parseInt(rowid) : null,
@@ -196,16 +240,11 @@ const TableauxRouter = Router.extend({
 
   mediaBrowser: function (langtag, folderid) {
     console.log("TableauxRouter.mediaBrowser", langtag, folderid);
-    currentLangtag = langtag;
-    // TODO show error to user
-    if (typeof langtag === "undefined" || TableauxConstants.Langtags.indexOf(langtag) === -1) {
-      console.error("path param 'langtag' is not valid");
-      return;
-    }
+    currentLangtag = validateLangtag(langtag);
 
     this.renderOrSwitchView(TableauxConstants.ViewNames.MEDIA_VIEW, {
       folderId: parseInt(folderid) || null,
-      langtag: langtag
+      langtag: validateLangtag(langtag)
     });
   }
 });

@@ -29,6 +29,7 @@ import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import {initHistoryOf} from "../table/undo/tableHistory";
+import {getMultiLangValue} from "../../helpers/multiLanguage";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
@@ -41,7 +42,6 @@ class TableView extends Component {
     const {columnId, rowId} = props;
     const {entityView} = props.urlOptions || {};
 
-    this.nextTableId = null;
     this.pendingCellGoto = null;
     this.state = {
       initialLoading: true,
@@ -63,7 +63,6 @@ class TableView extends Component {
   };
 
   componentWillMount = () => {
-    Dispatcher.on(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
@@ -73,7 +72,6 @@ class TableView extends Component {
   };
 
   componentWillUnmount = () => {
-    Dispatcher.off(ActionTypes.CLEANUP_TABLE_DONE, this.doSwitchTable);
     Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
     Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
@@ -184,31 +182,12 @@ class TableView extends Component {
 
   componentDidMount = () => {
     ActionCreator.spinnerOn();
-
-    // fetch all tables
-    if (!this.tables) {
-      this.tables = new Tables();
-      this.tables.fetch({
-        success: (collection) => {
-          initHistoryOf(this.tables);
-          if (this.props.tableId === null) {
-            ActionCreator.switchTable(collection.at(0).getId(), this.props.langtag);
-          } else {
-            this.fetchTable(this.props.tableId);
-          }
-        }
-      });
-    }
+    initHistoryOf(this.props.tables);
+    this.fetchTable(this.props.table.id);
   };
 
   fetchTable = (tableId) => {
-    const currentTable = this.tables.get(tableId);
-    if (f.isNil(currentTable)) {
-      const here = window.location.href.toString();
-      const firstTable = here.replace(/\/tables.*/, "");
-      window.location = firstTable;
-      return;
-    }
+    const currentTable = this.props.table;
     this.setState({
       initialLoading: true,
       tableFullyLoaded: false
@@ -289,15 +268,7 @@ class TableView extends Component {
         this.applyColumnVisibility(nextProps.projection);
       }
     }
-    if (nextProps.tableId !== this.props.tableId) {
-      let oldTable = this.tables.get(this.state.currentTableId);
-      this.nextTableId = nextProps.tableId;
-      if (oldTable) {
-        ActionCreator.cleanupTable(oldTable);
-      } else {
-        this.doSwitchTable();
-      }
-    } else if (nextProps.rowId
+    if (nextProps.rowId
       && (nextProps.columnId !== this.props.columnId || nextProps.rowId !== this.props.rowId)) {
       this.gotoCell({
         columnId: nextProps.columnId,
@@ -345,19 +316,23 @@ class TableView extends Component {
   };
 
   setDocumentTitleToTableName = () => {
-    const currentTable = this.tables.get(this.state.currentTableId);
+    const {table = {}, langtag} = this.props;
 
-    if (currentTable) {
-      const tableDisplayNameObj = this.tables.get(this.state.currentTableId).displayName;
-      const tableDisplayName = tableDisplayNameObj[this.props.langtag] || tableDisplayNameObj[TableauxConstants.FallbackLanguage];
+    if (table) {
+      const tableDisplayName = getMultiLangValue(langtag, "", table.displayName);
       document.title = tableDisplayName
         ? tableDisplayName + " | " + TableauxConstants.PageTitle
         : TableauxConstants.PageTitle;
     }
   };
 
-  componentDidUpdate = () => {
+  componentDidUpdate = (prev) => {
     this.setDocumentTitleToTableName();
+    if (prev.table !== this.props.table) {
+      this.pendingCellGoto = null;
+      this.props.resetStoredProjection();
+      this.fetchTable(this.props.table.id);
+    }
   };
 
   clearFilter = () => {
@@ -426,15 +401,7 @@ class TableView extends Component {
   };
 
   getCurrentTable = () => {
-    return this.tables.get(this.state.currentTableId);
-  };
-
-  doSwitchTable = () => {
-    if (this.nextTableId) {
-      this.pendingCellGoto = null;
-      this.props.resetStoredProjection();
-      this.fetchTable(this.nextTableId);
-    }
+    return this.props.table;
   };
 
   onLanguageSwitch = (newLangtag) => {
@@ -445,7 +412,7 @@ class TableView extends Component {
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
-      const tables = this.tables;
+      const {tables} = this.props;
       const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang, currentTableId} = this.state;
       const {langtag, overlayOpen} = this.props;
       const currentTable = this.getCurrentTable();
