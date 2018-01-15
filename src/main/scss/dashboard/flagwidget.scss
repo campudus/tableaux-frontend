@@ -1,0 +1,86 @@
+.flag-widget {
+  .header-wrapper {
+    width: 100%;
+    border-bottom: 2px solid;
+    padding: 5px 0;
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: flex;
+
+    i {
+      width: 20px;
+      position: relative;
+    }
+
+    &.postpone {
+      border-color: $color-postpone;
+    }
+
+    &.important {
+      border-color: $color-important;
+    }
+
+    &.needs-translation {
+      border-color: $color-needs-translation;
+      padding-bottom: 0;
+    }
+
+    &.check-me {
+      border-color: $color-checkme;
+    }
+
+    &.comments {
+      border-color: $color-comments;
+      i {
+        color: $color-comments;
+      }
+    }
+
+    .heading {
+      flex: 1;
+    }
+
+    .language-tab {
+      background-color: $color-needs-translation;
+      padding: 5px;
+      border-radius: 3px 3px 0 0;
+      margin-left: 5px;
+      color: white;
+
+      &.active {
+        background-color: darken($color-needs-translation, 10);
+      }
+    }
+
+    .dot.important { @include status-dot($color-important, white); }
+    .dot.needs-translation { @include status-dot($color-needs-translation, white); }
+    .dot.postpone { @include status-dot($color-postpone, white); }
+    .dot.check-me { @include status-dot($color-checkme, white); }
+    .dot::before {
+      top: 2px !important;
+    }
+  }
+
+  .table-entry {
+    display: flex;
+    flex-direction: row;
+    color: $color-primary-text;
+
+    &.active {
+      color: $color-text-medium-grey;
+    }
+
+    &.selected {
+      color: $color-primary-text;
+    }
+
+    .label {
+      flex: 1;
+      font-weight: bold;
+    }
+
+    .element-count {
+
+    }
+  }
+}

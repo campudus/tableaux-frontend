@@ -1,0 +1,29 @@
+@import "translationStatusWidget", "support", "greeter", "flagwidget";
+
+#dashboard-view.wrapper {
+  padding-top: 55px;
+
+  .info-text {
+    color: $color-text-medium-grey;
+    padding-top: 10px;
+  }
+
+  .widgets {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    background-color: white;
+
+    .tile {
+      flex: 1;
+      padding: 35px;
+      min-width: 15vw;
+      height: 200px;
+
+      &.wide {
+        flex: 2;
+        min-width: 30vw;
+      }
+    }
+  }
+}

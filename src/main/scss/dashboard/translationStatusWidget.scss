@@ -1,0 +1,49 @@
+.translation-status {
+  width: 100%;
+  background-color: $color-overlay-header;
+
+  .heading {
+    width: 100%;
+    padding: 15px 0;
+    color: $color-primary-contrast-text;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .content {
+    padding: 20px 50px;
+    display: flex;
+    flex-flow: row wrap;
+  }
+
+  .circle-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+
+    svg {
+      overflow: visible;
+
+      circle {
+        stroke: lighten($color-overlay-header, 5);
+      }
+    }
+
+    .label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: xx-large;
+      font-weight: lighter;
+    }
+
+    .langtag {
+      text-transform: uppercase;
+      color: $color-primary-contrast-text;
+      font-weight: bold;
+    }
+  }
+}
