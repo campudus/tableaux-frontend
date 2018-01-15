@@ -1,6 +1,7 @@
 import TableauxConstants from "../constants/TableauxConstants";
 import React from "react";
 import f from "lodash/fp";
+import {doto} from "./functools";
 
 const langtagSeparatorRegex = /[-_]/;
 
@@ -131,6 +132,14 @@ function getTableDisplayName(table, langtag) {
   }
 }
 
+const getMultiLangValue = f.curry(
+  (langtag, defaultValue, element) => doto(element,
+    f.props([langtag, doto(langtag, f.takeRight(2), f.join), TableauxConstants.DefaultLangtag, TableauxConstants.FallbackLanguage]),
+    f.find(f.identity),
+    f.defaultTo(defaultValue)
+  )
+);
+
 /**
  * example usage:
  * let multiLanguage = require('./multiLanguage.js')
@@ -164,6 +173,7 @@ module.exports = {
       return retrieveTranslation(json, language, defaultLanguage);
     };
   },
+  getMultiLangValue,
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
   getTableDisplayName,
