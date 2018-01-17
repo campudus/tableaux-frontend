@@ -1,6 +1,6 @@
 import apiUrl from "../../helpers/apiUrl";
 import AmpersandModel from "ampersand-model";
-import {currentLangtag} from "../../router";
+import {currentLangtag} from "../../router/router";
 
 const SimpleFolder = AmpersandModel.extend({
   props: {

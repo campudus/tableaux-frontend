@@ -1,7 +1,7 @@
 import Raven from "raven-js";
 import {getAllLangtagsFromServer, getSentryUrlFromServer} from "./helpers/serverSettingsHelper";
 import App from "ampersand-app";
-import Router from "./router";
+import Router from "./router/router";
 import TableauxConstants from "./constants/TableauxConstants";
 import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";

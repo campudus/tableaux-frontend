@@ -8,11 +8,13 @@ import GreeterWidget from "./greeter/GreeterWidget";
 import TranslationStatusWidget from "./translationstatus/TranslationStatusWidget";
 import SupportWidget from "./support/SupportWidget";
 import FlagWidget from "./flagwidget/FlagWidget";
+import App from "ampersand-app";
 
 const DashboardView = ({langtag, handleLanguageSwitch}) => (
   <React.Fragment>
     <header>
       <Navigation langtag={langtag} />
+      <div className="header-separator"/>
       <PageTitle titleKey="Dashboard" />
       <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} languages={["de", "en", "en-US", "ch-IT"]} />
     </header>
@@ -98,7 +100,9 @@ DashboardView.propTypes = {
 const enhance = compose(
   pure,
   withHandlers({
-    handleLanguageSwitch: () => () => {
+    handleLanguageSwitch: () => (langtag) => {
+      console.log("Set lang to", langtag)
+      App.router.history.navigate(`/${langtag}/dashboard`, {trigger: true});
     }
   })
 );

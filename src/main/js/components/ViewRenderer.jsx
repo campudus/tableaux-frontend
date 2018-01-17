@@ -1,46 +1,33 @@
-import React, {PureComponent} from "react";
-import PropTypes from "prop-types";
-import TableauxConstants from "../constants/TableauxConstants";
+import React from "react";
+import {ViewNames} from "../constants/TableauxConstants";
+import f from "lodash/fp";
 import TableView from "./tableView/TableView.jsx";
 import MediaView from "../components/media/MediaView.jsx";
+import DashboardView from "./dashboard/DashboardView";
+import {pure} from "recompose";
 
-const ViewNames = TableauxConstants.ViewNames;
+const viewNameIs = (name) => f.matchesProperty("viewName", name);
 
-export default class ViewRenderer extends PureComponent {
-  static propTypes = {
-    viewName: PropTypes.string.isRequired,
-    params: PropTypes.object.isRequired
-  };
+const renderTableView = ({params}) => (
+  <TableView {...params}
+             overlayOpen={!!params.overlayOpen}
+  />
+);
 
-  constructor(props) {
-    super(props);
+const renderMediaView = ({params}) => (
+  <MediaView {...params}
+             overlayOpen={!!params.overlayOpen}
+  />
+);
 
-    this.views = {};
-    this.views[ViewNames.TABLE_VIEW] = () => {
-      return (
-        <TableView {...this.props.params}
-          overlayOpen={!!this.props.params.overlayOpen}
-        />
-      );
-    };
+const renderDashboard = ({params}) => (
+  <DashboardView {...params} />
+);
 
-    this.views[ViewNames.MEDIA_VIEW] = () => {
-      return <MediaView langtag={this.props.params.langtag}
-        folderId={this.props.params.folderId}
-        overlayOpen={!!this.props.params.overlayOpen} />;
-    };
-  }
+const ViewRenderer = f.cond([
+  [viewNameIs(ViewNames.TABLE_VIEW), renderTableView],
+  [viewNameIs(ViewNames.MEDIA_VIEW), renderMediaView],
+  [viewNameIs(ViewNames.DASHBOARD_VIEW), renderDashboard]
+]);
 
-  getView(viewName) {
-    if (this.views[viewName]) {
-      return this.views[viewName]();
-    } else {
-      // TODO show error to user
-      console.error("View with name " + viewName + " not found.");
-    }
-  }
-
-  render() {
-    return this.getView(this.props.viewName);
-  }
-}
+export default pure(ViewRenderer);
