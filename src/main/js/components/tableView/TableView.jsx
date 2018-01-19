@@ -6,7 +6,6 @@ import Table from "../table/Table.jsx";
 import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import ActionCreator from "../../actions/ActionCreator";
-import Tables from "../../models/Tables";
 import f from "lodash/fp";
 import TableauxConstants, {ActionTypes, FilterModes} from "../../constants/TableauxConstants";
 import Filter from "../header/filter/Filter.jsx";
@@ -405,7 +404,9 @@ class TableView extends Component {
   };
 
   onLanguageSwitch = (newLangtag) => {
-    ActionCreator.switchLanguage(newLangtag);
+    const history = App.router.history;
+    const url = history.getPath();
+    history.navigate(url.replace(this.props.langtag, newLangtag));
   };
 
   render = () => {
