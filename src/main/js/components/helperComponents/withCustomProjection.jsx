@@ -13,7 +13,7 @@
 import {compose, mapProps, withStateHandlers} from "recompose";
 import {either} from "../../helpers/functools";
 import f from "lodash/fp";
-import {FilterModes} from "../../constants/TableauxConstants";
+import {FilterModes, Langtags} from "../../constants/TableauxConstants";
 
 const getStoredViewObject = (tableId = null, name = "default") => {
   if (tableId) {
@@ -50,24 +50,24 @@ const loadProjection = (props) => {
 // ({urlOptions: object, projections: object}) -> props object with "projection" object replaced by
 //       filter defined by urlOptions
 const parseUrlFilterProp = (props) => {
-  const filter = f.get(["urlOptions", "filter"], props);
-  if (f.isEmpty(filter)) {
+  const filters = f.get(["urlOptions", "filter"], props);
+  if (f.isEmpty(filters)) {
     return props;
   }
-  const rowsFilter = {
-    filters: [
-      (filter === true)
-        ? {
-          mode: FilterModes.ID_ONLY,
-          value: [props.rowId]
-        }
-        : filter
-    ]
-  };
+
+  const primaryLangAsksForTranslation = (filter = {}) => (
+    filter.mode === FilterModes.UNTRANSLATED && props.langtag === f.first(Langtags)
+  );
+
+  const checkFilter = f.cond([
+    [f.eq(true), f.always({mode: FilterModes.ID_ONLY, value: [props.rowId]})],
+    [primaryLangAsksForTranslation, f.assoc("mode", FilterModes.ANY_UNTRANSLATED)],
+    [f.stubTrue, f.identity]
+  ]);
 
   return f.assoc(
-    ["projection", "rows"],
-    rowsFilter,
+    ["projection", "rows", "filters"],
+    f.map(checkFilter, filters),
     props
   );
 };

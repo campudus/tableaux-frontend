@@ -18,7 +18,7 @@ const TableauxRouter = Router.extend({
   routes: {
     "": "dashboard",
     "(:langtag/)dashboard(/)": "dashboard",
-    "(:langtag/)tables(/:tableid)(/columns/:columnid)(/rows/:rowid)(?:options)": "tableBrowser",
+    "(:langtag/)tables(/:tableid)(/columns/:columnid)(/rows/:rowid)(/)(?:options)": "tableBrowser",
 
     ":langtag/media(/)": "mediaBrowser",
     ":langtag/media/:folderid": "mediaBrowser",

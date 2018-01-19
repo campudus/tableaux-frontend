@@ -52,7 +52,7 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
   return coll;
 };
 
-const mkFilterFn = closures => (settings) => {
+const mkFilterFn = (closures) => (settings) => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   return f.cond([
     [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],

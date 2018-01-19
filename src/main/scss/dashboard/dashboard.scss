@@ -2,6 +2,7 @@
 
 #dashboard-view.wrapper {
   padding-top: 55px;
+  overflow-y: auto;
 
   .info-text {
     color: $color-text-medium-grey;
