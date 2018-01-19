@@ -6,7 +6,7 @@ import i18n from "i18next";
 const PageTitle = (props) => {
   const {titleKey} = props;
   return (
-    <div id="header-pagename">{i18n.t(titleKey)}</div>
+    <div id="header-pagename">{i18n.t("header:" + titleKey)}</div>
   );
 };
 

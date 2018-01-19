@@ -1,11 +1,13 @@
 {
   "menu": {
     "media": "Media",
-    "tables": "Tables"
+    "tables": "Tables",
+    "dashboard": "Dashboard"
   },
   "pageTitle": {
     "media": "Media Management",
-    "tables": "Tables"
+    "tables": "Tables",
+    "dashboard": "Dashboard"
   },
   "tableSwitcher": {
     "nogroup": "Show all tables...",
