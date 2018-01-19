@@ -61,7 +61,7 @@ const CircleGraph = ({percent, radius = 50}) => {
       </div>
     </div>
   );
-}
+};
 
 CircleGraph.propTypes = {
   percent: PropTypes.number.isRequired

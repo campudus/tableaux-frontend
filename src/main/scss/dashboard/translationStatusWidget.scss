@@ -1,6 +1,8 @@
 .translation-status {
   width: 100%;
+  min-height: 236px;
   background-color: $color-overlay-header;
+  position: relative;
 
   .heading {
     width: 100%;
@@ -14,6 +16,7 @@
     padding: 20px 50px;
     display: flex;
     flex-flow: row wrap;
+    justify-content: center
   }
 
   .circle-chart {

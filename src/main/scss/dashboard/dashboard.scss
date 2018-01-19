@@ -20,6 +20,7 @@
       padding: 35px;
       min-width: 15vw;
       height: 200px;
+      position: relative;
 
       &.wide {
         flex: 2;
@@ -27,4 +28,17 @@
       }
     }
   }
+
+  footer {
+    padding: 150px 0 50px 0;
+    width: 100%;
+    text-align: center;
+    color: $color-text-medium-grey;
+  }
+
+}
+
+.feedback-toast {
+  border-width: 5px;
+  padding: 25px;
 }

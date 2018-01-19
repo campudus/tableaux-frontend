@@ -8,6 +8,7 @@ import GreeterWidget from "./greeter/GreeterWidget";
 import TranslationStatusWidget from "./translationstatus/TranslationStatusWidget";
 import SupportWidget from "./support/SupportWidget";
 import FlagWidget from "./flagwidget/FlagWidget";
+import i18n from "i18next";
 import App from "ampersand-app";
 
 const DashboardView = ({langtag, handleLanguageSwitch}) => (
@@ -16,7 +17,7 @@ const DashboardView = ({langtag, handleLanguageSwitch}) => (
       <Navigation langtag={langtag} />
       <div className="header-separator"/>
       <PageTitle titleKey="Dashboard" />
-      <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} languages={["de", "en", "en-US", "ch-IT"]} />
+      <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} />
     </header>
     <div id="dashboard-view" className={"wrapper"}>
       <div className="widgets">
@@ -66,14 +67,6 @@ const DashboardView = ({langtag, handleLanguageSwitch}) => (
         />
         <FlagWidget langtag={langtag}
                     flag="check-me"
-                    requestedData={{
-                      tables: [
-                        {id: 1, displayName: {de: "Testtabelle 1"}, events: (Math.random() * 200) | 0},
-                        {id: 2, displayName: {de: "Testtabelle 2"}, events: (Math.random() * 200) | 0},
-                        {id: 3, displayName: {de: "Testtabelle 3"}, events: (Math.random() * 200) | 0},
-                        {id: 4, displayName: {de: "Testtabelle 5"}, events: (Math.random() * 200) | 0}
-                      ]
-                    }}
         />
         <FlagWidget langtag={langtag}
                     flag="postpone"
@@ -89,6 +82,9 @@ const DashboardView = ({langtag, handleLanguageSwitch}) => (
       </div>
       <TranslationStatusWidget langtag={langtag} />
       <SupportWidget langtag={langtag} />
+      <footer>
+        <div className="footer-text">{i18n.t("dashboard:footer-text")}</div>
+      </footer>
     </div>
   </React.Fragment>
 );

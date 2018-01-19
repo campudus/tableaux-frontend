@@ -6,11 +6,11 @@ import {compose, pure, withProps} from "recompose";
 const GreeterWidget = ({userName, motd}) => (
   <div className="greeter tile wide">
     <div className="heading">
-      <span className="default-text">{i18n.t("dashboard.greeter:hello") || "Hello "}</span>
+      <span className="default-text">{i18n.t("dashboard:greeter.hello")}</span>
       <span className="user-name">{userName},</span>
     </div>
     <div className="default-text">{motd}</div>
-    <div className="info-text">{i18n.t("dashboard.greeter:info")||"Let there be information"}</div>
+    <div className="info-text">{i18n.t("dashboard:greeter.info")}</div>
   </div>
 );
 

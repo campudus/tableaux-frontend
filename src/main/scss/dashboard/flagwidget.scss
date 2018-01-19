@@ -52,10 +52,18 @@
       }
     }
 
-    .dot.important { @include status-dot($color-important, white); }
-    .dot.needs-translation { @include status-dot($color-needs-translation, white); }
-    .dot.postpone { @include status-dot($color-postpone, white); }
-    .dot.check-me { @include status-dot($color-checkme, white); }
+    .dot.important {
+      @include status-dot($color-important, white);
+    }
+    .dot.needs-translation {
+      @include status-dot($color-needs-translation, white);
+    }
+    .dot.postpone {
+      @include status-dot($color-postpone, white);
+    }
+    .dot.check-me {
+      @include status-dot($color-checkme, white);
+    }
     .dot::before {
       top: 2px !important;
     }
@@ -79,8 +87,8 @@
       font-weight: bold;
     }
 
-    .element-count {
-
+    .element-count i {
+      margin-left: 5px;
     }
   }
 }

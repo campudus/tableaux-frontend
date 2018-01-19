@@ -6,8 +6,9 @@ import classNames from "classnames";
 import App from "ampersand-app";
 import f from "lodash/fp";
 import {doto} from "../../../helpers/functools";
+import {Langtags} from "../../../constants/TableauxConstants";
 
-const Langtags = ["de", "en", "en-US", "ch-IT", "fr"];
+// const Langtags = ["de", "en", "en-US", "ch-IT", "fr"];
 
 const HeaderIcon = ({flag}) => (flag === "comments")
   ? <i className="fa fa-commenting" />
@@ -16,7 +17,7 @@ const HeaderIcon = ({flag}) => (flag === "comments")
 const DefaultHeader = ({flag, children}) => (
   <div className={"header-wrapper " + flag}>
     <HeaderIcon flag={flag} />
-    <div className="heading">{i18n.t(`dashboard.flag:heading-${flag}`) || flag}</div>
+    <div className="heading">{i18n.t(`dashboard:flag.heading-${flag}`) || flag}</div>
     {children}
   </div>
 );
@@ -46,11 +47,11 @@ const Header = branch(
 
 const ElementCount = ({n, flag, selected}) => {
   const gotoString = (flag === "comments")
-    ? "dashboard.flag:goto-comment"
-    : "dashboard.flag:goto-table";
+    ? "dashboard:flag.goto-comment"
+    : "dashboard:flag.goto-table";
   return (selected)
     ? (
-      <div className={"element count"}>
+      <div className={"element-count"}>
         {i18n.t(gotoString)}
         <i className="fa fa-long-arrow-right" />
       </div>
