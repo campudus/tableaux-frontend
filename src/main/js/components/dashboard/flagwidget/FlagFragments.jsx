@@ -1,7 +1,7 @@
 import React from "react";
 import i18n from "i18next";
 import {getMultiLangValue} from "../../../helpers/multiLanguage";
-import {branch, compose, pure, renderComponent, withHandlers, withStateHandlers} from "recompose";
+import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
 import classNames from "classnames";
 import App from "ampersand-app";
 import f from "lodash/fp";
@@ -35,7 +35,7 @@ const HeaderWithLangTabs = ({setLangtag, selectedLang, flag}) => (
           <div className="language-label">{doto(langtag, f.toLower, f.takeRight(2), f.join(""))}</div>
         </a>
       ),
-      Langtags
+      f.tail(Langtags)
     )}
   </DefaultHeader>
 );

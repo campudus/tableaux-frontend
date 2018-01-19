@@ -38,7 +38,7 @@ export default class Tableaux extends PureComponent {
         lng: this.props.initialParams.langtag,
 
         // have a common namespace used around the full app
-        ns: ["common", "header", "table", "media"],
+        ns: ["common", "header", "table", "media", "filter", "dashboard"],
         defaultNS: "common",
 
         debug: false,

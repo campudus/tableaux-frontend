@@ -57,7 +57,8 @@ const CircleGraph = ({percent, radius = 50}) => {
       </svg>
       <div style={{color: getColorForPercentage(percentage)}}
            className="label">
-        {((percentage * 10) | 0) / 10 + "%"}
+        {((percentage * 10) | 0) / 10}
+        <span className="percent-sign">%</span>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@
     color: $color-primary-contrast-text;
     text-align: center;
     font-weight: bold;
+    font-size: large;
   }
 
   .content {
@@ -41,6 +42,13 @@
       transform: translate(-50%, -50%);
       font-size: xx-large;
       font-weight: lighter;
+      display: flex;
+      align-items: center;
+
+      .percent-sign {
+        font-size: large;
+        margin-left: 3px;
+      }
     }
 
     .langtag {

@@ -41,14 +41,17 @@
     }
 
     .language-tab {
-      background-color: $color-needs-translation;
-      padding: 5px;
+      padding: 5px 8px;
       border-radius: 3px 3px 0 0;
       margin-left: 5px;
-      color: white;
+
+      &:hover {
+        background-color: transparentize($color-border-grey, 0.3);
+      }
 
       &.active {
-        background-color: darken($color-needs-translation, 10);
+        color: white;
+        background-color: $color-needs-translation;
       }
     }
 

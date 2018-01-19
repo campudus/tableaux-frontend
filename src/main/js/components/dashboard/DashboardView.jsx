@@ -47,7 +47,7 @@ const DashboardView = ({langtag, handleLanguageSwitch}) => (
         <FlagWidget langtag={langtag}
                     flag="needs-translation"
                     requestedData={{
-                      de: {
+                      pl: {
                         tables: [
                           {id: 1, displayName: {de: "Testtabelle 1"}, events: (Math.random() * 200) | 0},
                           {id: 2, displayName: {de: "Testtabelle 2"}, events: (Math.random() * 200) | 0},
