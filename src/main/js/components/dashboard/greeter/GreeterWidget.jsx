@@ -2,6 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import i18n from "i18next";
 import {compose, pure, withProps} from "recompose";
+import f from "lodash/fp";
+import Raven from "raven-js";
+import getMotd from "./Messages";
 
 const GreeterWidget = ({userName, motd}) => (
   <div className="greeter tile wide">
@@ -14,14 +17,13 @@ const GreeterWidget = ({userName, motd}) => (
   </div>
 );
 
-//TODO: Get MOTD
-
 const enhance = compose(
   pure,
-  withProps({
-    userName: "John Deaux",
-    motd: "This is the message of the day!"
+  withProps((props) => ({
+    userName: f.getOr("GRUDling", ["user", "id"], Raven.getContext()),
+    motd: getMotd(props.langtag)
   })
+  )
 );
 
 GreeterWidget.propTypes = {
