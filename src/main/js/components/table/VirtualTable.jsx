@@ -471,7 +471,7 @@ export default class VirtualTable extends PureComponent {
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows.models) + 2;
     const selectedCellKey = `${f.get("id", selectedCell)}-${selectedCellEditing}-${selectedCellExpandedRow}`;
-    const shouldIDColBeGrey = f.get("kind", columns.first) === ColumnKinds.concat
+    const shouldIDColBeGrey = f.get("kind", columns.first()) === ColumnKinds.concat
       && rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
                                                   // window
 
