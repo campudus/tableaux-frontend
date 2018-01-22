@@ -9,7 +9,6 @@ const parseOptions = optString => {
   const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
 
   const mergeOptions = (opts, moreOpts) => {
-    console.log("Merge:", opts, moreOpts)
     return (f.contains("filter", f.keys(moreOpts)))
       ? f.update("filter", (oldFilters = []) => [...oldFilters, f.get("filter", moreOpts)], opts)
       : f.merge(opts, moreOpts);

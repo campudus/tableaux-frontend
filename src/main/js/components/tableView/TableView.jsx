@@ -14,51 +14,36 @@ import PageTitle from "../header/PageTitle.jsx";
 import Spinner from "../header/Spinner.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import ColumnFilter from "../header/ColumnFilter";
-import {either} from "../../helpers/functools";
-import {INITIAL_PAGE_SIZE, PAGE_SIZE} from "../../models/Rows";
 import getFilteredRows from "../table/RowFilters";
 import i18n from "i18next";
 import App from "ampersand-app";
 import pasteCellValue from "../cells/cellCopyHelper";
-import {openEntityView} from "../overlay/EntityViewOverlay";
 import JumpSpinner from "./JumpSpinner";
-import withCustomProjection from "../helperComponents/withCustomProjection";
+import withCustomProjection from "./withCustomProjection";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import {initHistoryOf} from "../table/undo/tableHistory";
 import {getMultiLangValue} from "../../helpers/multiLanguage";
+import canFocusCell from "./canFocusCell";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 
 @withCustomProjection
+@canFocusCell
 @connectToAmpersand
 class TableView extends Component {
   constructor(props) {
     super(props);
 
-    const {columnId, rowId} = props;
-    const {entityView} = props.urlOptions || {};
-
-    this.pendingCellGoto = null;
     this.state = {
       initialLoading: true,
-      currentTableId: this.props.tableId,
       rowsCollection: null,
       pasteOriginCell: {},
       pasteOriginCellLang: props.langtag,
       tableFullyLoaded: false
     };
-
-    if (rowId) {
-      this.pendingCellGoto = {
-        page: this.estimateCellPage(rowId),
-        rowId,
-        columnId,
-        entityView
-      };
-    }
   };
 
   componentWillMount = () => {
@@ -97,86 +82,11 @@ class TableView extends Component {
   };
 
   resetURL = () => {
-    App.router.navigate(`${this.props.langtag}/tables/${this.state.currentTableId}`);
-  };
-
-  cellJumpError = msg => {
-    ActionCreator.showToast(
-      <div id="cell-jump-toast">{msg}</div>,
-      7000
-    );
-  };
-
-  checkGotoCellRequest = (loaded) => {
-    if (!this.pendingCellGoto) {
-      return;
-    }
-    const columns = this.getCurrentTable().columns.models;
-    const columnId = this.pendingCellGoto.columnId || f.first(columns).getId();
-    if (!this.checkIfColExists(columns, columnId)) {
-      return;
-    }
-    const {page} = this.pendingCellGoto;
-    if (loaded >= page || this.state.tableFullyLoaded) {
-      this.gotoCell(this.pendingCellGoto, loaded);
-    }
-  };
-
-  // needs the columns.models as argument, else won't find correct column
-  checkIfColExists = (columns, colId) => {
-    if (f.findIndex(f.matchesProperty("id", colId), columns) < 0) {
-      this.cellJumpError(i18n.t("table:jump.no_such_column", {col: colId}));
-      this.pendingCellGoto = null;
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  estimateCellPage = rowId => 1 + Math.ceil((rowId - INITIAL_PAGE_SIZE) / PAGE_SIZE);
-
-  gotoCell = ({rowId, columnId, page, ignore = "NO_HISTORY_PUSH", entityView}, nPagesLoaded = 0) => {
-    const colId = columnId || f.first(this.getCurrentTable().columns.models).getId();
-    if (!this.checkIfColExists(this.getCurrentTable().columns.models, colId)) {
-      return;
-    }
-    const cellId = `cell-${this.state.currentTableId}-${colId}-${rowId}`;
-
-    // Helper closure
-    const focusCell = cell => {
-      this.setColumnsVisibility({
-        val: true,
-        coll: [colId]
+    App.router.history.navigate(`${this.props.langtag}/tables/${this.props.table.id}`,
+      {
+        trigger: false,
+        replace: true
       });
-      const rows = this.getCurrentTable().rows.models;
-      const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
-
-      this.pendingCellGoto = null;
-      ActionCreator.toggleCellSelection(cell, true, this.props.langtag);
-      if (entityView) {
-        openEntityView(rows.at(rowIndex), this.props.langtag, cellId);
-      } else {
-        this.forceUpdate();
-      }
-      return cell;
-    };
-
-    if (nPagesLoaded >= page || this.state.tableFullyLoaded) {
-      either(this.getCurrentTable().rows)
-        .map(rows => rows.get(rowId).cells)
-        .map(cells => cells.get(cellId))
-        .map(focusCell)
-        .orElse(() => this.cellJumpError(i18n.t("table:jump.no_such_row", {row: rowId})));
-      ActionCreator.jumpSpinnerOff();
-      this.pendingCellGoto = null;
-      this.forceUpdate();
-    } else {
-      this.pendingCellGoto = {
-        rowId: rowId,
-        columnId: colId,
-        page: this.estimateCellPage(rowId)
-      };
-    }
   };
 
   componentDidMount = () => {
@@ -203,7 +113,6 @@ class TableView extends Component {
           reset: true,
           success: () => {
             this.setState({
-              currentTableId: tableId,
               initialLoading: false
             }, this.applyProjection);
             resolve({ // return information about first page to be fetched
@@ -226,10 +135,11 @@ class TableView extends Component {
           {
             success: (totalPages) => {
               ++fetchedPages;
+              const tableFullyLoaded = fetchedPages >= totalPages;
               this.setState({
-                tableFullyLoaded: fetchedPages >= totalPages
+                tableFullyLoaded
               }, ((fetchedPages === 1) ? applyStoredViews : f.noop));
-              this.checkGotoCellRequest(fetchedPages);
+              this.props.checkCellFocus(tableFullyLoaded);
               if (fetchedPages >= totalPages) {
                 ActionCreator.spinnerOff();
                 resolve();
@@ -258,22 +168,16 @@ class TableView extends Component {
   };
 
   componentWillReceiveProps = (nextProps) => {
-    if ((f.isNil(nextProps.tableId) || nextProps.tableId === this.props.tableId)) {
+    if (this.props.table === nextProps.table) {
       // Table ID did not change, check independently for changes of row- and column projection
+
       if (!f.equals(this.props.projection.rows, nextProps.projection.rows)) {
         this.applyFilters(nextProps.projection);
       }
+
       if (!f.equals(this.props.projection.columns, nextProps.projection.columns)) {
         this.applyColumnVisibility(nextProps.projection);
       }
-    }
-    if (nextProps.rowId
-      && (nextProps.columnId !== this.props.columnId || nextProps.rowId !== this.props.rowId)) {
-      this.gotoCell({
-        columnId: nextProps.columnId,
-        rowId: nextProps.rowId,
-        page: this.estimateCellPage(nextProps.rowId)
-      });
     }
   };
 
@@ -288,7 +192,7 @@ class TableView extends Component {
 
   applyColumnVisibility = (projection = this.props.projection) => {
     const DEFAULT_VISIBLE_COLUMNS = 10;
-    const columns = f.getOr([], ["columns", "models"], this.getCurrentTable());
+    const columns = f.getOr([], ["columns", "models"], this.props.table);
     const colIds = columns.map(f.get("id"));
     if (f.isEmpty(colIds)) {
       return; // don't try to sanitise visible columns when column data not yet loaded
@@ -328,7 +232,6 @@ class TableView extends Component {
   componentDidUpdate = (prev) => {
     this.setDocumentTitleToTableName();
     if (prev.table !== this.props.table) {
-      this.pendingCellGoto = null;
       this.props.resetStoredProjection();
       this.fetchTable(this.props.table.id);
     }
@@ -339,18 +242,23 @@ class TableView extends Component {
     const clearedUrl = window.location.href
                              .replace(/https?:\/\/.*?\//, "")
                              .replace(/\?.*/, "");
-    App.router.navigate(clearedUrl, {trigger: false});
+    App.router.history.navigate(clearedUrl,
+      {
+        trigger: false,
+        replace: true
+      });
   };
 
   applyFilters = (projection = this.props.projection) => {
     const rowFilter = f.get("rows", projection);
-    const tableRows = f.getOr([], "rows", this.getCurrentTable());
+    const {table} = this.props;
+    const tableRows = f.getOr([], "rows", table);
 
     if (f.isEmpty(rowFilter) || (f.isEmpty(rowFilter.filters) && f.isNil(rowFilter.sortColumnId))) {
       this.setState({rowsCollection: tableRows});
     } else {
       const doApplyFilters = () => {
-        const rowsCollection = getFilteredRows(this.getCurrentTable(), this.props.langtag, rowFilter);
+        const rowsCollection = getFilteredRows(table, this.props.langtag, rowFilter);
         if (!f.isEmpty(rowsCollection.colsWithMatches)) {
           this.props.setColumnVisibility({val: false}, false);
           this.props.setColumnVisibility({
@@ -372,7 +280,7 @@ class TableView extends Component {
   };
 
   changeFilter = (settings = {}, store = true) => {
-    const currentTable = this.getCurrentTable();
+    const currentTable = this.props.table;
     const hasSlowFilters = f.flow(
       f.get("filters"),
       f.map(f.get("mode")),
@@ -399,10 +307,6 @@ class TableView extends Component {
     }
   };
 
-  getCurrentTable = () => {
-    return this.props.table;
-  };
-
   onLanguageSwitch = (newLangtag) => {
     const history = App.router.history;
     const url = history.getPath();
@@ -413,13 +317,13 @@ class TableView extends Component {
     if (this.state.initialLoading) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
-      const {tables} = this.props;
-      const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang, currentTableId} = this.state;
+      const {tables, table} = this.props;
+      const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang} = this.state;
       const {langtag, overlayOpen} = this.props;
-      const currentTable = this.getCurrentTable();
+      const currentTable = this.props.table;
 
       if (f.isNil(currentTable)) {
-        console.error("No table found with id " + this.state.currentTableId);
+        console.error("No table found with id " + this.props.table.id);
       }
 
       const rows = rowsCollection || currentTable.rows || {};
@@ -458,9 +362,9 @@ class TableView extends Component {
                   columns={currentTable.columns}
                 />
               )
-              : <div/>
+              : <div />
             }
-            <HistoryButtons tableId={currentTableId}/>
+            <HistoryButtons tableId={table.id} />
             <div className="header-separator" />
             <Spinner />
             <PageTitle titleKey="pageTitle.tables" />
@@ -484,7 +388,7 @@ class TableView extends Component {
             />
             }
           </div>
-          <JumpSpinner isOpen={!!this.pendingCellGoto && !this.state.searchOverlayOpen} />
+          <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !this.state.searchOverlayOpen} />
           <SearchOverlay isOpen={this.state.searchOverlayOpen} />
         </div>
       );
