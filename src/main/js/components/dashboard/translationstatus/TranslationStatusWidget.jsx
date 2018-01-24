@@ -27,7 +27,7 @@ const TranslationStatusWidget = ({requestedData}) => (
           <div className="content">
             {f.map(
               (lt) => {
-                const perc = f.getOr(Math.random() * 100, ["translation", lt], requestedData);
+                const perc = f.getOr(0, ["translationStatus", lt], requestedData) * 100;
                 return (
                   <div className="circle-chart"
                        key={lt}
@@ -50,13 +50,4 @@ TranslationStatusWidget.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-// TODO: fetch real data from endpoint
-
-const enhance = compose(
-  pure,
-  withProps({
-    requestedData: {}
-  })
-);
-
-export default enhance(TranslationStatusWidget);
+export default pure(TranslationStatusWidget);

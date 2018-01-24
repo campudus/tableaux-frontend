@@ -93,5 +93,10 @@
     .element-count i {
       margin-left: 5px;
     }
+
+    .element-count .percent {
+      margin-left: 5px;
+      color: $color-text-medium-grey;
+    }
   }
 }

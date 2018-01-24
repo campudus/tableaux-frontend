@@ -8,8 +8,6 @@ import f from "lodash/fp";
 import {doto} from "../../../helpers/functools";
 import {Langtags} from "../../../constants/TableauxConstants";
 
-// const Langtags = ["de", "en", "en-US", "ch-IT", "fr"];
-
 const HeaderIcon = ({flag}) => (flag === "comments")
   ? <i className="fa fa-commenting" />
   : <i className={"dot active " + flag} />;
@@ -45,7 +43,7 @@ const Header = branch(
   renderComponent(HeaderWithLangTabs)
 )(DefaultHeader);
 
-const ElementCount = ({n, flag, selected}) => {
+const DefaultElementCount = ({n, flag, selected}) => {
   const gotoString = (flag === "comments")
     ? "dashboard:flag.goto-comment"
     : "dashboard:flag.goto-table";
@@ -59,6 +57,30 @@ const ElementCount = ({n, flag, selected}) => {
     : <div className={"element-count"}>{n}</div>;
 };
 
+const ElementCountWithPercents = ({n, flag, selected, perc}) => {
+  const gotoString = (flag === "comments")
+    ? "dashboard:flag.goto-comment"
+    : "dashboard:flag.goto-table";
+  return (selected)
+    ? (
+      <div className={"element-count"}>
+        {i18n.t(gotoString)}
+        <i className="fa fa-long-arrow-right" />
+      </div>
+    )
+    : (
+      <div className={"element-count"}>
+        {n}
+        <span className="percent">({perc}%)</span>
+      </div>
+    );
+};
+
+const ElementCount = branch(
+  (props) => props.flag === "needs-translation",
+  renderComponent(ElementCountWithPercents)
+)(DefaultElementCount);
+
 const TableEntry = compose(
   pure,
   withHandlers({
@@ -71,9 +93,9 @@ const TableEntry = compose(
     }
   })
 )(
-  ({active, onMouseEnter, langtag, selectedLang, table = {}, style, selected, flag}) => (
+  ({active, onMouseEnter, langtag, selectedLang, table = {}, style, selected, flag, perc}) => (
     <a className={classNames("table-entry", {active, selected})}
-       href={`/${selectedLang}/tables/${table.id}?filter:flag:${flag}`}
+       href={`/${(flag === "needs-translation") ? selectedLang : langtag}/tables/${table.id}?filter:flag:${flag}`}
        style={style}
        onMouseEnter={onMouseEnter}
        draggable={false}
@@ -81,9 +103,10 @@ const TableEntry = compose(
       <div className="label">
         {getMultiLangValue(langtag, table.name, table.displayName)}
       </div>
-      <ElementCount n={table.events}
+      <ElementCount n={f.get(["annotationCount", "count"], table)}
                     selected={selected}
                     flag={flag}
+                    perc={(((1 - f.getOr(0, ["translationStatus", selectedLang], table)) * 1000) | 0) / 10}
       />
     </a>
   )

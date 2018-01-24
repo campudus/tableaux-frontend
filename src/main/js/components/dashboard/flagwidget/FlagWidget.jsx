@@ -5,26 +5,50 @@ import {branch, compose, mapProps, pure, renderComponent, withHandlers, withStat
 import {Header, TableEntry} from "./FlagFragments";
 import classNames from "classnames";
 import {AutoSizer, List} from "react-virtualized";
-import {doto} from "../../../helpers/functools";
+import {doto, fspy, logged} from "../../../helpers/functools";
 import Spinner from "../../header/Spinner";
 import {Langtags} from "../../../constants/TableauxConstants";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 
 const pickTables = (props) => {
   const {selectedLang, flag, requestedData} = props;
-  const tables = (flag === "needs-translation")
-    ? doto(requestedData,
-      f.getOr([], [selectedLang, "tables"]),
-      f.filter((table) => f.getOr(0, "events", table) > 0)
-    )
-    : requestedData.tables;
+
+  const pickComments = f.flow(
+    f.get("type"),
+    f.contains(f, ["info", "warning", "error"]),
+  );
+  const pickTranslation = f.flow(
+    f.props(["value", "langtag"]),
+    ([value, langtag]) => value === "needs_translation" && langtag === selectedLang,
+  );
+  const pickByFlag = f.matchesProperty("value", flag);
+
+  const selector = f.cond([
+      [f.eq("comments"), f.always(pickComments)],
+      [f.eq("needs-translation"), f.always(pickTranslation)],
+      [f.stubTrue, f.always(pickByFlag)]
+    ])(flag);
+
+  const tables = doto(requestedData,
+    f.get("tables"),
+    f.map(f.update("annotationCount", f.flow(f.filter(selector), f.first))),
+    f.filter(f.flow(f.get(["annotationCount", "count"]), f.lt(0)))
+  );
+
   return f.assoc("tables", tables, props);
 };
 
 const sortEntries = (props) => {
   return f.update(
     "tables",
-    f.sortBy((table) => Number.MAX_SAFE_INTEGER - f.getOr(0, "events", table)), // reverse in one step
+    (props.flag === "comments")
+      ? (
+        f.flow(
+          f.sortBy(f.get(["annotationCount", "lastCreatedAt"])),
+          f.reverse
+        )
+      )
+      : f.sortBy((table) => -f.getOr(0, ["annotationCount", "count"], table)), // reverse in one step
     props
   );
 };

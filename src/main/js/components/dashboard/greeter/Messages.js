@@ -11,7 +11,7 @@ import {doto} from "../../../helpers/functools";
  * @type {{langtag: {generic: string[], mon: {name: string, values: Array}, tue: {name: string, values: Array}, wed: {name: string, values: Array}, thu: {name: string, values: Array}, fri: {name: string, values: string[]}, sat: {name: string, values: Array}, sun: {name: string, values: Array}}}}}
  */
 const defaultMessages = {
-  de: {
+  "de-DE": {
     generic: [
       "lass uns loslegen.",
       "lass uns die Aufgaben angehen.",
