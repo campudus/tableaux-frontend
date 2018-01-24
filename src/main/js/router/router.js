@@ -60,7 +60,7 @@ const TableauxRouter = Router.extend({
   },
 
   initialize: function (options) {
-    console.log("init router");
+    // console.log("init router");
     Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTableHandler);
     Dispatcher.on(ActionTypes.SWITCH_FOLDER, this.switchFolderHandler);
     Dispatcher.on(ActionTypes.SWITCH_LANGUAGE, this.switchLanguageHandler, this);
@@ -94,7 +94,7 @@ const TableauxRouter = Router.extend({
   },
 
   tableBrowser: async function (langtag, tableId, columnId, rowId, options) {
-    console.log("TableauxRouter.tableBrowser", arguments);
+    // console.log("TableauxRouter.tableBrowser", arguments);
 
     const validTableId = await validateTableId(parseInt(tableId));
     const validColumnId = posOrNil(columnId);
@@ -124,7 +124,7 @@ const TableauxRouter = Router.extend({
   },
 
   mediaBrowser: function (langtag, folderid) {
-    console.log("TableauxRouter.mediaBrowser", langtag, folderid);
+    // console.log("TableauxRouter.mediaBrowser", langtag, folderid);
     const validLangtag = validateLangtag(langtag);
     currentLangtag = validLangtag;
     const validFolderId = posOrNil(folderid);
@@ -140,7 +140,7 @@ const TableauxRouter = Router.extend({
   },
 
   dashboard: function (langtag) {
-    console.log("TableauxRouter.dashboard");
+    // console.log("TableauxRouter.dashboard");
     const validLangtag = validateLangtag(langtag);
     this.renderOrSwitchView(TableauxConstants.ViewNames.DASHBOARD_VIEW, {langtag: validLangtag});
     this.history.navigate("/" + validLangtag + "/dashboard", {trigger: false, replace: true});
