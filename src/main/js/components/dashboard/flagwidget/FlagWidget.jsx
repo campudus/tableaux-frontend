@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
 import {branch, compose, mapProps, pure, renderComponent, withHandlers, withStateHandlers} from "recompose";
-import {Header, TableEntry} from "./FlagFragments";
+import {Header, TableEntry} from "./TableEntryFragments";
 import classNames from "classnames";
 import {AutoSizer, List} from "react-virtualized";
 import {doto} from "../../../helpers/functools";
@@ -46,12 +46,17 @@ const pickTables = (props) => {
 };
 
 const sortEntries = (props) => {
+  const latestObjOrFallback = f.flow(
+    f.props([["annotationCount", "latest", "createdAt"], ["annotationCount", "lastCreatedAt"]]),
+    f.find(f.identity)
+  );
+
   return f.update(
     "tables",
     (props.flag === "comments")
       ? (
         f.flow(
-          f.sortBy(f.get(["annotationCount", "lastCreatedAt"])),
+          f.sortBy(latestObjOrFallback),
           f.reverse
         )
       )
