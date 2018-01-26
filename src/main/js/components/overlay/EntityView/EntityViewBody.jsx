@@ -42,7 +42,7 @@ class EntityViewBody extends Component {
     });
   }
 
-  static PropTypes = {
+  static propTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
     registerForEvent: PropTypes.func.isRequired,
