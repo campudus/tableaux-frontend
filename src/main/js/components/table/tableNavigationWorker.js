@@ -7,8 +7,7 @@ import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {maybe} from "../../helpers/functools";
 import * as TableHistory from "./undo/tableHistory";
-
-const KEYBOARD_TABLE_HISTORY = false;
+import {KEYBOARD_TABLE_HISTORY} from "../../FeatureFlags";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {

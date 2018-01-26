@@ -11,12 +11,13 @@ import Dispatcher from "../dispatcher/Dispatcher";
 import f from "lodash/fp";
 import parseOptions from "./urlOptionParser";
 import {getTables, posOrNil, validateLangtag, validateTableId} from "./routeValidators";
+import {ENABLE_DASHBOARD} from "../FeatureFlags";
 
 export let currentLangtag = null;
 
 const TableauxRouter = Router.extend({
   routes: {
-    "": "dashboard",
+    "": "home",
     "(:langtag/)dashboard(/)": "dashboard",
     "(:langtag/)tables(/:tableid)(/columns/:columnid)(/rows/:rowid)(/)(?:options)": "tableBrowser",
 
@@ -27,6 +28,10 @@ const TableauxRouter = Router.extend({
   },
 
   alreadyRendered: false,
+
+  home: function () {
+    (ENABLE_DASHBOARD) ? this.dashboard() : this.tableBrowser();
+  },
 
   redirectToNewUrl: function (langtag = null, rest = null) {
     const prefix = (langtag) ? `${langtag}/` : "";
