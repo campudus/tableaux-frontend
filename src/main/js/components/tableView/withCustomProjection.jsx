@@ -30,9 +30,9 @@ const getStoredViewObject = (tableId = null, name = "default") => {
   }
 };
 
-// ({tableId: number}) -> props object with "projection" object from localStorage added
+// ({table: Table model}) -> props object with "projection" object from localStorage added
 const loadProjection = (props) => {
-  const {tableId} = props;
+  const tableId = props.table.id;
   const storedViewObject = getStoredViewObject(tableId);
   const storedColumnView = f.get("visibleColumns", storedViewObject);
   const storedRowsFilter = f.get("rowsFilter", storedViewObject) || {};
@@ -50,6 +50,7 @@ const loadProjection = (props) => {
 // ({urlOptions: object, projections: object}) -> props object with "projection" object replaced by
 //       filter defined by urlOptions
 const parseUrlFilterProp = (props) => {
+  devLog("parseUrlFilterProp", props)
   const filters = f.get(["urlOptions", "filter"], props);
   if (f.isEmpty(filters)) {
     return props;
@@ -152,9 +153,9 @@ const withPredefinedProjection = compose(
   withStateHandlers(
     ({projection = {}}) => ({projection}),
     {
-      setFilter: (state, {tableId}) => (filter, shouldSave = true) => updateFilter(tableId, state, filter, shouldSave),
-      setColumnVisibility: (state, {tableId}) => (info, shouldSave = true) => updateColumnVisibility(
-        tableId,
+      setFilter: (state, {table: {id}}) => (filter, shouldSave = true) => updateFilter(id, state, filter, shouldSave),
+      setColumnVisibility: (state, {table: {id}}) => (info, shouldSave = true) => updateColumnVisibility(
+        id,
         state,
         info,
         shouldSave
