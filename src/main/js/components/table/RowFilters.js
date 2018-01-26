@@ -2,7 +2,7 @@ import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import f from "lodash/fp";
-import {doto, either, withTryCatch} from "../../helpers/functools";
+import {doto, either, fspy, logged, withTryCatch} from "../../helpers/functools";
 
 const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
   {
@@ -55,7 +55,6 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
 const mkFilterFn = (closures) => (settings) => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   return f.cond([
-    [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
     [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
@@ -63,6 +62,7 @@ const mkFilterFn = (closures) => (settings) => {
     [f.matchesProperty("mode", FilterModes.ROW_CONTAINS), mkAnywhereFilter(closures)],
     [f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER), mkTranslatorFilter(closures)],
     [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(mode, value)],
+    [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
     [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
     [f.stubTrue, f.stubTrue]
   ])(settings);
