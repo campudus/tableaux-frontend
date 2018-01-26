@@ -31,7 +31,7 @@ const HeaderWithLangTabs = ({setLangtag, selectedLang, flag}) => (
           <div className="language-label">{doto(langtag, f.toLower, f.takeRight(2), f.join(""))}</div>
         </a>
       ),
-      f.tail(Langtags)
+      f.tail(Langtags) // TODO: tail() can be removed once we decided how to visualise needs_translation_other_langs for primary
     )}
   </DefaultHeader>
 );

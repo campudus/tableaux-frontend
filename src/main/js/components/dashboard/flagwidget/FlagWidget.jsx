@@ -11,7 +11,7 @@ import {Langtags} from "../../../constants/TableauxConstants";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 
 const getFirstEditableLang = (langtag) => doto(Langtags,
-  f.tail,
+  f.tail, // this line prevents primary lang from being selected
   f.filter(hasUserAccessToLanguage),
   f.first,
   f.defaultTo(langtag)
@@ -26,7 +26,8 @@ const pickTables = (props) => {
   );
   const pickTranslation = f.flow(
     f.props(["value", "langtag"]),
-    ([value, langtag]) => value === "needs_translation" && langtag === selectedLang,
+    ([value, langtag]) => value === "needs_translation"
+      && (selectedLang === f.first(Langtags) || langtag === selectedLang),
   );
   const pickByFlag = f.matchesProperty("value", flag);
 
