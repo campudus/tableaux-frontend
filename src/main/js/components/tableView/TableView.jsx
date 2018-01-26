@@ -82,7 +82,10 @@ class TableView extends Component {
   };
 
   resetURL = () => {
-    App.router.history.navigate(`${this.props.langtag}/tables/${this.props.table.id}`,
+    const history = App.router.history;
+    const clearedUrl = history.getPath()
+      .replace(/\?*/, "");
+    App.router.history.navigate(clearedUrl,
       {
         trigger: false,
         replace: true
@@ -239,14 +242,7 @@ class TableView extends Component {
 
   clearFilter = () => {
     this.props.setFilter({}, true);
-    const clearedUrl = window.location.href
-                             .replace(/https?:\/\/.*?\//, "")
-                             .replace(/\?.*/, "");
-    App.router.history.navigate(clearedUrl,
-      {
-        trigger: false,
-        replace: true
-      });
+    this.resetURL();
   };
 
   applyFilters = (projection = this.props.projection) => {

@@ -5,10 +5,17 @@ import {branch, compose, mapProps, pure, renderComponent, withHandlers, withStat
 import {Header, TableEntry} from "./FlagFragments";
 import classNames from "classnames";
 import {AutoSizer, List} from "react-virtualized";
-import {doto, fspy, logged} from "../../../helpers/functools";
+import {doto} from "../../../helpers/functools";
 import Spinner from "../../header/Spinner";
 import {Langtags} from "../../../constants/TableauxConstants";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
+
+const getFirstEditableLang = (langtag) => doto(Langtags,
+  f.tail,
+  f.filter(hasUserAccessToLanguage),
+  f.first,
+  f.defaultTo(langtag)
+);
 
 const pickTables = (props) => {
   const {selectedLang, flag, requestedData} = props;
@@ -92,25 +99,20 @@ FlagWidget.propTypes = {
 
 const enhance = compose(
   pure,
-  branch(
-    (props) => f.isNil(props.requestedData),
-    renderComponent(LoadingFlagWidget)
-  ),
   withStateHandlers(
     ({langtag}) => ({
       selectedIdx: -1,
-      selectedLang: doto(Langtags,
-        f.tail,
-        f.filter(hasUserAccessToLanguage),
-        f.first,
-        f.defaultTo(langtag)
-      )
+      selectedLang: getFirstEditableLang(langtag)
     }),
     {
       handleMouseLeave: () => () => ({selectedIdx: -1}),
       setSelection: () => (index) => ({selectedIdx: index}),
       setLangtag: () => (langtag) => ({selectedLang: langtag})
     }
+  ),
+  branch(
+    (props) => f.isNil(props.requestedData),
+    renderComponent(LoadingFlagWidget)
   ),
   mapProps(pickTables),
   mapProps(sortEntries),

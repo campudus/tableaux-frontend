@@ -12,6 +12,10 @@ const canFocusCell = compose(
     ({rowId, columnId}) => ({showCellJumpOverlay: !f.every(f.isNil, [rowId, columnId])}),
     {
       checkCellFocus: (state, {urlOptions, rowId, columnId, table, langtag}) => (fullyLoaded = false) => {
+        if (f.every(f.isNil, [rowId, columnId])) {
+          return;
+        }
+
         const showToast = (msg) => {
           ActionCreator.showToast(
             <div id="cell-jump-toast">{msg}</div>,

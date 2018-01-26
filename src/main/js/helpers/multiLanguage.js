@@ -134,7 +134,7 @@ function getTableDisplayName(table, langtag) {
 
 const getMultiLangValue = f.curry(
   (langtag, defaultValue, element) => doto(element,
-    f.props([langtag, doto(langtag, f.takeRight(2), f.join), TableauxConstants.DefaultLangtag, TableauxConstants.FallbackLanguage]),
+    f.props([langtag, doto(langtag, f.take(2), f.join("")), TableauxConstants.FallbackLanguage, TableauxConstants.DefaultLangtag]),
     f.find(f.identity),
     f.defaultTo(defaultValue)
   )
