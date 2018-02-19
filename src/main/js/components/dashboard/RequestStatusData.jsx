@@ -34,7 +34,7 @@ const withApiData = compose(
         return f.assoc("translationStatus", translationForTable, table);
       };
       try {
-        const translationStatus = doto(await request.get(apiUrl("/tables/translationstatus")), f.get("text"), JSON.parse);
+        const translationStatus = doto(await request.get(apiUrl("/tables/translationStatus")), f.get("text"), JSON.parse);
         const annotationCounts = doto(await request.get(apiUrl("/tables/annotationCount")), f.get("text"), JSON.parse);
         const requestedData = doto({},
           f.assoc("tables", f.get("tables", annotationCounts)),
