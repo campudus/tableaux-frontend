@@ -33,15 +33,20 @@ const withApiData = compose(
         );
         return f.assoc("translationStatus", translationForTable, table);
       };
+
+      const getJson = async (url) => doto(await request.get(apiUrl(url)), f.get("text"), JSON.parse);
+
       try {
-        const translationStatus = doto(await request.get(apiUrl("/tables/translationStatus")), f.get("text"), JSON.parse);
-        const annotationCounts = doto(await request.get(apiUrl("/tables/annotationCount")), f.get("text"), JSON.parse);
-        const requestedData = doto({},
-          f.assoc("tables", f.get("tables", annotationCounts)),
-          f.update("tables", f.map(mergeTableTranslationStatus(translationStatus))),
-          f.assoc("translationStatus", translationStatus.translationStatus)
+        const annotationCounts = await getJson("/tables/annotationCount");
+        const translationStatus = await getJson("/tables/translationStatus");
+
+        setRequestedData(
+          doto({},
+            f.assoc("tables", f.get("tables", annotationCounts)),
+            f.update("tables", f.map(mergeTableTranslationStatus(translationStatus))),
+            f.assoc("translationStatus", translationStatus.translationStatus)
+          )
         );
-        setRequestedData(requestedData);
       } catch (err) {
         console.error(err);
         Raven.captureException(err);
