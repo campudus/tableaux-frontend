@@ -29,7 +29,7 @@ const withApiData = compose(
         const translationForTable = doto(allTranslations,
           f.get("tables"),
           f.find(f.matchesProperty("id", table.id)),
-          f.get("needsTranslationStatus"),
+          f.get("translationStatus"),
         );
         return f.assoc("translationStatus", translationForTable, table);
       };
