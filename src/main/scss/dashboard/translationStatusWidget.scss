@@ -17,7 +17,8 @@
     padding: 20px 50px;
     display: flex;
     flex-flow: row wrap;
-    justify-content: center
+    justify-content: center;
+    width: 100%;
   }
 
   .circle-chart {
@@ -42,8 +43,10 @@
       transform: translate(-50%, -50%);
       font-size: xx-large;
       font-weight: lighter;
-      display: flex;
-      align-items: center;
+      
+      span {
+        vertical-align: middle;
+      }
 
       .percent-sign {
         font-size: large;
