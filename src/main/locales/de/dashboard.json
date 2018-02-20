@@ -17,7 +17,7 @@
     "heading": "Übersetzungsstatus"
   },
   "flag": {
-    "goto-comment": "Zum neuesten Kommentar",
+    "goto-comment": "Zur Tabelle",
     "goto-table": "Zur Tabelle",
     "heading-comments": "Kommentare",
     "heading-important": "$t(table:important)",

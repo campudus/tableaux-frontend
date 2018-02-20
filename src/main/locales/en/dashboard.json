@@ -17,7 +17,7 @@
     "heading": "Translation status"
   },
   "flag": {
-    "goto-comment": "To most recent comment",
+    "goto-comment": "To table",
     "goto-table": "To table",
     "heading-comments": "Comments",
     "heading-important": "$t(table:important)",
