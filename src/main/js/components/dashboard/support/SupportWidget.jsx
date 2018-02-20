@@ -53,8 +53,20 @@ const SupportWidget = (
         <div className="heading">{i18n.t("dashboard:support.contact-infos")}</div>
         <div className="contact-data">
           <div className="details">{title}</div>
-          <div className="details">{`${i18n.t("dashboard:support:phone")}: ${phone}`}</div>
-          <div className="details">{email}</div>
+          <div>
+
+            <a href={`tel:${phone.replace(/ /g, "")}`}
+               className="details">
+              {`${i18n.t("dashboard:support:phone")}: ${phone}`}
+            </a>
+          </div>
+
+          <div>
+            <a href={`mailto:${email}`}
+               className="details">
+              {`${i18n.t("dashboard:support:email")}: ${email}`}
+            </a>
+          </div>
         </div>
       </div>
 
