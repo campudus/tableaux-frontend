@@ -4,16 +4,35 @@
   padding-top: 55px;
   overflow-y: auto;
 
+  .widgets, .translation-status .content, .support .tiles {
+    max-width: 1440px;
+  }
+
+  div {
+    user-select: none;
+  }
+
   .info-text {
     color: $color-text-medium-grey;
     padding-top: 10px;
+  }
+
+  .widgets-wrapper, .translation-status, .support {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .widgets-wrapper {
+    background-color: white;
   }
 
   .widgets {
     width: 100%;
     display: flex;
     flex-flow: row wrap;
-    background-color: white;
+    padding-bottom: 25px;
 
     .tile {
       flex: 1;

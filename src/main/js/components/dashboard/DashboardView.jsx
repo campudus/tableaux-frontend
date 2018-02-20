@@ -13,7 +13,7 @@ import App from "ampersand-app";
 import FetchStatusData from "./RequestStatusData";
 
 const WidgetColletion = ({langtag, requestedData}) => (
-  <React.Fragment>
+  <div className="widgets-wrapper">
     <div className="widgets">
       <GreeterWidget langtag={langtag} />
       <FlagWidget langtag={langtag}
@@ -40,21 +40,22 @@ const WidgetColletion = ({langtag, requestedData}) => (
     <TranslationStatusWidget langtag={langtag}
                              requestedData={requestedData}
     />
-  </React.Fragment>
+  </div>
+
 );
 
 const DashboardView = ({langtag, handleLanguageSwitch}) => (
   <React.Fragment>
     <header>
       <Navigation langtag={langtag} />
-      <div className="header-separator"/>
+      <div className="header-separator" />
       <PageTitle titleKey="Dashboard" />
       <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} />
     </header>
     <div id="dashboard-view" className={"wrapper"}>
 
       <FetchStatusData>
-        <WidgetColletion langtag={langtag}/>
+        <WidgetColletion langtag={langtag} />
       </FetchStatusData>
 
       <SupportWidget langtag={langtag} />

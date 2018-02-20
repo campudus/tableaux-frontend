@@ -55,6 +55,10 @@
       .contact-data{
         font-size: small;
       }
+
+      a.details:hover {
+        color: $color-text-light-grey;
+      }
     }
 
     .feedback {
