@@ -86,17 +86,25 @@
     }
 
     .label {
-      flex: 1;
+      flex: 1 1 auto;
       font-weight: bold;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .element-count i {
-      margin-left: 5px;
-    }
+    .element-count {
+      display: inline-block;
+      white-space: nowrap;
 
-    .element-count .percent {
-      margin-left: 5px;
-      color: $color-text-medium-grey;
+      i {
+        margin-left: 5px;
+      }
+
+      .percent {
+        margin-left: 5px;
+        color: $color-text-medium-grey;
+      }
     }
   }
 }
