@@ -52,12 +52,24 @@
       justify-content: space-between;
 
 
-      .contact-data{
+      .contact-data {
         font-size: small;
       }
 
       a.details:hover {
         color: $color-text-light-grey;
+      }
+
+      .details {
+        display: flex;
+        align-items: center;
+
+        i.fa {
+          font-size: 0.8em;
+          width: 11px;
+          text-align: center;
+          padding-right: 3px;
+        }
       }
     }
 

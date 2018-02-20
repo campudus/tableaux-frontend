@@ -57,16 +57,19 @@ const SupportWidget = (
 
             <a href={`tel:${phone.replace(/ /g, "")}`}
                className="details">
-              {`${i18n.t("dashboard:support:phone")}: ${phone}`}
+              <i className="fa fa-phone"/>
+              <span>{phone}</span>
             </a>
           </div>
 
           <div>
             <a href={`mailto:${email}`}
                className="details">
-              {`${i18n.t("dashboard:support:email")}: ${email}`}
+              <i className="fa fa-envelope-open"/>
+              <span>{email}</span>
             </a>
           </div>
+
         </div>
       </div>
 
