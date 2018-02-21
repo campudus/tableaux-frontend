@@ -119,19 +119,22 @@ const mkIDFilter = closures => ({value}) => {
   );
 };
 
+const hasUntranslatedCells = (closures, needsTranslation) => f.flow(
+  f.get(["cells", "models"]),
+  f.filter(needsTranslation),
+  f.map(rememberColumnIds(closures.colsWithMatches)),
+  f.complement(f.isEmpty)
+);
+
 const mkOthersTranslationStatusFilter = (closures) => ({value}) => {
   const needsTranslation = f.flow(
     f.get(["annotations", "translationNeeded", "langtags"]),
     f.complement(f.isEmpty),
     (match) => (value) ? match : !match
   );
-  const hasUntranslatedCells = f.flow(
-    f.get(["cells", "models"]),
-    f.filter(needsTranslation),
-    f.map(rememberColumnIds(closures.colsWithMatches)),
-    f.complement(f.isEmpty)
-  );
-  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
+
+  const hasUntranslatedCellsFn = hasUntranslatedCells(closures, needsTranslation);
+  return (value === true) ? hasUntranslatedCellsFn : f.complement(hasUntranslatedCellsFn);
 };
 
 const mkTranslationStatusFilter = (closures) => ({value}) => {
@@ -140,13 +143,9 @@ const mkTranslationStatusFilter = (closures) => ({value}) => {
     f.contains(closures.langtag),
     (match) => (value) ? match : !match
   );
-  const hasUntranslatedCells = f.flow(
-    f.get(["cells", "models"]),
-    f.filter(needsTranslation),
-    f.map(rememberColumnIds(closures.colsWithMatches)),
-    f.complement(f.isEmpty)
-  );
-  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
+
+  const hasUntranslatedCellsFn = hasUntranslatedCells(closures, needsTranslation);
+  return (value === true) ? hasUntranslatedCellsFn : f.complement(hasUntranslatedCellsFn);
 };
 
 const mkFlagFilter = (closures, mode, value) => {
