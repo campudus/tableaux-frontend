@@ -36,7 +36,7 @@ const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.P
 
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
-  const allFilters = f.flow(
+  const allFilters = f.flow( // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
     f.map(fn => withTryCatch(fn, f.always(false))) // to get errors, replace f.always(false) with eg. console.error
   )(filterSettings.filters || []);
@@ -52,17 +52,17 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
   return coll;
 };
 
-const mkFilterFn = closures => (settings) => {
+const mkFilterFn = (closures) => (settings) => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   return f.cond([
-    [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
     [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
     [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ROW_CONTAINS), mkAnywhereFilter(closures)],
     [f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER), mkTranslatorFilter(closures)],
-    [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(mode, value)],
+    [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(closures, mode, value)],
+    [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
     [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
     [f.stubTrue, f.stubTrue]
   ])(settings);
@@ -119,39 +119,42 @@ const mkIDFilter = closures => ({value}) => {
   );
 };
 
-const mkOthersTranslationStatusFilter = closures => ({value}) => {
+const hasUntranslatedCells = (closures, needsTranslation) => f.flow(
+  f.get(["cells", "models"]),
+  f.filter(needsTranslation),
+  f.map(rememberColumnIds(closures.colsWithMatches)),
+  f.complement(f.isEmpty)
+);
+
+const mkOthersTranslationStatusFilter = (closures) => ({value}) => {
   const needsTranslation = f.flow(
     f.get(["annotations", "translationNeeded", "langtags"]),
-    f.complement(f.isEmpty)
+    f.complement(f.isEmpty),
+    (match) => (value) ? match : !match
   );
-  const hasUntranslatedCells = f.flow(
-    f.get(["cells", "models"]),
-    f.any(needsTranslation)
-  );
-  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
+
+  const hasUntranslatedCellsFn = hasUntranslatedCells(closures, needsTranslation);
+  return (value === true) ? hasUntranslatedCellsFn : f.complement(hasUntranslatedCellsFn);
 };
 
-const mkTranslationStatusFilter = closures => ({value}) => {
+const mkTranslationStatusFilter = (closures) => ({value}) => {
   const needsTranslation = f.flow(
     f.get(["annotations", "translationNeeded", "langtags"]),
-    f.contains(closures.langtag)
+    f.contains(closures.langtag),
+    (match) => (value) ? match : !match
   );
-  const hasUntranslatedCells = f.flow(
-    f.get(["cells", "models"]),
-    f.any(needsTranslation)
-  );
-  return (value === true) ? hasUntranslatedCells : f.complement(hasUntranslatedCells);
+
+  const hasUntranslatedCellsFn = hasUntranslatedCells(closures, needsTranslation);
+  return (value === true) ? hasUntranslatedCellsFn : f.complement(hasUntranslatedCellsFn);
 };
 
-const mkFlagFilter = (mode, value) => {
+const mkFlagFilter = (closures, mode, value) => {
   const flag = f.get(mode, {
     [FilterModes.IMPORTANT]: "important",
     [FilterModes.POSTPONE]: "postpone",
     [FilterModes.CHECK_ME]: "check-me"
   });
-  const isAsRequired = (value)
-    ? f.any((v) => v)
-    : f.every((v) => !v);
+
   const findAnnotation = (flag)
     ? f.get(["annotations", flag]) // search for flag
     : f.flow( // else search for comment
@@ -160,10 +163,13 @@ const mkFlagFilter = (mode, value) => {
       f.intersection(["info", "warning", "error"]),
       f.complement(f.isEmpty)
     );
+
   return f.flow(
     f.get(["cells", "models"]),
-    f.map(findAnnotation),
-    isAsRequired
+    f.filter(findAnnotation),
+    f.map(rememberColumnIds(closures.colsWithMatches)),
+    f.isEmpty,
+    (misMatch) => (value) ? !misMatch : misMatch
   );
 };
 

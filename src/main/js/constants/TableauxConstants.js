@@ -131,7 +131,8 @@ var TableauxConstant = {
 
   ViewNames: keyMirror({
     "TABLE_VIEW": null,
-    "MEDIA_VIEW": null
+    "MEDIA_VIEW": null,
+    "DASHBOARD_VIEW": null
   }),
 
   Alignments: keyMirror({

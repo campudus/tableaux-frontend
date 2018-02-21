@@ -1,0 +1,29 @@
+{
+  "greeter": {
+    "hello": "Hi",
+    "info": "Im Dashboard hast du einen Überblick über das Wichtigste, das zu erledigen ist."
+  },
+  "support": {
+    "heading": "Support & Feedback",
+    "info": "Hilf uns die GRUD noch besser zu machen.",
+    "contact-infos": "Technischer Support",
+    "phone": "Tel.",
+    "email": "E-Mail",
+    "feedback-placeholder": "Berichte einen Bug, schreib uns deine Ideen, oder schick uns Kudos :)",
+    "submit-feedback": "Feedback abschicken",
+    "sent-feedback": "Vielen Dank für dein Feedback"
+  },
+  "translation": {
+    "heading": "Übersetzungsstatus"
+  },
+  "flag": {
+    "goto-comment": "Zur Tabelle",
+    "goto-table": "Zur Tabelle",
+    "heading-comments": "Kommentare",
+    "heading-important": "$t(table:important)",
+    "heading-needs-translation": "Benötigt Übersetzung",
+    "heading-check-me": "$t(table:check-me)",
+    "heading-postpone": "$t(table:postpone)"
+  },
+  "footer-text": "GRUD wird entwickelt von der Campudus GmbH"
+}

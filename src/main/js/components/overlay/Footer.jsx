@@ -5,7 +5,7 @@ import ActionCreator from "../../actions/ActionCreator";
 import Raven from "raven-js";
 
 class Footer extends Component {
-  static PropTypes = { // compare OverlayHeader
+  static propTypes = { // compare OverlayHeader
     actions: PropTypes.object
   };
 

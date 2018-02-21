@@ -13,7 +13,7 @@
 import {compose, mapProps, withStateHandlers} from "recompose";
 import {either} from "../../helpers/functools";
 import f from "lodash/fp";
-import {FilterModes} from "../../constants/TableauxConstants";
+import {FilterModes, Langtags} from "../../constants/TableauxConstants";
 
 const getStoredViewObject = (tableId = null, name = "default") => {
   if (tableId) {
@@ -30,9 +30,9 @@ const getStoredViewObject = (tableId = null, name = "default") => {
   }
 };
 
-// ({tableId: number}) -> props object with "projection" object from localStorage added
+// ({table: Table model}) -> props object with "projection" object from localStorage added
 const loadProjection = (props) => {
-  const {tableId} = props;
+  const tableId = props.table.id;
   const storedViewObject = getStoredViewObject(tableId);
   const storedColumnView = f.get("visibleColumns", storedViewObject);
   const storedRowsFilter = f.get("rowsFilter", storedViewObject) || {};
@@ -50,24 +50,24 @@ const loadProjection = (props) => {
 // ({urlOptions: object, projections: object}) -> props object with "projection" object replaced by
 //       filter defined by urlOptions
 const parseUrlFilterProp = (props) => {
-  const filter = f.get(["urlOptions", "filter"], props);
-  if (f.isEmpty(filter)) {
+  const filters = f.get(["urlOptions", "filter"], props);
+  if (f.isEmpty(filters)) {
     return props;
   }
-  const rowsFilter = {
-    filters: [
-      (filter === true)
-        ? {
-          mode: FilterModes.ID_ONLY,
-          value: [props.rowId]
-        }
-        : filter
-    ]
-  };
+
+  const primaryLangAsksForTranslation = (filter = {}) => (
+    filter.mode === FilterModes.UNTRANSLATED && props.langtag === f.first(Langtags)
+  );
+
+  const checkFilter = f.cond([
+    [f.eq(true), f.always({mode: FilterModes.ID_ONLY, value: [props.rowId]})],
+    [primaryLangAsksForTranslation, f.assoc("mode", FilterModes.ANY_UNTRANSLATED)],
+    [f.stubTrue, f.identity]
+  ]);
 
   return f.assoc(
-    ["projection", "rows"],
-    rowsFilter,
+    ["projection", "rows", "filters"],
+    f.map(checkFilter, filters),
     props
   );
 };
@@ -152,9 +152,9 @@ const withPredefinedProjection = compose(
   withStateHandlers(
     ({projection = {}}) => ({projection}),
     {
-      setFilter: (state, {tableId}) => (filter, shouldSave = true) => updateFilter(tableId, state, filter, shouldSave),
-      setColumnVisibility: (state, {tableId}) => (info, shouldSave = true) => updateColumnVisibility(
-        tableId,
+      setFilter: (state, {table: {id}}) => (filter, shouldSave = true) => updateFilter(id, state, filter, shouldSave),
+      setColumnVisibility: (state, {table: {id}}) => (info, shouldSave = true) => updateColumnVisibility(
+        id,
         state,
         info,
         shouldSave

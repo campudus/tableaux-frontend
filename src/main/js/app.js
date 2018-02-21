@@ -1,7 +1,7 @@
 import Raven from "raven-js";
 import {getAllLangtagsFromServer, getSentryUrlFromServer} from "./helpers/serverSettingsHelper";
 import App from "ampersand-app";
-import Router from "./router";
+import Router from "./router/router";
 import TableauxConstants from "./constants/TableauxConstants";
 import {initDevelopmentAccessCookies} from "./helpers/accessManagementHelper";
 import "../index.html";
@@ -22,19 +22,25 @@ const conditionalLogger = (logger) => (test, ...args) => {
 window.devLog = (isProduction)
   ? function () {}
   : function (...args) {
-    console.log("devel:", ...args);
+    try {
+      console.log("devel:", ...args);
+    } catch (e) {}
   };
 
 window.devWarn = (isProduction)
   ? function () {}
   : function (...args) {
-    console.warn("devel:", ...args);
+    try {
+      console.warn("devel:", ...args);
+    } catch (e) {}
   };
 
 window.devErr = (isProduction)
   ? function () {}
   : function (...args) {
-    console.error("devel", ...args);
+    try {
+      console.error("devel", ...args);
+    } catch (e) {}
   };
 
 window.devLogIf = conditionalLogger(window.devLog);

@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 
 class InfoBox extends Component {
-  static PropTypes = {
+  static propTypes = {
     message: PropTypes.string.isRequired,
     heading: PropTypes.string,
     type: PropTypes.string

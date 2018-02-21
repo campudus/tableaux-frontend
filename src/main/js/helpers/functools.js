@@ -294,8 +294,12 @@ const fspy = info => x => {
 };
 
 const logged = curryN(2)(
-  (msg, fn) => function () {
-    const result = fn.apply(null, arguments);
+  (msg, fn) => function (...args) {
+    if (!isFunction(fn)) {
+      console.error(fn, "is not a function");
+      return undefined;
+    }
+    const result = fn(...args);
     console.log("Logging:", msg, "=>", result);
     return result;
   }
