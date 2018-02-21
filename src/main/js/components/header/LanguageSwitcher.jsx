@@ -35,7 +35,7 @@ const LanguageSwitcher = (props) => {
   const {limitLanguages, disabled, langtag, onChange, renderOption, openOnTop} = props;
   const languages = (f.isNil(props.languages)) ? Langtags : props.languages;
   // Inside select box show user just the languages he has access to
-  const languagesToDisplay = (!disabled && limitLanguages) ? limitLanguages : languages
+  const languagesToDisplay = (!disabled && limitLanguages) ? limitLanguages : languages;
 
   const options = props.options
     || languagesToDisplay.map(
