@@ -17,7 +17,7 @@ export let currentLangtag = null;
 
 const TableauxRouter = Router.extend({
   routes: {
-    "": "home",
+    "(:langtag)(/)": "home",
     "(:langtag/)dashboard(/)": "dashboard",
     "(:langtag/)tables(/:tableid)(/columns/:columnid)(/rows/:rowid)(/)(?:options)": "tableBrowser",
 
