@@ -74,7 +74,6 @@ const enhance = compose(
   pure,
   withHandlers({
     handleLanguageSwitch: () => (langtag) => {
-      console.log("Set lang to", langtag)
       App.router.history.navigate(`/${langtag}/dashboard`, {trigger: true});
     }
   })

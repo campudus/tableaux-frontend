@@ -1,6 +1,5 @@
 import React from "react";
 import {storiesOf} from "@storybook/react";
-import {action} from "@storybook/addon-actions";
 import "../main/scss/main.scss";
 import TableauxConstants from "../main/js/constants/TableauxConstants";
 import resources from "i18next-resource-store-loader!../main/locales/index";

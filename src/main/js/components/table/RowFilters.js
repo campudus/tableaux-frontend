@@ -2,7 +2,7 @@ import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import f from "lodash/fp";
-import {doto, either, fspy, withTryCatch} from "../../helpers/functools";
+import {doto, either, withTryCatch} from "../../helpers/functools";
 
 const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
   {

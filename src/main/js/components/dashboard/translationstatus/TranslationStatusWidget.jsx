@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import i18n from "i18next";
 import {Langtags} from "../../../constants/TableauxConstants";
-import {compose, pure, withProps} from "recompose";
+import {pure} from "recompose";
 import f from "lodash/fp";
 import {doto} from "../../../helpers/functools";
 import CircleGraph from "./CircleGraph";
