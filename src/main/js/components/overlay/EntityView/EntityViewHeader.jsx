@@ -11,7 +11,6 @@ import {changeEntityViewRow, switchEntityViewLanguage} from "../../../actions/Ac
 import Dispatcher from "../../../dispatcher/Dispatcher";
 import {unlockRow} from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
-import Empty from "../../helperComponents/emptyEntry";
 import HistoryButtons from "../../table/undo/HistoryButtons";
 import RowConcat from "../../../helpers/RowConcatHelper";
 
@@ -170,8 +169,6 @@ class EntityViewHeader extends Component {
   render() {
     const {canSwitchRows, hasMeaningfulLinks, langtag} = this.props;
     const row = this.props.sharedData.row || this.props.row;
-    const firstCell = row.cells.at(0);
-    const title = firstCell.displayValue[langtag];
     const titleElement = <RowConcat row={row} langtag={langtag}/>;
     const tableName = getTableName(row, langtag);
     const components = (

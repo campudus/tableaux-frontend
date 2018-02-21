@@ -5,7 +5,7 @@
  */
 
 import {Grid, MultiGrid} from "react-virtualized";
-import f, {add, compose, debounce, noop, update} from "lodash/fp";
+import f from "lodash/fp";
 import ReactDOM from "react-dom";
 import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
 import Rx from "rxjs";
@@ -18,7 +18,7 @@ console.warn(
 );
 
 const handleScrollLater = new DebouncedFunction(
-  function(self, scrollPosition) {
+  function (self, scrollPosition) {
     self._originalScrollHandler(scrollPosition);
   }
 );

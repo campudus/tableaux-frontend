@@ -4,8 +4,6 @@ import classNames from "classnames";
 import ActionCreator from "../../actions/ActionCreator";
 import f from "lodash/fp";
 import SvgIcon from "../helperComponents/SvgIcon";
-import Dispatcher from "../../dispatcher/Dispatcher";
-import {ActionTypes} from "../../constants/TableauxConstants";
 import Raven from "raven-js";
 
 class Header extends PureComponent {
