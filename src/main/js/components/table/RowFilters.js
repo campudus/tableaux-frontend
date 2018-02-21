@@ -36,7 +36,7 @@ const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.P
 
 const getFilteredRows = (currentTable, langtag, filterSettings) => {
   const closures = mkClosures(currentTable, langtag, filterSettings);
-  const allFilters = f.flow(
+  const allFilters = f.flow( // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
     f.map(fn => withTryCatch(fn, f.always(false))) // to get errors, replace f.always(false) with eg. console.error
   )(filterSettings.filters || []);
