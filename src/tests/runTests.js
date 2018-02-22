@@ -3,6 +3,7 @@ import f from "lodash/fp";
 
 const modulesWithTests = [
   require("./simpleTests"),
+  require("../main/js/specs/SpecTest"),
   require("../main/js/helpers/functools"),
   require("../main/js/models/helpers/getDisplayValue"),
   require("../main/js/helpers/multiLanguage"),
