@@ -141,7 +141,7 @@ class Cell extends React.Component {
   cellClickedWorker = (event, withRightClick) => {
     let {cell, editing, selected, langtag} = this.props;
     ActionCreator.closeAnnotationsPopup();
-    window.devLog((cell.isMultiLanguage) ? "multilanguage" : "",
+    console.log((cell.isMultiLanguage) ? "multilanguage" : "",
       cell.kind,
       "cell clicked",
       langtag,

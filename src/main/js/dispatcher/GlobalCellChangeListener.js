@@ -57,7 +57,7 @@ const triggerCallbacks = (payload) => {
 };
 
 Dispatcher.on("all", (...args) => {
-  // window.devLog("An event was triggered:", ...args);
+  // console.log("An event was triggered:", ...args);
   const [name, ...rest] = args;
   if (name === ActionTypes.BROADCAST_DATA_CHANGE) {
     triggerCallbacks(...rest);

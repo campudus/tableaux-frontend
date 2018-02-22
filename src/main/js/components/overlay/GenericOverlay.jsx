@@ -135,7 +135,7 @@ class GenericOverlay extends PureComponent {
         body: updatedProps("body"),
         footer: updatedProps("footer")
       }
-    }, () => window.devLog("updated children props to", this.state.childrenProps));
+    }, () => console.log("updated children props to", this.state.childrenProps));
   };
 
   updateSharedData = (fn) => {

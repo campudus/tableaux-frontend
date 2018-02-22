@@ -104,7 +104,7 @@ const reportStacks = (process.env.NODE_ENV === "production")
     if (process.env.NODE_ENV !== "production") {
       const undoVals = f.map(f.flow(f.props(["value", ["cell", "id"]]), f.join(" in ")), stacks.undo);
       const redoVals = f.map(f.flow(f.props(["value", ["cell", "id"]]), f.join(" in ")), stacks.redo);
-      window.devLog(`After ${action}:\nUndoStack:`, undoVals, "\nRedoStack:", redoVals, "\n");
+      console.log(`After ${action}:\nUndoStack:`, undoVals, "\nRedoStack:", redoVals, "\n");
     }
   };
 

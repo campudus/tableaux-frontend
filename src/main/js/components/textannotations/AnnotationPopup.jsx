@@ -117,7 +117,7 @@ class AnnotationPopup extends PureComponent {
         }
       )
       .orElse(
-        () => window.devError("The CSS selector for the annoations popup seems to have changed; adapt " +
+        () => console.error("The CSS selector for the annoations popup seems to have changed; adapt " +
           "the arrowSelector constant in AnnotationPopup.jsx accordingly!"
         )
       );

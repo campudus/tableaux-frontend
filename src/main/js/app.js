@@ -8,6 +8,7 @@ import "../index.html";
 import "../scss/main.scss";
 import "./dispatcher/GlobalCellChangeListener";
 import "dom4";
+import f from "lodash/fp";
 
 import Cookies from "js-cookie";
 
@@ -19,33 +20,9 @@ const conditionalLogger = (logger) => (test, ...args) => {
   }
 };
 
-window.devLog = (isProduction)
-  ? function () {}
-  : function (...args) {
-    try {
-      console.log("devel:", ...args);
-    } catch (e) {}
-  };
-
-window.devWarn = (isProduction)
-  ? function () {}
-  : function (...args) {
-    try {
-      console.warn("devel:", ...args);
-    } catch (e) {}
-  };
-
-window.devErr = (isProduction)
-  ? function () {}
-  : function (...args) {
-    try {
-      console.error("devel", ...args);
-    } catch (e) {}
-  };
-
-window.devLogIf = conditionalLogger(window.devLog);
-window.devWarnIf = conditionalLogger(window.devWarn);
-window.devErrorIf = conditionalLogger(window.devErr);
+window.logIf = conditionalLogger(console.log);
+window.warnIf = conditionalLogger(console.warn);
+window.errorIf = conditionalLogger(console.error);
 
 console.log("GRUD version", process.env.BUILD_VERSION);
 if (isProduction) {
@@ -71,6 +48,7 @@ if (isProduction) {
         console.warn("Could not get Sentry url, Sentry not enabled");
       }
     });
+  window.console.log = f.noop;
 } else {
   require("../../tests/runTests");
 }

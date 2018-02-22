@@ -167,7 +167,7 @@ class TableView extends Component {
     fetchColumns(currentTable)
       .then(fetchPages)
       .then(applyStoredViews)
-      .then(() => window.devLog("Loading took", (performance.now() - start) / 1000, "s"));
+      .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
   };
 
   componentWillReceiveProps = (nextProps) => {
