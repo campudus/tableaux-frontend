@@ -4,6 +4,7 @@ import {openEntityView} from "../overlay/EntityViewOverlay";
 import ActionCreator from "../../actions/ActionCreator";
 import {maybe} from "../../helpers/functools";
 import i18n from "i18next";
+import React from "react";
 
 const canFocusCell = compose(
   pure,

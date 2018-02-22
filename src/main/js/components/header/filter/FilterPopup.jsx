@@ -281,7 +281,9 @@ class FilterPopup extends React.Component {
   };
 
   onChangeSelectSortValue = (selection) => {
-    this.setState({sorting: f.assoc("value", selection.value, this.state.sorting)});
+    if (f.isObject(selection) && !f.isNil(selection.value)) {
+      this.setState({sorting: f.assoc("value", selection.value, this.state.sorting)});
+    }
   };
 
   render() {
