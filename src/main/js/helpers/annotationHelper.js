@@ -1,9 +1,44 @@
 import request from "superagent";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import Cell from "../models/Cell";
 import Row from "../models/Row";
 import {doto, maybe} from "./functools";
+import {specAny, specObject, withSpecs} from "../specs/Spec";
+import i18n from "i18next";
+import {showDialog} from "../components/overlay/GenericOverlay";
+import Raven from "raven-js";
+
+const validAnnotation = specObject({
+  uuid: [
+    f.isString,
+    f.every(f.contains(f, "0123456789-abcdef"))
+  ],
+  type: {
+    optional: true,
+    fn: f.isString
+  },
+  value: {
+    optional: true,
+    fn: specAny
+  }
+});
+
+const annotationError = withSpecs({pre: [f.isString, f.isObject]})(
+  function annotationError(heading, error) {
+    const {message} = error;
+    console.error(heading, "\n->", message);
+    Raven.captureException(error);
+    showDialog({
+      type: "warning",
+      context: i18n.t("common:error"),
+      title: i18n.t("table:error_occured_hl"),
+      heading,
+      message,
+      actions: {neutral: [i18n.t("common:ok"), null]}
+    });
+  }
+);
 
 const extractAnnotations = obj => {
   const kvPairs = (obj || []).map(
@@ -67,7 +102,7 @@ const refreshCellAnnotations = cell => {
     .end(
       (error, response) => {
         if (error) {
-          console.error("Could not refresh cell", cell.id, error);
+          annotationError("Could not refresh cell " + cell.id, error);
         } else {
           const cellIdx = f.findIndex(f.equals(cell), cell.row.cells.models);
           const cellAnnotations = f.flow(
@@ -94,7 +129,7 @@ const refreshRowAnnotations = row => {
     .end(
       (error, response) => {
         if (error) {
-          console.error(`Could not refresh row ${row.id}:`, error);
+          annotationError(`Could not refresh row ${row.id}`, error);
         } else {
           const rowAnnotations = f.flow(
             f.get("text"),
@@ -129,13 +164,13 @@ const setCellAnnotation = (annotation, cell) => {
     deleteCellAnnotation(annotation, cell)
       .then(r.end((error, result) => {
         if (error) {
-          console.error("Error setting annotation", error);
+          annotationError("Error setting annotation", error);
         }
       }));
   } else {
     r.end((error, result) => {
       if (error) {
-        console.error("Error setting annotation", error);
+        annotationError("Error setting annotation", error);
       } else {
         refreshAnnotations(cell);
       }
@@ -184,7 +219,7 @@ const addTranslationNeeded = (langtags, cell) => {
       (error, response) => {
         if (error) {
           cell.set({annotations: oldCellAnnotations}); // rollback on error
-          console.error(`Error setting langtag ${langtags}`);
+          annotationError(`Error setting langtag ${langtags}`, error);
         } else {
           finishTransaction(response);
           refreshRowTranslations(JSON.parse(f.prop("text", response)), cell);
@@ -219,60 +254,66 @@ const removeTranslationNeeded = (langtag, cell) => {
     .end(
       (error, response) => {
         if (error) {
-          console.error("Could not remove langtag", langtag);
+          annotationError(`Could not remove langtag ${langtag}`, error);
           cell.set({annotations: oldCellAnnotations});
         }
       }
     );
 };
 
-const deleteCellAnnotation = (annotation, cell, fireAndForget) => {
-  if (!annotation || !annotation.uuid) {
-    window.devWarn("Trying to delete invalid annotation:", annotation);
-    return;
-  }
-  const {uuid, type, value} = annotation;
-  const r = request.delete(`${cellAnnotationUrl(cell)}/${uuid}`);
-  const {row} = cell;
-  const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
-  const cellAnnotations = f.prop(["annotations", cellIdx]);
-  const newRowAnnotations = f.assocPath([cellIdx],
-    f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)),
-    f.prop("annotations", row));
-  row.set({annotations: newRowAnnotations});
-
-  const annotationKeys = f.flow(
-    f.keys,
-    f.reject(f.eq("translationNeeded"))
-  )(cell.annotations);
-  const newCellAnnotations = (() => {
-    if (annotation.value === "translationNeeded" && annotation.type === "flag") {
-      return f.dissoc("translationNeeded", cell.annotations);
-    } else if (annotation.type === "flag") {
-      return f.dissoc(annotation.value, cell.annotations);
-    } else {
-      return f.reduce(
-        (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
-        cell.annotations,
-        annotationKeys
-      );
+const deleteCellAnnotation = withSpecs({
+  pre: [
+    validAnnotation,
+    f.isObject,
+    {
+      optional: true,
+      fn: f.complement(f.isNil)
     }
-  })();
+  ]
+})(function deleteCellAnnotation(annotation, cell, fireAndForget) {
+    const {uuid, type, value} = annotation;
+    const r = request.delete(`${cellAnnotationUrl(cell)}/${uuid}`);
+    const {row} = cell;
+    const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
+    const cellAnnotations = f.prop(["annotations", cellIdx]);
+    const newRowAnnotations = f.assocPath([cellIdx],
+      f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)),
+      f.prop("annotations", row));
+    row.set({annotations: newRowAnnotations});
 
-  if (fireAndForget) {
-    r.end(
-      (error, result) => {
-        if (error) {
-          console.error(`Error deleting ${type} annotation ${value}:`, error);
-        } else {
-          cell.set({annotations: newCellAnnotations});
-        }
+    const annotationKeys = f.flow(
+      f.keys,
+      f.reject(f.eq("translationNeeded"))
+    )(cell.annotations);
+    const newCellAnnotations = (() => {
+      if (annotation.value === "translationNeeded" && annotation.type === "flag") {
+        return f.dissoc("translationNeeded", cell.annotations);
+      } else if (annotation.type === "flag") {
+        return f.dissoc(annotation.value, cell.annotations);
+      } else {
+        return f.reduce(
+          (obj, ann) => f.update(ann, f.reject(f.matchesProperty("uuid", annotation.uuid)), obj),
+          cell.annotations,
+          annotationKeys
+        );
       }
-    );
-  } else {
-    return r;
+    })();
+
+    if (fireAndForget) {
+      r.end(
+        (error, result) => {
+          if (error) {
+            annotationError(`Error deleting ${type} annotation ${value}:`, error);
+          } else {
+            cell.set({annotations: newCellAnnotations});
+          }
+        }
+      );
+    } else {
+      return r;
+    }
   }
-};
+);
 
 const getRowAnnotationPath = target => {
   const getSingleRowPath = row => {
@@ -287,7 +328,7 @@ const getRowAnnotationPath = target => {
 const setRowAnnotation = (annotation, target) => {
   const afterRowUpdate = (error, response) => {
     if (error) {
-      console.error("Could not set annotation", annotation, "for row", target.id);
+      annotationError(`Could not set annotation ${annotation} for row ${target.id}`, error);
     } else {
       target.set(annotation);
     }
@@ -295,7 +336,7 @@ const setRowAnnotation = (annotation, target) => {
 
   const afterTableUpdate = (error, response) => {
     if (error) {
-      console.error("Could not set annotation", annotation, "for table", target.id);
+      annotationError(`Could not set annotation ${annotation} for table ${target.id}`, error);
     } else {
       target.rows.models.forEach(row => row.set(annotation));
     }
@@ -311,14 +352,17 @@ const setRowAnnotation = (annotation, target) => {
 // Stateful variable!
 class UnlockedRowManager {
   static unlockedRow = null;
+
   static getUnlocked() {
     return UnlockedRowManager.unlockedRow;
   }
+
   static unlock(row) {
     UnlockedRowManager.relock();
     UnlockedRowManager.unlockedRow = row;
     row.set({unlocked: true});
   }
+
   static relock() {
     maybe(UnlockedRowManager.getUnlocked())
       .method("set", {unlocked: false});
@@ -357,4 +401,3 @@ export {
   isLocked,
   isTranslationNeeded
 };
-export default setCellAnnotation;
