@@ -70,7 +70,15 @@ const unitTests = (name) => (tests) => {
     throws
   };
   const results = tests.map(
-    ([op, expected, fn, args], i) => ops[op](name, i, expected, fn, args)
+    ([op, expected, fn, args], i) => {
+      try {
+        return ops[op](name, i, expected, fn, args);
+      } catch (err) {
+        console.error(err);
+        console.log("--> failure: trying to execute test #" + i + " threw unexpected exception");
+        return false;
+      }
+    }
   );
 
   const summary = {
