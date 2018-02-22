@@ -10,7 +10,7 @@ const enhance = compose(
   pure,
   withProps({
     details: {
-      title: "Campudus GmbH",
+      title: "GRUD Team",
       phone: "+49 871 20667909",
       email: "support@grud.de"
     }
@@ -52,7 +52,7 @@ const SupportWidget = (
       <div className="contact-info">
         <div className="heading">{i18n.t("dashboard:support.contact-infos")}</div>
         <div className="contact-data">
-          <div className="details">{title}</div>
+          <div className="details title">{title}</div>
           <div>
 
             <a href={`tel:${phone.replace(/ /g, "")}`}
