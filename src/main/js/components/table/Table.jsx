@@ -147,6 +147,10 @@ class Table extends Component { // PureComponent will not react to updates calle
       : null;
   };
 
+  handleKeyboardShortcut = (event) => {
+    return KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(this))(event);
+  };
+
   render() {
     const {langtag, table: {columns}, rows, table, tables} = this.props;
     const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
@@ -158,9 +162,12 @@ class Table extends Component { // PureComponent will not react to updates calle
 
     return (
       <section id="table-wrapper" ref="tableWrapper" tabIndex="-1"
-        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
-          this))}
-        onMouseDown={this.onMouseDownHandler}>
+               onKeyDown={this.handleKeyboardShortcut}
+               onMouseDown={this.onMouseDownHandler}
+               ref={(node) => {
+                 this.props.registerTableComponent(node, this);
+               }}
+      >
         <div className="tableaux-table" ref="tableInner">
           <VirtualTable key={`virtual-table-${table.id}`}
             columns={columns} ref={this.findAndStoreTableDiv}

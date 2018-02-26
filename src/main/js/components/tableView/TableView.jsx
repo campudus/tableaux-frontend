@@ -46,6 +46,29 @@ class TableView extends Component {
     };
   };
 
+  tableComponent = null;
+
+  registerTableComponent = (node, comp) => {
+    this.tableComponent = {node, comp};
+  };
+
+  routeEventToTable = (event) => {
+    if (f.isNil(this.tableComponent)) {
+      return;
+    }
+
+    // prevent infinitely returning unhandled event
+    if (this.tableComponent.node.contains(event.target)) {
+      return;
+    }
+
+    try {
+      this.tableComponent.comp.handleKeyboardShortcut(event);
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
   componentWillMount = () => {
     Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
     Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
@@ -338,8 +361,8 @@ class TableView extends Component {
       )(currentTable.columns);
 
       return (
-        <div>
-          <header>
+        <div onKeyDown={this.routeEventToTable}>
+          <header tabIndex={1}>
             <Navigation langtag={this.props.langtag} />
             <TableSwitcher
               langtag={langtag}
@@ -381,6 +404,7 @@ class TableView extends Component {
               pasteOriginCell={pasteOriginCell}
               tables={tables}
               disableOnClickOutside={this.props.overlayOpen}
+              registerTableComponent={this.registerTableComponent}
             />
             }
           </div>

@@ -19,6 +19,7 @@ var TableauxConstant = {
     // Generic Overlay events
     OPEN_OVERLAY: null,
     CLOSE_OVERLAY: null,
+    OPEN_FILTERS: null,
 
     CHANGE_CELL: null,
 

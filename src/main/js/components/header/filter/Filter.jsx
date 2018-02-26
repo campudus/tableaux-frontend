@@ -1,11 +1,12 @@
 import React from "react";
 import FilterPopup from "./FilterPopup.jsx";
 import {translate} from "react-i18next";
-import {FilterModes} from "../../../constants/TableauxConstants";
+import {FilterModes, ActionTypes} from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import {either} from "../../../helpers/functools";
 import * as f from "lodash/fp";
 import PropTypes from "prop-types";
+import Dispatcher from "../../../dispatcher/Dispatcher";
 
 class FilterButton extends React.Component {
   static propTypes = {
@@ -19,12 +20,26 @@ class FilterButton extends React.Component {
     filterMode: either(this.props.currentFilter).map(f.prop(["filterMode"])).getOrElse(FilterModes.CONTAINS)
   };
 
+  componentWillMount() {
+    Dispatcher.on(ActionTypes.OPEN_FILTERS, this.openPopup);
+  }
+
+  componentWillUnmount() {
+    Dispatcher.off(ActionTypes.OPEN_FILTERS, this.closePopup);
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       open: false
     };
   }
+
+  openPopup = () => {
+    if (!this.state.open) {
+      this.setState({open: true});
+    }
+  };
 
   handleClickedOutside = (event) => {
     this.setState({open: false});

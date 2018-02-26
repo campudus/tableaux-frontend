@@ -35,6 +35,7 @@ export function getKeyboardShortcuts() {
   const actionKey = (f.contains("Mac OS", navigator.userAgent))
     ? "metaKey"
     : "ctrlKey";
+
   return {
     left: (event) => {
       event.preventDefault();
@@ -105,11 +106,8 @@ export function getKeyboardShortcuts() {
       );
     },
     text: (event) => {
-      if (!selectedCell) {
-        return;
-      }
       const hasActionKey = !!f.get(actionKey, event);
-      const isKeyPressed = (k) => (k >= "A" && k <= "Z")
+      const isKeyPressed = (k) => (event) => (k >= "A" && k <= "Z")
         ? f.matchesProperty("key", k)(event) || (f.matchesProperty("key", f.toLower(k))(event) && f.get("shiftKey", event))
         : f.matchesProperty("key", k)(event);
       const thisLangtag = this.props.langtag;
@@ -118,24 +116,48 @@ export function getKeyboardShortcuts() {
           [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
       const langtag = this.state.selectedCellExpandedRow || thisLangtag;
 
-      if (hasActionKey && isKeyPressed("c") // Cell copy
-        && selectedCell.kind !== ColumnKinds.concat && !isTextSelected()) {
+      const copyToClipboard = () => {
+        if (f.isEmpty(selectedCell) || f.matchesProperty("kind", ColumnKinds.concat)(selectedCell) || isTextSelected()) {
+          return;
+        }
         event.stopPropagation();
         ActionCreator.copyCellContent(selectedCell, langtag);
-      } else if (!f.isEmpty(this.props.pasteOriginCell)
-        && !f.eq(this.props.pasteOriginCell, selectedCell)
-        && hasActionKey && isKeyPressed("v")
-        && !systemPaste) { // Cell paste
+      };
+
+      const pasteFromClipboard = () => {
+        const {pasteOriginCell} = this.props;
+        if (systemPaste || f.isEmpty(pasteOriginCell) || f.isEmpty(selectedCell) || f.eq(pasteOriginCell, selectedCell)) {
+          return;
+        }
         event.preventDefault();
         event.stopPropagation();
         ActionCreator.pasteCellContent(selectedCell, langtag);
-      } else if (KEYBOARD_TABLE_HISTORY && hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
-        if (!selectedCellEditing) {
-          const undoFn = (isKeyPressed("Z")) ? TableHistory.redo : TableHistory.undo;
-          undoFn();
-        }
-      } else if (KEYBOARD_TABLE_HISTORY && isKeyPressed("y") && event.ctrlKey && !selectedCellEditing) {
-        TableHistory.redo();
+      };
+
+      const historyRedo = (KEYBOARD_TABLE_HISTORY)
+        ? () => TableHistory.redo()
+        : f.noop;
+
+      const historyUndo = (KEYBOARD_TABLE_HISTORY)
+        ? () => TableHistory.redo()
+        : f.noop;
+
+      const startSearch = () => {
+        event.preventDefault();
+        ActionCreator.openFilterPopup();
+      };
+
+      if (hasActionKey) {
+        const doAction = f.cond([
+          [isKeyPressed("c"), f.always(copyToClipboard)],
+          [isKeyPressed("v"), f.always(pasteFromClipboard)],
+          [isKeyPressed("z"), f.always(historyUndo)],
+          [isKeyPressed("y"), f.always(historyUndo)], // *NIX redo
+          [isKeyPressed("Z"), f.always(historyRedo)], // Windows redo
+          [isKeyPressed("f"), f.always(startSearch)],
+          [f.stubTrue, f.always(f.noop)]
+        ])(event);
+        doAction();
       } else if (!selectedCellEditing // Other keypress
         && (!event.altKey && !event.metaKey && !event.ctrlKey)
         && (selectedCell.kind === ColumnKinds.text

@@ -348,5 +348,9 @@ module.exports = {
 
   broadcastHistoryEvent: (canUndo, canRedo) => {
     Dispatcher.trigger(ActionTypes.BROADCAST_UNDO_EVENT, {canUndo, canRedo});
+  },
+
+  openFilterPopup: () => {
+    Dispatcher.trigger(ActionTypes.OPEN_FILTERS, null);
   }
 };
