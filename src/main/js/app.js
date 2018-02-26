@@ -14,11 +14,7 @@ import Cookies from "js-cookie";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const conditionalLogger = (logger) => (test, ...args) => {
-  if (test) {
-    logger(...args);
-  }
-};
+const conditionalLogger = (logger) => (test) => (test) ? logger : f.noop;
 
 window.logIf = conditionalLogger(console.log);
 window.warnIf = conditionalLogger(console.warn);

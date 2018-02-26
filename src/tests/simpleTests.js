@@ -69,17 +69,18 @@ const unitTests = (name) => (tests) => {
     not,
     throws
   };
-  const results = tests.map(
-    ([op, expected, fn, args], i) => {
-      try {
-        return ops[op](name, i, expected, fn, args);
-      } catch (err) {
-        console.error(err);
-        console.log("--> failure: trying to execute test #" + i + " threw unexpected exception");
-        return false;
+  try {
+    const results = tests.map(
+      ([op, expected, fn, args], i) => {
+        try {
+          return ops[op](name, i, expected, fn, args);
+        } catch (err) {
+          console.error(err);
+          console.log("--> failure: trying to execute test #" + i + " threw unexpected exception");
+          return false;
+        }
       }
-    }
-  );
+    );
 
     const summary = {
       total: f.size(results),
