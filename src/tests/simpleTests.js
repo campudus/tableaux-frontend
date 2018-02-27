@@ -69,27 +69,33 @@ const unitTests = (name) => (tests) => {
     not,
     throws
   };
-  const results = tests.map(
-    ([op, expected, fn, args], i) => {
-      try {
-        return ops[op](name, i, expected, fn, args);
-      } catch (err) {
-        console.error(err);
-        console.log("--> failure: trying to execute test #" + i + " threw unexpected exception");
-        return false;
+  try {
+    const results = tests.map(
+      ([op, expected, fn, args], i) => {
+        try {
+          return ops[op](name, i, expected, fn, args);
+        } catch (err) {
+          console.error(err);
+          console.log("--> failure: trying to execute test #" + i + " threw unexpected exception");
+          return false;
+        }
       }
-    }
-  );
+    );
 
-  const summary = {
-    total: f.size(results),
-    success: f.size(f.filter(f.eq(true), results)),
-    failed: f.size(f.reject(f.eq(true), results))
-  };
+    const summary = {
+      total: f.size(results),
+      success: f.size(f.filter(f.eq(true), results)),
+      failed: f.size(f.reject(f.eq(true), results))
+    };
 
-  const message = `${summary.total} tests run, ${summary.success} succeeded, ${summary.failed} failed`;
-  ((summary.failed > 0) ? console.error : console.warn)(message);
-  return summary;
+    const message = `${summary.total} tests run, ${summary.success} succeeded, ${summary.failed} failed`;
+    ((summary.failed > 0) ? console.error : console.warn)(message);
+    return summary;
+  } catch (IEWithClosedConsole) {
+    // For some reason, IE will fail when trying to run the functions picked from the ops map while the
+    // developer console is not open.
+    return {};
+  }
 };
 
 const unitTestFunction = (process.env.NODE_ENV !== "production")

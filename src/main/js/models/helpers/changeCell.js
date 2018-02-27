@@ -16,7 +16,7 @@ import Raven from "raven-js";
 import {remember} from "../../components/table/undo/tableHistory";
 
 async function changeCell({cell, value, options = {}}) {
-  window.devLog(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", value);
+  console.log(`Changing ${cell.kind} cell ${cell.id} from`, cell.value, "to", value);
   Raven.captureBreadcrumb({
     message: `Change cell ${cell.id}`,
     data: {
@@ -123,7 +123,7 @@ async function changeDefaultCell({cell, value, options}) {
           success(model, data, options) {
             // is there new data from the server?
             if (!f.equals(data.value, mergedValue)) {
-              window.devLog("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
+              console.log("Cell model saved successfully. Server data changed meanwhile:", data.value, mergedValue);
               cell.value = data.value;
             }
             resolve();

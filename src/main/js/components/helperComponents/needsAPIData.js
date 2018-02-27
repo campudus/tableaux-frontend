@@ -16,9 +16,9 @@ export default compose(
   lifecycle({
     componentWillMount() {
       const {addAbortableXhrRequest, requestUrl} = this.props;
-      window.devErrorIf(f.isEmpty(requestUrl),
+      window.errorIf(f.isEmpty(requestUrl),
         "needsAPIData HOC requires a prop \"requestUrl\" to send a GET request to");
-      window.devLog("needsAPIData: getting", requestUrl);
+      console.log("needsAPIData: getting", requestUrl);
       const req = Request
         .get(requestUrl)
         .end(

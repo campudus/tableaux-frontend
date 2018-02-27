@@ -89,6 +89,7 @@ const refreshAnnotations = item => {
   const isInstanceOf = type => el => {
     return el instanceof type;
   };
+  // eslint-disable-next-line lodash-fp/no-unused-result
   f.cond([
     [isInstanceOf(Cell), refreshCellAnnotations],
     [isInstanceOf(Row), refreshRowAnnotations]
@@ -277,7 +278,7 @@ const deleteCellAnnotation = withSpecs({
     const cellIdx = f.findIndex(f.matchesProperty("id", cell.id), row.cells.models);
     const cellAnnotations = f.prop(["annotations", cellIdx]);
     const newRowAnnotations = f.assocPath([cellIdx],
-      f.remove(f.matchesProperty("uuid", uuid, cellAnnotations)),
+      f.remove(f.matchesProperty("uuid", uuid)(cellAnnotations)),
       f.prop("annotations", row));
     row.set({annotations: newRowAnnotations});
 

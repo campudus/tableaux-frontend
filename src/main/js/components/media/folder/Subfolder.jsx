@@ -19,7 +19,7 @@ const withButtonHandlers = withHandlers({
   onSave: (props) => (folderId, folderName, folderDescription, folderParent) => {
     const {t} = props;
     props.onEdit();
-    window.devLog("Folder.changed", folderId, folderName, folderDescription, folderParent);
+    console.log("Folder.changed", folderId, folderName, folderDescription, folderParent);
     ActionCreator.changeFolder(
       folderId, folderName, folderDescription, folderParent,
       () => simpleError(t("error_folder_exists_already")));
