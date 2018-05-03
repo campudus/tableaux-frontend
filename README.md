@@ -34,6 +34,12 @@ Project configuration is done via a `config.json` in the base directory.
 }
 ```
 
+It's also possible to adapt the config via process environment variables. That's very usefull if you for example want to start multiple instances, what implies that you also have to use different ports.
+For that set the environmet variables for the process:
+
+    env <var>=<value> [...] npm start dev
+
+
 ## License
 
     Copyright 2016-present Campudus GmbH.

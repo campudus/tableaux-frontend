@@ -207,5 +207,11 @@ function getBuildConfig() {
     // ignore
   }
 
+  // env variables overwrites config.json overwrites default config (e.g. from IDE)
+  config.host = process.env.host || config.host;
+  config.apiPort = process.env.apiPort || config.apiPort;
+  config.serverPort = process.env.serverPort || config.serverPort;
+  config.outDir = process.env.outDir || config.outDir;
+
   return config;
 }
