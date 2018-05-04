@@ -23,7 +23,9 @@ or
     
     
 ## Project configuration
-Project configuration is done via a `config.json` in the base directory.
+Default project configuration can be overwritten via a `config.json` in the base directory or via environment variables.
+
+**Example for config.json**
 
 ```
 {
@@ -32,6 +34,21 @@ Project configuration is done via a `config.json` in the base directory.
   "apiPort": 8080,     // port of the backend service
   "serverPort": 3000   // port for the http frontend
 }
+```
+
+**Example for environment variables**
+
+That's very usefull if you for example want to start multiple instances, what implies that you also have to use different ports.
+
+Following variable names can be used:
+
+- HOST
+- APIPORT
+- SERVERPORT
+- OUTDIR
+
+```
+HOST=localhost npm start dev
 ```
 
 ## License
