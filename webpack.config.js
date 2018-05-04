@@ -1,11 +1,13 @@
 "use strict";
 
 const path = require("path");
+const fse = require("fs-extra");
 const webpack = require("webpack");
+const f = require("lodash");
 
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 
 const config = getBuildConfig();
 const isProductionBuild = process.env.NODE_ENV === "production";
@@ -183,35 +185,40 @@ function getBuildVersion() {
 }
 
 function getBuildConfig() {
-  let config = {
+  const configDefault = {
     "outDir": "out",
     "host": "localhost",
     "apiPort": 8080,
     "serverPort": 3000
   };
 
-  try {
-    config = require("./config.json");
-
-    if (!config.host || !config.apiPort || !config.serverPort || !config.outDir) {
-      console.error("Please adapt your config.json to contain\n" +
-        "{\n" +
-        "  outDir:     $dir                = out,\n" +
-        "  host:       $hostname           = localhost,\n" +
-        "  apiPort:    $apiRedirectionPort = 8080,\n" +
-        "  serverPort: $webServerPort      = 3000\n" +
-        "}"
-      );
+  const configJson = (() => {
+    if (fse.existsSync("./config.json")) {
+      try {
+        return fse.readJsonSync("./config.json");
+      } catch (err) {
+        return {};
+      }
+    } else {
+      return {};
     }
-  } catch (e) {
-    // ignore
-  }
+  })();
 
   // env variables overwrites config.json overwrites default config (e.g. from IDE)
-  config.host = process.env.host || config.host;
-  config.apiPort = process.env.apiPort || config.apiPort;
-  config.serverPort = process.env.serverPort || config.serverPort;
-  config.outDir = process.env.outDir || config.outDir;
+  const configEnv = {
+    host: process.env.HOST,
+    apiPort: process.env.APIPORT,
+    serverPort: process.env.SERVERPORT,
+    outDir: process.env.OUTDIR
+  };
+
+  const config = {
+    ...configDefault,
+    ...f.omitBy(configJson, f.isNil),
+    ...f.omitBy(configEnv, f.isNil)
+  };
+
+  console.log("Start tableaux frontend with config:", JSON.stringify(config), "\n");
 
   return config;
 }
