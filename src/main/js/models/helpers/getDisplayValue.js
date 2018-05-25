@@ -114,7 +114,7 @@ const moustache = f.memoize(
 // with displayValue[i]
 const format = f.curryN(2)(
   (column, displayValue) => {
-    if (f.isEmpty(f.get("format", column))) { // no or empty format string => simple concat
+    if (f.isEmpty(f.get("formatPattern", column))) { // no or empty format string => simple concat
       return (f.isArray(displayValue))
         ? displayValue
           .map(str => str.trim())
@@ -134,7 +134,7 @@ const format = f.curryN(2)(
         );
     };
 
-    return f.trim(applyFormat(f.get("format", column)));
+    return f.trim(applyFormat(f.get("formatPattern", column)));
   }
 );
 
@@ -143,14 +143,14 @@ const tests = {
   tests: [
     ["is", "foo", format, [{}, "foo"]],
     ["is", "foo bar", format, [{}, ["foo", "bar"]]],
-    ["is", "testVal foo", format, [{format: "testVal {{1}}"}, "foo"]],
-    ["is", "foo bar baz", format, [{format: "{{1}} bar {{2}}"}, ["foo", "baz"]]],
-    ["is", "1 x 2 x 3mm", format, [{format: "{{1}} x {{2}} x {{3}}mm"}, [1, 2, 3]]],
-    ["is", "2 times moustaches is 2 times the fun", format, [{format: "{{1}} times {{2}} is {{1}} times the fun"}, [2, "moustaches"]]],
-    ["is", "foo bar", format, [{format: ""}, ["foo", "bar"]]],
-    ["not", "foo bar", format, [{format: " "}, ["foo", "bar"]]],
-    ["is", "foo bar", format, [{format: ""}, [" foo", " bar    "]]],
-    ["not", "foo   bar", format, [{format: ""}, ["foo ", " bar"]]]
+    ["is", "testVal foo", format, [{formatPattern: "testVal {{1}}"}, "foo"]],
+    ["is", "foo bar baz", format, [{formatPattern: "{{1}} bar {{2}}"}, ["foo", "baz"]]],
+    ["is", "1 x 2 x 3mm", format, [{formatPattern: "{{1}} x {{2}} x {{3}}mm"}, [1, 2, 3]]],
+    ["is", "2 times moustaches is 2 times the fun", format, [{formatPattern: "{{1}} times {{2}} is {{1}} times the fun"}, [2, "moustaches"]]],
+    ["is", "foo bar", format, [{formatPattern: ""}, ["foo", "bar"]]],
+    ["not", "foo bar", format, [{formatPattern: " "}, ["foo", "bar"]]],
+    ["is", "foo bar", format, [{formatPattern: ""}, [" foo", " bar    "]]],
+    ["not", "foo   bar", format, [{formatPattern: ""}, ["foo ", " bar"]]]
   ]
 };
 
