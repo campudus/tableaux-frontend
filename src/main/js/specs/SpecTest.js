@@ -6,7 +6,7 @@ const fn1 = withSpecs({
   pre: [[f.isNumber, f.lt(1)], f.isString],
   post: [f.isString]
 })(
-  function f1 (posNum, str) {
+  function f1(posNum, str) {
     return str + " " + posNum;
   }
 );
@@ -22,14 +22,14 @@ const fn3 = withSpecs({
   pre: [
     specObject({
       num: f.isNumber,
-      pnum: [f.isNumber, (n) => 1 < n && n < 4],
+      pnum: [f.isNumber, (n) => n > 1 && n < 4],
       text: [f.isString, (str) => str.length > 3]
     }),
     [f.isNumber, f.lt(0)]
   ],
   post: [f.identity]
 })(
-  function fn3 ({num, pnum, text}, n2) {
+  function fn3({num, pnum, text}, n2) {
     return !!(num && pnum && text && n2);
   }
 );
@@ -50,7 +50,7 @@ const fn5 = withSpecs({
     }
   ]
 })(
-  function fn5 (a, maybeB) {
+  function fn5(a, maybeB) {
     return a + " " + ((f.isNil(maybeB)) ? "no b" : maybeB);
   }
 );
@@ -59,7 +59,7 @@ const fn6 = withSpecs({
   pre: [[specNotEmpty, specArrayOf([f.isInteger, (n) => n !== 0])]],
   post: specArrayOf(f.isString)
 })(
-  function arrayOfIntsToStrings (ints) {
+  function arrayOfIntsToStrings(ints) {
     return ints.map(f.toString);
   }
 );

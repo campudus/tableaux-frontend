@@ -38,7 +38,7 @@ const Column = AmpersandModel.extend({
       type: "array",
       default: null
     },
-    format: {
+    formatPattern: {
       type: "string",
       default: null
     }

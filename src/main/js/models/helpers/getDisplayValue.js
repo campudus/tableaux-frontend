@@ -106,6 +106,11 @@ const getConcatValue = (selector) => (column) => value => {
   return applyToAllLangs(lt => format(column, f.map(f.get(lt), displayValues)));
 };
 
+const getColumnIdForIndex = (column, index) => {
+    const index2columnId = f.flow(f.get("groups"), f.map("id"), f.nth(index - 1));
+    return index2columnId(column);
+};
+
 const moustache = f.memoize(
   (n) => new RegExp(`\\{\\{${n}\\}\\}`, "g") // double-escape regex generator string to get single-escaped regex-braces
 );
@@ -114,7 +119,7 @@ const moustache = f.memoize(
 // with displayValue[i]
 const format = f.curryN(2)(
   (column, displayValue) => {
-    if (f.isEmpty(f.get("format", column))) { // no or empty format string => simple concat
+    if (f.isEmpty(f.get("formatPattern", column))) { // no or empty format string => simple concat
       return (f.isArray(displayValue))
         ? displayValue
           .map(str => str.trim())
@@ -124,33 +129,36 @@ const format = f.curryN(2)(
 
     const valueArray = (f.isArray(displayValue)) ? displayValue : [displayValue];
     // replace all occurences of {{n+1}} with displayValue[n]; then recur with n = n+1
+    // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
     const applyFormat = function (result, dVal = valueArray, i = 1) {
       return (f.isEmpty(dVal))
         ? result
         : applyFormat(
-          result.replace(moustache(i), f.trim(f.first(dVal))),
+          result.replace(moustache(getColumnIdForIndex(column, i)), f.trim(f.first(dVal))),
           f.tail(dVal),
           i + 1
         );
     };
 
-    return f.trim(applyFormat(f.get("format", column)));
+    return f.trim(applyFormat(f.get("formatPattern", column)));
   }
 );
 
+const defaultTestGroups = {"groups": [{"id": 1}, {"id": 2}, {"id": 3}]};
 const tests = {
   title: "formatting",
   tests: [
     ["is", "foo", format, [{}, "foo"]],
     ["is", "foo bar", format, [{}, ["foo", "bar"]]],
-    ["is", "testVal foo", format, [{format: "testVal {{1}}"}, "foo"]],
-    ["is", "foo bar baz", format, [{format: "{{1}} bar {{2}}"}, ["foo", "baz"]]],
-    ["is", "1 x 2 x 3mm", format, [{format: "{{1}} x {{2}} x {{3}}mm"}, [1, 2, 3]]],
-    ["is", "2 times moustaches is 2 times the fun", format, [{format: "{{1}} times {{2}} is {{1}} times the fun"}, [2, "moustaches"]]],
-    ["is", "foo bar", format, [{format: ""}, ["foo", "bar"]]],
-    ["not", "foo bar", format, [{format: " "}, ["foo", "bar"]]],
-    ["is", "foo bar", format, [{format: ""}, [" foo", " bar    "]]],
-    ["not", "foo   bar", format, [{format: ""}, ["foo ", " bar"]]]
+    ["is", "testVal foo", format, [{formatPattern: "testVal {{1}}", ...defaultTestGroups}, "foo"]],
+    ["is", "foo bar baz", format, [{formatPattern: "{{1}} bar {{2}}", ...defaultTestGroups}, ["foo", "baz"]]],
+    ["is", "1 x 2 x 3mm", format, [{formatPattern: "{{1}} x {{2}} x {{3}}mm", ...defaultTestGroups}, [1, 2, 3]]],
+    ["is", "2 times moustaches is 2 times the fun", format, [{formatPattern: "{{1}} times {{2}} is {{1}} times the fun", ...defaultTestGroups}, [2, "moustaches"]]],
+    ["is", "foo bar", format, [{formatPattern: ""}, ["foo", "bar"]]],
+    ["not", "foo bar", format, [{formatPattern: " "}, ["foo", "bar"]]],
+    ["is", "foo bar", format, [{formatPattern: ""}, [" foo", " bar    "]]],
+    ["not", "foo   bar", format, [{formatPattern: ""}, ["foo ", " bar"]]],
+    ["is", "1 test with index NOT EQUALS columnId", format, [{formatPattern: "1 test with {{42}} NOT EQUALS {{43}}", "groups": [{"id": 42}, { "id": 43 }]}, ["index", "columnId"]]]
   ]
 };
 
