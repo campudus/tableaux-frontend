@@ -106,9 +106,9 @@ const getConcatValue = (selector) => (column) => value => {
   return applyToAllLangs(lt => format(column, f.map(f.get(lt), displayValues)));
 };
 
-const index2columnId = (column) => {
-    const rows = f.get("groups", column);
-    return f.chain(rows).map(row => row.id).value();
+const getColumnIdForIndex = (column, index) => {
+    const index2columnId = f.flow(f.get("groups"), f.map("id"), f.nth(index - 1));
+    return index2columnId(column);
 };
 
 const moustache = f.memoize(
@@ -134,7 +134,7 @@ const format = f.curryN(2)(
       return (f.isEmpty(dVal))
         ? result
         : applyFormat(
-          result.replace(moustache(index2columnId(column)[i - 1]), f.trim(f.first(dVal))),
+          result.replace(moustache(getColumnIdForIndex(column, i)), f.trim(f.first(dVal))),
           f.tail(dVal),
           i + 1
         );
@@ -158,7 +158,7 @@ const tests = {
     ["not", "foo bar", format, [{formatPattern: " "}, ["foo", "bar"]]],
     ["is", "foo bar", format, [{formatPattern: ""}, [" foo", " bar    "]]],
     ["not", "foo   bar", format, [{formatPattern: ""}, ["foo ", " bar"]]],
-    ["is", "1 test with index NOT EQUALS columnId", format, [{formatPattern: "1 test with {{42}} NOT EQUALS {{43}}", "groups": [{"id": 42 }, { "id": 43 }]}, ["index", "columnId"]]]
+    ["is", "1 test with index NOT EQUALS columnId", format, [{formatPattern: "1 test with {{42}} NOT EQUALS {{43}}", "groups": [{"id": 42}, { "id": 43 }]}, ["index", "columnId"]]]
   ]
 };
 
