@@ -59,7 +59,6 @@
     "eslint-plugin-standard": "3.0.1",
     "file-loader": "1.1.10",
     "focus-trap-react": "3.1.2",
-    "fs-extra": "6.0.0",
     "i18next": "10.5.0",
     "i18next-resource-store-loader": "0.1.2",
     "js-cookie": "2.2.0",
