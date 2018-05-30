@@ -1,9 +1,9 @@
 "use strict";
 
 const path = require("path");
-const fse = require("fs-extra");
+const fs = require("fs");
 const webpack = require("webpack");
-const f = require("lodash");
+const _ = require("lodash");
 
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
@@ -193,13 +193,15 @@ function getBuildConfig() {
   };
 
   const configJson = (() => {
-    if (fse.existsSync("./config.json")) {
-      try {
-        return fse.readJsonSync("./config.json");
-      } catch (err) {
+    try {
+      if (fs.existsSync("./config.json")) {
+        const data = fs.readFileSync("./config.json");
+        return JSON.parse(data);
+      } else {
         return {};
       }
-    } else {
+    } catch (err) {
+      console.error("Failed to read or parse config.json", err);
       return {};
     }
   })();
@@ -215,8 +217,8 @@ function getBuildConfig() {
   const config = Object.assign(
     {},
     configDefault,
-    f.omitBy(configJson, f.isNil),
-    f.omitBy(configEnv, f.isNil)
+    _.omitBy(configJson, _.isNil),
+    _.omitBy(configEnv, _.isNil)
   );
 
   console.log("Start tableaux frontend with config:", JSON.stringify(config), "\n");
