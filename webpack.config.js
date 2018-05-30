@@ -212,11 +212,12 @@ function getBuildConfig() {
     outDir: process.env.OUTDIR
   };
 
-  const config = {
-    ...configDefault,
-    ...f.omitBy(configJson, f.isNil),
-    ...f.omitBy(configEnv, f.isNil)
-  };
+  const config = Object.assign(
+    {},
+    configDefault,
+    f.omitBy(configJson, f.isNil),
+    f.omitBy(configEnv, f.isNil)
+  );
 
   console.log("Start tableaux frontend with config:", JSON.stringify(config), "\n");
 
