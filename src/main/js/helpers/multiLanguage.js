@@ -78,7 +78,47 @@ const currencyCodeMap = {
   AT: "EUR",
   CH: "SFR",
   CZ: "CZK",
-  DK: "DKK"
+  DK: "DKK",
+  HR: "HRK",
+  NZ: "NZD", // New Zealand
+  BE: "EUR", // Belgium
+  FI: "EUR", // Finland
+  GR: "EUR", // Greece
+  IE: "EUR", // Ireland
+  LU: "EUR", // Luxembourg
+  MC: "EUR", // Monaco
+  PT: "EUR", // Portugal
+  SI: "EUR", // Slovenia
+  HK: "HKD", // Hong Kong
+  CA: "CAD", // Canada
+  JP: "JPY", // Japan
+  IN: "INR", // India
+  NO: "NOK", // Norway
+  BR: "BRL", // Brazil
+  BG: "BGN", // Bulgaria
+  CN: "CNY", // China
+  ID: "IDR", // Indonesia
+  HU: "HUF", // Hungary
+  IQ: "IQD", // Iraq
+  IL: "ILS", // Israel
+  KR: "KRW", // Korea South
+  KW: "KWD", // Kuwait
+  LI: "CHF", // Liechtenstein
+  MX: "MXN", // Mexico
+  MA: "MAD", // Morocco
+  RO: "RON", // Romania
+  RU: "RUB", // Russian Federation
+  SA: "SAR", // Saudi Arabia
+  SG: "SGD", // Singapore
+  ZA: "ZAR", // South Africa
+  SE: "SEK", // Sweden
+  TW: "TWD", // Taiwan
+  TH: "THB", // Thailand
+  TR: "TRY", // Turkey
+  UA: "UAH", // Ukraine
+  AE: "AED", // United Arab Emirates
+  ME: "EUR", // Montenegro
+  RS: "RSD" // Serbia
 };
 
 const reverseCurrencyCodeMap = f.keys(currencyCodeMap).reduce(
