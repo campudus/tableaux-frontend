@@ -69,9 +69,10 @@ const enhance = compose(
         selected: (index + f.size(completions)) % f.size(completions),
         completionSelected: true
       }),
-      applySelectedCompletion: ({selected, completions}) => (event) => {
+      applySelectedCompletion: ({selected, completions, curValue}, {onBlur}) => (event) => {
         maybe(event).method("stopPropagation");
         maybe(event).method("preventDefault");
+        onBlur(curValue);
         return {
           curValue: f.get(selected, completions),
           completionSelected: false
@@ -169,7 +170,6 @@ const SelectableShortText = (
       <input ref={setCaret}
              value={curValue}
              onChange={handleChange}
-             onBlur={saveEdits}
              autoFocus
       />
       {(!f.isNil(requestedData) && f.isEmpty(completions))
