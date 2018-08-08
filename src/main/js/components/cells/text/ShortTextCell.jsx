@@ -34,11 +34,13 @@ const withTextCellFallback = branch(
 );
 
 const ShortTextCell = (props) => {
-  const {cell, handleEditDone, editing, langtag, setCellKeyboardShortcuts, value} = props;
+  const {cell, handleEditDone, editing, langtag, setCellKeyboardShortcuts, value,focusTable} = props;
+  
 
   return (editing)
     ? (
       <SelectableShortText cell={cell}
+                           focusTable={focusTable}
                            langtag={langtag}
                            value={value}
                            onBlur={handleEditDone}

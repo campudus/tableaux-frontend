@@ -201,7 +201,7 @@ class Cell extends React.Component {
   };
 
   render() {
-    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow} = this.props;
+    const {annotationsOpen, cell, langtag, selected, editing, inSelectedRow, focusTable} = this.props;
     const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
 
@@ -240,6 +240,7 @@ class Cell extends React.Component {
         <CellKind cell={cell}
                   key={`${cell.id}-${langtag}-${displayValue}`}
                   langtag={langtag}
+                  focusTable={focusTable}
                   selected={selected}
                   inSelectedRow={inSelectedRow}
                   editing={cell.isEditable && editing}

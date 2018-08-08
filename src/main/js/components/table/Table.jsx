@@ -165,6 +165,7 @@ class Table extends Component { // PureComponent will not react to updates calle
           <VirtualTable key={`virtual-table-${table.id}`}
             columns={columns} ref={this.findAndStoreTableDiv}
             rows={rows}
+            focusTable={() => tableNavigationWorker.checkFocusInsideTable.call(this)}
             rowKeys={rowKeys}
             columnKeys={this.props.columnKeys}
             table={table}

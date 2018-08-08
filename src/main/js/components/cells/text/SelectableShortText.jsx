@@ -131,9 +131,11 @@ const enhance = compose(
         enter: () => {
           if (this.props.completionSelected) {
             this.props.applySelectedCompletion();
+            this.props.focusTable();
           } else {
             this.props.saveEdits();
             ActionCreator.addRowOrSelectNextCell();
+            this.props.focusTable();
           }
         }
       });

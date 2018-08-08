@@ -13,7 +13,7 @@ import {KEYBOARD_TABLE_HISTORY} from "../../FeatureFlags";
 export function checkFocusInsideTable() {
   // Is a cell selected?
   if (this.state.selectedCell !== null) {
-    let tableDOMNode = this.tableDOMNode;
+     const tableDOMNode = document.getElementById("table-wrapper");
     let focusedElement = document.activeElement;
     // happens in IE
     if (focusedElement === null) {
