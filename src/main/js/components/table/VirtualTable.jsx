@@ -274,6 +274,7 @@ export default class VirtualTable extends PureComponent {
     return (
       <Cell cell={cell}
             annotationState={getAnnotationState(cell)}
+            focusTable={this.props.test}
             langtag={langtag}
             row={row}
             table={table}
