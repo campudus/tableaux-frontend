@@ -34,8 +34,7 @@ const withTextCellFallback = branch(
 );
 
 const ShortTextCell = (props) => {
-  const {cell, handleEditDone, editing, langtag, setCellKeyboardShortcuts, value,focusTable} = props;
-  
+  const {cell, handleEditDone, editing, langtag, setCellKeyboardShortcuts, value, focusTable} = props;
 
   return (editing)
     ? (
