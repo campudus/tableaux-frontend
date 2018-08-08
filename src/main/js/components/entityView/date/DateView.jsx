@@ -137,7 +137,7 @@ class DateView extends Component {
             <div className="datetime-popup">
               <Datetime onBlur={this.saveEditsAndClose}
                 onChange={this.handleChange}
-                value={this.state.moment}
+                defaultValue={this.state.moment || Moment()}
                 input={false}
               />
               <div className="clear-datetime" onClick={() => this.handleChange(null)}>
