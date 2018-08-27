@@ -2,7 +2,6 @@ import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import listenToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
-import _ from "lodash";
 import {DefaultLangtag} from "../../constants/TableauxConstants";
 import Empty from "../helperComponents/emptyEntry";
 import AnnotationEntry from "./AnnotationEntry";
@@ -102,9 +101,9 @@ class AnnotationPopup extends PureComponent {
   setArrowPosition = (fromBottom = 0) => {
     const arrowSelector = ".annotation-popup.shift-up::before";
     // The first element doesn't have the key "cssRules", leading to an error.
-    const sheets = _.tail(document.styleSheets);
+    const styleSheets = f.tail(document.styleSheets);
 
-    const arrowRule = doto(sheets,
+    const arrowRule = doto(styleSheets,
       f.map("cssRules"),
       f.map(f.find(f.matchesProperty("selectorText", arrowSelector))),
       f.flatten,
