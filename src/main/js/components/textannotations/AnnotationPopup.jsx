@@ -100,8 +100,10 @@ class AnnotationPopup extends PureComponent {
 
   setArrowPosition = (fromBottom = 0) => {
     const arrowSelector = ".annotation-popup.shift-up::before";
+    // The first element doesn't have the key "cssRules", leading to an error.
+    const styleSheets = f.tail(document.styleSheets);
 
-    const arrowRule = doto(document.styleSheets,
+    const arrowRule = doto(styleSheets,
       f.map("cssRules"),
       f.map(f.find(f.matchesProperty("selectorText", arrowSelector))),
       f.flatten,
