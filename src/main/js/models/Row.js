@@ -72,14 +72,13 @@ const Row = AmpersandModel.extend({
     const self = this;
     return new Promise(
       function (resolve, reject) {
-        const hasCardinality = f.flow(
-          f.get(["column", "constraint", "cardinality"]),
-          f.props(["to", "from"]),
-          f.any((n) => (n || 0) > 0)
+        const isFromCardinalityGreaterThanZero = f.flow(
+          f.getOr(0, ["column", "constraint", "cardinality", "from"]),
+          f.gt(f.__, 0)
         );
 
         const valueShouldBeCopied = (cell) => !f.contains(cell.kind, [ColumnKinds.concat, ColumnKinds.group])
-          && !(cell.kind === ColumnKinds.link && hasCardinality(cell));
+          && !(cell.kind === ColumnKinds.link && isFromCardinalityGreaterThanZero(cell));
 
         const valuesToCopy = f.flow(
           f.filter(valueShouldBeCopied),
@@ -134,7 +133,7 @@ const Row = AmpersandModel.extend({
                   reject(err);
                 } else {
                   row.recentlyDuplicated = true;
-                  const cellsWithCardinality = row.cells.models.filter(hasCardinality);
+                  const cellsWithCardinality = row.cells.models.filter(isFromCardinalityGreaterThanZero);
                   if (!f.isEmpty(cellsWithCardinality)) {
                     ActionCreator.showDefaultToast("table:check-columns");
                     cellsWithCardinality.forEach(
