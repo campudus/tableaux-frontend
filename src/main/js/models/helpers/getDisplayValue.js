@@ -1,6 +1,8 @@
 import {ColumnKinds, DateFormats, DateTimeFormats, DefaultLangtag, Langtags} from "../../constants/TableauxConstants";
 import * as f from "lodash/fp";
 import Moment from "moment";
+import {getCountryOfLangtag, getCurrencyCode} from "../../helpers/multiLanguage";
+import {getCurrencyWithCountry} from "../../components/cells/currency/currencyHelper";
 
 // (obj, obj) -> obj
 //
@@ -16,6 +18,7 @@ const getDisplayValue = f.curryN(2)(
       [f.eq(ColumnKinds.group), f.always(getConcatValue("groups"))],
       [f.eq(ColumnKinds.boolean), f.always(getBoolValue)],
       [f.eq(ColumnKinds.attachment), f.always(getAttachmentFileName)],
+      [f.eq(ColumnKinds.currency), f.always(getCurrencyValue)],
       [f.startsWith("date"), f.always(getDateValue)],
       [f.stubTrue, f.always(getDefaultValue)]
     ])(column.kind);
@@ -45,6 +48,18 @@ const getValueForLang = (obj, lt) => f.get(lt, obj) || f.get(DefaultLangtag, obj
 const getDefaultValue = (column) => (value) => (
   applyToAllLangs(lt => {
     const val = getValueForLang(value, lt) || "";
+    return (f.isEmpty(val) && !f.isNumber(val)) ? "" : format(column, val);
+  })
+);
+
+const getCurrencyValue = (column) => (value) => (
+  applyToAllLangs(lt => {
+    const country = getCountryOfLangtag(lt);
+    const rawValue = getCurrencyWithCountry(value, country, true);
+    const currencyCode = getCurrencyCode(country);
+
+    const val = f.isNil(rawValue) ? "" : f.join(" ", [rawValue, currencyCode]);
+
     return (f.isEmpty(val) && !f.isNumber(val)) ? "" : format(column, val);
   })
 );
