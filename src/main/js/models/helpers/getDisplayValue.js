@@ -56,9 +56,13 @@ const getCurrencyValue = (column) => (value) => (
   applyToAllLangs(lt => {
     const country = getCountryOfLangtag(lt);
     const rawValue = getCurrencyWithCountry(value, country, true);
+
     const currencyCode = getCurrencyCode(country);
 
-    const val = f.isNil(rawValue) ? "" : f.join(" ", [rawValue, currencyCode]);
+    // TODO use localization lib
+    const val = f.isNil(rawValue)
+        ? ""
+        : f.join(" ", [String(rawValue).replace(".", ","), currencyCode]);
 
     return (f.isEmpty(val) && !f.isNumber(val)) ? "" : format(column, val);
   })

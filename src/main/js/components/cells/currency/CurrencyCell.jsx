@@ -68,6 +68,7 @@ export default class CurrencyCell extends React.PureComponent {
       );
     }
 
+    // TODO localization
     return (
       <div className={`currency-wrapper${(cell.value[country]) ? "" : " grey-out"}`}>
         <span className="currency-value">
