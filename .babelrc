@@ -1,0 +1,33 @@
+{
+  "presets": [
+    [
+      "env", {
+      "targets": {
+        "browsers": [
+          "last 2 versions",
+          "IE 11"
+        ]
+      },
+      "useBuiltIns": "entry"
+    }
+    ],
+    "flow",
+    "react",
+    "stage-0"
+  ],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-object-rest-spread",
+    "transform-class-properties",
+    "syntax-dynamic-import",
+    "react-hot-loader/babel"
+  ],
+  "retainLines": true,
+  "env": {
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
+    }
+  }
+}
