@@ -82,6 +82,7 @@ class TableSwitcherButton extends React.PureComponent {
       f.get("_values"),
       f.props([["displayName", langtag], ["displayName", TableauxConstants.FallbackLanguage], ["name"]]),
       f.find(f.identity), // first non-nil
+      f.deburr,
       f.toLower
     );
 
