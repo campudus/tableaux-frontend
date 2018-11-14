@@ -87,9 +87,9 @@ export default class GrudGrid extends MultiGrid {
 
   recalculateScrollPosition = new DebouncedFunction(
     (newPosition) => {
-          if (this.props.fullyLoaded) {
-            spinnerOff();
-          }
+      if (this.props.fullyLoaded) {
+        spinnerOff();
+      }
       this.translateElement(this._blgParent, null);
       this.translateElement(this._trgParent, null);
       this.setState(
