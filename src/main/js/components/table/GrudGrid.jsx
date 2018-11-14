@@ -87,15 +87,13 @@ export default class GrudGrid extends MultiGrid {
 
   recalculateScrollPosition = new DebouncedFunction(
     (newPosition) => {
+      if (this.props.fullyLoaded) {
+        spinnerOff();
+      }
       this.translateElement(this._blgParent, null);
       this.translateElement(this._trgParent, null);
       this.setState(
-        newPosition,
-        () => {
-          if (this.props.fullyLoaded) {
-            spinnerOff();
-          }
-        }
+        newPosition
       );
     }
   );
@@ -122,6 +120,7 @@ export default class GrudGrid extends MultiGrid {
 
     this.translateElement(this._blgParent, `translateY(${y}px)`);
     this.translateElement(this._trgParent, `translateX(${x}px)`);
+
     this.recalculateScrollPosition.start({scrollLeft, scrollTop});
   }
 
