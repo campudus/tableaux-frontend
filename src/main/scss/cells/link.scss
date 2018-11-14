@@ -11,7 +11,7 @@
   //Label
   .link-label {
     @include link-look();
-    max-width: 240px;
+    max-width: 90%;
     flex: 0 0 auto;
     display: inline-flex;
     align-items: baseline;
