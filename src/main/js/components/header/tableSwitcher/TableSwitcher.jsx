@@ -78,8 +78,20 @@ class TableSwitcherButton extends React.PureComponent {
       groups
     );
 
+    const getDisplayName = f.pipe(
+      f.get("_values"),
+      f.props([["displayName", langtag], ["displayName", TableauxConstants.FallbackLanguage], ["name"]]),
+      f.find(f.identity), // first non-nil
+      f.toLower
+    );
+
+    const sortedTables = {
+      ...tables,
+      models: f.sortBy(getDisplayName, tables.models)
+    };
+
     return <TableSwitcherPopup langtag={langtag} groups={[noGroup, ...sortedGroups]}
-      tables={tables} currentTable={currentTable}
+      tables={sortedTables} currentTable={currentTable}
       onClickedOutside={this.onClickedOutside}
       onClickedTable={this.onClickedTable}
       onClickedGroup={this.onClickedGroup}
