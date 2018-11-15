@@ -1,15 +1,31 @@
 import actionTypes from "../actionTypes";
+import {toObjectById} from '../../helpers/funcHelpers';
 
-const {LOAD_TABLES} = actionTypes;
+const {
+  TABLE_LOADING_DATA,
+  TABLE_DATA_LOADED,
+  TABLE_DATA_LOAD_ERROR
+} = actionTypes;
+
 const initialState = {
-  tables: {}
+    finishedLoading: false,
+    error: false,
+    data: {}
 };
 
 const tables = (state = initialState, action) => {
-  console.log(action);
   switch (action.type) {
-    case LOAD_TABLES:
-      return {...state, tables: action.result};
+    case TABLE_LOADING_DATA:
+      return {...state, error: false, finishedLoading: false};
+    case TABLE_DATA_LOADED:
+      return {
+        ...state,
+        error: false,
+        finishedLoading: true,
+        data: toObjectById(action.result.tables)
+      };
+    case TABLE_LOADING_DATA:
+      return {...state, error: true, finishedLoading: true};
     default:
       return state;
   }
