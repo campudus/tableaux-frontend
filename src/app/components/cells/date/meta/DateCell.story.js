@@ -7,4 +7,4 @@ import DateCell from "../DateCell";
 
 storiesOf("DateCell", module)
   .add("default", () => <DateCell value="2018-08-10"/>)
-  .add("editing", () => <DateCell editing={true} />)
+  .add("editing", () => <DateCell editing={true} value="2018-08-10"/>)
