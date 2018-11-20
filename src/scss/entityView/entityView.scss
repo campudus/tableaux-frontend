@@ -1,0 +1,736 @@
+@import "../variables";
+@import "../helper";
+
+// EntityView-specific items
+.overlay .entity-view.content-items {
+  margin-bottom: 40px;
+  .item {
+    position: relative;
+    &.disabled {
+      cursor: not-allowed;
+    }
+
+    &:hover {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-left: 3px solid $color-text-medium-grey;
+      }
+    }
+
+    &.has-focused-child {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        border-left: 3px solid $color-primary;
+      }
+    }
+  }
+}
+
+.action-tags {
+  padding-top: 10px;
+  display: flex;
+
+  .action-item {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: $color-text-light-grey;
+    border-radius: 10px;
+    border: 1px solid $color-text-light-grey;
+    text-transform: uppercase;
+    color: $color-primary-contrast-text;
+    padding: 4px 10px 3px 10px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: normal;
+    margin-right: 1em;
+    cursor: pointer;
+
+    a {
+      @include button-with-icon();
+    }
+
+    &.translation {
+      background-color: $color-needs-translation;
+      border-color: $color-needs-translation;
+      &:hover {
+        background-color: $color-needs-translation-dark;
+        border-color: $color-needs-translation-dark;
+      }
+    }
+
+    &.important {
+      background-color: $color-important;
+      border-color: $color-important;
+    }
+
+    &.check-me {
+      background-color: $color-checkme;
+      border-color: $color-checkme;
+    }
+
+    &.postpone {
+      background-color: $color-postpone;
+      border-color: $color-postpone;
+    }
+  }
+}
+
+.overlay .entity-view {
+  .rich-text-wrapper {
+    overflow: hidden;
+  }
+  .rich-text-component {
+    position: relative;
+    .content-pane {
+      max-height: 250px;
+    }
+  }
+}
+
+.overlay .entity-view .item {
+  &:nth-child(even) .rich-text-component.preview {
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 250px;
+      background: -webkit-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      background: -moz-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      background: -ms-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      z-index: 1;
+    }
+  }
+
+  &:nth-child(odd) .rich-text-component.preview {
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 250px;
+      background: -webkit-linear-gradient(top, transparent 80%, $color-overlay-background);
+      background: -moz-linear-gradient(top, transparent 80%, $color-overlay-background);
+      background: -ms-linear-gradient(top, transparent 80%, $color-overlay-background);
+      z-index: 1;
+    }
+  }
+}
+
+.view-text, .view-richtext {
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 350px;
+  }
+}
+
+.currency {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+
+  .currency-item {
+    position: relative;
+    width: 33%;
+    padding: 7px 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    border: none;
+    border-color: transparent;
+
+    &.not-set {
+      .currency-string, .langtag-label, .currency-code {
+        color: $color-text-medium-grey;
+      }
+    }
+
+    &:hover {
+      border-color: $color-primary-lighter;
+    }
+    &.editing {
+      border-color: transparent;
+    }
+
+    div, span {
+      @include flex-centered();
+      height: 100%;
+      margin: 0 0.5px;
+      flex-direction: column;
+      padding: 5px 0;
+    }
+
+    .langtag {
+      flex: 1;
+      @include flex-centered();
+      background-color: $color-white;
+      .langtag-label {
+        font-weight: normal;
+        padding: 0;
+        margin: 0 !important;
+        height: $font-size-standard;
+      }
+    }
+
+    .value {
+      flex: 2;
+      background-color: $color-white;
+      border-color: inherit;
+
+      .currency-string {
+        border-bottom: 1px solid;
+        border-color: inherit;
+        height: $font-size-standard;
+        width: 80%;
+      }
+
+      .currency-input {
+        @include flex-centered();
+        flex-flow: row nowrap;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+
+        input {
+          border: none;
+          border-bottom: 1px solid transparent;
+          width: 45%;
+          color: $color-text-medium-grey;
+          &.left {
+            text-align: right;
+          }
+          &.right {
+            width: 20%;
+          }
+          &:focus {
+            border-bottom: 1px solid $color-primary-lighter;
+            color: $color-primary-text;
+          }
+        }
+      }
+    }
+
+    .currency-code {
+      flex: 1;
+      background-color: $color-background-very-light-grey;
+    }
+  }
+}
+
+.boolean {
+  width: 100%;
+  .content-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    .value {
+      margin-left: 10px;
+      color: $color-text-medium-grey;
+      pointer-events: none;
+      display: flex;
+      div {
+        margin-left: 5px;
+        color: $color-primary-text;
+      }
+    }
+  }
+}
+
+.datetime {
+  border-color: inherit;
+  border-bottom: 1px solid;
+  padding-bottom: 2px;
+  transition: border 0.3s;
+
+  i {
+    margin-right: 5px;
+  }
+
+  .content-wrapper {
+    .content {
+      display: flex;
+      div {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .datetime-popup {
+    position: absolute;
+    top: calc(100% - 0.7em);
+    z-index: 1;
+    box-shadow: 0 0 15px 0 $color-text-medium-grey;
+    .clear-datetime {
+      display: flex;
+      justify-content: center;
+      color: $color-primary-contrast-text;
+      background-color: $color-overlay-header;
+      align-items: center;
+      height: 3em;
+    }
+  }
+}
+
+.header-wrapper .history-buttons {
+  grid-column-start: 4;
+  -ms-grid-column: 4;
+  grid-row-start: 2;
+  -ms-grid-row: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .button {
+    padding: 0 8px;
+    height: 70% !important;
+    color: $color-text-medium-grey;
+    border-radius: 3px;
+    border: 1px solid transparentize($color-text-medium-grey, 0.5);
+    margin: 0 3px;
+
+    &:hover:not(.disabled) {
+      color: $color-primary-contrast-text;
+    }
+
+    &.disabled {
+      color: darken($color-text-medium-grey, 25);
+    }
+
+    &.inactive {
+      background-color: $color-border-grey;
+      color: $color-primary-contrast-text;
+      cursor: wait;
+    }
+  }
+}
+
+// Language and row switchers
+.eev-language-switcher-wrapper {
+  grid-column-start: 3;
+  -ms-grid-column: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .eev-language-switcher {
+    height: 28px;
+    width: 80px;
+    background-color: transparent;
+    border-radius: 3px;
+    color: $color-primary-contrast-text;
+    outline: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 1px solid transparentize($color-text-medium-grey, 0.5);
+
+    .langtag {
+      min-width: 36px;
+    }
+
+    &:hover, &.open {
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+
+    &.open {
+      @include rounded-upper-borders();
+    }
+
+    img {
+      margin-right: 5px;
+    }
+
+    .eev-label {
+      white-space: nowrap;
+      position: relative;
+      display: block;
+      line-height: 26px;
+
+      i {
+        font-size: 16px;
+        position: absolute;
+        right: 0;
+        top: 5px;
+      }
+    }
+
+    .eev-dropdown {
+      position: absolute;
+      top: 38px;
+      width: 80px;
+      right: 110px;
+      box-shadow: 0 2px 2px $color-text-medium-grey;
+      z-index: 5;
+
+      .menu-item {
+        background-color: $color-white;
+        color: $color-text-medium-grey;
+        height: 24px;
+        padding: 0;
+        &.active {
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
+        }
+        position: relative;
+
+        a {
+          position: absolute;
+          right: 0;
+          padding: 5px 10px;
+          width: 100%;
+          height: 100%;
+          display: block;
+          box-sizing: border-box;
+
+          i {
+            position: absolute;
+            right: 0;
+            padding-right: 8px;
+          }
+        }
+
+        &:hover {
+          background-color: $color-hover-background;
+          color: $color-hover-foreground;
+        }
+      }
+    }
+  }
+}
+
+.row-switcher {
+  -ms-grid-column: 4;
+  -ms-grid-column-span: 2;
+  grid-column-start: 4;
+  grid-column-end: 6;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  .button {
+    display: contents;
+    color: $color-primary-contrast-text;
+    font-size: 16px;
+    font-weight: bold;
+    flex: 1;
+    height: 100%;
+    position: relative;
+    border-radius: 3px;
+    &.clickable:hover {
+      color: $color-text-medium-grey;
+    }
+
+    a {
+      @include button-with-icon();
+    }
+  }
+}
+
+// Entry popup
+.overlay .overlay-content .content-items .item.has-mouse-pointer .entry-popup-wrapper .popup-button { // stack all the selectors!
+  a {
+    border: 1px solid transparentize($color-primary, 0.5);
+    .svg-icon {
+      svg {
+        fill: $color-primary;
+      }
+    }
+  }
+}
+
+// Icons in link/attachment buttons
+.overlay .entity-view .item-header .column-icon .svg-icon {
+  height: 0.8em;
+}
+
+.overlay .entity-view .item-header .column-icon.svg-icon {
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    flex: 1;
+    padding-right: 20px;
+  }
+
+  svg {
+    fill: $color-text-medium-grey;
+  }
+}
+
+.overlay .overlay-content .content-items .item-header .title-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  .svg-icon {
+    height: 12px;
+    vertical-align: middle;
+    margin-left: 0.1em;
+  }
+
+  .entry-popup-wrapper {
+    text-transform: none;
+    font-weight: normal;
+    position: absolute;
+    left: -40px;
+
+    .popup-button {
+      position: relative;
+      height: 30px;
+      width: 30px;
+
+      a {
+        position: absolute;
+        background-color: transparent;
+        color: $color-primary;
+        border-radius: 3px;
+        @include button-with-icon();
+
+        div {
+          flex: 1;
+        }
+
+        svg {
+          fill: transparent;
+        }
+      }
+
+      &:hover, &.is-open {
+        a {
+          background-color: $color-primary;
+          svg {
+            fill: $color-white;
+          }
+        }
+      }
+
+      &.is-open {
+        a {
+          @include rounded-upper-borders;
+        }
+        &.menu-is-right {
+          a {
+            border-radius: 3px 0 0 3px;
+          }
+        }
+      }
+    }
+
+    .entry-popup {
+      @include popup-menu();
+      z-index: 5;
+      width: 25vw;
+      top: 30px;
+
+      &.inverse {
+        bottom: 0;
+        left: 29px;
+        top: auto;
+        border-top: none;
+        border-radius: 0 3px 3px 0;
+        border-left: 3px solid $color-primary;
+      }
+    }
+  }
+}
+
+// Row-is-locked bottom bar
+.overlay .entity-view .unlock-bar {
+  z-index: 2;
+  position: fixed;
+  bottom: 0;
+  width: 60vw;
+  background-color: $color-overlay-header;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $color-primary-contrast-text;
+  font-size: small;
+  padding: 0.5em 0;
+  .text {
+    margin-right: 2em;
+    i {
+      color: $color-text-medium-grey;
+      margin-right: 1em;
+    }
+    span {
+      font-weight: bold;
+    }
+  }
+  .button {
+    padding: 0.5em 1em;
+    border: 1px solid $color-text-light-grey;
+    border-radius: 3px;
+    position: relative;
+    display: block;
+    a {
+      @include button-with-icon();
+    }
+    &:hover {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+      border-color: $color-primary;
+    }
+    &.shake {
+      animation: do-the-shake 200ms 2 alternate;
+    }
+  }
+}
+
+.language-info-toast {
+  padding: 0 50px;
+  div {
+    margin: 50px 0;
+    i {
+      margin: 0 30px;
+    }
+    .langtag-label {
+      margin-left: 10px;
+    }
+  }
+}
+
+// Header elements
+.overlay {
+  .separator {
+    padding: 10px 20px;
+    color: $color-text-medium-grey;
+    border-top: 1px solid $color-border-grey;
+    text-transform: uppercase;
+  }
+
+  .header-wrapper {
+    .header-filter-bar-wrapper {
+      grid-column-start: 2;
+      grid-column-end: 4;
+      grid-row-start: 3;
+      -ms-grid-column: 2;
+      -ms-grid-column-span: 2;
+      -ms-grid-row: 3;
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+
+      .header-filter-bar {
+        flex: 1;
+        padding: 8px 15px;
+        border-radius: 3px;
+        border: none;
+      }
+
+      // https://stackoverflow.com/questions/2610497/change-an-html5-inputs-placeholder-color-with-css#2610741
+      *::-webkit-input-placeholder {
+        color: $color-text-medium-grey;
+      }
+      *::-moz-placeholder {
+        color: $color-text-medium-grey;
+      }
+      *:-ms-input-placeholder {
+        color: $color-text-medium-grey;
+      }
+
+      .icon-wrapper {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 31px;
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $color-text-light-grey;
+      }
+    }
+
+    .header-popup-wrapper {
+      position: relative;
+      grid-column-start: 4;
+      grid-row-start: 3;
+      -ms-grid-column: 4;
+      -ms-grid-row: 3;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+
+      .popup-button {
+        position: relative;
+        width: 31px;
+        height: 31px;
+
+        a {
+          @include button-with-icon();
+          background-color: transparent;
+          color: $color-primary-contrast-text;
+          border: 1px solid transparentize($color-text-medium-grey, 0.5);
+          border-radius: 3px;
+
+          .svg-icon {
+            flex: 1;
+            max-width: none;
+          }
+        }
+
+        &:hover, &.is-open {
+          a {
+            border-color: $color-primary;
+            background-color: $color-primary;
+            color: $color-primary-contrast-text;
+          }
+        }
+
+        &.is-open {
+          a {
+            @include rounded-upper-borders;
+          }
+        }
+      }
+
+      .popup-wrapper {
+        @include popup-menu();
+        right: 10px;
+        top: 31px;
+        width: 25vw;
+
+        .entry {
+          left: 1px;
+        }
+      }
+    }
+
+  }
+}
+
+@keyframes do-the-shake {
+  from {
+    transform: scale(1);
+    background-color: transparent;
+    border-color: transparent;
+  }
+  to {
+    transform: scale(1.1);
+    background-color: $color-primary;
+    border-color: transparent;
+  }
+}
+
+//--------------------------------------------
+// IE places "fixed" elements more naturally
+//--------------------------------------------
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .overlay .entity-view .translation-arrow {
+    left: calc(40vw - 0.3 * 50px); // arrow-height
+  }
+  .overlay .unlock-bar {
+    left: 40vw;
+  }
+}

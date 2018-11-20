@@ -1,0 +1,45 @@
+.toast-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  height: auto;
+  max-width: 250px;
+  max-height: 200px;
+  text-align: center;
+
+  background-color: rgba(#000, 0.70);
+  color: #fff;
+
+  z-index: 100;
+  overflow: hidden;
+  cursor: default;
+
+  @include box-shadow(0px 0px 50px 0px rgba(black, 0.3));
+  @include border-radius(5px);
+  @include transform(translate(-50%, -50%));
+
+  &.no-interaction {
+    pointer-events: none;
+  }
+
+  p, a {
+    padding: 13px 30px;
+    display: block;
+  }
+
+  p {
+    //font-weight: bold;
+  }
+
+  a {
+    color: $color-primary;
+    background-color: rgba(black, 0.5);
+
+    i {
+      margin-left: 5px;
+    }
+
+  }
+
+}
