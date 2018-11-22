@@ -1,4 +1,5 @@
 import {configure} from "@storybook/react";
+import "../src/scss/main.scss"
 
 function loadStories() {
   const context = require.context(

@@ -10,7 +10,7 @@ module.exports = {
       // },
       {
         test: /\.s?css$/,
-        include: path.resolve(__dirname, "../"),
+        include: path.resolve(__dirname, "../src/scss"),
         use: [
           {
             loader: "style-loader"
