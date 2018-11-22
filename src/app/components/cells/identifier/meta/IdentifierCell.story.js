@@ -6,5 +6,10 @@ import React from "react";
 import IdentifierCell from "../IdentifierCell";
 
 storiesOf("IdentifierCell", module).add("default", () => (
-  <IdentifierCell cell={{value: "test", displayValue: {de: "test"}}} langtag="de" />
+  <div className="cell">
+    <IdentifierCell
+      cell={{value: "test", displayValue: {de: "test"}}}
+      langtag="de"
+    />
+  </div>
 ));

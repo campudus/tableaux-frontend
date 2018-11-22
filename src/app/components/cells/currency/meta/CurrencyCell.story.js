@@ -6,11 +6,20 @@ import React from "react";
 import CurrencyCell from "../CurrencyCell";
 
 storiesOf("CurrencyCell", module)
-  .add("default", () => <CurrencyCell cell={{value: "test"}} langtag="de" />)
+  .add("default", () => (
+    <div className="cell cell-currency">
+      <CurrencyCell
+        cell={{value: "test", column: {countryCodes: ["de"]}}}
+        langtag="de"
+      />
+    </div>
+  ))
   .add("editing", () => (
-    <CurrencyCell
-      cell={{value: "test", column: {countryCodes: ["de"]}}}
-      langtag="de"
-      editing={true}
-    />
+    <div className="cell cell-currency">
+      <CurrencyCell
+        cell={{value: "test", column: {countryCodes: ["de"]}}}
+        langtag="de"
+        editing={true}
+      />
+    </div>
   ));

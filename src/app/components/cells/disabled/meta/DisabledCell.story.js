@@ -6,4 +6,4 @@ import React from "react";
 import DisabledCell from "../DisabledCell";
 
 storiesOf("DisabledCell", module)
-  .add("default", () => <DisabledCell cell={{value:"test"}}/>)
+  .add("default", () => (<div className="cell cell-disabled"><DisabledCell cell={{value:"test"}}/></div>))

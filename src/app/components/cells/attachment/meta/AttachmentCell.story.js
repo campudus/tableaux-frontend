@@ -7,5 +7,5 @@ import AttachmentCell from "../AttachmentCell";
 
 
 storiesOf("AttachmentCell", module)
-  .add("default", () => <AttachmentCell cell={{value:"attachment"}}/>)
+  .add("default", () => (<div className="cell cell-attachment"><AttachmentCell cell={{value:"attachment"}}/></div>))
   // .add("not checked", () => <Boolean toggleCheckboxValue={()=> console.log("toggledCheckboxValue")} cell={{value:false}}/>);

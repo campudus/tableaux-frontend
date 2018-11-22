@@ -7,8 +7,16 @@ import NumericCell from "../NumericCell";
 
 storiesOf("NumericCell", module)
   .add("default", () => (
-    <NumericCell cell={{value: 7, displayValue: {de: "test"}}} langtag="de" />
+    <div className="cell cell-numeric">
+      <NumericCell cell={{value: 7, displayValue: {de: "test"}}} langtag="de" />
+    </div>
   ))
   .add("editing", () => (
-    <NumericCell editing cell={{value: 7, displayValue: {de: "test"}}} langtag="de" />
+    <div className="cell cell-numeric">
+      <NumericCell
+        editing
+        cell={{value: 7, displayValue: {de: "test"}}}
+        langtag="de"
+      />
+    </div>
   ));

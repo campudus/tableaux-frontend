@@ -5,7 +5,20 @@ import {storiesOf} from "@storybook/react";
 import React from "react";
 import Boolean from "../boolean";
 
-
 storiesOf("boolean", module)
-  .add("checked", () => <Boolean toggleCheckboxValue={()=> console.log("toggledCheckboxValue")} cell={{value:true}}/>)
-  .add("not checked", () => <Boolean toggleCheckboxValue={()=> console.log("toggledCheckboxValue")} cell={{value:false}}/>);
+  .add("checked", () => (
+    <div className="cell cell-boolean">
+      <Boolean
+        toggleCheckboxValue={() => console.log("toggledCheckboxValue")}
+        cell={{value: true}}
+      />
+    </div>
+  ))
+  .add("not checked", () => (
+    <div className="cell cell-boolean">
+      <Boolean
+        toggleCheckboxValue={() => console.log("toggledCheckboxValue")}
+        cell={{value: false}}
+      />
+    </div>
+  ));
