@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {openLinkOverlay} from "./LinkOverlay.jsx";
+// import {openLinkOverlay} from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
@@ -8,55 +8,63 @@ import {compose, lifecycle, withHandlers} from "recompose";
 import f from "lodash/fp";
 import {spy} from "../../../helpers/functools";
 
-const withFunctionality = compose(
-  withHandlers({
-    openOverlay: (props) => () => {
-      const {cell, langtag} = props;
-      if (isUserAdmin() && !isLocked(cell.row)) {
-        openLinkOverlay(cell, langtag);
-      }
-    },
-    catchScrolling: (props) => (event) => event.stopPropagation()
-  }),
-  lifecycle({
-    componentDidMount() {
-      this.props.setCellKeyboardShortcuts({
-        enter: (event) => {
-          if (!isLocked(this.props.cell.row)) {
-            event.stopPropagation();
-            event.preventDefault();
-            this.props.openOverlay();
-          }
-        }
-      });
-    },
-    componentWillUnmount() {
-      this.props.setCellKeyboardShortcuts({});
-    }
-  })
-);
+// lifecycle({
+//   componentDidMount() {
+//     this.props.setCellKeyboardShortcuts({
+//       enter: (event) => {
+//         if (!isLocked(this.props.cell.row)) {
+//           event.stopPropagation();
+//           event.preventDefault();
+//           this.props.openOverlay();
+//         }
+//       }
+//     });
+//   },
+//   componentWillUnmount() {
+//     this.props.setCellKeyboardShortcuts({});
+//   }
+// })
+// );
 
-const LinkEditCell = (props) => {
+const LinkEditCell = props => {
   const {cell, langtag} = props;
-  const links = (f.isArray(cell.value))
-    ? cell.value.map(
-      (element, index) => (
+  const openOverlay = () => {
+    if (isUserAdmin() && !isLocked(cell.row)) {
+      openLinkOverlay(cell, langtag);
+    }
+  };
+  const catchScrolling = event => event.stopPropagation();
+
+  const links = f.isArray(cell.value)
+    ? cell.value.map((element, index) => (
         <LinkLabelCell
-          key={element.id} clickable={false} linkElement={element}
-          cell={cell} langtag={langtag}
+          key={element.id}
+          clickable={false}
+          linkElement={element}
+          cell={cell}
+          langtag={langtag}
           linkIndexAt={index}
         />
-      )
-    )
-    : spy([], "Cell value was not array but " + typeof cell.value + " " + JSON.stringify(cell.value));
+      ))
+    : spy(
+        [],
+        "Cell value was not array but " +
+          typeof cell.value +
+          " " +
+          JSON.stringify(cell.value)
+      );
 
   return (
     <div
       className={"cell-content"}
       onScroll={props.catchScrolling}
-      onClick={props.openOverlay}
-    >
-      {[...links, <button key={"add-btn"} className="edit"><span className="fa fa-pencil"></span></button>]}
+      onClick={props.openOverlay}>
+      {[
+        ...links,
+        <button key={"add-btn"} className="edit">
+          <span className="fa fa-pencil" />
+        </button>
+      ]}
     </div>
   );
 };
@@ -68,4 +76,4 @@ LinkEditCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-export default withFunctionality(LinkEditCell);
+export default LinkEditCell;

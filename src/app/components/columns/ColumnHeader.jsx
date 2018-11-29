@@ -1,0 +1,127 @@
+import React, {PureComponent} from "react";
+import PropTypes from "prop-types";
+import {ActionTypes, ColumnKinds, DefaultLangtag} from "../../constants/TableauxConstants";
+import f from "lodash/fp";
+import i18n from "i18next";
+import ColumnEntry from "./ColumnEntry";
+// import Dispatcher from "../../dispatcher/Dispatcher";
+
+export default class ColumnHeader extends PureComponent {
+  static propTypes = {
+    column: PropTypes.object.isRequired,
+    langtag: PropTypes.string.isRequired,
+    tables: PropTypes.object.isRequired,
+    tableId: PropTypes.number.isRequired,
+    resizeHandler: PropTypes.func.isRequired,
+    resizeFinishedHandler: PropTypes.func.isRequired
+  };
+
+  componentWillMount = () => {
+    // Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
+  };
+
+  componentWillUnmount = () => {
+    // Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
+  };
+
+  getDisplayName = () => {
+    const {column, column: {name, displayName}, langtag, tableId, tables} = this.props;
+    // const table = tables.get(tableId);
+      return displayName[langtag] || displayName[DefaultLangtag] || name;
+  };
+
+  // isToTableHidden = () => {
+  //   const {column, tables} = this.props;
+  //   return f.flow(
+  //     f.get("hidden"),
+  //     f.defaultTo(false)
+  //   )(tables.get(column.toTable));
+  // };
+
+  getIdentifierIcon = () => {
+    const {column = {}} = this.props;
+    const key = `${column.id}-id-icon`;
+    if (column.kind === ColumnKinds.concat) {
+      return <i key={key} className="fa fa-bookmark" />;
+    } else if (column.identifier) {
+      return <i key={key} className="fa fa-bookmark-o" />;
+    }
+    return null;
+  };
+
+  mkLinkHeader = () => {
+    const {langtag, column} = this.props;
+    const key = `${column.id}-display-name`;
+    return false//(this.isToTableHidden())
+      ? <div key={key}>{this.getDisplayName()}</div>
+      : (
+        <a key={key} className="tableHeader-inner"
+          href={`/${langtag}/tables/${column.toTable}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <i className="fa fa-columns" />
+          {this.getDisplayName()}
+        </a>
+      );
+  };
+
+  stopEditing = (payload) => {
+    if (payload
+      && (f.isString(payload.newDescription) || !f.isEmpty(payload.newName))) {
+      this.saveEdits(payload);
+    }
+  };
+
+  saveEdits = (payload) => {
+    const {langtag, newName, newDescription, colId} = payload;
+    const {column} = this.props;
+    if (!f.matchesProperty("id", colId)(column)) {
+      return;
+    }
+    const modifications =
+      f.flow(
+        m => (f.isString(newDescription)) ? f.assoc(["description", langtag], newDescription, m) : m,
+        m => (newName) ? f.assoc(["displayName", langtag], newName, m) : m
+      )({});
+
+    column
+      .save(modifications, {
+        patch: true,
+        wait: true,
+        success: () => this.forceUpdate()
+      });
+  };
+
+  getDescription = () => {
+    const {column: {description}, langtag} = this.props;
+    return description[langtag] || description[DefaultLangtag];
+  };
+
+  render() {
+    const {column, resizeHandler, resizeFinishedHandler, index, langtag, style, tables, width} = this.props;
+
+    const columnContent =
+      [this.getIdentifierIcon(),
+        (column.kind === ColumnKinds.link)
+          ? this.mkLinkHeader()
+          : this.getDisplayName()
+      ];
+
+    return (
+      <ColumnEntry style={style}
+        columnContent={columnContent}
+        name={this.getDisplayName()}
+        column={column}
+        description={this.getDescription()}
+        langtag={langtag}
+        isId={column.identifier}
+        tables={tables}
+        resizeHandler={resizeHandler}
+        resizeFinishedHandler={resizeFinishedHandler}
+        index={index}
+        width={width}
+      />
+    );
+  }
+}

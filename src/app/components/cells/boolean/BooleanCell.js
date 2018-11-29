@@ -1,10 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {pure} from "recompose";
 import '../../../../scss/main.scss';
 
 const BooleanCell = (props) => {
-  const {cell, langtag, selected, setCellKeyboardShortcuts, toggleCheckboxValue} = props;
+  const {value,column, langtag, selected, setCellKeyboardShortcuts, toggleCheckboxValue} = props;
 
   // const handleEditDone = (newValue) => {
   //   const valueToSave = (cell.isMultiLanguage)
@@ -14,7 +13,7 @@ const BooleanCell = (props) => {
   // };
 
   const getCheckboxValue = () => {
-    return !!((cell.isMultiLanguage) ? cell.value[langtag] : cell.value);
+    return !!((column.isMultiLanguage) ? value[langtag] : value);
   };
 
   // const toggleCheckboxValue = () => {
@@ -47,4 +46,4 @@ BooleanCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-export default pure(BooleanCell);
+export default BooleanCell;

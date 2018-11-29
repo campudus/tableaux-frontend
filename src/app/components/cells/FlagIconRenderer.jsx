@@ -2,7 +2,7 @@ import React from "react";
 import {Langtags} from "../../constants/TableauxConstants";
 import {branch, compose, flattenProp, onlyUpdateForKeys, pure, renderNothing} from "recompose";
 import f from "lodash/fp";
-import TextAnnotationButton from "../textannotations/TextAnnotationButton";
+// import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
 const knownFlags = ["important", "translationNeeded", "check-me", "postpone", "info", "warning", "error"];
 

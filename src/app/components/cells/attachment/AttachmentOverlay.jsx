@@ -23,6 +23,7 @@ class AttachmentOverlay extends Component {
   };
 
   constructor(props) {
+    console.log("construct");
     super(props);
     this.state = {
       folder: null,
@@ -34,6 +35,7 @@ class AttachmentOverlay extends Component {
   retrieveTranslation = multiLanguage.retrieveTranslation(TableauxConstants.FallbackLanguage);
 
   componentWillMount() {
+    console.log("component will mount");
     if (this.props.cell.column.kind !== ColumnKinds.attachment) {
       console.error("Couldn't open AttachmentOverlay for this column type.");
       return;
@@ -243,4 +245,5 @@ const FileItem = translate(["media", "common"])(
   }
 );
 
-module.exports = translate(["media", "common"])(AttachmentOverlay);
+// module.exports = translate(["media", "common"])(AttachmentOverlay);
+export default AttachmentOverlay;

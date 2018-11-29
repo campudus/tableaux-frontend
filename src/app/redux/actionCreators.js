@@ -17,11 +17,13 @@ const {
 } = actionTypes;
 
 const loadTables = () => {
+  console.log("loadTables");
   return {
     promise: makeRequest({apiRoute: getAllTables(), type: "GET"}),
     actionTypes: [TABLE_LOADING_DATA, TABLE_DATA_LOADED, TABLE_DATA_LOAD_ERROR]
   };
 };
+
 
 const loadColumns = tableId => {
   return {

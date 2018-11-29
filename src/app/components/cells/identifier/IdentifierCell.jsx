@@ -3,35 +3,19 @@ import PropTypes from "prop-types";
 // import {openEntityView} from "../../overlay/EntityViewOverlay";
 // import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {isLocked} from "../../../helpers/annotationHelper";
-import {compose, lifecycle, pure, withHandlers} from "recompose";
 
-const withFunctionality = compose(
-  withHandlers({
-    openEditor: (props) => () => {
-      const {cell, editing, langtag, selected} = props;
-      ((selected || editing) && !isLocked(cell.row))
-        ? function(){}//openEntityView(cell.row, langtag, null, null, cell.column)
-        : function () {
-        };
-    }
-  }),
-  lifecycle({
-    componentDidMount() {
-      // const {setCellKeyboardShortcuts} = this.props;
-      // setCellKeyboardShortcuts({
-      //   enter: this.props.openEditor
-      // });
-    }
-  }),
-  pure
-  // connectToAmpersand,
-);
+const IdentifierCell = props => {
+  const {value,column, langtag, editing, selected} = props;
+  const displayValue = value[0] + " " + value[1]["en-GB"];
+  const openEditor = () => {
+    (selected || editing) && !isLocked(cell.row)
+      ? function() {} //openEntityView(cell.row, langtag, null, null, cell.column)
+      : function() {};
+  };
 
-const IdentifierCell = (props) => {
-  const {cell, langtag, openEditor} = props;
   return (
     <div className="cell-content" onClick={openEditor}>
-      {cell.displayValue[langtag]}
+      {displayValue}
     </div>
   );
 };
@@ -44,4 +28,4 @@ IdentifierCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func.isRequired
 };
 
-export default withFunctionality(IdentifierCell);
+export default IdentifierCell;

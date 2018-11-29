@@ -1,12 +1,4 @@
 import React from "react";
-import {
-  branch,
-  compose,
-  pure,
-  renderComponent,
-  withProps,
-  withStateHandlers
-} from "recompose";
 import Moment from "moment";
 import f from "lodash/fp";
 import {

@@ -1,6 +1,6 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import ActionCreator from "../../../actions/ActionCreator";
+// import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import i18n from "i18next";
 import {FilterModes} from "../../../constants/TableauxConstants";
@@ -31,7 +31,7 @@ class SearchBar extends PureComponent {
       filterValue: (f.isString(value)) ? value : filterValue,
       popupOpen: false
     };
-    this.setState(newValue, () => ActionCreator.filterLinksInOverlay(newValue));
+    // this.setState(newValue, () => ActionCreator.filterLinksInOverlay(newValue));
   };
 
   handleClickOutside = event => {
@@ -80,10 +80,10 @@ class SearchBar extends PureComponent {
 
     const passOnKey = () => {
       event.preventDefault();
-      ActionCreator.passOnKeyStrokes({
-        id: this.props.id,
-        event
-      });
+      // ActionCreator.passOnKeyStrokes({
+      //   id: this.props.id,
+      //   event
+      // });
     };
 
     const isIn = x => y => f.contains(f.toLower(y), f.map(f.toLower, x));

@@ -19,7 +19,7 @@ const rows = (state = initialState, action) => {
         [action.tableId]: {
           error: false,
           finishedLoading: true,
-          data: toObjectById(action.result.rows)
+          data: action.result.rows
         }
       };
     case ALL_ROWS_DATA_LOAD_ERROR:

@@ -5,7 +5,7 @@ import DragSortList from "./DragSortList";
 import Spinner from "../../header/Spinner";
 import {AutoSizer, List} from "react-virtualized";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
-import ActionCreator from "../../../actions/ActionCreator";
+// import ActionCreator from "../../../actions/ActionCreator";
 import DefaultLangtag from "../../../constants/TableauxConstants";
 import i18n from "i18next";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -155,7 +155,7 @@ export const RowCreator = compose(
             rowId: row.id
           }, langtag);
         };
-        ActionCreator.addRow(toTable, linkNewRow);
+        // ActionCreator.addRow(toTable, linkNewRow);
       }
     }
   )

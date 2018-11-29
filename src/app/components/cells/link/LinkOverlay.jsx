@@ -1,6 +1,6 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import ActionCreator from "../../../actions/ActionCreator";
+// import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import {translate} from "react-i18next";
 import i18n from "i18next";
@@ -13,20 +13,20 @@ import apiUrl, {openInNewTab} from "../../../helpers/apiUrl";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator";
 import Header from "../../overlay/Header";
-import Dispatcher from "../../../dispatcher/Dispatcher";
+// import Dispatcher from "../../../dispatcher/Dispatcher";
 import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import SearchBar from "./LinkOverlaySearchBar";
 import LinkItem from "./LinkItem";
 import Request from "superagent";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+// import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {mkLinkDisplayItem} from "./linkDisplayItemHelper";
 import Raven from "raven-js";
 import {LinkedRows, LinkStatus, RowCreator, SwitchSortingButton, UnlinkedRows} from "./LinkOverlayFragments";
-import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../models/Rows";
+// import {INITIAL_PAGE_SIZE, MAX_CONCURRENT_PAGES, PAGE_SIZE} from "../../../models/Rows";
 import {Promise} from "es6-promise";
 import Spinner from "../../header/Spinner";
 import Throat from "throat";
-import changeCell from "../../../models/helpers/changeCell";
+// import changeCell from "../../../models/helpers/changeCell";
 const throat = Throat(Promise);
 
 const MAIN_BUTTON = 0;
@@ -39,8 +39,8 @@ const sortIcons = [
   "fa fa-sort-alpha-asc"
 ];
 
-@translate(["table"])
-@withAbortableXhrRequests
+// @translate(["table"])
+// @withAbortableXhrRequests
 class LinkOverlay extends PureComponent {
   constructor(props) {
     super(props);
@@ -77,15 +77,15 @@ class LinkOverlay extends PureComponent {
   ];
 
   componentDidMount = () => {
-    Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
-    Dispatcher.on(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateValues);
+    // Dispatcher.on(ActionTypes.FILTER_LINKS, this.setFilterMode);
+    // Dispatcher.on(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
+    // Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateValues);
   };
 
   componentWillUnmount = () => {
-    Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
-    Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
-    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateValue);
+    // Dispatcher.off(ActionTypes.FILTER_LINKS, this.setFilterMode);
+    // Dispatcher.off(ActionTypes.PASS_ON_KEYSTROKES, this.handleMyKeys);
+    // Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateValue);
   };
 
   componentWillReceiveProps(nextProps) {
@@ -136,7 +136,7 @@ class LinkOverlay extends PureComponent {
       escape: event => {
         event.preventDefault();
         event.stopPropagation();
-        ActionCreator.closeOverlay();
+        // ActionCreator.closeOverlay();
       },
       up: event => {
         event.preventDefault();
@@ -413,11 +413,11 @@ class LinkOverlay extends PureComponent {
     const maxLinks = this.getToCardinality();
 
     if (shouldLink && !this.canAddLink()) {
-      ActionCreator.showToast(
-        <div id="cell-jump-toast">
-          {i18n.t("table:cardinality-reached", {maxLinks})}
-        </div>
-      );
+      // ActionCreator.showToast(
+      //   <div id="cell-jump-toast">
+      //     {i18n.t("table:cardinality-reached", {maxLinks})}
+      //   </div>
+      // );
       Raven.captureMessage("Tried to add link with wrong cardinality", {level: "warning"});
       return;
     }
@@ -433,13 +433,13 @@ class LinkOverlay extends PureComponent {
       this.updateRowResults(withoutLink);
     }
 
-    ActionCreator.changeCell(cell, links,
-      () => {
-        if (f.isFinite(maxLinks)) {
-          this.fetchForeignRowsJson();
-        }
-      }
-    );
+    // ActionCreator.changeCell(cell, links,
+    //   () => {
+    //     if (f.isFinite(maxLinks)) {
+    //       this.fetchForeignRowsJson();
+    //     }
+    //   }
+    // );
     this.setState({rowResults: this.filterRowsBySearch(this.getCurrentSearchValue())});
   };
 
@@ -631,12 +631,12 @@ export const openLinkOverlay = (cell, langtag) => {
     }
   );
 
-  ActionCreator.openOverlay({
-    head: <LinkOverlayHeader langtag={langtag} cell={cell} />,
-    body: overlayContent,
-    type: "full-height",
-    classes: "link-overlay"
-  });
+  // ActionCreator.openOverlay({
+  //   head: <LinkOverlayHeader langtag={langtag} cell={cell} />,
+  //   body: overlayContent,
+  //   type: "full-height",
+  //   classes: "link-overlay"
+  // });
 };
 
 export default LinkOverlay;

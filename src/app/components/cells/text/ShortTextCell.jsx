@@ -1,44 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ActionCreator from "../../../actions/ActionCreator";
+// import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";
 import TextCell from "./TextCell";
-import changeCell from "../../../models/helpers/changeCell";
+// import changeCell from "../../../models/helpers/changeCell";
 import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
 import SelectableShortText from "./SelectableShortText";
 
-const withEditFn = withHandlers({
-  handleEditDone: (props) => (newValue) => {
-    const oldValue = props.value;
-    const {contentChanged, cell, langtag} = props;
-    if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
-      ActionCreator.toggleCellEditing({editing: false});
-      return;
-    }
-    const valueToSave = (cell.isMultiLanguage)
-      ? {[langtag]: newValue}
-      : newValue;
+// const withEditFn = withHandlers({
+//   handleEditDone: (props) => (newValue) => {
+//     const oldValue = props.value;
+//     const {contentChanged, cell, langtag} = props;
+//     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
+//       // ActionCreator.toggleCellEditing({editing: false});
+//       return;
+//     }
+//     const valueToSave = (cell.isMultiLanguage)
+//       ? {[langtag]: newValue}
+//       : newValue;
 
-    changeCell({
-      cell,
-      value: valueToSave
-    })
-      .then(contentChanged(cell, langtag, oldValue));
-    ActionCreator.toggleCellEditing({editing: false});
-  }
-});
+//     changeCell({
+//       cell,
+//       value: valueToSave
+//     })
+//       .then(contentChanged(cell, langtag, oldValue));
+//     // ActionCreator.toggleCellEditing({editing: false});
+//   }
+// });
 
-const withTextCellFallback = branch(
-  (props) => f.contains("\n", props.value),
-  renderComponent(TextCell)
-);
 
 const ShortTextCell = (props) => {
-  const {cell, handleEditDone, editing, langtag, setCellKeyboardShortcuts, value, focusTable} = props;
+  const { handleEditDone,column, editing, langtag, setCellKeyboardShortcuts, value, focusTable} = props;
+  const displayValue = column.multilanguage ? value["en-GB"] : value;
+
+  if(f.contains("\n", value)){
+    return <TextCell {...props} />
+  }
 
   return (editing)
     ? (
-      <SelectableShortText cell={cell}
+      <SelectableShortText 
                            focusTable={focusTable}
                            langtag={langtag}
                            value={value}
@@ -48,7 +49,7 @@ const ShortTextCell = (props) => {
     )
     : (
       <div className="cell-content">
-        {(value === null) ? "" : value}
+        {(value === null) ? "" : displayValue}
       </div>
     );
 };
@@ -62,8 +63,9 @@ ShortTextCell.propTypes = {
   value: PropTypes.string
 };
 
-export default compose(
-  pure,
-  withTextCellFallback, // just in case someone put a linebreak into the backend
-  withEditFn
-)(ShortTextCell);
+// export default compose(
+//   pure,
+//   withTextCellFallback, // just in case someone put a linebreak into the backend
+//   withEditFn
+// )(ShortTextCell);
+export default ShortTextCell;

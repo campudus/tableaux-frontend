@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import f from "lodash/fp";
 import Datetime from "react-datetime";
-import {compose, lifecycle, withHandlers, withStateHandlers} from "recompose";
 
 class DateEditCell extends Component {
   state = {

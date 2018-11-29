@@ -10,7 +10,6 @@ import AttachmentOverlay from "./AttachmentOverlay.jsx";
 import {FallbackLanguage} from "../../../constants/TableauxConstants";
 import {isLocked} from "../../../helpers/annotationHelper";
 import {maybe} from "../../../helpers/functools";
-import {pure} from "recompose";
 
 const AttachmentCell = (props) => {
   const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = props;
@@ -87,4 +86,4 @@ AttachmentCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func.isRequired
 };
 
-export default pure(AttachmentCell);
+export default AttachmentCell;

@@ -13,7 +13,7 @@ export default function(ComposedComponent, mapStatetoProps) {
     }
     render() {
       return (
-        <ComposedComponent {...this.props} {...this.boundActionCreators} />
+        <ComposedComponent {...this.props} actions={{...this.boundActionCreators}} />
       );
     }
   }

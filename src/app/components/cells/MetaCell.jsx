@@ -1,14 +1,14 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
-import connectToAmpersand from "../helperComponents/connectToAmpersand";
-import {initiateDeleteRow} from "../../helpers/rowHelper";
-import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
+// import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
+// import connectToAmpersand from "../helperComponents/connectToAmpersand";
+// import {initiateDeleteRow} from "../../helpers/rowHelper";
+// import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {DefaultLangtag} from "../../constants/TableauxConstants";
-import ActionCreator from "../../actions/ActionCreator";
+// import ActionCreator from "../../actions/ActionCreator";
 import classNames from "classnames";
 
-@connectToAmpersand
+// @connectToAmpersand
 class MetaCell extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -19,34 +19,36 @@ class MetaCell extends PureComponent {
 
   constructor(props) {
     super(props);
-    props.watch(props.row, {
-      events: "change:final",
-      force: true
-    });
-    props.watch(props.row, {
-      events: "change:unlocked",
-      force: true
-    });
+    // props.watch(props.row, {
+    //   events: "change:final",
+    //   force: true
+    // });
+    // props.watch(props.row, {
+    //   events: "change:unlocked",
+    //   force: true
+    // });
   }
 
   handleClick = (event) => {
     event.stopPropagation();
-    ActionCreator.toggleRowExpand(this.props.row.id);
+    // ActionCreator.toggleRowExpand(this.props.row.id);
   };
 
   deleteRow = (event) => {
     event.stopPropagation();
     const {row, langtag} = this.props;
-    initiateDeleteRow(row, langtag);
+    // initiateDeleteRow(row, langtag);
   };
 
   mkDeleteRowButton() {
     const {langtag, selected, row, expanded} = this.props;
-    const firstCell = row.cells.at(0);
-    const table = firstCell.tables.get(firstCell.tableId);
-    const userCanDeleteRow = table.type !== "settings"
-      && selected && isUserAdmin()
-      && (langtag === DefaultLangtag || !expanded);
+    // const firstCell = row.cells.at(0);
+    // const table = firstCell.tables.get(firstCell.tableId);
+    // const userCanDeleteRow = table.type !== "settings"
+    //   && selected && isUserAdmin()
+    //   && (langtag === DefaultLangtag || !expanded);
+    //
+    const userCanDeleteRow = false;
 
     return (userCanDeleteRow && !row.final)
       ? (
@@ -61,7 +63,7 @@ class MetaCell extends PureComponent {
 
   mkLockStatusIcon = () => {
     const {langtag, row, selected, expanded} = this.props;
-    const cantTranslate = !isUserAdmin() && (selected || expanded) && !hasUserAccessToLanguage(langtag);
+    const cantTranslate = false//!isUserAdmin() && (selected || expanded) && !hasUserAccessToLanguage(langtag);
     if (cantTranslate) {
       return <i className="fa fa-ban access-denied-icon" />;
     } else if (row.final) {
@@ -78,7 +80,7 @@ class MetaCell extends PureComponent {
   render = () => {
     const {langtag, row, expanded, selected} = this.props;
     const cellContent = (expanded)
-      ? getLanguageOrCountryIcon(langtag)
+      ? <div>empty</div>//getLanguageOrCountryIcon(langtag)
       : (
         <div className="meta-info-collapsed">
           <div className="row-number">{row.id}</div>

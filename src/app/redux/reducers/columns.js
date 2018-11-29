@@ -19,7 +19,7 @@ const columns = (state = initialState, action) => {
         [action.tableId]: {
           error: false,
           finishedLoading: true,
-          data: toObjectById(action.result.columns)
+          data: action.result.columns
         }
       };
     case COLUMNS_DATA_LOAD_ERROR:

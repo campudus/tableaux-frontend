@@ -1,18 +1,19 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import RichTextComponent from "../../RichTextComponent";
+// import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
 // import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 // import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty, isString} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
-import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
+// import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
-import Header from "../../overlay/Header";
+// import Header from "../../overlay/Header";
 import {doto, maybe} from "../../../helpers/functools";
 import i18n from "i18next";
-import {contentChanged} from "../Cell";
-import changeCell from "../../../models/helpers/changeCell";
+// import {contentChanged} from "../Cell";
+// import changeCell from "../../../models/helpers/changeCell";
+import "../../../../scss/main.scss";
 
 class TextCell extends PureComponent {
   static propTypes = {
@@ -28,35 +29,36 @@ class TextCell extends PureComponent {
       // ActionCreator.toggleCellEditing({editing: false});
       return;
     }
-    const {cell, langtag} = this.props;
-    const valueToSave = (cell.isMultiLanguage)
+    const {value, langtag} = this.props;
+    const valueToSave = false//(cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
-    changeCell({
-      cell,
-      value: valueToSave
-    })
-      .then(contentChanged(cell, langtag, oldValue));
+    // changeCell({
+    //   cell,
+    //   value: valueToSave
+    // })
+      // .then(contentChanged(cell, langtag, oldValue));
     // ActionCreator.toggleCellEditing({editing: false});
   };
 
   openOverlay = (event, withContent) => {
-    maybe(event)
-      .method("stopPropagation")
-      .method("preventDefault");
-    if (isLocked(this.props.cell.row)) {
-      askForSessionUnlock(this.props.cell.row);
-      return;
-    }
+    return;
+    // maybe(event)
+    //   .method("stopPropagation")
+    //   .method("preventDefault");
+    // if (isLocked(this.props.cell.row)) {
+    //   // askForSessionUnlock(this.props.cell.row);
+    //   return;
+    // }
     const textValue = withContent || this.getValue();
 
     const {cell, langtag} = this.props;
-    const table = cell.tables.get(cell.tableId);
-    const context = doto([table.displayName[langtag], table.displayName[FallbackLanguage], table.name],
-      f.compact,
-      f.first,
-      (ctx) => (f.isString(ctx)) ? ctx : f.toString(ctx)
-    );
+    // const table = cell.tables.get(cell.tableId);
+    // const context = doto([table.displayName[langtag], table.displayName[FallbackLanguage], table.name],
+    //   f.compact,
+    //   f.first,
+    //   (ctx) => (f.isString(ctx)) ? ctx : f.toString(ctx)
+    // );
 
     const Wrapper = (props) => props.children;
 
@@ -94,11 +96,12 @@ class TextCell extends PureComponent {
   };
 
   getValue = () => {
-    const {cell, langtag} = this.props;
-    const value = (cell.isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
-    return value || "";
+    const {value, langtag} = this.props;
+    // const value = (cell.isMultiLanguage)
+    //   ? cell.value[langtag]
+    //   : cell.value;
+    // return value || "";
+    return f.toString(value);
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -119,7 +122,7 @@ class TextCell extends PureComponent {
     const isMultiLine = f.contains("\n", value);
 
     const expandButton = (selected)
-      ? <ExpandButton onTrigger={this.openOverlay} />
+      ? null//<ExpandButton onTrigger={this.openOverlay} />
       : null;
 
     const multiLineIndicator = (isMultiLine)

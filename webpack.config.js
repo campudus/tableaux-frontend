@@ -14,13 +14,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: "babel-loader"
-      },
-      {
-        test: /\.(html|pdf|ttf|eot|woff2?)$/,
-        use: "file-loader"
       },
       {
         test: /\.json$/,
@@ -75,6 +71,9 @@ module.exports = {
         loader: "file-loader?name=./img/[hash].[ext]"
       }
     ]
+  },
+  resolve: {
+    extensions:[".js",".jsx"]
   },
   devServer: {
     contentBase: "./dist",

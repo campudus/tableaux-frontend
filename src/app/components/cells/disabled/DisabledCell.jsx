@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {pure} from "recompose";
 
 const DisabledCell = (props) => {
   const {cell, langtag} = props;
@@ -31,4 +30,4 @@ DisabledCell.propTypes = {
   selected: PropTypes.bool.isRequired
 };
 
-export default pure(DisabledCell);
+export default DisabledCell;

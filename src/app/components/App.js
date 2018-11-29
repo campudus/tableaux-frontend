@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import { hot } from 'react-hot-loader';
-import Test from "../components/test/test.js";
+import TableContainer from "../containers/TableContainer";
 import "../../scss/main.scss";
 
 class App extends Component {
   render() {
-    return (<div><Test/></div>);
+    return <TableContainer tableId={71} langtag={"en"} fullyLoaded/>;
   }
 } 
 

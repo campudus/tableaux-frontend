@@ -17,7 +17,7 @@ const AttachmentLabelCell = (props) => {
 
   const fallbackLang = TableauxConstants.DefaultLangtag;
   const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-  const attachmentTitle = null//retrieveTranslation(attachmentElement.title, langtag);
+  const attachmentTitle = retrieveTranslation(attachmentElement.title, langtag);
 
   return (
     <div className="link-label" onClick={handleClick}>

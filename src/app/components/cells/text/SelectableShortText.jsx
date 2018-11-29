@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import {compose, lifecycle, withHandlers, withProps, withStateHandlers} from "recompose";
 import {maybe} from "../../../helpers/functools";
-import ActionCreator from "../../../actions/ActionCreator";
+// import ActionCreator from "../../../actions/ActionCreator";
 import needsAPIData from "../../helperComponents/needsAPIData";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import {FilterModes} from "../../../constants/TableauxConstants";
@@ -134,7 +134,7 @@ const enhance = compose(
             this.props.focusTable();
           } else {
             this.props.saveEdits();
-            ActionCreator.addRowOrSelectNextCell();
+            // ActionCreator.addRowOrSelectNextCell();
             this.props.focusTable();
           }
         }
@@ -203,4 +203,5 @@ SelectableShortText.propTypes = {
   value: PropTypes.string.isRequired
 };
 
-export default enhance(SelectableShortText);
+// export default enhance(SelectableShortText);
+export default SelectableShortText;

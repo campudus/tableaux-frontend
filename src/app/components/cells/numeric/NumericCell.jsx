@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import NumericEditCell from "./NumericEditCell.jsx";
 // import ActionCreator from "../../../actions/ActionCreator";
 import {prop, isNil} from "lodash/fp";
-import {pure} from "recompose";
 // import changeCell from "../../../models/helpers/changeCell";
 
 const NumericCell = (props) => {
@@ -43,4 +42,4 @@ NumericCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-export default pure(NumericCell);
+export default NumericCell;
