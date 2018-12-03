@@ -6,7 +6,7 @@ import {prop, isNil} from "lodash/fp";
 // import changeCell from "../../../models/helpers/changeCell";
 
 const NumericCell = (props) => {
-  const {cell, langtag, contentChanged, editing, setCellKeyboardShortcuts} = props;
+  const {cell, langtag, contentChanged, editing, setCellKeyboardShortcuts, displayValue} = props;
 
   const handleEditDone = (newValue) => {
     const oldValue = prop(["value", langtag], cell) || prop("value", cell);
@@ -24,7 +24,7 @@ const NumericCell = (props) => {
   if (!editing) {
     return (
       <div className="cell-content">
-        {(cell.isMultiLanguage) ? cell.value[langtag] : cell.value}
+        {displayValue["de"]}
       </div>
     );
   } else {

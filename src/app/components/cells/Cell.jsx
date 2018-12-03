@@ -35,6 +35,7 @@ import {
   withHandlers
 } from "recompose";
 import PropTypes from "prop-types";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const FlagIconRenderer = () => null;
 const ExpandCorner = compose(
@@ -205,17 +206,17 @@ class Cell extends React.Component {
 
   static cellKinds = {
     [ColumnKinds.link]: LinkCell,
-    // [ColumnKinds.attachment]: AttachmentCell,
-    // [ColumnKinds.numeric]: NumericCell,
+    [ColumnKinds.attachment]: AttachmentCell,
+    [ColumnKinds.numeric]: NumericCell,
     [ColumnKinds.boolean]: BooleanCell,
     [ColumnKinds.date]: DateCell,
     [ColumnKinds.datetime]: DateCell,
     [ColumnKinds.shorttext]: ShortTextCell,
     [ColumnKinds.concat]: IdentifierCell,
-    // [ColumnKinds.currency]: CurrencyCell,
+    [ColumnKinds.currency]: CurrencyCell,
     [ColumnKinds.text]: TextCell,
-    // [ColumnKinds.richtext]: TextCell,
-    // [ColumnKinds.group]: IdentifierCell
+    [ColumnKinds.richtext]: TextCell,
+    [ColumnKinds.group]: IdentifierCell
   };
 
   render() {
@@ -257,7 +258,7 @@ class Cell extends React.Component {
     //       f.join(";")
     //     )(cell.displayValue) || ""
     //   : f.get(langtag, cell.displayValue) || "";
-    const displayValue = f.toString(value);
+    const displayValue = getDisplayValue(column,value);
 
     // onKeyDown event just for selected components
     return (
@@ -277,6 +278,7 @@ class Cell extends React.Component {
         onMouseDown={this.onMouseDownHandler}>
         <CellKind
           value={value}
+          displayValue={displayValue}
           column={column}
           key={`${column.id}-${langtag}-${displayValue}`}
           langtag={langtag}

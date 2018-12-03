@@ -40,22 +40,22 @@ export default class CurrencyCell extends React.PureComponent {
   }
 
   saveCurrencyCell = (valuesToSave) => {
-    ActionCreator.changeCell(this.props.cell, valuesToSave);
+    // ActionCreator.changeCell(this.props.cell, valuesToSave);
   };
 
   exitCurrencyCell = () => {
-    ActionCreator.toggleCellEditing({editing: false});
+    // ActionCreator.toggleCellEditing({editing: false});
   };
 
   handleClickOutside = (event) => {
-    this.exitCurrencyCell();
+    // this.exitCurrencyCell();
   };
 
   renderPrice(currencyValues, country) {
     const currencyValue = getCurrencyWithCountry(currencyValues, country, "withFallback");
     const splittedValueAsString = splitPriceDecimals(currencyValue);
     const currencyCode = getCurrencyCode(country);
-    const {cell, t} = this.props;
+    const {value, t} = this.props;
     if (!currencyCode) {
       return (
         <div className="currency-wrapper">
@@ -69,7 +69,7 @@ export default class CurrencyCell extends React.PureComponent {
 
     // TODO localization
     return (
-      <div className={`currency-wrapper${(cell.value[country]) ? "" : " grey-out"}`}>
+      <div className={`currency-wrapper${(value[country]) ? "" : " grey-out"}`}>
         <span className="currency-value">
           {splittedValueAsString[0]}
         </span>
@@ -129,8 +129,8 @@ export default class CurrencyCell extends React.PureComponent {
   }
 
   render() {
-    const {langtag, editing, cell, setCellKeyboardShortcuts} = this.props;
-    const currencyValues = cell.value;
+    const {langtag, editing, value,displayValue, setCellKeyboardShortcuts} = this.props;
+    const currencyValues = value;
     const country = getCountryOfLangtag(langtag);
     const currencyCellMarkup = (editing)
       ? (

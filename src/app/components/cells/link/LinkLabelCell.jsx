@@ -5,9 +5,14 @@ import * as f from "lodash/fp";
 import {DefaultLangtag} from "../../../constants/TableauxConstants";
 import {compose, pure, withHandlers} from "recompose";
 import Empty from "../../helperComponents/emptyEntry";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const LinkLabelCell = props => {
-  const {value, clickable, langtag, linkElement, linkIndexAt} = props;
+  const {value,column, clickable, langtag, linkElement, linkIndexAt, displayValue} = props;
+  // const displayValue = getDisplayValue(column, value);
+  // console.log(value);
+  // console.log(displayValue);
+  // console.log(column);
   // const linkName = f.find(
   //   // first truthy value
   //   f.complement(f.isEmpty),
@@ -16,11 +21,10 @@ const LinkLabelCell = props => {
   //     <Empty />
   //   ]
   // );
-  const linkName = f.join(" ", value.value);
 
   return (
     <a href="#" onClick={() => console.log("onClick")} className="link-label">
-      <div className="label-text">{linkName}</div>
+      <div className="label-text">{displayValue["de"]}</div>
     </a>
   );
 };

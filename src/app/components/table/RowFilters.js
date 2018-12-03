@@ -1,14 +1,14 @@
-import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
+// import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
 import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import f from "lodash/fp";
 import {doto, either, withTryCatch} from "../../helpers/functools";
 
-const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
-  {
-    colsWithMatches: null
-  }
-);
+// const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
+//   {
+//     colsWithMatches: null
+//   }
+// );
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -44,12 +44,12 @@ const getFilteredRows = (currentTable, langtag, filterSettings) => {
     f.juxt(allFilters),
     f.every(f.identity)
   );
-  const coll = new FilteredSubcollection(currentTable.rows, {
-    filter: combinedFilter,
-    comparator: (f.isInteger(filterSettings.sortColumnId)) ? closures.comparator : null
-  });
-  coll.colsWithMatches = f.uniq(Array.from(closures.colsWithMatches.values()));
-  return coll;
+  // const coll = new FilteredSubcollection(currentTable.rows, {
+  //   filter: combinedFilter,
+  //   comparator: (f.isInteger(filterSettings.sortColumnId)) ? closures.comparator : null
+  // });
+  // coll.colsWithMatches = f.uniq(Array.from(closures.colsWithMatches.values()));
+  // return coll;
 };
 
 const mkFilterFn = (closures) => (settings) => {

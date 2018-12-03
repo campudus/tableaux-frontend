@@ -29,6 +29,7 @@ const enhance = compose(
       } else if (isExternal) {
         document.location = url;
       } else {
+        console.log(App);
         App.router.history.navigate(url, {trigger: true});
       }
     }

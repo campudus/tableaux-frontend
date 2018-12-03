@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import * as TableHistory from "./tableHistory";
 import f from "lodash/fp";
-import Dispatcher from "../../../dispatcher/Dispatcher";
+// import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 import {compose, lifecycle, withStateHandlers} from "recompose";
 import classNames from "classnames";
@@ -62,10 +62,10 @@ export default compose(
   ),
   lifecycle({
     componentDidMount() {
-      Dispatcher.on(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
+      // Dispatcher.on(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
     },
     componentWillUnmount() {
-      Dispatcher.off(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
+      // Dispatcher.off(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
     },
     componentDidUpdate(prevProps) { // table switch
       if (this.props.tableId !== prevProps.tableId || this.props.rowId !== prevProps.rowId) {

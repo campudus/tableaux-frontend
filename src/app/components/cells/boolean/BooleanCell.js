@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import '../../../../scss/main.scss';
 
 const BooleanCell = (props) => {
-  const {value,column, langtag, selected, setCellKeyboardShortcuts, toggleCheckboxValue} = props;
+  const {value,column, langtag, selected, setCellKeyboardShortcuts, toggleCheckboxValue, displayValue} = props;
 
   // const handleEditDone = (newValue) => {
   //   const valueToSave = (cell.isMultiLanguage)

@@ -5,9 +5,10 @@ import LinkEditCell from "./LinkEditCell.jsx";
 import * as f from "lodash/fp";
 
 const LinkCell = props => {
-  const {value, langtag, selected, editing} = props;
+  const {value, langtag, selected, editing, column, displayValue} = props;
 
   // Show a link preview for performance
+  // const displayValues = getDisplayValue(column, value);
   const tooManyLinks = f.size(value) > 3;
   const links = f
     .take(3, value)
@@ -19,6 +20,7 @@ const LinkCell = props => {
         value={element}
         langtag={langtag}
         clickable={false}
+        displayValue={displayValue[index]}
       />
     ));
 

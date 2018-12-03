@@ -1,5 +1,5 @@
 import * as f from "lodash/fp";
-import ActionCreator from "../../actions/ActionCreator";
+// import ActionCreator from "../../actions/ActionCreator";
 import {ColumnKinds, DefaultLangtag} from "../../constants/TableauxConstants";
 import {canConvert, convert} from "../../helpers/cellValueConverter";
 import React from "react";
@@ -17,7 +17,7 @@ const throat = require("throat")(Promise); // throat ignores the global Promise 
 const MAX_CONCURRENT_REQUESTS = 3; // retrieve row or copy cell
 
 const showErrorToast = (msg, data = {}) => {
-  ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg, data)}</div>, 3000);
+  // ActionCreator.showToast(<div id="cell-jump-toast">{i18n.t(msg, data)}</div>, 3000);
 };
 
 const canCopySafely = (src, dst) => !src.isMultiLanguage || (src.isMultiLanguage && !dst.isMultiLanguage)
@@ -63,7 +63,7 @@ const copyGroupColumn = (src, srcLang, dst, dstLang) => {
 const copyLinks = (src, dst) => {
   const cardinality = f.get(["column", "constraint", "cardinality"], dst);
   if (f.isEmpty(cardinality)) {
-    ActionCreator.changeCell(dst, src.value);
+    // ActionCreator.changeCell(dst, src.value);
   } else {
     // Cardinality constraints do exist
     const cardinalityFrom = (f.gt(cardinality.from, 0)) ? cardinality.from : 0; // set zero or undefined to 0
@@ -71,7 +71,7 @@ const copyLinks = (src, dst) => {
     const constrainedValue = f.take(cardinalityTo, src.value); // take the first allowed number of links to copy
     if (cardinalityFrom === 0) {
       // No constrained to the left => just set values
-      ActionCreator.changeCell(dst, constrainedValue);
+      // ActionCreator.changeCell(dst, constrainedValue);
     } else {
       // Link constrained to left, too => create new rows in toTable, link and fill them
       createEntriesAndCopy(src, dst, constrainedValue);
@@ -139,13 +139,13 @@ const createEntriesAndCopy = (src, dst, constrainedValue) => {
       )
     )
       .then((linkValues) => {
-        ActionCreator.changeCell(dst, linkValues);
+        // ActionCreator.changeCell(dst, linkValues);
       })
   );
 };
 
 async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
-  ActionCreator.changeCell(dst, reducedValue);
+  // ActionCreator.changeCell(dst, reducedValue);
   if (src.isMultiLanguage && dst.isMultiLanguage) {
     const srcTranslation = f.get(["annotations", "translationNeeded"], src);
     const dstTranslation = f.get(["annotations", "translationNeeded"], dst);
@@ -220,17 +220,17 @@ const pasteCellValue = function (src, srcLang, dst, dstLang, skipDialogs = false
       positive: [i18n.t("common:save"), save],
       neutral: [i18n.t("common:cancel"), null]
     };
-    ActionCreator.openOverlay({
-      head: <Header title={i18n.t("table:copy_cell")} />,
-      body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
-        oldVals={dst.value}
-        newVals={newValue}
-        saveAndClose={save}
-        kind={dst.kind}
-      />,
-      footer: <Footer actions={buttons} />,
-      keyboardShortcuts: {enter: event => { save(event); ActionCreator.closeOverlay(); }}
-    });
+    // ActionCreator.openOverlay({
+    //   head: <Header title={i18n.t("table:copy_cell")} />,
+    //   body: <PasteMultilanguageCellInfo langtag={this.props.langtag}
+    //     oldVals={dst.value}
+    //     newVals={newValue}
+    //     saveAndClose={save}
+    //     kind={dst.kind}
+    //   />,
+    //   footer: <Footer actions={buttons} />,
+    //   keyboardShortcuts: {enter: event => { save(event); ActionCreator.closeOverlay(); }}
+    // });
   }
 };
 

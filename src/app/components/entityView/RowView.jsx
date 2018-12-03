@@ -11,7 +11,7 @@ import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import GroupView from "./group/GroupView";
 import RowHeadline from "./RowHeadline";
-import connectToAmpersand from "../helperComponents/connectToAmpersand";
+// import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import * as f from "lodash/fp";
 import * as Access from "../../helpers/accessManagementHelper";
 import * as Annotations from "../../helpers/annotationHelper";
@@ -19,7 +19,7 @@ import {getCountryOfLangtag} from "../../helpers/multiLanguage";
 import classNames from "classnames";
 import i18n from "i18next";
 
-@connectToAmpersand
+ // @connectToAmpersand
 class View extends Component {
   static propTypes = {
     cell: PropTypes.object.isRequired,

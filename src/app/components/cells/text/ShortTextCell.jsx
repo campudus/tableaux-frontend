@@ -6,6 +6,7 @@ import TextCell from "./TextCell";
 // import changeCell from "../../../models/helpers/changeCell";
 import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
 import SelectableShortText from "./SelectableShortText";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 
 // const withEditFn = withHandlers({
 //   handleEditDone: (props) => (newValue) => {
@@ -28,30 +29,35 @@ import SelectableShortText from "./SelectableShortText";
 //   }
 // });
 
+const ShortTextCell = props => {
+  const {
+    handleEditDone,
+    column,
+    editing,
+    langtag,
+    setCellKeyboardShortcuts,
+    value,
+    focusTable
+  } = props;
+  const displayValue = column.multilanguage
+    ? getDisplayValue(column, value)[langtag]
+    : value;
 
-const ShortTextCell = (props) => {
-  const { handleEditDone,column, editing, langtag, setCellKeyboardShortcuts, value, focusTable} = props;
-  const displayValue = column.multilanguage ? value["en-GB"] : value;
-
-  if(f.contains("\n", value)){
-    return <TextCell {...props} />
+  if (f.contains("\n", value)) {
+    return <TextCell {...props} />;
   }
 
-  return (editing)
-    ? (
-      <SelectableShortText 
-                           focusTable={focusTable}
-                           langtag={langtag}
-                           value={value}
-                           onBlur={handleEditDone}
-                           setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-      />
-    )
-    : (
-      <div className="cell-content">
-        {(value === null) ? "" : displayValue}
-      </div>
-    );
+  return editing ? (
+    <SelectableShortText
+      focusTable={focusTable}
+      langtag={langtag}
+      value={value}
+      onBlur={handleEditDone}
+      setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+    />
+  ) : (
+    <div className="cell-content">{displayValue || ""}</div>
+  );
 };
 
 ShortTextCell.propTypes = {

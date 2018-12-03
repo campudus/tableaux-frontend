@@ -5,8 +5,7 @@ import PropTypes from "prop-types";
 import {isLocked} from "../../../helpers/annotationHelper";
 
 const IdentifierCell = props => {
-  const {value,column, langtag, editing, selected} = props;
-  const displayValue = value[0] + " " + value[1]["en-GB"];
+  const {value,column, langtag, editing, selected, displayValue} = props;
   const openEditor = () => {
     (selected || editing) && !isLocked(cell.row)
       ? function() {} //openEntityView(cell.row, langtag, null, null, cell.column)
@@ -15,7 +14,7 @@ const IdentifierCell = props => {
 
   return (
     <div className="cell-content" onClick={openEditor}>
-      {displayValue}
+      {displayValue["de"]}
     </div>
   );
 };

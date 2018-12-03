@@ -6,7 +6,7 @@ import Empty from "../../helperComponents/emptyEntry";
 import f from "lodash/fp";
 
 const AttachmentLabelCell = (props) => {
-  const {attachmentElement, langtag, selected, openOverlay} = props;
+  const {attachmentElement, langtag, selected,value, openOverlay} = props;
 
   const handleClick = (evt) => {
     if (selected) {

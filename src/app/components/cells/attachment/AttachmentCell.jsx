@@ -12,7 +12,7 @@ import {isLocked} from "../../../helpers/annotationHelper";
 import {maybe} from "../../../helpers/functools";
 
 const AttachmentCell = (props) => {
-  const {editing, selected, cell, langtag, setCellKeyboardShortcuts} = props;
+  const {editing, selected, value, column, langtag, setCellKeyboardShortcuts} = props;
   const cellClass = classNames("cell-content", {
     "editing": editing,
     "selected": selected
@@ -32,13 +32,13 @@ const AttachmentCell = (props) => {
     // });
   };
 
-  const attachments = ((editing || selected) ? cell.value : f.take(3)(cell.value))
+  const attachments = ((editing || selected) ? value : f.take(3)(value))
     .map(
       (element, idx) => (
         <AttachmentLabelCell
           key={idx}
           attachmentElement={element}
-          cell={cell}
+          value={value}
           langtag={langtag}
           openOverlay={openOverlay}
           selected={selected}
@@ -66,7 +66,7 @@ const AttachmentCell = (props) => {
 
   return (
     <div className={cellClass} onClick={handleClick}>
-      {(f.size(attachments) === f.size(cell.value))
+      {(f.size(attachments) === f.size(value))
         ? attachments
         : [...attachments, <span key={"more"} className="more">&hellip;</span>]
       }

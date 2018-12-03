@@ -510,6 +510,7 @@ export default class VirtualTable extends PureComponent {
       selectedCellEditing,
       selectedCellExpandedRow
     } = this.props;
+    console.log(this.props);
     const {openAnnotations, scrolledCell, lastScrolledCell} = this.state;
     const {columnIndex, rowIndex} =
       !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell

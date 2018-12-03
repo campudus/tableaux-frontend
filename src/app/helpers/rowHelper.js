@@ -2,7 +2,7 @@ import {noPermissionAlertWithLanguage} from "../components/overlay/ConfirmationO
 import {confirmDeleteRow, openShowDependency} from "../components/overlay/ConfirmDependentOverlay.jsx";
 import {getUserLanguageAccess, isUserAdmin} from "./accessManagementHelper";
 import {openEntityView} from "../components/overlay/EntityViewOverlay";
-import ActionCreator from "../actions/ActionCreator";
+// import ActionCreator from "../actions/ActionCreator";
 
 export function initiateDeleteRow(row, langtag, overlayToCloseId) {
   if (isUserAdmin()) {
@@ -14,7 +14,7 @@ export function initiateDeleteRow(row, langtag, overlayToCloseId) {
 
 export function initiateDuplicateRow(row, langtag) {
   if (isUserAdmin()) {
-    ActionCreator.duplicateRow(row.tableId, row.id);
+    // ActionCreator.duplicateRow(row.tableId, row.id);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
   }

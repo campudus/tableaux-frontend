@@ -7,7 +7,10 @@ import ExpandButton from "./ExpandButton.jsx";
 import f, {isEmpty, isString} from "lodash/fp";
 import {isLocked} from "../../../helpers/annotationHelper";
 // import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
-import {ColumnKinds, FallbackLanguage} from "../../../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  FallbackLanguage
+} from "../../../constants/TableauxConstants";
 // import Header from "../../overlay/Header";
 import {doto, maybe} from "../../../helpers/functools";
 import i18n from "i18next";
@@ -23,21 +26,21 @@ class TextCell extends PureComponent {
     selected: PropTypes.bool.isRequired
   };
 
-  saveCell = (newValue) => {
+  saveCell = newValue => {
     const oldValue = this.getValue();
     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
       // ActionCreator.toggleCellEditing({editing: false});
       return;
     }
     const {value, langtag} = this.props;
-    const valueToSave = false//(cell.isMultiLanguage)
+    const valueToSave = false //(cell.isMultiLanguage)
       ? {[langtag]: newValue}
       : newValue;
     // changeCell({
     //   cell,
     //   value: valueToSave
     // })
-      // .then(contentChanged(cell, langtag, oldValue));
+    // .then(contentChanged(cell, langtag, oldValue));
     // ActionCreator.toggleCellEditing({editing: false});
   };
 
@@ -60,7 +63,7 @@ class TextCell extends PureComponent {
     //   (ctx) => (f.isString(ctx)) ? ctx : f.toString(ctx)
     // );
 
-    const Wrapper = (props) => props.children;
+    const Wrapper = props => props.children;
 
     // ActionCreator.openOverlay({
     //   head: <Header context={context}
@@ -85,7 +88,7 @@ class TextCell extends PureComponent {
     // });
   };
 
-  closeOverlay = (event) => {
+  closeOverlay = event => {
     // ActionCreator.closeOverlay(event);
   };
 
@@ -96,21 +99,17 @@ class TextCell extends PureComponent {
   };
 
   getValue = () => {
-    const {value, langtag} = this.props;
-    // const value = (cell.isMultiLanguage)
-    //   ? cell.value[langtag]
-    //   : cell.value;
-    // return value || "";
-    return f.toString(value);
+    const {value, column, langtag} = this.props;
+    return (column.multiLanguage ? value[langtag] : value) || "";
   };
 
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = nextProps => {
     if (!this.props.editing && nextProps.editing) {
       this.openOverlay();
     }
   };
 
-  handleClick = (evt) => {
+  handleClick = evt => {
     if (this.props.selected || this.props.editing) {
       this.openOverlay(evt);
     }
@@ -121,19 +120,19 @@ class TextCell extends PureComponent {
     const value = this.getValue();
     const isMultiLine = f.contains("\n", value);
 
-    const expandButton = (selected)
-      ? null//<ExpandButton onTrigger={this.openOverlay} />
+    const expandButton = selected
+      ? null //<ExpandButton onTrigger={this.openOverlay} />
       : null;
 
-    const multiLineIndicator = (isMultiLine)
-      ? <i className="fa fa-paragraph multiline-indicator" />
-      : null;
+    const multiLineIndicator = isMultiLine ? (
+      <i className="fa fa-paragraph multiline-indicator" />
+    ) : null;
 
     return (
-      <div className={`cell-content ${(isMultiLine) ? "is-multiline" : ""}`}
-        onClick={this.handleClick}
-      >
-        <div>{(isString(value)) ? value.split("\n")[0] : ""}</div>
+      <div
+        className={`cell-content ${isMultiLine ? "is-multiline" : ""}`}
+        onClick={this.handleClick}>
+        <div>{isString(value) ? value.split("\n")[0] : ""}</div>
         {expandButton}
         {multiLineIndicator}
       </div>

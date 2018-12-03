@@ -8,7 +8,7 @@ const isDev = true;
 
 module.exports = {
   entry: {
-    app: "./src/client.js"
+    app: ["babel-regenerator-runtime","./src/client.js"]
   },
   devtool: "inline-source-map",
   module: {
@@ -23,7 +23,7 @@ module.exports = {
         use: "json-loader"
       },
       {
-        test: /\.(jpe?g|png|gif|svg|webm|mp4)$/,
+        test: /\.(jpe?g|png\*?|gif|svg|webm|mp4)$/,
         include: [path.resolve(__dirname, "./src/img")],
         use: "file-loader"
       },
@@ -85,6 +85,10 @@ module.exports = {
       {
         from: path.resolve(__dirname, "./src/assets"),
         to: path.resolve(__dirname, "./dist/public/assets")
+      },
+      {
+        from: path.resolve(__dirname, "./src/img"),
+        to: path.resolve(__dirname, "./dist/img")
       },
       {
         from: path.resolve(__dirname, "./src/index.html"),

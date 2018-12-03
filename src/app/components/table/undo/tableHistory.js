@@ -18,8 +18,8 @@
  */
 
 import f from "lodash/fp";
-import * as ActionCreator from "../../../actions/ActionCreator";
-import changeCell from "../../../models/helpers/changeCell";
+// import * as ActionCreator from "../../../actions/ActionCreator";
+// import changeCell from "../../../models/helpers/changeCell";
 
 const MAX_UNDO_STEPS = 50;
 
@@ -83,7 +83,7 @@ async function popAndApply(view, stackName) {
 
   const isUndo = stackName === "undo";
   const {cell, value} = item;
-  ActionCreator.toggleCellSelection(cell, true); // do that here to feel more responsive
+  // ActionCreator.toggleCellSelection(cell, true); // do that here to feel more responsive
   const complementaryStack = (isUndo) ? "redo" : "undo";
   push(complementaryStack, {cell, value: f.clone(cell.value)});
   // Table might have been switched away and back; in this case cells have been reloaded, so we can't rely on
@@ -92,9 +92,9 @@ async function popAndApply(view, stackName) {
     .get(cell.tableId)
     .rows.get(cell.row.id)
     .cells.get(cell.id);
-  await changeCell({cell: possiblyReloadedCell, value, options: {type: "UNDO"}});
+  // await changeCell({cell: possiblyReloadedCell, value, options: {type: "UNDO"}});
   const applied = pop(view, stackName);
-  ActionCreator.broadcastHistoryEvent(canUndo(view), canRedo(view));
+  // ActionCreator.broadcastHistoryEvent(canUndo(view), canRedo(view));
   return applied;
 }
 
@@ -114,7 +114,7 @@ export const remember = ({cell, value}) => {
     cell,
     value: f.clone(value)
   });
-  ActionCreator.broadcastHistoryEvent(canUndo({tableId}), canRedo({tableId}));
+  // ActionCreator.broadcastHistoryEvent(canUndo({tableId}), canRedo({tableId}));
 };
 
 export const initHistoryOf = (tables) => {

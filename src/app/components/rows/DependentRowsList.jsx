@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import getDisplayName from "../../models/helpers/getDisplayValue";
+import getDisplayName from "../../helpers/getDisplayValue";
 import {getTableDisplayName} from "../../helpers/multiLanguage";
 import {translate} from "react-i18next";
 import Spinner from "../header/Spinner";
