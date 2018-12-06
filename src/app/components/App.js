@@ -5,7 +5,7 @@ import TableContainer from "../containers/TableContainer";
 import "../../scss/main.scss";
 
 // const router = new Router();
-
+// router.history.start();
 class App extends Component {
   render() {
     return <TableContainer tableId={77} langtag={"de"} fullyLoaded />;

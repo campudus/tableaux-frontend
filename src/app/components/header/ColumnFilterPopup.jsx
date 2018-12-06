@@ -60,7 +60,8 @@ class ColumnFilterPopup extends React.Component {
   };
 
   getKeyboardShortcuts = () => {
-    const filteredColumns = this.state.filteredColumns;
+    const {columns} = this.props;
+    const filteredColumns = this.props.columns.filter(this.buildFilter());
     const selectNext = (dir) => {
       const {selectedId} = this.state;
       const nextIdx = (selectedId + ((dir === Directions.UP) ? -1 : 1) + columns.length) % columns.length;
@@ -108,9 +109,10 @@ class ColumnFilterPopup extends React.Component {
     .getOrElseThrow("Could not extract displayName or name from" + col);
 
   renderCheckboxItems = ({key, index, style}) => {
-    const {filteredColumns} = this.state;
+    const filteredColumns = this.props.columns.filter(this.buildFilter());
     const col = filteredColumns[index];
     const name = this.getColName(col);
+    const {columnActions:{toggleColumnVisibility}, tableId} = this.props;
 
     const cssClass = classNames("column-filter-checkbox-wrapper", {
       "even": index % 2 === 0 && index !== this.state.selectedId,
@@ -122,7 +124,7 @@ class ColumnFilterPopup extends React.Component {
       <div className={cssClass}
         key={key}
         style={style}
-        onClick={this.toggleCol(col.id)}
+        onClick={()=>toggleColumnVisibility(tableId,col.id)}
         onMouseEnter={() => this.setState({selectedId: index})}
       >
         <input type="checkbox"
@@ -143,7 +145,7 @@ class ColumnFilterPopup extends React.Component {
   };
 
   render = () => {
-    const {columns} = this.props;
+    const {columns, columnActions:{hideAllColumns, showAllColumns}, tableId} = this.props;
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),
@@ -196,10 +198,10 @@ class ColumnFilterPopup extends React.Component {
         <div className="wrap-me-grey">
           <div className="row">
             <a href="#" className="button positive"
-              onClick={this.setAll(true)}
+              onClick={()=>showAllColumns(tableId)}
             >{i18n.t("table:show_all_columns")}</a>
             <a href="#" className="button neutral"
-              onClick={this.setAll(false)}
+              onClick={()=>hideAllColumns(tableId)}
             >{i18n.t("table:hide_all_columns")}</a>
           </div>
         </div>

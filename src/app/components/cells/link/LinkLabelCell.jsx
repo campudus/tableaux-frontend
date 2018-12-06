@@ -24,7 +24,7 @@ const LinkLabelCell = props => {
 
   return (
     <a href="#" onClick={() => console.log("onClick")} className="link-label">
-      <div className="label-text">{displayValue["de"]}</div>
+      <div className="label-text">{displayValue[langtag]}</div>
     </a>
   );
 };

@@ -8,7 +8,7 @@ const isDev = true;
 
 module.exports = {
   entry: {
-    app: ["babel-regenerator-runtime","./src/client.js"]
+    app: ["babel-regenerator-runtime","./src/app/router/router.js"]
   },
   devtool: "inline-source-map",
   module: {
@@ -49,26 +49,26 @@ module.exports = {
       {
         test: /\.woff2(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=./fonts/[hash].[ext]&mimetype=application/font-woff2"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-woff2"
       },
       {
         test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=./fonts/[hash].[ext]&mimetype=application/font-woff"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-woff"
       },
       {
         test: /\.ttf(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=./fonts/[hash].[ext]&mimetype=application/font-ttf"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-ttf"
       },
       {
         test: /\.eot(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=./fonts/[hash].[ext]&mimetype=application/vnd.ms-fontobject"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/vnd.ms-fontobject"
       },
       {
         test: /\.(svg|gif|jpg|jpeg|png)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file-loader?name=./img/[hash].[ext]"
+        loader: "file-loader?name=/img/[hash].[ext]"
       }
     ]
   },

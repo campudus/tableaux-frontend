@@ -24,9 +24,10 @@ const getTables = () => new Promise(
 );
 
 const validateLangtag = (langtag) => {
-  return (f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags))
-    ? TableauxConstants.DefaultLangtag
-    : langtag;
+  // return (f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags))
+  //   ? TableauxConstants.DefaultLangtag
+  //   : langtag;
+  return langtag;
 };
 
 async function getFirstTableId() {
@@ -35,13 +36,14 @@ async function getFirstTableId() {
 }
 
 async function validateTableId(tableId) {
-  const tables = await getTables();
-  const firstTableId = f.always(await getFirstTableId());
-  return f.cond([
-    [f.isNil, firstTableId],
-    [(id) => f.isNil(tables.get(id)), firstTableId],
-    [f.stubTrue, f.identity]
-  ])(tableId);
+  return tableId;
+  // const tables = await getTables();
+  // const firstTableId = f.always(await getFirstTableId());
+  // return f.cond([
+  //   [f.isNil, firstTableId],
+  //   [(id) => f.isNil(tables.get(id)), firstTableId],
+  //   [f.stubTrue, f.identity]
+  // ])(tableId);
 }
 
 const posOrNil = (string) => {

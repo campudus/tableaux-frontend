@@ -8,12 +8,15 @@ const {
   TABLE_LOADING_DATA,
   TABLE_DATA_LOADED,
   TABLE_DATA_LOAD_ERROR,
+  TOGGLE_COLUMN_VISIBILITY,
   COLUMNS_LOADING_DATA,
   COLUMNS_DATA_LOADED,
   COLUMNS_DATA_LOAD_ERROR,
   ALL_ROWS_LOADING_DATA,
   ALL_ROWS_DATA_LOADED,
-  ALL_ROWS_DATA_LOAD_ERROR
+  ALL_ROWS_DATA_LOAD_ERROR,
+  SHOW_ALL_COLUMNS,
+  HIDE_ALL_COLUMNS
 } = actionTypes;
 
 const loadTables = () => {
@@ -23,7 +26,6 @@ const loadTables = () => {
     actionTypes: [TABLE_LOADING_DATA, TABLE_DATA_LOADED, TABLE_DATA_LOAD_ERROR]
   };
 };
-
 
 const loadColumns = tableId => {
   return {
@@ -52,10 +54,34 @@ const loadAllRows = tableId => {
   };
 };
 
+const toggleColumnVisibility = (tableId, columnId) => {
+  return {
+    type: TOGGLE_COLUMN_VISIBILITY,
+    tableId,
+    columnId
+  };
+};
+
+const showAllColumns = (tableId) => {
+  return{
+    type: SHOW_ALL_COLUMNS,
+    tableId
+  }
+}
+const hideAllColumns = (tableId) => {
+  return{
+    type: HIDE_ALL_COLUMNS,
+    tableId
+  }
+}
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
-  loadAllRows: loadAllRows
+  loadAllRows: loadAllRows,
+  toggleColumnVisibility: toggleColumnVisibility,
+  showAllColumns: showAllColumns,
+  hideAllColumns: hideAllColumns
 };
 
 export default actionCreators;

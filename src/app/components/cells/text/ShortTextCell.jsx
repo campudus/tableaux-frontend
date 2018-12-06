@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import ActionCreator from "../../../actions/ActionCreator";
 import f, {isEmpty} from "lodash/fp";
 import TextCell from "./TextCell";
 // import changeCell from "../../../models/helpers/changeCell";
-import {branch, compose, pure, renderComponent, withHandlers} from "recompose";
 import SelectableShortText from "./SelectableShortText";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 
@@ -69,9 +67,4 @@ ShortTextCell.propTypes = {
   value: PropTypes.string
 };
 
-// export default compose(
-//   pure,
-//   withTextCellFallback, // just in case someone put a linebreak into the backend
-//   withEditFn
-// )(ShortTextCell);
 export default ShortTextCell;

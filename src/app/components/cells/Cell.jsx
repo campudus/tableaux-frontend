@@ -233,7 +233,6 @@ class Cell extends React.Component {
     } = this.props;
     const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
-
     // const kind = cell.isEditable ? this.props.cell.kind : "disabled";
     const {kind} = column;
     const {translationNeeded} = {translationNeeded:true}//cell.annotations;

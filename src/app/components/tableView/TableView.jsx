@@ -17,6 +17,7 @@ import ColumnFilter from "../header/ColumnFilter";
 import getFilteredRows from "../table/RowFilters";
 import i18n from "i18next";
 // import App from "ampersand-app";
+import TableauxRouter from "../../router/router";
 import pasteCellValue from "../cells/cellCopyHelper";
 import JumpSpinner from "./JumpSpinner";
 import withCustomProjection from "./withCustomProjection";
@@ -83,14 +84,14 @@ class TableView extends Component {
   };
 
   resetURL = () => {
-    // const history = App.router.history;
+    const history = TableauxRouter.history;
     const clearedUrl = history.getPath()
       .replace(/\?*/, "");
-    // App.router.history.navigate(clearedUrl,
-    //   {
-    //     trigger: false,
-    //     replace: true
-    //   });
+    TableauxRouter.history.navigate(clearedUrl,
+      {
+        trigger: false,
+        replace: true
+      });
   };
 
   componentDidMount = () => {
@@ -306,18 +307,22 @@ class TableView extends Component {
   };
 
   onLanguageSwitch = (newLangtag) => {
-    // const history = App.router.history;
+    console.log("onLanguageSwitch", newLangtag);
+    const history = TableauxRouter.history;
     const url = history.getPath();
-    history.navigate(url.replace(this.props.langtag, newLangtag));
+    console.log(url);
+    history.navigate(url.replace(this.props.initialParams.langtag, newLangtag));
   };
 
   render = () => {
     if (/*this.state.initialLoading*/false) {
       return <div className="initial-loader"><Spinner isLoading={true} /></div>;
     } else {
-      const {tables, table,columns,rows,langtag, overlayOpen, tableId} = this.props;
-      console.log(this.props);
+      const {tables, table,columns,rows,initialParams:{langtag,tableId},actions} = this.props;
+      const columnActions = f.pick(["toggleColumnVisibility","showAllColumns", "hideAllColumns"],actions);
+      console.log(columnActions);
       const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang} = this.state;
+      const overlayOpen = false;
 
       if (f.isNil(table)) {
         console.error("No table found with id " + tableId);
@@ -357,6 +362,8 @@ class TableView extends Component {
                 <ColumnFilter
                   langtag={langtag}
                   columns={columns}
+                  tableId={tableId}
+                  columnActions={columnActions}
                 />
               )
               : <div />

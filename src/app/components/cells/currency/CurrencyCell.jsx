@@ -10,7 +10,7 @@ import f from "lodash/fp";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
-// @translate(["table"])
+@translate(["table"])
 export default class CurrencyCell extends React.PureComponent {
   static propTypes = {
     cell: PropTypes.object.isRequired,
@@ -60,7 +60,7 @@ export default class CurrencyCell extends React.PureComponent {
       return (
         <div className="currency-wrapper">
           <span className="currency-no-country">
-            {"test"/*t("error_language_is_no_country")*/}
+            {t("error_language_is_no_country")}
             <i className="open-country fa fa-angle-down" />
           </span>
         </div>

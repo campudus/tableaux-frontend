@@ -26,7 +26,8 @@ class ColumnFilter extends React.Component {
   };
 
   render = () => {
-    const {langtag, columns} = this.props;
+    const {langtag, columns, tableId,columnActions} = this.props;
+    console.log(this.props);
     const {open} = this.state;
     const nHidden = f.flow(
       f.drop(1),
@@ -53,7 +54,7 @@ class ColumnFilter extends React.Component {
           }
         </a>
         {(open)
-          ? <ColumnFilterPopup langtag={langtag}
+          ? <ColumnFilterPopup langtag={langtag} tableId={tableId} columnActions={columnActions}
             close={this.handleClickedOutside}
             columns={this.props.columns}
           />

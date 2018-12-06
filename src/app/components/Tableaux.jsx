@@ -1,12 +1,12 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-import Dispatcher from "../dispatcher/Dispatcher";
+// import Dispatcher from "../dispatcher/Dispatcher";
 import TableauxConstants from "../constants/TableauxConstants";
 import GenericOverlay from "./overlay/GenericOverlay.jsx";
 import ViewRenderer from "./ViewRenderer.jsx";
 import i18n from "i18next";
 import {I18nextProvider} from "react-i18next";
-import ActionCreator from "../actions/ActionCreator";
+// import ActionCreator from "../actions/ActionCreator";
 import Toast from "./overlay/Toast.jsx";
 import * as f from "lodash/fp";
 import RootButton from "./RootButton";
@@ -22,12 +22,12 @@ export default class Tableaux extends PureComponent {
 
   constructor(props) {
     super(props);
-    this.currentLangtag = this.props.initialParams.langtag;
+    this.currentLangtag = props.initialParams.langtag;
 
-    Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay, this);
-    Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay, this);
-    Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
-    Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
+    // Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay, this);
+    // Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay, this);
+    // Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
+    // Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
 
     i18n
       .init({
@@ -61,18 +61,18 @@ export default class Tableaux extends PureComponent {
   }
 
   componentWillUnmount() {
-    Dispatcher.off(ActionTypes.OPEN_OVERLAY, this.openOverlay);
-    Dispatcher.off(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
-    Dispatcher.off(ActionTypes.SWITCH_VIEW, this.switchViewHandler);
+    // Dispatcher.off(ActionTypes.OPEN_OVERLAY, this.openOverlay);
+    // Dispatcher.off(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
+    // Dispatcher.off(ActionTypes.SWITCH_VIEW, this.switchViewHandler);
   }
 
   switchViewHandler(payload) {
     console.log("switchViewHandler", payload);
     // check if language has changed
     if (this.currentLangtag !== payload.params.langtag) {
-      ActionCreator.spinnerOn();
+      // ActionCreator.spinnerOn();
       i18n.changeLanguage(payload.params.langtag, () => {
-        ActionCreator.spinnerOff();
+        // ActionCreator.spinnerOff();
         this.currentLangtag = payload.params.langtag;
         this.changeView(payload);
       });
@@ -221,11 +221,13 @@ export default class Tableaux extends PureComponent {
 
   render() {
     const {activeOverlays, currentView, currentViewParams} = this.state;
+    const {initialParams, actions} = this.props;
     return (
       <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
           <ViewRenderer viewName={currentView}
-                        params={currentViewParams}
+                        params={initialParams}
+                        actions={actions}
           />
           {this.renderActiveOverlays()}
           <RootButton closeOverlay={this.closeOverlay}
