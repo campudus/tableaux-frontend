@@ -26,7 +26,9 @@ const columns = (state = initialState, action) => {
         [tableId]: {
           error: false,
           finishedLoading: true,
-          data: action.result.columns
+          data: f.map(column => {
+            return {...column, visible: true};
+          }, action.result.columns)
         }
       };
     case COLUMNS_DATA_LOAD_ERROR:
