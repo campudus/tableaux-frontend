@@ -29,8 +29,7 @@ class ColumnFilterPopup extends React.Component {
     };
     const {columns} = this.props;
     this.setState({
-      filter: filter,
-      columns: columns.filter(this.buildFilter(filter))
+      filter: filter
     });
   };
 
@@ -106,11 +105,10 @@ class ColumnFilterPopup extends React.Component {
     .map(f.prop(["displayName", this.props.langtag]))
     .orElse(f.prop(["displayName", FallbackLanguage]))
     .orElse(f.prop(["name"]))
-    .getOrElseThrow("Could not extract displayName or name from" + col);
+    .getOrElseThrow("Could not extract displayName or name from  " + col);
 
-  renderCheckboxItems = ({key, index, style}) => {
-    const filteredColumns = this.props.columns.filter(this.buildFilter());
-    const col = filteredColumns[index];
+  renderCheckboxItems = columns => ({key, index, style}) => {
+    const col = columns[index];
     const name = this.getColName(col);
     const {columnActions:{toggleColumnVisibility}, tableId} = this.props;
 
@@ -151,7 +149,7 @@ class ColumnFilterPopup extends React.Component {
       f.reject("visible"),
       f.size
     )(columns);
-    const {filteredColumns} = this.state;
+    const filteredColumns = this.props.columns.filter(this.buildFilter(this.state.filter));
 
     return (
       <div id="column-filter-popup-wrapper"
@@ -188,7 +186,7 @@ class ColumnFilterPopup extends React.Component {
             rowCount={filteredColumns.length}
             rowHeight={30}
             scrollToIndex={this.state.selectedId}
-            rowRenderer={this.renderCheckboxItems}
+            rowRenderer={this.renderCheckboxItems(filteredColumns)}
             style={{overflowX: "hidden"}} // react-virtualized will override CSS overflow style, so set it here
           />
         }
