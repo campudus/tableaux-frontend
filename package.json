@@ -16,6 +16,7 @@
     "@storybook/addon-knobs": "^4.0.4",
     "@storybook/react": "^3.4.11",
     "@types/react": "^16.0.38",
+    "ampersand-app": "^2.0.0",
     "autoprefixer": "^7.1.5",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -54,7 +55,6 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
-    "ampersand-app": "^2.0.0",
     "ampersand-router": "^5.0.0",
     "es6-promise": "^4.2.5",
     "http-proxy-middleware": "^0.19.0",
