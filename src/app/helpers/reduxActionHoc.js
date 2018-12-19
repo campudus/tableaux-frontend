@@ -1,6 +1,6 @@
 import React from "react";
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import actionCreators from "../redux/actionCreators";
 
@@ -8,12 +8,12 @@ export default function(ComposedComponent, mapStatetoProps) {
   class ReduxContainer extends React.PureComponent {
     constructor(props) {
       super(props);
-      const {dispatch} = props;
+      const { dispatch } = props;
       this.boundActionCreators = bindActionCreators(actionCreators, dispatch);
     }
     render() {
       return (
-        <ComposedComponent {...this.props} actions={{...this.boundActionCreators}} />
+        <ComposedComponent {...this.props} actions={this.boundActionCreators} />
       );
     }
   }
