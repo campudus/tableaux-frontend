@@ -5,14 +5,14 @@ import TableView from "./tableView/TableView.jsx";
 // import MediaView from "../components/media/MediaView.jsx";
 import DashboardView from "./dashboard/DashboardView";
 import {pure} from "recompose";
+import reduxActionHoc from "../helpers/reduxActionHoc";
 
-const viewNameIs = (name) => f.matchesProperty("viewName", name);
+const viewNameIs = name => f.matchesProperty("viewName", name);
 
-const renderTableView = ({params}) => {console.log(params);return(
-  <TableView {...params}
-             overlayOpen={!!params.overlayOpen}
-  />
-)};
+const renderTableView = props => {
+  const {params} = props;
+  return <TableView {...params} overlayOpen={!!props.overlayOpen} />;
+};
 
 const renderMediaView = ({params}) => (
   <div />
@@ -21,9 +21,7 @@ const renderMediaView = ({params}) => (
   // />
 );
 
-const renderDashboard = ({params}) => (
-  <DashboardView {...params} />
-);
+const renderDashboard = ({params}) => <DashboardView {...params} />;
 
 const ViewRenderer = f.cond([
   [viewNameIs(ViewNames.TABLE_VIEW), renderTableView],
@@ -31,4 +29,6 @@ const ViewRenderer = f.cond([
   [viewNameIs(ViewNames.DASHBOARD_VIEW), renderDashboard]
 ]);
 
-export default pure(ViewRenderer);
+export default reduxActionHoc(ViewRenderer, () => {
+  return {};
+});

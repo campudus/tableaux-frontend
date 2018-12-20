@@ -143,7 +143,7 @@ class ColumnFilterPopup extends React.Component {
   };
 
   render = () => {
-    const {columns, columnActions:{hideAllColumns, showAllColumns}, tableId} = this.props;
+    const {columns, columnActions:{hideAllColumns, setColumnsVisible}, tableId} = this.props;
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),
@@ -196,7 +196,7 @@ class ColumnFilterPopup extends React.Component {
         <div className="wrap-me-grey">
           <div className="row">
             <a href="#" className="button positive"
-              onClick={()=>showAllColumns(tableId)}
+              onClick={()=>setColumnsVisible(f.map("id",columns))}
             >{i18n.t("table:show_all_columns")}</a>
             <a href="#" className="button neutral"
               onClick={()=>hideAllColumns(tableId)}

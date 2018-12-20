@@ -35,15 +35,14 @@ async function getFirstTableId() {
   return f.get("id", tables.first());
 }
 
-async function validateTableId(tableId) {
+async function validateTableId(tableId, tables) {
   return tableId;
-  // const tables = await getTables();
-  // const firstTableId = f.always(await getFirstTableId());
-  // return f.cond([
-  //   [f.isNil, firstTableId],
-  //   [(id) => f.isNil(tables.get(id)), firstTableId],
-  //   [f.stubTrue, f.identity]
-  // ])(tableId);
+  const firstTableId = f.first(tables);
+  return f.cond([
+    [f.isNil, firstTableId],
+    [(id) => f.isNil(tables[id]), firstTableId],
+    [f.stubTrue, f.identity]
+  ])(tableId);
 }
 
 const posOrNil = (string) => {

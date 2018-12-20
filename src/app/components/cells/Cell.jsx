@@ -262,6 +262,7 @@ class Cell extends React.PureComponent {
     const {
       annotationsOpen,
       value,
+      displayValue,
       column,
       langtag,
       selected,
@@ -343,17 +344,17 @@ class Cell extends React.PureComponent {
   }
 }
 
-Cell.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  selected: PropTypes.bool,
-  inSelectedRow: PropTypes.bool,
-  editing: PropTypes.bool,
-  row: PropTypes.object.isRequired,
-  column: PropTypes.object.isRequired,
-  table: PropTypes.object.isRequired
-  //  annotationsOpen: PropTypes.bool,
-  //  isExpandedCell: PropTypes.bool.isRequired
-};
+// Cell.propTypes = {
+//   cell: PropTypes.object.isRequired,
+//   langtag: PropTypes.string.isRequired,
+//   selected: PropTypes.bool,
+//   inSelectedRow: PropTypes.bool,
+//   editing: PropTypes.bool,
+//   row: PropTypes.object.isRequired,
+//   table: PropTypes.object.isRequired,
+//   annotationsOpen: PropTypes.bool,
+//   isExpandedCell: PropTypes.bool.isRequired
+// };
 
 const isRepeaterCell = ({ cell, isExpandedCell }) =>
   isExpandedCell &&

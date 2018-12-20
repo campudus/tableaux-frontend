@@ -2,10 +2,8 @@ import React from "react";
 import f from "lodash/fp";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import TableSwitcherPopup from "./TableSwitcherPopup";
-// import ActionCreator from "../../../actions/ActionCreator";
 import {translate} from "react-i18next";
 import * as AccessControl from "../../../helpers/accessManagementHelper";
-// import Dispatcher from "../../../dispatcher/Dispatcher";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
@@ -26,21 +24,8 @@ class TableSwitcherButton extends React.PureComponent {
     this.forceUpdate();
   };
 
-  componentWillMount = () => {
-    // Dispatcher.on(TableauxConstants.ActionTypes.REFRESH_TABLE_NAMES, this.refresh);
-  };
-
-  componentWillUnmount = () => {
-    // Dispatcher.off(TableauxConstants.ActionTypes.REFRESH_TABLE_NAMES, this.refresh);
-  };
-
   onClickedOutside = event => {
     this.setState({isOpen: false});
-  };
-
-  onClickedTable = table => {
-    this.onClickedOutside({});
-    // ActionCreator.switchTable(table.id, this.props.langtag);
   };
 
   onClickedGroup = groupId => {
@@ -53,7 +38,7 @@ class TableSwitcherButton extends React.PureComponent {
   };
 
   renderPopup = () => {
-    const {t, langtag, tables, currentTable} = this.props;
+    const {t, langtag, tables, currentTable,navigate} = this.props;
 
     const groups = f.flow(
       f.reject("hidden"), //   ...of visible tables
@@ -99,9 +84,9 @@ class TableSwitcherButton extends React.PureComponent {
         tables={sortedTables}
         currentTable={currentTable}
         onClickedOutside={this.onClickedOutside}
-        onClickedTable={this.onClickedTable}
         onClickedGroup={this.onClickedGroup}
         currentGroupId={this.state.currentGroupId}
+        navigate={navigate}
       />
     );
   };

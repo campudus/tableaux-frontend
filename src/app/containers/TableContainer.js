@@ -26,17 +26,9 @@ class TableContainer extends Component {
   constructor(props) {
     super(props);
   }
-  componentWillMount() {
-    const {
-      actions: { loadTables, loadAllRows, loadColumns },
-      initialParams: { tableId }
-    } = this.props;
-    loadTables();
-    loadAllRows(tableId);
-    loadColumns(tableId);
-  }
   render() {
-    const { table, columns, rows, initialParams, actions } = this.props;
+    const {table, columns, rows,initialParams} = this.props;
+    console.log(this.props);
     if (f.isEmpty(table) || f.isEmpty(rows) || f.isEmpty(columns)) {
       // return <div>waiting</div>
       return <Spinner isLoading />;

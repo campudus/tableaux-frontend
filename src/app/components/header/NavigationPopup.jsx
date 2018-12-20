@@ -8,7 +8,6 @@ import Link from "../helperComponents/Link";
 import {ENABLE_DASHBOARD} from "../../FeatureFlags";
 
 const NavigationPopup = (props) => {
-  console.log("NavigationPopup");
   const {langtag, t} = props;
   return (
     <div id="main-navigation">
@@ -52,12 +51,3 @@ NavigationPopup.propTypes = {
 };
 
 export default translate(["header"])(NavigationPopup);
-// export default compose(
-//   branch(
-//     (props) => !props.navigationOpen,
-//     renderNothing
-//   ),
-//   pure,
-//   translate(["header"]),
-//   handleClickOutside
-// )(NavigationPopup);

@@ -32,7 +32,7 @@ const getStoredViewObject = (tableId = null, name = "default") => {
 
 // ({table: Table model}) -> props object with "projection" object from localStorage added
 const loadProjection = (props) => {
-  const tableId = props.table.id;
+  const { tableId } = props;
   const storedViewObject = getStoredViewObject(tableId);
   const storedColumnView = f.get("visibleColumns", storedViewObject);
   const storedRowsFilter = f.get("rowsFilter", storedViewObject) || {};

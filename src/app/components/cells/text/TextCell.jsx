@@ -19,12 +19,12 @@ import i18n from "i18next";
 import "../../../../scss/main.scss";
 
 class TextCell extends PureComponent {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired,
-    editing: PropTypes.bool.isRequired,
-    selected: PropTypes.bool.isRequired
-  };
+  // static propTypes = {
+  //   langtag: PropTypes.string.isRequired,
+  //   cell: PropTypes.object.isRequired,
+  //   editing: PropTypes.bool.isRequired,
+  //   selected: PropTypes.bool.isRequired
+  // };
 
   saveCell = newValue => {
     const oldValue = this.getValue();

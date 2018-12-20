@@ -58,12 +58,11 @@ const NumericCell = props => {
   }
 };
 
-NumericCell.propTypes = {
-  value: PropTypes.any.isRequired,
-  displayValue: PropTypes.string.isRequired,
-  editing: PropTypes.bool.isRequired,
-  langtag: PropTypes.string.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func
-};
+// NumericCell.propTypes = {
+//   cell: PropTypes.object.isRequired,
+//   langtag: PropTypes.string.isRequired,
+//   editing: PropTypes.bool.isRequired,
+//   setCellKeyboardShortcuts: PropTypes.func
+// };
 
 export default NumericCell;

@@ -26,7 +26,6 @@ export default class ColumnHeader extends PureComponent {
 
   getDisplayName = () => {
     const {column, column: {name, displayName}, langtag, tableId, tables} = this.props;
-    console.log(name, displayName);
     // const table = tables.get(tableId);
       return displayName[langtag] || displayName[DefaultLangtag] || name;
   };

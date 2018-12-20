@@ -16,7 +16,9 @@ class FilterButton extends React.Component {
 
   state = {
     open: false,
-    filterMode: either(this.props.currentFilter).map(f.prop(["filterMode"])).getOrElse(FilterModes.CONTAINS)
+    filterMode: either(this.props.currentFilter)
+      .map(f.prop(["filterMode"]))
+      .getOrElse(FilterModes.CONTAINS)
   };
 
   constructor(props) {
@@ -26,23 +28,29 @@ class FilterButton extends React.Component {
     };
   }
 
-  handleClickedOutside = (event) => {
+  handleClickedOutside = event => {
     this.setState({open: false});
   };
 
   renderFilterPopup() {
-    const {currentFilter,columns, langtag} = this.props;
+    const {currentFilter, columns, langtag, filterActions, filters} = this.props;
     if (this.state.open) {
       return (
-        <FilterPopup langtag={langtag} onClickedOutside={this.handleClickedOutside}
-          columns={columns} currentFilter={currentFilter} />
+        <FilterPopup
+          langtag={langtag}
+          onClickedOutside={this.handleClickedOutside}
+          columns={columns}
+          currentFilter={currentFilter}
+          filterActions={filterActions}
+          filters={filters}
+        />
       );
     } else {
       return null;
     }
   }
 
-  toggleFilter = (event) => {
+  toggleFilter = event => {
     event.preventDefault();
     this.setState({open: !this.state.open});
   };
@@ -57,16 +65,20 @@ class FilterButton extends React.Component {
     }
 
     const cssClass = classNames({
-      "active": open,
-      "has-filter": !f.isEmpty(currentFilter)
-        && (!f.isEmpty(currentFilter.filters) || f.isInteger(currentFilter.sortColumnId))
-        && !open
+      active: open,
+      "has-filter":
+        !f.isEmpty(currentFilter) &&
+        (!f.isEmpty(currentFilter.filters) ||
+          f.isInteger(currentFilter.sortColumnId)) &&
+        !open
     });
 
     return (
       <div id="filter-wrapper" className={cssClass}>
         <a href="#" className={buttonClass} onClick={this.toggleFilter}>
-          <i className="fa fa-filter" />{t("button.title")}</a>
+          <i className="fa fa-filter" />
+          {t("button.title")}
+        </a>
         {this.renderFilterPopup()}
       </div>
     );

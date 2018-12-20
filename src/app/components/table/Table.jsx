@@ -218,15 +218,15 @@ class Table extends Component {
   }
 }
 
-Table.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  table: PropTypes.object.isRequired,
-  overlayOpen: PropTypes.bool,
-  rows: PropTypes.object,
-  rowKeys: PropTypes.string.isRequired,
-  columnKeys: PropTypes.string,
-  tables: PropTypes.object.isRequired,
-  fullyLoaded: PropTypes.bool.isRequired
-};
+// Table.propTypes = {
+//   langtag: PropTypes.string.isRequired,
+//   table: PropTypes.object.isRequired,
+//   overlayOpen: PropTypes.bool,
+//   rows: PropTypes.object,
+//   rowKeys: PropTypes.string.isRequired,
+//   columnKeys: PropTypes.string,
+//   tables: PropTypes.object.isRequired,
+//   fullyLoaded: PropTypes.bool.isRequired
+// };
 
 export default Table;

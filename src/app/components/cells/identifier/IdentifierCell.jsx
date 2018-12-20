@@ -19,12 +19,12 @@ const IdentifierCell = props => {
   );
 };
 
-IdentifierCell.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  cell: PropTypes.object.isRequired,
-  editing: PropTypes.bool.isRequired,
-  selected: PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func.isRequired
-};
+// IdentifierCell.propTypes = {
+//   langtag: PropTypes.string.isRequired,
+//   cell: PropTypes.object.isRequired,
+//   editing: PropTypes.bool.isRequired,
+//   selected: PropTypes.bool.isRequired,
+//   setCellKeyboardShortcuts: PropTypes.func.isRequired
+// };
 
 export default IdentifierCell;

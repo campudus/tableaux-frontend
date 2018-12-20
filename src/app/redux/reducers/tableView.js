@@ -3,6 +3,8 @@ import f from "lodash/fp";
 import { DefaultLangtag, langtags } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
 import { checkOrThrow } from "../../specs/type";
+import {toObjectById} from "../../helpers/funcHelpers";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
 

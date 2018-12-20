@@ -27,7 +27,6 @@ class ColumnFilter extends React.Component {
 
   render = () => {
     const {langtag, columns, tableId,columnActions} = this.props;
-    console.log(this.props);
     const {open} = this.state;
     const nHidden = f.flow(
       f.drop(1),
@@ -65,9 +64,9 @@ class ColumnFilter extends React.Component {
   }
 }
 
-ColumnFilter.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  columns: PropTypes.object.isRequired
-};
+// ColumnFilter.propTypes = {
+//   langtag: PropTypes.string.isRequired,
+//   columns: PropTypes.object.isRequired
+// };
 
 export default ColumnFilter;

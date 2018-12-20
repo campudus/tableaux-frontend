@@ -29,20 +29,20 @@ const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
 export default class VirtualTable extends PureComponent {
-  static propTypes = {
-    columns: PropTypes.array.isRequired,
-    columnKeys: PropTypes.string,
-    rows: PropTypes.array.isRequired,
-    rowKeys: PropTypes.string, // re-render hint
-    table: PropTypes.object.isRequired,
-    tables: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    expandedRowIds: PropTypes.array,
-    selectedCell: PropTypes.object,
-    selectedCellEditing: PropTypes.bool,
-    selectedCellExpandedRow: PropTypes.string,
-    visibleColumns: PropTypes.string.isRequired
-  };
+  // static propTypes = {
+  //   columns: PropTypes.object.isRequired,
+  //   columnKeys: PropTypes.string,
+  //   rows: PropTypes.object.isRequired,
+  //   rowKeys: PropTypes.string, // re-render hint
+  //   table: PropTypes.object.isRequired,
+  //   tables: PropTypes.object.isRequired,
+  //   langtag: PropTypes.string.isRequired,
+  //   expandedRowIds: PropTypes.array,
+  //   selectedCell: PropTypes.object,
+  //   selectedCellEditing: PropTypes.bool,
+  //   selectedCellExpandedRow: PropTypes.string,
+  //   visibleColumns: PropTypes.string.isRequired
+  // };
 
   constructor(props) {
     super(props);
@@ -300,6 +300,7 @@ export default class VirtualTable extends PureComponent {
       <Cell
         actions={actions}
         value={value}
+        displayValue={displayValue}
         column={column}
         annotationState={null /*getAnnotationState(cell)*/}
         focusTable={this.props.test}
