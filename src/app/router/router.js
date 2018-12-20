@@ -16,10 +16,20 @@ import {
 } from "./routeValidators";
 import {ENABLE_DASHBOARD} from "../FeatureFlags";
 import {Provider} from "react-redux";
+import {bindActionCreators} from "redux";
 import store from "../redux/store.js";
+import actionCreators from "../redux/actionCreators";
+import Tableaux from "../components/Tableaux";
 
 export let currentLangtag = null;
 const router = new Router();
+
+// const loadCompleteTable = (tableId, actions) =>
+//   f.compose(
+//     f.each(func => func(tableId)),
+//     f.values,
+//     f.pick(["setCurrentTable", "loadColumns", "loadAllRows"])
+//   )(actions);
 
 const extendedRouter = Router.extend({
   routes: {
@@ -37,52 +47,43 @@ const extendedRouter = Router.extend({
   alreadyRendered: false,
 
   home: function() {
-    console.log("home called");
     // (ENABLE_DASHBOARD) ? this.dashboard() : this.tableBrowser();
     this.tableBrowser();
   },
 
   redirectToNewUrl: function(langtag = null, rest = null) {
-    console.log("redirectToNewUrl");
     const prefix = langtag ? `${langtag}/` : "";
     const suffix = rest || "";
     return this.redirectTo(`${prefix}tables/${suffix}`);
   },
+  actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
-    console.log("renderOrSwitchView");
+    const {loadTables, loadAllRows, loadColumns} = this.actions;
+    const {tableId} = params;
+    // loadAllRows(tableId);
+    // loadColumns(tableId);
     if (/*this.alreadyRendered*/ false) {
-      // ActionCreator.switchView(viewName, params);
+      this.switchTableHandler(params);
     } else {
       this.alreadyRendered = true;
-      console.log(viewName, params);
 
+      //<TableContainer initialViewName={viewName} initialParams={{...params, navigate: this.navigate.bind(this)}}/>
       ReactDOM.render(
         <Provider store={store}>
-          <TableContainer initialViewName={viewName} initialParams={params}/>
+          <Tableaux
+            initialViewName={viewName}
+            initialParams={{...params, navigate: this.navigate.bind(this)}}
+          />
         </Provider>,
         document.getElementById("tableaux")
       );
-
-      // Hot Module Replacement API
-      // if (module.hot) {
-      //   module.hot.accept("../components/Tableaux.jsx", () => {
-      //     const TableauxNext = require("../components/Tableaux.jsx").default;
-
-      //     ReactDOM.render(
-      //       <AppContainer><TableauxNext initialViewName={viewName} initialParams={params} /></AppContainer>,
-      //       document.getElementById("tableaux")
-      //     );
-      //   });
-      // }
     }
   },
 
   initialize: function(options) {
-    // console.log("init router");
-    // Dispatcher.on(ActionTypes.SWITCH_TABLE, this.switchTableHandler);
-    // Dispatcher.on(ActionTypes.SWITCH_FOLDER, this.switchFolderHandler);
-    // Dispatcher.on(ActionTypes.SWITCH_LANGUAGE, this.switchLanguageHandler, this);
+    const {loadTables} = this.actions;
+    loadTables();
   },
 
   switchLanguageHandler: function(newLangtagObj) {
@@ -93,9 +94,11 @@ const extendedRouter = Router.extend({
     his.navigate(newPath, {trigger: true});
   },
 
-  switchTableHandler: async function(payload) {
+  switchTableHandler: function(payload) {
+    console.log("switchTableHandler");
+    const {tables} = store.getState();
     const langtag = payload.langtag;
-    const tableId = await validateTableId(payload.id);
+    const tableId = validateTableId(payload.id, tables);
     Raven.captureBreadcrumb({message: "Switch table", data: payload});
     Raven.captureMessage("Switch table", {level: "info"});
     router.navigate(langtag + "/tables/" + tableId);
@@ -115,13 +118,20 @@ const extendedRouter = Router.extend({
   },
 
   tableBrowser: async function(langtag, tableId, columnId, rowId, options) {
-    console.log("TableauxRouter.tableBrowser", arguments);
-
     const validTableId = await validateTableId(parseInt(tableId));
     const validColumnId = posOrNil(columnId);
     const validRowId = posOrNil(rowId);
-    // const tables = await getTables();
     const validLangtag = validateLangtag(langtag);
+    
+    const {
+      tableView: {currentTable},
+      tables
+    } = store.getState();
+
+    if (currentTable != validTableId || !currentTable) {
+      const {loadCompleteTable} = this.actions;
+      loadCompleteTable(tableId);
+    }
 
     const fullUrl =
       "/" +
@@ -138,8 +148,6 @@ const extendedRouter = Router.extend({
       rowId: validRowId,
       urlOptions: parseOptions(options)
     };
-
-    console.log("tableParams", tableParams);
 
     this.renderOrSwitchView(
       TableauxConstants.ViewNames.TABLE_VIEW,

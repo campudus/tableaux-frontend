@@ -19,7 +19,8 @@ import VirtualTable from "./VirtualTable";
 // @connectToAmpersand
 // @listensToClickOutside
 
-class Table extends Component { // PureComponent will not react to updates called from connectToAmpersand
+class Table extends Component {
+  // PureComponent will not react to updates called from connectToAmpersand
   /**
    * This is an anti-pattern on purpose
    * Don't change this, its more performant than using this.state !
@@ -67,7 +68,6 @@ class Table extends Component { // PureComponent will not react to updates calle
     // Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     // Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     // Dispatcher.off(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
-
     // window.removeEventListener("resize", this.windowResize);
     // this.props.table.rows.off("add", tableRowsWorker.rowAdded.bind(this));
     // window.GLOBAL_TABLEAUX.tableRowsDom = null;
@@ -86,7 +86,7 @@ class Table extends Component { // PureComponent will not react to updates calle
     }
   }
 
-  handleClickOutside = (event) => {
+  handleClickOutside = event => {
     /*
      Prevent to render when clicking on already selected cell and don't clear when some cell is editing. This way cells
      like shorttext will be saved on the first click outside and on the second click it gets deselected.
@@ -98,18 +98,20 @@ class Table extends Component { // PureComponent will not react to updates calle
     }
   };
 
-  onMouseDownHandler = (e) => {
+  onMouseDownHandler = e => {
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
     // in the header
-    if (maybe(this.tableDOMNode)
-      .exec("contains", document.activeElement)
-      .getOrElse(false)
+    if (
+      maybe(this.tableDOMNode)
+        .exec("contains", document.activeElement)
+        .getOrElse(false)
     ) {
       // deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
       // can't differentiate between clicking the scrollbar or content
-      if (maybe(this.headerDOMElement)
-        .exec("contains", e.target)
-        .getOrElse(false)
+      if (
+        maybe(this.headerDOMElement)
+          .exec("contains", e.target)
+          .getOrElse(false)
       ) {
         this.handleClickOutside(e);
         e.preventDefault();
@@ -127,31 +129,32 @@ class Table extends Component { // PureComponent will not react to updates calle
     this.setState({windowHeight: window.innerHeight});
   };
 
-  findAndStoreTableDiv = (virtualDOMNode) => {
+  findAndStoreTableDiv = virtualDOMNode => {
     this.tableDOMNode = ReactDOM.findDOMNode(virtualDOMNode);
   };
 
   noRowsInfo = () => {
     const {rows, table} = this.props;
-    return (this.props.fullyLoaded && f.isEmpty(rows))
-      ? (
-        <Portal isOpened>
-          <div className="table-has-no-rows">
-            {
-              (rows === table.rows)
-                ? i18n.t("table:has-no-rows")
-                : i18n.t("table:search_no_results")
-            }
-          </div>
-        </Portal>
-      )
-      : null;
+    return this.props.fullyLoaded && f.isEmpty(rows) ? (
+      <Portal isOpened>
+        <div className="table-has-no-rows">
+          {rows === table.rows
+            ? i18n.t("table:has-no-rows")
+            : i18n.t("table:search_no_results")}
+        </div>
+      </Portal>
+    ) : null;
   };
 
   render() {
-    const { columns, rows, tables, table, langtag} = this.props;
-    console.log(columns);
-    const {selectedCell, selectedCellEditing, expandedRowIds, selectedCellExpandedRow} = this.state;
+    const {columns, rows, tables, table, langtag} = this.props;
+    console.lo
+    const {
+      selectedCell,
+      selectedCellEditing,
+      expandedRowIds,
+      selectedCellExpandedRow
+    } = this.state;
     const rowKeys = f.flow(
       f.keys,
       f.toString
@@ -162,15 +165,28 @@ class Table extends Component { // PureComponent will not react to updates calle
     )(columns);
 
     return (
-      <section id="table-wrapper" ref="tableWrapper" tabIndex="-1"
-        onKeyDown={()=>console.log("onKeyDown")/*KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
-          this))*/}
+      <section
+        id="table-wrapper"
+        ref="tableWrapper"
+        tabIndex="-1"
+        onKeyDown={
+          () =>
+            console.log(
+              "onKeyDown"
+            ) /*KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
+          this))*/
+        }
         onMouseDown={this.onMouseDownHandler}>
         <div className="tableaux-table" ref="tableInner">
-          <VirtualTable key={`virtual-table-${f.get("id", table)}`}
-            columns={columns} ref={this.findAndStoreTableDiv}
+          <VirtualTable
+            key={`virtual-table-${f.get("id", table)}`}
+            columns={columns}
+            ref={this.findAndStoreTableDiv}
             rows={rows}
-            focusTable={() => null/*tableNavigationWorker.checkFocusInsideTable.call(this)*/}
+            focusTable={
+              () =>
+                null /*tableNavigationWorker.checkFocusInsideTable.call(this)*/
+            }
             rowKeys={rowKeys}
             columnKeys={columnKeys}
             table={table}
@@ -185,21 +201,21 @@ class Table extends Component { // PureComponent will not react to updates calle
           />
         </div>
         {this.noRowsInfo()}
-        {/*tableContextMenu.getRowContextMenu.call(this)*/null}
+        {/*tableContextMenu.getRowContextMenu.call(this)*/ null}
       </section>
     );
   }
 }
 
-Table.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  table: PropTypes.object.isRequired,
-  overlayOpen: PropTypes.bool,
-  rows: PropTypes.object,
-  rowKeys: PropTypes.string.isRequired,
-  columnKeys: PropTypes.string,
-  tables: PropTypes.object.isRequired,
-  fullyLoaded: PropTypes.bool.isRequired
-};
+// Table.propTypes = {
+//   langtag: PropTypes.string.isRequired,
+//   table: PropTypes.object.isRequired,
+//   overlayOpen: PropTypes.bool,
+//   rows: PropTypes.object,
+//   rowKeys: PropTypes.string.isRequired,
+//   columnKeys: PropTypes.string,
+//   tables: PropTypes.object.isRequired,
+//   fullyLoaded: PropTypes.bool.isRequired
+// };
 
 export default Table;

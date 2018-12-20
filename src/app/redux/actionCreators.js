@@ -1,6 +1,9 @@
+import f from "lodash/fp";
 import actionTypes from "./actionTypes";
 import {makeRequest} from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
+import getDisplayValue from "../helpers/getDisplayValue";
+import TableauxConstants from "../constants/TableauxConstants";
 
 const {getAllTables, getAllColumnsForTable, getAllRowsForTable} = API_ROUTES;
 
@@ -15,12 +18,17 @@ const {
   ALL_ROWS_LOADING_DATA,
   ALL_ROWS_DATA_LOADED,
   ALL_ROWS_DATA_LOAD_ERROR,
-  SHOW_ALL_COLUMNS,
-  HIDE_ALL_COLUMNS
+  SET_COLUMNS_VISIBLE,
+  HIDE_ALL_COLUMNS,
+  SET_FILTERS_AND_SORTING,
+  SET_CURRENT_TABLE,
+  DELETE_FILTERS,
+  GENERATED_DISPLAY_VALUES,
+  START_GENERATING_DISPLAY_VALUES,
+  SET_CURRENT_LANGUAGE
 } = actionTypes;
 
 const loadTables = () => {
-  console.log("loadTables");
   return {
     promise: makeRequest({apiRoute: getAllTables(), type: "GET"}),
     actionTypes: [TABLE_LOADING_DATA, TABLE_DATA_LOADED, TABLE_DATA_LOAD_ERROR]
@@ -57,21 +65,71 @@ const loadAllRows = tableId => {
 const toggleColumnVisibility = (tableId, columnId) => {
   return {
     type: TOGGLE_COLUMN_VISIBILITY,
-    tableId,
     columnId
   };
 };
 
-const showAllColumns = (tableId) => {
-  return{
-    type: SHOW_ALL_COLUMNS,
-    tableId
-  }
-}
-const hideAllColumns = (tableId) => {
-  return{
+const setColumnsVisible = columnIds => {
+  return {
+    type: SET_COLUMNS_VISIBLE,
+    columnIds
+  };
+};
+const hideAllColumns = tableId => {
+  return {
     type: HIDE_ALL_COLUMNS,
     tableId
+  };
+};
+
+const setFiltersAndSorting = (filters, sorting) => {
+  return {
+    type: SET_FILTERS_AND_SORTING,
+    filters,
+    sorting
+  };
+};
+
+const setCurrentTable = tableId => {
+  return {
+    type: SET_CURRENT_TABLE,
+    tableId
+  };
+};
+
+const deleteFilters = () => {
+  return {type: DELETE_FILTERS};
+};
+
+const trace = str => element => {console.log(str, element); return element};
+const mapWithIndex = f.map.convert({cap:false});
+
+const generateDisplayValues = (rows, columns) => (dispatch, getState) => {
+  dispatch({type: START_GENERATING_DISPLAY_VALUES});
+  const t1 = performance.now();
+  const displayValues = f.compose(
+    f.map(mapWithIndex((value,id) => getDisplayValue(columns[id],value))),
+    f.map("values")
+  )(rows);
+  const t2 = performance.now();
+  console.log("generate",t2-t1);
+
+  dispatch({
+    type: GENERATED_DISPLAY_VALUES,
+    displayValues
+  });
+};
+
+const loadCompleteTable = tableId => (dispatch, getState) => {
+  dispatch(setCurrentTable(tableId));
+  dispatch(loadColumns(tableId));
+  dispatch(loadAllRows(tableId));
+};
+
+const setCurrentLanguage = lang => {
+  return {
+    type:SET_CURRENT_LANGUAGE,
+    lang
   }
 }
 
@@ -80,8 +138,14 @@ const actionCreators = {
   loadColumns: loadColumns,
   loadAllRows: loadAllRows,
   toggleColumnVisibility: toggleColumnVisibility,
-  showAllColumns: showAllColumns,
-  hideAllColumns: hideAllColumns
+  setColumnsVisible: setColumnsVisible,
+  hideAllColumns: hideAllColumns,
+  setFiltersAndSorting: setFiltersAndSorting,
+  setCurrentTable: setCurrentTable,
+  deleteFilters: deleteFilters,
+  generateDisplayValues: generateDisplayValues,
+  loadCompleteTable: loadCompleteTable,
+  setCurrentLanguage: setCurrentLanguage
 };
 
 export default actionCreators;

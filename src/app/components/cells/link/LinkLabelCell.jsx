@@ -29,13 +29,13 @@ const LinkLabelCell = props => {
   );
 };
 
-LinkLabelCell.propTypes = {
-  cell: PropTypes.object.isRequired,
-  linkElement: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired,
-  linkIndexAt: PropTypes.number.isRequired,
-  clickable: PropTypes.bool
-};
+// LinkLabelCell.propTypes = {
+//   cell: PropTypes.object.isRequired,
+//   linkElement: PropTypes.object.isRequired,
+//   langtag: PropTypes.string.isRequired,
+//   linkIndexAt: PropTypes.number.isRequired,
+//   clickable: PropTypes.bool
+// };
 
 // const enhance = compose(
 //   withHandlers({

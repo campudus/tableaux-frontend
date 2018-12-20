@@ -40,13 +40,13 @@ const LinkCell = props => {
   );
 };
 
-LinkCell.propTypes = {
-  cell: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired,
-  selected: PropTypes.bool.isRequired,
-  editing: PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func
-};
+// LinkCell.propTypes = {
+//   cell: PropTypes.object.isRequired,
+//   langtag: PropTypes.string.isRequired,
+//   selected: PropTypes.bool.isRequired,
+//   editing: PropTypes.bool.isRequired,
+//   setCellKeyboardShortcuts: PropTypes.func
+// };
 export default LinkCell;
 
 // export default compose(

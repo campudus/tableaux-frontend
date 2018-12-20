@@ -7,7 +7,10 @@ import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 // import ActionCreator from "../../actions/ActionCreator";
 import f from "lodash/fp";
-import TableauxConstants, {ActionTypes, FilterModes} from "../../constants/TableauxConstants";
+import TableauxConstants, {
+  ActionTypes,
+  FilterModes
+} from "../../constants/TableauxConstants";
 import Filter from "../header/filter/Filter.jsx";
 import Navigation from "../header/Navigation.jsx";
 import PageTitle from "../header/PageTitle.jsx";
@@ -16,11 +19,11 @@ import TableSettings from "../header/tableSettings/TableSettings";
 import ColumnFilter from "../header/ColumnFilter";
 import getFilteredRows from "../table/RowFilters";
 import i18n from "i18next";
-// import App from "ampersand-app";
 import TableauxRouter from "../../router/router";
 import pasteCellValue from "../cells/cellCopyHelper";
 import JumpSpinner from "./JumpSpinner";
 import withCustomProjection from "./withCustomProjection";
+import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import PasteCellIcon from "../header/PasteCellIcon";
 import {showDialog} from "../overlay/GenericOverlay";
 import SearchOverlay from "./SearchOverlay";
@@ -28,12 +31,26 @@ import HistoryButtons from "../table/undo/HistoryButtons";
 import {initHistoryOf} from "../table/undo/tableHistory";
 import {getMultiLangValue} from "../../helpers/multiLanguage";
 import canFocusCell from "./canFocusCell";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
+const mapStatetoProps = (state, props) => {
+  const {tableId} = props;
+  const tables = f.get(`tables.data`, state);
+  const table = tables[tableId];
+  const columns = f.get(`columns.${tableId}.data`, state);
+  const rows = f.get(`rows.${tableId}.data`, state);
+  const visibleColumns = f.get("tableView.visibleColumns", state);
+  const {filters, sorting, startedGeneratingDisplayValues, displayValues} = f.get("tableView", state);
+  if (table) {
+    TableauxConstants.initLangtags(table.langtags);
+  }
+  return {table, columns, rows, tables, visibleColumns, filters, sorting, startedGeneratingDisplayValues, displayValues};
+};
 
+@applyFiltersAndVisibility
 @withCustomProjection
 // @canFocusCell
-// @connectToAmpersand
 class TableView extends Component {
   constructor(props) {
     super(props);
@@ -46,25 +63,7 @@ class TableView extends Component {
       tableFullyLoaded: true,
       searchOverlayOpen: false
     };
-  };
-
-  componentWillMount = () => {
-    // Dispatcher.on(ActionTypes.CHANGE_FILTER, this.changeFilter);
-    // Dispatcher.on(ActionTypes.CLEAR_FILTER, this.clearFilter);
-    // Dispatcher.on(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    // Dispatcher.on(ActionTypes.RESET_TABLE_URL, this.resetURL);
-    // Dispatcher.on(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
-    // Dispatcher.on(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
-  };
-
-  componentWillUnmount = () => {
-    // Dispatcher.off(ActionTypes.CHANGE_FILTER, this.changeFilter);
-    // Dispatcher.off(ActionTypes.CLEAR_FILTER, this.clearFilter);
-    // Dispatcher.off(ActionTypes.SET_COLUMNS_VISIBILITY, this.setColumnsVisibility, this);
-    // Dispatcher.off(ActionTypes.RESET_TABLE_URL, this.resetURL);
-    // Dispatcher.off(ActionTypes.COPY_CELL_CONTENT, this.setCopyOrigin);
-    // Dispatcher.off(ActionTypes.PASTE_CELL_CONTENT, this.pasteCellTo);
-  };
+  }
 
   setCopyOrigin = ({cell, langtag}) => {
     this.setState({
@@ -85,95 +84,55 @@ class TableView extends Component {
 
   resetURL = () => {
     const history = TableauxRouter.history;
-    const clearedUrl = history.getPath()
-      .replace(/\?*/, "");
-    TableauxRouter.history.navigate(clearedUrl,
-      {
-        trigger: false,
-        replace: true
-      });
+    const clearedUrl = history.getPath().replace(/\?*/, "");
+    TableauxRouter.history.navigate(clearedUrl, {
+      trigger: false,
+      replace: true
+    });
+  };
+
+  renderTableOrSpinner = () => {
+    const {tables, columns, rows, displayValues, langtag, table, actions, startedGeneratingDisplayValues,canRenderTable} = this.props;
+    if (!canRenderTable) {
+      return (
+        <div className="initial-loader">
+          <Spinner isLoading={true} />
+        </div>
+      );
+    } else {
+    const rowKeys = f.flow(
+      f.get("models"),
+      f.map(f.get("id")),
+      f.toString
+    )(rows);
+    const columnKeys = f.flow(
+      // f.filter((col, idx) => col.visible || idx === 0),
+      f.map(f.get("id")),
+      f.toString
+    )(columns);
+      return (
+        <div className="wrapper">
+          <Table
+            table={table}
+            langtag={langtag}
+            rows={rows}
+            rowKeys={rowKeys}
+            columnKeys={columnKeys}
+            columns={columns}
+            tables={tables}
+          />
+        </div>
+      );
+    }
   };
 
   componentDidMount = () => {
     // ActionCreator.spinnerOn();
     initHistoryOf(this.props.tables);
-    this.fetchTable(this.props.table.id);
+    // this.fetchTable(this.props.table.id);
   };
 
-  fetchTable = (tableId) => {
-    const currentTable = this.props.table;
-    this.setState({
-      initialLoading: true,
-      tableFullyLoaded: false
-    });
-
-    // ActionCreator.spinnerOn();
-    let fetchedPages = 0;
-
-    const fetchColumns = () => console.log("fetchColumns");
-    // We need to fetch columns first, since rows has Cells that depend on the column model
-    // const fetchColumns = table => new Promise(
-    //   (resolve, reject) => {
-    //     // ActionCreator.spinnerOn();
-    //     table.columns.fetch({
-    //       reset: true,
-    //       success: () => {
-    //         this.setState({
-    //           initialLoading: false
-    //         }, this.applyProjection);
-    //         resolve({ // return information about first page to be fetched
-    //           table: table,
-    //           page: 1
-    //         });
-    //       },
-    //       error: e => {
-    //         // ActionCreator.spinnerOff();
-    //         reject("Error fetching table columns:" + JSON.stringify(e));
-    //       }
-    //     });
-    //   }
-    // );
-
-    const fetchPages = () => new Promise(
-      (resolve, reject) => {
-        // ActionCreator.spinnerOn();
-        currentTable.rows.fetchPage(1,
-          {
-            success: (totalPages) => {
-              ++fetchedPages;
-              const tableFullyLoaded = fetchedPages >= totalPages;
-              this.setState({
-                tableFullyLoaded
-              }, ((fetchedPages === 1) ? applyStoredViews : f.noop));
-              // this.props.checkCellFocus(tableFullyLoaded);
-              if (fetchedPages >= totalPages) {
-                // ActionCreator.spinnerOff();
-                resolve();
-              }
-            },
-            error: e => {
-              // ActionCreator.spinnerOff();
-              reject("Error fetching pages:" + e);
-            }
-          });
-      }
-    );
-
-    const applyStoredViews = () => new Promise(
-      (resolve) => {
-        this.applyProjection();
-        resolve();
-      }
-    );
-
-    const start = performance.now();
-    // fetchColumns(currentTable)
-    //   .then(fetchPages)
-    //   .then(applyStoredViews)
-    //   .then(() => console.log("Loading took", (performance.now() - start) / 1000, "s"));
-  };
-
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = nextProps => {
     if (this.props.table === nextProps.table) {
       // Table ID did not change, check independently for changes of row- and column projection
 
@@ -181,43 +140,15 @@ class TableView extends Component {
         this.applyFilters(nextProps.projection);
       }
 
-      if (!f.equals(this.props.projection.columns, nextProps.projection.columns)) {
+      if (
+        !f.equals(this.props.projection.columns, nextProps.projection.columns)
+      ) {
         this.applyColumnVisibility(nextProps.projection);
       }
     }
   };
 
   // Set visibility of all columns in <coll> to <val>
-  setColumnsVisibility = ({val, coll, cb}, shouldSave = true) => {
-    this.props.setColumnVisibility({
-      val,
-      colIds: coll,
-      callback: cb
-    }, shouldSave);
-  };
-
-  applyColumnVisibility = (projection = this.props.projection) => {
-    const DEFAULT_VISIBLE_COLUMNS = 10;
-    const columns = f.getOr([], ["columns", "models"], this.props.table);
-    const colIds = columns.map(f.get("id"));
-    if (f.isEmpty(colIds)) {
-      return; // don't try to sanitise visible columns when column data not yet loaded
-    }
-    const visibleColIds = f.get("columns", projection)
-      || f.take(DEFAULT_VISIBLE_COLUMNS, colIds);
-    if (f.isNil(projection.columns)) {
-      this.setColumnsVisibility({
-        val: true,
-        coll: visibleColIds
-      }, true);
-    }
-    columns.forEach(
-      (col, idx) => {
-        col.visible = idx === 0 || f.contains(col.id, visibleColIds);
-      }
-    );
-    this.forceUpdate();
-  };
 
   applyProjection = (projection = this.props.projection) => {
     this.applyFilters(projection);
@@ -228,50 +159,23 @@ class TableView extends Component {
     const {table = {}, langtag} = this.props;
 
     if (table) {
-      const tableDisplayName = getMultiLangValue(langtag, "", table.displayName);
+      const tableDisplayName = getMultiLangValue(
+        langtag,
+        "",
+        table.displayName
+      );
       document.title = tableDisplayName
         ? tableDisplayName + " | " + TableauxConstants.PageTitle
         : TableauxConstants.PageTitle;
     }
   };
 
-  componentDidUpdate = (prev) => {
+  componentDidUpdate = prev => {
     this.setDocumentTitleToTableName();
-    if (prev.table !== this.props.table) {
-      this.props.resetStoredProjection();
-      this.fetchTable(this.props.table.id);
-    }
-  };
-
-  clearFilter = () => {
-    this.props.setFilter({}, true);
-    this.resetURL();
-  };
-
-  applyFilters = (projection = this.props.projection) => {
-    const rowFilter = f.get("rows", projection);
-    const {table} = this.props;
-    const tableRows = f.getOr([], "rows", table);
-
-    if (f.isEmpty(rowFilter) || (f.isEmpty(rowFilter.filters) && f.isNil(rowFilter.sortColumnId))) {
-      this.setState({rowsCollection: tableRows});
-    } else {
-      const doApplyFilters = () => {
-        const rowsCollection = getFilteredRows(table, this.props.langtag, rowFilter);
-        if (!f.isEmpty(rowsCollection.colsWithMatches)) {
-          this.props.setColumnVisibility({val: false}, false);
-          this.props.setColumnVisibility({
-            val: true,
-            colIds: rowsCollection.colsWithMatches
-          });
-        }
-        this.setState({rowsCollection});
-        if (this.state.tableFullyLoaded) {
-          this.displaySearchOverlay(false);
-        }
-      };
-      this.displaySearchOverlay(true, doApplyFilters);
-    }
+    // if (prev.table !== this.props.table) {
+    //   this.props.resetStoredProjection();
+    //   this.fetchTable(this.props.table.id);
+    // }
   };
 
   displaySearchOverlay = (state = true, cb = f.noop) => {
@@ -287,8 +191,9 @@ class TableView extends Component {
     );
 
     if (
-      hasSlowFilters(settings)
-      && currentTable.rows.length * currentTable.columns.length > BIG_TABLE_THRESHOLD
+      hasSlowFilters(settings) &&
+      currentTable.rows.length * currentTable.columns.length >
+        BIG_TABLE_THRESHOLD
     ) {
       showDialog({
         type: "question",
@@ -297,8 +202,11 @@ class TableView extends Component {
         message: i18n.t("filter:large-table.message"),
         heading: i18n.t("filter:large-table.header"),
         actions: {
-          "positive": [i18n.t("common:ok"), () => this.props.setFilter(settings, store)],
-          "neutral": [i18n.t("common:cancel"), this.clearFilter]
+          positive: [
+            i18n.t("common:ok"),
+            () => this.props.setFilter(settings, store)
+          ],
+          neutral: [i18n.t("common:cancel"), this.clearFilter]
         }
       });
     } else {
@@ -306,98 +214,110 @@ class TableView extends Component {
     }
   };
 
-  onLanguageSwitch = (newLangtag) => {
+  onLanguageSwitch = newLangtag => {
     console.log("onLanguageSwitch", newLangtag);
     const history = TableauxRouter.history;
     const url = history.getPath();
-    console.log(url);
-    history.navigate(url.replace(this.props.initialParams.langtag, newLangtag));
+    history.navigate(url.replace(this.props.langtag, newLangtag));
   };
 
   render = () => {
-    if (/*this.state.initialLoading*/false) {
-      return <div className="initial-loader"><Spinner isLoading={true} /></div>;
-    } else {
-      const {tables, table,columns,rows,initialParams:{langtag,tableId},actions} = this.props;
-      const columnActions = f.pick(["toggleColumnVisibility","showAllColumns", "hideAllColumns"],actions);
-      console.log(columnActions);
-      const {rowsCollection, tableFullyLoaded, pasteOriginCell, pasteOriginCellLang} = this.state;
-      const overlayOpen = false;
+    const {
+      tables,
+      table,
+      columns,
+      rows,
+      langtag,
+      tableId,
+      navigate,
+      actions,
+      filters
+    } = this.props;
+    const filterActions = f.pick(
+      ["setFiltersAndSorting", "deleteFilters"],
+      actions
+    );
+    const columnActions = f.pick(
+      ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
+      actions
+    );
+    const {
+      rowsCollection,
+      tableFullyLoaded,
+      pasteOriginCell,
+      pasteOriginCellLang
+    } = this.state;
+    const overlayOpen = false;
 
-      if (f.isNil(table)) {
-        console.error("No table found with id " + tableId);
-      }
+    if (f.isNil(table)) {
+      console.error("No table found with id " + tableId);
+    }
 
-      // const rows = rowsCollection || currentTable.rows || {};
-      // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
-      // without adding event listeners
-      const rowKeys = f.flow(
-        f.get("models"),
-        f.map(f.get("id")),
-        f.toString
-      )(rows);
-      const columnKeys = f.flow(
-        // f.filter((col, idx) => col.visible || idx === 0),
-        f.map(f.get("id")),
-        f.toString
-      )(columns);
-
+    // const rows = rowsCollection || currentTable.rows || {};
+    // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
+    // without adding event listeners
+    if (f.isEmpty(table)) {
       return (
-        <div>
-          <header>
-            <Navigation langtag={langtag} />
-            <TableSwitcher
-              langtag={langtag}
-              currentTable={table}
-              tables={tables} />
-             <TableSettings langtag={langtag} table={table} />
-             <Filter
-              langtag={langtag}
-              table={table}
-              columns={columns}
-              currentFilter={this.props.projection.rows}
-            />
-            {(table && columns && columns.length > 1)
-              ? (
-                <ColumnFilter
-                  langtag={langtag}
-                  columns={columns}
-                  tableId={tableId}
-                  columnActions={columnActions}
-                />
-              )
-              : <div />
-            }
-             <HistoryButtons tableId={table.id} />
-            <div className="header-separator" />
-             <Spinner />
-             <PageTitle titleKey="pageTitle.tables" />
-             <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
-            <PasteCellIcon clearCellClipboard={this.clearCellClipboard}
-                           pasteOriginCell={pasteOriginCell}
-                           pasteOriginCellLang={pasteOriginCellLang}
-                           tableId={table.id}
-            />
-          </header>
-          <div className="wrapper">
-            <Table
-              fullyLoaded={tableFullyLoaded}
-              table={table}
-              langtag={langtag} rows={rows} overlayOpen={overlayOpen}
-              rowKeys={rowKeys}
-              columnKeys={columnKeys}
-              columns={columns}
-              pasteOriginCell={pasteOriginCell}
-              tables={tables}
-              disableOnClickOutside={overlayOpen}
-            />
-          </div>
-          <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !this.state.searchOverlayOpen} />
-          <SearchOverlay isOpen={this.state.searchOverlayOpen} />
+        <div className="initial-loader">
+          <Spinner isLoading={true} />
         </div>
       );
     }
-  }
+
+    return (
+      <div>
+        <header>
+          <Navigation langtag={langtag} />
+          <TableSwitcher
+            langtag={langtag}
+            currentTable={table}
+            tables={tables}
+            navigate={navigate}
+          />
+          <TableSettings langtag={langtag} table={table} />
+          <Filter
+            langtag={langtag}
+            table={table}
+            columns={columns}
+            currentFilter={this.props.projection.rows}
+            filterActions={filterActions}
+            filters={filters}
+          />
+          {table && columns && columns.length > 1 ? (
+            <ColumnFilter
+              langtag={langtag}
+              columns={columns}
+              tableId={tableId}
+              columnActions={columnActions}
+            />
+          ) : (
+            <div />
+          )}
+          <HistoryButtons tableId={table.id} />
+          <div className="header-separator" />
+          <Spinner />
+          <PageTitle titleKey="pageTitle.tables" />
+          <LanguageSwitcher
+            langtag={langtag}
+            onChange={this.onLanguageSwitch}
+          />
+          <PasteCellIcon
+            clearCellClipboard={this.clearCellClipboard}
+            pasteOriginCell={pasteOriginCell}
+            pasteOriginCellLang={pasteOriginCellLang}
+            tableId={table.id}
+          />
+        </header>
+        {this.renderTableOrSpinner()}
+        <JumpSpinner
+          isOpen={
+            !!this.props.showCellJumpOverlay && !this.state.searchOverlayOpen
+          }
+        />
+        <SearchOverlay isOpen={this.state.searchOverlayOpen} />
+      </div>
+    );
+  };
 }
 
 TableView.propTypes = {
@@ -407,4 +327,4 @@ TableView.propTypes = {
   projection: PropTypes.object
 };
 
-export default TableView;
+export default reduxActionHoc(TableView, mapStatetoProps);

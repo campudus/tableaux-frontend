@@ -58,13 +58,13 @@ const ShortTextCell = props => {
   );
 };
 
-ShortTextCell.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  cell: PropTypes.object.isRequired,
-  editing: PropTypes.bool.isRequired,
-  selected: PropTypes.bool,
-  setCellKeyboardShortcuts: PropTypes.func,
-  value: PropTypes.string
-};
+// ShortTextCell.propTypes = {
+//   langtag: PropTypes.string.isRequired,
+//   cell: PropTypes.object.isRequired,
+//   editing: PropTypes.bool.isRequired,
+//   selected: PropTypes.bool,
+//   setCellKeyboardShortcuts: PropTypes.func,
+//   value: PropTypes.string
+// };
 
 export default ShortTextCell;

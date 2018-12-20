@@ -28,7 +28,6 @@ class Navigation extends Component {
   };
   render() {
     const {langtag, onClickOutside} = this.props;
-    console.log(langtag)
     const {navigationOpen} = this.state;
 
     return (

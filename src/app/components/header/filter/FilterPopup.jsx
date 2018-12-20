@@ -1,6 +1,5 @@
 import React from "react";
 import * as f from "lodash/fp";
-// import ActionCreator from "../../../actions/ActionCreator";
 import listensToClickOutside from "react-onclickoutside";
 import Select from "react-select";
 import {translate} from "react-i18next";
@@ -29,12 +28,12 @@ const SPECIAL_TEXT_SEARCHES = [
 @translate(["filter", "table"])
 @listensToClickOutside
 class FilterPopup extends React.Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    onClickedOutside: PropTypes.func.isRequired,
-    columns: PropTypes.object,
-    currentFilter: PropTypes.object
-  };
+  // static propTypes = {
+  //   langtag: PropTypes.string.isRequired,
+  //   onClickedOutside: PropTypes.func.isRequired,
+  //   columns: PropTypes.object,
+  //   currentFilter: PropTypes.object
+  // };
 
   static isSortableColumn = (column) => f.contains(column.kind, SortableCellKinds);
   static isSearchableColumn = (column) => f.contains(column.kind, FilterableCellKinds);
@@ -44,6 +43,7 @@ class FilterPopup extends React.Component {
 
   constructor(props) {
     super(props);
+    console.log(props);
     const currFilter = f.defaultTo({})(f.get(["currentFilter"], props));
 
     const cleanFilter = filter => {
@@ -69,7 +69,7 @@ class FilterPopup extends React.Component {
     this.state = {
       sorting,
       filterModesOpen: false,
-      filters: f.map(cleanFilter, f.defaultTo([{}])(f.get(["currentFilter", "filters"], props)))
+      filters: f.map(cleanFilter, f.defaultTo([{}])(f.get(["filters"], props)))
     };
 
     this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn);
@@ -205,13 +205,16 @@ class FilterPopup extends React.Component {
 
   applyFilters = (event) => {
     const {filters, sorting} = this.state;
+    const { filterActions:{setFiltersAndSorting }} = this.props;
     const colIdToNumber = obj => f.assoc("columnId", parseInt(obj.columnId), obj);
     // ActionCreator.changeRowFilters(f.map(colIdToNumber, filters), colIdToNumber(sorting));
+    setFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting));
     this.handleClickOutside(event);
   };
 
   clearFilter = (event) => {
-    // ActionCreator.clearFilter();
+    const { filterActions:{deleteFilters }} = this.props;
+    deleteFilters();
     this.handleClickOutside(event);
   };
 

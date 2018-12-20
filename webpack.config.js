@@ -80,7 +80,7 @@ module.exports = {
     port: 3000
   },
   plugins: [
-    new CleanWebpackPlugin(["dist"]),
+    new CleanWebpackPlugin(["dist/app.bundle.js"]),
     new CopyPlugin([
       {
         from: path.resolve(__dirname, "./src/assets"),
