@@ -4,24 +4,24 @@
  * cell position indices.
  */
 
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
-import Cell, {getAnnotationState} from "../cells/Cell";
+import Cell, { getAnnotationState } from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
-import {AutoSizer} from "react-virtualized";
+import { AutoSizer } from "react-virtualized";
 import {
   ActionTypes,
   ColumnKinds,
   Langtags
 } from "../../constants/TableauxConstants";
-import {either, maybe} from "../../helpers/functools";
+import { either, maybe } from "../../helpers/functools";
 // import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 
 import MultiGrid from "./GrudGrid";
-import {isLocked} from "../../helpers/annotationHelper";
+import { isLocked } from "../../helpers/annotationHelper";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -30,9 +30,9 @@ const ROW_HEIGHT = 45;
 
 export default class VirtualTable extends PureComponent {
   static propTypes = {
-    columns: PropTypes.object.isRequired,
+    columns: PropTypes.array.isRequired,
     columnKeys: PropTypes.string,
-    rows: PropTypes.object.isRequired,
+    rows: PropTypes.array.isRequired,
     rowKeys: PropTypes.string, // re-render hint
     table: PropTypes.object.isRequired,
     tables: PropTypes.object.isRequired,
@@ -54,6 +54,12 @@ export default class VirtualTable extends PureComponent {
     };
     this.expandedRowIds = props.expandedRowIds;
   }
+
+  isCellSelected = (columnId, rowId) => {
+    const { tableView } = this.props;
+    const selected = f.getOr({}, "selectedCell", tableView);
+    return rowId === selected.rowId && columnId === selected.columnId;
+  };
 
   colWidths = new Map([[0, META_CELL_WIDTH]]);
   columnStartSize = null;
@@ -96,7 +102,7 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  calcRowHeight = ({index}) => {
+  calcRowHeight = ({ index }) => {
     return ROW_HEIGHT;
     if (index === 0) {
       return HEADER_HEIGHT;
@@ -110,11 +116,11 @@ export default class VirtualTable extends PureComponent {
       : ROW_HEIGHT;
   };
 
-  calcColWidth = ({index}) => this.colWidths.get(index) || CELL_WIDTH;
+  calcColWidth = ({ index }) => this.colWidths.get(index) || CELL_WIDTH;
 
   updateColWidth = (index, dx) => {
     if (!this.columnStartSize) {
-      this.columnStartSize = this.calcColWidth({index});
+      this.columnStartSize = this.calcColWidth({ index });
     }
     const newWidth = Math.max(100, this.columnStartSize + dx);
     this.colWidths.set(index, newWidth);
@@ -138,9 +144,9 @@ export default class VirtualTable extends PureComponent {
 
   setOpenAnnotations = cellInfo => {
     if (f.isNil(cellInfo) && !f.isEmpty(this.state.openAnnotations)) {
-      this.setState({openAnnotations: {}});
+      this.setState({ openAnnotations: {} });
     } else if (!f.isNil(cellInfo)) {
-      this.setState({openAnnotations: cellInfo});
+      this.setState({ openAnnotations: cellInfo });
     }
   };
 
@@ -157,7 +163,7 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderGridCell = gridData => {
-    const {rowIndex, columnIndex} = gridData;
+    const { rowIndex, columnIndex } = gridData;
     // if we're below all rows, render buttons
     if (rowIndex > f.size(this.props.rows)) {
       return this.renderButton(gridData);
@@ -190,12 +196,12 @@ export default class VirtualTable extends PureComponent {
         );
   };
 
-  renderColumnHeader = ({columnIndex}) => {
+  renderColumnHeader = ({ columnIndex }) => {
     const visibleColumns = this.props.columns.filter(
       (col, idx) => idx === 0 || col.visible
     );
     const column = visibleColumns[columnIndex];
-    const {table, tables} = this.props;
+    const { table, tables } = this.props;
     return (
       <ColumnHeader
         column={column}
@@ -204,13 +210,13 @@ export default class VirtualTable extends PureComponent {
         tableId={table.id}
         resizeHandler={this.updateColWidth}
         resizeFinishedHandler={this.saveColWidths}
-        index={columnIndex+1}
-        width={this.calcColWidth({index: columnIndex+1})}
+        index={columnIndex + 1}
+        width={this.calcColWidth({ index: columnIndex + 1 })}
       />
     );
   };
 
-  renderMetaCell = ({rowIndex, key}) => {
+  renderMetaCell = ({ rowIndex, key }) => {
     if (rowIndex < 0) {
       return (
         <div className="id-meta-cell" key="id-cell">
@@ -219,7 +225,12 @@ export default class VirtualTable extends PureComponent {
       );
     }
 
-    const {langtag, rows, expandedRowIds, selectedCellExpandedRow} = this.props;
+    const {
+      langtag,
+      rows,
+      expandedRowIds,
+      selectedCellExpandedRow
+    } = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const isRowSelected = !!(
@@ -253,11 +264,8 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderCell = gridData => {
-    const {rows, expandedRowIds} = this.props;
-    const {rowIndex} = gridData;
-    // const row = maybe(rows)
-    //   .exec("at", rowIndex)
-    //   .getOrElse({});
+    const { rows, expandedRowIds } = this.props;
+    const { rowIndex } = gridData;
     const row = rows[rowIndex];
     // return f.contains(row.id, expandedRowIds)
     //   ? this.renderExpandedRowCell(gridData)
@@ -265,20 +273,21 @@ export default class VirtualTable extends PureComponent {
     return this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({columnIndex, rowIndex}) => {
-    const {rows, table, langtag, columns} = this.props;
-    const {openAnnotations} = this.state;
+  renderSingleCell = ({ columnIndex, rowIndex }) => {
+    const { actions, rows, table, langtag, columns } = this.props;
+    const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const value = this.getCell(rowIndex, columnIndex);
-    const isInSelectedRow = row.id === this.selectedIds.row;
+    const isInSelectedRow =
+      row.id === f.get("tableView.selectedCell.rowId", this.props);
     const visibleColumns = this.props.columns.filter(
       (col, idx) => idx === 0 || col.visible
     );
-    // const isSelected =
-    //   !!this.props.selectedCell && cell.id === this.props.selectedCell.id;
-    // const isEditing = isSelected && this.props.selectedCellEditing;
-    const isSelected = false;
-    const isEditing = false;
+    if (Math.random() < 0.1) console.log(visibleColumns);
+    const column = visibleColumns[columnIndex];
+    const isSelected = this.isCellSelected(column.id, row.id);
+    const isEditing =
+      isSelected && f.getOr(false, "tableView.editing", this.props);
 
     // const displayValue = f.isArray(cell.displayValue)
     //   ? f.flow(
@@ -289,15 +298,17 @@ export default class VirtualTable extends PureComponent {
 
     return (
       <Cell
+        actions={actions}
         value={value}
-        column={visibleColumns[columnIndex]}
+        column={column}
         annotationState={null /*getAnnotationState(cell)*/}
         focusTable={this.props.test}
         langtag={langtag}
         row={row}
         table={table}
         annotationsOpen={
-          openAnnotations.cellId && openAnnotations.cellId === cell.id
+          // openAnnotations.cellId && openAnnotations.cellId === cell.id
+          false
         }
         isExpandedCell={false}
         selected={isSelected}
@@ -307,9 +318,9 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  renderExpandedRowCell = ({columnIndex, rowIndex, key}) => {
-    const {rows, columns, table} = this.props;
-    const {openAnnotations} = this.state;
+  renderExpandedRowCell = ({ columnIndex, rowIndex, key }) => {
+    const { actions, rows, columns, table } = this.props;
+    const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const column = columns[columnIndex];
     const cell = this.getCell(rowIndex, columnIndex);
@@ -334,6 +345,7 @@ export default class VirtualTable extends PureComponent {
             : f.get(langtag, cell.displayValue) || "";
           return (
             <Cell
+              actions={actions}
               key={`${langtag}-${key}`}
               annotationState={annotationsState}
               cell={cell}
@@ -357,8 +369,8 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  renderButton = ({columnIndex}) => {
-    const {table} = this.props;
+  renderButton = ({ columnIndex }) => {
+    const { table } = this.props;
     if (columnIndex === 1) {
       return <AddNewRowButton table={table} onAdd={this.jumpToLastRow} />;
     }
@@ -374,7 +386,7 @@ export default class VirtualTable extends PureComponent {
   };
 
   getCell = (rowIndex, columnIndex) => {
-    const {columns, rows} = this.props;
+    const { columns, rows } = this.props;
     const cells = rows[rowIndex].values;
     // return cells[columnIndex];
 
@@ -400,13 +412,12 @@ export default class VirtualTable extends PureComponent {
     // }
     // return cells[this.getCell.totalColIdx];
     // Original implementation which eats too much CPU-time
-       const visibleCells = cells.filter(this.filterVisibleCells);
-       return visibleCells[columnIndex];
+    const visibleCells = cells.filter(this.filterVisibleCells);
+    return visibleCells[columnIndex];
   };
 
   filterVisibleCells = (cell, columnIdx) =>
-    columnIdx === 0 ||
-    f.get("visible", this.props.columns[columnIdx]);
+    columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -447,7 +458,7 @@ export default class VirtualTable extends PureComponent {
 
   scrollToCell = (cellId, langtag = this.props.selectedCellExpandedRow) => {
     this.updateSelectedCellId(cellId, langtag);
-    const {scrolledCell, lastScrolledCell} = this.state;
+    const { scrolledCell, lastScrolledCell } = this.state;
     if (!cellId || f.get("scrolledCell", scrolledCell) === lastScrolledCell) {
       // when called by cell deselection
       this.setState({
@@ -456,7 +467,7 @@ export default class VirtualTable extends PureComponent {
       });
       return false;
     }
-    const {columns, rows} = this.props;
+    const { columns, rows } = this.props;
     const rowIndex = f.add(
       1,
       f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows)
@@ -491,9 +502,9 @@ export default class VirtualTable extends PureComponent {
   }
 
   jumpToLastRow = () => {
-    const {rows} = this.props;
+    const { rows } = this.props;
     this.setState({
-      scrolledCell: {rowIndex: f.size(rows)}
+      scrolledCell: { rowIndex: f.size(rows) }
     });
   };
 
@@ -508,13 +519,13 @@ export default class VirtualTable extends PureComponent {
       selectedCellEditing,
       selectedCellExpandedRow
     } = this.props;
-    const {openAnnotations, scrolledCell, lastScrolledCell} = this.state;
-    const {columnIndex, rowIndex} =
+    const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
+    const { columnIndex, rowIndex } =
       !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell
         ? scrolledCell
         : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
-    const columnCount = f.size(visibleColumns)+1;
+    const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows);
     const selectedCellKey = `${f.get(
       "id",
@@ -527,7 +538,7 @@ export default class VirtualTable extends PureComponent {
 
     return (
       <AutoSizer>
-        {({height, width}) => {
+        {({ height, width }) => {
           return (
             <MultiGrid
               ref={this.storeGridElement}

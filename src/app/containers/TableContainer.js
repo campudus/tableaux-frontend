@@ -10,12 +10,11 @@ import TableauxConstants from "../constants/TableauxConstants";
 import Tableaux from "../components/Tableaux";
 
 const mapStateToProps = (state, props) => {
-  console.log("<TableContainer> state:", state);
   const {
-    initialParams: { tableId },
+    initialParams: { tableId }
   } = props;
   const table = f.get(`tables.data.${tableId}`, state);
-  const tables = f.get(`tables.data`, state);
+  const tables = f.get("tables.data", state);
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const tableView = f.get("tableView", state);
@@ -30,16 +29,14 @@ class TableContainer extends Component {
   componentWillMount() {
     const {
       actions: { loadTables, loadAllRows, loadColumns },
-      initialParams: { tableId },
+      initialParams: { tableId }
     } = this.props;
     loadTables();
     loadAllRows(tableId);
     loadColumns(tableId);
   }
   render() {
-    const { table, columns, rows, initialParams, tableView } = this.props;
-    console.log(initialParams);
-    console.log("tableView:", tableView);
+    const { table, columns, rows, initialParams, actions } = this.props;
     if (f.isEmpty(table) || f.isEmpty(rows) || f.isEmpty(columns)) {
       // return <div>waiting</div>
       return <Spinner isLoading />;
@@ -49,6 +46,7 @@ class TableContainer extends Component {
       <Tableaux
         initialParams={{ ...this.props }}
         initialViewName={"TABLE_VIEW"}
+        actions={actions}
       />
     );
   }
