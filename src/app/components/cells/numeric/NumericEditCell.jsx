@@ -1,9 +1,9 @@
-import {Directions} from "../../../constants/TableauxConstants";
-// import ActionCreator from "../../../actions/ActionCreator";
+import { Directions } from "../../../constants/TableauxConstants";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
-import {maybe} from "../../../helpers/functools";
+import { maybe } from "../../../helpers/functools";
 import PropTypes from "prop-types";
+import { filterAllowedKeys } from "../numericInput";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
@@ -13,44 +13,48 @@ class NumericEditCell extends React.Component {
   }
 
   componentDidMount = () => {
-    // this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
+    this.props.setCellKeyboardShortcuts(this.getKeyboardShortcuts());
   };
 
   componentWillUnmount = () => {
-    // this.props.setCellKeyboardShortcuts({});
+    this.props.setCellKeyboardShortcuts({});
   };
 
   getKeyboardShortcuts = () => {
     return {
-      up: (event) => {
+      up: event => {
         event.preventDefault();
         this.doneEditing(event);
       },
-      down: (event) => {
+      down: event => {
         event.preventDefault();
         this.doneEditing(event);
       },
-      left: (event) => {
+      left: event => {
         event.stopPropagation();
       },
-      right: (event) => {
+      right: event => {
         event.stopPropagation();
       },
-      enter: (event) => {
+      enter: event => {
         this.doneEditing(event);
-        ActionCreator.selectNextCell(Directions.DOWN);
+        //        ActionCreator.selectNextCell(Directions.DOWN);
       },
-      navigation: (event) => {
+      navigation: event => {
         this.doneEditing(event);
       }
     };
   };
 
-  handleClickOutside = (event) => {
+  handleClickOutside = event => {
     this.doneEditing(event);
   };
 
-  formatNumberCell = (input) => {
+  filterKeys = event => {
+    filterAllowedKeys(event.target.value)(event);
+  };
+
+  formatNumberCell = input => {
     let result = null;
     const curr = input.value;
     const currLength = curr.trim().length;
@@ -64,7 +68,7 @@ class NumericEditCell extends React.Component {
         result = realNumber;
       }
     }
-    input.value = (result === null) ? "" : result;
+    input.value = result === null ? "" : result;
     return result;
   };
 
@@ -73,19 +77,18 @@ class NumericEditCell extends React.Component {
   };
 
   getValue = () => {
-    const {cell, langtag} = this.props;
-    const value = (cell.isMultiLanguage)
-      ? cell.value[langtag]
-      : cell.value;
-
-    return value || "";
+    const { value, isMultiLanguage, langtag } = this.props;
+    return (isMultiLanguage ? value[langtag] : value) || "";
   };
 
-  correctNumberFormat = (value) => {
-    return String(value).replace(/,/g, ".");
+  correctNumberFormat = value => {
+    const result = String(value)
+      .replace(/,/g, ".")
+      .match(/\d+(\.\d*)?/);
+    return (result && result[0]) || "";
   };
 
-  onChangeHandler = (e) => {
+  onChangeHandler = e => {
     const curr = e.target.value;
     const formattedNumber = this.correctNumberFormat(curr);
 
@@ -95,7 +98,7 @@ class NumericEditCell extends React.Component {
     }
   };
 
-  handleFocus = () => {
+  moveCaretToEnd = () => {
     const l = this.getValue().toString().length;
     maybe(this.input).method("setSelectionRange", l, l);
   };
@@ -103,20 +106,25 @@ class NumericEditCell extends React.Component {
   render = () => {
     return (
       <div className={"cell-content editing"}>
-        <input autoFocus type="number"
-          onFocus={this.handleFocus}
+        <input
+          autoFocus
+          onFocus={this.moveCaretToEnd}
           className="input"
           name={this.inputName}
           defaultValue={this.getValue()}
           onChange={this.onChangeHandler}
-          ref={input => { this.input = input; this.handleFocus(); }}
+          onKeyDown={this.filterKeys}
+          ref={input => {
+            this.input = input;
+            this.moveCaretToEnd();
+          }}
         />
       </div>
     );
-  }
+  };
 }
+
 NumericEditCell.propTypes = {
-  cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
   onSave: PropTypes.func.isRequired,
   setCellKeyboardShortcuts: PropTypes.func

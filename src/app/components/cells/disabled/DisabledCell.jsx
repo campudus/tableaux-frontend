@@ -1,33 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { isEmpty } from "lodash/fp";
 
-const DisabledCell = (props) => {
-  const {cell, langtag} = props;
-
-  const getValue = () => {
-    let value;
-    if (cell.isMultiLanguage) {
-      value = cell.value[langtag];
-    } else {
-      value = cell.value;
-    }
-
-    return typeof value === "undefined" ? "" : value;
-  };
-
-  const value = getValue();
-
-  return (
-    <div className='cell-content'>
-      {value === null ? "" : value}
-    </div>
-  );
-};
+const DisabledCell = props =>
+  // <div className="cell-content">{isEmpty(props.value) ? "" : props.value}</div>
+  null;
 
 DisabledCell.propTypes = {
   langtag: PropTypes.string.isRequired,
-  cell: PropTypes.object.isRequired,
-  selected: PropTypes.bool.isRequired
+  value: PropTypes.any.isRequired
 };
 
 export default DisabledCell;
