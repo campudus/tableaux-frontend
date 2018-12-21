@@ -1,41 +1,53 @@
 import ActionTypes from "../actionTypes";
 import f from "lodash/fp";
-import { DefaultLangtag } from "../../constants/TableauxConstants";
+import { DefaultLangtag, langtags } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
+import { checkOrThrow } from "../../specs/type";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
 
-const initalState = {
-  langtag: DefaultLangtag,
+const initialState = {
   selectedCell: {},
-  editing: false,
-  expandedRows: [],
-  contextMenuOpen: false,
+  editing: false
 };
 
 const toggleSelectedCell = (state, action) => {
+  checkOrThrow(toggleCellSelectionActionSpec, action);
   if (action.pushHistory !== false && action.select !== false) {
     setUrlBarToCell({
       tableId: action.tableId,
       rowId: action.rowId,
       columnId: action.columnId,
-      langtag: action.langtag || state.tableView.langtag,
+      langtag:
+        action.langtag ||
+        (state.tableView && state.tableView.langtag) ||
+        DefaultLangtag
     });
   }
   // TODO: unlock row
-  return f.update(
-    "selectedCell",
-    prevSelection =>
+  return f.flow(
+    f.assoc("editing", false),
+    f.update("selectedCell", prevSelection =>
       action.select !== false &&
       (prevSelection.rowId !== action.rowId ||
         prevSelection.columnId !== action.columnId)
         ? f.pick(["rowId", "columnId"], action)
-        : {},
-    state
-  );
+        : {}
+    )
+  )(state);
+};
+
+const isLangtagOrNil = lt => f.isNil(lt) || f.contains(lt, langtags);
+
+const toggleCellSelectionActionSpec = {
+  tableId: f.isNumber,
+  columnId: f.isNumber,
+  rowId: f.isNumber,
+  langtag: isLangtagOrNil
 };
 
 const toggleCellEditing = (state, action) => {
+  console.log("toggleCellEditing", action);
   // TODO: Check if editable
   return f.update(
     "editing",
@@ -44,12 +56,12 @@ const toggleCellEditing = (state, action) => {
   );
 };
 
-const tableView = (state = initialState, action) => {
+export default (state = initialState, action) => {
   switch (action.type) {
     case TOGGLE_CELL_SELECTION:
-      return toggleCellSelection(state, action);
+      return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
-      return togleCellEditing(state, action);
+      return toggleCellEditing(state, action);
     default:
       return state;
   }

@@ -1,6 +1,5 @@
 import f from "lodash/fp";
 import actionTypes from "../actionTypes";
-import {toObjectById} from "../../helpers/funcHelpers";
 
 const {
   COLUMNS_LOADING_DATA,
@@ -14,12 +13,12 @@ const {
 const initialState = {};
 
 const columns = (state = initialState, action) => {
-  const {tableId, columnId, type} = action;
+  const { tableId, columnId, type } = action;
   switch (type) {
     case COLUMNS_LOADING_DATA:
       return {
         ...state,
-        [action.tableId]: {error: false, finishedLoading: false}
+        [action.tableId]: { error: false, finishedLoading: false }
       };
     case COLUMNS_DATA_LOADED:
       return {
@@ -33,7 +32,7 @@ const columns = (state = initialState, action) => {
     case COLUMNS_DATA_LOAD_ERROR:
       return {
         ...state,
-        [action.tableId]: {error: action.error, finishedLoading: true}
+        [action.tableId]: { error: action.error, finishedLoading: true }
       };
     case TOGGLE_COLUMN_VISIBILITY:
       return toggleSingleColumn(state, tableId, columnId);
@@ -53,7 +52,7 @@ const toggleSingleColumn = (state, tableId, columnId) => {
     path,
     f.map(column => {
       if (column.id === columnId) {
-        return {...column, visible: !column.visible};
+        return { ...column, visible: !column.visible };
       }
       return column;
     }, previousData),
@@ -67,7 +66,7 @@ const setAllColumns = (state, tableId, value) => {
   const temp = f.set(
     path,
     f.map(column => {
-      return {...column, visible: value};
+      return { ...column, visible: value };
     }, previousData),
     state
   );
