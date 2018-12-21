@@ -8,7 +8,7 @@ const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
 export const makeRequest = ({
   apiRoute,
   method = "GET",
-  params,
+  //  params,
   data,
   responseType = "JSON"
 }) => {
@@ -20,8 +20,4 @@ export const makeRequest = ({
   })
     .then(parseResponse)
     .catch(error => String(error));
-  then(returnValue => {
-    console.log("FETCH returned", returnValue);
-    return returnValue;
-  });
 };
