@@ -1,14 +1,27 @@
-import {apiHost, apiPort} from "../conf.js";
-import request from "superagent";
+import { apiHost, apiPort } from "../conf.js";
+import fetch from "cross-fetch";
+import { isNil } from "lodash/fp";
+import apiUrl from "./apiUrl";
 
-const buildURL = apiRoute => apiHost + apiPort +  "/api" + apiRoute;
+const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
 
-export const makeRequest = ({apiRoute, type, params}) => {
+export const makeRequest = ({
+  apiRoute,
+  method = "GET",
+  params,
+  data,
+  responseType = "JSON"
+}) => {
   const url = buildURL(apiRoute);
-  switch (type) {
-    case "GET":
-      return request.get(url).then(result => result.body);
-    default:
-      return null;
-  }
+  const parseResponse = response => response[responseType.toLowerCase()]();
+  return fetch(url, {
+    method,
+    body: isNil(data) ? undefined : JSON.stringify(data)
+  })
+    .then(parseResponse)
+    .catch(error => String(error));
+  then(returnValue => {
+    console.log("FETCH returned", returnValue);
+    return returnValue;
+  });
 };
