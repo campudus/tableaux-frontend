@@ -4,100 +4,102 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const autoprefixer = require("autoprefixer");
-const isDev = true;
+const isProduction = process.env.NODE_ENV === "production";
 
 module.exports = {
   entry: {
-    app: ["babel-regenerator-runtime","./src/app/router/router.js"]
+    app: ["babel-regenerator-runtime", "./src/app/router/router.js"],
   },
-  devtool: "inline-source-map",
+  devtool: isProduction
+    ? "cheap-module-source-map"
+    : "cheap-module-eval-source-map",
   module: {
     rules: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: "babel-loader"
+        use: "babel-loader",
       },
       {
         test: /\.json$/,
-        use: "json-loader"
+        use: "json-loader",
       },
       {
         test: /\.(jpe?g|png\*?|gif|svg|webm|mp4)$/,
         include: [path.resolve(__dirname, "./src/img")],
-        use: "file-loader"
+        use: "file-loader",
       },
       {
         test: /\.s?css$/,
         use: [
           {
-            loader: "style-loader"
+            loader: "style-loader",
           },
           {
-            loader: "css-loader"
+            loader: "css-loader",
           },
           {
             loader: "sass-loader",
             options: {
               includePaths: [
-                path.resolve(__dirname, "./node_modules/compass-mixins/lib")
-              ]
-            }
-          }
-        ]
+                path.resolve(__dirname, "./node_modules/compass-mixins/lib"),
+              ],
+            },
+          },
+        ],
       },
       {
         test: /\.woff2(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-woff2"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-woff2",
       },
       {
         test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-woff"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-woff",
       },
       {
         test: /\.ttf(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-ttf"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/font-ttf",
       },
       {
         test: /\.eot(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader:
-          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/vnd.ms-fontobject"
+          "url-loader?limit=10000&name=/fonts/[hash].[ext]&mimetype=application/vnd.ms-fontobject",
       },
       {
         test: /\.(svg|gif|jpg|jpeg|png)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file-loader?name=/img/[hash].[ext]"
-      }
-    ]
+        loader: "file-loader?name=/img/[hash].[ext]",
+      },
+    ],
   },
   resolve: {
-    extensions:[".js",".jsx"]
+    extensions: [".js", ".jsx"],
   },
   devServer: {
     contentBase: "./dist",
-    port: 3000
+    port: 3000,
   },
   plugins: [
     new CleanWebpackPlugin(["dist"]),
     new CopyPlugin([
       {
         from: path.resolve(__dirname, "./src/assets"),
-        to: path.resolve(__dirname, "./dist/public/assets")
+        to: path.resolve(__dirname, "./dist/public/assets"),
       },
       {
         from: path.resolve(__dirname, "./src/img"),
-        to: path.resolve(__dirname, "./dist/img")
+        to: path.resolve(__dirname, "./dist/img"),
       },
       {
         from: path.resolve(__dirname, "./src/index.html"),
-        to: path.resolve(__dirname, "./dist/index.html")
-      }
-    ])
+        to: path.resolve(__dirname, "./dist/index.html"),
+      },
+    ]),
   ],
   output: {
     filename: "[name].bundle.js",
-    path: path.resolve(__dirname, "dist")
-  }
+    path: path.resolve(__dirname, "dist"),
+  },
 };

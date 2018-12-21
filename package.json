@@ -4,6 +4,12 @@
   "description": "Experimental rewrite for tableaux-frontend with redux",
   "main": "index.js",
   "scripts": {
+    "tslint": "tslint",
+    "format:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs prettier --write",
+    "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs eslint",
+    "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs eslint --fix",
+    "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
+    "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "dev": "nodemon -w ./src --config ./nodemon.json --exec \"webpack && node ./src/server/index.js\"",
     "storybook": "start-storybook -p 3001 -s src"
   },
@@ -20,7 +26,7 @@
     "autoprefixer": "^7.1.5",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.0.2",
+    "babel-eslint": "^8.2.6",
     "babel-loader": "^7.1.2",
     "babel-plugin-istanbul": "^4.1.5",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
@@ -35,7 +41,14 @@
     "compass-mixins": "^0.12.10",
     "copy-webpack-plugin": "^4.6.0",
     "core-js": "^2.5.7",
+    "cross-fetch": "^3.0.0",
     "css-loader": "^1.0.1",
+    "eslint": "^5.10.0",
+    "eslint-plugin-lodash-fp": "^2.2.0-a1",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
     "event-stream": "^4.0.1",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^2.0.0",
@@ -51,6 +64,7 @@
     "sass-loader": "^7.1.0",
     "storybook": "^1.0.0",
     "style-loader": "^0.23.1",
+    "superagent": "^4.0.0",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^3.1.10"
   },
@@ -84,8 +98,8 @@
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
     "rxjs": "^5.5.6",
-    "superagent": "^4.0.0-beta.5",
     "throat": "^4.1.0",
+    "typescript": "^3.2.2",
     "webpack-cli": "^3.1.2"
   }
 }
