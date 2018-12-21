@@ -1,7 +1,7 @@
 import TableauxConstants from "../constants/TableauxConstants";
 import React from "react";
 import f from "lodash/fp";
-import {doto} from "./functools";
+import { doto } from "./functools";
 
 const langtagSeparatorRegex = /[-_]/;
 
@@ -41,9 +41,8 @@ function getLanguageOrCountryIcon(langtag, specific = "") {
   // unless asked for "language" or "country"
   // ... in that case we return either language or country from full langtag
   // ... or we expect the country to be expandable like de -> de_DE, it -> it_IT etc.
-  const countryOrLanguage = langtagSplitted.length > 1
-    ? langtagSplitted[1]
-    : langtagSplitted[0];
+  const countryOrLanguage =
+    langtagSplitted.length > 1 ? langtagSplitted[1] : langtagSplitted[0];
 
   const getResult = ([lang]) => {
     if (specific.startsWith("c")) {
@@ -60,8 +59,8 @@ function getLanguageOrCountryIcon(langtag, specific = "") {
 
   return (
     <span className="langtag">
-      <img src={"/img/flags/" + icon} alt={result} /><span
-        className="langtag-label">{result}</span>
+      <img src={"/img/flags/" + icon} alt={result} />
+      <span className="langtag-label">{result}</span>
     </span>
   );
 }
@@ -121,8 +120,9 @@ const currencyCodeMap = {
   RS: "RSD" // Serbia
 };
 
-const reverseCurrencyCodeMap = f.keys(currencyCodeMap).reduce(
-  (aggregator, country) => {
+const reverseCurrencyCodeMap = f
+  .keys(currencyCodeMap)
+  .reduce((aggregator, country) => {
     const key = currencyCodeMap[country];
     if (!aggregator[key]) {
       aggregator[key] = [country];
@@ -131,13 +131,11 @@ const reverseCurrencyCodeMap = f.keys(currencyCodeMap).reduce(
       aggregator[key].push(country);
       return aggregator;
     }
-  },
-  {}
-);
+  }, {});
 
 const getFallbackCurrencyValue = f.curry(
-  ({country, fromLangtag = false}, value = {}) => {
-    const _country = (fromLangtag) ? getCountryOfLangtag(country) : country;
+  ({ country, fromLangtag = false }, value = {}) => {
+    const _country = fromLangtag ? getCountryOfLangtag(country) : country;
     const currency = getCurrencyCode(_country);
     const fallbackEntry = f.flow(
       f.reject(f.eq(_country)),
@@ -155,7 +153,9 @@ function getCurrencyCode(country) {
 // TODO Map EN to GB or
 function getCountryOfLangtag(langtag) {
   const splittedLangtag = langtag.split(langtagSeparatorRegex);
-  return splittedLangtag.length > 1 ? splittedLangtag[1] : String(splittedLangtag[0]).toUpperCase();
+  return splittedLangtag.length > 1
+    ? splittedLangtag[1]
+    : String(splittedLangtag[0]).toUpperCase();
 }
 
 function getLanguageOfLangtag(langtag) {
@@ -164,17 +164,30 @@ function getLanguageOfLangtag(langtag) {
 
 function getTableDisplayName(table, langtag) {
   if (!table || !table.name || !langtag) {
-    console.warn("getTableDisplayName called with invalid parameters:", table, langtag);
+    console.warn(
+      "getTableDisplayName called with invalid parameters:",
+      table,
+      langtag
+    );
   } else {
     const tableDisplayName = table.displayName[langtag];
-    const fallbackTableDisplayName = table.displayName[TableauxConstants.FallbackLanguage] || table.name;
-    return f.isNil(tableDisplayName) ? fallbackTableDisplayName : tableDisplayName;
+    const fallbackTableDisplayName =
+      table.displayName[TableauxConstants.FallbackLanguage] || table.name;
+    return f.isNil(tableDisplayName)
+      ? fallbackTableDisplayName
+      : tableDisplayName;
   }
 }
 
-const getMultiLangValue = f.curry(
-  (langtag, defaultValue, element) => doto(element,
-    f.props([langtag, doto(langtag, f.take(2), f.join("")), TableauxConstants.FallbackLanguage, TableauxConstants.DefaultLangtag]),
+const getMultiLangValue = f.curry((langtag, defaultValue, element) =>
+  doto(
+    element,
+    f.props([
+      langtag,
+      doto(langtag, f.take(2), f.join("")),
+      TableauxConstants.FallbackLanguage,
+      TableauxConstants.DefaultLangtag
+    ]),
     f.find(f.identity),
     f.defaultTo(defaultValue)
   )
@@ -200,16 +213,41 @@ const tests = {
   tests: [
     ["is", 6, f.size, [reverseCurrencyCodeMap["EUR"]]],
     ["is", "SFR", getCurrencyCode, [getCountryOfLangtag("de-CH")]],
-    ["is", 42, getFallbackCurrencyValue, [{country: "IT"}, {DE: 42}]],
-    ["is", 42, getFallbackCurrencyValue, [{country: "de-DE", fromLangtag: true}, {IT: 42}]],
-    ["conformsTo", f.isNil, getFallbackCurrencyValue, [{country: "US"}, {GB: 1, DE: 2, CH: 3}]],
-    ["is", "Deutscher Inhalt", retrieveTranslation, [{"de_DE": "Deutscher Inhalt", "en_GB": null}, "en_GB", "de_DE"]]
+    ["is", 42, getFallbackCurrencyValue, [{ country: "IT" }, { DE: 42 }]],
+    [
+      "is",
+      42,
+      getFallbackCurrencyValue,
+      [{ country: "de-DE", fromLangtag: true }, { IT: 42 }]
+    ],
+    [
+      "conformsTo",
+      f.isNil,
+      getFallbackCurrencyValue,
+      [{ country: "US" }, { GB: 1, DE: 2, CH: 3 }]
+    ],
+    [
+      "is",
+      "Deutscher Inhalt",
+      retrieveTranslation,
+      [{ de_DE: "Deutscher Inhalt", en_GB: null }, "en_GB", "de_DE"]
+    ]
   ]
 };
 
+// if all object keys are langtags, value is multi language
+const isMultiLanguage = value =>
+  f.isObject(value) &&
+  f.all(f.contains(f.__, TableauxConstants.Langtags), f.keys(value));
+
+// if all object keys are country codes, value is multi country
+const isMultiCountry = value => {
+  const countries = f.keys(currencyCodeMap);
+  return f.isObject(value) && f.all(f.contains(f.__, countries), f.keys(value));
+};
 module.exports = {
-  retrieveTranslation: function (defaultLanguage) {
-    return function (json, language) {
+  retrieveTranslation: function(defaultLanguage) {
+    return function(json, language) {
       return retrieveTranslation(json, language, defaultLanguage);
     };
   },
@@ -220,5 +258,7 @@ module.exports = {
   getCountryOfLangtag,
   getCurrencyCode,
   getFallbackCurrencyValue,
-  tests
+  tests,
+  isMultiLanguage,
+  isMultiCountry
 };
