@@ -516,7 +516,7 @@ export default class VirtualTable extends PureComponent {
         : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
     const columnCount = f.size(visibleColumns)+1;
-    const rowCount = f.size(rows);
+    const rowCount = f.size(rows)+1;
     const selectedCellKey = `${f.get(
       "id",
       selectedCell
