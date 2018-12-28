@@ -52,7 +52,6 @@ export default class VirtualTable extends PureComponent {
       scrolledCell: {},
       lastScrolledCell: null
     };
-    this.expandedRowIds = props.expandedRowIds;
   }
 
   colWidths = new Map([[0, META_CELL_WIDTH]]);
@@ -97,15 +96,13 @@ export default class VirtualTable extends PureComponent {
   };
 
   calcRowHeight = ({index}) => {
-    return ROW_HEIGHT;
     if (index === 0) {
       return HEADER_HEIGHT;
     }
-    const row = maybe(this.props.rows)
-      .exec("at", index - 1)
-      .getOrElse({});
+    const row = f.get([index-1], this.props.rows);
+    // console.log(row);
     const rowId = f.get("id", row);
-    return f.contains(rowId, this.expandedRowIds)
+    return f.contains(rowId, this.props.expandedRowIds)
       ? f.size(Langtags) * ROW_HEIGHT
       : ROW_HEIGHT;
   };
@@ -219,7 +216,7 @@ export default class VirtualTable extends PureComponent {
       );
     }
 
-    const {langtag, rows, expandedRowIds, selectedCellExpandedRow} = this.props;
+    const {langtag, rows, expandedRowIds,toggleExpandedRow, selectedCellExpandedRow} = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const isRowSelected = !!(
@@ -231,6 +228,7 @@ export default class VirtualTable extends PureComponent {
       <div className="cell-stack">
         {Langtags.map(lt => (
           <MetaCell
+            toggleExpandedRow={toggleExpandedRow(row.id)}
             key={`${key}-${lt}`}
             langtag={lt}
             expanded={true}
@@ -242,6 +240,7 @@ export default class VirtualTable extends PureComponent {
       </div>
     ) : (
       <MetaCell
+        toggleExpandedRow={toggleExpandedRow(row.id)}
         key={`${key}-${row.id}`}
         langtag={langtag}
         row={row}
@@ -259,10 +258,9 @@ export default class VirtualTable extends PureComponent {
     //   .exec("at", rowIndex)
     //   .getOrElse({});
     const row = rows[rowIndex];
-    // return f.contains(row.id, expandedRowIds)
-    //   ? this.renderExpandedRowCell(gridData)
-    //   : this.renderSingleCell(gridData);
-    return this.renderSingleCell(gridData);
+    return f.contains(row.id, expandedRowIds)
+      ? this.renderExpandedRowCell(gridData)
+      : this.renderSingleCell(gridData);
   };
 
   renderSingleCell = ({columnIndex, rowIndex}) => {
@@ -327,16 +325,12 @@ export default class VirtualTable extends PureComponent {
           const isSelected =
             isRowSelected && column.id === this.selectedIds.column;
           const isEditing = isSelected && this.props.selectedCellEditing;
-          const displayValue = f.isArray(cell.displayValue)
-            ? f.flow(
-                f.map(f.get(langtag)),
-                f.join(";")
-              )(cell.displayValue) || ""
-            : f.get(langtag, cell.displayValue) || "";
+          const {displayValue} = cell;
           return (
             <Cell
               key={`${langtag}-${key}`}
               annotationState={annotationsState}
+              column={column}
               cell={cell}
               langtag={langtag}
               row={row}
@@ -350,7 +344,8 @@ export default class VirtualTable extends PureComponent {
               selected={isSelected}
               inSelectedRow={isRowSelected}
               editing={isEditing}
-              value={displayValue}
+              displayValue={displayValue}
+              value={cell.value}
             />
           );
         })}
@@ -413,7 +408,7 @@ export default class VirtualTable extends PureComponent {
     const newPropKeys = f.keys(next);
     const changeInRowSelection =
       f.contains("expandedRowIds", newPropKeys) &&
-      !f.isEmpty(f.xor(next.expandedRowIds, this.expandedRowIds));
+      !f.isEmpty(f.xor(next.expandedRowIds, this.props.expandedRowIds));
 
     if (
       f.contains("selectedCell", newPropKeys) &&
@@ -425,7 +420,6 @@ export default class VirtualTable extends PureComponent {
         next.selectedCellExpandedRow
       );
     } else if (changeInRowSelection) {
-      this.expandedRowIds = next.expandedRowIds;
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
   }

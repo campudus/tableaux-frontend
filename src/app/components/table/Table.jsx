@@ -39,7 +39,7 @@ class Table extends Component {
       selectedCell: null,
       selectedCellEditing: false,
       // needed for multilanguage cell selection
-      expandedRowIds: null, // Array
+      expandedRowIds: [], // Array
       selectedCellExpandedRow: null,
       rowContextMenu: null,
       showScrollToLeftButton: false
@@ -85,6 +85,15 @@ class Table extends Component {
       // tableNavigationWorker.checkFocusInsideTable.call(this);
     }
   }
+
+  toggleExpandedRow = rowId => () => {
+    const {expandedRowIds} = this.state;
+    const newExpandedRowIds = f.cond([
+      [f.includes(rowId), f.pull(rowId)],
+      [f.stubTrue, f.concat(rowId)]
+    ])(expandedRowIds);
+    this.setState({expandedRowIds: newExpandedRowIds});
+  };
 
   handleClickOutside = event => {
     /*
@@ -148,7 +157,6 @@ class Table extends Component {
 
   render() {
     const {columns, rows, tables, table, langtag} = this.props;
-    console.lo
     const {
       selectedCell,
       selectedCellEditing,
@@ -195,6 +203,7 @@ class Table extends Component {
             selectedCell={selectedCell}
             selectedCellEditing={selectedCellEditing}
             selectedCellExpandedRow={selectedCellExpandedRow}
+            toggleExpandedRow={this.toggleExpandedRow}
             expandedRowIds={expandedRowIds}
             visibleColumns={f.map(column => !!column, columns).toString()}
             fullyLoaded={this.props.fullyLoaded}
@@ -206,16 +215,5 @@ class Table extends Component {
     );
   }
 }
-
-// Table.propTypes = {
-//   langtag: PropTypes.string.isRequired,
-//   table: PropTypes.object.isRequired,
-//   overlayOpen: PropTypes.bool,
-//   rows: PropTypes.object,
-//   rowKeys: PropTypes.string.isRequired,
-//   columnKeys: PropTypes.string,
-//   tables: PropTypes.object.isRequired,
-//   fullyLoaded: PropTypes.bool.isRequired
-// };
 
 export default Table;

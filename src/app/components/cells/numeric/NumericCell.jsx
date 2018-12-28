@@ -24,7 +24,7 @@ const NumericCell = (props) => {
   if (!editing) {
     return (
       <div className="cell-content">
-        {displayValue["de"]}
+        {displayValue[langtag]}
       </div>
     );
   } else {

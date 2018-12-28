@@ -35,11 +35,9 @@ const ShortTextCell = props => {
     langtag,
     setCellKeyboardShortcuts,
     value,
-    focusTable
+    focusTable,
+    displayValue
   } = props;
-  const displayValue = column.multilanguage
-    ? getDisplayValue(column, value)[langtag]
-    : value;
 
   if (f.contains("\n", value)) {
     return <TextCell {...props} />;
@@ -54,7 +52,7 @@ const ShortTextCell = props => {
       setCellKeyboardShortcuts={setCellKeyboardShortcuts}
     />
   ) : (
-    <div className="cell-content">{displayValue || ""}</div>
+    <div className="cell-content">{displayValue[langtag] || ""}</div>
   );
 };
 

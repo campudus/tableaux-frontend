@@ -1,14 +1,12 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
-// import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
-// import connectToAmpersand from "../helperComponents/connectToAmpersand";
+import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
+// TODO check permissions
 // import {initiateDeleteRow} from "../../helpers/rowHelper";
 // import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
 import {DefaultLangtag} from "../../constants/TableauxConstants";
-// import ActionCreator from "../../actions/ActionCreator";
 import classNames from "classnames";
 
-// @connectToAmpersand
 class MetaCell extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -31,7 +29,8 @@ class MetaCell extends PureComponent {
 
   handleClick = (event) => {
     event.stopPropagation();
-    // ActionCreator.toggleRowExpand(this.props.row.id);
+    const {toggleExpandedRow} = this.props;
+    toggleExpandedRow();
   };
 
   deleteRow = (event) => {
@@ -80,7 +79,7 @@ class MetaCell extends PureComponent {
   render = () => {
     const {langtag, row, expanded, selected} = this.props;
     const cellContent = (expanded)
-      ? <div>empty</div>//getLanguageOrCountryIcon(langtag)
+      ?getLanguageOrCountryIcon(langtag)
       : (
         <div className="meta-info-collapsed">
           <div className="row-number">{row.id}</div>
