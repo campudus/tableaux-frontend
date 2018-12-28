@@ -4,15 +4,17 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const autoprefixer = require("autoprefixer");
-const isProduction = process.env.NODE_ENV === "production";
+const isDev = process.env.NODE_ENV !== "production";
+const LiveReloadPlugin = require("webpack-livereload-plugin");
 
 module.exports = {
   entry: {
     app: ["babel-regenerator-runtime", "./src/app/router/router.js"],
   },
-  devtool: isProduction
-    ? "cheap-module-source-map"
-    : "cheap-module-eval-source-map",
+  watchOptions:{
+    ignored: "/node_modules/"
+  },
+  devtool: "inline-source-map",
   module: {
     rules: [
       {
@@ -77,11 +79,8 @@ module.exports = {
   resolve: {
     extensions: [".js", ".jsx"],
   },
-  devServer: {
-    contentBase: "./dist",
-    port: 3000,
-  },
   plugins: [
+    new LiveReloadPlugin({port:3003, hostname:"localhost",protocol:"http"}),
     new CleanWebpackPlugin(["dist/app.bundle.js"]),
     new CopyPlugin([
       {
