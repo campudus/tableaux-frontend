@@ -14,17 +14,9 @@ const IdentifierCell = props => {
 
   return (
     <div className="cell-content" onClick={openEditor}>
-      {displayValue["de"]}
+      {displayValue[langtag]}
     </div>
   );
 };
-
-// IdentifierCell.propTypes = {
-//   langtag: PropTypes.string.isRequired,
-//   cell: PropTypes.object.isRequired,
-//   editing: PropTypes.bool.isRequired,
-//   selected: PropTypes.bool.isRequired,
-//   setCellKeyboardShortcuts: PropTypes.func.isRequired
-// };
 
 export default IdentifierCell;
