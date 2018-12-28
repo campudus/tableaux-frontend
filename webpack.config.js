@@ -5,10 +5,14 @@ const CopyPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const autoprefixer = require("autoprefixer");
 const isDev = true;
+const LiveReloadPlugin = require("webpack-livereload-plugin");
 
 module.exports = {
   entry: {
     app: ["babel-regenerator-runtime","./src/app/router/router.js"]
+  },
+  watchOptions:{
+    ignored: "/node_modules/"
   },
   devtool: "inline-source-map",
   module: {
@@ -75,11 +79,8 @@ module.exports = {
   resolve: {
     extensions:[".js",".jsx"]
   },
-  devServer: {
-    contentBase: "./dist",
-    port: 3000
-  },
   plugins: [
+    new LiveReloadPlugin({port:3003, hostname:"localhost",protocol:"http"}),
     new CleanWebpackPlugin(["dist/app.bundle.js"]),
     new CopyPlugin([
       {

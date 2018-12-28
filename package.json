@@ -4,7 +4,9 @@
   "description": "Experimental rewrite for tableaux-frontend with redux",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -w ./src --config ./nodemon.json --exec \"webpack && node ./src/server/index.js\"",
+    "dev": "npm-run-all --parallel startServer startWatch",
+    "startServer": "node ./src/server/index.js",
+    "startWatch": "webpack --watch",
     "storybook": "start-storybook -p 3001 -s src"
   },
   "author": "",
@@ -51,11 +53,13 @@
     "storybook": "^1.0.0",
     "style-loader": "^0.23.1",
     "webpack": "^3.8.1",
-    "webpack-dev-server": "^3.1.10"
+    "webpack-dev-server": "^3.1.10",
+    "webpack-livereload-plugin": "^1.2.0"
   },
   "dependencies": {
     "ampersand-app": "^2.0.0",
     "ampersand-router": "^5.0.0",
+    "browser-sync": "^2.26.3",
     "es6-promise": "^4.2.5",
     "http-proxy-middleware": "^0.19.0",
     "i18next": "^10.5.0",
@@ -65,6 +69,7 @@
     "memoize-one": "^5.0.0",
     "moment": "^2.22.2",
     "node-sass": "^4.10.0",
+    "npm-run-all": "^4.1.5",
     "raven-js": "^3.27.0",
     "react": "^16.6.1",
     "react-datetime": "^2.16.2",
