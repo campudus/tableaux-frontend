@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "tslint": "tslint",
-    "format:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs prettier --write",
-    "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs eslint",
-    "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs eslint --fix",
+    "format:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" |  xargs prettier --write",
+    "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
+    "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "dev": "npm-run-all --parallel startServer startWatch",
