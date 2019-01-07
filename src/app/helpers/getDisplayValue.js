@@ -42,12 +42,11 @@ const applyToAllLangs = fn => (
 const isLangObj = (obj) => !f.isEmpty(f.intersection(f.keys(obj), Langtags));
 // Retrieve obj[lantag] or obj[DefaultLangtag].
 // If both are unset, return null if obj has language keys but not langtag or DefaultLangtag, else return obj
-const getValueForLang = (obj, lt) => f.get(lt, obj) || f.get(DefaultLangtag, obj) || ((isLangObj(obj)) ? null : obj);
+  const getValueForLang = (obj, lt) => f.get(lt, obj) || ((isLangObj(obj)) ? null : obj) || "";
 
 // Return cell.value
 const getDefaultValue = (column) => (value) => (
   applyToAllLangs(lt => {
-    // console.log(column,value);
     const val = getValueForLang(value, lt) || "";
     return (f.isEmpty(val) && !f.isNumber(val)) ? "" : format(column, val);
   })

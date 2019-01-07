@@ -35,10 +35,11 @@ export const SortableCellKinds = [
 const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.POSTPONE, FilterModes.WITH_COMMENT];
 
 const getFilteredRows = (currentTable,rows, columns, langtag, filterSettings) => {
+  console.log(filterSettings);
   const closures = mkClosures(columns,rows , langtag, filterSettings);
   const allFilters = f.flow( // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
-    f.map(fn => withTryCatch(fn, f.always(false))) // to get errors, replace f.always(false) with eg. console.error
+    f.map(fn => withTryCatch(fn, console.error)) // to get errors, replace f.always(false) with eg. console.error
   )(filterSettings.filters || []);
   const combinedFilter = f.flow(
     f.juxt(allFilters),
@@ -50,7 +51,6 @@ const getFilteredRows = (currentTable,rows, columns, langtag, filterSettings) =>
   //   filter: combinedFilter,
   //   comparator: (f.isInteger(filterSettings.sortColumnId)) ? closures.comparator : null
   // });
-  // coll.colsWithMatches = f.uniq(Array.from(closures.colsWithMatches.values()));
   // return coll;
 };
 
@@ -58,21 +58,17 @@ const mkFilterFn = (closures) => (settings) => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   return f.cond([
     [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
-    // [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
-    // [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
-    // [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
+    [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
     [f.matchesProperty("mode", FilterModes.ROW_CONTAINS), mkAnywhereFilter(closures)],
     // [f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER), mkTranslatorFilter(closures)],
-    // [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(closures, mode, value)],
-    // [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
-    // [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
+    [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(closures, mode, value)],
+    [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
+    [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
     [f.stubTrue, ()=>f.stubTrue]
   ])(settings);
 };
-
-const rememberColumnIds = (colSet) => f.tap(
-  (cell) => colSet.add(cell.column.id)
-);
 
 const trace = str => stuff => {console.log(str,stuff); return stuff};
 const mkAnywhereFilter = (closures) => ({value}) => {
@@ -82,16 +78,16 @@ const mkAnywhereFilter = (closures) => ({value}) => {
       (cell) => f.contains(cell.kind, FilterableCellKinds),
       (cell) => searchFunctions[FilterModes.CONTAINS](value, closures.getSortableCellValue(cell))
       ])),
-    // f.map(rememberColumnIds(closures.colsWithMatches)),
     // trace("2"),
     f.any(f.identity)
   );
 };
 
 const mkBoolFilter = (closures) => ({value, columnId}) => (row) => {
-  const colIdx = f.findIndex(f.matchesProperty("id", columnId), row.columns);
+  const idx = closures.getColumnIndex(columnId);
+  const {values} = row;
   return doto(
-    row.cells.at(colIdx),
+    values[idx],
     (cell) => (cell.isMultiLanguage)
       ? cell.value[closures.langtag]
       : cell.value,
@@ -123,9 +119,8 @@ const mkIDFilter = closures => ({value}) => {
 };
 
 const hasUntranslatedCells = (closures, needsTranslation) => f.flow(
-  f.get(["cells", "models"]),
+  f.get(["values"]),
   f.filter(needsTranslation),
-  f.map(rememberColumnIds(closures.colsWithMatches)),
   f.complement(f.isEmpty)
 );
 
@@ -168,9 +163,8 @@ const mkFlagFilter = (closures, mode, value) => {
     );
 
   return f.flow(
-    f.get(["cells", "models"]),
+    f.get(["values"]),
     f.filter(findAnnotation),
-    f.map(rememberColumnIds(closures.colsWithMatches)),
     f.isEmpty,
     (misMatch) => (value) ? !misMatch : misMatch
   );
@@ -186,7 +180,7 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
   }
 
   return (row) => {
-    const firstCell = row.cells.at(0);
+    const firstCell = f.get(["values",0],row);
     const firstCellValue = getSortableCellValue(firstCell);
 
     // Always return true for rows with empty first value.
@@ -196,7 +190,7 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
       return true;
     }
 
-    const targetCell = row.cells.at(filterColumnIndex);
+    const targetCell = f.get(["values",filterColumnIndex],row);
     const searchFunction = searchFunctions[mode];
 
     if (f.contains(targetCell.kind, FilterableCellKinds)) {

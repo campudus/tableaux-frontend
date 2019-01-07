@@ -99,7 +99,7 @@ export default class VirtualTable extends PureComponent {
     if (index === 0) {
       return HEADER_HEIGHT;
     }
-    const row = f.get([index-1], this.props.rows);
+    const row = f.get([index - 1], this.props.rows);
     // console.log(row);
     const rowId = f.get("id", row);
     return f.contains(rowId, this.props.expandedRowIds)
@@ -201,8 +201,8 @@ export default class VirtualTable extends PureComponent {
         tableId={table.id}
         resizeHandler={this.updateColWidth}
         resizeFinishedHandler={this.saveColWidths}
-        index={columnIndex+1}
-        width={this.calcColWidth({index: columnIndex+1})}
+        index={columnIndex + 1}
+        width={this.calcColWidth({index: columnIndex + 1})}
       />
     );
   };
@@ -216,7 +216,13 @@ export default class VirtualTable extends PureComponent {
       );
     }
 
-    const {langtag, rows, expandedRowIds,toggleExpandedRow, selectedCellExpandedRow} = this.props;
+    const {
+      langtag,
+      rows,
+      expandedRowIds,
+      toggleExpandedRow,
+      selectedCellExpandedRow
+    } = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const isRowSelected = !!(
@@ -267,7 +273,11 @@ export default class VirtualTable extends PureComponent {
     const {rows, table, langtag, columns} = this.props;
     const {openAnnotations} = this.state;
     const row = rows[rowIndex];
-    const {value, displayValue} = this.getCell(rowIndex, columnIndex);
+    const cell = this.getCell(rowIndex, columnIndex);
+    const {value, displayValue, annotations} = cell;
+    if (!f.isEmpty(annotations)) {
+      console.log(annotations);
+    }
     const isInSelectedRow = row.id === this.selectedIds.row;
     const visibleColumns = this.props.columns.filter(
       (col, idx) => idx === 0 || col.visible
@@ -396,13 +406,12 @@ export default class VirtualTable extends PureComponent {
     // }
     // return cells[this.getCell.totalColIdx];
     // Original implementation which eats too much CPU-time
-       const visibleCells = cells.filter(this.filterVisibleCells);
-       return visibleCells[columnIndex];
+    const visibleCells = cells.filter(this.filterVisibleCells);
+    return visibleCells[columnIndex];
   };
 
   filterVisibleCells = (cell, columnIdx) =>
-    columnIdx === 0 ||
-    f.get("visible", this.props.columns[columnIdx]);
+    columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -509,8 +518,8 @@ export default class VirtualTable extends PureComponent {
         ? scrolledCell
         : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
-    const columnCount = f.size(visibleColumns)+1;
-    const rowCount = f.size(rows)+1;
+    const columnCount = f.size(visibleColumns) + 1;
+    const rowCount = f.size(rows) + 1;
     const selectedCellKey = `${f.get(
       "id",
       selectedCell

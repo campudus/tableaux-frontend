@@ -3,6 +3,7 @@ import f from "lodash/fp";
 import memoize from "memoize-one";
 import getFilteredRows from "../table/RowFilters";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import {extractAnnotations} from "../../helpers/annotationHelper";
 
 const mapIndexed = f.map.convert({cap: false});
 
@@ -21,28 +22,22 @@ export default function(ComposedComponent) {
 
     prepareRowsForFilter = memoize((rows, columns, displayValues) =>
       mapIndexed((row, id) => {
-        const {values} = row;
-        // const updatedValues = f.compose(
-        //   f.zipWith()
-        //   f.zipWith((column, cell) => {
-        //     return {
-        //       value: cell,
-        //       kind: column.kind
-        //     };
-        //   }, columns)
-        // )(values);
+        const {values,annotations} = row;
+        const extractedAnnotations = f.map(extractAnnotations,annotations);
         const updatedValues = mapIndexed((cell, index) => {
           return {
             value: cell,
             kind: columns[index].kind,
-            displayValue: displayValues[id][index]
+            displayValue: displayValues[id][index],
+            annotations: f.get([index], extractedAnnotations),
+            isMultilanguage: f.get(["multilanguage"],columns)
           };
         }, values);
         return {...row, values: updatedValues};
       }, rows)
     );
 
-    filterRows = memoize((
+    filterRows = (
       columns,
       table,
       tables,
@@ -64,8 +59,9 @@ export default function(ComposedComponent) {
         columns,
         displayValues
       );
+      console.log(preparedRows);
       return getFilteredRows(table, preparedRows, columns, langtag, rowsFilter);
-    });
+    };
 
     render() {
       const {

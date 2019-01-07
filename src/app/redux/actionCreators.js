@@ -112,7 +112,6 @@ const generateDisplayValues = (rows, columns) => (dispatch, getState) => {
     f.map("values")
   )(rows);
   const t2 = performance.now();
-  console.log("generate",t2-t1);
 
   dispatch({
     type: GENERATED_DISPLAY_VALUES,
