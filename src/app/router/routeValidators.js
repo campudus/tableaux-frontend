@@ -4,8 +4,8 @@ import f from "lodash/fp";
 
 let cachedTables = null;
 
-const getTables = () => new Promise(
-  (resolve, reject) => {
+const getTables = () =>
+  new Promise((resolve, reject) => {
     if (f.isNil(cachedTables)) {
       const tables = new Tables();
       tables.fetch({
@@ -13,17 +13,16 @@ const getTables = () => new Promise(
           cachedTables = tables;
           resolve(cachedTables);
         },
-        error: (err) => {
+        error: err => {
           reject(err);
         }
       });
     } else {
       resolve(cachedTables);
     }
-  }
-);
+  });
 
-const validateLangtag = (langtag) => {
+const validateLangtag = langtag => {
   // return (f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags))
   //   ? TableauxConstants.DefaultLangtag
   //   : langtag;
@@ -40,14 +39,20 @@ async function validateTableId(tableId, tables) {
   const firstTableId = f.first(tables);
   return f.cond([
     [f.isNil, firstTableId],
-    [(id) => f.isNil(tables[id]), firstTableId],
+    [id => f.isNil(tables[id]), firstTableId],
     [f.stubTrue, f.identity]
   ])(tableId);
 }
 
-const posOrNil = (string) => {
+const posOrNil = string => {
   const number = parseInt(string);
-  return (f.isNumber(number) && number >= 0) ? number : null;
+  return f.isNumber(number) && number >= 0 ? number : null;
 };
 
-export {posOrNil, validateLangtag, validateTableId, getFirstTableId, getTables};
+export {
+  posOrNil,
+  validateLangtag,
+  validateTableId,
+  getFirstTableId,
+  getTables
+};

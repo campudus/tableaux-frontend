@@ -2,13 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 // import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import * as f from "lodash/fp";
-import {DefaultLangtag} from "../../../constants/TableauxConstants";
-import {compose, pure, withHandlers} from "recompose";
+import { DefaultLangtag } from "../../../constants/TableauxConstants";
+import { compose, pure, withHandlers } from "recompose";
 import Empty from "../../helperComponents/emptyEntry";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const LinkLabelCell = props => {
-  const {value,column, clickable, langtag, linkElement, linkIndexAt, displayValue} = props;
+  const {
+    value,
+    column,
+    clickable,
+    langtag,
+    linkElement,
+    linkIndexAt,
+    displayValue
+  } = props;
   // const displayValue = getDisplayValue(column, value);
   // console.log(value);
   // console.log(displayValue);

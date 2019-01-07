@@ -1,18 +1,18 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 // import RichTextComponent from "../../RichTextComponent";
 import ExpandButton from "./ExpandButton.jsx";
 // import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 // import ActionCreator from "../../../actions/ActionCreator";
-import f, {isEmpty, isString} from "lodash/fp";
-import {isLocked} from "../../../helpers/annotationHelper";
+import f, { isEmpty, isString } from "lodash/fp";
+import { isLocked } from "../../../helpers/annotationHelper";
 // import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
 import {
   ColumnKinds,
   FallbackLanguage
 } from "../../../constants/TableauxConstants";
 // import Header from "../../overlay/Header";
-import {doto, maybe} from "../../../helpers/functools";
+import { doto, maybe } from "../../../helpers/functools";
 import i18n from "i18next";
 // import {contentChanged} from "../Cell";
 // import changeCell from "../../../models/helpers/changeCell";
@@ -32,9 +32,9 @@ class TextCell extends PureComponent {
       // ActionCreator.toggleCellEditing({editing: false});
       return;
     }
-    const {value, langtag} = this.props;
+    const { value, langtag } = this.props;
     const valueToSave = false //(cell.isMultiLanguage)
-      ? {[langtag]: newValue}
+      ? { [langtag]: newValue }
       : newValue;
     // changeCell({
     //   cell,
@@ -55,7 +55,7 @@ class TextCell extends PureComponent {
     // }
     const textValue = withContent || this.getValue();
 
-    const {cell, langtag} = this.props;
+    const { cell, langtag } = this.props;
     // const table = cell.tables.get(cell.tableId);
     // const context = doto([table.displayName[langtag], table.displayName[FallbackLanguage], table.name],
     //   f.compact,
@@ -99,7 +99,7 @@ class TextCell extends PureComponent {
   };
 
   getValue = () => {
-    const {value, column, langtag} = this.props;
+    const { value, column, langtag } = this.props;
     return (column.multiLanguage ? value[langtag] : value) || "";
   };
 
@@ -116,7 +116,7 @@ class TextCell extends PureComponent {
   };
 
   render() {
-    const {selected} = this.props;
+    const { selected } = this.props;
     const value = this.getValue();
     const isMultiLine = f.contains("\n", value);
 
@@ -131,7 +131,8 @@ class TextCell extends PureComponent {
     return (
       <div
         className={`cell-content ${isMultiLine ? "is-multiline" : ""}`}
-        onClick={this.handleClick}>
+        onClick={this.handleClick}
+      >
         <div>{isString(value) ? value.split("\n")[0] : ""}</div>
         {expandButton}
         {multiLineIndicator}

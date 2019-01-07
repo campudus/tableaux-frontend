@@ -2,7 +2,7 @@ import React from "react";
 import f from "lodash/fp";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import TableSwitcherPopup from "./TableSwitcherPopup";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import * as AccessControl from "../../../helpers/accessManagementHelper";
 import classNames from "classnames";
 import PropTypes from "prop-types";
@@ -25,7 +25,7 @@ class TableSwitcherButton extends React.PureComponent {
   };
 
   onClickedOutside = event => {
-    this.setState({isOpen: false});
+    this.setState({ isOpen: false });
   };
 
   onClickedGroup = groupId => {
@@ -34,11 +34,11 @@ class TableSwitcherButton extends React.PureComponent {
         ? null // clicked again so toggle off
         : groupId; // set new group
 
-    this.setState({currentGroupId: newGroupId});
+    this.setState({ currentGroupId: newGroupId });
   };
 
   renderPopup = () => {
-    const {t, langtag, tables, currentTable,navigate} = this.props;
+    const { t, langtag, tables, currentTable, navigate } = this.props;
 
     const groups = f.flow(
       f.reject("hidden"), //   ...of visible tables
@@ -93,7 +93,7 @@ class TableSwitcherButton extends React.PureComponent {
 
   togglePopup = event => {
     event.preventDefault();
-    this.setState({isOpen: !this.state.isOpen});
+    this.setState({ isOpen: !this.state.isOpen });
   };
 
   render() {

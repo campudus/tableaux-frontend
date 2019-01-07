@@ -1,17 +1,17 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import NavigationPopup from "./NavigationPopup";
 import PropTypes from "prop-types";
-import {withState, withHandlers, compose, pure} from "recompose";
+import { withState, withHandlers, compose, pure } from "recompose";
 import f from "lodash/fp";
 
 const withPopupChild = compose(
   withState("navigationOpen", "setPopup", false),
   withHandlers({
-    onButtonClicked: ({setPopup}) => event => {
+    onButtonClicked: ({ setPopup }) => event => {
       event.preventDefault();
       setPopup(open => !open);
     },
-    onClickOutside: ({setPopup}) => () => setPopup(f.always(false))
+    onClickOutside: ({ setPopup }) => () => setPopup(f.always(false))
   }),
   pure
 );
@@ -23,22 +23,24 @@ class Navigation extends Component {
   onButtonClicked = event => {
     event.preventDefault();
     this.setState(prevState => {
-      return {navigationOpen: !prevState.navigationOpen};
+      return { navigationOpen: !prevState.navigationOpen };
     });
   };
   render() {
-    const {langtag, onClickOutside} = this.props;
-    const {navigationOpen} = this.state;
+    const { langtag, onClickOutside } = this.props;
+    const { navigationOpen } = this.state;
 
     return (
       <nav
         id="main-navigation-wrapper"
-        className={navigationOpen ? "active" : ""}>
+        className={navigationOpen ? "active" : ""}
+      >
         <a
           id="burger"
           className="ignore-react-onclickoutside"
           href="#"
-          onClick={this.onButtonClicked}>
+          onClick={this.onButtonClicked}
+        >
           <i className="fa fa-bars" />
         </a>
         <NavigationPopup

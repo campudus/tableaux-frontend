@@ -35,17 +35,34 @@ import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
-  const {tableId} = props;
-  const tables = f.get(`tables.data`, state);
+  const { tableId } = props;
+  const tables = f.get("tables.data", state);
   const table = tables[tableId];
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const visibleColumns = f.get("tableView.visibleColumns", state);
-  const {filters, sorting, startedGeneratingDisplayValues, displayValues} = f.get("tableView", state);
+  const tableView = f.get("tableView", state);
+  const {
+    filters,
+    sorting,
+    startedGeneratingDisplayValues,
+    displayValues
+  } = tableView;
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
   }
-  return {table, columns, rows, tables, visibleColumns, filters, sorting, startedGeneratingDisplayValues, displayValues};
+  return {
+    table,
+    columns,
+    rows,
+    tables,
+    visibleColumns,
+    filters,
+    sorting,
+    startedGeneratingDisplayValues,
+    displayValues,
+    tableView
+  };
 };
 
 @applyFiltersAndVisibility
@@ -65,7 +82,7 @@ class TableView extends Component {
     };
   }
 
-  setCopyOrigin = ({cell, langtag}) => {
+  setCopyOrigin = ({ cell, langtag }) => {
     this.setState({
       pasteOriginCell: cell,
       pasteOriginCellLang: langtag
@@ -92,7 +109,18 @@ class TableView extends Component {
   };
 
   renderTableOrSpinner = () => {
-    const {tables, columns, rows, displayValues, langtag, table, actions, startedGeneratingDisplayValues,canRenderTable} = this.props;
+    const {
+      tables,
+      columns,
+      rows,
+      displayValues,
+      langtag,
+      table,
+      actions,
+      startedGeneratingDisplayValues,
+      canRenderTable,
+      tableView
+    } = this.props;
     if (!canRenderTable) {
       return (
         <div className="initial-loader">
@@ -100,19 +128,22 @@ class TableView extends Component {
         </div>
       );
     } else {
-    const rowKeys = f.flow(
-      f.get("models"),
-      f.map(f.get("id")),
-      f.toString
-    )(rows);
-    const columnKeys = f.flow(
-      // f.filter((col, idx) => col.visible || idx === 0),
-      f.map(f.get("id")),
-      f.toString
-    )(columns);
+      const rowKeys = f.flow(
+        f.get("models"),
+        f.map(f.get("id")),
+        f.toString
+      )(rows);
+      const columnKeys = f.flow(
+        // f.filter((col, idx) => col.visible || idx === 0),
+        f.map(f.get("id")),
+        f.toString
+      )(columns);
       return (
         <div className="wrapper">
           <Table
+            actions={actions}
+            displayValues={displayValues}
+            tableView={tableView}
             table={table}
             langtag={langtag}
             rows={rows}

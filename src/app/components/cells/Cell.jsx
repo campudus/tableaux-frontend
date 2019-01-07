@@ -133,13 +133,21 @@ export const contentChanged = (cell, langtag, oldValue) => () => {
   // }
 };
 
-class Cell extends React.PureComponent {
+class Cell extends React.Component {
   cellDOMNode = null;
 
   constructor(props) {
     super(props);
     this.keyboardShortcuts = {};
   }
+
+  shouldComponentUpdate = nextProps => {
+    const keys = f.keys(nextProps);
+    const changes = keys.filter(key =>
+      f.complement(f.eq)(this.props[key], nextProps[key])
+    );
+    return changes.length > 0 && !f.equals(changes, ["column"]);
+  };
 
   getKeyboardShortcuts = event => {
     return this.keyboardShortcuts;
@@ -150,7 +158,7 @@ class Cell extends React.PureComponent {
   };
 
   cellClickedWorker = (event, withRightClick) => {
-    let {
+    const {
       actions,
       table,
       row,
@@ -273,10 +281,10 @@ class Cell extends React.PureComponent {
     } = this.props;
     const { concat, text, richtext } = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
-    const kind =
-      this.userCanEditValue() || column.kind === ColumnKinds.concat
-        ? column.kind
-        : "disabled";
+    const kind = column.kind;
+    //       this.userCanEditValue() || column.kind === ColumnKinds.concat
+    //         ? column.kind
+    //         : "disabled";
     const { translationNeeded } = { translationNeeded: true }; //cell.annotations;
     const isPrimaryLanguage = langtag === f.first(Langtags);
     const needsTranslationOtherLanguages =
@@ -299,7 +307,6 @@ class Cell extends React.PureComponent {
     //       f.join(";")
     //     )(cell.displayValue) || ""
     //   : f.get(langtag, cell.displayValue) || "";
-    const displayValue = getDisplayValue(column, value);
 
     // onKeyDown event just for selected components
     return (

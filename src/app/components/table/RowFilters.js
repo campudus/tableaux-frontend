@@ -1,8 +1,12 @@
 // import AmpersandFilteredSubcollection from "ampersand-filtered-subcollection";
-import {ColumnKinds, FilterModes, SortValues} from "../../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  FilterModes,
+  SortValues
+} from "../../constants/TableauxConstants";
 import searchFunctions from "../../helpers/searchFunctions";
 import f from "lodash/fp";
-import {doto, either, withTryCatch} from "../../helpers/functools";
+import { doto, either, withTryCatch } from "../../helpers/functools";
 
 // const FilteredSubcollection = AmpersandFilteredSubcollection.extend(
 //   {
@@ -32,11 +36,23 @@ export const SortableCellKinds = [
   ColumnKinds.datetime
 ];
 
-const FlagSearches = [FilterModes.CHECK_ME, FilterModes.IMPORTANT, FilterModes.POSTPONE, FilterModes.WITH_COMMENT];
+const FlagSearches = [
+  FilterModes.CHECK_ME,
+  FilterModes.IMPORTANT,
+  FilterModes.POSTPONE,
+  FilterModes.WITH_COMMENT
+];
 
-const getFilteredRows = (currentTable,rows, columns, langtag, filterSettings) => {
-  const closures = mkClosures(columns,rows , langtag, filterSettings);
-  const allFilters = f.flow( // eslint-disable-line lodash-fp/prefer-composition-grouping
+const getFilteredRows = (
+  currentTable,
+  rows,
+  columns,
+  langtag,
+  filterSettings
+) => {
+  const closures = mkClosures(columns, rows, langtag, filterSettings);
+  const allFilters = f.flow(
+    // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
     f.map(fn => withTryCatch(fn, f.always(false))) // to get errors, replace f.always(false) with eg. console.error
   )(filterSettings.filters || []);
@@ -54,56 +70,64 @@ const getFilteredRows = (currentTable,rows, columns, langtag, filterSettings) =>
   // return coll;
 };
 
-const mkFilterFn = (closures) => (settings) => {
+const mkFilterFn = closures => settings => {
   const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
   return f.cond([
     [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
     // [f.matchesProperty("mode", FilterModes.UNTRANSLATED), mkTranslationStatusFilter(closures)],
     // [f.matchesProperty("mode", FilterModes.ANY_UNTRANSLATED), mkOthersTranslationStatusFilter(closures)],
     // [f.matchesProperty("mode", FilterModes.FINAL), mkFinalFilter(closures)],
-    [f.matchesProperty("mode", FilterModes.ROW_CONTAINS), mkAnywhereFilter(closures)],
+    [
+      f.matchesProperty("mode", FilterModes.ROW_CONTAINS),
+      mkAnywhereFilter(closures)
+    ],
     // [f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER), mkTranslatorFilter(closures)],
     // [({mode}) => f.contains(mode, FlagSearches), ({mode, value}) => mkFlagFilter(closures, mode, value)],
     // [f.matchesProperty("columnKind", ColumnKinds.boolean), mkBoolFilter(closures)],
     // [({mode}) => f.contains(mode, valueFilters), mkColumnValueFilter(closures)],
-    [f.stubTrue, ()=>f.stubTrue]
+    [f.stubTrue, () => f.stubTrue]
   ])(settings);
 };
 
-const rememberColumnIds = (colSet) => f.tap(
-  (cell) => colSet.add(cell.column.id)
-);
+const rememberColumnIds = colSet => f.tap(cell => colSet.add(cell.column.id));
 
-const trace = str => stuff => {console.log(str,stuff); return stuff};
-const mkAnywhereFilter = (closures) => ({value}) => {
+const trace = str => stuff => {
+  console.log(str, stuff);
+  return stuff;
+};
+const mkAnywhereFilter = closures => ({ value }) => {
   return f.flow(
     f.get("values"),
-    f.filter(f.overEvery([
-      (cell) => f.contains(cell.kind, FilterableCellKinds),
-      (cell) => searchFunctions[FilterModes.CONTAINS](value, closures.getSortableCellValue(cell))
-      ])),
+    f.filter(
+      f.overEvery([
+        cell => f.contains(cell.kind, FilterableCellKinds),
+        cell =>
+          searchFunctions[FilterModes.CONTAINS](
+            value,
+            closures.getSortableCellValue(cell)
+          )
+      ])
+    ),
     // f.map(rememberColumnIds(closures.colsWithMatches)),
     // trace("2"),
     f.any(f.identity)
   );
 };
 
-const mkBoolFilter = (closures) => ({value, columnId}) => (row) => {
+const mkBoolFilter = closures => ({ value, columnId }) => row => {
   const colIdx = f.findIndex(f.matchesProperty("id", columnId), row.columns);
   return doto(
     row.cells.at(colIdx),
-    (cell) => (cell.isMultiLanguage)
-      ? cell.value[closures.langtag]
-      : cell.value,
-    (boolVal) => !!boolVal === value,
+    cell => (cell.isMultiLanguage ? cell.value[closures.langtag] : cell.value),
+    boolVal => !!boolVal === value
   );
 };
 
-const mkTranslatorFilter = (closures) => () => (row) => {
+const mkTranslatorFilter = closures => () => row => {
   if (f.isEmpty(closures.colsWithMatches)) {
     row.columns
-       .filter(f.get("isMultilanguage"))
-       .forEach(rememberColumnIds(closures.colsWithMatches));
+      .filter(f.get("isMultilanguage"))
+      .forEach(rememberColumnIds(closures.colsWithMatches));
   }
   return f.flow(
     f.map(["annotations", "translationNeeded", "langtags", closures.langtag]),
@@ -111,44 +135,55 @@ const mkTranslatorFilter = (closures) => () => (row) => {
   )(row);
 };
 
-const mkFinalFilter = closures => ({value}) => {
+const mkFinalFilter = closures => ({ value }) => {
   return f.matchesProperty("final", value);
 };
 
-const mkIDFilter = closures => ({value}) => {
+const mkIDFilter = closures => ({ value }) => {
   return f.flow(
     f.get("id"),
-    (id) => f.contains(id, value)
+    id => f.contains(id, value)
   );
 };
 
-const hasUntranslatedCells = (closures, needsTranslation) => f.flow(
-  f.get(["cells", "models"]),
-  f.filter(needsTranslation),
-  f.map(rememberColumnIds(closures.colsWithMatches)),
-  f.complement(f.isEmpty)
-);
+const hasUntranslatedCells = (closures, needsTranslation) =>
+  f.flow(
+    f.get(["cells", "models"]),
+    f.filter(needsTranslation),
+    f.map(rememberColumnIds(closures.colsWithMatches)),
+    f.complement(f.isEmpty)
+  );
 
-const mkOthersTranslationStatusFilter = (closures) => ({value}) => {
+const mkOthersTranslationStatusFilter = closures => ({ value }) => {
   const needsTranslation = f.flow(
     f.get(["annotations", "translationNeeded", "langtags"]),
     f.complement(f.isEmpty),
-    (match) => (value) ? match : !match
+    match => (value ? match : !match)
   );
 
-  const hasUntranslatedCellsFn = hasUntranslatedCells(closures, needsTranslation);
-  return (value === true) ? hasUntranslatedCellsFn : f.complement(hasUntranslatedCellsFn);
+  const hasUntranslatedCellsFn = hasUntranslatedCells(
+    closures,
+    needsTranslation
+  );
+  return value === true
+    ? hasUntranslatedCellsFn
+    : f.complement(hasUntranslatedCellsFn);
 };
 
-const mkTranslationStatusFilter = (closures) => ({value}) => {
+const mkTranslationStatusFilter = closures => ({ value }) => {
   const needsTranslation = f.flow(
     f.get(["annotations", "translationNeeded", "langtags"]),
     f.contains(closures.langtag),
-    (match) => (value) ? match : !match
+    match => (value ? match : !match)
   );
 
-  const hasUntranslatedCellsFn = hasUntranslatedCells(closures, needsTranslation);
-  return (value === true) ? hasUntranslatedCellsFn : f.complement(hasUntranslatedCellsFn);
+  const hasUntranslatedCellsFn = hasUntranslatedCells(
+    closures,
+    needsTranslation
+  );
+  return value === true
+    ? hasUntranslatedCellsFn
+    : f.complement(hasUntranslatedCellsFn);
 };
 
 const mkFlagFilter = (closures, mode, value) => {
@@ -158,25 +193,26 @@ const mkFlagFilter = (closures, mode, value) => {
     [FilterModes.CHECK_ME]: "check-me"
   });
 
-  const findAnnotation = (flag)
+  const findAnnotation = flag
     ? f.get(["annotations", flag]) // search for flag
-    : f.flow( // else search for comment
-      f.get("annotations"),
-      f.keys,
-      f.intersection(["info", "warning", "error"]),
-      f.complement(f.isEmpty)
-    );
+    : f.flow(
+        // else search for comment
+        f.get("annotations"),
+        f.keys,
+        f.intersection(["info", "warning", "error"]),
+        f.complement(f.isEmpty)
+      );
 
   return f.flow(
     f.get(["cells", "models"]),
     f.filter(findAnnotation),
     f.map(rememberColumnIds(closures.colsWithMatches)),
     f.isEmpty,
-    (misMatch) => (value) ? !misMatch : misMatch
+    misMatch => (value ? !misMatch : misMatch)
   );
 };
 
-const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
+const mkColumnValueFilter = closures => ({ value, mode, columnId }) => {
   const filterColumnIndex = closures.getColumnIndex(columnId);
   const toFilterValue = closures.cleanString(value);
   const getSortableCellValue = closures.getSortableCellValue;
@@ -185,7 +221,7 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
     return f.stubTrue;
   }
 
-  return (row) => {
+  return row => {
     const firstCell = row.cells.at(0);
     const firstCellValue = getSortableCellValue(firstCell);
 
@@ -210,23 +246,27 @@ const mkColumnValueFilter = closures => ({value, mode, columnId}) => {
 
 // Generate settings-specific helper functions needed by all filters
 const mkClosures = (columns, rows, langtag, rowsFilter) => {
-  const cleanString = f.flow(f.toString, f.toLower, f.trim);
-  const getColumnIndex = id => f.findIndex(f.matchesProperty("id", id), columns);
-  const {sortValue} = rowsFilter;
+  const cleanString = f.flow(
+    f.toString,
+    f.toLower,
+    f.trim
+  );
+  const getColumnIndex = id =>
+    f.findIndex(f.matchesProperty("id", id), columns);
+  const { sortValue } = rowsFilter;
 
   const sortColumnIdx = getColumnIndex(rowsFilter.sortColumnId);
-  const isOfKind = (kind) => f.matchesProperty("kind", kind);
+  const isOfKind = kind => f.matchesProperty("kind", kind);
   const joinStrings = f.flow(
     f.get("displayValue"),
     f.map(f.get(langtag)),
     f.join("::")
   );
 
-  const getPlainValue = (cell) => (cell.isMultiLanguage)
-    ? cell.value[langtag]
-    : cell.value;
+  const getPlainValue = cell =>
+    cell.isMultiLanguage ? cell.value[langtag] : cell.value;
 
-  const getSortableCellValue = (cell) => {
+  const getSortableCellValue = cell => {
     const rawValue = f.cond([
       [isOfKind(ColumnKinds.boolean), getPlainValue],
       [isOfKind(ColumnKinds.link), joinStrings],
@@ -237,14 +277,14 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     ])(cell);
     const temp = f.cond([
       [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
-      [isOfKind(ColumnKinds.boolean), f.always((rawValue) ? "a" : "b")],
+      [isOfKind(ColumnKinds.boolean), f.always(rawValue ? "a" : "b")],
       [f.stubTrue, f.always(f.toLower(rawValue) || "")]
     ])(cell);
     return temp;
   };
 
   const comparator = (a, b) => {
-    const dir = (sortValue === SortValues.ASC) ? +1 : -1;
+    const dir = sortValue === SortValues.ASC ? +1 : -1;
     const [gt, lt] = [dir, -dir];
     const [aFirst, bFirst, equal] = [-1, +1, 0];
     const getSortValue = row => {
@@ -255,20 +295,21 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     };
     const compareRowIds = (a, b) => {
       const idOf = f.prop("id");
-      return (idOf(a) === idOf(b))
-        ? equal
-        : idOf(a) - idOf(b);
+      return idOf(a) === idOf(b) ? equal : idOf(a) - idOf(b);
     };
-    const compareValues = (a, b) => (a > b) ? gt : lt;
-    const isEmpty = (x) => !x && x !== 0 && x !== !!x;
+    const compareValues = (a, b) => (a > b ? gt : lt);
+    const isEmpty = x => !x && x !== 0 && x !== !!x;
 
-    return (sortColumnIdx >= 0)
+    return sortColumnIdx >= 0
       ? f.cond([
-        [(vals) => f.every(isEmpty, vals), f.always(equal)],
-        [([A, dummy]) => isEmpty(A), f.always(bFirst)],
-        [([dummy, B]) => isEmpty(B), f.always(aFirst)],
-        [f.stubTrue, ([A, B]) => (f.eq(A, B)) ? compareRowIds(a, b) : compareValues(A, B)]
-      ])(([a, b].map(getSortValue)))
+          [vals => f.every(isEmpty, vals), f.always(equal)],
+          [([A, dummy]) => isEmpty(A), f.always(bFirst)],
+          [([dummy, B]) => isEmpty(B), f.always(aFirst)],
+          [
+            f.stubTrue,
+            ([A, B]) => (f.eq(A, B) ? compareRowIds(a, b) : compareValues(A, B))
+          ]
+        ])([a, b].map(getSortValue))
       : compareRowIds(a, b);
   };
 

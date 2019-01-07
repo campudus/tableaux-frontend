@@ -2,12 +2,17 @@ import React from "react";
 import * as f from "lodash/fp";
 import listensToClickOutside from "react-onclickoutside";
 import Select from "react-select";
-import {translate} from "react-i18next";
-import TableauxConstants, {ColumnKinds, FilterModes, Langtags, SortValues} from "../../../constants/TableauxConstants";
+import { translate } from "react-i18next";
+import TableauxConstants, {
+  ColumnKinds,
+  FilterModes,
+  Langtags,
+  SortValues
+} from "../../../constants/TableauxConstants";
 import i18n from "i18next";
-import {either} from "../../../helpers/functools";
-import FilterRow, {BOOL, TEXT} from "./FilterRow";
-import {FilterableCellKinds, SortableCellKinds} from "../../table/RowFilters";
+import { either } from "../../../helpers/functools";
+import FilterRow, { BOOL, TEXT } from "./FilterRow";
+import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
 import PropTypes from "prop-types";
 
 const SPECIAL_SEARCHES = [
@@ -21,9 +26,7 @@ const SPECIAL_SEARCHES = [
   FilterModes.WITH_COMMENT
 ];
 
-const SPECIAL_TEXT_SEARCHES = [
-  FilterModes.ROW_CONTAINS
-];
+const SPECIAL_TEXT_SEARCHES = [FilterModes.ROW_CONTAINS];
 
 @translate(["filter", "table"])
 @listensToClickOutside
@@ -35,8 +38,10 @@ class FilterPopup extends React.Component {
   //   currentFilter: PropTypes.object
   // };
 
-  static isSortableColumn = (column) => f.contains(column.kind, SortableCellKinds);
-  static isSearchableColumn = (column) => f.contains(column.kind, FilterableCellKinds);
+  static isSortableColumn = column =>
+    f.contains(column.kind, SortableCellKinds);
+  static isSearchableColumn = column =>
+    f.contains(column.kind, FilterableCellKinds);
 
   sortableColumns = null;
   searchableColumns = null;
@@ -51,9 +56,14 @@ class FilterPopup extends React.Component {
         columnId: either(filter)
           .map(cf => {
             const mode = f.get(["mode"], cf);
-            return (f.contains(mode, SPECIAL_SEARCHES)) ? mode : null;
+            return f.contains(mode, SPECIAL_SEARCHES) ? mode : null;
           })
-          .orElse(f.flow(f.get("columnId"), f.toString))
+          .orElse(
+            f.flow(
+              f.get("columnId"),
+              f.toString
+            )
+          )
           .getOrElse(null),
         mode: f.get("mode", filter),
         value: f.get("value", filter),
@@ -63,7 +73,9 @@ class FilterPopup extends React.Component {
 
     const sorting = {
       columnId: f.toString(f.prop("sortColumnId", currFilter)),
-      value: f.defaultTo(TableauxConstants.SortValues.ASC)(f.prop("sortValue", currFilter))
+      value: f.defaultTo(TableauxConstants.SortValues.ASC)(
+        f.prop("sortValue", currFilter)
+      )
     };
 
     this.state = {
@@ -72,41 +84,56 @@ class FilterPopup extends React.Component {
       filters: f.map(cleanFilter, f.defaultTo([{}])(f.get(["filters"], props)))
     };
 
-    this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn);
-    this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn);
+    this.sortableColumns = this.buildColumnOptions(
+      FilterPopup.isSortableColumn
+    );
+    this.searchableColumns = this.buildColumnOptions(
+      FilterPopup.isSearchableColumn
+    );
   }
 
   addFilter = () => {
-    this.setState({filters: [...this.state.filters, {}]});
+    this.setState({ filters: [...this.state.filters, {}] });
   };
 
   removeFilter = (idx = this.state.filters.length - 1) => () => {
-    this.setState({filters: f.pullAt(idx, this.state.filters)});
+    this.setState({ filters: f.pullAt(idx, this.state.filters) });
   };
 
   getSortableColumns() {
-    return this.sortableColumns || (this.sortableColumns = this.buildColumnOptions(FilterPopup.isSortableColumn()));
+    return (
+      this.sortableColumns ||
+      (this.sortableColumns = this.buildColumnOptions(
+        FilterPopup.isSortableColumn()
+      ))
+    );
   }
 
   getSearchableColumns() {
-    const searchableColumns = this.searchableColumns || (this.searchableColumns = this.buildColumnOptions(FilterPopup.isSearchableColumn()));
-    const {langtag} = this.props;
+    const searchableColumns =
+      this.searchableColumns ||
+      (this.searchableColumns = this.buildColumnOptions(
+        FilterPopup.isSearchableColumn()
+      ));
+    const { langtag } = this.props;
     return [
       {
         label: f.toUpper(this.props.t("table:filter.generic")),
         disabled: true
       },
-      (langtag !== f.first(Langtags))
+      langtag !== f.first(Langtags)
         ? {
-          label: this.props.t("table:translations.this_translation_needed", {langtag}),
-          value: FilterModes.UNTRANSLATED,
-          kind: BOOL
-        }
+            label: this.props.t("table:translations.this_translation_needed", {
+              langtag
+            }),
+            value: FilterModes.UNTRANSLATED,
+            kind: BOOL
+          }
         : {
-          label: this.props.t("table:filter.needs_translation"),
-          value: FilterModes.ANY_UNTRANSLATED,
-          kind: BOOL
-        },
+            label: this.props.t("table:filter.needs_translation"),
+            value: FilterModes.ANY_UNTRANSLATED,
+            kind: BOOL
+          },
       {
         label: this.props.t("table:filter.is_final"),
         value: FilterModes.FINAL,
@@ -146,13 +173,14 @@ class FilterPopup extends React.Component {
   }
 
   buildColumnOptions(filterFn) {
-    const {t, columns, langtag} = this.props;
+    const { t, columns, langtag } = this.props;
 
-    return columns.map((column) => {
+    return columns.map(column => {
       // Show display name with fallback to machine name
       const columnDisplayName = column.displayName[langtag] || column.name;
       // ID Column gets translated name
-      const labelName = column.id === 0 ? t("table:concat_column_name") : columnDisplayName;
+      const labelName =
+        column.id === 0 ? t("table:concat_column_name") : columnDisplayName;
 
       return {
         label: labelName,
@@ -164,7 +192,7 @@ class FilterPopup extends React.Component {
   }
 
   getSortOptions() {
-    const {t} = this.props;
+    const { t } = this.props;
 
     return [
       {
@@ -178,20 +206,20 @@ class FilterPopup extends React.Component {
     ];
   }
 
-  changeFilterValue = idx => (event) => {
+  changeFilterValue = idx => event => {
     const hasNodeType = tag => f.matchesProperty(["target", "tagName"], tag);
     f.cond([
       [hasNodeType("INPUT"), this.changeTextFilterValue(idx)],
       [f.stubTrue, this.toggleBoolFilter(idx)]
     ])(event);
   };
-  changeTextFilterValue = (idx) => (event) => {
+  changeTextFilterValue = idx => event => {
     this.setState({
       filters: f.assoc([idx, "value"], event.target.value, this.state.filters)
     });
   };
-  toggleBoolFilter = (idx) => () => {
-    const {filters} = this.state;
+  toggleBoolFilter = idx => () => {
+    const { filters } = this.state;
     this.setState({
       filters: f.assoc([idx, "value"], !f.get([idx, "value"], filters), filters)
     });
@@ -203,34 +231,51 @@ class FilterPopup extends React.Component {
     });
   };
 
-  applyFilters = (event) => {
-    const {filters, sorting} = this.state;
-    const { filterActions:{setFiltersAndSorting }} = this.props;
-    const colIdToNumber = obj => f.assoc("columnId", parseInt(obj.columnId), obj);
+  applyFilters = event => {
+    const { filters, sorting } = this.state;
+    const {
+      filterActions: { setFiltersAndSorting }
+    } = this.props;
+    const colIdToNumber = obj =>
+      f.assoc("columnId", parseInt(obj.columnId), obj);
     // ActionCreator.changeRowFilters(f.map(colIdToNumber, filters), colIdToNumber(sorting));
     setFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting));
     this.handleClickOutside(event);
   };
 
-  clearFilter = (event) => {
-    const { filterActions:{deleteFilters }} = this.props;
+  clearFilter = event => {
+    const {
+      filterActions: { deleteFilters }
+    } = this.props;
     deleteFilters();
     this.handleClickOutside(event);
   };
 
-  handleClickOutside = (event) => {
+  handleClickOutside = event => {
     this.props.onClickedOutside(event);
   };
 
-  selectFilterValueRenderer = (option) => {
-    return <div><span>{option.label}</span></div>;
+  selectFilterValueRenderer = option => {
+    return (
+      <div>
+        <span>{option.label}</span>
+      </div>
+    );
   };
 
-  selectSortValueRenderer = (option) => {
+  selectSortValueRenderer = option => {
     if (option.value === TableauxConstants.SortValues.ASC) {
-      return <div><i className="fa fa-sort-alpha-asc" /> {option.label}</div>;
+      return (
+        <div>
+          <i className="fa fa-sort-alpha-asc" /> {option.label}
+        </div>
+      );
     } else {
-      return <div><i className="fa fa-sort-alpha-desc" /> {option.label}</div>;
+      return (
+        <div>
+          <i className="fa fa-sort-alpha-desc" /> {option.label}
+        </div>
+      );
     }
   };
 
@@ -243,38 +288,44 @@ class FilterPopup extends React.Component {
   };
 
   onChangeFilterColumn = idx => option => {
-    const {value, kind} = option;
+    const { value, kind } = option;
     const oldFilter = f.defaultTo({})(f.get(["filters", idx]));
     if (f.contains(value, SPECIAL_SEARCHES)) {
       const filter = {
         columnId: value,
         mode: value,
-        columnKind: (f.contains(value, SPECIAL_TEXT_SEARCHES)) ? TEXT : BOOL,
+        columnKind: f.contains(value, SPECIAL_TEXT_SEARCHES) ? TEXT : BOOL,
         value: true
       };
-      this.setState({filters: f.assoc([idx], filter, this.state.filters)});
+      this.setState({ filters: f.assoc([idx], filter, this.state.filters) });
     } else {
       const defaultMode = FilterModes.CONTAINS;
       const oldValue = oldFilter.value;
-      const filterMode = (oldFilter.columnKind === BOOL)
-        ? defaultMode
-        : oldFilter.mode || defaultMode;
+      const filterMode =
+        oldFilter.columnKind === BOOL
+          ? defaultMode
+          : oldFilter.mode || defaultMode;
       const columnKind = this.filtersForKind(kind);
       const filter = {
-        mode: (columnKind === ColumnKinds.boolean) ? BOOL : filterMode,
+        mode: columnKind === ColumnKinds.boolean ? BOOL : filterMode,
         columnId: value,
-        value: (columnKind === ColumnKinds.boolean)
-          ? true
-          : f.isString(oldValue) ? oldValue : "",
+        value:
+          columnKind === ColumnKinds.boolean
+            ? true
+            : f.isString(oldValue)
+            ? oldValue
+            : "",
         columnKind
       };
-      this.setState({filters: f.assoc([idx], filter, this.state.filters)});
+      this.setState({ filters: f.assoc([idx], filter, this.state.filters) });
     }
   };
 
-  onChangeSelectSortColumn = (selection) => {
-    const {value} = selection;
-    const sortValue = f.defaultTo(SortValues.ASC)(f.prop(["sorting", "sortvalue"], this.state));
+  onChangeSelectSortColumn = selection => {
+    const { value } = selection;
+    const sortValue = f.defaultTo(SortValues.ASC)(
+      f.prop(["sorting", "sortvalue"], this.state)
+    );
     this.setState({
       sorting: {
         columnId: value,
@@ -283,28 +334,34 @@ class FilterPopup extends React.Component {
     });
   };
 
-  onChangeSelectSortValue = (selection) => {
+  onChangeSelectSortValue = selection => {
     if (f.isObject(selection) && !f.isNil(selection.value)) {
-      this.setState({sorting: f.assoc("value", selection.value, this.state.sorting)});
+      this.setState({
+        sorting: f.assoc("value", selection.value, this.state.sorting)
+      });
     }
   };
 
   render() {
-    const {t} = this.props;
-    const {sorting} = this.state;
+    const { t } = this.props;
+    const { sorting } = this.state;
 
     const filters = f.isEmpty(this.state.filters)
-      ? [{
-          mode: FilterModes.CONTAINS,
-          value: null,
-          columnId: null
-        }]
+      ? [
+          {
+            mode: FilterModes.CONTAINS,
+            value: null,
+            columnId: null
+          }
+        ]
       : this.state.filters;
 
     const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
-    const hasFilterValue =
-      filter => (filter.columnKind === TEXT && f.isString(filter.value) && !f.isEmpty(filter.value))
-        || (filter.columnKind === BOOL && f.isBoolean(filter.value));
+    const hasFilterValue = filter =>
+      (filter.columnKind === TEXT &&
+        f.isString(filter.value) &&
+        !f.isEmpty(filter.value)) ||
+      (filter.columnKind === BOOL && f.isBoolean(filter.value));
     const anyFilterHasValue = f.flow(
       f.map(hasFilterValue),
       f.any(f.identity)
@@ -313,45 +370,54 @@ class FilterPopup extends React.Component {
     const sortOptions = this.getSortOptions();
 
     const allColumns = this.getSearchableColumns();
-    const selectedByOtherFilters = idx => f.flow(
-      f.map("columnId"),
-      f.pull(filters[idx].columnId) // remove element selected by this filter
-    )(filters);
-    const isSelectedByOtherFilter = idx => f.flow(
-      f.get("value"),
-      v => f.contains(v, selectedByOtherFilters(idx))
-    );
-    const availableColumns = idx => f.reject(isSelectedByOtherFilter(idx), allColumns);
+    const selectedByOtherFilters = idx =>
+      f.flow(
+        f.map("columnId"),
+        f.pull(filters[idx].columnId) // remove element selected by this filter
+      )(filters);
+    const isSelectedByOtherFilter = idx =>
+      f.flow(
+        f.get("value"),
+        v => f.contains(v, selectedByOtherFilters(idx))
+      );
+    const availableColumns = idx =>
+      f.reject(isSelectedByOtherFilter(idx), allColumns);
 
     return (
       <div id="filter-popup">
         <div className="filter-options">
-          {filters.map(
-            (filter, idx) => {
-              const isIDFilter = either(filter).map(f.matchesProperty("mode", FilterModes.ID_ONLY)).getOrElse(false);
-              return (isIDFilter)
-                ? (
-                  <div className="wip-filter-message" key={idx}>
-                    {i18n.t("table:filter.rows_hidden", {rowId: this.props.currentFilter.filterValue})}
-                  </div>
-                )
-                : (
-                  <FilterRow
-                    searchableColumns={availableColumns(idx)}
-                    valueRenderer={this.selectFilterValueRenderer}
-                    onChangeColumn={this.onChangeFilterColumn(idx)}
-                    onChangeValue={this.changeFilterValue(idx)}
-                    onChangeMode={this.changeFilterMode(idx)}
-                    onAddFilter={(idx === filters.length - 1 && filters.length < 6) ? this.addFilter : null}
-                    onRemoveFilter={(filters.length > 1) ? this.removeFilter(idx) : null}
-                    filter={filter}
-                    applyFilters={this.applyFilters}
-                    key={idx}
-                    t={t}
-                  />
-                );
-            }
-          )}
+          {filters.map((filter, idx) => {
+            const isIDFilter = either(filter)
+              .map(f.matchesProperty("mode", FilterModes.ID_ONLY))
+              .getOrElse(false);
+            return isIDFilter ? (
+              <div className="wip-filter-message" key={idx}>
+                {i18n.t("table:filter.rows_hidden", {
+                  rowId: this.props.currentFilter.filterValue
+                })}
+              </div>
+            ) : (
+              <FilterRow
+                searchableColumns={availableColumns(idx)}
+                valueRenderer={this.selectFilterValueRenderer}
+                onChangeColumn={this.onChangeFilterColumn(idx)}
+                onChangeValue={this.changeFilterValue(idx)}
+                onChangeMode={this.changeFilterMode(idx)}
+                onAddFilter={
+                  idx === filters.length - 1 && filters.length < 6
+                    ? this.addFilter
+                    : null
+                }
+                onRemoveFilter={
+                  filters.length > 1 ? this.removeFilter(idx) : null
+                }
+                filter={filter}
+                applyFilters={this.applyFilters}
+                key={idx}
+                t={t}
+              />
+            );
+          })}
           <div className="sort-row">
             <Select
               className="filter-select"
@@ -372,7 +438,7 @@ class FilterPopup extends React.Component {
               options={sortOptions}
               searchable={false}
               clearable={false}
-              value={(sortColumnSelected) ? sorting.value : ""}
+              value={sortColumnSelected ? sorting.value : ""}
               onChange={this.onChangeSelectSortValue}
               valueRenderer={this.selectSortValueRenderer}
               optionRenderer={this.selectSortValueRenderer}
@@ -385,15 +451,19 @@ class FilterPopup extends React.Component {
         </div>
         <div className="description-row">
           <p className="info">
-            <span className="text">{t("help.note")}</span></p>
-          <button
-            tabIndex="1" className="neutral"
-            onClick={this.clearFilter}>{t("button.clearFilter")}</button>
+            <span className="text">{t("help.note")}</span>
+          </p>
+          <button tabIndex="1" className="neutral" onClick={this.clearFilter}>
+            {t("button.clearFilter")}
+          </button>
           <button
             tabIndex="0"
-            className={(canApplyFilter) ? "filter-go" : "filter-go neutral"}
+            className={canApplyFilter ? "filter-go" : "filter-go neutral"}
             disabled={!canApplyFilter}
-            onClick={this.applyFilters}>{t("button.doFilter")}</button>
+            onClick={this.applyFilters}
+          >
+            {t("button.doFilter")}
+          </button>
         </div>
       </div>
     );

@@ -109,21 +109,24 @@ const setCurrentTable = tableId => {
 };
 
 const deleteFilters = () => {
-  return {type: DELETE_FILTERS};
+  return { type: DELETE_FILTERS };
 };
 
-const trace = str => element => {console.log(str, element); return element};
-const mapWithIndex = f.map.convert({cap:false});
+const trace = str => element => {
+  console.log(str, element);
+  return element;
+};
+const mapWithIndex = f.map.convert({ cap: false });
 
 const generateDisplayValues = (rows, columns) => (dispatch, getState) => {
-  dispatch({type: START_GENERATING_DISPLAY_VALUES});
+  dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const t1 = performance.now();
   const displayValues = f.compose(
-    f.map(mapWithIndex((value,id) => getDisplayValue(columns[id],value))),
+    f.map(mapWithIndex((value, id) => getDisplayValue(columns[id], value))),
     f.map("values")
   )(rows);
   const t2 = performance.now();
-  console.log("generate",t2-t1);
+  console.log("generate", t2 - t1);
 
   dispatch({
     type: GENERATED_DISPLAY_VALUES,
@@ -139,10 +142,10 @@ const loadCompleteTable = tableId => (dispatch, getState) => {
 
 const setCurrentLanguage = lang => {
   return {
-    type:SET_CURRENT_LANGUAGE,
+    type: SET_CURRENT_LANGUAGE,
     lang
-  }
-}
+  };
+};
 
 const actionCreators = {
   loadTables: loadTables,

@@ -1,31 +1,28 @@
 import React from "react";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import SvgIcon from "../helperComponents/SvgIcon";
 import PropTypes from "prop-types";
-import {branch, compose, pure, renderNothing} from "recompose";
+import { branch, compose, pure, renderNothing } from "recompose";
 import handleClickOutside from "react-onclickoutside";
 import Link from "../helperComponents/Link";
-import {ENABLE_DASHBOARD} from "../../FeatureFlags";
+import { ENABLE_DASHBOARD } from "../../FeatureFlags";
 
-const NavigationPopup = (props) => {
-  const {langtag, t} = props;
+const NavigationPopup = props => {
+  const { langtag, t } = props;
   return (
     <div id="main-navigation">
       <div id="logo">
         <SvgIcon icon={"/img/GRUD-Logo.svg"} />
       </div>
       <ul id="main-navigation-list">
-
-        {(ENABLE_DASHBOARD) ? (
-            <li>
-              <Link href={"/" + langtag + "/dashboard"}>
-                <i className="fa fa-dashboard" />
-                {t("header:menu.dashboard")}
-              </Link>
-            </li>
-          )
-          : null
-        }
+        {ENABLE_DASHBOARD ? (
+          <li>
+            <Link href={"/" + langtag + "/dashboard"}>
+              <i className="fa fa-dashboard" />
+              {t("header:menu.dashboard")}
+            </Link>
+          </li>
+        ) : null}
 
         <li>
           <Link href={"/" + langtag + "/table"}>
@@ -37,10 +34,9 @@ const NavigationPopup = (props) => {
         <li>
           <Link href={"/" + langtag + "/media"}>
             <i className="fa fa-file" />
-              {t("header:menu.media")}
+            {t("header:menu.media")}
           </Link>
         </li>
-
       </ul>
     </div>
   );

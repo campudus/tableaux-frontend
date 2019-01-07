@@ -1,9 +1,9 @@
 import React from "react";
 import FilterPopup from "./FilterPopup.jsx";
-import {translate} from "react-i18next";
-import {FilterModes} from "../../../constants/TableauxConstants";
+import { translate } from "react-i18next";
+import { FilterModes } from "../../../constants/TableauxConstants";
 import classNames from "classnames";
-import {either} from "../../../helpers/functools";
+import { either } from "../../../helpers/functools";
 import * as f from "lodash/fp";
 import PropTypes from "prop-types";
 
@@ -29,11 +29,17 @@ class FilterButton extends React.Component {
   }
 
   handleClickedOutside = event => {
-    this.setState({open: false});
+    this.setState({ open: false });
   };
 
   renderFilterPopup() {
-    const {currentFilter, columns, langtag, filterActions, filters} = this.props;
+    const {
+      currentFilter,
+      columns,
+      langtag,
+      filterActions,
+      filters
+    } = this.props;
     if (this.state.open) {
       return (
         <FilterPopup
@@ -52,12 +58,12 @@ class FilterButton extends React.Component {
 
   toggleFilter = event => {
     event.preventDefault();
-    this.setState({open: !this.state.open});
+    this.setState({ open: !this.state.open });
   };
 
   render() {
-    const {t, currentFilter} = this.props;
-    const {open} = this.state;
+    const { t, currentFilter } = this.props;
+    const { open } = this.state;
 
     let buttonClass = "button";
     if (open) {

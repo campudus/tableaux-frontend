@@ -1,10 +1,10 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import {getLanguageOrCountryIcon} from "../../helpers/multiLanguage";
+import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 // TODO check permissions
 // import {initiateDeleteRow} from "../../helpers/rowHelper";
 // import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
-import {DefaultLangtag} from "../../constants/TableauxConstants";
+import { DefaultLangtag } from "../../constants/TableauxConstants";
 import classNames from "classnames";
 
 class MetaCell extends PureComponent {
@@ -27,20 +27,20 @@ class MetaCell extends PureComponent {
     // });
   }
 
-  handleClick = (event) => {
+  handleClick = event => {
     event.stopPropagation();
-    const {toggleExpandedRow} = this.props;
+    const { toggleExpandedRow } = this.props;
     toggleExpandedRow();
   };
 
-  deleteRow = (event) => {
+  deleteRow = event => {
     event.stopPropagation();
-    const {row, langtag} = this.props;
+    const { row, langtag } = this.props;
     // initiateDeleteRow(row, langtag);
   };
 
   mkDeleteRowButton() {
-    const {langtag, selected, row, expanded} = this.props;
+    const { langtag, selected, row, expanded } = this.props;
     // const firstCell = row.cells.at(0);
     // const table = firstCell.tables.get(firstCell.tableId);
     // const userCanDeleteRow = table.type !== "settings"
@@ -49,27 +49,28 @@ class MetaCell extends PureComponent {
     //
     const userCanDeleteRow = false;
 
-    return (userCanDeleteRow && !row.final)
-      ? (
-        <div className="delete-row">
-          <button className="button" onClick={this.deleteRow} >
-            <i className="fa fa-trash" />
-          </button>
-        </div>
-      )
-      : null;
+    return userCanDeleteRow && !row.final ? (
+      <div className="delete-row">
+        <button className="button" onClick={this.deleteRow}>
+          <i className="fa fa-trash" />
+        </button>
+      </div>
+    ) : null;
   }
 
   mkLockStatusIcon = () => {
-    const {langtag, row, selected, expanded} = this.props;
-    const cantTranslate = false//!isUserAdmin() && (selected || expanded) && !hasUserAccessToLanguage(langtag);
+    const { langtag, row, selected, expanded } = this.props;
+    const cantTranslate = false; //!isUserAdmin() && (selected || expanded) && !hasUserAccessToLanguage(langtag);
     if (cantTranslate) {
       return <i className="fa fa-ban access-denied-icon" />;
     } else if (row.final) {
       return (
-        <i className={(row.unlocked)
-          ? "fa fa-unlock access-denied-icon"
-          : "fa fa-lock access-denied-icon"}
+        <i
+          className={
+            row.unlocked
+              ? "fa fa-unlock access-denied-icon"
+              : "fa fa-lock access-denied-icon"
+          }
         />
       );
     }
@@ -77,15 +78,17 @@ class MetaCell extends PureComponent {
   };
 
   render = () => {
-    const {langtag, row, expanded, selected} = this.props;
-    const cellContent = (expanded)
-      ?getLanguageOrCountryIcon(langtag)
-      : (
-        <div className="meta-info-collapsed">
-          <div className="row-number">{row.id}</div>
-          <div className="row-expand"><i className="fa fa-chevron-down" /></div>
+    const { langtag, row, expanded, selected } = this.props;
+    const cellContent = expanded ? (
+      getLanguageOrCountryIcon(langtag)
+    ) : (
+      <div className="meta-info-collapsed">
+        <div className="row-number">{row.id}</div>
+        <div className="row-expand">
+          <i className="fa fa-chevron-down" />
         </div>
-      );
+      </div>
+    );
 
     const cellClass = classNames("meta-cell", {
       "row-expanded": expanded,
@@ -93,9 +96,7 @@ class MetaCell extends PureComponent {
     });
 
     return (
-      <div className={cellClass}
-        onClick={this.handleClick}
-      >
+      <div className={cellClass} onClick={this.handleClick}>
         <div className="cell-content">
           {this.mkDeleteRowButton()}
           {this.mkLockStatusIcon()}

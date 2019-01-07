@@ -6,10 +6,10 @@ import {
 } from "../../../constants/TableauxConstants";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import ReactDOM from "react-dom";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import {forkJoin} from "../../../helpers/functools";
+import { forkJoin } from "../../../helpers/functools";
 import PropTypes from "prop-types";
 
 @translate(["header"])
@@ -82,11 +82,11 @@ class SwitcherPopup extends React.PureComponent {
     const tableResults = this.getFilteredTables(group.id, "");
     // on click search gets cleared, so only matching tables are visible
     const tableIds = f.map("id", tableResults.inGroup);
-    const {currentTable} = this.props;
-    const {focusTableId} = this.state;
+    const { currentTable } = this.props;
+    const { focusTableId } = this.state;
     const currentTableId = f.get("id", currentTable);
     if (isDeselection && currentTable) {
-      this.setState({focusTableId: currentTableId});
+      this.setState({ focusTableId: currentTableId });
     } else {
       this.setState({
         focusTableId: f.contains(currentTableId, tableIds)
@@ -170,7 +170,7 @@ class SwitcherPopup extends React.PureComponent {
           f.size(filteredTables.inGroup) + f.size(filteredTables.notInGroup) >
           0
         ) {
-          this.onClickTable({id: this.state.focusTableId})();
+          this.onClickTable({ id: this.state.focusTableId })();
         }
       },
       // clear input
@@ -194,7 +194,7 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   getFilteredTables = (filterGroupId, filterTableName) => {
-    const {langtag, tables} = this.props;
+    const { langtag, tables } = this.props;
     const getDisplayNameOrFallback = f.flow(
       f.props([
         ["displayName", langtag],
@@ -227,7 +227,7 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   renderGroups = groups => {
-    const {t, langtag} = this.props;
+    const { t, langtag } = this.props;
 
     const renderGroup = group => {
       const groupDisplayName =
@@ -244,7 +244,8 @@ class SwitcherPopup extends React.PureComponent {
         <li
           key={"group" + group.id}
           onClick={this.onClickGroup(group)}
-          className={className}>
+          className={className}
+        >
           {groupDisplayName}
           {isActive ? <i className="fa fa-times-circle" /> : ""}
         </li>
@@ -276,9 +277,9 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   renderTables = (groups, tables) => {
-    const {t, langtag, currentTable, navigate} = this.props;
+    const { t, langtag, currentTable, navigate } = this.props;
     const groupId = this.state.filterGroupId;
-    const {focusTableId} = this.state;
+    const { focusTableId } = this.state;
     const queryStr = this.state.filterTableName;
     const isGroupSelected = f.isNumber(groupId);
     const isSearchEntered = !f.isEmpty(queryStr);
@@ -296,7 +297,7 @@ class SwitcherPopup extends React.PureComponent {
         f.matchesProperty("id", focusTableId)(table),
         f.isInteger(focusTableId)
       ]);
-      const onKeyDownFn = f.always({enter: this.onClickTable(table)});
+      const onKeyDownFn = f.always({ enter: this.onClickTable(table) });
       const newUrl = `/${this.props.langtag}/tables/${table.id}`;
       return (
         <li
@@ -304,7 +305,8 @@ class SwitcherPopup extends React.PureComponent {
           className={isActive ? "active" : ""}
           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)}
           tabIndex={0}
-          ref={`table${tableId}`}>
+          ref={`table${tableId}`}
+        >
           <div onClick={this.onClickTable(table)}>{displayName}</div>
           <a target="_blank" rel="noopener" href={newUrl}>
             <i className="fa fa-external-link" />
@@ -313,12 +315,12 @@ class SwitcherPopup extends React.PureComponent {
       );
     };
 
-    const style = groups.length <= 1 ? {width: "100%"} : {};
+    const style = groups.length <= 1 ? { width: "100%" } : {};
 
     const separator = !hasResults ? (
       <div className="separator">
         <div className="no-results">
-          {t("tableSwitcher.no-results", {query: queryStr})}
+          {t("tableSwitcher.no-results", { query: queryStr })}
         </div>
       </div>
     ) : (

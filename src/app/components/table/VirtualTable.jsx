@@ -101,11 +101,11 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  calcRowHeight = ({index}) => {
+  calcRowHeight = ({ index }) => {
     if (index === 0) {
       return HEADER_HEIGHT;
     }
-    const row = f.get([index-1], this.props.rows);
+    const row = f.get([index - 1], this.props.rows);
     // console.log(row);
     const rowId = f.get("id", row);
     return f.contains(rowId, this.props.expandedRowIds)
@@ -226,7 +226,8 @@ export default class VirtualTable extends PureComponent {
       langtag,
       rows,
       expandedRowIds,
-      selectedCellExpandedRow
+      selectedCellExpandedRow,
+      toggleExpandedRow
     } = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
@@ -275,13 +276,13 @@ export default class VirtualTable extends PureComponent {
     const { actions, rows, table, langtag, columns } = this.props;
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
-    const value = this.getCell(rowIndex, columnIndex);
+    const cell = this.getCell(rowIndex, columnIndex);
+    const { value, displayValue, annotations } = cell;
     const isInSelectedRow =
       row.id === f.get("tableView.selectedCell.rowId", this.props);
     const visibleColumns = this.props.columns.filter(
       (col, idx) => idx === 0 || col.visible
     );
-    if (Math.random() < 0.1) console.log(visibleColumns);
     const column = visibleColumns[columnIndex];
     const isSelected = this.isCellSelected(column.id, row.id);
     const isEditing =
@@ -336,7 +337,7 @@ export default class VirtualTable extends PureComponent {
           const isSelected =
             isRowSelected && column.id === this.selectedIds.column;
           const isEditing = isSelected && this.props.selectedCellEditing;
-          const {displayValue} = cell;
+          const { displayValue } = cell;
           return (
             <Cell
               actions={actions}
@@ -520,8 +521,8 @@ export default class VirtualTable extends PureComponent {
         ? scrolledCell
         : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
-    const columnCount = f.size(visibleColumns)+1;
-    const rowCount = f.size(rows)+1;
+    const columnCount = f.size(visibleColumns) + 1;
+    const rowCount = f.size(rows) + 1;
     const selectedCellKey = `${f.get(
       "id",
       selectedCell

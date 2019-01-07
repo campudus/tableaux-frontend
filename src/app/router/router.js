@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import TableContainer from "../containers/TableContainer";
-import TableauxConstants, {ActionTypes} from "../constants/TableauxConstants";
+import TableauxConstants, { ActionTypes } from "../constants/TableauxConstants";
 import Raven from "raven-js";
-import {AppContainer} from "react-hot-loader";
+import { AppContainer } from "react-hot-loader";
 import Router from "ampersand-router";
 import App from "ampersand-app";
 import f from "lodash/fp";
@@ -14,9 +14,9 @@ import {
   validateLangtag,
   validateTableId
 } from "./routeValidators";
-import {ENABLE_DASHBOARD} from "../FeatureFlags";
-import {Provider} from "react-redux";
-import {bindActionCreators} from "redux";
+import { ENABLE_DASHBOARD } from "../FeatureFlags";
+import { Provider } from "react-redux";
+import { bindActionCreators } from "redux";
 import store from "../redux/store.js";
 import actionCreators from "../redux/actionCreators";
 import Tableaux from "../components/Tableaux";
@@ -59,8 +59,8 @@ const extendedRouter = Router.extend({
   actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
-    const {loadTables, loadAllRows, loadColumns} = this.actions;
-    const {tableId} = params;
+    const { loadTables, loadAllRows, loadColumns } = this.actions;
+    const { tableId } = params;
     // loadAllRows(tableId);
     // loadColumns(tableId);
     if (/*this.alreadyRendered*/ false) {
@@ -73,7 +73,7 @@ const extendedRouter = Router.extend({
         <Provider store={store}>
           <Tableaux
             initialViewName={viewName}
-            initialParams={{...params, navigate: this.navigate.bind(this)}}
+            initialParams={{ ...params, navigate: this.navigate.bind(this) }}
           />
         </Provider>,
         document.getElementById("tableaux")
@@ -82,7 +82,7 @@ const extendedRouter = Router.extend({
   },
 
   initialize: function(options) {
-    const {loadTables} = this.actions;
+    const { loadTables } = this.actions;
     loadTables();
   },
 
@@ -91,29 +91,29 @@ const extendedRouter = Router.extend({
     const path = his.getPath();
     const newPath = path.replace(currentLangtag, newLangtagObj.langtag);
 
-    his.navigate(newPath, {trigger: true});
+    his.navigate(newPath, { trigger: true });
   },
 
   switchTableHandler: function(payload) {
     console.log("switchTableHandler");
-    const {tables} = store.getState();
+    const { tables } = store.getState();
     const langtag = payload.langtag;
     const tableId = validateTableId(payload.id, tables);
-    Raven.captureBreadcrumb({message: "Switch table", data: payload});
-    Raven.captureMessage("Switch table", {level: "info"});
+    Raven.captureBreadcrumb({ message: "Switch table", data: payload });
+    Raven.captureMessage("Switch table", { level: "info" });
     router.navigate(langtag + "/tables/" + tableId);
   },
 
   switchFolderHandler: function(payload) {
-    Raven.captureBreadcrumb({message: "Switch folder", data: payload});
-    Raven.captureMessage("MediaView folder switch", {level: "info"});
+    Raven.captureBreadcrumb({ message: "Switch folder", data: payload });
+    Raven.captureMessage("MediaView folder switch", { level: "info" });
     const langtag = validateLangtag(payload.langtag);
     if (payload.id) {
       router.history.navigate(langtag + "/media/" + payload.id, {
         trigger: true
       });
     } else {
-      router.history.navigate(langtag + "/media", {trigger: true});
+      router.history.navigate(langtag + "/media", { trigger: true });
     }
   },
 
@@ -122,14 +122,14 @@ const extendedRouter = Router.extend({
     const validColumnId = posOrNil(columnId);
     const validRowId = posOrNil(rowId);
     const validLangtag = validateLangtag(langtag);
-    
+
     const {
-      tableView: {currentTable},
+      tableView: { currentTable },
       tables
     } = store.getState();
 
     if (currentTable != validTableId || !currentTable) {
-      const {loadCompleteTable} = this.actions;
+      const { loadCompleteTable } = this.actions;
       loadCompleteTable(tableId);
     }
 
@@ -153,7 +153,7 @@ const extendedRouter = Router.extend({
       TableauxConstants.ViewNames.TABLE_VIEW,
       tableParams
     );
-    this.history.navigate(fullUrl, {trigger: false, replace: true});
+    this.history.navigate(fullUrl, { trigger: false, replace: true });
   },
 
   mediaBrowser: function(langtag, folderid) {
@@ -172,7 +172,7 @@ const extendedRouter = Router.extend({
       folderId: validFolderId,
       langtag: validLangtag
     });
-    this.history.navigate(fullUrl, {trigger: false, replace: true});
+    this.history.navigate(fullUrl, { trigger: false, replace: true });
   },
 
   dashboard: function(langtag) {

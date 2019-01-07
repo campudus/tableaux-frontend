@@ -4,24 +4,24 @@ import memoize from "memoize-one";
 import getFilteredRows from "../table/RowFilters";
 import getDisplayValue from "../../helpers/getDisplayValue";
 
-const mapIndexed = f.map.convert({cap: false});
+const mapIndexed = f.map.convert({ cap: false });
 
 export default function(ComposedComponent) {
   return class ReduxContainer extends React.Component {
     applyColumnVisibility = () => {
-      const {columns, visibleColumns} = this.props;
+      const { columns, visibleColumns } = this.props;
       return f.map(column => {
-        const {id} = column;
+        const { id } = column;
         if (!f.includes(id, visibleColumns)) {
-          return {...column, visible: false};
+          return { ...column, visible: false };
         }
-        return {...column, visible: true};
+        return { ...column, visible: true };
       }, columns);
     };
 
     prepareRowsForFilter = memoize((rows, columns, displayValues) =>
       mapIndexed((row, id) => {
-        const {values} = row;
+        const { values } = row;
         // const updatedValues = f.compose(
         //   f.zipWith()
         //   f.zipWith((column, cell) => {
@@ -38,34 +38,42 @@ export default function(ComposedComponent) {
             displayValue: displayValues[id][index]
           };
         }, values);
-        return {...row, values: updatedValues};
+        return { ...row, values: updatedValues };
       }, rows)
     );
 
-    filterRows = memoize((
-      columns,
-      table,
-      tables,
-      rows,
-      filters,
-      sorting,
-      langtag,
-      displayValues
-    ) => {
-      const isFilterEmpty = filter =>
-        f.isEmpty(filter.value) && !f.isString(filter.mode);
-      const rowsFilter = {
-        sortColumnId: sorting.columnId,
-        sortValue: sorting.value,
-        filters: f.reject(isFilterEmpty, filters)
-      };
-      const preparedRows = this.prepareRowsForFilter(
-        rows,
+    filterRows = memoize(
+      (
         columns,
+        table,
+        tables,
+        rows,
+        filters,
+        sorting,
+        langtag,
         displayValues
-      );
-      return getFilteredRows(table, preparedRows, columns, langtag, rowsFilter);
-    });
+      ) => {
+        const isFilterEmpty = filter =>
+          f.isEmpty(filter.value) && !f.isString(filter.mode);
+        const rowsFilter = {
+          sortColumnId: sorting.columnId,
+          sortValue: sorting.value,
+          filters: f.reject(isFilterEmpty, filters)
+        };
+        const preparedRows = this.prepareRowsForFilter(
+          rows,
+          columns,
+          displayValues
+        );
+        return getFilteredRows(
+          table,
+          preparedRows,
+          columns,
+          langtag,
+          rowsFilter
+        );
+      }
+    );
 
     render() {
       const {
@@ -85,9 +93,11 @@ export default function(ComposedComponent) {
         f.isEmpty(displayValues) &&
         !startedGeneratingDisplayValues
       ) {
-        const {generateDisplayValues} = actions;
+        const { generateDisplayValues } = actions;
         generateDisplayValues(rows, columns);
       }
+
+      console.log("tables", tables, "rows", rows, "dv", displayValues);
 
       const canRenderTable = f.every(f.negate(f.isEmpty), [
         tables,
@@ -112,7 +122,7 @@ export default function(ComposedComponent) {
             ),
             canRenderTable
           }
-        : {...this.props, canRenderTable};
+        : { ...this.props, canRenderTable };
       return <ComposedComponent {...newProps} />;
     }
   };

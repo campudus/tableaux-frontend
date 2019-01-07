@@ -5,7 +5,7 @@ import LinkEditCell from "./LinkEditCell.jsx";
 import * as f from "lodash/fp";
 
 const LinkCell = props => {
-  const {value, langtag, selected, editing, column, displayValue} = props;
+  const { value, langtag, selected, editing, column, displayValue } = props;
 
   // Show a link preview for performance
   // const displayValues = getDisplayValue(column, value);
