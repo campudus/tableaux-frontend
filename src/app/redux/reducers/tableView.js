@@ -18,8 +18,10 @@ const {
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
-  SET_DISPLAY_VALUE_WORKER
-} = actionTypes;
+  SET_DISPLAY_VALUE_WORKER,
+  CELL_SET_VALUE,
+  CELL_ROLLBACK_VALUE
+} = ActionTypes;
 
 const initialState = {
   selectedCell: {},
@@ -113,7 +115,46 @@ const toggleSingleColumn = (state, action) => {
   return { ...state, visibleColumns: updatedVisibleColumns };
 };
 
-export default (state = initialState, action) => {
+const updateDisplayValue = (valueProp, tableView, action, completeState) => {
+  const value = f.prop(valueProp, action);
+  const { tableId } = action;
+  const [rowIdx, columnIdx] = idsToIndices(action, completeState);
+  // FIXME: adapt once we address displayValues[tableId][rowIdx][columnIdx]
+  const displayValueSelector = ["displayValues", rowIdx, columnIdx];
+  const column = completeState.columns[tableId];
+  return f.assoc(
+    displayValueSelector,
+    getDisplayValue(column, value),
+    tableView
+  );
+};
+
+const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
+  try {
+    const rowIdx = f.findIndex(
+      row => row.id === rowId,
+      completeState.rows[tableId].data
+    );
+    const columnIdx = f.findIndex(
+      col => col.id === columnId,
+      completeState.columns[tableId].data
+    );
+    return [rowIdx, columnIdx];
+  } catch (err) {
+    console.error(
+      "tableView Reducer: could not calculate indices for table",
+      tableId,
+      "row",
+      rowId,
+      "column",
+      columnId,
+      err
+    );
+    return [-1, -1];
+  }
+};
+
+export default (state = initialState, action, completeState) => {
   switch (action.type) {
     case TOGGLE_COLUMN_VISIBILITY:
       return toggleSingleColumn(state, action);
@@ -139,6 +180,10 @@ export default (state = initialState, action) => {
       return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action);
+    case CELL_SET_VALUE:
+      return updateDisplayValue("newValue", state, action, completeState);
+    case CELL_ROLLBACK_VALUE:
+      return updateDisplayValue("oldValue", state, action, completeState);
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,
