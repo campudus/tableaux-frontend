@@ -4,12 +4,15 @@
   "description": "Experimental rewrite for tableaux-frontend with redux",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "tslint": "tslint",
     "format:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" |  xargs prettier --write",
     "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
     "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
+=======
+>>>>>>> header-functionality
     "dev": "npm-run-all --parallel startServer startWatch",
     "startServer": "node ./src/server/index.js",
     "startWatch": "webpack --watch",
@@ -66,8 +69,7 @@
     "sass-loader": "^7.1.0",
     "storybook": "^1.0.0",
     "style-loader": "^0.23.1",
-    "superagent": "^4.0.0",
-    "webpack": "^3.8.1",
+    "webpack": "3.8.1",
     "webpack-dev-server": "^3.1.10",
     "webpack-livereload-plugin": "^1.2.0"
   },
@@ -104,6 +106,7 @@
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
     "rxjs": "^5.5.6",
+    "superagent": "^4.0.0-beta.5",
     "throat": "^4.1.0",
     "typescript": "^3.2.2",
     "webpack-cli": "^3.1.2"

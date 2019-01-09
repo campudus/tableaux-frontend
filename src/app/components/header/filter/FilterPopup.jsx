@@ -48,7 +48,6 @@ class FilterPopup extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log(props);
     const currFilter = f.defaultTo({})(f.get(["currentFilter"], props));
 
     const cleanFilter = filter => {

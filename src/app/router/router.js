@@ -14,9 +14,9 @@ import {
   validateLangtag,
   validateTableId
 } from "./routeValidators";
-import { ENABLE_DASHBOARD } from "../FeatureFlags";
-import { Provider } from "react-redux";
-import { bindActionCreators } from "redux";
+import {ENABLE_DASHBOARD} from "../FeatureFlags";
+import {Provider} from "react-redux";
+import {bindActionCreators} from "redux";
 import store from "../redux/store.js";
 import actionCreators from "../redux/actionCreators";
 import Tableaux from "../components/Tableaux";
@@ -59,8 +59,8 @@ const extendedRouter = Router.extend({
   actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
-    const { loadTables, loadAllRows, loadColumns } = this.actions;
-    const { tableId } = params;
+    const {loadTables, loadAllRows, loadColumns} = this.actions;
+    const {tableId} = params;
     // loadAllRows(tableId);
     // loadColumns(tableId);
     if (/*this.alreadyRendered*/ false) {
@@ -73,7 +73,7 @@ const extendedRouter = Router.extend({
         <Provider store={store}>
           <Tableaux
             initialViewName={viewName}
-            initialParams={{ ...params, navigate: this.navigate.bind(this) }}
+            initialParams={{...params, navigate: this.navigate.bind(this)}}
           />
         </Provider>,
         document.getElementById("tableaux")
@@ -82,8 +82,12 @@ const extendedRouter = Router.extend({
   },
 
   initialize: function(options) {
-    const { loadTables } = this.actions;
+    const {loadTables,createDisplayValueWorker} = this.actions;
     loadTables();
+    createDisplayValueWorker();
+    console.log("initialize router");
+    // const worker = new Worker("/worker.js");
+    // worker.postMessage(["receive", "this","shit"]);
   },
 
   switchLanguageHandler: function(newLangtagObj) {
@@ -96,11 +100,11 @@ const extendedRouter = Router.extend({
 
   switchTableHandler: function(payload) {
     console.log("switchTableHandler");
-    const { tables } = store.getState();
+    const {tables} = store.getState();
     const langtag = payload.langtag;
     const tableId = validateTableId(payload.id, tables);
-    Raven.captureBreadcrumb({ message: "Switch table", data: payload });
-    Raven.captureMessage("Switch table", { level: "info" });
+    Raven.captureBreadcrumb({message: "Switch table", data: payload});
+    Raven.captureMessage("Switch table", {level: "info"});
     router.navigate(langtag + "/tables/" + tableId);
   },
 

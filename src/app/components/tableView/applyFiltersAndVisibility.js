@@ -3,77 +3,65 @@ import f from "lodash/fp";
 import memoize from "memoize-one";
 import getFilteredRows from "../table/RowFilters";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import {extractAnnotations} from "../../helpers/annotationHelper";
 
-const mapIndexed = f.map.convert({ cap: false });
+const mapIndexed = f.map.convert({cap: false});
 
 export default function(ComposedComponent) {
   return class ReduxContainer extends React.Component {
     applyColumnVisibility = () => {
-      const { columns, visibleColumns } = this.props;
+      const {columns, visibleColumns} = this.props;
       return f.map(column => {
-        const { id } = column;
+        const {id} = column;
         if (!f.includes(id, visibleColumns)) {
-          return { ...column, visible: false };
+          return {...column, visible: false};
         }
-        return { ...column, visible: true };
+        return {...column, visible: true};
       }, columns);
     };
 
     prepareRowsForFilter = memoize((rows, columns, displayValues) =>
       mapIndexed((row, id) => {
-        const { values } = row;
-        // const updatedValues = f.compose(
-        //   f.zipWith()
-        //   f.zipWith((column, cell) => {
-        //     return {
-        //       value: cell,
-        //       kind: column.kind
-        //     };
-        //   }, columns)
-        // )(values);
+        const {values,annotations} = row;
+        const extractedAnnotations = f.map(extractAnnotations,annotations);
         const updatedValues = mapIndexed((cell, index) => {
           return {
             value: cell,
             kind: columns[index].kind,
-            displayValue: displayValues[id][index]
+            displayValue: f.get([id,index],displayValues),
+            annotations: f.get([index], extractedAnnotations),
+            isMultilanguage: f.get(["multilanguage"],columns)
           };
         }, values);
-        return { ...row, values: updatedValues };
+        return {...row, values: updatedValues};
       }, rows)
     );
 
-    filterRows = memoize(
-      (
-        columns,
-        table,
-        tables,
+    filterRows = (
+      columns,
+      table,
+      tables,
+      rows,
+      filters,
+      sorting,
+      langtag,
+      displayValues
+    ) => {
+      const isFilterEmpty = filter =>
+        f.isEmpty(filter.value) && !f.isString(filter.mode);
+      const rowsFilter = {
+        sortColumnId: sorting.columnId,
+        sortValue: sorting.value,
+        filters: f.reject(isFilterEmpty, filters)
+      };
+      const preparedRows = this.prepareRowsForFilter(
         rows,
-        filters,
-        sorting,
-        langtag,
+        columns,
         displayValues
-      ) => {
-        const isFilterEmpty = filter =>
-          f.isEmpty(filter.value) && !f.isString(filter.mode);
-        const rowsFilter = {
-          sortColumnId: sorting.columnId,
-          sortValue: sorting.value,
-          filters: f.reject(isFilterEmpty, filters)
-        };
-        const preparedRows = this.prepareRowsForFilter(
-          rows,
-          columns,
-          displayValues
-        );
-        return getFilteredRows(
-          table,
-          preparedRows,
-          columns,
-          langtag,
-          rowsFilter
-        );
-      }
-    );
+      );
+      // console.log(preparedRows);
+      return getFilteredRows(table, preparedRows, columns, langtag, rowsFilter);
+    };
 
     render() {
       const {
@@ -93,17 +81,15 @@ export default function(ComposedComponent) {
         f.isEmpty(displayValues) &&
         !startedGeneratingDisplayValues
       ) {
-        const { generateDisplayValues } = actions;
+        const {generateDisplayValues} = actions;
         generateDisplayValues(rows, columns);
       }
-
-      console.log("tables", tables, "rows", rows, "dv", displayValues);
 
       const canRenderTable = f.every(f.negate(f.isEmpty), [
         tables,
         rows,
-        columns,
-        displayValues
+        columns
+        // displayValues
       ]);
 
       const newProps = canRenderTable
@@ -122,7 +108,7 @@ export default function(ComposedComponent) {
             ),
             canRenderTable
           }
-        : { ...this.props, canRenderTable };
+        : {...this.props, canRenderTable};
       return <ComposedComponent {...newProps} />;
     }
   };

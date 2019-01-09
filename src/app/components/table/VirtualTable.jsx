@@ -19,6 +19,7 @@ import {
 import { either, maybe } from "../../helpers/functools";
 // import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 import MultiGrid from "./GrudGrid";
 import { isLocked } from "../../helpers/annotationHelper";
@@ -101,7 +102,7 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  calcRowHeight = ({ index }) => {
+  calcRowHeight = ({index}) => {
     if (index === 0) {
       return HEADER_HEIGHT;
     }
@@ -208,7 +209,7 @@ export default class VirtualTable extends PureComponent {
         resizeHandler={this.updateColWidth}
         resizeFinishedHandler={this.saveColWidths}
         index={columnIndex + 1}
-        width={this.calcColWidth({ index: columnIndex + 1 })}
+        width={this.calcColWidth({index: columnIndex + 1})}
       />
     );
   };
@@ -277,9 +278,20 @@ export default class VirtualTable extends PureComponent {
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const cell = this.getCell(rowIndex, columnIndex);
-    const { value, displayValue, annotations } = cell;
-    const isInSelectedRow =
-      row.id === f.get("tableView.selectedCell.rowId", this.props);
+    const {value, annotations} = cell;
+    const column = columns[columnIndex];
+    const displayValueWithFallback = originalValue => {
+      if (!f.isNil(originalValue)) {
+        // console.log("value exists");
+        return originalValue;
+      }
+      return getDisplayValue(column, value);
+    };
+    const displayValue = displayValueWithFallback(f.get("displayValue", cell));
+    if (!f.isEmpty(annotations)) {
+      console.log(annotations);
+    }
+    const isInSelectedRow = row.id === this.selectedIds.row;
     const visibleColumns = this.props.columns.filter(
       (col, idx) => idx === 0 || col.visible
     );
@@ -300,7 +312,7 @@ export default class VirtualTable extends PureComponent {
         actions={actions}
         value={value}
         displayValue={displayValue}
-        column={column}
+        column={visibleColumns[columnIndex]}
         annotationState={null /*getAnnotationState(cell)*/}
         focusTable={this.props.test}
         langtag={langtag}
@@ -337,7 +349,7 @@ export default class VirtualTable extends PureComponent {
           const isSelected =
             isRowSelected && column.id === this.selectedIds.column;
           const isEditing = isSelected && this.props.selectedCellEditing;
-          const { displayValue } = cell;
+          const {displayValue} = cell;
           return (
             <Cell
               actions={actions}
@@ -390,27 +402,27 @@ export default class VirtualTable extends PureComponent {
     // This hideous C-style loop avoids allocating and garbage-collecting
     // (visibleCols + overscanCol) * (visibleRows + overscanRows) arrays in
     // a performance-critical section, thus considerably speeding up rendering.
-    // this.getCell.visibleColIdx = -1;
-    // this.getCell.totalColIdx = 0;
-    // for (
-    //   ;
-    //   this.getCell.totalColIdx < cells.length;
-    //   ++this.getCell.totalColIdx
-    // ) {
-    //   if (
-    //     columns[this.getCell.totalColIdx].visible ||
-    //     this.getCell.totalColIdx === 0
-    //   ) {
-    //     ++this.getCell.visibleColIdx;
-    //   }
-    //   if (this.getCell.visibleColIdx === columnIndex) {
-    //     break;
-    //   }
-    // }
-    // return cells[this.getCell.totalColIdx];
+    this.getCell.visibleColIdx = -1;
+    this.getCell.totalColIdx = 0;
+    for (
+      ;
+      this.getCell.totalColIdx < cells.length;
+      ++this.getCell.totalColIdx
+    ) {
+      if (
+        columns[this.getCell.totalColIdx].visible ||
+        this.getCell.totalColIdx === 0
+      ) {
+        ++this.getCell.visibleColIdx;
+      }
+      if (this.getCell.visibleColIdx === columnIndex) {
+        break;
+      }
+    }
+    return cells[this.getCell.totalColIdx];
     // Original implementation which eats too much CPU-time
-    const visibleCells = cells.filter(this.filterVisibleCells);
-    return visibleCells[columnIndex];
+    // const visibleCells = cells.filter(this.filterVisibleCells);
+    // return visibleCells[columnIndex];
   };
 
   filterVisibleCells = (cell, columnIdx) =>

@@ -39,7 +39,7 @@ async function validateTableId(tableId, tables) {
   const firstTableId = f.first(tables);
   return f.cond([
     [f.isNil, firstTableId],
-    [id => f.isNil(tables[id]), firstTableId],
+    [(id) => f.isNil(tables[id]), firstTableId],
     [f.stubTrue, f.identity]
   ])(tableId);
 }

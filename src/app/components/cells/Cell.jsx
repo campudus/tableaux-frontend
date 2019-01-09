@@ -23,7 +23,7 @@ import f from "lodash/fp";
 //   removeTranslationNeeded
 // } from "../../helpers/annotationHelper";
 // import openTranslationDialog from "../overlay/TranslationDialog";
-import { either } from "../../helpers/functools";
+import {either} from "../../helpers/functools";
 // import FlagIconRenderer from "./FlagIconRenderer";
 import {
   branch,
@@ -43,7 +43,7 @@ import { isMultiLanguage } from "../../helpers/multiLanguage";
 
 const FlagIconRenderer = () => null;
 const ExpandCorner = compose(
-  branch(({ show }) => !show, renderNothing),
+  branch(({show}) => !show, renderNothing),
   withHandlers({
     onClick: props => event => {
       event.stopPropagation();
@@ -279,7 +279,7 @@ class Cell extends React.Component {
       focusTable,
       rowId
     } = this.props;
-    const { concat, text, richtext } = ColumnKinds;
+    const {concat, text, richtext} = ColumnKinds;
     const noKeyboard = [concat, "disabled", text, richtext];
     const kind = column.kind;
     //       this.userCanEditValue() || column.kind === ColumnKinds.concat
@@ -323,8 +323,7 @@ class Cell extends React.Component {
               )
             : f.noop
         }
-        onMouseDown={this.onMouseDownHandler}
-      >
+        onMouseDown={this.onMouseDownHandler}>
         <CellKind
           table={this.props.table}
           row={this.props.row}

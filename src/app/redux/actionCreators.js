@@ -26,7 +26,8 @@ const {
   DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
-  SET_CURRENT_LANGUAGE
+  SET_CURRENT_LANGUAGE,
+  SET_DISPLAY_VALUE_WORKER
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -109,29 +110,38 @@ const setCurrentTable = tableId => {
 };
 
 const deleteFilters = () => {
-  return { type: DELETE_FILTERS };
+  return {type: DELETE_FILTERS};
 };
 
 const trace = str => element => {
   console.log(str, element);
   return element;
 };
-const mapWithIndex = f.map.convert({ cap: false });
+const mapWithIndex = f.map.convert({cap: false});
 
 const generateDisplayValues = (rows, columns) => (dispatch, getState) => {
-  dispatch({ type: START_GENERATING_DISPLAY_VALUES });
+  dispatch({type: START_GENERATING_DISPLAY_VALUES});
+  const {
+    tableView: {worker}
+  } = getState();
+  const t3 = performance.now()
+  worker.postMessage([
+    rows,
+    columns,
+    ["de", "en", "en-US", "fr", "it", "es", "pl", "nl", "cs"]
+  ]);
+  worker.onmessage = e => {
   const t1 = performance.now();
-  const displayValues = f.compose(
-    f.map(mapWithIndex((value, id) => getDisplayValue(columns[id], value))),
-    f.map("values")
-  )(rows);
-  const t2 = performance.now();
-  console.log("generate", t2 - t1);
-
-  dispatch({
-    type: GENERATED_DISPLAY_VALUES,
-    displayValues
-  });
+    const displayValues = JSON.parse(e.data);
+  const t4 = performance.now()
+    const t2 = performance.now();
+    console.log(t2-t1,"parse");
+    console.log(t4-t3,"complete")
+    dispatch({
+      type: GENERATED_DISPLAY_VALUES,
+      displayValues
+    });
+  };
 };
 
 const loadCompleteTable = tableId => (dispatch, getState) => {
@@ -144,6 +154,12 @@ const setCurrentLanguage = lang => {
   return {
     type: SET_CURRENT_LANGUAGE,
     lang
+  };
+};
+
+const createDisplayValueWorker = () => {
+  return {
+    type: SET_DISPLAY_VALUE_WORKER
   };
 };
 
@@ -163,6 +179,7 @@ const actionCreators = {
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: dispatchParamsFor(TOGGLE_CELL_EDITING),
   changeCellValue
+  createDisplayValueWorker: createDisplayValueWorker
 };
 
 export default actionCreators;

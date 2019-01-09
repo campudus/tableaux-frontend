@@ -9,7 +9,8 @@ const LiveReloadPlugin = require("webpack-livereload-plugin");
 
 module.exports = {
   entry: {
-    app: ["babel-regenerator-runtime", "./src/app/router/router.js"],
+    app: ["babel-regenerator-runtime","./src/app/router/router.js"],
+    worker: "./src/worker.js"
   },
   watchOptions:{
     ignored: "/node_modules/"
@@ -77,7 +78,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".js", ".jsx"],
+    extensions:[".js",".jsx"]
   },
   plugins: [
     new LiveReloadPlugin({port:3003, hostname:"localhost",protocol:"http"}),

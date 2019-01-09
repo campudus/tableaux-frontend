@@ -26,8 +26,8 @@ class ColumnFilter extends React.Component {
   };
 
   render = () => {
-    const { langtag, columns, tableId, columnActions } = this.props;
-    const { open } = this.state;
+    const {langtag, columns, tableId,columnActions} = this.props;
+    const {open} = this.state;
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),

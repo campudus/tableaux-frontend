@@ -24,7 +24,7 @@ const columns = (state = initialState, action) => {
           error: false,
           finishedLoading: true,
           data: f.map(column => {
-            return { ...column, visible: true };
+            return {...column, visible: true};
           }, action.result.columns)
         }
       };

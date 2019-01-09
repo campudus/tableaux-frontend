@@ -26,6 +26,7 @@ import getDisplayValue from "../../../helpers/getDisplayValue";
 //     // ActionCreator.toggleCellEditing({editing: false});
 //   }
 // });
+//test
 
 const ShortTextCell = props => {
   const {

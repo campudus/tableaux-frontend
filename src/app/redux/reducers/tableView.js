@@ -17,8 +17,9 @@ const {
   DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
-  SET_CURRENT_LANGUAGE
-} = ActionTypes;
+  SET_CURRENT_LANGUAGE,
+  SET_DISPLAY_VALUE_WORKER
+} = actionTypes;
 
 const initialState = {
   selectedCell: {},
@@ -120,7 +121,31 @@ export default (state = initialState, action) => {
       return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action);
+    case SET_DISPLAY_VALUE_WORKER:
+      return {
+        ...state,
+        worker: new Worker("/worker.bundle.js")
+      };
     default:
       return state;
   }
 };
+
+const setInitialVisibleColumns = (state, action) =>
+  f.compose(
+    ids => f.assoc("visibleColumns")(ids)(state),
+    f.map("id"),
+    f.slice(0, 10),
+    f.prop(["result", "columns"])
+  )(action);
+
+const toggleSingleColumn = (state, action) => {
+  const {columnId} = action;
+  const {visibleColumns} = state;
+  const updatedVisibleColumns = f.includes(columnId, visibleColumns)
+    ? f.without([columnId], visibleColumns)
+    : f.concat(visibleColumns, columnId);
+  return {...state, visibleColumns: updatedVisibleColumns};
+};
+
+export default tableView;

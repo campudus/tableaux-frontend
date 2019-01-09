@@ -320,7 +320,8 @@ class TableView extends Component {
             <ColumnFilter
               langtag={langtag}
               columns={columns}
-              currentFilter={this.props.projection.rows}
+              tableId={tableId}
+              columnActions={columnActions}
             />
           ) : (
             <div />

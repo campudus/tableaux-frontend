@@ -14,6 +14,10 @@ app.use(
   })
 );
 
+app.use("/worker.js",function(req,res){
+  res.sendFile(path.resolve(__dirname, "../../dist/worker.js"));
+})
+
 app.use(function(req, res, next) {
   res.sendFile(path.resolve(__dirname, "../../dist/index.html"));
 });

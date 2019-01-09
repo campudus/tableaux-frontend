@@ -21,18 +21,18 @@ const LinkLabelCell = props => {
   // console.log(value);
   // console.log(displayValue);
   // console.log(column);
-  // const linkName = f.find(
-  //   // first truthy value
-  //   f.complement(f.isEmpty),
-  //   [
-  //     ...f.props([langtag, DefaultLangtag], cell.displayValue[linkIndexAt]),
-  //     <Empty />
-  //   ]
-  // );
+  const linkName = f.find(
+    // first truthy value
+    f.complement(f.isEmpty),
+    [
+      ...f.props([langtag, DefaultLangtag], displayValue),
+      <Empty />
+    ]
+  );
 
   return (
     <a href="#" onClick={() => console.log("onClick")} className="link-label">
-      <div className="label-text">{displayValue[langtag]}</div>
+      <div className="label-text">{linkName}</div>
     </a>
   );
 };
