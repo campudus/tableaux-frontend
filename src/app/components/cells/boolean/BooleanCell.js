@@ -39,12 +39,12 @@ const BooleanCell = props => {
     // } else if (selected) {
     //   handleEditDone(!getCheckboxValue());
     // }
-    handleEditDone(!getCheckboxValue());
+    selected && handleEditDone(!getCheckboxValue());
   };
 
   setCellKeyboardShortcuts({
     enter: evt => {
-      selected && toggleCheckboxValue();
+      toggleCheckboxValue();
     }
   });
 
