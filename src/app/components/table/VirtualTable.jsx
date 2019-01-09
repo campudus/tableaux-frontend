@@ -278,8 +278,11 @@ export default class VirtualTable extends PureComponent {
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const cell = this.getCell(rowIndex, columnIndex);
+    const visibleColumns = this.props.columns.filter(
+      (col, idx) => idx === 0 || col.visible
+    );
+    const column = visibleColumns[columnIndex];
     const {value, annotations} = cell;
-    const column = columns[columnIndex];
     const displayValueWithFallback = originalValue => {
       if (!f.isNil(originalValue)) {
         // console.log("value exists");
@@ -292,10 +295,6 @@ export default class VirtualTable extends PureComponent {
       console.log(annotations);
     }
     const isInSelectedRow = row.id === this.selectedIds.row;
-    const visibleColumns = this.props.columns.filter(
-      (col, idx) => idx === 0 || col.visible
-    );
-    const column = visibleColumns[columnIndex];
     const isSelected = this.isCellSelected(column.id, row.id);
     const isEditing =
       isSelected && f.getOr(false, "tableView.editing", this.props);
@@ -312,7 +311,7 @@ export default class VirtualTable extends PureComponent {
         actions={actions}
         value={value}
         displayValue={displayValue}
-        column={visibleColumns[columnIndex]}
+        column={column}
         annotationState={null /*getAnnotationState(cell)*/}
         focusTable={this.props.test}
         langtag={langtag}

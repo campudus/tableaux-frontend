@@ -178,7 +178,7 @@ const actionCreators = {
   setCurrentLanguage: setCurrentLanguage,
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: dispatchParamsFor(TOGGLE_CELL_EDITING),
-  changeCellValue
+  changeCellValue,
   createDisplayValueWorker: createDisplayValueWorker
 };
 

@@ -1,4 +1,4 @@
-import ActionTypes from "../actionTypes";
+import actionTypes from "../actionTypes";
 import f from "lodash/fp";
 import { DefaultLangtag, langtags } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
@@ -6,7 +6,7 @@ import { checkOrThrow } from "../../specs/type";
 import { toObjectById } from "../../helpers/funcHelpers";
 import getDisplayValue from "../../helpers/getDisplayValue";
 
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
+const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
 const {
   TOGGLE_COLUMN_VISIBILITY,
   HIDE_ALL_COLUMNS,
@@ -131,21 +131,3 @@ export default (state = initialState, action) => {
   }
 };
 
-const setInitialVisibleColumns = (state, action) =>
-  f.compose(
-    ids => f.assoc("visibleColumns")(ids)(state),
-    f.map("id"),
-    f.slice(0, 10),
-    f.prop(["result", "columns"])
-  )(action);
-
-const toggleSingleColumn = (state, action) => {
-  const {columnId} = action;
-  const {visibleColumns} = state;
-  const updatedVisibleColumns = f.includes(columnId, visibleColumns)
-    ? f.without([columnId], visibleColumns)
-    : f.concat(visibleColumns, columnId);
-  return {...state, visibleColumns: updatedVisibleColumns};
-};
-
-export default tableView;

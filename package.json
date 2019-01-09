@@ -4,15 +4,6 @@
   "description": "Experimental rewrite for tableaux-frontend with redux",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
-    "tslint": "tslint",
-    "format:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" |  xargs prettier --write",
-    "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
-    "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
-    "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
-    "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
-=======
->>>>>>> header-functionality
     "dev": "npm-run-all --parallel startServer startWatch",
     "startServer": "node ./src/server/index.js",
     "startWatch": "webpack --watch",
@@ -27,11 +18,10 @@
     "@storybook/addon-knobs": "^4.0.4",
     "@storybook/react": "^3.4.11",
     "@types/react": "^16.0.38",
-    "ampersand-app": "^2.0.0",
     "autoprefixer": "^7.1.5",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.6",
+    "babel-eslint": "^8.0.2",
     "babel-loader": "^7.1.2",
     "babel-plugin-istanbul": "^4.1.5",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
@@ -46,14 +36,7 @@
     "compass-mixins": "^0.12.10",
     "copy-webpack-plugin": "^4.6.0",
     "core-js": "^2.5.7",
-    "cross-fetch": "^3.0.0",
     "css-loader": "^1.0.1",
-    "eslint": "^5.10.0",
-    "eslint-plugin-lodash-fp": "^2.2.0-a1",
-    "eslint-plugin-prettier": "^3.0.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-react": "^7.11.1",
-    "eslint-plugin-standard": "^4.0.0",
     "event-stream": "^4.0.1",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^2.0.0",
@@ -74,8 +57,10 @@
     "webpack-livereload-plugin": "^1.2.0"
   },
   "dependencies": {
+    "ampersand-app": "^2.0.0",
     "ampersand-router": "^5.0.0",
     "browser-sync": "^2.26.3",
+    "cross-fetch": "^3.0.0",
     "es6-promise": "^4.2.5",
     "http-proxy-middleware": "^0.19.0",
     "i18next": "^10.5.0",
@@ -108,7 +93,6 @@
     "rxjs": "^5.5.6",
     "superagent": "^4.0.0-beta.5",
     "throat": "^4.1.0",
-    "typescript": "^3.2.2",
     "webpack-cli": "^3.1.2"
   }
 }

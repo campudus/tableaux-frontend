@@ -43,7 +43,6 @@ const FlagSearches = [
   FilterModes.WITH_COMMENT
 ];
 
-<<<<<<< HEAD
 const getFilteredRows = (
   currentTable,
   rows,
@@ -54,12 +53,6 @@ const getFilteredRows = (
   const closures = mkClosures(columns, rows, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
-=======
-const getFilteredRows = (currentTable,rows, columns, langtag, filterSettings) => {
-  console.log(filterSettings);
-  const closures = mkClosures(columns,rows , langtag, filterSettings);
-  const allFilters = f.flow( // eslint-disable-line lodash-fp/prefer-composition-grouping
->>>>>>> header-functionality
     f.map(mkFilterFn(closures)),
     f.map(fn => withTryCatch(fn, console.error)) // to get errors, replace f.always(false) with eg. console.error
   )(filterSettings.filters || []);

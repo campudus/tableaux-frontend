@@ -85,7 +85,6 @@ class MetaCell extends PureComponent {
           <div className="row-number">{row.id}</div>
           <div className="row-expand"><i className="fa fa-chevron-down" /></div>
         </div>
-      </div>
     );
 
     const cellClass = classNames("meta-cell", {

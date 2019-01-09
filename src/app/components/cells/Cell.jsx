@@ -249,7 +249,6 @@ class Cell extends React.Component {
     const { column, row } = this.props;
     const cellid = `${column.id}/${row.id}`;
     const modifiedVals = f.filter(k => this.props[k] !== nextProps[k], keys);
-    console.log(cellid, f.isEmpty(modifiedVals) ? "--" : modifiedVals);
   }
 
   userCanEditValue() {
