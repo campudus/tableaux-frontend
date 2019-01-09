@@ -136,12 +136,12 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
 
 // if an identifier cell was modified, we need to update the concat display value
 const maybeUpdateConcat = (tableView, action, completeState) => {
-  const concatValues = calcConcatValues(action, completeState);
+  const concatValues = calcConcatValues(action, completeState) || {};
   const { rowIdx, displayValue } = concatValues;
   // FIXME: adapt once we addresse displayValues[tableId][rowIdx][columnIdx]
   // const { tableId } = action;
 
-  return concatValues
+  return f.isEmpty(concatValues)
     ? f.assoc(["displayValues", rowIdx, 0], displayValue, tableView)
     : tableView;
 };

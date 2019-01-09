@@ -14,11 +14,11 @@ const {
 const initialState = {};
 
 const maybeUpdateConcats = (rows, action, completeState) => {
-  const concatValues = calcConcatValues(action, completeState);
+  const concatValues = calcConcatValues(action, completeState) || {};
   const { rowIdx, updatedConcatValue } = concatValues;
   const { tableId } = action;
 
-  return concatValues
+  return f.isEmpty(concatValues)
     ? f.assoc([tableId, "data", rowIdx, 0], updatedConcatValue, rows)
     : rows;
 };
