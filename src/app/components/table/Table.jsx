@@ -165,7 +165,6 @@ class Table extends Component {
       langtag,
       tableView
     } = this.props;
-    console.log("tableView:", tableView);
     const {
       selectedCell,
       selectedCellEditing,

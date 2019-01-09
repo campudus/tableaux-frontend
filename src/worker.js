@@ -5,9 +5,9 @@ const getDisplayValueOld = require("./app/helpers/getDisplayValueOld").default;
 const mapWithIndex = f.map.convert({cap: false});
 onmessage = function(e) {
   const rows = e.data[0];
-  console.log(rows);
   const columns = e.data[1];
   const langtags = e.data[2];
+  const tableId = e.data[3];
   initLangtags(langtags);
   const t1 = performance.now();
   const displayValues = f.compose(
@@ -36,5 +36,5 @@ onmessage = function(e) {
   const valueString = JSON.stringify(displayValues);
   // const t4 = performance.now();
   // console.log(t4 - t3, "stringify");
-  postMessage(valueString);
+  postMessage([valueString,tableId]);
 };

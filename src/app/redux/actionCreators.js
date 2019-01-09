@@ -5,6 +5,7 @@ import API_ROUTES from "../helpers/apiRoutes";
 import getDisplayValue from "../helpers/getDisplayValue";
 import TableauxConstants from "../constants/TableauxConstants";
 import { changeCellValue } from "./actions/cellActions";
+import {Langtags} from "../constants/TableauxConstants";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
 
@@ -110,36 +111,38 @@ const setCurrentTable = tableId => {
 };
 
 const deleteFilters = () => {
-  return {type: DELETE_FILTERS};
+  return { type: DELETE_FILTERS };
 };
 
 const trace = str => element => {
   console.log(str, element);
   return element;
 };
-const mapWithIndex = f.map.convert({cap: false});
+const mapWithIndex = f.map.convert({ cap: false });
 
-const generateDisplayValues = (rows, columns) => (dispatch, getState) => {
-  dispatch({type: START_GENERATING_DISPLAY_VALUES});
+const generateDisplayValues = (rows, columns, tableId) => (dispatch, getState) => {
+  dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const {
-    tableView: {worker}
+    tableView: { worker }
   } = getState();
-  const t3 = performance.now()
   worker.postMessage([
     rows,
     columns,
-    ["de", "en", "en-US", "fr", "it", "es", "pl", "nl", "cs"]
+    Langtags,
+    tableId
   ]);
   worker.onmessage = e => {
-  const t1 = performance.now();
-    const displayValues = JSON.parse(e.data);
-  const t4 = performance.now()
-    const t2 = performance.now();
-    console.log(t2-t1,"parse");
-    console.log(t4-t3,"complete")
+    const returnedTableId = e.data[1];
+    if(returnedTableId != tableId){
+      return;
+    }
+    const displayValues = JSON.parse(e.data[0]);
+    console.log("received DisplayValues");
+    console.log(e.data);
     dispatch({
       type: GENERATED_DISPLAY_VALUES,
-      displayValues
+      displayValues,
+      tableId
     });
   };
 };

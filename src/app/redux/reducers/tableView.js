@@ -112,7 +112,7 @@ export default (state = initialState, action) => {
     case COLUMNS_DATA_LOADED:
       return setInitialVisibleColumns(state, action);
     case GENERATED_DISPLAY_VALUES:
-      return { ...state, displayValues: action.displayValues };
+      return { ...state, displayValues:{ [action.tableId]: action.displayValues } };
     case START_GENERATING_DISPLAY_VALUES:
       return { ...state, startedGeneratingDisplayValues: true };
     case SET_CURRENT_LANGUAGE:

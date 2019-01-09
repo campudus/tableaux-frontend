@@ -82,7 +82,7 @@ export default function(ComposedComponent) {
         !startedGeneratingDisplayValues
       ) {
         const {generateDisplayValues} = actions;
-        generateDisplayValues(rows, columns);
+        generateDisplayValues(rows, columns,table.id);
       }
 
       const canRenderTable = f.every(f.negate(f.isEmpty), [

@@ -35,6 +35,7 @@ import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
+  console.log(state);
   const { tableId } = props;
   const tables = f.get("tables.data", state);
   const table = tables[tableId];
@@ -46,8 +47,9 @@ const mapStatetoProps = (state, props) => {
     filters,
     sorting,
     startedGeneratingDisplayValues,
-    displayValues
   } = tableView;
+  const displayValues = f.get(["displayValues", tableId], tableView);
+  console.log(displayValues);
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
   }
