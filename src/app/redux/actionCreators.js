@@ -6,6 +6,7 @@ import getDisplayValue from "../helpers/getDisplayValue";
 import TableauxConstants from "../constants/TableauxConstants";
 import { changeCellValue } from "./actions/cellActions";
 import {Langtags} from "../constants/TableauxConstants";
+import identifyLinkedRows from "../helpers/linkHelper";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
 
@@ -122,6 +123,7 @@ const mapWithIndex = f.map.convert({ cap: false });
 
 const generateDisplayValues = (rows, columns, tableId) => (dispatch, getState) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
+  identifyLinkedRows(rows,columns);
   const {
     tableView: { worker }
   } = getState();
