@@ -82,8 +82,12 @@ const extendedRouter = Router.extend({
   },
 
   initialize: function(options) {
-    const {loadTables} = this.actions;
+    const {loadTables,createDisplayValueWorker} = this.actions;
     loadTables();
+    createDisplayValueWorker();
+    console.log("initialize router");
+    // const worker = new Worker("/worker.js");
+    // worker.postMessage(["receive", "this","shit"]);
   },
 
   switchLanguageHandler: function(newLangtagObj) {

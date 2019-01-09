@@ -28,7 +28,7 @@ export default function(ComposedComponent) {
           return {
             value: cell,
             kind: columns[index].kind,
-            displayValue: displayValues[id][index],
+            displayValue: f.get([id,index],displayValues),
             annotations: f.get([index], extractedAnnotations),
             isMultilanguage: f.get(["multilanguage"],columns)
           };
@@ -59,7 +59,7 @@ export default function(ComposedComponent) {
         columns,
         displayValues
       );
-      console.log(preparedRows);
+      // console.log(preparedRows);
       return getFilteredRows(table, preparedRows, columns, langtag, rowsFilter);
     };
 
@@ -76,6 +76,7 @@ export default function(ComposedComponent) {
         langtag,
         table
       } = this.props;
+      console.log(displayValues);
       if (
         f.every(f.negate(f.isEmpty), [rows, columns]) &&
         f.isEmpty(displayValues) &&
@@ -88,8 +89,8 @@ export default function(ComposedComponent) {
       const canRenderTable = f.every(f.negate(f.isEmpty), [
         tables,
         rows,
-        columns,
-        displayValues
+        columns
+        // displayValues
       ]);
 
       const newProps = canRenderTable

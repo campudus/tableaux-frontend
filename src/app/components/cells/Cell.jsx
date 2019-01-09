@@ -35,7 +35,6 @@ import {
   withHandlers
 } from "recompose";
 import PropTypes from "prop-types";
-import getDisplayValue from "../../helpers/getDisplayValue";
 
 const FlagIconRenderer = () => null;
 const ExpandCorner = compose(

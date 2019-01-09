@@ -2,7 +2,7 @@ import f from "lodash/fp";
 import actionTypes from "./actionTypes";
 import {makeRequest} from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
-import getDisplayValue from "../helpers/getDisplayValue";
+import getDisplayValues from "../helpers/getDisplayValue";
 import TableauxConstants from "../constants/TableauxConstants";
 
 const {getAllTables, getAllColumnsForTable, getAllRowsForTable} = API_ROUTES;
@@ -25,7 +25,8 @@ const {
   DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
-  SET_CURRENT_LANGUAGE
+  SET_CURRENT_LANGUAGE,
+  SET_DISPLAY_VALUE_WORKER
 } = actionTypes;
 
 const loadTables = () => {
@@ -101,22 +102,35 @@ const deleteFilters = () => {
   return {type: DELETE_FILTERS};
 };
 
-const trace = str => element => {console.log(str, element); return element};
-const mapWithIndex = f.map.convert({cap:false});
+const trace = str => element => {
+  console.log(str, element);
+  return element;
+};
+const mapWithIndex = f.map.convert({cap: false});
 
 const generateDisplayValues = (rows, columns) => (dispatch, getState) => {
   dispatch({type: START_GENERATING_DISPLAY_VALUES});
+  const {
+    tableView: {worker}
+  } = getState();
+  const t3 = performance.now()
+  worker.postMessage([
+    rows,
+    columns,
+    ["de", "en", "en-US", "fr", "it", "es", "pl", "nl", "cs"]
+  ]);
+  worker.onmessage = e => {
   const t1 = performance.now();
-  const displayValues = f.compose(
-    f.map(mapWithIndex((value,id) => getDisplayValue(columns[id],value))),
-    f.map("values")
-  )(rows);
-  const t2 = performance.now();
-
-  dispatch({
-    type: GENERATED_DISPLAY_VALUES,
-    displayValues
-  });
+    const displayValues = JSON.parse(e.data);
+  const t4 = performance.now()
+    const t2 = performance.now();
+    console.log(t2-t1,"parse");
+    console.log(t4-t3,"complete")
+    dispatch({
+      type: GENERATED_DISPLAY_VALUES,
+      displayValues
+    });
+  };
 };
 
 const loadCompleteTable = tableId => (dispatch, getState) => {
@@ -127,10 +141,16 @@ const loadCompleteTable = tableId => (dispatch, getState) => {
 
 const setCurrentLanguage = lang => {
   return {
-    type:SET_CURRENT_LANGUAGE,
+    type: SET_CURRENT_LANGUAGE,
     lang
-  }
-}
+  };
+};
+
+const createDisplayValueWorker = () => {
+  return {
+    type: SET_DISPLAY_VALUE_WORKER
+  };
+};
 
 const actionCreators = {
   loadTables: loadTables,
@@ -144,7 +164,8 @@ const actionCreators = {
   deleteFilters: deleteFilters,
   generateDisplayValues: generateDisplayValues,
   loadCompleteTable: loadCompleteTable,
-  setCurrentLanguage: setCurrentLanguage
+  setCurrentLanguage: setCurrentLanguage,
+  createDisplayValueWorker: createDisplayValueWorker
 };
 
 export default actionCreators;

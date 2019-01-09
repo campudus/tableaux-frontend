@@ -13,7 +13,8 @@ const {
   DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
-  SET_CURRENT_LANGUAGE
+  SET_CURRENT_LANGUAGE,
+  SET_DISPLAY_VALUE_WORKER
 } = actionTypes;
 
 const initialState = {
@@ -22,8 +23,9 @@ const initialState = {
   sorting: {},
   currentTable: null,
   displayValues: {},
-  startedGeneratingDisplayValues:false,
-  currentLanguage: "de"
+  startedGeneratingDisplayValues: false,
+  currentLanguage: "de",
+  worker: null
 };
 
 const tableView = (state = initialState, action) => {
@@ -45,9 +47,14 @@ const tableView = (state = initialState, action) => {
     case GENERATED_DISPLAY_VALUES:
       return {...state, displayValues: action.displayValues};
     case START_GENERATING_DISPLAY_VALUES:
-      return {...state,startedGeneratingDisplayValues: true}
+      return {...state, startedGeneratingDisplayValues: true};
     case SET_CURRENT_LANGUAGE:
-      return {...state, currentLanguage: action.lang}
+      return {...state, currentLanguage: action.lang};
+    case SET_DISPLAY_VALUE_WORKER:
+      return {
+        ...state,
+        worker: new Worker("/worker.bundle.js")
+      };
     default:
       return state;
   }
