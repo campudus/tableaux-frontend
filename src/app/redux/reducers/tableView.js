@@ -1,10 +1,15 @@
 import actionTypes from "../actionTypes";
 import f from "lodash/fp";
-import { DefaultLangtag, langtags } from "../../constants/TableauxConstants";
+import {
+  DefaultLangtag,
+  langtags,
+  ColumnKinds
+} from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
 import { checkOrThrow } from "../../specs/type";
 import { toObjectById } from "../../helpers/funcHelpers";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { idsToIndices, calcConcatValues } from "../redux-helpers";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
 const {
@@ -20,7 +25,8 @@ const {
   SET_CURRENT_LANGUAGE,
   SET_DISPLAY_VALUE_WORKER,
   CELL_SET_VALUE,
-  CELL_ROLLBACK_VALUE
+  CELL_ROLLBACK_VALUE,
+  CELL_SAVED_SUCCESSFULLY
 } = ActionTypes;
 
 const initialState = {
@@ -89,7 +95,6 @@ const toggleCellSelectionActionSpec = {
 };
 
 const toggleCellEditing = (state, action) => {
-  console.log("toggleCellEditing", action);
   // TODO: Check if editable
   return f.update(
     "editing",
@@ -129,29 +134,16 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
   );
 };
 
-const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
-  try {
-    const rowIdx = f.findIndex(
-      row => row.id === rowId,
-      completeState.rows[tableId].data
-    );
-    const columnIdx = f.findIndex(
-      col => col.id === columnId,
-      completeState.columns[tableId].data
-    );
-    return [rowIdx, columnIdx];
-  } catch (err) {
-    console.error(
-      "tableView Reducer: could not calculate indices for table",
-      tableId,
-      "row",
-      rowId,
-      "column",
-      columnId,
-      err
-    );
-    return [-1, -1];
-  }
+// if an identifier cell was modified, we need to update the concat display value
+const maybeUpdateConcat = (tableView, action, completeState) => {
+  const concatValues = calcConcatValues(action, completeState);
+  const { rowIdx, displayValue } = concatValues;
+  // FIXME: adapt once we addresse displayValues[tableId][rowIdx][columnIdx]
+  // const { tableId } = action;
+
+  return concatValues
+    ? f.assoc(["displayValues", rowIdx, 0], displayValue, tableView)
+    : tableView;
 };
 
 export default (state = initialState, action, completeState) => {
@@ -184,6 +176,8 @@ export default (state = initialState, action, completeState) => {
       return updateDisplayValue("newValue", state, action, completeState);
     case CELL_ROLLBACK_VALUE:
       return updateDisplayValue("oldValue", state, action, completeState);
+    case CELL_SAVED_SUCCESSFULLY:
+      return maybeUpdateConcat(state, action, completeState);
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,
