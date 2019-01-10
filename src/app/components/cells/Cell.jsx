@@ -225,9 +225,10 @@ class Cell extends React.Component {
   componentDidCatch(error, info) {
     console.error(
       "Could not render cell:",
-      this.props.column.kind,
-      this.props.column.id,
-      this.props.row.id,
+      "column",
+      this.props.column,
+      "row",
+      this.props.row,
       error
     );
   }
@@ -345,12 +346,19 @@ class Cell extends React.Component {
           inSelectedRow={inSelectedRow}
           editing={this.userCanEditValue && editing}
           contentChanged={contentChanged}
-          isMultiLanguage={isMultiLanguage(value)}
+          isMultiLanguage={column.multilanguage}
           setCellKeyboardShortcuts={
             f.contains(kind, noKeyboard)
               ? f.noop
               : this.setKeyboardShortcutsForChildren
           }
+          cell={{
+            column: this.props.column,
+            row: this.props.row,
+            table: this.props.table,
+            value: this.props.value,
+            displayValue
+          }}
         />
       </div>
     );

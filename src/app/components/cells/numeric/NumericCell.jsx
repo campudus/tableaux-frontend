@@ -22,6 +22,7 @@ const NumericCell = props => {
     const valueToSave = isMultiLanguage ? { [langtag]: newValue } : newValue;
 
     actions.changeCellValue({
+      column,
       columnId: column.id,
       rowId: row.id,
       tableId: table.id,

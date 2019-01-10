@@ -43,6 +43,7 @@ class DateEditCell extends Component {
       : momentString;
     actions.changeCellValue({
       tableId: table.id,
+      column,
       columnId: column.id,
       rowId: row.id,
       oldValue: f.isEmpty(value) ? null : value.format(Formats.formatForServe),

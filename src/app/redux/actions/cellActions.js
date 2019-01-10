@@ -3,6 +3,7 @@ import {
   complement,
   cond,
   contains,
+  dissoc,
   dropWhile,
   equals,
   flow,
@@ -23,7 +24,6 @@ import {
 } from "../../helpers/accessManagementHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes";
-import { isMultiCountry, isMultiLanguage } from "../../helpers/multiLanguage";
 import ActionTypes from "../actionTypes";
 
 const {
@@ -32,20 +32,10 @@ const {
   CELL_SET_VALUE
 } = ActionTypes;
 
-export const changeCellValue = ({
-  tableId,
-  columnId,
-  rowId,
-  kind,
-  oldValue,
-  newValue
-}) => {
+export const changeCellValue = action => {
+  const { tableId, columnId, rowId, column, oldValue, newValue } = action;
   console.log("Change cell value:", oldValue, "->", newValue);
-  const update = calculateCellUpdate({
-    oldValue,
-    newValue,
-    cellKind: kind
-  });
+  const update = calculateCellUpdate(action);
   console.log("-- update:", update);
 
   // bail out if no updates needed
@@ -66,23 +56,19 @@ export const changeCellValue = ({
           CELL_SAVED_SUCCESSFULLY,
           CELL_ROLLBACK_VALUE
         ],
-        tableId,
-        columnId,
-        rowId,
-        newValue,
-        oldValue
+        ...dissoc("type", action)
       };
 };
 
-export const calculateCellUpdate = ({ oldValue, newValue, cellKind }) => {
-  const cellIs = kind => ({ cellKind }) => kind === cellKind;
+export const calculateCellUpdate = action => {
+  const cellIs = kind => ({ column }) => column.kind === kind;
   return cond([
     [cellIs(ColumnKinds.link), calculateLinkCellUpdate],
     [always(true), calculateDefaultCellUpdate]
-  ])({ oldValue, newValue, cellKind });
+  ])(action);
 };
 
-const calculateDefaultCellUpdate = ({ oldValue, newValue }) => {
+const calculateDefaultCellUpdate = ({ column, oldValue, newValue }) => {
   const reduceLangs = flow(
     reduceValuesToAllowedLanguages,
     merge(oldValue)
@@ -94,8 +80,8 @@ const calculateDefaultCellUpdate = ({ oldValue, newValue }) => {
 
   const allowedChangeValue = cond([
     [complement(isObject), identity],
-    [isMultiLanguage, reduceLangs],
-    [isMultiCountry, reduceCountries],
+    [() => column.languageType === "country", reduceCountries],
+    [() => column.multilanguage, reduceLangs],
     [always(true), identity]
   ])(newValue);
 
