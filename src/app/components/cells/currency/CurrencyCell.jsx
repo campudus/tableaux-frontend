@@ -1,10 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {getCountryOfLangtag, getCurrencyCode} from "../../../helpers/multiLanguage";
+import {
+  getCountryOfLangtag,
+  getCurrencyCode
+} from "../../../helpers/multiLanguage";
 import CurrencyEditCell from "./CurrencyEditCell";
-import {getCurrencyWithCountry, splitPriceDecimals} from "./currencyHelper";
+import { getCurrencyWithCountry, splitPriceDecimals } from "./currencyHelper";
 import onClickOutside from "react-onclickoutside";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
 
@@ -39,23 +42,36 @@ export default class CurrencyCell extends React.PureComponent {
     event.stopPropagation();
   }
 
-  saveCurrencyCell = (valuesToSave) => {
-    // ActionCreator.changeCell(this.props.cell, valuesToSave);
+  saveCurrencyCell = valuesToSave => {
+    const { actions, table, column, row } = this.props;
+    actions.changeCellValue({
+      tableId: table.id,
+      columnId: column.id,
+      column,
+      rowId: row.id,
+      oldValue: this.props.value,
+      newValue: valuesToSave
+    });
   };
 
   exitCurrencyCell = () => {
-    // ActionCreator.toggleCellEditing({editing: false});
+    const { actions, tableId, columnId, rowId } = this.props;
+    actions.toggleCellEditing({ tableId, columnId, rowId, editing: false });
   };
 
-  handleClickOutside = (event) => {
-    // this.exitCurrencyCell();
+  handleClickOutside = () => {
+    this.exitCurrencyCell();
   };
 
   renderPrice(currencyValues, country) {
-    const currencyValue = getCurrencyWithCountry(currencyValues, country, "withFallback");
+    const currencyValue = getCurrencyWithCountry(
+      currencyValues,
+      country,
+      "withFallback"
+    );
     const splittedValueAsString = splitPriceDecimals(currencyValue);
     const currencyCode = getCurrencyCode(country);
-    const {value, t} = this.props;
+    const { value, t } = this.props;
     if (!currencyCode) {
       return (
         <div className="currency-wrapper">
@@ -69,36 +85,28 @@ export default class CurrencyCell extends React.PureComponent {
 
     // TODO localization
     return (
-      <div className={`currency-wrapper${(value[country]) ? "" : " grey-out"}`}>
-        <span className="currency-value">
-          {splittedValueAsString[0]}
-        </span>
+      <div className={`currency-wrapper${value[country] ? "" : " grey-out"}`}>
+        <span className="currency-value">{splittedValueAsString[0]}</span>
         <span className="currency-value-decimals">
           ,{splittedValueAsString[1]}
         </span>
-        <span
-          className="currency-code">{currencyCode}</span>
+        <span className="currency-code">{currencyCode}</span>
         <i className="open-country fa fa-angle-down" />
       </div>
-
     );
   }
 
   getStyle = () => {
-    const {shiftUp} = this.state;
-    return (this.props.editing)
-      ? (
-        {
-          top: (shiftUp) ? -125 : 0,
-          bottom: (shiftUp) ? -45 : -170
+    const { shiftUp } = this.state;
+    return this.props.editing
+      ? {
+          top: shiftUp ? -125 : 0,
+          bottom: shiftUp ? -45 : -170
         }
-      )
-      : (
-        {
+      : {
           top: 0,
           bottom: 0
-        }
-      );
+        };
   };
 
   checkPosition = (domNode = this.state.domNode) => {
@@ -107,7 +115,7 @@ export default class CurrencyCell extends React.PureComponent {
     }
 
     if (f.isNil(this.state.domNode)) {
-      this.setState({domNode});
+      this.setState({ domNode });
     }
 
     if (!this.props.editing) {
@@ -115,12 +123,13 @@ export default class CurrencyCell extends React.PureComponent {
     }
 
     const rect = domNode.getBoundingClientRect();
-    const unshiftedBottom = (this.state.shiftUp)
+    const unshiftedBottom = this.state.shiftUp
       ? rect.bottom + 180
       : rect.bottom + 10;
-    const needsShiftUp = this.props.editing && unshiftedBottom >= window.innerHeight;
+    const needsShiftUp =
+      this.props.editing && unshiftedBottom >= window.innerHeight;
     if (needsShiftUp !== this.state.shiftUp) {
-      this.setState({shiftUp: needsShiftUp});
+      this.setState({ shiftUp: needsShiftUp });
     }
   };
 
@@ -129,26 +138,33 @@ export default class CurrencyCell extends React.PureComponent {
   }
 
   render() {
-    const {langtag, editing, value,displayValue, setCellKeyboardShortcuts} = this.props;
+    const {
+      langtag,
+      editing,
+      value,
+      displayValue,
+      setCellKeyboardShortcuts
+    } = this.props;
     const currencyValues = value;
     const country = getCountryOfLangtag(langtag);
-    const currencyCellMarkup = (editing)
-      ? (
-        <CurrencyEditCellWithClickOutside
-          cell={cell}
-          setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-          onClickOutside={this.handleClickOutside}
-          saveCell={this.saveCurrencyCell}
-          exitCell={this.exitCurrencyCell}
-        />
-      )
-      : this.renderPrice(currencyValues, country);
+    const currencyCellMarkup = editing ? (
+      <CurrencyEditCellWithClickOutside
+        cell={this.props.cell}
+        setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+        onClickOutside={this.handleClickOutside}
+        saveCell={this.saveCurrencyCell}
+        exitCell={this.exitCurrencyCell}
+      />
+    ) : (
+      this.renderPrice(currencyValues, country)
+    );
 
     return (
-      <div className="cell-content"
-           onScroll={this.scrollHandler}
-           ref={this.checkPosition}
-           style={this.getStyle()}
+      <div
+        className="cell-content"
+        onScroll={this.scrollHandler}
+        ref={this.checkPosition}
+        style={this.getStyle()}
       >
         {currencyCellMarkup}
       </div>
