@@ -244,7 +244,7 @@ class ColumnFilterPopup extends React.Component {
 ColumnFilterPopup.propTypes = {
   close: PropTypes.func.isRequired,
   langtag: PropTypes.string.isRequired,
-  columns: PropTypes.object.isRequired
+  columns: PropTypes.array.isRequired
 };
 
 export default ColumnFilterPopup;
