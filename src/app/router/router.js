@@ -20,6 +20,9 @@ import {bindActionCreators} from "redux";
 import store from "../redux/store.js";
 import actionCreators from "../redux/actionCreators";
 import Tableaux from "../components/Tableaux";
+import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+
+initDevelopmentAccessCookies();
 
 export let currentLangtag = null;
 const router = new Router();
