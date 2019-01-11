@@ -268,8 +268,8 @@ class Cell extends React.Component {
       return true;
     }
     return (
-      isMultiLanguage(value) && hasUserAccessToLanguage(langtag)
-      //  || (isMultiCountry(value) && hasUserAccessToCountryCode(langtag)) // TODO: get country code instead of langtag
+      (column.multilanguage && hasUserAccessToLanguage(langtag)) ||
+      (column.languageType === "country" && hasUserAccessToCountryCode(langtag))
     );
   }
 
