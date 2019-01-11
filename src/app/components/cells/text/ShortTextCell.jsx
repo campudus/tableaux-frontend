@@ -6,32 +6,11 @@ import TextCell from "./TextCell";
 import SelectableShortText from "./SelectableShortText";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 
-// const withEditFn = withHandlers({
-//   handleEditDone: (props) => (newValue) => {
-//     const oldValue = props.value;
-//     const {contentChanged, cell, langtag} = props;
-//     if ((isEmpty(newValue) && isEmpty(oldValue)) || newValue === oldValue) {
-//       // ActionCreator.toggleCellEditing({editing: false});
-//       return;
-//     }
-//     const valueToSave = (cell.isMultiLanguage)
-//       ? {[langtag]: newValue}
-//       : newValue;
-
-//     changeCell({
-//       cell,
-//       value: valueToSave
-//     })
-//       .then(contentChanged(cell, langtag, oldValue));
-//     // ActionCreator.toggleCellEditing({editing: false});
-//   }
-// });
-//test
-
 const ShortTextCell = props => {
   const {
     handleEditDone,
     column,
+    table,
     editing,
     langtag,
     setCellKeyboardShortcuts,
@@ -49,6 +28,8 @@ const ShortTextCell = props => {
       focusTable={focusTable}
       langtag={langtag}
       value={value}
+      table={table}
+      column={column}
       onBlur={handleEditDone}
       setCellKeyboardShortcuts={setCellKeyboardShortcuts}
     />
@@ -57,13 +38,27 @@ const ShortTextCell = props => {
   );
 };
 
-// ShortTextCell.propTypes = {
-//   langtag: PropTypes.string.isRequired,
-//   cell: PropTypes.object.isRequired,
-//   editing: PropTypes.bool.isRequired,
-//   selected: PropTypes.bool,
-//   setCellKeyboardShortcuts: PropTypes.func,
-//   value: PropTypes.string
-// };
+class ShortTextCellContainer extends React.PureComponent {
+  handleEditDone = newValue => {
+    const { value, actions, column, row, table, langtag } = this.props;
+    const valueToSave = column.multilanguage
+      ? { [langtag]: newValue }
+      : newValue;
+    actions.changeCellValue({
+      tableId: table.id,
+      column,
+      columnId: column.id,
+      rowId: row.id,
+      oldValue: value,
+      newValue: valueToSave
+    });
+  };
 
-export default ShortTextCell;
+  render() {
+    return (
+      <ShortTextCell {...this.props} handleEditDone={this.handleEditDone} />
+    );
+  }
+}
+
+export default ShortTextCellContainer;
