@@ -7,9 +7,10 @@ import {
 } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
 import { checkOrThrow } from "../../specs/type";
-import { toObjectById } from "../../helpers/funcHelpers";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
+import { isLocked } from "../../helpers/annotationHelper";
+import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
 const {
@@ -72,7 +73,6 @@ const toggleSelectedCell = (state, action) => {
         DefaultLangtag
     });
   }
-  // TODO: unlock row
   return f.flow(
     f.assoc("editing", false),
     f.update("selectedCell", prevSelection =>
@@ -94,13 +94,20 @@ const toggleCellSelectionActionSpec = {
   langtag: isLangtagOrNil
 };
 
-const toggleCellEditing = (state, action) => {
-  // TODO: Check if editable
-  return f.update(
-    "editing",
-    wasEditing => action.editing !== false && !wasEditing,
-    state
-  );
+const toggleCellEditing = (state, action, completeState) => {
+  const { currentTable, selectedCell: { rowId } = {} } = state;
+  const tableId = parseInt(currentTable);
+  const row = f.find(f.propEq("id", rowId), completeState.rows[tableId].data);
+  if (action.editing !== false && row && isLocked(row)) {
+    askForSessionUnlock(row);
+    return state;
+  } else {
+    return f.update(
+      "editing",
+      wasEditing => action.editing !== false && !wasEditing,
+      state
+    );
+  }
 };
 
 const setInitialVisibleColumns = (state, action) =>
@@ -171,7 +178,7 @@ export default (state = initialState, action, completeState) => {
     case TOGGLE_CELL_SELECTION:
       return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
-      return toggleCellEditing(state, action);
+      return toggleCellEditing(state, action, completeState);
     case CELL_SET_VALUE:
       return updateDisplayValue("newValue", state, action, completeState);
     case CELL_ROLLBACK_VALUE:
