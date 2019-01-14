@@ -42,32 +42,6 @@ const mapStateToProps = state => {
   return { toast, overlays };
 };
 
-// TODO: Stop hiding toast when user hovers over the toast message
-const showToast = payload => {
-  if (f.isEmpty(payload)) {
-    hideToast();
-  }
-  // default 2700ms
-  const { content, milliseconds = 2700 } = payload;
-
-  this.setState({
-    toast: content
-  });
-
-  if (this.toastTimer) {
-    clearInterval(this.toastTimer);
-  }
-
-  this.toastTimer = setTimeout(this.hideToast, milliseconds);
-};
-
-const hideToast = () => {
-  this.toastTimer = null;
-  this.setState({
-    toast: null
-  });
-};
-
 const renderActiveOverlays = () => {
   let overlays = this.state.activeOverlays;
   if (f.isEmpty(overlays)) {

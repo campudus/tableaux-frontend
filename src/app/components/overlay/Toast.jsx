@@ -10,8 +10,16 @@ import {
 } from "recompose";
 
 const Toast = props => {
-  const { content } = props;
-  return <div className="toast-wrapper">{content}</div>;
+  const { content, clearTimer, setTimer } = props;
+  return (
+    <div
+      className="toast-wrapper"
+      onMouseOver={clearTimer}
+      onMouseOut={setTimer}
+    >
+      {content}
+    </div>
+  );
 };
 
 Toast.propTypes = {
@@ -28,6 +36,8 @@ const selfHiding = compose(
       hidingTimer: setTimer();
     },
     {
+      clearTimer: ({ hidingTimer }) =>
+        hidingTimer && clearInterval(hidingTimer),
       resetTimer: (state, props) => () => {
         const { hidingTimer } = state;
         const { setTimer } = props;
