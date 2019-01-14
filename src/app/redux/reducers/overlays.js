@@ -17,12 +17,12 @@ const initialState = {
 };
 
 const openOverlay = (state, action) => {
-  const { content } = action.payload;
+  const content = action.payload;
   const timestamp = new Date().getTime();
   const namedContent = doto(
     content,
     when(cont => f.isEmpty(cont.name), f.assoc("name", timestamp)),
-    assoc("id", timestamp)
+    f.assoc("id", timestamp)
   );
 
   return doto(state, f.update("overlays", f.concat(namedContent)));

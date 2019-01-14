@@ -3,7 +3,6 @@ import actionTypes from "./actionTypes";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
 import getDisplayValue from "../helpers/getDisplayValue";
-import TableauxConstants from "../constants/TableauxConstants";
 import { changeCellValue } from "./actions/cellActions";
 import { Langtags } from "../constants/TableauxConstants";
 import identifyLinkedRows from "../helpers/linkHelper";
@@ -38,7 +37,8 @@ const {
   SHOW_TOAST,
   HIDE_TOAST,
   OPEN_OVERLAY,
-  CLOSE_OVERLAY
+  CLOSE_OVERLAY,
+  REMOVE_OVERLAY
 } = actionTypes.overlays;
 
 const dispatchParamsFor = actionType => params => ({
@@ -150,7 +150,7 @@ const generateDisplayValues = (rows, columns, tableId) => (
   };
 };
 
-const loadCompleteTable = tableId => (dispatch, getState) => {
+const loadCompleteTable = tableId => dispatch => {
   dispatch(setCurrentTable(tableId));
   dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
@@ -176,6 +176,22 @@ const hideToast = () => ({ type: HIDE_TOAST });
 
 const openOverlay = payload => ({ payload, type: OPEN_OVERLAY });
 
+const closeOverlayWithAnimation = ({
+  overlayId,
+  closingAnimationDuration
+}) => ({
+  promise: new Promise(resolve =>
+    setTimeout(resolve, closingAnimationDuration)
+  ),
+  actionTypes: [CLOSE_OVERLAY, REMOVE_OVERLAY, "IGNORE_ERROR"],
+  overlayId
+});
+
+const closeOverlayImmediately = overlayId => ({
+  type: REMOVE_OVERLAY,
+  overlayId
+});
+
 const closeOverlay = name => (dispatch, getState) => {
   const closingAnimationDuration = 400; // ms
   const overlays = doto(
@@ -186,16 +202,16 @@ const closeOverlay = name => (dispatch, getState) => {
   const overlayToClose = f.isString(name)
     ? f.find(f.propEqn("name", name), overlays)
     : f.last(overlays);
+  console.log("Close overlay:", name, overlayToClose);
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
   return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
-    ? {
-        promise: new Promise(resolve =>
-          setTimeout(resolve, closingAnimationDuration)
-        ),
-        actionTypes: [CLOSE_OVERLAY, REMOVE_OVERLAY, "IGNORE_ERROR"],
-        overlayId: overlayToClose.id
-      }
-    : {};
+    ? dispatch(
+        closeOverlayWithAnimation({
+          overlayId: overlayToClose.id,
+          closingAnimationDuration
+        })
+      )
+    : dispatch(closeOverlayImmediately(overlayToClose.id));
 };
 
 const createDisplayValueWorker = () => {

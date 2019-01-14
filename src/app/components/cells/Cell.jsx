@@ -353,6 +353,7 @@ class Cell extends React.Component {
           }
           cell={{
             column: this.props.column,
+            columns: this.props.columns,
             row: this.props.row,
             table: this.props.table,
             value: this.props.value,

@@ -309,6 +309,7 @@ export default class VirtualTable extends PureComponent {
         value={value}
         displayValue={displayValue}
         column={column}
+        columns={columns}
         annotationState={null /*getAnnotationState(cell)*/}
         focusTable={this.props.test}
         langtag={langtag}

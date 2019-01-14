@@ -2,34 +2,36 @@ import Empty from "../components/helperComponents/emptyEntry";
 import f from "lodash/fp";
 import React from "react";
 import PropTypes from "prop-types";
+import getDisplayValue from "./getDisplayValue";
 
-const rowConcatString = (row, langtag) => {
-  if (!row.cells || !row.cells.at) {
-    console.error("The object does not seem to be a valid row:", row);
-  }
-  const firstCell = row.cells.at(0);
-  const displayValue = firstCell.displayValue;
-  const arrayConcatForLang = (langtag) => f.flow(
-    f.map(f.get(langtag)),
-    f.join(" ")
-  )(displayValue);
-  return (f.isArray(displayValue))
+const rowConcatString = (idColumn, row, langtag) => {
+  const firstCell = f.get(["values", 0], row);
+  const displayValue = getDisplayValue(idColumn, firstCell.value);
+  const arrayConcatForLang = langtag =>
+    f.flow(
+      f.map(f.get(langtag)),
+      f.join(" ")
+    )(displayValue);
+  return f.isArray(displayValue)
     ? arrayConcatForLang(langtag)
     : displayValue[langtag];
 };
 
-const RowConcat = (props) => {
-  const {row, langtag} = props;
-  const displayValue = rowConcatString(row, langtag);
-  return (f.isEmpty(displayValue))
-    ? <Empty />
-    : <span className="row-concat-string">{displayValue}</span>;
+const RowConcat = props => {
+  const { idColumn, row, langtag } = props;
+  const displayValue = rowConcatString(idColumn, row, langtag);
+  return f.isEmpty(displayValue) ? (
+    <Empty />
+  ) : (
+    <span className="row-concat-string">{displayValue}</span>
+  );
 };
 
 RowConcat.propTypes = {
   row: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  idColumn: PropTypes.object.isRequired
 };
 
-export {rowConcatString};
+export { rowConcatString };
 export default RowConcat;
