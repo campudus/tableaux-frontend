@@ -1,5 +1,5 @@
 import React from "react";
-import {unlockRow, isLocked} from "../../helpers/annotationHelper";
+import { unlockRow, isLocked } from "../../helpers/annotationHelper";
 // import ActionCreator from "../../actions/ActionCreator";
 import * as f from "lodash/fp";
 import i18n from "i18next";
@@ -19,15 +19,15 @@ class Candidates {
   }
 
   static has(id) {
-    return (f.contains(id, this._cnd));
+    return f.contains(id, this._cnd);
   }
 }
 
-const askForSessionUnlock = (el, key) => {
+const askForSessionUnlock = (el, key, actions) => {
   if (!isLocked(el)) {
     return;
   }
-  const {id} = el;
+  const { id } = el;
   const keyCanUnlock = key && key === "Enter";
 
   if (Candidates.has(id) && (!key || keyCanUnlock)) {
@@ -37,11 +37,15 @@ const askForSessionUnlock = (el, key) => {
     if (!key || (key && keyCanUnlock)) {
       Candidates.add(id);
     }
-    // ActionCreator.showToast(
-    //   <div id="cell-jump-toast">
-    //     <h1>{i18n.t("table:final.unlock_header")}</h1>
-    //     <p>{i18n.t("table:final.unlock_toast")}</p>
-    //   </div>, TOAST_TIME);
+    actions.showToast({
+      content: (
+        <div id="cell-jump-toast">
+          <h1>{i18n.t("table:final.unlock_header")}</h1>
+          <p>{i18n.t("table:final.unlock_toast")}</p>
+        </div>
+      ),
+      duration: TOAST_TIME
+    });
   }
 };
 

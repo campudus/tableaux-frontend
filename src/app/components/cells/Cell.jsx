@@ -39,7 +39,6 @@ import {
   isUserAdmin,
   hasUserAccessToLanguage
 } from "../../helpers/accessManagementHelper";
-import { isMultiLanguage } from "../../helpers/multiLanguage";
 
 const FlagIconRenderer = () => null;
 const ExpandCorner = compose(
