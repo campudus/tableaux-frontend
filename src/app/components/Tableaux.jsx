@@ -1,18 +1,12 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-// import Dispatcher from "../dispatcher/Dispatcher";
-import TableauxConstants from "../constants/TableauxConstants";
-import GenericOverlay from "./overlay/GenericOverlay.jsx";
 import ViewRenderer from "./ViewRenderer.jsx";
 import i18n from "i18next";
-import {I18nextProvider} from "react-i18next";
-// import ActionCreator from "../actions/ActionCreator";
-import Toast from "./overlay/Toast.jsx";
-import * as f from "lodash/fp";
+import { I18nextProvider } from "react-i18next";
+import f from "lodash/fp";
 import RootButton from "./RootButton";
 import resources from "i18next-resource-store-loader!../../locales/index";
-
-const ActionTypes = TableauxConstants.ActionTypes;
+import Overlays from "./overlay/Overlays";
 
 export default class Tableaux extends PureComponent {
   static propTypes = {
@@ -24,29 +18,25 @@ export default class Tableaux extends PureComponent {
     super(props);
     this.currentLangtag = props.initialParams.langtag;
 
-    // Dispatcher.on(ActionTypes.OPEN_OVERLAY, this.openOverlay, this);
-    // Dispatcher.on(ActionTypes.CLOSE_OVERLAY, this.closeOverlay, this);
     // Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
-    // Dispatcher.on(ActionTypes.SHOW_TOAST, this.showToast, this);
 
-    i18n
-      .init({
-        resources,
-        // we need to define just 'en' otherwise fallback doesn't work correctly since i18next tries to load the
-        // json only once with the exact fallbackLng Key. So 'en-GB' doesn't work because all
-        fallbackLng: "en",
-        lng: this.props.initialParams.langtag,
+    i18n.init({
+      resources,
+      // we need to define just 'en' otherwise fallback doesn't work correctly since i18next tries to load the
+      // json only once with the exact fallbackLng Key. So 'en-GB' doesn't work because all
+      fallbackLng: "en",
+      lng: this.props.initialParams.langtag,
 
-        // have a common namespace used around the full app
-        ns: ["common", "header", "table", "media", "filter", "dashboard"],
-        defaultNS: "common",
+      // have a common namespace used around the full app
+      ns: ["common", "header", "table", "media", "filter", "dashboard"],
+      defaultNS: "common",
 
-        debug: false,
+      debug: false,
 
-        interpolation: {
-          escapeValue: false // not needed for react!!
-        }
-      });
+      interpolation: {
+        escapeValue: false // not needed for react!!
+      }
+    });
 
     this.state = {
       currentView: this.props.initialViewName,
@@ -61,8 +51,6 @@ export default class Tableaux extends PureComponent {
   }
 
   componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.OPEN_OVERLAY, this.openOverlay);
-    // Dispatcher.off(ActionTypes.CLOSE_OVERLAY, this.closeOverlay);
     // Dispatcher.off(ActionTypes.SWITCH_VIEW, this.switchViewHandler);
   }
 
@@ -88,152 +76,18 @@ export default class Tableaux extends PureComponent {
     });
   }
 
-  openOverlay(content) {
-    this.hideToast();
-    const {currentViewParams, activeOverlays} = this.state;
-    const timestamp = new Date().getTime();
-    const namedContent = (f.isNil(content.name)) ? f.assoc("name", timestamp, content) : content;
-    this.setState({
-      activeOverlays: [...activeOverlays, f.assoc("id", timestamp, namedContent)],
-      currentViewParams: f.assoc("overlayOpen", true, currentViewParams)
-    });
-  }
-
-  closeOverlay = (name) => {
-    return new Promise(
-      (resolve, reject) => {
-        const {currentViewParams, activeOverlays} = this.state;
-        const overlayToClose = (f.isString(name))
-          ? f.find(f.matchesProperty("name", name), activeOverlays)
-          : f.flow(
-            f.reject(ol => f.contains(ol.id, this.exitingOverlays)),
-            f.last
-          )(activeOverlays);
-        if (!overlayToClose) {
-          resolve();
-        }
-        const fullSizeOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"));
-        if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") { // closing a right-aligned full-height overlay
-          const removeOverlayAfterTimeout = () => {
-            const {activeOverlays} = this.state;
-            this.exitingOverlays = f.reject(f.eq(overlayToClose.id), this.exitingOverlays);
-            this.setState({
-              exitingOverlays: !f.isEmpty(this.exitingOverlays),
-              activeOverlays: f.reject(f.matchesProperty("id", overlayToClose.id), activeOverlays),
-              currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
-            });
-          };
-          this.exitingOverlays = [...this.exitingOverlays, overlayToClose.id];
-          this.setState({exitingOverlays: true}, resolve);
-          window.setTimeout(removeOverlayAfterTimeout, 400);
-        } else {
-          this.setState({
-            activeOverlays: f.dropRight(1, activeOverlays),
-            currentViewParams: f.assoc("overlayOpen", activeOverlays.length > 1, currentViewParams)
-          }, resolve);
-        }
-      });
-  };
-
-  renderActiveOverlays() {
-    let overlays = this.state.activeOverlays;
-    if (f.isEmpty(overlays)) {
-      return null;
-    }
-
-    const bigOverlayIdces = overlays
-      .map((ol, idx) => (ol.type === "full-height") ? idx : null)
-      .filter(f.isInteger); // 0 is falsy
-    const nonExitingOverlays = f.reject(ii => f.contains(overlays[ii].id, this.exitingOverlays), bigOverlayIdces);
-
-    const getSpecialClass = idx => {
-      const left = f.dropRight(1)(f.intersection(bigOverlayIdces, nonExitingOverlays));
-      const isExitingOverlay = idx => f.contains(overlays[idx].id, this.exitingOverlays);
-      const followsAfterExitingOverlay = idx => {
-        return (nonExitingOverlays.length < 2)
-          ? false
-          : overlays[f.last(nonExitingOverlays)].id === overlays[idx].id;
-      };
-      const shouldBeRightAligned = idx => {
-        return followsAfterExitingOverlay(idx)
-          || (f.isEmpty(this.exitingOverlays) && f.last(bigOverlayIdces) === idx);
-      };
-      const shouldBeLeftAligned = idx => f.contains(idx, left);
-
-      return f.cond([
-        [isExitingOverlay, f.always("is-right is-exiting")],
-        [() => bigOverlayIdces.length < 2, f.noop],
-        [shouldBeRightAligned, f.always("is-right")],
-        [shouldBeLeftAligned, f.always("is-left")],
-        [f.stubTrue, f.noop]
-      ])(idx);
-    };
-
-    const topIndex = f.flow(
-      f.range(0),
-      f.reject(idx => f.contains(overlays[idx].id, this.exitingOverlays)),
-      f.last
-    )(overlays.length);
-
-    return overlays.map((overlayParams, idx) => {
-      return (
-        <GenericOverlay {...overlayParams}
-          key={`overlay-${idx}`}
-          isOnTop={idx === topIndex}
-          specialClass={getSpecialClass(idx)}
-        />
-      );
-    });
-  }
-
-  renderToast() {
-    const {toast} = this.state;
-    if (toast) {
-      return (<Toast content={toast} />);
-    }
-  }
-
-  // TODO: Stop hiding toast when user hovers over the toast message
-  showToast(payload) {
-    if (f.isEmpty(payload)) {
-      this.hideToast();
-    }
-    // default 2700ms
-    const {content, milliseconds = 2700} = payload;
-
-    this.setState({
-      toast: content
-    });
-
-    if (this.toastTimer) {
-      clearInterval(this.toastTimer);
-    }
-
-    this.toastTimer = setTimeout(this.hideToast, milliseconds);
-  }
-
-  hideToast = () => {
-    this.toastTimer = null;
-    this.setState({
-      toast: null
-    });
-  };
-
   render() {
-    const {activeOverlays, currentView, currentViewParams} = this.state;
-    const {initialParams, actions} = this.props;
+    const { activeOverlays, currentView, currentViewParams } = this.state;
+    const { initialParams, actions } = this.props;
     return (
       <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
-          <ViewRenderer viewName={currentView}
-                        params={initialParams}
-                        actions={actions}
+          <ViewRenderer
+            viewName={currentView}
+            params={initialParams}
+            actions={actions}
           />
-          {this.renderActiveOverlays()}
-          <RootButton closeOverlay={this.closeOverlay}
-                      activeOverlays={activeOverlays}
-          />
-          {this.renderToast()}
+          <Overlays />
         </div>
       </I18nextProvider>
     );

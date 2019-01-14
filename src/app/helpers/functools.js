@@ -1,6 +1,16 @@
 /* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
 
-import {curryN, flow, identity, isEmpty, isFunction, map, noop, prop, range} from "lodash/fp";
+import {
+  curryN,
+  flow,
+  identity,
+  isEmpty,
+  isFunction,
+  map,
+  noop,
+  prop,
+  range
+} from "lodash/fp";
 
 /* Maybe monad.
  * .of(val) - create from (safe!) value
@@ -19,7 +29,7 @@ class Maybe {
   }
 
   static fromNullable(a) {
-    return (a !== null && a !== undefined) ? Maybe.just(a) : Maybe.none();
+    return a !== null && a !== undefined ? Maybe.just(a) : Maybe.none();
   }
 
   static of(a) {
@@ -179,7 +189,7 @@ class Either {
   }
 
   static fromNullable(val) {
-    return (val !== null && val !== undefined)
+    return val !== null && val !== undefined
       ? Either.right(val)
       : Either.left(val);
   }
@@ -205,7 +215,7 @@ class Left extends Either {
 
   orElse(f) {
     const fOfVal = f(this._value);
-    return (fOfVal !== null && fOfVal !== undefined)
+    return fOfVal !== null && fOfVal !== undefined
       ? Either.right(fOfVal)
       : this;
   }
@@ -235,9 +245,7 @@ class Right extends Either {
   map(f) {
     try {
       const result = f(this.value);
-      return (result)
-        ? Either.right(result)
-        : Either.left(this.value);
+      return result ? Either.right(result) : Either.left(this.value);
     } catch (e) {
       return Either.left(e);
     }
@@ -284,32 +292,31 @@ class Right extends Either {
 const maybe = x => Maybe.fromNullable(x);
 const either = x => Either.fromNullable(x);
 const spy = (x, info) => {
-  console.log("I spy " + ((info) || ""), x);
+  console.log("I spy " + (info || ""), x);
   return x;
 };
 
 const fspy = info => x => {
-  console.log("I spy " + ((info) || ""), x);
+  console.log("I spy " + (info || ""), x);
   return x;
 };
 
 const logged = curryN(2)(
-  (msg, fn) => function (...args) {
-    if (!isFunction(fn)) {
-      console.error(fn, "is not a function");
-      return undefined;
+  (msg, fn) =>
+    function(...args) {
+      if (!isFunction(fn)) {
+        console.error(fn, "is not a function");
+        return undefined;
+      }
+      const result = fn(...args);
+      console.log("Logging:", msg, "=>", result);
+      return result;
     }
-    const result = fn(...args);
-    console.log("Logging:", msg, "=>", result);
-    return result;
-  }
 );
 
-const forkJoin = curryN(4,
-  function (combine, f, g, x) {
-    return combine(f(x), g(x));
-  }
-);
+const forkJoin = curryN(4, function(combine, f, g, x) {
+  return combine(f(x), g(x));
+});
 
 const withTryCatch = (fn, onError = noop) => (...args) => {
   try {
@@ -321,16 +328,65 @@ const withTryCatch = (fn, onError = noop) => (...args) => {
 
 // threading macro to create more readable code
 export const doto = (initialValue, ...fns) => {
-  const fnArray = (isEmpty(fns)) ? [identity] : fns;
+  const fnArray = isEmpty(fns) ? [identity] : fns;
   return flow(...fnArray)(initialValue);
 };
+
+/**
+ * (<T1> -> bool) -> (<T1> -> <T2>) -> <T1> -> <T2>
+ * If the predicate returns true for the input value, just return the input value
+ * else apply the transducer to item
+ *
+ * unless(nameAlreadySet, setName("default"))(myObject)
+ **/
+const unless = curryN(3, (predicate, transduce, value) =>
+  !predicate(value) ? transduce(value) : value
+);
+
+/**
+ * (<T1> -> bool) -> (<T1> -> <T2>) -> <T1> -> <T2>
+ * If the predicate returns false for the input value, just return the input value
+ * else apply the transducer to item
+ *
+ * when(nameIsEmpty, setName("default")(myObject)
+ **/
+const when = curryN(3, (predicate, transduce, value) =>
+  predicate(value) ? transduce(value) : value
+);
 
 const tests = {
   title: "Monads",
   tests: [
-    ["is", "foobarbaz", logged("log test", (x, y, z) => x + y + z), ["foo", "bar", "baz"]],
-    ["is", "FOOfoo", forkJoin, [(a, b) => a + b, (x) => x.toUpperCase(), (x) => x.toLowerCase(), "Foo"]]
+    [
+      "is",
+      "foobarbaz",
+      logged("log test", (x, y, z) => x + y + z),
+      ["foo", "bar", "baz"]
+    ],
+    [
+      "is",
+      "FOOfoo",
+      forkJoin,
+      [(a, b) => a + b, x => x.toUpperCase(), x => x.toLowerCase(), "Foo"]
+    ]
   ]
 };
 
-export {Maybe, Just, None, Either, Left, Right, maybe, either, spy, fspy, logged, forkJoin, withTryCatch, tests};
+export {
+  Maybe,
+  Just,
+  None,
+  Either,
+  Left,
+  Right,
+  maybe,
+  either,
+  spy,
+  fspy,
+  logged,
+  forkJoin,
+  withTryCatch,
+  when,
+  unless,
+  tests
+};

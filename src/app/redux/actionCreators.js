@@ -5,7 +5,7 @@ import API_ROUTES from "../helpers/apiRoutes";
 import getDisplayValue from "../helpers/getDisplayValue";
 import TableauxConstants from "../constants/TableauxConstants";
 import { changeCellValue } from "./actions/cellActions";
-import {Langtags} from "../constants/TableauxConstants";
+import { Langtags } from "../constants/TableauxConstants";
 import identifyLinkedRows from "../helpers/linkHelper";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
@@ -33,6 +33,12 @@ const {
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
+const {
+  SHOW_TOAST,
+  HIDE_TOAST,
+  OPEN_OVERLAY,
+  CLOSE_OVERLAY
+} = actionTypes.overlays;
 
 const dispatchParamsFor = actionType => params => ({
   ...params,
@@ -121,25 +127,23 @@ const trace = str => element => {
 };
 const mapWithIndex = f.map.convert({ cap: false });
 
-const generateDisplayValues = (rows, columns, tableId) => (dispatch, getState) => {
+const generateDisplayValues = (rows, columns, tableId) => (
+  dispatch,
+  getState
+) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const {
     tableView: { worker }
   } = getState();
-  worker.postMessage([
-    rows,
-    columns,
-    Langtags,
-    tableId
-  ]);
+  worker.postMessage([rows, columns, Langtags, tableId]);
   worker.onmessage = e => {
     const returnedTableId = e.data[1];
-    if(returnedTableId != tableId){
+    if (returnedTableId != tableId) {
       return;
     }
     const displayValues = e.data[0];
     dispatch({
-      type:GENERATED_DISPLAY_VALUES,
+      type: GENERATED_DISPLAY_VALUES,
       displayValues
     });
   };
@@ -157,6 +161,20 @@ const setCurrentLanguage = lang => {
     lang
   };
 };
+
+const showToast = ({ content, duration = 2700 }) => {
+  console.log("ShowToast", content, duration);
+  return {
+    type: SHOW_TOAST,
+    content,
+    duration
+  };
+};
+
+const hideToast = () => ({ type: HIDE_TOAST });
+
+const openOverlay = () => payload => ({ ...payload, type: OPEN_OVERLAY });
+const closeOverlay = () => payload => ({ ...payload, type: CLOSE_OVERLAY });
 
 const createDisplayValueWorker = () => {
   return {
@@ -180,6 +198,10 @@ const actionCreators = {
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: dispatchParamsFor(TOGGLE_CELL_EDITING),
   changeCellValue,
+  showToast,
+  hideToast,
+  openOverlay,
+  closeOverlay,
   createDisplayValueWorker: createDisplayValueWorker
 };
 
