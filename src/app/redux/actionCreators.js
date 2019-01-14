@@ -7,6 +7,7 @@ import TableauxConstants from "../constants/TableauxConstants";
 import { changeCellValue } from "./actions/cellActions";
 import { Langtags } from "../constants/TableauxConstants";
 import identifyLinkedRows from "../helpers/linkHelper";
+import { doto } from "../helpers/functools";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
 
@@ -173,8 +174,29 @@ const showToast = ({ content, duration = 2700 }) => {
 
 const hideToast = () => ({ type: HIDE_TOAST });
 
-const openOverlay = () => payload => ({ ...payload, type: OPEN_OVERLAY });
-const closeOverlay = () => payload => ({ ...payload, type: CLOSE_OVERLAY });
+const openOverlay = payload => ({ payload, type: OPEN_OVERLAY });
+
+const closeOverlay = name => (dispatch, getState) => {
+  const closingAnimationDuration = 400; // ms
+  const overlays = doto(
+    getState(),
+    f.getOr([], "overlays.overlays"),
+    f.reject(f.propEq("exiting", true))
+  );
+  const overlayToClose = f.isString(name)
+    ? f.find(f.propEqn("name", name), overlays)
+    : f.last(overlays);
+  const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
+  return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
+    ? {
+        promise: new Promise(resolve =>
+          setTimeout(resolve, closingAnimationDuration)
+        ),
+        actionTypes: [CLOSE_OVERLAY, REMOVE_OVERLAY, "IGNORE_ERROR"],
+        overlayId: overlayToClose.id
+      }
+    : {};
+};
 
 const createDisplayValueWorker = () => {
   return {

@@ -36,6 +36,7 @@ const actionTypes = {
   overlays: {
     OPEN_OVERLAY: "OPEN_OVERLAY",
     CLOSE_OVERLAY: "CLOSE_OVERLAY",
+    REMOVE_OVERLAY: "REMOVE_OVERLAY",
     SHOW_TOAST: "SHOW_TOAST",
     HIDE_TOAST: "HIDE_TOAST"
   }
