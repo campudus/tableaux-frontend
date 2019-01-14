@@ -48,7 +48,7 @@ const selfHiding = compose(
       }
     }
   ),
-  onlyUpdateForKeys(["content"]),
+  onlyUpdateForKeys(["content"]), // else resetting timer will cause recursive redraws
   lifecycle({
     componentWillUpdate() {
       this.props.resetTimer();
