@@ -32,6 +32,24 @@ const initialState = {
   startedGeneratingDisplayValues: false,
   currentLanguage: DefaultLangtag
 };
+const setLinkDisplayValues = (state, linkDisplayValues) => {
+  const { displayValues } = state;
+  const updatedDisplayValues = f.reduce(
+    (acc, val) => {
+      const { values } = val;
+      return f.assoc(
+        [f.get("tableId", val)],
+        f.map(element => {
+          return { id: element.id, values: element.values };
+        }, values),
+        acc
+      );
+    },
+    displayValues,
+    linkDisplayValues
+  );
+  return { ...state, displayValues: updatedDisplayValues };
+};
 
 const toggleSelectedCell = (state, action) => {
   checkOrThrow(toggleCellSelectionActionSpec, action);
@@ -112,7 +130,7 @@ export default (state = initialState, action) => {
     case COLUMNS_DATA_LOADED:
       return setInitialVisibleColumns(state, action);
     case GENERATED_DISPLAY_VALUES:
-      return { ...state, displayValues:{ [action.tableId]: action.displayValues } };
+      return setLinkDisplayValues(state, action.displayValues);
     case START_GENERATING_DISPLAY_VALUES:
       return { ...state, startedGeneratingDisplayValues: true };
     case SET_CURRENT_LANGUAGE:
@@ -130,4 +148,3 @@ export default (state = initialState, action) => {
       return state;
   }
 };
-

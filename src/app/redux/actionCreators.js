@@ -123,7 +123,6 @@ const mapWithIndex = f.map.convert({ cap: false });
 
 const generateDisplayValues = (rows, columns, tableId) => (dispatch, getState) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
-  identifyLinkedRows(rows,columns);
   const {
     tableView: { worker }
   } = getState();
@@ -138,13 +137,10 @@ const generateDisplayValues = (rows, columns, tableId) => (dispatch, getState) =
     if(returnedTableId != tableId){
       return;
     }
-    const displayValues = JSON.parse(e.data[0]);
-    console.log("received DisplayValues");
-    console.log(e.data);
+    const displayValues = e.data[0];
     dispatch({
-      type: GENERATED_DISPLAY_VALUES,
-      displayValues,
-      tableId
+      type:GENERATED_DISPLAY_VALUES,
+      displayValues
     });
   };
 };

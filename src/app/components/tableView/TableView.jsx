@@ -32,10 +32,10 @@ import { initHistoryOf } from "../table/undo/tableHistory";
 import { getMultiLangValue } from "../../helpers/multiLanguage";
 import canFocusCell from "./canFocusCell";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
+import {combineDisplayValuesWithLinks} from "../../helpers/linkHelper";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
-  console.log(state);
   const { tableId } = props;
   const tables = f.get("tables.data", state);
   const table = tables[tableId];
@@ -48,8 +48,10 @@ const mapStatetoProps = (state, props) => {
     sorting,
     startedGeneratingDisplayValues,
   } = tableView;
-  const displayValues = f.get(["displayValues", tableId], tableView);
-  console.log(displayValues);
+  const allDisplayValues = f.get(["displayValues"], tableView);
+  const t1=performance.now();
+  const displayValues = combineDisplayValuesWithLinks(allDisplayValues,columns, tableId);
+  const t2=performance.now();
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
   }
@@ -250,7 +252,6 @@ class TableView extends Component {
   };
 
   onLanguageSwitch = newLangtag => {
-    console.log("onLanguageSwitch", newLangtag);
     const history = TableauxRouter.history;
     const url = history.getPath();
     history.navigate(url.replace(this.props.langtag, newLangtag));
