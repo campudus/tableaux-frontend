@@ -67,7 +67,7 @@ rules:
   lodash-fp/no-submodule-destructuring: error
   lodash-fp/no-unused-result: error
   lodash-fp/prefer-compact: error
-  lodash-fp/prefer-composition-grouping: error
+  lodash-fp/prefer-composition-grouping: off
   lodash-fp/prefer-constant:
     - error
     - arrowFunctions: false

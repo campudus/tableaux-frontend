@@ -33,7 +33,7 @@ const {
 } = ActionTypes;
 
 export const changeCellValue = action => {
-  const { tableId, columnId, rowId, column, oldValue, newValue } = action;
+  const { tableId, columnId, rowId, oldValue, newValue } = action;
   console.log("Change cell value:", oldValue, "->", newValue);
   const update = calculateCellUpdate(action);
   console.log("-- update:", update);

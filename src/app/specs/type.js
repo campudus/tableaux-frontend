@@ -1,20 +1,7 @@
-// import * as R from "ramda";
 import f from "lodash/fp";
 
-// using named functions will make output more readable
-
-const flattenObject = obj => {
-  const go = obj_ =>
-    f.chain(([k, v]) => {
-      if (f.type(v) === "Object" || f.type(v) === "Array") {
-        return f.map(([k_, v_]) => [`${k}.${k_}`, v_], f.go(v));
-      } else {
-        return [[k, v]];
-      }
-    }, f.toPairs(obj_));
-
-  return f.fromPairs(go(obj));
-};
+// using named functions in spec objects will make output more
+// readable
 
 export const optional = test => f.anyPass([f.isNil, test]);
 

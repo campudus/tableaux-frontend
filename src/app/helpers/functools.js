@@ -121,7 +121,7 @@ class Just extends Maybe {
 }
 
 class None extends Maybe {
-  map(f) {
+  map() {
     return this;
   }
 
@@ -201,7 +201,7 @@ class Either {
 }
 
 class Left extends Either {
-  map(_) {
+  map() {
     return this;
   }
 
@@ -225,7 +225,7 @@ class Left extends Either {
     return other;
   }
 
-  chain(f) {
+  chain() {
     return this;
   }
 
@@ -233,12 +233,12 @@ class Left extends Either {
     throw new Error(a);
   }
 
-  filter(f) {
+  filter() {
     return this;
   }
 
   toString() {
-    return `Either.Left()`;
+    return "Either.Left()";
   }
 }
 
@@ -257,7 +257,7 @@ class Right extends Either {
     return this;
   }
 
-  getOrElse(other) {
+  getOrElse() {
     return this.value;
   }
 
@@ -273,7 +273,7 @@ class Right extends Either {
     }
   }
 
-  getOrElseThrow(_) {
+  getOrElseThrow() {
     return this.value;
   }
 

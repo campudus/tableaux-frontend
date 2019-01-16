@@ -1,12 +1,7 @@
 import actionTypes from "../actionTypes";
 import f from "lodash/fp";
-import {
-  DefaultLangtag,
-  langtags,
-  ColumnKinds
-} from "../../constants/TableauxConstants";
+import { DefaultLangtag } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
-import { checkOrThrow } from "../../specs/type";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import { isLocked } from "../../helpers/annotationHelper";
@@ -61,7 +56,6 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
 };
 
 const toggleSelectedCell = (state, action) => {
-  checkOrThrow(toggleCellSelectionActionSpec, action);
   if (action.pushHistory !== false && action.select !== false) {
     setUrlBarToCell({
       tableId: action.tableId,
@@ -83,15 +77,6 @@ const toggleSelectedCell = (state, action) => {
         : {}
     )
   )(state);
-};
-
-const isLangtagOrNil = lt => f.isNil(lt) || f.contains(lt, langtags);
-
-const toggleCellSelectionActionSpec = {
-  tableId: f.isNumber,
-  columnId: f.isNumber,
-  rowId: f.isNumber,
-  langtag: isLangtagOrNil
 };
 
 const toggleCellEditing = (state, action, completeState) => {

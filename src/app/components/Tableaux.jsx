@@ -4,7 +4,6 @@ import ViewRenderer from "./ViewRenderer.jsx";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
 import f from "lodash/fp";
-import RootButton from "./RootButton";
 import resources from "i18next-resource-store-loader!../../locales/index";
 import Overlays from "./overlay/Overlays";
 

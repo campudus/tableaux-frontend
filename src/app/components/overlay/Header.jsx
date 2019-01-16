@@ -4,10 +4,9 @@ import classNames from "classnames";
 import f from "lodash/fp";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Raven from "raven-js";
-import { isCell, cellSpec } from "../../specs/cell-spec";
+import { isCell } from "../../specs/cell-spec";
 import { doto } from "../../helpers/functools";
 import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
-import { check } from "../../specs/type";
 
 class Header extends PureComponent {
   static propTypes = {

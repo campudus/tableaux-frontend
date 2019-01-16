@@ -10,7 +10,7 @@ const {
 const initialState = {};
 
 const columns = (state = initialState, action) => {
-  const { tableId, columnId, type } = action;
+  const { tableId, type } = action;
   switch (type) {
     case COLUMNS_LOADING_DATA:
       return {

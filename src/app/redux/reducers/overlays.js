@@ -42,9 +42,9 @@ const closeOverlay = (state, action) => {
   );
 };
 
-const isObjectOrString = v => f.anyPass([f.isObject, f.isString], v);
-const isOptionalObjectOrString = v => f.anyPass([f.isNil, isObjectOrString], v);
-const isOptionalString = v => f.anyPass([f.isNil, f.isString], v);
+const isObjectOrString = v => f.anyPass([f.isObject, f.isString])(v);
+const isOptionalObjectOrString = v => f.anyPass([f.isNil, isObjectOrString])(v);
+const isOptionalString = v => f.anyPass([f.isNil, f.isString])(v);
 
 export const overlayParamsSpec = {
   head: isObjectOrString,
