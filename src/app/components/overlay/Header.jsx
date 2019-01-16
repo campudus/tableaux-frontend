@@ -1,15 +1,21 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-// import ActionCreator from "../../actions/ActionCreator";
 import f from "lodash/fp";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Raven from "raven-js";
+import { isCell, cellSpec } from "../../specs/cell-spec";
+import { doto } from "../../helpers/functools";
+import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
+import { check } from "../../specs/type";
 
 class Header extends PureComponent {
   static propTypes = {
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
-      .isRequired, // main headline
+    title: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.element,
+      PropTypes.object // Passing a "Cell" object (containing row and table) will create a self-updateing default title
+    ]).isRequired, // main headline
     context: PropTypes.string, // additional context info
     actions: PropTypes.object, // map: {[positive|negative|neutral]: [text, function]} for buttons
     components: PropTypes.element, // more components to display, e.g. search bar
@@ -37,9 +43,34 @@ class Header extends PureComponent {
     this.props.actions.closeOverlay(this.props.id);
   };
 
+  renderTitle = () => {
+    const { title, langtag } = this.props;
+    if (isCell(title)) {
+      const { table, column, row } = title;
+      const [tableId, rowId] = [table.id, row.id];
+      const [columns, rows] = doto(
+        this.props.grudData,
+        f.pick(["columns", "rows"]),
+        f.map(f.prop([tableId, "data"]))
+      );
+      // Don't use the - possibly outdated - data from the time the
+      // overlay was opened, but look up the current row values in
+      // the redux state
+      const dataRow = f.find(f.propEq("id", rowId), rows);
+      return (
+        <OverlayHeadRowIdentificator
+          cell={{ row: dataRow, column, columns }}
+          langtag={langtag}
+        />
+      );
+    } else {
+      return title;
+    }
+  };
+
   render() {
+    console.log("Default title?", isCell(this.props.title));
     const { actions, components, context, id } = this.props;
-    const { title } = this.state;
     const cssClass = classNames("header-wrapper", {
       "with-buttons": actions,
       "with-components": components || this.props.children
@@ -79,7 +110,6 @@ class Header extends PureComponent {
           <a
             href="#"
             onClick={() => {
-              console.log("Closy!");
               actions.closeOverlay(id);
             }}
           >
@@ -92,7 +122,7 @@ class Header extends PureComponent {
         </div>
         <div className="labels">
           <div className="context-info">{context || "Action"}</div>
-          <div className="title">{title}</div>
+          <div className="title">{this.renderTitle()}</div>
         </div>
         {buttonsItem}
         {children.map((el, idx) =>

@@ -7,6 +7,8 @@ import { changeCellValue } from "./actions/cellActions";
 import { Langtags } from "../constants/TableauxConstants";
 import identifyLinkedRows from "../helpers/linkHelper";
 import { doto } from "../helpers/functools";
+import { checkOrThrow } from "../specs/type";
+import { overlayParamsSpec } from "./reducers/overlays";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
 
@@ -174,7 +176,10 @@ const showToast = ({ content, duration = 2700 }) => {
 
 const hideToast = () => ({ type: HIDE_TOAST });
 
-const openOverlay = payload => ({ payload, type: OPEN_OVERLAY });
+const openOverlay = payload => {
+  checkOrThrow(overlayParamsSpec, payload);
+  return { payload, type: OPEN_OVERLAY };
+};
 
 const closeOverlayWithAnimation = ({
   overlayId,

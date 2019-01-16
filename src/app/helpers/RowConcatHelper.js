@@ -6,7 +6,8 @@ import getDisplayValue from "./getDisplayValue";
 
 const rowConcatString = (idColumn, row, langtag) => {
   const firstCell = f.get(["values", 0], row);
-  const displayValue = getDisplayValue(idColumn, firstCell.value);
+  const displayValue = getDisplayValue(idColumn, firstCell);
+
   const arrayConcatForLang = langtag =>
     f.flow(
       f.map(f.get(langtag)),

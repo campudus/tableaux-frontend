@@ -9,6 +9,7 @@ import {
   map,
   noop,
   prop,
+  propOr,
   range
 } from "lodash/fp";
 
@@ -354,6 +355,10 @@ const when = curryN(3, (predicate, transduce, value) =>
   predicate(value) ? transduce(value) : value
 );
 
+const propSuffices = curryN(3, (predicate, propSelector, obj) =>
+  predicate(propOr(null, propSelector, obj))
+);
+
 const tests = {
   title: "Monads",
   tests: [
@@ -388,5 +393,6 @@ export {
   withTryCatch,
   when,
   unless,
+  propSuffices,
   tests
 };

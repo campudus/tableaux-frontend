@@ -5,7 +5,14 @@ import Toast from "./Toast";
 import withReduxState from "../../helpers/reduxActionHoc";
 import f from "lodash/fp";
 
-const OverlayRenderer = ({ overlays, toast, actions }) => {
+const OverlayRenderer = ({
+  overlays,
+  toast,
+  actions,
+  columns,
+  rows,
+  tables
+}) => {
   console.log("OverlayRenderer", overlays, toast);
 
   const renderActiveOverlays = () => {
@@ -56,12 +63,20 @@ const OverlayRenderer = ({ overlays, toast, actions }) => {
       f.last
     )(overlays.length);
 
+    const grudData = {
+      columns: columns,
+      rows: rows,
+      tables: tables
+    };
+
     return overlays.map((overlayParams, idx) => {
       return (
         <GenericOverlay
           {...overlayParams}
           key={`overlay-${idx}`}
           isOnTop={idx === topIndex}
+          grudData={grudData}
+          actions={actions}
           specialClass={getSpecialClass(idx)}
         />
       );
@@ -89,75 +104,7 @@ const OverlayRenderer = ({ overlays, toast, actions }) => {
 const mapStateToProps = state => {
   const toast = (state.overlays && state.overlays.toast) || null;
   const overlays = (state.overlays && state.overlays.overlays) || [];
-  return { toast, overlays };
+  return { toast, overlays, ...f.pick(["columns", "rows", "tables"], state) };
 };
-
-// const openOverlay = content => {
-//   this.hideToast();
-//   const { currentViewParams, activeOverlays } = this.state;
-//   const timestamp = new Date().getTime();
-//   const namedContent = f.isNil(content.name)
-//     ? f.assoc("name", timestamp, content)
-//     : content;
-//   this.setState({
-//     activeOverlays: [...activeOverlays, f.assoc("id", timestamp, namedContent)],
-//     currentViewParams: f.assoc("overlayOpen", true, currentViewParams)
-//   });
-// };
-//
-// const closeOverlay = name => {
-//   return new Promise((resolve, reject) => {
-//     const { currentViewParams, activeOverlays } = this.state;
-//     const overlayToClose = f.isString(name)
-//       ? f.find(f.matchesProperty("name", name), activeOverlays)
-//       : f.flow(
-//           f.reject(ol => f.contains(ol.id, this.exitingOverlays)),
-//           f.last
-//         )(activeOverlays);
-//     if (!overlayToClose) {
-//       resolve();
-//     }
-//     const fullSizeOverlays = activeOverlays.filter(
-//       f.matchesProperty("type", "full-height")
-//     );
-//     if (fullSizeOverlays.length > 1 && overlayToClose.type === "full-height") {
-//       // closing a right-aligned full-height overlay
-//       const removeOverlayAfterTimeout = () => {
-//         const { activeOverlays } = this.state;
-//         this.exitingOverlays = f.reject(
-//           f.eq(overlayToClose.id),
-//           this.exitingOverlays
-//         );
-//         this.setState({
-//           exitingOverlays: !f.isEmpty(this.exitingOverlays),
-//           activeOverlays: f.reject(
-//             f.matchesProperty("id", overlayToClose.id),
-//             activeOverlays
-//           ),
-//           currentViewParams: f.assoc(
-//             "overlayOpen",
-//             activeOverlays.length > 1,
-//             currentViewParams
-//           )
-//         });
-//       };
-//       this.exitingOverlays = [...this.exitingOverlays, overlayToClose.id];
-//       this.setState({ exitingOverlays: true }, resolve);
-//       window.setTimeout(removeOverlayAfterTimeout, 400);
-//     } else {
-//       this.setState(
-//         {
-//           activeOverlays: f.dropRight(1, activeOverlays),
-//           currentViewParams: f.assoc(
-//             "overlayOpen",
-//             activeOverlays.length > 1,
-//             currentViewParams
-//           )
-//         },
-//         resolve
-//       );
-//     }
-//   });
-// };
 
 export default withReduxState(OverlayRenderer, mapStateToProps);

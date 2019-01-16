@@ -1,8 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import RowConcat from "../../helpers/RowConcatHelper";
-import { compose, lifecycle, pure, withStateHandlers } from "recompose";
-import { ActionTypes } from "../../constants/TableauxConstants";
 
 const OverlayHeadRowIdentificator = props => {
   const {

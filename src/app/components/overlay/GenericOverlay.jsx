@@ -9,7 +9,6 @@ import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import { maybe } from "../../helpers/functools";
 import Raven from "raven-js";
-import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
@@ -18,6 +17,7 @@ class GenericOverlay extends PureComponent {
     head: PropTypes.element.isRequired,
     body: PropTypes.element.isRequired,
     footer: PropTypes.element,
+    title: PropTypes.oneOf[(PropTypes.element, PropTypes.object)],
     type: PropTypes.string,
     isOnTop: PropTypes.bool.isRequired,
     keyboardShortcuts: PropTypes.object,
@@ -33,9 +33,7 @@ class GenericOverlay extends PureComponent {
     const sharedProps = {
       id: props.id,
       registerForEvent: this.registerChildForEvent,
-      allTables: props.tables,
-      allRows: props.rows,
-      allColumns: props.columns,
+      grudData: props.grudData,
       actions: props.actions
     };
 
@@ -101,7 +99,7 @@ class GenericOverlay extends PureComponent {
         escape: event => {
           event.preventDefault();
           event.stopPropagation();
-          // ActionCreator.closeOverlay();
+          this.props.actions.closeOverlay();
         },
         always: event => {
           event.stopPropagation();
@@ -158,7 +156,7 @@ class GenericOverlay extends PureComponent {
       ? this.props.type
       : "normal";
 
-    const { footer, head, body, isOnTop, specialClass } = this.props;
+    const { footer, head, body, isOnTop, specialClass, title } = this.props;
     const { childrenProps, sharedDataContainer } = this.state;
     const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
@@ -199,7 +197,11 @@ class GenericOverlay extends PureComponent {
           }}
           onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
-          {React.cloneElement(head, { ...childrenProps.head, ...dataShare })}
+          {React.cloneElement(head, {
+            ...childrenProps.head,
+            ...dataShare,
+            title
+          })}
           <div className="overlay-content">
             {React.cloneElement(body, { ...childrenProps.body, ...dataShare })}
           </div>
@@ -238,7 +240,7 @@ const showDialog = ({
     if (f.isFunction(fn)) {
       fn(event);
     }
-    // ActionCreator.closeOverlay();
+    this.props.actions.closeOverlay();
   };
   const enterKeyFn = f.flow(
     f.props(["positive", "negative", "neutral"]),
@@ -262,7 +264,7 @@ const showDialog = ({
       event.stopPropagation();
     }
   };
-  ActionCreator.openOverlay({
+  this.props.actions.openOverlay({
     head: <Header context={context} title={title} />,
     body: <InfoBox heading={heading} message={message} type={type} />,
     footer: <Footer actions={actions} />,
@@ -271,7 +273,5 @@ const showDialog = ({
   });
 };
 
-export default reduxActionHoc(GenericOverlay, props => {
-  f.pick(["tables", "rows", "columns"]);
-});
+export default GenericOverlay;
 export { showDialog };
