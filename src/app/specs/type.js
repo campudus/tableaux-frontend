@@ -32,11 +32,13 @@ export const check = spec => (value, previousResults = {}) => {
   return results;
 };
 
-export const isValid = f.compose(
-  f.all(f.eq(true)),
-  f.values,
-  flattenObject
-);
+export const isValid = (valueOrObj, prev = true) => {
+  return f.isObject(valueOrObj)
+    ? prev && f.every(val => isValid(val), f.values(valueOrObj))
+    : f.isBoolean(valueOrObj)
+    ? prev && valueOrObj
+    : false;
+};
 
 export const validate = f.curryN(2, (spec, value) =>
   isValid(check(spec)(value))
@@ -47,13 +49,13 @@ export const checkOrThrow = f.curryN(2, (spec, value) => {
   if (isValid(checkResults)) {
     return true;
   } else {
-    const specDescription = f.isFunction(spec) ? spec.name : "description";
+    const specDescription = f.isFunction(spec) ? spec.name : "specification";
     throw new Error(
-      `Invalid value: ${specDescription} failed for value\n${JSON.stringify(
-        value,
+      `Invalid value: ${specDescription} failed with\n${JSON.stringify(
+        checkResults,
         null,
         2
-      )}\ncheck results:\n ${JSON.stringify(checkResults, null, 2)}`
+      )}\nfor value:\n ${JSON.stringify(value, null, 2)}`
     );
   }
 });
@@ -101,7 +103,7 @@ const checkWithFunction = test => value => test(value);
 
 const checkWithObject = (spec, testResult) => value => {
   if (!f.isObject(value) || f.isArray(value) || f.isNil(value)) {
-    return { isObject: false };
+    return { canApplySpecObjectToNonObject: false };
   }
   f.keys(spec).forEach(key => {
     if (key !== "__self") {
