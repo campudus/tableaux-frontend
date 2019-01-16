@@ -7,7 +7,6 @@ import {
 import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes";
 import ActionTypes from "../actionTypes";
-import { doto } from "../../helpers/functools";
 
 const {
   CELL_ROLLBACK_VALUE,
