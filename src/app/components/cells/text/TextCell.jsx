@@ -116,7 +116,7 @@ class TextCell extends PureComponent {
   };
 
   render() {
-    const { selected } = this.props;
+    const { selected, displayValue,langtag } = this.props;
     const value = this.getValue();
     const isMultiLine = f.contains("\n", value);
 
@@ -133,7 +133,7 @@ class TextCell extends PureComponent {
         className={`cell-content ${isMultiLine ? "is-multiline" : ""}`}
         onClick={this.handleClick}
       >
-        <div>{isString(value) ? value.split("\n")[0] : ""}</div>
+        <div>{displayValue[langtag]}</div>
         {expandButton}
         {multiLineIndicator}
       </div>
