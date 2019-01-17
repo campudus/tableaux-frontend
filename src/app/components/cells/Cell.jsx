@@ -147,7 +147,7 @@ class Cell extends React.Component {
         key != "columns" &&
         key !== "column" &&
         key !== "row" &&
-        f.complement(f.eq)(this.props[key], nextProps[key])
+        f.complement(f.equals)(this.props[key], nextProps[key])
     );
     return changes.length > 0;
   };
