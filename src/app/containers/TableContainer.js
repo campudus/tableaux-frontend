@@ -27,7 +27,7 @@ class TableContainer extends Component {
     super(props);
   }
   render() {
-    const {table, columns, rows,initialParams} = this.props;
+    const { table, columns, rows, initialParams } = this.props;
     console.log(this.props);
     if (f.isEmpty(table) || f.isEmpty(rows) || f.isEmpty(columns)) {
       // return <div>waiting</div>

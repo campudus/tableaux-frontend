@@ -22,7 +22,7 @@ const paramsToString = params =>
         f.join("")
       );
 
-export const makeRequest = ({
+export const makeRequest = async ({
   apiRoute,
   method = "GET",
   params,
@@ -40,13 +40,11 @@ export const makeRequest = ({
     .catch(error => String(error));
 };
 
-const sendTestData = path =>data =>
+export const sendTestData = path => data =>
   fetch("http://localhost:3004", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({data,path})
+    body: JSON.stringify({ data, path })
   }).then(response => console.log(response));
-
-export {makeRequest,sendTestData}

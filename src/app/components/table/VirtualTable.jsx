@@ -102,7 +102,7 @@ export default class VirtualTable extends PureComponent {
     );
   };
 
-  calcRowHeight = ({index}) => {
+  calcRowHeight = ({ index }) => {
     if (index === 0) {
       return HEADER_HEIGHT;
     }
@@ -209,7 +209,7 @@ export default class VirtualTable extends PureComponent {
         resizeHandler={this.updateColWidth}
         resizeFinishedHandler={this.saveColWidths}
         index={columnIndex + 1}
-        width={this.calcColWidth({index: columnIndex + 1})}
+        width={this.calcColWidth({ index: columnIndex + 1 })}
       />
     );
   };
@@ -282,7 +282,7 @@ export default class VirtualTable extends PureComponent {
       (col, idx) => idx === 0 || col.visible
     );
     const column = visibleColumns[columnIndex];
-    const {value, annotations} = cell;
+    const { value, annotations } = cell;
     const displayValueWithFallback = originalValue => {
       if (!f.isNil(originalValue)) {
         // console.log("value exists");
@@ -346,7 +346,7 @@ export default class VirtualTable extends PureComponent {
           const isSelected =
             isRowSelected && column.id === this.selectedIds.column;
           const isEditing = isSelected && this.props.selectedCellEditing;
-          const {displayValue} = cell;
+          const { displayValue } = cell;
           return (
             <Cell
               actions={actions}

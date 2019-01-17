@@ -33,7 +33,7 @@ const selfHiding = compose(
   }),
   withStateHandlers(
     ({ setTimer }) => {
-      hidingTimer: setTimer();
+      setTimer();
     },
     {
       clearTimer: ({ hidingTimer }) =>

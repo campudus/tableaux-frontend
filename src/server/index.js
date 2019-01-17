@@ -3,9 +3,7 @@ const app = express();
 const port = 3000;
 const path = require("path");
 const proxy = require("http-proxy-middleware");
-const cors = require('cors');
-
-
+const cors = require("cors");
 
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, "../../dist")));
@@ -17,12 +15,12 @@ app.use(
   })
 );
 
-app.use("/worker.js",function(req,res){
+app.use("/worker.js", function(req, res) {
   res.sendFile(path.resolve(__dirname, "../../dist/worker.js"));
-})
+});
 
 app.use(function(req, res, next) {
   res.sendFile(path.resolve(__dirname, "../../dist/index.html"));
 });
 
-app.listen(port,'0.0.0.0');
+app.listen(port, "0.0.0.0");

@@ -87,12 +87,12 @@ class Table extends Component {
   }
 
   toggleExpandedRow = rowId => () => {
-    const {expandedRowIds} = this.state;
+    const { expandedRowIds } = this.state;
     const newExpandedRowIds = f.cond([
       [f.includes(rowId), f.pull(rowId)],
       [f.stubTrue, f.concat(rowId)]
     ])(expandedRowIds);
-    this.setState({expandedRowIds: newExpandedRowIds});
+    this.setState({ expandedRowIds: newExpandedRowIds });
   };
 
   handleClickOutside = event => {
@@ -143,7 +143,7 @@ class Table extends Component {
   };
 
   noRowsInfo = () => {
-    const {rows, table} = this.props;
+    const { rows, table } = this.props;
     return this.props.fullyLoaded && f.isEmpty(rows) ? (
       <Portal isOpened>
         <div className="table-has-no-rows">

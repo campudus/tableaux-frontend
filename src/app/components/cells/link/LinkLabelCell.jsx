@@ -24,10 +24,7 @@ const LinkLabelCell = props => {
   const linkName = f.find(
     // first truthy value
     f.complement(f.isEmpty),
-    [
-      ...f.props([langtag, DefaultLangtag], displayValue),
-      <Empty />
-    ]
+    [...f.props([langtag, DefaultLangtag], displayValue), <Empty />]
   );
 
   return (

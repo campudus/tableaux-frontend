@@ -79,16 +79,27 @@ const getFilteredRows = (
   };
   const getCompareFunc = f.cond([
     [
-      kind => f.includes(kind, [ColumnKinds.text, ColumnKinds.shorttext, ColumnKinds.concat]),
+      kind =>
+        f.includes(kind, [
+          ColumnKinds.text,
+          ColumnKinds.shorttext,
+          ColumnKinds.concat
+        ]),
       f.always(f.get(ColumnKinds.text, compareFuncs))
     ],
     [f.eq(ColumnKinds.link), f.always(f.get(ColumnKinds.link, compareFuncs))],
-    [f.eq(ColumnKinds.numeric), f.always(f.get(ColumnKinds.numeric, compareFuncs))],
+    [
+      f.eq(ColumnKinds.numeric),
+      f.always(f.get(ColumnKinds.numeric, compareFuncs))
+    ],
     [
       kind => f.includes(kind, [ColumnKinds.datetime, ColumnKinds.date]),
       f.always(f.get(ColumnKinds.date, compareFuncs))
     ],
-    [f.eq(ColumnKinds.boolean), f.always(f.get(ColumnKinds.boolean, compareFuncs))]
+    [
+      f.eq(ColumnKinds.boolean),
+      f.always(f.get(ColumnKinds.boolean, compareFuncs))
+    ]
   ]);
 
   const ordered = sortColumnId

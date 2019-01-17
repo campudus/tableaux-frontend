@@ -1,4 +1,4 @@
-import actionTypes from "../actionTypes";
+import ActionTypes from "../actionTypes";
 import f from "lodash/fp";
 import { DefaultLangtag } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
@@ -7,7 +7,7 @@ import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import { isLocked } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
+const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
 const {
   TOGGLE_COLUMN_VISIBILITY,
   HIDE_ALL_COLUMNS,

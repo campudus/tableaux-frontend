@@ -44,6 +44,7 @@
     "compass-mixins": "^0.12.10",
     "copy-webpack-plugin": "^4.6.0",
     "core-js": "^2.5.7",
+    "cors": "^2.8.5",
     "cross-fetch": "^3.0.0",
     "css-loader": "^1.0.1",
     "eslint": "^5.10.0",

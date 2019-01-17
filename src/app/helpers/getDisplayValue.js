@@ -7,8 +7,8 @@ import {
 } from "../constants/TableauxConstants";
 import * as f from "lodash/fp";
 import Moment from "moment";
-import {getCountryOfLangtag, getCurrencyCode} from "./multiLanguage";
-import {getCurrencyWithCountry} from "../components/cells/currency/currencyHelper";
+import { getCountryOfLangtag, getCurrencyCode } from "./multiLanguage";
+import { getCurrencyWithCountry } from "../components/cells/currency/currencyHelper";
 
 // (obj, obj) -> obj
 //
@@ -196,5 +196,5 @@ const format = f.curryN(2)((column, displayValue) => {
   return f.trim(applyFormat(formatPattern));
 });
 
-export {format};
+export { format };
 export default getDisplayValue;

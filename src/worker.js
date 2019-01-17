@@ -48,6 +48,6 @@ onmessage = function(e) {
     return f.set([alreadyExistsAt], displayValues, linkDisplayValues);
   })(displayValues, linkDisplayValues);
   const t2 = performance.now();
-  console.log(t2-t1);
+  console.log(t2 - t1);
   postMessage([combined, tableId]);
 };
