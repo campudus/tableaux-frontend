@@ -5,7 +5,7 @@ import apiUrl from "./apiUrl";
 
 const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
 
-export const makeRequest = ({
+const makeRequest = ({
   apiRoute,
   method = "GET",
   //  params,
@@ -21,3 +21,14 @@ export const makeRequest = ({
     .then(parseResponse)
     .catch(error => String(error));
 };
+
+const sendTestData = path =>data =>
+  fetch("http://localhost:3004", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({data,path})
+  }).then(response => console.log(response));
+
+export {makeRequest,sendTestData}
