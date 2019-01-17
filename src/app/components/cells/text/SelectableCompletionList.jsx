@@ -69,7 +69,6 @@ const CompletionItem = compose(
 ));
 
 const SelectableCompletionList = ({ completions, renderEntry, selected }) => {
-  console.log("SelectableCompletionList", completions, selected);
   return (
     <AutoSizer>
       {({ width, height }) => (

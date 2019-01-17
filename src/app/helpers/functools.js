@@ -316,8 +316,6 @@ const logged = curryN(2)(
 );
 
 const forkJoin = curryN(4, function(combine, f, g, x) {
-  console.log("f(x) =", f(x));
-  console.log("g(x) =", g(x));
   return combine(f(x), g(x));
 });
 

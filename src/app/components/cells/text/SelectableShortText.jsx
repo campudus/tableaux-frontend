@@ -121,7 +121,6 @@ const enhance = compose(
       }
     },
     componentDidMount() {
-      console.log("did mount");
       this.props.setCellKeyboardShortcuts({
         left: event => {
           event.stopPropagation();
