@@ -62,6 +62,7 @@ const getValueForLang = (obj, lt) =>
 const getDefaultValue = column => value =>
   applyToAllLangs(lt => {
     const val = getValueForLang(value, lt) || "";
+
     return f.isEmpty(val) && !f.isNumber(val) ? "" : format(column, val);
   });
 
@@ -195,63 +196,5 @@ const format = f.curryN(2)((column, displayValue) => {
   return f.trim(applyFormat(formatPattern));
 });
 
-const defaultTestGroups = {groups: [{id: 1}, {id: 2}, {id: 3}]};
-const tests = {
-  title: "formatting",
-  tests: [
-    ["is", "foo", format, [{}, "foo"]],
-    ["is", "foo bar", format, [{}, ["foo", "bar"]]],
-    [
-      "is",
-      "testVal foo",
-      format,
-      [{formatPattern: "testVal {{1}}", ...defaultTestGroups}, "foo"]
-    ],
-    [
-      "is",
-      "foo bar baz",
-      format,
-      [{formatPattern: "{{1}} bar {{2}}", ...defaultTestGroups}, ["foo", "baz"]]
-    ],
-    [
-      "is",
-      "1 x 2 x 3mm",
-      format,
-      [
-        {formatPattern: "{{1}} x {{2}} x {{3}}mm", ...defaultTestGroups},
-        [1, 2, 3]
-      ]
-    ],
-    [
-      "is",
-      "2 times moustaches is 2 times the fun",
-      format,
-      [
-        {
-          formatPattern: "{{1}} times {{2}} is {{1}} times the fun",
-          ...defaultTestGroups
-        },
-        [2, "moustaches"]
-      ]
-    ],
-    ["is", "foo bar", format, [{formatPattern: ""}, ["foo", "bar"]]],
-    ["not", "foo bar", format, [{formatPattern: " "}, ["foo", "bar"]]],
-    ["is", "foo bar", format, [{formatPattern: ""}, [" foo", " bar    "]]],
-    ["not", "foo   bar", format, [{formatPattern: ""}, ["foo ", " bar"]]],
-    [
-      "is",
-      "1 test with index NOT EQUALS columnId",
-      format,
-      [
-        {
-          formatPattern: "1 test with {{42}} NOT EQUALS {{43}}",
-          groups: [{id: 42}, {id: 43}]
-        },
-        ["index", "columnId"]
-      ]
-    ]
-  ]
-};
-
-export {format, tests};
+export {format};
 export default getDisplayValue;
