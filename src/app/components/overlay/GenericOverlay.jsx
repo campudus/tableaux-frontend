@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
@@ -12,7 +12,7 @@ import Raven from "raven-js";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
-class GenericOverlay extends PureComponent {
+class GenericOverlay extends Component {
   static propTypes = {
     head: PropTypes.element.isRequired,
     body: PropTypes.element.isRequired,
@@ -33,7 +33,6 @@ class GenericOverlay extends PureComponent {
     const sharedProps = {
       id: props.id,
       registerForEvent: this.registerChildForEvent,
-      grudData: props.grudData,
       actions: props.actions
     };
 
@@ -152,11 +151,20 @@ class GenericOverlay extends PureComponent {
   };
 
   render() {
+    console.log("Rendering Overlay");
     const overlayType = f.contains(this.props.type, this.allowedTypes)
       ? this.props.type
       : "normal";
 
-    const { footer, head, body, isOnTop, specialClass, title } = this.props;
+    const {
+      footer,
+      head,
+      body,
+      isOnTop,
+      specialClass,
+      title,
+      grudData
+    } = this.props;
     const { childrenProps, sharedDataContainer } = this.state;
     const overlayWrapperClass = classNames("overlay open", {
       "has-footer": footer,
@@ -200,10 +208,15 @@ class GenericOverlay extends PureComponent {
           {React.cloneElement(head, {
             ...childrenProps.head,
             ...dataShare,
+            grudData,
             title
           })}
           <div className="overlay-content">
-            {React.cloneElement(body, { ...childrenProps.body, ...dataShare })}
+            {React.cloneElement(body, {
+              ...childrenProps.body,
+              ...dataShare,
+              grudData
+            })}
           </div>
           {footer ? (
             <footer>

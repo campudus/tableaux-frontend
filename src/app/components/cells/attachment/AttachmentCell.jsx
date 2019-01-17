@@ -7,15 +7,22 @@ import classNames from "classnames";
 import Header from "../../overlay/Header";
 import AttachmentOverlay from "./AttachmentOverlay.jsx";
 // import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
-import {FallbackLanguage} from "../../../constants/TableauxConstants";
-import {isLocked} from "../../../helpers/annotationHelper";
-import {maybe} from "../../../helpers/functools";
+import { isLocked } from "../../../helpers/annotationHelper";
+import { maybe } from "../../../helpers/functools";
 
-const AttachmentCell = (props) => {
-  const {editing, selected, value, column, langtag, setCellKeyboardShortcuts} = props;
+const AttachmentCell = props => {
+  const {
+    actions,
+    cell,
+    editing,
+    selected,
+    value,
+    langtag,
+    setCellKeyboardShortcuts
+  } = props;
   const cellClass = classNames("cell-content", {
-    "editing": editing,
-    "selected": selected
+    editing: editing,
+    selected: selected
   });
 
   const openOverlay = (event, folderId) => {
@@ -23,40 +30,46 @@ const AttachmentCell = (props) => {
       return;
     }
     maybe(event).method("stopPropagation");
-    const columnName = cell.column.displayName[langtag] || cell.column.displayName[FallbackLanguage];
-    // ActionCreator.openOverlay({
-    //   head: <Header title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} context={columnName} />,
-    //   body: <AttachmentOverlay cell={cell} langtag={langtag} folderId={folderId} />,
-    //   type: "full-height",
-    //   preferRight: true
-    // });
-  };
 
-  const attachments = ((editing || selected) ? value : f.take(3)(value))
-    .map(
-      (element, idx) => (
-        <AttachmentLabelCell
-          key={idx}
-          attachmentElement={element}
-          value={value}
+    actions.openOverlay({
+      head: <Header langtag={langtag} />,
+      body: (
+        <AttachmentOverlay
+          cell={cell}
           langtag={langtag}
-          openOverlay={openOverlay}
-          selected={selected}
+          folderId={folderId}
+          value={value}
         />
       ),
-    );
+      type: "full-height",
+      preferRight: true,
+      title: cell
+    });
+  };
 
-  // setCellKeyboardShortcuts(
-  //   {
-  //     enter: (event) => {
-  //       if (!isLocked(cell.row)) {
-  //         event.stopPropagation();
-  //         event.preventDefault();
-  //         openOverlay();
-  //       }
-  //     }
-  //   }
-  // );
+  const attachments = (editing || selected ? value : f.take(3)(value)).map(
+    (element, idx) => (
+      <AttachmentLabelCell
+        key={idx}
+        attachmentElement={element}
+        value={value}
+        langtag={langtag}
+        openOverlay={openOverlay}
+        selected={selected}
+        cell={cell}
+      />
+    )
+  );
+
+  setCellKeyboardShortcuts({
+    enter: event => {
+      if (!isLocked(cell.row)) {
+        event.stopPropagation();
+        event.preventDefault();
+        openOverlay();
+      }
+    }
+  });
 
   const handleClick = () => {
     if (editing || selected) {
@@ -66,24 +79,31 @@ const AttachmentCell = (props) => {
 
   return (
     <div className={cellClass} onClick={handleClick}>
-      {(f.size(attachments) === f.size(value))
+      {f.size(attachments) === f.size(value)
         ? attachments
-        : [...attachments, <span key={"more"} className="more">&hellip;</span>]
-      }
-      {(editing || selected)
-        ? <button key={"add-btn"} className="edit" onClick={openOverlay}><span className="fa fa-pencil"></span></button>
-        : null
-      }
+        : [
+            ...attachments,
+            <span key={"more"} className="more">
+              &hellip;
+            </span>
+          ]}
+      {editing || selected ? (
+        <button key={"add-btn"} className="edit" onClick={openOverlay}>
+          <span className="fa fa-pencil" />
+        </button>
+      ) : null}
     </div>
   );
 };
 
 AttachmentCell.propTypes = {
-  editing: PropTypes.bool,
-  selected: PropTypes.bool,
+  actions: PropTypes.object.isRequired,
   cell: PropTypes.object.isRequired,
+  editing: PropTypes.bool,
   langtag: PropTypes.string.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func.isRequired
+  selected: PropTypes.bool,
+  setCellKeyboardShortcuts: PropTypes.func.isRequired,
+  value: PropTypes.array.isRequired
 };
 
 export default AttachmentCell;

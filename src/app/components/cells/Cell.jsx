@@ -144,6 +144,7 @@ class Cell extends React.Component {
     const keys = f.keys(nextProps);
     const changes = keys.filter(
       key =>
+        key != "columns" &&
         key !== "column" &&
         key !== "row" &&
         f.complement(f.eq)(this.props[key], nextProps[key])

@@ -5,10 +5,10 @@ import TableauxConstants from "../../../constants/TableauxConstants";
 import Empty from "../../helperComponents/emptyEntry";
 import f from "lodash/fp";
 
-const AttachmentLabelCell = (props) => {
-  const {attachmentElement, langtag, selected,value, openOverlay} = props;
+const AttachmentLabelCell = props => {
+  const { attachmentElement, langtag, selected, openOverlay } = props;
 
-  const handleClick = (evt) => {
+  const handleClick = evt => {
     if (selected) {
       evt.stopPropagation();
       openOverlay(evt, attachmentElement.folder);
@@ -22,7 +22,7 @@ const AttachmentLabelCell = (props) => {
   return (
     <div className="link-label" onClick={handleClick}>
       <div className="label-text">
-        {f.isEmpty(attachmentTitle) ? <Empty/> : attachmentTitle}
+        {f.isEmpty(attachmentTitle) ? <Empty /> : attachmentTitle}
       </div>
     </div>
   );
@@ -36,4 +36,4 @@ AttachmentLabelCell.propTypes = {
   selected: PropTypes.bool.isRequired
 };
 
-module.exports = AttachmentLabelCell;
+export default AttachmentLabelCell;
