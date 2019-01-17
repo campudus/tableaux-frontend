@@ -1,7 +1,12 @@
-import TableauxConstants from "../constants/TableauxConstants";
+import TableauxConstants, {
+  DefaultLanguage,
+  FallbackLanguage
+} from "../constants/TableauxConstants";
 import React from "react";
 import f from "lodash/fp";
 import { doto } from "./functools";
+import { getLangObjSpec } from "./multilanguage-specs";
+import { checkOrThrow } from "../specs/type";
 
 const langtagSeparatorRegex = /[-_]/;
 
@@ -14,21 +19,12 @@ const langtagSeparatorRegex = /[-_]/;
  * @returns any
  */
 function retrieveTranslation(json, language, defaultLanguage) {
-  if (!f.isPlainObject(json)) {
-    console.error("json is not a plain object", json);
-    throw new Error("json is not a plain object");
-  }
+  checkOrThrow(getLangObjSpec(), json);
 
-  let content = json[language];
-
-  if (typeof defaultLanguage !== "undefined" && defaultLanguage !== language) {
-    // fallback to default language if no or empty translation found
-    if (typeof content === "undefined" || content === null || content === "") {
-      content = json[defaultLanguage];
-    }
-  }
-
-  return content;
+  return f.flow(
+    f.props([language, defaultLanguage, DefaultLanguage, FallbackLanguage]),
+    f.find(f.identity)
+  )(json);
 }
 
 function getLanguageOrCountryIcon(langtag, specific = "") {

@@ -61,7 +61,7 @@ export const calculateCellUpdate = action => {
   ])(action);
 };
 
-const calculateDefaultCellUpdate = ({ column, oldValue, newValue }) => {
+const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
   const reduceLangs = f.flow(
     reduceValuesToAllowedLanguages,
     f.merge(oldValue)
@@ -80,7 +80,7 @@ const calculateDefaultCellUpdate = ({ column, oldValue, newValue }) => {
 
   return {
     value: { value: allowedChangeValue },
-    method: "POST"
+    method: method || "POST"
   };
 };
 

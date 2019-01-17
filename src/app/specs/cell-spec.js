@@ -41,9 +41,8 @@ const isCell = v => validate(cellSpec, v);
 const isStringOrStringArray = v =>
   f.isString(v) || (f.isArray(v) && f.every(isString, v));
 const displayValueSpec = f.flow(
-  f.map(lt => ({
-    [lt]: isStringOrStringArray
-  }))
+  f.map(lt => [lt, isStringOrStringArray]),
+  f.fromPairs
 );
 
 const isDisplayValue = v => validate(displayValueSpec, v);

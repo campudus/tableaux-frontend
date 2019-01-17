@@ -30,6 +30,7 @@ export const makeRequest = ({
   responseType = "JSON"
 }) => {
   const url = buildURL(apiRoute) + paramsToString(params);
+  console.log("apiHelper", method.toUpperCase(), url);
   const parseResponse = response => response[responseType.toLowerCase()]();
   return fetch(url, {
     method,

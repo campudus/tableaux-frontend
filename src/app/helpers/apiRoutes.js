@@ -1,4 +1,4 @@
-import { flow, join, map, toString } from "lodash/fp";
+import { flow, join, map, toString, isInteger } from "lodash/fp";
 const urlTrim = url => url.match(/\.*\/?(.*)\/?/)[1];
 const joinUrlParts = (...args) =>
   flow(
@@ -18,11 +18,15 @@ const getAllRowsForTable = tableId => "/tables/" + tableId + "/rows";
 const toCell = ({ tableId, rowId, columnId }) =>
   "/" + joinUrlParts("tables", tableId, "columns", columnId, "rows", rowId);
 
+const toFolder = folderId =>
+  isInteger(folderId) ? `/folders/${folderId}` : "/folders";
+
 const API_ROUTES = {
-  getAllTables: getAllTables,
+  getAllTables,
   getAllColumnsForTable,
   getAllRowsForTable,
-  toCell
+  toCell,
+  toFolder
 };
 
 export default API_ROUTES;

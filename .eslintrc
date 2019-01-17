@@ -83,5 +83,6 @@ rules:
   react/no-typos: error
   react/no-this-in-sfc: error
   react/prefer-stateless-function: warn
+  react/prop-types: off
   react/jsx-key: warn
   react/jsx-no-duplicate-props: error
