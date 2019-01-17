@@ -13,8 +13,6 @@ const OverlayRenderer = ({
   rows,
   tables
 }) => {
-  console.log("OverlayRenderer", overlays, toast);
-
   const renderActiveOverlays = () => {
     if (f.isEmpty(overlays)) {
       return null;

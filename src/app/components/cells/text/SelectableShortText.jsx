@@ -9,7 +9,6 @@ import {
   withStateHandlers
 } from "recompose";
 import { maybe } from "../../../helpers/functools";
-// import ActionCreator from "../../../actions/ActionCreator";
 import needsAPIData from "../../helperComponents/needsAPIData";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import { FilterModes } from "../../../constants/TableauxConstants";
@@ -164,7 +163,6 @@ const SelectableShortText = ({
   handleKeyboard,
   setCaret,
   handleChange,
-  saveEdits,
   curValue,
   completions,
   selected,
@@ -215,7 +213,6 @@ const SelectableShortText = ({
 };
 
 SelectableShortText.propTypes = {
-  cell: PropTypes.object.isRequired,
   onBlur: PropTypes.func.isRequired,
   setCellKeyboardShortcuts: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired

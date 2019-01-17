@@ -285,10 +285,6 @@ class TableView extends Component {
     } = this.state;
     const overlayOpen = false;
 
-    if (f.isNil(table)) {
-      console.error("No table found with id " + tableId);
-    }
-
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
     // without adding event listeners

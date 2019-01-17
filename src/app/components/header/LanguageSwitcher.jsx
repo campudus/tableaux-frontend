@@ -20,7 +20,6 @@ const enhance = compose(
     onChange: props => langObj => {
       // prevents undefined language tag: we just want to switch the language when there is actually something selected
       // if (!f.isEmpty(langObj)) {
-      console.log(langObj);
       const langtag = langObj.value;
       if (props.onChange) {
         props.onChange(langtag);
@@ -43,7 +42,6 @@ const LanguageSwitcher = props => {
     openOnTop
   } = props;
   const languages = f.isNil(props.languages) ? Langtags : props.languages;
-  console.log("languages", languages);
   // Inside select box show user just the languages he has access to
   const languagesToDisplay =
     !disabled && limitLanguages ? limitLanguages : languages;
