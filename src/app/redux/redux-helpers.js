@@ -12,7 +12,21 @@ export const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
       col => col.id === columnId,
       completeState.columns[tableId].data
     );
-    return [rowIdx, columnIdx];
+    const displayValueColumnIdx = f.findIndex(
+      row => row.id === rowId,
+      f.prop(["tableView", "displayValues", tableId], completeState)
+    );
+    console.log(
+      "ids",
+      tableId,
+      rowId,
+      columnId,
+      "=>",
+      rowIdx,
+      columnIdx,
+      displayValueColumnIdx
+    );
+    return [rowIdx, columnIdx, displayValueColumnIdx];
   } catch (err) {
     console.error(
       "Redux helper: could not calculate indices for table",
@@ -23,13 +37,13 @@ export const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
       columnId,
       err
     );
-    return [-1, -1];
+    return [-1, -1, -1];
   }
 };
 
 export const calcConcatValues = (action, completeState) => {
   const { tableId, columnId } = action;
-  const [rowIdx, columnIdx] = idsToIndices(action, completeState);
+  const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
   const columns = completeState.columns[tableId].data;
   const rows = completeState.rows[tableId].data;
 
@@ -47,6 +61,7 @@ export const calcConcatValues = (action, completeState) => {
     return {
       rowIdx,
       updatedConcatValue,
+      dvRowIdx,
       displayValue: getDisplayValue(concatColumn, updatedConcatValue)
     };
   } else {

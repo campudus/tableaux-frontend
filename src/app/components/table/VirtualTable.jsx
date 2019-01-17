@@ -283,14 +283,17 @@ export default class VirtualTable extends PureComponent {
     );
     const column = visibleColumns[columnIndex];
     const { value, annotations } = cell;
-    const displayValueWithFallback = originalValue => {
-      if (!f.isNil(originalValue)) {
-        // console.log("value exists");
-        return originalValue;
-      }
-      return getDisplayValue(column, value);
-    };
-    const displayValue = displayValueWithFallback(f.get("displayValue", cell));
+    //     const displayValueWithFallback = originalValue => {
+    //       if (!f.isNil(originalValue)) {
+    //         // console.log(`-- using cached DV for [${row.id},${column.id}]`);
+    //         return originalValue;
+    //       }
+    //       console.log(`-- CALCULATING DV for [${row.id},${column.id}]`);
+    //       return getDisplayValue(column, value);
+    //     };
+    const displayValue =
+      f.get([rowIndex, columnIndex], this.visibleDisplayValues) ||
+      getDisplayValue(column, value);
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = this.isCellSelected(column.id, row.id);
     const isEditing =
@@ -522,7 +525,8 @@ export default class VirtualTable extends PureComponent {
       columnKeys,
       selectedCell,
       selectedCellEditing,
-      selectedCellExpandedRow
+      selectedCellExpandedRow,
+      displayValues
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
     const { columnIndex, rowIndex } =
@@ -530,6 +534,11 @@ export default class VirtualTable extends PureComponent {
         ? scrolledCell
         : {};
     const visibleColumns = columns.filter(this.filterVisibleCells);
+
+    this.visibleDisplayValues = (displayValues || []).map(col =>
+      col.filter(this.filterVisibleCells)
+    );
+
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows) + 1;
     const selectedCellKey = `${f.get(
@@ -539,7 +548,6 @@ export default class VirtualTable extends PureComponent {
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
-    // window
 
     return (
       <AutoSizer>

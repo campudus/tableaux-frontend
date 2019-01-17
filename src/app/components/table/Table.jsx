@@ -163,7 +163,8 @@ class Table extends Component {
       tables,
       table,
       langtag,
-      tableView
+      tableView,
+      displayValues
     } = this.props;
     const {
       selectedCell,
@@ -207,6 +208,7 @@ class Table extends Component {
                 null /*tableNavigationWorker.checkFocusInsideTable.call(this)*/
             }
             rowKeys={rowKeys}
+            displayValues={displayValues}
             columnKeys={columnKeys}
             table={table}
             tables={tables}

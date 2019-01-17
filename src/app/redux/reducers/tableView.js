@@ -113,11 +113,17 @@ const toggleSingleColumn = (state, action) => {
 };
 
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
+  console.log("updateDisplayValue");
   const value = f.prop(valueProp, action);
   const { tableId } = action;
-  const [rowIdx, columnIdx] = idsToIndices(action, completeState);
-  // FIXME: adapt once we address displayValues[tableId][rowIdx][columnIdx]
-  const displayValueSelector = ["displayValues", rowIdx, columnIdx];
+  const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
+  const displayValueSelector = [
+    "displayValues",
+    tableId,
+    dvRowIdx,
+    "values",
+    columnIdx
+  ];
   const column = completeState.columns[tableId];
   return f.assoc(
     displayValueSelector,
@@ -129,12 +135,14 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
 // if an identifier cell was modified, we need to update the concat display value
 const maybeUpdateConcat = (tableView, action, completeState) => {
   const concatValues = calcConcatValues(action, completeState) || {};
-  const { rowIdx, displayValue } = concatValues;
-  // FIXME: adapt once we addresse displayValues[tableId][rowIdx][columnIdx]
-  // const { tableId } = action;
+  const { dvRowIdx, displayValue } = concatValues;
 
   return f.isEmpty(concatValues)
-    ? f.assoc(["displayValues", rowIdx, 0], displayValue, tableView)
+    ? f.assoc(
+        ["displayValues", action.tableId, dvRowIdx, "values", 0],
+        displayValue,
+        tableView
+      )
     : tableView;
 };
 
