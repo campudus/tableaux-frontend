@@ -291,9 +291,6 @@ export default class VirtualTable extends PureComponent {
       return getDisplayValue(column, value);
     };
     const displayValue = displayValueWithFallback(f.get("displayValue", cell));
-    if (!f.isEmpty(annotations)) {
-      console.log(annotations);
-    }
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = this.isCellSelected(column.id, row.id);
     const isEditing =
