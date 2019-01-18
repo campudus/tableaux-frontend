@@ -192,7 +192,7 @@ class Cell extends React.Component {
         tableId: table.id
       });
     } else if (!withRightClick) {
-      actions.toggleCellEditing();
+      actions.toggleCellEditing({ row });
     }
 
     if (withRightClick) {

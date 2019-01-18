@@ -6,6 +6,7 @@ import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 // import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
 import { DefaultLangtag } from "../../constants/TableauxConstants";
 import classNames from "classnames";
+import { isLocked } from "../../helpers/annotationHelper";
 
 class MetaCell extends PureComponent {
   static propTypes = {
@@ -67,9 +68,9 @@ class MetaCell extends PureComponent {
       return (
         <i
           className={
-            row.unlocked
-              ? "fa fa-unlock access-denied-icon"
-              : "fa fa-lock access-denied-icon"
+            isLocked(row)
+              ? "fa fa-lock access-denied-icon"
+              : "fa fa-unlock access-denied-icon"
           }
         />
       );

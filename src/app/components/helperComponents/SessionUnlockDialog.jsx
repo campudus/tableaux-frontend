@@ -23,21 +23,24 @@ class Candidates {
   }
 }
 
-const askForSessionUnlock = (el, key, actions) => {
+const askForSessionUnlock = (el, key) => {
   if (!isLocked(el)) {
-    return;
+    return null;
   }
   const { id } = el;
+  // Otherwise typing into locked cells would automatically unlock
+  // rows
   const keyCanUnlock = key && key === "Enter";
 
   if (Candidates.has(id) && (!key || keyCanUnlock)) {
     Candidates.remove(id);
     unlockRow(el);
+    return null;
   } else {
     if (!key || (key && keyCanUnlock)) {
       Candidates.add(id);
     }
-    actions.showToast({
+    return {
       content: (
         <div id="cell-jump-toast">
           <h1>{i18n.t("table:final.unlock_header")}</h1>
@@ -45,7 +48,7 @@ const askForSessionUnlock = (el, key, actions) => {
         </div>
       ),
       duration: TOAST_TIME
-    });
+    };
   }
 };
 

@@ -2,13 +2,13 @@ import f from "lodash/fp";
 import actionTypes from "./actionTypes";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
-import getDisplayValue from "../helpers/getDisplayValue";
 import { changeCellValue } from "./actions/cellActions";
 import { Langtags } from "../constants/TableauxConstants";
-import identifyLinkedRows from "../helpers/linkHelper";
 import { doto } from "../helpers/functools";
 import { checkOrThrow } from "../specs/type";
 import { overlayParamsSpec } from "./reducers/overlays";
+import { isLocked } from "../helpers/annotationHelper";
+import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
 
@@ -225,6 +225,15 @@ const createDisplayValueWorker = () => {
   };
 };
 
+const toggleCellEditingOrUnlockCell = action => {
+  // when triggered from keyboard, event.key should be passed to
+  // prevent editing while still locked
+  const { row, eventKey } = action;
+  return isLocked(row)
+    ? showToast(askForSessionUnlock(row, eventKey))
+    : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -239,7 +248,7 @@ const actionCreators = {
   loadCompleteTable: loadCompleteTable,
   setCurrentLanguage: setCurrentLanguage,
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
-  toggleCellEditing: dispatchParamsFor(TOGGLE_CELL_EDITING),
+  toggleCellEditing: toggleCellEditingOrUnlockCell,
   changeCellValue,
   showToast,
   hideToast,
