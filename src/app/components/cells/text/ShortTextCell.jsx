@@ -1,10 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
-import f, { isEmpty } from "lodash/fp";
+import f from "lodash/fp";
 import TextCell from "./TextCell";
-// import changeCell from "../../../models/helpers/changeCell";
 import SelectableShortText from "./SelectableShortText";
-import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const ShortTextCell = props => {
   const {

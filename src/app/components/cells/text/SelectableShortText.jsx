@@ -36,8 +36,8 @@ const enhance = compose(
   getCompletionValueUrl,
   needsAPIData,
   withStateHandlers(
-    ({ value, requestedData }) => ({
-      curValue: value,
+    ({ value, column, langtag }) => ({
+      curValue: column.multilanguage ? f.getOr("", langtag, value) : value,
       completions: [],
       selected: 0,
       completionSelected: false,
