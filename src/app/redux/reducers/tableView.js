@@ -112,38 +112,40 @@ const toggleSingleColumn = (state, action) => {
   return { ...state, visibleColumns: updatedVisibleColumns };
 };
 
+const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
+  "displayValues",
+  tableId,
+  dvRowIdx,
+  "values",
+  columnIdx
+];
+
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
-  console.log("updateDisplayValue");
   const value = f.prop(valueProp, action);
   const { tableId } = action;
   const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
-  const displayValueSelector = [
-    "displayValues",
+  const pathToDv = displayValueSelector({
     tableId,
     dvRowIdx,
-    "values",
     columnIdx
-  ];
+  });
   const column = completeState.columns[tableId];
-  return f.assoc(
-    displayValueSelector,
-    getDisplayValue(column, value),
-    tableView
-  );
+  return f.assoc(pathToDv, getDisplayValue(column, value), tableView);
 };
 
 // if an identifier cell was modified, we need to update the concat display value
 const maybeUpdateConcat = (tableView, action, completeState) => {
   const concatValues = calcConcatValues(action, completeState) || {};
   const { dvRowIdx, displayValue } = concatValues;
+  const pathToDv = displayValueSelector({
+    tableId: action.tableId,
+    dvRowIdx,
+    columnIdx: 0
+  });
 
   return f.isEmpty(concatValues)
-    ? f.assoc(
-        ["displayValues", action.tableId, dvRowIdx, "values", 0],
-        displayValue,
-        tableView
-      )
-    : tableView;
+    ? tableView
+    : f.assoc(pathToDv, displayValue, tableView);
 };
 
 export default (state = initialState, action, completeState) => {
