@@ -1,94 +1,68 @@
-import React, {Component} from "react";
-// import ActionCreator from "../../actions/ActionCreator";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import f from "lodash/fp";
+
+import Folder from "./folder/Folder.jsx";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
 import LanguageSwitcher from "../../components/header/LanguageSwitcher.jsx";
-// import FolderModel from "../../models/media/Folder";
-import Folder from "./folder/Folder.jsx";
-import PropTypes from "prop-types";
+import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 
-export default class MediaView extends Component {
+/*
+TODO-W
+-> LanguageSwitcher
+-> moving between folders
+-> create folder
+-> files/upload
+-> rename and delete
+*/
+
+const mapStateToProps = state => {
+  return { media: f.get("media")(state) };
+};
+
+class MediaView extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
-    folderId: PropTypes.number
+    folderId: PropTypes.number,
+    media: PropTypes.object
   };
 
   state = {
-    activeOverlay: null,
-    currentFolder: null,
-    isLoading: true
+    activeOverlay: null
   };
 
   constructor(props) {
     super(props);
-    this.loadFolder(this.props.folderId);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.folderId !== this.props.folderId) {
-      this.setState({
-        isLoading: true
-      });
-      this.loadFolder(nextProps.folderId);
-    }
-  }
+  // componentWillReceiveProps(nextProps) {}
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const shouldRenderPropUpdate = nextProps.langtag !== this.props.langtag;
-    const shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading
-      || nextState.currentFolder !== this.state.currentFolder;
-
-    return shouldRenderPropUpdate || shouldRenderStateUpdate;
-  }
-
-  loadFolder(folderId) {
-    let folder = {}//new FolderModel({id: folderId || null});
-    folder.fetch({
-      data: {langtag: this.props.langtag},
-      success: () => {
-        let oldFolder = this.state.currentFolder;
-
-        this.setState({
-          currentFolder: folder,
-          isLoading: false
-        });
-
-        // Reset old folder
-        if (oldFolder) {
-          this.cleanUpFolder(oldFolder);
-        }
-      }
-    });
-  }
-
-  cleanUpFolder(folderToCleanUp) {
-    folderToCleanUp.files.destructor();
-    folderToCleanUp.subfolders.desctructor();
-    folderToCleanUp.files.reset();
-    folderToCleanUp.subfolders.reset();
-    folderToCleanUp = null;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {}
 
   onLanguageSwitch(newLangtag) {
-    // ActionCreator.switchLanguage(newLangtag);
+    console.log("switch to language", newLangtag);
   }
 
   render() {
-    if (!this.state.isLoading) {
+    const { langtag, media } = this.props;
+    if (media.finishedLoading) {
       return (
         <div>
           <header>
-            <Navigation langtag={this.props.langtag} />
+            <Navigation langtag={langtag} />
             <div className="header-separator" />
             <PageTitle titleKey="pageTitle.media" />
-            <LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />
+            {/*<LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />*/}
           </header>
-          <Folder folder={this.state.currentFolder} langtag={this.props.langtag} />
+          <Folder folder={media.data} langtag={langtag} />
         </div>
       );
     } else {
-      // show spinner
+      // show spinner while waiting for state to finish loading
       return null;
     }
   }
 }
+
+export default ReduxActionHoc(MediaView, mapStateToProps);
