@@ -11,7 +11,7 @@ import { isLocked } from "../helpers/annotationHelper";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import identifyLinkedRows from "../helpers/linkHelper";
 
-const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
+const { getAllTables, getAllColumnsForTable, getAllRowsForTable, getMediaFolder } = API_ROUTES;
 
 const {
   TABLE_LOADING_DATA,
@@ -46,6 +46,12 @@ const {
   CLOSE_OVERLAY,
   REMOVE_OVERLAY
 } = actionTypes.overlays;
+
+const {
+  MEDIA_FOLDER_LOADING,
+  MEDIA_FOLDER_LOADED,
+  MEDIA_FOLDER_ERROR
+} = actionTypes.media;
 
 const dispatchParamsFor = actionType => params => ({
   ...params,
@@ -240,6 +246,20 @@ const toggleCellEditingOrUnlockCell = action => {
     : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
+const loadMediaFolder = (folderId, langtag) => {
+  return {
+    promise: makeRequest({
+      apiRoute: getMediaFolder(folderId, langtag),
+      method: "GET"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_LOADING,
+      MEDIA_FOLDER_LOADED,
+      MEDIA_FOLDER_ERROR
+    ]
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -260,7 +280,8 @@ const actionCreators = {
   closeOverlay,
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
-  applyFiltersAndSorting: applyFiltersAndSorting
+  applyFiltersAndSorting: applyFiltersAndSorting,
+  loadMediaFolder
 };
 
 export default actionCreators;
