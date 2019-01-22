@@ -5,13 +5,13 @@ import f from "lodash/fp";
 import Folder from "./folder/Folder.jsx";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
-import LanguageSwitcher from "../../components/header/LanguageSwitcher.jsx";
+// import LanguageSwitcher from "../../components/header/LanguageSwitcher.jsx";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 
 /*
 TODO-W
 -> LanguageSwitcher
--> moving between folders
+-> files not rendering!
 -> create folder
 -> files/upload
 -> rename and delete

@@ -4,7 +4,6 @@ import NewFolderAction from "./NewFolderAction.jsx";
 import { isUserAdmin } from "../../../helpers/accessManagementHelper";
 import { translate } from "react-i18next";
 import { DateTimeFormats } from "../../../constants/TableauxConstants";
-import { contains, sortBy, prop, map, compose, reverse } from "lodash/fp";
 import Moment from "moment";
 import Subfolder from "./Subfolder.jsx";
 import File from "./File.jsx";
@@ -105,27 +104,27 @@ class Folder extends Component {
     const { langtag } = this.props;
     const { modifiedFiles } = this.state;
 
-    const sortAndMarkup = compose(
-      map(file => {
+    const sortAndMarkup = f.compose(
+      f.map(file => {
         return (
           <li
             key={file.uuid}
             className={
-              contains(file.uuid, modifiedFiles) ? "modified-file" : ""
+              f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
             }
           >
             <File key={file.uuid} file={file} langtag={langtag} />
           </li>
         );
       }),
-      reverse, // keep latest first
-      sortBy(prop("updatedAt"))
+      f.reverse, // keep latest first
+      f.sortBy(f.prop("updatedAt"))
     );
 
-    if (files && files.length > 0) {
+    if (files && f.size(files) > 0) {
       return (
         <div className="media-switcher">
-          <ol className="media-switcher-menu">{sortAndMarkup(files.models)}</ol>
+          <ol className="media-switcher-menu">{sortAndMarkup(files)}</ol>
         </div>
       );
     } else {
