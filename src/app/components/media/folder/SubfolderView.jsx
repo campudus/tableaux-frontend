@@ -1,44 +1,49 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {isUserAdmin} from "../../../helpers/accessManagementHelper";
-import {translate} from "react-i18next";
-import {branch, compose, pure, renderNothing, withHandlers} from "recompose";
+import f from "lodash/fp";
+import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import { translate } from "react-i18next";
+import { branch, compose, pure, renderNothing, withHandlers } from "recompose";
+import TableauxRouter from "../../../router/router";
 
 const MediaOptions = compose(
-  branch(
-    () => !isUserAdmin(),
-    renderNothing
-  ),
+  branch(() => !isUserAdmin(), renderNothing),
   pure
-)(
-  (props) => (
-    <div className="media-options">
-      <span className="button" onClick={props.onEdit} alt="edit">
-        <i className="icon fa fa-pencil-square-o"></i>{props.t("rename_folder")}
-      </span>
-      <span className="button" onClick={props.onRemove} alt={props.t("delete_folder")}>
-        <i className="fa fa-trash"></i>
-      </span>
-    </div>
-  )
-);
+)(props => (
+  <div className="media-options">
+    <span className="button" onClick={props.onEdit} alt="edit">
+      <i className="icon fa fa-pencil-square-o" />
+      {props.t("rename_folder")}
+    </span>
+    <span
+      className="button"
+      onClick={props.onRemove}
+      alt={props.t("delete_folder")}
+    >
+      <i className="fa fa-trash" />
+    </span>
+  </div>
+));
 
 const enhance = compose(
   withHandlers({
-    onFolderClick: (props) => (event) => {
+    onFolderClick: props => event => {
+      const folderId = f.get(["folder", "id"], props);
+
+      TableauxRouter.switchFolderHandler(folderId, f.get("langtag", props));
       event.preventDefault();
-      
     }
   }),
   pure,
   translate(["media"])
 );
 
-const SubfolderView = (props) => {
+const SubfolderView = props => {
   return (
     <div>
       <a className="folder-link" onClick={props.onFolderClick}>
-        <i className="icon fa fa-folder-open"></i><span>{props.folder.name}</span>
+        <i className="icon fa fa-folder-open" />
+        <span>{props.folder.name}</span>
       </a>
       <MediaOptions {...props} />
     </div>
