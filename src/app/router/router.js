@@ -113,7 +113,10 @@ const extendedRouter = Router.extend({
   },
 
   switchFolderHandler: function(folderId, langtag) {
-    Raven.captureBreadcrumb({ message: "Switch folder", data: payload });
+    Raven.captureBreadcrumb({
+      message: "Switch folder",
+      data: { folderId, langtag }
+    });
     Raven.captureMessage("MediaView folder switch", { level: "info" });
     const validLangtag = validateLangtag(langtag);
     if (folderId) {
