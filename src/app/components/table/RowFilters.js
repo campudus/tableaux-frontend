@@ -36,6 +36,9 @@ const FlagSearches = [
   FilterModes.WITH_COMMENT
 ];
 
+const rememberColumnIds = colSet => f.tap(val => colSet.add(val.colId));
+const mapIndexed = f.map.convert({ cap: false });
+
 const getFilteredRows = (
   currentTable,
   rows,
@@ -43,7 +46,11 @@ const getFilteredRows = (
   langtag,
   filterSettings
 ) => {
-  const closures = mkClosures(columns, rows, langtag, filterSettings);
+  const rowsWithIndex = mapIndexed((row, index) => {
+    return { ...row, rowIndex: index };
+  }, rows);
+  console.log(rowsWithIndex);
+  const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
@@ -53,7 +60,7 @@ const getFilteredRows = (
     f.juxt(allFilters),
     f.every(f.identity)
   );
-  const filteredRows = f.filter(combinedFilter, rows);
+  const filteredRows = f.filter(combinedFilter, rowsWithIndex);
   const { sortColumnId, sortValue } = filterSettings;
   const columnIndex = f.findIndex(column => column.id == sortColumnId, columns);
   const sortColumn = columns[columnIndex];
@@ -79,16 +86,28 @@ const getFilteredRows = (
   };
   const getCompareFunc = f.cond([
     [
-      kind => f.includes(kind, [ColumnKinds.text, ColumnKinds.shorttext, ColumnKinds.concat]),
+      kind =>
+        f.includes(kind, [
+          ColumnKinds.text,
+          ColumnKinds.shorttext,
+          ColumnKinds.concat,
+          ColumnKinds.richtext
+        ]),
       f.always(f.get(ColumnKinds.text, compareFuncs))
     ],
     [f.eq(ColumnKinds.link), f.always(f.get(ColumnKinds.link, compareFuncs))],
-    [f.eq(ColumnKinds.numeric), f.always(f.get(ColumnKinds.numeric, compareFuncs))],
+    [
+      f.eq(ColumnKinds.numeric),
+      f.always(f.get(ColumnKinds.numeric, compareFuncs))
+    ],
     [
       kind => f.includes(kind, [ColumnKinds.datetime, ColumnKinds.date]),
       f.always(f.get(ColumnKinds.date, compareFuncs))
     ],
-    [f.eq(ColumnKinds.boolean), f.always(f.get(ColumnKinds.boolean, compareFuncs))]
+    [
+      f.eq(ColumnKinds.boolean),
+      f.always(f.get(ColumnKinds.boolean, compareFuncs))
+    ]
   ]);
 
   const ordered = sortColumnId
@@ -98,7 +117,11 @@ const getFilteredRows = (
         filteredRows
       )
     : filteredRows;
-  return ordered;
+  console.log("ordered", ordered);
+  return {
+    visibleRows: f.map("rowIndex", ordered),
+    colsWithMatches: f.toArray(closures.colsWithMatches)
+  };
 };
 
 const mkFilterFn = closures => settings => {
@@ -118,7 +141,10 @@ const mkFilterFn = closures => settings => {
       f.matchesProperty("mode", FilterModes.ROW_CONTAINS),
       mkAnywhereFilter(closures)
     ],
-    // [f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER), mkTranslatorFilter(closures)],
+    [
+      f.matchesProperty("mode", FilterModes.TRANSLATOR_FILTER),
+      mkTranslatorFilter(closures)
+    ],
     [
       ({ mode }) => f.contains(mode, FlagSearches),
       ({ mode, value }) => mkFlagFilter(closures, mode, value)
@@ -152,7 +178,7 @@ const mkAnywhereFilter = closures => ({ value }) => {
           )
       ])
     ),
-    // trace("2"),
+    f.map(rememberColumnIds(closures.colsWithMatches)),
     f.any(f.identity)
   );
 };
@@ -169,9 +195,8 @@ const mkBoolFilter = closures => ({ value, columnId }) => row => {
 
 const mkTranslatorFilter = closures => () => row => {
   if (f.isEmpty(closures.colsWithMatches)) {
-    row.columns
-      .filter(f.get("isMultilanguage"))
-      .forEach(rememberColumnIds(closures.colsWithMatches));
+    row.columns.filter(f.get("isMultilanguage"));
+    // .forEach(rememberColumnIds(closures.colsWithMatches));
   }
   return f.flow(
     f.map(["annotations", "translationNeeded", "langtags", closures.langtag]),
@@ -239,7 +264,6 @@ const mkFlagFilter = (closures, mode, value) => {
   const findAnnotation = flag
     ? f.get(["annotations", flag]) // search for flag
     : f.flow(
-        // else search for comment
         f.get("annotations"),
         f.keys,
         f.intersection(["info", "warning", "error"]),

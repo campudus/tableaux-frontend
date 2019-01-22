@@ -10,9 +10,9 @@ import DateEditCell from "./DateEditCell";
 
 const DateCellWrapper = props => {
   const {editing, value} = props;
-  const showTime = f.get("kind", props.cell) === ColumnKinds.datetime;
+  const showTime = f.get("kind", props.column) === ColumnKinds.datetime;
   const Formats = showTime ? DateTimeFormats : DateFormats;
-  const validatedValue = f.isEmpty(props.value) ? null : Moment(props.value);
+  const validatedValue = f.isEmpty(value) ? null : Moment(value);
 
   return editing ? (
     <DateEditCell

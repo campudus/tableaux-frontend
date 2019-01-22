@@ -1,9 +1,10 @@
 import { apiHost, apiPort } from "../conf.js";
-import fetch from "cross-fetch";
+import "cross-fetch/polyfill";
 import { isNil } from "lodash/fp";
 import apiUrl from "./apiUrl";
 
-const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
+
+const buildURL = apiRoute => "http://10.10.2.120:" + apiPort + apiUrl(apiRoute);
 
 const makeRequest = ({
   apiRoute,

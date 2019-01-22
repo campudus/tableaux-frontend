@@ -32,7 +32,7 @@ class TextCell extends PureComponent {
       // ActionCreator.toggleCellEditing({editing: false});
       return;
     }
-    const { value, langtag } = this.props;
+    const { value, langtag} = this.props;
     const valueToSave = false //(cell.isMultiLanguage)
       ? { [langtag]: newValue }
       : newValue;
@@ -116,7 +116,7 @@ class TextCell extends PureComponent {
   };
 
   render() {
-    const { selected, displayValue,langtag } = this.props;
+    const { selected, displayValue, langtag } = this.props;
     const value = this.getValue();
     const isMultiLine = f.contains("\n", value);
 
