@@ -11,7 +11,6 @@ import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 /*
 TODO-W
 -> LanguageSwitcher
--> files not rendering!
 -> create folder
 -> files/upload
 -> rename and delete
@@ -41,7 +40,7 @@ class MediaView extends Component {
   // shouldComponentUpdate(nextProps, nextState) {}
 
   onLanguageSwitch(newLangtag) {
-    console.log("switch to language", newLangtag);
+    // TODO-W implement onLanguageSwitch
   }
 
   render() {

@@ -1,41 +1,52 @@
 import NewFolderActionView from "./NewFolderActionView.jsx";
 import SubfolderEdit from "./SubfolderEdit";
-import {simpleError} from "../../../components/overlay/ConfirmationOverlay";
+import { simpleError } from "../../../components/overlay/ConfirmationOverlay";
 import React from "react";
 import PropTypes from "prop-types";
-import {pure, compose, withHandlers, withState} from "recompose";
+import { pure, compose, withHandlers, withState } from "recompose";
 import f from "lodash/fp";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 
 const withEditMode = compose(
   withState("edit", "updateEdit", false),
   withHandlers({
-    toggleEdit: ({updateEdit}) => () => updateEdit(edit => !edit),
-    onSave: ({t, updateEdit}) => (folderId, folderName, folderDescription, folderParent) => {
+    toggleEdit: ({ updateEdit }) => () => {
+      // TODO-W make this work again
+      console.log("toggleEdit!", updateEdit);
+      updateEdit(edit => !edit);
+    },
+    onSave: ({ t, updateEdit }) => (
+      folderId,
+      folderName,
+      folderDescription,
+      folderParent
+    ) => {
+      // TODO-W make this work again
+      console.log("onSave!", updateEdit);
       updateEdit(f.always(false));
     }
   })
 );
 
-const NewFolderAction = (props) => {
+const NewFolderAction = props => {
   let newFolderAction;
-  const {t, onSave, toggleEdit, edit} = props;
+  const { t, onSave, toggleEdit, edit, parent } = props;
 
   if (edit) {
-    /*let folder = new SimpleFolder({
+    const folder = {
       name: t("new_folder"),
       description: "",
-      parent: props.parentFolder.getId()
-    });*/
-    newFolderAction = <SubfolderEdit folder={folder} onSave={onSave} onCancel={toggleEdit} />;
+      parent: parent
+    };
+    newFolderAction = (
+      <SubfolderEdit folder={folder} onSave={onSave} onCancel={toggleEdit} />
+    );
   } else {
     newFolderAction = <NewFolderActionView callback={toggleEdit} />;
   }
 
   return (
-    <div className="media-switcher new-folder-action">
-      {newFolderAction}
-    </div>
+    <div className="media-switcher new-folder-action">{newFolderAction}</div>
   );
 };
 

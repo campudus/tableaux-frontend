@@ -1,41 +1,55 @@
 import React from "react";
 import PropTypes from "prop-types";
 import SubfolderView from "./SubfolderView";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
-import {confirmDeleteFolder, simpleError} from "../../../components/overlay/ConfirmationOverlay";
-import {branch, compose, pure, renderComponent, withHandlers, withState} from "recompose";
+import {
+  confirmDeleteFolder,
+  simpleError
+} from "../../../components/overlay/ConfirmationOverlay";
+import {
+  branch,
+  compose,
+  pure,
+  renderComponent,
+  withHandlers,
+  withState
+} from "recompose";
 import f from "lodash/fp";
 
 const withToggleableEditState = compose(
   withState("edit", "updateEditState", f.constant(false)),
   withHandlers({
-    onEdit: ({updateEditState}) => () => updateEditState((editing) => !editing)
+    onEdit: ({ updateEditState }) => () => updateEditState(editing => !editing)
   })
 );
 
 const withButtonHandlers = withHandlers({
-  onSave: (props) => (folderId, folderName, folderDescription, folderParent) => {
-    const {t} = props;
+  onSave: props => (folderId, folderName, folderDescription, folderParent) => {
+    const { t } = props;
     props.onEdit();
-    console.log("Folder.changed", folderId, folderName, folderDescription, folderParent);
+    console.log(
+      "Folder.changed",
+      folderId,
+      folderName,
+      folderDescription,
+      folderParent
+    );
   },
-  onCancel: (props) => props.onEdit,
-  onRemove: (props) => () => {
+  onCancel: props => props.onEdit,
+  onRemove: props => () => {
     confirmDeleteFolder(
       props.folder.name,
       () => {
         console.log("Folder.onRemove", props.folder.getId());
       },
-      () => {
-        
-      }
+      () => {}
     );
   }
 });
 
 const withEditMode = branch(
-  (props) => props.edit,
+  props => props.edit,
   renderComponent(SubfolderEdit)
 );
 
@@ -44,11 +58,9 @@ const ViewComponent = compose(
   withButtonHandlers,
   withEditMode,
   pure
-)(
-  (props) => <SubfolderView {...props} />
-);
+)(props => <SubfolderView {...props} />);
 
-const Subfolder = (props) => {
+const Subfolder = props => {
   return (
     <div className="subfolder">
       <ViewComponent {...props} />

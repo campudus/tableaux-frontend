@@ -63,8 +63,6 @@ class File extends Component {
   };
 
   render() {
-    console.log("file props", this.props.file);
-
     const { langtag, file, t } = this.props;
     const fallbackLang = TableauxConstants.DefaultLangtag;
     const translate = multiLanguage.retrieveTranslation(fallbackLang);

@@ -15,7 +15,8 @@ import TableauxRouter from "../../../router/router";
 class Folder extends Component {
   static propTypes = {
     folder: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired
+    langtag: PropTypes.string.isRequired,
+    t: PropTypes.any // TODO-W specifiy t-prop
   };
 
   constructor(props) {
@@ -49,20 +50,20 @@ class Folder extends Component {
   };
 
   renderCurrentFolder = () => {
+    const { id, name, description } = this.props.folder;
     let currentFolder = "";
     const currentFolderClass = ["current-folder"];
-    if (this.props.folder.name === "root") {
+    if (name === "root") {
       currentFolder = this.props.t("root_folder_name");
-    } else if (this.props.folder.name && this.props.folder.description) {
-      currentFolder =
-        this.props.folder.name + " – " + this.props.folder.description;
-    } else if (this.props.folder.name) {
-      currentFolder = this.props.folder.name;
+    } else if (name && description) {
+      currentFolder = name + " – " + description;
+    } else if (name) {
+      currentFolder = name;
     } else {
-      currentFolder = "Folder " + this.props.folder.id;
+      currentFolder = "Folder " + id;
     }
 
-    if (this.props.folder.name !== "root") {
+    if (name !== "root") {
       currentFolder = (
         <a href="#" onClick={this.backFolderHandler}>
           <span className="back">
