@@ -1,23 +1,19 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import apiUrl from "../../../helpers/apiUrl";
 import multiLanguage from "../../../helpers/multiLanguage";
-import Dispatcher from "../../../dispatcher/Dispatcher";
 import FileEdit from "../overlay/FileEdit.jsx";
 
 import Header from "../../overlay/Header";
 import Footer from "../../overlay/Footer";
 
 import TableauxConstants from "../../../constants/TableauxConstants";
-import ActionCreator from "../../../actions/ActionCreator";
 import {getUserLanguageAccess, isUserAdmin} from "../../../helpers/accessManagementHelper";
 import {confirmDeleteFile, noPermissionAlertWithLanguage} from "../../../components/overlay/ConfirmationOverlay";
 import {translate} from "react-i18next";
 import i18n from "i18next";
 
 @translate(["media"])
-@connectToAmpersand
 class File extends Component {
   static propTypes = {
     file: PropTypes.object.isRequired,
@@ -33,11 +29,10 @@ class File extends Component {
         retrieveTranslation(this.props.file.title, this.props.langtag),
         () => {
           console.log("File.onRemove", this.props.file.uuid);
-          ActionCreator.removeFile(this.props.file.uuid);
-          ActionCreator.closeOverlay();
+          
         },
         () => {
-          ActionCreator.closeOverlay();
+          
         });
     } else {
       noPermissionAlertWithLanguage(getUserLanguageAccess());
@@ -45,30 +40,21 @@ class File extends Component {
   };
 
   onSave = () => {
-    Dispatcher.trigger("on-media-overlay-save");
+    
   };
 
   onCancel = () => {
-    Dispatcher.trigger("on-media-overlay-cancel");
+    
   };
 
   onEdit = () => {
     const {file, langtag, t} = this.props;
     const {FallbackLanguage} = TableauxConstants;
-    ActionCreator.openOverlay({
-      head: <Header context={t("change_file")}
-        title={multiLanguage.retrieveTranslation(FallbackLanguage)(file.title, langtag)}
-      />,
-      body: <FileEdit file={this.props.file} langtag={this.props.langtag} onClose={this.onEditClose} />,
-      footer: (
-        <Footer actions={{positive: [i18n.t("common:save"), this.onSave], neutral: [i18n.t("common:close"), null]}}
-        />
-      )
-    });
+    
   };
 
   onEditClose = (event) => {
-    ActionCreator.closeOverlay();
+    
   };
 
   render() {

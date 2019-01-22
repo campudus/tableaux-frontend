@@ -8,7 +8,6 @@ import {DefaultLangtag, Langtags} from "../../../constants/TableauxConstants";
 import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
 import apiUrl from "../../../helpers/apiUrl";
 import Request from "superagent";
-import ActionCreator from "../../../actions/ActionCreator";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
 import f from "lodash/fp";
 
@@ -37,7 +36,7 @@ const enhance = compose(
 
       if (uploadRes) {
         const file = uploadRes.body;
-        ActionCreator.changedFileData(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
+        // ActionCreator.changedFileData(file.uuid, file.title, file.description, file.externalName, file.internalName, file.mimeType, file.folder, file.url);
       }
     }
   }),

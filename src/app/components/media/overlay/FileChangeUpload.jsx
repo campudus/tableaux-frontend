@@ -2,9 +2,7 @@ import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
 import request from "superagent";
-import withAbortableXhrRequest from "../../helperComponents/withAbortableXhrRequests";
 import apiUrl from "../../../helpers/apiUrl";
-import ActionCreator from "../../../actions/ActionCreator";
 import ProgressBar from "../ProgressBar.jsx";
 import FileIcon from "../folder/FileIcon.jsx";
 import {hasUserAccessToLanguage} from "../../../helpers/accessManagementHelper";
@@ -12,7 +10,6 @@ import {DefaultLangtag} from "../../../constants/TableauxConstants";
 import {translate} from "react-i18next";
 
 @translate(["media"])
-@withAbortableXhrRequest
 class FileChangeUpload extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -60,14 +57,14 @@ class FileChangeUpload extends PureComponent {
 
     if (res) {
       const file = res.body;
-      ActionCreator.changedFileData(file.uuid,
+      /*ActionCreator.changedFileData(file.uuid,
         file.title,
         file.description,
         file.externalName,
         file.internalName,
         file.mimeType,
         file.folder,
-        file.url);
+        file.url);*/
     }
   };
 

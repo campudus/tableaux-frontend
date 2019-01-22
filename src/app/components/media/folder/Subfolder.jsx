@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ActionCreator from "../../../actions/ActionCreator";
 import SubfolderView from "./SubfolderView";
 import {translate} from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
@@ -20,9 +19,6 @@ const withButtonHandlers = withHandlers({
     const {t} = props;
     props.onEdit();
     console.log("Folder.changed", folderId, folderName, folderDescription, folderParent);
-    ActionCreator.changeFolder(
-      folderId, folderName, folderDescription, folderParent,
-      () => simpleError(t("error_folder_exists_already")));
   },
   onCancel: (props) => props.onEdit,
   onRemove: (props) => () => {
@@ -30,11 +26,9 @@ const withButtonHandlers = withHandlers({
       props.folder.name,
       () => {
         console.log("Folder.onRemove", props.folder.getId());
-        ActionCreator.removeFolder(props.folder.id);
-        ActionCreator.closeOverlay();
       },
       () => {
-        ActionCreator.closeOverlay();
+        
       }
     );
   }

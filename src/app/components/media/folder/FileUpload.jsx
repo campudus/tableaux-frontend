@@ -1,5 +1,4 @@
 import ProgressBar from "../ProgressBar.jsx";
-import ActionCreator from "../../../actions/ActionCreator";
 import apiUrl from "../../../helpers/apiUrl";
 import request from "superagent";
 import Dropzone from "react-dropzone";
@@ -27,10 +26,10 @@ const withUploadHandlers = compose(
 
       if (res) {
         const file = res.body;
-        ActionCreator.addFile(
+        //ActionCreator.addFile(
           // uuid, title, descr, extName, intName, mimeType, folder, url
-          ...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
-        );
+          //...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
+        //);
       }
     }
   })

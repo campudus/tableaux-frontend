@@ -3,10 +3,7 @@ import f from "lodash/fp";
 import {branch, compose, lifecycle, renderComponent, withHandlers, withStateHandlers} from "recompose";
 import MultiFileEdit from "./MultiFileEdit";
 import SingleFileEdit from "./SingleFileEdit";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 import {reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
-import ActionCreator from "../../../actions/ActionCreator";
-import Dispatcher from "../../../dispatcher/Dispatcher";
 import {ActionTypes} from "../../../constants/TableauxConstants";
 
 const enhance = compose(
@@ -37,7 +34,7 @@ const enhance = compose(
       ) {
         const {title, description, externalName} = fileAttributes;
         const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, title, description, externalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
-        ActionCreator.changeFile(...changeFileParams);
+        // ActionCreator.changeFile(...changeFileParams);
       }
       onClose(event);
     }
@@ -45,12 +42,12 @@ const enhance = compose(
 
   lifecycle({
     componentWillMount() {
-      Dispatcher.on("on-media-overlay-save", this.props.onSave);
-      Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+      //Dispatcher.on("on-media-overlay-save", this.props.onSave);
+      //Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
     },
     componentWillUnmount() {
-      Dispatcher.off("on-media-overlay-save", this.props.onSave);
-      Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+      //Dispatcher.off("on-media-overlay-save", this.props.onSave);
+      //Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
     }
   })
 );
@@ -74,6 +71,5 @@ FileEdit.propTypes = {
 };
 
 export default compose(
-  enhance,
-  connectToAmpersand
+  enhance
 )(FileEdit);

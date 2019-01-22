@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ActionCreator from "../../../actions/ActionCreator";
 import {isUserAdmin} from "../../../helpers/accessManagementHelper";
 import {translate} from "react-i18next";
 import {branch, compose, pure, renderNothing, withHandlers} from "recompose";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
 const MediaOptions = compose(
   branch(
@@ -29,12 +27,11 @@ const enhance = compose(
   withHandlers({
     onFolderClick: (props) => (event) => {
       event.preventDefault();
-      ActionCreator.switchFolder(props.folder.id, props.langtag);
+      
     }
   }),
   pure,
-  translate(["media"]),
-  connectToAmpersand
+  translate(["media"])
 );
 
 const SubfolderView = (props) => {

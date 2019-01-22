@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import {translate} from "react-i18next";
 import {compose} from "recompose";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
 
 const NewFolderActionView = (props) => (
   <div className="new-folder-button" onClick={props.callback}>
@@ -18,6 +17,5 @@ NewFolderActionView.propTypes = {
 };
 
 export default compose(
-  translate(["media"]),
-  connectToAmpersand
+  translate(["media"])
 )(NewFolderActionView);
