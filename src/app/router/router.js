@@ -112,16 +112,16 @@ const extendedRouter = Router.extend({
     router.navigate(langtag + "/tables/" + tableId);
   },
 
-  switchFolderHandler: function(payload) {
+  switchFolderHandler: function(folderId, langtag) {
     Raven.captureBreadcrumb({ message: "Switch folder", data: payload });
     Raven.captureMessage("MediaView folder switch", { level: "info" });
-    const langtag = validateLangtag(payload.langtag);
-    if (payload.id) {
-      router.history.navigate(langtag + "/media/" + payload.id, {
+    const validLangtag = validateLangtag(langtag);
+    if (folderId) {
+      router.history.navigate(validLangtag + "/media/" + folderId, {
         trigger: true
       });
     } else {
-      router.history.navigate(langtag + "/media", { trigger: true });
+      router.history.navigate(validLangtag + "/media", { trigger: true });
     }
   },
 

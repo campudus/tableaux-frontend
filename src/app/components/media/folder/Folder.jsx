@@ -1,17 +1,16 @@
 import React, { Component } from "react";
+import f from "lodash/fp";
 import NewFolderAction from "./NewFolderAction.jsx";
 import { isUserAdmin } from "../../../helpers/accessManagementHelper";
 import { translate } from "react-i18next";
-import {
-  ActionTypes,
-  DateTimeFormats
-} from "../../../constants/TableauxConstants";
+import { DateTimeFormats } from "../../../constants/TableauxConstants";
 import { contains, sortBy, prop, map, compose, reverse } from "lodash/fp";
 import Moment from "moment";
 import Subfolder from "./Subfolder.jsx";
 import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
 import PropTypes from "prop-types";
+import TableauxRouter from "../../../router/router";
 
 @translate(["media"])
 class Folder extends Component {
@@ -26,7 +25,10 @@ class Folder extends Component {
   }
 
   backFolderHandler = e => {
-    // TODO-W backFolderHandler implementieren
+    const { langtag, folder } = this.props;
+    const parentId = f.get("parent", folder);
+
+    TableauxRouter.switchFolderHandler(parentId, langtag);
     e.preventDefault();
   };
 
