@@ -25,6 +25,9 @@ const toCell = ({ tableId, rowId, columnId }) =>
 const toFolder = folderId =>
   isInteger(folderId) ? `/folders/${folderId}` : "/folders";
 
+const getMediaFolder = (folderId, langtag) =>
+  "/folders" + (folderId ? "/" + folderId : "") + "?langtag=" + langtag;
+
 const API_ROUTES = {
   getAllTables,
   getAllColumnsForTable,
@@ -32,7 +35,8 @@ const API_ROUTES = {
   toColumn,
   toRow,
   toCell,
-  toFolder
+  toFolder,
+  getMediaFolder
 };
 
 export default API_ROUTES;
