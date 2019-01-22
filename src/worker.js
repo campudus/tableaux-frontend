@@ -10,7 +10,7 @@ onmessage = function(e) {
   const langtags = e.data[2];
   const tableId = e.data[3];
   initLangtags(langtags);
-  const t1 = performance.now();
+  // const t1 = performance.now();
   const uniqueLinks = identifyUniqueLinkedRows(rows, columns);
   const linkDisplayValues = f.map(outer => {
     return {
@@ -47,7 +47,7 @@ onmessage = function(e) {
     }
     return f.set([alreadyExistsAt], displayValues, linkDisplayValues);
   })(displayValues, linkDisplayValues);
-  const t2 = performance.now();
-  console.log(t2-t1);
+  // const t2 = performance.now();
+  // console.log(t2-t1,"displayValues");
   postMessage([combined, tableId]);
 };

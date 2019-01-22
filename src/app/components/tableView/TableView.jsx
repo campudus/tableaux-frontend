@@ -32,39 +32,33 @@ import { initHistoryOf } from "../table/undo/tableHistory";
 import { getMultiLangValue } from "../../helpers/multiLanguage";
 import canFocusCell from "./canFocusCell";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
-import {combineDisplayValuesWithLinks} from "../../helpers/linkHelper";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
   const { tableId } = props;
-  const tables = f.get("tables.data", state);
+  const tables = state.tables.data;
   const table = tables[tableId];
-  const columns = f.get(`columns.${tableId}.data`, state);
-  const rows = f.get(`rows.${tableId}.data`, state);
-  const visibleColumns = f.get("tableView.visibleColumns", state);
-  const tableView = f.get("tableView", state);
+  const columns = state.columns[tableId].data;
+  const rows = state.rows[tableId].data;
+  const tableView = state.tableView;
   const {
-    filters,
-    sorting,
-    startedGeneratingDisplayValues,
+    visibleColumns,
+    visibleRows,
+    startedGeneratingDisplayValues
   } = tableView;
-  const allDisplayValues = f.get(["displayValues"], tableView);
-  const t1=performance.now();
-  const displayValues = combineDisplayValuesWithLinks(allDisplayValues,columns, tableId);
-  const t2=performance.now();
+  const allDisplayValues = tableView.displayValues;
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
   }
   return {
+    visibleRows,
     table,
     columns,
     rows,
     tables,
     visibleColumns,
-    filters,
-    sorting,
     startedGeneratingDisplayValues,
-    displayValues,
+    allDisplayValues,
     tableView
   };
 };
@@ -262,17 +256,13 @@ class TableView extends Component {
       tables,
       table,
       columns,
-      rows,
       langtag,
       tableId,
       navigate,
       actions,
-      filters
+      preparedRows,
+      allDisplayValues
     } = this.props;
-    const filterActions = f.pick(
-      ["setFiltersAndSorting", "deleteFilters"],
-      actions
-    );
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
       actions
@@ -316,8 +306,7 @@ class TableView extends Component {
             table={table}
             columns={columns}
             currentFilter={this.props.projection.rows}
-            filterActions={filterActions}
-            filters={filters}
+            preparedRows={preparedRows}
           />
           {table && columns && columns.length > 1 ? (
             <ColumnFilter
@@ -331,7 +320,7 @@ class TableView extends Component {
           )}
           <HistoryButtons tableId={table.id} />
           <div className="header-separator" />
-          <Spinner />
+          <Spinner isLoading={f.isEmpty(allDisplayValues)}/>
           <PageTitle titleKey="pageTitle.tables" />
           <LanguageSwitcher
             langtag={langtag}

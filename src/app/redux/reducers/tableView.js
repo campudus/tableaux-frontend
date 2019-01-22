@@ -5,32 +5,35 @@ import { setUrlBarToCell } from "../../helpers/browserNavigation";
 import { checkOrThrow } from "../../specs/type";
 import { toObjectById } from "../../helpers/funcHelpers";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { extractAnnotations } from "../../helpers/annotationHelper";
+import getFilteredRows from "../../components/table/RowFilters";
+import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
 const {
   TOGGLE_COLUMN_VISIBILITY,
   HIDE_ALL_COLUMNS,
   SET_COLUMNS_VISIBLE,
-  SET_FILTERS_AND_SORTING,
   SET_CURRENT_TABLE,
   COLUMNS_DATA_LOADED,
   DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
-  SET_DISPLAY_VALUE_WORKER
+  SET_DISPLAY_VALUE_WORKER,
+  ALL_ROWS_DATA_LOADED,
+  APPLY_FILTERS_AND_SORTING
 } = actionTypes;
 
 const initialState = {
   selectedCell: {},
   editing: false,
   visibleColumns: [],
-  filters: [],
-  sorting: {},
   currentTable: null,
   displayValues: {},
   startedGeneratingDisplayValues: false,
-  currentLanguage: DefaultLangtag
+  currentLanguage: DefaultLangtag,
+  invisibleRows: []
 };
 const setLinkDisplayValues = (state, linkDisplayValues) => {
   const { displayValues } = state;
@@ -87,7 +90,7 @@ const toggleCellSelectionActionSpec = {
 };
 
 const toggleCellEditing = (state, action) => {
-  console.log("toggleCellEditing", action);
+  // console.log("toggleCellEditing", action);
   // TODO: Check if editable
   return f.update(
     "editing",
@@ -113,7 +116,7 @@ const toggleSingleColumn = (state, action) => {
   return { ...state, visibleColumns: updatedVisibleColumns };
 };
 
-export default (state = initialState, action) => {
+export default (state = initialState, action, completeState) => {
   switch (action.type) {
     case TOGGLE_COLUMN_VISIBILITY:
       return toggleSingleColumn(state, action);
@@ -121,10 +124,18 @@ export default (state = initialState, action) => {
       return { ...state, visibleColumns: [] };
     case SET_COLUMNS_VISIBLE:
       return { ...state, visibleColumns: action.columnIds };
-    case SET_FILTERS_AND_SORTING:
-      return { ...state, filters: action.filters, sorting: action.sorting };
-    case DELETE_FILTERS:
-      return { ...state, filters: [] };
+    case APPLY_FILTERS_AND_SORTING:
+      const { colsWithMatches, visibleRows } = updateVisibleColumns(
+        state,
+        completeState,
+        action
+      );
+      return {
+        ...state,
+        visibleColumns: colsWithMatches,
+        visibleRows: visibleRows
+      };
+
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:
@@ -144,7 +155,72 @@ export default (state = initialState, action) => {
         ...state,
         worker: new Worker("/worker.bundle.js")
       };
+    case ALL_ROWS_DATA_LOADED:
+      return {
+        ...state,
+        visibleRows: f.compose(f.map(f.toInteger),f.keys)(action.result.rows)
+      };
+
     default:
       return state;
   }
+};
+
+const updateVisibleColumns = (state, completeState,action) => {
+  const {
+    currentTable,
+    currentLanguage
+  } = state;
+  // const displayValues = f.get(["displayValues",currentTable],state);
+  const [columns, table] = f.props(
+    [
+      ["columns", currentTable, "data"],
+      ["tables", "data", currentTable]
+    ],
+    completeState
+  );
+  // const allDisplayValues = state.displayValues;
+  // const displayValues = combineDisplayValuesWithLinks(
+  //   allDisplayValues,
+  //   columns,
+  //   currentTable
+  // );
+  const {filters,sorting, preparedRows} = action;
+  // const prepareRowsForFilter = (rows, columns, displayValues) =>
+  //   mapIndexed((row, id) => {
+  //     const { values, annotations } = row;
+  //     const extractedAnnotations = f.map(extractAnnotations, annotations);
+  //     const updatedValues = mapIndexed((cell, index) => {
+  //       const column = columns[index];
+  //       return {
+  //         value: cell,
+  //         kind: column.kind,
+  //         displayValue: f.get([id,"values", index], displayValues),
+  //         annotations: f.get([index], extractedAnnotations),
+  //         isMultilanguage: f.get(["multilanguage"], column),
+  //         colId: column.id
+  //       };
+  //     }, values);
+  //     return { ...row, values: updatedValues };
+  //   }, rows);
+
+  const isFilterEmpty = filter =>
+    f.isEmpty(filter.value) && !f.isString(filter.mode);
+  const rowsFilter = {
+    sortColumnId: sorting.columnId,
+    sortValue: sorting.value,
+    filters: f.reject(isFilterEmpty, filters)
+  };
+  // const preparedRows = prepareRowsForFilter(rows, columns, displayValues);
+  const { colsWithMatches, visibleRows } = getFilteredRows(
+    table,
+    preparedRows,
+    columns,
+    "de",
+    rowsFilter
+  );
+  if(f.isEmpty(colsWithMatches)){
+    return {visibleRows,colsWithMatches:state.visibleColumns};
+  }
+  return { colsWithMatches, visibleRows };
 };

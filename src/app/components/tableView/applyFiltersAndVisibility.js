@@ -1,83 +1,71 @@
 import React from "react";
 import f from "lodash/fp";
 import memoize from "memoize-one";
-import getFilteredRows from "../table/RowFilters";
-import getDisplayValue from "../../helpers/getDisplayValue";
 import { extractAnnotations } from "../../helpers/annotationHelper";
+import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
 
 const mapIndexed = f.map.convert({ cap: false });
 
 export default function(ComposedComponent) {
   return class ReduxContainer extends React.Component {
-    applyColumnVisibility = () => {
+    applyColumnVisibility = (colsWithMatches = []) => {
       const { columns, visibleColumns } = this.props;
-      return f.map(column => {
-        const { id } = column;
-        if (!f.includes(id, visibleColumns)) {
-          return { ...column, visible: false };
-        }
-        return { ...column, visible: true };
-      }, columns);
+      const applyVisibility = (columns, visibleArray) =>
+        f.map(column => {
+          const { id } = column;
+          if (!f.includes(id, visibleArray)) {
+            return { ...column, visible: false };
+          }
+          return { ...column, visible: true };
+        }, columns);
+      if (!f.isEmpty(colsWithMatches)) {
+        return applyVisibility(columns, colsWithMatches);
+      }
+      return applyVisibility(columns, visibleColumns);
     };
 
-    prepareRowsForFilter = memoize((rows, columns, displayValues) =>
-      mapIndexed((row, id) => {
-        const { values, annotations } = row;
+    prepareRows = memoize((tableId, rows, columns, allDisplayValues) => {
+      const displayValues = combineDisplayValuesWithLinks(
+        allDisplayValues,
+        columns,
+        tableId
+      );
+      return mapIndexed((row, rowIndex) => {
+        const { values, annotations, id } = row;
+        const rowDisplayValues = f.get([rowIndex], displayValues);
         const extractedAnnotations = f.map(extractAnnotations, annotations);
-        const updatedValues = mapIndexed((cell, index) => {
+        const updatedValues = mapIndexed((cell, cellIndex) => {
+          const { multilanguage, id, kind } = columns[cellIndex];
           return {
             value: cell,
-            kind: columns[index].kind,
-            displayValue: f.get([id, index], displayValues),
-            annotations: f.get([index], extractedAnnotations),
-            isMultilanguage: f.get(["multilanguage"], columns)
+            kind: kind,
+            displayValue: f.get(["values", cellIndex], rowDisplayValues),
+            annotations: f.get([cellIndex], extractedAnnotations),
+            isMultilanguage: multilanguage,
+            colId: id
           };
         }, values);
-        return { ...row, values: updatedValues };
-      }, rows)
-    );
+        return { id, values: updatedValues };
+      }, rows);
+    });
 
-    filterRows = (
-      columns,
-      table,
-      tables,
-      rows,
-      filters,
-      sorting,
-      langtag,
-      displayValues
-    ) => {
-      const isFilterEmpty = filter =>
-        f.isEmpty(filter.value) && !f.isString(filter.mode);
-      const rowsFilter = {
-        sortColumnId: sorting.columnId,
-        sortValue: sorting.value,
-        filters: f.reject(isFilterEmpty, filters)
-      };
-      const preparedRows = this.prepareRowsForFilter(
-        rows,
-        columns,
-        displayValues
-      );
-      return getFilteredRows(table, preparedRows, columns, langtag, rowsFilter);
-    };
+    applyFilters = (visibleRows, preparedRows) =>
+      f.map(rowIndex => preparedRows[rowIndex], visibleRows);
 
     render() {
       const {
         tables,
+        visibleRows,
         rows,
         columns,
-        displayValues,
+        allDisplayValues,
         actions,
         startedGeneratingDisplayValues,
-        filters,
-        sorting,
-        langtag,
         table
       } = this.props;
       if (
         f.every(f.negate(f.isEmpty), [rows, columns]) &&
-        f.isEmpty(displayValues) &&
+        f.isEmpty(allDisplayValues[table.id]) &&
         !startedGeneratingDisplayValues
       ) {
         const { generateDisplayValues } = actions;
@@ -88,25 +76,28 @@ export default function(ComposedComponent) {
         rows,
         columns
       ]);
-
-      const newProps = canRenderTable
-        ? {
-            ...this.props,
-            columns: this.applyColumnVisibility(),
-            rows: this.filterRows(
-              columns,
-              table,
-              tables,
-              rows,
-              filters,
-              sorting,
-              langtag,
-              displayValues
-            ),
-            canRenderTable
-          }
-        : { ...this.props, canRenderTable };
-      return <ComposedComponent {...newProps} />;
+      if (canRenderTable) {
+        const preparedRows = this.prepareRows(
+          table.id,
+          rows,
+          columns,
+          allDisplayValues
+        );
+        const filteredRows = this.applyFilters(visibleRows, preparedRows);
+        const visibleColumns = this.applyColumnVisibility();
+        return (
+          <ComposedComponent
+            {...{
+              ...this.props,
+              columns: visibleColumns,
+              rows: filteredRows,
+              canRenderTable,
+              preparedRows
+            }}
+          />
+        );
+      }
+      return <ComposedComponent {...{ ...this.props, canRenderTable }} />;
     }
   };
 }
