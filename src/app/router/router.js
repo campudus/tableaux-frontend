@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
 import TableContainer from "../containers/TableContainer";
@@ -59,10 +60,6 @@ const extendedRouter = Router.extend({
   actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
-    const {loadTables, loadAllRows, loadColumns} = this.actions;
-    const {tableId} = params;
-    // loadAllRows(tableId);
-    // loadColumns(tableId);
     if (/*this.alreadyRendered*/ false) {
       this.switchTableHandler(params);
     } else {
@@ -85,15 +82,16 @@ const extendedRouter = Router.extend({
     const {loadTables,createDisplayValueWorker} = this.actions;
     loadTables();
     createDisplayValueWorker();
-    console.log("initialize router");
-    // const worker = new Worker("/worker.js");
-    // worker.postMessage(["receive", "this","shit"]);
+    console.log(options);
   },
 
   switchLanguageHandler: function(newLangtagObj) {
     const his = this.history;
     const path = his.getPath();
     const newPath = path.replace(currentLangtag, newLangtagObj.langtag);
+    const {setCurrentLanguage} = this.actions;
+    console.log("switchLanguage");
+    setCurrentLanguage(newLangtagObj.langtag);
 
     his.navigate(newPath, { trigger: true });
   },
