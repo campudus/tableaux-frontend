@@ -49,7 +49,6 @@ const getFilteredRows = (
   const rowsWithIndex = mapIndexed((row, index) => {
     return { ...row, rowIndex: index };
   }, rows);
-  console.log(rowsWithIndex);
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
@@ -110,14 +109,13 @@ const getFilteredRows = (
     ]
   ]);
 
-  const ordered = sortColumnId
+  const ordered = f.isFinite(sortColumnId)
     ? f.orderBy(
         [getCompareFunc(sortColumn.kind)],
         [f.toLower(sortValue)],
         filteredRows
       )
     : filteredRows;
-  console.log("ordered", ordered);
   return {
     visibleRows: f.map("rowIndex", ordered),
     colsWithMatches: f.toArray(closures.colsWithMatches)
@@ -161,10 +159,6 @@ const mkFilterFn = closures => settings => {
   ])(settings);
 };
 
-const trace = str => stuff => {
-  console.log(str, stuff);
-  return stuff;
-};
 const mkAnywhereFilter = closures => ({ value }) => {
   return f.flow(
     f.get("values"),
