@@ -377,6 +377,9 @@ const tests = {
   ]
 };
 
+const preventDefault = event => maybe(event).method("preventDefault");
+const stopPropagation = event => maybe(event).method("stopPropagation");
+
 export {
   Maybe,
   Just,
@@ -394,5 +397,7 @@ export {
   when,
   unless,
   propSuffices,
+  preventDefault,
+  stopPropagation,
   tests
 };

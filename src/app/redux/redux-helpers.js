@@ -16,16 +16,6 @@ export const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
       row => row.id === rowId,
       f.prop(["tableView", "displayValues", tableId], completeState)
     );
-    console.log(
-      "ids",
-      tableId,
-      rowId,
-      columnId,
-      "=>",
-      rowIdx,
-      columnIdx,
-      displayValueColumnIdx
-    );
     return [rowIdx, columnIdx, displayValueColumnIdx];
   } catch (err) {
     console.error(

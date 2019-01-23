@@ -242,9 +242,9 @@ const isMultiCountry = value => {
   return f.isObject(value) && f.all(f.contains(f.__, countries), f.keys(value));
 };
 module.exports = {
-  retrieveTranslation: function(defaultLanguage) {
-    return function(json, language) {
-      return retrieveTranslation(json, language, defaultLanguage);
+  retrieveTranslation: function(language, defaultLanguage) {
+    return function(json, overrideLanguage = language) {
+      return retrieveTranslation(json, overrideLanguage, defaultLanguage);
     };
   },
   getMultiLangValue,
