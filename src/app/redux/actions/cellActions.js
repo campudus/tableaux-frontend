@@ -54,10 +54,10 @@ const dispatchCellValueChange = action => {
 };
 
 export const calculateCellUpdate = action => {
-  const cellIs = kind => f.propEq("kind", kind);
+  const cellIs = kind => f.propEq(["column", "kind"], kind);
   return f.cond([
     [cellIs(ColumnKinds.link), calculateLinkCellUpdate],
-    [f.always(true), calculateDefaultCellUpdate]
+    [f.stubTrue, calculateDefaultCellUpdate]
   ])(action);
 };
 
@@ -85,6 +85,7 @@ const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
 };
 
 const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
+  console.log("calculate link cell update");
   const oldIds = f.map("id", oldValue);
   const newIds = f.map("id", newValue);
   const isReordering = linkList =>
@@ -94,21 +95,26 @@ const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
   const isMultiSet = linkList => f.xor(linkList, oldIds).length > 1;
 
   const action = f.cond([
-    [f.equals(oldIds), noop],
+    [f.equals(oldIds), f.noop],
     [isReordering, reorderLinks(oldIds)],
     [isMultiSet, resetLinkValue],
     [f.stubTrue, toggleLink(oldIds)]
   ])(newIds);
 
-  return action({ oldValue, newValue });
+  console.log("link value action:", typeof action, action);
+  return action;
 };
 
-const resetLinkValue = newIds => ({
-  value: { value: newIds },
-  method: "PUT"
-});
+const resetLinkValue = newIds => {
+  console.log("reset to", newIds);
+  return {
+    value: { value: newIds },
+    method: "PUT"
+  };
+};
 
 const reorderLinks = oldIds => newIds => {
+  console.log("reorder", oldIds, "->", newIds);
   const [swapee, successor] = f.flow(
     f.dropWhile(([a, b]) => a === b),
     f.take(2),
@@ -124,10 +130,12 @@ const reorderLinks = oldIds => newIds => {
 
 const toggleLink = oldIds => newIds => {
   const toggler = f.xor(oldIds, newIds)[0];
+  console.log("toggle", oldIds, "->", newIds, `(${toggler})`);
   return f.contains(toggler, oldIds)
     ? {
         method: "DELETE",
-        pathPostfix: `/link/${toggler}`
+        pathPostfix: `/link/${toggler}`,
+        value: {}
       }
     : {
         method: "PATCH",

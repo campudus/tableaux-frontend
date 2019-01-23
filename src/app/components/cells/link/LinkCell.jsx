@@ -1,11 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import LinkEditCell from "./LinkEditCell.jsx";
 import * as f from "lodash/fp";
 
 const LinkCell = props => {
-  const { value, langtag, selected, editing, column, displayValue } = props;
+  const {
+    cell,
+    value,
+    langtag,
+    selected,
+    editing,
+    displayValue,
+    allDisplayValues
+  } = props;
 
   // Show a link preview for performance
   // const displayValues = getDisplayValue(column, value);
@@ -15,12 +22,13 @@ const LinkCell = props => {
     .map((element, index) => (
       <LinkLabelCell
         key={element.id}
-        linkElement={element}
         linkIndexAt={index}
         value={element}
         langtag={langtag}
         clickable={false}
         displayValue={displayValue[index]}
+        displayValues={allDisplayValues[cell.column.toTable]}
+        cell={cell}
       />
     ));
 

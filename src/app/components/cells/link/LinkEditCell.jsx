@@ -1,48 +1,64 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import {openLinkOverlay} from "./LinkOverlay.jsx";
+import { openLinkOverlay } from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-import {isLocked} from "../../../helpers/annotationHelper";
-import {isUserAdmin} from "../../../helpers/accessManagementHelper";
-import {compose, lifecycle, withHandlers} from "recompose";
+import { isLocked } from "../../../helpers/annotationHelper";
+import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import { compose, lifecycle, withHandlers } from "recompose";
 import f from "lodash/fp";
-import {spy} from "../../../helpers/functools";
+import { spy } from "../../../helpers/functools";
 
-// lifecycle({
-//   componentDidMount() {
-//     this.props.setCellKeyboardShortcuts({
-//       enter: (event) => {
-//         if (!isLocked(this.props.cell.row)) {
-//           event.stopPropagation();
-//           event.preventDefault();
-//           this.props.openOverlay();
-//         }
-//       }
-//     });
-//   },
-//   componentWillUnmount() {
-//     this.props.setCellKeyboardShortcuts({});
-//   }
-// })
-// );
+const withOverlayOpener = compose(
+  lifecycle({
+    componentDidMount() {
+      this.props.setCellKeyboardShortcuts({
+        enter: event => {
+          if (!isLocked(this.props.cell.row)) {
+            event.stopPropagation();
+            event.preventDefault();
+            this.props.openOverlay();
+          }
+        }
+      });
+    },
+    componentWillUnmount() {
+      this.props.setCellKeyboardShortcuts({});
+    }
+  }),
+  withHandlers({
+    catchStrolling: () => event => {
+      event && event.stopPropagation();
+    },
+    openOverlay: ({ cell, langtag, actions }) => () => {
+      if (isUserAdmin() && !isLocked(cell.row)) {
+        openLinkOverlay({ cell, langtag, actions });
+      }
+    }
+  })
+);
 
 const LinkEditCell = props => {
-  const {cell, langtag} = props;
-  const openOverlay = () => {
-    if (isUserAdmin() && !isLocked(cell.row)) {
-      openLinkOverlay(cell, langtag);
-    }
-  };
-  const catchScrolling = event => event.stopPropagation();
+  const {
+    cell,
+    langtag,
+    displayValue,
+    allDisplayValues,
+    value,
+    openOverlay,
+    catchScrolling
+  } = props;
 
-  const links = f.isArray(cell.value)
-    ? cell.value.map((element, index) => (
+  const links = f.isArray(value)
+    ? value.map((element, index) => (
         <LinkLabelCell
           key={element.id}
           clickable={false}
           linkElement={element}
           cell={cell}
           langtag={langtag}
+          displayValue={displayValue[index]}
+          value={element}
+          displayValues={allDisplayValues[cell.column.toTable]}
           linkIndexAt={index}
         />
       ))
@@ -57,8 +73,9 @@ const LinkEditCell = props => {
   return (
     <div
       className={"cell-content"}
-      onScroll={props.catchScrolling}
-      onClick={props.openOverlay}>
+      onScroll={catchScrolling}
+      onClick={openOverlay}
+    >
       {[
         ...links,
         <button key={"add-btn"} className="edit">
@@ -76,4 +93,4 @@ LinkEditCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-export default LinkEditCell;
+export default withOverlayOpener(LinkEditCell);

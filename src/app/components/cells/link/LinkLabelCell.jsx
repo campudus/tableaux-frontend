@@ -2,10 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 // import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import * as f from "lodash/fp";
-import { DefaultLangtag } from "../../../constants/TableauxConstants";
 import { compose, pure, withHandlers } from "recompose";
 import Empty from "../../helperComponents/emptyEntry";
-import getDisplayValue from "../../../helpers/getDisplayValue";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import { when } from "../../../helpers/functools";
 
 const LinkLabelCell = props => {
   const {
@@ -15,28 +15,29 @@ const LinkLabelCell = props => {
     langtag,
     linkElement,
     linkIndexAt,
-    displayValue
+    displayValue,
+    displayValues
   } = props;
-  // const displayValue = getDisplayValue(column, value);
-  // console.log(value);
-  // console.log(displayValue);
-  // console.log(column);
-  const linkName = f.find(
-    // first truthy value
-    f.complement(f.isEmpty),
-    [...f.props([langtag, DefaultLangtag], displayValue), <Empty />]
-  );
+  const { id } = value;
+  const linkName = f.isEmpty(displayValues)
+    ? retrieveTranslation(langtag)(displayValue)
+    : f.flow(
+        f.find(f.propEq("id", id)),
+        f.prop(["values", 0]),
+        when(f.isObject, retrieveTranslation(langtag))
+      )(displayValues);
 
   return (
     <a href="#" onClick={() => console.log("onClick")} className="link-label">
-      <div className="label-text">{linkName}</div>
+      <div className="label-text">
+        {f.isEmpty(linkName) ? <Empty langtag={langtag} /> : linkName}
+      </div>
     </a>
   );
 };
 
 // LinkLabelCell.propTypes = {
 //   cell: PropTypes.object.isRequired,
-//   linkElement: PropTypes.object.isRequired,
 //   langtag: PropTypes.string.isRequired,
 //   linkIndexAt: PropTypes.number.isRequired,
 //   clickable: PropTypes.bool
