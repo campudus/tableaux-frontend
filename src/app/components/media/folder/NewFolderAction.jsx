@@ -1,6 +1,6 @@
 import NewFolderActionView from "./NewFolderActionView.jsx";
 import SubfolderEdit from "./SubfolderEdit";
-import { simpleError } from "../../../components/overlay/ConfirmationOverlay";
+// import { simpleError } from "../../../components/overlay/ConfirmationOverlay";
 import React from "react";
 import PropTypes from "prop-types";
 import { pure, compose, withHandlers, withState } from "recompose";
@@ -11,18 +11,15 @@ const withEditMode = compose(
   withState("edit", "updateEdit", false),
   withHandlers({
     toggleEdit: ({ updateEdit }) => () => {
-      // TODO-W make this work again
-      console.log("toggleEdit!", updateEdit);
       updateEdit(edit => !edit);
     },
-    onSave: ({ t, updateEdit }) => (
+    onSave: ({ /*t,*/ updateEdit }) => actions => (
       folderId,
       folderName,
       folderDescription,
       folderParent
     ) => {
-      // TODO-W make this work again
-      console.log("onSave!", updateEdit);
+      actions.createMediaFolder(folderParent.id, folderName, folderDescription);
       updateEdit(f.always(false));
     }
   })
@@ -30,16 +27,20 @@ const withEditMode = compose(
 
 const NewFolderAction = props => {
   let newFolderAction;
-  const { t, onSave, toggleEdit, edit, parent } = props;
+  const { t, onSave, toggleEdit, edit, parentFolder, actions } = props;
 
   if (edit) {
     const folder = {
       name: t("new_folder"),
       description: "",
-      parent: parent
+      parent: parentFolder
     };
     newFolderAction = (
-      <SubfolderEdit folder={folder} onSave={onSave} onCancel={toggleEdit} />
+      <SubfolderEdit
+        folder={folder}
+        onSave={onSave(actions)}
+        onCancel={toggleEdit}
+      />
     );
   } else {
     newFolderAction = <NewFolderActionView callback={toggleEdit} />;
@@ -52,7 +53,8 @@ const NewFolderAction = props => {
 
 NewFolderAction.propTypes = {
   parentFolder: PropTypes.object,
-  folder: PropTypes.object
+  folder: PropTypes.object,
+  actions: PropTypes.any // TODO-W
 };
 
 export default compose(

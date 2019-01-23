@@ -11,7 +11,13 @@ import { isLocked } from "../helpers/annotationHelper";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import identifyLinkedRows from "../helpers/linkHelper";
 
-const { getAllTables, getAllColumnsForTable, getAllRowsForTable, getMediaFolder } = API_ROUTES;
+const {
+  getAllTables,
+  getAllColumnsForTable,
+  getAllRowsForTable,
+  getMediaFolderRoute,
+  createMediaFolderRoute
+} = API_ROUTES;
 
 const {
   TABLE_LOADING_DATA,
@@ -50,7 +56,10 @@ const {
 const {
   MEDIA_FOLDER_LOADING,
   MEDIA_FOLDER_LOADED,
-  MEDIA_FOLDER_ERROR
+  MEDIA_FOLDER_ERROR,
+  MEDIA_FOLDER_CREATE,
+  MEDIA_FOLDER_CREATE_SUCCESS,
+  MEDIA_FOLDER_CREATE_ERROR
 } = actionTypes.media;
 
 const dispatchParamsFor = actionType => params => ({
@@ -249,13 +258,28 @@ const toggleCellEditingOrUnlockCell = action => {
 const loadMediaFolder = (folderId, langtag) => {
   return {
     promise: makeRequest({
-      apiRoute: getMediaFolder(folderId, langtag),
+      apiRoute: getMediaFolderRoute(folderId, langtag),
       method: "GET"
     }),
+    actionTypes: [MEDIA_FOLDER_LOADING, MEDIA_FOLDER_LOADED, MEDIA_FOLDER_ERROR]
+  };
+};
+
+const createMediaFolder = (parentId, folderName, folderDescription = "") => {
+  return {
+    promise: makeRequest({
+      apiRoute: createMediaFolderRoute(),
+      data: {
+        parent: parentId,
+        name: folderName,
+        description: folderDescription
+      },
+      method: "POST"
+    }),
     actionTypes: [
-      MEDIA_FOLDER_LOADING,
-      MEDIA_FOLDER_LOADED,
-      MEDIA_FOLDER_ERROR
+      MEDIA_FOLDER_CREATE,
+      MEDIA_FOLDER_CREATE_SUCCESS,
+      MEDIA_FOLDER_CREATE_ERROR
     ]
   };
 };
@@ -281,7 +305,8 @@ const actionCreators = {
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
   applyFiltersAndSorting: applyFiltersAndSorting,
-  loadMediaFolder
+  loadMediaFolder: loadMediaFolder,
+  createMediaFolder: createMediaFolder
 };
 
 export default actionCreators;

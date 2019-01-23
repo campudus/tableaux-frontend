@@ -11,20 +11,25 @@ import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 /*
 TODO-W
 -> LanguageSwitcher
--> create folder
--> files/upload
--> rename and delete
+-> folders
+  -> edit (rename)
+  -> delete
+-> files
+  -> upload (create)
+  -> edit
+  -> delete
 */
 
 const mapStateToProps = state => {
-  return { media: f.get("media")(state) };
+  return { media: f.get("media", state) };
 };
 
 class MediaView extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     folderId: PropTypes.number,
-    media: PropTypes.object
+    media: PropTypes.object,
+    actions: PropTypes.any // TODO-W
   };
 
   state = {
@@ -40,11 +45,17 @@ class MediaView extends Component {
   // shouldComponentUpdate(nextProps, nextState) {}
 
   onLanguageSwitch(newLangtag) {
+    console.log("langSwitch to ", newLangtag);
     // TODO-W implement onLanguageSwitch
   }
 
   render() {
-    const { langtag, media } = this.props;
+    const { langtag, media, actions } = this.props;
+
+    if (media.error) {
+      console.log("MediaView -> state returned a error!");
+    }
+
     if (media.finishedLoading) {
       return (
         <div>
@@ -54,7 +65,7 @@ class MediaView extends Component {
             <PageTitle titleKey="pageTitle.media" />
             {/*<LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />*/}
           </header>
-          <Folder folder={media.data} langtag={langtag} />
+          <Folder folder={media.data} langtag={langtag} actions={actions} />
         </div>
       );
     } else {

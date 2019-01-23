@@ -16,7 +16,8 @@ class Folder extends Component {
   static propTypes = {
     folder: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
-    t: PropTypes.any // TODO-W specifiy t-prop
+    t: PropTypes.any, // TODO-W specifiy t-prop
+    actions: PropTypes.any // TODO-W
   };
 
   constructor(props) {
@@ -134,8 +135,9 @@ class Folder extends Component {
   };
 
   render() {
+    const { folder, actions } = this.props;
     const newFolderAction = isUserAdmin() ? (
-      <NewFolderAction parentFolder={this.props.folder} />
+      <NewFolderAction parentFolder={folder} actions={actions} />
     ) : null;
     return (
       <div id="media-wrapper">
@@ -143,7 +145,7 @@ class Folder extends Component {
         {newFolderAction}
         {this.renderSubfolders()}
         {this.renderFiles()}
-        <FileUpload folder={this.props.folder} />
+        <FileUpload folder={folder} />
       </div>
     );
   }

@@ -36,14 +36,16 @@ const withButtonHandlers = withHandlers({
       folderParent
     );
   },
-  onCancel: props => props.onEdit,
+  onCancel: props => props.onEdit(),
   onRemove: props => () => {
     confirmDeleteFolder(
       props.folder.name,
       () => {
-        console.log("Folder.onRemove", props.folder.getId());
+        console.log("Folder.onRemove", props.folder);
       },
-      () => {}
+      () => {
+        console.log("Folder cancel remove!");
+      }
     );
   }
 });
