@@ -16,7 +16,7 @@ class Folder extends Component {
   static propTypes = {
     folder: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
-    t: PropTypes.any, // TODO-W specifiy t-prop
+    t: PropTypes.func.isRequired,
     actions: PropTypes.any // TODO-W
   };
 
@@ -82,12 +82,17 @@ class Folder extends Component {
 
   renderSubfolders = () => {
     const subFolders = this.props.folder.subfolders;
-    const { langtag } = this.props;
+    const { langtag, actions } = this.props;
     if (subFolders && subFolders.length > 0) {
       const subfolder = subFolders.map((folder, idx) => {
         return (
           <li key={idx}>
-            <Subfolder key={idx} folder={folder} langtag={langtag} />
+            <Subfolder
+              key={idx}
+              folder={folder}
+              langtag={langtag}
+              actions={actions}
+            />
           </li>
         );
       });

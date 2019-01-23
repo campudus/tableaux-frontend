@@ -16,7 +16,8 @@ const {
   getAllColumnsForTable,
   getAllRowsForTable,
   getMediaFolderRoute,
-  createMediaFolderRoute
+  createMediaFolderRoute,
+  alterMediaFolderRoute
 } = API_ROUTES;
 
 const {
@@ -59,7 +60,10 @@ const {
   MEDIA_FOLDER_ERROR,
   MEDIA_FOLDER_CREATE,
   MEDIA_FOLDER_CREATE_SUCCESS,
-  MEDIA_FOLDER_CREATE_ERROR
+  MEDIA_FOLDER_CREATE_ERROR,
+  MEDIA_FOLDER_EDIT,
+  MEDIA_FOLDER_EDIT_SUCCESS,
+  MEDIA_FOLDER_EDIT_ERROR
 } = actionTypes.media;
 
 const dispatchParamsFor = actionType => params => ({
@@ -284,6 +288,30 @@ const createMediaFolder = (parentId, folderName, folderDescription = "") => {
   };
 };
 
+const alterMediaFolder = (
+  folderId,
+  parentId,
+  folderName,
+  folderDescription = ""
+) => {
+  return {
+    promise: makeRequest({
+      apiRoute: alterMediaFolderRoute(folderId),
+      data: {
+        parent: parentId,
+        name: folderName,
+        description: folderDescription
+      },
+      method: "PUT"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_EDIT,
+      MEDIA_FOLDER_EDIT_SUCCESS,
+      MEDIA_FOLDER_EDIT_ERROR
+    ]
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -306,7 +334,8 @@ const actionCreators = {
   createDisplayValueWorker: createDisplayValueWorker,
   applyFiltersAndSorting: applyFiltersAndSorting,
   loadMediaFolder: loadMediaFolder,
-  createMediaFolder: createMediaFolder
+  createMediaFolder: createMediaFolder,
+  alterMediaFolder: alterMediaFolder
 };
 
 export default actionCreators;

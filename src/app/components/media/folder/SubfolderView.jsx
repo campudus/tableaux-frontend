@@ -54,7 +54,8 @@ SubfolderView.propTypes = {
   folder: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
   onRemove: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired
+  onEdit: PropTypes.func.isRequired,
+  onFolderClick: PropTypes.func.isRequired
 };
 
 export default enhance(SubfolderView);

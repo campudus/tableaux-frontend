@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import SubfolderView from "./SubfolderView";
 import { translate } from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
-import {
-  confirmDeleteFolder,
-  simpleError
-} from "../../../components/overlay/ConfirmationOverlay";
+// import {
+//   confirmDeleteFolder,
+//   simpleError
+// } from "../../../components/overlay/ConfirmationOverlay";
 import {
   branch,
   compose,
@@ -26,18 +26,20 @@ const withToggleableEditState = compose(
 
 const withButtonHandlers = withHandlers({
   onSave: props => (folderId, folderName, folderDescription, folderParent) => {
-    const { t } = props;
+    // const { t } = props;
     props.onEdit();
-    console.log(
-      "Folder.changed",
+    props.actions.alterMediaFolder(
       folderId,
+      folderParent,
       folderName,
-      folderDescription,
-      folderParent
+      folderDescription
     );
   },
   onCancel: props => props.onEdit(),
   onRemove: props => () => {
+    console.log("Subfolder onRemove", props);
+    // TODO-W
+    /*
     confirmDeleteFolder(
       props.folder.name,
       () => {
@@ -47,6 +49,7 @@ const withButtonHandlers = withHandlers({
         console.log("Folder cancel remove!");
       }
     );
+    */
   }
 });
 
@@ -72,7 +75,8 @@ const Subfolder = props => {
 
 Subfolder.propTypes = {
   folder: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  actions: PropTypes.any // TODO-W
 };
 
 module.exports = compose(
