@@ -1,8 +1,8 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import "react-virtualized/styles.css";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import {DragDropContext, DragSource, DropTarget} from "react-dnd";
+import { DragDropContext, DragSource, DropTarget } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import classNames from "classnames";
 import f from "lodash/fp";
@@ -19,7 +19,7 @@ const itemSource = {
 };
 
 const itemTarget = {
-  hover(props, monitor, component) {
+  hover(props, monitor) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
 
@@ -42,16 +42,24 @@ const itemTarget = {
 }))
 class DragItem extends Component {
   render() {
-    const {isDragging, connectDragSource, connectDropTarget, connectDragPreview, isHovered} = this.props;
+    const {
+      isDragging,
+      connectDragSource,
+      connectDropTarget,
+      connectDragPreview,
+      isHovered
+    } = this.props;
     const itemClass = classNames("draggable", {
       "is-dragging": isDragging,
       "is-hovered": isHovered
     });
     return connectDragPreview(
       connectDropTarget(
-        <div className={itemClass} >
+        <div className={itemClass}>
           {connectDragSource(
-            <div className="drag-handle"><SvgIcon icon="burger" /></div>
+            <div className="drag-handle">
+              <SvgIcon icon="burger" />
+            </div>
           )}
           {this.props.children}
         </div>
@@ -69,32 +77,25 @@ class DragSortList extends Component {
   };
 
   render() {
-    const {renderListItem, swapItems, rowResults} = this.props;
-    const items = f.defaultTo([])(rowResults.linked).map(
-      (row = {}, index) => {
+    const { renderListItem, swapItems, rowResults } = this.props;
+    const items = f
+      .defaultTo([])(rowResults.linked)
+      .map((row = {}, index) => {
         return {
           index,
           id: row.id
         };
-      }
-    );
+      });
     return (
       <div className="link-list">
-        {
-          items.map(
-            (item, idx) => (
-              <DragItem key={idx}
-                index={idx}
-                swapItems={swapItems}
-              >
-                {renderListItem({
-                  index: item.index,
-                  key: idx
-                })}
-              </DragItem>
-            )
-          )
-        }
+        {items.map((item, idx) => (
+          <DragItem key={idx} index={idx} swapItems={swapItems}>
+            {renderListItem({
+              index: item.index,
+              key: idx
+            })}
+          </DragItem>
+        ))}
       </div>
     );
   }
