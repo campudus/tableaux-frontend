@@ -68,7 +68,7 @@ class Header extends PureComponent {
   };
 
   render() {
-    console.log("Default title?", isCell(this.props.title));
+    //    console.log("Default title?", isCell(this.props.title));
     const { actions, components, context, id } = this.props;
     const cssClass = classNames("header-wrapper", {
       "with-buttons": actions,
@@ -125,7 +125,7 @@ class Header extends PureComponent {
         </div>
         {buttonsItem}
         {children.map((el, idx) =>
-          React.cloneElement(el, { id: this.props.id, key: idx })
+          React.cloneElement(el, { ...this.props, key: idx })
         )}
         {this.props.children}
       </div>

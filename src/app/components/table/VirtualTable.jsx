@@ -274,7 +274,7 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderSingleCell = ({ columnIndex, rowIndex }) => {
-    const { actions, rows, table, langtag, columns } = this.props;
+    const { actions, rows, table, langtag, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const cell = this.getCell(rowIndex, columnIndex);
@@ -310,6 +310,7 @@ export default class VirtualTable extends PureComponent {
       <Cell
         actions={actions}
         value={value}
+        allDisplayValues={tableView.displayValues}
         displayValue={displayValue}
         column={column}
         columns={columns}

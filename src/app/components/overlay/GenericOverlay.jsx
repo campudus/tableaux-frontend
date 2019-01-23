@@ -17,7 +17,7 @@ class GenericOverlay extends Component {
     head: PropTypes.element.isRequired,
     body: PropTypes.element.isRequired,
     footer: PropTypes.element,
-    title: PropTypes.oneOf[(PropTypes.element, PropTypes.object)],
+    title: PropTypes.any,
     type: PropTypes.string,
     isOnTop: PropTypes.bool.isRequired,
     keyboardShortcuts: PropTypes.object,
@@ -189,6 +189,20 @@ class GenericOverlay extends Component {
       updateSharedData: this.updateSharedData
     };
 
+    const additionalProps = f.omit(
+      [
+        "head",
+        "foot",
+        "title",
+        "body",
+        "classes",
+        "type",
+        "isOnTop",
+        "specialClass"
+      ],
+      this.props
+    );
+
     return (
       <div
         className={overlayWrapperClass}
@@ -208,21 +222,22 @@ class GenericOverlay extends Component {
           {React.cloneElement(head, {
             ...childrenProps.head,
             ...dataShare,
-            grudData,
+            ...additionalProps,
             title
           })}
           <div className="overlay-content">
             {React.cloneElement(body, {
               ...childrenProps.body,
               ...dataShare,
-              grudData
+              ...additionalProps
             })}
           </div>
           {footer ? (
             <footer>
               {React.cloneElement(footer, {
                 ...childrenProps.footer,
-                ...dataShare
+                ...dataShare,
+                ...additionalProps
               })}
             </footer>
           ) : null}

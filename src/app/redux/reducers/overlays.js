@@ -6,6 +6,7 @@ const {
   OPEN_OVERLAY,
   CLOSE_OVERLAY,
   REMOVE_OVERLAY,
+  SET_OVERLAY_STATE,
   SHOW_TOAST,
   HIDE_TOAST
 } = actionTypes.overlays;
@@ -42,6 +43,20 @@ const closeOverlay = (state, action) => {
   );
 };
 
+const setOverlayState = (state, action) => {
+  const id = f.prop("id", action);
+  if (f.isEmpty(id) && !f.isInteger(id)) {
+    console.log("  -- id:", typeof id, id);
+    console.warn("Trying to set overlay to", action, "but no id was given");
+    return state;
+  }
+
+  // make sure we don't accidently trash the overlay
+  const overlayState = f.omit(["id", "head", "body", "foot", "type"], action);
+  const overlayIdx = f.findIndex(f.propEq("id", id), state.overlays);
+  return f.update(["overlays", overlayIdx], f.merge(f.__, overlayState), state);
+};
+
 const isObjectOrString = v => f.anyPass([f.isObject, f.isString])(v);
 const isOptionalObjectOrString = v => f.anyPass([f.isNil, isObjectOrString])(v);
 const isOptionalString = v => f.anyPass([f.isNil, f.isString])(v);
@@ -68,6 +83,8 @@ export default (state = initialState, action) => {
       return closeOverlay(state, action);
     case REMOVE_OVERLAY:
       return removeOverlay(state, action);
+    case SET_OVERLAY_STATE:
+      return setOverlayState(state, action);
     default:
       return state;
   }

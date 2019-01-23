@@ -39,6 +39,7 @@ const {
   SHOW_TOAST,
   HIDE_TOAST,
   OPEN_OVERLAY,
+  SET_OVERLAY_STATE,
   CLOSE_OVERLAY,
   REMOVE_OVERLAY
 } = actionTypes.overlays;
@@ -254,6 +255,7 @@ const actionCreators = {
   hideToast,
   openOverlay,
   closeOverlay,
+  setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker
 };
 
