@@ -35,6 +35,7 @@ import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
+  // console.log(testData);
   const { tableId } = props;
   const tables = state.tables.data;
   const table = tables[tableId];
@@ -115,9 +116,9 @@ class TableView extends Component {
       langtag,
       table,
       actions,
-      startedGeneratingDisplayValues,
       canRenderTable,
-      tableView
+      tableView,
+      visibleColumns
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -139,6 +140,7 @@ class TableView extends Component {
       return (
         <div className="wrapper">
           <Table
+            visibleColumns={visibleColumns}
             actions={actions}
             displayValues={displayValues}
             tableView={tableView}

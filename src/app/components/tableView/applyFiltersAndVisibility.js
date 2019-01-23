@@ -84,12 +84,13 @@ export default function(ComposedComponent) {
           allDisplayValues
         );
         const filteredRows = this.applyFilters(visibleRows, preparedRows);
-        const visibleColumns = this.applyColumnVisibility();
+        const columnsWithVisibility = this.applyColumnVisibility();
         return (
           <ComposedComponent
             {...{
               ...this.props,
-              columns: visibleColumns,
+              columns: columnsWithVisibility,
+              visibleColumns:f.filter("visible",columnsWithVisibility),
               rows: filteredRows,
               canRenderTable,
               preparedRows
