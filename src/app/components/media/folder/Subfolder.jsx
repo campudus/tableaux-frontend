@@ -37,8 +37,10 @@ const withButtonHandlers = withHandlers({
   },
   onCancel: props => props.onEdit(),
   onRemove: props => () => {
-    console.log("Subfolder onRemove", props);
+    console.log("delete is deactivated", props);
     // TODO-W
+    // deactivated to prevent deleting without a confirmation-dialog
+    // props.actions.deleteMediaFolder(props.folder.id);
     /*
     confirmDeleteFolder(
       props.folder.name,

@@ -63,7 +63,10 @@ const {
   MEDIA_FOLDER_CREATE_ERROR,
   MEDIA_FOLDER_EDIT,
   MEDIA_FOLDER_EDIT_SUCCESS,
-  MEDIA_FOLDER_EDIT_ERROR
+  MEDIA_FOLDER_EDIT_ERROR,
+  MEDIA_FOLDER_DELETE,
+  MEDIA_FOLDER_DELETE_SUCCESS,
+  MEDIA_FOLDER_DELETE_ERROR
 } = actionTypes.media;
 
 const dispatchParamsFor = actionType => params => ({
@@ -312,6 +315,20 @@ const alterMediaFolder = (
   };
 };
 
+const deleteMediaFolder = folderId => {
+  return {
+    promise: makeRequest({
+      apiRoute: alterMediaFolderRoute(folderId),
+      method: "DELETE"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_DELETE,
+      MEDIA_FOLDER_DELETE_SUCCESS,
+      MEDIA_FOLDER_DELETE_ERROR
+    ]
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -335,7 +352,8 @@ const actionCreators = {
   applyFiltersAndSorting: applyFiltersAndSorting,
   loadMediaFolder: loadMediaFolder,
   createMediaFolder: createMediaFolder,
-  alterMediaFolder: alterMediaFolder
+  alterMediaFolder: alterMediaFolder,
+  deleteMediaFolder: deleteMediaFolder
 };
 
 export default actionCreators;
