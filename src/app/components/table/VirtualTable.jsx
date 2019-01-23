@@ -161,14 +161,13 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderGridCell = gridData => {
-    const { rowIndex, columnIndex } = gridData;
     // if we're below all rows, render buttons
-    if (rowIndex > f.size(this.props.rows)) {
+    if (gridData.rowIndex > f.size(this.props.rows)) {
       return this.renderButton(gridData);
     }
 
     // if we're in the first column, render meta cells
-    if (columnIndex === 0) {
+    if (gridData.columnIndex === 0) {
       return this.renderMetaCell(
         f.flow(
           f.update("key", key => `meta-${key}`),
@@ -178,7 +177,7 @@ export default class VirtualTable extends PureComponent {
     }
 
     // else render either column headers or boring normal cells
-    return rowIndex === 0
+    return gridData.rowIndex === 0
       ? this.renderColumnHeader(
           f.flow(
             f.update("key", key => `col-${key}`),
@@ -195,11 +194,8 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderColumnHeader = ({ columnIndex }) => {
-    const visibleColumns = this.props.columns.filter(
-      (col, idx) => idx === 0 || col.visible
-    );
+    const { table, tables, visibleColumns } = this.props;
     const column = visibleColumns[columnIndex];
-    const { table, tables } = this.props;
     return (
       <ColumnHeader
         column={column}
@@ -274,34 +270,17 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderSingleCell = ({ columnIndex, rowIndex }) => {
-    const { actions, rows, table, langtag, columns } = this.props;
-    const { openAnnotations } = this.state;
+    const { actions, rows, table, langtag, visibleColumns } = this.props;
+    // const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const cell = this.getCell(rowIndex, columnIndex);
-    const visibleColumns = this.props.columns.filter(
-      (col, idx) => idx === 0 || col.visible
-    );
     const column = visibleColumns[columnIndex];
-    const {value, annotations} = cell;
-    const displayValueWithFallback = originalValue => {
-      if (!f.isNil(originalValue)) {
-        // console.log("value exists");
-        return originalValue;
-      }
-      return getDisplayValue(column, value);
-    };
-    const displayValue = displayValueWithFallback(f.get("displayValue", cell));
+    const {value} = cell;
+    const displayValue = cell.displayValue || getDisplayValue(column,value);
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = this.isCellSelected(column.id, row.id);
     const isEditing =
       isSelected && f.getOr(false, "tableView.editing", this.props);
-
-    // const displayValue = f.isArray(cell.displayValue)
-    //   ? f.flow(
-    //       f.map(f.get(langtag)),
-    //       f.join(";")
-    //     )(cell.displayValue) || ""
-    //   : f.get(langtag, cell.displayValue) || "";
 
     return (
       <Cell
@@ -521,14 +500,14 @@ export default class VirtualTable extends PureComponent {
       columnKeys,
       selectedCell,
       selectedCellEditing,
-      selectedCellExpandedRow
+      selectedCellExpandedRow,
+      visibleColumns
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
     const { columnIndex, rowIndex } =
       !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell
         ? scrolledCell
         : {};
-    const visibleColumns = columns.filter(this.filterVisibleCells);
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows) + 1;
     const selectedCellKey = `${f.get(
