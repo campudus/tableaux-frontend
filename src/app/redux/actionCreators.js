@@ -5,7 +5,7 @@ import API_ROUTES from "../helpers/apiRoutes";
 import getDisplayValue from "../helpers/getDisplayValue";
 import TableauxConstants from "../constants/TableauxConstants";
 import { changeCellValue } from "./actions/cellActions";
-import {Langtags} from "../constants/TableauxConstants";
+import { Langtags } from "../constants/TableauxConstants";
 import identifyLinkedRows from "../helpers/linkHelper";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
@@ -31,7 +31,7 @@ const {
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
   SET_DISPLAY_VALUE_WORKER,
-APPLY_FILTERS_AND_SORTING
+  APPLY_FILTERS_AND_SORTING
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -98,14 +98,15 @@ const hideAllColumns = tableId => {
   };
 };
 
-const applyFiltersAndSorting  = (filters,sorting,preparedRows) => {
+const applyFiltersAndSorting = (filters, sorting, preparedRows, langtag) => {
   return {
     type: APPLY_FILTERS_AND_SORTING,
     filters,
     sorting,
-    preparedRows
-  }
-}
+    preparedRows,
+    langtag
+  };
+};
 
 const setCurrentTable = tableId => {
   return {
@@ -114,31 +115,23 @@ const setCurrentTable = tableId => {
   };
 };
 
-const trace = str => element => {
-  console.log(str, element);
-  return element;
-};
-const mapWithIndex = f.map.convert({ cap: false });
-
-const generateDisplayValues = (rows, columns, tableId) => (dispatch, getState) => {
+const generateDisplayValues = (rows, columns, tableId) => (
+  dispatch,
+  getState
+) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const {
     tableView: { worker }
   } = getState();
-  worker.postMessage([
-    rows,
-    columns,
-    Langtags,
-    tableId
-  ]);
+  worker.postMessage([rows, columns, Langtags, tableId]);
   worker.onmessage = e => {
     const returnedTableId = e.data[1];
-    if(returnedTableId != tableId){
+    if (returnedTableId != tableId) {
       return;
     }
     const displayValues = e.data[0];
     dispatch({
-      type:GENERATED_DISPLAY_VALUES,
+      type: GENERATED_DISPLAY_VALUES,
       displayValues
     });
   };

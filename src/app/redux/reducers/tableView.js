@@ -121,7 +121,7 @@ export default (state = initialState, action, completeState) => {
     case TOGGLE_COLUMN_VISIBILITY:
       return toggleSingleColumn(state, action);
     case HIDE_ALL_COLUMNS:
-      return { ...state, visibleColumns: [] };
+      return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
     case SET_COLUMNS_VISIBLE:
       return { ...state, visibleColumns: action.columnIds };
     case APPLY_FILTERS_AND_SORTING:
@@ -158,7 +158,10 @@ export default (state = initialState, action, completeState) => {
     case ALL_ROWS_DATA_LOADED:
       return {
         ...state,
-        visibleRows: f.compose(f.map(f.toInteger),f.keys)(action.result.rows)
+        visibleRows: f.compose(
+          f.map(f.toInteger),
+          f.keys
+        )(action.result.rows)
       };
 
     default:
@@ -166,43 +169,13 @@ export default (state = initialState, action, completeState) => {
   }
 };
 
-const updateVisibleColumns = (state, completeState,action) => {
-  const {
-    currentTable,
-    currentLanguage
-  } = state;
-  // const displayValues = f.get(["displayValues",currentTable],state);
+const updateVisibleColumns = (state, completeState, action) => {
+  const { currentTable } = state;
   const [columns, table] = f.props(
-    [
-      ["columns", currentTable, "data"],
-      ["tables", "data", currentTable]
-    ],
+    [["columns", currentTable, "data"], ["tables", "data", currentTable]],
     completeState
   );
-  // const allDisplayValues = state.displayValues;
-  // const displayValues = combineDisplayValuesWithLinks(
-  //   allDisplayValues,
-  //   columns,
-  //   currentTable
-  // );
-  const {filters,sorting, preparedRows} = action;
-  // const prepareRowsForFilter = (rows, columns, displayValues) =>
-  //   mapIndexed((row, id) => {
-  //     const { values, annotations } = row;
-  //     const extractedAnnotations = f.map(extractAnnotations, annotations);
-  //     const updatedValues = mapIndexed((cell, index) => {
-  //       const column = columns[index];
-  //       return {
-  //         value: cell,
-  //         kind: column.kind,
-  //         displayValue: f.get([id,"values", index], displayValues),
-  //         annotations: f.get([index], extractedAnnotations),
-  //         isMultilanguage: f.get(["multilanguage"], column),
-  //         colId: column.id
-  //       };
-  //     }, values);
-  //     return { ...row, values: updatedValues };
-  //   }, rows);
+  const { filters, sorting, preparedRows, langtag } = action;
 
   const isFilterEmpty = filter =>
     f.isEmpty(filter.value) && !f.isString(filter.mode);
@@ -211,16 +184,15 @@ const updateVisibleColumns = (state, completeState,action) => {
     sortValue: sorting.value,
     filters: f.reject(isFilterEmpty, filters)
   };
-  // const preparedRows = prepareRowsForFilter(rows, columns, displayValues);
   const { colsWithMatches, visibleRows } = getFilteredRows(
     table,
     preparedRows,
     columns,
-    "de",
+    langtag,
     rowsFilter
   );
-  if(f.isEmpty(colsWithMatches)){
-    return {visibleRows,colsWithMatches:state.visibleColumns};
+  if (f.isEmpty(colsWithMatches)) {
+    return { visibleRows, colsWithMatches: state.visibleColumns };
   }
   return { colsWithMatches, visibleRows };
 };
