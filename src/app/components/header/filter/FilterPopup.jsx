@@ -234,11 +234,12 @@ class FilterPopup extends React.Component {
     const { filters, sorting } = this.state;
     const {
       actions: { applyFiltersAndSorting },
-      preparedRows
+      preparedRows,
+      langtag
     } = this.props;
     const colIdToNumber = obj =>
       f.assoc("columnId", parseInt(obj.columnId), obj);
-    applyFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting),preparedRows);
+    applyFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting),preparedRows,langtag);
     this.handleClickOutside(event);
   };
 
@@ -343,7 +344,7 @@ class FilterPopup extends React.Component {
   };
 
   render() {
-    const { t } = this.props;
+    const { t} = this.props;
     const { sorting } = this.state;
 
     const filters = f.isEmpty(this.state.filters)
