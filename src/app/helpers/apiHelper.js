@@ -4,7 +4,7 @@ import { isNil } from "lodash/fp";
 import apiUrl from "./apiUrl";
 
 
-const buildURL = apiRoute => "http://10.10.2.120:" + apiPort + apiUrl(apiRoute);
+const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
 
 const makeRequest = ({
   apiRoute,
@@ -23,13 +23,13 @@ const makeRequest = ({
     .catch(error => String(error));
 };
 
-const sendTestData = path =>data =>
+const sendTestData = path =>fileName =>data =>
   fetch("http://localhost:3004", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({data,path})
+    body: JSON.stringify({data,path:path+fileName})
   }).then(response => console.log(response));
 
-export {makeRequest,sendTestData}
+export {makeRequest,sendTestData};
