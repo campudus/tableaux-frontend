@@ -13,7 +13,7 @@ const withEditMode = compose(
     toggleEdit: ({ updateEdit }) => () => {
       updateEdit(edit => !edit);
     },
-    onSave: ({ /*t,*/ updateEdit }) => actions => (
+    onSave: ({ updateEdit }) => actions => (
       folderId,
       folderName,
       folderDescription,
@@ -54,7 +54,11 @@ const NewFolderAction = props => {
 NewFolderAction.propTypes = {
   parentFolder: PropTypes.object,
   folder: PropTypes.object,
-  actions: PropTypes.any // TODO-W
+  actions: PropTypes.object,
+  t: PropTypes.func,
+  onSave: PropTypes.func,
+  toggleEdit: PropTypes.func,
+  edit: PropTypes.bool
 };
 
 export default compose(

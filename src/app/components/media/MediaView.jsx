@@ -29,7 +29,7 @@ class MediaView extends Component {
     langtag: PropTypes.string.isRequired,
     folderId: PropTypes.number,
     media: PropTypes.object,
-    actions: PropTypes.any // TODO-W
+    actions: PropTypes.object
   };
 
   state = {

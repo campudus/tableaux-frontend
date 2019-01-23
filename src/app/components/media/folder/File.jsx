@@ -24,7 +24,7 @@ class File extends Component {
   static propTypes = {
     file: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
-    t: PropTypes.any // TODO-W specifiy t-prop
+    t: PropTypes.func
   };
 
   onRemove = () => {

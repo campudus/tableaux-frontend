@@ -26,7 +26,6 @@ const withToggleableEditState = compose(
 
 const withButtonHandlers = withHandlers({
   onSave: props => (folderId, folderName, folderDescription, folderParent) => {
-    // const { t } = props;
     props.onEdit();
     props.actions.alterMediaFolder(
       folderId,
@@ -78,7 +77,7 @@ const Subfolder = props => {
 Subfolder.propTypes = {
   folder: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  actions: PropTypes.any // TODO-W
+  actions: PropTypes.object
 };
 
 module.exports = compose(

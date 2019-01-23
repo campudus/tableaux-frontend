@@ -17,7 +17,7 @@ class Folder extends Component {
     folder: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
-    actions: PropTypes.any // TODO-W
+    actions: PropTypes.object
   };
 
   constructor(props) {
