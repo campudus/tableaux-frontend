@@ -7,7 +7,7 @@ const cors = require('cors');
 
 
 
-app.use(cors());
+// app.use(cors());
 app.use(express.static(path.resolve(__dirname, "../../dist")));
 app.use(
   "/api",
@@ -25,4 +25,4 @@ app.use(function(req, res, next) {
   res.sendFile(path.resolve(__dirname, "../../dist/index.html"));
 });
 
-app.listen(port,'0.0.0.0');
+app.listen(port,"localhost");
