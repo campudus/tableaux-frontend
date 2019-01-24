@@ -108,7 +108,7 @@ class Folder extends Component {
 
   renderFiles = () => {
     const files = this.props.folder.files;
-    const { langtag } = this.props;
+    const { langtag, actions } = this.props;
     const { modifiedFiles } = this.state;
 
     const sortAndMarkup = f.compose(
@@ -120,7 +120,7 @@ class Folder extends Component {
               f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
             }
           >
-            <File key={file.uuid} file={file} langtag={langtag} />
+            <File key={file.uuid} file={file} langtag={langtag} actions={actions} />
           </li>
         );
       }),

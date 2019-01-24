@@ -24,7 +24,8 @@ class File extends Component {
   static propTypes = {
     file: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
-    t: PropTypes.func
+    t: PropTypes.func,
+    actions: PropTypes.object
   };
 
   onRemove = () => {
@@ -35,12 +36,17 @@ class File extends Component {
       confirmDeleteFile(
         retrieveTranslation(this.props.file.title, this.props.langtag),
         () => {
+          // TODO-W
           console.log("File.onRemove", this.props.file.uuid);
         },
-        () => {}
+        this.props.actions
       );
     } else {
-      noPermissionAlertWithLanguage(getUserLanguageAccess());
+      noPermissionAlertWithLanguage(
+        getUserLanguageAccess(),
+        null,
+        this.props.actions
+      );
     }
   };
 

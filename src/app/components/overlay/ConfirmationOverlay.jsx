@@ -2,7 +2,7 @@ import React from "react";
 import { showDialog } from "./GenericOverlay";
 import i18n from "i18next";
 
-export function confirmDeleteFile(fileName, onYes) {
+export function confirmDeleteFile(fileName, onYes, reduxActions) {
   showDialog({
     type: "question",
     context: fileName,
@@ -11,7 +11,8 @@ export function confirmDeleteFile(fileName, onYes) {
     buttonActions: {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
-    }
+    },
+    reduxActions: reduxActions
   });
 }
 
@@ -33,7 +34,8 @@ export function confirmDeleteFolder(folderName, onYes, reduxActions) {
 
 export function noPermissionAlertWithLanguage(
   allowedLangtags,
-  allowedCountries
+  allowedCountries,
+  reduxActions
 ) {
   let totalError;
   const userError = `${i18n.t(
@@ -90,7 +92,10 @@ export function noPermissionAlertWithLanguage(
     title: i18n.t("common:access_management.permission_denied_headline"),
     heading: i18n.t("table:error_occured_hl"),
     message: totalError,
-    buttonActions: { neutral: [i18n.t("common:ok"), null] }
+    buttonActions: {
+      neutral: [i18n.t("common:ok"), null]
+    },
+    reduxActions: reduxActions
   });
 
   console.warn("Access denied. User can not edit this language.");
