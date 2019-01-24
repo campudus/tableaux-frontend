@@ -32,10 +32,6 @@ class MediaView extends Component {
     actions: PropTypes.object
   };
 
-  state = {
-    activeOverlay: null
-  };
-
   constructor(props) {
     super(props);
   }
