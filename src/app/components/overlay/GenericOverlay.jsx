@@ -9,6 +9,8 @@ import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import { maybe } from "../../helpers/functools";
 import Raven from "raven-js";
+import { when } from "../../helpers/functools";
+import { isCell } from "../../specs/cell-spec";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
@@ -219,12 +221,14 @@ class GenericOverlay extends Component {
           }}
           onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
-          {React.cloneElement(head, {
-            ...childrenProps.head,
-            ...dataShare,
-            ...additionalProps,
-            title
-          })}
+          {React.cloneElement(
+            head,
+            when(() => isCell(title), f.assoc("title", title), {
+              ...childrenProps.head,
+              ...dataShare,
+              ...additionalProps
+            })
+          )}
           <div className="overlay-content">
             {React.cloneElement(body, {
               ...childrenProps.body,
@@ -258,8 +262,9 @@ const showDialog = ({
   title,
   heading = "",
   message = "",
-  actions = {},
-  name
+  buttonActions = {},
+  name,
+  reduxActions = {}
 }) => {
   const wrapActionFn = fn => event => {
     Raven.captureBreadcrumb({
@@ -268,18 +273,21 @@ const showDialog = ({
     if (f.isFunction(fn)) {
       fn(event);
     }
-    this.props.actions.closeOverlay();
+    reduxActions.closeOverlay();
   };
+
   const enterKeyFn = f.flow(
     f.props(["positive", "negative", "neutral"]),
     f.find(f.identity),
     f.nth(1),
     wrapActionFn
-  )(actions);
+  )(buttonActions);
+
   const escKeyFn = f.flow(
     f.get(["neutral", 1]),
     wrapActionFn
-  )(actions);
+  )(buttonActions);
+
   const keyShortcuts = {
     enter: event => {
       event.preventDefault();
@@ -292,10 +300,11 @@ const showDialog = ({
       event.stopPropagation();
     }
   };
-  this.props.actions.openOverlay({
+
+  reduxActions.openOverlay({
     head: <Header context={context} title={title} />,
     body: <InfoBox heading={heading} message={message} type={type} />,
-    footer: <Footer actions={actions} />,
+    footer: <Footer buttonActions={buttonActions} />,
     keyboardShortcuts: keyShortcuts,
     name
   });

@@ -8,14 +8,14 @@ export function confirmDeleteFile(fileName, onYes) {
     context: fileName,
     title: i18n.t("media:delete_file_headline"),
     heading: <p>{i18n.t("media:confirm_delete_file", { fileName })}</p>,
-    actions: {
+    buttonActions: {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
     }
   });
 }
 
-export function confirmDeleteFolder(folderName, onYes) {
+export function confirmDeleteFolder(folderName, onYes, reduxActions) {
   showDialog({
     type: "question",
     context: folderName,
@@ -23,10 +23,11 @@ export function confirmDeleteFolder(folderName, onYes) {
     heading: (
       <p>{i18n.t("media:confirm_delete_folder_question", { folderName })}</p>
     ),
-    actions: {
+    buttonActions: {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
-    }
+    },
+    reduxActions: reduxActions
   });
 }
 
@@ -89,7 +90,7 @@ export function noPermissionAlertWithLanguage(
     title: i18n.t("common:access_management.permission_denied_headline"),
     heading: i18n.t("table:error_occured_hl"),
     message: totalError,
-    actions: { neutral: [i18n.t("common:ok"), null] }
+    buttonActions: { neutral: [i18n.t("common:ok"), null] }
   });
 
   console.warn("Access denied. User can not edit this language.");
@@ -121,7 +122,7 @@ export function cellModelSavingError(errorFromServer) {
     title: i18n.t("table:error_occured_hl"),
     heading: userError,
     message: totalError,
-    actions: { neutral: [i18n.t("common:ok"), null] }
+    buttonActions: { neutral: [i18n.t("common:ok"), null] }
   });
 }
 
@@ -132,6 +133,6 @@ export function simpleError(errorMsg, errorHead) {
     title: i18n.t("table:error_occured_hl"),
     heading: errorHead || i18n.t("table:error_occured_hl"),
     message: errorMsg,
-    actions: { neutral: [i18n.t("common:ok"), null] }
+    buttonActions: { neutral: [i18n.t("common:ok"), null] }
   });
 }

@@ -1,42 +1,51 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
-// import ActionCreator from "../../actions/ActionCreator";
 import Raven from "raven-js";
 
 class Footer extends Component {
-  static propTypes = { // compare OverlayHeader
-    actions: PropTypes.object
+  static propTypes = {
+    // compare OverlayHeader
+    actions: PropTypes.object,
+    buttonActions: PropTypes.object
   };
 
   wrapButtonFn = (value, fn) => (...args) => {
-    Raven.captureBreadcrumb({message: "Footer button: " + value});
+    Raven.captureBreadcrumb({ message: "Footer button: " + value });
     if (f.isFunction(fn)) {
       fn(...args);
     }
-    // ActionCreator.closeOverlay();
+    this.props.actions.closeOverlay();
   };
 
   render() {
-    const {actions} = this.props;
-    if (f.isEmpty(actions)) {
+    const { buttonActions } = this.props;
+
+    if (f.isEmpty(buttonActions)) {
       return null;
     } else {
-      const [pos, neg, ntr] = f.props(["positive", "negative", "neutral"], actions);
+      const [pos, neg, ntr] = f.props(
+        ["positive", "negative", "neutral"],
+        buttonActions
+      );
+
       const makeButton = (className, [text, fn]) => (
-        <a className={"button " + className}
+        <a
+          className={"button " + className}
           onClick={this.wrapButtonFn(className, fn)}
         >
           {text}
         </a>
       );
+
       const buttonsItem = (
         <div className="action-buttons">
-          {(neg) ? makeButton("negative", neg) : null}
-          {(ntr) ? makeButton("neutral", ntr) : null}
-          {(pos) ? makeButton("positive", pos) : null}
+          {neg ? makeButton("negative", neg) : null}
+          {ntr ? makeButton("neutral", ntr) : null}
+          {pos ? makeButton("positive", pos) : null}
         </div>
       );
+
       return <footer className="button-wrapper">{buttonsItem}</footer>;
     }
   }

@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import SubfolderView from "./SubfolderView";
 import { translate } from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
-// import {
-//   confirmDeleteFolder,
-//   simpleError
-// } from "../../../components/overlay/ConfirmationOverlay";
+import {
+  confirmDeleteFolder // ,
+  // simpleError
+} from "../../../components/overlay/ConfirmationOverlay";
 import {
   branch,
   compose,
@@ -36,21 +36,13 @@ const withButtonHandlers = withHandlers({
   },
   onCancel: props => props.onEdit(),
   onRemove: props => () => {
-    console.log("delete is deactivated", props);
-    // TODO-W
-    // deactivated to prevent deleting without a confirmation-dialog
-    // props.actions.deleteMediaFolder(props.folder.id);
-    /*
     confirmDeleteFolder(
       props.folder.name,
       () => {
-        console.log("Folder.onRemove", props.folder);
+        props.actions.deleteMediaFolder(props.folder.id);
       },
-      () => {
-        console.log("Folder cancel remove!");
-      }
+      props.actions
     );
-    */
   }
 });
 
