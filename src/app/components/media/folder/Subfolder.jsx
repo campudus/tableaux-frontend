@@ -3,10 +3,7 @@ import PropTypes from "prop-types";
 import SubfolderView from "./SubfolderView";
 import { translate } from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
-import {
-  confirmDeleteFolder // ,
-  // simpleError
-} from "../../../components/overlay/ConfirmationOverlay";
+import { confirmDeleteFolder } from "../../../components/overlay/ConfirmationOverlay";
 import {
   branch,
   compose,
