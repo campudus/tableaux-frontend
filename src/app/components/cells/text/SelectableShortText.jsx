@@ -57,7 +57,7 @@ const enhance = compose(
       setInitialCompletionList: () => requestedData => ({
         completions: extractAndFilterCompletions("", requestedData)
       }),
-      saveEdits: ({ curValue }, { value, onBlur }) => () => {
+      saveEdits: ({ curValue }, { onBlur }) => () => {
         onBlur(curValue);
       },
       setCaret: ({ curValue }) => inputNode => {

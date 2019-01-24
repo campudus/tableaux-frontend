@@ -39,14 +39,8 @@ export default class Tableaux extends PureComponent {
 
     this.state = {
       currentView: this.props.initialViewName,
-      currentViewParams: this.props.initialParams,
-      activeOverlays: [],
-      exitingOverlays: false,
-      toast: null
+      currentViewParams: this.props.initialParams
     };
-
-    this.toastTimer = null;
-    this.exitingOverlays = [];
   }
 
   componentWillUnmount() {
@@ -76,7 +70,7 @@ export default class Tableaux extends PureComponent {
   }
 
   render() {
-    const { activeOverlays, currentView, currentViewParams } = this.state;
+    const { currentView } = this.state;
     const { initialParams, actions } = this.props;
     return (
       <I18nextProvider i18n={i18n}>
