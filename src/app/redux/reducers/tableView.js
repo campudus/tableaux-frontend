@@ -123,14 +123,19 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
   const value = f.prop(valueProp, action);
-  const { tableId } = action;
+  const { tableId, column } = action;
+  console.log(
+    "updateDisplayValue",
+    JSON.stringify(value),
+    column.kind,
+    column.multilanguage ? "multilang" : "single lang"
+  );
   const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
   const pathToDv = displayValueSelector({
     tableId,
     dvRowIdx,
     columnIdx
   });
-  const column = completeState.columns[tableId];
   return f.assoc(pathToDv, getDisplayValue(column, value), tableView);
 };
 

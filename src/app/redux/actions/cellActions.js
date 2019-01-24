@@ -22,15 +22,30 @@ export const changeCellValue = action => (dispatch, getState) => {
     f.find(f.propEq("id", columnId))
   );
   const column = action.column || getColumn();
-  dispatch(dispatchCellValueChange({ ...action, column }));
+  const reduceValue =
+    column.languageType === "country"
+      ? reduceValuesToAllowedCountries
+      : reduceValuesToAllowedLanguages;
+  const newValue = column.multilanguage
+    ? f.merge(action.oldValue, reduceValue(action.newValue))
+    : action.newValue;
+
+  dispatch(
+    dispatchCellValueChange({
+      ...action,
+      column,
+      newValue
+    })
+  );
 };
 
 const dispatchCellValueChange = action => {
-  const { tableId, columnId, rowId, oldValue, newValue } = action;
-  console.log("Change cell value:", oldValue, "->", newValue);
+  const { tableId, columnId, rowId, oldValue, newValue, column } = action;
   const update = calculateCellUpdate(action);
-  console.log("-- update:", update);
 
+  const needsUpdate = column.multilanguage
+    ? !f.every(k => f.isEqual(oldValue[k], newValue[k]), f.keys(newValue))
+    : f.isEqual(oldValue, newValue);
   // bail out if no updates needed
   return f.equals(update.value.value, oldValue)
     ? {
