@@ -4,7 +4,7 @@ import { DefaultLangtag } from "../../constants/TableauxConstants";
 import { setUrlBarToCell } from "../../helpers/browserNavigation";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
-import { isLocked } from "../../helpers/annotationHelper";
+import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
@@ -67,6 +67,7 @@ const toggleSelectedCell = (state, action) => {
         DefaultLangtag
     });
   }
+  unlockRow(action.rowId, false);
   return f.flow(
     f.assoc("editing", false),
     f.update("selectedCell", prevSelection =>
