@@ -72,8 +72,9 @@ const toggleSelectedCell = (state, action) => {
     f.update("selectedCell", prevSelection =>
       action.select !== false &&
       (prevSelection.rowId !== action.rowId ||
-        prevSelection.columnId !== action.columnId)
-        ? f.pick(["rowId", "columnId"], action)
+        prevSelection.columnId !== action.columnId ||
+        prevSelection.langtag !== action.langtag)
+        ? f.pick(["rowId", "columnId", "langtag"], action)
         : {}
     )
   )(state);
