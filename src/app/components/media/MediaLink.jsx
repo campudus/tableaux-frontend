@@ -12,7 +12,7 @@ const enhance = compose(
     fileUrl: apiUrl(f.getOr(url[DefaultLangtag], langtag, url))
   })),
   withHandlers({
-    openWindow: ({ url }) => () => window.open(url)
+    openWindow: ({ fileUrl }) => () => window.open(fileUrl)
   })
 );
 
