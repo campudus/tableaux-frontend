@@ -1,28 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Empty from "../helperComponents/emptyEntry";
-import {DefaultLangtag} from "../../constants/TableauxConstants";
-import {compose, withProps, pure, withHandlers} from "recompose";
+import { DefaultLangtag } from "../../constants/TableauxConstants";
+import { compose, withProps, pure, withHandlers } from "recompose";
 import apiUrl from "../../helpers/apiUrl";
 import f from "lodash/fp";
 
 const enhance = compose(
   pure,
-  withProps(
-    ({file: {fileUrl}, langtag}) => ({fileUrl: apiUrl(f.getOr(fileUrl[DefaultLangtag], langtag, fileUrl))})
-  ),
+  withProps(({ file: { url }, langtag }) => ({
+    fileUrl: apiUrl(f.getOr(url[DefaultLangtag], langtag, url))
+  })),
   withHandlers({
-    openWindow: ({fileUrl}) => () => window.open(fileUrl)
+    openWindow: ({ url }) => () => window.open(url)
   })
 );
 
-const MediaLink = ({fileUrl, openWindow, children}) => {
+const MediaLink = ({ url, openWindow, children }) => {
   return (
-    <a href={fileUrl}
-       rel="noopener"
-       target="_blank"
-       onClick={openWindow}
-    >
+    <a href={url} rel="noopener" target="_blank" onClick={openWindow}>
       {children || <Empty />}
     </a>
   );
