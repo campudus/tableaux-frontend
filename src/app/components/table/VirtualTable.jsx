@@ -13,7 +13,6 @@ import ColumnHeader from "../columns/ColumnHeader";
 import { AutoSizer } from "react-virtualized";
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { either, maybe } from "../../helpers/functools";
-// import Dispatcher from "../../dispatcher/Dispatcher";
 import AddNewRowButton from "../rows/NewRow";
 import getDisplayValue from "../../helpers/getDisplayValue";
 
@@ -303,6 +302,8 @@ export default class VirtualTable extends PureComponent {
         selected={isSelected}
         inSelectedRow={isInSelectedRow}
         editing={isEditing}
+        openCellContextMenu={this.props.openCellContextMenu}
+        closeCellContextMenu={this.props.closeCellContextMenu}
       />
     );
   };
@@ -317,10 +318,13 @@ export default class VirtualTable extends PureComponent {
     const column = visibleColumns[columnIndex];
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
+    const tableLangtag = this.props.langtag;
 
     console.log(
       "selected:",
-      JSON.stringify({ ...tableView.selectedCell, editing: tableView.editing })
+      JSON.stringify({ ...tableView.selectedCell, editing: tableView.editing }),
+      "state",
+      this.state
     );
     return (
       // key={cell.id}
@@ -365,6 +369,11 @@ export default class VirtualTable extends PureComponent {
               displayValue={displayValue}
               allDisplayValues={tableView.displayValues}
               value={cell.value}
+              openCellContextMenu={this.props.openCellContextMenu({
+                langtag: tableLangtag,
+                cell
+              })}
+              closeCellContextMenu={this.props.closeCellContextMenu}
             />
           );
         })}

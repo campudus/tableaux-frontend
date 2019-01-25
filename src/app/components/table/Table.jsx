@@ -1,21 +1,23 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
-import { ActionTypes } from "../../constants/TableauxConstants";
 // import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 // import * as tableRowsWorker from "./tableRowsWorker";
 // import * as tableNavigationWorker from "./tableNavigationWorker";
 // import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
-import { maybe } from "../../helpers/functools";
+import {
+  maybe,
+  stopPropagation,
+  preventDefault
+} from "../../helpers/functools";
 import i18n from "i18next";
+import RowContextMenu from "../contextMenu/RowContextMenu";
 import { Portal } from "react-portal";
-
 import VirtualTable from "./VirtualTable";
 
 class Table extends Component {
-  // PureComponent will not react to updates called from connectToAmpersand
   /**
    * This is an anti-pattern on purpose
    * Don't change this, its more performant than using this.state !
@@ -28,7 +30,6 @@ class Table extends Component {
     this.tableRowsDom = null; // scrolling rows container
 
     this.state = {
-      offsetTableData: 0,
       windowHeight: window.innerHeight,
       scrolledHorizontal: 0,
       selectedCell: null,
@@ -44,22 +45,9 @@ class Table extends Component {
   componentWillMount() {
     // Dispatcher.on(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
     // Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
-    // Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
-    // Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
     // Dispatcher.on(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
 
     window.addEventListener("resize", this.windowResize);
-  }
-
-  componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
-    // Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
-    // Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
-    // Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
-    // Dispatcher.off(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
-    // window.removeEventListener("resize", this.windowResize);
-    // this.props.table.rows.off("add", tableRowsWorker.rowAdded.bind(this));
-    // window.GLOBAL_TABLEAUX.tableRowsDom = null;
   }
 
   componentWillReceiveProps(np) {
@@ -146,6 +134,28 @@ class Table extends Component {
     ) : null;
   };
 
+  showRowContextMenu = ({ langtag, cell }) => event => {
+    const { pageX, pageY } = event;
+    const { actions } = this.props;
+    this.setState({
+      rowContextMenu: {
+        x: pageX,
+        y: pageY,
+        row: cell.row,
+        table: cell.table,
+        actions,
+        langtag,
+        cell
+      }
+    });
+  };
+
+  hideRowContextMenu = event => {
+    stopPropagation(event);
+    preventDefault(event);
+    this.setState({ rowContextMenu: null });
+  };
+
   render() {
     const {
       actions,
@@ -159,10 +169,9 @@ class Table extends Component {
       visibleColumns
     } = this.props;
     const {
-      selectedCell,
-      selectedCellEditing,
       expandedRowIds,
-      selectedCellExpandedRow
+      selectedCellExpandedRow,
+      rowContextMenu
     } = this.state;
     const rowKeys = f.flow(
       f.keys,
@@ -212,10 +221,18 @@ class Table extends Component {
             toggleExpandedRow={this.toggleExpandedRow}
             expandedRowIds={expandedRowIds}
             fullyLoaded={this.props.fullyLoaded}
+            openCellContextMenu={this.showRowContextMenu}
+            closeCellContextMenu={this.hideRowContextMenu}
           />
         </div>
         {this.noRowsInfo()}
-        {/*tableContextMenu.getRowContextMenu.call(this)*/ null}
+        {rowContextMenu ? (
+          <RowContextMenu
+            {...rowContextMenu}
+            onClickOutside={this.hideRowContextMenu}
+            action={actions}
+          />
+        ) : null}
       </section>
     );
   }

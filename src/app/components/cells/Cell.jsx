@@ -147,6 +147,8 @@ class Cell extends React.Component {
         key != "columns" &&
         key !== "column" &&
         key !== "row" &&
+        key !== "openCellContextMenu" &&
+        key !== "closeCellContextMenu" &&
         !(
           key === "allDisplayValues" &&
           this.props.column.kind === ColumnKinds.link
@@ -163,6 +165,17 @@ class Cell extends React.Component {
   setKeyboardShortcutsForChildren = childrenEvents => {
     this.keyboardShortcuts = childrenEvents;
   };
+
+  openCellContextMenu = this.props.openCellContextMenu({
+    langtag: this.props.langtag,
+    cell: {
+      row: this.props.row,
+      table: this.props.table,
+      column: this.props.column,
+      value: this.props.value,
+      kind: this.props.column.kind
+    }
+  });
 
   cellClickedWorker = (event, withRightClick) => {
     const {
@@ -187,6 +200,12 @@ class Cell extends React.Component {
     //   cell.displayValue
     // );
 
+    console.log(`cell${withRightClick ? " right" : ""} clicked:`, event);
+
+    if (!withRightClick) {
+      this.props.closeCellContextMenu();
+    }
+
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
       actions.toggleCellSelection({
@@ -201,6 +220,7 @@ class Cell extends React.Component {
 
     if (withRightClick) {
       event.preventDefault();
+      this.openCellContextMenu(event);
       // ActionCreator.showRowContextMenu(this.props.row, langtag, event.pageX, event.pageY, this.props.table, cell);
     }
 
