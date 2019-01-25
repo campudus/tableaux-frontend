@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import i18n from "i18next";
 import apiUrl from "../../../helpers/apiUrl";
 import multiLanguage from "../../../helpers/multiLanguage";
-// import FileEdit from "../overlay/FileEdit.jsx";
 
-// import Header from "../../overlay/Header";
-// import Footer from "../../overlay/Footer";
+// import { showDialog } from "../../overlay/GenericOverlay";
+import FileEdit from "../overlay/FileEdit.jsx";
+import Header from "../../overlay/Header";
+import Footer from "../../overlay/Footer";
 
 import TableauxConstants from "../../../constants/TableauxConstants";
 import {
@@ -52,20 +54,47 @@ class File extends Component {
 
   onSave = () => {
     // TODO-W implement onSave
+    console.log("onSave File");
   };
 
   onCancel = () => {
     // TODO-W implement onCancel
+    console.log("onCancel File");
   };
 
   onEdit = () => {
     // TODO-W implement onEdit
-    // const { file, langtag, t } = this.props;
-    // const { FallbackLanguage } = TableauxConstants;
+    const { file, langtag, actions } = this.props;
+    const { FallbackLanguage } = TableauxConstants;
+    const retrieveTranslation = multiLanguage.retrieveTranslation(
+      FallbackLanguage
+    );
+    console.log("onEdit File");
+    actions.openOverlay({
+      head: (
+        <Header
+          context={i18n.t("media:change_file")}
+          title={retrieveTranslation(file.title, langtag)}
+        />
+      ),
+      body: (
+        <FileEdit file={file} langtag={langtag} onClose={this.onEditClose} />
+      ),
+      footer: (
+        <Footer
+          buttonActions={{
+            negative: [i18n.t("common:save"), this.onSave],
+            neutral: [i18n.t("common:cancel"), null]
+          }}
+        />
+      ),
+      name: retrieveTranslation(file.title, langtag)
+    });
   };
 
   onEditClose = event => {
     // TODO-W implement onEditClose
+    console.log("onEditClose File");
   };
 
   render() {
