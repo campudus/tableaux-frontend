@@ -313,13 +313,6 @@ class Cell extends React.Component {
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
 
-    // const displayValue = f.isArray(cell.displayValue)
-    //   ? f.flow(
-    //       f.map(f.get(langtag)),
-    //       f.join(";")
-    //     )(cell.displayValue) || ""
-    //   : f.get(langtag, cell.displayValue) || "";
-
     // onKeyDown event just for selected components
     return (
       <div

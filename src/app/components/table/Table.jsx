@@ -1,23 +1,18 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
-// import Dispatcher from "../../dispatcher/Dispatcher";
 import { ActionTypes } from "../../constants/TableauxConstants";
 // import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 // import * as tableRowsWorker from "./tableRowsWorker";
 // import * as tableNavigationWorker from "./tableNavigationWorker";
 // import * as tableContextMenu from "./tableContextMenu";
 import listensToClickOutside from "react-onclickoutside";
-// import connectToAmpersand from "../helperComponents/connectToAmpersand";
 import f from "lodash/fp";
 import { maybe } from "../../helpers/functools";
 import i18n from "i18next";
 import { Portal } from "react-portal";
 
 import VirtualTable from "./VirtualTable";
-
-// @connectToAmpersand
-// @listensToClickOutside
 
 class Table extends Component {
   // PureComponent will not react to updates called from connectToAmpersand
@@ -47,10 +42,7 @@ class Table extends Component {
   }
 
   componentWillMount() {
-    // Dispatcher.on(ActionTypes.TOGGLE_CELL_SELECTION, tableNavigationWorker.toggleCellSelection, this);
-    // Dispatcher.on(ActionTypes.TOGGLE_CELL_EDITING, tableNavigationWorker.toggleCellEditing, this);
     // Dispatcher.on(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
-    // Dispatcher.on(ActionTypes.TOGGLE_ROW_EXPAND, tableRowsWorker.toggleRowExpand, this);
     // Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
     // Dispatcher.on(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     // Dispatcher.on(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
@@ -60,10 +52,7 @@ class Table extends Component {
   }
 
   componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.TOGGLE_CELL_SELECTION, tableNavigationWorker.toggleCellSelection, this);
-    // Dispatcher.off(ActionTypes.TOGGLE_CELL_EDITING, tableNavigationWorker.toggleCellEditing, this);
     // Dispatcher.off(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
-    // Dispatcher.off(ActionTypes.TOGGLE_ROW_EXPAND, tableRowsWorker.toggleRowExpand, this);
     // Dispatcher.off(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
     // Dispatcher.off(ActionTypes.SHOW_ROW_CONTEXT_MENU, tableContextMenu.showRowContextMenu, this);
     // Dispatcher.off(ActionTypes.CLOSE_ROW_CONTEXT_MENU, tableContextMenu.closeRowContextMenu, this);
@@ -95,14 +84,16 @@ class Table extends Component {
     this.setState({ expandedRowIds: newExpandedRowIds });
   };
 
-  handleClickOutside = event => {
-    /*
-     Prevent to render when clicking on already selected cell and don't clear when some cell is editing. This way cells
-     like shorttext will be saved on the first click outside and on the second click it gets deselected.
-     */
-    if (this.state.selectedCell && !this.state.selectedCellEditing) {
-      this.setState({
-        selectedCell: null
+  handleClickOutside = () => {
+    const {
+      actions,
+      tableView: { selectedCell, editing }
+    } = this.props;
+    if (!f.isEmpty(selectedCell) && !editing) {
+      actions.toggleCellSelection({
+        selected: false,
+        pushHistory: false,
+        rowId: f.prop("rowId", selectedCell)
       });
     }
   };
@@ -230,4 +221,4 @@ class Table extends Component {
   }
 }
 
-export default Table;
+export default listensToClickOutside(Table);
