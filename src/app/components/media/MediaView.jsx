@@ -1,28 +1,27 @@
+import { compose, withProps } from "recompose";
 import React, { Component } from "react";
+
 import PropTypes from "prop-types";
 import f from "lodash/fp";
 
+import TableauxConstants from "../../constants/TableauxConstants";
 import Folder from "./folder/Folder.jsx";
+import LanguageSwitcher from "../header/LanguageSwitcher";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
-// import LanguageSwitcher from "../../components/header/LanguageSwitcher.jsx";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
-
-/*
-TODO-W
--> LanguageSwitcher
--> folders
-  -> edit (rename)
-  -> delete
--> files
-  -> upload (create)
-  -> edit
-  -> delete
-*/
+import needsApiData from "../helperComponents/needsAPIData";
 
 const mapStateToProps = state => {
   return { media: f.get("media", state) };
 };
+
+const enhance = compose(
+  withProps(() => {
+    return { requestUrl: "/api/system/settings/langtags" };
+  }),
+  needsApiData
+);
 
 class MediaView extends Component {
   static propTypes = {
@@ -46,20 +45,27 @@ class MediaView extends Component {
   }
 
   render() {
-    const { langtag, media, actions } = this.props;
+    const { langtag, media, actions, requestedData } = this.props;
+
+    if (requestedData) {
+      TableauxConstants.initLangtags(this.props.requestedData.value);
+    }
 
     if (media.error) {
       console.log("MediaView -> state returned a error!");
     }
 
-    if (media.finishedLoading) {
+    if (media.finishedLoading && requestedData) {
       return (
         <div>
           <header>
             <Navigation langtag={langtag} />
             <div className="header-separator" />
             <PageTitle titleKey="pageTitle.media" />
-            {/*<LanguageSwitcher langtag={this.props.langtag} onChange={this.onLanguageSwitch} />*/}
+            <LanguageSwitcher
+              langtag={this.props.langtag}
+              onChange={this.onLanguageSwitch}
+            />
           </header>
           <Folder folder={media.data} langtag={langtag} actions={actions} />
         </div>
@@ -71,4 +77,4 @@ class MediaView extends Component {
   }
 }
 
-export default ReduxActionHoc(MediaView, mapStateToProps);
+export default compose(enhance)(ReduxActionHoc(MediaView, mapStateToProps));
