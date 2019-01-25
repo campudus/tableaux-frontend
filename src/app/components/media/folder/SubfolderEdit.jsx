@@ -1,4 +1,4 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import listensToClickOutside from "react-onclickoutside";
 import ReactDOM from "react-dom";
@@ -12,22 +12,22 @@ class SubfolderEdit extends PureComponent {
     onCancel: PropTypes.func.isRequired
   };
 
-  handleClickOutside = (event) => {
+  handleClickOutside = event => {
     this.onSave();
   };
 
   getKeyboardShortcuts = () => {
-    const {onCancel} = this.props;
+    const { onCancel } = this.props;
     return {
-      escape: (event) => {
+      escape: event => {
         event.preventDefault();
         onCancel();
       },
-      tab: (event) => {
+      tab: event => {
         event.preventDefault();
         this.onSave();
       },
-      enter: (event) => {
+      enter: event => {
         event.preventDefault();
         this.onSave();
       }
@@ -46,7 +46,12 @@ class SubfolderEdit extends PureComponent {
     if (currentName === "" || currentName === placeHolderName) {
       this.props.onCancel();
     } else {
-      this.props.onSave(this.props.folder.id, currentName, this.props.folder.description, this.props.folder.parent);
+      this.props.onSave(
+        this.props.folder.id,
+        currentName,
+        this.props.folder.description,
+        this.props.folder.parent
+      );
     }
   };
 
@@ -55,9 +60,15 @@ class SubfolderEdit extends PureComponent {
 
     return (
       <div className="create-new-folder">
-        <i className="icon fa fa-folder-open"></i>
-        <input ref="nameInput" type="text" defaultValue={placeHolderName}
-          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
+        <i className="icon fa fa-folder-open" />
+        <input
+          ref="nameInput"
+          type="text"
+          defaultValue={placeHolderName}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
+            this.getKeyboardShortcuts
+          )}
+        />
       </div>
     );
   }

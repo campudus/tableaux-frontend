@@ -120,7 +120,12 @@ class Folder extends Component {
               f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
             }
           >
-            <File key={file.uuid} file={file} langtag={langtag} actions={actions} />
+            <File
+              key={file.uuid}
+              file={file}
+              langtag={langtag}
+              actions={actions}
+            />
           </li>
         );
       }),
