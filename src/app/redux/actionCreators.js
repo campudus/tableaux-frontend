@@ -15,9 +15,7 @@ const {
   getAllTables,
   getAllColumnsForTable,
   getAllRowsForTable,
-  getMediaFolderRoute,
-  createMediaFolderRoute,
-  alterMediaFolderRoute
+  toFolder
 } = API_ROUTES;
 
 const {
@@ -265,7 +263,7 @@ const toggleCellEditingOrUnlockCell = action => {
 const loadMediaFolder = (folderId, langtag) => {
   return {
     promise: makeRequest({
-      apiRoute: getMediaFolderRoute(folderId, langtag),
+      apiRoute: toFolder(folderId, langtag),
       method: "GET"
     }),
     actionTypes: [MEDIA_FOLDER_LOADING, MEDIA_FOLDER_LOADED, MEDIA_FOLDER_ERROR]
@@ -275,7 +273,7 @@ const loadMediaFolder = (folderId, langtag) => {
 const createMediaFolder = (parentId, folderName, folderDescription = "") => {
   return {
     promise: makeRequest({
-      apiRoute: createMediaFolderRoute(),
+      apiRoute: toFolder(),
       data: {
         parent: parentId,
         name: folderName,
@@ -299,7 +297,7 @@ const alterMediaFolder = (
 ) => {
   return {
     promise: makeRequest({
-      apiRoute: alterMediaFolderRoute(folderId),
+      apiRoute: toFolder(folderId),
       data: {
         parent: parentId,
         name: folderName,
@@ -318,7 +316,7 @@ const alterMediaFolder = (
 const deleteMediaFolder = folderId => {
   return {
     promise: makeRequest({
-      apiRoute: alterMediaFolderRoute(folderId),
+      apiRoute: toFolder(folderId),
       method: "DELETE"
     }),
     actionTypes: [
