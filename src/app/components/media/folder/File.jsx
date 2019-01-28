@@ -4,7 +4,6 @@ import i18n from "i18next";
 import apiUrl from "../../../helpers/apiUrl";
 import multiLanguage from "../../../helpers/multiLanguage";
 
-// import { showDialog } from "../../overlay/GenericOverlay";
 import FileEdit from "../overlay/FileEdit.jsx";
 import Header from "../../overlay/Header";
 import Footer from "../../overlay/Footer";
@@ -52,24 +51,23 @@ class File extends Component {
     }
   };
 
-  onSave = () => {
+  onSave = changeFileParams => {
     // TODO-W implement onSave
-    console.log("onSave File");
+    console.log("onSave File", changeFileParams);
   };
 
-  onCancel = () => {
+  /*onCancel = () => {
     // TODO-W implement onCancel
     console.log("onCancel File");
-  };
+  };*/
 
   onEdit = () => {
-    // TODO-W implement onEdit
     const { file, langtag, actions } = this.props;
     const { FallbackLanguage } = TableauxConstants;
     const retrieveTranslation = multiLanguage.retrieveTranslation(
       FallbackLanguage
     );
-    console.log("onEdit File");
+
     actions.openOverlay({
       head: (
         <Header
@@ -78,12 +76,17 @@ class File extends Component {
         />
       ),
       body: (
-        <FileEdit file={file} langtag={langtag} onClose={this.onEditClose} />
+        <FileEdit
+          file={file}
+          langtag={langtag}
+          onClose={this.onEditClose}
+          onSave={this.onSave}
+        />
       ),
       footer: (
         <Footer
           buttonActions={{
-            negative: [i18n.t("common:save"), this.onSave],
+            negative: [i18n.t("common:save"), null],
             neutral: [i18n.t("common:cancel"), null]
           }}
         />

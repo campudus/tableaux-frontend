@@ -3,7 +3,6 @@ import {
   compose,
   lifecycle,
   renderComponent,
-  withHandlers,
   withStateHandlers
 } from "recompose";
 
@@ -37,8 +36,12 @@ const enhance = compose(
       onLangChange: () => langtag => ({ langtag })
     }
   ),
-  withHandlers({
-    onSave: ({ file, onClose, fileAttributes }) => event => {
+  lifecycle({
+    componentWillUnmount() {
+      // TODO-W
+      console.log("closing FileEdit with data", this.props);
+
+      const { file, fileAttributes } = this.props;
       if (
         !f.equals(
           fileAttributes,
@@ -56,23 +59,9 @@ const enhance = compose(
           file.folder,
           file.fileUrl
         ]);
-        // TODO-W
-        // ActionCreator.changeFile(...changeFileParams);
-      }
-      onClose(event);
-    }
-  }),
 
-  lifecycle({
-    componentWillMount() {
-      // TODO-W
-      //Dispatcher.on("on-media-overlay-save", this.props.onSave);
-      //Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
-    },
-    componentWillUnmount() {
-      // TODO-W
-      //Dispatcher.off("on-media-overlay-save", this.props.onSave);
-      //Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+        this.props.onSave(changeFileParams);
+      }
     }
   })
 );
@@ -93,7 +82,8 @@ const FileEdit = compose(
 FileEdit.propTypes = {
   file: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired
 };
 
 export default compose(enhance)(FileEdit);
