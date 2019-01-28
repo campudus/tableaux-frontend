@@ -32,14 +32,7 @@ const withUploadHandlers = compose(
       }
 
       if (res) {
-        const file = res.body;
-        // TODO-W
-        // update state to show new files!
-
-        //ActionCreator.addFile(
-        // uuid, title, descr, extName, intName, mimeType, folder, url
-        //...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
-        //);
+        props.actions.loadMediaFolder(props.folder.id, props.langtag);
       }
     }
   })
@@ -124,7 +117,9 @@ const FileUpload = props => {
 };
 
 FileUpload.propTypes = {
-  folder: PropTypes.object.isRequired
+  folder: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired
 };
 
 export default compose(

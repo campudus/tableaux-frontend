@@ -145,7 +145,7 @@ class Folder extends Component {
   };
 
   render() {
-    const { folder, actions } = this.props;
+    const { folder, actions, langtag } = this.props;
     const newFolderAction = isUserAdmin() ? (
       <NewFolderAction parentFolder={folder} actions={actions} />
     ) : null;
@@ -155,7 +155,7 @@ class Folder extends Component {
         {newFolderAction}
         {this.renderSubfolders()}
         {this.renderFiles()}
-        <FileUpload folder={folder} />
+        <FileUpload folder={folder} actions={actions} langtag={langtag} />
       </div>
     );
   }

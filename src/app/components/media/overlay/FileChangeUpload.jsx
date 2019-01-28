@@ -10,6 +10,7 @@ import { DefaultLangtag } from "../../../constants/TableauxConstants";
 import { translate } from "react-i18next";
 
 // TODO-W
+// refresh for translated file upload in FileEdit-Overlay
 
 @translate(["media"])
 class FileChangeUpload extends PureComponent {
