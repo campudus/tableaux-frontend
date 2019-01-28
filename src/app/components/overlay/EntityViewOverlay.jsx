@@ -1,16 +1,55 @@
 import React from "react";
-// import {openOverlay} from "../../actions/ActionCreator";
 import EntityViewHeader from "./EntityView/EntityViewHeader";
 import EntityViewBody from "./EntityView/EntityViewBody";
-import {LoadingEntityViewBodyWrapper, LoadingEntityViewHeaderWrapper} from "./EntityView/LoadingEntityView";
+import {
+  LoadingEntityViewBodyWrapper,
+  LoadingEntityViewHeaderWrapper
+} from "./EntityView/LoadingEntityView";
+import store from "../../redux/store";
+import ReduxActions from "../../redux/actionCreators";
+import f from "lodash/fp";
 
-export function openEntityView(row, langtag, focusElementId, rows, filterColumn) {
-  // openOverlay({
-  //   head: <EntityViewHeader row={row} rows={rows} langtag={langtag} canSwitchRows={true} hasMeaningfulLinks={!filterColumn} />,
-  //   body: <EntityViewBody row={row} langtag={langtag} focusElementId={focusElementId} filterColumn={filterColumn} />,
-  //   type: "full-height",
-  //   preferRight: true
-  // });
+export function openEntityView({
+  columnId,
+  filterColumn,
+  langtag,
+  row,
+  rows,
+  table
+}) {
+  const state = store.getState();
+  const columns = f.prop(["columns", table.id, "data"], state);
+  const idColumn = f.first(columns);
+  store.dispatch(
+    ReduxActions.openOverlay({
+      head: (
+        <EntityViewHeader
+          rows={rows}
+          langtag={langtag}
+          canSwitchRows={true}
+          hasMeaningfulLinks={!filterColumn}
+          idColumn={idColumn}
+        />
+      ),
+      body: (
+        <EntityViewBody
+          langtag={langtag}
+          focusElementId={columnId}
+          filterColumn={filterColumn}
+        />
+      ),
+      type: "full-height",
+      table,
+      row,
+      columns,
+      title: {
+        row,
+        column: idColumn,
+        table
+      },
+      preferRight: true
+    })
+  );
 }
 
 // target: {(tables: Tables, tableId: int > 0, | table: Table) rowId: int > 0}

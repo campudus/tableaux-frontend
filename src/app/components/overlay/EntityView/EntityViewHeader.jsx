@@ -1,18 +1,18 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
-import {ActionTypes, Directions, FallbackLanguage, Langtags} from "../../../constants/TableauxConstants";
+import { Directions, Langtags } from "../../../constants/TableauxConstants";
 import classNames from "classnames";
 import listensToClickOutside from "react-onclickoutside";
 import HeaderPopupMenu from "./HeaderPopupMenu";
 import FilterBar from "./FilterBar";
-import {getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
+import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
 // import {changeEntityViewRow, switchEntityViewLanguage} from "../../../actions/ActionCreator";
 // import Dispatcher from "../../../dispatcher/Dispatcher";
-import {unlockRow} from "../../../helpers/annotationHelper";
+import { unlockRow } from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import HistoryButtons from "../../table/undo/HistoryButtons";
-import RowConcat from "../../../helpers/RowConcatHelper";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -37,17 +37,17 @@ class LanguageSwitcher extends Component {
   }
 
   toggleOpen = () => {
-    const {open} = this.state;
+    const { open } = this.state;
     this.setOpen(!open)();
   };
 
   setOpen = open => () => {
-    this.setState({open});
+    this.setState({ open });
   };
 
-  handleLangtagSwitch = ({langtag}) => {
+  handleLangtagSwitch = ({ langtag }) => {
     if (this.state.langtag !== langtag) {
-      this.setState({langtag});
+      this.setState({ langtag });
     }
   };
 
@@ -61,31 +61,28 @@ class LanguageSwitcher extends Component {
   };
 
   render() {
-    const {open, langtag} = this.state;
-    const lswCssClass = classNames("eev-language-switcher", {"open": open});
+    const { open, langtag } = this.state;
+    const lswCssClass = classNames("eev-language-switcher", { open: open });
     return (
       <div className="eev-language-switcher-wrapper">
         <div className={lswCssClass} onClick={this.toggleOpen}>
           <div className="eev-label">
             {getLanguageOrCountryIcon(langtag)}
-            <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"} />
+            <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
           </div>
-          {(open)
-            ? (
-              <div className="eev-dropdown">
-                {Langtags
-                  .filter(lt => lt !== langtag)
-                  .map(
-                    lt => {
-                      return <div key={lt} className="menu-item">
-                        <a href="#" onClick={this.setLang(lt)}>{getLanguageOrCountryIcon(lt, "language")}</a>
-                      </div>;
-                    }
-                  )}
-              </div>
-            )
-            : null
-          }
+          {open ? (
+            <div className="eev-dropdown">
+              {Langtags.filter(lt => lt !== langtag).map(lt => {
+                return (
+                  <div key={lt} className="menu-item">
+                    <a href="#" onClick={this.setLang(lt)}>
+                      {getLanguageOrCountryIcon(lt, "language")}
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
     );
@@ -100,13 +97,16 @@ class RowSwitcher extends Component {
   };
 
   getNextRow = dir => {
-    const {row} = this.props;
-    const firstCell = row.cells.at(0);
-    const table = firstCell.tables.get(firstCell.tableId);
-    const rowsCollection = f.get("models", this.props.rows || table.rows);
-    const myRowIdx = f.findIndex(f.matchesProperty("id", row.id), rowsCollection);
-    const dirAsNumber = (dir === Directions.UP) ? -1 : 1;
-    return f.get([myRowIdx + dirAsNumber], rowsCollection);
+    // const { row } = this.props;
+    // const firstCell = row.cells.at(0);
+    // const table = firstCell.tables.get(firstCell.tableId);
+    // const rowsCollection = f.get("models", this.props.rows || table.rows);
+    // const myRowIdx = f.findIndex(
+    //   f.matchesProperty("id", row.id),
+    //   rowsCollection
+    // );
+    // const dirAsNumber = dir === Directions.UP ? -1 : 1;
+    // return f.get([myRowIdx + dirAsNumber], rowsCollection);
   };
 
   switchRow = dir => () => {
@@ -121,26 +121,30 @@ class RowSwitcher extends Component {
   render() {
     return (
       <div className="row-switcher">
-        {(this.getNextRow(Directions.UP))
-          ? (
-            <div className="button clickable" onClick={this.switchRow(Directions.UP)}>
-              <a href="#">
-                <i className="fa fa-angle-left" />
-              </a>
-            </div>
-          )
-          : <div className="button dummy" />
-        }
-        {(this.getNextRow(Directions.DOWN))
-          ? (
-            <div className="button clickable" onClick={this.switchRow(Directions.DOWN)}>
-              <a href="#">
-                <i className="fa fa-angle-right" />
-              </a>
-            </div>
-          )
-          : <div className="button dummy" />
-        }
+        {this.getNextRow(Directions.UP) ? (
+          <div
+            className="button clickable"
+            onClick={this.switchRow(Directions.UP)}
+          >
+            <a href="#">
+              <i className="fa fa-angle-left" />
+            </a>
+          </div>
+        ) : (
+          <div className="button dummy" />
+        )}
+        {this.getNextRow(Directions.DOWN) ? (
+          <div
+            className="button clickable"
+            onClick={this.switchRow(Directions.DOWN)}
+          >
+            <a href="#">
+              <i className="fa fa-angle-right" />
+            </a>
+          </div>
+        ) : (
+          <div className="button dummy" />
+        )}
       </div>
     );
   }
@@ -155,51 +159,54 @@ class EntityViewHeader extends Component {
   };
 
   componentWillMount() {
-    Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
+    // Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
   }
 
   componentWillUnmount() {
-    Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
+    // Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
   }
 
-  updateHeader = ({cell}) => {
+  updateHeader = ({ cell }) => {
     this.forceUpdate();
   };
 
   render() {
-    const {canSwitchRows, hasMeaningfulLinks, langtag} = this.props;
-    const row = this.props.sharedData.row || this.props.row;
-    const titleElement = <RowConcat row={row} langtag={langtag}/>;
-    const tableName = getTableName(row, langtag);
+    const {
+      canSwitchRows,
+      hasMeaningfulLinks,
+      langtag,
+      table,
+      row
+    } = this.props;
+
     const components = (
       <div className="header-components">
         <LanguageSwitcher langtag={langtag} />
-        {(canSwitchRows) ? <RowSwitcher {...this.props} row={row}/> : null}
-        <HistoryButtons tableId={row.cells.at(0).tableId}
-                        rowId={row.id}
-        />
+        {canSwitchRows ? <RowSwitcher {...this.props} row={row} /> : null}
+        <HistoryButtons tableId={table.id} rowId={row.id} />
         <FilterBar id={this.props.id} />
-        <HeaderPopupMenu langtag={langtag}
-                         row={row}
-                         id={this.props.id}
-                         hasMeaningfulLinks={hasMeaningfulLinks}
+        <HeaderPopupMenu
+          langtag={langtag}
+          row={row}
+          id={this.props.id}
+          hasMeaningfulLinks={hasMeaningfulLinks}
         />
       </div>
     );
-    return <Header {...this.props} context={tableName} title={titleElement} components={components} />;
+    const tableName = f.isEmpty(table.displayName)
+      ? table.name
+      : retrieveTranslation(langtag)(table.displayName) || table.name;
+
+    return (
+      <Header {...this.props} context={tableName} components={components} />
+    );
   }
 }
-
-const getTableName = (row, langtag) => {
-  const firstCell = row.cells.at(0);
-  const table = firstCell.tables.get(firstCell.tableId);
-  return f.prop(["displayName", langtag], table) || f.prop(["displayName", FallbackLanguage], table);
-};
 
 const getDisplayLabel = (row, langtag) => {
   const firstCell = row.cells.at(0);
   return firstCell.displayValue[langtag];
 };
 
-export {getTableName, getDisplayLabel};
+export { getDisplayLabel };
 export default EntityViewHeader;
