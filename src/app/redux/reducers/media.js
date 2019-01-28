@@ -13,7 +13,10 @@ const {
   MEDIA_FOLDER_EDIT_ERROR,
   MEDIA_FOLDER_DELETE,
   MEDIA_FOLDER_DELETE_SUCCESS,
-  MEDIA_FOLDER_DELETE_ERROR
+  MEDIA_FOLDER_DELETE_ERROR,
+  MEDIA_FILE_DELETE,
+  MEDIA_FILE_DELETE_SUCCESS,
+  MEDIA_FILE_DELETE_ERROR
 } = actionTypes.media;
 
 const initialState = {
@@ -30,11 +33,13 @@ const mediaReducer = (state = initialState, action) => {
     case MEDIA_FOLDER_CREATE:
     case MEDIA_FOLDER_EDIT:
     case MEDIA_FOLDER_DELETE:
+    case MEDIA_FILE_DELETE:
       return { ...state, error: false, finishedLoading: false };
     case MEDIA_FOLDER_ERROR:
     case MEDIA_FOLDER_CREATE_ERROR:
     case MEDIA_FOLDER_EDIT_ERROR:
     case MEDIA_FOLDER_DELETE_ERROR:
+    case MEDIA_FILE_DELETE_ERROR:
       return { ...state, error: true, finishedLoading: true };
     case MEDIA_FOLDER_LOADED:
       return {
@@ -88,6 +93,21 @@ const mediaReducer = (state = initialState, action) => {
                 subfolders: f.remove(
                   subfolder => subfolder.id === action.result.id
                 )(state.data.subfolders)
+              }
+            : state.data
+      };
+    case MEDIA_FILE_DELETE_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        finishedLoading: true,
+        data:
+          typeof action.result === "object"
+            ? {
+                ...state.data,
+                files: f.remove(file => file.id === action.result.id)(
+                  state.data.files
+                )
               }
             : state.data
       };

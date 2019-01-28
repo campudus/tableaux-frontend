@@ -15,7 +15,8 @@ const {
   getAllTables,
   getAllColumnsForTable,
   getAllRowsForTable,
-  toFolder
+  toFolder,
+  toFile
 } = API_ROUTES;
 
 const {
@@ -64,7 +65,10 @@ const {
   MEDIA_FOLDER_EDIT_ERROR,
   MEDIA_FOLDER_DELETE,
   MEDIA_FOLDER_DELETE_SUCCESS,
-  MEDIA_FOLDER_DELETE_ERROR
+  MEDIA_FOLDER_DELETE_ERROR,
+  MEDIA_FILE_DELETE,
+  MEDIA_FILE_DELETE_SUCCESS,
+  MEDIA_FILE_DELETE_ERROR
 } = actionTypes.media;
 
 const dispatchParamsFor = actionType => params => ({
@@ -327,6 +331,20 @@ const deleteMediaFolder = folderId => {
   };
 };
 
+const deleteMediaFile = fileId => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFile(fileId),
+      method: "DELETE"
+    }),
+    actionTypes: [
+      MEDIA_FILE_DELETE,
+      MEDIA_FILE_DELETE_SUCCESS,
+      MEDIA_FILE_DELETE_ERROR
+    ]
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -351,7 +369,8 @@ const actionCreators = {
   loadMediaFolder: loadMediaFolder,
   createMediaFolder: createMediaFolder,
   alterMediaFolder: alterMediaFolder,
-  deleteMediaFolder: deleteMediaFolder
+  deleteMediaFolder: deleteMediaFolder,
+  deleteMediaFile: deleteMediaFile
 };
 
 export default actionCreators;

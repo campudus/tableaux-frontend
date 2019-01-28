@@ -26,6 +26,10 @@ const toFolder = (folderId, langtag) =>
   (folderId ? `/folders/${folderId}` : "/folders") +
   (langtag ? "?langtag=" + langtag : "");
 
+const toFile = (fileId, langtag) =>
+  (fileId ? `/files/${fileId}` : "/files") +
+  (langtag ? "?langtag=" + langtag : "");
+
 const API_ROUTES = {
   getAllTables,
   getAllColumnsForTable,
@@ -33,7 +37,8 @@ const API_ROUTES = {
   toColumn,
   toRow,
   toCell,
-  toFolder
+  toFolder,
+  toFile
 };
 
 export default API_ROUTES;

@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import i18n from "i18next";
+import { translate } from "react-i18next";
 import { withState } from "recompose";
-import apiUrl from "../../../helpers/apiUrl";
-import multiLanguage from "../../../helpers/multiLanguage";
+import React, { Component } from "react";
+import i18n from "i18next";
 
-import FileEdit from "../overlay/FileEdit.jsx";
-import Header from "../../overlay/Header";
-import Footer from "../../overlay/Footer";
+import PropTypes from "prop-types";
 
-import TableauxConstants from "../../../constants/TableauxConstants";
-import {
-  getUserLanguageAccess,
-  isUserAdmin
-} from "../../../helpers/accessManagementHelper";
 import {
   confirmDeleteFile,
   noPermissionAlertWithLanguage
 } from "../../../components/overlay/ConfirmationOverlay";
-import { translate } from "react-i18next";
+import {
+  getUserLanguageAccess,
+  isUserAdmin
+} from "../../../helpers/accessManagementHelper";
+import FileEdit from "../overlay/FileEdit.jsx";
+import Footer from "../../overlay/Footer";
+import Header from "../../overlay/Header";
+import TableauxConstants from "../../../constants/TableauxConstants";
+import apiUrl from "../../../helpers/apiUrl";
+import multiLanguage from "../../../helpers/multiLanguage";
 
 const enhance = withState("saveChanges", "setSaveChanges", false);
 
@@ -39,8 +39,7 @@ class File extends Component {
       confirmDeleteFile(
         retrieveTranslation(this.props.file.title, this.props.langtag),
         () => {
-          // TODO-W
-          console.log("File.onRemove", this.props.file.uuid);
+          this.props.actions.deleteMediaFile(this.props.file.uuid);
         },
         this.props.actions
       );

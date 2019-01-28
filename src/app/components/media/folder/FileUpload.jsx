@@ -33,6 +33,9 @@ const withUploadHandlers = compose(
 
       if (res) {
         const file = res.body;
+        // TODO-W
+        // update state to show new files!
+
         //ActionCreator.addFile(
         // uuid, title, descr, extName, intName, mimeType, folder, url
         //...f.props(["uuid", "title", "description", "externalName", "internalName", "mimeType", "folder", "url"], file)
