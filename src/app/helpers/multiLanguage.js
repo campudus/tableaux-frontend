@@ -11,21 +11,21 @@ import { checkOrThrow } from "../specs/type";
 const langtagSeparatorRegex = /[-_]/;
 
 /**
- * Parses json for translation value.
+ * Parses an object of {[key:string]: any}for translation value.
  *
  * @param json simple json object
- * @param language e.g. de_DE
- * @param defaultLanguage
+ * @param langtag e.g. de_DE or de
  * @returns any
  */
-function retrieveTranslation(json, language, defaultLanguage) {
+const retrieveTranslation = f.curryN(2, (langtag, json) => {
   checkOrThrow(getLangObjSpec(), json);
+  const language = getLanguageOfLangtag(langtag);
 
   return f.flow(
-    f.props([language, defaultLanguage, DefaultLanguage, FallbackLanguage]),
-    f.find(f.identity)
+    f.props([langtag, language, DefaultLanguage, FallbackLanguage]),
+    f.find(value => !f.isEmpty(value))
   )(json);
-}
+});
 
 function getLanguageOrCountryIcon(langtag, specific = "") {
   // we try to split on "-" (dash) character
@@ -62,58 +62,58 @@ function getLanguageOrCountryIcon(langtag, specific = "") {
 }
 
 const currencyCodeMap = {
-  DE: "EUR",
-  FR: "EUR",
-  US: "USD",
-  GB: "GBP",
-  IT: "EUR",
-  PL: "PLN",
-  NL: "EUR",
-  ES: "EUR",
-  AT: "EUR",
-  CH: "SFR",
-  CZ: "CZK",
-  DK: "DKK",
-  HR: "HRK",
-  NZ: "NZD", // New Zealand
+  AE: "AED", // United Arab Emirates
+  AT: "EUR", // Austria
   BE: "EUR", // Belgium
-  FI: "EUR", // Finland
-  GR: "EUR", // Greece
-  IE: "EUR", // Ireland
-  LU: "EUR", // Luxembourg
-  MC: "EUR", // Monaco
-  PT: "EUR", // Portugal
-  SI: "EUR", // Slovenia
-  HK: "HKD", // Hong Kong
-  CA: "CAD", // Canada
-  JP: "JPY", // Japan
-  IN: "INR", // India
-  NO: "NOK", // Norway
-  BR: "BRL", // Brazil
   BG: "BGN", // Bulgaria
+  BR: "BRL", // Brazil
+  CA: "CAD", // Canada
+  CH: "SFR", // Switzerland
   CN: "CNY", // China
-  ID: "IDR", // Indonesia
+  CZ: "CZK", // Czechia
+  DE: "EUR", // Germany
+  DK: "DKK", // Denmark
+  ES: "EUR", // Spain
+  FI: "EUR", // Finland
+  FR: "EUR", // France
+  GB: "GBP", // Great Britain
+  GR: "EUR", // Greece
+  HK: "HKD", // Hong Kong
+  HR: "HRK", // Croatia
   HU: "HUF", // Hungary
-  IQ: "IQD", // Iraq
+  ID: "IDR", // Indonesia
+  IE: "EUR", // Ireland
   IL: "ILS", // Israel
+  IN: "INR", // India
+  IQ: "IQD", // Iraq
+  IT: "EUR", // Italy
+  JP: "JPY", // Japan
   KR: "KRW", // Korea South
   KW: "KWD", // Kuwait
   LI: "CHF", // Liechtenstein
-  MX: "MXN", // Mexico
+  LU: "EUR", // Luxembourg
   MA: "MAD", // Morocco
+  MC: "EUR", // Monaco
+  ME: "EUR", // Montenegro
+  MX: "MXN", // Mexico
+  NL: "EUR", // Netherlands
+  NO: "NOK", // Norway
+  NZ: "NZD", // New Zealand
+  PL: "PLN", // Poland
+  PT: "EUR", // Portugal
   RO: "RON", // Romania
+  RS: "RSD", // Serbia
   RU: "RUB", // Russian Federation
   SA: "SAR", // Saudi Arabia
-  SG: "SGD", // Singapore
-  ZA: "ZAR", // South Africa
   SE: "SEK", // Sweden
-  TW: "TWD", // Taiwan
+  SG: "SGD", // Singapore
+  SI: "EUR", // Slovenia
   TH: "THB", // Thailand
   TR: "TRY", // Turkey
+  TW: "TWD", // Taiwan
   UA: "UAH", // Ukraine
-  AE: "AED", // United Arab Emirates
-  ME: "EUR", // Montenegro
-  RS: "RSD" // Serbia
+  US: "USD", // United States of America
+  ZA: "ZAR" // South Africa
 };
 
 const reverseCurrencyCodeMap = f
@@ -242,11 +242,7 @@ const isMultiCountry = value => {
   return f.isObject(value) && f.all(f.contains(f.__, countries), f.keys(value));
 };
 module.exports = {
-  retrieveTranslation: function(language, defaultLanguage) {
-    return function(json, overrideLanguage = language) {
-      return retrieveTranslation(json, overrideLanguage, defaultLanguage);
-    };
-  },
+  retrieveTranslation,
   getMultiLangValue,
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
