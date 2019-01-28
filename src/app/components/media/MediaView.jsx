@@ -4,12 +4,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
 
-import TableauxConstants from "../../constants/TableauxConstants";
 import Folder from "./folder/Folder.jsx";
 import LanguageSwitcher from "../header/LanguageSwitcher";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
+import TableauxConstants from "../../constants/TableauxConstants";
+import TableauxRouter from "../../router/router";
 import needsApiData from "../helperComponents/needsAPIData";
 
 const mapStateToProps = state => {
@@ -33,6 +34,8 @@ class MediaView extends Component {
 
   constructor(props) {
     super(props);
+
+    this.onLanguageSwitch = this.onLanguageSwitch.bind(this);
   }
 
   // componentWillReceiveProps(nextProps) {}
@@ -40,8 +43,10 @@ class MediaView extends Component {
   // shouldComponentUpdate(nextProps, nextState) {}
 
   onLanguageSwitch(newLangtag) {
-    console.log("langSwitch to ", newLangtag);
-    // TODO-W implement onLanguageSwitch
+    const oldLangtag = this.props.langtag;
+    const history = TableauxRouter.history;
+    const url = history.getPath();
+    history.navigate(url.replace(oldLangtag, newLangtag));
   }
 
   render() {
@@ -63,7 +68,7 @@ class MediaView extends Component {
             <div className="header-separator" />
             <PageTitle titleKey="pageTitle.media" />
             <LanguageSwitcher
-              langtag={this.props.langtag}
+              langtag={langtag}
               onChange={this.onLanguageSwitch}
             />
           </header>
