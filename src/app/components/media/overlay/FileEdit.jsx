@@ -38,10 +38,7 @@ const enhance = compose(
   ),
   lifecycle({
     componentWillUnmount() {
-      // TODO-W
-      console.log("closing FileEdit with data", this.props);
-
-      const { file, fileAttributes } = this.props;
+      const { file, fileAttributes, onClose } = this.props;
       if (
         !f.equals(
           fileAttributes,
@@ -60,7 +57,9 @@ const enhance = compose(
           file.fileUrl
         ]);
 
-        this.props.onSave(changeFileParams);
+        onClose(changeFileParams);
+      } else {
+        onClose();
       }
     }
   })
@@ -82,8 +81,7 @@ const FileEdit = compose(
 FileEdit.propTypes = {
   file: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired
 };
 
 export default compose(enhance)(FileEdit);

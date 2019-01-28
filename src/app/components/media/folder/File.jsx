@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import i18n from "i18next";
+import { withState } from "recompose";
 import apiUrl from "../../../helpers/apiUrl";
 import multiLanguage from "../../../helpers/multiLanguage";
 
@@ -18,7 +19,8 @@ import {
   noPermissionAlertWithLanguage
 } from "../../../components/overlay/ConfirmationOverlay";
 import { translate } from "react-i18next";
-// import i18n from "i18next";
+
+const enhance = withState("saveChanges", "setSaveChanges", false);
 
 @translate(["media"])
 class File extends Component {
@@ -51,15 +53,17 @@ class File extends Component {
     }
   };
 
-  onSave = changeFileParams => {
-    // TODO-W implement onSave
-    console.log("onSave File", changeFileParams);
+  onEditClose = changeFileParams => {
+    // TODO-W
+    if (this.props.saveChanges && changeFileParams) {
+      console.log(
+        "save new Filedata",
+        this.props.saveChanges,
+        changeFileParams
+      );
+    }
+    this.props.setSaveChanges(false);
   };
-
-  /*onCancel = () => {
-    // TODO-W implement onCancel
-    console.log("onCancel File");
-  };*/
 
   onEdit = () => {
     const { file, langtag, actions } = this.props;
@@ -76,17 +80,12 @@ class File extends Component {
         />
       ),
       body: (
-        <FileEdit
-          file={file}
-          langtag={langtag}
-          onClose={this.onEditClose}
-          onSave={this.onSave}
-        />
+        <FileEdit file={file} langtag={langtag} onClose={this.onEditClose} />
       ),
       footer: (
         <Footer
           buttonActions={{
-            negative: [i18n.t("common:save"), null],
+            negative: [i18n.t("common:save"), this.onSave],
             neutral: [i18n.t("common:cancel"), null]
           }}
         />
@@ -95,9 +94,8 @@ class File extends Component {
     });
   };
 
-  onEditClose = event => {
-    // TODO-W implement onEditClose
-    console.log("onEditClose File");
+  onSave = () => {
+    this.props.setSaveChanges(true);
   };
 
   render() {
@@ -148,4 +146,4 @@ class File extends Component {
   }
 }
 
-export default File;
+export default enhance(File);
