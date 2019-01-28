@@ -192,6 +192,7 @@ class View extends Component {
         }}
       >
         <RowHeadline
+          actions={actions}
           column={column}
           langtag={langtag}
           cell={cell}
