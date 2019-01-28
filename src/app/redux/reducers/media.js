@@ -105,7 +105,7 @@ const mediaReducer = (state = initialState, action) => {
           typeof action.result === "object"
             ? {
                 ...state.data,
-                files: f.remove(file => file.id === action.result.id)(
+                files: f.remove(file => file.uuid === action.result.uuid)(
                   state.data.files
                 )
               }
