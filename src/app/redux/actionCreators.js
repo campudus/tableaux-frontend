@@ -66,6 +66,10 @@ const {
   MEDIA_FOLDER_DELETE,
   MEDIA_FOLDER_DELETE_SUCCESS,
   MEDIA_FOLDER_DELETE_ERROR,
+
+  MEDIA_FILE_EDIT,
+  MEDIA_FILE_EDIT_SUCCESS,
+  MEDIA_FILE_EDIT_ERROR,
   MEDIA_FILE_DELETE,
   MEDIA_FILE_DELETE_SUCCESS,
   MEDIA_FILE_DELETE_ERROR
@@ -293,7 +297,7 @@ const createMediaFolder = (parentId, folderName, folderDescription = "") => {
   };
 };
 
-const alterMediaFolder = (
+const editMediaFolder = (
   folderId,
   parentId,
   folderName,
@@ -327,6 +331,21 @@ const deleteMediaFolder = folderId => {
       MEDIA_FOLDER_DELETE,
       MEDIA_FOLDER_DELETE_SUCCESS,
       MEDIA_FOLDER_DELETE_ERROR
+    ]
+  };
+};
+
+const editMediaFile = (fileId, data) => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFile(fileId),
+      data: data,
+      method: "PUT"
+    }),
+    actionTypes: [
+      MEDIA_FILE_EDIT,
+      MEDIA_FILE_EDIT_SUCCESS,
+      MEDIA_FILE_EDIT_ERROR
     ]
   };
 };
@@ -368,8 +387,9 @@ const actionCreators = {
   applyFiltersAndSorting: applyFiltersAndSorting,
   loadMediaFolder: loadMediaFolder,
   createMediaFolder: createMediaFolder,
-  alterMediaFolder: alterMediaFolder,
+  editMediaFolder: editMediaFolder,
   deleteMediaFolder: deleteMediaFolder,
+  editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile
 };
 

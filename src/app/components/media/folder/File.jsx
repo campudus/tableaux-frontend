@@ -53,13 +53,19 @@ class File extends Component {
   };
 
   onEditClose = changeFileParams => {
-    // TODO-W
-    if (this.props.saveChanges && changeFileParams) {
-      console.log(
-        "save new Filedata",
-        this.props.saveChanges,
-        changeFileParams
-      );
+    const { saveChanges, actions } = this.props;
+    if (saveChanges && changeFileParams) {
+      const fileId = changeFileParams[0];
+      const requestData = {
+        title: changeFileParams[1],
+        description: changeFileParams[2],
+        externalName: changeFileParams[3],
+        internalName: changeFileParams[4],
+        mimeType: changeFileParams[5],
+        folder: changeFileParams[6]
+      };
+
+      actions.editMediaFile(fileId, requestData);
     }
     this.props.setSaveChanges(false);
   };

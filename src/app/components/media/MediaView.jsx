@@ -57,6 +57,7 @@ class MediaView extends Component {
     }
 
     if (media.error) {
+      // TODO-W
       console.log("MediaView -> state returned a error!");
     }
 

@@ -14,6 +14,10 @@ const {
   MEDIA_FOLDER_DELETE,
   MEDIA_FOLDER_DELETE_SUCCESS,
   MEDIA_FOLDER_DELETE_ERROR,
+
+  MEDIA_FILE_EDIT,
+  MEDIA_FILE_EDIT_SUCCESS,
+  MEDIA_FILE_EDIT_ERROR,
   MEDIA_FILE_DELETE,
   MEDIA_FILE_DELETE_SUCCESS,
   MEDIA_FILE_DELETE_ERROR
@@ -33,12 +37,14 @@ const mediaReducer = (state = initialState, action) => {
     case MEDIA_FOLDER_CREATE:
     case MEDIA_FOLDER_EDIT:
     case MEDIA_FOLDER_DELETE:
+    case MEDIA_FILE_EDIT:
     case MEDIA_FILE_DELETE:
       return { ...state, error: false, finishedLoading: false };
     case MEDIA_FOLDER_ERROR:
     case MEDIA_FOLDER_CREATE_ERROR:
     case MEDIA_FOLDER_EDIT_ERROR:
     case MEDIA_FOLDER_DELETE_ERROR:
+    case MEDIA_FILE_EDIT_ERROR:
     case MEDIA_FILE_DELETE_ERROR:
       return { ...state, error: true, finishedLoading: true };
     case MEDIA_FOLDER_LOADED:
@@ -93,6 +99,23 @@ const mediaReducer = (state = initialState, action) => {
                 subfolders: f.remove(
                   subfolder => subfolder.id === action.result.id
                 )(state.data.subfolders)
+              }
+            : state.data
+      };
+    case MEDIA_FILE_EDIT_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        finishedLoading: true,
+        data:
+          typeof action.result === "object"
+            ? {
+                ...state.data,
+                files: f.compose(
+                  f.orderBy(file => f.toLower(file.updatedAt), ["desc"]),
+                  f.concat(action.result),
+                  f.remove(file => file.uuid === action.result.uuid)
+                )(state.data.files)
               }
             : state.data
       };
