@@ -39,18 +39,25 @@ const initialState = {
   currentLanguage: DefaultLangtag,
   invisibleRows: []
 };
+
+// This sets display values for foreign tables, allowing us to track
+// changes made by entity views onto them
 const setLinkDisplayValues = (state, linkDisplayValues) => {
   const { displayValues } = state;
   const updatedDisplayValues = f.reduce(
     (acc, val) => {
-      const { values } = val;
-      return f.assoc(
-        [f.get("tableId", val)],
-        f.map(element => {
-          return { id: element.id, values: element.values };
-        }, values),
-        acc
+      const { values, tableId } = val;
+      const linesExist = !f.isEmpty(acc[tableId]);
+      acc[tableId] = f.map(
+        f.pick(["id", "values"]),
+        linesExist
+          ? // Function might be called by "getForeignRows", thus
+            // delivering only a subset of existing rows. In this case,
+            // we just cache the new values
+            f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
+          : values
       );
+      return acc;
     },
     displayValues,
     linkDisplayValues

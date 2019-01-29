@@ -377,6 +377,7 @@ const actionCreators = {
   hideAllColumns: hideAllColumns,
   setCurrentTable: setCurrentTable,
   generateDisplayValues: generateDisplayValues,
+  addDisplayValues: dispatchParamsFor(GENERATED_DISPLAY_VALUES),
   loadCompleteTable: loadCompleteTable,
   setCurrentLanguage: setCurrentLanguage,
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),

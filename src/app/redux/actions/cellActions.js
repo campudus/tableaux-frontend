@@ -15,13 +15,21 @@ const {
 } = ActionTypes;
 
 export const changeCellValue = action => (dispatch, getState) => {
-  const { columnId, tableId } = action;
+  // We either get ids directly, or we extract them from a "cell"
+  const rowId = (action.cell && action.cell.row.id) || action.rowId;
+  const columnId = (action.cell && action.cell.columnId) || action.columnId;
+  const tableId = (action.cell && action.cell.tableId) || action.tableId;
   const getColumn = f.flow(
     getState,
     f.prop(["columns", tableId, "data"]),
     f.find(f.propEq("id", columnId))
   );
-  const column = action.column || getColumn();
+  const column =
+    action.column || (action.cell && action.cell.column) || getColumn();
+
+  // Merge allowed changes into old cell value, so we can use the
+  // delta to calculate a new display value immediately without
+  // waiting for the request
   const reduceValue =
     column.languageType === "country"
       ? reduceValuesToAllowedCountries
@@ -34,6 +42,9 @@ export const changeCellValue = action => (dispatch, getState) => {
     dispatchCellValueChange({
       ...action,
       column,
+      columnId,
+      rowId,
+      tableId,
       newValue
     })
   );
