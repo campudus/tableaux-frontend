@@ -26,7 +26,7 @@ const openOverlay = (state, action) => {
     f.assoc("id", timestamp)
   );
 
-  return doto(state, f.update("overlays", f.concat(namedContent)));
+  return doto(state, f.update("overlays", f.concat(f.__, namedContent)));
 };
 
 const removeOverlay = (state, action) => {
