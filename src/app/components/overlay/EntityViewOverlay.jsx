@@ -10,11 +10,11 @@ import ReduxActions from "../../redux/actionCreators";
 import f from "lodash/fp";
 
 export function openEntityView({
-  columnId,
-  filterColumn,
+  columnId, // of the column/cell to scroll to
+  filterColumn, // group column if used to edit groups
   langtag,
   row,
-  rows,
+  rows, // non-nil will allow to navigate rows
   table
 }) {
   const state = store.getState();

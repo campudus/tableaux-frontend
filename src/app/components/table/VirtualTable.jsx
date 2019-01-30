@@ -537,6 +537,12 @@ export default class VirtualTable extends PureComponent {
       !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell
         ? scrolledCell
         : {};
+    const visibleColumns = columns.filter(this.filterVisibleCells);
+
+    this.visibleDisplayValues = (displayValues || []).map(col =>
+      f.filter(this.filterVisibleCells, col)
+    );
+
     const columnCount = f.size(visibleColumns) + 1;
     const rowCount = f.size(rows) + 1;
     const selectedCellKey = `${f.get(
