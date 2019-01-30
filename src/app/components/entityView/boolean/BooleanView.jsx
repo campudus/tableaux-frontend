@@ -1,13 +1,11 @@
-import React, {Component} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import {contentChanged} from "../../cells/Cell";
-// import changeCell from "../../../models/helpers/changeCell";
 
 @translate(["common"])
-class BooleanView extends Component {
+class BooleanView extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
@@ -16,27 +14,20 @@ class BooleanView extends Component {
     thisUserCantEdit: PropTypes.bool
   };
 
-  constructor(props) {
-    super(props);
-    const {langtag, cell: {value, isMultiLanguage}} = props;
-    this.state = {selected: (isMultiLanguage) ? value[langtag] : value};
-  }
-
   toggleValue = event => {
     event.preventDefault();
     event.stopPropagation();
-    const {cell, langtag, thisUserCantEdit} = this.props;
+    const { value, actions, cell, langtag, thisUserCantEdit } = this.props;
+    const { column } = cell;
     if (thisUserCantEdit) {
       return;
     }
 
-    const newValue = !this.state.selected;
-    const changes = (cell.isMultiLanguage)
-      ? {[langtag]: newValue}
-      : newValue;
-    this.setState({selected: newValue});
-    // changeCell({cell, value: changes})
-    //   .then(() => contentChanged(cell, langtag));
+    const valueToSet = !(column.multilanguage ? value[langtag] : value);
+    const newValue = column.multilanguage
+      ? { [langtag]: valueToSet }
+      : valueToSet;
+    actions.changeCellValue({ cell, oldValue: value, newValue });
   };
 
   toggleOnEnter = event => {
@@ -46,24 +37,31 @@ class BooleanView extends Component {
   };
 
   render() {
-    const {t, funcs, thisUserCantEdit} = this.props;
-    const {selected} = this.state;
-    const checkboxCss = classNames("checkbox", {"checked": selected, "disabled": thisUserCantEdit});
+    const { t, funcs, thisUserCantEdit, value, langtag, cell } = this.props;
+    const selected = cell.column.multilanguage ? value[langtag] : value;
+    const checkboxCss = classNames("checkbox", {
+      checked: selected,
+      disabled: thisUserCantEdit
+    });
 
     return (
-      <div className="item-content boolean" onClick={this.toggleValue}
+      <div
+        className="item-content boolean"
+        onClick={this.toggleValue}
         onKeyDown={this.toggleOnEnter}
         tabIndex={1}
-        ref={el => { funcs.register(el); }}
+        ref={el => {
+          funcs.register(el);
+        }}
       >
         <div className="content-wrapper">
           <div className={checkboxCss}>
-            {(selected)
-              ? <SvgIcon icon="check"/>
-              : ""
-            }
+            {selected ? <SvgIcon icon="check" /> : ""}
           </div>
-          <div className="value">{`${t("current_selection")}: `}<div>{selected ? t("yes") : t("no")}</div></div>
+          <div className="value">
+            {`${t("current_selection")}: `}
+            <div>{selected ? t("yes") : t("no")}</div>
+          </div>
         </div>
         {this.props.children}
       </div>
