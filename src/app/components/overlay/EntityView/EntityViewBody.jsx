@@ -6,7 +6,7 @@ import {
   Directions,
   FilterModes
 } from "../../../constants/TableauxConstants";
-import { maybe, doto } from "../../../helpers/functools";
+import { maybe } from "../../../helpers/functools";
 import TranslationPopup from "../../entityView/TranslationPopup";
 import * as f from "lodash/fp";
 import columnFilter from "./columnFilter";
