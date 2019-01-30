@@ -1,38 +1,15 @@
 import React from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import i18n from "i18next";
-import * as f from "lodash/fp";
 import PropTypes from "prop-types";
+import { withStateHandlers } from "recompose";
 
-class TextView extends React.Component {
-  constructor(props) {
-    super(props);
-    const {
-      value,
-      cell: { column },
-      langtag
-    } = this.props;
-    this.originalValue = column.multilanguage ? value[langtag] : value;
-    this.state = {
-      value: this.originalValue,
-      dirty: false
-    };
-  }
-
+class TextView extends React.PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
     thisUserCantEdit: PropTypes.bool,
     actions: PropTypes.object.isRequired
-  };
-
-  getValue = () => {
-    const {
-      value,
-      cell: { column },
-      langtag
-    } = this.props;
-    return column.multilanguage ? value[langtag] : value;
   };
 
   getKeyboardShortcuts = () => {
@@ -44,61 +21,15 @@ class TextView extends React.Component {
 
     return {
       //      escape: captureEventAnd(() => { this.background.focus() }),
-      escape: captureEventAnd(this.saveEdits),
+      escape: captureEventAnd(this.props.saveEdits),
       enter: event => event.stopPropagation(),
       up: event => event.stopPropagation(),
       down: event => event.stopPropagation()
     };
   };
 
-  saveEdits = () => {
-    const { dirty, value } = this.state;
-    if (!dirty) {
-      console.log("Early out without saving");
-      return;
-    }
-    console.log("Saving new value:", value);
-    const {
-      actions: { changeCellValue },
-      cell: { column, row, table },
-      langtag
-    } = this.props;
-
-    changeCellValue({
-      oldValue: this.originalValue,
-      newValue: column.multilanguage ? { [langtag]: value } : value,
-      tableId: table.id,
-      columnId: column.id,
-      rowId: row.id
-    });
-
-    this.originalValue = value.trim();
-    this.setState({ dirty: false });
-  };
-
-  componentWillReceiveProps(np) {
-    const { cell, langtag } = np;
-    const nextVal = f.defaultTo("")(
-      cell.isMultiLanguage ? cell.value[langtag] : cell.value
-    );
-    if (
-      (!this.state.dirty && nextVal !== this.originalValue) ||
-      cell !== this.props.cell ||
-      langtag !== this.props.langtag
-    ) {
-      this.setState({ value: nextVal, dirty: false });
-    }
-  }
-
-  handleChange = event => {
-    this.setState({
-      value: event.target.value,
-      dirty: true
-    });
-  };
-
   componentWillUnmount() {
-    this.saveEdits();
+    this.props.saveEdits();
   }
 
   setRef = node => {
@@ -109,19 +40,19 @@ class TextView extends React.Component {
   };
 
   render() {
-    const { thisUserCantEdit } = this.props;
+    const { thisUserCantEdit, editValue, handleChange, saveEdits } = this.props;
 
     return (
       <div className="item-content shorttext" tabIndex={1}>
         <textarea
-          value={this.state.value || ""}
+          value={editValue}
           placeholder={i18n.t("table:empty.text")}
           disabled={thisUserCantEdit}
-          onChange={this.handleChange}
+          onChange={handleChange}
           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
             this.getKeyboardShortcuts
           )}
-          onBlur={this.saveEdits}
+          onBlur={saveEdits}
           ref={this.setRef}
         />
         {this.props.children}
@@ -130,4 +61,21 @@ class TextView extends React.Component {
   }
 }
 
-export default TextView;
+const withEditFunction = withStateHandlers(
+  ({ value, langtag, cell }) => ({
+    editValue: (cell.column.multilanguage ? value[langtag] : value) || ""
+  }),
+  {
+    handleChange: () => event => ({
+      editValue: event.target.value
+    }),
+    saveEdits: ({ editValue }, { value, langtag, cell, actions }) => () => {
+      const newValue = cell.column.multilanguage
+        ? { [langtag]: editValue }
+        : editValue;
+      actions.changeCellValue({ cell, newValue, oldValue: value });
+    }
+  }
+);
+
+export default withEditFunction(TextView);
