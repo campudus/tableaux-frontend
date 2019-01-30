@@ -1,12 +1,6 @@
 import React from "react";
-import {
-  ColumnKinds,
-  FallbackLanguage
-} from "../../constants/TableauxConstants";
-import {
-  getLanguageOfLangtag,
-  retrieveTranslation
-} from "../../helpers/multiLanguage";
+import { ColumnKinds } from "../../constants/TableauxConstants";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 import * as f from "lodash/fp";
 import Header from "../overlay/Header";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
@@ -29,11 +23,9 @@ class RowHeadline extends React.Component {
 
   getDisplayName = column => {
     const { langtag } = this.props;
-    const language = getLanguageOfLangtag(langtag);
     return (
-      column.displayName[langtag] ||
-      column.displayName[language] ||
-      column.displayName[FallbackLanguage] ||
+      (column.displayName &&
+        retrieveTranslation(langtag, column.displayName)) ||
       column.name
     );
   };
@@ -119,19 +111,18 @@ class RowHeadline extends React.Component {
   };
 
   openAttachmentOverlay = () => {
-    const { cell, langtag } = this.props;
-    const table = cell.tables.get(cell.tableId);
-    const tableName = retrieveTranslation(langtag)(table.displayValue);
+    const {
+      actions,
+      cell,
+      cell: { table },
+      langtag,
+      value
+    } = this.props;
+    const tableName =
+      retrieveTranslation(langtag, table.displayName) || table.name;
     actions.openOverlay({
       head: <Header langtag={langtag} context={tableName} />,
-      body: (
-        <AttachmentOverlay
-          cell={cell}
-          langtag={langtag}
-          folderId={folderId}
-          value={value}
-        />
-      ),
+      body: <AttachmentOverlay cell={cell} langtag={langtag} value={value} />,
       title: cell,
       type: "full-height",
       preferRight: true

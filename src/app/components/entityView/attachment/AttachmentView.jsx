@@ -1,9 +1,7 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
-// import ActionCreator from "../../../actions/ActionCreator";
 import LinkList from "../../helperComponents/LinkList";
-import {FallbackLanguage} from "../../../constants/TableauxConstants";
-import multiLanguage from "../../../helpers/multiLanguage";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import i18n from "i18next";
 import apiUrl from "../../../helpers/apiUrl";
 import * as f from "lodash/fp";
@@ -21,29 +19,32 @@ class AttachmentView extends Component {
   };
 
   removeAttachment = uuid => () => {
-    const {cell} = this.props;
+    const { actions, value, cell } = this.props;
     const newValue = cell.value.filter(el => el.uuid !== uuid);
-    // ActionCreator.changeCell(cell, newValue);
+    actions.changeCellValue({ cell, newValue, oldValue: value });
   };
 
   render() {
-    const {cell, langtag} = this.props;
-    const translate = multiLanguage.retrieveTranslation(FallbackLanguage);
+    const { cell, langtag } = this.props;
+    const translate = retrieveTranslation(langtag);
 
-    const attachments = f.zip(cell.value, cell.displayValue).map(
-      ([{url}, displayValue]) => (
-        {
-          displayName: displayValue[langtag],
-          linkTarget: (f.isPlainObject(url)) ? apiUrl(translate(url, langtag)) : ""}
-      )
-    );
+    const attachments = f
+      .zip(cell.value, cell.displayValue)
+      .map(([{ url }, displayValue]) => ({
+        displayName: displayValue[langtag],
+        linkTarget: f.isPlainObject(url) ? apiUrl(translate(url, langtag)) : ""
+      }));
 
-    return (f.isEmpty(attachments))
-      ? <div className="item-description">{i18n.t("table:empty.attachments")}</div>
-      : <div className="item-content link">
+    return f.isEmpty(attachments) ? (
+      <div className="item-description">
+        {i18n.t("table:empty.attachments")}
+      </div>
+    ) : (
+      <div className="item-content link">
         <LinkList links={attachments} langtag={langtag} />
         {this.props.children}
-      </div>;
+      </div>
+    );
   }
 }
 
