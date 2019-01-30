@@ -17,8 +17,8 @@ const {
 export const changeCellValue = action => (dispatch, getState) => {
   // We either get ids directly, or we extract them from a "cell"
   const rowId = (action.cell && action.cell.row.id) || action.rowId;
-  const columnId = (action.cell && action.cell.columnId) || action.columnId;
-  const tableId = (action.cell && action.cell.tableId) || action.tableId;
+  const columnId = (action.cell && action.cell.column.id) || action.columnId;
+  const tableId = (action.cell && action.cell.table.id) || action.tableId;
   const getColumn = f.flow(
     getState,
     f.prop(["columns", tableId, "data"]),

@@ -10,7 +10,7 @@ export const safeRender = render => () => {
   }
 };
 
-export const reportUpdateReasons = (title = "Component") =>
+export const reportUpdateReasons = title =>
   // usage: componentWillUpdate = reportUpdateReasons("SomeComp").bind(this)
   function(nextProps, nextState) {
     const getChanges = (keys, a, b) => keys.filter(k => !f.equals(a[k], b[k]));
@@ -19,5 +19,5 @@ export const reportUpdateReasons = (title = "Component") =>
       state: getChanges(f.keys(nextState), this.state, nextState)
     };
 
-    console.log("Rendered", title, JSON.stringify(changes));
+    console.log("Rendered", title || this.displayName, JSON.stringify(changes));
   };
