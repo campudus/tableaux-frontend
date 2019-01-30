@@ -3,10 +3,11 @@ import {
   ColumnKinds,
   FallbackLanguage
 } from "../../constants/TableauxConstants";
-import { getLanguageOfLangtag } from "../../helpers/multiLanguage";
+import {
+  getLanguageOfLangtag,
+  retrieveTranslation
+} from "../../helpers/multiLanguage";
 import * as f from "lodash/fp";
-// import ActionCreator from "../../actions/ActionCreator";
-import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 import Header from "../overlay/Header";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
@@ -62,7 +63,7 @@ class RowHeadline extends React.Component {
   };
 
   mkLinkHeader = column => {
-    const { cell, langtag, funcs, thisUserCantEdit } = this.props;
+    const { actions, cell, langtag, funcs, thisUserCantEdit } = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     const colName = this.getDisplayName(column);
     const toTableVisible = !cell.table.hidden;
@@ -104,7 +105,7 @@ class RowHeadline extends React.Component {
           <a
             className="column-icon button"
             href="#"
-            onClick={() => openLinkOverlay(cell, langtag)}
+            onClick={() => openLinkOverlay({ cell, langtag, actions })}
             ref={el => {
               funcs.register(el);
             }}
@@ -120,13 +121,21 @@ class RowHeadline extends React.Component {
   openAttachmentOverlay = () => {
     const { cell, langtag } = this.props;
     const table = cell.tables.get(cell.tableId);
-    const tableName =
-      table.displayName[langtag] || table.displayName[FallbackLanguage];
-    // ActionCreator.openOverlay({
-    //   head: <Header context={tableName} title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />} />,
-    //   body: <AttachmentOverlay cell={cell} langtag={langtag} />,
-    //   type: "full-height"
-    // });
+    const tableName = retrieveTranslation(langtag)(table.displayValue);
+    actions.openOverlay({
+      head: <Header langtag={langtag} context={tableName} />,
+      body: (
+        <AttachmentOverlay
+          cell={cell}
+          langtag={langtag}
+          folderId={folderId}
+          value={value}
+        />
+      ),
+      title: cell,
+      type: "full-height",
+      preferRight: true
+    });
   };
 
   mkAttachmentHeader = column => {
