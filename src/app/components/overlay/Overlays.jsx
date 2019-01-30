@@ -11,7 +11,8 @@ const OverlayRenderer = ({
   actions,
   columns,
   rows,
-  tables
+  tables,
+  displayValues
 }) => {
   const renderActiveOverlays = () => {
     if (f.isEmpty(overlays)) {
@@ -62,9 +63,10 @@ const OverlayRenderer = ({
     )(overlays.length);
 
     const grudData = {
-      columns: columns,
-      rows: rows,
-      tables: tables
+      columns,
+      rows,
+      tables,
+      displayValues: displayValues
     };
 
     return overlays.map((overlayParams, idx) => {
@@ -102,7 +104,12 @@ const OverlayRenderer = ({
 const mapStateToProps = state => {
   const toast = (state.overlays && state.overlays.toast) || null;
   const overlays = (state.overlays && state.overlays.overlays) || [];
-  return { toast, overlays, ...f.pick(["columns", "rows", "tables"], state) };
+  return {
+    toast,
+    overlays,
+    ...f.pick(["columns", "rows", "tables"], state),
+    displayValues: state.tableView.displayValues
+  };
 };
 
 export default withReduxState(OverlayRenderer, mapStateToProps);

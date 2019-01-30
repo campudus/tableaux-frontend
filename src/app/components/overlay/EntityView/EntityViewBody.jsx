@@ -333,7 +333,7 @@ class EntityViewBody extends Component {
       displayValue: getDisplayValue(column, cellData.value)
     }));
     const { langtag, filter, focused } = this.state;
-    const { filterColumn } = this.props;
+    const { filterColumn, grudData } = this.props;
     const {
       enterItemPopupButton,
       leaveItemPopupButton,
@@ -380,6 +380,7 @@ class EntityViewBody extends Component {
                 value={JSON.stringify(cell.value)}
                 annotations={JSON.stringify(cell.annotations)}
                 actions={actions}
+                grudData={grudData}
               />
             );
           })}

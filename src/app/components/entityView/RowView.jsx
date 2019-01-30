@@ -21,6 +21,7 @@ import * as Annotations from "../../helpers/annotationHelper";
 import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 import classNames from "classnames";
 import i18n from "i18next";
+import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
 
 class View extends Component {
   static propTypes = {
@@ -110,9 +111,11 @@ class View extends Component {
     const {
       actions,
       cell,
+      grudData,
       langtag,
       setTranslationView,
-      hasFocusedChild
+      hasFocusedChild,
+      value
     } = this.props;
     const { kind, column } = cell;
     const views = {
@@ -209,8 +212,9 @@ class View extends Component {
           </div>
         ) : null}
         <CellKind
+          grudData={grudData}
           actions={actions}
-          cell={cell}
+          cell={f.assoc("value", value, cell)}
           langtag={langtag}
           time={cell.kind === ColumnKinds.datetime}
           key={`${cell.id}-${
@@ -219,9 +223,7 @@ class View extends Component {
           setTranslationView={setTranslationView}
           funcs={this.props.funcs}
           thisUserCantEdit={isDisabled}
-          value={
-            cell.isMultiLanguage ? f.get(["value", langtag], cell) : cell.value
-          }
+          value={cell.isMultiLanguage ? f.get(langtag, value) : value}
         >
           <div className="action-tags">
             {translationTag}
@@ -233,4 +235,4 @@ class View extends Component {
   }
 }
 
-export default View;
+export default connectOverlayToCellValue(View);
