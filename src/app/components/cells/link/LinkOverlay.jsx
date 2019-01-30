@@ -47,7 +47,6 @@ const LINKED_ITEMS = 0;
 const UNLINKED_ITEMS = 1;
 
 class LinkOverlay extends PureComponent {
-  q;
   constructor(props) {
     super(props);
     this.allRowResults = {};
