@@ -16,7 +16,7 @@ class LinkView extends Component {
     actions: PropTypes.object.isRequired
   };
 
-  componentDidUpdate = reportUpdateReasons("link").bind(this);
+  // componentDidUpdate = reportUpdateReasons("link").bind(this);
 
   openOverlay = () => {
     const { cell, langtag, actions } = this.props;
@@ -66,10 +66,15 @@ class LinkView extends Component {
 }
 
 export default withProps(({ value, grudData, cell }) => {
-  const displayValues = grudData.displayValues[cell.column.toTable];
-  const linkDisplayValues = value.map(({ id }) => {
-    const displayValueObject = f.find(f.propEq("id", id), displayValues);
-    return displayValueObject.values[0];
-  });
-  return { displayValues: linkDisplayValues };
+  try {
+    const displayValues = grudData.displayValues[cell.column.toTable];
+    const linkDisplayValues = value.map(({ id }) => {
+      const displayValueObject = f.find(f.propEq("id", id), displayValues);
+      return displayValueObject.values[0];
+    });
+    return { displayValues: linkDisplayValues };
+  } catch (err) {
+    // Worker is not done creating display values
+    return { displayValues: cell.displayValue || [] };
+  }
 })(LinkView);
