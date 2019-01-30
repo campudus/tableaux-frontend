@@ -433,7 +433,13 @@ const withDataRows = compose(
         apiRoute: url
       }).then(setToIdColumn);
     },
-    fetchForeignRows: ({ cell, setForeignRows, setLoading, value }) => () => {
+    fetchForeignRows: ({
+      cell,
+      setForeignRows,
+      setLoading,
+      value,
+      actions
+    }) => async () => {
       setLoading(true);
       const { column, table, row } = cell;
       const url =
@@ -442,16 +448,34 @@ const withDataRows = compose(
           columnId: column.id,
           rowId: row.id
         }) + "/foreignRows";
-      makeRequest({ apiRoute: url })
+      const rows = await makeRequest({ apiRoute: url })
         .then(f.prop("rows"))
-        .then(rows => {
-          // Maximum available rows: rows from initial value plus
-          // available ones. Otherwise we lose available items when we
-          // remove links from `value`
-          setForeignRows([...value, ...rows]);
-        })
-        .then(() => setLoading(false))
-        .catch(err => console.error("Error loading foreignRows:", err));
+        .catch(err => {
+          console.error("Error loading foreignRows:", err);
+          return [];
+        });
+      // Maximum available rows: rows from initial value plus
+      // available ones. Otherwise we lose available items when we
+      // remove links from `value`
+
+      setForeignRows([...value, ...rows]);
+      setLoading(false);
+      // Add the foreign values to the link's displayValues cache,
+      // else they might display <empty> when they were not linked by
+      // another row before
+      actions.addDisplayValues({
+        displayValues: [
+          {
+            tableId: cell.column.toTable,
+            values: rows.map(foreignValue => ({
+              id: foreignValue.id,
+              values: [
+                getDisplayValue(cell.column.toColumn, foreignValue.values[0])
+              ]
+            }))
+          }
+        ]
+      });
     },
     setFilterValue: ({ id, actions }) => filterValue =>
       actions.setOverlayState({ id, filterValue }),
