@@ -14,10 +14,10 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import classNames from "classnames";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import i18n from "i18next";
-// import {showToast} from "../../../actions/ActionCreator";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import { safeRender } from "../../../helpers/devWrappers";
+import { withPropsOnChange } from "recompose";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
@@ -39,6 +39,7 @@ class EntityViewBody extends Component {
     };
     this.focusElements = {};
     this.translationItem = null;
+    this.funcs = [];
     props.registerForEvent({
       type: "scroll",
       handler: () => this.setTranslationItem()
@@ -149,10 +150,14 @@ class EntityViewBody extends Component {
 
   switchLang = ({ langtag }) => {
     const newLang = getLanguageOrCountryIcon(langtag);
-    // showToast(<div className="language-info-toast">
-    //   <div className="new-lang">{newLang}</div>
-    // </div>,
-    // 2000);
+    this.props.actions.showToast({
+      content: (
+        <div className="language-info-toast">
+          <div className="new-lang">{newLang}</div>
+        </div>
+      ),
+      duration: 2000
+    });
     this.setState({ langtag });
   };
 
@@ -170,8 +175,9 @@ class EntityViewBody extends Component {
   };
 
   getVisibleCells = () => {
-    const { filter, langtag, row } = this.state;
-    return row.cells.models
+    const { cells } = this.props;
+    const { filter, langtag } = this.state;
+    return cells
       .filter(this.groupFilter(this.props.filterColumn))
       .filter(columnFilter(langtag, filter));
   };
@@ -260,8 +266,10 @@ class EntityViewBody extends Component {
     });
   };
 
-  // Opening/closing popup by click will modify the DOM, so the hovering pointer will cause mouseEnter + mouseLeave
-  // events. To ignore them, check if any button is pressed when handling the enter/leave events.
+  // Opening/closing popup by click will modify the DOM, so the
+  // hovering pointer will cause mouseEnter + mouseLeave events. To
+  // ignore them, check if any button is pressed when handling the
+  // enter/leave events.
   enterItemPopupButton = idx => event => {
     if (event.buttons > 0) {
       return;
@@ -312,26 +320,27 @@ class EntityViewBody extends Component {
     );
   };
 
-  groupFilter = filterColumn => cell => {
+  // (filterColumn) -> (cell) -> boolean
+  groupFilter = filterColumn => {
     const prefilteredIds = filterColumn
       ? f.map("id", filterColumn.concats || filterColumn.groups)
       : null;
-    return filterColumn
-      ? f.contains(f.get(["column", "id"], cell), prefilteredIds)
-      : !cell.column.isGroupMember;
+
+    return cell => {
+      return filterColumn
+        ? f.contains(f.get(["column", "id"], cell), prefilteredIds)
+        : !cell.column.isGroupMember;
+    };
   };
 
+  componentDidUpdate(nextProps) {
+    if (this.props.row.id !== nextProps.row.id) {
+      this.funcs = [];
+    }
+  }
+
   render = safeRender(() => {
-    const { row, columns, table, actions } = this.props;
-    const cells = f.zip(columns, row.values).map(([column, cellData]) => ({
-      column,
-      kind: column.kind,
-      value: cellData.value,
-      table,
-      row,
-      id: `${column.id}-${cellData.kind}`,
-      displayValue: getDisplayValue(column, cellData.value)
-    }));
+    const { row, actions, cells } = this.props;
     const { langtag, filter, focused } = this.state;
     const { filterColumn, grudData } = this.props;
     const {
@@ -364,17 +373,20 @@ class EntityViewBody extends Component {
                 hasFocusedChild={f.eq(cell.id, focused)}
                 hasMeaningfulLinks={!filterColumn}
                 popupOpen={this.state.itemWithPopup === idx}
-                funcs={{
-                  setTranslationItem: this.setTranslationItem,
-                  register: this.registerFocusable(cell.id),
-                  focus: this.changeFocus,
-                  id: cell.id,
-                  enterItemPopupButton: enterItemPopupButton(idx),
-                  leaveItemPopupButton: leaveItemPopupButton(idx),
-                  openItemPopup: openItemPopup(idx),
-                  closeItemPopup: closeItemPopup(idx),
-                  hintUnlockButton: this.shakeBar
-                }}
+                funcs={
+                  this.funcs[idx] ||
+                  (this.funcs[idx] = {
+                    setTranslationItem: this.setTranslationItem,
+                    register: this.registerFocusable(cell.id),
+                    focus: this.changeFocus,
+                    id: cell.id,
+                    enterItemPopupButton: enterItemPopupButton(idx),
+                    leaveItemPopupButton: leaveItemPopupButton(idx),
+                    openItemPopup: openItemPopup(idx),
+                    closeItemPopup: closeItemPopup(idx),
+                    hintUnlockButton: this.shakeBar
+                  })
+                }
                 lockStatus={isLocked(row)}
                 final={row.final}
                 value={JSON.stringify(cell.value)}
@@ -391,4 +403,17 @@ class EntityViewBody extends Component {
   });
 }
 
-export default EntityViewBody;
+// Re-construct relevant data from previous Ampersand cell model so
+// downstream functions and components need no changes
+export default withPropsOnChange(["rows"], ({ row, columns, table }) => {
+  const cells = f.zip(columns, row.values).map(([column, cellData]) => ({
+    column,
+    kind: column.kind,
+    value: cellData.value,
+    table,
+    row,
+    id: `${column.id}-${cellData.kind}`,
+    displayValue: getDisplayValue(column, cellData.value)
+  }));
+  return { cells };
+})(EntityViewBody);
