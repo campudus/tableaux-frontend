@@ -1,14 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import {openEntityView} from "../../overlay/EntityViewOverlay";
-// import connectToAmpersand from "../../helperComponents/connectToAmpersand";
+import { openEntityView } from "../../overlay/EntityViewOverlay";
 import { isLocked } from "../../../helpers/annotationHelper";
 
 const IdentifierCell = props => {
-  const { value, column, langtag, editing, selected, displayValue } = props;
+  const { langtag, cell, editing, selected, displayValue } = props;
   const openEditor = () => {
     (selected || editing) && !isLocked(cell.row)
-      ? function() {} //openEntityView(cell.row, langtag, null, null, cell.column)
+      ? openEntityView({
+          langtag,
+          table: cell.table,
+          row: cell.row,
+          filterColumn: cell.column
+        })
       : function() {};
   };
 
