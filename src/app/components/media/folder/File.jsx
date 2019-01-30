@@ -90,8 +90,8 @@ class File extends Component {
       footer: (
         <Footer
           buttonActions={{
-            negative: [i18n.t("common:save"), this.onSave],
-            neutral: [i18n.t("common:cancel"), null]
+            neutral: [i18n.t("common:cancel"), null],
+            positive: [i18n.t("common:save"), this.onSave]
           }}
         />
       ),
