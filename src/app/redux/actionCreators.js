@@ -278,15 +278,11 @@ const loadMediaFolder = (folderId, langtag) => {
   };
 };
 
-const createMediaFolder = (parentId, folderName, folderDescription = "") => {
+const createMediaFolder = data => {
   return {
     promise: makeRequest({
       apiRoute: toFolder(),
-      data: {
-        parent: parentId,
-        name: folderName,
-        description: folderDescription
-      },
+      data: data,
       method: "POST"
     }),
     actionTypes: [
@@ -297,20 +293,11 @@ const createMediaFolder = (parentId, folderName, folderDescription = "") => {
   };
 };
 
-const editMediaFolder = (
-  folderId,
-  parentId,
-  folderName,
-  folderDescription = ""
-) => {
+const editMediaFolder = (folderId, data) => {
   return {
     promise: makeRequest({
       apiRoute: toFolder(folderId),
-      data: {
-        parent: parentId,
-        name: folderName,
-        description: folderDescription
-      },
+      data: data,
       method: "PUT"
     }),
     actionTypes: [

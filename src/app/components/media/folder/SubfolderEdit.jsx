@@ -12,7 +12,7 @@ class SubfolderEdit extends PureComponent {
     onCancel: PropTypes.func.isRequired
   };
 
-  handleClickOutside = event => {
+  handleClickOutside = () => {
     this.onSave();
   };
 
@@ -41,17 +41,20 @@ class SubfolderEdit extends PureComponent {
   }
 
   onSave = () => {
+    const { folder, onSave, onCancel } = this.props;
     const currentName = this.refs.nameInput.value.toString().trim();
-    const placeHolderName = this.props.folder.name;
+    const placeHolderName = folder.name;
+
     if (currentName === "" || currentName === placeHolderName) {
-      this.props.onCancel();
+      onCancel();
     } else {
-      this.props.onSave(
-        this.props.folder.id,
-        currentName,
-        this.props.folder.description,
-        this.props.folder.parent
-      );
+      const requestData = {
+        parent: folder.parent,
+        name: currentName,
+        description: folder.description
+      };
+
+      onSave(folder.id, requestData);
     }
   };
 

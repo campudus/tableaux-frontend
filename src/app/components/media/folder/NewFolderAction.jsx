@@ -1,6 +1,5 @@
 import NewFolderActionView from "./NewFolderActionView.jsx";
 import SubfolderEdit from "./SubfolderEdit";
-// import { simpleError } from "../../../components/overlay/ConfirmationOverlay";
 import React from "react";
 import PropTypes from "prop-types";
 import { pure, compose, withHandlers, withState } from "recompose";
@@ -13,13 +12,13 @@ const withEditMode = compose(
     toggleEdit: ({ updateEdit }) => () => {
       updateEdit(edit => !edit);
     },
-    onSave: ({ updateEdit }) => actions => (
-      folderId,
-      folderName,
-      folderDescription,
-      folderParent
-    ) => {
-      actions.createMediaFolder(folderParent.id, folderName, folderDescription);
+    onSave: ({ updateEdit }) => actions => (folderId, data) => {
+      const requestData = {
+        parent: data.parent.id,
+        name: data.name,
+        description: data.description
+      };
+      actions.createMediaFolder(requestData);
       updateEdit(f.always(false));
     }
   })

@@ -22,14 +22,9 @@ const withToggleableEditState = compose(
 );
 
 const withButtonHandlers = withHandlers({
-  onSave: props => (folderId, folderName, folderDescription, folderParent) => {
+  onSave: props => (folderId, requestData) => {
     props.onEdit();
-    props.actions.editMediaFolder(
-      folderId,
-      folderParent,
-      folderName,
-      folderDescription
-    );
+    props.actions.editMediaFolder(folderId, requestData);
   },
   onCancel: props => props.onEdit(),
   onRemove: props => () => {
