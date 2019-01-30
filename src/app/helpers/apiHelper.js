@@ -37,8 +37,14 @@ const makeRequest = async ({
     method,
     body: f.isNil(data) ? undefined : JSON.stringify(data)
   })
-    .then(parseResponse)
-    .catch(error => String(error));
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Request error: ${url}: ${response.statusName}`);
+      } else {
+        return response;
+      }
+    })
+    .then(parseResponse);
 };
 
 const sendTestData = path =>fileName =>data =>
