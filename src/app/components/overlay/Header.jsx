@@ -21,19 +21,6 @@ class Header extends PureComponent {
     id: PropTypes.number
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: props.title
-    };
-  }
-
-  componentWillReceiveProps(next) {
-    if (next.title !== this.props.title) {
-      this.setState({ title: next.title });
-    }
-  }
-
   wrapButtonFn = (value, fn) => (...args) => {
     Raven.captureBreadcrumb({ message: "Header button: " + value });
     if (f.isFunction(fn)) {
@@ -68,7 +55,6 @@ class Header extends PureComponent {
   };
 
   render() {
-    //    console.log("Default title?", isCell(this.props.title));
     const { actions, components, context, id } = this.props;
     const cssClass = classNames("header-wrapper", {
       "with-buttons": actions,

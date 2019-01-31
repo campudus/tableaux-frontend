@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import {
   ColumnKinds,
@@ -23,7 +23,7 @@ import classNames from "classnames";
 import i18n from "i18next";
 import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
 
-class View extends Component {
+class View extends PureComponent {
   static propTypes = {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
@@ -34,28 +34,8 @@ class View extends Component {
     lockStatus: PropTypes.any // just to signal a neccessary re-render when row (un-)locked
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    // don't re-render when only functions changed
-    const pKeys = f.keys(this.props);
-    const sKeys = f.keys(this.state);
-    const pDiffs = pKeys.filter(k => this.props[k] !== nextProps[k]);
-    const sDiffs = sKeys.filter(k => this.state[k] !== nextState[k]);
-    const diffs = [...pDiffs, ...sDiffs];
-    return !(diffs.length === 1 && f.first(diffs) === "funcs");
-  }
-
   constructor(props) {
     super(props);
-    // this.props.watch(this.props.cell,
-    //   {
-    //     events: "change:annotations",
-    //     force: true
-    //   });
-    // this.props.watch(this.props.cell,
-    //   {
-    //     events: "change:value",
-    //     force: true
-    //   });
     this.state = { hovered: false };
   }
 
@@ -184,8 +164,11 @@ class View extends Component {
       )
       .filter(f.identity);
 
+    const itemKey = `${cell.table.id}-${cell.column.id}-${cell.row.id}`;
+
     return (
       <div
+        key={itemKey}
         className={viewClass}
         onClick={this.clickHandler}
         onMouseEnter={() => this.setState({ hovered: true })}

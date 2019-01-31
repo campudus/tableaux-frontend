@@ -1,14 +1,10 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-// import connectToAmpersand from "../helperComponents/connectToAmpersand";
-// import Dispatcher from "../../dispatcher/Dispatcher";
 import Table from "../table/Table.jsx";
 import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
-// import ActionCreator from "../../actions/ActionCreator";
 import f from "lodash/fp";
 import TableauxConstants, {
-  ActionTypes,
   FilterModes
 } from "../../constants/TableauxConstants";
 import Filter from "../header/filter/Filter.jsx";
@@ -33,6 +29,7 @@ import { getMultiLangValue } from "../../helpers/multiLanguage";
 // import canFocusCell from "./canFocusCell";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
+import { when } from "../../helpers/functools.js";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -48,11 +45,6 @@ const mapStatetoProps = (state, props) => {
     startedGeneratingDisplayValues
   } = tableView;
   const allDisplayValues = f.get(["displayValues"], tableView);
-  const displayValues = combineDisplayValuesWithLinks(
-    allDisplayValues,
-    columns,
-    tableId
-  );
 
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
@@ -65,7 +57,7 @@ const mapStatetoProps = (state, props) => {
     tables,
     visibleColumns,
     startedGeneratingDisplayValues,
-    allDisplayValues,
+    displayValues: f.defaultTo([], f.prop(tableId, allDisplayValues)),
     tableView
   };
 };
@@ -73,7 +65,7 @@ const mapStatetoProps = (state, props) => {
 @applyFiltersAndVisibility
 @withCustomProjection
 // @canFocusCell
-class TableView extends Component {
+class TableView extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -118,7 +110,6 @@ class TableView extends Component {
       tables,
       columns,
       rows,
-      displayValues,
       langtag,
       table,
       actions,
@@ -148,7 +139,6 @@ class TableView extends Component {
           <Table
             visibleColumns={visibleColumns}
             actions={actions}
-            displayValues={displayValues}
             tableView={tableView}
             table={table}
             langtag={langtag}

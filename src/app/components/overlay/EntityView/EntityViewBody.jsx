@@ -405,7 +405,7 @@ class EntityViewBody extends Component {
 
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
-export default withPropsOnChange(["rows"], ({ row, columns, table }) => {
+export default withPropsOnChange(["row"], ({ row, columns, table }) => {
   const cells = f.zip(columns, row.values).map(([column, cellData]) => ({
     column,
     kind: column.kind,

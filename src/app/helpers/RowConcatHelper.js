@@ -22,7 +22,7 @@ const RowConcat = props => {
   const { idColumn, row, langtag } = props;
   const displayValue = rowConcatString(idColumn, row, langtag);
   return f.isEmpty(displayValue) ? (
-    <Empty />
+    <Empty langtag={langtag} />
   ) : (
     <span className="row-concat-string">{displayValue}</span>
   );

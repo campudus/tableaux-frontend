@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { Directions, Langtags } from "../../../constants/TableauxConstants";
 import classNames from "classnames";
@@ -7,12 +7,13 @@ import HeaderPopupMenu from "./HeaderPopupMenu";
 import FilterBar from "./FilterBar";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-// import {changeEntityViewRow, switchEntityViewLanguage} from "../../../actions/ActionCreator";
-// import Dispatcher from "../../../dispatcher/Dispatcher";
 import { unlockRow } from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import HistoryButtons from "../../table/undo/HistoryButtons";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import { doto } from "../../../helpers/functools";
+import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
+import Empty from "../../../components/helperComponents/emptyEntry";
 
 @listensToClickOutside
 class LanguageSwitcher extends Component {
@@ -89,24 +90,24 @@ class LanguageSwitcher extends Component {
   }
 }
 
-class RowSwitcher extends Component {
+class RowSwitcher extends PureComponent {
   static propTypes = {
+    rows: PropTypes.array,
     row: PropTypes.object.isRequired,
     id: PropTypes.number.isRequired,
     langtag: PropTypes.string.isRequired
   };
 
+  changeEntityViewRow = row => {
+    const { id, actions } = this.props;
+    actions.setOverlayState({ id, row });
+  };
+
   getNextRow = dir => {
-    // const { row } = this.props;
-    // const firstCell = row.cells.at(0);
-    // const table = firstCell.tables.get(firstCell.tableId);
-    // const rowsCollection = f.get("models", this.props.rows || table.rows);
-    // const myRowIdx = f.findIndex(
-    //   f.matchesProperty("id", row.id),
-    //   rowsCollection
-    // );
-    // const dirAsNumber = dir === Directions.UP ? -1 : 1;
-    // return f.get([myRowIdx + dirAsNumber], rowsCollection);
+    const { row, rows } = this.props;
+    const myRowIdx = f.findIndex(f.matchesProperty("id", row.id), rows);
+    const dirAsNumber = dir === Directions.UP ? -1 : 1;
+    return f.get([myRowIdx + dirAsNumber], rows);
   };
 
   switchRow = dir => () => {
@@ -114,7 +115,7 @@ class RowSwitcher extends Component {
     if (nextRow) {
       unlockRow({}, false);
       this.props.updateSharedData(f.assoc("row", nextRow));
-      // changeEntityViewRow({row: nextRow, id: this.props.id});
+      this.changeEntityViewRow(nextRow);
     }
   };
 
@@ -150,7 +151,8 @@ class RowSwitcher extends Component {
   }
 }
 
-class EntityViewHeader extends Component {
+@connectOverlayToCellValue
+class EntityViewHeader extends PureComponent {
   static propTypes = {
     canSwitchRows: PropTypes.bool,
     hasMeaningfulLinks: PropTypes.any,
@@ -158,13 +160,6 @@ class EntityViewHeader extends Component {
     langtag: PropTypes.string.isRequired
   };
 
-  componentWillMount() {
-    // Dispatcher.on(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
-  }
-
-  componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.BROADCAST_DATA_CHANGE, this.updateHeader);
-  }
 
   updateHeader = ({ cell }) => {
     this.forceUpdate();
@@ -176,13 +171,17 @@ class EntityViewHeader extends Component {
       hasMeaningfulLinks,
       langtag,
       table,
-      row
+      row,
+      rows,
+      grudData
     } = this.props;
 
     const components = (
       <div className="header-components">
         <LanguageSwitcher langtag={langtag} />
-        {canSwitchRows ? <RowSwitcher {...this.props} row={row} /> : null}
+        {canSwitchRows && !f.isEmpty(rows) ? (
+          <RowSwitcher {...this.props} />
+        ) : null}
         <HistoryButtons tableId={table.id} rowId={row.id} />
         <FilterBar id={this.props.id} />
         <HeaderPopupMenu
@@ -195,10 +194,25 @@ class EntityViewHeader extends Component {
     );
     const tableName = f.isEmpty(table.displayName)
       ? table.name
-      : retrieveTranslation(langtag)(table.displayName) || table.name;
+      : retrieveTranslation(langtag, table.displayName) || table.name;
+
+    const title = doto(
+      grudData,
+      f.prop(["displayValues", table.id]),
+      f.find(f.propEq("id", row.id)),
+      f.prop("values"),
+      f.propOr({}, 0),
+      retrieveTranslation(langtag),
+      f.defaultTo(<Empty langtag={langtag} />)
+    );
 
     return (
-      <Header {...this.props} context={tableName} components={components} />
+      <Header
+        {...this.props}
+        context={tableName}
+        components={components}
+        title={title}
+      />
     );
   }
 }

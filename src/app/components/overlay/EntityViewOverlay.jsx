@@ -20,6 +20,7 @@ export function openEntityView({
   const state = store.getState();
   const columns = f.prop(["columns", table.id, "data"], state);
   const idColumn = f.first(columns);
+  const titleSpec = { row, column: idColumn, table };
   store.dispatch(
     ReduxActions.openOverlay({
       head: (
@@ -29,6 +30,7 @@ export function openEntityView({
           canSwitchRows={true}
           hasMeaningfulLinks={!filterColumn}
           idColumn={idColumn}
+          cell={titleSpec}
         />
       ),
       body: (
@@ -42,11 +44,7 @@ export function openEntityView({
       table,
       row,
       columns,
-      title: {
-        row,
-        column: idColumn,
-        table
-      },
+      title: titleSpec,
       preferRight: true
     })
   );

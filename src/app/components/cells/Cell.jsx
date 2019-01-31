@@ -1,10 +1,6 @@
 import React from "react";
 // import ActionCreator from "../../actions/ActionCreator";
-import {
-  ColumnKinds,
-  FallBackLanguage,
-  Langtags
-} from "../../constants/TableauxConstants";
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import TextCell from "./text/TextCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
@@ -39,6 +35,7 @@ import {
   isUserAdmin,
   hasUserAccessToLanguage
 } from "../../helpers/accessManagementHelper";
+import { reportUpdateReasons } from "../../helpers/devWrappers";
 
 const FlagIconRenderer = () => null;
 const ExpandCorner = compose(
@@ -272,17 +269,6 @@ class Cell extends React.Component {
     [ColumnKinds.group]: IdentifierCell
   };
 
-  //  componentWillUpdate(nextProps) {
-  //    const keys = f.keys(nextProps);
-  //    const { column, row } = this.props;
-  //    const cellid = `${column.id}/${row.id}`;
-  //    const modifiedVals = f.filter(
-  //      k => k !== "column" && k !== "row" && this.props[k] !== nextProps[k],
-  //      keys
-  //    );
-  //    console.log(cellid, f.isEmpty(modifiedVals) ? "--" : modifiedVals);
-  //  }
-
   userCanEditValue() {
     const { column, langtag, value } = this.props;
     if (column.kind === ColumnKinds.concat) {
@@ -296,6 +282,12 @@ class Cell extends React.Component {
       (column.languageType === "country" && hasUserAccessToCountryCode(langtag))
     );
   }
+
+  //   componentDidUpdate = reportUpdateReasons(
+  //     `${this.props.column.kind}-cell-${this.props.row.id}-${
+  //       this.props.column.id
+  //     }-${this.props.langtag}`
+  //   );
 
   render() {
     const {
@@ -360,7 +352,7 @@ class Cell extends React.Component {
             column.kind === ColumnKinds.link ? allDisplayValues : null
           }
           column={column}
-          key={`${column.id}-${langtag}-${displayValue}`}
+          key={`${column.id}-${langtag}-${displayValue[langtag]}`}
           langtag={langtag}
           focusTable={focusTable}
           selected={selected}

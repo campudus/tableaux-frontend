@@ -535,10 +535,12 @@ export default class VirtualTable extends PureComponent {
       !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell
         ? scrolledCell
         : {};
-    this.visibleColumns = columns.filter(this.filterVisibleCells);
 
+    // cache visible elements for this render cycle, so we won't need
+    // to recalculate for each cell
+    this.visibleColumns = columns.filter(this.filterVisibleCells);
     this.visibleDisplayValues = (displayValues || []).map(col =>
-      f.filter(this.filterVisibleCells, col)
+      col.filter(this.filterVisibleCells)
     );
 
     const columnCount = f.size(this.visibleColumns) + 1;

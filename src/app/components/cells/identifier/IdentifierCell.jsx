@@ -23,4 +23,11 @@ const IdentifierCell = props => {
   );
 };
 
+IdentifierCell.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  cell: PropTypes.object.isRequired,
+  selected: PropTypes.bool,
+  displayValue: PropTypes.object.isRequired
+};
+
 export default IdentifierCell;

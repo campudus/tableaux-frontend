@@ -10,7 +10,8 @@ import f from "lodash/fp";
 import {
   maybe,
   stopPropagation,
-  preventDefault
+  preventDefault,
+  doto
 } from "../../helpers/functools";
 import i18n from "i18next";
 import RowContextMenu from "../contextMenu/RowContextMenu";
@@ -56,12 +57,13 @@ class Table extends Component {
     }
   }
 
-  componentDidUpdate() {
-    // When overlay is open we don't want anything to force focus inside the table
-    if (!this.props.overlayOpen) {
-      // tableNavigationWorker.checkFocusInsideTable.call(this);
-    }
-  }
+  //   componentDidUpdate() {
+  //     // When overlay is open we don't want anything to force focus inside the table
+  //     if (!this.props.overlayOpen) {
+  //       // tableNavigationWorker.checkFocusInsideTable.call(this);
+  //     }
+  //   }
+
 
   toggleExpandedRow = rowId => () => {
     const { expandedRowIds } = this.state;
@@ -136,7 +138,7 @@ class Table extends Component {
 
   showRowContextMenu = ({ langtag, cell }) => event => {
     const { pageX, pageY } = event;
-    const { actions } = this.props;
+    const { actions, rows } = this.props;
     this.setState({
       rowContextMenu: {
         x: pageX,
@@ -145,7 +147,8 @@ class Table extends Component {
         table: cell.table,
         actions,
         langtag,
-        cell
+        cell,
+        rows
       }
     });
   };
@@ -173,14 +176,14 @@ class Table extends Component {
       selectedCellExpandedRow,
       rowContextMenu
     } = this.state;
-    const rowKeys = f.flow(
-      f.keys,
-      f.toString
-    )(rows);
-    const columnKeys = f.flow(
-      f.keys,
-      f.toString
-    )(columns);
+    const rowIds = f.map("id", rows);
+
+    const displayValues = doto(
+      tableView,
+      f.prop(["displayValues", table.id]),
+      f.filter(({ id }) => f.contains(id, rowIds)),
+      f.map("values")
+    );
 
     return (
       <section
@@ -209,9 +212,7 @@ class Table extends Component {
               () =>
                 null /*tableNavigationWorker.checkFocusInsideTable.call(this)*/
             }
-            rowKeys={rowKeys}
             displayValues={displayValues}
-            columnKeys={columnKeys}
             table={table}
             tables={tables}
             langtag={langtag}
@@ -237,5 +238,13 @@ class Table extends Component {
     );
   }
 }
+
+Table.propTypes = {
+  actions: PropTypes.object.isRequired,
+  tableView: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  rows: PropTypes.array,
+  columns: PropTypes.array
+};
 
 export default listensToClickOutside(Table);
