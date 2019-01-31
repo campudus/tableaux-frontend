@@ -51,13 +51,13 @@ const NewFolderAction = props => {
 };
 
 NewFolderAction.propTypes = {
-  parentFolder: PropTypes.object,
-  folder: PropTypes.object,
-  actions: PropTypes.object,
-  t: PropTypes.func,
-  onSave: PropTypes.func,
-  toggleEdit: PropTypes.func,
-  edit: PropTypes.bool
+  parentFolder: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  t: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  toggleEdit: PropTypes.func.isRequired,
+  edit: PropTypes.bool.isRequired,
+  folder: PropTypes.object
 };
 
 export default compose(

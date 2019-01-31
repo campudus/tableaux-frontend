@@ -13,13 +13,6 @@ import TableauxRouter from "../../../router/router";
 
 @translate(["media"])
 class Folder extends Component {
-  static propTypes = {
-    folder: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    t: PropTypes.func.isRequired,
-    actions: PropTypes.object
-  };
-
   constructor(props) {
     super(props);
     this.state = { modifiedFiles: [] };
@@ -160,5 +153,11 @@ class Folder extends Component {
     );
   }
 }
+
+Folder.propTypes = {
+  folder: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  actions: PropTypes.object.isRequired
+};
 
 export default Folder;

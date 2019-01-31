@@ -11,7 +11,8 @@ const NewFolderActionView = props => (
 );
 
 NewFolderActionView.propTypes = {
-  callback: PropTypes.func.isRequired
+  callback: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired
 };
 
 export default compose(translate(["media"]))(NewFolderActionView);

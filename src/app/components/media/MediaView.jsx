@@ -25,16 +25,8 @@ const enhance = compose(
 );
 
 class MediaView extends Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    folderId: PropTypes.number,
-    media: PropTypes.object,
-    actions: PropTypes.object
-  };
-
   constructor(props) {
     super(props);
-
     this.onLanguageSwitch = this.onLanguageSwitch.bind(this);
   }
 
@@ -82,5 +74,12 @@ class MediaView extends Component {
     }
   }
 }
+
+MediaView.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  media: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  folderId: PropTypes.number
+};
 
 export default compose(enhance)(ReduxActionHoc(MediaView, mapStateToProps));

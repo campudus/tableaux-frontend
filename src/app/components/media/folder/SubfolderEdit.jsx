@@ -6,12 +6,6 @@ import PropTypes from "prop-types";
 
 @listensToClickOutside
 class SubfolderEdit extends PureComponent {
-  static propTypes = {
-    folder: PropTypes.object.isRequired,
-    onSave: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired
-  };
-
   handleClickOutside = () => {
     this.onSave();
   };
@@ -76,5 +70,11 @@ class SubfolderEdit extends PureComponent {
     );
   }
 }
+
+SubfolderEdit.propTypes = {
+  folder: PropTypes.object.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired
+};
 
 export default SubfolderEdit;

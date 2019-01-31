@@ -61,7 +61,7 @@ const Subfolder = props => {
 Subfolder.propTypes = {
   folder: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  actions: PropTypes.object
+  actions: PropTypes.object.isRequired
 };
 
 module.exports = compose(

@@ -24,13 +24,6 @@ const enhance = withState("saveChanges", "setSaveChanges", false);
 
 @translate(["media"])
 class File extends Component {
-  static propTypes = {
-    file: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    t: PropTypes.func,
-    actions: PropTypes.object
-  };
-
   onRemove = () => {
     const fallbackLang = TableauxConstants.DefaultLangtag;
     const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
@@ -155,5 +148,11 @@ class File extends Component {
     );
   }
 }
+
+File.propTypes = {
+  file: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  actions: PropTypes.object.isRequired
+};
 
 export default enhance(File);
