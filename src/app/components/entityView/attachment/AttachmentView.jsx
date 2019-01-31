@@ -25,15 +25,18 @@ class AttachmentView extends Component {
   };
 
   render() {
-    const { cell, langtag } = this.props;
+    const { cell, langtag, value } = this.props;
     const translate = retrieveTranslation(langtag);
 
-    const attachments = f
-      .zip(cell.value, cell.displayValue)
-      .map(([{ url }, displayValue]) => ({
-        displayName: displayValue[langtag],
-        linkTarget: f.isPlainObject(url) ? apiUrl(translate(url, langtag)) : ""
-      }));
+    const attachments =
+      f.size(value) === f.size(cell.displayValue)
+        ? f.zip(value, cell.displayValue).map(([{ url }, displayValue]) => ({
+            displayName: displayValue[langtag],
+            linkTarget: f.isPlainObject(url)
+              ? apiUrl(translate(url, langtag))
+              : ""
+          }))
+        : null;
 
     return f.isEmpty(attachments) ? (
       <div className="item-description">
