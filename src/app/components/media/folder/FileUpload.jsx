@@ -32,7 +32,7 @@ const withUploadHandlers = compose(
       }
 
       if (res) {
-        props.actions.loadMediaFolder(props.folder.id, props.langtag);
+        props.actions.getMediaFolder(props.folder.id, props.langtag);
       }
     }
   })

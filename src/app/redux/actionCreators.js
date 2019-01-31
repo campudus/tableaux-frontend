@@ -54,9 +54,9 @@ const {
 } = actionTypes.overlays;
 
 const {
-  MEDIA_FOLDER_LOADING,
-  MEDIA_FOLDER_LOADED,
-  MEDIA_FOLDER_ERROR,
+  MEDIA_FOLDER_GET,
+  MEDIA_FOLDER_GET_SUCCESS,
+  MEDIA_FOLDER_GET_ERROR,
   MEDIA_FOLDER_CREATE,
   MEDIA_FOLDER_CREATE_SUCCESS,
   MEDIA_FOLDER_CREATE_ERROR,
@@ -271,14 +271,17 @@ const toggleCellEditingOrUnlockCell = action => {
     : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
-// TODO-W naming getMediaFolder
-const loadMediaFolder = (folderId, langtag) => {
+const getMediaFolder = (folderId, langtag) => {
   return {
     promise: makeRequest({
       apiRoute: toFolder(folderId, langtag),
       method: "GET"
     }),
-    actionTypes: [MEDIA_FOLDER_LOADING, MEDIA_FOLDER_LOADED, MEDIA_FOLDER_ERROR]
+    actionTypes: [
+      MEDIA_FOLDER_GET,
+      MEDIA_FOLDER_GET_SUCCESS,
+      MEDIA_FOLDER_GET_ERROR
+    ]
   };
 };
 
@@ -386,7 +389,7 @@ const actionCreators = {
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
   applyFiltersAndSorting: applyFiltersAndSorting,
-  loadMediaFolder: loadMediaFolder,
+  getMediaFolder: getMediaFolder,
   createMediaFolder: createMediaFolder,
   editMediaFolder: editMediaFolder,
   deleteMediaFolder: deleteMediaFolder,

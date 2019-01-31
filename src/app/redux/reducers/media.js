@@ -2,9 +2,9 @@ import f from "lodash/fp";
 import actionTypes from "../actionTypes";
 
 const {
-  MEDIA_FOLDER_LOADING,
-  MEDIA_FOLDER_LOADED,
-  MEDIA_FOLDER_ERROR,
+  MEDIA_FOLDER_GET,
+  MEDIA_FOLDER_GET_SUCCESS,
+  MEDIA_FOLDER_GET_ERROR,
   MEDIA_FOLDER_CREATE,
   MEDIA_FOLDER_CREATE_SUCCESS,
   MEDIA_FOLDER_CREATE_ERROR,
@@ -36,7 +36,7 @@ const mediaReducer = (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case MEDIA_FOLDER_LOADING:
+    case MEDIA_FOLDER_GET:
     case MEDIA_FOLDER_CREATE:
     case MEDIA_FOLDER_EDIT:
     case MEDIA_FOLDER_DELETE:
@@ -44,7 +44,7 @@ const mediaReducer = (state = initialState, action) => {
     case MEDIA_FILE_EDIT:
     case MEDIA_FILE_DELETE:
       return { ...state, error: false, finishedLoading: false };
-    case MEDIA_FOLDER_ERROR:
+    case MEDIA_FOLDER_GET_ERROR:
     case MEDIA_FOLDER_CREATE_ERROR:
     case MEDIA_FOLDER_EDIT_ERROR:
     case MEDIA_FOLDER_DELETE_ERROR:
@@ -52,7 +52,7 @@ const mediaReducer = (state = initialState, action) => {
     case MEDIA_FILE_EDIT_ERROR:
     case MEDIA_FILE_DELETE_ERROR:
       return { ...state, error: true, finishedLoading: true };
-    case MEDIA_FOLDER_LOADED:
+    case MEDIA_FOLDER_GET_SUCCESS:
       return {
         ...state,
         error: false,

@@ -168,8 +168,8 @@ const extendedRouter = Router.extend({
   },
 
   mediaBrowser: function(langtag, folderid) {
-    const { loadMediaFolder } = this.actions;
-    loadMediaFolder(folderid, langtag);
+    const { getMediaFolder } = this.actions;
+    getMediaFolder(folderid, langtag);
 
     const validLangtag = validateLangtag(langtag);
     currentLangtag = validLangtag;
