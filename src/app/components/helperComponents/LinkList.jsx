@@ -12,7 +12,6 @@ import * as f from "lodash/fp";
 import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { List } from "react-virtualized";
 import SvgIcon from "../helperComponents/SvgIcon";
-import { reportUpdateReasons } from "../../helpers/devWrappers";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -30,8 +29,6 @@ class LinkList extends PureComponent {
       hovered: null
     };
   }
-
-  componentDidUpdate = reportUpdateReasons("LinkList").bind(this);
 
   toggleExpand = () => this.setState({ expanded: !this.state.expanded });
 
