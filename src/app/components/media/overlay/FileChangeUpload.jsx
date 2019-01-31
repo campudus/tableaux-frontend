@@ -9,16 +9,14 @@ import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper
 import { DefaultLangtag } from "../../../constants/TableauxConstants";
 import { translate } from "react-i18next";
 
-// TODO-W
-// refresh for translated file upload in FileEdit-Overlay
-
 @translate(["media"])
 class FileChangeUpload extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     internalFileName: PropTypes.string,
     uuid: PropTypes.string.isRequired,
-    isSingleFile: PropTypes.bool
+    isSingleFile: PropTypes.bool,
+    actions: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -34,7 +32,7 @@ class FileChangeUpload extends PureComponent {
       this.setState({
         uploadProgress: 0
       });
-      const req = request
+      request
         .put(uploadUrl)
         .on("progress", e => {
           this.setState({
@@ -43,8 +41,6 @@ class FileChangeUpload extends PureComponent {
         })
         .attach("file", file, file.name)
         .end(this.uploadCallback);
-
-      this.props.addAbortableXhrRequest(req.xhr);
     });
   };
 
@@ -59,15 +55,7 @@ class FileChangeUpload extends PureComponent {
     }
 
     if (res) {
-      const file = res.body;
-      /*ActionCreator.changedFileData(file.uuid,
-        file.title,
-        file.description,
-        file.externalName,
-        file.internalName,
-        file.mimeType,
-        file.folder,
-        file.url);*/
+      this.props.actions.getMediaFile(this.props.uuid);
     }
   };
 
@@ -75,15 +63,6 @@ class FileChangeUpload extends PureComponent {
     const { langtag, internalFileName, isSingleFile } = this.props;
     const { uploadProgress } = this.state;
     const { t } = this.props;
-
-    /*console.log(
-      "DefaultLangtag:",
-      DefaultLangtag,
-      "isSingleFile: ",
-      isSingleFile,
-      "hasUserAccessToLanguage(DefaultLangtag):",
-      hasUserAccessToLanguage(DefaultLangtag)
-    );*/
 
     if (
       (isSingleFile && hasUserAccessToLanguage(DefaultLangtag)) ||

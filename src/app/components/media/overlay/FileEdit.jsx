@@ -81,7 +81,8 @@ const FileEdit = compose(
 FileEdit.propTypes = {
   file: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 export default compose(enhance)(FileEdit);

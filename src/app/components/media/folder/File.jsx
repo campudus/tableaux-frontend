@@ -85,7 +85,12 @@ class File extends Component {
         />
       ),
       body: (
-        <FileEdit file={file} langtag={langtag} onClose={this.onEditClose} />
+        <FileEdit
+          file={file}
+          langtag={langtag}
+          onClose={this.onEditClose}
+          actions={actions}
+        />
       ),
       footer: (
         <Footer

@@ -3,7 +3,13 @@ import f from "lodash/fp";
 import { Langtags } from "../../../constants/TableauxConstants";
 import MultifileFileEdit from "./MultifileFileEdit";
 
-export default ({ langtag, fileAttributes, file, setFileAttribute }) => {
+export default ({
+  langtag,
+  fileAttributes,
+  file,
+  setFileAttribute,
+  actions
+}) => {
   const langsWithFiles = lt =>
     f.flow(
       f.props([["externalName", lt], ["title", lt], ["description", lt]]),
@@ -23,6 +29,7 @@ export default ({ langtag, fileAttributes, file, setFileAttribute }) => {
           fileAttributes={fileAttributes}
           setFileAttribute={setFileAttribute}
           hasContent={true}
+          actions={actions}
         />
       ))}
       <MultifileFileEdit
@@ -33,6 +40,7 @@ export default ({ langtag, fileAttributes, file, setFileAttribute }) => {
         fileAttributes={fileAttributes}
         setFileAttribute={setFileAttribute}
         hasContent={false}
+        actions={actions}
       />
     </div>
   );

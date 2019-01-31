@@ -11,7 +11,8 @@ const SingleFileEdit = ({
   file,
   langtag,
   fileAttributes,
-  setFileAttribute
+  setFileAttribute,
+  actions
 }) => {
   const { internalName, uuid } = file;
   const fileLangtag = Object.keys(internalName)[0];
@@ -25,6 +26,7 @@ const SingleFileEdit = ({
             langtag={fileLangtag}
             internalFileName={fileInternalName}
             uuid={uuid}
+            actions={actions}
           />
         </div>
         <span className="open-file">
@@ -68,7 +70,8 @@ const SingleFileEdit = ({
 SingleFileEdit.propTypes = {
   setFileAttribute: PropTypes.func.isRequired,
   langtag: PropTypes.string.isRequired,
-  file: PropTypes.object.isRequired
+  file: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 export default SingleFileEdit;
