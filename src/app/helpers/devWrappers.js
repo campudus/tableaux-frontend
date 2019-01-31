@@ -1,5 +1,6 @@
 import React from "react";
 import f from "lodash/fp";
+import { when } from "./functools";
 
 export const safeRender = render => () => {
   try {
@@ -11,13 +12,29 @@ export const safeRender = render => () => {
 };
 
 export const reportUpdateReasons = title =>
-  // usage: componentWillUpdate = reportUpdateReasons("SomeComp").bind(this)
+  /**
+   * usage: componentWillUpdate = reportUpdateReasons("SomeComp")
+   * or
+   * componentWillUpdate(nextProps, nextState) {
+   *   reportUpdateReasons("SomeComp").call(this, nextProps, nextState)
+   *   performStuff()
+   * }
+   */
   function(nextProps, nextState) {
+    this.renderCount = (this.renderCount || 0) + 1;
     const getChanges = (keys, a, b) => keys.filter(k => !f.equals(a[k], b[k]));
     const changes = {
-      props: getChanges(f.keys(nextProps), this.props, nextProps),
-      state: getChanges(f.keys(nextState), this.state, nextState)
+      props: when(f.isEmpty, () => "unchanged")(
+        getChanges(f.keys(nextProps), this.props, nextProps)
+      ),
+      state: when(f.isEmpty, () => "unchanged")(
+        getChanges(f.keys(nextState), this.state, nextState)
+      )
     };
 
-    console.log("Rendered", title || this.displayName, JSON.stringify(changes));
+    console.log(
+      `Render #${this.renderCount} of`,
+      title || this.displayName,
+      JSON.stringify(changes)
+    );
   };
