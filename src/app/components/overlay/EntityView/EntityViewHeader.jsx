@@ -16,7 +16,7 @@ import { connectOverlayToCellValue } from "../../helperComponents/connectOverlay
 import Empty from "../../../components/helperComponents/emptyEntry";
 
 @listensToClickOutside
-class LanguageSwitcher extends Component {
+class LanguageSwitcher extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired
   };
@@ -159,7 +159,6 @@ class EntityViewHeader extends PureComponent {
     row: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired
   };
-
 
   updateHeader = ({ cell }) => {
     this.forceUpdate();

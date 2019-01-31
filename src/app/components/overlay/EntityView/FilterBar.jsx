@@ -1,7 +1,6 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
-// import ActionCreator from "../../../actions/ActionCreator";
-import {FilterModes} from "../../../constants/TableauxConstants";
+import { FilterModes } from "../../../constants/TableauxConstants";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 
@@ -22,32 +21,30 @@ class FilterBar extends Component {
     if (event.key === "Escape" && !f.isEmpty(this.state.value)) {
       event.preventDefault();
       event.stopPropagation();
-      this.setState({value: ""});
-      // ActionCreator.filterEntityView({
-      //   id: this.props.id,
-      //   value: "",
-      //   filterMode: this.state.filterMode
-      // });
+      this.setState({ value: "" });
+      this.props.sharedData.setFilter({
+        value: "",
+        filterMode: this.state.filterMode
+      });
     }
   };
 
   handleChange = event => {
-    const {value} = event.target;
-    const {id} = this.props;
-    const {filterMode} = this.state;
-    this.setState({value});
-    // ActionCreator.filterEntityView({
-    //   id,
-    //   value,
-    //   filterMode
-    // });
+    const { value } = event.target;
+    const { filterMode } = this.state;
+    this.setState({ value });
+    this.props.sharedData.setFilter({
+      value,
+      filterMode
+    });
   };
 
   render() {
-    const {value} = this.state;
+    const { value } = this.state;
     return (
       <div className="header-filter-bar-wrapper">
-        <input className="header-filter-bar"
+        <input
+          className="header-filter-bar"
           onChange={this.handleChange}
           onKeyDown={this.handleInput}
           value={value}

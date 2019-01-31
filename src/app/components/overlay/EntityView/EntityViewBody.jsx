@@ -27,7 +27,6 @@ class EntityViewBody extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      row: props.row,
       langtag: props.langtag,
       translationView: false,
       filter: {
@@ -45,13 +44,6 @@ class EntityViewBody extends Component {
       handler: () => this.setTranslationItem()
     });
   }
-
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    row: PropTypes.object.isRequired,
-    registerForEvent: PropTypes.func.isRequired,
-    filterColumn: PropTypes.object
-  };
 
   getKeyboardShortcuts = () => {
     return {
@@ -84,7 +76,13 @@ class EntityViewBody extends Component {
     // Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     // Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
     // Dispatcher.on(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
-    // Dispatcher.on(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
+    this.props.updateSharedData(
+      f.merge(f.__, {
+        setFilter: f.debounce(250, this.setColumnFilter),
+        setContentLang: this.switchLang,
+        setTranslationView: this.setTranslationView
+      })
+    );
   };
 
   componentDidMount() {
@@ -98,47 +96,14 @@ class EntityViewBody extends Component {
     // this.changeFocus(focusTarget);
   }
 
+  componentDidUpdate = reportUpdateReasons("EntityViewBody");
+
   componentWillUnmount = () => {
     this.cancelClosingTimer();
     maybe(this.shakeTimerId).map(window.clearTimeout);
   };
 
-  changeRow = ({ id, row }) => {
-    if (this.props.id !== id) {
-      return;
-    }
-
-    const selectedIndex = f.findIndex(
-      f.matchesProperty("id", this.state.focused),
-      this.getVisibleCells()
-    );
-
-    const restoreFocus = () => {
-      if (selectedIndex < 0) {
-        return;
-      }
-      // visibleCells changed meanwhile
-      this.changeFocus(f.get([selectedIndex, "id"], this.getVisibleCells()));
-    };
-
-    this.setState(
-      {
-        row,
-        focused: null,
-        itemWithPopup: null
-      },
-      restoreFocus
-    );
-    this.translationItem = null;
-    this.setTranslationView({ cell: {}, show: false });
-    this.cancelClosingTimer();
-  };
-
-  setColumnFilter = ({ id, value, filterMode }) => {
-    if (id !== this.props.id) {
-      return;
-    }
-
+  setColumnFilter = ({ value, filterMode }) => {
     this.setState({
       filter: {
         value,
@@ -302,7 +267,7 @@ class EntityViewBody extends Component {
   };
 
   renderUnlockBar = () => {
-    const { row } = this.state;
+    const { row } = this.props;
     if (!isLocked(row)) {
       return null;
     }
@@ -333,7 +298,7 @@ class EntityViewBody extends Component {
     };
   };
 
-  componentDidUpdate(nextProps) {
+  componentWillUpdate(nextProps) {
     if (this.props.row.id !== nextProps.row.id) {
       this.funcs = [];
     }
@@ -362,7 +327,7 @@ class EntityViewBody extends Component {
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
           .filter(this.groupFilter(filterColumn))
-          .filter(columnFilter(filter.langtag, filter))
+          .filter(columnFilter(filter.langtag || this.props.langtag, filter))
           .map((cell, idx) => {
             return (
               <View
@@ -417,3 +382,10 @@ export default withPropsOnChange(["row"], ({ row, columns, table }) => {
   }));
   return { cells };
 })(EntityViewBody);
+
+EntityViewBody.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  row: PropTypes.object.isRequired,
+  registerForEvent: PropTypes.func.isRequired,
+  filterColumn: PropTypes.object
+};
