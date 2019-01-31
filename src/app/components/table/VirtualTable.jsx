@@ -106,7 +106,6 @@ export default class VirtualTable extends PureComponent {
       return HEADER_HEIGHT;
     }
     const row = f.get([index - 1], this.props.rows);
-    // console.log(row);
     const rowId = f.get("id", row);
     return f.contains(rowId, this.props.expandedRowIds)
       ? f.size(Langtags) * ROW_HEIGHT
@@ -273,9 +272,19 @@ export default class VirtualTable extends PureComponent {
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const cell = this.getCell(rowIndex, columnIndex);
+==== BASE ====
+    const visibleColumns = this.props.columns.filter(
+      (col, idx) => idx === 0 || col.visible
+    );
     const column = visibleColumns[columnIndex];
+==== BASE ====
     const { value, annotations } = cell;
-    const displayValue = cell.displayValue || getDisplayValue(column, value);
+    const displayValue = this.getDisplayValueWithFallback(
+      rowIndex,
+      columnIndex,
+      column,
+      cell.value
+    );
     const isInSelectedRow = row.id === this.selectedIds.row;
     const isSelected = this.isCellSelected(column.id, row.id);
     const isEditing =
@@ -312,20 +321,11 @@ export default class VirtualTable extends PureComponent {
     const { actions, rows, columns, table, tableView } = this.props;
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
-    const visibleColumns = this.props.columns.filter(
-      (col, idx) => idx === 0 || col.visible
-    );
-    const column = visibleColumns[columnIndex];
+    const column = this.visibleColumns[columnIndex];
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
     const tableLangtag = this.props.langtag;
 
-    console.log(
-      "selected:",
-      JSON.stringify({ ...tableView.selectedCell, editing: tableView.editing }),
-      "state",
-      this.state
-    );
     return (
       // key={cell.id}
       <div className="cell-stack">
@@ -337,16 +337,13 @@ export default class VirtualTable extends PureComponent {
           const isSelected = this.isCellSelected(column.id, row.id, langtag);
           const isEditing =
             isSelected && f.getOr(false, "tableView.editing", this.props);
-          console.log(
-            JSON.stringify({
-              row: row.id,
-              column: column.id,
-              langtag,
-              isSelected,
-              isEditing
-            })
+          const displayValue = this.getDisplayValueWithFallback(
+            rowIndex,
+            columnIndex,
+            column,
+            cell.value
           );
-          const { displayValue } = cell;
+
           return (
             <Cell
               actions={actions}
@@ -369,10 +366,7 @@ export default class VirtualTable extends PureComponent {
               displayValue={displayValue}
               allDisplayValues={tableView.displayValues}
               value={cell.value}
-              openCellContextMenu={this.props.openCellContextMenu({
-                langtag: tableLangtag,
-                cell
-              })}
+              openCellContextMenu={this.props.openCellContextMenu}
               closeCellContextMenu={this.props.closeCellContextMenu}
             />
           );
@@ -427,6 +421,10 @@ export default class VirtualTable extends PureComponent {
     // const visibleCells = cells.filter(this.filterVisibleCells);
     // return visibleCells[columnIndex];
   };
+
+  getDisplayValueWithFallback = (rowIndex, columnIndex, column, value) =>
+    f.get([rowIndex, columnIndex], this.visibleDisplayValues) ||
+    getDisplayValue(column, value);
 
   filterVisibleCells = (cell, columnIdx) =>
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
@@ -537,13 +535,13 @@ export default class VirtualTable extends PureComponent {
       !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell
         ? scrolledCell
         : {};
-    const visibleColumns = columns.filter(this.filterVisibleCells);
+    this.visibleColumns = columns.filter(this.filterVisibleCells);
 
     this.visibleDisplayValues = (displayValues || []).map(col =>
       f.filter(this.filterVisibleCells, col)
     );
 
-    const columnCount = f.size(visibleColumns) + 1;
+    const columnCount = f.size(this.visibleColumns) + 1;
     const rowCount = f.size(rows) + 1;
     const selectedCellKey = `${f.get(
       "id",
