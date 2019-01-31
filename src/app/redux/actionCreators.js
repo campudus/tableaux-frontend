@@ -178,7 +178,7 @@ const generateDisplayValues = (rows, columns, tableId) => (
   worker.postMessage([rows, columns, Langtags, tableId]);
   worker.onmessage = e => {
     const returnedTableId = e.data[1];
-    if (returnedTableId != tableId) {
+    if (returnedTableId !== tableId) {
       return;
     }
     const displayValues = e.data[0];
