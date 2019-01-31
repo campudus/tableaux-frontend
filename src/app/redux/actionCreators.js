@@ -67,6 +67,9 @@ const {
   MEDIA_FOLDER_DELETE_SUCCESS,
   MEDIA_FOLDER_DELETE_ERROR,
 
+  MEDIA_FILE_GET,
+  MEDIA_FILE_GET_SUCCESS,
+  MEDIA_FILE_GET_ERROR,
   MEDIA_FILE_EDIT,
   MEDIA_FILE_EDIT_SUCCESS,
   MEDIA_FILE_EDIT_ERROR,
@@ -268,6 +271,7 @@ const toggleCellEditingOrUnlockCell = action => {
     : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
+// TODO-W naming getMediaFolder
 const loadMediaFolder = (folderId, langtag) => {
   return {
     promise: makeRequest({
@@ -319,6 +323,16 @@ const deleteMediaFolder = folderId => {
       MEDIA_FOLDER_DELETE_SUCCESS,
       MEDIA_FOLDER_DELETE_ERROR
     ]
+  };
+};
+
+const getMediaFile = fileId => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFile(fileId),
+      method: "GET"
+    }),
+    actionTypes: [MEDIA_FILE_GET, MEDIA_FILE_GET_SUCCESS, MEDIA_FILE_GET_ERROR]
   };
 };
 
@@ -376,6 +390,7 @@ const actionCreators = {
   createMediaFolder: createMediaFolder,
   editMediaFolder: editMediaFolder,
   deleteMediaFolder: deleteMediaFolder,
+  getMediaFile: getMediaFile,
   editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile
 };

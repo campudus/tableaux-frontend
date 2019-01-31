@@ -15,6 +15,9 @@ const {
   MEDIA_FOLDER_DELETE_SUCCESS,
   MEDIA_FOLDER_DELETE_ERROR,
 
+  MEDIA_FILE_GET,
+  MEDIA_FILE_GET_SUCCESS,
+  MEDIA_FILE_GET_ERROR,
   MEDIA_FILE_EDIT,
   MEDIA_FILE_EDIT_SUCCESS,
   MEDIA_FILE_EDIT_ERROR,
@@ -37,6 +40,7 @@ const mediaReducer = (state = initialState, action) => {
     case MEDIA_FOLDER_CREATE:
     case MEDIA_FOLDER_EDIT:
     case MEDIA_FOLDER_DELETE:
+    case MEDIA_FILE_GET:
     case MEDIA_FILE_EDIT:
     case MEDIA_FILE_DELETE:
       return { ...state, error: false, finishedLoading: false };
@@ -44,6 +48,7 @@ const mediaReducer = (state = initialState, action) => {
     case MEDIA_FOLDER_CREATE_ERROR:
     case MEDIA_FOLDER_EDIT_ERROR:
     case MEDIA_FOLDER_DELETE_ERROR:
+    case MEDIA_FILE_GET_ERROR:
     case MEDIA_FILE_EDIT_ERROR:
     case MEDIA_FILE_DELETE_ERROR:
       return { ...state, error: true, finishedLoading: true };
@@ -102,6 +107,7 @@ const mediaReducer = (state = initialState, action) => {
               }
             : state.data
       };
+    case MEDIA_FILE_GET_SUCCESS:
     case MEDIA_FILE_EDIT_SUCCESS:
       return {
         ...state,
