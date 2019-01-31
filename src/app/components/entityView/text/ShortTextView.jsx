@@ -20,7 +20,7 @@ const enhance = compose(
         : value;
       return {
         oldValue,
-        value: oldValue
+        value: oldValue || ""
       };
     },
     {
