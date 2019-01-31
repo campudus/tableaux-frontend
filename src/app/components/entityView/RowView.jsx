@@ -52,29 +52,25 @@ class View extends PureComponent {
   componentDidCatch(err) {}
 
   canEditValue = theoretically => {
-    // const { cell, langtag } = this.props;
-    // const canEditUnlocked =
-    //   Access.isUserAdmin() ||
-    //   (Access.canUserChangeCell(cell) &&
-    //     f.cond([
-    //       [
-    //         () => cell.isMultiLanguage,
-    //         f.always(Access.hasUserAccessToLanguage(langtag))
-    //       ],
-    //       [
-    //         () => cell.isMultiCountry,
-    //         f.always(
-    //           Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag))
-    //         )
-    //       ],
-    //       [f.stubTrue, f.always(false)] // Non-admins can't change single-value items
-    //     ])());
-    // return theoretically
-    //   ? canEditUnlocked
-    //   : canEditUnlocked &&
-    //       (!Annotations.isLocked(cell.row) ||
-    //         Annotations.isTranslationNeeded(langtag)(cell));
-    return true;
+    const { cell, langtag } = this.props;
+    const canEditUnlocked =
+      Access.isUserAdmin() ||
+      (Access.canUserChangeCell(cell) &&
+        f.cond([
+          [() => !cell.column.mulilanguage, () => false], // Non-admins can't change single-value items
+          [
+            () => cell.column.languageType === "country",
+            f.always(
+              Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag))
+            )
+          ],
+          [f.stubTrue, f.always(Access.hasUserAccessToLanguage(langtag))]
+        ])());
+    return theoretically
+      ? canEditUnlocked
+      : canEditUnlocked &&
+          (!Annotations.isLocked(cell.row) ||
+            Annotations.isTranslationNeeded(langtag)(cell));
   };
 
   clickHandler = () => {
