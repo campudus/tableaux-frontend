@@ -29,14 +29,6 @@ class LanguageSwitcher extends PureComponent {
     };
   }
 
-  componentDidMount() {
-    // Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.handleLangtagSwitch);
-  }
-
-  componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.handleLangtagSwitch);
-  }
-
   toggleOpen = () => {
     const { open } = this.state;
     this.setOpen(!open)();
@@ -48,13 +40,14 @@ class LanguageSwitcher extends PureComponent {
 
   handleLangtagSwitch = ({ langtag }) => {
     if (this.state.langtag !== langtag) {
-      this.setState({ langtag });
+      this.props.sharedData.setContentLanguage({ langtag });
     }
   };
 
   setLang = langtag => () => {
-    // this.setState({langtag}, () => switchEntityViewLanguage({langtag}));
-    this.setOpen(false);
+    this.handleLangtagSwitch({ langtag });
+    this.setState({ langtag });
+    this.setOpen(false)();
   };
 
   handleClickOutside = () => {

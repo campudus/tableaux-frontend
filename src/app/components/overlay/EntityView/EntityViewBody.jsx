@@ -16,7 +16,7 @@ import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import i18n from "i18next";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import getDisplayValue from "../../../helpers/getDisplayValue";
-import { safeRender } from "../../../helpers/devWrappers";
+import { safeRender, reportUpdateReasons } from "../../../helpers/devWrappers";
 import { withPropsOnChange } from "recompose";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
@@ -75,11 +75,10 @@ class EntityViewBody extends Component {
   componentWillMount = () => {
     // Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     // Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
-    // Dispatcher.on(ActionTypes.FILTER_ENTITY_VIEW, this.setColumnFilter);
     this.props.updateSharedData(
       f.merge(f.__, {
         setFilter: f.debounce(250, this.setColumnFilter),
-        setContentLang: this.switchLang,
+        setContentLanguage: this.switchLang,
         setTranslationView: this.setTranslationView
       })
     );
@@ -262,8 +261,8 @@ class EntityViewBody extends Component {
   };
 
   unlockRowTemporary = () => {
-    unlockRow(this.state.row, true);
-    this.setState({ row: this.state.row }); //
+    unlockRow(this.props.row, true);
+    this.forceUpdate();
   };
 
   renderUnlockBar = () => {
@@ -306,7 +305,7 @@ class EntityViewBody extends Component {
 
   render = safeRender(() => {
     const { row, actions, cells } = this.props;
-    const { langtag, filter, focused } = this.state;
+    const { filter, focused } = this.state;
     const { filterColumn, grudData } = this.props;
     const {
       enterItemPopupButton,
@@ -333,7 +332,8 @@ class EntityViewBody extends Component {
               <View
                 key={cell.id}
                 cell={cell}
-                langtag={langtag}
+                langtag={this.state.langtag}
+                uiLangtag={this.props.langtag}
                 setTranslationView={this.setTranslationView}
                 hasFocusedChild={f.eq(cell.id, focused)}
                 hasMeaningfulLinks={!filterColumn}

@@ -88,7 +88,8 @@ class View extends PureComponent {
       actions,
       cell,
       grudData,
-      langtag,
+      langtag, // for view content
+      uiLangtag, // for view headers
       setTranslationView,
       hasFocusedChild,
       value
@@ -176,7 +177,7 @@ class View extends PureComponent {
         <RowHeadline
           actions={actions}
           column={column}
-          langtag={langtag}
+          langtag={uiLangtag}
           cell={cell}
           setTranslationView={setTranslationView}
           funcs={f.assoc("viewElement", this.viewElement, this.props.funcs)}
