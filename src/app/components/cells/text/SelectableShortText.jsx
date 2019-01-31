@@ -109,7 +109,10 @@ const enhance = compose(
   ),
   withHandlers({
     selectNextCompletion: ({ modifySelection }) => () => modifySelection(1),
-    selectPrevCompletion: ({ modifySelection }) => () => modifySelection(-1)
+    selectPrevCompletion: ({ modifySelection }) => () => modifySelection(-1),
+    focusTable: () => () => {
+      document.querySelector("#table-wrapper").focus();
+    }
   }),
   lifecycle({
     componentWillReceiveProps(nextProps) {
@@ -214,7 +217,8 @@ const SelectableShortText = ({
 SelectableShortText.propTypes = {
   onBlur: PropTypes.func.isRequired,
   setCellKeyboardShortcuts: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+  displayValue: PropTypes.object
 };
 
 export default enhance(SelectableShortText);

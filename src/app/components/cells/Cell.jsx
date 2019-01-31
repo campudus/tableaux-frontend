@@ -270,7 +270,7 @@ class Cell extends React.Component {
   };
 
   userCanEditValue() {
-    const { column, langtag, value } = this.props;
+    const { column, langtag } = this.props;
     if (column.kind === ColumnKinds.concat) {
       return false;
     }
