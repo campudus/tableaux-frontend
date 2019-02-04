@@ -79,7 +79,7 @@ class File extends Component {
       ),
       body: (
         <FileEdit
-          file={file}
+          fileId={file.uuid}
           langtag={langtag}
           onClose={this.onEditClose}
           actions={actions}

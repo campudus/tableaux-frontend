@@ -62,7 +62,7 @@ const SingleFileEdit = ({
         />
       </div>
 
-      <MultilangFileDropzone file={file} langtag={langtag} />
+      <MultilangFileDropzone file={file} langtag={langtag} actions={actions} />
     </div>
   );
 };
