@@ -3,8 +3,6 @@ import f from "lodash/fp";
 import NewFolderAction from "./NewFolderAction.jsx";
 import { isUserAdmin } from "../../../helpers/accessManagementHelper";
 import { translate } from "react-i18next";
-import { DateTimeFormats } from "../../../constants/TableauxConstants";
-import Moment from "moment";
 import Subfolder from "./Subfolder.jsx";
 import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
@@ -24,23 +22,6 @@ class Folder extends Component {
 
     TableauxRouter.switchFolderHandler(parentId, langtag);
     e.preventDefault();
-  };
-
-  addFileToRecentlyModifiedFiles = ({ uuid }) => {
-    const { modifiedFiles } = this.state;
-    // Added a workaround to set frontend time on file creation to in-memory models
-    // of new files. They will get replaced with server creation/update times on
-    // reload.
-    const now = Moment().format(DateTimeFormats.formatForServer);
-    const file = this.props.folder.files.get(uuid);
-    file.set({
-      updatedAt: now,
-      createdAt: now
-    });
-    this.setState(
-      { modifiedFiles: [...modifiedFiles, uuid] },
-      this.forceUpdate
-    );
   };
 
   renderCurrentFolder = () => {
