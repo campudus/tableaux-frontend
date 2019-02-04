@@ -55,6 +55,7 @@ class FileChangeUpload extends PureComponent {
     }
 
     if (res) {
+      // on success reload file from api into state
       this.props.actions.getMediaFile(this.props.uuid);
     }
   };
