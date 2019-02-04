@@ -3,7 +3,9 @@ import React, { Component } from "react";
 
 import PropTypes from "prop-types";
 import f from "lodash/fp";
+import i18n from "i18next";
 
+import { simpleError } from "../overlay/ConfirmationOverlay";
 import Folder from "./folder/Folder.jsx";
 import LanguageSwitcher from "../header/LanguageSwitcher";
 import Navigation from "../../components/header/Navigation.jsx";
@@ -30,14 +32,11 @@ class MediaView extends Component {
     this.onLanguageSwitch = this.onLanguageSwitch.bind(this);
   }
 
-  // componentWillReceiveProps(nextProps) {}
-
-  // shouldComponentUpdate(nextProps, nextState) {}
-
   onLanguageSwitch(newLangtag) {
     const oldLangtag = this.props.langtag;
     const history = TableauxRouter.history;
     const url = history.getPath();
+    i18n.changeLanguage(newLangtag);
     history.navigate(url.replace(oldLangtag, newLangtag));
   }
 
@@ -49,8 +48,7 @@ class MediaView extends Component {
     }
 
     if (media.error) {
-      // TODO-W
-      console.log("MediaView -> state returned a error!");
+      simpleError(actions);
     }
 
     if (media.finishedLoading && requestedData) {
