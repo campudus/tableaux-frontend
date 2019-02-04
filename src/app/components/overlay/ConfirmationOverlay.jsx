@@ -101,6 +101,7 @@ export function noPermissionAlertWithLanguage(
   console.warn("Access denied. User can not edit this language.");
 }
 
+/* TODO-W this needs reduxActions too! */
 export function cellModelSavingError(errorFromServer) {
   console.error(
     "Cell model saved unsuccessfully!",
@@ -131,13 +132,14 @@ export function cellModelSavingError(errorFromServer) {
   });
 }
 
-export function simpleError(errorMsg, errorHead) {
+export function simpleError(reduxActions, errorMsg, errorHead) {
   showDialog({
     type: "warning",
     context: i18n.t("common:error"),
     title: i18n.t("table:error_occured_hl"),
     heading: errorHead || i18n.t("table:error_occured_hl"),
     message: errorMsg,
-    buttonActions: { neutral: [i18n.t("common:ok"), null] }
+    buttonActions: { neutral: [i18n.t("common:ok"), null] },
+    reduxActions: reduxActions
   });
 }
