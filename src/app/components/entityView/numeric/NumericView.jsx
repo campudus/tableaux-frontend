@@ -15,8 +15,8 @@ import { maybe } from "../../../helpers/functools";
 const enhance = compose(
   pure,
   withStateHandlers(
-    ({ value, cell, langtag }) => {
-      const oldValue = cell.column.multilanguage ? { [langtag]: value } : value;
+    ({ value, cell }) => {
+      const oldValue = cell.value;
       return {
         oldValue,
         value: maybe(value)

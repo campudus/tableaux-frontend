@@ -62,8 +62,9 @@ class TextView extends React.PureComponent {
 }
 
 const withEditFunction = withStateHandlers(
-  ({ value, langtag, cell }) => ({
-    editValue: (cell.column.multilanguage ? value[langtag] : value) || ""
+  ({ langtag, cell }) => ({
+    editValue:
+      (cell.column.multilanguage ? cell.value[langtag] : cell.value) || ""
   }),
   {
     handleChange: () => event => ({

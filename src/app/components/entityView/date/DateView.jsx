@@ -36,8 +36,10 @@ class DateView extends Component {
   };
 
   getValue = () => {
-    const { cell, langtag, value } = this.props;
-    const currValue = cell.column.multilanguage ? value[langtag] : value;
+    const { cell, langtag } = this.props;
+    const currValue = cell.column.multilanguage
+      ? cell.value[langtag]
+      : cell.value;
     return this.momentFromString(currValue);
   };
 

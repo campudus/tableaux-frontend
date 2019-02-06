@@ -17,17 +17,19 @@ class BooleanView extends PureComponent {
   toggleValue = event => {
     event.preventDefault();
     event.stopPropagation();
-    const { value, actions, cell, langtag, thisUserCantEdit } = this.props;
+    const { actions, cell, langtag, thisUserCantEdit } = this.props;
     const { column } = cell;
     if (thisUserCantEdit) {
       return;
     }
 
-    const valueToSet = !(column.multilanguage ? value[langtag] : value);
+    const valueToSet = !(column.multilanguage
+      ? cell.value[langtag]
+      : cell.value);
     const newValue = column.multilanguage
       ? { [langtag]: valueToSet }
       : valueToSet;
-    actions.changeCellValue({ cell, oldValue: value, newValue });
+    actions.changeCellValue({ cell, oldValue: cell.value, newValue });
   };
 
   toggleOnEnter = event => {

@@ -19,9 +19,9 @@ class AttachmentView extends Component {
   };
 
   removeAttachment = uuid => () => {
-    const { actions, value, cell } = this.props;
+    const { actions, cell } = this.props;
     const newValue = cell.value.filter(el => el.uuid !== uuid);
-    actions.changeCellValue({ cell, newValue, oldValue: value });
+    actions.changeCellValue({ cell, newValue, oldValue: cell.value });
   };
 
   render() {
