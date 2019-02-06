@@ -359,6 +359,12 @@ const propSuffices = curryN(3, (predicate, propSelector, obj) =>
   predicate(propOr(null, propSelector, obj))
 );
 
+// ((a) -> (idx) -> b) -> (a[]) -> b[]
+const mapIndexed = curryN(2, (fn, coll) => coll.map(fn));
+
+// ((a) -> (idx) -> bool) -> (a[]) -> a[]
+const filterIndexed = curryN(2, (fn, coll) => coll.filter(fn));
+
 const tests = {
   title: "Monads",
   tests: [
@@ -399,5 +405,7 @@ export {
   propSuffices,
   preventDefault,
   stopPropagation,
+  mapIndexed,
+  filterIndexed,
   tests
 };

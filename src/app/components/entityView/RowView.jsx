@@ -194,16 +194,20 @@ class View extends PureComponent {
         <CellKind
           grudData={grudData}
           actions={actions}
-          cell={f.assoc("value", value, cell)}
+          cell={cell}
           langtag={langtag}
           time={cell.kind === ColumnKinds.datetime}
           key={`${cell.id}-${
-            cell.isMultiLanguage ? f.get(["value", langtag], cell) : cell.value
+            cell.column.multilanguage
+              ? f.get(["value", langtag], cell)
+              : cell.value
           }-${langtag}`}
           setTranslationView={setTranslationView}
           funcs={this.props.funcs}
           thisUserCantEdit={isDisabled}
-          value={cell.isMultiLanguage ? f.get(langtag, value) : value}
+          value={
+            cell.column.multilanguage ? f.get(langtag, cell.value) : cell.value
+          }
         >
           <div className="action-tags">
             {translationTag}

@@ -14,13 +14,13 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 const enhance = compose(
   pure,
   withStateHandlers(
-    ({ value, cell, langtag }) => {
-      const oldValue = f.prop(["column", "multilanguage"], cell)
-        ? value[langtag]
-        : value;
+    ({ cell, langtag }) => {
+      const oldValue = cell.value;
       return {
         oldValue,
-        value: oldValue || ""
+        value: cell.column.multilanguage
+          ? f.propOr("", ["value", langtag], cell)
+          : f.propOr("", "value", cell)
       };
     },
     {
@@ -33,12 +33,15 @@ const enhance = compose(
           ? { [langtag]: value }
           : value;
         actions.changeCellValue({
-          tableId: cell.table.id,
-          columnId: cell.column.id,
-          rowId: cell.row.id,
+          cell,
           oldValue,
           newValue
         });
+        return {
+          oldValue: cell.column.multilanguage
+            ? f.merge(oldValue, newValue)
+            : value
+        };
       }
     }
   ),

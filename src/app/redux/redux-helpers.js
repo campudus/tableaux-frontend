@@ -6,11 +6,11 @@ export const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
   try {
     const rowIdx = f.findIndex(
       row => row.id === rowId,
-      completeState.rows[tableId].data
+      f.prop(["rows", tableId, "data"], completeState)
     );
     const columnIdx = f.findIndex(
       col => col.id === columnId,
-      completeState.columns[tableId].data
+      f.prop(["columns", tableId, "data"], completeState)
     );
     const displayValueColumnIdx = f.findIndex(
       row => row.id === rowId,

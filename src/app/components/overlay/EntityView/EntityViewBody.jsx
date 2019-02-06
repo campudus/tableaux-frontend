@@ -73,7 +73,6 @@ class EntityViewBody extends Component {
   };
 
   componentWillMount = () => {
-    // Dispatcher.on(ActionTypes.SWITCH_ENTITY_VIEW_LANGUAGE, this.switchLang);
     // Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
     this.props.updateSharedData(
       f.merge(f.__, {
@@ -85,14 +84,16 @@ class EntityViewBody extends Component {
   };
 
   componentDidMount() {
-    // const { focusElementId } = this.props;
-    // const { row } = this.state;
-    // const cellToFocus = focusElementId ? row.cells.get(focusElementId) : null;
-    // const focusTarget =
-    //   cellToFocus && cellToFocus.kind !== ColumnKinds.concat
-    //     ? cellToFocus.id
-    //     : row.cells.at(0);
-    // this.changeFocus(focusTarget);
+    const { cells, focusElementId } = this.props;
+    const cellToFocus = focusElementId
+      ? f.find(f.propEq("id", focusElementId, cells))
+      : null;
+    console.log("Focussing", focusElementId, "=", cellToFocus);
+    const focusTarget =
+      cellToFocus && cellToFocus.kind !== ColumnKinds.concat
+        ? cellToFocus.id
+        : cells[0];
+    this.changeFocus(focusTarget);
   }
 
   componentDidUpdate = reportUpdateReasons("EntityViewBody");
@@ -371,15 +372,17 @@ class EntityViewBody extends Component {
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
 export default withPropsOnChange(["row"], ({ row, columns, table }) => {
-  const cells = f.zip(columns, row.values).map(([column, cellData]) => ({
-    column,
-    kind: column.kind,
-    value: cellData.value,
-    table,
-    row,
-    id: `${column.id}-${cellData.kind}`,
-    displayValue: getDisplayValue(column, cellData.value)
-  }));
+  const cells = f.zip(columns, row.values).map(([column, cellData]) => {
+    return {
+      column,
+      kind: column.kind,
+      value: cellData.value,
+      table,
+      row,
+      id: `${column.id}-${column.kind}`,
+      displayValue: getDisplayValue(column, cellData.value)
+    };
+  });
   return { cells };
 })(EntityViewBody);
 

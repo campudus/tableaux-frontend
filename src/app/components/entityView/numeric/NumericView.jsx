@@ -46,9 +46,7 @@ const enhance = compose(
           : _value;
 
         actions.changeCellValue({
-          tableId: cell.table.id,
-          columnId: cell.column.id,
-          rowId: cell.row.id,
+          cell,
           oldValue,
           newValue
         });

@@ -11,7 +11,7 @@ import { unlockRow } from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import HistoryButtons from "../../table/undo/HistoryButtons";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { doto } from "../../../helpers/functools";
+import { doto, unless } from "../../../helpers/functools";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
 import Empty from "../../../components/helperComponents/emptyEntry";
 
@@ -162,11 +162,13 @@ class EntityViewHeader extends PureComponent {
       canSwitchRows,
       hasMeaningfulLinks,
       langtag,
-      table,
       row,
       rows,
-      grudData
+      grudData,
+      cell
     } = this.props;
+    const tableId = f.prop(["table", "id"], cell);
+    const table = f.prop(["tables", "data", tableId], grudData);
 
     const components = (
       <div className="header-components">
@@ -174,7 +176,7 @@ class EntityViewHeader extends PureComponent {
         {canSwitchRows && !f.isEmpty(rows) ? (
           <RowSwitcher {...this.props} />
         ) : null}
-        <HistoryButtons tableId={table.id} rowId={row.id} />
+        <HistoryButtons tableId={tableId} rowId={row.id} />
         <FilterBar id={this.props.id} />
         <HeaderPopupMenu
           langtag={langtag}
@@ -210,8 +212,10 @@ class EntityViewHeader extends PureComponent {
 }
 
 const getDisplayLabel = (row, langtag) => {
-  const firstCell = row.cells.at(0);
-  return firstCell.displayValue[langtag];
+  const firstCell = f.prop(["values", 0], row);
+  return unless(f.isEmpty, retrieveTranslation(langtag))(
+    f.prop("displayValue", firstCell)
+  );
 };
 
 export { getDisplayLabel };

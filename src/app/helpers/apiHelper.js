@@ -23,17 +23,38 @@ const paramsToString = params =>
         f.join("")
       );
 
-const makeRequest = async ({
+/**
+ * Make a promisified cross-browser-compatible XHR-request, using
+ * browser fetch-API or a polyfill
+ *
+ * @param {apiRoute?: string} Fetch route relative to app's api
+ * @param {url?: string} Fetch url directly, without api prefix
+ * @param {method?: string = "GET"}
+ * @param {data?: any} Request body data, must be JSON.stringify-able
+ * @param {responseType?: string = "JSON"} One of ["json", "text"]
+ * @returns Promise<:responseType>
+ **/
+export const makeRequest = async ({
+  url,
   apiRoute,
   method = "GET",
   params,
   data,
   responseType = "JSON"
 }) => {
-  const url = buildURL(apiRoute) + paramsToString(params);
-  console.log("apiHelper", method.toUpperCase(), url);
+  console.log("Should request:", {
+    url,
+    apiRoute,
+    method,
+    params,
+    data,
+    responseType
+  });
+  const targetUrl =
+    (f.isString(apiRoute) ? buildURL(apiRoute) : url) + paramsToString(params);
+  console.log("apiHelper", method.toUpperCase(), targetUrl);
   const parseResponse = response => response[responseType.toLowerCase()]();
-  return fetch(url, {
+  return fetch(targetUrl, {
     method,
     body: f.isNil(data) ? undefined : JSON.stringify(data)
   })
@@ -55,5 +76,3 @@ const sendTestData = path =>fileName =>data =>
     },
     body: JSON.stringify({data,path:path+fileName})
   }).then(response => console.log(response));
-
-export {makeRequest,sendTestData};

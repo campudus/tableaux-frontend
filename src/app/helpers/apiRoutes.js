@@ -16,7 +16,9 @@ const getAllTables = () => "/tables";
 const getAllColumnsForTable = tableId => "/tables/" + tableId + "/columns";
 const getAllRowsForTable = tableId => "/tables/" + tableId + "/rows";
 const toColumn = ({ tableId, columnId }) =>
-  "/" + joinUrlParts("tables", tableId, "columns", columnId);
+  isInteger(columnId)
+    ? "/" + joinUrlParts("tables", tableId, "columns", columnId)
+    : "/" + joinUrlParts("tables", tableId, "columns");
 const toRow = ({ tableId, rowId }) =>
   "/" + joinUrlParts("tables", tableId, "rows", rowId);
 const toCell = ({ tableId, rowId, columnId }) =>

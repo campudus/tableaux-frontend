@@ -2,9 +2,9 @@ import React from "react";
 import EntityViewHeader from "./EntityView/EntityViewHeader";
 import EntityViewBody from "./EntityView/EntityViewBody";
 import {
-  LoadingEntityViewBodyWrapper,
-  LoadingEntityViewHeaderWrapper
-} from "./EntityView/LoadingEntityView";
+  ForeignEntityViewBody,
+  ForeignEntityViewHeader
+} from "./EntityView/ForeignEntityView";
 import store from "../../redux/store";
 import ReduxActions from "../../redux/actionCreators";
 import f from "lodash/fp";
@@ -50,13 +50,14 @@ export function openEntityView({
   );
 }
 
-// target: {(tables: Tables, tableId: int > 0, | table: Table) rowId: int > 0}
-export function loadAndOpenEntityView(target, langtag) {
-  const temporaryFakeId = 0; // replaced by GenericOverlay.render() <- Tableaux.renderActiveOverlays()
-  // openOverlay({
-  //   head: <LoadingEntityViewHeaderWrapper langtag={langtag} id={temporaryFakeId} />,
-  //   body: <LoadingEntityViewBodyWrapper langtag={langtag} toLoad={target} id={temporaryFakeId} />,
-  //   type: "full-height",
-  //   preferRight: true
-  // });
-}
+export const loadAndOpenEntityView = ({ tableId, rowId, langtag }) =>
+  store.dispatch(
+    ReduxActions.openOverlay({
+      head: <ForeignEntityViewHeader loading={true} />,
+      body: <ForeignEntityViewBody tableId={tableId} rowId={rowId} />,
+      langtag,
+      type: "full-height",
+      preferRight: true,
+      loading: true
+    })
+  );

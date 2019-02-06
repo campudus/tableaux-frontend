@@ -75,15 +75,11 @@ class GenericOverlay extends Component {
     ) {
       maybe(overlayDOMNode).method("focus");
     }
-
-    // Dispatcher.on(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
   };
 
   componentWillUnmount = () => {
     // Overlay is going to be closed
     document.getElementsByTagName("body")[0].style.overflow = "auto";
-    // Dispatcher.off(ActionTypes.UPDATE_OVERLAY, this.updateChildrenProps);
-
     // Reset active element before overlay opened
     maybe(this.focusedElementBeforeOverlayOpens).method("focus");
   };
@@ -120,31 +116,31 @@ class GenericOverlay extends Component {
     f.map(handler => handler(event), handlersForType);
   };
 
-  updateChildrenProps = ({ id, props }) => {
-    if (id !== this.props.id) {
-      return;
-    }
-    const modifiedProps = f.keys(props);
-    const updatedProps = childIdString => {
-      const existingProps = f.get(childIdString, this.state.childrenProps);
-      const existingKeys = f.intersection(modifiedProps, existingProps);
-      return f.merge(
-        existingProps,
-        f.fromPairs(f.zip(existingKeys, f.props(existingKeys, props)))
-      );
-    };
-
-    this.setState(
-      {
-        childrenProps: {
-          head: updatedProps("head"),
-          body: updatedProps("body"),
-          footer: updatedProps("footer")
-        }
-      },
-      () => console.log("updated children props to", this.state.childrenProps)
-    );
-  };
+  // updateChildrenProps = ({ id, props }) => {
+  //   if (id !== this.props.id) {
+  //     return;
+  //   }
+  //   const modifiedProps = f.keys(props);
+  //   const updatedProps = childIdString => {
+  //     const existingProps = f.get(childIdString, this.state.childrenProps);
+  //     const existingKeys = f.intersection(modifiedProps, existingProps);
+  //     return f.merge(
+  //       existingProps,
+  //       f.fromPairs(f.zip(existingKeys, f.props(existingKeys, props)))
+  //     );
+  //   };
+  //
+  //   this.setState(
+  //     {
+  //       childrenProps: {
+  //         head: updatedProps("head"),
+  //         body: updatedProps("body"),
+  //         footer: updatedProps("footer")
+  //       }
+  //     },
+  //     () => console.log("updated children props to", this.state.childrenProps)
+  //   );
+  // };
 
   updateSharedData = fn => {
     this.setState(({ sharedDataContainer }) => ({
@@ -153,7 +149,6 @@ class GenericOverlay extends Component {
   };
 
   render() {
-    console.log("Rendering Overlay");
     const overlayType = f.contains(this.props.type, this.allowedTypes)
       ? this.props.type
       : "normal";
