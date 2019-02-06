@@ -50,8 +50,7 @@ const extendedRouter = Router.extend({
   alreadyRendered: false,
 
   home: function() {
-    // (ENABLE_DASHBOARD) ? this.dashboard() : this.tableBrowser();
-    this.tableBrowser();
+    ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
 
   redirectToNewUrl: function(langtag = null, rest = null) {
