@@ -153,14 +153,11 @@ class EntityViewHeader extends PureComponent {
     langtag: PropTypes.string.isRequired
   };
 
-  updateHeader = ({ cell }) => {
-    this.forceUpdate();
-  };
-
   render() {
     const {
       canSwitchRows,
       hasMeaningfulLinks,
+      sharedData,
       langtag,
       row,
       rows,
@@ -182,6 +179,7 @@ class EntityViewHeader extends PureComponent {
           langtag={langtag}
           row={row}
           id={this.props.id}
+          funcs={sharedData}
           hasMeaningfulLinks={hasMeaningfulLinks}
         />
       </div>

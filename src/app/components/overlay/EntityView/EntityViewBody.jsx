@@ -16,6 +16,7 @@ import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import i18n from "i18next";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import getDisplayValue from "../../../helpers/getDisplayValue";
+import { addCellId } from "../../../helpers/getCellId";
 import { safeRender, reportUpdateReasons } from "../../../helpers/devWrappers";
 import { withPropsOnChange } from "recompose";
 
@@ -28,7 +29,6 @@ class EntityViewBody extends Component {
     super(props);
     this.state = {
       langtag: props.langtag,
-      translationView: false,
       filter: {
         value: "",
         mode: FilterModes.CONTAINS
@@ -47,7 +47,7 @@ class EntityViewBody extends Component {
 
   getKeyboardShortcuts = () => {
     return {
-      escape: event => {
+      escape: () => {
         this.setTranslationView({ show: false });
       },
       tab: event => {
@@ -73,7 +73,6 @@ class EntityViewBody extends Component {
   };
 
   componentWillMount = () => {
-    // Dispatcher.on(ActionTypes.SET_TRANSLATION_VIEW, this.setTranslationView);
     this.props.updateSharedData(
       f.merge(f.__, {
         setFilter: f.debounce(250, this.setColumnFilter),
@@ -127,12 +126,14 @@ class EntityViewBody extends Component {
   };
 
   setTranslationView = item => {
-    const oldItem = this.state.translationView;
+    const { actions, id } = this.props;
+    const oldItem = this.props.translationView || {};
     const newItem = {
       show: f.isNil(item.show) ? f.prop("show", oldItem) : item.show,
       cell: f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell
     };
-    this.setState({ translationView: newItem });
+    console.log("Setting translation view to", item, oldItem, "->", newItem);
+    actions.setOverlayState({ id, translationView: newItem });
   };
 
   registerFocusable = id => el => {
@@ -159,7 +160,7 @@ class EntityViewBody extends Component {
     const toFocus = f.cond([
       [
         d => f.contains(d, [Directions.UP, Directions.DOWN]),
-        d => f.prop([selectedIdx + numericDir, "id"], visibleCells)
+        () => f.prop([selectedIdx + numericDir, "id"], visibleCells)
       ],
       [f.stubTrue, f.identity]
     ])(dir);
@@ -170,7 +171,8 @@ class EntityViewBody extends Component {
   };
 
   renderTranslationView = () => {
-    const { translationView, langtag, arrowPosition } = this.state;
+    const { arrowPosition } = this.state;
+    const { langtag, translationView = {} } = this.props;
     const arrow =
       f.isNumber(arrowPosition) && f.prop("show", translationView) ? (
         <div
@@ -373,15 +375,14 @@ class EntityViewBody extends Component {
 // downstream functions and components need no changes
 export default withPropsOnChange(["row"], ({ row, columns, table }) => {
   const cells = f.zip(columns, row.values).map(([column, cellData]) => {
-    return {
+    return addCellId({
       column,
       kind: column.kind,
       value: cellData.value,
       table,
       row,
-      id: `${column.id}-${column.kind}`,
       displayValue: getDisplayValue(column, cellData.value)
-    };
+    });
   });
   return { cells };
 })(EntityViewBody);

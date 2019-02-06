@@ -4,7 +4,6 @@ import i18n from "i18next";
 import classNames from "classnames";
 import * as f from "lodash/fp";
 import { openShowDependency } from "../ConfirmDependentOverlay";
-import { maybe } from "../../../helpers/functools";
 import {
   initiateDeleteRow,
   initiateDuplicateRow
@@ -13,6 +12,8 @@ import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { openInNewTab } from "../../../helpers/apiUrl";
+import { isFinal } from "../../../helpers/annotationHelper";
+import { addCellId } from "../../../helpers/getCellId";
 import * as TableHistory from "../../table/undo/tableHistory";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
@@ -28,31 +29,15 @@ class HeaderPopupMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
-      row: props.row
+      open: false
     };
   }
 
-  componentDidMount() {
-    // Dispatcher.on(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
-  }
-
-  componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.CHANGE_ENTITY_VIEW_ROW, this.changeRow);
-    this.cancelClosingTimer();
-  }
-
-  changeRow = ({ row, id }) => {
-    if (this.props.id === id) {
-      this.setState({ row });
-    }
-  };
-
   mkEntry = (id, { title, fn, icon }) => {
-    const clickHandler = f.flow(
-      fn,
-      () => this.setState({ open: false })
-    );
+    const clickHandler = () => {
+      f.isFunction(fn) ? fn() : console.log("handler function:", typeof fn, fn);
+      this.setState({ open: false });
+    };
     return (
       <a className="entry" onClick={clickHandler} href="#">
         <i className={`fa fa-${icon}`} />
@@ -101,10 +86,11 @@ class HeaderPopupMenu extends Component {
   };
 
   getHistoryView = () => {
-    const { row } = this.props;
-    //    const {tableId} = row.cells.at(0);
+    const {
+      cell: { row, table }
+    } = this.props;
     return {
-      tableId: -1,
+      tableId: table.id,
       rowId: row.id
     };
   };
@@ -113,14 +99,12 @@ class HeaderPopupMenu extends Component {
   handleRedo = () => TableHistory.redo(this.getHistoryView());
 
   render() {
-    const { langtag, hasMeaningfulLinks, id } = this.props;
-    const { open, row } = this.state;
+    const { funcs, cell, langtag, hasMeaningfulLinks, row, id } = this.props;
+    const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
     const translationInfo = {
       show: true,
-      cell: maybe(row.cells)
-        .exec("at", 0)
-        .getOrElse(null)
+      cell: addCellId(cell)
     };
     const historyView = this.getHistoryView();
 
@@ -157,7 +141,7 @@ class HeaderPopupMenu extends Component {
                 : null}
               {this.mkEntry(1, {
                 title: "table:show_translation",
-                // fn: () => ActionCreator.setTranslationView(translationInfo),
+                fn: () => funcs.setTranslationView(translationInfo),
                 icon: "flag"
               })}
               {this.mkEntry(2, {
@@ -202,7 +186,7 @@ class HeaderPopupMenu extends Component {
                 title: row.final
                   ? "table:final.set_not_final"
                   : "table:final.set_final",
-                fn: () => setRowAnnotation({ final: !row.final }, row),
+                fn: () => setRowAnnotation({ final: isFinal(row) }, row),
                 icon: "lock"
               })}
             </div>
