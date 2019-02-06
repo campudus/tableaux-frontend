@@ -1,19 +1,18 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import listenToClickOutside from "react-onclickoutside";
 import classNames from "classnames";
 import i18n from "i18next";
-// import ActionCreator from "../../actions/ActionCreator";
-import * as f from "lodash/fp";
-import {ColumnKinds, Langtags} from "../../constants/TableauxConstants";
+import f from "lodash/fp";
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
   setCellAnnotation,
   removeTranslationNeeded
 } from "../../helpers/annotationHelper";
-import {openShowDependency} from "../overlay/ConfirmDependentOverlay";
-import {canConvert} from "../../helpers/cellValueConverter";
+import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
+import { canConvert } from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
 import ReactDOM from "react-dom";
 
@@ -32,7 +31,8 @@ class MenuPopup extends Component {
 
   render() {
     return (
-      <div className={this.props.popupClass}
+      <div
+        className={this.props.popupClass}
         onMouseEnter={this.props.handleMouseEnter}
         onMouseLeave={this.props.handleMouseLeave}
       >
@@ -65,94 +65,112 @@ class ItemPopupMenu extends Component {
     this.props.funcs.closeItemPopup();
   };
 
-  mkEntry = (idx, {title, fn, value, icon, classes}) => {
+  mkEntry = (idx, { title, fn, value, icon, classes }) => {
     const clickHandler = f.flow(
-      e => { e.stopPropagation(); },
+      e => {
+        e.stopPropagation();
+      },
       fn,
-      this.closePopup,
+      this.closePopup
     );
     return (
-      <a className="entry"
-        href="#"
-        onClick={clickHandler}
-      >
+      <a className="entry" href="#" onClick={clickHandler}>
         <i className={classes || `fa fa-${icon}`} />
-        <div>{(value) ? i18n.t(title, {langtag: value}) : i18n.t(title)}</div>
+        <div>{value ? i18n.t(title, { langtag: value }) : i18n.t(title)}</div>
       </a>
     );
   };
 
-  mkToggleFlagItem = (flag) => {
-    const {cell} = this.props;
+  mkToggleFlagItem = flag => {
+    const { cell } = this.props;
     const flagValue = f.get(["annotations", flag], cell);
-    const toggleFn = (flagValue)
-      ? () => deleteCellAnnotation({type: "flag", value: flag, uuid: flagValue}, cell, "do-it!")
-      : () => setCellAnnotation({type: "flag", value: flag}, cell);
-    return this.mkEntry(
-      flag,
-      {
-        fn: toggleFn,
-        title: `table:${flag}`,
-        classes: `dot ${flag} ${(flagValue) ? "active" : "inactive"}`
-      }
-    );
+    const toggleFn = flagValue
+      ? () =>
+          deleteCellAnnotation(
+            { type: "flag", value: flag, uuid: flagValue },
+            cell,
+            "do-it!"
+          )
+      : () => setCellAnnotation({ type: "flag", value: flag }, cell);
+    return this.mkEntry(flag, {
+      fn: toggleFn,
+      title: `table:${flag}`,
+      classes: `dot ${flag} ${flagValue ? "active" : "inactive"}`
+    });
   };
 
   isPrimaryLanguage = () => {
-    const {langtag} = this.props;
-    return (langtag === f.first(Langtags));
+    const { langtag } = this.props;
+    return langtag === f.first(Langtags);
   };
 
   needsTranslation = () => {
-    const {cell, langtag} = this.props;
-    const neededTranslations = f.get(["annotations", "translationNeeded", "langtags"], cell);
-    return f.contains(langtag, neededTranslations)
-      || (this.isPrimaryLanguage() && f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))));
+    const { cell, langtag } = this.props;
+    const neededTranslations = f.get(
+      ["annotations", "translationNeeded", "langtags"],
+      cell
+    );
+    return (
+      f.contains(langtag, neededTranslations) ||
+      (this.isPrimaryLanguage() &&
+        f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))))
+    );
   };
 
   mkAddTranslationEntry = () => {
-    const {cell, langtag} = this.props;
+    const { cell, langtag } = this.props;
     if (this.needsTranslation()) {
       return null;
     }
-    const neededTranslation = (this.isPrimaryLanguage())
+    const neededTranslation = this.isPrimaryLanguage()
       ? f.drop(1, Langtags)
-      : [...(f.prop(["annotation", "translationNeeded", "langtags"], cell) || []), langtag];
-    const text = (this.isPrimaryLanguage())
+      : [
+          ...(f.prop(["annotation", "translationNeeded", "langtags"], cell) ||
+            []),
+          langtag
+        ];
+    const text = this.isPrimaryLanguage()
       ? "table:translations.translation_needed"
       : "table:translations.this_translation_needed";
-    return this.mkEntry(3,
-      {
-        title: text,
-        value: (!this.isPrimaryLanguage()) ? langtag : null,
-        fn: () => addTranslationNeeded(neededTranslation, cell),
-        classes: "dot translation inactive"
-      });
+    return this.mkEntry(3, {
+      title: text,
+      value: !this.isPrimaryLanguage() ? langtag : null,
+      fn: () => addTranslationNeeded(neededTranslation, cell),
+      classes: "dot translation inactive"
+    });
   };
 
   mkRemoveTranslationEntry = () => {
-    const {cell, langtag} = this.props;
-    const cellTranslationAnnotation = f.prop(["annotations", "translationNeeded"], cell);
+    const { cell, langtag } = this.props;
+    const cellTranslationAnnotation = f.prop(
+      ["annotations", "translationNeeded"],
+      cell
+    );
     const untranslated = f.get(["langtags"], cellTranslationAnnotation);
     if (!this.needsTranslation()) {
       return null;
     }
     const remaining = f.remove(f.eq(langtag), untranslated);
-    const deleteAnnotationFn = (cellTranslationAnnotation)
-      ? () => deleteCellAnnotation(f.merge(cellTranslationAnnotation,
-        {
-          type: "flag",
-          value: "translationNeeded"
-        }), cell, true)
+    const deleteAnnotationFn = cellTranslationAnnotation
+      ? () =>
+          deleteCellAnnotation(
+            f.merge(cellTranslationAnnotation, {
+              type: "flag",
+              value: "translationNeeded"
+            }),
+            cell,
+            true
+          )
       : f.noop;
     return this.mkEntry(4, {
-      title: (this.isPrimaryLanguage())
+      title: this.isPrimaryLanguage()
         ? "table:translations.translation_needed"
         : "table:translations.this_translation_needed",
       value: langtag,
-      fn: (this.isPrimaryLanguage() || f.isEmpty(remaining))
-        ? deleteAnnotationFn
-        : () => removeTranslationNeeded(langtag, cell),
+      fn:
+        this.isPrimaryLanguage() || f.isEmpty(remaining)
+          ? deleteAnnotationFn
+          : () => removeTranslationNeeded(langtag, cell),
       classes: "dot translation active"
     });
   };
@@ -164,103 +182,105 @@ class ItemPopupMenu extends Component {
     const nodeDOM = ReactDOM.findDOMNode(this.nodeRef);
     const elRect = nodeDOM.getBoundingClientRect();
     if (!this.state.isOffScreen && elRect.bottom > window.innerHeight) {
-      this.setState({isOffScreen: true});
-    } else if (this.state.isOffScreen && elRect.bottom + elRect.height < window.innerHeight) { // if it won't be off-screen after resetting
-      this.setState({isOffScreen: false});
+      this.setState({ isOffScreen: true });
+    } else if (
+      this.state.isOffScreen &&
+      elRect.bottom + elRect.height < window.innerHeight
+    ) {
+      // if it won't be off-screen after resetting
+      this.setState({ isOffScreen: false });
     }
-  };
+  }
 
   render() {
-    const {isOffScreen} = this.state;
-    const {cell: {row}, cell, langtag, popupOpen, thisUserCantEdit, hasMeaningfulLinks} = this.props;
+    const { isOffScreen } = this.state;
+    const {
+      cell: { row },
+      cell,
+      langtag,
+      popupOpen,
+      thisUserCantEdit,
+      hasMeaningfulLinks
+    } = this.props;
     const buttonClass = classNames("popup-button", {
       "is-open": popupOpen,
       "menu-is-right": isOffScreen
     });
-    const {enterItemPopupButton, leaveItemPopupButton} = this.props.funcs;
-    const popupClass = classNames("entry-popup ignore-react-onclickoutside", {"inverse": isOffScreen});
+    const { enterItemPopupButton, leaveItemPopupButton } = this.props.funcs;
+    const popupClass = classNames("entry-popup ignore-react-onclickoutside", {
+      inverse: isOffScreen
+    });
     const wrapperClass = classNames("entry-popup-wrapper");
 
     return (
       <div className={wrapperClass}>
-        <div className={buttonClass}
+        <div
+          className={buttonClass}
           onMouseLeave={leaveItemPopupButton}
-          onMouseDown={(popupOpen) ? f.noop : this.props.funcs.openItemPopup}
+          onMouseDown={popupOpen ? f.noop : this.props.funcs.openItemPopup}
         >
           <a href="#">
             <SvgIcon icon="vdots" />
           </a>
         </div>
-        {(popupOpen)
-          ? (
-            <MenuPopup
-              popupClass={popupClass}
-              handleMouseEnter={enterItemPopupButton}
-              handleMouseLeave={leaveItemPopupButton}
-              clickOutside={this.closePopup}
-              ref={el => {
-                this.nodeRef = el;
-              }}
-            >
-              <div className="separator">
-                {i18n.t("table:menus.data_set")}
-              </div>
-              {(hasMeaningfulLinks)
-                ? this.mkEntry(0,
-                  {
-                    title: "table:show_dependency",
-                    fn: () => openShowDependency(row, langtag),
-                    icon: "code-fork"
-                  })
-                : null
-              }
-              {this.mkEntry(1,
-                {
-                  title: "table:copy_cell",
-                  fn: () => null,//ActionCreator.copyCellContent(cell, langtag),
-                  icon: "files-o"
+        {popupOpen ? (
+          <MenuPopup
+            popupClass={popupClass}
+            handleMouseEnter={enterItemPopupButton}
+            handleMouseLeave={leaveItemPopupButton}
+            clickOutside={this.closePopup}
+            ref={el => {
+              this.nodeRef = el;
+            }}
+          >
+            <div className="separator">{i18n.t("table:menus.data_set")}</div>
+            {hasMeaningfulLinks
+              ? this.mkEntry(0, {
+                  title: "table:show_dependency",
+                  fn: () => openShowDependency(row, langtag),
+                  icon: "code-fork"
+                })
+              : null}
+            {this.mkEntry(1, {
+              title: "table:copy_cell",
+              fn: () => null, //ActionCreator.copyCellContent(cell, langtag),
+              icon: "files-o"
+            })}
+            {thisUserCantEdit
+              ? null
+              : this.mkEntry(2, {
+                  title: "table:paste_cell",
+                  fn: () => null, //ActionCreator.pasteCellContent(cell, langtag),
+                  icon: "clipboard"
                 })}
-              {(thisUserCantEdit)
-                ? null
-                : this.mkEntry(2,
-                  {
-                    title: "table:paste_cell",
-                    fn: () => null,//ActionCreator.pasteCellContent(cell, langtag),
-                    icon: "clipboard"
-                  })
-              }
-              {this.mkToggleFlagItem("important")}
-              {this.mkToggleFlagItem("check-me")}
-              {this.mkToggleFlagItem("postpone")}
-              {(cell.isMultiLanguage && canConvert(cell.kind, ColumnKinds.text))
-                ? (
-                  <div>
-                    <div className="separator">
-                      {i18n.t("table:menus.translation")}
-                    </div>
-                    {this.mkAddTranslationEntry()}
-                    {this.mkRemoveTranslationEntry()}
-                    {this.mkEntry(5,
-                      {
-                        title: "table:show_translation",
-                        fn: () => {
-                          this.props.setTranslationView({
-                            show: true,
-                            cell
-                          });
-                          this.props.funcs.setTranslationItem(this.props.funcs.viewElement);
-                        },
-                        icon: "flag"
-                      })
-                    }
-                  </div>
-                )
-                : null
-              }
-            </MenuPopup>
-          )
-          : null
-        }
+            {this.mkToggleFlagItem("important")}
+            {this.mkToggleFlagItem("check-me")}
+            {this.mkToggleFlagItem("postpone")}
+            {cell.column.multiLanguage &&
+            canConvert(cell.kind, ColumnKinds.text) ? (
+              <div>
+                <div className="separator">
+                  {i18n.t("table:menus.translation")}
+                </div>
+                {this.mkAddTranslationEntry()}
+                {this.mkRemoveTranslationEntry()}
+                {this.mkEntry(5, {
+                  title: "table:show_translation",
+                  fn: () => {
+                    this.props.setTranslationView({
+                      show: true,
+                      cell
+                    });
+                    this.props.funcs.setTranslationItem(
+                      this.props.funcs.viewElement
+                    );
+                  },
+                  icon: "flag"
+                })}
+              </div>
+            ) : null}
+          </MenuPopup>
+        ) : null}
       </div>
     );
   }
