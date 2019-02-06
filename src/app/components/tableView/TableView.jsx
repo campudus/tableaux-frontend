@@ -28,8 +28,6 @@ import { initHistoryOf } from "../table/undo/tableHistory";
 import { getMultiLangValue } from "../../helpers/multiLanguage";
 // import canFocusCell from "./canFocusCell";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
-import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
-import { when } from "../../helpers/functools.js";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {

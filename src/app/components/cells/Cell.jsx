@@ -1,5 +1,4 @@
 import React from "react";
-// import ActionCreator from "../../actions/ActionCreator";
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import TextCell from "./text/TextCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
@@ -19,7 +18,7 @@ import f from "lodash/fp";
 //   removeTranslationNeeded
 // } from "../../helpers/annotationHelper";
 // import openTranslationDialog from "../overlay/TranslationDialog";
-import { either, doto } from "../../helpers/functools";
+import { either } from "../../helpers/functools";
 // import FlagIconRenderer from "./FlagIconRenderer";
 import {
   branch,
@@ -196,8 +195,6 @@ class Cell extends React.Component {
     //   cell.value,
     //   cell.displayValue
     // );
-
-    console.log(`cell${withRightClick ? " right" : ""} clicked:`, event);
 
     if (!withRightClick) {
       this.props.closeCellContextMenu();
