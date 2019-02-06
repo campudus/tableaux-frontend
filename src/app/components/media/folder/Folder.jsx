@@ -13,7 +13,6 @@ import TableauxRouter from "../../../router/router";
 class Folder extends Component {
   constructor(props) {
     super(props);
-    this.state = { modifiedFiles: [] };
   }
 
   backFolderHandler = e => {
@@ -82,8 +81,7 @@ class Folder extends Component {
 
   renderFiles = () => {
     const files = this.props.folder.files;
-    const { langtag, actions } = this.props;
-    const { modifiedFiles } = this.state;
+    const { langtag, actions, modifiedFiles } = this.props;
 
     const sortAndMarkup = f.compose(
       f.map(file => {
@@ -138,7 +136,8 @@ class Folder extends Component {
 Folder.propTypes = {
   folder: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  actions: PropTypes.object.isRequired
+  actions: PropTypes.object.isRequired,
+  modifiedFiles: PropTypes.array
 };
 
 export default Folder;

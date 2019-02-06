@@ -14,7 +14,7 @@ const SFTIInputField = compose(
     },
     stopPropagation: () => event => event.stopPropagation()
   })
-)(({ name, value, langtag, handleToggle, handleChange, stopPropagation }) => (
+)(({ value, langtag, handleToggle, handleChange, stopPropagation }) => (
   <div className="item">
     <div className="item-content">
       <div onClick={handleToggle}>{getLanguageOrCountryIcon(langtag)}</div>

@@ -29,7 +29,42 @@ const enhance = compose(
 class MediaView extends Component {
   constructor(props) {
     super(props);
+
+    this.state = { modifiedFiles: [] };
+
     this.onLanguageSwitch = this.onLanguageSwitch.bind(this);
+  }
+
+  componentDidUpdate(lastProps) {
+    const finishedLoading = this.props.media.finishedLoading;
+
+    if (finishedLoading) {
+      const oldFolderId = lastProps.media.data.id;
+      const newFolderId = this.props.media.data.id;
+      const isFolderChange = oldFolderId !== newFolderId;
+
+      const oldFiles = lastProps.media.data.files;
+      const newFiles = this.props.media.data.files;
+      const oldFileCount = f.size(oldFiles);
+      const newFileCount = f.size(newFiles);
+
+      // add new fileIDs to state for highlighting
+      if (
+        !isFolderChange &&
+        oldFileCount !== 0 &&
+        oldFileCount < newFileCount
+      ) {
+        const newUUIDs = f.map(newFile => {
+          if (!f.find(oldFile => oldFile.uuid === newFile.uuid, oldFiles)) {
+            return newFile.uuid;
+          }
+        }, newFiles);
+
+        this.setState({ modifiedFiles: f.compact(newUUIDs) });
+      } else if (isFolderChange) {
+        this.setState({ modifiedFiles: [] });
+      }
+    }
   }
 
   onLanguageSwitch(newLangtag) {
@@ -42,6 +77,7 @@ class MediaView extends Component {
 
   render() {
     const { langtag, media, actions, requestedData } = this.props;
+    const { modifiedFiles } = this.state;
 
     if (requestedData) {
       TableauxConstants.initLangtags(this.props.requestedData.value);
@@ -63,7 +99,12 @@ class MediaView extends Component {
               onChange={this.onLanguageSwitch}
             />
           </header>
-          <Folder folder={media.data} langtag={langtag} actions={actions} />
+          <Folder
+            folder={media.data}
+            langtag={langtag}
+            actions={actions}
+            modifiedFiles={modifiedFiles}
+          />
         </div>
       );
     } else {

@@ -2,15 +2,18 @@ import React from "react";
 import PropTypes from "prop-types";
 import Empty from "../helperComponents/emptyEntry";
 import { DefaultLangtag } from "../../constants/TableauxConstants";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { compose, withProps, pure, withHandlers } from "recompose";
 import apiUrl from "../../helpers/apiUrl";
-import f from "lodash/fp";
 
 const enhance = compose(
   pure,
-  withProps(({ file: { url }, langtag }) => ({
-    fileUrl: apiUrl(f.getOr(url[DefaultLangtag], langtag, url))
-  })),
+  withProps(({ file: { url }, langtag }) => {
+    const translate = retrieveTranslation(DefaultLangtag);
+    return {
+      fileUrl: apiUrl(translate(url, langtag))
+    };
+  }),
   withHandlers({
     openWindow: ({ fileUrl }) => () => window.open(fileUrl)
   })
@@ -18,7 +21,12 @@ const enhance = compose(
 
 const MediaLink = ({ url, openWindow, children }) => {
   return (
-    <a href={url} rel="noopener" target="_blank" onClick={openWindow}>
+    <a
+      href={url}
+      rel="noopener noreferrer"
+      target="_blank"
+      onClick={openWindow}
+    >
       {children || <Empty />}
     </a>
   );

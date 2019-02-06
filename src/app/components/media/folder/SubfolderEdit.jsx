@@ -29,14 +29,14 @@ class SubfolderEdit extends PureComponent {
   };
 
   componentDidMount() {
-    var domNode = ReactDOM.findDOMNode(this.refs.nameInput);
+    var domNode = ReactDOM.findDOMNode(this.nameInput);
     domNode.focus();
     domNode.select();
   }
 
   onSave = () => {
     const { folder, onSave, onCancel } = this.props;
-    const currentName = this.refs.nameInput.value.toString().trim();
+    const currentName = this.nameInput.value.toString().trim();
     const placeHolderName = folder.name;
 
     if (currentName === "" || currentName === placeHolderName) {
@@ -55,11 +55,15 @@ class SubfolderEdit extends PureComponent {
   render() {
     const placeHolderName = this.props.folder.name;
 
+    const storeRef = element => {
+      this.nameInput = element;
+    };
+
     return (
       <div className="create-new-folder">
         <i className="icon fa fa-folder-open" />
         <input
-          ref="nameInput"
+          ref={storeRef}
           type="text"
           defaultValue={placeHolderName}
           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
