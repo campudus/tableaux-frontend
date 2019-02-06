@@ -4,7 +4,6 @@ import { openLinkOverlay } from "../../cells/link/LinkOverlay";
 import LinkList from "../../helperComponents/LinkList";
 import i18n from "i18next";
 import * as f from "lodash/fp";
-import { reportUpdateReasons } from "../../../helpers/devWrappers";
 import Empty from "../../helperComponents/emptyEntry";
 import { withProps } from "recompose";
 
@@ -15,8 +14,6 @@ class LinkView extends Component {
     thisUserCantEdit: PropTypes.bool,
     actions: PropTypes.object.isRequired
   };
-
-  // componentDidUpdate = reportUpdateReasons("link").bind(this);
 
   openOverlay = () => {
     const { cell, langtag, actions } = this.props;
@@ -48,7 +45,7 @@ class LinkView extends Component {
   };
 
   render() {
-    const { cell, langtag, value } = this.props;
+    const { cell, langtag } = this.props;
     const links = this.mkLinkList(cell, langtag);
 
     return f.isEmpty(links) ? (
