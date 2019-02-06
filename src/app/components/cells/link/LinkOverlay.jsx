@@ -110,11 +110,11 @@ class LinkOverlay extends PureComponent {
         } else {
           const { cell } = this.props;
           const target = {
-            tables: cell.tables,
             tableId: cell.column.toTable,
-            rowId: row.id
+            rowId: row.id,
+            langtag: this.props.langtag
           };
-          loadAndOpenEntityView(target, this.props.langtag);
+          loadAndOpenEntityView(target);
         }
       },
       escape: event => {
