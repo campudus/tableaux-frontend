@@ -243,7 +243,7 @@ const closeOverlay = name => (dispatch, getState) => {
     f.reject(f.propEq("exiting", true))
   );
   const overlayToClose = f.isString(name)
-    ? f.find(f.propEqn("name", name), overlays)
+    ? f.find(f.propEq("name", name), overlays)
     : f.last(overlays);
   console.log("Close overlay:", name, overlayToClose);
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
