@@ -1,47 +1,71 @@
 import TableauxConstants from "../constants/TableauxConstants";
-// import Tables from "../models/Tables";
 import f from "lodash/fp";
+import Request from "superagent";
 
 let cachedTables = null;
 
-const getTables = () =>
-  new Promise((resolve, reject) => {
-    if (f.isNil(cachedTables)) {
-      const tables = new Tables();
-      tables.fetch({
-        success: () => {
-          cachedTables = tables;
-          resolve(cachedTables);
-        },
-        error: err => {
-          reject(err);
+export async function initLangtags() {
+  return new Promise((resolve, reject) => {
+    if (f.isNil(TableauxConstants.Langtags)) {
+      Request.get("/api/system/settings/langtags").end((error, response) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          TableauxConstants.initLangtags(response.body.value);
+          resolve();
         }
       });
     } else {
-      resolve(cachedTables);
+      resolve();
     }
   });
+}
 
-const validateLangtag = langtag => {
-  // return (f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags))
-  //   ? TableauxConstants.DefaultLangtag
-  //   : langtag;
-  return langtag;
-};
+async function getTables() {
+  return new Promise((resolve, reject) => {
+    if (f.isNil(cachedTables)) {
+      Request.get("/api/tables").end((error, response) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const allTables = response.body.tables;
+          cachedTables = allTables;
+          resolve(allTables);
+        }
+      });
+    } else {
+      return cachedTables;
+    }
+  });
+}
+
+async function validateLangtag(langtag) {
+  await initLangtags();
+  return f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags)
+    ? TableauxConstants.DefaultLangtag
+    : langtag;
+}
 
 async function getFirstTableId() {
   const tables = await getTables();
-  return f.get("id", tables.first());
+  return f.get("id", f.head(tables));
 }
 
-async function validateTableId(tableId, tables) {
-  return tableId;
-  const firstTableId = f.first(tables);
-  return f.cond([
+async function validateTableId(tableId) {
+  // TODO-W
+  const firstTableId = await getFirstTableId();
+  const tables = await getTables();
+  const result = f.cond([
     [f.isNil, firstTableId],
     [id => f.isNil(tables[id]), firstTableId],
     [f.stubTrue, f.identity]
   ])(tableId);
+
+  console.log("valid tableId", result);
+
+  return result;
 }
 
 const posOrNil = string => {
