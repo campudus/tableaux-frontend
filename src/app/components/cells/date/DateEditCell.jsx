@@ -1,7 +1,10 @@
+import Datetime from "react-datetime";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+
 import f from "lodash/fp";
-import Datetime from "react-datetime";
+
+import { stopPropagation } from '../../../helpers/functools';
 
 class DateEditCell extends Component {
   state = {
@@ -58,7 +61,11 @@ class DateEditCell extends Component {
         {f.isEmpty(value) ? "" : value.format(Formats.formatForUser)}
         <i className="fa fa-ban" onClick={this.clearMoment} />
 
-        <div className="time-picker-wrapper" style={this.getStyle()}>
+        <div
+          className="time-picker-wrapper"
+          style={this.getStyle()}
+          onClick={stopPropagation}
+        >
           <Datetime
             onChange={this.handleChange}
             open
