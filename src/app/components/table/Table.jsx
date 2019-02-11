@@ -64,7 +64,6 @@ class Table extends Component {
   //     }
   //   }
 
-
   toggleExpandedRow = rowId => () => {
     const { expandedRowIds } = this.state;
     const newExpandedRowIds = f.cond([

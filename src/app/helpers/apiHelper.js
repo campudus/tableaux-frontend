@@ -42,14 +42,6 @@ export const makeRequest = async ({
   data,
   responseType = "JSON"
 }) => {
-  console.log("Should request:", {
-    url,
-    apiRoute,
-    method,
-    params,
-    data,
-    responseType
-  });
   const targetUrl =
     (f.isString(apiRoute) ? buildURL(apiRoute) : url) + paramsToString(params);
   console.log("apiHelper", method.toUpperCase(), targetUrl);

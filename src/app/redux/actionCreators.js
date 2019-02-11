@@ -1,13 +1,20 @@
 import f from "lodash/fp";
-import actionTypes from "./actionTypes";
-import { makeRequest } from "../helpers/apiHelper";
-import API_ROUTES from "../helpers/apiRoutes";
-import { changeCellValue } from "./actions/cellActions";
+
 import { Langtags } from "../constants/TableauxConstants";
-import { doto } from "../helpers/functools";
+import {
+  addAnnotationLangtag,
+  removeAnnotationLangtag,
+  setCommentAnnotation,
+  setFlagAnnotation
+} from "./actions/annotationActions";
+import { changeCellValue } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
-import { overlayParamsSpec } from "./reducers/overlays";
+import { doto } from "../helpers/functools";
 import { isLocked } from "../helpers/annotationHelper";
+import { makeRequest } from "../helpers/apiHelper";
+import { overlayParamsSpec } from "./reducers/overlays";
+import API_ROUTES from "../helpers/apiRoutes";
+import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import identifyLinkedRows from "../helpers/linkHelper";
 
@@ -161,12 +168,6 @@ const setCurrentTable = tableId => {
 const deleteFilters = () => {
   return { type: DELETE_FILTERS };
 };
-
-const trace = str => element => {
-  console.log(str, element);
-  return element;
-};
-const mapWithIndex = f.map.convert({ cap: false });
 
 const generateDisplayValues = (rows, columns, tableId) => (
   dispatch,
@@ -386,6 +387,10 @@ const actionCreators = {
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   changeCellValue,
+  addAnnotationLangtag,
+  removeAnnotationLangtag,
+  setFlagAnnotation,
+  setCommentAnnotation,
   showToast,
   hideToast,
   openOverlay,

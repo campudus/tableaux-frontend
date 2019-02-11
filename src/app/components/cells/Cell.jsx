@@ -1,46 +1,34 @@
+import { branch, compose, renderNothing, withHandlers } from "recompose";
 import React from "react";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import TextCell from "./text/TextCell.jsx";
-import ShortTextCell from "./text/ShortTextCell.jsx";
-import NumericCell from "./numeric/NumericCell.jsx";
-import LinkCell from "./link/LinkCell.jsx";
-import AttachmentCell from "./attachment/AttachmentCell.jsx";
-import BooleanCell from "./boolean/BooleanCell";
-import IdentifierCell from "./identifier/IdentifierCell.jsx";
-import DisabledCell from "./disabled/DisabledCell.jsx";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
-import CurrencyCell from "./currency/CurrencyCell.jsx";
-import DateCell from "./date/DateCell";
+
 import classNames from "classnames";
 import f from "lodash/fp";
-// import {
-//   addTranslationNeeded, deleteCellAnnotation, isLocked,
-//   removeTranslationNeeded
-// } from "../../helpers/annotationHelper";
-// import openTranslationDialog from "../overlay/TranslationDialog";
-import { either } from "../../helpers/functools";
-// import FlagIconRenderer from "./FlagIconRenderer";
-import {
-  branch,
-  compose,
-  pure,
-  renderComponent,
-  renderNothing,
-  withHandlers
-} from "recompose";
-import PropTypes from "prop-types";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import {
-  isUserAdmin,
-  hasUserAccessToLanguage
-} from "../../helpers/accessManagementHelper";
-import { reportUpdateReasons } from "../../helpers/devWrappers";
 
-const FlagIconRenderer = () => null;
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import { either } from "../../helpers/functools";
+import {
+  hasUserAccessToCountryCode,
+  hasUserAccessToLanguage,
+  isUserAdmin
+} from "../../helpers/accessManagementHelper";
+import { isLocked } from "../../helpers/annotationHelper";
+import AttachmentCell from "./attachment/AttachmentCell.jsx";
+import BooleanCell from "./boolean/BooleanCell";
+import CurrencyCell from "./currency/CurrencyCell.jsx";
+import DateCell from "./date/DateCell";
+import DisabledCell from "./disabled/DisabledCell.jsx";
+import FlagIconRenderer from "./FlagIconRenderer";
+import IdentifierCell from "./identifier/IdentifierCell.jsx";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import LinkCell from "./link/LinkCell.jsx";
+import NumericCell from "./numeric/NumericCell.jsx";
+import ShortTextCell from "./text/ShortTextCell.jsx";
+import TextCell from "./text/TextCell.jsx";
+
 const ExpandCorner = compose(
   branch(({ show }) => !show, renderNothing),
   withHandlers({
-    onClick: props => event => {
+    onClick: () => event => {
       event.stopPropagation();
       // ActionCreator.toggleRowExpand(props.cell.row.getId());
     }
@@ -74,10 +62,10 @@ export const getAnnotationState = cell => {
     f.join(":")
   )(cell.annotations);
 
-  // return f.join("-", [flags, translations, comments, isLocked(cell.row)]);
+  return f.join("-", [flags, translations, comments, isLocked(cell.row)]);
 };
 
-export const contentChanged = (cell, langtag, oldValue) => () => {
+export const contentChanged = (cell, langtag, oldValue) => value => {
   if (
     !cell.isMultiLanguage ||
     either(cell)
@@ -137,21 +125,16 @@ class Cell extends React.Component {
   }
 
   shouldComponentUpdate = nextProps => {
-    const keys = f.keys(nextProps);
-    const changes = keys.filter(
-      key =>
-        key != "columns" &&
-        key !== "column" &&
-        key !== "row" &&
-        key !== "openCellContextMenu" &&
-        key !== "closeCellContextMenu" &&
-        !(
-          key === "allDisplayValues" &&
-          this.props.column.kind === ColumnKinds.link
-        ) &&
-        f.complement(f.equals)(this.props[key], nextProps[key])
+    const cell = this.props.cell;
+    const nextCell = nextProps.cell;
+
+    return (
+      !f.eq(cell.value, nextCell.value) ||
+      !f.eq(cell.displayValue, nextCell.displayValue) ||
+      this.props.selected !== nextProps.selected ||
+      this.props.inSelectedRow !== nextProps.inSelectedRow ||
+      this.props.editing !== nextProps.editing
     );
-    return changes.length > 0;
   };
 
   getKeyboardShortcuts = event => {
@@ -164,25 +147,11 @@ class Cell extends React.Component {
 
   openCellContextMenu = this.props.openCellContextMenu({
     langtag: this.props.langtag,
-    cell: {
-      row: this.props.row,
-      table: this.props.table,
-      column: this.props.column,
-      value: this.props.value,
-      kind: this.props.column.kind
-    }
+    cell: this.props.cell
   });
 
   cellClickedWorker = (event, withRightClick) => {
-    const {
-      actions,
-      table,
-      row,
-      column,
-      editing,
-      selected,
-      langtag
-    } = this.props;
+    const { actions, cell, editing, selected, langtag } = this.props;
     // ActionCreator.closeAnnotationsPopup();
     // console.log(
     //   cell.isMultiLanguage ? "multilanguage" : "",
@@ -195,6 +164,7 @@ class Cell extends React.Component {
     //   cell.value,
     //   cell.displayValue
     // );
+    const { table, column, row } = cell;
 
     if (!withRightClick) {
       this.props.closeCellContextMenu();
@@ -215,7 +185,6 @@ class Cell extends React.Component {
     if (withRightClick) {
       event.preventDefault();
       this.openCellContextMenu(event);
-      // ActionCreator.showRowContextMenu(this.props.row, langtag, event.pageX, event.pageY, this.props.table, cell);
     }
 
     if (!withRightClick || editing) {
@@ -241,14 +210,8 @@ class Cell extends React.Component {
   };
 
   componentDidCatch(error, info) {
-    console.error(
-      "Could not render cell:",
-      "column",
-      this.props.column,
-      "row",
-      this.props.row,
-      error
-    );
+    console.error("Could not render cell:", this.props.cell, error);
+    console.warn(info);
   }
 
   static cellKinds = {
@@ -267,7 +230,10 @@ class Cell extends React.Component {
   };
 
   userCanEditValue() {
-    const { column, langtag } = this.props;
+    const {
+      cell: { column },
+      langtag
+    } = this.props;
     if (column.kind === ColumnKinds.concat) {
       return false;
     }
@@ -289,35 +255,31 @@ class Cell extends React.Component {
   render() {
     const {
       annotationsOpen,
+      cell,
       value,
-      displayValue,
       allDisplayValues,
-      column,
       langtag,
       selected,
       editing,
       inSelectedRow,
-      focusTable,
-      rowId
+      focusTable
     } = this.props;
     const { concat, text, richtext } = ColumnKinds;
+    const { column, row, table } = cell;
     const noKeyboard = [concat, "disabled", text, richtext];
     const kind = column.kind;
     //       this.userCanEditValue() || column.kind === ColumnKinds.concat
     //         ? column.kind
     //         : "disabled";
-    const { translationNeeded } = { translationNeeded: true }; //cell.annotations;
+    const { translationNeeded } = cell.annotations || {};
     const isPrimaryLanguage = langtag === f.first(Langtags);
     const needsTranslationOtherLanguages =
       !f.isEmpty(f.prop("langtags", translationNeeded)) && isPrimaryLanguage;
-    const cssClass = classNames(
-      `cell cell-${kind} cell-${column.id}-${rowId}`,
-      {
-        selected: selected,
-        editing: this.userCanEditValue() && editing,
-        "in-selected-row": inSelectedRow
-      }
-    );
+    const cssClass = classNames(`cell cell-${kind} ${cell.id}`, {
+      selected: selected,
+      editing: this.userCanEditValue() && editing,
+      "in-selected-row": inSelectedRow
+    });
 
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
@@ -340,16 +302,16 @@ class Cell extends React.Component {
         onMouseDown={this.onMouseDownHandler}
       >
         <CellKind
-          table={this.props.table}
-          row={this.props.row}
+          table={table}
+          row={row}
           actions={this.props.actions}
           value={value}
-          displayValue={displayValue}
+          displayValue={cell.displayValue}
           allDisplayValues={
             column.kind === ColumnKinds.link ? allDisplayValues : null
           }
           column={column}
-          key={`${column.id}-${langtag}-${displayValue[langtag]}`}
+          key={`${column.id}-${langtag}-${cell.displayValue[langtag]}`}
           langtag={langtag}
           focusTable={focusTable}
           selected={selected}
@@ -362,15 +324,15 @@ class Cell extends React.Component {
               ? f.noop
               : this.setKeyboardShortcutsForChildren
           }
-          cell={{
-            column: this.props.column,
-            columns: this.props.columns,
-            row: this.props.row,
-            table: this.props.table,
-            value: this.props.value,
-            displayValue
-          }}
+          cell={cell}
         />
+        <FlagIconRenderer
+          cell={cell}
+          annotationState={getAnnotationState(cell)}
+          langtag={langtag}
+          annotationsOpen={annotationsOpen}
+        />
+        <ExpandCorner show={needsTranslationOtherLanguages} cell={cell} />
       </div>
     );
   }

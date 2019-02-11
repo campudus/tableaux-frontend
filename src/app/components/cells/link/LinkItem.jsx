@@ -4,6 +4,9 @@ import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import Empty from "../../helperComponents/emptyEntry";
+import { unless } from "../../../helpers/functools";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import f from "lodash/fp";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -37,7 +40,11 @@ const SelectedItem = props => {
           onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
         >
           <a href="#" draggable={false}>
-            {props.label || <Empty langtag={props.langtag} />}
+            {unless(
+              f.isString,
+              retrieveTranslation(props.langtag),
+              props.label
+            ) || <Empty langtag={props.langtag} />}
           </a>
           {props.isLinked ? (
             <SvgIcon icon="cross" containerClasses="color-primary" />
@@ -51,14 +58,11 @@ const SelectedItem = props => {
           draggable={false}
           onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
           onClick={() => {
-            loadAndOpenEntityView(
-              {
-                tables: props.cell.tables,
-                tableId: props.cell.column.toTable,
-                rowId: props.row.id
-              },
-              props.langtag
-            );
+            loadAndOpenEntityView({
+              tableId: props.cell.column.toTable,
+              rowId: props.row.id,
+              langtag: props.langtag
+            });
           }}
         >
           <i className="fa fa-long-arrow-right" />
@@ -79,7 +83,11 @@ const PlainItem = props => {
     >
       <div className={getCssClass(props)}>
         <div className="link-label">
-          {props.label || <Empty langtag={props.langtag} />}
+          {unless(
+            f.isString,
+            retrieveTranslation(props.langtag),
+            props.label
+          ) || <Empty langtag={props.langtag} />}
         </div>
       </div>
     </div>

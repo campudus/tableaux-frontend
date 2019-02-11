@@ -15,6 +15,7 @@ const joinUrlParts = (...args) =>
 const getAllTables = () => "/tables";
 const getAllColumnsForTable = tableId => "/tables/" + tableId + "/columns";
 const getAllRowsForTable = tableId => "/tables/" + tableId + "/rows";
+const toTable = ({ tableId }) => "/tables/" + tableId;
 const toColumn = ({ tableId, columnId }) =>
   isInteger(columnId)
     ? "/" + joinUrlParts("tables", tableId, "columns", columnId)
@@ -36,6 +37,7 @@ const API_ROUTES = {
   getAllTables,
   getAllColumnsForTable,
   getAllRowsForTable,
+  toTable,
   toColumn,
   toRow,
   toCell,

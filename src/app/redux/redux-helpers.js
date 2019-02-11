@@ -2,6 +2,10 @@ import f from "lodash/fp";
 import { ColumnKinds } from "../constants/TableauxConstants";
 import getDisplayValue from "../helpers/getDisplayValue";
 
+/**
+ * @params { tableId, columnId, rowId }
+ * @returns [rowIndex, columnIndex, displayValueColumnIndex]
+ */
 export const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
   try {
     const rowIdx = f.findIndex(

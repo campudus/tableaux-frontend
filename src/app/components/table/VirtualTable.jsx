@@ -15,7 +15,6 @@ import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { either, maybe } from "../../helpers/functools";
 import AddNewRowButton from "../rows/NewRow";
 import getDisplayValue from "../../helpers/getDisplayValue";
-
 import MultiGrid from "./GrudGrid";
 import { isLocked } from "../../helpers/annotationHelper";
 
@@ -25,21 +24,6 @@ const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
 export default class VirtualTable extends PureComponent {
-  // static propTypes = {
-  //   columns: PropTypes.object.isRequired,
-  //   columnKeys: PropTypes.string,
-  //   rows: PropTypes.object.isRequired,
-  //   rowKeys: PropTypes.string, // re-render hint
-  //   table: PropTypes.object.isRequired,
-  //   tables: PropTypes.object.isRequired,
-  //   langtag: PropTypes.string.isRequired,
-  //   expandedRowIds: PropTypes.array,
-  //   selectedCell: PropTypes.object,
-  //   selectedCellEditing: PropTypes.bool,
-  //   selectedCellExpandedRow: PropTypes.string,
-  //   visibleColumns: PropTypes.string.isRequired
-  // };
-
   constructor(props) {
     super(props);
     this.updateSelectedCellId();
@@ -132,12 +116,6 @@ export default class VirtualTable extends PureComponent {
     // Dispatcher.on(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
   };
 
-  componentWillUnmount = () => {
-    // Dispatcher.off(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
-    // Dispatcher.off(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
-    // Dispatcher.off(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
-  };
-
   setOpenAnnotations = cellInfo => {
     if (f.isNil(cellInfo) && !f.isEmpty(this.state.openAnnotations)) {
       this.setState({ openAnnotations: {} });
@@ -192,8 +170,8 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderColumnHeader = ({ columnIndex }) => {
-    const { table, tables, visibleColumns } = this.props;
-    const column = visibleColumns[columnIndex];
+    const column = this.getVisibleElement(this.props.columns, columnIndex);
+    const { table, tables } = this.props;
     return (
       <ColumnHeader
         column={column}
@@ -268,25 +246,12 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderSingleCell = ({ columnIndex, rowIndex }) => {
-    const { actions, rows, table, langtag, columns, tableView, visibleColumns } = this.props;
+    const { actions, table, langtag, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
-    const row = rows[rowIndex];
     const cell = this.getCell(rowIndex, columnIndex);
-==== BASE ====
-    const visibleColumns = this.props.columns.filter(
-      (col, idx) => idx === 0 || col.visible
-    );
-    const column = visibleColumns[columnIndex];
-==== BASE ====
     const { value, annotations } = cell;
-    const displayValue = this.getDisplayValueWithFallback(
-      rowIndex,
-      columnIndex,
-      column,
-      cell.value
-    );
-    const isInSelectedRow = row.id === this.selectedIds.row;
-    const isSelected = this.isCellSelected(column.id, row.id);
+    const isInSelectedRow = cell.row.id === this.selectedIds.row;
+    const isSelected = this.isCellSelected(cell.column.id, cell.row.id);
     const isEditing =
       isSelected && f.getOr(false, "tableView.editing", this.props);
 
@@ -295,14 +260,12 @@ export default class VirtualTable extends PureComponent {
         actions={actions}
         value={value}
         allDisplayValues={tableView.displayValues}
-        displayValue={displayValue}
-        column={column}
+        displayValue={cell.displayValue}
+        cell={cell}
         columns={columns}
         annotationState={null /*getAnnotationState(cell)*/}
         focusTable={this.props.test}
         langtag={langtag}
-        row={row}
-        table={table}
         annotationsOpen={
           // openAnnotations.cellId && openAnnotations.cellId === cell.id
           false
@@ -321,7 +284,7 @@ export default class VirtualTable extends PureComponent {
     const { actions, rows, columns, table, tableView } = this.props;
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
-    const column = this.visibleColumns[columnIndex];
+    const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
     const tableLangtag = this.props.langtag;
@@ -392,42 +355,35 @@ export default class VirtualTable extends PureComponent {
   };
 
   getCell = (rowIndex, columnIndex) => {
-    const { columns, rows } = this.props;
-    const cells = rows[rowIndex].values;
-    // return cells[columnIndex];
-
-    // This hideous C-style loop avoids allocating and garbage-collecting
-    // (visibleCols + overscanCol) * (visibleRows + overscanRows) arrays in
-    // a performance-critical section, thus considerably speeding up rendering.
-    this.getCell.visibleColIdx = -1;
-    this.getCell.totalColIdx = 0;
-    for (
-      ;
-      this.getCell.totalColIdx < cells.length;
-      ++this.getCell.totalColIdx
-    ) {
-      if (
-        columns[this.getCell.totalColIdx].visible ||
-        this.getCell.totalColIdx === 0
-      ) {
-        ++this.getCell.visibleColIdx;
-      }
-      if (this.getCell.visibleColIdx === columnIndex) {
-        break;
-      }
-    }
-    return cells[this.getCell.totalColIdx];
-    // Original implementation which eats too much CPU-time
-    // const visibleCells = cells.filter(this.filterVisibleCells);
-    // return visibleCells[columnIndex];
+    const { rows } = this.props;
+    const values = rows[rowIndex].values;
+    const cells = rows[rowIndex].cells;
+    const value = this.getVisibleElement(values, columnIndex).value;
+    const cell = this.getVisibleElement(cells, columnIndex);
+    return {
+      ...cell,
+      value,
+      row: rows[rowIndex],
+      displayValue: this.getDisplayValueWithFallback(
+        rowIndex,
+        columnIndex,
+        cell.column,
+        value
+      )
+    };
   };
 
   getDisplayValueWithFallback = (rowIndex, columnIndex, column, value) =>
-    f.get([rowIndex, columnIndex], this.visibleDisplayValues) ||
-    getDisplayValue(column, value);
+    this.getVisibleElement(
+      f.propOr([], rowIndex, this.props.displayValues),
+      columnIndex
+    ) || getDisplayValue(column, value);
 
   filterVisibleCells = (cell, columnIdx) =>
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
+
+  getVisibleElement = (elements, idx) =>
+    elements[this.visibleColumnIndices[idx]];
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -526,9 +482,7 @@ export default class VirtualTable extends PureComponent {
       columnKeys,
       selectedCell,
       selectedCellEditing,
-      selectedCellExpandedRow,
-      displayValues,
-      visibleColumns
+      selectedCellExpandedRow
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
     const { columnIndex, rowIndex } =
@@ -536,19 +490,18 @@ export default class VirtualTable extends PureComponent {
         ? scrolledCell
         : {};
 
-    // cache visible elements for this render cycle, so we won't need
-    // to recalculate for each cell
-    this.visibleColumns = columns.filter(this.filterVisibleCells);
-    this.visibleDisplayValues = (displayValues || []).map(col =>
-      col.filter(this.filterVisibleCells)
-    );
+    this.visibleColumnIndices = f
+      .range(0, columns.length)
+      .filter(this.filterVisibleCells);
 
-    const columnCount = f.size(this.visibleColumns) + 1;
+    const columnCount = f.size(this.visibleColumnIndices) + 1;
     const rowCount = f.size(rows) + 1;
+
     const selectedCellKey = `${f.get(
       "id",
       selectedCell
     )}-${selectedCellEditing}-${selectedCellExpandedRow}`;
+
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
@@ -598,3 +551,16 @@ export default class VirtualTable extends PureComponent {
     );
   }
 }
+
+VirtualTable.propTypes = {
+  columns: PropTypes.array.isRequired,
+  rows: PropTypes.array.isRequired,
+  table: PropTypes.object.isRequired,
+  tables: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  expandedRowIds: PropTypes.array,
+  selectedCell: PropTypes.object,
+  selectedCellEditing: PropTypes.bool,
+  selectedCellExpandedRow: PropTypes.string,
+  visibleColumns: PropTypes.string.isRequired
+};

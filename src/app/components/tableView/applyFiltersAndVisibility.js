@@ -1,6 +1,7 @@
 import React from "react";
 import f from "lodash/fp";
 import memoize from "memoize-one";
+import getFilteredRows from "../table/RowFilters";
 import { extractAnnotations } from "../../helpers/annotationHelper";
 import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
 
