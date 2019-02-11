@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
 import TableContainer from "../containers/TableContainer";
@@ -87,15 +88,16 @@ const extendedRouter = Router.extend({
     const { loadTables, createDisplayValueWorker } = this.actions;
     loadTables();
     createDisplayValueWorker();
-    console.log("initialize router");
-    // const worker = new Worker("/worker.js");
-    // worker.postMessage(["receive", "this","shit"]);
+    console.log(options);
   },
 
   switchLanguageHandler: function(newLangtagObj) {
     const his = this.history;
     const path = his.getPath();
     const newPath = path.replace(currentLangtag, newLangtagObj.langtag);
+    const {setCurrentLanguage} = this.actions;
+    console.log("switchLanguage");
+    setCurrentLanguage(newLangtagObj.langtag);
 
     his.navigate(newPath, { trigger: true });
   },

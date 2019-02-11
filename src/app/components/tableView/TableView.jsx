@@ -30,7 +30,7 @@ import SearchOverlay from "./SearchOverlay";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import { initHistoryOf } from "../table/undo/tableHistory";
 import { getMultiLangValue } from "../../helpers/multiLanguage";
-import canFocusCell from "./canFocusCell";
+// import canFocusCell from "./canFocusCell";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
 
@@ -41,30 +41,31 @@ const mapStatetoProps = (state, props) => {
   const table = tables[tableId];
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
-  const visibleColumns = f.get("tableView.visibleColumns", state);
   const tableView = f.get("tableView", state);
-  const { filters, sorting, startedGeneratingDisplayValues } = tableView;
+  const {
+    visibleColumns,
+    visibleRows,
+    startedGeneratingDisplayValues
+  } = tableView;
   const allDisplayValues = f.get(["displayValues"], tableView);
-  const t1 = performance.now();
   const displayValues = combineDisplayValuesWithLinks(
     allDisplayValues,
     columns,
     tableId
   );
-  const t2 = performance.now();
+
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
   }
   return {
+    visibleRows,
     table,
     columns,
     rows,
     tables,
     visibleColumns,
-    filters,
-    sorting,
     startedGeneratingDisplayValues,
-    displayValues,
+    allDisplayValues,
     tableView
   };
 };
@@ -121,9 +122,9 @@ class TableView extends Component {
       langtag,
       table,
       actions,
-      startedGeneratingDisplayValues,
       canRenderTable,
-      tableView
+      tableView,
+      visibleColumns
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -145,6 +146,7 @@ class TableView extends Component {
       return (
         <div className="wrapper">
           <Table
+            visibleColumns={visibleColumns}
             actions={actions}
             displayValues={displayValues}
             tableView={tableView}
@@ -262,28 +264,23 @@ class TableView extends Component {
       tables,
       table,
       columns,
-      rows,
       langtag,
       tableId,
       navigate,
       actions,
-      filters
+      preparedRows,
+      allDisplayValues
     } = this.props;
-    const filterActions = f.pick(
-      ["setFiltersAndSorting", "deleteFilters"],
-      actions
-    );
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
       actions
     );
     const {
-      rowsCollection,
-      tableFullyLoaded,
+      // rowsCollection,
+      // tableFullyLoaded,
       pasteOriginCell,
       pasteOriginCellLang
     } = this.state;
-    const overlayOpen = false;
 
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
@@ -312,8 +309,7 @@ class TableView extends Component {
             table={table}
             columns={columns}
             currentFilter={this.props.projection.rows}
-            filterActions={filterActions}
-            filters={filters}
+            preparedRows={preparedRows}
           />
           {table && columns && columns.length > 1 ? (
             <ColumnFilter
@@ -327,7 +323,7 @@ class TableView extends Component {
           )}
           <HistoryButtons tableId={table.id} />
           <div className="header-separator" />
-          <Spinner />
+          <Spinner isLoading={f.isEmpty(allDisplayValues)} />
           <PageTitle titleKey="pageTitle.tables" />
           <LanguageSwitcher
             langtag={langtag}

@@ -38,7 +38,9 @@ class FilterButton extends React.Component {
       columns,
       langtag,
       filterActions,
-      filters
+      filters,
+      sorting,
+      preparedRows
     } = this.props;
     if (this.state.open) {
       return (
@@ -49,6 +51,8 @@ class FilterButton extends React.Component {
           currentFilter={currentFilter}
           filterActions={filterActions}
           filters={filters}
+          sorting={sorting}
+          preparedRows={preparedRows}
         />
       );
     } else {

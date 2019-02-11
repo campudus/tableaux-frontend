@@ -77,17 +77,18 @@ const combineDisplayValuesWithLinks = (allDisplayValues, columns, tableId) => {
     );
   };
   const currentDisplayValues = f.get([tableId], allDisplayValues);
-  return f.map(
-    row =>
-      mapIndexed((cell, index) => {
+  return f.map(row => {
+    return {
+      id: row.id,
+      values: mapIndexed((cell, index) => {
         if (columns[index].kind != "link") {
           return cell;
         }
         const { tableId, rowIds } = cell;
         return findCells(tableId, rowIds);
-      }, row.values),
-    currentDisplayValues
-  );
+      }, row.values)
+    };
+  }, currentDisplayValues);
 };
 export { combineDisplayValuesWithLinks };
 

@@ -52,16 +52,16 @@ const applyToAllLangs = fn =>
   Langtags.map(lt => [lt, fn(lt)]).reduce(merge, {});
 
 // To catch cases where (obj.langtag || obj.DefaultLangtag) is falsey, but obj still has langtag keys
-const isLangObj = obj => !f.isEmpty(f.intersection(f.keys(obj), Langtags));
+const isLangObj = column => column.multilanguage; //!f.isEmpty(f.intersection(f.keys(obj), Langtags));
 // Retrieve obj[lantag] or obj[DefaultLangtag].
 // If both are unset, return null if obj has language keys but not langtag or DefaultLangtag, else return obj
-const getValueForLang = (obj, lt) =>
-  f.get(lt, obj) || (isLangObj(obj) ? null : obj) || "";
+const getValueForLang = (obj, lt,column) =>
+  f.get(lt, obj) || (isLangObj(column) ? null : obj) || "";
 
 // Return cell.value
 const getDefaultValue = column => value =>
   applyToAllLangs(lt => {
-    const val = getValueForLang(value, lt) || "";
+    const val = getValueForLang(value, lt,column) || "";
 
     return f.isEmpty(val) && !f.isNumber(val) ? "" : format(column, val);
   });
@@ -82,36 +82,34 @@ const getCurrencyValue = column => value =>
   });
 
 // bool -> column display name || ""
-const getBoolValue = column => value => {
+const getBoolValue = f.curry((column, value) => {
   const getValue = lt => {
     const isTrue = f.find(f.isBoolean, [
       ...f.props([lt, DefaultLangtag], value),
       value,
       false
     ]); // allow false
-    return isTrue && !isLangObj(isTrue)
+    return isTrue && !isLangObj(column)
       ? column.displayName[lt] || column.displayName[DefaultLangtag]
       : "";
   };
   return applyToAllLangs(getValue);
-};
+});
 
 // convert date to human-friendly format
 const getDateValue = column => value => {
   const getDate = lt => {
-    const date = getValueForLang(value, lt);
+    const date = getValueForLang(value, lt,column);
     const Formats =
       column.kind === ColumnKinds.datetime ? DateTimeFormats : DateFormats;
     return f.isEmpty(date)
       ? ""
       : Moment(date, Formats.formatForServer).format(
-          getValueForLang(column.format, lt) || Formats.formatForUser
+          getValueForLang(column.format, lt,column) || Formats.formatForUser
         );
   };
   return applyToAllLangs(getDate);
 };
-
-// const getLinkValue = () => () => {return {de: "test"}}
 
 const getLinkValue = column =>
   f.map(
@@ -121,7 +119,7 @@ const getLinkValue = column =>
     )
   );
 
-const getAttachmentFileName = column => links => {
+const getAttachmentFileName = () => links => {
   const getFileName = (lt, link) =>
     f.flow(
       f.props([
@@ -169,6 +167,7 @@ const moustache = f.memoize(
 // Replace all moustache expressions "{{i}}" of the column's format string where i in [1,..,N], N = displayValue.length,
 // with displayValue[i]
 const format = f.curryN(2)((column, displayValue) => {
+  // console.log("orig",displayValue);
   const formatPattern = f.get("formatPattern", column);
   if (f.isEmpty(formatPattern)) {
     // no or empty format string => simple concat
@@ -193,7 +192,9 @@ const format = f.curryN(2)((column, displayValue) => {
         );
   };
 
-  return f.trim(applyFormat(formatPattern));
+  const result = f.trim(applyFormat(formatPattern));
+  console.log("after format", result);
+  return result;
 });
 
 export { format };

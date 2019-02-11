@@ -9,6 +9,7 @@ import { checkOrThrow } from "../specs/type";
 import { overlayParamsSpec } from "./reducers/overlays";
 import { isLocked } from "../helpers/annotationHelper";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import identifyLinkedRows from "../helpers/linkHelper";
 
 const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
 
@@ -25,13 +26,15 @@ const {
   ALL_ROWS_DATA_LOAD_ERROR,
   SET_COLUMNS_VISIBLE,
   HIDE_ALL_COLUMNS,
-  SET_FILTERS_AND_SORTING,
+  SET_FILTERS,
+  SET_SORTING,
   SET_CURRENT_TABLE,
   DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
-  SET_DISPLAY_VALUE_WORKER
+  SET_DISPLAY_VALUE_WORKER,
+  APPLY_FILTERS_AND_SORTING
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -106,11 +109,13 @@ const hideAllColumns = tableId => {
   };
 };
 
-const setFiltersAndSorting = (filters, sorting) => {
+const applyFiltersAndSorting = (filters, sorting, preparedRows, langtag) => {
   return {
-    type: SET_FILTERS_AND_SORTING,
+    type: APPLY_FILTERS_AND_SORTING,
     filters,
-    sorting
+    sorting,
+    preparedRows,
+    langtag
   };
 };
 
@@ -242,9 +247,7 @@ const actionCreators = {
   toggleColumnVisibility: toggleColumnVisibility,
   setColumnsVisible: setColumnsVisible,
   hideAllColumns: hideAllColumns,
-  setFiltersAndSorting: setFiltersAndSorting,
   setCurrentTable: setCurrentTable,
-  deleteFilters: deleteFilters,
   generateDisplayValues: generateDisplayValues,
   loadCompleteTable: loadCompleteTable,
   setCurrentLanguage: setCurrentLanguage,
@@ -256,7 +259,8 @@ const actionCreators = {
   openOverlay,
   closeOverlay,
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
-  createDisplayValueWorker: createDisplayValueWorker
+  createDisplayValueWorker: createDisplayValueWorker,
+  applyFiltersAndSorting: applyFiltersAndSorting
 };
 
 export default actionCreators;

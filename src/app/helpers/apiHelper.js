@@ -4,6 +4,7 @@ import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import { doto } from "./functools.js";
 
+
 const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
 
 const paramsToString = params =>
@@ -22,7 +23,7 @@ const paramsToString = params =>
         f.join("")
       );
 
-export const makeRequest = async ({
+const makeRequest = async ({
   apiRoute,
   method = "GET",
   params,
@@ -40,11 +41,13 @@ export const makeRequest = async ({
     .catch(error => String(error));
 };
 
-export const sendTestData = path => data =>
+const sendTestData = path =>fileName =>data =>
   fetch("http://localhost:3004", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ data, path })
+    body: JSON.stringify({data,path:path+fileName})
   }).then(response => console.log(response));
+
+export {makeRequest,sendTestData};

@@ -14,6 +14,7 @@ import { either } from "../../../helpers/functools";
 import FilterRow, { BOOL, TEXT } from "./FilterRow";
 import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
 import PropTypes from "prop-types";
+import reduxActionHoc from "../../../helpers/reduxActionHoc";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -28,15 +29,14 @@ const SPECIAL_SEARCHES = [
 
 const SPECIAL_TEXT_SEARCHES = [FilterModes.ROW_CONTAINS];
 
+const mapStateToProps = (state,props) => {
+  const {filters, sorting} = state.filtersAndSorting;
+  return {filters,sorting};
+}
+
 @translate(["filter", "table"])
 @listensToClickOutside
 class FilterPopup extends React.Component {
-  // static propTypes = {
-  //   langtag: PropTypes.string.isRequired,
-  //   onClickedOutside: PropTypes.func.isRequired,
-  //   columns: PropTypes.object,
-  //   currentFilter: PropTypes.object
-  // };
 
   static isSortableColumn = column =>
     f.contains(column.kind, SortableCellKinds);
@@ -48,7 +48,7 @@ class FilterPopup extends React.Component {
 
   constructor(props) {
     super(props);
-    const currFilter = f.defaultTo({})(f.get(["currentFilter"], props));
+    console.log(props);
 
     const cleanFilter = filter => {
       return {
@@ -71,9 +71,9 @@ class FilterPopup extends React.Component {
     };
 
     const sorting = {
-      columnId: f.toString(f.prop("sortColumnId", currFilter)),
+      columnId: f.get(["sorting","columnId"], props),
       value: f.defaultTo(TableauxConstants.SortValues.ASC)(
-        f.prop("sortValue", currFilter)
+        f.get(["sorting","value"], props)
       )
     };
 
@@ -233,20 +233,22 @@ class FilterPopup extends React.Component {
   applyFilters = event => {
     const { filters, sorting } = this.state;
     const {
-      filterActions: { setFiltersAndSorting }
+      actions: { applyFiltersAndSorting },
+      preparedRows,
+      langtag
     } = this.props;
     const colIdToNumber = obj =>
       f.assoc("columnId", parseInt(obj.columnId), obj);
-    // ActionCreator.changeRowFilters(f.map(colIdToNumber, filters), colIdToNumber(sorting));
-    setFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting));
+    applyFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting),preparedRows,langtag);
     this.handleClickOutside(event);
   };
 
   clearFilter = event => {
     const {
-      filterActions: { deleteFilters }
+      actions: { applyFiltersAndSorting },
+      preparedRows
     } = this.props;
-    deleteFilters();
+    applyFiltersAndSorting([],{},preparedRows);
     this.handleClickOutside(event);
   };
 
@@ -342,7 +344,7 @@ class FilterPopup extends React.Component {
   };
 
   render() {
-    const { t } = this.props;
+    const { t} = this.props;
     const { sorting } = this.state;
 
     const filters = f.isEmpty(this.state.filters)
@@ -469,4 +471,4 @@ class FilterPopup extends React.Component {
   }
 }
 
-export default FilterPopup;
+export default reduxActionHoc(FilterPopup,mapStateToProps);

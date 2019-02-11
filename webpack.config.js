@@ -20,7 +20,7 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        exclude: /node_modules/,
+        include: [path.resolve(__dirname,"src"),path.resolve(__dirname,"node_modules/superagent")],
         use: "babel-loader",
       },
       {

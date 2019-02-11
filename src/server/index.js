@@ -5,7 +5,7 @@ const path = require("path");
 const proxy = require("http-proxy-middleware");
 const cors = require("cors");
 
-app.use(cors());
+// app.use(cors());
 app.use(express.static(path.resolve(__dirname, "../../dist")));
 app.use(
   "/api",

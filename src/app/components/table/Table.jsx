@@ -164,7 +164,8 @@ class Table extends Component {
       table,
       langtag,
       tableView,
-      displayValues
+      displayValues,
+      visibleColumns
     } = this.props;
     const {
       selectedCell,
@@ -200,6 +201,7 @@ class Table extends Component {
             key={`virtual-table-${f.get("id", table)}`}
             actions={actions}
             columns={columns}
+            visibleColumns={visibleColumns}
             ref={this.findAndStoreTableDiv}
             rows={rows}
             tableView={tableView}
@@ -218,7 +220,6 @@ class Table extends Component {
             selectedCellExpandedRow={selectedCellExpandedRow}
             toggleExpandedRow={this.toggleExpandedRow}
             expandedRowIds={expandedRowIds}
-            visibleColumns={f.map(column => !!column, columns).toString()}
             fullyLoaded={this.props.fullyLoaded}
           />
         </div>
