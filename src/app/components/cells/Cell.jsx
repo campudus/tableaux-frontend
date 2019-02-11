@@ -1,9 +1,8 @@
 import { branch, compose, renderNothing, withHandlers } from "recompose";
 import React from "react";
-
+import PropTypes from "prop-types";
 import classNames from "classnames";
 import f from "lodash/fp";
-
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { either } from "../../helpers/functools";
 import {
@@ -131,9 +130,11 @@ class Cell extends React.Component {
     return (
       !f.eq(cell.value, nextCell.value) ||
       !f.eq(cell.displayValue, nextCell.displayValue) ||
+      !f.eq(cell.annotations, nextCell.annotations) ||
       this.props.selected !== nextProps.selected ||
       this.props.inSelectedRow !== nextProps.inSelectedRow ||
-      this.props.editing !== nextProps.editing
+      this.props.editing !== nextProps.editing ||
+      this.props.annotationsOpen !== nextProps.annotationsOpen
     );
   };
 
@@ -262,7 +263,8 @@ class Cell extends React.Component {
       selected,
       editing,
       inSelectedRow,
-      focusTable
+      focusTable,
+      toggleAnnotationPopup
     } = this.props;
     const { concat, text, richtext } = ColumnKinds;
     const { column, row, table } = cell;
@@ -331,24 +333,13 @@ class Cell extends React.Component {
           annotationState={getAnnotationState(cell)}
           langtag={langtag}
           annotationsOpen={annotationsOpen}
+          toggleAnnotationPopup={toggleAnnotationPopup}
         />
         <ExpandCorner show={needsTranslationOtherLanguages} cell={cell} />
       </div>
     );
   }
 }
-
-// Cell.propTypes = {
-//   cell: PropTypes.object.isRequired,
-//   langtag: PropTypes.string.isRequired,
-//   selected: PropTypes.bool,
-//   inSelectedRow: PropTypes.bool,
-//   editing: PropTypes.bool,
-//   row: PropTypes.object.isRequired,
-//   table: PropTypes.object.isRequired,
-//   annotationsOpen: PropTypes.bool,
-//   isExpandedCell: PropTypes.bool.isRequired
-// };
 
 const isRepeaterCell = ({ cell, isExpandedCell }) =>
   isExpandedCell &&
@@ -385,3 +376,14 @@ const RepeaterCell = withHandlers({
 //   connectToAmpersand
 // )(Cell);
 export default Cell;
+
+Cell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  selected: PropTypes.bool,
+  inSelectedRow: PropTypes.bool,
+  editing: PropTypes.bool,
+  annotationsOpen: PropTypes.bool,
+  toggleAnnotationPopup: PropTypes.func.isRequired,
+  isExpandedCell: PropTypes.bool.isRequired
+};

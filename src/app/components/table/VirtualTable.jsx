@@ -116,11 +116,12 @@ export default class VirtualTable extends PureComponent {
     // Dispatcher.on(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
   };
 
-  setOpenAnnotations = cellInfo => {
-    if (f.isNil(cellInfo) && !f.isEmpty(this.state.openAnnotations)) {
+  setOpenAnnotations = cell => {
+    console.log("setting open annotation:", cell);
+    if (f.isNil(cell) && !f.isEmpty(this.state.openAnnotations)) {
       this.setState({ openAnnotations: {} });
-    } else if (!f.isNil(cellInfo)) {
-      this.setState({ openAnnotations: cellInfo });
+    } else if (!f.isNil(cell)) {
+      this.setState({ openAnnotations: { cellId: cell.id } });
     }
   };
 
@@ -246,10 +247,10 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderSingleCell = ({ columnIndex, rowIndex }) => {
-    const { actions, table, langtag, columns, tableView } = this.props;
+    const { actions, langtag, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const cell = this.getCell(rowIndex, columnIndex);
-    const { value, annotations } = cell;
+    const { value } = cell;
     const isInSelectedRow = cell.row.id === this.selectedIds.row;
     const isSelected = this.isCellSelected(cell.column.id, cell.row.id);
     const isEditing =
@@ -267,13 +268,13 @@ export default class VirtualTable extends PureComponent {
         focusTable={this.props.test}
         langtag={langtag}
         annotationsOpen={
-          // openAnnotations.cellId && openAnnotations.cellId === cell.id
-          false
+          openAnnotations.cellId && openAnnotations.cellId === cell.id
         }
         isExpandedCell={false}
         selected={isSelected}
         inSelectedRow={isInSelectedRow}
         editing={isEditing}
+        toggleAnnotationPopup={this.setOpenAnnotations}
         openCellContextMenu={this.props.openCellContextMenu}
         closeCellContextMenu={this.props.closeCellContextMenu}
       />
@@ -281,7 +282,7 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderExpandedRowCell = ({ columnIndex, rowIndex, key }) => {
-    const { actions, rows, columns, table, tableView } = this.props;
+    const { actions, rows, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const row = rows[rowIndex];
     const column = this.getVisibleElement(columns, columnIndex);
@@ -315,8 +316,6 @@ export default class VirtualTable extends PureComponent {
               column={column}
               cell={cell}
               langtag={langtag}
-              row={row}
-              table={table}
               annotationsOpen={
                 isPrimaryLang &&
                 openAnnotations.cellId &&
@@ -329,6 +328,7 @@ export default class VirtualTable extends PureComponent {
               displayValue={displayValue}
               allDisplayValues={tableView.displayValues}
               value={cell.value}
+              toggleAnnotationPopup={this.setOpenAnnotations}
               openCellContextMenu={this.props.openCellContextMenu}
               closeCellContextMenu={this.props.closeCellContextMenu}
             />

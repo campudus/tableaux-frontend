@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Langtags } from "../../constants/TableauxConstants";
 import {
   branch,
@@ -8,7 +9,7 @@ import {
   renderNothing
 } from "recompose";
 import f from "lodash/fp";
-// import TextAnnotationButton from "../textannotations/TextAnnotationButton";
+import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
 const knownFlags = [
   "important",
@@ -31,13 +32,14 @@ const AnnotationBubble = compose(
     renderNothing
   ),
   pure
-)(({ isOpen, cell, annotationState }) => (
-  <div>o</div>
-  //   <TextAnnotationButton
-  //     open={isOpen}
-  //     cell={cell}
-  //     annotationState={annotationState}
-  //   />
+)(({ isOpen, cell, annotationState, toggleAnnotationPopup, langtag }) => (
+  <TextAnnotationButton
+    open={isOpen}
+    cell={cell}
+    annotationState={annotationState}
+    togglePopup={toggleAnnotationPopup}
+    langtag={langtag}
+  />
 ));
 
 const FlagIconRenderer = onlyUpdateForKeys([
@@ -50,7 +52,8 @@ const FlagIconRenderer = onlyUpdateForKeys([
     cell,
     cell: { annotations },
     langtag,
-    annotationsOpen
+    annotationsOpen,
+    toggleAnnotationPopup
   } = props;
 
   const hasTextAnnotations = f.any(f.complement(f.isEmpty), [
@@ -72,6 +75,8 @@ const FlagIconRenderer = onlyUpdateForKeys([
         isOpen={annotationsOpen}
         cell={cell}
         annotationState={props.annotationsState}
+        toggleAnnotationPopup={toggleAnnotationPopup}
+        langtag={langtag}
       />
       <FlagDot flag="translation" show={isTranslationNeeded} />
       <FlagDot flag="important" show={annotations.important} />
@@ -94,3 +99,11 @@ const spreadProps = compose(
 );
 
 export default spreadProps(FlagIconRenderer);
+
+FlagIconRenderer.propTypes = {
+  isOpen: PropTypes.bool,
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  annotationState: PropTypes.string.isRequired,
+  toggleAnnotationPopup: PropTypes.func.isRequired
+};
