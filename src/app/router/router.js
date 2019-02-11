@@ -112,16 +112,19 @@ const extendedRouter = Router.extend({
     router.navigate(langtag + "/tables/" + tableId);
   },
 
-  switchFolderHandler: function(payload) {
-    Raven.captureBreadcrumb({ message: "Switch folder", data: payload });
+  switchFolderHandler: function(folderId, langtag) {
+    Raven.captureBreadcrumb({
+      message: "Switch folder",
+      data: { folderId, langtag }
+    });
     Raven.captureMessage("MediaView folder switch", { level: "info" });
-    const langtag = validateLangtag(payload.langtag);
-    if (payload.id) {
-      router.history.navigate(langtag + "/media/" + payload.id, {
+    const validLangtag = validateLangtag(langtag);
+    if (folderId) {
+      router.history.navigate(validLangtag + "/media/" + folderId, {
         trigger: true
       });
     } else {
-      router.history.navigate(langtag + "/media", { trigger: true });
+      router.history.navigate(validLangtag + "/media", { trigger: true });
     }
   },
 
@@ -165,7 +168,9 @@ const extendedRouter = Router.extend({
   },
 
   mediaBrowser: function(langtag, folderid) {
-    // console.log("TableauxRouter.mediaBrowser", langtag, folderid);
+    const { getMediaFolder } = this.actions;
+    getMediaFolder(folderid, langtag);
+
     const validLangtag = validateLangtag(langtag);
     currentLangtag = validLangtag;
     const validFolderId = posOrNil(folderid);

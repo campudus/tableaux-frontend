@@ -11,7 +11,13 @@ import { isLocked } from "../helpers/annotationHelper";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import identifyLinkedRows from "../helpers/linkHelper";
 
-const { getAllTables, getAllColumnsForTable, getAllRowsForTable } = API_ROUTES;
+const {
+  getAllTables,
+  getAllColumnsForTable,
+  getAllRowsForTable,
+  toFolder,
+  toFile
+} = API_ROUTES;
 
 const {
   TABLE_LOADING_DATA,
@@ -46,6 +52,31 @@ const {
   CLOSE_OVERLAY,
   REMOVE_OVERLAY
 } = actionTypes.overlays;
+
+const {
+  MEDIA_FOLDER_GET,
+  MEDIA_FOLDER_GET_SUCCESS,
+  MEDIA_FOLDER_GET_ERROR,
+  MEDIA_FOLDER_CREATE,
+  MEDIA_FOLDER_CREATE_SUCCESS,
+  MEDIA_FOLDER_CREATE_ERROR,
+  MEDIA_FOLDER_EDIT,
+  MEDIA_FOLDER_EDIT_SUCCESS,
+  MEDIA_FOLDER_EDIT_ERROR,
+  MEDIA_FOLDER_DELETE,
+  MEDIA_FOLDER_DELETE_SUCCESS,
+  MEDIA_FOLDER_DELETE_ERROR,
+
+  MEDIA_FILE_GET,
+  MEDIA_FILE_GET_SUCCESS,
+  MEDIA_FILE_GET_ERROR,
+  MEDIA_FILE_EDIT,
+  MEDIA_FILE_EDIT_SUCCESS,
+  MEDIA_FILE_EDIT_ERROR,
+  MEDIA_FILE_DELETE,
+  MEDIA_FILE_DELETE_SUCCESS,
+  MEDIA_FILE_DELETE_ERROR
+} = actionTypes.media;
 
 const dispatchParamsFor = actionType => params => ({
   ...params,
@@ -240,6 +271,103 @@ const toggleCellEditingOrUnlockCell = action => {
     : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
+const getMediaFolder = (folderId, langtag) => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFolder(folderId, langtag),
+      method: "GET"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_GET,
+      MEDIA_FOLDER_GET_SUCCESS,
+      MEDIA_FOLDER_GET_ERROR
+    ]
+  };
+};
+
+const createMediaFolder = data => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFolder(),
+      data: data,
+      method: "POST"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_CREATE,
+      MEDIA_FOLDER_CREATE_SUCCESS,
+      MEDIA_FOLDER_CREATE_ERROR
+    ]
+  };
+};
+
+const editMediaFolder = (folderId, data) => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFolder(folderId),
+      data: data,
+      method: "PUT"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_EDIT,
+      MEDIA_FOLDER_EDIT_SUCCESS,
+      MEDIA_FOLDER_EDIT_ERROR
+    ]
+  };
+};
+
+const deleteMediaFolder = folderId => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFolder(folderId),
+      method: "DELETE"
+    }),
+    actionTypes: [
+      MEDIA_FOLDER_DELETE,
+      MEDIA_FOLDER_DELETE_SUCCESS,
+      MEDIA_FOLDER_DELETE_ERROR
+    ]
+  };
+};
+
+const getMediaFile = fileId => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFile(fileId),
+      method: "GET"
+    }),
+    actionTypes: [MEDIA_FILE_GET, MEDIA_FILE_GET_SUCCESS, MEDIA_FILE_GET_ERROR]
+  };
+};
+
+const editMediaFile = (fileId, data) => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFile(fileId),
+      data: data,
+      method: "PUT"
+    }),
+    actionTypes: [
+      MEDIA_FILE_EDIT,
+      MEDIA_FILE_EDIT_SUCCESS,
+      MEDIA_FILE_EDIT_ERROR
+    ]
+  };
+};
+
+const deleteMediaFile = fileId => {
+  return {
+    promise: makeRequest({
+      apiRoute: toFile(fileId),
+      method: "DELETE"
+    }),
+    actionTypes: [
+      MEDIA_FILE_DELETE,
+      MEDIA_FILE_DELETE_SUCCESS,
+      MEDIA_FILE_DELETE_ERROR
+    ]
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -260,7 +388,14 @@ const actionCreators = {
   closeOverlay,
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
-  applyFiltersAndSorting: applyFiltersAndSorting
+  applyFiltersAndSorting: applyFiltersAndSorting,
+  getMediaFolder: getMediaFolder,
+  createMediaFolder: createMediaFolder,
+  editMediaFolder: editMediaFolder,
+  deleteMediaFolder: deleteMediaFolder,
+  getMediaFile: getMediaFile,
+  editMediaFile: editMediaFile,
+  deleteMediaFile: deleteMediaFile
 };
 
 export default actionCreators;

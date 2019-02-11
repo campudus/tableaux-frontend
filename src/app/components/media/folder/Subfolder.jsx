@@ -1,47 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ActionCreator from "../../../actions/ActionCreator";
 import SubfolderView from "./SubfolderView";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
-import {confirmDeleteFolder, simpleError} from "../../../components/overlay/ConfirmationOverlay";
-import {branch, compose, pure, renderComponent, withHandlers, withState} from "recompose";
+import { confirmDeleteFolder } from "../../../components/overlay/ConfirmationOverlay";
+import {
+  branch,
+  compose,
+  pure,
+  renderComponent,
+  withHandlers,
+  withState
+} from "recompose";
 import f from "lodash/fp";
 
 const withToggleableEditState = compose(
   withState("edit", "updateEditState", f.constant(false)),
   withHandlers({
-    onEdit: ({updateEditState}) => () => updateEditState((editing) => !editing)
+    onEdit: ({ updateEditState }) => () => updateEditState(editing => !editing)
   })
 );
 
 const withButtonHandlers = withHandlers({
-  onSave: (props) => (folderId, folderName, folderDescription, folderParent) => {
-    const {t} = props;
+  onSave: props => (folderId, requestData) => {
     props.onEdit();
-    console.log("Folder.changed", folderId, folderName, folderDescription, folderParent);
-    ActionCreator.changeFolder(
-      folderId, folderName, folderDescription, folderParent,
-      () => simpleError(t("error_folder_exists_already")));
+    props.actions.editMediaFolder(folderId, requestData);
   },
-  onCancel: (props) => props.onEdit,
-  onRemove: (props) => () => {
+  onCancel: props => props.onEdit(),
+  onRemove: props => () => {
     confirmDeleteFolder(
       props.folder.name,
       () => {
-        console.log("Folder.onRemove", props.folder.getId());
-        ActionCreator.removeFolder(props.folder.id);
-        ActionCreator.closeOverlay();
+        props.actions.deleteMediaFolder(props.folder.id);
       },
-      () => {
-        ActionCreator.closeOverlay();
-      }
+      props.actions
     );
   }
 });
 
 const withEditMode = branch(
-  (props) => props.edit,
+  props => props.edit,
   renderComponent(SubfolderEdit)
 );
 
@@ -50,11 +48,9 @@ const ViewComponent = compose(
   withButtonHandlers,
   withEditMode,
   pure
-)(
-  (props) => <SubfolderView {...props} />
-);
+)(props => <SubfolderView {...props} />);
 
-const Subfolder = (props) => {
+const Subfolder = props => {
   return (
     <div className="subfolder">
       <ViewComponent {...props} />
@@ -64,7 +60,8 @@ const Subfolder = (props) => {
 
 Subfolder.propTypes = {
   folder: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 module.exports = compose(

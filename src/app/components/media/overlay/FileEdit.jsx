@@ -1,17 +1,31 @@
+import {
+  branch,
+  compose,
+  lifecycle,
+  renderComponent,
+  withStateHandlers
+} from "recompose";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
-import {branch, compose, lifecycle, renderComponent, withHandlers, withStateHandlers} from "recompose";
+
+import { reduceMediaValuesToAllowedLanguages } from "../../../helpers/accessManagementHelper";
 import MultiFileEdit from "./MultiFileEdit";
 import SingleFileEdit from "./SingleFileEdit";
-import connectToAmpersand from "../../helperComponents/connectToAmpersand";
-import {reduceMediaValuesToAllowedLanguages} from "../../../helpers/accessManagementHelper";
-import ActionCreator from "../../../actions/ActionCreator";
-import Dispatcher from "../../../dispatcher/Dispatcher";
-import {ActionTypes} from "../../../constants/TableauxConstants";
+
+const mapStateToProps = (state, props) => {
+  const file = f.head(
+    f.filter(file => file.uuid === props.fileId)(
+      f.get(["media", "data", "files"], state)
+    )
+  );
+
+  return { file: file };
+};
 
 const enhance = compose(
   withStateHandlers(
-    ({file, langtag}) => ({
+    ({ file, langtag }) => ({
       langtag,
       fileAttributes: {
         title: file.title,
@@ -20,60 +34,76 @@ const enhance = compose(
       }
     }),
     {
-      setFileAttribute: ({fileAttributes}) => (name, langtag, value) => ({
+      setFileAttribute: ({ fileAttributes }) => (name, langtag, value) => ({
         fileAttributes: f.assoc([name, langtag], value, fileAttributes)
       }),
-      resetFileAttributes: () => (fileInfo) => ({
-        fileAttributes: f.pick(["description", "title", "externalName"], fileInfo)
+      resetFileAttributes: () => fileInfo => ({
+        fileAttributes: f.pick(
+          ["description", "title", "externalName"],
+          fileInfo
+        )
       }),
-      onLangChange: () => (langtag) => ({langtag})
+      onLangChange: () => langtag => ({ langtag })
     }
   ),
-  withHandlers({
-    onSave: ({file, onClose, fileAttributes}) => (event) => {
-      if (!f.equals(
-          fileAttributes,
-          f.pick(["title", "description", "externalName"], file))
-      ) {
-        const {title, description, externalName} = fileAttributes;
-        const changeFileParams = reduceMediaValuesToAllowedLanguages([file.uuid, title, description, externalName, file.internalName, file.mimeType, file.folder, file.fileUrl]);
-        ActionCreator.changeFile(...changeFileParams);
-      }
-      onClose(event);
-    }
-  }),
-
   lifecycle({
-    componentWillMount() {
-      Dispatcher.on("on-media-overlay-save", this.props.onSave);
-      Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+    componentDidUpdate(prevProps) {
+      // reset state with props to show new file with its attributes
+      const oldFileCount = f.size(prevProps.file.internalName);
+      const newFileCount = f.size(this.props.file.internalName);
+      const file = this.props.file;
+
+      if (oldFileCount < newFileCount) {
+        this.props.resetFileAttributes(file);
+      }
     },
     componentWillUnmount() {
-      Dispatcher.off("on-media-overlay-save", this.props.onSave);
-      Dispatcher.on(ActionTypes.CHANGED_FILE_DATA, this.props.resetFileAttributes);
+      const { file, fileAttributes, onClose } = this.props;
+      if (
+        !f.equals(
+          fileAttributes,
+          f.pick(["title", "description", "externalName"], file)
+        )
+      ) {
+        const { title, description, externalName } = fileAttributes;
+        const changeFileParams = reduceMediaValuesToAllowedLanguages([
+          file.uuid,
+          title,
+          description,
+          externalName,
+          file.internalName,
+          file.mimeType,
+          file.folder,
+          file.fileUrl
+        ]);
+
+        onClose(changeFileParams);
+      } else {
+        onClose();
+      }
     }
   })
 );
 
 const FileEdit = compose(
   branch(
-    (props) => f.flow(
-      f.get("internalName"),
-      f.keys,
-      f.size,
-      f.gt(f, 1)
-    )(props.file),
+    props =>
+      f.flow(
+        f.get("internalName"),
+        f.keys,
+        f.size,
+        f.gt(f, 1)
+      )(props.file),
     renderComponent(MultiFileEdit)
   )
 )(SingleFileEdit);
 
 FileEdit.propTypes = {
+  fileId: PropTypes.string.isRequired,
   file: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
-export default compose(
-  enhance,
-  connectToAmpersand
-)(FileEdit);
+export default connect(mapStateToProps)(compose(enhance)(FileEdit));

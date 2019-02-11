@@ -1,50 +1,62 @@
 import NewFolderActionView from "./NewFolderActionView.jsx";
 import SubfolderEdit from "./SubfolderEdit";
-import {simpleError} from "../../../components/overlay/ConfirmationOverlay";
 import React from "react";
-import ActionCreator from "../../../actions/ActionCreator";
-import SimpleFolder from "../../../models/media/SimpleFolder";
 import PropTypes from "prop-types";
-import {pure, compose, withHandlers, withState} from "recompose";
+import { pure, compose, withHandlers, withState } from "recompose";
 import f from "lodash/fp";
-import {translate} from "react-i18next";
+import { translate } from "react-i18next";
 
 const withEditMode = compose(
   withState("edit", "updateEdit", false),
   withHandlers({
-    toggleEdit: ({updateEdit}) => () => updateEdit(edit => !edit),
-    onSave: ({t, updateEdit}) => (folderId, folderName, folderDescription, folderParent) => {
+    toggleEdit: ({ updateEdit }) => () => {
+      updateEdit(edit => !edit);
+    },
+    onSave: ({ updateEdit }) => actions => (folderId, data) => {
+      const requestData = {
+        parent: data.parent.id,
+        name: data.name,
+        description: data.description
+      };
+      actions.createMediaFolder(requestData);
       updateEdit(f.always(false));
-      ActionCreator.addFolder(folderName, folderDescription, folderParent,
-        () => simpleError(t("error_folder_exists_already")));
     }
   })
 );
 
-const NewFolderAction = (props) => {
+const NewFolderAction = props => {
   let newFolderAction;
-  const {t, onSave, toggleEdit, edit} = props;
+  const { t, onSave, toggleEdit, edit, parentFolder, actions } = props;
 
   if (edit) {
-    let folder = new SimpleFolder({
+    const folder = {
       name: t("new_folder"),
       description: "",
-      parent: props.parentFolder.getId()
-    });
-    newFolderAction = <SubfolderEdit folder={folder} onSave={onSave} onCancel={toggleEdit} />;
+      parent: parentFolder
+    };
+    newFolderAction = (
+      <SubfolderEdit
+        folder={folder}
+        onSave={onSave(actions)}
+        onCancel={toggleEdit}
+      />
+    );
   } else {
     newFolderAction = <NewFolderActionView callback={toggleEdit} />;
   }
 
   return (
-    <div className="media-switcher new-folder-action">
-      {newFolderAction}
-    </div>
+    <div className="media-switcher new-folder-action">{newFolderAction}</div>
   );
 };
 
 NewFolderAction.propTypes = {
-  parentFolder: PropTypes.object,
+  parentFolder: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  t: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  toggleEdit: PropTypes.func.isRequired,
+  edit: PropTypes.bool.isRequired,
   folder: PropTypes.object
 };
 

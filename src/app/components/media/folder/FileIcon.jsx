@@ -1,21 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {pure} from "recompose";
+import { pure } from "recompose";
 
 function FileIcon(props) {
-  const {internalFileName} = props;
-  const fileExtension = internalFileName ? internalFileName.split(".").pop() : false;
+  const { internalFileName } = props;
+  const fileExtension = internalFileName
+    ? internalFileName.split(".").pop()
+    : false;
   let fileIcon;
   if (fileExtension) {
-    fileIcon = <img src={"/img/filetypes/" + fileExtension + "-icon-128x128.png"} alt={fileExtension}/>;
+    fileIcon = (
+      <img
+        src={"/img/filetypes/" + fileExtension + "-icon-128x128.png"}
+        alt={fileExtension}
+      />
+    );
   } else {
-    fileIcon = <span className="fa-stack empty-icon">
-      <i className="fa fa-file-o fa-stack-2x"></i>
-      <i className="fa fa-plus fa-stack-1x"></i>
-    </span>;
+    fileIcon = (
+      <span className="fa-stack empty-icon">
+        <i className="fa fa-file-o fa-stack-2x" />
+        <i className="fa fa-plus fa-stack-1x" />
+      </span>
+    );
   }
   return <span className="file-icon">{fileIcon}</span>;
-};
+}
 
 FileIcon.propTypes = {
   internalFileName: PropTypes.string

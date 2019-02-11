@@ -1,4 +1,4 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import listensToClickOutside from "react-onclickoutside";
 import ReactDOM from "react-dom";
@@ -6,28 +6,22 @@ import PropTypes from "prop-types";
 
 @listensToClickOutside
 class SubfolderEdit extends PureComponent {
-  static propTypes = {
-    folder: PropTypes.object.isRequired,
-    onSave: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired
-  };
-
-  handleClickOutside = (event) => {
+  handleClickOutside = () => {
     this.onSave();
   };
 
   getKeyboardShortcuts = () => {
-    const {onCancel} = this.props;
+    const { onCancel } = this.props;
     return {
-      escape: (event) => {
+      escape: event => {
         event.preventDefault();
         onCancel();
       },
-      tab: (event) => {
+      tab: event => {
         event.preventDefault();
         this.onSave();
       },
-      enter: (event) => {
+      enter: event => {
         event.preventDefault();
         this.onSave();
       }
@@ -35,32 +29,56 @@ class SubfolderEdit extends PureComponent {
   };
 
   componentDidMount() {
-    var domNode = ReactDOM.findDOMNode(this.refs.nameInput);
+    var domNode = ReactDOM.findDOMNode(this.nameInput);
     domNode.focus();
     domNode.select();
   }
 
   onSave = () => {
-    const currentName = this.refs.nameInput.value.toString().trim();
-    const placeHolderName = this.props.folder.name;
+    const { folder, onSave, onCancel } = this.props;
+    const currentName = this.nameInput.value.toString().trim();
+    const placeHolderName = folder.name;
+
     if (currentName === "" || currentName === placeHolderName) {
-      this.props.onCancel();
+      onCancel();
     } else {
-      this.props.onSave(this.props.folder.id, currentName, this.props.folder.description, this.props.folder.parent);
+      const requestData = {
+        parent: folder.parent,
+        name: currentName,
+        description: folder.description
+      };
+
+      onSave(folder.id, requestData);
     }
   };
 
   render() {
     const placeHolderName = this.props.folder.name;
 
+    const storeRef = element => {
+      this.nameInput = element;
+    };
+
     return (
       <div className="create-new-folder">
-        <i className="icon fa fa-folder-open"></i>
-        <input ref="nameInput" type="text" defaultValue={placeHolderName}
-          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(this.getKeyboardShortcuts)}/>
+        <i className="icon fa fa-folder-open" />
+        <input
+          ref={storeRef}
+          type="text"
+          defaultValue={placeHolderName}
+          onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
+            this.getKeyboardShortcuts
+          )}
+        />
       </div>
     );
   }
 }
+
+SubfolderEdit.propTypes = {
+  folder: PropTypes.object.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired
+};
 
 export default SubfolderEdit;
