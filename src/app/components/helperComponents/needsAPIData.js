@@ -12,10 +12,7 @@ import withAbortableXhrRequests from "./withAbortableXhrRequests";
 export default compose(
   withAbortableXhrRequests,
   withStateHandlers(() => ({ requestedData: undefined }), {
-    setRequestData: (
-      state,
-      { requestUrl, addAbortableXhrRequest }
-    ) => response => ({
+    setRequestData: () => response => ({
       requestedData: f.flow(
         f.get("text"),
         JSON.parse
