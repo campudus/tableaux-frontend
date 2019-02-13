@@ -1,42 +1,30 @@
 import TableauxConstants from "../constants/TableauxConstants";
 import f from "lodash/fp";
-import Request from "superagent";
+import { makeRequest } from "../helpers/apiHelper";
+import apiRoute from "../helpers/apiRoutes";
 
 async function initLangtags() {
-  return new Promise((resolve, reject) => {
-    if (f.isNil(TableauxConstants.Langtags)) {
-      Request.get("/api/system/settings/langtags").end((error, response) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          TableauxConstants.initLangtags(response.body.value);
-          resolve();
-        }
-      });
-    } else {
-      resolve();
-    }
-  });
+  if (f.isNil(TableauxConstants.Langtags)) {
+    const requestData = await makeRequest({
+      apiRoute: "/system/settings/langtags"
+    });
+    TableauxConstants.initLangtags(requestData.value);
+    return requestData.value;
+  } else {
+    return TableauxConstants.Langtags;
+  }
 }
 
 async function getTables() {
-  return new Promise((resolve, reject) => {
-    Request.get("/api/tables").end((error, response) => {
-      if (error) {
-        console.error(error);
-        reject(error);
-      } else {
-        const allTables = response.body.tables;
-        resolve(allTables);
-      }
-    });
+  const requestData = await makeRequest({
+    apiRoute: apiRoute.getAllTables()
   });
+  return requestData.tables;
 }
 
 async function validateLangtag(langtag) {
-  await initLangtags();
-  return f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags)
+  const allLangtags = await initLangtags();
+  return f.isNil(langtag) || !f.contains(langtag, allLangtags)
     ? TableauxConstants.DefaultLangtag
     : langtag;
 }
