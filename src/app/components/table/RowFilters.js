@@ -1,11 +1,13 @@
+import f from "lodash/fp";
+
 import {
   ColumnKinds,
   FilterModes,
   SortValues
 } from "../../constants/TableauxConstants";
-import searchFunctions from "../../helpers/searchFunctions";
-import f from "lodash/fp";
 import { doto, either, withTryCatch } from "../../helpers/functools";
+import searchFunctions from "../../helpers/searchFunctions";
+import store from "../../redux/store";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -37,7 +39,6 @@ const FlagSearches = [
 ];
 
 const rememberColumnIds = colSet => f.tap(val => colSet.add(val.colId));
-const mapIndexed = f.map.convert({ cap: false });
 
 const getFilteredRows = (
   currentTable,
@@ -46,9 +47,8 @@ const getFilteredRows = (
   langtag,
   filterSettings
 ) => {
-  const rowsWithIndex = mapIndexed((row, index) => {
-    return { ...row, rowIndex: index };
-  }, rows);
+  const rowsWithIndex = completeRowInformation(columns, currentTable, rows);
+  console.log(rowsWithIndex);
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
@@ -61,7 +61,10 @@ const getFilteredRows = (
   );
   const filteredRows = f.filter(combinedFilter, rowsWithIndex);
   const { sortColumnId, sortValue } = filterSettings;
-  const columnIndex = f.findIndex(column => column.id == sortColumnId, columns);
+  const columnIndex = f.findIndex(
+    column => column.id === sortColumnId,
+    columns
+  );
   const sortColumn = columns[columnIndex];
   const compareFuncs = {
     [ColumnKinds.numeric]: f.compose(
@@ -120,6 +123,42 @@ const getFilteredRows = (
     visibleRows: f.map("rowIndex", ordered),
     colsWithMatches: f.toArray(closures.colsWithMatches)
   };
+};
+
+const completeRowInformation = (columns, table, rows) => {
+  const state = store.getState();
+  const tableDisplayValues = f.prop(
+    ["tableView", "displayValues", table.id],
+    state
+  );
+
+  // generate and reuse one getter per table
+  const getLinkDisplayValue = f.memoize(tableId =>
+    // memoize every link during this filter
+    f.memoize(linkId => {
+      const dv = doto(
+        state,
+        f.prop(["tableView", "displayValues", tableId]),
+        f.find(f.propEq("id", linkId)),
+        f.prop(["values", 0])
+      );
+      return dv;
+    })
+  );
+
+  return rows.map(({ id, cells, values }, rowIndex) => ({
+    rowIndex,
+    id,
+    values: cells.map((cell, colIndex) => ({
+      ...cell,
+      displayValue:
+        cell.kind === ColumnKinds.link
+          ? values[colIndex].map(link =>
+              getLinkDisplayValue(columns[colIndex].toTable)(link.id)
+            )
+          : tableDisplayValues[rowIndex].values[colIndex]
+    }))
+  }));
 };
 
 const mkFilterFn = closures => settings => {
@@ -198,11 +237,11 @@ const mkTranslatorFilter = closures => () => row => {
   )(row);
 };
 
-const mkFinalFilter = closures => ({ value }) => {
+const mkFinalFilter = () => ({ value }) => {
   return f.matchesProperty("final", value);
 };
 
-const mkIDFilter = closures => ({ value }) => {
+const mkIDFilter = () => ({ value }) => {
   return f.flow(
     f.get("id"),
     id => f.contains(id, value)

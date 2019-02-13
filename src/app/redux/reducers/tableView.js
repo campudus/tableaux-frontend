@@ -6,9 +6,7 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
-import { extractAnnotations } from "../../helpers/annotationHelper";
 import getFilteredRows from "../../components/table/RowFilters";
-import { combineDisplayValuesWithLinks } from "../../helpers/linkHelper";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
 const {
@@ -17,7 +15,6 @@ const {
   SET_COLUMNS_VISIBLE,
   SET_CURRENT_TABLE,
   COLUMNS_DATA_LOADED,
-  DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
@@ -25,8 +22,7 @@ const {
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
-  ALL_ROWS_DATA_LOADED,
-  APPLY_FILTERS_AND_SORTING
+  ALL_ROWS_DATA_LOADED
 } = ActionTypes;
 
 const initialState = {
@@ -177,18 +173,6 @@ export default (state = initialState, action, completeState) => {
       return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
     case SET_COLUMNS_VISIBLE:
       return { ...state, visibleColumns: action.columnIds };
-    case APPLY_FILTERS_AND_SORTING:
-      const { colsWithMatches, visibleRows } = updateVisibleColumns(
-        state,
-        completeState,
-        action
-      );
-      return {
-        ...state,
-        visibleColumns: colsWithMatches,
-        visibleRows: visibleRows
-      };
-
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:
@@ -243,6 +227,7 @@ const updateVisibleColumns = (state, completeState, action) => {
     sortValue: sorting.value,
     filters: f.reject(isFilterEmpty, filters)
   };
+  console.log("preparedRows:", preparedRows);
   const { colsWithMatches, visibleRows } = getFilteredRows(
     table,
     preparedRows,

@@ -7,13 +7,7 @@ import { either } from "../../../helpers/functools";
 import * as f from "lodash/fp";
 import PropTypes from "prop-types";
 
-class FilterButton extends React.Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    table: PropTypes.object.isRequired,
-    currentFilter: PropTypes.object
-  };
-
+class FilterButton extends React.PureComponent {
   state = {
     open: false,
     filterMode: either(this.props.currentFilter)
@@ -28,7 +22,7 @@ class FilterButton extends React.Component {
     };
   }
 
-  handleClickedOutside = event => {
+  handleClickedOutside = () => {
     this.setState({ open: false });
   };
 
@@ -38,9 +32,7 @@ class FilterButton extends React.Component {
       columns,
       langtag,
       filterActions,
-      filters,
-      sorting,
-      preparedRows
+      setRowFilter
     } = this.props;
     if (this.state.open) {
       return (
@@ -50,9 +42,7 @@ class FilterButton extends React.Component {
           columns={columns}
           currentFilter={currentFilter}
           filterActions={filterActions}
-          filters={filters}
-          sorting={sorting}
-          preparedRows={preparedRows}
+          setRowFilter={setRowFilter}
         />
       );
     } else {
@@ -96,3 +86,11 @@ class FilterButton extends React.Component {
 }
 
 export default translate(["filter"])(FilterButton);
+
+FilterButton.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  columns: PropTypes.array, // required to open popup, but nil if not loaded yet
+  table: PropTypes.object.isRequired,
+  currentFilter: PropTypes.object,
+  setRowFilter: PropTypes.func.isRequired
+};

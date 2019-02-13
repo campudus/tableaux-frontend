@@ -10,10 +10,18 @@
  * applying the requested projection to the displayed rows and columns.
  */
 
-import { compose, mapProps, withStateHandlers } from "recompose";
-import { either } from "../../helpers/functools";
+import {
+  compose,
+  mapProps,
+  withPropsOnChange,
+  withStateHandlers
+} from "recompose";
+
 import f from "lodash/fp";
+
 import { FilterModes, Langtags } from "../../constants/TableauxConstants";
+import { either } from "../../helpers/functools";
+import getFilteredRows from "../table/RowFilters";
 
 const getStoredViewObject = (tableId = null, name = "default") => {
   if (tableId) {
@@ -149,13 +157,40 @@ const updateColumnVisibility = (
   return f.assoc(["projection", "columns"], visibility, state);
 };
 
+const tableOrFiltersChanged = (props, nextProps) => {
+  const { currentTableId } = props;
+  const displayValuesOf = f.prop(["allDisplayValues", currentTableId]);
+  (f.isNil(props.rows) && !f.isNil(nextProps.rows)) || // rows got initialized
+  (f.isEmpty(displayValuesOf(props)) &&
+    !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
+    !f.equals(props.projection.rows, nextProps.projection.rows); // filter changed
+};
+
+const filterRows = props => {
+  const { projection, rows, table, langtag, columns, allDisplayValues } = props;
+  console.log("filterRows()", props);
+  if (f.isNil(rows) || f.isEmpty(allDisplayValues)) {
+    return {};
+  }
+  const unfilteredRows = rows.map(f.identity);
+  const filteredRows = getFilteredRows(
+    table,
+    unfilteredRows,
+    columns,
+    langtag,
+    projection.rows
+  );
+
+  return filteredRows;
+};
+
 const withPredefinedProjection = compose(
   // make sure we parse all options and trigger a re-render on table switch
   mapProps(loadProjection),
   mapProps(parseUrlFilterProp),
   // add function props to modify session's projection on user input
   withStateHandlers(({ projection = {} }) => ({ projection }), {
-    setFilter: (state, { table: { id } }) => (filter, shouldSave = true) =>
+    setRowFilter: (state, { table: { id } }) => (filter, shouldSave = true) =>
       updateFilter(id, state, filter, shouldSave),
     setColumnVisibility: (state, { table: { id } }) => (
       info,
@@ -163,7 +198,8 @@ const withPredefinedProjection = compose(
     ) => updateColumnVisibility(id, state, info, shouldSave),
     resetStoredProjection: (_, { projection }) =>
       f.assoc("projection", projection)
-  })
+  }),
+  withPropsOnChange(tableOrFiltersChanged, filterRows)
 );
 
 export default withPredefinedProjection;

@@ -354,22 +354,30 @@ export default class VirtualTable extends PureComponent {
   };
 
   getCell = (rowIndex, columnIndex) => {
-    const { rows } = this.props;
-    const values = rows[rowIndex].values;
-    const cells = rows[rowIndex].cells;
-    const value = this.getVisibleElement(values, columnIndex).value;
-    const cell = this.getVisibleElement(cells, columnIndex);
-    return {
-      ...cell,
-      value,
-      row: rows[rowIndex],
-      displayValue: this.getDisplayValueWithFallback(
-        rowIndex,
-        columnIndex,
-        cell.column,
-        value
-      )
-    };
+    try {
+      const { rows } = this.props;
+      const values = rows[rowIndex].values;
+      const cells = rows[rowIndex].cells;
+      const value = this.getVisibleElement(values, columnIndex);
+      const cell = this.getVisibleElement(cells, columnIndex);
+      return {
+        ...cell,
+        value,
+        row: rows[rowIndex],
+        displayValue: this.getDisplayValueWithFallback(
+          rowIndex,
+          columnIndex,
+          cell.column,
+          value
+        )
+      };
+    } catch (err) {
+      console.error(
+        `Could not get cell ${rowIndex}, ${columnIndex}`,
+        this.props.rows[rowIndex],
+        err
+      );
+    }
   };
 
   getDisplayValueWithFallback = (rowIndex, columnIndex, column, value) =>

@@ -167,7 +167,6 @@ class Table extends Component {
       table,
       langtag,
       tableView,
-      displayValues,
       visibleColumns
     } = this.props;
     const {
@@ -187,7 +186,6 @@ class Table extends Component {
     return (
       <section
         id="table-wrapper"
-        ref="tableWrapper"
         tabIndex="-1"
         onKeyDown={
           () =>

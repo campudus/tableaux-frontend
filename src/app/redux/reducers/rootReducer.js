@@ -3,7 +3,6 @@ import columns from "./columns";
 import rows from "./rows";
 import tableView from "./tableView";
 import overlays from "./overlays";
-import filtersAndSorting from "./filtersAndSorting";
 import media from "./media";
 import { omniscentReducer } from "./omniscentReducer";
 
@@ -14,7 +13,6 @@ const rootReducer = omniscentReducer({
   rows,
   tableView,
   overlays,
-  filtersAndSorting,
   media
 });
 

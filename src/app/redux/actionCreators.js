@@ -17,7 +17,6 @@ import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
-import identifyLinkedRows from "../helpers/linkHelper";
 
 const {
   getAllTables,
@@ -41,15 +40,11 @@ const {
   ADDITIONAL_ROWS_DATA_LOADED,
   SET_COLUMNS_VISIBLE,
   HIDE_ALL_COLUMNS,
-  SET_FILTERS,
-  SET_SORTING,
   SET_CURRENT_TABLE,
-  DELETE_FILTERS,
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
-  SET_DISPLAY_VALUE_WORKER,
-  APPLY_FILTERS_AND_SORTING
+  SET_DISPLAY_VALUE_WORKER
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -149,25 +144,11 @@ const hideAllColumns = tableId => {
   };
 };
 
-const applyFiltersAndSorting = (filters, sorting, preparedRows, langtag) => {
-  return {
-    type: APPLY_FILTERS_AND_SORTING,
-    filters,
-    sorting,
-    preparedRows,
-    langtag
-  };
-};
-
 const setCurrentTable = tableId => {
   return {
     type: SET_CURRENT_TABLE,
     tableId
   };
-};
-
-const deleteFilters = () => {
-  return { type: DELETE_FILTERS };
 };
 
 const generateDisplayValues = (rows, columns, tableId) => (
@@ -399,7 +380,6 @@ const actionCreators = {
   closeOverlay,
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
-  applyFiltersAndSorting: applyFiltersAndSorting,
   getMediaFolder: getMediaFolder,
   createMediaFolder: createMediaFolder,
   editMediaFolder: editMediaFolder,

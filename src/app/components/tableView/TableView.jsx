@@ -13,7 +13,6 @@ import PageTitle from "../header/PageTitle.jsx";
 import Spinner from "../header/Spinner.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import ColumnFilter from "../header/ColumnFilter";
-import getFilteredRows from "../table/RowFilters";
 import i18n from "i18next";
 import TableauxRouter from "../../router/router";
 import pasteCellValue from "../cells/cellCopyHelper";
@@ -56,12 +55,13 @@ const mapStatetoProps = (state, props) => {
     visibleColumns,
     startedGeneratingDisplayValues,
     displayValues: f.defaultTo([], f.prop(tableId, allDisplayValues)),
+    allDisplayValues,
     tableView
   };
 };
 
-@applyFiltersAndVisibility
 @withCustomProjection
+@applyFiltersAndVisibility
 // @canFocusCell
 class TableView extends PureComponent {
   constructor(props) {
@@ -157,28 +157,7 @@ class TableView extends PureComponent {
     // this.fetchTable(this.props.table.id);
   };
 
-  componentWillReceiveProps = nextProps => {
-    if (this.props.table === nextProps.table) {
-      // Table ID did not change, check independently for changes of row- and column projection
-
-      if (!f.equals(this.props.projection.rows, nextProps.projection.rows)) {
-        this.applyFilters(nextProps.projection);
-      }
-
-      if (
-        !f.equals(this.props.projection.columns, nextProps.projection.columns)
-      ) {
-        this.applyColumnVisibility(nextProps.projection);
-      }
-    }
-  };
-
   // Set visibility of all columns in <coll> to <val>
-
-  applyProjection = (projection = this.props.projection) => {
-    this.applyFilters(projection);
-    this.applyColumnVisibility(projection);
-  };
 
   setDocumentTitleToTableName = () => {
     const { table = {}, langtag } = this.props;
@@ -256,8 +235,8 @@ class TableView extends PureComponent {
       tableId,
       navigate,
       actions,
-      preparedRows,
-      allDisplayValues
+      allDisplayValues,
+      rows
     } = this.props;
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
@@ -297,7 +276,7 @@ class TableView extends PureComponent {
             table={table}
             columns={columns}
             currentFilter={this.props.projection.rows}
-            preparedRows={preparedRows}
+            setRowFilter={this.props.setRowFilter}
           />
           {table && columns && columns.length > 1 ? (
             <ColumnFilter
