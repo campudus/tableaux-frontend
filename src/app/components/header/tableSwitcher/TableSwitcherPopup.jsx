@@ -15,15 +15,6 @@ import PropTypes from "prop-types";
 @translate(["header"])
 @listensToClickOutside
 class SwitcherPopup extends React.PureComponent {
-  static propTypes = {
-    onClickedOutside: PropTypes.func.isRequired,
-    langtag: PropTypes.string.isRequired,
-    tables: PropTypes.object.isRequired,
-    groups: PropTypes.array.isRequired,
-    currentTable: PropTypes.object.isRequired,
-    currentGroupId: PropTypes.number
-  };
-
   constructor(props) {
     super(props);
 
@@ -53,7 +44,7 @@ class SwitcherPopup extends React.PureComponent {
     filterInput.focus();
   };
 
-  componentDidUpdate = (prevProps, prevState) => {
+  componentDidUpdate = () => {
     this.componentDidMount();
   };
 
@@ -104,6 +95,7 @@ class SwitcherPopup extends React.PureComponent {
     this.setState({
       focusTableId: table.id
     });
+    this.handleClickOutside(null);
   };
 
   filterInputChange = event => {
@@ -158,10 +150,10 @@ class SwitcherPopup extends React.PureComponent {
     });
   };
 
-  getKeyboardShortcutsFilterTable = event => {
+  getKeyboardShortcutsFilterTable = () => {
     return {
       // enter on input
-      enter: event => {
+      enter: () => {
         const filteredTables = this.getFilteredTables(
           this.state.filterGroupId,
           this.state.filterTableName
@@ -174,7 +166,7 @@ class SwitcherPopup extends React.PureComponent {
         }
       },
       // clear input
-      escape: event => {
+      escape: () => {
         this.setState({
           filterTableName: "",
           focusTableId: this.props.currentTable.id
@@ -277,7 +269,7 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   renderTables = (groups, tables) => {
-    const { t, langtag, currentTable, navigate } = this.props;
+    const { t, langtag } = this.props;
     const groupId = this.state.filterGroupId;
     const { focusTableId } = this.state;
     const queryStr = this.state.filterTableName;
@@ -308,7 +300,7 @@ class SwitcherPopup extends React.PureComponent {
           ref={`table${tableId}`}
         >
           <div onClick={this.onClickTable(table)}>{displayName}</div>
-          <a target="_blank" rel="noopener" href={newUrl}>
+          <a target="_blank" rel="noopener noreferrer" href={newUrl}>
             <i className="fa fa-external-link" />
           </a>
         </li>
@@ -367,7 +359,7 @@ class SwitcherPopup extends React.PureComponent {
                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
                   this.getKeyboardShortcutsFilterTable
                 )}
-                autoFocus="true"
+                autoFocus={true}
               />
               <i className="fa fa-search" />
             </div>
@@ -404,5 +396,14 @@ class SwitcherPopup extends React.PureComponent {
     );
   }
 }
+
+SwitcherPopup.propTypes = {
+  onClickedOutside: PropTypes.func.isRequired,
+  langtag: PropTypes.string.isRequired,
+  tables: PropTypes.array.isRequired,
+  groups: PropTypes.array.isRequired,
+  currentTable: PropTypes.object.isRequired,
+  currentGroupId: PropTypes.number
+};
 
 export default SwitcherPopup;
