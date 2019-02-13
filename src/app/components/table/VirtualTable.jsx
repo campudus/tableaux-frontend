@@ -117,7 +117,6 @@ export default class VirtualTable extends PureComponent {
   };
 
   setOpenAnnotations = cell => {
-    console.log("setting open annotation:", cell);
     if (f.isNil(cell) && !f.isEmpty(this.state.openAnnotations)) {
       this.setState({ openAnnotations: {} });
     } else if (!f.isNil(cell)) {

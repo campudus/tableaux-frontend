@@ -1,151 +1,34 @@
-import request from "superagent";
-import f from "lodash/fp";
-import apiUrl from "./apiUrl";
-// import Cell from "../models/Cell";
-// import Row from "../models/Row";
-import { doto, maybe } from "./functools";
-import { specAny, specObject, withSpecs } from "../specs/Spec";
-import i18n from "i18next";
-import { showDialog } from "../components/overlay/GenericOverlay";
 import Raven from "raven-js";
+import i18n from "i18next";
 
-const validAnnotation = specObject({
-  uuid: [f.isString, f.every(f.contains(f, "0123456789-abcdef"))],
-  type: {
-    optional: true,
-    fn: f.isString
-  },
-  value: {
-    optional: true,
-    fn: specAny
-  }
-});
+import f from "lodash/fp";
 
-const annotationError = withSpecs({ pre: [f.isString, f.isObject] })(
-  function annotationError(heading, error) {
-    const { message } = error;
-    console.error(heading, "\n->", message);
-    Raven.captureException(error);
-    showDialog({
-      type: "warning",
-      context: i18n.t("common:error"),
-      title: i18n.t("table:error_occured_hl"),
-      heading,
-      message,
-      actions: { neutral: [i18n.t("common:ok"), null] }
-    });
-  }
-);
+import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
+import {
+  isFlagAnnotation,
+  isMultilangAnnotation,
+  isTextAnnotation
+} from "../redux/actions/annoation-specs";
+import { isText } from "./KeyboardShortcutsHelper";
+import { maybe, unless } from './functools';
+import { showDialog } from "../components/overlay/GenericOverlay";
+import actions from "../redux/actionCreators";
+import apiUrl from "./apiUrl";
+import store from "../redux/store";
 
-const extractAnnotations = obj => {
-  const kvPairs = (obj || []).map(
-    f.cond([
-      [f.isNil, f.noop],
-      [
-        ({ type, value }) => type === "flag" && value === "needs_translation",
-        ({ langtags, uuid }) => ["translationNeeded", { langtags, uuid }]
-      ],
-      [
-        ({ type }) => type === "flag",
-        ({ value, uuid }) => ["flag", [value, uuid]]
-      ],
-      [
-        f.stubTrue,
-        ({ type, value, uuid, createdAt }) => [
-          type,
-          { type, value, uuid, createdAt }
-        ]
-      ]
-    ])
-  );
-
-  return kvPairs.filter(f.identity).reduce((result, [type, value]) => {
-    if (type === "translationNeeded") {
-      result[type] = value;
-    } else if (type === "flag") {
-      const [flag, uuid] = value;
-      result[flag] = uuid;
-    } else {
-      if (!result[type]) {
-        result[type] = [value];
-      } else {
-        result[type].push(value);
-      }
-    }
-    return result;
-  }, {});
-};
-
-const cellAnnotationUrl = cell => {
-  const { tableId } = cell;
-  const rowId = cell.row.id;
-  const colId = cell.column.id;
-  return apiUrl(
-    `/tables/${tableId}/columns/${colId}/rows/${rowId}/annotations`
-  );
-};
-
-const cellRowUrl = cell => {
-  const { tableId } = cell;
-  const rowId = cell.row.id;
-  return apiUrl(`/tables/${tableId}/rows/${rowId}`);
-};
-
-const refreshAnnotations = item => {
-  const isInstanceOf = type => el => {
-    return el instanceof type;
-  };
-  // eslint-disable-next-line lodash-fp/no-unused-result
-  // f.cond([
-  //   [isInstanceOf(Cell), refreshCellAnnotations],
-  //   [isInstanceOf(Row), refreshRowAnnotations]
-  // ])(item);
-};
-
-// Refresh annotations without reloading the table; making Ampersand refresh rows will break the react elements
-const refreshCellAnnotations = cell => {
-  request.get(cellRowUrl(cell)).end((error, response) => {
-    if (error) {
-      annotationError("Could not refresh cell " + cell.id, error);
-    } else {
-      const cellIdx = f.findIndex(f.equals(cell), cell.row.cells.models);
-      const cellAnnotations = f.flow(
-        f.prop("text"),
-        JSON.parse,
-        f.prop("annotations"),
-        f.nth(cellIdx),
-        extractAnnotations
-      )(response);
-      const updatedAnnotations = f.merge(
-        f.mapValues(f.stubFalse, cell.annotations), // clear old annotations, as empty ones only get ignored
-        cellAnnotations
-      );
-      cell.set({ annotations: updatedAnnotations });
-      refreshRowAnnotations(cell.row);
-    }
+function annotationError(heading, error) {
+  const { message } = error;
+  console.error(heading, "\n->", message);
+  Raven.captureException(error);
+  showDialog({
+    type: "warning",
+    context: i18n.t("common:error"),
+    title: i18n.t("table:error_occured_hl"),
+    heading,
+    message,
+    actions: { neutral: [i18n.t("common:ok"), null] }
   });
-};
-
-const refreshRowAnnotations = row => {
-  request
-    .get(apiUrl(`/tables/${row.tableId}/rows/${row.id}`))
-    .end((error, response) => {
-      if (error) {
-        annotationError(`Could not refresh row ${row.id}`, error);
-      } else {
-        const rowAnnotations = f.flow(
-          f.get("text"),
-          JSON.parse,
-          f.get("annotations")
-        )(response);
-        row.set({ annotations: rowAnnotations });
-      }
-    });
-};
-
-const isFlag = ann => f.matchesProperty("type", "flag")(ann);
-const isText = ann =>
-  f.contains(f.prop("type", ann), ["info", "warning", "error"]);
+}
 
 const getAnnotation = (annotation, cell) => {
   const cellAnnotations = cell.annotations;
@@ -159,198 +42,45 @@ const getAnnotation = (annotation, cell) => {
 };
 
 const setCellAnnotation = (annotation, cell) => {
-  const r = request.post(cellAnnotationUrl(cell)).send(annotation);
-  if (getAnnotation(annotation, cell)) {
-    deleteCellAnnotation(annotation, cell).then(
-      r.end((error, result) => {
-        if (error) {
-          annotationError("Error setting annotation", error);
-        }
-      })
-    );
-  } else {
-    r.end((error, result) => {
-      if (error) {
-        annotationError("Error setting annotation", error);
-      } else {
-        refreshAnnotations(cell);
-      }
-    });
-  }
+  f.flow(
+    f.con([
+      [isTextAnnotation, f.identity],
+      [isFlagAnnotation, f.identity],
+      [isMultilangAnnotation, f.identity],
+      [f.stubTrue, f.noop]
+    ])
+  )(annotation);
 };
 
-const addTranslationNeeded = (langtags, cell) => {
-  if (!f.isArray(langtags)) {
-    console.warn("addTranslationNeeded: array expected, got", langtags);
-  }
-  const oldCellAnnotations = f.prop("annotations", cell) || {};
-  const finishTransaction = f.isEmpty(
-    f.prop("translationNeeded", oldCellAnnotations)
-  )
-    ? response => {
-        const [uuid, langtags] = doto(
-          response,
-          f.get("text"),
-          JSON.parse,
-          f.props(["uuid", "langtags"])
-        );
-        const newTranslationStatus = doto(
-          f.get("annotations", cell),
-          f.assoc(["translationNeeded", "uuid"], uuid),
-          f.assoc(["translationNeeded", "langtags"], langtags)
-        );
-        cell.set({ annotations: newTranslationStatus });
-      }
-    : f.noop;
-  cell.set({
-    annotations: f.assoc(
-      ["translationNeeded", "langtags"],
-      f.uniq(
-        f.union(
-          f.prop(["translationNeeded", "langtags"], oldCellAnnotations),
-          langtags
-        )
-      ),
-      f.isBoolean(oldCellAnnotations.translationNeeded)
-        ? f.assoc(["translationNeeded"], {}, oldCellAnnotations)
-        : oldCellAnnotations
-    )
-  });
-  request
-    .post(cellAnnotationUrl(cell))
-    .send({
-      type: "flag",
-      value: "needs_translation",
-      langtags
+const addTranslationNeeded = (langtag, cell) => {
+  const langtags = unless(f.isArray, lt => [lt], langtag);
+  store.dispatch(
+    actions.addAnnotationLangtags({
+      annotation: {
+        type: "flag",
+        value: "needs_translation",
+        langtags
+      },
+      cell
     })
-    .end((error, response) => {
-      if (error) {
-        cell.set({ annotations: oldCellAnnotations }); // rollback on error
-        annotationError(`Error setting langtag ${langtags}`, error);
-      } else {
-        finishTransaction(response);
-        refreshRowTranslations(JSON.parse(f.prop("text", response)), cell);
-      }
-    });
-};
-
-const refreshRowTranslations = (xhrResponseBody, cell) => {
-  const row = cell.row;
-  const cellIdx = f.findIndex(
-    f.matchesProperty("id", cell.id),
-    row.cells.models
   );
-  const rowAnnotations = f.prop("annotations", row);
-  const cellAnnotations = f.nth(cellIdx)(rowAnnotations);
-  const translationIdx = Math.max(
-    f.findIndex(
-      f.matchesProperty("value", "needsTranslation"),
-      cellAnnotations
-    ),
-    0
-  );
-  const newAnnotations = f.assocPath(
-    [cellIdx, translationIdx],
-    xhrResponseBody,
-    rowAnnotations || []
-  );
-  row.set({ annotations: newAnnotations });
 };
 
 const removeTranslationNeeded = (langtag, cell) => {
-  const oldCellAnnotations = f.prop("annotations", cell) || {};
-  const remainingLangtags = f.remove(
-    f.eq(langtag),
-    f.prop(["translationNeeded", "langtags"], oldCellAnnotations)
+  const langtags = unless(f.isArray, lt => [lt], langtag);
+  store.dispatch(
+    actions.removeAnnotationLangtags({
+      annotation: {
+        type: "flag",
+        value: "needs_translation",
+        langtags
+      },
+      cell
+    })
   );
-  const uuid = f.prop(["translationNeeded", "uuid"], oldCellAnnotations);
-  cell.set({
-    annotations: f.assoc(
-      ["translationNeeded", "langtags"],
-      remainingLangtags,
-      oldCellAnnotations
-    )
-  });
-  refreshRowTranslations(
-    {
-      uuid,
-      langtags: remainingLangtags
-    },
-    cell
-  );
-  request
-    .delete(`${cellAnnotationUrl(cell)}/${uuid}/${langtag}`)
-    .end((error, response) => {
-      if (error) {
-        annotationError(`Could not remove langtag ${langtag}`, error);
-        cell.set({ annotations: oldCellAnnotations });
-      }
-    });
 };
 
-const deleteCellAnnotation = withSpecs({
-  pre: [
-    validAnnotation,
-    f.isObject,
-    {
-      optional: true,
-      fn: f.complement(f.isNil)
-    }
-  ]
-})(function deleteCellAnnotation(annotation, cell, fireAndForget) {
-  const { uuid, type, value } = annotation;
-  const r = request.delete(`${cellAnnotationUrl(cell)}/${uuid}`);
-  const { row } = cell;
-  const cellIdx = f.findIndex(
-    f.matchesProperty("id", cell.id),
-    row.cells.models
-  );
-  const cellAnnotations = f.prop(["annotations", cellIdx]);
-  const newRowAnnotations = f.assocPath(
-    [cellIdx],
-    f.remove(f.matchesProperty("uuid", uuid)(cellAnnotations)),
-    f.prop("annotations", row)
-  );
-  row.set({ annotations: newRowAnnotations });
-
-  const annotationKeys = f.flow(
-    f.keys,
-    f.reject(f.eq("translationNeeded"))
-  )(cell.annotations);
-  const newCellAnnotations = (() => {
-    if (
-      annotation.value === "translationNeeded" &&
-      annotation.type === "flag"
-    ) {
-      return f.dissoc("translationNeeded", cell.annotations);
-    } else if (annotation.type === "flag") {
-      return f.dissoc(annotation.value, cell.annotations);
-    } else {
-      return f.reduce(
-        (obj, ann) =>
-          f.update(
-            ann,
-            f.reject(f.matchesProperty("uuid", annotation.uuid)),
-            obj
-          ),
-        cell.annotations,
-        annotationKeys
-      );
-    }
-  })();
-
-  if (fireAndForget) {
-    r.end((error, result) => {
-      if (error) {
-        annotationError(`Error deleting ${type} annotation ${value}:`, error);
-      } else {
-        cell.set({ annotations: newCellAnnotations });
-      }
-    });
-  } else {
-    return r;
-  }
-});
+function deleteCellAnnotation(annotation, cell) {}
 
 const getRowAnnotationPath = target => {
   const getSingleRowPath = row => {

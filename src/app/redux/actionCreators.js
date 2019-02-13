@@ -2,10 +2,11 @@ import f from "lodash/fp";
 
 import { Langtags } from "../constants/TableauxConstants";
 import {
-  addAnnotationLangtag,
-  removeAnnotationLangtag,
-  setCommentAnnotation,
-  setFlagAnnotation
+  addAnnotationLangtags,
+  addTextAnnotation,
+  removeAnnotationLangtags,
+  removeTextAnnotation,
+  toggleAnnotationFlag
 } from "./actions/annotationActions";
 import { changeCellValue } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
@@ -387,10 +388,11 @@ const actionCreators = {
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   changeCellValue,
-  addAnnotationLangtag,
-  removeAnnotationLangtag,
-  setFlagAnnotation,
-  setCommentAnnotation,
+  addAnnotationLangtags,
+  removeAnnotationLangtags,
+  addTextAnnotation,
+  removeTextAnnotation,
+  toggleAnnotationFlag,
   showToast,
   hideToast,
   openOverlay,

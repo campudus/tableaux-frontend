@@ -12,7 +12,10 @@ const {
   ADDITIONAL_ROWS_DATA_LOADED,
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
-  CELL_SAVED_SUCCESSFULLY
+  CELL_SAVED_SUCCESSFULLY,
+  SET_CELL_ANNOTATION,
+  REMOVE_CELL_ANNOTATION,
+  ANNOTATION_ERROR
 } = actionTypes;
 
 const initialState = {};
@@ -46,16 +49,20 @@ const insertSkeletonRows = (state, action, completeState) => {
 const annotationsToObject = annotations => {
   const annObj =
     annotations &&
-    annotations.reduce((obj, { type, value, langtags, uuid }) => {
+    annotations.reduce((obj, { type, value, langtags, uuid, createdAt }) => {
       if (type === "flag") {
         const key = when(
           f.eq("needs_translation"),
           () => "translationNeeded",
           value
         );
-        obj[key] = { uuid, ...(langtags ? { langtags } : { value: true }) };
+        obj[key] = {
+          createdAt,
+          uuid,
+          ...(langtags ? { langtags } : { value: true })
+        };
       } else {
-        const _value = { value, uuid };
+        const _value = { value, uuid, createdAt };
         obj[type] = f.isEmpty(obj[type]) ? [_value] : [...obj[type], _value];
       }
       return obj;
@@ -88,6 +95,54 @@ const rowValuesToCells = (table, columns) => rows => {
     `rowValuesToCells(${table.id}) took ${performance.now() - start}ms`
   );
   return rowsWithCells;
+};
+
+const updateCellAnnotation = (state, action, completeState) => {
+  const { cell, rowIdx, newCellAnnotations } = action;
+  const columns = completeState.columns[cell.table.id].data;
+  const row = completeState.rows[cell.table.id].data[rowIdx];
+  const colIdx = f.findIndex(f.propEq("id", cell.column.id), columns);
+
+  const newRow = rowValuesToCells(cell.table, columns)([
+    f.update("annotations", f.assoc(colIdx, newCellAnnotations), row)
+  ]);
+
+  return f.update(
+    "data",
+    f.assoc(rowIdx, newRow),
+    completeState.rows[cell.table.id]
+  );
+};
+
+const removeCellAnnotation = (state, action, completeState) => {
+  const { annotations, annotation } = action;
+  const newCellAnnotations = f.reject(
+    f.propEq("uuid", annotation.uuid),
+    annotations
+  );
+  return updateCellAnnotation(
+    state,
+    { ...action, newCellAnnotations },
+    completeState
+  );
+};
+
+const setCellAnnotation = (state, action, completeState) => {
+  const { annotations, response } = action;
+  const annotation = response;
+  const annotationIdx = f.findIndex(
+    f.propEq("uuid", annotation.uuid),
+    annotations
+  );
+  const newCellAnnotations =
+    annotationIdx >= 0
+      ? f.assoc(annotationIdx, annotation, annotations)
+      : [...annotations, annotation];
+  return updateCellAnnotation(
+    state,
+    { ...action, newCellAnnotations },
+    completeState
+  );
 };
 
 const rows = (state = initialState, action, completeState) => {
@@ -124,6 +179,16 @@ const rows = (state = initialState, action, completeState) => {
       const rowSelector = [action.tableId, "data", rowIdx, "values"];
       return f.update(rowSelector, f.assoc(columnIdx, action.newValue), state);
     }
+    case SET_CELL_ANNOTATION:
+      return setCellAnnotation(state, action, completeState);
+    case REMOVE_CELL_ANNOTATION:
+      return removeCellAnnotation(state, action, completeState);
+    case ANNOTATION_ERROR:
+      return setCellAnnotation(
+        state,
+        { ...action, response: action.annotation },
+        completeState
+      );
     case CELL_ROLLBACK_VALUE: {
       const [rowIdx, columnIdx] = idsToIndices(action, completeState);
       const rowSelector = [action.tableId, "data", rowIdx, "values"];
