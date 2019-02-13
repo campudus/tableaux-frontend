@@ -19,15 +19,14 @@ const enhance = compose(
     return { url: href };
   }),
   withHandlers({
-    handleClick: ({ isExternal = false, newTab = false, url }) => event => {
-      event.preventDefault();
+    handleClick: ({ isExternal = false, newTab = false, url }) => () => {
       if (newTab) {
         window.open(url);
       } else if (isExternal) {
         document.location = url;
       } else {
         const history = TableauxRouter.history;
-        history.navigate(url);
+        history.navigate(url, { trigger: true });
       }
     }
   })
