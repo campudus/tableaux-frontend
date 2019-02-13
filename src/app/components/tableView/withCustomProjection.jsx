@@ -158,12 +158,22 @@ const updateColumnVisibility = (
 };
 
 const tableOrFiltersChanged = (props, nextProps) => {
-  const { currentTableId } = props;
-  const displayValuesOf = f.prop(["allDisplayValues", currentTableId]);
-  (f.isNil(props.rows) && !f.isNil(nextProps.rows)) || // rows got initialized
-  (f.isEmpty(displayValuesOf(props)) &&
-    !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
-    !f.equals(props.projection.rows, nextProps.projection.rows); // filter changed
+  const { tableId } = props;
+  const displayValuesOf = f.prop(["allDisplayValues", tableId]);
+  // console.table([
+  //   [props.rows, nextProps.rows],
+  //   [displayValuesOf(props), displayValuesOf(nextProps)],
+  //   [
+  //     JSON.stringify(props.projection.rows),
+  //     JSON.stringify(nextProps.projection.rows)
+  //   ]
+  // ]);
+  return (
+    (f.isNil(props.rows) && !f.isNil(nextProps.rows)) || // rows got initialized
+    (f.isEmpty(displayValuesOf(props)) &&
+      !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
+    !f.equals(props.projection.rows, nextProps.projection.rows)
+  ); // filter changed
 };
 
 const filterRows = props => {

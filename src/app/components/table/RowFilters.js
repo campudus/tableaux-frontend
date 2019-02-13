@@ -146,9 +146,10 @@ const completeRowInformation = (columns, table, rows) => {
     })
   );
 
-  return rows.map(({ id, cells, values }, rowIndex) => ({
+  return rows.map(({ id, cells, values, annotations }, rowIndex) => ({
     rowIndex,
     id,
+    annotations,
     values: cells.map((cell, colIndex) => ({
       ...cell,
       displayValue:
