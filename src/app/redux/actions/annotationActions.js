@@ -1,53 +1,20 @@
 import f from "lodash/fp";
 
-import {
-  SET_CELL_ANNOTATION,
-  REMOVE_CELL_ANNOTATION,
-  ANNOTATION_ERROR
-} from "../actionTypes.js";
+import ActionTypes from "../actionTypes.js";
 import { makeRequest } from "../../helpers/apiHelper";
 import { when } from "../../helpers/functools";
 import route from "../../helpers/apiRoutes";
 
 const Change = { ADD: "ADD", DELETE: "DELETE" };
+const {
+  SET_CELL_ANNOTATION,
+  REMOVE_CELL_ANNOTATION,
+  SET_ANNOTATION_ERROR
+} = ActionTypes;
 
-export const removeAnnotationLangtags = modifyAnnotationLangtags(Change.REMOVE);
-export const addAnnotationLangtags = modifyAnnotationLangtags(Change.ADD);
-export const removeTextAnnotation = setTextAnnotation(Change.REMOVE);
-export const addTextAnnotation = setTextAnnotation(Change.ADD);
-
-export const toggleAnnotationFlag = action => (getState, dispatch) => {
+const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
   const { cell, annotation } = action;
-  const { rowIdx, annotations } = findAnnotations(getState, action);
-  const existingAnnotation = annotations.find(
-    ann => ann.type === "flag" && ann.value === annotation.value
-  );
-
-  const shouldDelete = f.isBoolean(annotation.setTo)
-    ? annotation.setTo
-    : !!existingAnnotation;
-
-  dispatch({
-    promise: makeRequest(
-      shouldDelete
-        ? paramToDeleteAnnotation(cell, existingAnnotation)
-        : paramToSetAnnotation(cell, { annotation })
-    ),
-    actionTypes: [
-      shouldDelete ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
-      shouldDelete ? "DO_NOTHING" : SET_CELL_ANNOTATION, // on new annotations set uuid
-      ANNOTATION_ERROR
-    ],
-    annotation,
-    annotations,
-    cell,
-    rowIdx
-  });
-};
-
-const modifyAnnotationLangtags = change => action => (getState, dispatch) => {
-  const { cell, annotation } = action;
-  const { rowIdx, annotations } = findAnnotations(getState, action);
+  const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
 
   const valueKey = when(
     f.eq("needsTranslation"),
@@ -67,32 +34,52 @@ const modifyAnnotationLangtags = change => action => (getState, dispatch) => {
       ? f.union(oldLangtags, newLangtags)
       : f.difference(oldLangtags, newLangtags);
 
+  console.log(
+    "modifyAnnotationlangtags()",
+    action,
+    "langtags",
+    langtags,
+    "change",
+    change,
+    "existingAnnotation",
+    existingAnnotation
+  );
+
   dispatch({
     promise: makeRequest(
-      f.isEmpty(langtags)
+      f.isEmpty(langtags) || action.setTo === false
         ? paramToDeleteAnnotation(cell, existingAnnotation)
         : paramToSetAnnotation(cell, annotation)
     ),
     actionTypes: [
       f.isEmpty(langtags) ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
       "NOTHING_TO_DO", // annotation got either deleted or modified, uuid unchanged
-      ANNOTATION_ERROR
+      SET_ANNOTATION_ERROR
     ],
-    annotation,
+    annotation: existingAnnotation || annotation,
     annotations,
     cell,
-    rowIdx
+    rowIdx,
+    colIdx
   });
 };
 
-const setTextAnnotation = change => action => (getState, dispatch) => {
+const setTextAnnotation = change => action => (dispatch, getState) => {
   const { cell, annotation } = action;
-  const { rowIdx, annotations } = findAnnotations(getState, dispatch);
+  const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
   const existingAnnotation = annotations.find(
     ann => ann.type === annotation.type && ann.uuid === annotation.uuid
   );
 
-  const shouldDelete = change === Change.DELETE;
+  const shouldDelete = change === Change.DELETE || action.setTo === false;
+  console.log(
+    "setTextAnnotation()",
+    action,
+    "shouldDelete?",
+    shouldDelete,
+    "existingAnnotation:",
+    existingAnnotation
+  );
 
   dispatch({
     promise: makeRequest(
@@ -103,21 +90,25 @@ const setTextAnnotation = change => action => (getState, dispatch) => {
     actionTypes: [
       shouldDelete ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
       shouldDelete ? "DO_NOTHING" : SET_CELL_ANNOTATION,
-      ANNOTATION_ERROR
+      SET_ANNOTATION_ERROR
     ],
-    annotation,
+    annotation: existingAnnotation || annotation,
     annotations,
     cell,
-    rowIdx
+    rowIdx,
+    colIdx
   });
 };
 
-const paramToSetAnnotation = getRequestParam(Change.ADD);
-const paramToDeleteAnnotation = getRequestParam(Change.DELETE);
-
-const getRequestParam = change => (cell, annotation) => {
+const getRequestParam = change => (cell, annotationObj) => {
   const { table, row, column } = cell;
-  const apiUrl =
+  console.log("Param for", change, "incoming annotation", annotationObj);
+  const annotation = when(
+    f.has("annotation"),
+    f.prop("annotation"),
+    annotationObj
+  );
+  const apiRoute =
     route.toCell({
       tableId: table.id,
       rowId: row.id,
@@ -126,23 +117,78 @@ const getRequestParam = change => (cell, annotation) => {
     (change === Change.ADD
       ? "/annotations"
       : `/annotations/${annotation.uuid}`);
-  return {
-    apiUrl,
+  const param = {
+    apiRoute,
     method: change === Change.ADD ? "POST" : "DELETE",
     data: annotation
   };
+
+  console.log("Param:", param);
+  return param;
 };
+
+const paramToSetAnnotation = getRequestParam(Change.ADD);
+const paramToDeleteAnnotation = getRequestParam(Change.DELETE);
 
 const findAnnotations = (getState, action) => {
   const { cell } = action;
-  const { row, table } = cell;
-  const rows = f.prop(["rows", table.id, "data"], getState());
+  const { row, table, column } = cell;
+  const state = getState();
+  const rows = f.prop(["rows", table.id, "data"], state);
+  const columns = f.prop(["columns", table.id, "data"], state);
 
   const rowIdx = f.findIndex(f.propEq("id", row.id), rows);
-  const annotations = f.propOr([], [rowIdx, "annotations"], rows);
+  const colIdx = f.findIndex(f.propEq("id", column.id), columns);
+  const annotations = f.propOr([], [rowIdx, "annotations", colIdx], rows);
 
   return {
     rowIdx,
+    colIdx,
     annotations
   };
+};
+
+export const removeAnnotationLangtags = modifyAnnotationLangtags(Change.REMOVE);
+export const addAnnotationLangtags = modifyAnnotationLangtags(Change.ADD);
+export const removeTextAnnotation = setTextAnnotation(Change.REMOVE);
+export const addTextAnnotation = setTextAnnotation(Change.ADD);
+
+export const toggleAnnotationFlag = action => (dispatch, getState) => {
+  const { cell, annotation } = action;
+  const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
+  const existingAnnotation = annotations.find(
+    ann => ann.type === "flag" && ann.value === annotation.value
+  );
+
+  const shouldDelete = f.isBoolean(annotation.setTo)
+    ? annotation.setTo
+    : !!existingAnnotation;
+
+  console.log(
+    "toggleAnnotationFlag",
+    action,
+    "existingAnnotation",
+    existingAnnotation,
+    "shouldDelete?",
+    shouldDelete
+  );
+
+  const description = {
+    promise: makeRequest(
+      shouldDelete
+        ? paramToDeleteAnnotation(cell, existingAnnotation)
+        : paramToSetAnnotation(cell, annotation)
+    ),
+    actionTypes: [
+      shouldDelete ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
+      shouldDelete ? "DO_NOTHING" : SET_CELL_ANNOTATION, // on new annotations set uuid
+      SET_ANNOTATION_ERROR
+    ],
+    annotation: existingAnnotation || annotation,
+    annotations,
+    cell,
+    rowIdx,
+    colIdx
+  };
+  dispatch(description);
 };

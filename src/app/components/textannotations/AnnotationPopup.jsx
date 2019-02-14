@@ -1,20 +1,23 @@
-import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import listenToClickOutside from "react-onclickoutside";
-import f from "lodash/fp";
-import Empty from "../helperComponents/emptyEntry";
-import AnnotationEntry from "./AnnotationEntry";
-import { setCellAnnotation } from "../../helpers/annotationHelper";
-import i18n from "i18next";
-import SvgIcon from "../helperComponents/SvgIcon";
-import classNames from "classnames";
 import { Portal } from "react-portal";
-import { doto, either, maybe } from "../../helpers/functools";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
+import React, { Component } from "react";
+import i18n from "i18next";
+import listenToClickOutside from "react-onclickoutside";
+
 import FocusTrap from "focus-trap-react";
+import PropTypes from "prop-types";
+import classNames from "classnames";
+import f from "lodash/fp";
+
+import { doto, either, maybe } from "../../helpers/functools";
+import { reportUpdateReasons } from "../../helpers/devWrappers";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { setCellAnnotation } from "../../helpers/annotationHelper";
+import AnnotationEntry from "./AnnotationEntry";
+import Empty from "../helperComponents/emptyEntry";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 @listenToClickOutside
-class AnnotationPopup extends PureComponent {
+class AnnotationPopup extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -119,6 +122,8 @@ class AnnotationPopup extends PureComponent {
         )
       );
   };
+
+  componentDidUpdate = reportUpdateReasons("AnnotationPopup");
 
   render() {
     this.focusInput();

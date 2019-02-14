@@ -59,10 +59,11 @@ const annotationsToObject = annotations => {
         obj[key] = {
           createdAt,
           uuid,
+          type,
           ...(langtags ? { langtags } : { value: true })
         };
       } else {
-        const _value = { value, uuid, createdAt };
+        const _value = { value, uuid, createdAt, type };
         obj[type] = f.isEmpty(obj[type]) ? [_value] : [...obj[type], _value];
       }
       return obj;
@@ -98,24 +99,22 @@ const rowValuesToCells = (table, columns) => rows => {
 };
 
 const updateCellAnnotation = (state, action, completeState) => {
-  const { cell, rowIdx, newCellAnnotations } = action;
+  const { cell, rowIdx, colIdx, newCellAnnotations } = action;
   const columns = completeState.columns[cell.table.id].data;
   const row = completeState.rows[cell.table.id].data[rowIdx];
-  const colIdx = f.findIndex(f.propEq("id", cell.column.id), columns);
 
-  const newRow = rowValuesToCells(cell.table, columns)([
-    f.update("annotations", f.assoc(colIdx, newCellAnnotations), row)
-  ]);
-
-  return f.update(
-    "data",
-    f.assoc(rowIdx, newRow),
-    completeState.rows[cell.table.id]
+  const newRow = f.first(
+    rowValuesToCells(cell.table, columns)([
+      f.assoc(["annotations", colIdx], newCellAnnotations, row)
+    ])
   );
+
+  return f.assoc([cell.table.id, "data", rowIdx], newRow, completeState.rows);
 };
 
 const removeCellAnnotation = (state, action, completeState) => {
   const { annotations, annotation } = action;
+  console.log("Should delete", annotation, "from", annotations);
   const newCellAnnotations = f.reject(
     f.propEq("uuid", annotation.uuid),
     annotations
@@ -128,8 +127,8 @@ const removeCellAnnotation = (state, action, completeState) => {
 };
 
 const setCellAnnotation = (state, action, completeState) => {
-  const { annotations, response } = action;
-  const annotation = response;
+  const { annotations, result } = action;
+  const annotation = result || action.annotation;
   const annotationIdx = f.findIndex(
     f.propEq("uuid", annotation.uuid),
     annotations
@@ -138,6 +137,10 @@ const setCellAnnotation = (state, action, completeState) => {
     annotationIdx >= 0
       ? f.assoc(annotationIdx, annotation, annotations)
       : [...annotations, annotation];
+  console.log("Result:", result);
+  console.log("annotation:", annotation);
+  console.log("annotations:", annotations);
+  console.log("newcellannotations:", newCellAnnotations);
   return updateCellAnnotation(
     state,
     { ...action, newCellAnnotations },

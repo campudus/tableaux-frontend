@@ -1,23 +1,17 @@
-import { flow, join, map, toString } from "lodash/fp";
+import f from "lodash/fp";
 const urlTrim = url => url.match(/\.*\/?(.*)\/?/)[1];
-const joinUrlParts = (...args) =>
-  flow(
-    map(
-      flow(
-        toString,
-        urlTrim
-      )
-    ),
-
-    join("/")
-  )(args);
+const cleanUrlPart = f.flow(
+  f.toString,
+  urlTrim
+);
+const joinUrlParts = (...args) => args.map(cleanUrlPart).join("/");
 
 const getAllTables = () => "/tables";
 const getAllColumnsForTable = tableId => "/tables/" + tableId + "/columns";
 const getAllRowsForTable = tableId => "/tables/" + tableId + "/rows";
 const toTable = ({ tableId }) => "/tables/" + tableId;
 const toColumn = ({ tableId, columnId }) =>
-  isInteger(columnId)
+  f.isInteger(columnId)
     ? "/" + joinUrlParts("tables", tableId, "columns", columnId)
     : "/" + joinUrlParts("tables", tableId, "columns");
 const toRow = ({ tableId, rowId }) =>

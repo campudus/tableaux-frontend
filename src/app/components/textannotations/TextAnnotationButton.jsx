@@ -8,6 +8,7 @@ const TextAnnotationButton = props => {
   const [node, rememberNode] = useState(null);
   const { cell, open, togglePopup } = props;
 
+  console.log("render TextAnnotationButton", props);
   const handleClick = event => {
     event.stopPropagation();
     rememberNode(event.target);

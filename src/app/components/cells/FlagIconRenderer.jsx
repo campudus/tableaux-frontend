@@ -46,7 +46,8 @@ const FlagIconRenderer = onlyUpdateForKeys([
   "langtags",
   ...knownFlags,
   "langtag",
-  "annotationsOpen"
+  "annotationsOpen",
+  "cell"
 ])(props => {
   const {
     cell,

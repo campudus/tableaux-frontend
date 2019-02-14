@@ -1,22 +1,22 @@
+import { Langtags } from "../../constants/TableauxConstants";
+
 import f from "lodash/fp";
 
-import { getLangObjSpec } from "../../helpers/multilanguage-specs";
 import { validate } from "../../specs/type";
 
 const knownTextAnnotations = ["info", "error", "warning"];
-
-const langObjSpec = getLangObjSpec();
-const isLangObject = v => validate(langObjSpec, v);
 
 const isFlag = v => v === "flag";
 const isString = v => f.isString(v);
 const isNil = v => f.isNil(v);
 const isTextAnnotationKey = v => f.contains(v, knownTextAnnotations);
+const isLangtagArray = v =>
+  f.isArray(v) && f.every(f.contains(f.__, Langtags), v);
 
 const multilangAnnotationSpec = {
   type: isFlag,
   value: isString,
-  langtags: isLangObject
+  langtags: isLangtagArray
 };
 
 const flagAnnotationSpec = {

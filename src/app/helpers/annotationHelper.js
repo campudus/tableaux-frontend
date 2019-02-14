@@ -8,12 +8,10 @@ import {
   isFlagAnnotation,
   isMultilangAnnotation,
   isTextAnnotation
-} from "../redux/actions/annoation-specs";
-import { isText } from "./KeyboardShortcutsHelper";
-import { maybe, unless } from './functools';
+} from "../redux/actions/annotation-specs";
+import { maybe, unless } from "./functools";
 import { showDialog } from "../components/overlay/GenericOverlay";
 import actions from "../redux/actionCreators";
-import apiUrl from "./apiUrl";
 import store from "../redux/store";
 
 function annotationError(heading, error) {
@@ -35,21 +33,36 @@ const getAnnotation = (annotation, cell) => {
   const getFlag = ann => f.prop([ann.value], cellAnnotations);
   const getText = ann => f.prop(f.prop(annotation.type, ann), cellAnnotations);
   return f.cond([
-    [isFlag, getFlag],
-    [isText, getText],
+    [isFlagAnnotation, getFlag],
+    [isTextAnnotation, getText],
     [f.stubTrue, f.always({})]
   ])(annotation);
 };
 
 const setCellAnnotation = (annotation, cell) => {
-  f.flow(
-    f.con([
-      [isTextAnnotation, f.identity],
-      [isFlagAnnotation, f.identity],
-      [isMultilangAnnotation, f.identity],
-      [f.stubTrue, f.noop]
-    ])
-  )(annotation);
+  const payload = { annotation, cell };
+  console.log(JSON.stringify(annotation, null, 2));
+  console.table({
+    isMultilangAnnotation: isMultilangAnnotation(annotation),
+    isTextAnnotation: isTextAnnotation(annotation),
+    isFlagAnnotation: isFlagAnnotation(annotation)
+  });
+  const action = isTextAnnotation(annotation)
+    ? actions.addTextAnnotation
+    : isMultilangAnnotation(annotation)
+    ? actions.addAnnotationLangtags
+    : actions.toggleAnnotationFlag;
+  store.dispatch(action(payload));
+};
+
+const deleteCellAnnotation = (annotation, cell) => {
+  const payload = { annotation, cell, setTo: false };
+  const action = isTextAnnotation(annotation)
+    ? actions.removeTextAnnotation
+    : isMultilangAnnotation(annotation)
+    ? actions.removeAnnotationLangtags
+    : actions.toggleAnnotationFlag;
+  store.dispatch(action(payload));
 };
 
 const addTranslationNeeded = (langtag, cell) => {
@@ -80,51 +93,9 @@ const removeTranslationNeeded = (langtag, cell) => {
   );
 };
 
-function deleteCellAnnotation(annotation, cell) {}
+const setRowAnnotation = () => null;
 
-const getRowAnnotationPath = target => {
-  const getSingleRowPath = row => {
-    return `/tables/${row.tableId}/rows/${row.id}/annotations`;
-  };
-  const getTableRowsPath = table => {
-    return `/tables/${table.id}/rows/annotations`;
-  };
-  return apiUrl(
-    target instanceof Row ? getSingleRowPath(target) : getTableRowsPath(target)
-  );
-};
-
-const setRowAnnotation = (annotation, target) => {
-  const afterRowUpdate = (error, response) => {
-    if (error) {
-      annotationError(
-        `Could not set annotation ${annotation} for row ${target.id}`,
-        error
-      );
-    } else {
-      target.set(annotation);
-    }
-  };
-
-  const afterTableUpdate = (error, response) => {
-    if (error) {
-      annotationError(
-        `Could not set annotation ${annotation} for table ${target.id}`,
-        error
-      );
-    } else {
-      target.rows.models.forEach(row => row.set(annotation));
-    }
-  };
-
-  const url = getRowAnnotationPath(target);
-  request
-    .patch(url)
-    .send(annotation)
-    .end(target instanceof Row ? afterRowUpdate : afterTableUpdate);
-};
-
-// Stateful variable!
+// Singleton
 class UnlockedRowManager {
   static unlockedRow = null;
 
