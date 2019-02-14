@@ -117,9 +117,8 @@ const extendedRouter = Router.extend({
     const validRowId = posOrNil(rowId);
     const validLangtag = await validateLangtag(langtag);
     currentLangtag = validLangtag;
-
-    loadAllRows(validTableId);
     loadColumns(validTableId);
+    loadAllRows(validTableId);
     createDisplayValueWorker();
 
     if (currentTable !== validTableId || !currentTable) {
