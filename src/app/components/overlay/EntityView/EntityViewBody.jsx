@@ -373,15 +373,12 @@ class EntityViewBody extends Component {
 
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
-export default withPropsOnChange(["row"], ({ row, columns, table }) => {
-  const cells = f.zip(columns, row.values).map(([column, cellData]) => {
+export default withPropsOnChange(["row"], ({ row, table }) => {
+  const cells = f.zip(row.cells, row.values).map(([cell, cellValue]) => {
     return addCellId({
-      column,
-      kind: column.kind,
-      value: cellData.value,
-      table,
-      row,
-      displayValue: getDisplayValue(column, cellData.value)
+      ...cell,
+      value: cellValue,
+      displayValue: getDisplayValue(cell.value, cellValue)
     });
   });
   return { cells };
