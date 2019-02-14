@@ -180,7 +180,7 @@ const filterRows = props => {
   const { projection, rows, table, langtag, columns, allDisplayValues } = props;
   console.log("filterRows()", props);
   if (f.isNil(rows) || f.isEmpty(allDisplayValues)) {
-    return {};
+    return { visibleRows: f.range(0, f.size(rows)) };
   }
   const unfilteredRows = rows.map(f.identity);
   const filteredRows = getFilteredRows(

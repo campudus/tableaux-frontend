@@ -167,7 +167,8 @@ class Table extends Component {
       table,
       langtag,
       tableView,
-      visibleColumns
+      visibleColumns,
+      visibleRows
     } = this.props;
     const {
       expandedRowIds,
@@ -202,6 +203,7 @@ class Table extends Component {
             actions={actions}
             columns={columns}
             visibleColumns={visibleColumns}
+            visibleRows={visibleRows}
             ref={this.findAndStoreTableDiv}
             rows={rows}
             tableView={tableView}

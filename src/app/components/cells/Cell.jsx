@@ -1,8 +1,10 @@
 import { branch, compose, renderNothing, withHandlers } from "recompose";
 import React from "react";
+
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import f from "lodash/fp";
+
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { either } from "../../helpers/functools";
 import {
@@ -128,13 +130,14 @@ class Cell extends React.Component {
     const nextCell = nextProps.cell;
 
     return (
-      !f.eq(cell.value, nextCell.value) ||
-      !f.eq(cell.displayValue, nextCell.displayValue) ||
-      !f.eq(cell.annotations, nextCell.annotations) ||
+      cell.id !== nextCell.id ||
       this.props.selected !== nextProps.selected ||
       this.props.inSelectedRow !== nextProps.inSelectedRow ||
       this.props.editing !== nextProps.editing ||
-      this.props.annotationsOpen !== nextProps.annotationsOpen
+      this.props.annotationsOpen !== nextProps.annotationsOpen ||
+      !f.eq(cell.value, nextCell.value) ||
+      !f.eq(cell.displayValue, nextCell.displayValue) ||
+      !f.eq(cell.annotations, nextCell.annotations)
     );
   };
 

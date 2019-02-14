@@ -30,8 +30,7 @@ export default function(ComposedComponent) {
         )
       );
 
-    filterRows = (visibleIndices, rows) =>
-      rows.filter((row, idx) => f.contains(idx, visibleIndices));
+    filterRows = (visibleIndices, rows) => visibleIndices.map(idx => rows[idx]);
 
     render() {
       const {
@@ -61,6 +60,8 @@ export default function(ComposedComponent) {
         columns
       ]);
 
+      console.log("Visible rows:", visibleRows);
+
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
         return (
@@ -77,6 +78,7 @@ export default function(ComposedComponent) {
                 this.filterRows(visibleRows, rows),
                 columnsWithVisibility
               ),
+              visibleRows,
               canRenderTable
             }}
           />

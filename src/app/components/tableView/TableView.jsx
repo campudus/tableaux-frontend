@@ -36,18 +36,13 @@ const mapStatetoProps = (state, props) => {
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const tableView = f.get("tableView", state);
-  const {
-    visibleColumns,
-    visibleRows,
-    startedGeneratingDisplayValues
-  } = tableView;
+  const { visibleColumns, startedGeneratingDisplayValues } = tableView;
   const allDisplayValues = f.get(["displayValues"], tableView);
 
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
   }
   return {
-    visibleRows,
     table,
     columns,
     rows,
@@ -113,7 +108,8 @@ class TableView extends PureComponent {
       actions,
       canRenderTable,
       tableView,
-      visibleColumns
+      visibleColumns,
+      visibleRows
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -136,6 +132,7 @@ class TableView extends PureComponent {
         <div className="wrapper">
           <Table
             visibleColumns={visibleColumns}
+            visibleRows={visibleRows}
             actions={actions}
             tableView={tableView}
             table={table}
