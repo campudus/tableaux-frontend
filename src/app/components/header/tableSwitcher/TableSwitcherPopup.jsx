@@ -10,6 +10,7 @@ import { translate } from "react-i18next";
 import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import { forkJoin } from "../../../helpers/functools";
+import TableauxRouter from "../../../router/router";
 import PropTypes from "prop-types";
 
 @translate(["header"])
@@ -90,8 +91,7 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   onClickTable = table => () => {
-    const newUrl = `/${this.props.langtag}/tables/${table.id}`;
-    this.props.navigate(newUrl);
+    TableauxRouter.switchTableHandler(table.id, this.props.langtag);
     this.setState({
       focusTableId: table.id
     });

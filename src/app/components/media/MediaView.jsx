@@ -3,7 +3,6 @@ import React, { Component } from "react";
 
 import PropTypes from "prop-types";
 import f from "lodash/fp";
-import i18n from "i18next";
 
 import { simpleError } from "../overlay/ConfirmationOverlay";
 import Folder from "./folder/Folder.jsx";
@@ -68,11 +67,7 @@ class MediaView extends Component {
   }
 
   onLanguageSwitch(newLangtag) {
-    const oldLangtag = this.props.langtag;
-    const history = TableauxRouter.history;
-    const url = history.getPath();
-    i18n.changeLanguage(newLangtag);
-    history.navigate(url.replace(oldLangtag, newLangtag));
+    TableauxRouter.switchLanguageHandler(newLangtag);
   }
 
   render() {

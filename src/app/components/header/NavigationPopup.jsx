@@ -2,8 +2,6 @@ import React from "react";
 import { translate } from "react-i18next";
 import SvgIcon from "../helperComponents/SvgIcon";
 import PropTypes from "prop-types";
-import { branch, compose, pure, renderNothing } from "recompose";
-import handleClickOutside from "react-onclickoutside";
 import Link from "../helperComponents/Link";
 import { ENABLE_DASHBOARD } from "../../FeatureFlags";
 
@@ -43,7 +41,8 @@ const NavigationPopup = props => {
 };
 
 NavigationPopup.propTypes = {
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  t: PropTypes.func
 };
 
 export default translate(["header"])(NavigationPopup);

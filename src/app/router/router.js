@@ -1,13 +1,9 @@
 import "babel-polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
-// import TableContainer from "../containers/TableContainer";
 import TableauxConstants from "../constants/TableauxConstants";
 import Raven from "raven-js";
-import i18n from "i18next";
-// import { AppContainer } from "react-hot-loader";
 import Router from "ampersand-router";
-// import App from "ampersand-app";
 import f from "lodash/fp";
 import parseOptions from "./urlOptionParser";
 import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
@@ -18,6 +14,7 @@ import store from "../redux/store.js";
 import actionCreators from "../redux/actionCreators";
 import Tableaux from "../components/Tableaux";
 import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+import i18n from "i18next";
 
 initDevelopmentAccessCookies();
 
@@ -44,8 +41,6 @@ const extendedRouter = Router.extend({
     "(:langtag/)table/*rest": "redirectToNewUrl"
   },
 
-  alreadyRendered: false,
-
   home: function() {
     ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
@@ -58,22 +53,15 @@ const extendedRouter = Router.extend({
   actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
-    if (this.alreadyRendered) {
-      this.switchTableHandler(params);
-    } else {
-      // this.alreadyRendered = true;
-
-      //<TableContainer initialViewName={viewName} initialParams={{...params, navigate: this.navigate.bind(this)}}/>
-      ReactDOM.render(
-        <Provider store={store}>
-          <Tableaux
-            initialViewName={viewName}
-            initialParams={{ ...params, navigate: this.navigate.bind(this) }}
-          />
-        </Provider>,
-        document.getElementById("tableaux")
-      );
-    }
+    ReactDOM.render(
+      <Provider store={store}>
+        <Tableaux
+          initialViewName={viewName}
+          initialParams={{ ...params, navigate: this.navigate.bind(this) }}
+        />
+      </Provider>,
+      document.getElementById("tableaux")
+    );
   },
 
   initialize: function(options) {
@@ -83,23 +71,23 @@ const extendedRouter = Router.extend({
     console.log("initialize router", options);
   },
 
-  switchLanguageHandler: function(newLangtagObj) {
+  switchLanguageHandler: function(newLangtag) {
     const his = this.history;
     const path = his.getPath();
-    const newPath = path.replace(currentLangtag, newLangtagObj.langtag);
+    const newPath = path.replace(currentLangtag, newLangtag);
     const { setCurrentLanguage } = this.actions;
-    setCurrentLanguage(newLangtagObj.langtag);
-
+    setCurrentLanguage(newLangtag);
+    i18n.changeLanguage(newLangtag);
+    currentLangtag = newLangtag;
     his.navigate(newPath, { trigger: true });
   },
 
-  switchTableHandler: async function(payload) {
+  switchTableHandler: async function(tableId, langtag) {
     const { tables } = store.getState();
-    const langtag = payload.langtag;
-    const tableId = await validateTableId(payload.id, tables);
-    Raven.captureBreadcrumb({ message: "Switch table", data: payload });
+    const validTableId = await validateTableId(tableId, tables);
+    Raven.captureBreadcrumb({ message: "Switch table", data: tableId });
     Raven.captureMessage("Switch table", { level: "info" });
-    router.navigate(langtag + "/tables/" + tableId);
+    router.navigate(langtag + "/tables/" + validTableId);
   },
 
   switchFolderHandler: async function(folderId, langtag) {
@@ -128,6 +116,7 @@ const extendedRouter = Router.extend({
     const validColumnId = posOrNil(columnId);
     const validRowId = posOrNil(rowId);
     const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
 
     loadAllRows(validTableId);
     loadColumns(validTableId);
@@ -163,8 +152,9 @@ const extendedRouter = Router.extend({
 
   mediaBrowser: async function(langtag, folderid) {
     const { getMediaFolder } = this.actions;
-    const validLangtag = await validateLangtag(langtag);
     const validFolderId = posOrNil(folderid);
+    const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
 
     getMediaFolder(validFolderId, validLangtag);
 
@@ -183,6 +173,7 @@ const extendedRouter = Router.extend({
 
   dashboard: async function(langtag) {
     const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
     this.renderOrSwitchView(TableauxConstants.ViewNames.DASHBOARD_VIEW, {
       langtag: validLangtag
     });

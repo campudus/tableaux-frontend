@@ -88,9 +88,7 @@ const enhance = compose(
   pure,
   withHandlers({
     handleLanguageSwitch: () => newLangtag => {
-      const history = TableauxRouter.history;
-      i18n.changeLanguage(newLangtag);
-      history.navigate(`/${newLangtag}/dashboard`);
+      TableauxRouter.switchLanguageHandler(newLangtag);
     }
   }),
   withProps(() => {
