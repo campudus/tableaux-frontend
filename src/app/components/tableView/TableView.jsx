@@ -218,9 +218,7 @@ class TableView extends PureComponent {
   };
 
   onLanguageSwitch = newLangtag => {
-    const history = TableauxRouter.history;
-    const url = history.getPath();
-    history.navigate(url.replace(this.props.langtag, newLangtag));
+    TableauxRouter.switchLanguageHandler(newLangtag);
   };
 
   render = () => {

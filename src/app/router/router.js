@@ -1,20 +1,12 @@
 import "babel-polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
-import TableContainer from "../containers/TableContainer";
-import TableauxConstants, { ActionTypes } from "../constants/TableauxConstants";
+import TableauxConstants from "../constants/TableauxConstants";
 import Raven from "raven-js";
-import { AppContainer } from "react-hot-loader";
 import Router from "ampersand-router";
-import App from "ampersand-app";
 import f from "lodash/fp";
 import parseOptions from "./urlOptionParser";
-import {
-  getTables,
-  posOrNil,
-  validateLangtag,
-  validateTableId
-} from "./routeValidators";
+import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
 import { ENABLE_DASHBOARD } from "../FeatureFlags";
 import { Provider } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -22,6 +14,7 @@ import store from "../redux/store.js";
 import actionCreators from "../redux/actionCreators";
 import Tableaux from "../components/Tableaux";
 import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+import i18n from "i18next";
 
 initDevelopmentAccessCookies();
 
@@ -48,8 +41,6 @@ const extendedRouter = Router.extend({
     "(:langtag/)table/*rest": "redirectToNewUrl"
   },
 
-  alreadyRendered: false,
-
   home: function() {
     ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
@@ -62,63 +53,50 @@ const extendedRouter = Router.extend({
   actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
-    const { loadTables, loadAllRows, loadColumns } = this.actions;
-    const { tableId } = params;
-    // loadAllRows(tableId);
-    // loadColumns(tableId);
-    if (/*this.alreadyRendered*/ false) {
-      this.switchTableHandler(params);
-    } else {
-      this.alreadyRendered = true;
-
-      //<TableContainer initialViewName={viewName} initialParams={{...params, navigate: this.navigate.bind(this)}}/>
-      ReactDOM.render(
-        <Provider store={store}>
-          <Tableaux
-            initialViewName={viewName}
-            initialParams={{ ...params, navigate: this.navigate.bind(this) }}
-          />
-        </Provider>,
-        document.getElementById("tableaux")
-      );
-    }
+    ReactDOM.render(
+      <Provider store={store}>
+        <Tableaux
+          initialViewName={viewName}
+          initialParams={{ ...params, navigate: this.navigate.bind(this) }}
+        />
+      </Provider>,
+      document.getElementById("tableaux")
+    );
   },
 
   initialize: function(options) {
     const { loadTables, createDisplayValueWorker } = this.actions;
     loadTables();
     createDisplayValueWorker();
-    console.log(options);
+    console.log("initialize router", options);
   },
 
-  switchLanguageHandler: function(newLangtagObj) {
+  switchLanguageHandler: function(newLangtag) {
     const his = this.history;
     const path = his.getPath();
-    const newPath = path.replace(currentLangtag, newLangtagObj.langtag);
-    const {setCurrentLanguage} = this.actions;
-    console.log("switchLanguage");
-    setCurrentLanguage(newLangtagObj.langtag);
-
+    const newPath = path.replace(currentLangtag, newLangtag);
+    const { setCurrentLanguage } = this.actions;
+    setCurrentLanguage(newLangtag);
+    i18n.changeLanguage(newLangtag);
+    currentLangtag = newLangtag;
     his.navigate(newPath, { trigger: true });
   },
 
-  switchTableHandler: function(payload) {
-    console.log("switchTableHandler");
+  switchTableHandler: async function(tableId, langtag) {
     const { tables } = store.getState();
-    const langtag = payload.langtag;
-    const tableId = validateTableId(payload.id, tables);
-    Raven.captureBreadcrumb({ message: "Switch table", data: payload });
+    const validTableId = await validateTableId(tableId, tables);
+    Raven.captureBreadcrumb({ message: "Switch table", data: tableId });
     Raven.captureMessage("Switch table", { level: "info" });
-    router.navigate(langtag + "/tables/" + tableId);
+    router.navigate(langtag + "/tables/" + validTableId);
   },
 
-  switchFolderHandler: function(folderId, langtag) {
+  switchFolderHandler: async function(folderId, langtag) {
     Raven.captureBreadcrumb({
       message: "Switch folder",
       data: { folderId, langtag }
     });
     Raven.captureMessage("MediaView folder switch", { level: "info" });
-    const validLangtag = validateLangtag(langtag);
+    const validLangtag = await validateLangtag(langtag);
     if (folderId) {
       router.history.navigate(validLangtag + "/media/" + folderId, {
         trigger: true
@@ -129,19 +107,23 @@ const extendedRouter = Router.extend({
   },
 
   tableBrowser: async function(langtag, tableId, columnId, rowId, options) {
-    const validTableId = await validateTableId(parseInt(tableId));
-    const validColumnId = posOrNil(columnId);
-    const validRowId = posOrNil(rowId);
-    const validLangtag = validateLangtag(langtag);
-
+    const { createDisplayValueWorker, loadAllRows, loadColumns } = this.actions;
     const {
       tableView: { currentTable },
       tables
     } = store.getState();
+    const validTableId = await validateTableId(parseInt(tableId), tables);
+    const validColumnId = posOrNil(columnId);
+    const validRowId = posOrNil(rowId);
+    const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
+    loadColumns(validTableId);
+    loadAllRows(validTableId);
+    createDisplayValueWorker();
 
-    if (currentTable != validTableId || !currentTable) {
+    if (currentTable !== validTableId || !currentTable) {
       const { loadCompleteTable } = this.actions;
-      loadCompleteTable(tableId);
+      loadCompleteTable(validTableId);
     }
 
     const fullUrl =
@@ -167,13 +149,13 @@ const extendedRouter = Router.extend({
     this.history.navigate(fullUrl, { trigger: false, replace: true });
   },
 
-  mediaBrowser: function(langtag, folderid) {
+  mediaBrowser: async function(langtag, folderid) {
     const { getMediaFolder } = this.actions;
-    getMediaFolder(folderid, langtag);
-
-    const validLangtag = validateLangtag(langtag);
-    currentLangtag = validLangtag;
     const validFolderId = posOrNil(folderid);
+    const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
+
+    getMediaFolder(validFolderId, validLangtag);
 
     const fullUrl =
       "/" +
@@ -188,9 +170,9 @@ const extendedRouter = Router.extend({
     this.history.navigate(fullUrl, { trigger: false, replace: true });
   },
 
-  dashboard: function(langtag) {
-    // console.log("TableauxRouter.dashboard");
-    const validLangtag = validateLangtag(langtag);
+  dashboard: async function(langtag) {
+    const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
     this.renderOrSwitchView(TableauxConstants.ViewNames.DASHBOARD_VIEW, {
       langtag: validLangtag
     });

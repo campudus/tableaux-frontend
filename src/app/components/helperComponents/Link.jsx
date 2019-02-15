@@ -1,36 +1,32 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {compose, pure, withHandlers, withProps} from "recompose";
-import App from "ampersand-app";
+import { compose, pure, withHandlers, withProps } from "recompose";
+import TableauxRouter from "../../router/router";
 import f from "lodash/fp";
 
-const Link = ({handleClick, url, children, className}) => (
-  <a href={url}
-     onClick={handleClick}
-     className={className}
-  >
+const Link = ({ handleClick, url, children, className }) => (
+  <a href={url} onClick={handleClick} className={className}>
     {children}
   </a>
 );
 
 const enhance = compose(
   pure,
-  withProps(({to, href}) => {
+  withProps(({ to, href }) => {
     if (!f.isNil(to)) {
       console.error("Generating urls from objects not yet supported");
     }
-    return {url: href};
+    return { url: href };
   }),
   withHandlers({
-    handleClick: ({isExternal = false, newTab = false, url}) => (event) => {
-      event.preventDefault();
+    handleClick: ({ isExternal = false, newTab = false, url }) => () => {
       if (newTab) {
         window.open(url);
       } else if (isExternal) {
         document.location = url;
       } else {
-        console.log(App);
-        App.router.history.navigate(url, {trigger: true});
+        const history = TableauxRouter.history;
+        history.navigate(url, { trigger: true });
       }
     }
   })

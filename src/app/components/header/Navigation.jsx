@@ -20,12 +20,14 @@ class Navigation extends Component {
   state = {
     navigationOpen: false
   };
+
   onButtonClicked = event => {
     event.preventDefault();
     this.setState(prevState => {
       return { navigationOpen: !prevState.navigationOpen };
     });
   };
+
   render() {
     const { langtag, onClickOutside } = this.props;
     const { navigationOpen } = this.state;
@@ -54,8 +56,8 @@ class Navigation extends Component {
 }
 
 Navigation.propTypes = {
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  onClickOutside: PropTypes.func
 };
 
-// export default withPopupChild(Navigation);
-export default Navigation;
+export default withPopupChild(Navigation);

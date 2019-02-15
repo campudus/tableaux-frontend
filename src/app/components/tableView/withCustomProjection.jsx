@@ -172,14 +172,16 @@ const tableOrFiltersChanged = (props, nextProps) => {
     (f.isNil(props.rows) && !f.isNil(nextProps.rows)) || // rows got initialized
     (f.isEmpty(displayValuesOf(props)) &&
       !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
-    !f.equals(props.projection.rows, nextProps.projection.rows)
+    (!f.equals(props.projection.rows, nextProps.projection.rows) &&
+      !f.isEmpty(displayValuesOf(nextProps)) &&
+      !f.isEmpty(nextProps.rows))
   ); // filter changed
 };
 
 const filterRows = props => {
   const { projection, rows, table, langtag, columns, allDisplayValues } = props;
   console.log("filterRows()", props);
-  if (f.isNil(rows) || f.isEmpty(allDisplayValues)) {
+  if (f.isNil(rows) || f.isEmpty(allDisplayValues[table.id])) {
     return { visibleRows: f.range(0, f.size(rows)) };
   }
   const unfilteredRows = rows.map(f.identity);

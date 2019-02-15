@@ -1,47 +1,45 @@
 import TableauxConstants from "../constants/TableauxConstants";
-// import Tables from "../models/Tables";
 import f from "lodash/fp";
+import { makeRequest } from "../helpers/apiHelper";
+import apiRoute from "../helpers/apiRoutes";
 
-let cachedTables = null;
-
-const getTables = () =>
-  new Promise((resolve, reject) => {
-    if (f.isNil(cachedTables)) {
-      const tables = new Tables();
-      tables.fetch({
-        success: () => {
-          cachedTables = tables;
-          resolve(cachedTables);
-        },
-        error: err => {
-          reject(err);
-        }
-      });
-    } else {
-      resolve(cachedTables);
-    }
-  });
-
-const validateLangtag = langtag => {
-  // return (f.isNil(langtag) || !f.contains(langtag, TableauxConstants.Langtags))
-  //   ? TableauxConstants.DefaultLangtag
-  //   : langtag;
-  return langtag;
-};
-
-async function getFirstTableId() {
-  const tables = await getTables();
-  return f.get("id", tables.first());
+async function initLangtags() {
+  if (f.isNil(TableauxConstants.Langtags)) {
+    const requestData = await makeRequest({
+      apiRoute: "/system/settings/langtags"
+    });
+    TableauxConstants.initLangtags(requestData.value);
+    return requestData.value;
+  } else {
+    return TableauxConstants.Langtags;
+  }
 }
 
-async function validateTableId(tableId, tables) {
-  return tableId;
-  const firstTableId = f.first(tables);
-  return f.cond([
-    [f.isNil, firstTableId],
-    [id => f.isNil(tables[id]), firstTableId],
-    [f.stubTrue, f.identity]
-  ])(tableId);
+async function getTables() {
+  const requestData = await makeRequest({
+    apiRoute: apiRoute.getAllTables()
+  });
+  return requestData.tables;
+}
+
+async function validateLangtag(langtag) {
+  const allLangtags = await initLangtags();
+  return f.isNil(langtag) || !f.contains(langtag, allLangtags)
+    ? TableauxConstants.DefaultLangtag
+    : langtag;
+}
+
+async function validateTableId(tableId, propTables) {
+  // if state has no tables yet we have to get them ourselves
+
+  const tables = propTables.finishedLoading
+    ? propTables.data
+    : await getTables();
+
+  const firstTableId = f.get("id", f.head(tables));
+  const result = f.isNil(tables[tableId]) ? firstTableId : tableId;
+
+  return result;
 }
 
 const posOrNil = string => {
@@ -49,10 +47,4 @@ const posOrNil = string => {
   return f.isNumber(number) && number >= 0 ? number : null;
 };
 
-export {
-  posOrNil,
-  validateLangtag,
-  validateTableId,
-  getFirstTableId,
-  getTables
-};
+export { posOrNil, validateLangtag, validateTableId };
