@@ -1,6 +1,20 @@
 import React, { Component } from "react";
 import NavigationPopup from "./NavigationPopup";
 import PropTypes from "prop-types";
+import { withState, withHandlers, compose, pure } from "recompose";
+import f from "lodash/fp";
+
+const withPopupChild = compose(
+  withState("navigationOpen", "setPopup", false),
+  withHandlers({
+    onButtonClicked: ({ setPopup }) => event => {
+      event.preventDefault();
+      setPopup(open => !open);
+    },
+    onClickOutside: ({ setPopup }) => () => setPopup(f.always(false))
+  }),
+  pure
+);
 
 class Navigation extends Component {
   state = {
@@ -46,4 +60,4 @@ Navigation.propTypes = {
   onClickOutside: PropTypes.func
 };
 
-export default Navigation;
+export default withPopupChild(Navigation);
