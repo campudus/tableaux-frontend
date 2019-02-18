@@ -140,8 +140,15 @@ const extendedRouter = Router.extend({
     createDisplayValueWorker();
 
     if (currentTable !== validTableId || !currentTable) {
-      const { loadCompleteTable } = this.actions;
+      const { loadCompleteTable, toggleCellSelection } = this.actions;
       loadCompleteTable(validTableId);
+
+      // when table changes set initial selected cell to values from url
+      toggleCellSelection({
+        rowId: validRowId,
+        columnId: validColumnId,
+        langtag: validLangtag
+      });
     }
 
     const fullUrl =
