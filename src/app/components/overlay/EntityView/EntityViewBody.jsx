@@ -373,14 +373,23 @@ class EntityViewBody extends Component {
 
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
-export default withPropsOnChange(["row"], ({ row, table }) => {
-  const cells = f.zip(row.cells, row.values).map(([cell, cellValue]) => {
-    return addCellId({
-      ...cell,
-      value: cellValue,
-      displayValue: getDisplayValue(cell.value, cellValue)
+export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
+  console.log("Row changed");
+
+  const rowData = doto(
+    grudData,
+    f.prop(["rows", table.id, "data"]),
+    f.find(f.propEq("id", row.id))
+  );
+  const cells = f
+    .zip(rowData.cells, rowData.values)
+    .map(([cell, cellValue]) => {
+      return addCellId({
+        ...cell,
+        value: cellValue,
+        displayValue: getDisplayValue(cell.value, cellValue)
+      });
     });
-  });
   return { cells };
 })(EntityViewBody);
 
