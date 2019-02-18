@@ -1,7 +1,6 @@
 import Raven from "raven-js";
-import i18n from "i18next";
-
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
 import {
@@ -10,6 +9,7 @@ import {
   isTextAnnotation
 } from "../redux/actions/annotation-specs";
 import { maybe, unless } from "./functools";
+import { setRowFlag } from "../redux/actions/annotationActions";
 import { showDialog } from "../components/overlay/GenericOverlay";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
@@ -87,6 +87,15 @@ const removeTranslationNeeded = (langtag, cell) => {
   );
 };
 
+const setRowFinal = ({ table, row, value = true }) => {
+  store.dispatch(setRowFlag, {
+    table,
+    row,
+    flagName: "final",
+    flagValue: value
+  });
+};
+
 const setRowAnnotation = () => null;
 
 // Singleton
@@ -140,6 +149,7 @@ export {
   refreshAnnotations,
   setRowAnnotation,
   setCellAnnotation,
+  setRowFinal,
   unlockRow,
   isLocked,
   isTranslationNeeded

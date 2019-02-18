@@ -1,13 +1,14 @@
 import f from "lodash/fp";
 
-import ActionTypes from "../actionTypes.js";
 import { makeRequest } from "../../helpers/apiHelper";
 import { when } from "../../helpers/functools";
+import ActionTypes from "../actionTypes.js";
 import route from "../../helpers/apiRoutes";
 
 const Change = { ADD: "ADD", DELETE: "DELETE" };
 const {
   SET_CELL_ANNOTATION,
+  SET_ROW_ANNOTATION,
   REMOVE_CELL_ANNOTATION,
   SET_ANNOTATION_ERROR
 } = ActionTypes;
@@ -184,6 +185,25 @@ export const removeAnnotationLangtags = modifyAnnotationLangtags(Change.REMOVE);
 export const addAnnotationLangtags = modifyAnnotationLangtags(Change.ADD);
 export const removeTextAnnotation = setTextAnnotation(Change.REMOVE);
 export const addTextAnnotation = setTextAnnotation(Change.ADD);
+
+export const setRowFlag = action => dispatch => {
+  const { table, row, flagName, flagValue } = action;
+  makeRequest({
+    apiRoute: route.toRow({ tableId: table.id, rowId: row.id }),
+    method: "PATCH",
+    data: { [flagName]: flagValue }
+  }).then(() =>
+    dispatch(
+      {
+        type: SET_ROW_ANNOTATION,
+        table,
+        row,
+        flagName,
+        flagValue: !!flagValue
+      }.catch(console.error)
+    )
+  );
+};
 
 export const toggleAnnotationFlag = action => (dispatch, getState) => {
   const { cell, annotation } = action;

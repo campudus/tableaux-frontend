@@ -1,8 +1,8 @@
 import f from "lodash/fp";
 
 import { addCellId } from "../../helpers/getCellId";
+import { doto, when } from '../../helpers/functools';
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
-import { when } from "../../helpers/functools";
 import actionTypes from "../actionTypes";
 
 const {
@@ -14,6 +14,7 @@ const {
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
   SET_CELL_ANNOTATION,
+  SET_ROW_ANNOTATION,
   REMOVE_CELL_ANNOTATION,
   ANNOTATION_ERROR
 } = actionTypes;
@@ -183,6 +184,19 @@ const rows = (state = initialState, action, completeState) => {
       return setCellAnnotation(state, action, completeState);
     case REMOVE_CELL_ANNOTATION:
       return removeCellAnnotation(state, action, completeState);
+    case SET_ROW_ANNOTATION: {
+      const { table, row, flagName, flagValue } = action;
+      const rowIdx = doto(
+        state,
+        f.prop([table.id, "data"]),
+        f.findIndex(f.propEq("id", row.id))
+      );
+      return f.update(
+        [table.id, "data", rowIdx],
+        f.assoc(flagName, flagValue),
+        state
+      );
+    }
     case ANNOTATION_ERROR:
       return setCellAnnotation(
         state,
