@@ -17,6 +17,7 @@ import i18n from "i18next";
 import RowContextMenu from "../contextMenu/RowContextMenu";
 import { Portal } from "react-portal";
 import VirtualTable from "./VirtualTable";
+import TableauxRouter from "../../router/router";
 
 class Table extends Component {
   /**
@@ -183,6 +184,12 @@ class Table extends Component {
       f.filter(({ id }) => f.contains(id, rowIds)),
       f.map("values")
     );
+
+    if (table.id && tableView.selectedCell) {
+      const { rowId, columnId } = tableView.selectedCell;
+      // update url with active-cell
+      TableauxRouter.selectCellHandler(table.id, rowId, columnId);
+    }
 
     return (
       <section
