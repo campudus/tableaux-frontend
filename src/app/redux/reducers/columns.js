@@ -14,12 +14,10 @@ const columns = (state = initialState, action) => {
   switch (type) {
     case COLUMNS_LOADING_DATA:
       return {
-        ...state,
         [action.tableId]: { error: false, finishedLoading: false }
       };
     case COLUMNS_DATA_LOADED:
       return {
-        ...state,
         [tableId]: {
           error: false,
           finishedLoading: true,
@@ -30,7 +28,6 @@ const columns = (state = initialState, action) => {
       };
     case COLUMNS_DATA_LOAD_ERROR:
       return {
-        ...state,
         [action.tableId]: { error: action.error, finishedLoading: true }
       };
     default:

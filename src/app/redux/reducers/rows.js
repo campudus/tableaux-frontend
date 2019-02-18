@@ -152,7 +152,6 @@ const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
     case ALL_ROWS_LOADING_DATA:
       return {
-        ...state,
         [action.tableId]: { error: false, finishedLoading: false }
       };
     case ALL_ROWS_DATA_LOADED: {
@@ -162,7 +161,6 @@ const rows = (state = initialState, action, completeState) => {
       );
       const table = f.prop(["tables", "data", action.tableId], completeState);
       return {
-        ...state,
         [action.tableId]: {
           error: false,
           finishedLoading: true,
@@ -172,7 +170,6 @@ const rows = (state = initialState, action, completeState) => {
     }
     case ALL_ROWS_DATA_LOAD_ERROR:
       return {
-        ...state,
         [action.tableId]: { error: action.error, finishedLoading: true }
       };
     case ADDITIONAL_ROWS_DATA_LOADED:
