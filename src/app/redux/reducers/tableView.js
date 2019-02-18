@@ -70,7 +70,8 @@ const toggleSelectedCell = (state, action) => {
     TableauxRouter.selectCellHandler(
       action.tableId,
       action.rowId,
-      action.columnId
+      action.columnId,
+      action.langtag
     );
   }
   unlockRow(action.rowId, false);

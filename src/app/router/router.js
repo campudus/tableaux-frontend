@@ -106,13 +106,13 @@ const extendedRouter = Router.extend({
     }
   },
 
-  selectCellHandler: function(tableId, rowId, columnId) {
+  selectCellHandler: function(tableId, rowId, columnId, langtag) {
     const validRowId = posOrNil(rowId);
     const validColumnId = posOrNil(columnId);
 
     if (validRowId && validColumnId) {
       router.navigate(
-        currentLangtag +
+        langtag +
           "/tables/" +
           tableId +
           "/columns/" +
