@@ -185,12 +185,6 @@ class Table extends Component {
       f.map("values")
     );
 
-    if (table.id && tableView.selectedCell) {
-      const { rowId, columnId } = tableView.selectedCell;
-      // update url with active-cell
-      TableauxRouter.selectCellHandler(table.id, rowId, columnId);
-    }
-
     return (
       <section
         id="table-wrapper"
