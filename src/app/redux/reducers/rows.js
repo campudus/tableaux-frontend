@@ -128,7 +128,7 @@ const removeCellAnnotation = (state, action, completeState) => {
 
 const setCellAnnotation = (state, action, completeState) => {
   const { annotations, result } = action;
-  const annotation = result || action.annotation;
+  const annotation = result && !f.isArray(result) ? result : action.annotation;
   const annotationIdx = f.findIndex(
     f.propEq("uuid", annotation.uuid),
     annotations
