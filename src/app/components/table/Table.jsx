@@ -17,7 +17,6 @@ import i18n from "i18next";
 import RowContextMenu from "../contextMenu/RowContextMenu";
 import { Portal } from "react-portal";
 import VirtualTable from "./VirtualTable";
-import TableauxRouter from "../../router/router";
 
 class Table extends Component {
   /**
