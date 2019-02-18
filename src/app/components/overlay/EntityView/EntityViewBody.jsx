@@ -97,7 +97,7 @@ class EntityViewBody extends Component {
     this.changeFocus(focusTarget);
   }
 
-  componentDidUpdate = reportUpdateReasons("EntityViewBody");
+  // componentDidUpdate = reportUpdateReasons("EntityViewBody");
 
   componentWillUnmount = () => {
     this.cancelClosingTimer();
@@ -308,7 +308,7 @@ class EntityViewBody extends Component {
     }
   }
 
-  render = safeRender(() => {
+  render() {
     const { row, actions, cells } = this.props;
     const { filter, focused } = this.state;
     const { filterColumn, grudData } = this.props;
@@ -370,7 +370,7 @@ class EntityViewBody extends Component {
         {this.renderTranslationView()}
       </div>
     );
-  });
+  }
 }
 
 // Re-construct relevant data from previous Ampersand cell model so

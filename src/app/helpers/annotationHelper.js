@@ -41,12 +41,6 @@ const getAnnotation = (annotation, cell) => {
 
 const setCellAnnotation = (annotation, cell) => {
   const payload = { annotation, cell };
-  console.log(JSON.stringify(annotation, null, 2));
-  console.table({
-    isMultilangAnnotation: isMultilangAnnotation(annotation),
-    isTextAnnotation: isTextAnnotation(annotation),
-    isFlagAnnotation: isFlagAnnotation(annotation)
-  });
   const action = isTextAnnotation(annotation)
     ? actions.addTextAnnotation
     : isMultilangAnnotation(annotation)
