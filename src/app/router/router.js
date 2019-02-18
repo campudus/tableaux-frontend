@@ -106,6 +106,24 @@ const extendedRouter = Router.extend({
     }
   },
 
+  selectCellHandler: function(tableId, rowId, columnId) {
+    const validRowId = posOrNil(rowId);
+    const validColumnId = posOrNil(columnId);
+
+    if (validRowId && validColumnId) {
+      router.navigate(
+        currentLangtag +
+          "/tables/" +
+          tableId +
+          "/columns/" +
+          validColumnId +
+          "/rows/" +
+          validRowId,
+        { trigger: false }
+      );
+    }
+  },
+
   tableBrowser: async function(langtag, tableId, columnId, rowId, options) {
     const { createDisplayValueWorker, loadAllRows, loadColumns } = this.actions;
     const {
