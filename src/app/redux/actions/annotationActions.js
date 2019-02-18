@@ -46,6 +46,9 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
   );
 
   const shouldDelete = f.isEmpty(langtags) || action.setTo === false;
+  const couldFindUuid =
+    annotation.uuid || (existingAnnotation && existingAnnotation.uuid);
+
   const promise = shouldDelete
     ? makeRequest(paramToDeleteAnnotation(cell, annotation))
     : change === Change.ADD
@@ -58,20 +61,26 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
           )
         )
       );
-
-  dispatch({
-    promise,
-    actionTypes: [
-      shouldDelete ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
-      shouldDelete ? "NOTHING_TO_DO" : SET_CELL_ANNOTATION,
-      SET_ANNOTATION_ERROR
-    ],
-    annotation: f.assoc("langtags", langtags, existingAnnotation || annotation),
-    annotations,
-    cell,
-    rowIdx,
-    colIdx
-  });
+  // Avoid langtag race condition
+  if (!(shouldDelete && !couldFindUuid)) {
+    dispatch({
+      promise,
+      actionTypes: [
+        shouldDelete ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
+        shouldDelete ? "NOTHING_TO_DO" : SET_CELL_ANNOTATION,
+        SET_ANNOTATION_ERROR
+      ],
+      annotation: f.assoc(
+        "langtags",
+        langtags,
+        existingAnnotation || annotation
+      ),
+      annotations,
+      cell,
+      rowIdx,
+      colIdx
+    });
+  }
 };
 
 const setTextAnnotation = change => action => (dispatch, getState) => {

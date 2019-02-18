@@ -1,12 +1,14 @@
 import f from "lodash/fp";
+
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { makeRequest } from "../../helpers/apiHelper";
 import {
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
 } from "../../helpers/accessManagementHelper";
-import { makeRequest } from "../../helpers/apiHelper";
-import route from "../../helpers/apiRoutes";
+import { removeTranslationNeeded } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
+import route from "../../helpers/apiRoutes";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -55,10 +57,32 @@ const dispatchCellValueChange = action => {
   const update = calculateCellUpdate(action);
 
   const needsUpdate = column.multilanguage
-    ? !f.every(k => f.isEqual(oldValue[k], newValue[k]), f.keys(newValue))
+    ? !f.every(
+        k => f.isEqual(oldValue[k], newValue[k]),
+        f.union(f.keys(newValue), f.keys(oldValue))
+      )
     : f.isEqual(oldValue, newValue);
+
+  // Automatic workflow to remove "translation needed" from newly written values
+  const freshlyTranslatedLangtags =
+    needsUpdate && column.multilanguage
+      ? f
+          .keys(newValue)
+          .filter(k => f.isEmpty(action.oldValue[k]) && !f.isEmpty(newValue[k]))
+      : null;
+
+  const maybeClearFreshTranslations = () => {
+    if (!f.isEmpty(freshlyTranslatedLangtags)) {
+      removeTranslationNeeded(freshlyTranslatedLangtags, {
+        column,
+        row: { id: rowId },
+        table: { id: tableId }
+      });
+    }
+  };
+
   // bail out if no updates needed
-  return f.equals(update.value.value, oldValue)
+  return !needsUpdate
     ? {
         type: "NOTHING_TO_DO"
       }
@@ -69,7 +93,7 @@ const dispatchCellValueChange = action => {
             (update.pathPostfix || ""),
           method: update.method,
           data: update.value
-        }),
+        }).then(maybeClearFreshTranslations),
         actionTypes: [
           CELL_SET_VALUE,
           CELL_SAVED_SUCCESSFULLY,
@@ -111,7 +135,6 @@ const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
 };
 
 const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
-  console.log("calculate link cell update");
   const oldIds = f.map("id", oldValue);
   const newIds = f.map("id", newValue);
   const isReordering = linkList =>
@@ -127,12 +150,10 @@ const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
     [f.stubTrue, toggleLink(oldIds)]
   ])(newIds);
 
-  console.log("link value action:", typeof action, action);
   return action;
 };
 
 const resetLinkValue = newIds => {
-  console.log("reset to", newIds);
   return {
     value: { value: newIds },
     method: "PUT"
@@ -140,7 +161,6 @@ const resetLinkValue = newIds => {
 };
 
 const reorderLinks = oldIds => newIds => {
-  console.log("reorder", oldIds, "->", newIds);
   const [swapee, successor] = f.flow(
     f.dropWhile(([a, b]) => a === b),
     f.take(2),
@@ -156,7 +176,6 @@ const reorderLinks = oldIds => newIds => {
 
 const toggleLink = oldIds => newIds => {
   const toggler = f.xor(oldIds, newIds)[0];
-  console.log("toggle", oldIds, "->", newIds, `(${toggler})`);
   return f.contains(toggler, oldIds)
     ? {
         method: "DELETE",
