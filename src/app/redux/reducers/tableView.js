@@ -66,7 +66,7 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
 };
 
 const toggleSelectedCell = (state, action) => {
-  if (action.pushHistory !== false && action.select !== false) {
+  if (action.select !== false) {
     TableauxRouter.selectCellHandler(
       action.tableId,
       action.rowId,
