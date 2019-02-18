@@ -1,24 +1,26 @@
+import { withPropsOnChange } from "recompose";
 import React, { Component } from "react";
+import * as f from "lodash/fp";
+import i18n from "i18next";
+
 import PropTypes from "prop-types";
-import View from "../../entityView/RowView";
+import classNames from "classnames";
+
 import {
   ColumnKinds,
   Directions,
   FilterModes
 } from "../../../constants/TableauxConstants";
-import { maybe } from "../../../helpers/functools";
-import TranslationPopup from "../../entityView/TranslationPopup";
-import * as f from "lodash/fp";
-import columnFilter from "./columnFilter";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import classNames from "classnames";
-import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
-import i18n from "i18next";
-import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
-import getDisplayValue from "../../../helpers/getDisplayValue";
 import { addCellId } from "../../../helpers/getCellId";
+import { doto, maybe } from "../../../helpers/functools";
+import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
+import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import { safeRender, reportUpdateReasons } from "../../../helpers/devWrappers";
-import { withPropsOnChange } from "recompose";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import TranslationPopup from "../../entityView/TranslationPopup";
+import View from "../../entityView/RowView";
+import columnFilter from "./columnFilter";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
