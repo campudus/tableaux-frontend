@@ -106,24 +106,46 @@ const extendedRouter = Router.extend({
     }
   },
 
+  selectCellHandler: function(tableId, rowId, columnId, langtag) {
+    const validRowId = posOrNil(rowId);
+    const validColumnId = posOrNil(columnId);
+
+    if (validRowId && validColumnId) {
+      router.navigate(
+        langtag +
+          "/tables/" +
+          tableId +
+          "/columns/" +
+          validColumnId +
+          "/rows/" +
+          validRowId,
+        { trigger: false }
+      );
+    }
+  },
+
   tableBrowser: async function(langtag, tableId, columnId, rowId, options) {
-    const { createDisplayValueWorker, loadAllRows, loadColumns } = this.actions;
     const {
       tableView: { currentTable },
       tables
     } = store.getState();
     const validTableId = await validateTableId(parseInt(tableId), tables);
-    const validColumnId = posOrNil(columnId);
     const validRowId = posOrNil(rowId);
+    const validColumnId = posOrNil(columnId);
+
     const validLangtag = await validateLangtag(langtag);
     currentLangtag = validLangtag;
-    loadColumns(validTableId);
-    loadAllRows(validTableId);
-    createDisplayValueWorker();
 
     if (currentTable !== validTableId || !currentTable) {
-      const { loadCompleteTable } = this.actions;
+      const { loadCompleteTable, toggleCellSelection } = this.actions;
       loadCompleteTable(validTableId);
+
+      // when table changes set initial selected cell to values from url
+      toggleCellSelection({
+        rowId: validRowId,
+        columnId: validColumnId,
+        langtag: validLangtag
+      });
     }
 
     const fullUrl =
