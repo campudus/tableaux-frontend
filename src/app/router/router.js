@@ -125,19 +125,21 @@ const extendedRouter = Router.extend({
   },
 
   tableBrowser: async function(langtag, tableId, columnId, rowId, options) {
-    const { createDisplayValueWorker, loadAllRows, loadColumns } = this.actions;
     const {
       tableView: { currentTable },
       tables
     } = store.getState();
     const validTableId = await validateTableId(parseInt(tableId), tables);
-    const validColumnId = posOrNil(columnId);
     const validRowId = posOrNil(rowId);
+    const checkedColumnId = posOrNil(columnId);
+    const validColumnId = f.isNil(checkedColumnId)
+      ? f.isNil(validRowId)
+        ? null
+        : 1
+      : checkedColumnId;
+
     const validLangtag = await validateLangtag(langtag);
     currentLangtag = validLangtag;
-    loadColumns(validTableId);
-    loadAllRows(validTableId);
-    createDisplayValueWorker();
 
     if (currentTable !== validTableId || !currentTable) {
       const { loadCompleteTable, toggleCellSelection } = this.actions;
