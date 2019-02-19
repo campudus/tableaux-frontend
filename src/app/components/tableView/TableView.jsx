@@ -30,13 +30,14 @@ import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
+  console.log(state);
   const { tableId } = props;
   const tables = f.get("tables.data", state);
   const table = tables[tableId];
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const tableView = f.get("tableView", state);
-  const { visibleColumns, startedGeneratingDisplayValues } = tableView;
+  const { startedGeneratingDisplayValues,visibleRows, visibleColumns,filters, sorting } = tableView;
   const allDisplayValues = f.get(["displayValues"], tableView);
 
   if (table) {
@@ -47,20 +48,24 @@ const mapStatetoProps = (state, props) => {
     columns,
     rows,
     tables,
-    visibleColumns,
     startedGeneratingDisplayValues,
     displayValues: f.defaultTo([], f.prop(tableId, allDisplayValues)),
     allDisplayValues,
-    tableView
+    tableView,
+    visibleRows,
+    visibleColumns,
+    filters,
+    sorting
   };
 };
 
-@withCustomProjection
+// @withCustomProjection
 @applyFiltersAndVisibility
 // @canFocusCell
 class TableView extends PureComponent {
   constructor(props) {
     super(props);
+    console.log(props)
 
     this.state = {
       initialLoading: false,
@@ -128,6 +133,7 @@ class TableView extends PureComponent {
         f.map(f.get("id")),
         f.toString
       )(columns);
+      console.log(rows)
       return (
         <div className="wrapper">
           <Table
@@ -270,8 +276,8 @@ class TableView extends PureComponent {
             langtag={langtag}
             table={table}
             columns={columns}
-            currentFilter={this.props.projection.rows}
-            setRowFilter={this.props.setRowFilter}
+            currentFilter={this.props.filters}
+            setRowFilter={this.props.actions.setFiltersAndSorting}
           />
           {table && columns && columns.length > 1 ? (
             <ColumnFilter

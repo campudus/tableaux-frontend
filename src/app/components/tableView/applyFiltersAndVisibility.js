@@ -6,8 +6,8 @@ import { mapIndexed } from "../../helpers/functools";
 
 export default function(ComposedComponent) {
   return class FilteredTableView extends React.Component {
-    applyColumnVisibility = (colsWithMatches = []) => {
-      const { columns, visibleColumns } = this.props;
+    applyColumnVisibility = () => {
+      const { columns, visibleColumns, colsWithMatches } = this.props;
       const applyVisibility = (columns, visibleArray) =>
         f.map(
           column =>
@@ -72,10 +72,7 @@ export default function(ComposedComponent) {
                 f.map("id"),
                 f.join(";")
               )(columnsWithVisibility),
-              rows: this.updateColumnVisibility(
-                this.filterRows(visibleRows, rows),
-                columnsWithVisibility
-              ),
+              rows: rows,
               visibleRows,
               canRenderTable
             }}

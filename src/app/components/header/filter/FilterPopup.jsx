@@ -228,13 +228,10 @@ class FilterPopup extends React.Component {
 
   applyFilters = event => {
     const { filters, sorting } = this.state;
-    const { setRowFilter } = this.props;
+    const { applyFiltersAndSorting } = this.props;
     const colIdToNumber = obj =>
       f.assoc("columnId", parseInt(obj.columnId), obj);
-    setRowFilter({
-      filters: f.map(colIdToNumber, filters),
-      sorting: colIdToNumber(sorting)
-    });
+    applyFiltersAndSorting(f.map(colIdToNumber, filters), colIdToNumber(sorting));
     this.handleClickOutside(event);
   };
 
