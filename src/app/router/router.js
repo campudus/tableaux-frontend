@@ -131,12 +131,7 @@ const extendedRouter = Router.extend({
     } = store.getState();
     const validTableId = await validateTableId(parseInt(tableId), tables);
     const validRowId = posOrNil(rowId);
-    const checkedColumnId = posOrNil(columnId);
-    const validColumnId = f.isNil(checkedColumnId)
-      ? f.isNil(validRowId)
-        ? null
-        : 1
-      : checkedColumnId;
+    const validColumnId = posOrNil(columnId);
 
     const validLangtag = await validateLangtag(langtag);
     currentLangtag = validLangtag;
