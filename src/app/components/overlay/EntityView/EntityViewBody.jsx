@@ -87,7 +87,7 @@ class EntityViewBody extends Component {
   componentDidMount() {
     const { cells, focusElementId } = this.props;
     const cellToFocus = focusElementId
-      ? f.find(f.propEq("id", focusElementId, cells))
+      ? f.find(f.propEq(["column", "id"], focusElementId), cells)
       : null;
     console.log("Focussing", focusElementId, "=", cellToFocus);
     const focusTarget =
