@@ -22,7 +22,8 @@ const {
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
-  ALL_ROWS_DATA_LOADED
+  ALL_ROWS_DATA_LOADED,
+  SET_FILTERS_AND_SORTING
 } = ActionTypes;
 
 const initialState = {
@@ -33,7 +34,9 @@ const initialState = {
   displayValues: {},
   startedGeneratingDisplayValues: false,
   currentLanguage: DefaultLangtag,
-  invisibleRows: []
+  invisibleRows: [],
+  filters: [],
+  sorting: []
 };
 
 // This sets display values for foreign tables, allowing us to track
@@ -50,9 +53,9 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
           f.pick(["id", "values"]),
           linesExist
             ? // Function might be called by "getForeignRows", thus
-              // delivering only a subset of existing rows. In this case,
-              // we just cache the new values
-              f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
+          // delivering only a subset of existing rows. In this case,
+          // we just cache the new values
+            f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
             : values
         ),
         acc
@@ -164,48 +167,53 @@ const maybeUpdateConcat = (tableView, action, completeState) => {
 
 export default (state = initialState, action, completeState) => {
   switch (action.type) {
-    case TOGGLE_COLUMN_VISIBILITY:
-      return toggleSingleColumn(state, action);
-    case HIDE_ALL_COLUMNS:
-      return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
-    case SET_COLUMNS_VISIBLE:
-      return { ...state, visibleColumns: action.columnIds };
-    case SET_CURRENT_TABLE:
-      return { ...state, currentTable: action.tableId };
-    case COLUMNS_DATA_LOADED:
-      return setInitialVisibleColumns(state, action);
-    case GENERATED_DISPLAY_VALUES:
-      return setLinkDisplayValues(state, action.displayValues);
-    case START_GENERATING_DISPLAY_VALUES:
-      return { ...state, startedGeneratingDisplayValues: true };
-    case SET_CURRENT_LANGUAGE:
-      return { ...state, currentLanguage: action.lang };
-    case TOGGLE_CELL_SELECTION:
-      return toggleSelectedCell(state, action);
-    case TOGGLE_CELL_EDITING:
-      return toggleCellEditing(state, action, completeState);
-    case CELL_SET_VALUE:
-      return updateDisplayValue("newValue", state, action, completeState);
-    case CELL_ROLLBACK_VALUE:
-      return updateDisplayValue("oldValue", state, action, completeState);
-    case CELL_SAVED_SUCCESSFULLY:
-      return maybeUpdateConcat(state, action, completeState);
-    case SET_DISPLAY_VALUE_WORKER:
-      return {
-        ...state,
-        worker: new Worker("/worker.bundle.js")
-      };
-    case ALL_ROWS_DATA_LOADED:
-      return {
-        ...state,
-        visibleRows: f.compose(
-          f.map(f.toInteger),
-          f.keys
-        )(action.result.rows)
-      };
-
-    default:
-      return state;
+  case TOGGLE_COLUMN_VISIBILITY:
+    return toggleSingleColumn(state, action);
+  case HIDE_ALL_COLUMNS:
+    return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
+  case SET_COLUMNS_VISIBLE:
+    return { ...state, visibleColumns: action.columnIds };
+  case SET_CURRENT_TABLE:
+    return { ...state, currentTable: action.tableId };
+  case COLUMNS_DATA_LOADED:
+    return setInitialVisibleColumns(state, action);
+  case GENERATED_DISPLAY_VALUES:
+    return setLinkDisplayValues(state, action.displayValues);
+  case START_GENERATING_DISPLAY_VALUES:
+    return { ...state, startedGeneratingDisplayValues: true };
+  case SET_CURRENT_LANGUAGE:
+    return { ...state, currentLanguage: action.lang };
+  case TOGGLE_CELL_SELECTION:
+    return toggleSelectedCell(state, action);
+  case TOGGLE_CELL_EDITING:
+    return toggleCellEditing(state, action, completeState);
+  case CELL_SET_VALUE:
+    return updateDisplayValue("newValue", state, action, completeState);
+  case CELL_ROLLBACK_VALUE:
+    return updateDisplayValue("oldValue", state, action, completeState);
+  case CELL_SAVED_SUCCESSFULLY:
+    return maybeUpdateConcat(state, action, completeState);
+  case SET_DISPLAY_VALUE_WORKER:
+    return {
+      ...state,
+      worker: new Worker("/worker.bundle.js")
+    };
+  case ALL_ROWS_DATA_LOADED:
+    return {
+      ...state,
+      visibleRows: f.compose(
+        f.map(f.toInteger),
+        f.keys
+      )(action.result.rows)
+    };
+  case SET_FILTERS_AND_SORTING:
+    return {
+      ...state,
+      filters: action.filters,
+      sorting: action.sorting
+    };
+  default:
+    return state;
   }
 };
 

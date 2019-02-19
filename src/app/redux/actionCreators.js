@@ -17,6 +17,7 @@ import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import { either } from "../helpers/functools";
 
 const {
   getAllTables,
@@ -44,7 +45,8 @@ const {
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
-  SET_DISPLAY_VALUE_WORKER
+  SET_DISPLAY_VALUE_WORKER,
+  SET_FILTERS_AND_SORTING
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -110,6 +112,7 @@ const loadColumns = tableId => {
 };
 
 const loadAllRows = tableId => {
+  console.log("loadAllRows");
   return {
     promise: makeRequest({
       apiRoute: getAllRowsForTable(tableId),
@@ -177,6 +180,28 @@ const loadCompleteTable = tableId => dispatch => {
   dispatch(setCurrentTable(tableId));
   dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
+
+  const getStoredViewObject = (tableId = null, name = "default") => {
+    if (tableId) {
+      return either(localStorage)
+        .map(f.get("tableViews"))
+        .map(JSON.parse)
+        .map(f.get([tableId.toString(), name]))
+        .getOrElse(null);
+    } else {
+      return either(localStorage)
+        .map(f.get("tableViews"))
+        .map(JSON.parse)
+        .getOrElse({});
+    }
+  };
+
+  const storedViewObject = getStoredViewObject(tableId);
+  const storedColumnView = f.get("visibleColumns", storedViewObject);
+  const storedRowsFilter = f.get("rowsFilter", storedViewObject) || {};
+
+  dispatch(setFiltersAndSorting(storedRowsFilter, []));
+  dispatch(setColumnsVisible(storedColumnView));
 };
 
 const setCurrentLanguage = lang => {
@@ -351,6 +376,13 @@ const deleteMediaFile = fileId => {
     ]
   };
 };
+const setFiltersAndSorting = (filters, sorting) => {
+  return {
+    type: SET_FILTERS_AND_SORTING,
+    filters,
+    sorting
+  };
+};
 
 const actionCreators = {
   loadTables: loadTables,
@@ -386,7 +418,8 @@ const actionCreators = {
   deleteMediaFolder: deleteMediaFolder,
   getMediaFile: getMediaFile,
   editMediaFile: editMediaFile,
-  deleteMediaFile: deleteMediaFile
+  deleteMediaFile: deleteMediaFile,
+  setFiltersAndSorting: setFiltersAndSorting
 };
 
 export default actionCreators;

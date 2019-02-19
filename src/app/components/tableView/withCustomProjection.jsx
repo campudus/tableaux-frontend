@@ -180,7 +180,6 @@ const tableOrFiltersChanged = (props, nextProps) => {
 
 const filterRows = props => {
   const { projection, rows, table, langtag, columns, allDisplayValues } = props;
-  console.log("filterRows()", props);
   if (f.isNil(rows) || f.isEmpty(allDisplayValues[table.id])) {
     return { visibleRows: f.range(0, f.size(rows)) };
   }
@@ -192,6 +191,7 @@ const filterRows = props => {
     langtag,
     projection.rows
   );
+  console.log(filteredRows);
 
   return filteredRows;
 };

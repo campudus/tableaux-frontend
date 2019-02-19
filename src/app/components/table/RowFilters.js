@@ -38,7 +38,7 @@ const FlagSearches = [
   FilterModes.WITH_COMMENT
 ];
 
-const rememberColumnIds = colSet => f.tap(val => colSet.add(val.colId));
+const rememberColumnIds = colSet => f.tap(val => colSet.add(val.column.id));
 
 const getFilteredRows = (
   currentTable,
@@ -48,7 +48,6 @@ const getFilteredRows = (
   filterSettings
 ) => {
   const rowsWithIndex = completeRowInformation(columns, currentTable, rows);
-  console.log(rowsWithIndex);
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
