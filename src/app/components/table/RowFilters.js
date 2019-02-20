@@ -118,7 +118,6 @@ const getFilteredRows = (
         filteredRows
       )
     : filteredRows;
-  console.log(closures.colsWithMatches);
   return {
     visibleRows: f.map("rowIndex", ordered),
     colsWithMatches: f.toArray(closures.colsWithMatches)

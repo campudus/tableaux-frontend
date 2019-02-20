@@ -17,8 +17,12 @@ import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
-import { either } from "../helpers/functools";
 import getFilteredRows from "../components/table/RowFilters";
+import {
+  getStoredViewObject,
+  saveFilterSettings,
+  saveColumnVisibility
+} from "../helpers/localStorage";
 
 const {
   getAllTables,
@@ -48,7 +52,8 @@ const {
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
   SET_DISPLAY_VALUE_WORKER,
-  SET_FILTERS_AND_SORTING
+  SET_FILTERS_AND_SORTING,
+  SET_SEARCH_OVERLAY
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -135,11 +140,14 @@ const toggleColumnVisibility = (tableId, columnId) => {
   };
 };
 
-const setColumnsVisible = columnIds => {
-  return {
+const setColumnsVisible = columnIds => (dispatch, getState) => {
+  dispatch({
     type: SET_COLUMNS_VISIBLE,
     columnIds
-  };
+  });
+  const state = getState();
+  const tableId = f.get(["tableView", "currentTable"], state);
+  saveColumnVisibility(tableId, columnIds);
 };
 const hideAllColumns = tableId => {
   return {
@@ -155,7 +163,7 @@ const setCurrentTable = tableId => {
   };
 };
 
-const generateDisplayValues = (rows, columns, tableId,langtag) => (
+const generateDisplayValues = (rows, columns, tableId, langtag) => (
   dispatch,
   getState
 ) => {
@@ -175,8 +183,15 @@ const generateDisplayValues = (rows, columns, tableId,langtag) => (
       displayValues
     });
     if (!f.isEmpty(filters)) {
-      dispatch(applyFiltersAndSorting(null, null,langtag));
+      dispatch(applyFiltersAndSorting(null, null, langtag));
     }
+  };
+};
+
+const setSearchOverlay = value => {
+  return {
+    type: SET_SEARCH_OVERLAY,
+    value
   };
 };
 
@@ -185,28 +200,20 @@ const loadCompleteTable = (tableId, urlFilters) => dispatch => {
   dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
 
-  const getStoredViewObject = (tableId = null, name = "default") => {
-    if (tableId) {
-      return either(localStorage)
-        .map(f.get("tableViews"))
-        .map(JSON.parse)
-        .map(f.get([tableId.toString(), name]))
-        .getOrElse(null);
-    } else {
-      return either(localStorage)
-        .map(f.get("tableViews"))
-        .map(JSON.parse)
-        .getOrElse({});
+  const { visibleColumns, rowsFilter } = getStoredViewObject(tableId);
+  if (urlFilters) {
+    dispatch(setSearchOverlay(true));
+    dispatch(setFiltersAndSorting(urlFilters, null));
+    dispatch(applyFiltersAndSorting());
+  } else {
+    if (!f.isEmpty(rowsFilter.filter)) {
+      const { filters, sortColumnId, sortValue } = rowsFilter;
+      dispatch(setSearchOverlay(true));
+      dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
+      dispatch(applyFiltersAndSorting());
     }
-  };
-
-  const storedViewObject = getStoredViewObject(tableId);
-  const columnView = f.get("visibleColumns", storedViewObject);
-  const rowsFilter = urlFilters || f.get("rowsFilter", storedViewObject) || [];
-  if (!f.isEmpty(rowsFilter)) {
-    dispatch(applyFiltersAndSorting(rowsFilter, []));
   }
-  dispatch(setColumnsVisible(columnView));
+  dispatch(setColumnsVisible(visibleColumns));
 };
 
 const setCurrentLanguage = lang => {
@@ -215,13 +222,7 @@ const setCurrentLanguage = lang => {
     lang
   };
 };
-const applyFiltersAndSorting = (filters, sorting, langtag) => (
-  dispatch,
-  getState
-) => {
-  if (filters && sorting) {
-    dispatch(setFiltersAndSorting(filters, sorting));
-  }
+const applyFiltersAndSorting = () => (dispatch, getState) => {
   if (!f.isEmpty(f.get(["tableView", "displayValues"], getState()))) {
     const updateVisibleRows = completeState => {
       const state = completeState.tableView;
@@ -234,7 +235,7 @@ const applyFiltersAndSorting = (filters, sorting, langtag) => (
         ],
         completeState
       );
-      const { filters, sorting } = state;
+      const { filters, sorting, currentLanguage } = state;
 
       const isFilterEmpty = filter =>
         f.isEmpty(filter.value) && !f.isString(filter.mode);
@@ -248,47 +249,22 @@ const applyFiltersAndSorting = (filters, sorting, langtag) => (
         table,
         unfilteredRows,
         columns,
-        langtag,
+        currentLanguage,
         rowsFilter
       );
       return {
         visibleColumns: colsWithMatches || state.visibleColumns,
-        visibleRows
+        visibleRows,
+        rowsFilter
       };
     };
-    const { visibleColumns, visibleRows } = updateVisibleRows(getState());
-    const action = () => {
-      return { type: APPLY_FILTERS_AND_SORTING, visibleColumns, visibleRows };
-    };
-    dispatch(action());
+    const { visibleColumns, visibleRows, rowsFilter } = updateVisibleRows(
+      getState()
+    );
+    dispatch({ type: APPLY_FILTERS_AND_SORTING, visibleColumns, visibleRows });
+    const currentTable = f.get(["tableView", "currentTable"], getState());
+    saveFilterSettings(currentTable, rowsFilter);
   }
-
-  // const state = getState();
-  // const currentTable = f.get(["tableView", "currentTable"], state);
-  // const displayValues = f.get(
-  //   ["tableView", "displayValues", currentTable],
-  //   state
-  // );
-  // const validFilters = filters || f.get(["tableView", "filters"], state);
-  // const validSorting = sorting || f.get(["tableView", "sorting"], state);
-  // if (f.isEmpty(displayValues)) {
-  //   return dispatch(setFiltersAndSorting(validFilters, validSorting));
-  // }
-  // const filterSettings = { filter: validFilters, sorting: validSorting };
-  // const rows = f.get(["rows", currentTable,"data"], state);
-  // const columns = f.get(["columns", currentTable,"data"], state);
-  // const langtag = f.get(["tableView", "currentLangtag"], state);
-  // const tableDisplayValues = f.get(["tableView", "displayValues",currentTable], state);
-
-  // const { visibleRows, colsWithMatches } = getFilteredRows(
-  //   currentTable,
-  //   rows,
-  //   columns,
-  //   langtag,
-  //   filterSettings,
-  //   tableDisplayValues
-  // );
-  // console.log(visibleRows)
 };
 
 const showToast = data => {
@@ -457,12 +433,18 @@ const deleteMediaFile = fileId => {
     ]
   };
 };
-const setFiltersAndSorting = (filters, sorting) => {
-  return {
+const setFiltersAndSorting = (filters, sorting, apply) => (
+  dispatch,
+  getState
+) => {
+  dispatch({
     type: SET_FILTERS_AND_SORTING,
     filters,
     sorting
-  };
+  });
+  if (apply) {
+    dispatch(applyFiltersAndSorting());
+  }
 };
 
 const actionCreators = {
@@ -501,7 +483,8 @@ const actionCreators = {
   editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
-  applyFiltersAndSorting: applyFiltersAndSorting
+  applyFiltersAndSorting: applyFiltersAndSorting,
+  setSearchOverlay: setSearchOverlay
 };
 
 export default actionCreators;

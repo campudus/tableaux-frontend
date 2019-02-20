@@ -23,7 +23,8 @@ const {
   CELL_SAVED_SUCCESSFULLY,
   ALL_ROWS_DATA_LOADED,
   APPLY_FILTERS_AND_SORTING,
-  SET_FILTERS_AND_SORTING
+  SET_FILTERS_AND_SORTING,
+  SET_SEARCH_OVERLAY
 } = ActionTypes;
 
 const initialState = {
@@ -36,7 +37,8 @@ const initialState = {
   currentLanguage: DefaultLangtag,
   visibleRows: [],
   filters: [],
-  sorting: []
+  sorting: [],
+  searchOverlayOpen:false
 };
 
 // This sets display values for foreign tables, allowing us to track
@@ -108,12 +110,14 @@ const toggleCellEditing = (state, action, completeState) => {
 };
 
 const setInitialVisibleColumns = (state, action) =>
-  f.compose(
-    ids => f.assoc("visibleColumns")(ids)(state),
-    f.map("id"),
-    f.slice(0, 10),
-    f.prop(["result", "columns"])
-  )(action);
+  f.isEmpty(f.get("visibleColumns", state))
+    ? f.compose(
+        ids => f.assoc("visibleColumns")(ids)(state),
+        f.map("id"),
+        f.slice(0, 10),
+        f.prop(["result", "columns"])
+      )(action)
+    : state;
 
 const toggleSingleColumn = (state, action) => {
   const { columnId } = action;
@@ -182,7 +186,11 @@ export default (state = initialState, action, completeState) => {
     case START_GENERATING_DISPLAY_VALUES:
       return { ...state, startedGeneratingDisplayValues: true };
     case SET_CURRENT_LANGUAGE:
-      return { ...state, currentLanguage: action.lang };
+      if (state.currentLanguage == action.lang) {
+        return state;
+      } else {
+        return { ...state, currentLanguage: action.lang };
+      }
     case TOGGLE_CELL_SELECTION:
       return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
@@ -209,51 +217,21 @@ export default (state = initialState, action, completeState) => {
     case APPLY_FILTERS_AND_SORTING:
       return {
         ...state,
+        searchOverlayOpen:false,
         visibleRows: action.visibleRows,
-        visibleColumns: f.isEmpty(action.visibleColumns) ? state.visibleColumns : action.visibleColumns
+        visibleColumns: f.isEmpty(action.visibleColumns)
+          ? state.visibleColumns
+          : action.visibleColumns
       };
     case SET_FILTERS_AND_SORTING:
       return {
         ...state,
-        filters: action.filters,
-        sorting: action.sorting
+        filters: action.filters || state.filters,
+        sorting: action.sorting || state.sorting
       };
+    case SET_SEARCH_OVERLAY:
+      return {...state, searchOverlayOpen: action.value}
     default:
       return state;
   }
-};
-
-const updateVisibleRows = (state, completeState) => {
-  const { currentTable } = state;
-  const [columns, rows, table] = f.props(
-    [
-      ["columns", currentTable, "data"],
-      ["rows", currentTable, "data"],
-      ["tables", "data", currentTable]
-    ],
-    completeState
-  );
-  const { filters, sorting, langtag } = state;
-
-  const isFilterEmpty = filter =>
-    f.isEmpty(filter.value) && !f.isString(filter.mode);
-  const rowsFilter = {
-    sortColumnId: sorting.columnId,
-    sortValue: sorting.value,
-    filters: f.reject(isFilterEmpty, filters)
-  };
-  const { colsWithMatches, visibleRows } = getFilteredRows(
-    table,
-    rows,
-    columns,
-    langtag,
-    rowsFilter,
-    completeState
-  );
-  console.log("visible Rows", visibleRows);
-  return {
-    ...state,
-    visibleColumns: colsWithMatches || state.visibleColumns,
-    visibleRows
-  };
 };

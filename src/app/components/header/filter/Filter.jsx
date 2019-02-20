@@ -31,7 +31,7 @@ class FilterButton extends React.PureComponent {
       currentFilter,
       columns,
       langtag,
-      filterActions,
+      actions,
       setRowFilter
     } = this.props;
     if (this.state.open) {
@@ -41,7 +41,7 @@ class FilterButton extends React.PureComponent {
           onClickedOutside={this.handleClickedOutside}
           columns={columns}
           currentFilter={currentFilter}
-          filterActions={filterActions}
+          actions={actions}
           setRowFilter={setRowFilter}
         />
       );

@@ -17,7 +17,6 @@ import i18n from "i18next";
 import TableauxRouter from "../../router/router";
 import pasteCellValue from "../cells/cellCopyHelper";
 import JumpSpinner from "./JumpSpinner";
-import withCustomProjection from "./withCustomProjection";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import PasteCellIcon from "../header/PasteCellIcon";
 import { showDialog } from "../overlay/GenericOverlay";
@@ -36,7 +35,7 @@ const mapStatetoProps = (state, props) => {
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const tableView = f.get("tableView", state);
-  const { startedGeneratingDisplayValues,visibleRows, visibleColumns,filters, sorting } = tableView;
+  const { startedGeneratingDisplayValues,visibleRows, visibleColumns,filters, sorting,searchOverlayOpen } = tableView;
   const allDisplayValues = f.get(["displayValues"], tableView);
 
   if (table) {
@@ -54,11 +53,11 @@ const mapStatetoProps = (state, props) => {
     visibleRows,
     visibleColumns,
     filters,
-    sorting
+    sorting,
+    searchOverlayOpen
   };
 };
 
-// @withCustomProjection
 @applyFiltersAndVisibility
 // @canFocusCell
 class TableView extends PureComponent {
@@ -234,7 +233,8 @@ class TableView extends PureComponent {
       navigate,
       actions,
       allDisplayValues,
-      rows
+      rows,
+      searchOverlayOpen
     } = this.props;
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
@@ -274,7 +274,8 @@ class TableView extends PureComponent {
             table={table}
             columns={columns}
             currentFilter={{filters:this.props.tableView.filters,sorting:this.props.tableView.sorting}}
-            setRowFilter={this.props.actions.applyFiltersAndSorting}
+            setRowFilter={this.props.actions.setFiltersAndSorting}
+            actions={actions}
           />
           {table && columns && columns.length > 1 ? (
             <ColumnFilter
@@ -307,7 +308,7 @@ class TableView extends PureComponent {
             !!this.props.showCellJumpOverlay && !this.state.searchOverlayOpen
           }
         />
-        <SearchOverlay isOpen={this.state.searchOverlayOpen} />
+        <SearchOverlay isOpen={searchOverlayOpen} />
       </div>
     );
   };

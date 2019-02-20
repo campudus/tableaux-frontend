@@ -53,6 +53,8 @@ const extendedRouter = Router.extend({
   actions: bindActionCreators(actionCreators, store.dispatch),
 
   renderOrSwitchView: function(viewName, params) {
+    const { setCurrentLanguage } = this.actions;
+    setCurrentLanguage(params.langtag);
     ReactDOM.render(
       <Provider store={store}>
         <Tableaux
@@ -75,8 +77,6 @@ const extendedRouter = Router.extend({
     const his = this.history;
     const path = his.getPath();
     const newPath = path.replace(currentLangtag, newLangtag);
-    const { setCurrentLanguage } = this.actions;
-    setCurrentLanguage(newLangtag);
     i18n.changeLanguage(newLangtag);
     currentLangtag = newLangtag;
     his.navigate(newPath, { trigger: true });

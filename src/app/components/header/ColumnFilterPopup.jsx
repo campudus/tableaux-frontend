@@ -121,8 +121,7 @@ class ColumnFilterPopup extends React.Component {
     const col = columns[index];
     const name = this.getColName(col);
     const {
-      columnActions: { toggleColumnVisibility },
-      tableId
+      columnActions: { setColumnsVisible }
     } = this.props;
 
     const cssClass = classNames("column-filter-checkbox-wrapper", {
@@ -136,7 +135,15 @@ class ColumnFilterPopup extends React.Component {
         className={cssClass}
         key={key}
         style={style}
-        onClick={() => toggleColumnVisibility(tableId, col.id)}
+        onClick={() =>
+          setColumnsVisible(
+            f.compose(
+              f.map("id"),
+              f.filter("visible"),
+              f.update([index, "visible"], isVisible => !isVisible)
+            )(columns)
+          )
+        }
         onMouseEnter={() => this.setState({ selectedId: index })}
       >
         <input
