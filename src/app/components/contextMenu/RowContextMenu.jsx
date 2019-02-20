@@ -46,10 +46,10 @@ class RowContextMenu extends React.Component {
     this.props.onClickOutside();
   }
 
-  deleteRow = event => {
-    const { row, langtag } = this.props;
-    this.closeRowContextMenu();
-    initiateDeleteRow(row, langtag);
+  deleteRow = () => {
+    const { cell, row, langtag } = this.props;
+    console.log("deleteRow()", cell, row, langtag);
+    initiateDeleteRow({ row, table: cell.table, langtag });
   };
 
   showTranslations = () => {

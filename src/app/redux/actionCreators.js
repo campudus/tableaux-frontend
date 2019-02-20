@@ -29,7 +29,8 @@ const {
   getAllColumnsForTable,
   toRows,
   toFolder,
-  toFile
+  toFile,
+  toRow
 } = API_ROUTES;
 
 const {
@@ -45,6 +46,7 @@ const {
   ALL_ROWS_DATA_LOADED,
   ALL_ROWS_DATA_LOAD_ERROR,
   ADDITIONAL_ROWS_DATA_LOADED,
+  DELETE_ROW,
   SET_COLUMNS_VISIBLE,
   HIDE_ALL_COLUMNS,
   SET_CURRENT_TABLE,
@@ -66,6 +68,7 @@ const {
   TOGGLE_CELL_EDITING,
   TOGGLE_EXPANDED_ROW
 } = actionTypes.tableView;
+
 const {
   SHOW_TOAST,
   HIDE_TOAST,
@@ -483,6 +486,15 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   }
 };
 
+const deleteRow = action => ({
+  ...action,
+  promise: makeRequest({
+    apiRoute: toRow({ tableId: action.table.id, rowId: action.row.id }),
+    method: "GET" //"DELETE"
+  }),
+  actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
+});
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -501,6 +513,7 @@ const actionCreators = {
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   changeCellValue,
+  deleteRow,
   addAnnotationLangtags,
   removeAnnotationLangtags,
   addTextAnnotation,

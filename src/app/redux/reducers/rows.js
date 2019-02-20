@@ -10,6 +10,7 @@ const {
   ALL_ROWS_DATA_LOADED,
   ALL_ROWS_DATA_LOAD_ERROR,
   ADDITIONAL_ROWS_DATA_LOADED,
+  DELETE_ROW,
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
@@ -152,6 +153,11 @@ const setCellAnnotation = (state, action, completeState) => {
   );
 };
 
+const deleteRow = (action, state) => {
+  const { table, row } = action;
+  return f.update([table.id, "data"], f.remove(f.propEq("id", row.id)), state);
+};
+
 const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
     case ALL_ROWS_LOADING_DATA:
@@ -167,6 +173,8 @@ const rows = (state = initialState, action, completeState) => {
       };
     case ADDITIONAL_ROWS_DATA_LOADED:
       return insertSkeletonRows(state, action, completeState);
+    case DELETE_ROW:
+      return deleteRow(action, state);
     case CELL_SET_VALUE: {
       const [rowIdx, columnIdx] = idsToIndices(action, completeState);
       const rowSelector = [action.tableId, "data", rowIdx, "values"];
