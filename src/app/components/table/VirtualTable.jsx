@@ -26,7 +26,7 @@ const ROW_HEIGHT = 45;
 export default class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
-    this.updateSelectedCellId();
+    this.updateSelectedCell();
     this.state = {
       openAnnotations: {},
       scrolledCell: {},
@@ -403,35 +403,34 @@ export default class VirtualTable extends PureComponent {
       !changeInRowSelection &&
       next.scrolledCell !== this.state.lastScrolledCell
     ) {
-      this.scrollToCell(
-        (next.selectedCell || {}).id,
-        next.selectedCellExpandedRow
-      );
+      this.scrollToCell(next.selectedCell, next.selectedCellExpandedRow);
     } else if (changeInRowSelection) {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
   }
 
-  updateSelectedCellId = (
-    idString,
+  updateSelectedCell = (
+    cell,
     selectedLang = this.props.selectedCellExpandedRow
   ) => {
-    if (f.isEmpty(idString) || !f.isString(idString)) {
+    if (f.isEmpty(cell)) {
       this.selectedIds = {};
       return;
     }
-    const [colId, rowId] = f.takeRight(2, idString.split("-"));
+    const { columnId, rowId } = cell;
     this.selectedIds = {
       row: parseInt(rowId),
-      column: parseInt(colId),
+      column: parseInt(columnId),
       langtag: selectedLang || null
     };
   };
 
-  scrollToCell = (cellId, langtag = this.props.selectedCellExpandedRow) => {
-    this.updateSelectedCellId(cellId, langtag);
+  scrollToCell = (cell, langtag = this.props.selectedCellExpandedRow) => {
+    this.updateSelectedCell(cell, langtag);
+    // TODO-W
     const { scrolledCell, lastScrolledCell } = this.state;
-    if (!cellId || f.get("scrolledCell", scrolledCell) === lastScrolledCell) {
+
+    if (f.isEmpty(cell) || scrolledCell.cell === lastScrolledCell) {
       // when called by cell deselection
       this.setState({
         scrolledCell: {},
@@ -439,6 +438,7 @@ export default class VirtualTable extends PureComponent {
       });
       return false;
     }
+
     const { columns, rows } = this.props;
     const rowIndex = f.add(
       1,
@@ -452,7 +452,7 @@ export default class VirtualTable extends PureComponent {
       scrolledCell: {
         columnIndex,
         rowIndex,
-        scrolledCell: cellId
+        scrolledCell: cell
       }
     });
   };
@@ -462,6 +462,8 @@ export default class VirtualTable extends PureComponent {
   };
 
   componentDidUpdate() {
+    // TODO-W
+    // console.log("didUpdate", this.state);
     // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
@@ -485,10 +487,10 @@ export default class VirtualTable extends PureComponent {
       rows,
       expandedRowIds,
       columns,
-      columnKeys,
-      selectedCell,
-      selectedCellEditing,
-      selectedCellExpandedRow
+      columnKeys // ,
+      // selectedCell,
+      // selectedCellEditing,
+      // selectedCellExpandedRow
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
     const { columnIndex, rowIndex } =
@@ -503,10 +505,10 @@ export default class VirtualTable extends PureComponent {
     const columnCount = f.size(this.visibleColumnIndices) + 1;
     const rowCount = f.size(rows) + 1;
 
-    const selectedCellKey = `${f.get(
+    /*const selectedCellKey = `${f.get(
       "id",
       selectedCell
-    )}-${selectedCellEditing}-${selectedCellExpandedRow}`;
+    )}-${selectedCellEditing}-${selectedCellExpandedRow}`;*/
 
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
@@ -530,7 +532,7 @@ export default class VirtualTable extends PureComponent {
               fixedRowCount={1}
               width={width}
               height={height}
-              selectedCell={selectedCellKey}
+              // selectedCell={selectedCellKey}
               expandedRows={expandedRowIds}
               openAnnotations={openAnnotations}
               scrollToRow={rowIndex}
