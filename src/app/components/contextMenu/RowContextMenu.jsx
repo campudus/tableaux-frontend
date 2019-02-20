@@ -76,7 +76,7 @@ class RowContextMenu extends React.Component {
   showEntityView = () => {
     const { row, langtag, cell, rows } = this.props;
     initiateEntityView({
-      columnId: cell.column.Id,
+      columnId: cell.column.id,
       langtag,
       row,
       rows,
@@ -112,7 +112,8 @@ class RowContextMenu extends React.Component {
   };
 
   canTranslate = cell =>
-    cell.isMultiLanguage && cell.isEditable && !translationNeverNeeded(cell);
+    cell.column.multilanguage &&
+    /*cell.isEditable &&*/ !translationNeverNeeded(cell);
 
   requestTranslationsItem = () => {
     const { langtag, cell, t } = this.props;

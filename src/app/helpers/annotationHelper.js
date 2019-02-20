@@ -1,7 +1,6 @@
 import Raven from "raven-js";
-import i18n from "i18next";
-
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
 import {
@@ -10,6 +9,7 @@ import {
   isTextAnnotation
 } from "../redux/actions/annotation-specs";
 import { maybe, unless } from "./functools";
+import { setRowFlag } from "../redux/actions/annotationActions";
 import { showDialog } from "../components/overlay/GenericOverlay";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
@@ -41,12 +41,6 @@ const getAnnotation = (annotation, cell) => {
 
 const setCellAnnotation = (annotation, cell) => {
   const payload = { annotation, cell };
-  console.log(JSON.stringify(annotation, null, 2));
-  console.table({
-    isMultilangAnnotation: isMultilangAnnotation(annotation),
-    isTextAnnotation: isTextAnnotation(annotation),
-    isFlagAnnotation: isFlagAnnotation(annotation)
-  });
   const action = isTextAnnotation(annotation)
     ? actions.addTextAnnotation
     : isMultilangAnnotation(annotation)
@@ -91,6 +85,15 @@ const removeTranslationNeeded = (langtag, cell) => {
       cell
     })
   );
+};
+
+const setRowFinal = ({ table, row, value = true }) => {
+  store.dispatch(setRowFlag, {
+    table,
+    row,
+    flagName: "final",
+    flagValue: value
+  });
 };
 
 const setRowAnnotation = () => null;
@@ -146,6 +149,7 @@ export {
   refreshAnnotations,
   setRowAnnotation,
   setCellAnnotation,
+  setRowFinal,
   unlockRow,
   isLocked,
   isTranslationNeeded

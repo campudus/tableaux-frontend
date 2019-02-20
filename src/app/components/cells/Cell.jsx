@@ -13,6 +13,7 @@ import {
   isUserAdmin
 } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
+import { reportUpdateReasons } from "../../helpers/devWrappers";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -149,10 +150,11 @@ class Cell extends React.Component {
     this.keyboardShortcuts = childrenEvents;
   };
 
-  openCellContextMenu = this.props.openCellContextMenu({
-    langtag: this.props.langtag,
-    cell: this.props.cell
-  });
+  openCellContextMenu = event =>
+    this.props.openCellContextMenu({
+      langtag: this.props.langtag,
+      cell: this.props.cell
+    })(event);
 
   cellClickedWorker = (event, withRightClick) => {
     const { actions, cell, editing, selected, langtag } = this.props;
@@ -250,11 +252,11 @@ class Cell extends React.Component {
     );
   }
 
-  //   componentDidUpdate = reportUpdateReasons(
-  //     `${this.props.column.kind}-cell-${this.props.row.id}-${
-  //       this.props.column.id
-  //     }-${this.props.langtag}`
-  //   );
+  // componentDidUpdate = reportUpdateReasons(
+  //   `${this.props.cell.column.kind}-cell-${this.props.cell.row.id}-${
+  //     this.props.cell.column.id
+  //   }-${this.props.langtag}`
+  // );
 
   render() {
     const {

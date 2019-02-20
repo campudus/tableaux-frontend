@@ -37,7 +37,7 @@ const selfHiding = compose(
     },
     {
       clearTimer: state =>
-        state && state.hidingTimer && clearInterval(hidingTimer),
+        state && state.hidingTimer && clearInterval(state.hidingTimer),
       resetTimer: (state, props) => () => {
         const { setTimer = () => null } = props;
         state && state.hidingTimer && clearInterval(state.hidingTimer);

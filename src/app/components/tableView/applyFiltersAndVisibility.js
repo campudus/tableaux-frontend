@@ -60,8 +60,6 @@ export default function(ComposedComponent) {
         columns
       ]);
 
-      console.log("Visible rows:", visibleRows);
-
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
         return (

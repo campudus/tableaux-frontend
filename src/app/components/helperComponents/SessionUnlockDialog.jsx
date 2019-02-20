@@ -24,7 +24,7 @@ class Candidates {
 
 const askForSessionUnlock = (el, key) => {
   if (!isLocked(el)) {
-    return null;
+    return {};
   }
   const { id } = el;
   // Otherwise typing into locked cells would automatically unlock

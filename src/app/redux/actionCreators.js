@@ -186,13 +186,14 @@ const setCurrentLanguage = lang => {
   };
 };
 
-const showToast = ({ content, duration = 2700 }) => {
-  console.log("ShowToast", content, duration);
-  return {
-    type: SHOW_TOAST,
-    content,
-    duration
-  };
+const showToast = data => {
+  return f.isEmpty(data)
+    ? { type: "NOTHING_TO_DO" }
+    : {
+        type: SHOW_TOAST,
+        content: data.content,
+        duration: data.duratin || 2700
+      };
 };
 
 const hideToast = () => ({ type: HIDE_TOAST });
