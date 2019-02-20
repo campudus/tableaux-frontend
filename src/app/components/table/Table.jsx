@@ -58,6 +58,9 @@ class Table extends Component {
         f.findIndex(col => col.id === columnId, columns) !== -1;
       const isValidRowId = f.findIndex(row => row.id === rowId, rows) !== -1;
 
+      const gotRowId = rowId !== null;
+      const gotColumnId = columnId !== null;
+
       const validColumnId = isValidColumnId ? columnId : 1;
       const validRowId = isValidRowId ? rowId : f.first(rows).id;
 
@@ -81,16 +84,21 @@ class Table extends Component {
           langtag
         );
 
-        // show toast, prio on row
-        actions.showToast({
-          content: (
-            <div id="cell-jump-toast">
-              {!isValidRowId
-                ? i18n.t("table:jump.no_such_row", { row: rowId })
-                : i18n.t("table:jump.no_such_column", { col: columnId })}
-            </div>
-          )
-        });
+        const showInvRowToast = !isValidRowId && gotRowId;
+        const showInvColToast = !isValidColumnId && gotColumnId;
+
+        if (showInvRowToast || showInvColToast) {
+          // show toast, prio on row
+          actions.showToast({
+            content: (
+              <div id="cell-jump-toast">
+                {showInvRowToast
+                  ? i18n.t("table:jump.no_such_row", { row: rowId })
+                  : i18n.t("table:jump.no_such_column", { col: columnId })}
+              </div>
+            )
+          });
+        }
       }
     }
 
