@@ -12,7 +12,6 @@ import {
   isUserAdmin
 } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
-import { reportUpdateReasons } from "../../helpers/devWrappers";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -79,6 +78,7 @@ class Cell extends React.Component {
     const nextCell = nextProps.cell;
 
     return (
+      this.props.langtag !== nextProps.langtag ||
       cell.id !== nextCell.id ||
       this.props.selected !== nextProps.selected ||
       this.props.inSelectedRow !== nextProps.inSelectedRow ||
