@@ -229,8 +229,9 @@ const mkBoolFilter = closures => ({ value, columnId }) => row => {
 
 const mkTranslatorFilter = closures => () => row => {
   if (f.isEmpty(closures.colsWithMatches)) {
-    row.columns.filter(f.get("isMultilanguage"));
-    // .forEach(rememberColumnIds(closures.colsWithMatches));
+    row.columns
+      .filter(f.get("isMultilanguage"))
+      .forEach(rememberColumnIds(closures.colsWithMatches));
   }
   return f.flow(
     f.map(["annotations", "translationNeeded", "langtags", closures.langtag]),
@@ -307,6 +308,7 @@ const mkFlagFilter = (closures, mode, value) => {
   return f.flow(
     f.get(["values"]),
     f.filter(findAnnotation),
+    f.forEach(rememberColumnIds(closures.colsWithMatches)),
     f.isEmpty,
     misMatch => (value ? !misMatch : misMatch)
   );
