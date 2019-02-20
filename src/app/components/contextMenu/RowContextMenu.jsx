@@ -67,9 +67,13 @@ class RowContextMenu extends React.Component {
     this.closeRowContextMenu();
   };
 
-  showDependency = event => {
-    const { row, langtag } = this.props;
-    initiateRowDependency(row, langtag);
+  showDependency = () => {
+    const {
+      cell: { table },
+      row,
+      langtag
+    } = this.props;
+    initiateRowDependency({ table, row, langtag });
     this.closeRowContextMenu();
   };
 

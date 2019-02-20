@@ -96,7 +96,7 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
   );
 }
 
-export function openShowDependency({ table, row }, langtag) {
+export function openShowDependency({ table, row, langtag }) {
   const itemName = <RowConcat row={row} langtag={langtag} />;
 
   store.dispatch(
