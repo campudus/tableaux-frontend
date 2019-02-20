@@ -61,7 +61,11 @@ const {
   ROW_CREATE_ERROR
 } = actionTypes;
 
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
+const {
+  TOGGLE_CELL_SELECTION,
+  TOGGLE_CELL_EDITING,
+  TOGGLE_EXPANDED_ROW
+} = actionTypes.tableView;
 const {
   SHOW_TOAST,
   HIDE_TOAST,
@@ -495,6 +499,7 @@ const actionCreators = {
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: toggleCellEditingOrUnlockCell,
+  toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   changeCellValue,
   addAnnotationLangtags,
   removeAnnotationLangtags,

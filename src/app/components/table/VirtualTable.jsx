@@ -201,16 +201,12 @@ export default class VirtualTable extends PureComponent {
       );
     }
 
-    const {
-      langtag,
-      rows,
-      expandedRowIds,
-      selectedCellExpandedRow,
-      toggleExpandedRow
-    } = this.props;
+    const { actions, langtag, rows, expandedRowIds } = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const locked = isLocked(row);
+    const toggleExpandedRow = rowId => () =>
+      actions.toggleExpandedRow({ rowId });
 
     return isRowExpanded ? (
       <div className="cell-stack">

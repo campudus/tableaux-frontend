@@ -1,13 +1,19 @@
-import ActionTypes from "../actionTypes";
 import f from "lodash/fp";
-import { DefaultLangtag } from "../../constants/TableauxConstants";
-import TableauxRouter from "../../router/router";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import { idsToIndices, calcConcatValues } from "../redux-helpers";
-import { isLocked, unlockRow } from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
+import { DefaultLangtag } from "../../constants/TableauxConstants";
+import { idsToIndices, calcConcatValues } from "../redux-helpers";
+import { ifElse } from "../../helpers/functools";
+import { isLocked, unlockRow } from "../../helpers/annotationHelper";
+import ActionTypes from "../actionTypes";
+import TableauxRouter from "../../router/router";
+import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
+import getDisplayValue from "../../helpers/getDisplayValue";
+
+const {
+  TOGGLE_CELL_SELECTION,
+  TOGGLE_CELL_EDITING,
+  TOGGLE_EXPANDED_ROW
+} = ActionTypes.tableView;
 const {
   TOGGLE_COLUMN_VISIBILITY,
   HIDE_ALL_COLUMNS,
@@ -32,6 +38,7 @@ const initialState = {
   visibleColumns: [],
   currentTable: null,
   displayValues: {},
+  expandedRowIds: [],
   startedGeneratingDisplayValues: false,
   currentLanguage: DefaultLangtag,
   visibleRows: [],
@@ -94,6 +101,16 @@ const toggleSelectedCell = (state, action) => {
         : {}
     )
   )(state);
+};
+
+const toggleExpandedRow = (state, action) => {
+  const { rowId } = action;
+
+  return f.update(
+    "expandedRowIds",
+    ifElse(f.includes(rowId), f.pull(rowId), f.concat(rowId)),
+    state
+  );
 };
 
 const toggleCellEditing = (state, action, completeState) => {
@@ -196,6 +213,8 @@ export default (state = initialState, action, completeState) => {
       }
     case TOGGLE_CELL_SELECTION:
       return toggleSelectedCell(state, action);
+    case TOGGLE_EXPANDED_ROW:
+      return toggleExpandedRow(state, action);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action, completeState);
     case CELL_SET_VALUE:

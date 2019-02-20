@@ -11,8 +11,7 @@ import {
   doto,
   maybe,
   preventDefault,
-  stopPropagation,
-  when
+  stopPropagation
 } from "../../helpers/functools";
 import RowContextMenu from "../contextMenu/RowContextMenu";
 import VirtualTable from "./VirtualTable";
@@ -35,8 +34,6 @@ class Table extends Component {
       scrolledHorizontal: 0,
       selectedCellEditing: false,
       // needed for multilanguage cell selection
-      expandedRowIds: [], // Array
-      selectedCellExpandedRow: null,
       rowContextMenu: null,
       showScrollToLeftButton: false
     };
@@ -122,15 +119,6 @@ class Table extends Component {
   //       // tableNavigationWorker.checkFocusInsideTable.call(this);
   //     }
   //   }
-
-  toggleExpandedRow = rowId => () => {
-    const { expandedRowIds } = this.state;
-    const newExpandedRowIds = f.cond([
-      [f.includes(rowId), f.pull(rowId)],
-      [f.stubTrue, f.concat(rowId)]
-    ])(expandedRowIds);
-    this.setState({ expandedRowIds: newExpandedRowIds });
-  };
 
   handleClickOutside = () => {
     const {
@@ -229,11 +217,7 @@ class Table extends Component {
       visibleColumns,
       visibleRows
     } = this.props;
-    const {
-      expandedRowIds,
-      selectedCellExpandedRow,
-      rowContextMenu
-    } = this.state;
+    const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
 
     const displayValues = doto(
@@ -276,9 +260,7 @@ class Table extends Component {
             langtag={langtag}
             selectedCell={(tableView && tableView.selectedCell) || {}}
             selectedCellEditing={(tableView && tableView.editiong) || false}
-            selectedCellExpandedRow={selectedCellExpandedRow}
-            toggleExpandedRow={this.toggleExpandedRow}
-            expandedRowIds={expandedRowIds}
+            expandedRowIds={tableView.expandedRowIds}
             fullyLoaded={this.props.fullyLoaded}
             openCellContextMenu={this.showRowContextMenu}
             closeCellContextMenu={this.hideRowContextMenu}
