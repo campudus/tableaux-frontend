@@ -6,9 +6,11 @@ import {
 import { getUserLanguageAccess, isUserAdmin } from "./accessManagementHelper";
 import { openEntityView } from "../components/overlay/EntityViewOverlay";
 
-export function initiateDeleteRow(row, langtag, overlayToCloseId) {
+// ({ table, row, langtag}) -> (string) -> void
+export function initiateDeleteRow(rowSpecs, overlayToCloseId) {
+  console.log("initiateDeleteRow", rowSpecs, isUserAdmin());
   if (isUserAdmin()) {
-    confirmDeleteRow(row, langtag, overlayToCloseId);
+    confirmDeleteRow(rowSpecs, overlayToCloseId);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
   }
