@@ -6,7 +6,6 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
-import getFilteredRows from "../../components/table/RowFilters";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
 const {
@@ -23,6 +22,7 @@ const {
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
   ALL_ROWS_DATA_LOADED,
+  APPLY_FILTERS_AND_SORTING,
   SET_FILTERS_AND_SORTING
 } = ActionTypes;
 
@@ -34,7 +34,7 @@ const initialState = {
   displayValues: {},
   startedGeneratingDisplayValues: false,
   currentLanguage: DefaultLangtag,
-  invisibleRows: [],
+  visibleRows: [],
   filters: [],
   sorting: []
 };
@@ -53,9 +53,9 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
           f.pick(["id", "values"]),
           linesExist
             ? // Function might be called by "getForeignRows", thus
-          // delivering only a subset of existing rows. In this case,
-          // we just cache the new values
-            f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
+              // delivering only a subset of existing rows. In this case,
+              // we just cache the new values
+              f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
             : values
         ),
         acc
@@ -167,63 +167,73 @@ const maybeUpdateConcat = (tableView, action, completeState) => {
 
 export default (state = initialState, action, completeState) => {
   switch (action.type) {
-  case TOGGLE_COLUMN_VISIBILITY:
-    return toggleSingleColumn(state, action);
-  case HIDE_ALL_COLUMNS:
-    return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
-  case SET_COLUMNS_VISIBLE:
-    return { ...state, visibleColumns: action.columnIds };
-  case SET_CURRENT_TABLE:
-    return { ...state, currentTable: action.tableId };
-  case COLUMNS_DATA_LOADED:
-    return setInitialVisibleColumns(state, action);
-  case GENERATED_DISPLAY_VALUES:
-    return setLinkDisplayValues(state, action.displayValues);
-  case START_GENERATING_DISPLAY_VALUES:
-    return { ...state, startedGeneratingDisplayValues: true };
-  case SET_CURRENT_LANGUAGE:
-    return { ...state, currentLanguage: action.lang };
-  case TOGGLE_CELL_SELECTION:
-    return toggleSelectedCell(state, action);
-  case TOGGLE_CELL_EDITING:
-    return toggleCellEditing(state, action, completeState);
-  case CELL_SET_VALUE:
-    return updateDisplayValue("newValue", state, action, completeState);
-  case CELL_ROLLBACK_VALUE:
-    return updateDisplayValue("oldValue", state, action, completeState);
-  case CELL_SAVED_SUCCESSFULLY:
-    return maybeUpdateConcat(state, action, completeState);
-  case SET_DISPLAY_VALUE_WORKER:
-    return {
-      ...state,
-      worker: new Worker("/worker.bundle.js")
-    };
-  case ALL_ROWS_DATA_LOADED:
-    return {
-      ...state,
-      visibleRows: f.compose(
-        f.map(f.toInteger),
-        f.keys
-      )(action.result.rows)
-    };
-  case SET_FILTERS_AND_SORTING:
-    return {
-      ...state,
-      filters: action.filters,
-      sorting: action.sorting
-    };
-  default:
-    return state;
+    case TOGGLE_COLUMN_VISIBILITY:
+      return toggleSingleColumn(state, action);
+    case HIDE_ALL_COLUMNS:
+      return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
+    case SET_COLUMNS_VISIBLE:
+      return { ...state, visibleColumns: action.columnIds };
+    case SET_CURRENT_TABLE:
+      return { ...state, currentTable: action.tableId };
+    case COLUMNS_DATA_LOADED:
+      return setInitialVisibleColumns(state, action);
+    case GENERATED_DISPLAY_VALUES:
+      return setLinkDisplayValues(state, action.displayValues);
+    case START_GENERATING_DISPLAY_VALUES:
+      return { ...state, startedGeneratingDisplayValues: true };
+    case SET_CURRENT_LANGUAGE:
+      return { ...state, currentLanguage: action.lang };
+    case TOGGLE_CELL_SELECTION:
+      return toggleSelectedCell(state, action);
+    case TOGGLE_CELL_EDITING:
+      return toggleCellEditing(state, action, completeState);
+    case CELL_SET_VALUE:
+      return updateDisplayValue("newValue", state, action, completeState);
+    case CELL_ROLLBACK_VALUE:
+      return updateDisplayValue("oldValue", state, action, completeState);
+    case CELL_SAVED_SUCCESSFULLY:
+      return maybeUpdateConcat(state, action, completeState);
+    case SET_DISPLAY_VALUE_WORKER:
+      return {
+        ...state,
+        worker: new Worker("/worker.bundle.js")
+      };
+    case ALL_ROWS_DATA_LOADED:
+      return {
+        ...state,
+        visibleRows: f.compose(
+          f.map(f.toInteger),
+          f.keys
+        )(action.result.rows)
+      };
+    case APPLY_FILTERS_AND_SORTING:
+      return {
+        ...state,
+        visibleRows: action.visibleRows,
+        visibleColumns: f.isEmpty(action.visibleColumns) ? state.visibleColumns : action.visibleColumns
+      };
+    case SET_FILTERS_AND_SORTING:
+      return {
+        ...state,
+        filters: action.filters,
+        sorting: action.sorting
+      };
+    default:
+      return state;
   }
 };
 
-const updateVisibleColumns = (state, completeState, action) => {
+const updateVisibleRows = (state, completeState) => {
   const { currentTable } = state;
-  const [columns, table] = f.props(
-    [["columns", currentTable, "data"], ["tables", "data", currentTable]],
+  const [columns, rows, table] = f.props(
+    [
+      ["columns", currentTable, "data"],
+      ["rows", currentTable, "data"],
+      ["tables", "data", currentTable]
+    ],
     completeState
   );
-  const { filters, sorting, preparedRows, langtag } = action;
+  const { filters, sorting, langtag } = state;
 
   const isFilterEmpty = filter =>
     f.isEmpty(filter.value) && !f.isString(filter.mode);
@@ -232,16 +242,18 @@ const updateVisibleColumns = (state, completeState, action) => {
     sortValue: sorting.value,
     filters: f.reject(isFilterEmpty, filters)
   };
-  console.log("preparedRows:", preparedRows);
   const { colsWithMatches, visibleRows } = getFilteredRows(
     table,
-    preparedRows,
+    rows,
     columns,
     langtag,
-    rowsFilter
+    rowsFilter,
+    completeState
   );
-  if (f.isEmpty(colsWithMatches)) {
-    return { visibleRows, colsWithMatches: state.visibleColumns };
-  }
-  return { colsWithMatches, visibleRows };
+  console.log("visible Rows", visibleRows);
+  return {
+    ...state,
+    visibleColumns: colsWithMatches || state.visibleColumns,
+    visibleRows
+  };
 };

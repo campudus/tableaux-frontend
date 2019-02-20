@@ -18,6 +18,7 @@ import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { either } from "../helpers/functools";
+import getFilteredRows from "../components/table/RowFilters";
 
 const {
   getAllTables,
@@ -28,6 +29,7 @@ const {
 } = API_ROUTES;
 
 const {
+  APPLY_FILTERS_AND_SORTING,
   TABLE_LOADING_DATA,
   TABLE_DATA_LOADED,
   TABLE_DATA_LOAD_ERROR,
@@ -112,7 +114,6 @@ const loadColumns = tableId => {
 };
 
 const loadAllRows = tableId => {
-  console.log("loadAllRows");
   return {
     promise: makeRequest({
       apiRoute: getAllRowsForTable(tableId),
@@ -154,13 +155,13 @@ const setCurrentTable = tableId => {
   };
 };
 
-const generateDisplayValues = (rows, columns, tableId) => (
+const generateDisplayValues = (rows, columns, tableId,langtag) => (
   dispatch,
   getState
 ) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const {
-    tableView: { worker }
+    tableView: { worker, filters }
   } = getState();
   worker.postMessage([rows, columns, Langtags, tableId]);
   worker.onmessage = e => {
@@ -173,10 +174,13 @@ const generateDisplayValues = (rows, columns, tableId) => (
       type: GENERATED_DISPLAY_VALUES,
       displayValues
     });
+    if (!f.isEmpty(filters)) {
+      dispatch(applyFiltersAndSorting(null, null,langtag));
+    }
   };
 };
 
-const loadCompleteTable = tableId => dispatch => {
+const loadCompleteTable = (tableId, urlFilters) => dispatch => {
   dispatch(setCurrentTable(tableId));
   dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
@@ -197,11 +201,12 @@ const loadCompleteTable = tableId => dispatch => {
   };
 
   const storedViewObject = getStoredViewObject(tableId);
-  const storedColumnView = f.get("visibleColumns", storedViewObject);
-  const storedRowsFilter = f.get("rowsFilter", storedViewObject) || {};
-
-  dispatch(setFiltersAndSorting(storedRowsFilter, []));
-  dispatch(setColumnsVisible(storedColumnView));
+  const columnView = f.get("visibleColumns", storedViewObject);
+  const rowsFilter = urlFilters || f.get("rowsFilter", storedViewObject) || [];
+  if (!f.isEmpty(rowsFilter)) {
+    dispatch(applyFiltersAndSorting(rowsFilter, []));
+  }
+  dispatch(setColumnsVisible(columnView));
 };
 
 const setCurrentLanguage = lang => {
@@ -209,6 +214,81 @@ const setCurrentLanguage = lang => {
     type: SET_CURRENT_LANGUAGE,
     lang
   };
+};
+const applyFiltersAndSorting = (filters, sorting, langtag) => (
+  dispatch,
+  getState
+) => {
+  if (filters && sorting) {
+    dispatch(setFiltersAndSorting(filters, sorting));
+  }
+  if (!f.isEmpty(f.get(["tableView", "displayValues"], getState()))) {
+    const updateVisibleRows = completeState => {
+      const state = completeState.tableView;
+      const { currentTable } = state;
+      const [columns, rows, table] = f.props(
+        [
+          ["columns", currentTable, "data"],
+          ["rows", currentTable, "data"],
+          ["tables", "data", currentTable]
+        ],
+        completeState
+      );
+      const { filters, sorting } = state;
+
+      const isFilterEmpty = filter =>
+        f.isEmpty(filter.value) && !f.isString(filter.mode);
+      const rowsFilter = {
+        sortColumnId: sorting.columnId,
+        sortValue: sorting.value,
+        filters: f.reject(isFilterEmpty, filters)
+      };
+      const unfilteredRows = rows.map(f.identity);
+      const { colsWithMatches, visibleRows } = getFilteredRows(
+        table,
+        unfilteredRows,
+        columns,
+        langtag,
+        rowsFilter
+      );
+      return {
+        visibleColumns: colsWithMatches || state.visibleColumns,
+        visibleRows
+      };
+    };
+    const { visibleColumns, visibleRows } = updateVisibleRows(getState());
+    const action = () => {
+      return { type: APPLY_FILTERS_AND_SORTING, visibleColumns, visibleRows };
+    };
+    dispatch(action());
+  }
+
+  // const state = getState();
+  // const currentTable = f.get(["tableView", "currentTable"], state);
+  // const displayValues = f.get(
+  //   ["tableView", "displayValues", currentTable],
+  //   state
+  // );
+  // const validFilters = filters || f.get(["tableView", "filters"], state);
+  // const validSorting = sorting || f.get(["tableView", "sorting"], state);
+  // if (f.isEmpty(displayValues)) {
+  //   return dispatch(setFiltersAndSorting(validFilters, validSorting));
+  // }
+  // const filterSettings = { filter: validFilters, sorting: validSorting };
+  // const rows = f.get(["rows", currentTable,"data"], state);
+  // const columns = f.get(["columns", currentTable,"data"], state);
+  // const langtag = f.get(["tableView", "currentLangtag"], state);
+  // const tableDisplayValues = f.get(["tableView", "displayValues",currentTable], state);
+
+  // const { visibleRows, colsWithMatches } = getFilteredRows(
+  //   currentTable,
+  //   rows,
+  //   columns,
+  //   langtag,
+  //   filterSettings,
+  //   tableDisplayValues
+  // );
+  // console.log(visibleRows)
 };
 
 const showToast = data => {
@@ -420,7 +500,8 @@ const actionCreators = {
   getMediaFile: getMediaFile,
   editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile,
-  setFiltersAndSorting: setFiltersAndSorting
+  setFiltersAndSorting: setFiltersAndSorting,
+  applyFiltersAndSorting: applyFiltersAndSorting
 };
 
 export default actionCreators;
