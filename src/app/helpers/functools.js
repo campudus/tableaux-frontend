@@ -383,6 +383,10 @@ const tests = {
   ]
 };
 
+const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
+  cond(value) ? ifFn(value) : elseFn(value)
+);
+
 const preventDefault = event => maybe(event).method("preventDefault");
 const stopPropagation = event => maybe(event).method("stopPropagation");
 
@@ -407,5 +411,6 @@ export {
   stopPropagation,
   mapIndexed,
   filterIndexed,
+  ifElse,
   tests
 };
