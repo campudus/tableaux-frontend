@@ -490,7 +490,7 @@ const deleteRow = action => ({
   ...action,
   promise: makeRequest({
     apiRoute: toRow({ tableId: action.table.id, rowId: action.row.id }),
-    method: "GET" //"DELETE"
+    method: "DELETE"
   }),
   actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
 });
