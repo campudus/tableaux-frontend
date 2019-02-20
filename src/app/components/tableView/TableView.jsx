@@ -242,7 +242,6 @@ class TableView extends PureComponent {
       navigate,
       actions,
       allDisplayValues,
-      rows,
       filtering
     } = this.props;
     const columnActions = f.pick(

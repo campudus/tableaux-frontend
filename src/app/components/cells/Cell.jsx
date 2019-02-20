@@ -6,7 +6,6 @@ import classNames from "classnames";
 import f from "lodash/fp";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { either } from "../../helpers/functools";
 import {
   hasUserAccessToCountryCode,
   hasUserAccessToLanguage,
@@ -65,57 +64,6 @@ export const getAnnotationState = cell => {
   )(cell.annotations);
 
   return f.join("-", [flags, translations, comments, isLocked(cell.row)]);
-};
-
-export const contentChanged = (cell, langtag, oldValue) => value => {
-  if (
-    !cell.isMultiLanguage ||
-    either(cell)
-      .map(f.prop(["value", langtag]))
-      .orElse(f.prop("value")).value === oldValue
-  ) {
-    return;
-  }
-  const isPrimaryLanguage = langtag === f.first(Langtags);
-  const untranslated = f.flow(
-    f.drop(1),
-    f.filter(lt => f.isEmpty(f.prop([lt], value)))
-  )(Langtags);
-
-  const translationAnnotation =
-    f.get(["annotations", "translationNeeded"], cell) || {};
-  const translationsExist = untranslated.length !== Langtags.length - 1;
-  const allFlaggedForTranslation =
-    f.size(translationAnnotation.langtags) === Langtags.length - 1;
-
-  if (isPrimaryLanguage && allFlaggedForTranslation) {
-    // no need to ask for further flagging
-    return;
-  }
-
-  // if (isPrimaryLanguage) {
-  //   const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
-  //   const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
-  //     ? addTranslationNeeded(untranslated, cell)
-  //     : f.noop;
-  //   if (translationsExist) {
-  //     const column = cell.column;
-  //     const columnName = f.get(["displayName", langtag], column)
-  //       || f.get(["displayName", FallBackLanguage], column)
-  //       || f.get(["name"], column);
-  //     // openTranslationDialog(columnName, flagAllTranslations, flagEmptyTranslations);
-  //   } else {
-  //     flagEmptyTranslations();
-  //   }
-  // } else {
-  //   const remainingTranslations = f.remove(f.equals(langtag), f.get("langtags", translationAnnotation));
-  //   if (f.contains(langtag, f.get("langtags", translationAnnotation))) {
-  //     removeTranslationNeeded(langtag, cell);
-  //     if (f.isEmpty(remainingTranslations)) {
-  //       deleteCellAnnotation(translationAnnotation, cell);
-  //     }
-  //   }
-  // }
 };
 
 class Cell extends React.Component {

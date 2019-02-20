@@ -1,21 +1,20 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import ReactDOM from "react-dom";
-// import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
-// import * as tableRowsWorker from "./tableRowsWorker";
-// import * as tableNavigationWorker from "./tableNavigationWorker";
-// import * as tableContextMenu from "./tableContextMenu";
-import listensToClickOutside from "react-onclickoutside";
-import f from "lodash/fp";
-import {
-  maybe,
-  stopPropagation,
-  preventDefault,
-  doto
-} from "../../helpers/functools";
-import i18n from "i18next";
-import RowContextMenu from "../contextMenu/RowContextMenu";
 import { Portal } from "react-portal";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import f from "lodash/fp";
+import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
+import {
+  doto,
+  maybe,
+  preventDefault,
+  stopPropagation,
+  when
+} from "../../helpers/functools";
+import RowContextMenu from "../contextMenu/RowContextMenu";
 import VirtualTable from "./VirtualTable";
 import TableauxRouter from "../../router/router";
 
@@ -112,9 +111,9 @@ class Table extends Component {
   }
 
   componentWillReceiveProps(np) {
-    if (!this.props.fullyLoaded && np.fullyLoaded) {
-      this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
-    }
+    // if (!this.props.fullyLoaded && np.fullyLoaded) {
+    //   this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
+    // }
   }
 
   //   componentDidUpdate() {
