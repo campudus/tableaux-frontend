@@ -34,13 +34,19 @@ export default class VirtualTable extends PureComponent {
     };
   }
 
-  isCellSelected = (columnId, rowId, langtag) => {
+  isInSelectedRow = (rowId, langtag) => {
     const { tableView } = this.props;
     const selected = f.getOr({}, "selectedCell", tableView);
     return (
       rowId === selected.rowId &&
-      columnId === selected.columnId &&
       (f.isEmpty(langtag) || langtag === selected.langtag)
+    );
+  };
+
+  isCellSelected = (columnId, rowId, langtag) => {
+    return (
+      this.isInSelectedRow(rowId, langtag) &&
+      this.props.tableView.selectedCell.columnId === columnId
     );
   };
 
@@ -204,9 +210,6 @@ export default class VirtualTable extends PureComponent {
     } = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
-    const isRowSelected = !!(
-      this.selectedIds && row.id === this.selectedIds.row
-    );
     const locked = isLocked(row);
 
     return isRowExpanded ? (
@@ -217,7 +220,7 @@ export default class VirtualTable extends PureComponent {
             key={`${key}-${lt}`}
             langtag={lt}
             expanded={true}
-            selected={isRowSelected && lt === selectedCellExpandedRow}
+            selected={this.isInSelectedRow(row.id, lt)}
             row={row}
             isLocked={locked}
           />
@@ -229,7 +232,7 @@ export default class VirtualTable extends PureComponent {
         key={`${key}-${row.id}`}
         langtag={langtag}
         row={row}
-        selected={isRowSelected}
+        selected={this.isInSelectedRow(row.id, langtag)}
         expanded={false}
         isLocked={locked}
       />
@@ -250,7 +253,6 @@ export default class VirtualTable extends PureComponent {
     const { openAnnotations } = this.state;
     const cell = this.getCell(rowIndex, columnIndex);
     const { value } = cell;
-    const isInSelectedRow = cell.row.id === this.selectedIds.row;
     const isSelected = this.isCellSelected(cell.column.id, cell.row.id);
     const isEditing =
       isSelected && f.getOr(false, "tableView.editing", this.props);
@@ -271,7 +273,7 @@ export default class VirtualTable extends PureComponent {
         }
         isExpandedCell={false}
         selected={isSelected}
-        inSelectedRow={isInSelectedRow}
+        inSelectedRow={this.isInSelectedRow(cell.row.id, langtag)}
         editing={isEditing}
         toggleAnnotationPopup={this.setOpenAnnotations}
         openCellContextMenu={this.props.openCellContextMenu}
@@ -287,16 +289,11 @@ export default class VirtualTable extends PureComponent {
     const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
-    const tableLangtag = this.props.langtag;
 
     return (
-      // key={cell.id}
       <div className="cell-stack">
         {Langtags.map(langtag => {
           const isPrimaryLang = langtag === f.first(Langtags);
-          const isRowSelected =
-            row.id === f.get(["selectedCell", "rowId"], tableView) &&
-            langtag === f.prop(["SelectedCell", "langtag"], tableView);
           const isSelected = this.isCellSelected(column.id, row.id, langtag);
           const isEditing =
             isSelected && f.getOr(false, "tableView.editing", this.props);
@@ -322,7 +319,7 @@ export default class VirtualTable extends PureComponent {
               }
               isExpandedCell={!isPrimaryLang}
               selected={isSelected}
-              inSelectedRow={isRowSelected}
+              inSelectedRow={this.isInSelectedRow(row.id, langtag)}
               editing={isEditing}
               displayValue={displayValue}
               allDisplayValues={tableView.displayValues}
