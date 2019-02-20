@@ -107,18 +107,6 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     const { actions, cell, editing, selected, langtag } = this.props;
-    // ActionCreator.closeAnnotationsPopup();
-    // console.log(
-    //   cell.isMultiLanguage ? "multilanguage" : "",
-    //   cell.kind,
-    //   "cell clicked",
-    //   langtag,
-    //   ":",
-    //   cell,
-    //   "value: ",
-    //   cell.value,
-    //   cell.displayValue
-    // );
     const { table, column, row } = cell;
 
     if (!withRightClick) {
@@ -273,7 +261,6 @@ class Cell extends React.Component {
           selected={selected}
           inSelectedRow={inSelectedRow}
           editing={this.userCanEditValue && editing}
-          contentChanged={contentChanged}
           isMultiLanguage={column.multilanguage}
           setCellKeyboardShortcuts={
             f.contains(kind, noKeyboard)
