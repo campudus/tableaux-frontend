@@ -52,12 +52,12 @@ class RowContextMenu extends React.Component {
     initiateDeleteRow(row, langtag);
   };
 
-  showTranslations = event => {
+  showTranslations = () => {
     const {
-      props: { row },
+      props: { row, actions },
       closeRowContextMenu
     } = this;
-    // ActionCreator.toggleRowExpand(row.getId());
+    actions.toggleExpandedRow({ rowId: row.id });
     closeRowContextMenu();
   };
 
