@@ -64,21 +64,33 @@ class Table extends Component {
       // TODO-W
       // for later actions.setColumnsVisible()
       // make selected column visible if it is not already!
-      // console.warn("valid active cell", validColumnId, validRowId);
 
       if (!isValidColumnId || !isValidRowId) {
+        // refresh tableView with valid selected cell
         actions.toggleCellSelection({
           columnId: validColumnId,
           rowId: validRowId,
           langtag
         });
 
+        // update url
         TableauxRouter.selectCellHandler(
           table.id,
           validRowId,
           validColumnId,
           langtag
         );
+
+        // show toast, prio on row
+        actions.showToast({
+          content: (
+            <div id="cell-jump-toast">
+              {!isValidRowId
+                ? i18n.t("table:jump.no_such_row", { row: rowId })
+                : i18n.t("table:jump.no_such_column", { col: columnId })}
+            </div>
+          )
+        });
       }
     }
 
