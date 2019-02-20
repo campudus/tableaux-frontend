@@ -488,7 +488,8 @@ export default class VirtualTable extends PureComponent {
       columnKeys,
       selectedCell,
       selectedCellEditing,
-      selectedCellExpandedRow
+      selectedCellExpandedRow,
+      langtag
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
     const { columnIndex, rowIndex } =
@@ -517,6 +518,7 @@ export default class VirtualTable extends PureComponent {
         {({ height, width }) => {
           return (
             <MultiGrid
+              langtag={langtag}
               ref={this.storeGridElement}
               key={columnCount < 3 ? "no-fixed-rows" : "with-fixed-rows"}
               className="data-wrapper"

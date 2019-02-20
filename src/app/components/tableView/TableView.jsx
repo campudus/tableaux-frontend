@@ -30,7 +30,6 @@ import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
-  console.log(state);
   const { tableId } = props;
   const tables = f.get("tables.data", state);
   const table = tables[tableId];
@@ -65,7 +64,6 @@ const mapStatetoProps = (state, props) => {
 class TableView extends PureComponent {
   constructor(props) {
     super(props);
-    console.log(props)
 
     this.state = {
       initialLoading: false,
@@ -133,7 +131,6 @@ class TableView extends PureComponent {
         f.map(f.get("id")),
         f.toString
       )(columns);
-      console.log(rows)
       return (
         <div className="wrapper">
           <Table
@@ -276,8 +273,8 @@ class TableView extends PureComponent {
             langtag={langtag}
             table={table}
             columns={columns}
-            currentFilter={this.props.filters}
-            setRowFilter={this.props.actions.setFiltersAndSorting}
+            currentFilter={{filters:this.props.tableView.filters,sorting:this.props.tableView.sorting}}
+            setRowFilter={this.props.actions.applyFiltersAndSorting}
           />
           {table && columns && columns.length > 1 ? (
             <ColumnFilter

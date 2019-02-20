@@ -137,7 +137,8 @@ class Cell extends React.Component {
       this.props.annotationsOpen !== nextProps.annotationsOpen ||
       !f.eq(cell.value, nextCell.value) ||
       !f.eq(cell.displayValue, nextCell.displayValue) ||
-      !f.eq(cell.annotations, nextCell.annotations)
+      !f.eq(cell.annotations, nextCell.annotations) ||
+      !f.eq(this.props.langtag, nextProps.langtag)
     );
   };
 
@@ -288,6 +289,7 @@ class Cell extends React.Component {
 
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
+
 
     // onKeyDown event just for selected components
     return (

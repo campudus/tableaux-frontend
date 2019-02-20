@@ -135,10 +135,11 @@ const extendedRouter = Router.extend({
 
     const validLangtag = await validateLangtag(langtag);
     currentLangtag = validLangtag;
+    const urlOptions = parseOptions(options);
 
     if (currentTable !== validTableId || !currentTable) {
       const { loadCompleteTable, toggleCellSelection } = this.actions;
-      loadCompleteTable(validTableId);
+      loadCompleteTable(validTableId,f.get("filter",urlOptions));
 
       // when table changes set initial selected cell to values from url
       toggleCellSelection({
@@ -147,7 +148,6 @@ const extendedRouter = Router.extend({
         langtag: validLangtag
       });
     }
-
     const fullUrl =
       "/" +
       validLangtag +
@@ -161,7 +161,7 @@ const extendedRouter = Router.extend({
       langtag: validLangtag,
       columnId: validColumnId,
       rowId: validRowId,
-      urlOptions: parseOptions(options)
+      urlOptions: urlOptions
     };
 
     this.renderOrSwitchView(

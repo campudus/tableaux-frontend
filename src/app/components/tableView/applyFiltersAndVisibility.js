@@ -41,7 +41,8 @@ export default function(ComposedComponent) {
         allDisplayValues,
         actions,
         startedGeneratingDisplayValues,
-        table
+        table,
+        langtag
       } = this.props;
 
       // Start displayValue worker if neccessary
@@ -51,7 +52,7 @@ export default function(ComposedComponent) {
         !startedGeneratingDisplayValues
       ) {
         const { generateDisplayValues } = actions;
-        generateDisplayValues(rows, columns, table.id);
+        generateDisplayValues(rows, columns, table.id,langtag);
       }
 
       const canRenderTable = f.every(f.negate(f.isEmpty), [
@@ -73,7 +74,7 @@ export default function(ComposedComponent) {
                 f.map("id"),
                 f.join(";")
               )(columnsWithVisibility),
-              rows: rows,
+              rows: f.map(rowIndex => rows[rowIndex] ,visibleRows),
               visibleRows,
               canRenderTable
             }}
