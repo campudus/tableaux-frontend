@@ -17,6 +17,7 @@ import i18n from "i18next";
 import RowContextMenu from "../contextMenu/RowContextMenu";
 import { Portal } from "react-portal";
 import VirtualTable from "./VirtualTable";
+import TableauxRouter from "../../router/router";
 
 class Table extends Component {
   /**
@@ -33,7 +34,6 @@ class Table extends Component {
     this.state = {
       windowHeight: window.innerHeight,
       scrolledHorizontal: 0,
-      selectedCell: null,
       selectedCellEditing: false,
       // needed for multilanguage cell selection
       expandedRowIds: [], // Array
@@ -47,6 +47,40 @@ class Table extends Component {
     // Dispatcher.on(ActionTypes.SELECT_NEXT_CELL, tableNavigationWorker.setNextSelectedCell, this);
     // Dispatcher.on(ActionTypes.CREATE_ROW_OR_SELECT_NEXT_CELL, tableRowsWorker.createRowOrSelectNext, this);
     // Dispatcher.on(ActionTypes.DUPLICATE_ROW, tableRowsWorker.duplicateRow, this);
+
+    // validate given column- and rowId of selected cell
+    const { actions, columns, rows, table, tableView } = this.props;
+    const { selectedCell } = tableView;
+    const { columnId, rowId, langtag } = selectedCell;
+
+    if (columnId || rowId) {
+      const isValidColumnId =
+        f.findIndex(col => col.id === columnId, columns) !== -1;
+      const isValidRowId = f.findIndex(row => row.id === rowId, rows) !== -1;
+
+      const validColumnId = isValidColumnId ? columnId : 1;
+      const validRowId = isValidRowId ? rowId : f.first(rows).id;
+
+      // TODO-W
+      // for later actions.setColumnsVisible()
+      // make selected column visible if it is not already!
+      // console.warn("valid active cell", validColumnId, validRowId);
+
+      if (!isValidColumnId || !isValidRowId) {
+        actions.toggleCellSelection({
+          columnId: validColumnId,
+          rowId: validRowId,
+          langtag
+        });
+
+        TableauxRouter.selectCellHandler(
+          table.id,
+          validRowId,
+          validColumnId,
+          langtag
+        );
+      }
+    }
 
     window.addEventListener("resize", this.windowResize);
   }
