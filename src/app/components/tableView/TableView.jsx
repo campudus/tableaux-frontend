@@ -34,6 +34,7 @@ const mapStatetoProps = (state, props) => {
   const table = tables[tableId];
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
+  const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
   const {
     startedGeneratingDisplayValues,
@@ -61,7 +62,8 @@ const mapStatetoProps = (state, props) => {
     visibleColumns,
     filters,
     sorting,
-    searchOverlayOpen
+    searchOverlayOpen,
+    finishedLoading
   };
 };
 

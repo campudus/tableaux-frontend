@@ -43,14 +43,15 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         actions,
         startedGeneratingDisplayValues,
         table,
-        langtag
+        langtag,
+        finishedLoading
       } = this.props;
 
       // Start displayValue worker if neccessary
       if (
         f.every(f.negate(f.isEmpty), [rows, columns]) &&
         f.isEmpty(allDisplayValues[table.id]) &&
-        !startedGeneratingDisplayValues
+        !startedGeneratingDisplayValues && finishedLoading
       ) {
         const { generateDisplayValues } = actions;
         generateDisplayValues(rows, columns, table.id, langtag);

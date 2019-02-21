@@ -3,8 +3,9 @@ import fetch from "cross-fetch";
 import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import { doto } from "./functools.js";
+import API_ROUTES from "./apiRoutes";
 
-const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
+const buildURL = apiRoute => apiUrl(apiRoute);
 
 const paramsToString = params =>
   f.isEmpty(params)
@@ -43,7 +44,6 @@ export const makeRequest = async ({
 }) => {
   const targetUrl =
     (f.isString(apiRoute) ? buildURL(apiRoute) : url) + paramsToString(params);
-  console.log("apiHelper", method.toUpperCase(), targetUrl);
   const parseResponse = response => response[responseType.toLowerCase()]();
   return fetch(targetUrl, {
     method,
@@ -58,6 +58,7 @@ export const makeRequest = async ({
     })
     .then(parseResponse);
 };
+
 
 const sendTestData = path => fileName => data =>
   fetch("http://localhost:3004", {

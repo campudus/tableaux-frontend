@@ -210,12 +210,14 @@ export default (state = initialState, action, completeState) => {
         worker: new Worker("/worker.bundle.js")
       };
     case ALL_ROWS_DATA_LOADED:
+      const { currentTable } = state.currentTable;
+      const { rows } = f.get(["rows", currentTable, "data"]);
       return {
         ...state,
         visibleRows: f.compose(
           f.map(f.toInteger),
           f.keys
-        )(action.result.rows)
+        )(rows)
       };
     case SET_FILTERS_AND_SORTING:
       return {
