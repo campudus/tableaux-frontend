@@ -159,6 +159,7 @@ function getLanguageOfLangtag(langtag) {
   return langtag.split(langtagSeparatorRegex)[0];
 }
 
+// data structure for columns is identical
 function getTableDisplayName(table, langtag) {
   if (!table || !table.name || !langtag) {
     console.warn(
@@ -251,6 +252,7 @@ module.exports = {
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
   getTableDisplayName,
+  getColumnDisplayName: getTableDisplayName,
   getCountryOfLangtag,
   getCurrencyCode,
   getFallbackCurrencyValue,

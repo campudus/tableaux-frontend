@@ -37,18 +37,20 @@ const maybeUpdateConcats = (rows, action, completeState) => {
 
 const insertSkeletonRows = (state, action, completeState) => {
   const { tableId } = action;
+  console.log("insertSkeletonRows()", action);
   const table = f.prop(["tables", "data", tableId], completeState);
   const columns = f.prop(["columns", tableId, "data"], completeState);
   const rows = rowValuesToCells(table, columns)(action.rows);
   const hasRows = f.isArray(f.prop([tableId]));
   const pathToData = [tableId, "data"];
-  return hasRows
+  const skeletonRows = hasRows
     ? f.flow(
         f.append(f.__, state[tableId]),
         f.uniqBy(f.prop("id")),
         f.assoc(pathToData, f.__, state)
       )(rows)
     : f.assoc(pathToData, rows, state);
+  return f.merge({ finishedLoading: true, error: false }, skeletonRows);
 };
 
 const annotationsToObject = annotations => {
