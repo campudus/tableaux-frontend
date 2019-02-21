@@ -22,9 +22,8 @@ const {
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
   ALL_ROWS_DATA_LOADED,
-  APPLY_FILTERS_AND_SORTING,
   SET_FILTERS_AND_SORTING,
-  SET_SEARCH_OVERLAY
+  CLEAN_UP
 } = ActionTypes;
 
 const initialState = {
@@ -38,7 +37,7 @@ const initialState = {
   visibleRows: [],
   filters: [],
   sorting: [],
-  searchOverlayOpen:false
+  searchOverlayOpen: false
 };
 
 // This sets display values for foreign tables, allowing us to track
@@ -67,7 +66,7 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     linkDisplayValues
   );
 
-  return { ...state, displayValues: updatedDisplayValues };
+  return { ...state, displayValues: updatedDisplayValues, startedGeneratingDisplayValues: false };
 };
 
 const toggleSelectedCell = (state, action) => {
@@ -220,6 +219,8 @@ export default (state = initialState, action, completeState) => {
         filters: action.filters || state.filters,
         sorting: action.sorting || state.sorting
       };
+    case CLEAN_UP:
+      return { ...state,  filters:[], sorting:[], displayValues:{} };
     default:
       return state;
   }

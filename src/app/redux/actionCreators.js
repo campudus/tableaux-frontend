@@ -53,7 +53,8 @@ const {
   SET_CURRENT_LANGUAGE,
   SET_DISPLAY_VALUE_WORKER,
   SET_FILTERS_AND_SORTING,
-  SET_SEARCH_OVERLAY
+  SET_SEARCH_OVERLAY,
+  CLEAN_UP
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -140,6 +141,14 @@ const toggleColumnVisibility = (tableId, columnId) => {
   };
 };
 
+const cleanUp = () => (dispatch, getState) => {
+  const tableId = f.get(["tableView", "currentTable"], getState());
+  dispatch({
+    type: CLEAN_UP,
+    tableId
+  });
+};
+
 const setColumnsVisible = columnIds => (dispatch, getState) => {
   dispatch({
     type: SET_COLUMNS_VISIBLE,
@@ -201,7 +210,7 @@ const loadCompleteTable = (tableId, urlFilters) => dispatch => {
   if (urlFilters) {
     dispatch(setFiltersAndSorting(urlFilters, null));
   } else {
-    if (!f.isEmpty(rowsFilter.filters)) {
+    if (!f.isEmpty(f.get("filters", rowsFilter))) {
       const { filters, sortColumnId, sortValue } = rowsFilter;
       dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
     }
@@ -440,7 +449,7 @@ const actionCreators = {
   editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
-  setSearchOverlay: setSearchOverlay
+  cleanUp: cleanUp
 };
 
 export default actionCreators;

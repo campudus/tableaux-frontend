@@ -85,6 +85,7 @@ const extendedRouter = Router.extend({
   switchTableHandler: async function(tableId, langtag) {
     const { tables } = store.getState();
     const validTableId = await validateTableId(tableId, tables);
+    console.log("switchTableHandler");
     Raven.captureBreadcrumb({ message: "Switch table", data: tableId });
     Raven.captureMessage("Switch table", { level: "info" });
     router.navigate(langtag + "/tables/" + validTableId);
@@ -138,8 +139,9 @@ const extendedRouter = Router.extend({
     const urlOptions = parseOptions(options);
 
     if (currentTable !== validTableId || !currentTable) {
-      const { loadCompleteTable, toggleCellSelection } = this.actions;
-      loadCompleteTable(validTableId,f.get("filter",urlOptions));
+      const { loadCompleteTable, toggleCellSelection, cleanUp } = this.actions;
+      cleanUp(validTableId);
+      loadCompleteTable(validTableId, f.get("filter", urlOptions));
 
       // when table changes set initial selected cell to values from url
       toggleCellSelection({
