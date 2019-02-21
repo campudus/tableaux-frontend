@@ -35,8 +35,8 @@ const columns = (state = initialState, action) => {
     case CLEAN_UP:
       return {
         ...state,
-        [action.tableId]:[]
-      }
+        [action.tableId]: []
+      };
     default:
       return state;
   }

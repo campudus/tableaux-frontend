@@ -91,13 +91,16 @@ const tableOrFiltersChanged = (props, nextProps) => {
   const { tableId } = props;
   const displayValuesOf = f.prop(["allDisplayValues", tableId]);
   return (
-    (f.size(props.rows) !== f.size(nextProps.rows)) || // rows got initialized
+    f.size(props.rows) !== f.size(nextProps.rows) || // rows got initialized
     (f.isEmpty(displayValuesOf(props)) &&
       !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
-    (!f.isEqual(props.sorting, nextProps.sorting &&
-      !f.isEqual(props.filters, nextProps.filters) &&
+    !f.isEqual(
+      props.sorting,
+      nextProps.sorting &&
+        !f.isEqual(props.filters, nextProps.filters) &&
         !f.isEmpty(displayValuesOf(nextProps)) &&
-        !f.isEmpty(nextProps.rows)))
+        !f.isEmpty(nextProps.rows)
+    )
   );
 };
 
@@ -110,7 +113,7 @@ const filterRows = props => {
     langtag,
     columns,
     allDisplayValues,
-    actions:{setColumnsVisible}
+    actions: { setColumnsVisible }
   } = props;
   const nothingToFilter = f.isEmpty(sorting) && f.isEmpty(filters);
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
@@ -127,17 +130,16 @@ const filterRows = props => {
     sortValue: sorting.value,
     filters: f.reject(isFilterEmpty, filters)
   };
-  const {visibleRows,colsWithMatches } = getFilteredRows(
+  const { visibleRows, colsWithMatches } = getFilteredRows(
     table,
     unfilteredRows,
     columns,
     langtag,
     rowsFilter
   );
-  if(!f.isEmpty(colsWithMatches)){
+  if (!f.isEmpty(colsWithMatches)) {
     setColumnsVisible(colsWithMatches);
   }
-
 
   return { visibleRows, filtering: false };
 };

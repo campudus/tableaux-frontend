@@ -66,7 +66,11 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     linkDisplayValues
   );
 
-  return { ...state, displayValues: updatedDisplayValues, startedGeneratingDisplayValues: false };
+  return {
+    ...state,
+    displayValues: updatedDisplayValues,
+    startedGeneratingDisplayValues: false
+  };
 };
 
 const toggleSelectedCell = (state, action) => {
@@ -220,7 +224,7 @@ export default (state = initialState, action, completeState) => {
         sorting: action.sorting || state.sorting
       };
     case CLEAN_UP:
-      return { ...state,  filters:[], sorting:[], displayValues:{} };
+      return { ...state, filters: [], sorting: [], displayValues: {} };
     default:
       return state;
   }

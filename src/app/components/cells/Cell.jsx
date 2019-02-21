@@ -292,7 +292,6 @@ class Cell extends React.Component {
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
 
-
     // onKeyDown event just for selected components
     return (
       <div

@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 
 import { addCellId } from "../../helpers/getCellId";
-import { doto, when } from '../../helpers/functools';
+import { doto, when } from "../../helpers/functools";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import actionTypes from "../actionTypes";
 
@@ -213,7 +213,7 @@ const rows = (state = initialState, action, completeState) => {
     case CELL_SAVED_SUCCESSFULLY:
       return maybeUpdateConcats(state, action, completeState);
     case CLEAN_UP:
-      return {...state,[action.tableId]:[]}
+      return { ...state, [action.tableId]: [] };
     default:
       return state;
   }

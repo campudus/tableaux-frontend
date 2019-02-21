@@ -55,13 +55,13 @@ const applyToAllLangs = fn =>
 const isLangObj = column => column.multilanguage; //!f.isEmpty(f.intersection(f.keys(obj), Langtags));
 // Retrieve obj[lantag] or obj[DefaultLangtag].
 // If both are unset, return null if obj has language keys but not langtag or DefaultLangtag, else return obj
-const getValueForLang = (obj, lt,column) =>
+const getValueForLang = (obj, lt, column) =>
   f.get(lt, obj) || (isLangObj(column) ? null : obj) || "";
 
 // Return cell.value
 const getDefaultValue = column => value =>
   applyToAllLangs(lt => {
-    const val = getValueForLang(value, lt,column) || "";
+    const val = getValueForLang(value, lt, column) || "";
 
     return f.isEmpty(val) && !f.isNumber(val) ? "" : format(column, val);
   });
@@ -99,13 +99,13 @@ const getBoolValue = f.curry((column, value) => {
 // convert date to human-friendly format
 const getDateValue = column => value => {
   const getDate = lt => {
-    const date = getValueForLang(value, lt,column);
+    const date = getValueForLang(value, lt, column);
     const Formats =
       column.kind === ColumnKinds.datetime ? DateTimeFormats : DateFormats;
     return f.isEmpty(date)
       ? ""
       : Moment(date, Formats.formatForServer).format(
-          getValueForLang(column.format, lt,column) || Formats.formatForUser
+          getValueForLang(column.format, lt, column) || Formats.formatForUser
         );
   };
   return applyToAllLangs(getDate);

@@ -35,7 +35,14 @@ const mapStatetoProps = (state, props) => {
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const tableView = f.get("tableView", state);
-  const { startedGeneratingDisplayValues,visibleRows, visibleColumns,filters, sorting,searchOverlayOpen } = tableView;
+  const {
+    startedGeneratingDisplayValues,
+    visibleRows,
+    visibleColumns,
+    filters,
+    sorting,
+    searchOverlayOpen
+  } = tableView;
   const allDisplayValues = f.get(["displayValues"], tableView);
 
   if (table) {
@@ -273,7 +280,10 @@ class TableView extends PureComponent {
             langtag={langtag}
             table={table}
             columns={columns}
-            currentFilter={{filters:this.props.tableView.filters,sorting:this.props.tableView.sorting}}
+            currentFilter={{
+              filters: this.props.tableView.filters,
+              sorting: this.props.tableView.sorting
+            }}
             setRowFilter={this.props.actions.setFiltersAndSorting}
             actions={actions}
           />
