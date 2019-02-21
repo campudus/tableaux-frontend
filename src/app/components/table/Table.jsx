@@ -64,9 +64,15 @@ class Table extends Component {
       const validColumnId = isValidColumnId ? columnId : 1;
       const validRowId = isValidRowId ? rowId : f.first(rows).id;
 
-      // TODO-W
-      // for later actions.setColumnsVisible()
-      // make selected column visible if it is not already!
+      if (gotColumnId) {
+        // make selected column visible if it is not already
+        const { visibleColumns } = tableView;
+        const selectedColumnVisible = f.contains(validColumnId, visibleColumns);
+
+        if (!selectedColumnVisible) {
+          actions.setColumnsVisible(visibleColumns.push(validColumnId));
+        }
+      }
 
       if (!isValidColumnId || !isValidRowId) {
         // refresh tableView with valid selected cell
