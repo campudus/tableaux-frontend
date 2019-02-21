@@ -91,7 +91,7 @@ const tableOrFiltersChanged = (props, nextProps) => {
   const { tableId } = props;
   const displayValuesOf = f.prop(["allDisplayValues", tableId]);
   return (
-    (f.isNil(props.rows) && !f.isNil(nextProps.rows)) || // rows got initialized
+    (f.size(props.rows) !== f.size(nextProps.rows)) || // rows got initialized
     (f.isEmpty(displayValuesOf(props)) &&
       !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
     (!f.isEqual(props.sorting, nextProps.sorting &&
