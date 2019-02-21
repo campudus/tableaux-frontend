@@ -427,7 +427,6 @@ export default class VirtualTable extends PureComponent {
 
   scrollToCell = (cell, langtag = this.props.selectedCellExpandedRow) => {
     this.updateSelectedCell(cell, langtag);
-    // TODO-W
     const { scrolledCell, lastScrolledCell } = this.state;
 
     if (f.isEmpty(cell) || scrolledCell.cell === lastScrolledCell) {
@@ -448,6 +447,7 @@ export default class VirtualTable extends PureComponent {
       1,
       f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns)
     );
+
     this.setState({
       scrolledCell: {
         columnIndex,
@@ -462,16 +462,17 @@ export default class VirtualTable extends PureComponent {
   };
 
   componentDidUpdate() {
-    // TODO-W
-    // console.log("didUpdate", this.state);
     // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
     if (!f.isEmpty(this.state.scrolledCell)) {
-      this.setState({
-        scrolledCell: {},
-        lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
-      });
+      // release after table was rendered once for real
+      requestAnimationFrame(() =>
+        this.setState({
+          scrolledCell: {},
+          lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
+        })
+      );
     }
   }
 
@@ -487,10 +488,10 @@ export default class VirtualTable extends PureComponent {
       rows,
       expandedRowIds,
       columns,
-      columnKeys // ,
-      // selectedCell,
-      // selectedCellEditing,
-      // selectedCellExpandedRow
+      columnKeys,
+      selectedCell,
+      selectedCellEditing,
+      selectedCellExpandedRow
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
     const { columnIndex, rowIndex } =
@@ -505,10 +506,13 @@ export default class VirtualTable extends PureComponent {
     const columnCount = f.size(this.visibleColumnIndices) + 1;
     const rowCount = f.size(rows) + 1;
 
-    /*const selectedCellKey = `${f.get(
-      "id",
-      selectedCell
-    )}-${selectedCellEditing}-${selectedCellExpandedRow}`;*/
+    const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
+    const selectedCellKey = isSelectedCellValid
+      ? `${f.get(
+          "id",
+          this.getCell(selectedCell.rowId - 1, selectedCell.columnId - 1)
+        )}-${selectedCellEditing}-${selectedCellExpandedRow}`
+      : "";
 
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
@@ -532,7 +536,7 @@ export default class VirtualTable extends PureComponent {
               fixedRowCount={1}
               width={width}
               height={height}
-              // selectedCell={selectedCellKey}
+              selectedCell={selectedCellKey}
               expandedRows={expandedRowIds}
               openAnnotations={openAnnotations}
               scrollToRow={rowIndex}
