@@ -214,23 +214,12 @@ export default (state = initialState, action, completeState) => {
           f.keys
         )(action.result.rows)
       };
-    case APPLY_FILTERS_AND_SORTING:
-      return {
-        ...state,
-        searchOverlayOpen:false,
-        visibleRows: action.visibleRows,
-        visibleColumns: f.isEmpty(action.visibleColumns)
-          ? state.visibleColumns
-          : action.visibleColumns
-      };
     case SET_FILTERS_AND_SORTING:
       return {
         ...state,
         filters: action.filters || state.filters,
         sorting: action.sorting || state.sorting
       };
-    case SET_SEARCH_OVERLAY:
-      return {...state, searchOverlayOpen: action.value}
     default:
       return state;
   }

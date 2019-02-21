@@ -182,9 +182,6 @@ const generateDisplayValues = (rows, columns, tableId, langtag) => (
       type: GENERATED_DISPLAY_VALUES,
       displayValues
     });
-    if (!f.isEmpty(filters)) {
-      dispatch(applyFiltersAndSorting(null, null, langtag));
-    }
   };
 };
 
@@ -202,15 +199,11 @@ const loadCompleteTable = (tableId, urlFilters) => dispatch => {
 
   const { visibleColumns, rowsFilter } = getStoredViewObject(tableId);
   if (urlFilters) {
-    dispatch(setSearchOverlay(true));
     dispatch(setFiltersAndSorting(urlFilters, null));
-    dispatch(applyFiltersAndSorting());
   } else {
-    if (!f.isEmpty(rowsFilter.filter)) {
+    if (!f.isEmpty(rowsFilter.filters)) {
       const { filters, sortColumnId, sortValue } = rowsFilter;
-      dispatch(setSearchOverlay(true));
       dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
-      dispatch(applyFiltersAndSorting());
     }
   }
   dispatch(setColumnsVisible(visibleColumns));
@@ -221,50 +214,6 @@ const setCurrentLanguage = lang => {
     type: SET_CURRENT_LANGUAGE,
     lang
   };
-};
-const applyFiltersAndSorting = () => (dispatch, getState) => {
-  if (!f.isEmpty(f.get(["tableView", "displayValues"], getState()))) {
-    const updateVisibleRows = completeState => {
-      const state = completeState.tableView;
-      const { currentTable } = state;
-      const [columns, rows, table] = f.props(
-        [
-          ["columns", currentTable, "data"],
-          ["rows", currentTable, "data"],
-          ["tables", "data", currentTable]
-        ],
-        completeState
-      );
-      const { filters, sorting, currentLanguage } = state;
-
-      const isFilterEmpty = filter =>
-        f.isEmpty(filter.value) && !f.isString(filter.mode);
-      const rowsFilter = {
-        sortColumnId: sorting.columnId,
-        sortValue: sorting.value,
-        filters: f.reject(isFilterEmpty, filters)
-      };
-      const unfilteredRows = rows.map(f.identity);
-      const { colsWithMatches, visibleRows } = getFilteredRows(
-        table,
-        unfilteredRows,
-        columns,
-        currentLanguage,
-        rowsFilter
-      );
-      return {
-        visibleColumns: colsWithMatches || state.visibleColumns,
-        visibleRows,
-        rowsFilter
-      };
-    };
-    const { visibleColumns, visibleRows, rowsFilter } = updateVisibleRows(
-      getState()
-    );
-    dispatch({ type: APPLY_FILTERS_AND_SORTING, visibleColumns, visibleRows });
-    const currentTable = f.get(["tableView", "currentTable"], getState());
-    saveFilterSettings(currentTable, rowsFilter);
-  }
 };
 
 const showToast = data => {
@@ -433,7 +382,7 @@ const deleteMediaFile = fileId => {
     ]
   };
 };
-const setFiltersAndSorting = (filters, sorting, apply) => (
+const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   dispatch,
   getState
 ) => {
@@ -442,8 +391,16 @@ const setFiltersAndSorting = (filters, sorting, apply) => (
     filters,
     sorting
   });
-  if (apply) {
-    dispatch(applyFiltersAndSorting());
+  const isFilterEmpty = filter =>
+    f.isEmpty(filter.value) && !f.isString(filter.mode);
+  const rowsFilter = {
+    sortColumnId: f.get("columnId", sorting),
+    sortValue: f.get("value", sorting),
+    filters: f.reject(isFilterEmpty, filters)
+  };
+  if (shouldSave) {
+    const currentTable = f.get(["tableView", "currentTable"], getState());
+    saveFilterSettings(currentTable, rowsFilter);
   }
 };
 
@@ -483,7 +440,6 @@ const actionCreators = {
   editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
-  applyFiltersAndSorting: applyFiltersAndSorting,
   setSearchOverlay: setSearchOverlay
 };
 

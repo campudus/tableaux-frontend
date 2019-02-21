@@ -234,7 +234,7 @@ class TableView extends PureComponent {
       actions,
       allDisplayValues,
       rows,
-      searchOverlayOpen
+      filtering
     } = this.props;
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
@@ -308,7 +308,7 @@ class TableView extends PureComponent {
             !!this.props.showCellJumpOverlay && !this.state.searchOverlayOpen
           }
         />
-        <SearchOverlay isOpen={searchOverlayOpen} />
+        <SearchOverlay isOpen={filtering} />
       </div>
     );
   };

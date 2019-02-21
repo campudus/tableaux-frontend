@@ -227,17 +227,16 @@ class FilterPopup extends React.Component {
 
   applyFilters = event => {
     const { filters, sorting } = this.state;
-    const { setRowFilter, langtag , actions:{setSearchOverlay}} = this.props;
-    setSearchOverlay(true)
+    const { setRowFilter} = this.props;
     const colIdToNumber = obj =>
       f.assoc("columnId", parseInt(obj.columnId), obj);
-    setRowFilter(f.map(colIdToNumber, filters), colIdToNumber(sorting), "apply");
+    setRowFilter(f.map(colIdToNumber, filters), colIdToNumber(sorting), "shouldSave");
     this.handleClickOutside(event);
   };
 
   clearFilter = event => {
     const { setRowFilter } = this.props;
-    setRowFilter([],{},"apply");
+    setRowFilter([],{},"shouldSave");
     this.handleClickOutside(event);
   };
 
