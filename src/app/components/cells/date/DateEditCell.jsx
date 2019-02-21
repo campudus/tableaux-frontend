@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 
 import f from "lodash/fp";
 
-import { stopPropagation } from '../../../helpers/functools';
+import { stopPropagation } from "../../../helpers/functools";
 
 class DateEditCell extends Component {
   state = {

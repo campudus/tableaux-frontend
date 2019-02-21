@@ -2,3 +2,7 @@ node_modules/
 dist/
 \.dist/
 **/\.tern-port
+package-lock.json
+.eslintrc.js
+.eslintrc.yaml
+tags

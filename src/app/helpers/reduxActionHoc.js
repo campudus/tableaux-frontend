@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import actionCreators from "../redux/actionCreators";
 
-const hoc = (ComposedComponent,mapStatetoProps) => {
+const hoc = (ComposedComponent, mapStatetoProps) => {
   class ReduxContainer extends React.PureComponent {
     constructor(props) {
       super(props);

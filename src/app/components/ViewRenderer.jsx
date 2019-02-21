@@ -14,10 +14,8 @@ const renderTableView = props => {
   return <TableView {...params} overlayOpen={!!props.overlayOpen} />;
 };
 
-const renderMediaView = ({params}) => (
-  <MediaView {...params}
-    overlayOpen={!!params.overlayOpen}
-  />
+const renderMediaView = ({ params }) => (
+  <MediaView {...params} overlayOpen={!!params.overlayOpen} />
 );
 
 const renderDashboard = ({ params }) => <DashboardView {...params} />;

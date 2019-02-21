@@ -1,13 +1,14 @@
 import React from "react";
-
+import { compose, withPropsOnChange } from "recompose";
+import getFilteredRows from "../table/RowFilters";
 import f from "lodash/fp";
 
 import { mapIndexed } from "../../helpers/functools";
 
-export default function(ComposedComponent) {
+const applyFiltersAndVisibility = function(ComposedComponent) {
   return class FilteredTableView extends React.Component {
-    applyColumnVisibility = (colsWithMatches = []) => {
-      const { columns, visibleColumns } = this.props;
+    applyColumnVisibility = () => {
+      const { columns, visibleColumns, colsWithMatches } = this.props;
       const applyVisibility = (columns, visibleArray) =>
         f.map(
           column =>
@@ -41,7 +42,8 @@ export default function(ComposedComponent) {
         allDisplayValues,
         actions,
         startedGeneratingDisplayValues,
-        table
+        table,
+        langtag
       } = this.props;
 
       // Start displayValue worker if neccessary
@@ -51,7 +53,7 @@ export default function(ComposedComponent) {
         !startedGeneratingDisplayValues
       ) {
         const { generateDisplayValues } = actions;
-        generateDisplayValues(rows, columns, table.id);
+        generateDisplayValues(rows, columns, table.id, langtag);
       }
 
       const canRenderTable = f.every(f.negate(f.isEmpty), [
@@ -72,10 +74,7 @@ export default function(ComposedComponent) {
                 f.map("id"),
                 f.join(";")
               )(columnsWithVisibility),
-              rows: this.updateColumnVisibility(
-                this.filterRows(visibleRows, rows),
-                columnsWithVisibility
-              ),
+              rows: f.map(rowIndex => rows[rowIndex], visibleRows),
               visibleRows,
               canRenderTable
             }}
@@ -86,4 +85,66 @@ export default function(ComposedComponent) {
       }
     }
   };
-}
+};
+
+const tableOrFiltersChanged = (props, nextProps) => {
+  const { tableId } = props;
+  const displayValuesOf = f.prop(["allDisplayValues", tableId]);
+  return (
+    f.size(props.rows) !== f.size(nextProps.rows) || // rows got initialized
+    (f.isEmpty(displayValuesOf(props)) &&
+      !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
+    !f.isEqual(
+      props.sorting,
+      nextProps.sorting &&
+        !f.isEqual(props.filters, nextProps.filters) &&
+        !f.isEmpty(displayValuesOf(nextProps)) &&
+        !f.isEmpty(nextProps.rows)
+    )
+  );
+};
+
+const filterRows = props => {
+  const {
+    filters,
+    sorting,
+    rows,
+    table,
+    langtag,
+    columns,
+    allDisplayValues,
+    actions: { setColumnsVisible }
+  } = props;
+  const nothingToFilter = f.isEmpty(sorting) && f.isEmpty(filters);
+  if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
+    return {
+      visibleRows: f.range(0, f.size(rows)),
+      filtering: !nothingToFilter
+    };
+  }
+  const isFilterEmpty = filter =>
+    f.isEmpty(filter.value) && !f.isString(filter.mode);
+  const unfilteredRows = rows.map(f.identity);
+  const rowsFilter = {
+    sortColumnId: sorting.columnId,
+    sortValue: sorting.value,
+    filters: f.reject(isFilterEmpty, filters)
+  };
+  const { visibleRows, colsWithMatches } = getFilteredRows(
+    table,
+    unfilteredRows,
+    columns,
+    langtag,
+    rowsFilter
+  );
+  if (!f.isEmpty(colsWithMatches)) {
+    setColumnsVisible(colsWithMatches);
+  }
+
+  return { visibleRows, filtering: false };
+};
+
+export default compose(
+  withPropsOnChange(tableOrFiltersChanged, filterRows),
+  applyFiltersAndVisibility
+);

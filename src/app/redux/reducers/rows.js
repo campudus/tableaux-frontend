@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 
 import { addCellId } from "../../helpers/getCellId";
-import { doto, when } from '../../helpers/functools';
+import { doto, when } from "../../helpers/functools";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import actionTypes from "../actionTypes";
 
@@ -16,7 +16,8 @@ const {
   SET_CELL_ANNOTATION,
   SET_ROW_ANNOTATION,
   REMOVE_CELL_ANNOTATION,
-  ANNOTATION_ERROR
+  ANNOTATION_ERROR,
+  CLEAN_UP
 } = actionTypes;
 
 const initialState = {};
@@ -162,6 +163,7 @@ const rows = (state = initialState, action, completeState) => {
       );
       const table = f.prop(["tables", "data", action.tableId], completeState);
       return {
+        ...state,
         [action.tableId]: {
           error: false,
           finishedLoading: true,
@@ -210,6 +212,8 @@ const rows = (state = initialState, action, completeState) => {
     }
     case CELL_SAVED_SUCCESSFULLY:
       return maybeUpdateConcats(state, action, completeState);
+    case CLEAN_UP:
+      return { ...state, [action.tableId]: [] };
     default:
       return state;
   }

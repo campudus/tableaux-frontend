@@ -17,6 +17,12 @@ import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import getFilteredRows from "../components/table/RowFilters";
+import {
+  getStoredViewObject,
+  saveFilterSettings,
+  saveColumnVisibility
+} from "../helpers/localStorage";
 
 const {
   getAllTables,
@@ -27,6 +33,7 @@ const {
 } = API_ROUTES;
 
 const {
+  APPLY_FILTERS_AND_SORTING,
   TABLE_LOADING_DATA,
   TABLE_DATA_LOADED,
   TABLE_DATA_LOAD_ERROR,
@@ -44,7 +51,10 @@ const {
   GENERATED_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
-  SET_DISPLAY_VALUE_WORKER
+  SET_DISPLAY_VALUE_WORKER,
+  SET_FILTERS_AND_SORTING,
+  SET_SEARCH_OVERLAY,
+  CLEAN_UP
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -131,11 +141,22 @@ const toggleColumnVisibility = (tableId, columnId) => {
   };
 };
 
-const setColumnsVisible = columnIds => {
-  return {
+const cleanUp = () => (dispatch, getState) => {
+  const tableId = f.get(["tableView", "currentTable"], getState());
+  dispatch({
+    type: CLEAN_UP,
+    tableId
+  });
+};
+
+const setColumnsVisible = columnIds => (dispatch, getState) => {
+  dispatch({
     type: SET_COLUMNS_VISIBLE,
     columnIds
-  };
+  });
+  const state = getState();
+  const tableId = f.get(["tableView", "currentTable"], state);
+  saveColumnVisibility(tableId, columnIds);
 };
 const hideAllColumns = tableId => {
   return {
@@ -151,13 +172,13 @@ const setCurrentTable = tableId => {
   };
 };
 
-const generateDisplayValues = (rows, columns, tableId) => (
+const generateDisplayValues = (rows, columns, tableId, langtag) => (
   dispatch,
   getState
 ) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const {
-    tableView: { worker }
+    tableView: { worker, filters }
   } = getState();
   worker.postMessage([rows, columns, Langtags, tableId]);
   worker.onmessage = e => {
@@ -173,10 +194,28 @@ const generateDisplayValues = (rows, columns, tableId) => (
   };
 };
 
-const loadCompleteTable = tableId => dispatch => {
+const setSearchOverlay = value => {
+  return {
+    type: SET_SEARCH_OVERLAY,
+    value
+  };
+};
+
+const loadCompleteTable = (tableId, urlFilters) => dispatch => {
   dispatch(setCurrentTable(tableId));
   dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
+
+  const { visibleColumns, rowsFilter } = getStoredViewObject(tableId);
+  if (urlFilters) {
+    dispatch(setFiltersAndSorting(urlFilters, null));
+  } else {
+    if (!f.isEmpty(f.get("filters", rowsFilter))) {
+      const { filters, sortColumnId, sortValue } = rowsFilter;
+      dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
+    }
+  }
+  dispatch(setColumnsVisible(visibleColumns));
 };
 
 const setCurrentLanguage = lang => {
@@ -352,6 +391,27 @@ const deleteMediaFile = fileId => {
     ]
   };
 };
+const setFiltersAndSorting = (filters, sorting, shouldSave) => (
+  dispatch,
+  getState
+) => {
+  dispatch({
+    type: SET_FILTERS_AND_SORTING,
+    filters,
+    sorting
+  });
+  const isFilterEmpty = filter =>
+    f.isEmpty(filter.value) && !f.isString(filter.mode);
+  const rowsFilter = {
+    sortColumnId: f.get("columnId", sorting),
+    sortValue: f.get("value", sorting),
+    filters: f.reject(isFilterEmpty, filters)
+  };
+  if (shouldSave) {
+    const currentTable = f.get(["tableView", "currentTable"], getState());
+    saveFilterSettings(currentTable, rowsFilter);
+  }
+};
 
 const actionCreators = {
   loadTables: loadTables,
@@ -387,7 +447,9 @@ const actionCreators = {
   deleteMediaFolder: deleteMediaFolder,
   getMediaFile: getMediaFile,
   editMediaFile: editMediaFile,
-  deleteMediaFile: deleteMediaFile
+  deleteMediaFile: deleteMediaFile,
+  setFiltersAndSorting: setFiltersAndSorting,
+  cleanUp: cleanUp
 };
 
 export default actionCreators;

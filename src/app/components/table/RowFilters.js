@@ -38,7 +38,7 @@ const FlagSearches = [
   FilterModes.WITH_COMMENT
 ];
 
-const rememberColumnIds = colSet => f.tap(val => colSet.add(val.colId));
+const rememberColumnIds = colSet => f.tap(val => colSet.add(val.column.id));
 
 const getFilteredRows = (
   currentTable,
@@ -48,7 +48,6 @@ const getFilteredRows = (
   filterSettings
 ) => {
   const rowsWithIndex = completeRowInformation(columns, currentTable, rows);
-  console.log(rowsWithIndex);
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
@@ -229,8 +228,9 @@ const mkBoolFilter = closures => ({ value, columnId }) => row => {
 
 const mkTranslatorFilter = closures => () => row => {
   if (f.isEmpty(closures.colsWithMatches)) {
-    row.columns.filter(f.get("isMultilanguage"));
-    // .forEach(rememberColumnIds(closures.colsWithMatches));
+    row.columns
+      .filter(f.get("isMultilanguage"))
+      .forEach(rememberColumnIds(closures.colsWithMatches));
   }
   return f.flow(
     f.map(["annotations", "translationNeeded", "langtags", closures.langtag]),
@@ -307,6 +307,7 @@ const mkFlagFilter = (closures, mode, value) => {
   return f.flow(
     f.get(["values"]),
     f.filter(findAnnotation),
+    f.forEach(rememberColumnIds(closures.colsWithMatches)),
     f.isEmpty,
     misMatch => (value ? !misMatch : misMatch)
   );

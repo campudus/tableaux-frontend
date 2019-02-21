@@ -70,7 +70,6 @@ class FilterPopup extends React.Component {
         props
       )
     };
-
     this.state = {
       sorting,
       filterModesOpen: false,
@@ -231,16 +230,17 @@ class FilterPopup extends React.Component {
     const { setRowFilter } = this.props;
     const colIdToNumber = obj =>
       f.assoc("columnId", parseInt(obj.columnId), obj);
-    setRowFilter({
-      filters: f.map(colIdToNumber, filters),
-      sorting: colIdToNumber(sorting)
-    });
+    setRowFilter(
+      f.map(colIdToNumber, filters),
+      colIdToNumber(sorting),
+      "shouldSave"
+    );
     this.handleClickOutside(event);
   };
 
   clearFilter = event => {
     const { setRowFilter } = this.props;
-    setRowFilter({});
+    setRowFilter([], {}, "shouldSave");
     this.handleClickOutside(event);
   };
 

@@ -6,7 +6,6 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
-import getFilteredRows from "../../components/table/RowFilters";
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
 const {
@@ -22,7 +21,9 @@ const {
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
-  ALL_ROWS_DATA_LOADED
+  ALL_ROWS_DATA_LOADED,
+  SET_FILTERS_AND_SORTING,
+  CLEAN_UP
 } = ActionTypes;
 
 const initialState = {
@@ -33,7 +34,10 @@ const initialState = {
   displayValues: {},
   startedGeneratingDisplayValues: false,
   currentLanguage: DefaultLangtag,
-  invisibleRows: []
+  visibleRows: [],
+  filters: [],
+  sorting: [],
+  searchOverlayOpen: false
 };
 
 // This sets display values for foreign tables, allowing us to track
@@ -62,7 +66,11 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     linkDisplayValues
   );
 
-  return { ...state, displayValues: updatedDisplayValues };
+  return {
+    ...state,
+    displayValues: updatedDisplayValues,
+    startedGeneratingDisplayValues: false
+  };
 };
 
 const toggleSelectedCell = (state, action) => {
@@ -105,12 +113,14 @@ const toggleCellEditing = (state, action, completeState) => {
 };
 
 const setInitialVisibleColumns = (state, action) =>
-  f.compose(
-    ids => f.assoc("visibleColumns")(ids)(state),
-    f.map("id"),
-    f.slice(0, 10),
-    f.prop(["result", "columns"])
-  )(action);
+  f.isEmpty(f.get("visibleColumns", state))
+    ? f.compose(
+        ids => f.assoc("visibleColumns")(ids)(state),
+        f.map("id"),
+        f.slice(0, 10),
+        f.prop(["result", "columns"])
+      )(action)
+    : state;
 
 const toggleSingleColumn = (state, action) => {
   const { columnId } = action;
@@ -179,7 +189,11 @@ export default (state = initialState, action, completeState) => {
     case START_GENERATING_DISPLAY_VALUES:
       return { ...state, startedGeneratingDisplayValues: true };
     case SET_CURRENT_LANGUAGE:
-      return { ...state, currentLanguage: action.lang };
+      if (state.currentLanguage == action.lang) {
+        return state;
+      } else {
+        return { ...state, currentLanguage: action.lang };
+      }
     case TOGGLE_CELL_SELECTION:
       return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
@@ -203,37 +217,15 @@ export default (state = initialState, action, completeState) => {
           f.keys
         )(action.result.rows)
       };
-
+    case SET_FILTERS_AND_SORTING:
+      return {
+        ...state,
+        filters: action.filters || state.filters,
+        sorting: action.sorting || state.sorting
+      };
+    case CLEAN_UP:
+      return { ...state, filters: [], sorting: [], displayValues: {} };
     default:
       return state;
   }
-};
-
-const updateVisibleColumns = (state, completeState, action) => {
-  const { currentTable } = state;
-  const [columns, table] = f.props(
-    [["columns", currentTable, "data"], ["tables", "data", currentTable]],
-    completeState
-  );
-  const { filters, sorting, preparedRows, langtag } = action;
-
-  const isFilterEmpty = filter =>
-    f.isEmpty(filter.value) && !f.isString(filter.mode);
-  const rowsFilter = {
-    sortColumnId: sorting.columnId,
-    sortValue: sorting.value,
-    filters: f.reject(isFilterEmpty, filters)
-  };
-  console.log("preparedRows:", preparedRows);
-  const { colsWithMatches, visibleRows } = getFilteredRows(
-    table,
-    preparedRows,
-    columns,
-    langtag,
-    rowsFilter
-  );
-  if (f.isEmpty(colsWithMatches)) {
-    return { visibleRows, colsWithMatches: state.visibleColumns };
-  }
-  return { colsWithMatches, visibleRows };
 };
