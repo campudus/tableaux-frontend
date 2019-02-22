@@ -2,7 +2,7 @@ import f from "lodash/fp";
 
 import { DefaultLangtag } from "../../constants/TableauxConstants";
 import { idsToIndices, calcConcatValues } from "../redux-helpers";
-import { ifElse } from "../../helpers/functools";
+import { ifElse, unless } from "../../helpers/functools";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import TableauxRouter from "../../router/router";
@@ -107,7 +107,7 @@ const insertSkeletonLinks = (state, action, completeState) => {
   const linksOfLinksAsRows = f.keys(linksOfLinks).map(tableId => {
     const tableDisplayValues = f.keys(linksOfLinks[tableId]).map(id => ({
       id: parseInt(id),
-      values: linksOfLinks[tableId][id]
+      values: unless(f.isArray, el => [el], linksOfLinks[tableId][id])
     }));
     return { tableId: parseInt(tableId), values: tableDisplayValues };
   });
@@ -268,7 +268,7 @@ export default (state = initialState, action, completeState) => {
         ...state,
         worker: new Worker("/worker.bundle.js")
       };
-    case ALL_ROWS_DATA_LOADED:
+    case ALL_ROWS_DATA_LOADED: {
       const { currentTable } = state.currentTable;
       const { rows } = f.get(["rows", currentTable, "data"]);
       return {
@@ -278,6 +278,7 @@ export default (state = initialState, action, completeState) => {
           f.keys
         )(rows)
       };
+    }
     case SET_FILTERS_AND_SORTING:
       return {
         ...state,
