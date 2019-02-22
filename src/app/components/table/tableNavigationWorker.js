@@ -5,8 +5,7 @@ import {
   Directions,
   Langtags
 } from "../../constants/TableauxConstants";
-import App from "ampersand-app";
-import ActionCreator from "../../actions/ActionCreator";
+import TableauxRouter from "../../router/router";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {
@@ -120,7 +119,7 @@ export function getKeyboardShortcuts() {
           ColumnKinds.shorttext,
           ColumnKinds.numeric
         ]);
-      const langtag = this.state.selectedCellExpandedRow || thisLangtag;
+      // const langtag = this.state.selectedCellExpandedRow || thisLangtag;
 
       if (
         hasActionKey &&
@@ -129,7 +128,8 @@ export function getKeyboardShortcuts() {
         !isTextSelected()
       ) {
         event.stopPropagation();
-        ActionCreator.copyCellContent(selectedCell, langtag);
+        // TODO-W
+        // ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (
         !f.isEmpty(this.props.pasteOriginCell) &&
         !f.eq(this.props.pasteOriginCell, selectedCell) &&
@@ -140,7 +140,8 @@ export function getKeyboardShortcuts() {
         // Cell paste
         event.preventDefault();
         event.stopPropagation();
-        ActionCreator.pasteCellContent(selectedCell, langtag);
+        // TODO-W
+        // ActionCreator.pasteCellContent(selectedCell, langtag);
       } else if (
         KEYBOARD_TABLE_HISTORY &&
         hasActionKey &&
@@ -184,22 +185,35 @@ export function isTextSelected() {
 }
 
 export function isLastRowSelected() {
-  const rows = this.props.rows;
-  const numberOfRows = rows.length;
-  const currentRowId = getCurrentSelectedRowId.call(this);
-  let lastRowId;
-  if (numberOfRows <= 0) {
-    return true;
-  }
-  lastRowId = rows.at(numberOfRows - 1).getId();
-  return currentRowId === lastRowId;
+  const { rows, tableView } = this.props;
+  const currentRowId = tableView.selectedCell.rowId;
+  const numberOfRows = f.size(rows);
+  const currentRowIndex = f.findIndex(row => row.id === currentRowId, rows);
+
+  return currentRowIndex === numberOfRows;
 }
 
 export function toggleCellSelection({ selected, cell, langtag }) {
-  ActionCreator.setColumnsVisibility(true, [f.get(["column", "id"], cell)]);
-  const tableId = cell.tableId;
-  const columnId = cell.column.id;
-  const rowId = cell.row.id;
+  const tableId = this.props.tableView.currentTable;
+  const columnId = cell.columnId;
+  const rowId = cell.rowId;
+
+  TableauxRouter.selectCellHandler(tableId, rowId, columnId, langtag);
+
+  this.props.actions.toggleCellSelection({
+    columnId,
+    rowId,
+    langtag,
+    tableId
+  });
+
+  this.setState({
+    selectedCell: cell,
+    selectedCellEditing: false,
+    selectedCellExpandedRow: langtag || null
+  });
+
+  /*
   if (selected !== "NO_HISTORY_PUSH") {
     const cellURL = `/${
       this.props.langtag
@@ -212,11 +226,7 @@ export function toggleCellSelection({ selected, cell, langtag }) {
   ) {
     unlockRow(this.state.selectedCell.row, false);
   }
-  this.setState({
-    selectedCell: cell,
-    selectedCellEditing: false,
-    selectedCellExpandedRow: langtag || null
-  });
+  */
 }
 
 export function toggleCellEditing(params = {}) {
@@ -255,51 +265,55 @@ export function toggleCellEditing(params = {}) {
 }
 
 export function setNextSelectedCell(direction) {
-  if (!this.state.selectedCell) {
+  const { tableView, langtag, rows, columns } = this.props;
+  const { selectedCell } = tableView;
+  const { columnId, rowId } = selectedCell;
+
+  if (!columnId || !rowId) {
     return;
   }
 
-  let row;
-  let nextCellId;
   let rowCell = {
-    id: getCurrentSelectedRowId.call(this),
-    selectedCellExpandedRow: this.props.langtag
+    id: rowId,
+    selectedCellExpandedRow: langtag
   };
   let columnCell = {
-    id: getCurrentSelectedColumnId.call(this),
-    selectedCellExpandedRow: this.props.langtag
+    id: columnId,
+    selectedCellExpandedRow: langtag
   };
   let newSelectedCellExpandedRow; // Either row or column switch changes the selected language
-  const { table } = this.props;
-  const currentSelectedColumnId = getCurrentSelectedColumnId.call(this);
-  const currentSelectedRowId = getCurrentSelectedRowId.call(this);
 
   switch (direction) {
     case Directions.LEFT:
-      columnCell = getPreviousColumn.call(this, currentSelectedColumnId);
+      columnCell = getPreviousColumn.call(this, columnId);
       newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
       break;
 
     case Directions.RIGHT:
-      columnCell = getNextColumnCell.call(this, currentSelectedColumnId);
+      columnCell = getNextColumnCell.call(this, rowId);
       newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
       break;
 
     case Directions.UP:
-      rowCell = getPreviousRow.call(this, currentSelectedRowId);
+      rowCell = getPreviousRow.call(this, rowId);
       newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
       break;
 
     case Directions.DOWN:
-      rowCell = getNextRowCell.call(this, currentSelectedRowId);
+      rowCell = getNextRowCell.call(this, columnId);
       newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
       break;
   }
 
-  row = table.rows.get(rowCell.id);
-  nextCellId = "cell-" + table.getId() + "-" + columnCell.id + "-" + rowCell.id;
-  if (row) {
-    let nextCell = row.cells.get(nextCellId);
+  const newRow = f.find(row => row.id === rowCell.id, rows);
+  const newColumn = f.find(col => col.id === columnCell.id, columns);
+
+  if (newRow && newColumn) {
+    const nextCell = {
+      rowId: rowCell.id,
+      columnId: columnCell.id,
+      langtag: newSelectedCellExpandedRow
+    };
     if (nextCell) {
       toggleCellSelection.call(this, {
         cell: nextCell,
@@ -311,15 +325,17 @@ export function setNextSelectedCell(direction) {
 
 // returns the next row and the next language cell when expanded
 export function getNextRowCell(currentRowId, getPrev) {
-  const { expandedRowIds, selectedCell, selectedCellExpandedRow } = this.state;
-  const { rows, langtag } = this.props;
-  const currentRow = rows.get(currentRowId);
-  const indexCurrentRow = rows.indexOf(currentRow);
+  const { expandedRowIds, selectedCellExpandedRow } = this.state;
+  const { tableView, langtag, rows } = this.props;
+  const { selectedCell } = tableView;
+
+  const indexCurrentRow = f.findIndex(
+    row => row.id === selectedCell.rowId,
+    rows
+  );
   const numberOfRows = rows.length;
   let nextSelectedCellExpandedRow;
   let nextIndex = getPrev ? indexCurrentRow - 1 : indexCurrentRow + 1;
-  let nextRowIndex;
-  let nextRowId;
   let jumpToNextRow = false;
 
   // are there expanded rows and is current selection inside of expanded row block
@@ -349,8 +365,8 @@ export function getNextRowCell(currentRowId, getPrev) {
   }
 
   // Get the next row id
-  nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
-  nextRowId = rows.at(nextRowIndex).getId();
+  const nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
+  const nextRowId = rows[nextRowIndex].id;
 
   if (jumpToNextRow) {
     // Next row is expanded
@@ -368,10 +384,12 @@ export function getNextRowCell(currentRowId, getPrev) {
     }
   }
 
-  return {
+  const result = {
     id: nextRowId,
     selectedCellExpandedRow: nextSelectedCellExpandedRow
   };
+
+  return result;
 }
 
 export function getPreviousRow(currentRowId) {
@@ -379,21 +397,25 @@ export function getPreviousRow(currentRowId) {
 }
 
 export function getNextColumnCell(currentColumnId, getPrev) {
-  const columns = this.props.table.columns.filter(col => col.visible);
-  const { selectedCell, expandedRowIds, selectedCellExpandedRow } = this.state;
+  const { columns, tableView } = this.props;
+  const { selectedCell } = tableView;
+  const { expandedRowIds, selectedCellExpandedRow } = this.state;
   const indexCurrentColumn = f.findIndex(
-    f.matchesProperty("id", currentColumnId),
+    f.matchesProperty("id", selectedCell.columnId),
     columns
   );
   const numberOfColumns = columns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
   const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
+
   const nextColumn = f.nth(nextColumnIndex, columns);
   const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
 
   // Not Multilanguage and row is expanded so jump to top language
+  // TODO-W
+  // if row is "open" it jumps straight to next row-id
   if (
     !nextColumn.multilanguage &&
     expandedRowIds &&
@@ -404,10 +426,12 @@ export function getNextColumnCell(currentColumnId, getPrev) {
     newSelectedCellExpandedRow = selectedCellExpandedRow;
   }
 
-  return {
+  const result = {
     id: nextColumnId,
     selectedCellExpandedRow: newSelectedCellExpandedRow
   };
+
+  return result;
 }
 
 export function getPreviousColumn(currentColumnId) {
@@ -427,7 +451,7 @@ export function preventSleepingOnTheKeyboard(cb) {
   }
 }
 
-export function getCurrentSelectedRowId() {
+/*export function getCurrentSelectedRowId() {
   const { selectedCell } = this.state;
   return selectedCell ? selectedCell.rowId : 0;
 }
@@ -435,4 +459,4 @@ export function getCurrentSelectedRowId() {
 export function getCurrentSelectedColumnId() {
   const { selectedCell } = this.state;
   return selectedCell ? selectedCell.column.getId() : 0;
-}
+}*/
