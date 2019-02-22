@@ -44,6 +44,7 @@ export const makeRequest = async ({
 }) => {
   const targetUrl =
     (f.isString(apiRoute) ? buildURL(apiRoute) : url) + paramsToString(params);
+  console.log("apiHelper", method.toUpperCase(), targetUrl);
   const parseResponse = response => response[responseType.toLowerCase()]();
   return fetch(targetUrl, {
     method,
@@ -58,7 +59,6 @@ export const makeRequest = async ({
     })
     .then(parseResponse);
 };
-
 
 const sendTestData = path => fileName => data =>
   fetch("http://localhost:3004", {

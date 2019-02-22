@@ -158,17 +158,6 @@ const rows = (state = initialState, action, completeState) => {
         [action.tableId]: { error: false, finishedLoading: false }
       };
     case ALL_ROWS_DATA_LOADED: {
-      // const columns = f.prop(
-      //   ["columns", action.tableId, "data"],
-      //   completeState
-      // );
-      // const table = f.prop(["tables", "data", action.tableId], completeState);
-      // return {
-      //   ...state,
-      //   [action.tableId]: {
-      //     finishedLoading: true
-      //   }
-      // };
       return f.update([action.tableId, "finishedLoading"], () => true, state);
     }
     case ALL_ROWS_DATA_LOAD_ERROR:
@@ -234,8 +223,8 @@ const addRows = (completeState, state, action) => {
 
 const insert = (prev, rows) => {
   const firstElement = f.first(rows);
-  const index = f.sortedIndexBy(row => f.get("id",row), firstElement, prev);
-  if (index == 0) {
+  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
+  if (index === 0) {
     return rows;
   } else {
     return f.concat(

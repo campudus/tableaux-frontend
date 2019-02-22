@@ -28,7 +28,7 @@ onmessage = function(e) {
           ...row,
           values: mapWithIndex((value, id) => {
             const column = columns[id];
-            if (column.kind == "link") {
+            if (column.kind === "link") {
               return { tableId: column.toTable, rowIds: f.map("id", value) };
             }
             return getDisplayValue(column)(value);
@@ -39,10 +39,10 @@ onmessage = function(e) {
   };
   const combined = ((displayValues, linkDisplayValues) => {
     const alreadyExistsAt = f.findIndex(
-      element => element.tableId == displayValues.tableId,
+      element => element.tableId === displayValues.tableId,
       linkDisplayValues
     );
-    if (alreadyExistsAt == -1) {
+    if (alreadyExistsAt === -1) {
       return f.concat(linkDisplayValues, displayValues);
     }
     return f.set([alreadyExistsAt], displayValues, linkDisplayValues);

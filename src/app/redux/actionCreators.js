@@ -141,7 +141,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
     )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
   };
 
-  const paginated = async (tableId, parallelRequests) => {
+  const fetchRowsPaginated = async (tableId, parallelRequests) => {
     const { getAllRowsForTable } = API_ROUTES;
     const {
       page: { totalSize },
@@ -185,7 +185,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
       )
     );
   };
-  paginated(tableId, 4);
+  fetchRowsPaginated(tableId, 4);
 };
 
 const toggleColumnVisibility = (tableId, columnId) => {
