@@ -12,7 +12,7 @@ import { changeCellValue } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import { isLocked } from "../helpers/annotationHelper";
-import { makeRequest } from "../helpers/apiHelper";
+import { makeRequest, paginated } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
@@ -54,7 +54,8 @@ const {
   SET_DISPLAY_VALUE_WORKER,
   SET_FILTERS_AND_SORTING,
   SET_SEARCH_OVERLAY,
-  CLEAN_UP
+  CLEAN_UP,
+  ADD_ROWS
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -119,19 +120,72 @@ const loadColumns = tableId => {
   };
 };
 
-const loadAllRows = tableId => {
+const addRows = (tableId, rows) => {
   return {
-    promise: makeRequest({
-      apiRoute: getAllRowsForTable(tableId),
-      method: "GET"
-    }),
-    actionTypes: [
-      ALL_ROWS_LOADING_DATA,
-      ALL_ROWS_DATA_LOADED,
-      ALL_ROWS_DATA_LOAD_ERROR
-    ],
-    tableId
+    type: "ADD_ROWS",
+    tableId,
+    rows
   };
+};
+
+const loadAllRows = tableId => (dispatch, getState) => {
+  const buildParams = (allRows, rowsPerRequest) => {
+    if (allRows <= rowsPerRequest) {
+      return [{ offset: 30, limit: allRows }];
+    }
+    return f.compose(
+      f.map(offset => {
+        return { offset, limit: rowsPerRequest };
+      }),
+      f.rangeStep(rowsPerRequest, 30)
+    )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
+  };
+
+  const fetchRowsPaginated = async (tableId, parallelRequests) => {
+    const { getAllRowsForTable } = API_ROUTES;
+    const {
+      page: { totalSize },
+      rows
+    } = await makeRequest({
+      apiRoute: getAllRowsForTable(tableId),
+      params: {
+        offset: 0,
+        limit: 30
+      },
+      method: "GET"
+    });
+    dispatch(addRows(tableId, rows));
+    const params = buildParams(totalSize, 500);
+    var resultLength = rows.length;
+    var index = 0;
+    const recReq = () => {
+      if (index >= params.length) {
+        return;
+      }
+      const oldIndex = index;
+      index++;
+      return makeRequest({
+        apiRoute: getAllRowsForTable(tableId),
+        params: params[oldIndex],
+        method: "GET"
+      }).then(result => {
+        resultLength = resultLength + result.rows.length;
+        dispatch(addRows(tableId, result.rows));
+        if (resultLength >= totalSize) {
+          dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
+          return;
+        }
+        recReq();
+      });
+    };
+    f.forEach(
+      recReq,
+      new Array(
+        parallelRequests > params.length ? params.length : parallelRequests
+      )
+    );
+  };
+  fetchRowsPaginated(tableId, 4);
 };
 
 const toggleColumnVisibility = (tableId, columnId) => {

@@ -3,8 +3,9 @@ import fetch from "cross-fetch";
 import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import { doto } from "./functools.js";
+import API_ROUTES from "./apiRoutes";
 
-const buildURL = apiRoute => apiHost + apiPort + apiUrl(apiRoute);
+const buildURL = apiRoute => apiUrl(apiRoute);
 
 const paramsToString = params =>
   f.isEmpty(params)

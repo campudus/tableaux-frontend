@@ -17,7 +17,8 @@ const {
   SET_ROW_ANNOTATION,
   REMOVE_CELL_ANNOTATION,
   ANNOTATION_ERROR,
-  CLEAN_UP
+  CLEAN_UP,
+  ADD_ROWS
 } = actionTypes;
 
 const initialState = {};
@@ -157,19 +158,7 @@ const rows = (state = initialState, action, completeState) => {
         [action.tableId]: { error: false, finishedLoading: false }
       };
     case ALL_ROWS_DATA_LOADED: {
-      const columns = f.prop(
-        ["columns", action.tableId, "data"],
-        completeState
-      );
-      const table = f.prop(["tables", "data", action.tableId], completeState);
-      return {
-        ...state,
-        [action.tableId]: {
-          error: false,
-          finishedLoading: true,
-          data: rowValuesToCells(table, columns)(action.result.rows)
-        }
-      };
+      return f.update([action.tableId, "finishedLoading"], () => true, state);
     }
     case ALL_ROWS_DATA_LOAD_ERROR:
       return {
@@ -213,9 +202,35 @@ const rows = (state = initialState, action, completeState) => {
     case CELL_SAVED_SUCCESSFULLY:
       return maybeUpdateConcats(state, action, completeState);
     case CLEAN_UP:
-      return { ...state, [action.tableId]: [] };
+      return {};
+    case ADD_ROWS:
+      return addRows(completeState, state, action);
     default:
       return state;
+  }
+};
+
+const addRows = (completeState, state, action) => {
+  const columns = f.prop(["columns", action.tableId, "data"], completeState);
+  const table = f.prop(["tables", "data", action.tableId], completeState);
+  const temp = f.update(
+    [action.tableId, "data"],
+    arr => {const ins = insert(arr, rowValuesToCells(table, columns)(action.rows)); return ins},
+    state
+  );
+  return temp;
+};
+
+const insert = (prev, rows) => {
+  const firstElement = f.first(rows);
+  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
+  if (index === 0) {
+    return rows;
+  } else {
+    return f.concat(
+      f.concat(f.slice(0, index, prev), rows),
+      f.slice(index, prev.length, prev)
+    );
   }
 };
 
