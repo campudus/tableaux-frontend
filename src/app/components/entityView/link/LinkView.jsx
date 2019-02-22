@@ -5,7 +5,7 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { doto, ifElse } from '../../../helpers/functools';
+import { doto, when } from "../../../helpers/functools";
 import { openLinkOverlay } from "../../cells/link/LinkOverlay";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import Empty from "../../helperComponents/emptyEntry";
@@ -34,22 +34,14 @@ class LinkView extends Component {
   };
 
   mkLinkList = (cell, langtag) => {
-    const translate = ifElse(
-      f.isPlainObject,
-      retrieveTranslation(langtag),
-      () => <Empty langtag={langtag} />
-    );
-    return cell.value.map(link => {
+    const translate = when(f.isPlainObject, retrieveTranslation(langtag));
+    return cell.value.map((link, idx) => {
+      const displayName = translate(cell.displayValue[idx]) || (
+        <Empty langtag={langtag} />
+      );
+
       return {
-        // translate(f.nth(idx, this.props.displayValues)) ||
-        displayName: translate(
-          doto(
-            this.props.grudData,
-            f.get(["displayValues", cell.column.toTable]),
-            f.find(f.propEq("id", link.id)),
-            f.get(["values"])
-          )
-        ),
+        displayName,
         linkTarget: {
           tables: cell.tables,
           tableId: cell.column.toTable,
