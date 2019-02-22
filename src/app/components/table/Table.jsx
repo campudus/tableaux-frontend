@@ -1,6 +1,11 @@
 import { Portal } from "react-portal";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+// import * as tableRowsWorker from "./tableRowsWorker";
+import * as tableNavigationWorker from "./tableNavigationWorker";
+// import * as tableContextMenu from "./tableContextMenu";
+import listensToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
 import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
@@ -159,13 +164,9 @@ class Table extends Component {
       <section
         id="table-wrapper"
         tabIndex="-1"
-        onKeyDown={
-          () =>
-            console.log(
-              "onKeyDown"
-            ) /*KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
-          this))*/
-        }
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
+          tableNavigationWorker.getKeyboardShortcuts.bind(this)
+        )}
         onMouseDown={this.onMouseDownHandler}
       >
         <div className="tableaux-table">
@@ -178,10 +179,7 @@ class Table extends Component {
             ref={this.findAndStoreTableDiv}
             rows={rows}
             tableView={tableView}
-            focusTable={
-              () =>
-                null /*tableNavigationWorker.checkFocusInsideTable.call(this)*/
-            }
+            focusTable={tableNavigationWorker.checkFocusInsideTable.call(this)}
             displayValues={displayValues}
             table={table}
             tables={tables}
