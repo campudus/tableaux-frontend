@@ -261,11 +261,11 @@ export default class VirtualTable extends PureComponent {
         displayValue={cell.displayValue}
         cell={cell}
         columns={columns}
-        annotationState={null /*getAnnotationState(cell)*/}
+        annotationState={getAnnotationState(cell)}
         focusTable={this.props.test}
         langtag={langtag}
         annotationsOpen={
-          openAnnotations.cellId && openAnnotations.cellId === cell.id
+          !!openAnnotations.cellId && openAnnotations.cellId === cell.id
         }
         isExpandedCell={false}
         selected={isSelected}
@@ -310,7 +310,7 @@ export default class VirtualTable extends PureComponent {
               langtag={langtag}
               annotationsOpen={
                 isPrimaryLang &&
-                openAnnotations.cellId &&
+                !!openAnnotations.cellId &&
                 cell.id === openAnnotations.cellId
               }
               isExpandedCell={!isPrimaryLang}
@@ -546,7 +546,7 @@ export default class VirtualTable extends PureComponent {
               height={height}
               selectedCell={selectedCellKey}
               expandedRows={expandedRowIds}
-              openAnnotations={openAnnotations}
+              openAnnotations={!!openAnnotations && openAnnotations.cellId}
               scrollToRow={rowIndex}
               scrollToColumn={columnIndex}
               columnKeys={columnKeys}
