@@ -17,7 +17,11 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
-import { safelyDuplicateRow, loadAllRows } from "./actions/rowActions";
+import {
+  createNewRow,
+  safelyDuplicateRow,
+  loadAllRows
+} from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -438,6 +442,7 @@ const actionCreators = {
   changeCellValue,
   deleteRow,
   duplicateRow: safelyDuplicateRow,
+  createNewRow,
   addAnnotationLangtags,
   removeAnnotationLangtags,
   addTextAnnotation,

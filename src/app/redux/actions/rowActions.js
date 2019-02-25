@@ -14,6 +14,32 @@ const {
 } = ActionTypes;
 const { TOGGLE_CELL_SELECTION } = ActionTypes.tableView;
 
+// Post an empty row to the backend to receive a valid rowId
+// TODO: make toggle_cell_selection always scroll to cell, like router dispatch does
+export const createNewRow = ({ tableId, cell }) => async (
+  dispatch,
+  getState
+) => {
+  const state = getState();
+  const columns = f.prop(["columns", tableId, "data"], state);
+  const newRow = await makeRequest({
+    apiRoute: route.toTable({ tableId }) + "/rows",
+    method: "POST",
+    data: { columns }
+  }).then(f.prop("rows"));
+  dispatch({
+    type: ADDITIONAL_ROWS_DATA_LOADED,
+    tableId,
+    rows: newRow
+  });
+  dispatch({
+    type: TOGGLE_CELL_SELECTION,
+    tableId,
+    columnId: f.prop(["column", "id"], cell), // don't crash when no cell is passed
+    rowId: newRow.id
+  });
+};
+
 // TODO: Let the backend handle this once /safelyDuplicate is implemented
 // When duplicating rows, we must make sure that link constraints are not
 // broken, else the backend will reject.
@@ -51,7 +77,7 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
       type: ADDITIONAL_ROWS_DATA_LOADED,
       tableId,
       rows: duplicatedRow
-    }); // additionalrow?
+    });
 
     dispatch({
       type: TOGGLE_CELL_SELECTION,
