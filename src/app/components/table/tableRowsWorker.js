@@ -1,19 +1,25 @@
-import ActionCreator from "../../actions/ActionCreator";
+import { translate } from "react-i18next";
 import React from "react";
-import {Directions} from "../../constants/TableauxConstants";
-import {isLastRowSelected, setNextSelectedCell} from "./tableNavigationWorker";
-import {translate} from "react-i18next";
-import f from "lodash/fp";
 
-const DuplicatedMessage = (props) => {
-  const {row, t, onJumpToRow} = props;
-  const onClickHandler = (e) => {
+// import { Directions } from "../../constants/TableauxConstants";
+// import {
+//   isLastRowSelected,
+//   setNextSelectedCell
+// } from "./tableNavigationWorker";
+import actions from "../../redux/actionCreators";
+import store from "../../redux/store";
+
+const DuplicatedMessage = props => {
+  const { row, t, onJumpToRow } = props;
+  const onClickHandler = () => {
     onJumpToRow(row);
   };
   return (
     <div>
       <p>{t("row_duplicated")}</p>
-      <a href="#" onClick={onClickHandler}>{t("jump_to_row")} <i className="fa fa-angle-right" /></a>
+      <a href="#" onClick={onClickHandler}>
+        {t("jump_to_row")} <i className="fa fa-angle-right" />
+      </a>
     </div>
   );
 };
@@ -21,49 +27,39 @@ const DuplicatedMessage = (props) => {
 const TranslatedDuplicatedMessage = translate(["table"])(DuplicatedMessage);
 
 export function duplicateRow(payload) {
-  const {rows} = this.props;
-  const {rowId} = payload;
-  const rowToCopy = rows.get(rowId);
-  rowToCopy.safelyDuplicate((row) => {
-    ActionCreator.showToast(<TranslatedDuplicatedMessage row={row} onJumpToRow={ActionCreator.jumpToDupe} />, 3000, true);
-  });
+  store.dispatch(
+    actions.duplicateRow({
+      ...payload,
+      DuplicatedMessage: TranslatedDuplicatedMessage
+    })
+  );
+  //   const { rows } = this.props;
+  //   const { rowId } = payload;
+  //   const rowToCopy = rows.get(rowId);
+  //   rowToCopy.safelyDuplicate(row => {
+  //     ActionCreator.showToast(
+  //       <TranslatedDuplicatedMessage
+  //         row={row}
+  //         onJumpToRow={ActionCreator.jumpToDupe}
+  //       />,
+  //       3000,
+  //       true
+  //     );
+  //   });
 }
 
 export function rowAdded() {
   if (this.selectNewCreatedRow) {
     this.selectNewCreatedRow = false;
-    setNextSelectedCell.call(this, Directions.DOWN);
+    //   setNextSelectedCell.call(this, Directions.DOWN);
   }
 }
 
 export function createRowOrSelectNext() {
-  if (isLastRowSelected.call(this)) {
-    this.selectNewCreatedRow = true;
-    ActionCreator.addRow(this.props.table.id);
-  } else {
-    setNextSelectedCell.call(this, Directions.DOWN);
-  }
-}
-
-export function toggleRowExpand(payload) {
-  const toggleRowId = payload.rowId;
-  const newExpandedRowIds = f.clone(this.state.expandedRowIds) || [];
-  let rowIdExists = false;
-
-  newExpandedRowIds.forEach((rowId, index) => {
-    if (rowId === toggleRowId) {
-      // already expanded: remove to close expanding row
-      newExpandedRowIds.splice(index, 1);
-      rowIdExists = true;
-    }
-  });
-
-  // expand this row
-  if (!rowIdExists) {
-    newExpandedRowIds.push(toggleRowId);
-  }
-
-  this.setState({
-    expandedRowIds: newExpandedRowIds
-  });
+  //if (isLastRowSelected.call(this)) {
+  //  this.selectNewCreatedRow = true;
+  //  //    ActionCreator.addRow(this.props.table.id);
+  //} else {
+  //  setNextSelectedCell.call(this, Directions.DOWN);
+  //}
 }

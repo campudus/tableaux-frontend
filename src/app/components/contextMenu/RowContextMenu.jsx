@@ -36,7 +36,6 @@ const translationNeverNeeded = cell =>
 class RowContextMenu extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
   }
   closeRowContextMenu = () => {
     this.props.onClickOutside();
@@ -48,7 +47,6 @@ class RowContextMenu extends React.Component {
 
   deleteRow = () => {
     const { cell, row, langtag } = this.props;
-    console.log("deleteRow()", cell, row, langtag);
     initiateDeleteRow({ row, table: cell.table, langtag });
   };
 
@@ -61,9 +59,14 @@ class RowContextMenu extends React.Component {
     closeRowContextMenu();
   };
 
-  duplicateRow = event => {
-    const { row, langtag } = this.props;
-    initiateDuplicateRow(row, langtag);
+  duplicateRow = () => {
+    const {
+      row,
+      langtag,
+      cell,
+      cell: { table }
+    } = this.props;
+    initiateDuplicateRow({ cell, tableId: table.id, rowId: row.id, langtag });
     this.closeRowContextMenu();
   };
 

@@ -17,7 +17,7 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
-import { duplicateRow, loadAllRows } from "./actions/rowActions";
+import { safelyDuplicateRow, loadAllRows } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -265,7 +265,6 @@ const closeOverlay = name => (dispatch, getState) => {
   const overlayToClose = f.isString(name)
     ? f.find(f.propEq("name", name), overlays)
     : f.last(overlays);
-  console.log("Close overlay:", name, overlayToClose);
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
   return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
     ? dispatch(
@@ -438,7 +437,7 @@ const actionCreators = {
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   changeCellValue,
   deleteRow,
-  duplicateRow: dispatchParamsFor(duplicateRow),
+  duplicateRow: safelyDuplicateRow,
   addAnnotationLangtags,
   removeAnnotationLangtags,
   addTextAnnotation,

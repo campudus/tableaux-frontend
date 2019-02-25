@@ -41,11 +41,12 @@ const insertSkeletonRows = (state, action, completeState) => {
   const table = f.prop(["tables", "data", tableId], completeState);
   const columns = f.prop(["columns", tableId, "data"], completeState);
   const rows = rowValuesToCells(table, columns)(action.rows);
-  const hasRows = f.isArray(f.prop([tableId]));
+  const existingRows = f.prop(["rows", tableId, "data"], completeState);
+  const hasRows = f.isArray(existingRows);
   const pathToData = [tableId, "data"];
   const skeletonRows = hasRows
     ? f.flow(
-        f.append(f.__, state[tableId]),
+        newRows => [...existingRows, ...newRows],
         f.uniqBy(f.prop("id")),
         f.assoc(pathToData, f.__, state)
       )(rows)
@@ -79,7 +80,6 @@ const annotationsToObject = annotations => {
 };
 
 const rowValuesToCells = (table, columns) => rows => {
-  const start = performance.now();
   const rowsWithCells = rows.map(row => {
     const fakeRow = { id: row.id };
     return {
@@ -99,9 +99,6 @@ const rowValuesToCells = (table, columns) => rows => {
       )
     };
   });
-  console.log(
-    `rowValuesToCells(${table.id}) took ${performance.now() - start}ms`
-  );
   return rowsWithCells;
 };
 
@@ -121,7 +118,6 @@ const updateCellAnnotation = (state, action, completeState) => {
 
 const removeCellAnnotation = (state, action, completeState) => {
   const { annotations, annotation } = action;
-  console.log("Should delete", annotation, "from", annotations);
   const newCellAnnotations = f.reject(
     f.propEq("uuid", annotation.uuid),
     annotations
@@ -144,10 +140,6 @@ const setCellAnnotation = (state, action, completeState) => {
     annotationIdx >= 0
       ? f.assoc(annotationIdx, annotation, annotations)
       : [...annotations, annotation];
-  console.log("Result:", result);
-  console.log("annotation:", annotation);
-  console.log("annotations:", annotations);
-  console.log("newcellannotations:", newCellAnnotations);
   return updateCellAnnotation(
     state,
     { ...action, newCellAnnotations },

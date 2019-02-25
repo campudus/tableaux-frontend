@@ -12,16 +12,15 @@ const {
   ALL_ROWS_DATA_LOADED,
   ADD_ROWS
 } = ActionTypes;
-const { SHOW_TOAST } = ActionTypes.overlays;
+const { TOGGLE_CELL_SELECTION } = ActionTypes.tableView;
 
 // TODO: Let the backend handle this once /safelyDuplicate is implemented
 // When duplicating rows, we must make sure that link constraints are not
 // broken, else the backend will reject.
-export const safelyDuplicateRow = ({
-  tableId,
-  rowId,
-  DuplicatedMessage
-}) => async (dispatch, getState) => {
+export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
+  dispatch,
+  getState
+) => {
   const state = getState();
   const columns = f.prop(["columns", tableId, "data"], state);
   const row = doto(
@@ -47,9 +46,20 @@ export const safelyDuplicateRow = ({
       apiRoute: route.toTable({ tableId }) + "/rows",
       data: { columns, rows: [{ values: duplicatedValues }] },
       method: "POST"
-    });
+    }).then(f.prop("rows"));
+    dispatch({
+      type: ADDITIONAL_ROWS_DATA_LOADED,
+      tableId,
+      rows: duplicatedRow
+    }); // additionalrow?
 
-    dispatch({ type: ADDITIONAL_ROWS_DATA_LOADED, rows: [duplicatedRow] }); // additionalrow?
+    dispatch({
+      type: TOGGLE_CELL_SELECTION,
+      tableId,
+      rowId: duplicatedRow[0].id,
+      columnId: cell.column.id,
+      langtag
+    });
 
     // Set a flag when we deleted values during copy
     const checkMeAnnotation = { type: "flag", value: "check-me" };
@@ -66,7 +76,7 @@ export const safelyDuplicateRow = ({
       )
     );
   } catch (err) {
-    dispatch({ type: SHOW_TOAST, content: DuplicatedMessage });
+    console.error("While duplicating row:", err);
   }
 };
 
