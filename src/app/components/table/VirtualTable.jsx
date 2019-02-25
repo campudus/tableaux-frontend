@@ -117,8 +117,6 @@ export default class VirtualTable extends PureComponent {
   };
 
   componentDidMount = () => {
-    // Dispatcher.on(ActionTypes.OPEN_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
-    // Dispatcher.on(ActionTypes.CLOSE_ANNOTATIONS_VIEWER, this.setOpenAnnotations);
     // Dispatcher.on(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
   };
 
@@ -129,6 +127,8 @@ export default class VirtualTable extends PureComponent {
       this.setState({ openAnnotations: { cellId: cell.id } });
     }
   };
+
+  openCellContextMenu = this.props.openCellContextMenu(this.setOpenAnnotations);
 
   renderEmptyTable = () => {
     return null;
@@ -272,7 +272,7 @@ export default class VirtualTable extends PureComponent {
         inSelectedRow={this.isInSelectedRow(cell.row.id, langtag)}
         editing={isEditing}
         toggleAnnotationPopup={this.setOpenAnnotations}
-        openCellContextMenu={this.props.openCellContextMenu}
+        openCellContextMenu={this.openCellContextMenu}
         closeCellContextMenu={this.props.closeCellContextMenu}
       />
     );
@@ -321,7 +321,7 @@ export default class VirtualTable extends PureComponent {
               allDisplayValues={tableView.displayValues}
               value={cell.value}
               toggleAnnotationPopup={this.setOpenAnnotations}
-              openCellContextMenu={this.props.openCellContextMenu}
+              openCellContextMenu={this.openCellContextMenu}
               closeCellContextMenu={this.props.closeCellContextMenu}
             />
           );
@@ -511,13 +511,13 @@ export default class VirtualTable extends PureComponent {
       .filter(this.filterVisibleCells);
 
     const columnCount = f.size(this.visibleColumnIndices) + 1;
-    const rowCount = f.size(rows) + 2;
+    const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
     const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
     const selectedCellKey = isSelectedCellValid
-      ? `${f.get(
-          "id",
-          this.getCell(selectedCell.rowId - 1, selectedCell.columnId - 1)
+      ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
+          "colId",
+          this.selectedCell
         )}-${selectedCellEditing}-${selectedCellExpandedRow}`
       : "";
 

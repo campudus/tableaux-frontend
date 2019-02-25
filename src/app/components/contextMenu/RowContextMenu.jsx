@@ -290,7 +290,7 @@ class RowContextMenu extends React.Component {
           {this.copyItem()}
           {this.pasteItem()}
           {this.mkItem(
-            f.noop, //() => ActionCreator.openAnnotationsPopup(cell),
+            () => this.props.openAnnotations(cell),
             "add-comment",
             "commenting"
           )}
@@ -340,7 +340,8 @@ RowContextMenu.propTypes = {
   table: PropTypes.object.isRequired,
   cell: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
-  onClickOutside: PropTypes.func.isRequired
+  onClickOutside: PropTypes.func.isRequired,
+  openAnnotations: PropTypes.func.isRequired
 };
 
 export default compose(

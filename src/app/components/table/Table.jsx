@@ -182,7 +182,7 @@ class Table extends Component {
     ) : null;
   };
 
-  showRowContextMenu = ({ langtag, cell }) => event => {
+  showRowContextMenu = openAnnotations => ({ langtag, cell }) => event => {
     const { pageX, pageY } = event;
     const { actions, rows } = this.props;
     this.setState({
@@ -194,7 +194,8 @@ class Table extends Component {
         actions,
         langtag,
         cell,
-        rows
+        rows,
+        openAnnotations
       }
     });
   };
