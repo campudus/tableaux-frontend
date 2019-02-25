@@ -88,15 +88,12 @@ const removeTranslationNeeded = (langtag, cell) => {
 };
 
 const setRowFinal = ({ table, row, value = true }) => {
-  store.dispatch(setRowFlag, {
-    table,
-    row,
-    flagName: "final",
-    flagValue: value
-  });
+  setRowAnnotation({ table, row, flagName: "final", flagValue: value });
 };
 
-const setRowAnnotation = () => null;
+const setRowAnnotation = ({ table, row, flagName, flagValue }) => {
+  store.dispatch(setRowFlag({ table, row, flagName, flagValue }));
+};
 
 // Singleton
 class UnlockedRowManager {

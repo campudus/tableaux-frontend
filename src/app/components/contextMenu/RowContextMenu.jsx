@@ -1,27 +1,29 @@
-import React from "react";
+import { compose } from "recompose";
 import { translate } from "react-i18next";
-import { isUserAdmin } from "../../helpers/accessManagementHelper";
-import {
-  initiateDeleteRow,
-  initiateDuplicateRow,
-  initiateEntityView,
-  initiateRowDependency
-} from "../../helpers/rowHelper";
-import GenericContextMenu from "./GenericContextMenu";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import React from "react";
 import f from "lodash/fp";
-import { canConvert } from "../../helpers/cellValueConverter";
+import withClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
   getAnnotation,
   removeTranslationNeeded,
   setCellAnnotation,
-  setRowAnnotation
+  setRowFinal
 } from "../../helpers/annotationHelper";
-import { compose } from "recompose";
-import withClickOutside from "react-onclickoutside";
-import PropTypes from "prop-types";
+import { canConvert } from "../../helpers/cellValueConverter";
+import {
+  initiateDeleteRow,
+  initiateDuplicateRow,
+  initiateEntityView,
+  initiateRowDependency
+} from "../../helpers/rowHelper";
+import { isUserAdmin } from "../../helpers/accessManagementHelper";
+import GenericContextMenu from "./GenericContextMenu";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -218,11 +220,12 @@ class RowContextMenu extends React.Component {
     );
   };
 
-  setFinal = isFinal => () => {
+  setFinal = valueToSet => () => {
     const {
-      cell: { row }
+      row,
+      cell: { table }
     } = this.props;
-    setRowAnnotation({ final: isFinal }, row);
+    setRowFinal({ table, row, value: valueToSet });
   };
 
   setFinalItem = () => {

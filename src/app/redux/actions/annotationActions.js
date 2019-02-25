@@ -189,20 +189,21 @@ export const addTextAnnotation = setTextAnnotation(Change.ADD);
 export const setRowFlag = action => dispatch => {
   const { table, row, flagName, flagValue } = action;
   makeRequest({
-    apiRoute: route.toRow({ tableId: table.id, rowId: row.id }),
+    apiRoute:
+      route.toRow({ tableId: table.id, rowId: row.id }) + "/annotations",
     method: "PATCH",
     data: { [flagName]: flagValue }
-  }).then(() =>
-    dispatch(
-      {
+  })
+    .then(result =>
+      dispatch({
         type: SET_ROW_ANNOTATION,
         table,
         row,
         flagName,
-        flagValue: !!flagValue
-      }.catch(console.error)
+        flagValue: f.prop(flagName, result)
+      })
     )
-  );
+    .catch(console.error);
 };
 
 export const toggleAnnotationFlag = action => (dispatch, getState) => {
