@@ -45,7 +45,11 @@ const initialState = {
   visibleRows: [],
   filters: [],
   sorting: [],
-  searchOverlayOpen: false
+  searchOverlayOpen: false,
+  history: {
+    undoQueue: [],
+    redoQueue: []
+  }
 };
 
 // This sets display values for foreign tables, allowing us to track
@@ -215,7 +219,7 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
 };
 
 // if an identifier cell was modified, we need to update the concat display value
-const maybeUpdateConcat = (tableView, action, completeState) => {
+const maybeUpdateConcat = f.curryN(3, (action, completeState, tableView) => {
   const concatValues = calcConcatValues(action, completeState) || {};
   const { dvRowIdx, displayValue } = concatValues;
   const pathToDv = displayValueSelector({
@@ -227,6 +231,63 @@ const maybeUpdateConcat = (tableView, action, completeState) => {
   return f.isEmpty(concatValues)
     ? tableView
     : f.assoc(pathToDv, displayValue, tableView);
+});
+
+const switchValues = action => ({
+  ...action,
+  oldValue: action.newValue,
+  newValue: action.oldValue
+});
+
+const limitQueue = limit => queue =>
+  queue.length >= limit ? f.tail(queue) : queue;
+
+const push = (action, history) => {
+  return {
+    ...history,
+    undoQueue: f.compose(
+      limitQueue(50),
+      f.compact,
+      f.concat(history.undoQueue),
+      switchValues
+    )(action)
+  };
+};
+const undo = history => {
+  const { undoQueue, redoQueue } = history;
+  return {
+    undoQueue: f.initial(undoQueue),
+    redoQueue: f.compose(
+      limitQueue(50),
+      f.compact,
+      f.concat(redoQueue),
+      switchValues,
+      f.last
+    )(undoQueue)
+  };
+};
+const redo = history => {
+  const { undoQueue, redoQueue } = history;
+  return {
+    redoQueue: f.initial(redoQueue),
+    undoQueue: f.compose(
+      limitQueue(50),
+      f.compact,
+      f.concat(undoQueue),
+      switchValues,
+      f.last
+    )(redoQueue)
+  };
+};
+
+const modifyHistory = action => state => {
+  const { modifyAction } = action;
+  const { history } = state;
+  if (!modifyAction) {
+    return { ...state, history: push(action, history) };
+  }
+  const newHistory = modifyAction === "undo" ? undo(history) : redo(history);
+  return { ...state, history: newHistory };
 };
 
 export default (state = initialState, action, completeState) => {
@@ -262,7 +323,10 @@ export default (state = initialState, action, completeState) => {
     case CELL_ROLLBACK_VALUE:
       return updateDisplayValue("oldValue", state, action, completeState);
     case CELL_SAVED_SUCCESSFULLY:
-      return maybeUpdateConcat(state, action, completeState);
+      return f.compose(
+        maybeUpdateConcat(action, completeState),
+        modifyHistory(action)
+      )(state);
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,
@@ -286,7 +350,13 @@ export default (state = initialState, action, completeState) => {
         sorting: action.sorting || state.sorting
       };
     case CLEAN_UP:
-      return { ...state, filters: [], sorting: [], displayValues: {} };
+      return {
+        ...state,
+        filters: [],
+        sorting: [],
+        displayValues: {},
+        history: []
+      };
     default:
       return state;
   }

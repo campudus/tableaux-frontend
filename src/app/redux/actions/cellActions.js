@@ -187,3 +187,18 @@ const toggleLink = oldIds => newIds => {
         value: { value: toggler }
       };
 };
+
+export const modifyHistory = modifyAction => (dispatch, getState) => {
+  const historyAction = f.compose(
+    f.last,
+    f.get([
+      "tableView",
+      "history",
+      modifyAction === "undo" ? "undoQueue" : "redoQueue"
+    ])
+  )(getState());
+  if (!historyAction) {
+    return;
+  }
+  dispatch(changeCellValue({ ...historyAction, modifyAction }));
+};

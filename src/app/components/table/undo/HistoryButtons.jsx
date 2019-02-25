@@ -1,27 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
-import * as TableHistory from "./tableHistory";
 import f from "lodash/fp";
-// import Dispatcher from "../../../dispatcher/Dispatcher";
-import {ActionTypes} from "../../../constants/TableauxConstants";
-import {compose, lifecycle, withStateHandlers} from "recompose";
+import { compose, lifecycle, withStateHandlers } from "recompose";
 import classNames from "classnames";
 
-const HistoryButtons = ({history: {canUndo, canRedo}, undo, redo, active}) => {
-  const buttonBaseClass = classNames("button", {inactive: !active});
+const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
+  const buttonBaseClass = classNames("button", { inactive: !active });
   return (
     <div className="history-buttons">
-      <a className={`${buttonBaseClass} undo-button ${(canUndo) ? "" : "disabled"}`}
-         onClick={(canUndo) ? undo : f.noop}
-         href="#"
-         draggable={false}
+      <a
+        className={`${buttonBaseClass} undo-button ${
+          canUndo ? "" : "disabled"
+        }`}
+        onClick={canUndo ? undo : f.noop}
+        href="#"
+        draggable={false}
       >
         <i className="fa fa-undo" />
       </a>
-      <a className={`${buttonBaseClass} redo-button ${(canRedo) ? "" : "disabled"}`}
-         onClick={(canRedo) ? redo : f.noop}
-         href="#"
-         draggable={false}
+      <a
+        className={`${buttonBaseClass} redo-button ${
+          canRedo ? "" : "disabled"
+        }`}
+        onClick={canRedo ? redo : f.noop}
+        href="#"
+        draggable={false}
       >
         <i className="fa fa-repeat" />
       </a>
@@ -31,44 +34,47 @@ const HistoryButtons = ({history: {canUndo, canRedo}, undo, redo, active}) => {
 
 export default compose(
   withStateHandlers(
-    (props) => ({
-      history: {
-        canUndo: TableHistory.canUndo({tableId: props.tableId, rowId: props.rowId}),
-        canRedo: TableHistory.canRedo({tableId: props.tableId, rowId: props.rowId})
-      },
+    props => ({
+      canUndo: f.compose(
+        f.negate(f.isEmpty),
+        f.get(["tableView", "history", "undoQueue"])
+      )(props),
+      canRedo: f.compose(
+        f.negate(f.isEmpty),
+        f.get(["tableView", "history", "redoQueue"])
+      )(props),
       active: true
     }),
     {
-      updateButtonState: (state, {tableId, rowId}) => () => ({
-        history: {
-          canUndo: TableHistory.canUndo({tableId, rowId}),
-          canRedo: TableHistory.canRedo({tableId, rowId})
-        },
+      updateButtonState: (state, props) => () => ({
+        canUndo: f.compose(
+          f.negate(f.isEmpty),
+          f.get(["tableView", "history", "undoQueue"])
+        )(props),
+        canRedo: f.compose(
+          f.negate(f.isEmpty),
+          f.get(["tableView", "history", "redoQueue"])
+        )(props),
         active: true
       }),
-      undo: ({active}, {tableId, rowId}) => () => {
+      undo: ({ active }, { actions: { modifyHistory } }) => () => {
         if (active) {
-          TableHistory.undo({tableId, rowId});
-          return {active: false};
+          modifyHistory("undo");
+          return { active: false };
         }
       },
-      redo: ({active}, {tableId, rowId}) => () => {
+      redo: ({ active }, { actions: { modifyHistory } }) => () => {
         if (active) {
-          TableHistory.redo({tableId, rowId});
-          return {active: false};
+          modifyHistory("redo");
+          return { active: false };
         }
       }
     }
   ),
   lifecycle({
-    componentDidMount() {
-      // Dispatcher.on(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
-    },
-    componentWillUnmount() {
-      // Dispatcher.off(ActionTypes.BROADCAST_UNDO_EVENT, this.props.updateButtonState);
-    },
-    componentDidUpdate(prevProps) { // table switch
-      if (this.props.tableId !== prevProps.tableId || this.props.rowId !== prevProps.rowId) {
+    componentDidUpdate(prevProps) {
+      // table switch
+      if (!f.eq(prevProps.tableView.history, this.props.tableView.history)) {
         this.props.updateButtonState();
       }
     }

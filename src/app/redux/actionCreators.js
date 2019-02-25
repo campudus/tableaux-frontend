@@ -8,7 +8,7 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue } from "./actions/cellActions";
+import { changeCellValue,modifyHistory } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import {
@@ -462,6 +462,7 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
+  modifyHistory,
   addEmptyRow: addEmptyRow
 };
 

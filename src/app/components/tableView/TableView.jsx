@@ -298,7 +298,7 @@ class TableView extends PureComponent {
           ) : (
             <div />
           )}
-          <HistoryButtons tableId={table.id} />
+          <HistoryButtons {...this.props} />
           <div className="header-separator" />
           <Spinner isLoading={f.isEmpty(allDisplayValues)} />
           <PageTitle titleKey="pageTitle.tables" />
