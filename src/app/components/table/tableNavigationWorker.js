@@ -82,7 +82,8 @@ export function getKeyboardShortcuts() {
       preventSleepingOnTheKeyboard.call(this, () => {
         if (selectedCell && !selectedCellEditing) {
           toggleCellEditing.call(this, {
-            langtag: this.state.selectedCellExpandedRow || this.props.langtag,
+            langtag:
+              this.props.tableView.selectedCell.langtag || this.props.langtag,
             event
           });
         }
@@ -110,7 +111,7 @@ export function getKeyboardShortcuts() {
             (f.matchesProperty("key", f.toLower(k))(event) &&
               f.get("shiftKey", event))
           : f.matchesProperty("key", k)(event);
-      const thisLangtag = this.props.langtag;
+      // const thisLangtag = this.props.langtag;
       const systemPaste =
         selectedCellEditing &&
         f.contains(selectedCell.kind, [
@@ -218,32 +219,48 @@ export function toggleCellEditing(params = {}) {
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
-  const selectedCell = this.state.selectedCell;
+  const { columns, rows, tableView, actions } = this.props;
+  const { columnId, rowId } = tableView.selectedCell;
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const rowIndex = f.findIndex(row => row.id === rowId, rows);
+  const selectedRow = rows[rowIndex];
+  const selectedCellObject = selectedRow.cells[columnIndex];
+
   const needsTranslation = f.contains(
     params.langtag,
     f.intersection(
       getUserLanguageAccess(),
-      f.prop(["annotations", "translationNeeded", "langtags"], selectedCell)
+      f.prop(
+        ["annotations", "translationNeeded", "langtags"],
+        selectedCellObject
+      )
     )
   );
-  if (selectedCell && canEdit) {
-    const noEditingModeNeeded = f.contains(selectedCell.kind, [
+
+  if (selectedCellObject && canEdit) {
+    const noEditingModeNeeded = f.contains(selectedCellObject.kind, [
       ColumnKinds.boolean,
       ColumnKinds.link,
       ColumnKinds.attachment
     ]);
+
     if (
-      (!this.state.selectedCellEditing || !noEditingModeNeeded) && // Editing requested or unnecessary
-      isLocked(selectedCell.row) &&
+      (!tableView.editing || !noEditingModeNeeded) && // Editing requested or unnecessary
+      isLocked(selectedRow) &&
       !needsTranslation
     ) {
       // needs_translation overrules final
-      askForSessionUnlock(selectedCell.row, f.prop(["event", "key"], params));
+      askForSessionUnlock(selectedRow, f.prop(["event", "key"], params));
       return;
     }
+
     if (!noEditingModeNeeded) {
-      this.setState({
-        selectedCellEditing: editVal
+      actions.toggleCellEditing({
+        tableId: tableView.currentTable,
+        columnId,
+        rowId,
+        row: selectedRow,
+        editing: editVal
       });
     }
   }
@@ -307,8 +324,6 @@ export function setNextSelectedCell(direction) {
       nextCell.columnId !== columnId ||
       nextCell.rowId !== rowId ||
       newSelectedCellExpandedRow !== langtag;
-
-    console.log("nextCell", nextCell);
 
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
@@ -438,8 +453,6 @@ export function getPreviousColumn() {
  * Helper to prevent massive events on pressing navigation keys for changing cell selections
  * @param cb
  */
-// TODO-W
-// we could let it be a bit faster because of rewrite-performance!
 export function preventSleepingOnTheKeyboard(cb) {
   if (this.keyboardRecentlyUsedTimer === null) {
     this.keyboardRecentlyUsedTimer = setTimeout(() => {
