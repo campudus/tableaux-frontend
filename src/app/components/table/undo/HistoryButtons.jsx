@@ -35,25 +35,25 @@ const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
 export default compose(
   withStateHandlers(
     props => ({
-      canUndo: f.compose(
-        f.negate(f.isEmpty),
-        f.get(["tableView", "history", "undoQueue"])
+      canUndo: f.flow(
+        f.get(["tableView", "history", "undoQueue"]),
+        f.negate(f.isEmpty)
       )(props),
-      canRedo: f.compose(
-        f.negate(f.isEmpty),
-        f.get(["tableView", "history", "redoQueue"])
+      canRedo: f.flow(
+        f.get(["tableView", "history", "redoQueue"]),
+        f.negate(f.isEmpty)
       )(props),
       active: true
     }),
     {
       updateButtonState: (state, props) => () => ({
-        canUndo: f.compose(
-          f.negate(f.isEmpty),
-          f.get(["tableView", "history", "undoQueue"])
+        canUndo: f.flow(
+          f.get(["tableView", "history", "undoQueue"]),
+          f.negate(f.isEmpty)
         )(props),
-        canRedo: f.compose(
-          f.negate(f.isEmpty),
-          f.get(["tableView", "history", "redoQueue"])
+        canRedo: f.flow(
+          f.get(["tableView", "history", "redoQueue"]),
+          f.negate(f.isEmpty)
         )(props),
         active: true
       }),
