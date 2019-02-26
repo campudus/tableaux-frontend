@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
-import { doto } from "../../helpers/functools";
+import { doto, propMatches, when } from "../../helpers/functools";
 import { makeRequest } from "../../helpers/apiHelper";
 import { toggleAnnotationFlag } from "./annotationActions";
 import ActionTypes from "../actionTypes";
@@ -55,22 +55,35 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
     f.find(f.propEq("id", rowId))
   );
 
-  const constrainedLinkIds = columns.filter(
-    column =>
-      column.kind === ColumnKinds.link &&
-      !f.isEmpty(f.prop("constraint.cardinality"), column)
-  );
-  const isConstrainedLink = column => f.contains(column.id, constrainedLinkIds);
+  const isPositiveNumber = num => f.isInteger(num) && num > 0;
+
+  const constrainedLinkIds = columns
+    .filter(
+      column =>
+        column.kind === ColumnKinds.link &&
+        propMatches(isPositiveNumber, "constraint.cardinality.from", column)
+    )
+    .map(f.prop("id"));
+
+  const canNotCopy = column =>
+    f.contains(column.id, constrainedLinkIds) ||
+    column.kind === ColumnKinds.group ||
+    column.kind === ColumnKinds.concat;
 
   // We can't check cardinality from the frontend, so we won't copy links with cardinality
   const duplicatedValues = row.values.map((value, idx) =>
-    isConstrainedLink(columns[idx]) ? null : value
+    canNotCopy(columns[idx]) ? null : value
   );
+
+  const hasConcat = f.propEq([0, "kind"], ColumnKinds.concat)(columns);
 
   try {
     const duplicatedRow = await makeRequest({
       apiRoute: route.toTable({ tableId }) + "/rows",
-      data: { columns, rows: [{ values: duplicatedValues }] },
+      data: {
+        columns: when(() => hasConcat, f.drop(1), columns),
+        rows: [{ values: when(() => hasConcat, f.drop(1), duplicatedValues) }]
+      },
       method: "POST"
     }).then(f.prop("rows"));
     dispatch({
@@ -94,7 +107,7 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
         toggleAnnotationFlag({
           cell: {
             table: { id: tableId },
-            row: { id: rowId },
+            row: { id: duplicatedRow[0].id },
             column: { id: columnId }
           },
           annotation: checkMeAnnotation
