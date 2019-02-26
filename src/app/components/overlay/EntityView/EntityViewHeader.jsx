@@ -164,7 +164,6 @@ class EntityViewHeader extends PureComponent {
       grudData,
       cell
     } = this.props;
-    console.log(this.props)
     const tableId = f.prop(["table", "id"], cell);
     const table = f.prop(["tables", "data", tableId], grudData);
     const { tableView } = grudData
