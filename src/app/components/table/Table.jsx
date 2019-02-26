@@ -36,7 +36,6 @@ class Table extends Component {
     this.state = {
       windowHeight: window.innerHeight,
       scrolledHorizontal: 0,
-      selectedCellEditing: false,
       // needed for multilanguage cell selection
       rowContextMenu: null,
       showScrollToLeftButton: false
