@@ -265,9 +265,9 @@ export function toggleCellEditing(params = {}) {
 }
 
 export function setNextSelectedCell(direction) {
-  const { tableView, langtag, rows, columns } = this.props;
+  const { tableView, rows, columns } = this.props;
   const { selectedCell } = tableView;
-  const { columnId, rowId } = selectedCell;
+  const { columnId, rowId, langtag } = selectedCell;
 
   if (!columnId || !rowId) {
     return;
@@ -318,7 +318,10 @@ export function setNextSelectedCell(direction) {
     };
 
     var isValidCell = nextCell.rowId > 0 && nextCell.columnId > 0;
-    var isNewCell = nextCell.columnId !== columnId || nextCell.rowId !== rowId;
+    var isNewCell =
+      nextCell.columnId !== columnId ||
+      nextCell.rowId !== rowId ||
+      newSelectedCellExpandedRow !== langtag;
 
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
@@ -330,10 +333,13 @@ export function setNextSelectedCell(direction) {
 }
 
 // returns the next row and the next language cell when expanded
-export function getNextRowCell(currentRowId, getPrev) {
+export function getNextRowCell(currentRowId2, getPrev) {
   const { expandedRowIds, selectedCellExpandedRow } = this.state;
   const { tableView, langtag, rows } = this.props;
   const { selectedCell } = tableView;
+  const { rowId } = selectedCell;
+
+  const currentRowId = rowId;
 
   const indexCurrentRow = f.findIndex(
     row => row.id === selectedCell.rowId,
@@ -356,8 +362,8 @@ export function getNextRowCell(currentRowId, getPrev) {
     // jump to new language inside expanded row - but just when cell is multilanguage
     if (
       nextLangtagIndex >= 0 &&
-      nextLangtagIndex <= Langtags.length - 1 &&
-      selectedCell.isMultiLanguage
+      nextLangtagIndex <= Langtags.length - 1 // &&
+      // selectedCell.isMultiLanguage
     ) {
       // keep the row
       nextIndex = indexCurrentRow;
@@ -378,24 +384,22 @@ export function getNextRowCell(currentRowId, getPrev) {
     // Next row is expanded
     if (expandedRowIds && expandedRowIds.indexOf(nextRowId) > -1) {
       // Multilanguage cell
-      if (selectedCell.isMultiLanguage) {
-        nextSelectedCellExpandedRow = getPrev
-          ? Langtags[Langtags.length - 1]
-          : DefaultLangtag;
-      } else {
+      //if (selectedCell.isMultiLanguage) {
+      nextSelectedCellExpandedRow = getPrev
+        ? Langtags[Langtags.length - 1]
+        : DefaultLangtag;
+      /*} else {
         nextSelectedCellExpandedRow = DefaultLangtag;
-      }
+      }*/
     } else {
       nextSelectedCellExpandedRow = langtag;
     }
   }
 
-  const result = {
+  return {
     id: nextRowId,
     selectedCellExpandedRow: nextSelectedCellExpandedRow
   };
-
-  return result;
 }
 
 export function getPreviousRow(currentRowId) {
@@ -420,8 +424,6 @@ export function getNextColumnCell(currentColumnId, getPrev) {
   let newSelectedCellExpandedRow;
 
   // Not Multilanguage and row is expanded so jump to top language
-  // TODO-W
-  // if row is "open" it jumps straight to next row-id
   if (
     !nextColumn.multilanguage &&
     expandedRowIds &&
@@ -448,6 +450,8 @@ export function getPreviousColumn(currentColumnId) {
  * Helper to prevent massive events on pressing navigation keys for changing cell selections
  * @param cb
  */
+// TODO-W
+// we could let it be a bit faster because of rewrite-performance!
 export function preventSleepingOnTheKeyboard(cb) {
   if (this.keyboardRecentlyUsedTimer === null) {
     this.keyboardRecentlyUsedTimer = setTimeout(() => {
