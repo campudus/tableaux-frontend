@@ -193,7 +193,7 @@ export function isLastRowSelected() {
   return currentRowIndex === numberOfRows;
 }
 
-export function toggleCellSelection({ selected, cell, langtag }) {
+export function toggleCellSelection({ cell, langtag }) {
   const tableId = this.props.tableView.currentTable;
   const columnId = cell.columnId;
   const rowId = cell.rowId;
@@ -212,21 +212,6 @@ export function toggleCellSelection({ selected, cell, langtag }) {
     selectedCellEditing: false,
     selectedCellExpandedRow: langtag || null
   });
-
-  /*
-  if (selected !== "NO_HISTORY_PUSH") {
-    const cellURL = `/${
-      this.props.langtag
-    }/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
-    App.router.navigate(cellURL, { trigger: false });
-  }
-  if (
-    !f.isNil(this.state.selectedCell) &&
-    !f.equals(this.state.selectedCell.row, cell.row)
-  ) {
-    unlockRow(this.state.selectedCell.row, false);
-  }
-  */
 }
 
 export function toggleCellEditing(params = {}) {
@@ -287,22 +272,22 @@ export function setNextSelectedCell(direction) {
 
   switch (direction) {
     case Directions.LEFT:
-      columnCell = getPreviousColumn.call(this, columnId);
+      columnCell = getPreviousColumn.call(this);
       newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
       break;
 
     case Directions.RIGHT:
-      columnCell = getNextColumnCell.call(this, rowId);
+      columnCell = getNextColumnCell.call(this);
       newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
       break;
 
     case Directions.UP:
-      rowCell = getPreviousRow.call(this, rowId);
+      rowCell = getPreviousRow.call(this);
       newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
       break;
 
     case Directions.DOWN:
-      rowCell = getNextRowCell.call(this, columnId);
+      rowCell = getNextRowCell.call(this);
       newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
       break;
   }
@@ -323,21 +308,24 @@ export function setNextSelectedCell(direction) {
       nextCell.rowId !== rowId ||
       newSelectedCellExpandedRow !== langtag;
 
+    console.log("nextCell", nextCell);
+
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
         cell: nextCell,
-        langtag: newSelectedCellExpandedRow
+        langtag: newSelectedCellExpandedRow // langtag
+        // TODO-W we should not change langtag or else everthing is in cell-language after refresh
       });
     }
   }
 }
 
 // returns the next row and the next language cell when expanded
-export function getNextRowCell(currentRowId2, getPrev) {
+export function getNextRowCell(getPrev) {
   const { expandedRowIds, selectedCellExpandedRow } = this.state;
-  const { tableView, langtag, rows } = this.props;
+  const { tableView, rows } = this.props;
   const { selectedCell } = tableView;
-  const { rowId } = selectedCell;
+  const { rowId, langtag } = selectedCell;
 
   const currentRowId = rowId;
 
@@ -402,11 +390,11 @@ export function getNextRowCell(currentRowId2, getPrev) {
   };
 }
 
-export function getPreviousRow(currentRowId) {
-  return getNextRowCell.call(this, currentRowId, true);
+export function getPreviousRow() {
+  return getNextRowCell.call(this, true);
 }
 
-export function getNextColumnCell(currentColumnId, getPrev) {
+export function getNextColumnCell(getPrev) {
   const { columns, tableView } = this.props;
   const { selectedCell } = tableView;
   const { expandedRowIds, selectedCellExpandedRow } = this.state;
@@ -442,8 +430,8 @@ export function getNextColumnCell(currentColumnId, getPrev) {
   return result;
 }
 
-export function getPreviousColumn(currentColumnId) {
-  return getNextColumnCell.call(this, currentColumnId, true);
+export function getPreviousColumn() {
+  return getNextColumnCell.call(this, true);
 }
 
 /**
@@ -460,13 +448,3 @@ export function preventSleepingOnTheKeyboard(cb) {
     cb();
   }
 }
-
-/*export function getCurrentSelectedRowId() {
-  const { selectedCell } = this.state;
-  return selectedCell ? selectedCell.rowId : 0;
-}
-
-export function getCurrentSelectedColumnId() {
-  const { selectedCell } = this.state;
-  return selectedCell ? selectedCell.column.getId() : 0;
-}*/
