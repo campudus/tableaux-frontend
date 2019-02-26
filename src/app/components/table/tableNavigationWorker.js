@@ -277,10 +277,12 @@ export function setNextSelectedCell(direction) {
     id: rowId,
     selectedCellExpandedRow: langtag
   };
+
   let columnCell = {
     id: columnId,
     selectedCellExpandedRow: langtag
   };
+
   let newSelectedCellExpandedRow; // Either row or column switch changes the selected language
 
   switch (direction) {
@@ -314,7 +316,11 @@ export function setNextSelectedCell(direction) {
       columnId: columnCell.id,
       langtag: newSelectedCellExpandedRow
     };
-    if (nextCell) {
+
+    var isValidCell = nextCell.rowId > 0 && nextCell.columnId > 0;
+    var isNewCell = nextCell.columnId !== columnId || nextCell.rowId !== rowId;
+
+    if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
         cell: nextCell,
         langtag: newSelectedCellExpandedRow
