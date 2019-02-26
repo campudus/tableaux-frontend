@@ -33,15 +33,14 @@ const withFunctionality = compose(
         return res;
       };
       const hasEmptyRow = f.every(isEmpty, f.last(rows).values);
-      if (hasEmptyRow) {
-        //TODO translate
-        showToast({
-          content: <div id="cell-jump-toast">{t("table:cant-add-row")}</div>,
-          duratin: 2000
-        });
+      if (f.isEmpty(rows) || !hasEmptyRow) {
+        onAdd();
         return;
       }
-      onAdd();
+      showToast({
+        content: <div id="cell-jump-toast">{t("table:cant-add-row")}</div>,
+        duratin: 2000
+      });
     }
   })
 );
