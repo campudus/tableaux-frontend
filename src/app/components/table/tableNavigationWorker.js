@@ -323,11 +323,11 @@ export function setNextSelectedCell(direction) {
 // returns the next row and the next language cell when expanded
 export function getNextRowCell(getPrev) {
   const { expandedRowIds, selectedCellExpandedRow } = this.state;
-  const { tableView, rows } = this.props;
+  const { tableView, rows, columns } = this.props;
   const { selectedCell } = tableView;
-  const { rowId, langtag } = selectedCell;
-
-  const currentRowId = rowId;
+  const { rowId, langtag, columnId } = selectedCell;
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const selectedColumn = columns[columnIndex];
 
   const indexCurrentRow = f.findIndex(
     row => row.id === selectedCell.rowId,
@@ -342,7 +342,7 @@ export function getNextRowCell(getPrev) {
   if (
     expandedRowIds &&
     expandedRowIds.length > 0 &&
-    expandedRowIds.indexOf(currentRowId) > -1
+    expandedRowIds.indexOf(rowId) > -1
   ) {
     // get next (lower / upper) language position
     let nextLangtagIndex =
@@ -350,8 +350,8 @@ export function getNextRowCell(getPrev) {
     // jump to new language inside expanded row - but just when cell is multilanguage
     if (
       nextLangtagIndex >= 0 &&
-      nextLangtagIndex <= Langtags.length - 1 // &&
-      // selectedCell.isMultiLanguage
+      nextLangtagIndex <= Langtags.length - 1 &&
+      selectedColumn.multilanguage
     ) {
       // keep the row
       nextIndex = indexCurrentRow;
@@ -372,13 +372,13 @@ export function getNextRowCell(getPrev) {
     // Next row is expanded
     if (expandedRowIds && expandedRowIds.indexOf(nextRowId) > -1) {
       // Multilanguage cell
-      //if (selectedCell.isMultiLanguage) {
-      nextSelectedCellExpandedRow = getPrev
-        ? Langtags[Langtags.length - 1]
-        : DefaultLangtag;
-      /*} else {
+      if (selectedColumn.multilanguage) {
+        nextSelectedCellExpandedRow = getPrev
+          ? Langtags[Langtags.length - 1]
+          : DefaultLangtag;
+      } else {
         nextSelectedCellExpandedRow = DefaultLangtag;
-      }*/
+      }
     } else {
       nextSelectedCellExpandedRow = langtag;
     }
