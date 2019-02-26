@@ -338,9 +338,22 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderButton = ({ columnIndex }) => {
-    const { table } = this.props;
+    const {
+      table: { id },
+      actions: { addEmptyRow, showToast },
+      rows
+    } = this.props;
     if (columnIndex === 1) {
-      return <AddNewRowButton table={table} onAdd={this.jumpToLastRow} />;
+      return (
+        <AddNewRowButton
+          onAdd={() => {
+            addEmptyRow(id);
+            this.jumpToLastRow;
+          }}
+          rows={rows}
+          showToast={showToast}
+        />
+      );
     }
     return (
       <div
@@ -505,7 +518,7 @@ export default class VirtualTable extends PureComponent {
       .filter(this.filterVisibleCells);
 
     const columnCount = f.size(this.visibleColumnIndices) + 1;
-    const rowCount = f.size(rows) + 1;
+    const rowCount = f.size(rows) + 2;
 
     const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
     const selectedCellKey = isSelectedCellValid

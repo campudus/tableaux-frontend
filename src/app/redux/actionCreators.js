@@ -27,7 +27,7 @@ import {
 const {
   getAllTables,
   getAllColumnsForTable,
-  getAllRowsForTable,
+  toRows,
   toFolder,
   toFile
 } = API_ROUTES;
@@ -55,7 +55,10 @@ const {
   SET_FILTERS_AND_SORTING,
   SET_SEARCH_OVERLAY,
   CLEAN_UP,
-  ADD_ROWS
+  ADD_ROWS,
+  ROW_CREATE,
+  ROW_CREATE_SUCCESS,
+  ROW_CREATE_ERROR
 } = actionTypes;
 
 const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
@@ -128,6 +131,15 @@ const addRows = (tableId, rows) => {
   };
 };
 
+const addEmptyRow = tableId => ({
+  promise: makeRequest({
+    apiRoute: toRows(tableId),
+    method: "POST"
+  }),
+  actionTypes: [ROW_CREATE, ROW_CREATE_SUCCESS, ROW_CREATE_ERROR],
+  tableId
+});
+
 const loadAllRows = tableId => (dispatch, getState) => {
   const buildParams = (allRows, rowsPerRequest) => {
     if (allRows <= rowsPerRequest) {
@@ -142,12 +154,12 @@ const loadAllRows = tableId => (dispatch, getState) => {
   };
 
   const fetchRowsPaginated = async (tableId, parallelRequests) => {
-    const { getAllRowsForTable } = API_ROUTES;
+    const { toRows } = API_ROUTES;
     const {
       page: { totalSize },
       rows
     } = await makeRequest({
-      apiRoute: getAllRowsForTable(tableId),
+      apiRoute: toRows(tableId),
       params: {
         offset: 0,
         limit: 30
@@ -165,7 +177,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
       const oldIndex = index;
       index++;
       return makeRequest({
-        apiRoute: getAllRowsForTable(tableId),
+        apiRoute: toRows(tableId),
         params: params[oldIndex],
         method: "GET"
       }).then(result => {
@@ -503,7 +515,8 @@ const actionCreators = {
   editMediaFile: editMediaFile,
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
-  cleanUp: cleanUp
+  cleanUp: cleanUp,
+addEmptyRow:addEmptyRow
 };
 
 export default actionCreators;
