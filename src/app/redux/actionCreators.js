@@ -30,7 +30,7 @@ import askForSessionUnlock from "../components/helperComponents/SessionUnlockDia
 const {
   getAllTables,
   getAllColumnsForTable,
-  toRows,
+  toRow,
   toFolder,
   toFile,
   toColumn
