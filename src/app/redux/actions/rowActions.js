@@ -31,10 +31,14 @@ export const addEmptyRow = tableId => ({
 // TODO: Let the backend handle this once /safelyDuplicate is implemented
 // When duplicating rows, we must make sure that link constraints are not
 // broken, else the backend will reject.
-export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
-  dispatch,
-  getState
-) => {
+export const safelyDuplicateRow = ({
+  tableId,
+  rowId,
+  langtag,
+  cell,
+  successCallback,
+  errorCallback
+}) => async (dispatch, getState) => {
   const state = getState();
   const columns = f.prop(["columns", tableId, "data"], state);
   const row = doto(
@@ -102,7 +106,10 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
         })
       )
     );
+
+    successCallback && successCallback();
   } catch (err) {
+    errorCallback && errorCallback(err);
     console.error("While duplicating row:", err);
   }
 };
