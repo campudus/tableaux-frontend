@@ -18,7 +18,8 @@ const {
   REMOVE_CELL_ANNOTATION,
   ANNOTATION_ERROR,
   CLEAN_UP,
-  ADD_ROWS
+  ADD_ROWS,
+  ROW_CREATE_SUCCESS
 } = actionTypes;
 
 const initialState = {};
@@ -205,6 +206,8 @@ const rows = (state = initialState, action, completeState) => {
       return {};
     case ADD_ROWS:
       return addRows(completeState, state, action);
+    case ROW_CREATE_SUCCESS:
+      return addRows(completeState,state,{tableId:action.tableId,rows:[action.result] })
     default:
       return state;
   }
@@ -215,7 +218,7 @@ const addRows = (completeState, state, action) => {
   const table = f.prop(["tables", "data", action.tableId], completeState);
   const temp = f.update(
     [action.tableId, "data"],
-    arr => {const ins = insert(arr, rowValuesToCells(table, columns)(action.rows)); return ins},
+    arr => insert(arr, rowValuesToCells(table, columns)(action.rows)),
     state
   );
   return temp;
