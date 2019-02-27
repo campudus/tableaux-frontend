@@ -3,7 +3,10 @@ import PropTypes from "prop-types";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 // TODO check permissions
 // import {initiateDeleteRow} from "../../helpers/rowHelper";
-// import {hasUserAccessToLanguage, isUserAdmin} from "../../helpers/accessManagementHelper";
+import {
+  hasUserAccessToLanguage,
+  isUserAdmin
+} from "../../helpers/accessManagementHelper";
 import { DefaultLangtag } from "../../constants/TableauxConstants";
 import classNames from "classnames";
 import { isLocked } from "../../helpers/annotationHelper";
@@ -18,14 +21,6 @@ class MetaCell extends PureComponent {
 
   constructor(props) {
     super(props);
-    // props.watch(props.row, {
-    //   events: "change:final",
-    //   force: true
-    // });
-    // props.watch(props.row, {
-    //   events: "change:unlocked",
-    //   force: true
-    // });
   }
 
   handleClick = event => {
@@ -34,25 +29,17 @@ class MetaCell extends PureComponent {
     toggleExpandedRow();
   };
 
-  deleteRow = event => {
-    event.stopPropagation();
-    const { row, langtag } = this.props;
-    // initiateDeleteRow(row, langtag);
-  };
-
   mkDeleteRowButton() {
-    const { langtag, selected, row, expanded } = this.props;
-    // const firstCell = row.cells.at(0);
-    // const table = firstCell.tables.get(firstCell.tableId);
-    // const userCanDeleteRow = table.type !== "settings"
-    //   && selected && isUserAdmin()
-    //   && (langtag === DefaultLangtag || !expanded);
-    //
-    const userCanDeleteRow = false;
+    const { langtag, selected, row, expanded, table, deleteRow } = this.props;
+    const userCanDeleteRow =
+      table.type !== "settings" &&
+      selected &&
+      isUserAdmin() &&
+      (langtag === DefaultLangtag || !expanded);
 
-    return userCanDeleteRow && !row.final ? (
+    return userCanDeleteRow && !row.final && selected ? (
       <div className="delete-row">
-        <button className="button" onClick={this.deleteRow}>
+        <button className="button" onClick={() => deleteRow({ table, row })}>
           <i className="fa fa-trash" />
         </button>
       </div>
