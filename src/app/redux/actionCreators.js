@@ -202,7 +202,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
   fetchRowsPaginated(tableId, 4);
 };
 
-const toggleColumnVisibility = (tableId, columnId) => {
+const toggleColumnVisibility = (columnId) => {
   return {
     type: TOGGLE_COLUMN_VISIBILITY,
     columnId
