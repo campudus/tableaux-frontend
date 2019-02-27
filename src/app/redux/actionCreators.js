@@ -19,8 +19,7 @@ import {
 import { isLocked } from "../helpers/annotationHelper";
 import {
   addEmptyRow,
-  safelyDuplicateRow,
-  loadAllRows
+  safelyDuplicateRow
 } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
@@ -132,7 +131,6 @@ const loadColumns = tableId => {
   };
 };
 
-==== BASE ====
 const addRows = (tableId, rows) => {
   return {
     type: "ADD_ROWS",
@@ -155,12 +153,12 @@ const loadAllRows = tableId => (dispatch, getState) => {
   };
 
   const fetchRowsPaginated = async (tableId, parallelRequests) => {
-    const { getAllRowsForTable } = API_ROUTES;
+    const { toRows } = API_ROUTES;
     const {
       page: { totalSize },
       rows
     } = await makeRequest({
-      apiRoute: getAllRowsForTable(tableId),
+      apiRoute: toRows(tableId),
       params: {
         offset: 0,
         limit: 30
@@ -178,7 +176,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
       const oldIndex = index;
       index++;
       return makeRequest({
-        apiRoute: getAllRowsForTable(tableId),
+        apiRoute: toRows(tableId),
         params: params[oldIndex],
         method: "GET"
       }).then(result => {
@@ -201,7 +199,6 @@ const loadAllRows = tableId => (dispatch, getState) => {
   fetchRowsPaginated(tableId, 4);
 };
 
-==== BASE ====
 const toggleColumnVisibility = (tableId, columnId) => {
   return {
     type: TOGGLE_COLUMN_VISIBILITY,
