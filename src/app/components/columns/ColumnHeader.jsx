@@ -1,14 +1,10 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import {
-  ActionTypes,
   ColumnKinds,
   DefaultLangtag
 } from "../../constants/TableauxConstants";
-import f from "lodash/fp";
-import i18n from "i18next";
 import ColumnEntry from "./ColumnEntry";
-// import Dispatcher from "../../dispatcher/Dispatcher";
 
 export default class ColumnHeader extends PureComponent {
   static propTypes = {
@@ -20,33 +16,14 @@ export default class ColumnHeader extends PureComponent {
     resizeFinishedHandler: PropTypes.func.isRequired
   };
 
-  componentWillMount = () => {
-    // Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  };
-
-  componentWillUnmount = () => {
-    // Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  };
-
   getDisplayName = () => {
     const {
-      column,
       column: { name, displayName },
-      langtag,
-      tableId,
-      tables
+      langtag
     } = this.props;
     // const table = tables.get(tableId);
     return displayName[langtag] || displayName[DefaultLangtag] || name;
   };
-
-  // isToTableHidden = () => {
-  //   const {column, tables} = this.props;
-  //   return f.flow(
-  //     f.get("hidden"),
-  //     f.defaultTo(false)
-  //   )(tables.get(column.toTable));
-  // };
 
   getIdentifierIcon = () => {
     const { column = {} } = this.props;
@@ -78,36 +55,6 @@ export default class ColumnHeader extends PureComponent {
     );
   };
 
-  stopEditing = payload => {
-    if (
-      payload &&
-      (f.isString(payload.newDescription) || !f.isEmpty(payload.newName))
-    ) {
-      this.saveEdits(payload);
-    }
-  };
-
-  saveEdits = payload => {
-    const { langtag, newName, newDescription, colId } = payload;
-    const { column } = this.props;
-    if (!f.matchesProperty("id", colId)(column)) {
-      return;
-    }
-    const modifications = f.flow(
-      m =>
-        f.isString(newDescription)
-          ? f.assoc(["description", langtag], newDescription, m)
-          : m,
-      m => (newName ? f.assoc(["displayName", langtag], newName, m) : m)
-    )({});
-
-    column.save(modifications, {
-      patch: true,
-      wait: true,
-      success: () => this.forceUpdate()
-    });
-  };
-
   getDescription = () => {
     const {
       column: { description },
@@ -125,7 +72,10 @@ export default class ColumnHeader extends PureComponent {
       langtag,
       style,
       tables,
-      width
+      width,
+      actions,
+      navigate,
+      tableId
     } = this.props;
 
     const columnContent = [
@@ -149,6 +99,9 @@ export default class ColumnHeader extends PureComponent {
         resizeFinishedHandler={resizeFinishedHandler}
         index={index}
         width={width}
+        actions={actions}
+        navigate={navigate}
+        tableId={tableId}
       />
     );
   }

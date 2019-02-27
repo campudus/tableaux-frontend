@@ -120,7 +120,8 @@ class TableView extends PureComponent {
       canRenderTable,
       tableView,
       visibleColumns,
-      visibleRows
+      visibleRows,
+      navigate
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -153,6 +154,7 @@ class TableView extends PureComponent {
             columnKeys={columnKeys}
             columns={columns}
             tables={tables}
+            navigate={navigate}
           />
         </div>
       );

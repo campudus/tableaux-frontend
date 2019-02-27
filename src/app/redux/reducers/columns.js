@@ -5,7 +5,8 @@ const {
   COLUMNS_LOADING_DATA,
   COLUMNS_DATA_LOADED,
   COLUMNS_DATA_LOAD_ERROR,
-  CLEAN_UP
+  CLEAN_UP,
+  COLUMN_EDIT_SUCCESS
 } = actionTypes;
 
 const initialState = {};
@@ -38,6 +39,15 @@ const columns = (state = initialState, action) => {
         ...state,
         [action.tableId]: []
       };
+    case COLUMN_EDIT_SUCCESS:
+      return f.update(
+        [action.tableId, "data"],
+        columns => f.flow(
+          f.findIndex(column => action.columnId === column.id),
+          index => f.set([index], action.result,columns)
+        )(columns),
+        state
+      );
     default:
       return state;
   }

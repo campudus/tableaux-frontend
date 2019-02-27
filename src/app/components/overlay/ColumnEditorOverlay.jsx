@@ -11,7 +11,7 @@ class ColumnEditorOverlay extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      name: this.props.name,
+      name: this.props.displayName,
       description: this.props.description
     };
   }

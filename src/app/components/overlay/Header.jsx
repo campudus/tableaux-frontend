@@ -55,14 +55,14 @@ class Header extends PureComponent {
   };
 
   render() {
-    const { actions, components, context, id } = this.props;
+    const { buttons, components, context, id, actions } = this.props;
     const cssClass = classNames("header-wrapper", {
-      "with-buttons": actions,
+      "with-buttons": buttons,
       "with-components": components || this.props.children
     });
     const [pos, neg, ntr] = f.props(
       ["positive", "negative", "neutral"],
-      actions
+      buttons
     );
     const makeButton = (className, [text, fn, dontClose]) => {
       const execAndClose = this.wrapButtonFn(className, fn);
@@ -75,7 +75,7 @@ class Header extends PureComponent {
         </a>
       );
     };
-    const buttonsItem = f.isEmpty(actions) ? null : (
+    const buttonsItem = f.isEmpty(buttons) ? null : (
       <div className="action-buttons">
         {neg ? makeButton("negative", neg) : null}
         {ntr ? makeButton("neutral", ntr) : null}

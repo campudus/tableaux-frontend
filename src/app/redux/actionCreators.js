@@ -33,7 +33,7 @@ const {
   toRows,
   toFolder,
   toFile,
-  toRow
+  toColumn
 } = API_ROUTES;
 
 const {
@@ -59,6 +59,9 @@ const {
   SET_SEARCH_OVERLAY,
   CLEAN_UP,
   ADD_ROWS,
+  COLUMN_EDIT,
+  COLUMN_EDIT_SUCCESS,
+  COLUMN_EDIT_ERROR,
   ROW_CREATE,
   ROW_CREATE_SUCCESS,
   ROW_CREATE_ERROR
@@ -333,6 +336,8 @@ const closeOverlay = name => (dispatch, getState) => {
   const overlayToClose = f.isString(name)
     ? f.find(f.propEq("name", name), overlays)
     : f.last(overlays);
+  console.log("Close overlay:", name, overlayToClose);
+
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
   return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
     ? dispatch(
@@ -486,6 +491,19 @@ const deleteRow = action => ({
   actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
 });
 
+const editColumn = (columnId, tableId, data) => {
+  return {
+    promise: makeRequest({
+      apiRoute: toColumn({ tableId, columnId }),
+      method: "POST",
+      data
+    }),
+    actionTypes: [COLUMN_EDIT, COLUMN_EDIT_SUCCESS, COLUMN_EDIT_ERROR],
+    tableId,
+    columnId
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -526,7 +544,6 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
-  modifyHistory,
   addEmptyRow: addEmptyRow
 };
 

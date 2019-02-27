@@ -5,9 +5,9 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as AccessControl from "../../helpers/accessManagementHelper";
 import {compose, contains} from "lodash/fp";
-// import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
 import PropTypes from "prop-types";
+import f from "lodash/fp"
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
@@ -32,9 +32,9 @@ class ColumnContextMenu extends React.Component {
   };
 
   render = () => {
-    const {column, closeHandler, editHandler, langtag, tables, rect} = this.props;
+    const {column, closeHandler, editHandler, langtag, tables, rect,actions:{toggleColumnVisibility},navigate} = this.props;
     const toTable = (column.isLink)
-      ? tables.get(column.toTable)
+      ? f.find(table => table.id === column.toTable, tables)
       : {};
 
     const canEdit =
@@ -47,12 +47,12 @@ class ColumnContextMenu extends React.Component {
       </div>
       : null;
 
-    const followLinkItem = (column.isLink && !toTable.hidden)
+    const followLinkItem = (column.kind === "link" && !toTable.hidden)
       ? <div>
         <a href="#"
           onClick={compose(
             closeHandler,
-            () => null)}
+            () => navigate("/"+langtag+"/tables/"+column.toTable))}
         >
           {i18n.t("table:switch_table")}
           <i className="fa fa-angle-right" style={{float: "right"}}></i>
@@ -67,7 +67,7 @@ class ColumnContextMenu extends React.Component {
           <a href="#"
             onClick={compose(
               closeHandler,
-              () => null
+              () => toggleColumnVisibility(column.id)
             )}
           >
             {i18n.t("table:hide_column")}

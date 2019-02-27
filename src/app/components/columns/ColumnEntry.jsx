@@ -4,12 +4,16 @@ import ReactDOM from "react-dom";
 import i18n from "i18next";
 import classNames from "classnames";
 import Header from "../overlay/Header";
-// import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
+import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import * as f from "lodash/fp";
-import {Rnd} from "react-rnd";
+import { Rnd } from "react-rnd";
 import PropTypes from "prop-types";
-import {ContextMenu, ContextMenuButton, DescriptionTooltip} from "./ColumnHeaderFragments";
-import {ColumnKinds} from "../../constants/TableauxConstants";
+import {
+  ContextMenu,
+  ContextMenuButton,
+  DescriptionTooltip
+} from "./ColumnHeaderFragments";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 
 export default class ColumnEntry extends React.PureComponent {
   constructor(props) {
@@ -22,44 +26,63 @@ export default class ColumnEntry extends React.PureComponent {
     };
   }
 
-  handleInput = (inputState) => {
+  handleInput = inputState => {
     this.setState(inputState);
   };
 
   saveEdit = () => {
-    const {langtag, column: {id}} = this.props;
-    const {name, description} = this.state;
-    const newName = (name !== this.props.name) ? f.trim(name) : null;
-    const newDesc = (description !== this.props.description) ? f.trim(description) : null;
-    // ActionCreator.editColumnHeaderDone(id, langtag, newName, newDesc);
+    const {
+      langtag,
+      column: { id, displayName },
+      column,
+      actions: { editColumn },
+      tableId
+    } = this.props;
+    const { name, description } = this.state;
+    const newName = name !== this.props.name ? f.trim(name) : null;
+    const newDesc =
+      description !== this.props.description ? f.trim(description) : null;
+    editColumn(id, tableId, {
+      displayName: { ...displayName, [langtag]: newName },
+      description: { ...column.description, [langtag]: newDesc }
+    });
   };
 
   editColumn = () => {
-    const {description, column: {id}, column, langtag} = this.props;
+    const {
+      column: { description, id },
+      column,
+      langtag,
+      actions: { openOverlay,closeOverlay }
+    } = this.props;
     const name = column.displayName[langtag] || column.name;
 
     const buttons = {
       positive: [i18n.t("common:save"), this.saveEdit],
-      neutral: [i18n.t("common:cancel"), f.noop]
+      neutral: [i18n.t("common:cancel"), null]
     };
 
-    // ActionCreator.openOverlay({
-      // head: <Header
-      //   context={i18n.t("table:editor.edit_column")}
-      //   title={name}
-      //   actions={buttons}
-      // />,
-      // body: <ColumnEditorOverlay
-      //   name={name}
-      //   handleInput={this.handleInput}
-      //   description={description}
-      //   index={id}
-      // />,
-      // type: "normal"
-    // });
+    openOverlay({
+      head: (
+        <Header
+          context={i18n.t("table:editor.edit_column")}
+          title={name}
+          buttons={buttons}
+        />
+      ),
+      body: (
+        <ColumnEditorOverlay
+          displayName={name}
+          handleInput={this.handleInput}
+          description={description[langtag]}
+          index={id}
+        />
+      ),
+      type: "normal"
+    });
   };
 
-  openContextMenu = (evt) => {
+  openContextMenu = evt => {
     if (!evt) {
       return;
     }
@@ -74,19 +97,19 @@ export default class ColumnEntry extends React.PureComponent {
   };
 
   closeContextMenu = () => {
-    this.setState({ctxCoords: null});
+    this.setState({ ctxCoords: null });
   };
 
-  toggleContextMenu = (evt) => {
-    (this.state.ctxCoords) ? this.closeContextMenu() : this.openContextMenu(evt);
+  toggleContextMenu = evt => {
+    this.state.ctxCoords ? this.closeContextMenu() : this.openContextMenu(evt);
     evt.preventDefault();
   };
 
-  showDescription = (show) => (event) => {
+  showDescription = show => event => {
     const headerNode = ReactDOM.findDOMNode(event.target);
     this.setState({
       showDescription: show && !f.isEmpty(this.props.description),
-      descriptionCoords: (show) ? headerNode.getBoundingClientRect() : null
+      descriptionCoords: show ? headerNode.getBoundingClientRect() : null
     });
   };
 
@@ -100,31 +123,43 @@ export default class ColumnEntry extends React.PureComponent {
     const nodeRight = nodeRect.right;
     const windowWidth = window.innerWidth;
 
-    if (nodeRight > (windowWidth - 10)) {
+    if (nodeRight > windowWidth - 10) {
       domNode.classList.add("shift-left");
     }
   }
 
   resize = (event, direction, ref, delta) => {
-    const {index, resizeHandler} = this.props;
+    const { index, resizeHandler } = this.props;
     resizeHandler(index, delta.width);
   };
 
-  setToolTipRef = (node) => {
+  setToolTipRef = node => {
     this.tooltip = node;
   };
 
-  render(){
-    const {column, langtag, column: {kind, id}, columnContent, columnIcon, description, resizeFinishedHandler} = this.props;
+  render() {
+    const {
+      column,
+      langtag,
+      column: { kind, id },
+      columnContent,
+      columnIcon,
+      description,
+      resizeFinishedHandler,
+      actions,
+      navigate
+    } = this.props;
     const menuOpen = this.state.ctxCoords;
-    const showDescription = !f.isEmpty(description) && this.state.showDescription && !menuOpen;
-    const {left, bottom} = (showDescription) ? this.state.descriptionCoords : {};
-    const contextMenuClass = classNames(
-      "column-contextmenu-button fa ", {
-        "fa-angle-up ignore-react-onclickoutside": menuOpen,
-        "fa-angle-down": !menuOpen
-      });
-    classNames("column-head", {"context-menu-open": menuOpen});
+    const showDescription =
+      !f.isEmpty(description) && this.state.showDescription && !menuOpen;
+    const { left, bottom } = showDescription
+      ? this.state.descriptionCoords
+      : {};
+    const contextMenuClass = classNames("column-contextmenu-button fa ", {
+      "fa-angle-up ignore-react-onclickoutside": menuOpen,
+      "fa-angle-down": !menuOpen
+    });
+    classNames("column-head", { "context-menu-open": menuOpen });
     return (
       <Rnd
         style={this.props.style}
@@ -150,16 +185,22 @@ export default class ColumnEntry extends React.PureComponent {
         onResize={this.resize}
       >
         <div
-          className={classNames("column-head", {"context-menu-open": menuOpen})}
+          className={classNames("column-head", {
+            "context-menu-open": menuOpen
+          })}
           key={id}
         >
           <div
-            className={classNames("column-name-wrapper", {"column-link-wrapper": kind === "link"})}
+            className={classNames("column-name-wrapper", {
+              "column-link-wrapper": kind === "link"
+            })}
             onMouseEnter={this.showDescription(true)}
             onMouseLeave={this.showDescription(false)}
           >
             {columnContent}
-            {!f.isEmpty(description) ? <i className="description-hint fa fa-info-circle" /> : null}
+            {!f.isEmpty(description) ? (
+              <i className="description-hint fa fa-info-circle" />
+            ) : null}
             {columnIcon}
           </div>
           <DescriptionTooltip
@@ -183,6 +224,8 @@ export default class ColumnEntry extends React.PureComponent {
             isId={this.props.isId}
             tables={this.props.tables}
             rect={this.state.ctxCoords}
+            actions={actions}
+            navigate={navigate}
           />
         </div>
       </Rnd>
@@ -201,4 +244,3 @@ ColumnEntry.propTypes = {
   resizeHandler: PropTypes.func.isRequired,
   resizeFinishedHandler: PropTypes.func.isRequired
 };
-
