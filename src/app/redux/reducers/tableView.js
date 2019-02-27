@@ -181,11 +181,11 @@ const toggleCellEditing = (state, action, completeState) => {
 
 const setInitialVisibleColumns = (state, action) =>
   f.isEmpty(f.get("visibleColumns", state))
-    ? f.compose(
-        ids => f.assoc("visibleColumns")(ids)(state),
-        f.map("id"),
+    ? f.flow(
+        f.prop(["result", "columns"]),
         f.slice(0, 10),
-        f.prop(["result", "columns"])
+        f.map("id"),
+        ids => f.assoc("visibleColumns")(ids)(state)
       )(action)
     : state;
 
@@ -245,11 +245,11 @@ const limitQueue = limit => queue =>
 const push = (action, history) => {
   return {
     ...history,
-    undoQueue: f.compose(
-      limitQueue(50),
-      f.compact,
+    undoQueue: f.flow(
+      switchValues,
       f.concat(history.undoQueue),
-      switchValues
+      f.compact,
+      limitQueue(50)
     )(action)
   };
 };
@@ -257,12 +257,12 @@ const undo = history => {
   const { undoQueue, redoQueue } = history;
   return {
     undoQueue: f.initial(undoQueue),
-    redoQueue: f.compose(
-      limitQueue(50),
-      f.compact,
-      f.concat(redoQueue),
+    redoQueue: f.flow(
+      f.last,
       switchValues,
-      f.last
+      f.concat(redoQueue),
+      f.compact,
+      limitQueue(50)
     )(undoQueue)
   };
 };
@@ -270,12 +270,12 @@ const redo = history => {
   const { undoQueue, redoQueue } = history;
   return {
     redoQueue: f.initial(redoQueue),
-    undoQueue: f.compose(
-      limitQueue(50),
-      f.compact,
-      f.concat(undoQueue),
+    undoQueue: f.flow(
+      f.last,
       switchValues,
-      f.last
+      f.concat(undoQueue),
+      f.compact,
+      limitQueue(50)
     )(redoQueue)
   };
 };
@@ -323,9 +323,9 @@ export default (state = initialState, action, completeState) => {
     case CELL_ROLLBACK_VALUE:
       return updateDisplayValue("oldValue", state, action, completeState);
     case CELL_SAVED_SUCCESSFULLY:
-      return f.compose(
-        maybeUpdateConcat(action, completeState),
-        modifyHistory(action)
+      return f.flow(
+        modifyHistory(action),
+        maybeUpdateConcat(action, completeState)
       )(state);
     case SET_DISPLAY_VALUE_WORKER:
       return {
@@ -337,9 +337,9 @@ export default (state = initialState, action, completeState) => {
       const { rows } = f.get(["rows", currentTable, "data"]);
       return {
         ...state,
-        visibleRows: f.compose(
-          f.map(f.toInteger),
-          f.keys
+        visibleRows: f.flow(
+          f.keys,
+          f.map(f.toInteger)
         )(rows)
       };
     }
