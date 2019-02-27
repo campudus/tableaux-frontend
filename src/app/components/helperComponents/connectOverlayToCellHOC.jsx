@@ -3,7 +3,6 @@ import { idsToIndices } from "../../redux/redux-helpers";
 
 export const connectOverlayToCellValue = withProps(props => {
   const { cell, grudData } = props;
-  // console.log("props:", props);
   try {
     const { rows } = grudData;
     const [rowIdx, columnIdx] = idsToIndices(

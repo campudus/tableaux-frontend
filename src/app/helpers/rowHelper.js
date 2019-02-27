@@ -1,29 +1,33 @@
-import { noPermissionAlertWithLanguage } from "../components/overlay/ConfirmationOverlay.jsx";
 import {
   confirmDeleteRow,
   openShowDependency
 } from "../components/overlay/ConfirmDependentOverlay.jsx";
+import { duplicateRow } from "../components/table/tableRowsWorker";
 import { getUserLanguageAccess, isUserAdmin } from "./accessManagementHelper";
+import { noPermissionAlertWithLanguage } from "../components/overlay/ConfirmationOverlay.jsx";
 import { openEntityView } from "../components/overlay/EntityViewOverlay";
 
-export function initiateDeleteRow(row, langtag, overlayToCloseId) {
+// ({ table, row, langtag}) -> (string) -> void
+export function initiateDeleteRow(rowSpecs, overlayToCloseId) {
+  console.log("initiateDeleteRow", rowSpecs, isUserAdmin());
   if (isUserAdmin()) {
-    confirmDeleteRow(row, langtag, overlayToCloseId);
+    confirmDeleteRow(rowSpecs, overlayToCloseId);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
   }
 }
 
-export function initiateDuplicateRow(row, langtag) {
+// ({ tableId, rowId, langtag }) -> void
+export function initiateDuplicateRow(payload) {
   if (isUserAdmin()) {
-    // ActionCreator.duplicateRow(row.tableId, row.id);
+    duplicateRow(payload);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
   }
 }
 
-export function initiateRowDependency(row, langtag) {
-  openShowDependency(row, langtag);
+export function initiateRowDependency({ row, table, langtag }) {
+  openShowDependency({ row, table, langtag });
 }
 
 export function initiateEntityView({ row, langtag, columnId, rows, table }) {

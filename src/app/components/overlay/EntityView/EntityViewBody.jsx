@@ -20,7 +20,6 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import TranslationPopup from "../../entityView/TranslationPopup";
 import View from "../../entityView/RowView";
 import columnFilter from "./columnFilter";
-import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
@@ -89,7 +88,6 @@ class EntityViewBody extends Component {
     const cellToFocus = focusElementId
       ? f.find(f.propEq(["column", "id"], focusElementId), cells)
       : null;
-    console.log("Focussing", focusElementId, "=", cellToFocus);
     const focusTarget =
       cellToFocus && cellToFocus.kind !== ColumnKinds.concat
         ? cellToFocus.id
@@ -134,7 +132,6 @@ class EntityViewBody extends Component {
       show: f.isNil(item.show) ? f.prop("show", oldItem) : item.show,
       cell: f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell
     };
-    console.log("Setting translation view to", item, oldItem, "->", newItem);
     actions.setOverlayState({ id, translationView: newItem });
   };
 
@@ -376,7 +373,24 @@ class EntityViewBody extends Component {
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
 export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
-  console.log("Row changed");
+  const findDisplayValue = f.memoize(tableId => {
+    const tableDv = f.prop(["displayValues", tableId], grudData);
+    return f.memoize(rowId => {
+      const rowDv = f.find(f.propEq("id", rowId), tableDv);
+      return columnIdx => {
+        const dv = f.prop(["values", columnIdx], rowDv);
+        return dv;
+      };
+    });
+  });
+
+  const getDisplayValue = (column, columnIdx, value) =>
+    column.kind === "link"
+      ? f.map(
+          linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
+          value
+        )
+      : findDisplayValue(table.id)(row.id)(columnIdx);
 
   const rowData = doto(
     grudData,
@@ -385,11 +399,11 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
   );
   const cells = f
     .zip(rowData.cells, rowData.values)
-    .map(([cell, cellValue]) => {
+    .map(([cell, cellValue], idx) => {
       return addCellId({
         ...cell,
         value: cellValue,
-        displayValue: getDisplayValue(cell.value, cellValue)
+        displayValue: getDisplayValue(cell.column, idx, cellValue)
       });
     });
   return { cells };

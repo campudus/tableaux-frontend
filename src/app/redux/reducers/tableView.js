@@ -1,13 +1,19 @@
-import ActionTypes from "../actionTypes";
 import f from "lodash/fp";
-import { DefaultLangtag } from "../../constants/TableauxConstants";
-import TableauxRouter from "../../router/router";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import { idsToIndices, calcConcatValues } from "../redux-helpers";
-import { isLocked, unlockRow } from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = ActionTypes.tableView;
+import { DefaultLangtag } from "../../constants/TableauxConstants";
+import { idsToIndices, calcConcatValues } from "../redux-helpers";
+import { ifElse, unless } from "../../helpers/functools";
+import { isLocked, unlockRow } from "../../helpers/annotationHelper";
+import ActionTypes from "../actionTypes";
+import TableauxRouter from "../../router/router";
+import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
+import getDisplayValue from "../../helpers/getDisplayValue";
+
+const {
+  TOGGLE_CELL_SELECTION,
+  TOGGLE_CELL_EDITING,
+  TOGGLE_EXPANDED_ROW
+} = ActionTypes.tableView;
 const {
   TOGGLE_COLUMN_VISIBILITY,
   HIDE_ALL_COLUMNS,
@@ -22,6 +28,7 @@ const {
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
   ALL_ROWS_DATA_LOADED,
+  ADDITIONAL_ROWS_DATA_LOADED,
   SET_FILTERS_AND_SORTING,
   CLEAN_UP
 } = ActionTypes;
@@ -32,6 +39,7 @@ const initialState = {
   visibleColumns: [],
   currentTable: null,
   displayValues: {},
+  expandedRowIds: [],
   startedGeneratingDisplayValues: false,
   currentLanguage: DefaultLangtag,
   visibleRows: [],
@@ -48,19 +56,16 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     (acc, val) => {
       const { values, tableId } = val;
       const linesExist = !f.isEmpty(acc[tableId]);
-      return f.assoc(
-        tableId,
-        f.map(
-          f.pick(["id", "values"]),
-          linesExist
-            ? // Function might be called by "getForeignRows", thus
-              // delivering only a subset of existing rows. In this case,
-              // we just cache the new values
-              f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
-            : values
-        ),
-        acc
+      acc[tableId] = f.map(
+        f.pick(["id", "values"]),
+        linesExist
+          ? // Function might be called by "getForeignRows", thus
+            // delivering only a subset of existing rows. In this case,
+            // we just cache the new values
+            f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
+          : values
       );
+      return acc;
     },
     displayValues,
     linkDisplayValues
@@ -71,6 +76,54 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     displayValues: updatedDisplayValues,
     startedGeneratingDisplayValues: false
   };
+};
+
+const insertSkeletonLinks = (state, action, completeState) => {
+  const { rows, tableId } = action;
+  const columns = f.prop(["columns", tableId, "data"], completeState);
+
+  const linkColumns = columns
+    .map((el, idx) => ({ ...el, idx }))
+    .filter(f.propEq("kind", "link"));
+
+  // get displayValues for all linked items
+  const linksOfLinks = linkColumns.reduce((accum, { toTable }) => {
+    accum[toTable] = {};
+    return accum;
+  }, {});
+
+  // Use in-place mutation to generate dependent displayValues for performance reasons
+  rows.forEach(row =>
+    linkColumns.forEach(({ toTable, idx, toColumn }) => {
+      const linkValues = row.values[idx];
+      linkValues.forEach(
+        ({ id, value }) =>
+          !linksOfLinks[toTable][id] &&
+          (linksOfLinks[toTable][id] = getDisplayValue(toColumn, value))
+      );
+    })
+  );
+
+  const linksOfLinksAsRows = f.keys(linksOfLinks).map(tableId => {
+    const tableDisplayValues = f.keys(linksOfLinks[tableId]).map(id => ({
+      id: parseInt(id),
+      values: unless(f.isArray, el => [el], linksOfLinks[tableId][id])
+    }));
+    return { tableId: parseInt(tableId), values: tableDisplayValues };
+  });
+
+  const asLinkFormat = [
+    {
+      tableId,
+      values: rows.map(({ id, values }) => ({
+        id,
+        values: values.map((value, idx) => getDisplayValue(columns[idx], value))
+      }))
+    },
+    ...linksOfLinksAsRows
+  ];
+
+  return setLinkDisplayValues(state, asLinkFormat);
 };
 
 const toggleSelectedCell = (state, action) => {
@@ -94,6 +147,16 @@ const toggleSelectedCell = (state, action) => {
         : {}
     )
   )(state);
+};
+
+const toggleExpandedRow = (state, action) => {
+  const { rowId } = action;
+
+  return f.update(
+    "expandedRowIds",
+    ifElse(f.includes(rowId), f.pull(rowId), f.concat(rowId)),
+    state
+  );
 };
 
 const toggleCellEditing = (state, action, completeState) => {
@@ -142,12 +205,6 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
   const value = f.prop(valueProp, action);
   const { tableId, column } = action;
-  console.log(
-    "updateDisplayValue",
-    JSON.stringify(value),
-    column.kind,
-    column.multilanguage ? "multilang" : "single lang"
-  );
   const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
   const pathToDv = displayValueSelector({
     tableId,
@@ -186,16 +243,18 @@ export default (state = initialState, action, completeState) => {
       return setInitialVisibleColumns(state, action);
     case GENERATED_DISPLAY_VALUES:
       return setLinkDisplayValues(state, action.displayValues);
+    case ADDITIONAL_ROWS_DATA_LOADED:
+      return insertSkeletonLinks(state, action, completeState);
     case START_GENERATING_DISPLAY_VALUES:
       return { ...state, startedGeneratingDisplayValues: true };
     case SET_CURRENT_LANGUAGE:
-      if (state.currentLanguage == action.lang) {
-        return state;
-      } else {
-        return { ...state, currentLanguage: action.lang };
-      }
+      return state.currentLanguage === action.lang
+        ? state
+        : { ...state, currentLanguage: action.lang };
     case TOGGLE_CELL_SELECTION:
       return toggleSelectedCell(state, action);
+    case TOGGLE_EXPANDED_ROW:
+      return toggleExpandedRow(state, action);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action, completeState);
     case CELL_SET_VALUE:
@@ -209,7 +268,7 @@ export default (state = initialState, action, completeState) => {
         ...state,
         worker: new Worker("/worker.bundle.js")
       };
-    case ALL_ROWS_DATA_LOADED:
+    case ALL_ROWS_DATA_LOADED: {
       const { currentTable } = state.currentTable;
       const { rows } = f.get(["rows", currentTable, "data"]);
       return {
@@ -219,6 +278,7 @@ export default (state = initialState, action, completeState) => {
           f.keys
         )(rows)
       };
+    }
     case SET_FILTERS_AND_SORTING:
       return {
         ...state,

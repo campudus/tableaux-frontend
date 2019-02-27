@@ -1,5 +1,9 @@
 import React from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
+
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import RowConcat from "../../helpers/RowConcatHelper";
 
 const OverlayHeadRowIdentificator = props => {
@@ -11,12 +15,12 @@ const OverlayHeadRowIdentificator = props => {
   if (!cell) {
     return null;
   }
-  const columnDisplayName = column.displayName[langtag] || column.name;
+  const columnDisplayName = getColumnDisplayName(column, langtag);
 
   return (
     <span>
       <span className="column-name">{columnDisplayName}: </span>
-      <RowConcat row={row} langtag={langtag} idColumn={columns[0]} />
+      <RowConcat row={row} langtag={langtag} idColumn={f.first(columns)} />
     </span>
   );
 };

@@ -11,25 +11,30 @@ import {
 import { changeCellValue } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
-import { isLocked } from "../helpers/annotationHelper";
-import { makeRequest, paginated } from "../helpers/apiHelper";
-import { overlayParamsSpec } from "./reducers/overlays";
-import API_ROUTES from "../helpers/apiRoutes";
-import actionTypes from "./actionTypes";
-import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
-import getFilteredRows from "../components/table/RowFilters";
 import {
   getStoredViewObject,
   saveFilterSettings,
   saveColumnVisibility
 } from "../helpers/localStorage";
+import { isLocked } from "../helpers/annotationHelper";
+import {
+  addEmptyRow,
+  safelyDuplicateRow,
+  loadAllRows
+} from "./actions/rowActions";
+import { makeRequest } from "../helpers/apiHelper";
+import { overlayParamsSpec } from "./reducers/overlays";
+import API_ROUTES from "../helpers/apiRoutes";
+import actionTypes from "./actionTypes";
+import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 
 const {
   getAllTables,
   getAllColumnsForTable,
   toRows,
   toFolder,
-  toFile
+  toFile,
+  toRow
 } = API_ROUTES;
 
 const {
@@ -45,6 +50,8 @@ const {
   ALL_ROWS_DATA_LOADED,
   ALL_ROWS_DATA_LOAD_ERROR,
   ADDITIONAL_ROWS_DATA_LOADED,
+  DELETE_ROW,
+  DUPLICATE_ROW,
   SET_COLUMNS_VISIBLE,
   HIDE_ALL_COLUMNS,
   SET_CURRENT_TABLE,
@@ -61,7 +68,12 @@ const {
   ROW_CREATE_ERROR
 } = actionTypes;
 
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING } = actionTypes.tableView;
+const {
+  TOGGLE_CELL_SELECTION,
+  TOGGLE_CELL_EDITING,
+  TOGGLE_EXPANDED_ROW
+} = actionTypes.tableView;
+
 const {
   SHOW_TOAST,
   HIDE_TOAST,
@@ -121,83 +133,6 @@ const loadColumns = tableId => {
     ],
     tableId
   };
-};
-
-const addRows = (tableId, rows) => {
-  return {
-    type: "ADD_ROWS",
-    tableId,
-    rows
-  };
-};
-
-const addEmptyRow = tableId => ({
-  promise: makeRequest({
-    apiRoute: toRows(tableId),
-    method: "POST"
-  }),
-  actionTypes: [ROW_CREATE, ROW_CREATE_SUCCESS, ROW_CREATE_ERROR],
-  tableId
-});
-
-const loadAllRows = tableId => (dispatch, getState) => {
-  const buildParams = (allRows, rowsPerRequest) => {
-    if (allRows <= rowsPerRequest) {
-      return [{ offset: 30, limit: allRows }];
-    }
-    return f.compose(
-      f.map(offset => {
-        return { offset, limit: rowsPerRequest };
-      }),
-      f.rangeStep(rowsPerRequest, 30)
-    )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
-  };
-
-  const fetchRowsPaginated = async (tableId, parallelRequests) => {
-    const { toRows } = API_ROUTES;
-    const {
-      page: { totalSize },
-      rows
-    } = await makeRequest({
-      apiRoute: toRows(tableId),
-      params: {
-        offset: 0,
-        limit: 30
-      },
-      method: "GET"
-    });
-    dispatch(addRows(tableId, rows));
-    const params = buildParams(totalSize, 500);
-    var resultLength = rows.length;
-    var index = 0;
-    const recReq = () => {
-      if (index >= params.length) {
-        return;
-      }
-      const oldIndex = index;
-      index++;
-      return makeRequest({
-        apiRoute: toRows(tableId),
-        params: params[oldIndex],
-        method: "GET"
-      }).then(result => {
-        resultLength = resultLength + result.rows.length;
-        dispatch(addRows(tableId, result.rows));
-        if (resultLength >= totalSize) {
-          dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
-          return;
-        }
-        recReq();
-      });
-    };
-    f.forEach(
-      recReq,
-      new Array(
-        parallelRequests > params.length ? params.length : parallelRequests
-      )
-    );
-  };
-  fetchRowsPaginated(tableId, 4);
 };
 
 const toggleColumnVisibility = (tableId, columnId) => {
@@ -334,7 +269,6 @@ const closeOverlay = name => (dispatch, getState) => {
   const overlayToClose = f.isString(name)
     ? f.find(f.propEq("name", name), overlays)
     : f.last(overlays);
-  console.log("Close overlay:", name, overlayToClose);
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
   return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
     ? dispatch(
@@ -479,6 +413,15 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   }
 };
 
+const deleteRow = action => ({
+  ...action,
+  promise: makeRequest({
+    apiRoute: toRow({ tableId: action.table.id, rowId: action.row.id }),
+    method: "DELETE"
+  }),
+  actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
+});
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -495,7 +438,10 @@ const actionCreators = {
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: toggleCellEditingOrUnlockCell,
+  toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   changeCellValue,
+  deleteRow,
+  duplicateRow: safelyDuplicateRow,
   addAnnotationLangtags,
   removeAnnotationLangtags,
   addTextAnnotation,
@@ -516,7 +462,7 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
-addEmptyRow:addEmptyRow
+  addEmptyRow: addEmptyRow
 };
 
 export default actionCreators;

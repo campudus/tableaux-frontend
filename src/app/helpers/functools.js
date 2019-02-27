@@ -383,6 +383,15 @@ const tests = {
   ]
 };
 
+const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
+  cond(value) ? ifFn(value) : elseFn(value)
+);
+
+// (T => boolean) -> (path) -> ({ [path] : T }) => boolean
+// propMatches(isNumber, "foo", { foo: 42 }) => true
+// propMatches(isNumber, "foo.bar", { foo: { bar: "imastring"}}) => false
+const propMatches = curryN(3, (pred, path, obj) => pred(prop(path, obj)));
+
 const preventDefault = event => maybe(event).method("preventDefault");
 const stopPropagation = event => maybe(event).method("stopPropagation");
 
@@ -407,5 +416,7 @@ export {
   stopPropagation,
   mapIndexed,
   filterIndexed,
+  ifElse,
+  propMatches,
   tests
 };

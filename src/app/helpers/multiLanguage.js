@@ -1,12 +1,13 @@
+import React from "react";
+import f from "lodash/fp";
+
+import { checkOrThrow } from "../specs/type";
+import { doto, ifElse } from "./functools";
+import { getLangObjSpec } from "./multilanguage-specs";
 import TableauxConstants, {
   DefaultLanguage,
   FallbackLanguage
 } from "../constants/TableauxConstants";
-import React from "react";
-import f from "lodash/fp";
-import { doto } from "./functools";
-import { getLangObjSpec } from "./multilanguage-specs";
-import { checkOrThrow } from "../specs/type";
 
 const langtagSeparatorRegex = /[-_]/;
 
@@ -158,6 +159,7 @@ function getLanguageOfLangtag(langtag) {
   return langtag.split(langtagSeparatorRegex)[0];
 }
 
+// data structure for columns is identical
 function getTableDisplayName(table, langtag) {
   if (!table || !table.name || !langtag) {
     console.warn(
@@ -166,12 +168,15 @@ function getTableDisplayName(table, langtag) {
       langtag
     );
   } else {
-    const tableDisplayName = table.displayName[langtag];
-    const fallbackTableDisplayName =
-      table.displayName[TableauxConstants.FallbackLanguage] || table.name;
-    return f.isNil(tableDisplayName)
-      ? fallbackTableDisplayName
-      : tableDisplayName;
+    const getDisplayName = f.flow(
+      f.propOr({}, "displayName"),
+      retrieveTranslation(langtag)
+    );
+    const hasNoDisplayName = f.flow(
+      f.isEmpty,
+      getDisplayName
+    );
+    return ifElse(hasNoDisplayName, f.prop("name"), getDisplayName)(table);
   }
 }
 
@@ -247,6 +252,7 @@ module.exports = {
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
   getTableDisplayName,
+  getColumnDisplayName: getTableDisplayName,
   getCountryOfLangtag,
   getCurrencyCode,
   getFallbackCurrencyValue,

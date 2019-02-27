@@ -1,27 +1,29 @@
-import React from "react";
+import { compose } from "recompose";
 import { translate } from "react-i18next";
-import { isUserAdmin } from "../../helpers/accessManagementHelper";
-import {
-  initiateDeleteRow,
-  initiateDuplicateRow,
-  initiateEntityView,
-  initiateRowDependency
-} from "../../helpers/rowHelper";
-import GenericContextMenu from "./GenericContextMenu";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import React from "react";
 import f from "lodash/fp";
-import { canConvert } from "../../helpers/cellValueConverter";
+import withClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
   getAnnotation,
   removeTranslationNeeded,
   setCellAnnotation,
-  setRowAnnotation
+  setRowFinal
 } from "../../helpers/annotationHelper";
-import { compose } from "recompose";
-import withClickOutside from "react-onclickoutside";
-import PropTypes from "prop-types";
+import { canConvert } from "../../helpers/cellValueConverter";
+import {
+  initiateDeleteRow,
+  initiateDuplicateRow,
+  initiateEntityView,
+  initiateRowDependency
+} from "../../helpers/rowHelper";
+import { isUserAdmin } from "../../helpers/accessManagementHelper";
+import GenericContextMenu from "./GenericContextMenu";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -36,7 +38,6 @@ const translationNeverNeeded = cell =>
 class RowContextMenu extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
   }
   closeRowContextMenu = () => {
     this.props.onClickOutside();
@@ -46,30 +47,38 @@ class RowContextMenu extends React.Component {
     this.props.onClickOutside();
   }
 
-  deleteRow = event => {
-    const { row, langtag } = this.props;
-    this.closeRowContextMenu();
-    initiateDeleteRow(row, langtag);
+  deleteRow = () => {
+    const { cell, row, langtag } = this.props;
+    initiateDeleteRow({ row, table: cell.table, langtag });
   };
 
-  showTranslations = event => {
+  showTranslations = () => {
     const {
-      props: { row },
+      props: { row, actions },
       closeRowContextMenu
     } = this;
-    // ActionCreator.toggleRowExpand(row.getId());
+    actions.toggleExpandedRow({ rowId: row.id });
     closeRowContextMenu();
   };
 
-  duplicateRow = event => {
-    const { row, langtag } = this.props;
-    initiateDuplicateRow(row, langtag);
+  duplicateRow = () => {
+    const {
+      row,
+      langtag,
+      cell,
+      cell: { table }
+    } = this.props;
+    initiateDuplicateRow({ cell, tableId: table.id, rowId: row.id, langtag });
     this.closeRowContextMenu();
   };
 
-  showDependency = event => {
-    const { row, langtag } = this.props;
-    initiateRowDependency(row, langtag);
+  showDependency = () => {
+    const {
+      cell: { table },
+      row,
+      langtag
+    } = this.props;
+    initiateRowDependency({ table, row, langtag });
     this.closeRowContextMenu();
   };
 
@@ -211,11 +220,12 @@ class RowContextMenu extends React.Component {
     );
   };
 
-  setFinal = isFinal => () => {
+  setFinal = valueToSet => () => {
     const {
-      cell: { row }
+      row,
+      cell: { table }
     } = this.props;
-    setRowAnnotation({ final: isFinal }, row);
+    setRowFinal({ table, row, value: valueToSet });
   };
 
   setFinalItem = () => {
@@ -270,57 +280,54 @@ class RowContextMenu extends React.Component {
       showEntityView,
       props: { cell, t }
     } = this;
-    try {
-      return (
-        <GenericContextMenu
-          x={this.props.x}
-          y={this.props.y - 60}
-          offset={CLICK_OFFSET}
-          minWidth={230}
-        >
-          <div className="separator">{t("cell")}</div>
-          {this.openLinksFilteredItem()}
-          {this.copyItem()}
-          {this.pasteItem()}
-          {this.mkItem(
-            f.noop, //() => ActionCreator.openAnnotationsPopup(cell),
-            "add-comment",
-            "commenting"
-          )}
-          {f.any(
-            f.complement(f.isEmpty),
-            f.props(["info", "error", "warning"], cell.annotations)
-          )
-            ? this.mkItem(
-                f.noop, //() => ActionCreator.openAnnotationsPopup(cell),
-                "show-comments",
-                "commenting-o"
-              )
-            : null}
-          {this.requestTranslationsItem()}
-          {this.removeTranslationNeededItem()}
-          {this.toggleFlagItem("important")}
-          {this.toggleFlagItem("check-me")}
-          {this.toggleFlagItem("postpone")}
 
-          <div className="separator with-line">{t("menus.data_set")}</div>
-          {this.props.table.type === "settings"
-            ? ""
-            : this.mkItem(showEntityView, "show_entity_view", "server")}
-          {this.props.table.type === "settings"
-            ? ""
-            : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-          {this.props.table.type === "settings"
-            ? ""
-            : this.mkItem(deleteRow, "delete_row", "trash-o")}
-          {this.mkItem(showDependency, "show_dependency", "code-fork")}
-          {this.mkItem(showTranslations, "show_translation", "flag")}
-          {this.setFinalItem()}
-        </GenericContextMenu>
-      );
-    } catch (err) {
-      return <div className="FAILED_CONTEXTMENU">EMPTY</div>;
-    }
+    return (
+      <GenericContextMenu
+        x={this.props.x}
+        y={this.props.y - 60}
+        offset={CLICK_OFFSET}
+        minWidth={230}
+      >
+        <div className="separator">{t("cell")}</div>
+        {this.openLinksFilteredItem()}
+        {this.copyItem()}
+        {this.pasteItem()}
+        {this.mkItem(
+          () => this.props.openAnnotations(cell),
+          "add-comment",
+          "commenting"
+        )}
+        {f.any(
+          f.complement(f.isEmpty),
+          f.props(["info", "error", "warning"], cell.annotations)
+        )
+          ? this.mkItem(
+              () => this.props.openAnnotations(cell),
+              "show-comments",
+              "commenting-o"
+            )
+          : null}
+        {this.requestTranslationsItem()}
+        {this.removeTranslationNeededItem()}
+        {this.toggleFlagItem("important")}
+        {this.toggleFlagItem("check-me")}
+        {this.toggleFlagItem("postpone")}
+
+        <div className="separator with-line">{t("menus.data_set")}</div>
+        {this.props.table.type === "settings"
+          ? ""
+          : this.mkItem(showEntityView, "show_entity_view", "server")}
+        {this.props.table.type === "settings"
+          ? ""
+          : this.mkItem(duplicateRow, "duplicate_row", "clone")}
+        {this.props.table.type === "settings"
+          ? ""
+          : this.mkItem(deleteRow, "delete_row", "trash-o")}
+        {this.mkItem(showDependency, "show_dependency", "code-fork")}
+        {this.mkItem(showTranslations, "show_translation", "flag")}
+        {this.setFinalItem()}
+      </GenericContextMenu>
+    );
   };
 }
 
@@ -333,7 +340,8 @@ RowContextMenu.propTypes = {
   table: PropTypes.object.isRequired,
   cell: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
-  onClickOutside: PropTypes.func.isRequired
+  onClickOutside: PropTypes.func.isRequired,
+  openAnnotations: PropTypes.func.isRequired
 };
 
 export default compose(

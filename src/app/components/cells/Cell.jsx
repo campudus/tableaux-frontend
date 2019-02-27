@@ -6,14 +6,12 @@ import classNames from "classnames";
 import f from "lodash/fp";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { either } from "../../helpers/functools";
 import {
   hasUserAccessToCountryCode,
   hasUserAccessToLanguage,
   isUserAdmin
 } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
-import { reportUpdateReasons } from "../../helpers/devWrappers";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -67,57 +65,6 @@ export const getAnnotationState = cell => {
   return f.join("-", [flags, translations, comments, isLocked(cell.row)]);
 };
 
-export const contentChanged = (cell, langtag, oldValue) => value => {
-  if (
-    !cell.isMultiLanguage ||
-    either(cell)
-      .map(f.prop(["value", langtag]))
-      .orElse(f.prop("value")).value === oldValue
-  ) {
-    return;
-  }
-  const isPrimaryLanguage = langtag === f.first(Langtags);
-  const untranslated = f.flow(
-    f.drop(1),
-    f.filter(lt => f.isEmpty(f.prop([lt], value)))
-  )(Langtags);
-
-  const translationAnnotation =
-    f.get(["annotations", "translationNeeded"], cell) || {};
-  const translationsExist = untranslated.length !== Langtags.length - 1;
-  const allFlaggedForTranslation =
-    f.size(translationAnnotation.langtags) === Langtags.length - 1;
-
-  if (isPrimaryLanguage && allFlaggedForTranslation) {
-    // no need to ask for further flagging
-    return;
-  }
-
-  // if (isPrimaryLanguage) {
-  //   const flagAllTranslations = () => addTranslationNeeded(f.drop(1, Langtags), cell);
-  //   const flagEmptyTranslations = () => (!f.isEmpty(untranslated))
-  //     ? addTranslationNeeded(untranslated, cell)
-  //     : f.noop;
-  //   if (translationsExist) {
-  //     const column = cell.column;
-  //     const columnName = f.get(["displayName", langtag], column)
-  //       || f.get(["displayName", FallBackLanguage], column)
-  //       || f.get(["name"], column);
-  //     // openTranslationDialog(columnName, flagAllTranslations, flagEmptyTranslations);
-  //   } else {
-  //     flagEmptyTranslations();
-  //   }
-  // } else {
-  //   const remainingTranslations = f.remove(f.equals(langtag), f.get("langtags", translationAnnotation));
-  //   if (f.contains(langtag, f.get("langtags", translationAnnotation))) {
-  //     removeTranslationNeeded(langtag, cell);
-  //     if (f.isEmpty(remainingTranslations)) {
-  //       deleteCellAnnotation(translationAnnotation, cell);
-  //     }
-  //   }
-  // }
-};
-
 class Cell extends React.Component {
   cellDOMNode = null;
 
@@ -131,6 +78,7 @@ class Cell extends React.Component {
     const nextCell = nextProps.cell;
 
     return (
+      this.props.langtag !== nextProps.langtag ||
       cell.id !== nextCell.id ||
       this.props.selected !== nextProps.selected ||
       this.props.inSelectedRow !== nextProps.inSelectedRow ||
@@ -159,18 +107,6 @@ class Cell extends React.Component {
 
   cellClickedWorker = (event, withRightClick) => {
     const { actions, cell, editing, selected, langtag } = this.props;
-    // ActionCreator.closeAnnotationsPopup();
-    // console.log(
-    //   cell.isMultiLanguage ? "multilanguage" : "",
-    //   cell.kind,
-    //   "cell clicked",
-    //   langtag,
-    //   ":",
-    //   cell,
-    //   "value: ",
-    //   cell.value,
-    //   cell.displayValue
-    // );
     const { table, column, row } = cell;
 
     if (!withRightClick) {
@@ -325,7 +261,6 @@ class Cell extends React.Component {
           selected={selected}
           inSelectedRow={inSelectedRow}
           editing={this.userCanEditValue && editing}
-          contentChanged={contentChanged}
           isMultiLanguage={column.multilanguage}
           setCellKeyboardShortcuts={
             f.contains(kind, noKeyboard)

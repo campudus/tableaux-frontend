@@ -1,11 +1,15 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { openLinkOverlay } from "../../cells/link/LinkOverlay";
-import LinkList from "../../helperComponents/LinkList";
-import i18n from "i18next";
-import * as f from "lodash/fp";
-import Empty from "../../helperComponents/emptyEntry";
 import { withProps } from "recompose";
+import React, { Component } from "react";
+import * as f from "lodash/fp";
+import i18n from "i18next";
+
+import PropTypes from "prop-types";
+
+import { doto, when } from "../../../helpers/functools";
+import { openLinkOverlay } from "../../cells/link/LinkOverlay";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import Empty from "../../helperComponents/emptyEntry";
+import LinkList from "../../helperComponents/LinkList";
 
 class LinkView extends Component {
   static propTypes = {
@@ -30,15 +34,19 @@ class LinkView extends Component {
   };
 
   mkLinkList = (cell, langtag) => {
+    const translate = when(f.isPlainObject, retrieveTranslation(langtag));
     return cell.value.map((link, idx) => {
+      const displayName = translate(cell.displayValue[idx]) || (
+        <Empty langtag={langtag} />
+      );
+
       return {
-        displayName: f.get([idx, langtag], this.props.displayValues) || (
-          <Empty langtag={langtag} />
-        ),
+        displayName,
         linkTarget: {
           tables: cell.tables,
           tableId: cell.column.toTable,
-          rowId: link.id
+          rowId: link.id,
+          langtag
         }
       };
     });

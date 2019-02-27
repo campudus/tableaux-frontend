@@ -24,14 +24,15 @@ export class ForeignEntityViewBody extends PureComponent {
       });
       const row = await makeRequest({
         apiRoute: route.toRow({ tableId, rowId })
-      }).then(({ id, values }) => ({
-        // format row to our state format
-        id,
-        values: values.map((v, idx) => ({
-          value: v,
-          kind: f.prop([idx, "kind"], columns)
-        }))
-      }));
+      });
+      //           .then(({ id, values }) => ({
+      //         // format row to our state format
+      //         id,
+      //         values: values.map((v, idx) => ({
+      //           value: v,
+      //           kind: f.prop([idx, "kind"], columns)
+      //         }))
+      //       }));
 
       // generate displayValues
       const displayValues = f

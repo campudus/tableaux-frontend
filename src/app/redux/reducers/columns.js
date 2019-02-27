@@ -20,6 +20,7 @@ const columns = (state = initialState, action) => {
       };
     case COLUMNS_DATA_LOADED:
       return {
+        ...state,
         [tableId]: {
           error: false,
           finishedLoading: true,

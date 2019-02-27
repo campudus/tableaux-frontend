@@ -9,7 +9,6 @@ import classNames from "classnames";
 import f from "lodash/fp";
 
 import { doto, either, maybe } from "../../helpers/functools";
-import { reportUpdateReasons } from "../../helpers/devWrappers";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { setCellAnnotation } from "../../helpers/annotationHelper";
 import AnnotationEntry from "./AnnotationEntry";
@@ -122,8 +121,6 @@ class AnnotationPopup extends Component {
         )
       );
   };
-
-  componentDidUpdate = reportUpdateReasons("AnnotationPopup");
 
   render() {
     this.focusInput();

@@ -1,6 +1,3 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Langtags } from "../../constants/TableauxConstants";
 import {
   branch,
   compose,
@@ -8,7 +5,12 @@ import {
   pure,
   renderNothing
 } from "recompose";
+import React from "react";
 import f from "lodash/fp";
+
+import PropTypes from "prop-types";
+
+import { Langtags } from "../../constants/TableauxConstants";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 
 const knownFlags = [
@@ -51,7 +53,7 @@ const FlagIconRenderer = onlyUpdateForKeys([
 ])(props => {
   const {
     cell,
-    cell: { annotations },
+    cell: { annotations = [] },
     langtag,
     annotationsOpen,
     toggleAnnotationPopup
@@ -87,19 +89,22 @@ const FlagIconRenderer = onlyUpdateForKeys([
   );
 });
 
-const spreadProps = compose(
+const enhance = compose(
   branch(props => {
-    return f.every(
-      f.isEmpty,
-      f.flow(
-        f.prop(["cell", "annotations"]),
-        f.props(knownFlags)
-      )(props)
+    return (
+      !props.annotationsOpen &&
+      f.every(
+        f.isEmpty,
+        f.flow(
+          f.prop(["cell", "annotations"]),
+          f.props(knownFlags)
+        )(props)
+      )
     );
   }, renderNothing)
 );
 
-export default spreadProps(FlagIconRenderer);
+export default enhance(FlagIconRenderer);
 
 FlagIconRenderer.propTypes = {
   isOpen: PropTypes.bool,

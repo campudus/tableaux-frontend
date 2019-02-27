@@ -1,21 +1,19 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import ReactDOM from "react-dom";
-// import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
-// import * as tableRowsWorker from "./tableRowsWorker";
-// import * as tableNavigationWorker from "./tableNavigationWorker";
-// import * as tableContextMenu from "./tableContextMenu";
-import listensToClickOutside from "react-onclickoutside";
-import f from "lodash/fp";
-import {
-  maybe,
-  stopPropagation,
-  preventDefault,
-  doto
-} from "../../helpers/functools";
-import i18n from "i18next";
-import RowContextMenu from "../contextMenu/RowContextMenu";
 import { Portal } from "react-portal";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import f from "lodash/fp";
+import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
+import {
+  doto,
+  maybe,
+  preventDefault,
+  stopPropagation
+} from "../../helpers/functools";
+import RowContextMenu from "../contextMenu/RowContextMenu";
 import VirtualTable from "./VirtualTable";
 import TableauxRouter from "../../router/router";
 
@@ -36,8 +34,6 @@ class Table extends Component {
       scrolledHorizontal: 0,
       selectedCellEditing: false,
       // needed for multilanguage cell selection
-      expandedRowIds: [], // Array
-      selectedCellExpandedRow: null,
       rowContextMenu: null,
       showScrollToLeftButton: false
     };
@@ -112,9 +108,9 @@ class Table extends Component {
   }
 
   componentWillReceiveProps(np) {
-    if (!this.props.fullyLoaded && np.fullyLoaded) {
-      this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
-    }
+    // if (!this.props.fullyLoaded && np.fullyLoaded) {
+    //   this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
+    // }
   }
 
   //   componentDidUpdate() {
@@ -123,15 +119,6 @@ class Table extends Component {
   //       // tableNavigationWorker.checkFocusInsideTable.call(this);
   //     }
   //   }
-
-  toggleExpandedRow = rowId => () => {
-    const { expandedRowIds } = this.state;
-    const newExpandedRowIds = f.cond([
-      [f.includes(rowId), f.pull(rowId)],
-      [f.stubTrue, f.concat(rowId)]
-    ])(expandedRowIds);
-    this.setState({ expandedRowIds: newExpandedRowIds });
-  };
 
   handleClickOutside = () => {
     const {
@@ -195,7 +182,7 @@ class Table extends Component {
     ) : null;
   };
 
-  showRowContextMenu = ({ langtag, cell }) => event => {
+  showRowContextMenu = openAnnotations => ({ langtag, cell }) => event => {
     const { pageX, pageY } = event;
     const { actions, rows } = this.props;
     this.setState({
@@ -207,7 +194,8 @@ class Table extends Component {
         actions,
         langtag,
         cell,
-        rows
+        rows,
+        openAnnotations
       }
     });
   };
@@ -230,11 +218,7 @@ class Table extends Component {
       visibleColumns,
       visibleRows
     } = this.props;
-    const {
-      expandedRowIds,
-      selectedCellExpandedRow,
-      rowContextMenu
-    } = this.state;
+    const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
 
     const displayValues = doto(
@@ -277,9 +261,7 @@ class Table extends Component {
             langtag={langtag}
             selectedCell={(tableView && tableView.selectedCell) || {}}
             selectedCellEditing={(tableView && tableView.editiong) || false}
-            selectedCellExpandedRow={selectedCellExpandedRow}
-            toggleExpandedRow={this.toggleExpandedRow}
-            expandedRowIds={expandedRowIds}
+            expandedRowIds={tableView.expandedRowIds}
             fullyLoaded={this.props.fullyLoaded}
             openCellContextMenu={this.showRowContextMenu}
             closeCellContextMenu={this.hideRowContextMenu}

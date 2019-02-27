@@ -10,6 +10,7 @@ const {
   ALL_ROWS_DATA_LOADED,
   ALL_ROWS_DATA_LOAD_ERROR,
   ADDITIONAL_ROWS_DATA_LOADED,
+  DELETE_ROW,
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
@@ -36,18 +37,21 @@ const maybeUpdateConcats = (rows, action, completeState) => {
 
 const insertSkeletonRows = (state, action, completeState) => {
   const { tableId } = action;
+  console.log("insertSkeletonRows()", action);
   const table = f.prop(["tables", "data", tableId], completeState);
   const columns = f.prop(["columns", tableId, "data"], completeState);
   const rows = rowValuesToCells(table, columns)(action.rows);
-  const hasRows = f.isArray(f.prop([tableId]));
+  const existingRows = f.prop(["rows", tableId, "data"], completeState);
+  const hasRows = f.isArray(existingRows);
   const pathToData = [tableId, "data"];
-  return hasRows
+  const skeletonRows = hasRows
     ? f.flow(
-        f.append(f.__, state[tableId]),
+        newRows => [...existingRows, ...newRows],
         f.uniqBy(f.prop("id")),
         f.assoc(pathToData, f.__, state)
       )(rows)
     : f.assoc(pathToData, rows, state);
+  return f.merge({ finishedLoading: true, error: false }, skeletonRows);
 };
 
 const annotationsToObject = annotations => {
@@ -76,7 +80,6 @@ const annotationsToObject = annotations => {
 };
 
 const rowValuesToCells = (table, columns) => rows => {
-  const start = performance.now();
   const rowsWithCells = rows.map(row => {
     const fakeRow = { id: row.id };
     return {
@@ -96,9 +99,6 @@ const rowValuesToCells = (table, columns) => rows => {
       )
     };
   });
-  console.log(
-    `rowValuesToCells(${table.id}) took ${performance.now() - start}ms`
-  );
   return rowsWithCells;
 };
 
@@ -118,7 +118,6 @@ const updateCellAnnotation = (state, action, completeState) => {
 
 const removeCellAnnotation = (state, action, completeState) => {
   const { annotations, annotation } = action;
-  console.log("Should delete", annotation, "from", annotations);
   const newCellAnnotations = f.reject(
     f.propEq("uuid", annotation.uuid),
     annotations
@@ -141,15 +140,40 @@ const setCellAnnotation = (state, action, completeState) => {
     annotationIdx >= 0
       ? f.assoc(annotationIdx, annotation, annotations)
       : [...annotations, annotation];
-  console.log("Result:", result);
-  console.log("annotation:", annotation);
-  console.log("annotations:", annotations);
-  console.log("newcellannotations:", newCellAnnotations);
   return updateCellAnnotation(
     state,
     { ...action, newCellAnnotations },
     completeState
   );
+};
+
+const deleteRow = (action, state) => {
+  const { table, row } = action;
+  return f.update([table.id, "data"], f.remove(f.propEq("id", row.id)), state);
+};
+
+const addRows = (completeState, state, action) => {
+  const columns = f.prop(["columns", action.tableId, "data"], completeState);
+  const table = f.prop(["tables", "data", action.tableId], completeState);
+  const temp = f.update(
+    [action.tableId, "data"],
+    arr => insert(arr, rowValuesToCells(table, columns)(action.rows)),
+    state
+  );
+  return temp;
+};
+
+const insert = (prev, rows) => {
+  const firstElement = f.first(rows);
+  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
+  if (index === 0) {
+    return rows;
+  } else {
+    return f.concat(
+      f.concat(f.slice(0, index, prev), rows),
+      f.slice(index, prev.length, prev)
+    );
+  }
 };
 
 const rows = (state = initialState, action, completeState) => {
@@ -167,6 +191,8 @@ const rows = (state = initialState, action, completeState) => {
       };
     case ADDITIONAL_ROWS_DATA_LOADED:
       return insertSkeletonRows(state, action, completeState);
+    case DELETE_ROW:
+      return deleteRow(action, state);
     case CELL_SET_VALUE: {
       const [rowIdx, columnIdx] = idsToIndices(action, completeState);
       const rowSelector = [action.tableId, "data", rowIdx, "values"];
@@ -207,33 +233,12 @@ const rows = (state = initialState, action, completeState) => {
     case ADD_ROWS:
       return addRows(completeState, state, action);
     case ROW_CREATE_SUCCESS:
-      return addRows(completeState,state,{tableId:action.tableId,rows:[action.result] })
+      return addRows(completeState, state, {
+        tableId: action.tableId,
+        rows: [action.result]
+      });
     default:
       return state;
-  }
-};
-
-const addRows = (completeState, state, action) => {
-  const columns = f.prop(["columns", action.tableId, "data"], completeState);
-  const table = f.prop(["tables", "data", action.tableId], completeState);
-  const temp = f.update(
-    [action.tableId, "data"],
-    arr => insert(arr, rowValuesToCells(table, columns)(action.rows)),
-    state
-  );
-  return temp;
-};
-
-const insert = (prev, rows) => {
-  const firstElement = f.first(rows);
-  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
-  if (index === 0) {
-    return rows;
-  } else {
-    return f.concat(
-      f.concat(f.slice(0, index, prev), rows),
-      f.slice(index, prev.length, prev)
-    );
   }
 };
 
