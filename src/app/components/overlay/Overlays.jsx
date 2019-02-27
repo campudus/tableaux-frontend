@@ -12,7 +12,8 @@ const OverlayRenderer = ({
   columns,
   rows,
   tables,
-  displayValues
+  displayValues,
+  tableView
 }) => {
   const renderActiveOverlays = () => {
     if (f.isEmpty(overlays)) {
@@ -66,7 +67,8 @@ const OverlayRenderer = ({
       columns,
       rows,
       tables,
-      displayValues: displayValues
+      displayValues: displayValues,
+      tableView
     };
 
     return overlays.map((overlayParams, idx) => {
@@ -108,7 +110,8 @@ const mapStateToProps = state => {
     toast,
     overlays,
     ...f.pick(["columns", "rows", "tables"], state),
-    displayValues: state.tableView.displayValues
+    displayValues: state.tableView.displayValues,
+    tableView: state.tableView
   };
 };
 

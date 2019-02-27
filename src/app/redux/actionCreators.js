@@ -8,7 +8,7 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue } from "./actions/cellActions";
+import { changeCellValue,modifyHistory } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import {
@@ -19,8 +19,7 @@ import {
 import { isLocked } from "../helpers/annotationHelper";
 import {
   addEmptyRow,
-  safelyDuplicateRow,
-  loadAllRows
+  safelyDuplicateRow
 } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
@@ -38,7 +37,6 @@ const {
 } = API_ROUTES;
 
 const {
-  APPLY_FILTERS_AND_SORTING,
   TABLE_LOADING_DATA,
   TABLE_DATA_LOADED,
   TABLE_DATA_LOAD_ERROR,
@@ -46,9 +44,7 @@ const {
   COLUMNS_LOADING_DATA,
   COLUMNS_DATA_LOADED,
   COLUMNS_DATA_LOAD_ERROR,
-  ALL_ROWS_LOADING_DATA,
   ALL_ROWS_DATA_LOADED,
-  ALL_ROWS_DATA_LOAD_ERROR,
   ADDITIONAL_ROWS_DATA_LOADED,
   DELETE_ROW,
   DUPLICATE_ROW,
@@ -135,6 +131,74 @@ const loadColumns = tableId => {
   };
 };
 
+const addRows = (tableId, rows) => {
+  return {
+    type: "ADD_ROWS",
+    tableId,
+    rows
+  };
+};
+
+const loadAllRows = tableId => (dispatch, getState) => {
+  const buildParams = (allRows, rowsPerRequest) => {
+    if (allRows <= rowsPerRequest) {
+      return [{ offset: 30, limit: allRows }];
+    }
+    return f.compose(
+      f.map(offset => {
+        return { offset, limit: rowsPerRequest };
+      }),
+      f.rangeStep(rowsPerRequest, 30)
+    )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
+  };
+
+  const fetchRowsPaginated = async (tableId, parallelRequests) => {
+    const { toRows } = API_ROUTES;
+    const {
+      page: { totalSize },
+      rows
+    } = await makeRequest({
+      apiRoute: toRows(tableId),
+      params: {
+        offset: 0,
+        limit: 30
+      },
+      method: "GET"
+    });
+    dispatch(addRows(tableId, rows));
+    const params = buildParams(totalSize, 500);
+    var resultLength = rows.length;
+    var index = 0;
+    const recReq = () => {
+      if (index >= params.length) {
+        return;
+      }
+      const oldIndex = index;
+      index++;
+      return makeRequest({
+        apiRoute: toRows(tableId),
+        params: params[oldIndex],
+        method: "GET"
+      }).then(result => {
+        resultLength = resultLength + result.rows.length;
+        dispatch(addRows(tableId, result.rows));
+        if (resultLength >= totalSize) {
+          dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
+          return;
+        }
+        recReq();
+      });
+    };
+    f.forEach(
+      recReq,
+      new Array(
+        parallelRequests > params.length ? params.length : parallelRequests
+      )
+    );
+  };
+  fetchRowsPaginated(tableId, 4);
+};
+
 const toggleColumnVisibility = (tableId, columnId) => {
   return {
     type: TOGGLE_COLUMN_VISIBILITY,
@@ -173,13 +237,13 @@ const setCurrentTable = tableId => {
   };
 };
 
-const generateDisplayValues = (rows, columns, tableId, langtag) => (
+const generateDisplayValues = (rows, columns, tableId) => (
   dispatch,
   getState
 ) => {
   dispatch({ type: START_GENERATING_DISPLAY_VALUES });
   const {
-    tableView: { worker, filters }
+    tableView: { worker }
   } = getState();
   worker.postMessage([rows, columns, Langtags, tableId]);
   worker.onmessage = e => {
@@ -462,6 +526,7 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
+  modifyHistory,
   addEmptyRow: addEmptyRow
 };
 
