@@ -152,6 +152,30 @@ const deleteRow = (action, state) => {
   return f.update([table.id, "data"], f.remove(f.propEq("id", row.id)), state);
 };
 
+const addRows = (completeState, state, action) => {
+  const columns = f.prop(["columns", action.tableId, "data"], completeState);
+  const table = f.prop(["tables", "data", action.tableId], completeState);
+  const temp = f.update(
+    [action.tableId, "data"],
+    arr => insert(arr, rowValuesToCells(table, columns)(action.rows)),
+    state
+  );
+  return temp;
+};
+
+const insert = (prev, rows) => {
+  const firstElement = f.first(rows);
+  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
+  if (index === 0) {
+    return rows;
+  } else {
+    return f.concat(
+      f.concat(f.slice(0, index, prev), rows),
+      f.slice(index, prev.length, prev)
+    );
+  }
+};
+
 const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
     case ALL_ROWS_LOADING_DATA:
@@ -209,33 +233,12 @@ const rows = (state = initialState, action, completeState) => {
     case ADD_ROWS:
       return addRows(completeState, state, action);
     case ROW_CREATE_SUCCESS:
-      return addRows(completeState,state,{tableId:action.tableId,rows:[action.result] })
+      return addRows(completeState, state, {
+        tableId: action.tableId,
+        rows: [action.result]
+      });
     default:
       return state;
-  }
-};
-
-const addRows = (completeState, state, action) => {
-  const columns = f.prop(["columns", action.tableId, "data"], completeState);
-  const table = f.prop(["tables", "data", action.tableId], completeState);
-  const temp = f.update(
-    [action.tableId, "data"],
-    arr => insert(arr, rowValuesToCells(table, columns)(action.rows)),
-    state
-  );
-  return temp;
-};
-
-const insert = (prev, rows) => {
-  const firstElement = f.first(rows);
-  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
-  if (index === 0) {
-    return rows;
-  } else {
-    return f.concat(
-      f.concat(f.slice(0, index, prev), rows),
-      f.slice(index, prev.length, prev)
-    );
   }
 };
 

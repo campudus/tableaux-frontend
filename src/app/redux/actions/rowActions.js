@@ -10,35 +10,23 @@ import route from "../../helpers/apiRoutes.js";
 const {
   ADDITIONAL_ROWS_DATA_LOADED,
   ALL_ROWS_DATA_LOADED,
-  ADD_ROWS
+  ADD_ROWS,
+  ROW_CREATE,
+  ROW_CREATE_ERROR,
+  ROW_CREATE_SUCCESS
 } = ActionTypes;
 const { TOGGLE_CELL_SELECTION } = ActionTypes.tableView;
 
 // Post an empty row to the backend to receive a valid rowId
 // TODO: make toggle_cell_selection always scroll to cell, like router dispatch does
-export const createNewRow = ({ tableId, cell }) => async (
-  dispatch,
-  getState
-) => {
-  const state = getState();
-  const columns = f.prop(["columns", tableId, "data"], state);
-  const newRow = await makeRequest({
-    apiRoute: route.toTable({ tableId }) + "/rows",
-    method: "POST",
-    data: { columns }
-  }).then(f.prop("rows"));
-  dispatch({
-    type: ADDITIONAL_ROWS_DATA_LOADED,
-    tableId,
-    rows: newRow
-  });
-  dispatch({
-    type: TOGGLE_CELL_SELECTION,
-    tableId,
-    columnId: f.prop(["column", "id"], cell), // don't crash when no cell is passed
-    rowId: newRow.id
-  });
-};
+export const addEmptyRow = tableId => ({
+  promise: makeRequest({
+    apiRoute: route.toRows(tableId),
+    method: "POST"
+  }),
+  actionTypes: [ROW_CREATE, ROW_CREATE_SUCCESS, ROW_CREATE_ERROR],
+  tableId
+});
 
 // TODO: Let the backend handle this once /safelyDuplicate is implemented
 // When duplicating rows, we must make sure that link constraints are not
@@ -133,12 +121,12 @@ export const loadAllRows = tableId => dispatch => {
   };
 
   const fetchRowsPaginated = async (tableId, parallelRequests) => {
-    const { getAllRowsForTable } = route;
+    const { toRows } = route;
     const {
       page: { totalSize },
       rows
     } = await makeRequest({
-      apiRoute: getAllRowsForTable(tableId),
+      apiRoute: toRows(tableId),
       params: {
         offset: 0,
         limit: 30
@@ -156,7 +144,7 @@ export const loadAllRows = tableId => dispatch => {
       const oldIndex = index;
       index++;
       return makeRequest({
-        apiRoute: getAllRowsForTable(tableId),
+        apiRoute: toRows(tableId),
         params: params[oldIndex],
         method: "GET"
       }).then(result => {

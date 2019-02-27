@@ -18,7 +18,7 @@ import {
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
 import {
-  createNewRow,
+  addEmptyRow,
   safelyDuplicateRow,
   loadAllRows
 } from "./actions/rowActions";
@@ -442,7 +442,6 @@ const actionCreators = {
   changeCellValue,
   deleteRow,
   duplicateRow: safelyDuplicateRow,
-  createNewRow,
   addAnnotationLangtags,
   removeAnnotationLangtags,
   addTextAnnotation,
@@ -463,7 +462,7 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
-addEmptyRow:addEmptyRow
+  addEmptyRow: addEmptyRow
 };
 
 export default actionCreators;
