@@ -6,8 +6,8 @@ import {
   Langtags
 } from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
-import { isLocked, unlockRow } from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
+// import { isLocked, unlockRow } from "../../helpers/annotationHelper";
+// import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {
   getUserLanguageAccess,
   isUserAdmin
@@ -39,10 +39,13 @@ export function checkFocusInsideTable() {
 }
 
 export function getKeyboardShortcuts() {
-  const { selectedCell, selectedCellEditing } = this.state;
+  const { tableView } = this.props;
+  const { selectedCell } = tableView;
+  const selectedCellEditing = tableView.editing;
   const actionKey = f.contains("Mac OS", navigator.userAgent)
     ? "metaKey"
     : "ctrlKey";
+
   return {
     left: event => {
       event.preventDefault();
@@ -195,13 +198,15 @@ export function isLastRowSelected() {
 }
 
 export function toggleCellSelection({ cell, langtag }) {
-  const tableId = this.props.tableView.currentTable;
+  const { actions, tableView } = this.props;
+  const tableId = tableView.currentTable;
   const columnId = cell.columnId;
   const rowId = cell.rowId;
+  const wasEditing = tableView.editing;
 
   TableauxRouter.selectCellHandler(tableId, rowId, columnId, langtag);
 
-  this.props.actions.toggleCellSelection({
+  actions.toggleCellSelection({
     columnId,
     rowId,
     langtag,
@@ -209,13 +214,17 @@ export function toggleCellSelection({ cell, langtag }) {
   });
 
   this.setState({
-    selectedCell: cell,
-    selectedCellEditing: false,
     selectedCellExpandedRow: langtag || null
   });
+
+  // reset editing so navigation does not get stuck
+  if (wasEditing) {
+    actions.toggleCellEditing({ editing: false });
+  }
 }
 
 export function toggleCellEditing(params = {}) {
+  // TODO-W
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
@@ -225,43 +234,24 @@ export function toggleCellEditing(params = {}) {
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const selectedRow = rows[rowIndex];
   const selectedCellObject = selectedRow.cells[columnIndex];
+  const selectedCellKind = selectedCellObject.kind;
 
-  const needsTranslation = f.contains(
-    params.langtag,
-    f.intersection(
-      getUserLanguageAccess(),
-      f.prop(
-        ["annotations", "translationNeeded", "langtags"],
-        selectedCellObject
-      )
-    )
-  );
-
-  if (selectedCellObject && canEdit) {
-    const noEditingModeNeeded = f.contains(selectedCellObject.kind, [
-      ColumnKinds.boolean,
-      ColumnKinds.link,
-      ColumnKinds.attachment
-    ]);
-
-    if (
-      (!tableView.editing || !noEditingModeNeeded) && // Editing requested or unnecessary
-      isLocked(selectedRow) &&
-      !needsTranslation
-    ) {
-      // needs_translation overrules final
-      askForSessionUnlock(selectedRow, f.prop(["event", "key"], params));
-      return;
-    }
-
-    if (!noEditingModeNeeded) {
-      actions.toggleCellEditing({
-        tableId: tableView.currentTable,
-        columnId,
-        rowId,
-        row: selectedRow,
-        editing: editVal
-      });
+  if (canEdit && selectedCellObject) {
+    switch (selectedCellKind) {
+      case ColumnKinds.concat:
+      case ColumnKinds.currency:
+      case ColumnKinds.date:
+      case ColumnKinds.datetime:
+      case ColumnKinds.group:
+      case ColumnKinds.numeric:
+      case ColumnKinds.richtext:
+      case ColumnKinds.shorttext:
+      case ColumnKinds.text:
+        actions.toggleCellEditing({ editing: editVal, row: selectedRow });
+        break;
+      case ColumnKinds.boolean:
+      case ColumnKinds.link:
+      case ColumnKinds.attachment:
     }
   }
 }
