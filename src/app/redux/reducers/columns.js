@@ -42,10 +42,11 @@ const columns = (state = initialState, action) => {
     case COLUMN_EDIT_SUCCESS:
       return f.update(
         [action.tableId, "data"],
-        columns => f.flow(
-          f.findIndex(column => action.columnId === column.id),
-          index => f.set([index], action.result,columns)
-        )(columns),
+        columns =>
+          f.flow(
+            f.findIndex(column => action.columnId === column.id),
+            index => f.set([index], action.result, columns)
+          )(columns),
         state
       );
     default:

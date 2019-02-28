@@ -107,19 +107,6 @@ class Table extends Component {
     window.addEventListener("resize", this.windowResize);
   }
 
-  componentWillReceiveProps(np) {
-    // if (!this.props.fullyLoaded && np.fullyLoaded) {
-    //   this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
-    // }
-  }
-
-  //   componentDidUpdate() {
-  //     // When overlay is open we don't want anything to force focus inside the table
-  //     if (!this.props.overlayOpen) {
-  //       // tableNavigationWorker.checkFocusInsideTable.call(this);
-  //     }
-  //   }
-
   handleClickOutside = () => {
     const {
       actions,

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { ColumnKinds, DefaultLangtag } from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry";
 import f from "lodash/fp";
-import { getColumnDisplayName } from "../../helpers/multiLanguage"
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
 
 export default class ColumnHeader extends PureComponent {
   static propTypes = {
@@ -67,22 +67,23 @@ export default class ColumnHeader extends PureComponent {
       navigate,
       tableId
     } = this.props;
-    const toTable = column.kind === "link"
-      ? f.find(table => table.id === column.toTable, tables)
-      : {};
+    const toTable =
+      column.kind === "link"
+        ? f.find(table => table.id === column.toTable, tables)
+        : {};
 
     const columnContent = [
       this.getIdentifierIcon(),
       column.kind === ColumnKinds.link
         ? this.mkLinkHeader(toTable)
-        : getColumnDisplayName(column,langtag)
+        : getColumnDisplayName(column, langtag)
     ];
 
     return (
       <ColumnEntry
         style={style}
         columnContent={columnContent}
-        name={getColumnDisplayName(column,langtag)}
+        name={getColumnDisplayName(column, langtag)}
         column={column}
         description={this.getDescription()}
         langtag={langtag}

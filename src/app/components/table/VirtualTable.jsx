@@ -177,7 +177,7 @@ export default class VirtualTable extends PureComponent {
 
   renderColumnHeader = ({ columnIndex }) => {
     const column = this.getVisibleElement(this.props.columns, columnIndex);
-    const { table, tables, actions,navigate } = this.props;
+    const { table, tables, actions, navigate } = this.props;
     return (
       <ColumnHeader
         column={column}

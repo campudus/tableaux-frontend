@@ -8,7 +8,7 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue,modifyHistory } from "./actions/cellActions";
+import { changeCellValue } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import {
@@ -17,10 +17,7 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
-import {
-  addEmptyRow,
-  safelyDuplicateRow
-} from "./actions/rowActions";
+import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -47,7 +44,6 @@ const {
   ALL_ROWS_DATA_LOADED,
   ADDITIONAL_ROWS_DATA_LOADED,
   DELETE_ROW,
-  DUPLICATE_ROW,
   SET_COLUMNS_VISIBLE,
   HIDE_ALL_COLUMNS,
   SET_CURRENT_TABLE,
@@ -58,13 +54,9 @@ const {
   SET_FILTERS_AND_SORTING,
   SET_SEARCH_OVERLAY,
   CLEAN_UP,
-  ADD_ROWS,
   COLUMN_EDIT,
   COLUMN_EDIT_SUCCESS,
-  COLUMN_EDIT_ERROR,
-  ROW_CREATE,
-  ROW_CREATE_SUCCESS,
-  ROW_CREATE_ERROR
+  COLUMN_EDIT_ERROR
 } = actionTypes;
 
 const {
@@ -202,7 +194,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
   fetchRowsPaginated(tableId, 4);
 };
 
-const toggleColumnVisibility = (columnId) => {
+const toggleColumnVisibility = columnId => {
   return {
     type: TOGGLE_COLUMN_VISIBILITY,
     columnId
