@@ -1,20 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Popup} from "../helperComponents/commonPatterns";
-import {branch, compose, pure, renderNothing} from "recompose";
+import { Popup } from "../helperComponents/commonPatterns";
+import { branch, compose, pure, renderNothing } from "recompose";
 import PasteCellPreview from "./PasteCellPreview";
 import f from "lodash/fp";
 
 const onlyWhenPasteSourceExists = branch(
-  (props) => f.isEmpty(props.pasteOriginCell),
+  props => f.isEmpty(props.pasteOriginCell),
   renderNothing
 );
 
-const PasteCellButton = (props) => (
-  <i className={"fa fa-clipboard"} />
-);
+const PasteCellButton = () => <i className={"fa fa-clipboard"} />;
 
-const PasteCellPopup = (props) => {
+const PasteCellPopup = props => {
   return (
     <Popup
       {...props}

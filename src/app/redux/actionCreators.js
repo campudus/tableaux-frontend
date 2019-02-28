@@ -8,7 +8,7 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue } from "./actions/cellActions";
+import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import {
@@ -62,7 +62,8 @@ const {
 const {
   TOGGLE_CELL_SELECTION,
   TOGGLE_CELL_EDITING,
-  TOGGLE_EXPANDED_ROW
+  TOGGLE_EXPANDED_ROW,
+  COPY_CELL_VALUE_TO_CLIPBOARD
 } = actionTypes.tableView;
 
 const {
@@ -513,6 +514,7 @@ const actionCreators = {
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
+  copyCellValue: dispatchParamsFor(COPY_CELL_VALUE_TO_CLIPBOARD),
   changeCellValue,
   deleteRow,
   duplicateRow: safelyDuplicateRow,

@@ -12,7 +12,8 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 const {
   TOGGLE_CELL_SELECTION,
   TOGGLE_CELL_EDITING,
-  TOGGLE_EXPANDED_ROW
+  TOGGLE_EXPANDED_ROW,
+  COPY_CELL_VALUE_TO_CLIPBOARD
 } = ActionTypes.tableView;
 const {
   TOGGLE_COLUMN_VISIBILITY,
@@ -35,6 +36,7 @@ const {
 
 const initialState = {
   selectedCell: {},
+  copySource: {},
   editing: false,
   visibleColumns: [],
   currentTable: null,
@@ -318,6 +320,9 @@ export default (state = initialState, action, completeState) => {
       return toggleExpandedRow(state, action);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action, completeState);
+    // Do not clear copySource on table switch! User might want to copy values between tables.
+    case COPY_CELL_VALUE_TO_CLIPBOARD:
+      return f.assoc("copySource", f.pick(["cell", "langtag"], action), state);
     case CELL_SET_VALUE:
       return updateDisplayValue("newValue", state, action, completeState);
     case CELL_ROLLBACK_VALUE:

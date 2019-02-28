@@ -49,43 +49,56 @@ const setCellAnnotation = (annotation, cell) => {
   store.dispatch(action(payload));
 };
 
-const deleteCellAnnotation = (annotation, cell) => {
-  const payload = { annotation, cell, setTo: false };
-  const action = isTextAnnotation(annotation)
-    ? actions.removeTextAnnotation
-    : isMultilangAnnotation(annotation)
-    ? actions.removeAnnotationLangtags
-    : actions.toggleAnnotationFlag;
-  store.dispatch(action(payload));
-};
+const deleteCellAnnotation = (annotation, cell) =>
+  new Promise((resolve, reject) => {
+    const payload = {
+      annotation,
+      cell,
+      setTo: false,
+      onError: reject,
+      onSuccess: resolve
+    };
+    const action = isTextAnnotation(annotation)
+      ? actions.removeTextAnnotation
+      : isMultilangAnnotation(annotation)
+      ? actions.removeAnnotationLangtags
+      : actions.toggleAnnotationFlag;
+    store.dispatch(action(payload));
+  });
 
-const addTranslationNeeded = (langtag, cell) => {
-  const langtags = unless(f.isArray, lt => [lt], langtag);
-  store.dispatch(
-    actions.addAnnotationLangtags({
-      annotation: {
-        type: "flag",
-        value: "needs_translation",
-        langtags
-      },
-      cell
-    })
-  );
-};
+const addTranslationNeeded = (langtag, cell) =>
+  new Promise((resolve, reject) => {
+    const langtags = unless(f.isArray, lt => [lt], langtag);
+    store.dispatch(
+      actions.addAnnotationLangtags({
+        annotation: {
+          type: "flag",
+          value: "needs_translation",
+          langtags
+        },
+        onError: reject,
+        onSuccess: resolve,
+        cell
+      })
+    );
+  });
 
-const removeTranslationNeeded = (langtag, cell) => {
-  const langtags = unless(f.isArray, lt => [lt], langtag);
-  store.dispatch(
-    actions.removeAnnotationLangtags({
-      annotation: {
-        type: "flag",
-        value: "needs_translation",
-        langtags
-      },
-      cell
-    })
-  );
-};
+const removeTranslationNeeded = (langtag, cell) =>
+  new Promise((resolve, reject) => {
+    const langtags = unless(f.isArray, lt => [lt], langtag);
+    store.dispatch(
+      actions.removeAnnotationLangtags({
+        annotation: {
+          type: "flag",
+          value: "needs_translation",
+          langtags
+        },
+        onError: reject,
+        onSuccess: resolve,
+        cell
+      })
+    );
+  });
 
 const setRowFinal = ({ table, row, value = true }) => {
   setRowAnnotation({ table, row, flagName: "final", flagValue: value });

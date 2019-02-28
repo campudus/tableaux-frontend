@@ -2,7 +2,7 @@ import React from "react";
 import f from "lodash/fp";
 
 import { checkOrThrow } from "../specs/type";
-import { doto, ifElse } from "./functools";
+import { ifElse, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
 import TableauxConstants, {
   DefaultLanguage,
@@ -181,17 +181,7 @@ function getTableDisplayName(table, langtag) {
 }
 
 const getMultiLangValue = f.curry((langtag, defaultValue, element) =>
-  doto(
-    element,
-    f.props([
-      langtag,
-      doto(langtag, f.take(2), f.join("")),
-      TableauxConstants.FallbackLanguage,
-      TableauxConstants.DefaultLangtag
-    ]),
-    f.find(f.identity),
-    f.defaultTo(defaultValue)
-  )
+  when(f.isEmpty, f.always(defaultValue))(retrieveTranslation(langtag, element))
 );
 
 /**

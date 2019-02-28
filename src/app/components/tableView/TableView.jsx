@@ -1,30 +1,31 @@
 import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import Table from "../table/Table.jsx";
-import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
-import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import f from "lodash/fp";
+import i18n from "i18next";
+
+import PropTypes from "prop-types";
+
+import { getTableDisplayName } from "../../helpers/multiLanguage";
+import { initHistoryOf } from "../table/undo/tableHistory";
+import { showDialog } from "../overlay/GenericOverlay";
+import ColumnFilter from "../header/ColumnFilter";
+import Filter from "../header/filter/Filter.jsx";
+import HistoryButtons from "../table/undo/HistoryButtons";
+import JumpSpinner from "./JumpSpinner";
+import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
+import Navigation from "../header/Navigation.jsx";
+import PageTitle from "../header/PageTitle.jsx";
+import PasteCellIcon from "../header/PasteCellIcon";
+import SearchOverlay from "./SearchOverlay";
+import Spinner from "../header/Spinner.jsx";
+import Table from "../table/Table.jsx";
+import TableSettings from "../header/tableSettings/TableSettings";
+import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import TableauxConstants, {
   FilterModes
 } from "../../constants/TableauxConstants";
-import Filter from "../header/filter/Filter.jsx";
-import Navigation from "../header/Navigation.jsx";
-import PageTitle from "../header/PageTitle.jsx";
-import Spinner from "../header/Spinner.jsx";
-import TableSettings from "../header/tableSettings/TableSettings";
-import ColumnFilter from "../header/ColumnFilter";
-import i18n from "i18next";
 import TableauxRouter from "../../router/router";
-import pasteCellValue from "../cells/cellCopyHelper";
-import JumpSpinner from "./JumpSpinner";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
-import PasteCellIcon from "../header/PasteCellIcon";
-import { showDialog } from "../overlay/GenericOverlay";
-import SearchOverlay from "./SearchOverlay";
-import HistoryButtons from "../table/undo/HistoryButtons";
-import { initHistoryOf } from "../table/undo/tableHistory";
-import { getMultiLangValue } from "../../helpers/multiLanguage";
-// import canFocusCell from "./canFocusCell";
+import pasteCellValue from "../cells/cellCopyHelper";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
@@ -76,28 +77,27 @@ class TableView extends PureComponent {
     this.state = {
       initialLoading: false,
       rowsCollection: null,
-      pasteOriginCell: {},
-      pasteOriginCellLang: props.langtag,
       tableFullyLoaded: true,
       searchOverlayOpen: false
     };
   }
 
   setCopyOrigin = ({ cell, langtag }) => {
-    this.setState({
-      pasteOriginCell: cell,
-      pasteOriginCellLang: langtag
+    this.props.actions.copyCellValue({
+      cell,
+      langtag
     });
   };
 
   pasteCellTo = ({ cell, langtag }) => {
-    const src = this.state.pasteOriginCell;
-    const srcLang = this.state.pasteOriginCellLang;
-    pasteCellValue.call(this, src, srcLang, cell, langtag);
+    const { copySource } = f.propOr({}, "tableview.copySource", this.props);
+    const src = copySource.cell;
+    const srcLang = copySource.langtag;
+    pasteCellValue(src, srcLang, cell, langtag);
   };
 
   clearCellClipboard = () => {
-    this.setState({ pasteOriginCell: {} });
+    this.props.actions.copyCellValue({});
   };
 
   resetURL = () => {
@@ -162,22 +162,14 @@ class TableView extends PureComponent {
   };
 
   componentDidMount = () => {
-    // ActionCreator.spinnerOn();
     initHistoryOf(this.props.tables);
-    // this.fetchTable(this.props.table.id);
   };
-
-  // Set visibility of all columns in <coll> to <val>
 
   setDocumentTitleToTableName = () => {
     const { table = {}, langtag } = this.props;
 
     if (table) {
-      const tableDisplayName = getMultiLangValue(
-        langtag,
-        "",
-        table.displayName
-      );
+      const tableDisplayName = getTableDisplayName(table, langtag);
       document.title = tableDisplayName
         ? tableDisplayName + " | " + TableauxConstants.PageTitle
         : TableauxConstants.PageTitle;
@@ -240,18 +232,16 @@ class TableView extends PureComponent {
       navigate,
       actions,
       allDisplayValues,
-      filtering
+      filtering,
+      tableView
     } = this.props;
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
       actions
     );
-    const {
-      // rowsCollection,
-      // tableFullyLoaded,
-      pasteOriginCell,
-      pasteOriginCellLang
-    } = this.state;
+    const copySource = f.propOr({}, "copySource", tableView);
+    const pasteOriginCell = copySource.cell;
+    const pasteOriginCellLang = copySource.langtag;
 
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
