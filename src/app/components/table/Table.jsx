@@ -107,19 +107,6 @@ class Table extends Component {
     window.addEventListener("resize", this.windowResize);
   }
 
-  componentWillReceiveProps(np) {
-    // if (!this.props.fullyLoaded && np.fullyLoaded) {
-    //   this.props.rows.on("add", tableRowsWorker.rowAdded.bind(this));
-    // }
-  }
-
-  //   componentDidUpdate() {
-  //     // When overlay is open we don't want anything to force focus inside the table
-  //     if (!this.props.overlayOpen) {
-  //       // tableNavigationWorker.checkFocusInsideTable.call(this);
-  //     }
-  //   }
-
   handleClickOutside = () => {
     const {
       actions,
@@ -216,7 +203,8 @@ class Table extends Component {
       langtag,
       tableView,
       visibleColumns,
-      visibleRows
+      visibleRows,
+      navigate
     } = this.props;
     const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
@@ -265,6 +253,7 @@ class Table extends Component {
             fullyLoaded={this.props.fullyLoaded}
             openCellContextMenu={this.showRowContextMenu}
             closeCellContextMenu={this.hideRowContextMenu}
+            navigate={navigate}
           />
         </div>
         {this.noRowsInfo()}

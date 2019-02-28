@@ -1,14 +1,9 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import {
-  ActionTypes,
-  ColumnKinds,
-  DefaultLangtag
-} from "../../constants/TableauxConstants";
-import f from "lodash/fp";
-import i18n from "i18next";
+import { ColumnKinds, DefaultLangtag } from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry";
-// import Dispatcher from "../../dispatcher/Dispatcher";
+import f from "lodash/fp";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
 
 export default class ColumnHeader extends PureComponent {
   static propTypes = {
@@ -19,34 +14,6 @@ export default class ColumnHeader extends PureComponent {
     resizeHandler: PropTypes.func.isRequired,
     resizeFinishedHandler: PropTypes.func.isRequired
   };
-
-  componentWillMount = () => {
-    // Dispatcher.on(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  };
-
-  componentWillUnmount = () => {
-    // Dispatcher.off(ActionTypes.DONE_EDIT_HEADER, this.stopEditing, this);
-  };
-
-  getDisplayName = () => {
-    const {
-      column,
-      column: { name, displayName },
-      langtag,
-      tableId,
-      tables
-    } = this.props;
-    // const table = tables.get(tableId);
-    return displayName[langtag] || displayName[DefaultLangtag] || name;
-  };
-
-  // isToTableHidden = () => {
-  //   const {column, tables} = this.props;
-  //   return f.flow(
-  //     f.get("hidden"),
-  //     f.defaultTo(false)
-  //   )(tables.get(column.toTable));
-  // };
 
   getIdentifierIcon = () => {
     const { column = {} } = this.props;
@@ -59,11 +26,11 @@ export default class ColumnHeader extends PureComponent {
     return null;
   };
 
-  mkLinkHeader = () => {
+  mkLinkHeader = toTable => {
     const { langtag, column } = this.props;
     const key = `${column.id}-display-name`;
-    return false ? ( //(this.isToTableHidden())
-      <div key={key}>{this.getDisplayName()}</div>
+    return toTable.hidden ? (
+      <div key={key}>{getColumnDisplayName(column, langtag)}</div>
     ) : (
       <a
         key={key}
@@ -73,39 +40,9 @@ export default class ColumnHeader extends PureComponent {
         rel="noopener"
       >
         <i className="fa fa-columns" />
-        {this.getDisplayName()}
+        {getColumnDisplayName(column, langtag)}
       </a>
     );
-  };
-
-  stopEditing = payload => {
-    if (
-      payload &&
-      (f.isString(payload.newDescription) || !f.isEmpty(payload.newName))
-    ) {
-      this.saveEdits(payload);
-    }
-  };
-
-  saveEdits = payload => {
-    const { langtag, newName, newDescription, colId } = payload;
-    const { column } = this.props;
-    if (!f.matchesProperty("id", colId)(column)) {
-      return;
-    }
-    const modifications = f.flow(
-      m =>
-        f.isString(newDescription)
-          ? f.assoc(["description", langtag], newDescription, m)
-          : m,
-      m => (newName ? f.assoc(["displayName", langtag], newName, m) : m)
-    )({});
-
-    column.save(modifications, {
-      patch: true,
-      wait: true,
-      success: () => this.forceUpdate()
-    });
   };
 
   getDescription = () => {
@@ -125,21 +62,28 @@ export default class ColumnHeader extends PureComponent {
       langtag,
       style,
       tables,
-      width
+      width,
+      actions,
+      navigate,
+      tableId
     } = this.props;
+    const toTable =
+      column.kind === "link"
+        ? f.find(table => table.id === column.toTable, tables)
+        : {};
 
     const columnContent = [
       this.getIdentifierIcon(),
       column.kind === ColumnKinds.link
-        ? this.mkLinkHeader()
-        : this.getDisplayName()
+        ? this.mkLinkHeader(toTable)
+        : getColumnDisplayName(column, langtag)
     ];
 
     return (
       <ColumnEntry
         style={style}
         columnContent={columnContent}
-        name={this.getDisplayName()}
+        name={getColumnDisplayName(column, langtag)}
         column={column}
         description={this.getDescription()}
         langtag={langtag}
@@ -149,6 +93,10 @@ export default class ColumnHeader extends PureComponent {
         resizeFinishedHandler={resizeFinishedHandler}
         index={index}
         width={width}
+        actions={actions}
+        navigate={navigate}
+        tableId={tableId}
+        toTable={toTable}
       />
     );
   }

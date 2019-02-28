@@ -8,7 +8,7 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue,modifyHistory } from "./actions/cellActions";
+import { changeCellValue } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import {
@@ -17,10 +17,7 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
-import {
-  addEmptyRow,
-  safelyDuplicateRow
-} from "./actions/rowActions";
+import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -30,10 +27,10 @@ import askForSessionUnlock from "../components/helperComponents/SessionUnlockDia
 const {
   getAllTables,
   getAllColumnsForTable,
-  toRows,
+  toRow,
   toFolder,
   toFile,
-  toRow
+  toColumn
 } = API_ROUTES;
 
 const {
@@ -47,7 +44,6 @@ const {
   ALL_ROWS_DATA_LOADED,
   ADDITIONAL_ROWS_DATA_LOADED,
   DELETE_ROW,
-  DUPLICATE_ROW,
   SET_COLUMNS_VISIBLE,
   HIDE_ALL_COLUMNS,
   SET_CURRENT_TABLE,
@@ -58,10 +54,9 @@ const {
   SET_FILTERS_AND_SORTING,
   SET_SEARCH_OVERLAY,
   CLEAN_UP,
-  ADD_ROWS,
-  ROW_CREATE,
-  ROW_CREATE_SUCCESS,
-  ROW_CREATE_ERROR
+  COLUMN_EDIT,
+  COLUMN_EDIT_SUCCESS,
+  COLUMN_EDIT_ERROR
 } = actionTypes;
 
 const {
@@ -199,7 +194,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
   fetchRowsPaginated(tableId, 4);
 };
 
-const toggleColumnVisibility = (tableId, columnId) => {
+const toggleColumnVisibility = columnId => {
   return {
     type: TOGGLE_COLUMN_VISIBILITY,
     columnId
@@ -333,6 +328,8 @@ const closeOverlay = name => (dispatch, getState) => {
   const overlayToClose = f.isString(name)
     ? f.find(f.propEq("name", name), overlays)
     : f.last(overlays);
+  console.log("Close overlay:", name, overlayToClose);
+
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
   return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
     ? dispatch(
@@ -486,6 +483,19 @@ const deleteRow = action => ({
   actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
 });
 
+const editColumn = (columnId, tableId, data) => {
+  return {
+    promise: makeRequest({
+      apiRoute: toColumn({ tableId, columnId }),
+      method: "POST",
+      data
+    }),
+    actionTypes: [COLUMN_EDIT, COLUMN_EDIT_SUCCESS, COLUMN_EDIT_ERROR],
+    tableId,
+    columnId
+  };
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -526,8 +536,8 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
-  modifyHistory,
-  addEmptyRow: addEmptyRow
+  addEmptyRow: addEmptyRow,
+  editColumn
 };
 
 export default actionCreators;

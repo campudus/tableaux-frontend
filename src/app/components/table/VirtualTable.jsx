@@ -177,7 +177,7 @@ export default class VirtualTable extends PureComponent {
 
   renderColumnHeader = ({ columnIndex }) => {
     const column = this.getVisibleElement(this.props.columns, columnIndex);
-    const { table, tables } = this.props;
+    const { table, tables, actions, navigate } = this.props;
     return (
       <ColumnHeader
         column={column}
@@ -188,6 +188,8 @@ export default class VirtualTable extends PureComponent {
         resizeFinishedHandler={this.saveColWidths}
         index={columnIndex + 1}
         width={this.calcColWidth({ index: columnIndex + 1 })}
+        actions={actions}
+        navigate={navigate}
       />
     );
   };

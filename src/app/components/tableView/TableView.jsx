@@ -120,7 +120,8 @@ class TableView extends PureComponent {
       canRenderTable,
       tableView,
       visibleColumns,
-      visibleRows
+      visibleRows,
+      navigate
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -153,6 +154,7 @@ class TableView extends PureComponent {
             columnKeys={columnKeys}
             columns={columns}
             tables={tables}
+            navigate={navigate}
           />
         </div>
       );
@@ -182,12 +184,8 @@ class TableView extends PureComponent {
     }
   };
 
-  componentDidUpdate = prev => {
+  componentDidUpdate = () => {
     this.setDocumentTitleToTableName();
-    // if (prev.table !== this.props.table) {
-    //   this.props.resetStoredProjection();
-    //   this.fetchTable(this.props.table.id);
-    // }
   };
 
   displaySearchOverlay = (state = true, cb = f.noop) => {
