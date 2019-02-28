@@ -235,7 +235,6 @@ class TableView extends PureComponent {
       filtering,
       tableView
     } = this.props;
-    console.log(this.props)
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
       actions
