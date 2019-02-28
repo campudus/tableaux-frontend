@@ -182,7 +182,6 @@ export const SwitchSortingButton = compose(
       setSortOrder((sortOrder + 1) % sortIcons.length)
   })
 )(props => {
-  console.log("SwitchSortingButton props", props);
   const { switchSortMode, sortIcons, sortOrder } = props;
   return (
     <a href="#" className="sort-mode-button" onClick={switchSortMode}>
