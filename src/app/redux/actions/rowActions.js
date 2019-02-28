@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 
-import { ColumnKinds } from "../../constants/TableauxConstants";
-import { doto, propMatches, when } from "../../helpers/functools";
+import { doto } from "../../helpers/functools";
+import { getSaveableRowDuplicate } from "../../components/cells/cellCopyHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { toggleAnnotationFlag } from "./annotationActions";
 import ActionTypes from "../actionTypes";
@@ -47,35 +47,12 @@ export const safelyDuplicateRow = ({
     f.find(f.propEq("id", rowId))
   );
 
-  const isPositiveNumber = num => f.isInteger(num) && num > 0;
-
-  const constrainedLinkIds = columns
-    .filter(
-      column =>
-        column.kind === ColumnKinds.link &&
-        propMatches(isPositiveNumber, "constraint.cardinality.from", column)
-    )
-    .map(f.prop("id"));
-
-  const canNotCopy = column =>
-    f.contains(column.id, constrainedLinkIds) ||
-    column.kind === ColumnKinds.group ||
-    column.kind === ColumnKinds.concat;
-
-  // We can't check cardinality from the frontend, so we won't copy links with cardinality
-  const duplicatedValues = row.values.map((value, idx) =>
-    canNotCopy(columns[idx]) ? null : value
-  );
-
-  const hasConcat = f.propEq([0, "kind"], ColumnKinds.concat)(columns);
+  const saveableRowDuplicate = getSaveableRowDuplicate({ columns, row });
 
   try {
     const duplicatedRow = await makeRequest({
       apiRoute: route.toTable({ tableId }) + "/rows",
-      data: {
-        columns: when(() => hasConcat, f.drop(1), columns),
-        rows: [{ values: when(() => hasConcat, f.drop(1), duplicatedValues) }]
-      },
+      data: f.pick(["columns", "rows"], saveableRowDuplicate),
       method: "POST"
     }).then(f.prop("rows"));
     dispatch({
@@ -94,7 +71,7 @@ export const safelyDuplicateRow = ({
 
     // Set a flag when we deleted values during copy
     const checkMeAnnotation = { type: "flag", value: "check-me" };
-    constrainedLinkIds.forEach(columnId =>
+    saveableRowDuplicate.constrainedLinkIds.forEach(columnId =>
       dispatch(
         toggleAnnotationFlag({
           cell: {
