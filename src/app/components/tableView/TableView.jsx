@@ -264,7 +264,7 @@ class TableView extends PureComponent {
             tables={tables}
             navigate={navigate}
           />
-          <TableSettings langtag={langtag} table={table} />
+          <TableSettings langtag={langtag} table={table} actions={actions} />
           <Filter
             langtag={langtag}
             table={table}
