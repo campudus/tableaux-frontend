@@ -35,9 +35,9 @@ import TextCell from "./text/TextCell.jsx";
 const ExpandCorner = compose(
   branch(({ show }) => !show, renderNothing),
   withHandlers({
-    onClick: () => event => {
+    onClick: ({ actions: { toggleExpandedRow }, cell: { row } }) => event => {
       event.stopPropagation();
-      // ActionCreator.toggleRowExpand(props.cell.row.getId());
+      toggleExpandedRow({ rowId: row.id });
     }
   })
 )(props => (
@@ -283,7 +283,11 @@ class Cell extends React.Component {
           annotationsOpen={annotationsOpen}
           toggleAnnotationPopup={toggleAnnotationPopup}
         />
-        <ExpandCorner show={needsTranslationOtherLanguages} cell={cell} />
+        <ExpandCorner
+          actions={this.props.actions}
+          show={needsTranslationOtherLanguages}
+          cell={cell}
+        />
       </div>
     );
   }
