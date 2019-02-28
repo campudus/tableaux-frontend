@@ -83,7 +83,7 @@ export default class CurrencyCell extends React.PureComponent {
       );
     }
 
-    // TODO localization
+    // TODO: localization
     return (
       <div className={`currency-wrapper${value[country] ? "" : " grey-out"}`}>
         <span className="currency-value">{splittedValueAsString[0]}</span>
@@ -141,8 +141,7 @@ export default class CurrencyCell extends React.PureComponent {
     const {
       langtag,
       editing,
-      value,
-      displayValue,
+      cell: { value },
       setCellKeyboardShortcuts
     } = this.props;
     const currencyValues = value;

@@ -3,10 +3,8 @@ import PropTypes from "prop-types";
 import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
 import * as f from "lodash/fp";
 import classNames from "classnames";
-// import ActionCreator from "../../../actions/ActionCreator";
 import Header from "../../overlay/Header";
 import AttachmentOverlay from "./AttachmentOverlay.jsx";
-// import OverlayHeadRowIdentificator from "../../overlay/OverlayHeadRowIdentificator.jsx";
 import { isLocked } from "../../../helpers/annotationHelper";
 import { maybe } from "../../../helpers/functools";
 
@@ -16,7 +14,7 @@ const AttachmentCell = props => {
     cell,
     editing,
     selected,
-    value,
+    cell: { value },
     langtag,
     setCellKeyboardShortcuts
   } = props;
@@ -102,8 +100,7 @@ AttachmentCell.propTypes = {
   editing: PropTypes.bool,
   langtag: PropTypes.string.isRequired,
   selected: PropTypes.bool,
-  setCellKeyboardShortcuts: PropTypes.func.isRequired,
-  value: PropTypes.array.isRequired
+  setCellKeyboardShortcuts: PropTypes.func.isRequired
 };
 
 export default AttachmentCell;

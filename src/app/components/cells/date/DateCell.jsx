@@ -9,7 +9,13 @@ import {
 import DateEditCell from "./DateEditCell";
 
 const DateCellWrapper = props => {
-  const { editing, actions, value, table, row, column, langtag } = props;
+  const {
+    editing,
+    actions,
+    cell: { table, value, column },
+    row,
+    langtag
+  } = props;
   const showTime = column.kind === ColumnKinds.datetime;
   const Formats = showTime ? DateTimeFormats : DateFormats;
   const validatedValue = f.isEmpty(value) ? null : Moment(value);

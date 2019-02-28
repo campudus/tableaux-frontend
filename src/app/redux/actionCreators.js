@@ -8,6 +8,7 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
+import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
@@ -17,7 +18,6 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
-import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -54,6 +54,10 @@ const {
   SET_FILTERS_AND_SORTING,
   SET_SEARCH_OVERLAY,
   CLEAN_UP,
+  ADD_ROWS,
+  ROW_CREATE,
+  ROW_CREATE_SUCCESS,
+  ROW_CREATE_ERROR,
   COLUMN_EDIT,
   COLUMN_EDIT_SUCCESS,
   COLUMN_EDIT_ERROR
@@ -252,13 +256,6 @@ const generateDisplayValues = (rows, columns, tableId) => (
       type: GENERATED_DISPLAY_VALUES,
       displayValues
     });
-  };
-};
-
-const setSearchOverlay = value => {
-  return {
-    type: SET_SEARCH_OVERLAY,
-    value
   };
 };
 

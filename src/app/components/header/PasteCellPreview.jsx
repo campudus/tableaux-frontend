@@ -11,9 +11,10 @@ import IdentifierCell from "../cells/identifier/IdentifierCell";
 import CurrencyCell from "../cells/currency/CurrencyCell";
 import TextCell from "../cells/text/TextCell";
 import { ColumnKinds } from "../../constants/TableauxConstants";
-// import ActionCreator from "../../actions/ActionCreator";
 import i18n from "i18next";
 import { openInNewTab } from "../../helpers/apiUrl";
+import store from "../../redux/store";
+import actions from "../../redux/actionCreators";
 
 const ClearCellButton = props => (
   <div className="clear-pasted-button button neutral">
@@ -26,11 +27,16 @@ const ClearCellButton = props => (
 const FocusCellButton = withHandlers({
   focusCell: props => () => {
     const { cell, langtag, tableId } = props;
-    if (cell.tableId === tableId) {
-      // ActionCreator.toggleCellSelection(props.cell, true);
+    if (cell.table.id === tableId) {
+      store.dispatch(
+        actions.toggleCellSelection({
+          tableId: cell.tableId,
+          columnId: cell.column.id,
+          rowId: cell.row.id
+        })
+      );
     } else {
-      const table = cell.tables.get(cell.tableId);
-      const { row, column } = cell;
+      const { row, column, table } = cell;
       openInNewTab({ langtag, table, column, row });
     }
   }
