@@ -15,15 +15,6 @@ export default class ColumnHeader extends PureComponent {
     resizeFinishedHandler: PropTypes.func.isRequired
   };
 
-  getDisplayName = () => {
-    const {
-      column: { name, displayName },
-      langtag
-    } = this.props;
-    // const table = tables.get(tableId);
-    return displayName[langtag] || displayName[DefaultLangtag] || name;
-  };
-
   getIdentifierIcon = () => {
     const { column = {} } = this.props;
     const key = `${column.id}-id-icon`;
