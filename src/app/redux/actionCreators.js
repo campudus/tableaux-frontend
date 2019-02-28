@@ -139,7 +139,7 @@ const addRows = (tableId, rows) => {
   };
 };
 
-const loadAllRows = tableId => (dispatch, getState) => {
+const loadAllRows = tableId => dispatch => {
   const buildParams = (allRows, rowsPerRequest) => {
     if (allRows <= rowsPerRequest) {
       return [{ offset: 30, limit: allRows }];

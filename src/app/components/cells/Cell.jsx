@@ -309,12 +309,6 @@ const RepeaterCell = withHandlers({
   </div>
 ));
 
-/**
- * Placing pure HOC component around connectToAmpersand and making Cell itself a non-pure component
- * gives us the best of two worlds:
- * the pure HOC will avoid unneccessary re-renders, while a non-pure base component will not stop
- * connectToAmpersand from triggering new render cycles on value changes.
- */
 export default compose(
   branch(isRepeaterCell, renderComponent(pure(RepeaterCell))),
   pure

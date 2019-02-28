@@ -34,6 +34,8 @@ export default class CurrencyCell extends React.PureComponent {
   CurrencyCellDOMNode = null;
 
   componentDidMount() {
+    // React ref does not support finding element dimensions
+    // eslint-disable-next-line react/no-find-dom-node
     this.CurrencyCellDOMNode = ReactDOM.findDOMNode(this);
   }
 

@@ -221,6 +221,7 @@ const tests = {
       "is",
       "Deutscher Inhalt",
       retrieveTranslation,
+      // eslint-disable-next-line camelcase
       [{ de_DE: "Deutscher Inhalt", en_GB: null }, "en_GB", "de_DE"]
     ]
   ]
