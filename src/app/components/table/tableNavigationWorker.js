@@ -1,9 +1,11 @@
+import React from "react";
 import f from "lodash/fp";
 import {
   ColumnKinds,
   DefaultLangtag,
   Directions,
-  Langtags
+  Langtags,
+  FallbackLanguage
 } from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
 // import { isLocked, unlockRow } from "../../helpers/annotationHelper";
@@ -12,9 +14,11 @@ import {
   getUserLanguageAccess,
   isUserAdmin
 } from "../../helpers/accessManagementHelper";
-import { maybe } from "../../helpers/functools";
+import { maybe, doto } from "../../helpers/functools";
 import * as TableHistory from "./undo/tableHistory";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
+import Header from "../overlay/Header";
+import TextEditOverlay from "../cells/text/TextEditOverlay";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -217,7 +221,7 @@ export function toggleCellSelection({ cell, langtag }) {
     selectedCellExpandedRow: langtag || null
   });
 
-  // reset editing so navigation does not get stuck
+  // reset editing so navigation does not get stuck on a locked row
   if (wasEditing) {
     actions.toggleCellEditing({ editing: false });
   }
@@ -228,30 +232,57 @@ export function toggleCellEditing(params = {}) {
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
-  const { columns, rows, tableView, actions } = this.props;
-  const { columnId, rowId } = tableView.selectedCell;
+  const { columns, rows, tableView, actions, langtag } = this.props;
+  const { selectedCell, displayValues, currentTable } = tableView;
+  const { columnId, rowId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const selectedRow = rows[rowIndex];
   const selectedCellObject = selectedRow.cells[columnIndex];
   const selectedCellKind = selectedCellObject.kind;
+  const table = selectedCellObject.table;
+  const cellDisplayValues =
+    displayValues[currentTable][rowIndex]["values"][columnIndex];
 
   if (canEdit && selectedCellObject) {
     switch (selectedCellKind) {
-      case ColumnKinds.concat:
-      case ColumnKinds.currency:
-      case ColumnKinds.date:
-      case ColumnKinds.datetime:
-      case ColumnKinds.group:
-      case ColumnKinds.numeric:
-      case ColumnKinds.richtext:
-      case ColumnKinds.shorttext:
-      case ColumnKinds.text:
-        actions.toggleCellEditing({ editing: editVal, row: selectedRow });
-        break;
       case ColumnKinds.boolean:
       case ColumnKinds.link:
       case ColumnKinds.attachment:
+        console.warn("boolean link attachement");
+        break;
+      case ColumnKinds.text:
+        actions.openOverlay({
+          head: (
+            <Header
+              context={doto(
+                [
+                  table.displayName[langtag],
+                  table.displayName[FallbackLanguage],
+                  table.name
+                ],
+                f.compact,
+                f.first,
+                ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
+              )}
+              title={cellDisplayValues[langtag]}
+              langtag={langtag}
+            />
+          ),
+          body: (
+            <TextEditOverlay
+              actions={actions}
+              value={cellDisplayValues}
+              langtag={langtag}
+              cell={selectedCellObject}
+            />
+          ),
+          // title: selectedCellObject,
+          type: "full-height"
+        });
+        break;
+      default:
+        actions.toggleCellEditing({ editing: editVal, row: selectedRow });
     }
   }
 }
