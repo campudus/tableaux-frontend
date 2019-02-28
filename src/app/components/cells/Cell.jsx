@@ -1,4 +1,11 @@
-import { branch, compose, renderNothing, withHandlers } from "recompose";
+import {
+  branch,
+  compose,
+  pure,
+  renderComponent,
+  renderNothing,
+  withHandlers
+} from "recompose";
 import React from "react";
 
 import PropTypes from "prop-types";
@@ -284,7 +291,7 @@ class Cell extends React.Component {
 
 const isRepeaterCell = ({ cell, isExpandedCell }) =>
   isExpandedCell &&
-  (!cell.isMultiLanguage ||
+  (!cell.column.multilanguage ||
     f.contains(cell.kind, [
       ColumnKinds.link,
       ColumnKinds.boolean,
@@ -292,9 +299,9 @@ const isRepeaterCell = ({ cell, isExpandedCell }) =>
     ]));
 
 const RepeaterCell = withHandlers({
-  onContextMenu: ({ row, langtag, table, cell }) => event => {
+  onContextMenu: ({ toggleAnnotationPopup }) => event => {
     event.preventDefault();
-    // ActionCreator.showRowContextMenu(row, langtag, event.pageX, event.pageY, table, cell);
+    toggleAnnotationPopup(event);
   }
 })(props => (
   <div className="cell repeat placeholder" onContextMenu={props.onContextMenu}>
@@ -308,15 +315,10 @@ const RepeaterCell = withHandlers({
  * the pure HOC will avoid unneccessary re-renders, while a non-pure base component will not stop
  * connectToAmpersand from triggering new render cycles on value changes.
  */
-// export default compose(
-//   branch(
-//     isRepeaterCell,
-//     renderComponent(pure(RepeaterCell))
-//   ),
-//   pure,
-//   connectToAmpersand
-// )(Cell);
-export default Cell;
+export default compose(
+  branch(isRepeaterCell, renderComponent(pure(RepeaterCell))),
+  pure
+)(Cell);
 
 Cell.propTypes = {
   cell: PropTypes.object.isRequired,
