@@ -544,7 +544,8 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
-  addEmptyRow: addEmptyRow
+  addEmptyRow: addEmptyRow,
+  editColumn
 };
 
 export default actionCreators;
