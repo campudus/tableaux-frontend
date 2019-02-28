@@ -1,10 +1,9 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import {
-  ColumnKinds,
-  DefaultLangtag
-} from "../../constants/TableauxConstants";
+import { ColumnKinds, DefaultLangtag } from "../../constants/TableauxConstants";
 import ColumnEntry from "./ColumnEntry";
+import f from "lodash/fp";
+import { getColumnDisplayName } from "../../helpers/multiLanguage"
 
 export default class ColumnHeader extends PureComponent {
   static propTypes = {
@@ -36,11 +35,11 @@ export default class ColumnHeader extends PureComponent {
     return null;
   };
 
-  mkLinkHeader = () => {
+  mkLinkHeader = toTable => {
     const { langtag, column } = this.props;
     const key = `${column.id}-display-name`;
-    return false ? ( //(this.isToTableHidden())
-      <div key={key}>{this.getDisplayName()}</div>
+    return toTable.hidden ? (
+      <div key={key}>{getColumnDisplayName(column, langtag)}</div>
     ) : (
       <a
         key={key}
@@ -50,7 +49,7 @@ export default class ColumnHeader extends PureComponent {
         rel="noopener"
       >
         <i className="fa fa-columns" />
-        {this.getDisplayName()}
+        {getColumnDisplayName(column, langtag)}
       </a>
     );
   };
@@ -77,19 +76,22 @@ export default class ColumnHeader extends PureComponent {
       navigate,
       tableId
     } = this.props;
+    const toTable = column.kind === "link"
+      ? f.find(table => table.id === column.toTable, tables)
+      : {};
 
     const columnContent = [
       this.getIdentifierIcon(),
       column.kind === ColumnKinds.link
-        ? this.mkLinkHeader()
-        : this.getDisplayName()
+        ? this.mkLinkHeader(toTable)
+        : getColumnDisplayName(column,langtag)
     ];
 
     return (
       <ColumnEntry
         style={style}
         columnContent={columnContent}
-        name={this.getDisplayName()}
+        name={getColumnDisplayName(column,langtag)}
         column={column}
         description={this.getDescription()}
         langtag={langtag}
@@ -102,6 +104,7 @@ export default class ColumnHeader extends PureComponent {
         actions={actions}
         navigate={navigate}
         tableId={tableId}
+        toTable={toTable}
       />
     );
   }
