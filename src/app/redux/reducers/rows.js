@@ -16,7 +16,7 @@ const {
   CELL_SAVED_SUCCESSFULLY,
   SET_CELL_ANNOTATION,
   SET_ROW_ANNOTATION,
-  SET_ROWS_ANNOTATION,
+  SET_ALL_ROWS_FINAL,
   REMOVE_CELL_ANNOTATION,
   ANNOTATION_ERROR,
   CLEAN_UP,
@@ -216,7 +216,7 @@ const rows = (state = initialState, action, completeState) => {
         state
       );
     }
-    case SET_ROWS_ANNOTATION: {
+    case SET_ALL_ROWS_FINAL: {
       const { table } = action;
       return f.update([table.id, "data"], f.map(f.assoc("final", true)), state);
     }

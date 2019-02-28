@@ -9,7 +9,7 @@ const Change = { ADD: "ADD", DELETE: "DELETE" };
 const {
   SET_CELL_ANNOTATION,
   SET_ROW_ANNOTATION,
-  SET_ROWS_ANNOTATION,
+  SET_ALL_ROWS_FINAL,
   REMOVE_CELL_ANNOTATION,
   SET_ANNOTATION_ERROR
 } = ActionTypes;
@@ -210,7 +210,7 @@ export const setAllRowsFinal = table => dispatch => {
   })
     .then(result =>
       dispatch({
-        type: SET_ROWS_ANNOTATION,
+        type: SET_ALL_ROWS_FINAL,
         table,
         result
       })
