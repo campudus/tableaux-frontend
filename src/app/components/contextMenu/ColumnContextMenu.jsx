@@ -4,10 +4,10 @@
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as AccessControl from "../../helpers/accessManagementHelper";
-import {compose, contains} from "lodash/fp";
 import i18n from "i18next";
 import PropTypes from "prop-types";
 import f from "lodash/fp"
+import TableauxConstants from "../../constants/TableauxConstants";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
@@ -32,27 +32,24 @@ class ColumnContextMenu extends React.Component {
   };
 
   render = () => {
-    const {column, closeHandler, editHandler, langtag, tables, rect,actions:{toggleColumnVisibility},navigate} = this.props;
-    const toTable = (column.isLink)
-      ? f.find(table => table.id === column.toTable, tables)
-      : {};
-
+    const {column, closeHandler, editHandler, langtag, tables, rect,actions:{toggleColumnVisibility},navigate,toTable} = this.props;
     const canEdit =
-      AccessControl.isUserAdmin() && !contains(column.kind, PROTECTED_CELL_KINDS);
+      AccessControl.isUserAdmin() && !f.contains(column.kind, PROTECTED_CELL_KINDS);
     const editorItem = (canEdit)
       ? <div>
-        <a href="#" onClick={compose(closeHandler, editHandler)}>
+        <a href="#" onClick={f.flow( editHandler, closeHandler)}>
           {i18n.t("table:editor.edit_column")}
         </a>
       </div>
       : null;
 
-    const followLinkItem = (column.kind === "link" && !toTable.hidden)
+    const followLinkItem = (column.kind === TableauxConstants.ColumnKinds.link && !toTable.hidden)
       ? <div>
         <a href="#"
-          onClick={compose(
-            closeHandler,
-            () => navigate("/"+langtag+"/tables/"+column.toTable))}
+          onClick={f.flow(
+            () => navigate("/"+langtag+"/tables/"+column.toTable),
+            closeHandler
+          )}
         >
           {i18n.t("table:switch_table")}
           <i className="fa fa-angle-right" style={{float: "right"}}></i>
@@ -65,9 +62,9 @@ class ColumnContextMenu extends React.Component {
       : (
         <div>
           <a href="#"
-            onClick={compose(
-              closeHandler,
-              () => toggleColumnVisibility(column.id)
+            onClick={f.flow(
+              () => toggleColumnVisibility(column.id),
+              closeHandler
             )}
           >
             {i18n.t("table:hide_column")}
