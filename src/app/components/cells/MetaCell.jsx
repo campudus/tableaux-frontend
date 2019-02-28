@@ -1,8 +1,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
-// TODO check permissions
-// import {initiateDeleteRow} from "../../helpers/rowHelper";
+import { initiateDeleteRow } from "../../helpers/rowHelper";
 import {
   hasUserAccessToLanguage,
   isUserAdmin
@@ -30,7 +29,7 @@ class MetaCell extends PureComponent {
   };
 
   mkDeleteRowButton() {
-    const { langtag, selected, row, expanded, table, deleteRow } = this.props;
+    const { langtag, selected, row, expanded, table } = this.props;
     const userCanDeleteRow =
       table.type !== "settings" &&
       selected &&
@@ -39,7 +38,10 @@ class MetaCell extends PureComponent {
 
     return userCanDeleteRow && !row.final && selected ? (
       <div className="delete-row">
-        <button className="button" onClick={() => deleteRow({ table, row })}>
+        <button
+          className="button"
+          onClick={() => initiateDeleteRow({ table, row, langtag })}
+        >
           <i className="fa fa-trash" />
         </button>
       </div>
