@@ -22,6 +22,7 @@ import {
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
+import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { isUserAdmin } from "../../helpers/accessManagementHelper";
 import GenericContextMenu from "./GenericContextMenu";
 
@@ -106,14 +107,15 @@ class RowContextMenu extends React.Component {
   };
 
   pasteItem = () => {
-    const { cell, table, pasteFrom, langtag } = this.props;
+    const { cell, table, copySource, langtag } = this.props;
     return table.type !== "settings" &&
-      pasteFrom &&
-      canConvert(pasteFrom.kind, cell.kind) &&
-      !f.isEmpty(pasteFrom) &&
-      !f.eq(cell, pasteFrom)
+      copySource &&
+      !f.isEmpty(copySource) &&
+      canConvert(copySource.cell.kind, cell.kind) &&
+      !f.eq(cell.id, copySource.cell.id)
       ? this.mkItem(
-          f.noop, //() => ActionCreator.pasteCellContent(cell, langtag),
+          () =>
+            pasteCellValue(copySource.cell, copySource.langtag, cell, langtag),
           "paste_cell",
           "clipboard"
         )

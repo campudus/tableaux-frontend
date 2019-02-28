@@ -91,7 +91,7 @@ class Cell extends React.Component {
     );
   };
 
-  getKeyboardShortcuts = event => {
+  getKeyboardShortcuts = () => {
     return this.keyboardShortcuts;
   };
 

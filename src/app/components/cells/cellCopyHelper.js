@@ -26,13 +26,17 @@ import store from "../../redux/store";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
-    actions.showToast(<div id="cell-jump-toast">{i18n.t(msg, data)}</div>, 3000)
+    actions.showToast({
+      content: <div id="cell-jump-toast">{i18n.t(msg, data)}</div>,
+      duration: 3000
+    })
   );
 };
 
 const changeCellValue = (cell, newValue) => {
+  console.log("Pasting", newValue, "to", cell, "which has", cell.value);
   store.dispatch(
-    actions.changeValue({
+    actions.changeCellValue({
       cell,
       newValue,
       oldValue: cell.value

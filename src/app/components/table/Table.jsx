@@ -171,7 +171,7 @@ class Table extends Component {
 
   showRowContextMenu = openAnnotations => ({ langtag, cell }) => event => {
     const { pageX, pageY } = event;
-    const { actions, rows } = this.props;
+    const { actions, rows, tableView } = this.props;
     this.setState({
       rowContextMenu: {
         x: pageX,
@@ -182,7 +182,8 @@ class Table extends Component {
         langtag,
         cell,
         rows,
-        openAnnotations
+        openAnnotations,
+        copySource: f.propOr({}, "copySource", tableView)
       }
     });
   };
