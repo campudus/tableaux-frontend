@@ -299,9 +299,15 @@ const isRepeaterCell = ({ cell, isExpandedCell }) =>
     ]));
 
 const RepeaterCell = withHandlers({
-  onContextMenu: ({ toggleAnnotationPopup }) => event => {
+  onContextMenu: ({
+    openCellContextMenu,
+    cell,
+    langtag,
+    actions: { toggleCellSelection }
+  }) => event => {
     event.preventDefault();
-    toggleAnnotationPopup(event);
+    toggleCellSelection({ cell, langtag });
+    openCellContextMenu({ cell, langtag: f.first(Langtags) })(event);
   }
 })(props => (
   <div className="cell repeat placeholder" onContextMenu={props.onContextMenu}>
