@@ -107,6 +107,13 @@ class Table extends Component {
     window.addEventListener("resize", this.windowResize);
   }
 
+  //   componentDidUpdate() {
+  //     // When overlay is open we don't want anything to force focus inside the table
+  //     if (!this.props.overlayOpen) {
+  //       // tableNavigationWorker.checkFocusInsideTable.call(this);
+  //     }
+  //   }
+
   handleClickOutside = () => {
     const {
       actions,
@@ -153,6 +160,8 @@ class Table extends Component {
   };
 
   findAndStoreTableDiv = virtualDOMNode => {
+    // The react ref is not enough for this use case
+    // eslint-disable-next-line react/no-find-dom-node
     this.tableDOMNode = ReactDOM.findDOMNode(virtualDOMNode);
   };
 
@@ -171,7 +180,7 @@ class Table extends Component {
 
   showRowContextMenu = openAnnotations => ({ langtag, cell }) => event => {
     const { pageX, pageY } = event;
-    const { actions, rows } = this.props;
+    const { actions, rows, tableView } = this.props;
     this.setState({
       rowContextMenu: {
         x: pageX,
@@ -182,7 +191,8 @@ class Table extends Component {
         langtag,
         cell,
         rows,
-        openAnnotations
+        openAnnotations,
+        copySource: f.propOr({}, "copySource", tableView)
       }
     });
   };
@@ -229,7 +239,7 @@ class Table extends Component {
         }
         onMouseDown={this.onMouseDownHandler}
       >
-        <div className="tableaux-table" ref="tableInner">
+        <div className="tableaux-table">
           <VirtualTable
             key={`virtual-table-${f.get("id", table)}`}
             actions={actions}

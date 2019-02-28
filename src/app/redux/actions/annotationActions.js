@@ -14,7 +14,7 @@ const {
 } = ActionTypes;
 
 const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
-  const { cell, annotation } = action;
+  const { cell, annotation, onError, onSuccess } = action;
   const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
 
   const valueKey = when(
@@ -34,17 +34,6 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
     change === Change.ADD
       ? f.union(oldLangtags, newLangtags)
       : f.difference(oldLangtags, newLangtags);
-
-  console.log(
-    "modifyAnnotationlangtags()",
-    action,
-    "langtags",
-    langtags,
-    "change",
-    change,
-    "existingAnnotation",
-    existingAnnotation
-  );
 
   const shouldDelete = f.isEmpty(langtags) || action.setTo === false;
   const couldFindUuid =
@@ -79,13 +68,15 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
       annotations,
       cell,
       rowIdx,
-      colIdx
+      colIdx,
+      onError,
+      onSuccess
     });
   }
 };
 
 const setTextAnnotation = change => action => (dispatch, getState) => {
-  const { cell, annotation } = action;
+  const { cell, annotation, onError, onSuccess } = action;
   const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
   const existingAnnotation = annotations.find(
     ann => ann.type === annotation.type && ann.uuid === annotation.uuid
@@ -116,7 +107,9 @@ const setTextAnnotation = change => action => (dispatch, getState) => {
     annotations,
     cell,
     rowIdx,
-    colIdx
+    colIdx,
+    onError,
+    onSuccess
   });
 };
 
@@ -187,7 +180,7 @@ export const removeTextAnnotation = setTextAnnotation(Change.REMOVE);
 export const addTextAnnotation = setTextAnnotation(Change.ADD);
 
 export const setRowFlag = action => dispatch => {
-  const { table, row, flagName, flagValue } = action;
+  const { table, row, flagName, flagValue, onError, onSuccess } = action;
   makeRequest({
     apiRoute:
       route.toRow({ tableId: table.id, rowId: row.id }) + "/annotations",
@@ -200,14 +193,16 @@ export const setRowFlag = action => dispatch => {
         table,
         row,
         flagName,
-        flagValue: f.prop(flagName, result)
+        flagValue: f.prop(flagName, result),
+        onError,
+        onSuccess
       })
     )
     .catch(console.error);
 };
 
 export const toggleAnnotationFlag = action => (dispatch, getState) => {
-  const { cell, annotation } = action;
+  const { cell, annotation, onError, onSuccess } = action;
   const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
   const existingAnnotation = annotations.find(
     ann => ann.type === "flag" && ann.value === annotation.value
@@ -241,7 +236,9 @@ export const toggleAnnotationFlag = action => (dispatch, getState) => {
     annotations,
     cell,
     rowIdx,
-    colIdx
+    colIdx,
+    onError,
+    onSuccess
   };
   dispatch(description);
 };

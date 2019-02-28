@@ -387,6 +387,10 @@ const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
   cond(value) ? ifFn(value) : elseFn(value)
 );
 
+const mapPromise = curryN(2, (promiseGenerator, inputs) =>
+  Promise.all((inputs || []).map(promiseGenerator))
+);
+
 // (T => boolean) -> (path) -> ({ [path] : T }) => boolean
 // propMatches(isNumber, "foo", { foo: 42 }) => true
 // propMatches(isNumber, "foo.bar", { foo: { bar: "imastring"}}) => false
@@ -418,5 +422,6 @@ export {
   filterIndexed,
   ifElse,
   propMatches,
+  mapPromise,
   tests
 };

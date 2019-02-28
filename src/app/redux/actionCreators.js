@@ -8,7 +8,8 @@ import {
   removeTextAnnotation,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue } from "./actions/cellActions";
+import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
+import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { checkOrThrow } from "../specs/type";
 import { doto } from "../helpers/functools";
 import {
@@ -17,7 +18,6 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
-import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -54,6 +54,10 @@ const {
   SET_FILTERS_AND_SORTING,
   SET_SEARCH_OVERLAY,
   CLEAN_UP,
+  ADD_ROWS,
+  ROW_CREATE,
+  ROW_CREATE_SUCCESS,
+  ROW_CREATE_ERROR,
   COLUMN_EDIT,
   COLUMN_EDIT_SUCCESS,
   COLUMN_EDIT_ERROR
@@ -62,7 +66,8 @@ const {
 const {
   TOGGLE_CELL_SELECTION,
   TOGGLE_CELL_EDITING,
-  TOGGLE_EXPANDED_ROW
+  TOGGLE_EXPANDED_ROW,
+  COPY_CELL_VALUE_TO_CLIPBOARD
 } = actionTypes.tableView;
 
 const {
@@ -134,7 +139,7 @@ const addRows = (tableId, rows) => {
   };
 };
 
-const loadAllRows = tableId => (dispatch, getState) => {
+const loadAllRows = tableId => dispatch => {
   const buildParams = (allRows, rowsPerRequest) => {
     if (allRows <= rowsPerRequest) {
       return [{ offset: 30, limit: allRows }];
@@ -251,13 +256,6 @@ const generateDisplayValues = (rows, columns, tableId) => (
       type: GENERATED_DISPLAY_VALUES,
       displayValues
     });
-  };
-};
-
-const setSearchOverlay = value => {
-  return {
-    type: SET_SEARCH_OVERLAY,
-    value
   };
 };
 
@@ -513,6 +511,7 @@ const actionCreators = {
   toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
+  copyCellValue: dispatchParamsFor(COPY_CELL_VALUE_TO_CLIPBOARD),
   changeCellValue,
   deleteRow,
   duplicateRow: safelyDuplicateRow,

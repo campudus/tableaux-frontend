@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 
-import { ColumnKinds } from "../../constants/TableauxConstants";
-import { doto, propMatches, when } from "../../helpers/functools";
+import { doto } from "../../helpers/functools";
+import { getSaveableRowDuplicate } from "../../components/cells/cellCopyHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { toggleAnnotationFlag } from "./annotationActions";
 import ActionTypes from "../actionTypes";
@@ -31,10 +31,14 @@ export const addEmptyRow = tableId => ({
 // TODO: Let the backend handle this once /safelyDuplicate is implemented
 // When duplicating rows, we must make sure that link constraints are not
 // broken, else the backend will reject.
-export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
-  dispatch,
-  getState
-) => {
+export const safelyDuplicateRow = ({
+  tableId,
+  rowId,
+  langtag,
+  cell,
+  successCallback,
+  errorCallback
+}) => async (dispatch, getState) => {
   const state = getState();
   const columns = f.prop(["columns", tableId, "data"], state);
   const row = doto(
@@ -43,35 +47,12 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
     f.find(f.propEq("id", rowId))
   );
 
-  const isPositiveNumber = num => f.isInteger(num) && num > 0;
-
-  const constrainedLinkIds = columns
-    .filter(
-      column =>
-        column.kind === ColumnKinds.link &&
-        propMatches(isPositiveNumber, "constraint.cardinality.from", column)
-    )
-    .map(f.prop("id"));
-
-  const canNotCopy = column =>
-    f.contains(column.id, constrainedLinkIds) ||
-    column.kind === ColumnKinds.group ||
-    column.kind === ColumnKinds.concat;
-
-  // We can't check cardinality from the frontend, so we won't copy links with cardinality
-  const duplicatedValues = row.values.map((value, idx) =>
-    canNotCopy(columns[idx]) ? null : value
-  );
-
-  const hasConcat = f.propEq([0, "kind"], ColumnKinds.concat)(columns);
+  const saveableRowDuplicate = getSaveableRowDuplicate({ columns, row });
 
   try {
     const duplicatedRow = await makeRequest({
       apiRoute: route.toTable({ tableId }) + "/rows",
-      data: {
-        columns: when(() => hasConcat, f.drop(1), columns),
-        rows: [{ values: when(() => hasConcat, f.drop(1), duplicatedValues) }]
-      },
+      data: f.pick(["columns", "rows"], saveableRowDuplicate),
       method: "POST"
     }).then(f.prop("rows"));
     dispatch({
@@ -90,7 +71,7 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
 
     // Set a flag when we deleted values during copy
     const checkMeAnnotation = { type: "flag", value: "check-me" };
-    constrainedLinkIds.forEach(columnId =>
+    saveableRowDuplicate.constrainedLinkIds.forEach(columnId =>
       dispatch(
         toggleAnnotationFlag({
           cell: {
@@ -102,7 +83,10 @@ export const safelyDuplicateRow = ({ tableId, rowId, langtag, cell }) => async (
         })
       )
     );
+
+    successCallback && successCallback();
   } catch (err) {
+    errorCallback && errorCallback(err);
     console.error("While duplicating row:", err);
   }
 };

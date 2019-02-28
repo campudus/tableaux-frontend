@@ -1,5 +1,5 @@
 import React from "react";
-import {pure, withHandlers} from "recompose";
+import { pure, withHandlers } from "recompose";
 import f from "lodash/fp";
 import LinkCell from "../cells/link/LinkCell";
 import AttachmentCell from "../cells/attachment/AttachmentCell";
@@ -10,43 +10,43 @@ import ShortTextCell from "../cells/text/ShortTextCell";
 import IdentifierCell from "../cells/identifier/IdentifierCell";
 import CurrencyCell from "../cells/currency/CurrencyCell";
 import TextCell from "../cells/text/TextCell";
-import {ColumnKinds} from "../../constants/TableauxConstants";
-// import ActionCreator from "../../actions/ActionCreator";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import i18n from "i18next";
-import {openInNewTab} from "../../helpers/apiUrl";
+import { openInNewTab } from "../../helpers/apiUrl";
+import store from "../../redux/store";
+import actions from "../../redux/actionCreators";
 
-const ClearCellButton = (props) => (
+const ClearCellButton = props => (
   <div className="clear-pasted-button button neutral">
-    <a href="#"
-       onClick={props.clearCellClipboard}
-    >
+    <a href="#" onClick={props.clearCellClipboard}>
       {i18n.t("header:clipboard.clear")}
     </a>
   </div>
 );
 
 const FocusCellButton = withHandlers({
-  focusCell: (props) => () => {
-    const {cell, langtag, tableId} = props;
-    if (cell.tableId === tableId) {
-      // ActionCreator.toggleCellSelection(props.cell, true);
+  focusCell: props => () => {
+    const { cell, langtag, tableId } = props;
+    if (cell.table.id === tableId) {
+      store.dispatch(
+        actions.toggleCellSelection({
+          tableId: cell.tableId,
+          columnId: cell.column.id,
+          rowId: cell.row.id
+        })
+      );
     } else {
-      const table = cell.tables.get(cell.tableId);
-      const {row, column} = cell;
-      openInNewTab({langtag, table, column, row});
+      const { row, column, table } = cell;
+      openInNewTab({ langtag, table, column, row });
     }
   }
-})(
-  (props) => (
-    <div className="focus-cell-button button positive">
-      <a href="#"
-         onClick={props.focusCell}
-      >
-        {i18n.t("header:clipboard.focus")}
-      </a>
-    </div>
-  )
-);
+})(props => (
+  <div className="focus-cell-button button positive">
+    <a href="#" onClick={props.focusCell}>
+      {i18n.t("header:clipboard.focus")}
+    </a>
+  </div>
+));
 
 const cellRenderers = {
   [ColumnKinds.link]: LinkCell,
@@ -63,7 +63,7 @@ const cellRenderers = {
   [ColumnKinds.group]: IdentifierCell
 };
 
-const CellPreview = (props) => {
+const CellPreview = props => {
   const cell = props.pasteOriginCell;
   const langtag = props.pasteOriginCellLang;
 
@@ -72,30 +72,38 @@ const CellPreview = (props) => {
   return (
     <div className="cell-preview">
       <div className={`cell cell-${cell.kind}`}>
-        <CellType cell={cell}
-                  langtag={langtag}
-                  selected={false}
-                  editing={false}
-                  value={cell.displayValue[langtag] || ""}
-                  contentChanged={f.noop}
-                  setCellKeyboardShortcuts={f.noop}
+        <CellType
+          cell={cell}
+          langtag={langtag}
+          selected={false}
+          editing={false}
+          value={cell.displayValue[langtag] || ""}
+          contentChanged={f.noop}
+          setCellKeyboardShortcuts={f.noop}
+          displayValue={cell.displayValue}
         />
       </div>
     </div>
   );
 };
 
-const PasteCellPreview = (props) => {
-  const {clearCellClipboard, pasteOriginCell, pasteOriginCellLang, tableId} = props;
+const PasteCellPreview = props => {
+  const {
+    clearCellClipboard,
+    pasteOriginCell,
+    pasteOriginCellLang,
+    tableId
+  } = props;
 
   return (
     <div className={"clipboard-popup"}>
       <div className="heading">{i18n.t("header:clipboard.heading")}</div>
       <CellPreview {...props} />
       <div className="buttons">
-        <FocusCellButton cell={pasteOriginCell}
-                         langtag={pasteOriginCellLang}
-                         tableId={tableId}
+        <FocusCellButton
+          cell={pasteOriginCell}
+          langtag={pasteOriginCellLang}
+          tableId={tableId}
         />
         <ClearCellButton clearCellClipboard={clearCellClipboard} />
       </div>

@@ -1,6 +1,4 @@
-import Raven from "raven-js";
 import f from "lodash/fp";
-import i18n from "i18next";
 
 import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
 import {
@@ -10,23 +8,23 @@ import {
 } from "../redux/actions/annotation-specs";
 import { maybe, unless } from "./functools";
 import { setRowFlag } from "../redux/actions/annotationActions";
-import { showDialog } from "../components/overlay/GenericOverlay";
+// import { showDialog } from "../components/overlay/GenericOverlay";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
 
-function annotationError(heading, error) {
-  const { message } = error;
-  console.error(heading, "\n->", message);
-  Raven.captureException(error);
-  showDialog({
-    type: "warning",
-    context: i18n.t("common:error"),
-    title: i18n.t("table:error_occured_hl"),
-    heading,
-    message,
-    actions: { neutral: [i18n.t("common:ok"), null] }
-  });
-}
+// function annotationError(heading, error) {
+//   const { message } = error;
+//   console.error(heading, "\n->", message);
+//   Raven.captureException(error);
+//   showDialog({
+//     type: "warning",
+//     context: i18n.t("common:error"),
+//     title: i18n.t("table:error_occured_hl"),
+//     heading,
+//     message,
+//     actions: { neutral: [i18n.t("common:ok"), null] }
+//   });
+// }
 
 const getAnnotation = (annotation, cell) => {
   const cellAnnotations = cell.annotations;
@@ -49,43 +47,56 @@ const setCellAnnotation = (annotation, cell) => {
   store.dispatch(action(payload));
 };
 
-const deleteCellAnnotation = (annotation, cell) => {
-  const payload = { annotation, cell, setTo: false };
-  const action = isTextAnnotation(annotation)
-    ? actions.removeTextAnnotation
-    : isMultilangAnnotation(annotation)
-    ? actions.removeAnnotationLangtags
-    : actions.toggleAnnotationFlag;
-  store.dispatch(action(payload));
-};
+const deleteCellAnnotation = (annotation, cell) =>
+  new Promise((resolve, reject) => {
+    const payload = {
+      annotation,
+      cell,
+      setTo: false,
+      onError: reject,
+      onSuccess: resolve
+    };
+    const action = isTextAnnotation(annotation)
+      ? actions.removeTextAnnotation
+      : isMultilangAnnotation(annotation)
+      ? actions.removeAnnotationLangtags
+      : actions.toggleAnnotationFlag;
+    store.dispatch(action(payload));
+  });
 
-const addTranslationNeeded = (langtag, cell) => {
-  const langtags = unless(f.isArray, lt => [lt], langtag);
-  store.dispatch(
-    actions.addAnnotationLangtags({
-      annotation: {
-        type: "flag",
-        value: "needs_translation",
-        langtags
-      },
-      cell
-    })
-  );
-};
+const addTranslationNeeded = (langtag, cell) =>
+  new Promise((resolve, reject) => {
+    const langtags = unless(f.isArray, lt => [lt], langtag);
+    store.dispatch(
+      actions.addAnnotationLangtags({
+        annotation: {
+          type: "flag",
+          value: "needs_translation",
+          langtags
+        },
+        onError: reject,
+        onSuccess: resolve,
+        cell
+      })
+    );
+  });
 
-const removeTranslationNeeded = (langtag, cell) => {
-  const langtags = unless(f.isArray, lt => [lt], langtag);
-  store.dispatch(
-    actions.removeAnnotationLangtags({
-      annotation: {
-        type: "flag",
-        value: "needs_translation",
-        langtags
-      },
-      cell
-    })
-  );
-};
+const removeTranslationNeeded = (langtag, cell) =>
+  new Promise((resolve, reject) => {
+    const langtags = unless(f.isArray, lt => [lt], langtag);
+    store.dispatch(
+      actions.removeAnnotationLangtags({
+        annotation: {
+          type: "flag",
+          value: "needs_translation",
+          langtags
+        },
+        onError: reject,
+        onSuccess: resolve,
+        cell
+      })
+    );
+  });
 
 const setRowFinal = ({ table, row, value = true }) => {
   setRowAnnotation({ table, row, flagName: "final", flagValue: value });

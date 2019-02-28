@@ -1,4 +1,11 @@
-import { branch, compose, renderNothing, withHandlers } from "recompose";
+import {
+  branch,
+  compose,
+  pure,
+  renderComponent,
+  renderNothing,
+  withHandlers
+} from "recompose";
 import React from "react";
 
 import PropTypes from "prop-types";
@@ -91,7 +98,7 @@ class Cell extends React.Component {
     );
   };
 
-  getKeyboardShortcuts = event => {
+  getKeyboardShortcuts = () => {
     return this.keyboardShortcuts;
   };
 
@@ -284,7 +291,7 @@ class Cell extends React.Component {
 
 const isRepeaterCell = ({ cell, isExpandedCell }) =>
   isExpandedCell &&
-  (!cell.isMultiLanguage ||
+  (!cell.column.multilanguage ||
     f.contains(cell.kind, [
       ColumnKinds.link,
       ColumnKinds.boolean,
@@ -292,9 +299,15 @@ const isRepeaterCell = ({ cell, isExpandedCell }) =>
     ]));
 
 const RepeaterCell = withHandlers({
-  onContextMenu: ({ row, langtag, table, cell }) => event => {
+  onContextMenu: ({
+    openCellContextMenu,
+    cell,
+    langtag,
+    actions: { toggleCellSelection }
+  }) => event => {
     event.preventDefault();
-    // ActionCreator.showRowContextMenu(row, langtag, event.pageX, event.pageY, table, cell);
+    toggleCellSelection({ cell, langtag });
+    openCellContextMenu({ cell, langtag: f.first(Langtags) })(event);
   }
 })(props => (
   <div className="cell repeat placeholder" onContextMenu={props.onContextMenu}>
@@ -302,21 +315,10 @@ const RepeaterCell = withHandlers({
   </div>
 ));
 
-/**
- * Placing pure HOC component around connectToAmpersand and making Cell itself a non-pure component
- * gives us the best of two worlds:
- * the pure HOC will avoid unneccessary re-renders, while a non-pure base component will not stop
- * connectToAmpersand from triggering new render cycles on value changes.
- */
-// export default compose(
-//   branch(
-//     isRepeaterCell,
-//     renderComponent(pure(RepeaterCell))
-//   ),
-//   pure,
-//   connectToAmpersand
-// )(Cell);
-export default Cell;
+export default compose(
+  branch(isRepeaterCell, renderComponent(pure(RepeaterCell))),
+  pure
+)(Cell);
 
 Cell.propTypes = {
   cell: PropTypes.object.isRequired,

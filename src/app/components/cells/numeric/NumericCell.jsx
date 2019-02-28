@@ -6,13 +6,13 @@ const NumericCell = props => {
   const {
     actions,
     langtag,
-    column,
     table,
     row,
     displayValue,
     value,
     editing,
-    setCellKeyboardShortcuts
+    setCellKeyboardShortcuts,
+    cell: { column }
   } = props;
 
   const isMultiLanguage = column.multilanguage;
@@ -51,11 +51,11 @@ const NumericCell = props => {
   }
 };
 
-// NumericCell.propTypes = {
-//   cell: PropTypes.object.isRequired,
-//   langtag: PropTypes.string.isRequired,
-//   editing: PropTypes.bool.isRequired,
-//   setCellKeyboardShortcuts: PropTypes.func
-// };
+NumericCell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  editing: PropTypes.bool.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func
+};
 
 export default NumericCell;

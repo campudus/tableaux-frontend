@@ -61,7 +61,7 @@ const dispatchCellValueChange = action => {
         k => f.isEqual(oldValue[k], newValue[k]),
         f.union(f.keys(newValue), f.keys(oldValue))
       )
-    : f.isEqual(oldValue, newValue);
+    : !f.isEqual(oldValue, newValue);
 
   // Automatic workflow to remove "translation needed" from newly written values
   const freshlyTranslatedLangtags =
