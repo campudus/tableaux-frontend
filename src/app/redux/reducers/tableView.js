@@ -211,8 +211,7 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
   const value = f.prop(valueProp, action);
   const { tableId, column } = action;
-  // eslint-disable-next-line no-unused-vars
-  const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
+  const [columnIdx, dvRowIdx] = f.tail(idsToIndices(action, completeState));
   const pathToDv = displayValueSelector({
     tableId,
     dvRowIdx,
