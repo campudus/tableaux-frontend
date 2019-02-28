@@ -53,7 +53,7 @@ export default class ColumnEntry extends React.PureComponent {
       column: { description, id },
       column,
       langtag,
-      actions: { openOverlay,closeOverlay }
+      actions: { openOverlay }
     } = this.props;
     const name = column.displayName[langtag] || column.name;
 
@@ -67,7 +67,7 @@ export default class ColumnEntry extends React.PureComponent {
         <Header
           context={i18n.t("table:editor.edit_column")}
           title={name}
-          buttons={buttons}
+          buttonActions={buttons}
         />
       ),
       body: (
@@ -147,7 +147,8 @@ export default class ColumnEntry extends React.PureComponent {
       description,
       resizeFinishedHandler,
       actions,
-      navigate
+      navigate,
+      toTable
     } = this.props;
     const menuOpen = this.state.ctxCoords;
     const showDescription =
@@ -226,6 +227,7 @@ export default class ColumnEntry extends React.PureComponent {
             rect={this.state.ctxCoords}
             actions={actions}
             navigate={navigate}
+            toTable={toTable}
           />
         </div>
       </Rnd>
