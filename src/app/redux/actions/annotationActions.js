@@ -187,13 +187,13 @@ export const setRowFlag = action => dispatch => {
     method: "PATCH",
     data: { [flagName]: flagValue }
   })
-    .then(result =>
+    .then(() =>
       dispatch({
         type: SET_ROW_ANNOTATION,
         table,
         row,
         flagName,
-        flagValue: f.prop(flagName, result),
+        flagValue
         onError,
         onSuccess
       })

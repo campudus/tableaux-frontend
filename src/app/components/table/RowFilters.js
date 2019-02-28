@@ -145,10 +145,11 @@ const completeRowInformation = (columns, table, rows) => {
     })
   );
 
-  return rows.map(({ id, cells, values, annotations }, rowIndex) => ({
+  return rows.map(({ id, cells, values, annotations, final }, rowIndex) => ({
     rowIndex,
     id,
     annotations,
+    final,
     values: cells.map((cell, colIndex) => ({
       ...cell,
       displayValue:
