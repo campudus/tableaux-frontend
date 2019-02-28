@@ -8,7 +8,6 @@ import * as tableNavigationWorker from "./tableNavigationWorker";
 import listensToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
