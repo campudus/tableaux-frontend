@@ -188,9 +188,9 @@ const toggleLink = oldIds => newIds => {
       };
 };
 
-export const modifyHistory = modifyAction => (dispatch, getState) => {
+export const modifyHistory = ( modifyAction, tableId ) => (dispatch, getState) => {
   const historyAction = f.compose(
-    f.last,
+    f.findLast(action => action.tableId === tableId),
     f.get([
       "tableView",
       "history",

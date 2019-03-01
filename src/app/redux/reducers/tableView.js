@@ -211,8 +211,7 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
   const value = f.prop(valueProp, action);
   const { tableId, column } = action;
-  // eslint-disable-next-line no-unused-vars
-  const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
+  const [columnIdx, dvRowIdx] = f.tail(idsToIndices(action, completeState));
   const pathToDv = displayValueSelector({
     tableId,
     dvRowIdx,
@@ -256,40 +255,59 @@ const push = (action, history) => {
     )(action)
   };
 };
-const undo = history => {
+
+const remove = (index,arr) => {
+  const removed = f.concat(
+    f.slice(0, index, arr),
+    f.slice(index + 1, arr.length, arr)
+  );
+  const element = f.get([index], arr);
+  return { removed, element };
+};
+
+const undo = (tableId, history) => {
   const { undoQueue, redoQueue } = history;
+  const index = f.findLastIndex(
+    action => action.tableId === tableId,
+    undoQueue
+  );
+  const { removed, element } = remove(index, undoQueue);
   return {
-    undoQueue: f.initial(undoQueue),
+    undoQueue: removed,
     redoQueue: f.flow(
-      f.last,
       switchValues,
       f.concat(redoQueue),
       f.compact,
       limitQueue(50)
-    )(undoQueue)
+    )(element)
   };
 };
-const redo = history => {
+
+const redo = (tableId, history) => {
   const { undoQueue, redoQueue } = history;
+  const index = f.findLastIndex(
+    action => action.tableId === tableId,
+    redoQueue
+  );
+  const { removed, element } = remove(index, redoQueue);
   return {
-    redoQueue: f.initial(redoQueue),
+    redoQueue: removed,
     undoQueue: f.flow(
-      f.last,
       switchValues,
       f.concat(undoQueue),
       f.compact,
       limitQueue(50)
-    )(redoQueue)
+    )(element)
   };
 };
 
 const modifyHistory = action => state => {
-  const { modifyAction } = action;
+  const { modifyAction,tableId } = action;
   const { history } = state;
   if (!modifyAction) {
     return { ...state, history: push(action, history) };
   }
-  const newHistory = modifyAction === "undo" ? undo(history) : redo(history);
+  const newHistory = modifyAction === "undo" ? undo(tableId,history) : redo(tableId,history);
   return { ...state, history: newHistory };
 };
 

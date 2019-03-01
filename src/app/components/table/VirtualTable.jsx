@@ -203,7 +203,7 @@ export default class VirtualTable extends PureComponent {
       );
     }
 
-    const { actions, langtag, rows, expandedRowIds } = this.props;
+    const { actions, actions:{ deleteRow}, langtag, rows, expandedRowIds,table } = this.props;
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const locked = isLocked(row);
@@ -221,6 +221,8 @@ export default class VirtualTable extends PureComponent {
             selected={this.isInSelectedRow(row.id, lt)}
             row={row}
             isLocked={locked}
+            table={table}
+            deleteRow={deleteRow}
           />
         ))}
       </div>
@@ -233,6 +235,8 @@ export default class VirtualTable extends PureComponent {
         selected={this.isInSelectedRow(row.id, langtag)}
         expanded={false}
         isLocked={locked}
+        table={table}
+        deleteRow={deleteRow}
       />
     );
   };

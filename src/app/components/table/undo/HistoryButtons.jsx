@@ -49,23 +49,25 @@ export default compose(
       updateButtonState: (state, props) => () => ({
         canUndo: f.flow(
           f.get(["tableView", "history", "undoQueue"]),
+          f.filter(action => action.tableId === props.tableId),
           f.negate(f.isEmpty)
         )(props),
         canRedo: f.flow(
           f.get(["tableView", "history", "redoQueue"]),
+          f.filter(action => action.tableId === props.tableId),
           f.negate(f.isEmpty)
         )(props),
         active: true
       }),
-      undo: ({ active }, { actions: { modifyHistory } }) => () => {
+      undo: ({ active }, { actions: { modifyHistory },tableId }) => () => {
         if (active) {
-          modifyHistory("undo");
+          modifyHistory("undo",tableId);
           return { active: false };
         }
       },
-      redo: ({ active }, { actions: { modifyHistory } }) => () => {
+      redo: ({ active }, { actions: { modifyHistory },tableId }) => () => {
         if (active) {
-          modifyHistory("redo");
+          modifyHistory("redo",tableId);
           return { active: false };
         }
       }
