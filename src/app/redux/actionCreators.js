@@ -6,7 +6,8 @@ import {
   addTextAnnotation,
   removeAnnotationLangtags,
   removeTextAnnotation,
-  toggleAnnotationFlag
+  toggleAnnotationFlag,
+  setAllRowsFinal
 } from "./actions/annotationActions";
 import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { changeCellValue, modifyHistory } from "./actions/cellActions";
@@ -535,7 +536,9 @@ const actionCreators = {
   deleteMediaFile: deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   cleanUp: cleanUp,
+  modifyHistory,
   addEmptyRow: addEmptyRow,
+  setAllRowsFinal,
   editColumn
 };
 

@@ -1,17 +1,17 @@
 /** Displays a cogwheel icon that, when clicked, displays an instance of TableSettingsPopup */
 import React from "react";
 import TableSettingsPopup from "./TableSettingsPopup";
-import {contains} from "lodash/fp";
+import { contains } from "lodash/fp";
 import PropTypes from "prop-types";
 
 class TableSettings extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {open: false};
+    this.state = { open: false };
   }
 
   setOpenState = open => {
-    this.setState({open: open});
+    this.setState({ open: open });
   };
 
   toggleSettingsPopup = () => {
@@ -27,28 +27,30 @@ class TableSettings extends React.Component {
   };
 
   render = () => {
-    const {open} = this.state;
+    const { open } = this.state;
     return (
-      <div id="table-settings-wrapper"
-           onClick={this.toggleSettingsPopup}>
-        <a id="table-settings"
-           className={(open) ? "button active" : "button"}
-           ref={tableSettings => {
-             this.tableSettings = tableSettings;
-           }}
-           href="#">
-          <i className={(open) ? "fa fa-angle-up" : "fa fa-angle-down"}>
-          </i>
+      <div id="table-settings-wrapper" onClick={this.toggleSettingsPopup}>
+        <a
+          id="table-settings"
+          className={open ? "button active" : "button"}
+          ref={tableSettings => {
+            this.tableSettings = tableSettings;
+          }}
+          href="#"
+        >
+          <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
         </a>
-        {(open)
-          ? <TableSettingsPopup table={this.props.table}
-                                langtag={this.props.langtag}
-                                outsideClickHandler={this.onClickOutside} />
-          : null
-        }
+        {open ? (
+          <TableSettingsPopup
+            table={this.props.table}
+            langtag={this.props.langtag}
+            outsideClickHandler={this.onClickOutside}
+            actions={this.props.actions}
+          />
+        ) : null}
       </div>
     );
-  }
+  };
 }
 
 TableSettings.propTypes = {

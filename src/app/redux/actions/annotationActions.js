@@ -9,6 +9,7 @@ const Change = { ADD: "ADD", DELETE: "DELETE" };
 const {
   SET_CELL_ANNOTATION,
   SET_ROW_ANNOTATION,
+  SET_ALL_ROWS_FINAL,
   REMOVE_CELL_ANNOTATION,
   SET_ANNOTATION_ERROR
 } = ActionTypes;
@@ -196,6 +197,22 @@ export const setRowFlag = action => dispatch => {
         flagValue: f.prop(flagName, result),
         onError,
         onSuccess
+      })
+    )
+    .catch(console.error);
+};
+
+export const setAllRowsFinal = table => dispatch => {
+  makeRequest({
+    apiRoute: route.toRows(table.id) + "/annotations",
+    method: "PATCH",
+    data: { final: true }
+  })
+    .then(result =>
+      dispatch({
+        type: SET_ALL_ROWS_FINAL,
+        table,
+        result
       })
     )
     .catch(console.error);
