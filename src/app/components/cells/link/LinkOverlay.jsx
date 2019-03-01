@@ -501,7 +501,7 @@ const withDataRows = compose(
       }
 
       const getCurrentDisplayValue = f.flow(
-        f.props(["value", "values"]),
+        f.props(["value", "values.0"]),
         f.find(f.identity),
         getDisplayValue(toIdColumn),
         retrieveTranslation(langtag)
