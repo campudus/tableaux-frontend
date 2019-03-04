@@ -20,6 +20,7 @@ import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import Header from "../overlay/Header";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import { openLinkOverlay } from "../cells/link/LinkOverlay";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -249,8 +250,14 @@ export function toggleCellEditing(params = {}) {
   if (canEdit && selectedCellObject) {
     switch (selectedCellKind) {
       case ColumnKinds.boolean:
+        console.warn("boolean");
+        break;
       case ColumnKinds.link:
-        console.warn("boolean link");
+        openLinkOverlay({
+          cell: selectedCellObject,
+          langtag: langtag,
+          actions: actions
+        });
         break;
       case ColumnKinds.attachment:
         actions.openOverlay({
