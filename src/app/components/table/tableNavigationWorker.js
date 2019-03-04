@@ -239,18 +239,29 @@ export function toggleCellEditing(params = {}) {
   const { columnId, rowId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
+  // const selectedColumn = columns[columnIndex];
   const selectedRow = rows[rowIndex];
   const selectedCellObject = selectedRow.cells[columnIndex];
   const selectedCellValues = selectedRow.values[columnIndex];
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
-  const cellDisplayValues =
-    displayValues[currentTable][rowIndex]["values"][columnIndex];
+  const cellDisplayValues = f.get(
+    [currentTable, rowIndex, "values", columnIndex],
+    displayValues
+  );
 
   if (canEdit && selectedCellObject) {
+    console.log("editCell", selectedCellValues);
     switch (selectedCellKind) {
       case ColumnKinds.boolean:
-        console.warn("boolean");
+        // TODO-W
+        actions.changeCellValue({
+          cell: selectedCellObject,
+          oldValue: selectedCellValues,
+          newValue: selectedCellObject.isMultiLanguage
+            ? { [langtag]: !selectedCellValues }
+            : selectedCellValues
+        });
         break;
       case ColumnKinds.link:
         openLinkOverlay({
