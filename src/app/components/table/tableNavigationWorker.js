@@ -259,7 +259,7 @@ export function toggleCellEditing(params = {}) {
             <AttachmentOverlay
               cell={selectedCellObject}
               langtag={langtag}
-              folderId={selectedCellValues[0].folder}
+              folderId={f.get([0, "folder"], selectedCellValues)}
               value={cellDisplayValues}
             />
           ),
