@@ -19,6 +19,7 @@ import * as TableHistory from "./undo/tableHistory";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import Header from "../overlay/Header";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
+import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -239,6 +240,7 @@ export function toggleCellEditing(params = {}) {
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const selectedRow = rows[rowIndex];
   const selectedCellObject = selectedRow.cells[columnIndex];
+  const selectedCellValues = selectedRow.values[columnIndex];
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
   const cellDisplayValues =
@@ -248,8 +250,23 @@ export function toggleCellEditing(params = {}) {
     switch (selectedCellKind) {
       case ColumnKinds.boolean:
       case ColumnKinds.link:
+        console.warn("boolean link");
+        break;
       case ColumnKinds.attachment:
-        console.warn("boolean link attachement");
+        actions.openOverlay({
+          head: <Header langtag={langtag} />,
+          body: (
+            <AttachmentOverlay
+              cell={selectedCellObject}
+              langtag={langtag}
+              folderId={selectedCellValues[0].folder}
+              value={cellDisplayValues}
+            />
+          ),
+          type: "full-height",
+          preferRight: true,
+          title: selectedCellObject
+        });
         break;
       case ColumnKinds.text:
         if (!isLocked(selectedCellObject)) {
@@ -278,7 +295,7 @@ export function toggleCellEditing(params = {}) {
                 cell={selectedCellObject}
               />
             ),
-            // title: selectedCellObject,
+            title: selectedCellObject,
             type: "full-height"
           });
         }
