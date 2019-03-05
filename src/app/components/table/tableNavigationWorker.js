@@ -15,7 +15,6 @@ import {
   isUserAdmin
 } from "../../helpers/accessManagementHelper";
 import { maybe, doto } from "../../helpers/functools";
-import * as TableHistory from "./undo/tableHistory";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import Header from "../overlay/Header";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
@@ -35,7 +34,7 @@ export function checkFocusInsideTable() {
 }
 
 export function getKeyboardShortcuts() {
-  const { tableView } = this.props;
+  const { actions, tableView } = this.props;
   const { selectedCell } = tableView;
   const selectedCellEditing = tableView.editing;
   const actionKey = f.contains("Mac OS", navigator.userAgent)
@@ -127,6 +126,7 @@ export function getKeyboardShortcuts() {
         selectedCell.kind !== ColumnKinds.concat &&
         !isTextSelected()
       ) {
+        event.preventDefault();
         event.stopPropagation();
         // TODO-W
         // ActionCreator.copyCellContent(selectedCell, langtag);
@@ -147,11 +147,13 @@ export function getKeyboardShortcuts() {
         hasActionKey &&
         (isKeyPressed("z") || isKeyPressed("Z"))
       ) {
+        event.preventDefault();
+        event.stopPropagation();
         // note upper/lower case!
         if (!selectedCellEditing) {
           const undoFn = isKeyPressed("Z")
-            ? TableHistory.redo
-            : TableHistory.undo;
+            ? () => actions.modifyHistory("redo", tableView.currentTable)
+            : () => actions.modifyHistory("undo", tableView.currentTable);
           undoFn();
         }
       } else if (
@@ -160,7 +162,9 @@ export function getKeyboardShortcuts() {
         event.ctrlKey &&
         !selectedCellEditing
       ) {
-        TableHistory.redo();
+        event.preventDefault();
+        event.stopPropagation();
+        actions.modifyHistory("redo", tableView.currentTable);
       } else if (
         !selectedCellEditing && // Other keypress
         (!event.altKey && !event.metaKey && !event.ctrlKey) &&
