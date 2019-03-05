@@ -10,22 +10,8 @@ import "../../../../scss/main.scss";
 import { withHandlers } from "recompose";
 
 const TextCell = props => {
-  const {
-    langtag,
-    displayValue,
-    selected,
-    openEditOverlay,
-    setCellKeyboardShortcuts
-  } = props;
+  const { langtag, displayValue, selected, openEditOverlay } = props;
   const isMultiLine = f.contains("\n", displayValue[langtag]);
-
-  setCellKeyboardShortcuts(() => ({
-    enter: event => {
-      event.stopPropagation();
-      event.preventDevault();
-      openEditOverlay();
-    }
-  }));
 
   return (
     <div

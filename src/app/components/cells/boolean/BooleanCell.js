@@ -3,16 +3,7 @@ import PropTypes from "prop-types";
 import "../../../../scss/main.scss";
 
 const BooleanCell = props => {
-  const {
-    actions,
-    value,
-    table,
-    row,
-    column,
-    langtag,
-    setCellKeyboardShortcuts,
-    selected
-  } = props;
+  const { actions, value, table, row, column, langtag, selected } = props;
 
   const handleEditDone = newValue => {
     const valueToSave = column.isMultiLanguage
@@ -43,12 +34,6 @@ const BooleanCell = props => {
     selected && handleEditDone(!getCheckboxValue());
   };
 
-  setCellKeyboardShortcuts({
-    enter: evt => {
-      toggleCheckboxValue();
-    }
-  });
-
   return (
     <div className={"cell-content"} onClick={toggleCheckboxValue}>
       <input
@@ -64,8 +49,7 @@ const BooleanCell = props => {
 BooleanCell.propTypes = {
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  selected: PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func
+  selected: PropTypes.bool.isRequired
 };
 
 export default BooleanCell;

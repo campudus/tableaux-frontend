@@ -4,27 +4,11 @@ import { openLinkOverlay } from "./LinkOverlay.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import { isLocked } from "../../../helpers/annotationHelper";
 import { isUserAdmin } from "../../../helpers/accessManagementHelper";
-import { compose, lifecycle, withHandlers } from "recompose";
+import { compose, withHandlers } from "recompose";
 import f from "lodash/fp";
 import { spy } from "../../../helpers/functools";
 
 const withOverlayOpener = compose(
-  lifecycle({
-    componentDidMount() {
-      this.props.setCellKeyboardShortcuts({
-        enter: event => {
-          if (!isLocked(this.props.cell.row)) {
-            event.stopPropagation();
-            event.preventDefault();
-            this.props.openOverlay();
-          }
-        }
-      });
-    },
-    componentWillUnmount() {
-      this.props.setCellKeyboardShortcuts({});
-    }
-  }),
   withHandlers({
     catchStrolling: () => event => {
       event && event.stopPropagation();
@@ -89,8 +73,7 @@ const LinkEditCell = props => {
 LinkEditCell.propTypes = {
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  editing: PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func
+  editing: PropTypes.bool.isRequired
 };
 
 export default withOverlayOpener(LinkEditCell);
