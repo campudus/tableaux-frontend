@@ -225,22 +225,24 @@ export function toggleCellEditing(params = {}) {
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions, langtag } = this.props;
-  const { selectedCell, displayValues, currentTable } = tableView;
-  const { columnId, rowId } = selectedCell;
+  const {
+    selectedCell: { columnId, rowId },
+    currentTable
+  } = tableView;
+
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
+
   const selectedColumn = columns[columnIndex];
   const selectedRow = rows[rowIndex];
+
   const selectedCellObject = selectedRow.cells[columnIndex];
   const selectedCellValues = selectedRow.values[columnIndex];
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
-  const cellDisplayValues = f.get(
-    [currentTable, rowIndex, "values", columnIndex],
-    displayValues
-  );
 
   // TODO-W
+  // FIXME
   // session unlock overlay is never shown!!!!!
 
   if (canEdit && selectedCellObject) {
@@ -279,7 +281,7 @@ export function toggleCellEditing(params = {}) {
               cell={selectedCellObject}
               langtag={langtag}
               folderId={f.get([0, "folder"], selectedCellValues)}
-              value={cellDisplayValues}
+              value={selectedCellValues}
             />
           ),
           type: "full-height",
@@ -301,14 +303,14 @@ export function toggleCellEditing(params = {}) {
                 f.first,
                 ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
               )}
-              title={cellDisplayValues[langtag]}
+              title={selectedCellValues}
               langtag={langtag}
             />
           ),
           body: (
             <TextEditOverlay
               actions={actions}
-              value={cellDisplayValues}
+              value={selectedCellValues}
               langtag={langtag}
               cell={selectedCellObject}
             />
