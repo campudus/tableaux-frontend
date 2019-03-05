@@ -9,7 +9,7 @@ import {
 } from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
 import { isLocked } from "../../helpers/annotationHelper";
-// import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {
   getUserLanguageAccess,
   isUserAdmin
@@ -241,9 +241,15 @@ export function toggleCellEditing(params = {}) {
   );
 
   // TODO-W
-  // respect locked rows and ask for session unlock!
+  // session unlock overlay is never shown!!!!!
 
   if (canEdit && selectedCellObject) {
+    // if row is locked unlock it first
+    if (isLocked(selectedRow)) {
+      askForSessionUnlock(selectedRow);
+      return;
+    }
+
     switch (selectedCellKind) {
       case ColumnKinds.boolean:
         actions.changeCellValue({
@@ -278,36 +284,34 @@ export function toggleCellEditing(params = {}) {
         });
         break;
       case ColumnKinds.text:
-        if (!isLocked(selectedCellObject)) {
-          actions.openOverlay({
-            head: (
-              <Header
-                context={doto(
-                  [
-                    table.displayName[langtag],
-                    table.displayName[FallbackLanguage],
-                    table.name
-                  ],
-                  f.compact,
-                  f.first,
-                  ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
-                )}
-                title={cellDisplayValues[langtag]}
-                langtag={langtag}
-              />
-            ),
-            body: (
-              <TextEditOverlay
-                actions={actions}
-                value={cellDisplayValues}
-                langtag={langtag}
-                cell={selectedCellObject}
-              />
-            ),
-            title: selectedCellObject,
-            type: "full-height"
-          });
-        }
+        actions.openOverlay({
+          head: (
+            <Header
+              context={doto(
+                [
+                  table.displayName[langtag],
+                  table.displayName[FallbackLanguage],
+                  table.name
+                ],
+                f.compact,
+                f.first,
+                ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
+              )}
+              title={cellDisplayValues[langtag]}
+              langtag={langtag}
+            />
+          ),
+          body: (
+            <TextEditOverlay
+              actions={actions}
+              value={cellDisplayValues}
+              langtag={langtag}
+              cell={selectedCellObject}
+            />
+          ),
+          title: selectedCellObject,
+          type: "full-height"
+        });
         break;
       default:
         actions.toggleCellEditing({ editing: editVal, row: selectedRow });
