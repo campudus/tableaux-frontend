@@ -142,7 +142,8 @@ class Table extends Component {
       tableView,
       visibleColumns,
       visibleRows,
-      navigate
+      navigate,
+      finishedLoading
     } = this.props;
     const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
@@ -192,7 +193,7 @@ class Table extends Component {
             openCellContextMenu={this.showRowContextMenu}
             closeCellContextMenu={this.hideRowContextMenu}
             navigate={navigate}
-            finishedLoading={this.props.finishedLoading}
+            finishedLoading={finishedLoading}
           />
         </div>
         {this.noRowsInfo()}

@@ -182,7 +182,6 @@ const mkBoolFilter = closures => ({ value, columnId }) => row => {
   const { values } = row;
   return doto(
     values[idx],
-    // cell => {console.log(cell);return cell},
     cell => (cell.isMultiLanguage ? cell.value[closures.langtag] : cell.value),
     boolVal => !!boolVal === value
   );
