@@ -229,7 +229,7 @@ export function toggleCellEditing(params = {}) {
   const { columnId, rowId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  // const selectedColumn = columns[columnIndex];
+  const selectedColumn = columns[columnIndex];
   const selectedRow = rows[rowIndex];
   const selectedCellObject = selectedRow.cells[columnIndex];
   const selectedCellValues = selectedRow.values[columnIndex];
@@ -253,11 +253,15 @@ export function toggleCellEditing(params = {}) {
     switch (selectedCellKind) {
       case ColumnKinds.boolean:
         actions.changeCellValue({
-          cell: selectedCellObject,
+          tableId: currentTable,
+          column: selectedColumn,
+          columnId: columnId,
+          rowId: rowId,
           oldValue: selectedCellValues,
           newValue: selectedCellObject.isMultiLanguage
             ? { [langtag]: !selectedCellValues }
-            : selectedCellValues
+            : !selectedCellValues,
+          kind: ColumnKinds.boolean
         });
         break;
       case ColumnKinds.link:
