@@ -396,9 +396,9 @@ export function setNextSelectedCell(direction) {
 
 // returns the next row and the next language cell when expanded
 export function getNextRowCell(getPrev) {
-  const { expandedRowIds, selectedCellExpandedRow } = this.state;
+  const { selectedCellExpandedRow } = this.state;
   const { tableView, rows, columns } = this.props;
-  const { selectedCell } = tableView;
+  const { selectedCell, expandedRowIds } = tableView;
   const { rowId, langtag, columnId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const selectedColumn = columns[columnIndex];
