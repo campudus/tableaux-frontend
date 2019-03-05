@@ -25,21 +25,11 @@ import { openLinkOverlay } from "../cells/link/LinkOverlay";
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
-  if (this.state.selectedCell !== null) {
+  if (!f.isEmpty(this.props.tableView.selectedCell)) {
     const tableDOMNode = document.getElementById("table-wrapper");
-    let focusedElement = document.activeElement;
-    // happens in IE
-    if (focusedElement === null) {
+
+    if (tableDOMNode) {
       maybe(tableDOMNode).method("focus");
-    } else if (
-      maybe(tableDOMNode)
-        .exec("contains", focusedElement)
-        .map(boolVal => !boolVal)
-        .getOrElse(false)
-    ) {
-      // Is the focus outside the table or is body selected
-      // force table to be focused to get keyboard events
-      tableDOMNode.focus();
     }
   }
 }
@@ -179,7 +169,7 @@ export function getKeyboardShortcuts() {
           selectedCell.kind === ColumnKinds.richtext ||
           selectedCell.kind === ColumnKinds.numeric)
       ) {
-        toggleCellEditing.call(this, { event });
+        toggleCellEditing.call(this);
       }
     }
   };
@@ -230,7 +220,7 @@ export function toggleCellSelection({ cell, langtag }) {
 }
 
 export function toggleCellEditing(params = {}) {
-  // TODO-W
+  // TODO-W cleanup code
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
@@ -250,11 +240,12 @@ export function toggleCellEditing(params = {}) {
     displayValues
   );
 
+  // TODO-W
+  // respect locked rows and ask for session unlock!
+
   if (canEdit && selectedCellObject) {
-    console.log("editCell", selectedCellValues);
     switch (selectedCellKind) {
       case ColumnKinds.boolean:
-        // TODO-W
         actions.changeCellValue({
           cell: selectedCellObject,
           oldValue: selectedCellValues,
