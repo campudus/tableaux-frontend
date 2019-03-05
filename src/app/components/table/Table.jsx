@@ -46,8 +46,9 @@ class Table extends Component {
 
     // validate given column- and rowId of selected cell
     const { actions, columns, rows, table, tableView } = this.props;
-    const { selectedCell } = tableView;
-    const { columnId, rowId, langtag } = selectedCell;
+    const {
+      selectedCell: { columnId, rowId, langtag }
+    } = tableView;
 
     if (columnId || rowId) {
       const isValidColumnId =

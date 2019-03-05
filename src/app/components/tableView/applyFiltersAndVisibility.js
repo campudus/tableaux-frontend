@@ -1,6 +1,6 @@
 import React from "react";
 import { compose, withPropsOnChange } from "recompose";
-import getFilteredRows from "../table/RowFilters";
+import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 import f from "lodash/fp";
 
 import { mapIndexed } from "../../helpers/functools";
@@ -31,12 +31,9 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         )
       );
 
-    filterRows = (visibleIndices, rows) => visibleIndices.map(idx => rows[idx]);
-
     render() {
       const {
         tables, // all tables
-        visibleRows, // array of visible rows' indices
         rows, // all rows with cell values
         columns, // all columns without visibility information
         allDisplayValues,
@@ -51,7 +48,8 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
       if (
         f.every(f.negate(f.isEmpty), [rows, columns]) &&
         f.isEmpty(allDisplayValues[table.id]) &&
-        !startedGeneratingDisplayValues && finishedLoading
+        !startedGeneratingDisplayValues &&
+        finishedLoading
       ) {
         const { generateDisplayValues } = actions;
         generateDisplayValues(rows, columns, table.id, langtag);
@@ -75,8 +73,8 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
                 f.map("id"),
                 f.join(";")
               )(columnsWithVisibility),
-              rows: f.map(rowIndex => rows[rowIndex], visibleRows),
-              visibleRows,
+              rows: f.map(rowIndex => rows[rowIndex], this.props.visibleRows),
+              visibleRows: this.props.visibleRows,
               canRenderTable
             }}
           />
@@ -89,19 +87,15 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
 };
 
 const tableOrFiltersChanged = (props, nextProps) => {
-  const { tableId } = props;
-  const displayValuesOf = f.prop(["allDisplayValues", tableId]);
+  if (!props || !nextProps) {
+    return false;
+  }
   return (
     f.size(props.rows) !== f.size(nextProps.rows) || // rows got initialized
-    (f.isEmpty(displayValuesOf(props)) &&
-      !f.isEmpty(displayValuesOf(nextProps))) || // displayValues got initialized
-    !f.isEqual(
-      props.sorting,
-      nextProps.sorting &&
-        !f.isEqual(props.filters, nextProps.filters) &&
-        !f.isEmpty(displayValuesOf(nextProps)) &&
-        !f.isEmpty(nextProps.rows)
-    )
+    (f.isEmpty(props.displayValues) &&
+      !f.isEmpty(nextProps.displayValues)) || // displayValues got initialized
+    !f.isEqual(props.sorting, nextProps.sorting) ||
+    !f.isEqual(props.filters, nextProps.filters)
   );
 };
 
@@ -125,15 +119,20 @@ const filterRows = props => {
   }
   const isFilterEmpty = filter =>
     f.isEmpty(filter.value) && !f.isString(filter.mode);
-  const unfilteredRows = rows.map(f.identity);
   const rowsFilter = {
     sortColumnId: sorting.columnId,
     sortValue: sorting.value,
     filters: f.reject(isFilterEmpty, filters)
   };
+  const rowsWithIndex = completeRowInformation(
+    columns,
+    table,
+    rows,
+    allDisplayValues
+  );
   const { visibleRows, colsWithMatches } = getFilteredRows(
     table,
-    unfilteredRows,
+    rowsWithIndex,
     columns,
     langtag,
     rowsFilter
@@ -141,7 +140,6 @@ const filterRows = props => {
   if (!f.isEmpty(colsWithMatches)) {
     setColumnsVisible(colsWithMatches);
   }
-
   return { visibleRows, filtering: false };
 };
 

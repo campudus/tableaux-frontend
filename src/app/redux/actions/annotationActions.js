@@ -194,7 +194,7 @@ export const setRowFlag = action => dispatch => {
         table,
         row,
         flagName,
-        flagValue
+        flagValue,
         onError,
         onSuccess
       })
