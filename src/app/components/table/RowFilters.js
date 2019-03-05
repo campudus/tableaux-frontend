@@ -7,7 +7,6 @@ import {
 } from "../../constants/TableauxConstants";
 import { doto, either, withTryCatch } from "../../helpers/functools";
 import searchFunctions from "../../helpers/searchFunctions";
-import store from "../../redux/store";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -42,12 +41,11 @@ const rememberColumnIds = colSet => f.tap(val => colSet.add(val.column.id));
 
 const getFilteredRows = (
   currentTable,
-  rows,
+  rowsWithIndex,
   columns,
   langtag,
   filterSettings
 ) => {
-  const rowsWithIndex = completeRowInformation(columns, currentTable, rows);
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
@@ -122,43 +120,6 @@ const getFilteredRows = (
     visibleRows: f.map("rowIndex", ordered),
     colsWithMatches: f.toArray(closures.colsWithMatches)
   };
-};
-
-const completeRowInformation = (columns, table, rows) => {
-  const state = store.getState();
-  const tableDisplayValues = f.prop(
-    ["tableView", "displayValues", table.id],
-    state
-  );
-
-  // generate and reuse one getter per table
-  const getLinkDisplayValue = f.memoize(tableId =>
-    // memoize every link during this filter
-    f.memoize(linkId => {
-      const dv = doto(
-        state,
-        f.prop(["tableView", "displayValues", tableId]),
-        f.find(f.propEq("id", linkId)),
-        f.prop(["values", 0])
-      );
-      return dv;
-    })
-  );
-
-  return rows.map(({ id, cells, values, annotations }, rowIndex) => ({
-    rowIndex,
-    id,
-    annotations,
-    values: cells.map((cell, colIndex) => ({
-      ...cell,
-      displayValue:
-        cell.kind === ColumnKinds.link
-          ? values[colIndex].map(link =>
-              getLinkDisplayValue(columns[colIndex].toTable)(link.id)
-            )
-          : tableDisplayValues[rowIndex].values[colIndex]
-    }))
-  }));
 };
 
 const mkFilterFn = closures => settings => {
@@ -239,7 +200,7 @@ const mkTranslatorFilter = closures => () => row => {
 };
 
 const mkFinalFilter = () => ({ value }) => {
-  return f.matchesProperty("final", value);
+  return cellValue => f.eq(!!cellValue.final, value);
 };
 
 const mkIDFilter = () => ({ value }) => {
@@ -424,5 +385,39 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     langtag
   };
 };
+const completeRowInformation = (columns, table, rows, allDisplayValues) => {
+  const tableDisplayValues = allDisplayValues[table.id];
+  // generate and reuse one getter per table
+  const getLinkDisplayValue = f.memoize(tableId =>
+    // memoize every link during this filter
+    f.memoize(linkId => {
+      const dv = doto(
+        allDisplayValues,
+        f.prop(["displayValues", tableId]),
+        f.find(f.propEq("id", linkId)),
+        f.prop(["values", 0])
+      );
+      return dv;
+    })
+  );
+
+  return rows.map(({ id, cells, values, annotations, final }, rowIndex) => ({
+    rowIndex,
+    id,
+    annotations,
+    final,
+    values: cells.map((cell, colIndex) => ({
+      ...cell,
+      displayValue:
+        cell.kind === ColumnKinds.link
+          ? values[colIndex].map(link =>
+              getLinkDisplayValue(columns[colIndex].toTable)(link.id)
+            )
+          : tableDisplayValues[rowIndex].values[colIndex],
+      value: values[colIndex]
+    }))
+  }));
+};
 
 export default getFilteredRows;
+export { completeRowInformation };

@@ -39,13 +39,12 @@ const mapStatetoProps = (state, props) => {
   const tableView = f.get("tableView", state);
   const {
     startedGeneratingDisplayValues,
-    visibleRows,
     visibleColumns,
     filters,
     sorting,
     searchOverlayOpen
   } = tableView;
-  const allDisplayValues = f.get(["displayValues"], tableView);
+  const allDisplayValues = f.get(["tableView", "displayValues"], state);
 
   if (table) {
     TableauxConstants.initLangtags(table.langtags);
@@ -59,7 +58,6 @@ const mapStatetoProps = (state, props) => {
     displayValues: f.defaultTo([], f.prop(tableId, allDisplayValues)),
     allDisplayValues,
     tableView,
-    visibleRows,
     visibleColumns,
     filters,
     sorting,
@@ -121,7 +119,8 @@ class TableView extends PureComponent {
       tableView,
       visibleColumns,
       visibleRows,
-      navigate
+      navigate,
+      finishedLoading
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -155,6 +154,7 @@ class TableView extends PureComponent {
             columns={columns}
             tables={tables}
             navigate={navigate}
+            finishedLoading={finishedLoading}
           />
         </div>
       );
