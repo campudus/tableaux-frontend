@@ -477,7 +477,7 @@ export default class VirtualTable extends PureComponent {
     // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
-    if (!f.isEmpty(this.state.scrolledCell)) {
+    if (!f.isEmpty(this.state.scrolledCell) && this.props.finishedLoading) {
       // release after table was rendered once for real
       requestAnimationFrame(() =>
         this.setState({

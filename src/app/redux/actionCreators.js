@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import React from "react";
 
 import { Langtags } from "../constants/TableauxConstants";
 import {
@@ -24,6 +25,8 @@ import { overlayParamsSpec } from "./reducers/overlays";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import TableauxRouter from "../router/router";
+import i18n from "i18next";
 
 const {
   getAllTables,
@@ -140,7 +143,7 @@ const addRows = (tableId, rows) => {
   };
 };
 
-const loadAllRows = tableId => dispatch => {
+const loadAllRows = tableId => (dispatch, getState) => {
   const buildParams = (allRows, rowsPerRequest) => {
     if (allRows <= rowsPerRequest) {
       return [{ offset: 30, limit: allRows }];
@@ -170,6 +173,65 @@ const loadAllRows = tableId => dispatch => {
     const params = buildParams(totalSize, 500);
     var resultLength = rows.length;
     var index = 0;
+
+    const validateSelectedCell = () => {
+      const state = getState();
+      const [selectedCell, rows, columns, table, visibleColumns] = f.props(
+        [
+          ["tableView", "selectedCell"],
+          ["rows", tableId, "data"],
+          ["columns", tableId, "data"],
+          ["tables", tableId],
+          ["tableView", "visibleColumns"]
+        ],
+        state
+      );
+      const { rowId, columnId, langtag } = selectedCell;
+      if (!rowId && !columnId) {
+        return;
+      }
+      const containsId = id =>
+        f.flow(
+          f.map("id"),
+          f.includes(id),
+          exists => (exists ? id : false)
+        );
+      const validRowId = containsId(rowId)(rows) || f.get("id", f.first(rows));
+      const validColumnId = containsId(columnId)(columns) || 1;
+      f.includes(validColumnId, visibleColumns)
+        ? null
+        : dispatch(
+            setColumnsVisible(f.concat(visibleColumns, [validColumnId]))
+          );
+      if (!f.eq(validRowId, rowId) || !f.eq(validColumnId, columnId)) {
+        dispatch(
+          showToast({
+            content: (
+              <div id="cell-jump-toast">
+                {!f.eq(validRowId, rowId)
+                  ? i18n.t("table:jump.no_such_row", { row: rowId })
+                  : i18n.t("table:jump.no_such_column", { col: columnId })}
+              </div>
+            )
+          })
+        );
+        dispatch(
+          dispatchParamsFor(TOGGLE_CELL_SELECTION)({
+            tableId: table.id,
+            columnId: validColumnId,
+            rowId: validRowId,
+            langtag
+          })
+        );
+        TableauxRouter.selectCellHandler(
+          table.id,
+          validRowId,
+          validColumnId,
+          langtag
+        );
+      }
+    };
+
     const recReq = () => {
       if (index >= params.length) {
         return;
@@ -185,6 +247,7 @@ const loadAllRows = tableId => dispatch => {
         dispatch(addRows(tableId, result.rows));
         if (resultLength >= totalSize) {
           dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
+          validateSelectedCell();
           return;
         }
         recReq();

@@ -41,7 +41,8 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         startedGeneratingDisplayValues,
         table,
         langtag,
-        finishedLoading
+        finishedLoading,
+        tableView: { selectedCell }
       } = this.props;
 
       // Start displayValue worker if neccessary
@@ -61,6 +62,9 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         columns
       ]);
 
+      const showCellJumpOverlay =
+        !finishedLoading && (!!selectedCell.rowId || !!selectedCell.columnId);
+
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
         return (
@@ -75,12 +79,17 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
               )(columnsWithVisibility),
               rows: f.map(rowIndex => rows[rowIndex], this.props.visibleRows),
               visibleRows: this.props.visibleRows,
-              canRenderTable
+              canRenderTable,
+              showCellJumpOverlay
             }}
           />
         );
       } else {
-        return <ComposedComponent {...{ ...this.props, canRenderTable }} />;
+        return (
+          <ComposedComponent
+            {...{ ...this.props, canRenderTable, showCellJumpOverlay }}
+          />
+        );
       }
     }
   };
@@ -92,8 +101,7 @@ const tableOrFiltersChanged = (props, nextProps) => {
   }
   return (
     f.size(props.rows) !== f.size(nextProps.rows) || // rows got initialized
-    (f.isEmpty(props.displayValues) &&
-      !f.isEmpty(nextProps.displayValues)) || // displayValues got initialized
+    (f.isEmpty(props.displayValues) && !f.isEmpty(nextProps.displayValues)) || // displayValues got initialized
     !f.isEqual(props.sorting, nextProps.sorting) ||
     !f.isEqual(props.filters, nextProps.filters)
   );
