@@ -303,7 +303,7 @@ export function toggleCellEditing(params = {}) {
                 f.first,
                 ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
               )}
-              title={selectedCellValues}
+              title={selectedCellValues[langtag]}
               langtag={langtag}
             />
           ),
