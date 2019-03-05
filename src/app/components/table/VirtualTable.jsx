@@ -29,8 +29,7 @@ export default class VirtualTable extends PureComponent {
     this.updateSelectedCell();
     this.state = {
       openAnnotations: {},
-      scrolledCell: {},
-      lastScrolledCell: null
+      scrolledCell: {}
     };
   }
 
@@ -413,9 +412,9 @@ export default class VirtualTable extends PureComponent {
     if (
       f.contains("selectedCell", newPropKeys) &&
       !changeInRowSelection &&
-      next.scrolledCell !== this.state.lastScrolledCell
+      next.tableView.selectedCell !== this.state.lastScrolledCell
     ) {
-      this.scrollToCell(next.selectedCell, next.selectedCellExpandedRow);
+      this.scrollToCell(next.tableView.selectedCell, next.selectedCellExpandedRow);
     } else if (changeInRowSelection) {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
@@ -441,7 +440,7 @@ export default class VirtualTable extends PureComponent {
     this.updateSelectedCell(cell, langtag);
     const { scrolledCell, lastScrolledCell } = this.state;
 
-    if (f.isEmpty(cell) || scrolledCell.cell === lastScrolledCell) {
+    if (f.isEmpty(cell)) {
       // when called by cell deselection
       this.setState({
         scrolledCell: {},
@@ -507,11 +506,7 @@ export default class VirtualTable extends PureComponent {
       langtag
     } = this.props;
     const { openAnnotations, scrolledCell, lastScrolledCell } = this.state;
-    const { columnIndex, rowIndex } =
-      !f.isEmpty(scrolledCell) && scrolledCell.scrolledCell !== lastScrolledCell
-        ? scrolledCell
-        : {};
-
+    const { columnIndex, rowIndex } = scrolledCell
     this.visibleColumnIndices = f
       .range(0, columns.length)
       .filter(this.filterVisibleCells);
