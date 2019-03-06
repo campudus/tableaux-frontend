@@ -19,6 +19,10 @@ import Header from "../overlay/Header";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
+import pasteCellValue from "../cells/cellCopyHelper";
+
+// TODO-W
+// move "this" to virtual table so this.getCell can be used!
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -107,7 +111,7 @@ export function getKeyboardShortcuts() {
             (f.matchesProperty("key", f.toLower(k))(event) &&
               f.get("shiftKey", event))
           : f.matchesProperty("key", k)(event);
-      // const thisLangtag = this.props.langtag;
+
       const systemPaste =
         selectedCellEditing &&
         f.contains(selectedCell.kind, [
@@ -116,23 +120,20 @@ export function getKeyboardShortcuts() {
           ColumnKinds.shorttext,
           ColumnKinds.numeric
         ]);
-      // const langtag = this.state.selectedCellExpandedRow || thisLangtag;
 
       if (
         hasActionKey &&
-        isKeyPressed("c") && // Cell copy
+        isKeyPressed("c") &&
         selectedCell.kind !== ColumnKinds.concat &&
         !isTextSelected()
       ) {
+        // Cell copy
         event.preventDefault();
         event.stopPropagation();
-        console.warn("cell copy", actions);
-        // actions.copyCellValue({});
-        // TODO-W
-        // ActionCreator.copyCellContent(selectedCell, langtag);
+        copySelectedCell.call(this);
       } else if (
-        !f.isEmpty(this.props.pasteOriginCell) &&
-        !f.eq(this.props.pasteOriginCell, selectedCell) &&
+        !f.isEmpty(this.props.tableView.copySource) &&
+        !f.eq(this.props.tableView.copySource, selectedCell) &&
         hasActionKey &&
         isKeyPressed("v") &&
         !systemPaste
@@ -140,9 +141,7 @@ export function getKeyboardShortcuts() {
         // Cell paste
         event.preventDefault();
         event.stopPropagation();
-        console.warn("cell paste", actions);
-        // TODO-W
-        // ActionCreator.pasteCellContent(selectedCell, langtag);
+        pasteSelectedCell.call(this);
       } else if (
         KEYBOARD_TABLE_HISTORY &&
         hasActionKey &&
@@ -224,8 +223,9 @@ export function toggleCellSelection({ cell, langtag }) {
   }
 }
 
+// TODO-W
+// this.getCell
 export function toggleCellEditing(params = {}) {
-  // TODO-W cleanup code
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
@@ -245,10 +245,6 @@ export function toggleCellEditing(params = {}) {
   const selectedCellValues = selectedRow.values[columnIndex];
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
-
-  // TODO-W
-  // FIXME
-  // session unlock overlay is never shown!!!!!
 
   if (canEdit && selectedCellObject) {
     actions.toggleCellEditing({ editing: editVal, row: selectedRow });
@@ -521,4 +517,56 @@ export function preventSleepingOnTheKeyboard(cb) {
     }, 100);
     cb();
   }
+}
+
+// TODO-W
+// this.getCell
+function copySelectedCell() {
+  const {
+    actions,
+    rows,
+    columns,
+    tableView: {
+      selectedCell: { columnId, rowId, langtag }
+    }
+  } = this.props;
+
+  const rowIndex = f.findIndex(row => row.id === rowId, rows);
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const selectedRow = rows[rowIndex];
+  const selectedCellObject = selectedRow.cells[columnIndex];
+  const selectedValue = selectedRow.values[columnIndex];
+
+  actions.copyCellValue({
+    cell: {
+      ...selectedCellObject,
+      value: selectedValue
+    },
+    langtag
+  });
+}
+
+// TODO-W
+// this.getCell
+function pasteSelectedCell() {
+  const {
+    rows,
+    columns,
+    tableView: {
+      selectedCell: { columnId, rowId, langtag },
+      copySource
+    }
+  } = this.props;
+
+  const rowIndex = f.findIndex(row => row.id === rowId, rows);
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const selectedRow = rows[rowIndex];
+  const selectedCellObject = selectedRow.cells[columnIndex];
+
+  pasteCellValue(
+    copySource.cell,
+    copySource.langtag,
+    selectedCellObject,
+    langtag
+  );
 }
