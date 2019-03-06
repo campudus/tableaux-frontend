@@ -20,7 +20,7 @@ import { openInNewTab } from "../../../helpers/apiUrl";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import LinkItem from "./LinkItem";
 import LinkOverlayHeader from "./LinkOverlayHeader";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 import {
   LinkedRows,
   LinkStatus,
@@ -203,7 +203,7 @@ class LinkOverlay extends PureComponent {
           {i18n.t("table:cardinality-reached", { maxLinks })}
         </div>
       );
-      Raven.captureMessage("Tried to add link with wrong cardinality", {
+      Sentry.captureMessage("Tried to add link with wrong cardinality", {
         level: "warning"
       });
       return;

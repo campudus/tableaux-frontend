@@ -15,7 +15,7 @@ import store from "../redux/store";
 // function annotationError(heading, error) {
 //   const { message } = error;
 //   console.error(heading, "\n->", message);
-//   Raven.captureException(error);
+//   Sentry.captureException(error);
 //   showDialog({
 //     type: "warning",
 //     context: i18n.t("common:error"),

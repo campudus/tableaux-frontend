@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import i18n from "i18next";
 import { compose, pure, withProps, withStateHandlers } from "recompose";
 import f from "lodash/fp";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 
 const enhance = compose(
   pure,
@@ -20,7 +20,7 @@ const enhance = compose(
     }),
     handleSubmit: ({ feedback }) => () => {
       if (!f.isEmpty(feedback)) {
-        Raven.captureMessage(feedback, {
+        Sentry.captureMessage(feedback, {
           level: "info",
           tags: { type: "support-feedback" }
         });

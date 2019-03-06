@@ -8,7 +8,7 @@ import Footer from "./Footer";
 import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import { maybe } from "../../helpers/functools";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 import { when } from "../../helpers/functools";
 import { isCell } from "../../specs/cell-spec";
 
@@ -262,7 +262,7 @@ const showDialog = ({
   reduxActions = {}
 }) => {
   const wrapActionFn = fn => event => {
-    Raven.captureBreadcrumb({
+    Sentry.captureBreadcrumb({
       message: "Keyboard dialog close: " + f.get("key", event)
     });
     if (f.isFunction(fn)) {

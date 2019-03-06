@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 
 class Footer extends Component {
   static propTypes = {
@@ -11,7 +11,7 @@ class Footer extends Component {
   };
 
   wrapButtonFn = (value, fn) => (...args) => {
-    Raven.captureBreadcrumb({ message: "Footer button: " + value });
+    Sentry.captureBreadcrumb({ message: "Footer button: " + value });
     if (f.isFunction(fn)) {
       fn(...args);
     }
