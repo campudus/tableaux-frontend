@@ -37,6 +37,7 @@ switch (process.env.NODE_ENV) {
   default:
     console.log("NODE_ENV:", process.env.NODE_ENV);
 }
+console.log("Build id:", process.env.BUILD_ID);
 
 console.log("using config:", config);
 
