@@ -9,7 +9,6 @@ import {
 } from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
 import { isLocked } from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import {
   getUserLanguageAccess,
   isUserAdmin
@@ -80,8 +79,7 @@ export function getKeyboardShortcuts() {
       preventSleepingOnTheKeyboard.call(this, () => {
         if (selectedCell && !selectedCellEditing) {
           toggleCellEditing.call(this, {
-            langtag:
-              this.props.tableView.selectedCell.langtag || this.props.langtag,
+            langtag: selectedCell.langtag || this.props.langtag,
             event
           });
         }
@@ -128,6 +126,8 @@ export function getKeyboardShortcuts() {
       ) {
         event.preventDefault();
         event.stopPropagation();
+        console.warn("cell copy", actions);
+        // actions.copyCellValue({});
         // TODO-W
         // ActionCreator.copyCellContent(selectedCell, langtag);
       } else if (
@@ -140,6 +140,7 @@ export function getKeyboardShortcuts() {
         // Cell paste
         event.preventDefault();
         event.stopPropagation();
+        console.warn("cell paste", actions);
         // TODO-W
         // ActionCreator.pasteCellContent(selectedCell, langtag);
       } else if (
@@ -250,81 +251,78 @@ export function toggleCellEditing(params = {}) {
   // session unlock overlay is never shown!!!!!
 
   if (canEdit && selectedCellObject) {
-    // if row is locked unlock it first
-    if (isLocked(selectedRow)) {
-      askForSessionUnlock(selectedRow);
-      return;
-    }
+    actions.toggleCellEditing({ editing: editVal, row: selectedRow });
 
-    switch (selectedCellKind) {
-      case ColumnKinds.boolean:
-        actions.changeCellValue({
-          tableId: currentTable,
-          column: selectedColumn,
-          columnId: columnId,
-          rowId: rowId,
-          oldValue: selectedCellValues,
-          newValue: selectedCellObject.isMultiLanguage
-            ? { [langtag]: !selectedCellValues }
-            : !selectedCellValues,
-          kind: ColumnKinds.boolean
-        });
-        break;
-      case ColumnKinds.link:
-        openLinkOverlay({
-          cell: selectedCellObject,
-          langtag: langtag,
-          actions: actions
-        });
-        break;
-      case ColumnKinds.attachment:
-        actions.openOverlay({
-          head: <Header langtag={langtag} />,
-          body: (
-            <AttachmentOverlay
-              cell={selectedCellObject}
-              langtag={langtag}
-              folderId={f.get([0, "folder"], selectedCellValues)}
-              value={selectedCellValues}
-            />
-          ),
-          type: "full-height",
-          preferRight: true,
-          title: selectedCellObject
-        });
-        break;
-      case ColumnKinds.text:
-        actions.openOverlay({
-          head: (
-            <Header
-              context={doto(
-                [
-                  table.displayName[langtag],
-                  table.displayName[FallbackLanguage],
-                  table.name
-                ],
-                f.compact,
-                f.first,
-                ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
-              )}
-              title={selectedCellValues[langtag]}
-              langtag={langtag}
-            />
-          ),
-          body: (
-            <TextEditOverlay
-              actions={actions}
-              value={selectedCellValues}
-              langtag={langtag}
-              cell={selectedCellObject}
-            />
-          ),
-          title: selectedCellObject,
-          type: "full-height"
-        });
-        break;
-      default:
-        actions.toggleCellEditing({ editing: editVal, row: selectedRow });
+    if (!isLocked(selectedRow)) {
+      switch (selectedCellKind) {
+        case ColumnKinds.boolean:
+          actions.changeCellValue({
+            tableId: currentTable,
+            column: selectedColumn,
+            columnId: columnId,
+            rowId: rowId,
+            oldValue: selectedCellValues,
+            newValue: selectedCellObject.isMultiLanguage
+              ? { [langtag]: !selectedCellValues }
+              : !selectedCellValues,
+            kind: ColumnKinds.boolean
+          });
+          break;
+        case ColumnKinds.link:
+          openLinkOverlay({
+            cell: selectedCellObject,
+            langtag: langtag,
+            actions: actions
+          });
+          break;
+        case ColumnKinds.attachment:
+          actions.openOverlay({
+            head: <Header langtag={langtag} />,
+            body: (
+              <AttachmentOverlay
+                cell={selectedCellObject}
+                langtag={langtag}
+                folderId={f.get([0, "folder"], selectedCellValues)}
+                value={selectedCellValues}
+              />
+            ),
+            type: "full-height",
+            preferRight: true,
+            title: selectedCellObject
+          });
+          break;
+        case ColumnKinds.text:
+        case ColumnKinds.richtext:
+          actions.openOverlay({
+            head: (
+              <Header
+                context={doto(
+                  [
+                    table.displayName[langtag],
+                    table.displayName[FallbackLanguage],
+                    table.name
+                  ],
+                  f.compact,
+                  f.first,
+                  ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
+                )}
+                title={selectedCellValues[langtag]}
+                langtag={langtag}
+              />
+            ),
+            body: (
+              <TextEditOverlay
+                actions={actions}
+                value={selectedCellValues}
+                langtag={langtag}
+                cell={selectedCellObject}
+              />
+            ),
+            title: selectedCellObject,
+            type: "full-height"
+          });
+          break;
+      }
     }
   }
 }
