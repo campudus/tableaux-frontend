@@ -1,8 +1,6 @@
 # Tableaux Frontend [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f0d9aa2ca53f415f91d355ed713ae405)](https://www.codacy.com/app/Campudus/tableaux-frontend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=campudus/tableaux-frontend&amp;utm_campaign=Badge_Grade)
 
-Tableaux (pronounced /ta.blo/) is a restful service for storing data
-in tables. This project contains an generic React-based HTML5 client
-for the [tableaux backend](https://github.com/campudus/tableaux).
+Tableaux (pronounced /ta.blo/) is a restful service for storing data in tables. This project contains a generic React-based HTML5 client for the [tableaux backend](https://github.com/campudus/tableaux).
 
 ## Project setup
 Go to project directory and execute:
@@ -14,9 +12,7 @@ Go to project directory and execute:
 
     npm run dev
 
-The redux store can hold a lot of data, which can slow down redux
-devtools severely. So when you have redux devtools installed and run
-into trouble while developing in large tables, you can try running
+The redux store can hold a lot of data, which can slow down redux devtools severely. So when you have redux devtools installed and run into trouble while developing in large tables, you can try running
 with
 
     REDUX_DEVTOOLS=false npm run dev
@@ -31,8 +27,7 @@ or
     npm run start
 
 ## Project configuration
-Default project configuration can be overwritten via a `config.json`
-in the base directory or via environment variables.
+Default project configuration can be overwritten via a `config.json` in the base directory or via environment variables.
 
 **Example for config.json**
 
