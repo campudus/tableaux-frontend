@@ -218,8 +218,6 @@ export function toggleCellSelection({ cell, langtag }) {
   }
 }
 
-// TODO-W
-// this.getCell
 export function toggleCellEditing(params = {}) {
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
@@ -233,13 +231,11 @@ export function toggleCellEditing(params = {}) {
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
 
-  console.log("toggleCellEditing", this.getCell(rowIndex, columnIndex));
-
   const selectedColumn = columns[columnIndex];
   const selectedRow = rows[rowIndex];
 
-  const selectedCellObject = selectedRow.cells[columnIndex];
-  const selectedCellValues = selectedRow.values[columnIndex];
+  const selectedCellObject = this.getCell(rowIndex, columnIndex);
+  const selectedCellValues = selectedCellObject.displayValue;
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
 
@@ -248,7 +244,7 @@ export function toggleCellEditing(params = {}) {
 
     if (!isLocked(selectedRow)) {
       switch (selectedCellKind) {
-        case ColumnKinds.boolean:
+        case ColumnKinds.boolean: // TODO-W stopped working!
           actions.changeCellValue({
             tableId: currentTable,
             column: selectedColumn,
@@ -306,7 +302,7 @@ export function toggleCellEditing(params = {}) {
             body: (
               <TextEditOverlay
                 actions={actions}
-                value={selectedCellValues}
+                value={selectedCellValues[langtag]}
                 langtag={langtag}
                 cell={selectedCellObject}
               />
