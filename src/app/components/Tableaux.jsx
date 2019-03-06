@@ -4,7 +4,7 @@ import ViewRenderer from "./ViewRenderer.jsx";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
 import f from "lodash/fp";
-import resources from "i18next-resource-store-loader!../../locales/index";
+import resources from "../../locales/index";
 import Overlays from "./overlay/Overlays";
 
 export default class Tableaux extends PureComponent {

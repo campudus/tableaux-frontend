@@ -1,36 +1,16 @@
 {
   "presets": [
-    [
-      "env", {
-      "targets": {
-        "browsers": [
-          "last 2 versions",
-          "IE >= 11"
-        ]
-      },
-      "useBuiltIns": "entry"
-    }
-    ],
-    "babel-preset-es2015",
-    "flow",
-    "react",
-    "stage-0"
+      ["@babel/preset-env",
+       {
+           "targets": [
+               "IE >= 11"
+           ]
+       }],
+    "@babel/preset-react"
   ],
-  "plugins": [
-  /* "transform-es2015-arrow-functions", */
-    "transform-decorators-legacy",
-    "transform-object-rest-spread",
-    "transform-class-properties",
-    "syntax-dynamic-import",
-    "react-hot-loader/babel",
-    "transform-runtime"
-  ],
-  "retainLines": true,
-  "env": {
-    "test": {
-      "plugins": [
-        "istanbul"
-      ]
-    }
-  }
+    "plugins": [
+      "@babel/plugin-proposal-function-bind",
+      ["@babel/plugin-proposal-decorators", { "legacy": true }],
+      ["@babel/plugin-proposal-class-properties", { "loose": true }]
+  ]
 }

@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 import f from "lodash/fp";
-import TableView from "../components/tableView/TableView";
 import Spinner from "../components/header/Spinner";
 import reduxActionHoc from "../helpers/reduxActionHoc";
-import i18n from "i18next";
-import { I18nextProvider } from "react-i18next";
-import resources from "i18next-resource-store-loader!../../locales/index";
 import TableauxConstants from "../constants/TableauxConstants";
 import Tableaux from "../components/Tableaux";
 
@@ -27,7 +23,7 @@ class TableContainer extends Component {
     super(props);
   }
   render() {
-    const { table, columns, rows, initialParams } = this.props;
+    const { actions, table, columns, rows } = this.props;
     console.log(this.props);
     if (f.isEmpty(table) || f.isEmpty(rows) || f.isEmpty(columns)) {
       // return <div>waiting</div>

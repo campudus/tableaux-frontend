@@ -1,8 +1,10 @@
 //@import "compass";
-@import "compass/css3",
-"compass/reset",
+@import
+"../../node_modules/compass-mixins/lib/compass/css3",
+"../../node_modules/compass-mixins/lib/compass/reset",
+// breaks as the bundler says "can not be found"; therefore import it in index.js
+// "../../node_modules/react-select/dist/react-select.css",
 "fontAwesome/font-awesome",
-"../../node_modules/react-select/dist/react-select.css",
 "helper",
 "variables",
 "reactSwitcher",

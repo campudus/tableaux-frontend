@@ -354,7 +354,7 @@ export default (state = initialState, action, completeState) => {
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,
-        worker: new Worker("/worker.bundle.js")
+        worker: new Worker("/worker.js")
       };
     case ALL_ROWS_DATA_LOADED: {
       const { currentTable } = state.currentTable;

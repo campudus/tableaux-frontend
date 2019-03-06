@@ -207,7 +207,7 @@ const extendedRouter = Router.extend({
   }
 });
 
-const TableauxRouter = new extendedRouter();
-TableauxRouter.history.start();
+const GRUDRouter = new extendedRouter();
+GRUDRouter.history.start();
 
-export default TableauxRouter;
+export default GRUDRouter;
