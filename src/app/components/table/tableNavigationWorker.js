@@ -233,6 +233,8 @@ export function toggleCellEditing(params = {}) {
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
 
+  console.log("toggleCellEditing", this.getCell(rowIndex, columnIndex));
+
   const selectedColumn = columns[columnIndex];
   const selectedRow = rows[rowIndex];
 
@@ -337,7 +339,8 @@ export function setNextSelectedCell(direction) {
     selectedCellExpandedRow: langtag
   };
 
-  let newSelectedCellExpandedRow; // Either row or column switch changes the selected language
+  // Either row or column switch changes the selected language
+  let newSelectedCellExpandedRow;
 
   switch (direction) {
     case Directions.LEFT:
@@ -380,8 +383,7 @@ export function setNextSelectedCell(direction) {
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
         cell: nextCell,
-        langtag: newSelectedCellExpandedRow // langtag
-        // TODO-W we should not change langtag or else everthing is in cell-language after refresh
+        langtag: newSelectedCellExpandedRow
       });
     }
   }
@@ -512,8 +514,6 @@ export function preventSleepingOnTheKeyboard(cb) {
   }
 }
 
-// TODO-W
-// this.getCell
 function copySelectedCell() {
   const {
     actions,
@@ -526,21 +526,15 @@ function copySelectedCell() {
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
-  const selectedRow = rows[rowIndex];
-  const selectedCellObject = selectedRow.cells[columnIndex];
-  const selectedValue = selectedRow.values[columnIndex];
+
+  const cell = this.getCell(rowIndex, columnIndex);
 
   actions.copyCellValue({
-    cell: {
-      ...selectedCellObject,
-      value: selectedValue
-    },
+    cell,
     langtag
   });
 }
 
-// TODO-W
-// this.getCell
 function pasteSelectedCell() {
   const {
     rows,
@@ -553,8 +547,8 @@ function pasteSelectedCell() {
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
-  const selectedRow = rows[rowIndex];
-  const selectedCellObject = selectedRow.cells[columnIndex];
+
+  const selectedCellObject = this.getCell(rowIndex, columnIndex);
 
   pasteCellValue(
     copySource.cell,
