@@ -3,18 +3,44 @@ const { createProxyServer } = require("http-proxy");
 const Path = require("path");
 const Bundler = require("parcel-bundler");
 
-// parcel options
-const options = {
-  //  publicUrl: ".",
-  watch: true,
-  sourceMaps: true
+let config = {
+  outDir: "out",
+  host: "localhost",
+  apiPort: 8080,
+  serverPort: 3000
 };
+
+try {
+  const localConfig = require("../config.json");
+  config = { ...config, ...localConfig };
+} catch (err) {
+  // pass
+}
+
+switch (process.env.NODE_ENV) {
+  case "production":
+    console.log("Production mode");
+    break;
+  case "development":
+    console.log("Development mode");
+    break;
+  default:
+    console.log("NODE_ENV:", process.env.NODE_ENV);
+}
+
+console.log("using config:", config);
 
 // point parcel at its "input"
 const entryFiles = [
   Path.join(__dirname, "src", "index.html"),
   Path.join(__dirname, "src", "worker.js")
 ];
+
+// parcel options
+const options = {
+  sourceMaps: true,
+  outDir: config.outDir
+};
 
 // init the bundler
 const bundler = new Bundler(entryFiles, options);
@@ -34,7 +60,7 @@ proxy.on("proxyReq", proxyReq => {
 const server = createServer((req, res) => {
   if (req.url.includes("/api")) {
     proxy.web(req, res, {
-      target: "http://127.0.0.1:8080",
+      target: `http://${config.host}:${config.apiPort}`,
       prependPath: true
     });
   } else {
@@ -46,5 +72,7 @@ const server = createServer((req, res) => {
   }
 });
 
-console.log("dev proxy server operating at: http://localhost:3000/");
-server.listen(3000);
+console.log(
+  "dev proxy server operating at: http://localhost:" + config.serverPort
+);
+server.listen(config.serverPort);

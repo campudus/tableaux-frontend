@@ -1,26 +1,24 @@
 {
-  "name": "experimental-tableaux-frontend",
+  "name": "grud-frontend",
   "version": "0.0.0",
+  "author": "Campudus GmbH",
   "description": "Experimental rewrite for tableaux-frontend with redux",
   "main": "index.js",
   "scripts": {
-    "eslint": "eslint -f stylish",
-    "format:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" |  xargs prettier --write",
-    "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
-    "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
+    "start": "NODE_ENV=production node dev-server.js",
+    "build": "parcel build src/index.html src/worker.js --out-dir out",
+    "dev": "NODE_ENV=development node dev-server.js",
     "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
+    "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
     "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
-    "dev": "node dev-server.js",
-    "start": "parcel serve src/index.html src/worker.js",
+    "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "storybook": "start-storybook -p 3001 -s src",
-    "test": "jest",
-    "build": "parcel build src/index.html src/worker.js --out-dir release"
+    "test": "jest"
   },
   "staticFiles": {
     "staticPath": "src/static"
   },
-  "author": "Campudus GmbH",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/plugin-proposal-class-properties": "^7.3.4",
