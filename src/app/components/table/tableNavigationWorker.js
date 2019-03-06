@@ -21,14 +21,11 @@ import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
 
-// TODO-W
-// move "this" to virtual table so this.getCell can be used!
-
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
   if (!f.isEmpty(this.props.tableView.selectedCell)) {
-    const tableDOMNode = document.getElementById("table-wrapper");
+    const tableDOMNode = document.getElementById("virtual-table-wrapper");
 
     if (tableDOMNode) {
       maybe(tableDOMNode).method("focus");
@@ -198,7 +195,7 @@ export function isLastRowSelected() {
 }
 
 export function toggleCellSelection({ cell, langtag }) {
-  const { actions, tableView } = this.props;
+  const { actions, tableView, setSelectedCellExpandedRow } = this.props;
   const tableId = tableView.currentTable;
   const columnId = cell.columnId;
   const rowId = cell.rowId;
@@ -213,9 +210,7 @@ export function toggleCellSelection({ cell, langtag }) {
     tableId
   });
 
-  this.setState({
-    selectedCellExpandedRow: langtag || null
-  });
+  setSelectedCellExpandedRow(langtag);
 
   // reset editing so navigation does not get stuck on a locked row
   if (wasEditing) {
@@ -394,8 +389,7 @@ export function setNextSelectedCell(direction) {
 
 // returns the next row and the next language cell when expanded
 export function getNextRowCell(getPrev) {
-  const { selectedCellExpandedRow } = this.state;
-  const { tableView, rows, columns } = this.props;
+  const { tableView, rows, columns, selectedCellExpandedRow } = this.props;
   const { selectedCell, expandedRowIds } = tableView;
   const { rowId, langtag, columnId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
@@ -467,9 +461,8 @@ export function getPreviousRow() {
 }
 
 export function getNextColumnCell(getPrev) {
-  const { columns, tableView } = this.props;
-  const { selectedCell } = tableView;
-  const { expandedRowIds, selectedCellExpandedRow } = this.state;
+  const { columns, tableView, selectedCellExpandedRow } = this.props;
+  const { selectedCell, expandedRowIds } = tableView;
   const indexCurrentColumn = f.findIndex(
     f.matchesProperty("id", selectedCell.columnId),
     columns

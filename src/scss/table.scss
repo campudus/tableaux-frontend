@@ -36,6 +36,12 @@
 
 }
 
+#virtual-table-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 body div div.column-header-context-menu {
   @include context-menu-look();
   background-color: $color-primary-contrast-text;
