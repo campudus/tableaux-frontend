@@ -222,9 +222,9 @@ export function toggleCellEditing(params = {}) {
   const canEdit =
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
-  const { columns, rows, tableView, actions, langtag } = this.props;
+  const { columns, rows, tableView, actions } = this.props;
   const {
-    selectedCell: { columnId, rowId },
+    selectedCell: { columnId, rowId, langtag },
     currentTable
   } = tableView;
 
@@ -235,6 +235,9 @@ export function toggleCellEditing(params = {}) {
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
+
+  console.log(selectedCellObject);
+
   const selectedCellValues = selectedCellObject.displayValue;
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
@@ -254,7 +257,7 @@ export function toggleCellEditing(params = {}) {
             newValue: selectedCellObject.isMultiLanguage
               ? { [langtag]: !selectedCellValues }
               : !selectedCellValues,
-            kind: ColumnKinds.boolean
+            kind: selectedCellKind
           });
           break;
         case ColumnKinds.link:
@@ -302,7 +305,7 @@ export function toggleCellEditing(params = {}) {
             body: (
               <TextEditOverlay
                 actions={actions}
-                value={selectedCellValues[langtag]}
+                value={selectedCellValues}
                 langtag={langtag}
                 cell={selectedCellObject}
               />
