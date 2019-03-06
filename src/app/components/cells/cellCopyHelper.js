@@ -72,14 +72,12 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
 
   // We can't check cardinality without loading and parsing all linked tables recursively,
   // so we don't copy links with cardinality
-  const duplicatedValues = row.values.map((value, idx) =>
-    canNotCopy(columns[idx]) ? null : value
+  const duplicatedValues = row.values.filter(
+    (value, idx) => !canNotCopy(columns[idx])
   );
-
-  const hasConcat = f.propEq([0, "kind"], ColumnKinds.concat)(columns);
   return {
-    columns: when(() => hasConcat, f.drop(1), columns),
-    rows: [{ values: when(() => hasConcat, f.drop(1), duplicatedValues) }],
+    columns: f.reject(canNotCopy, columns),
+    rows: [{ values: duplicatedValues }],
     constrainedLinkIds
   };
 };
