@@ -235,9 +235,6 @@ export function toggleCellEditing(params = {}) {
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
-
-  console.log(selectedCellObject);
-
   const selectedCellValues = selectedCellObject.displayValue;
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
@@ -247,7 +244,7 @@ export function toggleCellEditing(params = {}) {
 
     if (!isLocked(selectedRow)) {
       switch (selectedCellKind) {
-        case ColumnKinds.boolean: // TODO-W stopped working!
+        case ColumnKinds.boolean:
           actions.changeCellValue({
             tableId: currentTable,
             column: selectedColumn,
