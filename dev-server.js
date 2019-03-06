@@ -17,6 +17,16 @@ try {
   // pass
 }
 
+const overrideConfigWithEnv = envVar => {
+  const envValue = process.env[envVar.toUpperCase()];
+  envValue && (config[envVar] = envValue);
+};
+
+overrideConfigWithEnv("host");
+overrideConfigWithEnv("outDir");
+overrideConfigWithEnv("apiPort");
+overrideConfigWithEnv("serverPort");
+
 switch (process.env.NODE_ENV) {
   case "production":
     console.log("Production mode");
@@ -30,7 +40,7 @@ switch (process.env.NODE_ENV) {
 
 console.log("using config:", config);
 
-// point parcel at its "input"
+// point parcel at its input
 const entryFiles = [
   Path.join(__dirname, "src", "index.html"),
   Path.join(__dirname, "src", "worker.js")
