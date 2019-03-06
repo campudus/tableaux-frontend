@@ -235,14 +235,15 @@ export function toggleCellEditing(params = {}) {
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
-  const selectedCellValues = selectedCellObject.displayValue;
+  const selectedCellDisplayValues = selectedCellObject.displayValue;
+  const selectedCellRawValue = selectedCellObject.value;
   const selectedCellKind = selectedCellObject.kind;
   const table = selectedCellObject.table;
 
   if (canEdit && selectedCellObject) {
     actions.toggleCellEditing({ editing: editVal, row: selectedRow });
 
-    if (!isLocked(selectedRow)) {
+    if (!isLocked(selectedRow) && editVal) {
       switch (selectedCellKind) {
         case ColumnKinds.boolean:
           actions.changeCellValue({
@@ -250,10 +251,10 @@ export function toggleCellEditing(params = {}) {
             column: selectedColumn,
             columnId: columnId,
             rowId: rowId,
-            oldValue: selectedCellValues,
+            oldValue: selectedCellRawValue,
             newValue: selectedCellObject.isMultiLanguage
-              ? { [langtag]: !selectedCellValues }
-              : !selectedCellValues,
+              ? { [langtag]: !selectedCellRawValue }
+              : !selectedCellRawValue,
             kind: selectedCellKind
           });
           break;
@@ -271,8 +272,8 @@ export function toggleCellEditing(params = {}) {
               <AttachmentOverlay
                 cell={selectedCellObject}
                 langtag={langtag}
-                folderId={f.get([0, "folder"], selectedCellValues)}
-                value={selectedCellValues}
+                folderId={f.get([0, "folder"], selectedCellRawValue)}
+                value={selectedCellDisplayValues}
               />
             ),
             type: "full-height",
@@ -295,14 +296,14 @@ export function toggleCellEditing(params = {}) {
                   f.first,
                   ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
                 )}
-                title={selectedCellValues[langtag]}
+                title={selectedCellDisplayValues[langtag]}
                 langtag={langtag}
               />
             ),
             body: (
               <TextEditOverlay
                 actions={actions}
-                value={selectedCellValues}
+                value={selectedCellDisplayValues}
                 langtag={langtag}
                 cell={selectedCellObject}
               />
