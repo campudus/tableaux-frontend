@@ -1,6 +1,8 @@
 node_modules/
 dist/
 \.dist/
+out/
+\.cache
 **/\.tern-port
 package-lock.json
 .eslintrc.js
