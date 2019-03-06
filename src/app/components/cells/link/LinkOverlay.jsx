@@ -120,7 +120,7 @@ class LinkOverlay extends PureComponent {
       escape: event => {
         preventDefault(event);
         stopPropagation(event);
-        actions.closeOverlay();
+        this.props.actions.closeOverlay();
       },
       up: event => {
         preventDefault(event);
