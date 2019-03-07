@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import f from "lodash/fp";
 import SvgIcon from "../helperComponents/SvgIcon";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 import { isCell } from "../../specs/cell-spec";
 import { doto } from "../../helpers/functools";
 import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
@@ -22,7 +22,7 @@ class Header extends PureComponent {
   };
 
   wrapButtonFn = (value, fn) => (...args) => {
-    Raven.captureBreadcrumb({ message: "Header button: " + value });
+    Sentry.captureBreadcrumb({ message: "Header button: " + value });
     if (f.isFunction(fn)) {
       fn(...args);
     }

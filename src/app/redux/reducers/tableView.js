@@ -256,7 +256,7 @@ const push = (action, history) => {
   };
 };
 
-const remove = (index,arr) => {
+const remove = (index, arr) => {
   const removed = f.concat(
     f.slice(0, index, arr),
     f.slice(index + 1, arr.length, arr)
@@ -302,12 +302,13 @@ const redo = (tableId, history) => {
 };
 
 const modifyHistory = action => state => {
-  const { modifyAction,tableId } = action;
+  const { modifyAction, tableId } = action;
   const { history } = state;
   if (!modifyAction) {
     return { ...state, history: push(action, history) };
   }
-  const newHistory = modifyAction === "undo" ? undo(tableId,history) : redo(tableId,history);
+  const newHistory =
+    modifyAction === "undo" ? undo(tableId, history) : redo(tableId, history);
   return { ...state, history: newHistory };
 };
 
@@ -354,7 +355,7 @@ export default (state = initialState, action, completeState) => {
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,
-        worker: new Worker("/worker.bundle.js")
+        worker: new Worker("/worker.js")
       };
     case ALL_ROWS_DATA_LOADED: {
       const { currentTable } = state.currentTable;

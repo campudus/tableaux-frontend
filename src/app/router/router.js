@@ -2,7 +2,7 @@ import "babel-polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
 import TableauxConstants from "../constants/TableauxConstants";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 import Router from "ampersand-router";
 import f from "lodash/fp";
 import parseOptions from "./urlOptionParser";
@@ -86,17 +86,17 @@ const extendedRouter = Router.extend({
     const { tables } = store.getState();
     const validTableId = await validateTableId(tableId, tables);
     console.log("switchTableHandler");
-    Raven.captureBreadcrumb({ message: "Switch table", data: tableId });
-    Raven.captureMessage("Switch table", { level: "info" });
+    Sentry.captureBreadcrumb({ message: "Switch table", data: tableId });
+    Sentry.captureMessage("Switch table", { level: "info" });
     router.navigate(langtag + "/tables/" + validTableId);
   },
 
   switchFolderHandler: async function(folderId, langtag) {
-    Raven.captureBreadcrumb({
+    Sentry.captureBreadcrumb({
       message: "Switch folder",
       data: { folderId, langtag }
     });
-    Raven.captureMessage("MediaView folder switch", { level: "info" });
+    Sentry.captureMessage("MediaView folder switch", { level: "info" });
     const validLangtag = await validateLangtag(langtag);
     if (folderId) {
       router.history.navigate(validLangtag + "/media/" + folderId, {
@@ -207,7 +207,7 @@ const extendedRouter = Router.extend({
   }
 });
 
-const TableauxRouter = new extendedRouter();
-TableauxRouter.history.start();
+const GRUDRouter = new extendedRouter();
+GRUDRouter.history.start();
 
-export default TableauxRouter;
+export default GRUDRouter;

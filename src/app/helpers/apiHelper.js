@@ -1,9 +1,7 @@
-import { apiHost, apiPort } from "../conf.js";
 import fetch from "cross-fetch";
 import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import { doto } from "./functools.js";
-import API_ROUTES from "./apiRoutes";
 
 const buildURL = apiRoute => apiUrl(apiRoute);
 

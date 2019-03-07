@@ -13,6 +13,8 @@ import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
 import needsApiData from "../helperComponents/needsAPIData";
+import route from "../../helpers/apiRoutes";
+import apiUrl from "../../helpers/apiUrl";
 
 const mapStateToProps = state => {
   return { media: f.get("media", state) };
@@ -20,7 +22,7 @@ const mapStateToProps = state => {
 
 const enhance = compose(
   withProps(() => {
-    return { requestUrl: "/api/system/settings/langtags" };
+    return { requestUrl: apiUrl(route.toSetting("langtag")) };
   }),
   needsApiData
 );

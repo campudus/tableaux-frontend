@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import request from "superagent";
 import { doto } from "../../helpers/functools";
 import apiUrl from "../../helpers/apiUrl";
-import Raven from "raven-js";
+import Sentry from "@sentry/browser";
 
 const FetchStatusData = ({ children, requestedData }) => (
   <React.Fragment>
@@ -50,7 +50,7 @@ const withApiData = compose(
         );
       } catch (err) {
         console.error(err);
-        Raven.captureException(err);
+        Sentry.captureException(err);
         setRequestedData({});
       }
     }

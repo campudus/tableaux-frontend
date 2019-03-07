@@ -15,6 +15,8 @@ import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
 import TranslationStatusWidget from "./translationstatus/TranslationStatusWidget";
 import needsApiData from "../helperComponents/needsAPIData";
+import route from "../../helpers/apiRoutes";
+import apiUrl from "../../helpers/apiUrl";
 
 const WidgetColletion = ({ langtag, requestedData }) => (
   <div className="widgets-wrapper">
@@ -92,7 +94,7 @@ const enhance = compose(
     }
   }),
   withProps(() => {
-    return { requestUrl: "/api/system/settings/langtags" };
+    return { requestUrl: apiUrl(route.toSetting("langtags")) };
   }),
   needsApiData
 );

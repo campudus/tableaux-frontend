@@ -6,7 +6,7 @@ import apiRoute from "../helpers/apiRoutes";
 async function initLangtags() {
   if (f.isNil(TableauxConstants.Langtags)) {
     const requestData = await makeRequest({
-      apiRoute: "/system/settings/langtags"
+      apiRoute: apiRoute.toSetting("langtags")
     });
     TableauxConstants.initLangtags(requestData.value);
     return requestData.value;

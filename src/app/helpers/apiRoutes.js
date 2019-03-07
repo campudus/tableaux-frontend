@@ -19,6 +19,8 @@ const toRow = ({ tableId, rowId }) =>
 const toCell = ({ tableId, rowId, columnId }) =>
   "/" + joinUrlParts("tables", tableId, "columns", columnId, "rows", rowId);
 
+const toSetting = setting => `/system/settings/${setting}`;
+
 const toFolder = (folderId, langtag) =>
   (folderId ? `/folders/${folderId}` : "/folders") +
   (langtag ? "?langtag=" + langtag : "");
@@ -36,7 +38,8 @@ const API_ROUTES = {
   toRow,
   toCell,
   toFolder,
-  toFile
+  toFile,
+  toSetting
 };
 
 export default API_ROUTES;
