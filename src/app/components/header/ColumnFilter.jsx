@@ -2,18 +2,11 @@ import React from "react";
 import ColumnFilterPopup from "./ColumnFilterPopup";
 import i18n from "i18next";
 import classNames from "classnames";
-// import connectToAmpersand from "../helperComponents/connectToAmpersand";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import PropTypes from "prop-types";
 
-// @connectToAmpersand
 class ColumnFilter extends React.Component {
   state = { open: false };
-
-  constructor(props) {
-    super(props);
-    this.props.columns.forEach(col => null /*this.props.watch(col)*/);
-  }
 
   togglePopup = event => {
     event.preventDefault();
@@ -62,9 +55,9 @@ class ColumnFilter extends React.Component {
   };
 }
 
-// ColumnFilter.propTypes = {
-//   langtag: PropTypes.string.isRequired,
-//   columns: PropTypes.object.isRequired
-// };
+ColumnFilter.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  columns: PropTypes.array.isRequired
+};
 
 export default ColumnFilter;
