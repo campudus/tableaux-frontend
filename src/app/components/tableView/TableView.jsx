@@ -236,7 +236,8 @@ class TableView extends PureComponent {
       actions,
       allDisplayValues,
       filtering,
-      tableView
+      tableView,
+      grudStatus: { connectedToBackend }
     } = this.props;
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
@@ -303,9 +304,7 @@ class TableView extends PureComponent {
             pasteOriginCellLang={pasteOriginCellLang}
             tableId={table.id}
           />
-          <ConnectionStatus
-            isConnected={this.props.grudStatus.connectedToBackend}
-          />
+          <ConnectionStatus isConnected={connectedToBackend} />
         </header>
         {this.renderTableOrSpinner()}
         <JumpSpinner

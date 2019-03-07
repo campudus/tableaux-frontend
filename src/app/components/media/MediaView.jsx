@@ -20,7 +20,7 @@ import apiUrl from "../../helpers/apiUrl";
 const mapStateToProps = state => {
   return {
     media: f.get("media", state),
-    isConnected: !!f.get("grudStatus.connectedToBackend", state)
+    isConnected: !!f.get(["grudStatus", "connectedToBackend"], state)
   };
 };
 
