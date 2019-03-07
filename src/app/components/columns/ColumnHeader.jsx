@@ -83,7 +83,7 @@ export default class ColumnHeader extends PureComponent {
       <ColumnEntry
         style={style}
         columnContent={columnContent}
-        name={getColumnDisplayName(column, langtag)}
+        name={getColumnDisplayName(column, langtag) || ""}
         column={column}
         description={this.getDescription()}
         langtag={langtag}
