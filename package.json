@@ -57,6 +57,7 @@
     "parcel-bundler": "^1.11.0",
     "parcel-plugin-static-files-copy": "^2.0.0",
     "prettier": "^1.15.1",
+    "rxjs": "^6.4.0",
     "sass": "^1.17.2",
     "storybook": "^1.0.0",
     "superagent": "^4.0.0"
@@ -78,8 +79,8 @@
     "raven-js": "^3.27.0",
     "react": "^16.8.4",
     "react-datetime": "^2.16.2",
-    "react-dnd": "^7.0.1",
-    "react-dnd-html5-backend": "^7.0.1",
+    "react-dnd": "^7.1.0",
+    "react-dnd-html5-backend": "^7.1.0",
     "react-dom": "^16.8.4",
     "react-dropzone": "^7.0.1",
     "react-i18next": "^7.4.0",
@@ -93,8 +94,6 @@
     "react-select": "1.2.1",
     "react-virtualized": "9.18.5",
     "recompose": "^0.30.0",
-    "redux": "^4.0.1",
-    "rxjs": "^5.5.6",
-    "throat": "^4.1.0"
+    "redux": "^4.0.1"
   }
 }
