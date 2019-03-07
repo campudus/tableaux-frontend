@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import i18n from "i18next";
 import { compose, pure, withProps, withStateHandlers } from "recompose";
 import f from "lodash/fp";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 
 const enhance = compose(
   pure,

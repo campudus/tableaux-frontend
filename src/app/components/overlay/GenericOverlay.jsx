@@ -8,7 +8,7 @@ import Footer from "./Footer";
 import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import { maybe } from "../../helpers/functools";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 import { when } from "../../helpers/functools";
 import { isCell } from "../../specs/cell-spec";
 
@@ -262,7 +262,7 @@ const showDialog = ({
   reduxActions = {}
 }) => {
   const wrapActionFn = fn => event => {
-    Sentry.captureBreadcrumb({
+    Sentry.addBreadcrumb({
       message: "Keyboard dialog close: " + f.get("key", event)
     });
     if (f.isFunction(fn)) {

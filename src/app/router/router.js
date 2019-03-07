@@ -2,7 +2,7 @@ import "babel-polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
 import TableauxConstants from "../constants/TableauxConstants";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 import Router from "ampersand-router";
 import f from "lodash/fp";
 import parseOptions from "./urlOptionParser";
@@ -20,13 +20,6 @@ initDevelopmentAccessCookies();
 
 export let currentLangtag = null;
 const router = new Router();
-
-// const loadCompleteTable = (tableId, actions) =>
-//   f.compose(
-//     f.each(func => func(tableId)),
-//     f.values,
-//     f.pick(["setCurrentTable", "loadColumns", "loadAllRows"])
-//   )(actions);
 
 const extendedRouter = Router.extend({
   routes: {
@@ -86,13 +79,13 @@ const extendedRouter = Router.extend({
     const { tables } = store.getState();
     const validTableId = await validateTableId(tableId, tables);
     console.log("switchTableHandler");
-    Sentry.captureBreadcrumb({ message: "Switch table", data: tableId });
+    Sentry.addBreadcrumb({ message: "Switch table", data: tableId });
     Sentry.captureMessage("Switch table", { level: "info" });
     router.navigate(langtag + "/tables/" + validTableId);
   },
 
   switchFolderHandler: async function(folderId, langtag) {
-    Sentry.captureBreadcrumb({
+    Sentry.addBreadcrumb({
       message: "Switch folder",
       data: { folderId, langtag }
     });

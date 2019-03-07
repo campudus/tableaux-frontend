@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import request from "superagent";
 import { doto } from "../../helpers/functools";
 import apiUrl from "../../helpers/apiUrl";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 
 const FetchStatusData = ({ children, requestedData }) => (
   <React.Fragment>

@@ -20,7 +20,7 @@ import { openInNewTab } from "../../../helpers/apiUrl";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import LinkItem from "./LinkItem";
 import LinkOverlayHeader from "./LinkOverlayHeader";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 import {
   LinkedRows,
   LinkStatus,

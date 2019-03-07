@@ -1,6 +1,6 @@
 import "../node_modules/react-select/dist/react-select.css";
 import "./app/router/router";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 import { makeRequest } from "./app/helpers/apiHelper";
 import route from "./app/helpers/apiRoutes";
 import { getUserName } from "./app/helpers/userNameHelper";
