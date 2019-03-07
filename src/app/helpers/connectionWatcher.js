@@ -37,11 +37,15 @@ connectionStatus
       return;
     }
 
+    const { connected } = statusNow;
+
     // Close any that might be open
     store.dispatch(actions.closeOverlay(LOST_DIALOG_NAME));
     store.dispatch(actions.closeOverlay(RECONNECTED_DIALOG_NAME));
+    store.dispatch(
+      actions.setStatusInfo({ key: "connectedToBackend", value: connected })
+    );
 
-    const { connected } = statusNow;
     showDialog({
       name: connected ? RECONNECTED_DIALOG_NAME : LOST_DIALOG_NAME,
       type: connected ? "important" : "warning",

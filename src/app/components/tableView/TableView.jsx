@@ -8,6 +8,7 @@ import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { initHistoryOf } from "../table/undo/tableHistory";
 import { showDialog } from "../overlay/GenericOverlay";
 import ColumnFilter from "../header/ColumnFilter";
+import { ConnectionStatus } from "../header/ConnectionStatus";
 import Filter from "../header/filter/Filter.jsx";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import JumpSpinner from "./JumpSpinner";
@@ -37,6 +38,7 @@ const mapStatetoProps = (state, props) => {
   const rows = f.get(`rows.${tableId}.data`, state);
   const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
+  const grudStatus = f.get("grudStatus", state);
   const {
     startedGeneratingDisplayValues,
     visibleColumns,
@@ -62,7 +64,8 @@ const mapStatetoProps = (state, props) => {
     filters,
     sorting,
     searchOverlayOpen,
-    finishedLoading
+    finishedLoading,
+    grudStatus
   };
 };
 
@@ -299,6 +302,9 @@ class TableView extends PureComponent {
             pasteOriginCell={pasteOriginCell}
             pasteOriginCellLang={pasteOriginCellLang}
             tableId={table.id}
+          />
+          <ConnectionStatus
+            isConnected={this.props.grudStatus.connectedToBackend}
           />
         </header>
         {this.renderTableOrSpinner()}

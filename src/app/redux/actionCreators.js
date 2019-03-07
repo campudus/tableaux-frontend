@@ -56,15 +56,11 @@ const {
   SET_CURRENT_LANGUAGE,
   SET_DISPLAY_VALUE_WORKER,
   SET_FILTERS_AND_SORTING,
-  SET_SEARCH_OVERLAY,
   CLEAN_UP,
-  ADD_ROWS,
-  ROW_CREATE,
-  ROW_CREATE_SUCCESS,
-  ROW_CREATE_ERROR,
   COLUMN_EDIT,
   COLUMN_EDIT_SUCCESS,
-  COLUMN_EDIT_ERROR
+  COLUMN_EDIT_ERROR,
+  SET_STATUS_INFO
 } = actionTypes;
 
 const {
@@ -591,6 +587,7 @@ const actionCreators = {
   hideToast,
   openOverlay,
   closeOverlay,
+  setStatusInfo: dispatchParamsFor(SET_STATUS_INFO),
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
   getMediaFolder: getMediaFolder,

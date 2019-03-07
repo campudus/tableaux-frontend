@@ -9,6 +9,7 @@ import Folder from "./folder/Folder.jsx";
 import LanguageSwitcher from "../header/LanguageSwitcher";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
+import ConnectionStatus from "../header/ConnectionStatus";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
@@ -17,7 +18,10 @@ import route from "../../helpers/apiRoutes";
 import apiUrl from "../../helpers/apiUrl";
 
 const mapStateToProps = state => {
-  return { media: f.get("media", state) };
+  return {
+    media: f.get("media", state),
+    isConnected: !!f.get("grudStatus.connectedToBackend", state)
+  };
 };
 
 const enhance = compose(
@@ -73,7 +77,7 @@ class MediaView extends Component {
   }
 
   render() {
-    const { langtag, media, actions, requestedData } = this.props;
+    const { langtag, media, actions, requestedData, isConnected } = this.props;
     const { modifiedFiles } = this.state;
 
     if (requestedData) {
@@ -95,6 +99,7 @@ class MediaView extends Component {
               langtag={langtag}
               onChange={this.onLanguageSwitch}
             />
+            <ConnectionStatus isConnected={isConnected} />
           </header>
           <Folder
             folder={media.data}

@@ -1,0 +1,27 @@
+.connection-status {
+  display: flex;
+  margin-top: 10px;
+  @include header-button-look();
+  border-color: transparent;
+}
+
+.connection-status--connected {
+  display: none;
+}
+
+.connection-status--disconnected {
+  animation-name: pulse-red;
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes pulse-red {
+  from {
+    background-color: transparent;
+  }
+
+  to {
+    background-color: $color-important;
+  }
+}
