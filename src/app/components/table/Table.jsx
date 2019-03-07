@@ -132,6 +132,13 @@ class Table extends Component {
     this.setState({ rowContextMenu: null });
   };
 
+  setSelectedCellExpandedRow = langtag => {
+    this.setState({
+      ...this.state,
+      selectedCellExpandedRow: langtag
+    });
+  };
+
   render() {
     const {
       actions,
@@ -185,12 +192,7 @@ class Table extends Component {
             navigate={navigate}
             finishedLoading={finishedLoading}
             selectedCellExpandedRow={this.state.selectedCellExpandedRow}
-            setSelectedCellExpandedRow={langtag =>
-              this.setState({
-                ...this.state,
-                selectedCellExpandedRow: langtag
-              })
-            }
+            setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
           />
         </div>
         {this.noRowsInfo()}

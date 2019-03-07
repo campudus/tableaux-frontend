@@ -11,7 +11,11 @@ import Cell, { getAnnotationState } from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import { AutoSizer } from "react-virtualized";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  Langtags,
+  Directions
+} from "../../constants/TableauxConstants";
 import { either, maybe } from "../../helpers/functools";
 import AddNewRowButton from "../rows/NewRow";
 import getDisplayValue from "../../helpers/getDisplayValue";
@@ -32,7 +36,9 @@ export default class VirtualTable extends PureComponent {
     this.updateSelectedCell();
     this.state = {
       openAnnotations: {},
-      scrolledCell: {}
+      scrolledCell: {},
+      lastScrolledCell: {},
+      newRowAdded: false
     };
   }
 
@@ -475,7 +481,7 @@ export default class VirtualTable extends PureComponent {
     this.multiGrid = node;
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(prev) {
     // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
@@ -487,6 +493,16 @@ export default class VirtualTable extends PureComponent {
           lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
         })
       );
+    }
+
+    // jump one row down if a new one was created from keyboardnavigation
+    if (this.state.newRowAdded && f.size(prev.rows) < f.size(this.props.rows)) {
+      tableNavigationWorker.setNextSelectedCell.call(this, Directions.DOWN);
+
+      this.setState({
+        ...this.state,
+        newRowAdded: false
+      });
     }
   }
 

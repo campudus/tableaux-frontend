@@ -78,11 +78,17 @@ export function getKeyboardShortcuts() {
     enter: event => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (selectedCell && !selectedCellEditing) {
-          toggleCellEditing.call(this, {
-            langtag: selectedCell.langtag || this.props.langtag,
-            event
-          });
+        if (isLastRowSelected.call(this) && selectedCellEditing) {
+          // if user is currently editing and presses enter in last row
+          // we create a new row and jump into that (like excel does)
+          createAndSelectNewRow.call(this);
+        } else {
+          if (selectedCell) {
+            toggleCellEditing.call(this, {
+              langtag: selectedCell.langtag || this.props.langtag,
+              event
+            });
+          }
         }
       });
     },
@@ -189,9 +195,10 @@ export function isLastRowSelected() {
   const { rows, tableView } = this.props;
   const currentRowId = tableView.selectedCell.rowId;
   const numberOfRows = f.size(rows);
+  const isTableEmpty = numberOfRows <= 0;
   const currentRowIndex = f.findIndex(row => row.id === currentRowId, rows);
 
-  return currentRowIndex === numberOfRows;
+  return isTableEmpty || currentRowIndex === numberOfRows - 1;
 }
 
 export function toggleCellSelection({ cell, langtag }) {
@@ -199,7 +206,6 @@ export function toggleCellSelection({ cell, langtag }) {
   const tableId = tableView.currentTable;
   const columnId = cell.columnId;
   const rowId = cell.rowId;
-  const wasEditing = tableView.editing;
 
   TableauxRouter.selectCellHandler(tableId, rowId, columnId, langtag);
 
@@ -211,11 +217,6 @@ export function toggleCellSelection({ cell, langtag }) {
   });
 
   setSelectedCellExpandedRow(langtag);
-
-  // reset editing so navigation does not get stuck on a locked row
-  if (wasEditing) {
-    actions.toggleCellEditing({ editing: false });
-  }
 }
 
 export function toggleCellEditing(params = {}) {
@@ -235,12 +236,13 @@ export function toggleCellEditing(params = {}) {
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
-  const selectedCellDisplayValues = selectedCellObject.displayValue;
-  const selectedCellRawValue = selectedCellObject.value;
-  const selectedCellKind = selectedCellObject.kind;
-  const table = selectedCellObject.table;
 
   if (canEdit && selectedCellObject) {
+    const selectedCellDisplayValues = selectedCellObject.displayValue;
+    const selectedCellRawValue = selectedCellObject.value;
+    const selectedCellKind = selectedCellObject.kind;
+    const table = selectedCellObject.table;
+
     actions.toggleCellEditing({ editing: editVal, row: selectedRow });
 
     if (!isLocked(selectedRow) && editVal) {
@@ -553,4 +555,19 @@ function pasteSelectedCell() {
     selectedCellObject,
     langtag
   );
+}
+
+function createAndSelectNewRow() {
+  const {
+    actions,
+    tableView: { currentTable }
+  } = this.props;
+
+  actions.addEmptyRow(currentTable);
+  toggleCellEditing.call(this, { editing: false });
+
+  this.setState({
+    ...this.state,
+    newRowAdded: true
+  });
 }
