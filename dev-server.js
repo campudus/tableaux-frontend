@@ -67,6 +67,15 @@ proxy.on("proxyReq", proxyReq => {
   }
 });
 
+proxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err);
+  res
+    .writeHead(500, {
+      "Content-Type": "text/plain"
+    })
+    .end(JSON.stringify(err));
+});
+
 // serve
 const server = createServer((req, res) => {
   if (req.url.includes("/api")) {

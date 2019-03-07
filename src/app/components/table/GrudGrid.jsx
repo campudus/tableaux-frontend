@@ -4,65 +4,62 @@
  * Debouncing the scroll handler also debounces rendering.
  */
 
-import {Grid, MultiGrid} from "react-virtualized";
+import { Grid, MultiGrid } from "react-virtualized";
 import f from "lodash/fp";
 import ReactDOM from "react-dom";
 // import {spinnerOn, spinnerOff} from "../../actions/ActionCreator";
-import Rx from "rxjs";
+import { Subject } from "rxjs";
+import { bufferCount, map } from "rxjs/operators";
 import DebouncedFunction from "../../helpers/DebouncedFunction";
 
 console.warn(
-  "Importing this file will change the behaviour of \"react-virtualize\"'s Grid component by monkey-patching " +
-  "its prototype.\n" +
-  "For an unaltered version, don't import react-virtualize.Grid, but GrudGrid.Grid."
+  "Importing this file will change the behaviour of react-virtualize's Grid component by monkey-patching " +
+    "its prototype.\n" +
+    "For an unaltered version, don't import react-virtualize.Grid, but GrudGrid.Grid."
 );
 
-const handleScrollLater = new DebouncedFunction(
-  function (self, scrollPosition) {
-    self._originalScrollHandler(scrollPosition);
-  }
-);
+const handleScrollLater = new DebouncedFunction(function(self, scrollPosition) {
+  self._originalScrollHandler(scrollPosition);
+});
 
-const scrollingEvents = new Rx.Subject();
+const scrollingEvents = new Subject();
 const IMMEDIATE_RENDER_SPEED = 8; // px/scroll event
 const IMMEDIATE_RENDER_FRAMES = 3; // minimum number of frames
 
-const getScrollingVelocity = ([[x1, y1], [x2, y2]]) => { // implicit differentiation of position to velocity
-  const xx = [(x2 - x1), (y2 - y1)]
-    .map((x) => x * x)
-    .reduce(f.add);
+const getScrollingVelocity = ([[x1, y1], [x2, y2]]) => {
+  // implicit differentiation of position to velocity
+  const xx = [x2 - x1, y2 - y1].map(x => x * x).reduce(f.add);
   return Math.sqrt(xx);
 };
 
 // implicitly differentiate velocity to get current scrolling acceleration, then
 // simultaneously test if velocity is below threshold and acceleration <= 0
-const isDecelerating = ([v1, v2]) => (
-  v2 <= v1
-  && v1 <= IMMEDIATE_RENDER_SPEED
-  && v2 <= IMMEDIATE_RENDER_SPEED
-);
+const isDecelerating = ([v1, v2]) =>
+  v2 <= v1 && v1 <= IMMEDIATE_RENDER_SPEED && v2 <= IMMEDIATE_RENDER_SPEED;
 
 // If during the last IMMEDIATE_RENDER_FRAMES scroll events scrolling speed was lower than IMMEDIATE_RENDER_SPEED
 // and no positive acceleration occurred, immediately render the visible portion of the table.
 scrollingEvents
-  .bufferCount(2, 1)
-  .map(getScrollingVelocity)
-  .bufferCount(2, 1)
-  .map(isDecelerating)
-  .bufferCount(IMMEDIATE_RENDER_FRAMES, 1)
-  .subscribe(
-    (history) => {
-      if (f.every(f.identity, history)) {
-        handleScrollLater.flush();
-      }
+  .pipe(
+    bufferCount(2, 1),
+    map(getScrollingVelocity),
+    bufferCount(2, 1),
+    map(isDecelerating),
+    bufferCount(IMMEDIATE_RENDER_FRAMES, 1)
+  )
+  .subscribe(history => {
+    if (f.every(f.identity, history)) {
+      handleScrollLater.flush();
     }
-  );
+  });
 
 Grid.prototype._originalScrollHandler = Grid.prototype.handleScrollEvent;
 
-Grid.prototype.handleScrollEvent = function (trigger) {
+Grid.prototype.handleScrollEvent = function(trigger) {
   if (!this._mainGridNode) {
-    this._mainGridNode = document.getElementsByClassName("ReactVirtualized__Grid")[3];
+    this._mainGridNode = document.getElementsByClassName(
+      "ReactVirtualized__Grid"
+    )[3];
   }
   const scrollInfo = {
     scrollTop: trigger.scrollTop,
@@ -85,20 +82,15 @@ export default class GrudGrid extends MultiGrid {
   _blgParent = null;
   _trgParent = null;
 
-  recalculateScrollPosition = new DebouncedFunction(
-    (newPosition) => {
-      this.translateElement(this._blgParent, null);
-      this.translateElement(this._trgParent, null);
-      this.setState(
-        newPosition,
-        () => {
-          if (this.props.fullyLoaded) {
-            // spinnerOff();
-          }
-        }
-      );
-    }
-  );
+  recalculateScrollPosition = new DebouncedFunction(newPosition => {
+    this.translateElement(this._blgParent, null);
+    this.translateElement(this._trgParent, null);
+    this.setState(newPosition, () => {
+      if (this.props.fullyLoaded) {
+        // spinnerOff();
+      }
+    });
+  });
 
   translateElement(element, position) {
     if (element && element.firstChild) {
@@ -110,10 +102,12 @@ export default class GrudGrid extends MultiGrid {
     }
   }
 
-  _onScroll({scrollLeft, scrollTop}) {
-    // spinnerOn();
+  _onScroll({ scrollLeft, scrollTop }) {
     if (!this._trgParent) {
+      // this needs to access the real DOM nodes, not React's virtual ones
+      // eslint-disable-next-line react/no-find-dom-node
       this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
+      // eslint-disable-next-line react/no-find-dom-node
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
     }
 
@@ -122,7 +116,7 @@ export default class GrudGrid extends MultiGrid {
 
     this.translateElement(this._blgParent, `translateY(${y}px)`);
     this.translateElement(this._trgParent, `translateX(${x}px)`);
-    this.recalculateScrollPosition.start({scrollLeft, scrollTop});
+    this.recalculateScrollPosition.start({ scrollLeft, scrollTop });
   }
 
   componentWillUnmount() {
@@ -146,4 +140,4 @@ const tests = {
   ]
 };
 
-export {VanillaGrid as Grid, tests};
+export { VanillaGrid as Grid, tests };

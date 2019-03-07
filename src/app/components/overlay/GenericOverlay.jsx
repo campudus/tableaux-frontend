@@ -8,9 +8,11 @@ import Footer from "./Footer";
 import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import { maybe } from "../../helpers/functools";
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 import { when } from "../../helpers/functools";
 import { isCell } from "../../specs/cell-spec";
+import store from "../../redux/store";
+import actions from "../../redux/actionCreators";
 
 const FRAME_DELAY = (1000 / 60) | 0; // ms delay between frames at 60 fps
 
@@ -90,7 +92,7 @@ class GenericOverlay extends Component {
   };
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
-  getKeyboardShortcuts = event => {
+  getKeyboardShortcuts = () => {
     return f.merge(
       {
         escape: event => {
@@ -258,11 +260,14 @@ const showDialog = ({
   heading = "",
   message = "",
   buttonActions = {},
-  name,
-  reduxActions = {}
+  name
 }) => {
+  const reduxActions = {
+    closeOverlay: (...args) => store.dispatch(actions.closeOverlay(...args)),
+    openOverlay: (...args) => store.dispatch(actions.openOverlay(...args))
+  };
   const wrapActionFn = fn => event => {
-    Sentry.captureBreadcrumb({
+    Sentry.addBreadcrumb({
       message: "Keyboard dialog close: " + f.get("key", event)
     });
     if (f.isFunction(fn)) {
