@@ -534,19 +534,11 @@ export default class VirtualTable extends PureComponent {
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
     const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
-    const selectedRowIndex = f.findIndex(
-      row => row.id === selectedCell.rowId,
-      rows
-    );
-    const selectedColumnIndex = f.findIndex(
-      col => col.id === selectedCell.columnId,
-      columns
-    );
 
     const selectedCellKey = isSelectedCellValid
-      ? `${f.get(
-          "id",
-          this.getCell(selectedRowIndex, selectedColumnIndex)
+      ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
+          "colId",
+          this.selectedCell
         )}-${selectedCellEditing}-${selectedCellExpandedRow}`
       : "";
 

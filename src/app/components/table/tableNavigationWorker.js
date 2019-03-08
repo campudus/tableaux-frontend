@@ -464,15 +464,15 @@ export function getPreviousRow() {
 export function getNextColumnCell(getPrev) {
   const { columns, tableView, selectedCellExpandedRow } = this.props;
   const { selectedCell, expandedRowIds } = tableView;
+  const vColumns = f.filter("visible", columns);
   const indexCurrentColumn = f.findIndex(
     f.matchesProperty("id", selectedCell.columnId),
-    columns
+    vColumns
   );
-  const numberOfColumns = columns.length;
+  const numberOfColumns = vColumns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
   const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
-
-  const nextColumn = f.nth(nextColumnIndex, columns);
+  const nextColumn = f.nth(nextColumnIndex, vColumns);
   const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
