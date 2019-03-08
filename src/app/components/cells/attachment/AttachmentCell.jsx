@@ -69,9 +69,9 @@ const AttachmentCell = props => {
     }
   });
 
-  const handleClick = () => {
+  const handleClick = e => {
     if (editing || selected) {
-      openOverlay();
+      openOverlay(e);
     }
   };
 
@@ -86,7 +86,7 @@ const AttachmentCell = props => {
             </span>
           ]}
       {editing || selected ? (
-        <button key={"add-btn"} className="edit" onClick={openOverlay}>
+        <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
       ) : null}
