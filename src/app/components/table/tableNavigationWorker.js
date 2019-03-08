@@ -224,15 +224,16 @@ export function toggleCellEditing(params = {}) {
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
+  const vColumns = f.filter("visible", columns);
   const {
     selectedCell: { columnId, rowId, langtag },
     currentTable
   } = tableView;
 
-  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
 
-  const selectedColumn = columns[columnIndex];
+  const selectedColumn = vColumns[columnIndex];
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
@@ -274,7 +275,7 @@ export function toggleCellEditing(params = {}) {
               <AttachmentOverlay
                 cell={selectedCellObject}
                 langtag={langtag}
-                folderId={f.get([0, "folder"], selectedCellRawValue)}
+                folderId={null}
                 value={selectedCellDisplayValues}
               />
             ),
