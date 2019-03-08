@@ -114,7 +114,7 @@ const NewAttachmentOverlay = props => {
         toggleAttachment={toggleAttachments(linked, file)}
         title={fileTitle}
         url={imageUrl}
-        editorUrl={apiRoute.toFolder(file.folder.id)}
+        editorUrl={`/${props.langtag}/media/${file.folder}`}
       />
     );
   };
