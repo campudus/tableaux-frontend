@@ -69,9 +69,11 @@ const AttachmentCell = props => {
     }
   });
 
-  const handleClick = () => {
+  const handleClick = e => {
     if (editing || selected) {
-      openOverlay();
+      const attachmentElement = f.head(f.get(["cell", "value"], props));
+      const folderId = attachmentElement ? attachmentElement.folder : null;
+      openOverlay(e, folderId);
     }
   };
 
@@ -86,7 +88,7 @@ const AttachmentCell = props => {
             </span>
           ]}
       {editing || selected ? (
-        <button key={"add-btn"} className="edit" onClick={openOverlay}>
+        <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
       ) : null}
