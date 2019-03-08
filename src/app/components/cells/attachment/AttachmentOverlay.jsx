@@ -9,9 +9,7 @@ import {
   withProps,
   withStateHandlers
 } from "recompose";
-import TableauxConstants, {
-  FilterModes
-} from "../../../constants/TableauxConstants";
+import { FilterModes } from "../../../constants/TableauxConstants";
 import { makeRequest } from "../../../helpers/apiHelper";
 import apiRoute from "../../../helpers/apiRoutes";
 import apiUrl from "../../../helpers/apiUrl";
@@ -98,10 +96,15 @@ const NewAttachmentOverlay = props => {
       console.log("empty file", index);
       return null;
     }
-    const imageUrl = apiUrl(retrieveTranslation(file.url, props.langtag));
+    const imageUrl = apiUrl(
+      multiLanguage.retrieveTranslation(props.langtag, file.url)
+    );
 
     const linked = isLinked(file);
-    const fileTitle = retrieveTranslation(file.title, props.langtag);
+    const fileTitle = multiLanguage.retrieveTranslation(
+      props.langtag,
+      file.title
+    );
 
     return (
       <FileItem
@@ -156,10 +159,6 @@ const NewAttachmentOverlay = props => {
   );
 };
 
-const retrieveTranslation = multiLanguage.retrieveTranslation(
-  TableauxConstants.FallbackLanguage
-);
-
 const withFolderLoader = compose(
   withStateHandlers(
     { folder: null, filter: {} },
@@ -178,7 +177,7 @@ const withFolderLoader = compose(
         const getSortValue = file =>
           (isLinked(file) ? "0_" : "1_") +
           (sorting === 0
-            ? retrieveTranslation(file.title, props.langtag)
+            ? multiLanguage.retrieveTranslation(props.langtag, file.title)
             : file.createdAt);
 
         const filterFn = file =>
@@ -187,7 +186,7 @@ const withFolderLoader = compose(
             : isLinked(file) ||
               SearchFunctions[mode](
                 value,
-                retrieveTranslation(file.title, props.langtag)
+                multiLanguage.retrieveTranslation(props.langtag, file.title)
               );
 
         return {
@@ -222,7 +221,7 @@ const withFolderLoader = compose(
       const getSortValue = file =>
         (isLinked(file) ? "0_" : "1_") +
         (sorting === 0
-          ? retrieveTranslation(file.title, langtag)
+          ? multiLanguage.retrieveTranslation(langtag, file.title)
           : file.createdAt);
 
       const filterFn = file =>
@@ -231,7 +230,7 @@ const withFolderLoader = compose(
           : isLinked(file) ||
             SearchFunctions[mode](
               filterValue,
-              retrieveTranslation(file.title, langtag)
+              multiLanguage.retrieveTranslation(langtag, file.title)
             );
 
       return doto(
