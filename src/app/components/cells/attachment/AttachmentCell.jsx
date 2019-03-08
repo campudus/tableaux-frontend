@@ -71,9 +71,7 @@ const AttachmentCell = props => {
 
   const handleClick = e => {
     if (editing || selected) {
-      const attachmentElement = f.head(f.get(["cell", "value"], props));
-      const folderId = attachmentElement ? attachmentElement.folder : null;
-      openOverlay(e, folderId);
+      openOverlay(e);
     }
   };
 

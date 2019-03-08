@@ -14,7 +14,7 @@ import { makeRequest } from "../../../helpers/apiHelper";
 import apiRoute from "../../../helpers/apiRoutes";
 import apiUrl from "../../../helpers/apiUrl";
 import { doto, forkJoin } from "../../../helpers/functools";
-import multiLanguage from "../../../helpers/multiLanguage";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import Spinner from "../../header/Spinner";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
@@ -96,15 +96,10 @@ const NewAttachmentOverlay = props => {
       console.log("empty file", index);
       return null;
     }
-    const imageUrl = apiUrl(
-      multiLanguage.retrieveTranslation(props.langtag, file.url)
-    );
+    const imageUrl = apiUrl(retrieveTranslation(props.langtag, file.url));
 
     const linked = isLinked(file);
-    const fileTitle = multiLanguage.retrieveTranslation(
-      props.langtag,
-      file.title
-    );
+    const fileTitle = retrieveTranslation(props.langtag, file.title);
 
     return (
       <FileItem
@@ -177,7 +172,7 @@ const withFolderLoader = compose(
         const getSortValue = file =>
           (isLinked(file) ? "0_" : "1_") +
           (sorting === 0
-            ? multiLanguage.retrieveTranslation(props.langtag, file.title)
+            ? retrieveTranslation(props.langtag, file.title)
             : file.createdAt);
 
         const filterFn = file =>
@@ -186,7 +181,7 @@ const withFolderLoader = compose(
             : isLinked(file) ||
               SearchFunctions[mode](
                 value,
-                multiLanguage.retrieveTranslation(props.langtag, file.title)
+                retrieveTranslation(props.langtag, file.title)
               );
 
         return {
@@ -221,7 +216,7 @@ const withFolderLoader = compose(
       const getSortValue = file =>
         (isLinked(file) ? "0_" : "1_") +
         (sorting === 0
-          ? multiLanguage.retrieveTranslation(langtag, file.title)
+          ? retrieveTranslation(langtag, file.title)
           : file.createdAt);
 
       const filterFn = file =>
@@ -230,7 +225,7 @@ const withFolderLoader = compose(
           : isLinked(file) ||
             SearchFunctions[mode](
               filterValue,
-              multiLanguage.retrieveTranslation(langtag, file.title)
+              retrieveTranslation(langtag, file.title)
             );
 
       return doto(
