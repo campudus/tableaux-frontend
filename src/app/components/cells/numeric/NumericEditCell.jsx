@@ -128,4 +128,4 @@ NumericEditCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-module.exports = NumericEditCell;
+export default NumericEditCell;

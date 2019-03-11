@@ -54,8 +54,7 @@ LinkCell.propTypes = {
   langtag: PropTypes.string.isRequired,
   selected: PropTypes.bool.isRequired,
   editing: PropTypes.bool.isRequired,
-  displayValue: PropTypes.object,
-  displayValues: PropTypes.array.isRequired,
+  displayValues: PropTypes.array,
   value: PropTypes.array.isRequired,
   setCellKeyboardShortcuts: PropTypes.func
 };

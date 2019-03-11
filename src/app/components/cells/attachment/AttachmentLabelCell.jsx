@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import multiLanguage from "../../../helpers/multiLanguage";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import Empty from "../../helperComponents/emptyEntry";
 import f from "lodash/fp";
 
@@ -15,9 +14,7 @@ const AttachmentLabelCell = props => {
     }
   };
 
-  const fallbackLang = TableauxConstants.DefaultLangtag;
-  const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-  const attachmentTitle = retrieveTranslation(attachmentElement.title, langtag);
+  const attachmentTitle = retrieveTranslation(langtag, attachmentElement.title);
 
   return (
     <div className="link-label" onClick={handleClick}>

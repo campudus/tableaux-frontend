@@ -16,21 +16,17 @@ import {
 import FileEdit from "../overlay/FileEdit.jsx";
 import Footer from "../../overlay/Footer";
 import Header from "../../overlay/Header";
-import TableauxConstants from "../../../constants/TableauxConstants";
 import apiUrl from "../../../helpers/apiUrl";
-import multiLanguage from "../../../helpers/multiLanguage";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 const enhance = withState("saveChanges", "setSaveChanges", false);
 
 @translate(["media"])
 class File extends Component {
   onRemove = () => {
-    const fallbackLang = TableauxConstants.DefaultLangtag;
-    const retrieveTranslation = multiLanguage.retrieveTranslation(fallbackLang);
-
     if (isUserAdmin()) {
       confirmDeleteFile(
-        retrieveTranslation(this.props.file.title, this.props.langtag),
+        retrieveTranslation(this.props.langtag, this.props.file.title),
         () => {
           this.props.actions.deleteMediaFile(this.props.file.uuid);
         },
@@ -65,16 +61,12 @@ class File extends Component {
 
   onEdit = () => {
     const { file, langtag, actions } = this.props;
-    const { FallbackLanguage } = TableauxConstants;
-    const retrieveTranslation = multiLanguage.retrieveTranslation(
-      FallbackLanguage
-    );
 
     actions.openOverlay({
       head: (
         <Header
           context={i18n.t("media:change_file")}
-          title={retrieveTranslation(file.title, langtag)}
+          title={retrieveTranslation(langtag, file.title)}
         />
       ),
       body: (
@@ -93,7 +85,7 @@ class File extends Component {
           }}
         />
       ),
-      name: retrieveTranslation(file.title, langtag)
+      name: retrieveTranslation(langtag, file.title)
     });
   };
 
@@ -103,11 +95,11 @@ class File extends Component {
 
   render() {
     const { langtag, file, t } = this.props;
-    const fallbackLang = TableauxConstants.DefaultLangtag;
-    const translate = multiLanguage.retrieveTranslation(fallbackLang);
 
-    const title = translate(file.title, langtag);
-    const imageUrl = apiUrl(translate(file.url, langtag));
+    const title = retrieveTranslation(langtag, file.title);
+    const imageUrl = apiUrl(retrieveTranslation(langtag, file.url));
+
+    console.log({ title });
 
     // delete and edit file
     const mediaOptions = (
@@ -116,7 +108,12 @@ class File extends Component {
           <i className="icon fa fa-pencil-square-o" />
           {t("change_file")}
         </span>
-        <a href={imageUrl} target="_blank" rel="noopener" className="button">
+        <a
+          href={imageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="button"
+        >
           <i className="icon fa fa-external-link" />
           {t("show_file")}
         </a>

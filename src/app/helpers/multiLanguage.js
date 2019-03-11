@@ -237,13 +237,14 @@ const isMultiCountry = value => {
   const countries = f.keys(currencyCodeMap);
   return f.isObject(value) && f.all(f.contains(f.__, countries), f.keys(value));
 };
-module.exports = {
+
+export {
   retrieveTranslation,
   getMultiLangValue,
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
   getTableDisplayName,
-  getColumnDisplayName: getTableDisplayName,
+  getTableDisplayName as getColumnDisplayName,
   getCountryOfLangtag,
   getCurrencyCode,
   getFallbackCurrencyValue,

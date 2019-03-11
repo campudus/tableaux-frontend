@@ -115,4 +115,4 @@ ColumnContextMenu.propTypes = {
   rect: PropTypes.object.isRequired
 };
 
-module.exports = ColumnContextMenu;
+export default ColumnContextMenu;

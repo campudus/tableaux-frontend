@@ -124,4 +124,4 @@ class TableSwitcherButton extends React.PureComponent {
   }
 }
 
-module.exports = TableSwitcherButton;
+export default TableSwitcherButton;
