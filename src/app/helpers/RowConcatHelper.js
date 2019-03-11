@@ -1,21 +1,20 @@
-import Empty from "../components/helperComponents/emptyEntry";
-import f from "lodash/fp";
 import React from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
+
+import { retrieveTranslation } from "./multiLanguage";
+import Empty from "../components/helperComponents/emptyEntry";
 import getDisplayValue from "./getDisplayValue";
 
 const rowConcatString = (idColumn, row, langtag) => {
-  const firstCell = f.get(["values", 0], row);
-  const displayValue = getDisplayValue(idColumn, firstCell);
+  const firstCellValue = f.get(["values", 0], row);
+  console.log("rowConcatString", { idColumn, firstCellValue });
 
-  const arrayConcatForLang = langtag =>
-    f.flow(
-      f.map(f.get(langtag)),
-      f.join(" ")
-    )(displayValue);
-  return f.isArray(displayValue)
-    ? arrayConcatForLang(langtag)
-    : displayValue[langtag];
+  return retrieveTranslation(
+    langtag,
+    getDisplayValue(idColumn, firstCellValue)
+  );
 };
 
 const RowConcat = props => {

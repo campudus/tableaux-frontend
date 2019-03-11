@@ -23,8 +23,10 @@ const RowsOverlay = props => {
   const hasNoDependencies = () =>
     setDepMessage(<p>{i18n.t("table:no_dependent_text")}</p>);
 
-  const { table, row, langtag, deleteInfo } = props;
-  const rowDisplayLabel = rowConcatString(row, langtag);
+  const { table, row, langtag, deleteInfo, grudData } = props;
+  const idColumn = f.prop(["columns", table.id, "data", 0], grudData);
+
+  const rowDisplayLabel = rowConcatString(idColumn, row, langtag);
 
   return (
     <div className="delete-row-confirmation">
@@ -97,7 +99,7 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
 }
 
 export function openShowDependency({ table, row, langtag }) {
-  const itemName = <RowConcat row={row} langtag={langtag} />;
+  const itemName = getRowConcat(table, row, langtag);
 
   store.dispatch(
     actions.openOverlay({
