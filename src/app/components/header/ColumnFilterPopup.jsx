@@ -2,8 +2,7 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import { either, maybe } from "../../helpers/functools";
-// import ActionCreator from "../../actions/ActionCreator";
+import { either } from "../../helpers/functools";
 import { List } from "react-virtualized";
 import {
   Directions,
@@ -20,9 +19,8 @@ class ColumnFilterPopup extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      filteredColumns: this.props.columns.filter(this.buildFilter()),
-      currFilter: null,
-      selectedId: 0
+      filter: null,
+      selectedIndex: 0
     };
   }
 
@@ -31,7 +29,7 @@ class ColumnFilterPopup extends React.Component {
       value: str,
       type: type
     };
-    const { columns } = this.props;
+
     this.setState({
       filter: filter
     });
@@ -55,29 +53,25 @@ class ColumnFilterPopup extends React.Component {
     this.props.close(event);
   };
 
-  setVisibilityAndUpdateGrid(val, coll) {
-    // ActionCreator.setColumnsVisibility(val, coll, () => maybe(this.list).method("forceUpdateGrid"));
-  }
-
-  setAll = val => () => {
-    const columns = this.props.columns;
-    const toggleIds = f.drop(1, columns).map(x => x.id); // get ids of all but first column
-    this.setVisibilityAndUpdateGrid(val, toggleIds);
-  };
-
   getKeyboardShortcuts = () => {
-    const { columns } = this.props;
-    const filteredColumns = this.props.columns.filter(this.buildFilter());
+    const {
+      columns,
+      columnActions: { toggleColumnVisibility }
+    } = this.props;
+    const { selectedIndex } = this.state;
     const selectNext = dir => {
-      const { selectedId } = this.state;
       const nextIdx =
-        (selectedId + (dir === Directions.UP ? -1 : 1) + columns.length) %
+        (selectedIndex + (dir === Directions.UP ? -1 : 1) + columns.length) %
         columns.length;
-      this.setState({ selectedId: nextIdx });
+      this.setState({ selectedIndex: nextIdx });
     };
+
     return {
       enter: event => {
-        this.toggleCol(columns[this.state.selectedId].id)(event);
+        event.preventDefault();
+        event.stopPropagation();
+        const selectedColumnId = f.get("id", columns[selectedIndex + 1]);
+        toggleColumnVisibility(selectedColumnId);
       },
       escape: event => {
         event.preventDefault();
@@ -102,14 +96,6 @@ class ColumnFilterPopup extends React.Component {
     };
   };
 
-  toggleCol = index => event => {
-    event.stopPropagation();
-    const { columns } = this.props;
-    const theColumn = f.first(f.filter(x => x.id === index, columns));
-    this.setVisibilityAndUpdateGrid(!theColumn.visible, [index]);
-    this.forceUpdate();
-  };
-
   getColName = col =>
     either(col)
       .map(f.prop(["displayName", this.props.langtag]))
@@ -121,13 +107,14 @@ class ColumnFilterPopup extends React.Component {
     const col = columns[index];
     const name = this.getColName(col);
     const {
-      columnActions: { setColumnsVisible }
+      columnActions: { toggleColumnVisibility }
     } = this.props;
+    const { selectedIndex } = this.state;
 
     const cssClass = classNames("column-filter-checkbox-wrapper", {
-      even: index % 2 === 0 && index !== this.state.selectedId,
-      odd: index % 2 === 1 && index !== this.state.selectedId,
-      selected: index === this.state.selectedId
+      even: index % 2 === 0 && index !== selectedIndex,
+      odd: index % 2 === 1 && index !== selectedIndex,
+      selected: index === selectedIndex
     });
 
     return (
@@ -135,16 +122,8 @@ class ColumnFilterPopup extends React.Component {
         className={cssClass}
         key={key}
         style={style}
-        onClick={() =>
-          setColumnsVisible(
-            f.compose(
-              f.map("id"),
-              f.filter("visible"),
-              f.update([index, "visible"], isVisible => !isVisible)
-            )(columns)
-          )
-        }
-        onMouseEnter={() => this.setState({ selectedId: index })}
+        onClick={() => toggleColumnVisibility(col.id)}
+        onMouseEnter={() => this.setState({ selectedIndex: index })}
       >
         <input
           type="checkbox"
@@ -169,14 +148,14 @@ class ColumnFilterPopup extends React.Component {
       columnActions: { hideAllColumns, setColumnsVisible },
       tableId
     } = this.props;
+    const { filter, selectedIndex } = this.state;
+
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),
       f.size
     )(columns);
-    const filteredColumns = this.props.columns.filter(
-      this.buildFilter(this.state.filter)
-    );
+    const filteredColumns = columns.filter(this.buildFilter(filter));
 
     return (
       <div
@@ -217,7 +196,7 @@ class ColumnFilterPopup extends React.Component {
             height={300}
             rowCount={filteredColumns.length}
             rowHeight={30}
-            scrollToIndex={this.state.selectedId}
+            scrollToIndex={selectedIndex}
             rowRenderer={this.renderCheckboxItems(filteredColumns)}
             style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
           />
