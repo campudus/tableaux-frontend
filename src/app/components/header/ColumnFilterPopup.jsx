@@ -2,7 +2,7 @@ import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import { either } from "../../helpers/functools";
+import { either, maybe } from "../../helpers/functools";
 import { List } from "react-virtualized";
 import {
   Directions,
@@ -70,7 +70,7 @@ class ColumnFilterPopup extends React.Component {
       enter: event => {
         event.preventDefault();
         event.stopPropagation();
-        const selectedColumnId = f.get("id", columns[selectedIndex]);
+        const selectedColumnId = f.get("id", columns[selectedIndex + 1]);
         toggleColumnVisibility(selectedColumnId);
       },
       escape: event => {
