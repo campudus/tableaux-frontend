@@ -20,7 +20,7 @@ class ColumnFilterPopup extends React.Component {
     super(props);
     this.state = {
       filter: null,
-      selectedId: 0
+      selectedIndex: 0
     };
   }
 
@@ -54,17 +54,24 @@ class ColumnFilterPopup extends React.Component {
   };
 
   getKeyboardShortcuts = () => {
-    const { columns } = this.props;
+    const {
+      columns,
+      columnActions: { toggleColumnVisibility }
+    } = this.props;
+    const { selectedIndex } = this.state;
     const selectNext = dir => {
-      const { selectedId } = this.state;
       const nextIdx =
-        (selectedId + (dir === Directions.UP ? -1 : 1) + columns.length) %
+        (selectedIndex + (dir === Directions.UP ? -1 : 1) + columns.length) %
         columns.length;
-      this.setState({ selectedId: nextIdx });
+      this.setState({ selectedIndex: nextIdx });
     };
+
     return {
       enter: event => {
-        // TODO-W
+        event.preventDefault();
+        event.stopPropagation();
+        const selectedColumnId = f.get("id", columns[selectedIndex]);
+        toggleColumnVisibility(selectedColumnId);
       },
       escape: event => {
         event.preventDefault();
@@ -102,11 +109,12 @@ class ColumnFilterPopup extends React.Component {
     const {
       columnActions: { toggleColumnVisibility }
     } = this.props;
+    const { selectedIndex } = this.state;
 
     const cssClass = classNames("column-filter-checkbox-wrapper", {
-      even: index % 2 === 0 && index !== this.state.selectedId,
-      odd: index % 2 === 1 && index !== this.state.selectedId,
-      selected: index === this.state.selectedId
+      even: index % 2 === 0 && index !== selectedIndex,
+      odd: index % 2 === 1 && index !== selectedIndex,
+      selected: index === selectedIndex
     });
 
     return (
@@ -115,7 +123,7 @@ class ColumnFilterPopup extends React.Component {
         key={key}
         style={style}
         onClick={() => toggleColumnVisibility(col.id)}
-        onMouseEnter={() => this.setState({ selectedId: index })}
+        onMouseEnter={() => this.setState({ selectedIndex: index })}
       >
         <input
           type="checkbox"
@@ -140,14 +148,14 @@ class ColumnFilterPopup extends React.Component {
       columnActions: { hideAllColumns, setColumnsVisible },
       tableId
     } = this.props;
+    const { filter, selectedIndex } = this.state;
+
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),
       f.size
     )(columns);
-    const filteredColumns = this.props.columns.filter(
-      this.buildFilter(this.state.filter)
-    );
+    const filteredColumns = columns.filter(this.buildFilter(filter));
 
     return (
       <div
@@ -188,7 +196,7 @@ class ColumnFilterPopup extends React.Component {
             height={300}
             rowCount={filteredColumns.length}
             rowHeight={30}
-            scrollToIndex={this.state.selectedId}
+            scrollToIndex={selectedIndex}
             rowRenderer={this.renderCheckboxItems(filteredColumns)}
             style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
           />
