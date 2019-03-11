@@ -1,11 +1,5 @@
 import { translate } from "react-i18next";
 import React from "react";
-
-// import { Directions } from "../../constants/TableauxConstants";
-// import {
-//   isLastRowSelected,
-//   setNextSelectedCell
-// } from "./tableNavigationWorker";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 
@@ -46,20 +40,4 @@ export function duplicateRow(payload) {
   //       true
   //     );
   //   });
-}
-
-export function rowAdded() {
-  if (this.selectNewCreatedRow) {
-    this.selectNewCreatedRow = false;
-    //   setNextSelectedCell.call(this, Directions.DOWN);
-  }
-}
-
-export function createRowOrSelectNext() {
-  //if (isLastRowSelected.call(this)) {
-  //  this.selectNewCreatedRow = true;
-  //  //    ActionCreator.addRow(this.props.table.id);
-  //} else {
-  //  setNextSelectedCell.call(this, Directions.DOWN);
-  //}
 }

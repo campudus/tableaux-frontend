@@ -11,12 +11,18 @@ import Cell, { getAnnotationState } from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import ColumnHeader from "../columns/ColumnHeader";
 import { AutoSizer } from "react-virtualized";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  Langtags,
+  Directions
+} from "../../constants/TableauxConstants";
 import { either, maybe } from "../../helpers/functools";
 import AddNewRowButton from "../rows/NewRow";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import MultiGrid from "./GrudGrid";
 import { isLocked } from "../../helpers/annotationHelper";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import * as tableNavigationWorker from "./tableNavigationWorker";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -26,10 +32,13 @@ const ROW_HEIGHT = 45;
 export default class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
+    this.keyboardRecentlyUsedTimer = null;
     this.updateSelectedCell();
     this.state = {
       openAnnotations: {},
-      scrolledCell: {}
+      scrolledCell: {},
+      lastScrolledCell: {},
+      newRowAdded: false
     };
   }
 
@@ -267,7 +276,7 @@ export default class VirtualTable extends PureComponent {
         cell={cell}
         columns={columns}
         annotationState={getAnnotationState(cell)}
-        focusTable={this.props.test}
+        focusTable={tableNavigationWorker.checkFocusInsideTable.call(this)}
         langtag={langtag}
         annotationsOpen={
           !!openAnnotations.cellId && openAnnotations.cellId === cell.id
@@ -472,7 +481,7 @@ export default class VirtualTable extends PureComponent {
     this.multiGrid = node;
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(prev) {
     // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
@@ -484,6 +493,16 @@ export default class VirtualTable extends PureComponent {
           lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
         })
       );
+    }
+
+    // jump one row down if a new one was created from keyboardnavigation
+    if (this.state.newRowAdded && f.size(prev.rows) < f.size(this.props.rows)) {
+      tableNavigationWorker.setNextSelectedCell.call(this, Directions.DOWN);
+
+      this.setState({
+        ...this.state,
+        newRowAdded: false
+      });
     }
   }
 
@@ -515,6 +534,7 @@ export default class VirtualTable extends PureComponent {
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
     const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
+
     const selectedCellKey = isSelectedCellValid
       ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
           "colId",
@@ -527,47 +547,55 @@ export default class VirtualTable extends PureComponent {
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
 
     return (
-      <AutoSizer>
-        {({ height, width }) => {
-          return (
-            <MultiGrid
-              langtag={langtag}
-              ref={this.storeGridElement}
-              key={columnCount < 3 ? "no-fixed-rows" : "with-fixed-rows"}
-              className="data-wrapper"
-              cellRenderer={this.cellRenderer}
-              columnCount={columnCount}
-              columnWidth={this.calcColWidth}
-              noContentRenderer={this.renderEmptyTable}
-              rowCount={rowCount}
-              rowHeight={this.calcRowHeight}
-              fixedColumnCount={columnCount < 3 ? 0 : f.min([columnCount, 2])}
-              fixedRowCount={1}
-              width={width}
-              height={height}
-              selectedCell={selectedCellKey}
-              expandedRows={expandedRowIds}
-              openAnnotations={!!openAnnotations && openAnnotations.cellId}
-              scrollToRow={rowIndex}
-              scrollToColumn={columnIndex}
-              columnKeys={columnKeys}
-              overscanColumnCount={5}
-              overscanRowCount={6}
-              classNameBottomRightGrid={"multigrid-bottom-right"}
-              classNameTopRightGrid={"multigrid-top-right"}
-              classNameBottomLeftGrid={"multigrid-bottom-left"}
-              fullyLoaded={this.props.fullyLoaded}
-              styleTopRightGrid={{
-                backgroundColor: "#f9f9f9",
-                borderBottom: "3px solid #eee"
-              }}
-              styleBottomLeftGrid={{
-                backgroundColor: shouldIDColBeGrey ? "#f9f9f9" : "white"
-              }}
-            />
-          );
-        }}
-      </AutoSizer>
+      <section
+        id="virtual-table-wrapper"
+        tabIndex="-1"
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
+          tableNavigationWorker.getKeyboardShortcuts.bind(this)
+        )}
+      >
+        <AutoSizer>
+          {({ height, width }) => {
+            return (
+              <MultiGrid
+                langtag={langtag}
+                ref={this.storeGridElement}
+                key={columnCount < 3 ? "no-fixed-rows" : "with-fixed-rows"}
+                className="data-wrapper"
+                cellRenderer={this.cellRenderer}
+                columnCount={columnCount}
+                columnWidth={this.calcColWidth}
+                noContentRenderer={this.renderEmptyTable}
+                rowCount={rowCount}
+                rowHeight={this.calcRowHeight}
+                fixedColumnCount={columnCount < 3 ? 0 : f.min([columnCount, 2])}
+                fixedRowCount={1}
+                width={width}
+                height={height}
+                selectedCell={selectedCellKey}
+                expandedRows={expandedRowIds}
+                openAnnotations={!!openAnnotations && openAnnotations.cellId}
+                scrollToRow={rowIndex}
+                scrollToColumn={columnIndex}
+                columnKeys={columnKeys}
+                overscanColumnCount={5}
+                overscanRowCount={6}
+                classNameBottomRightGrid={"multigrid-bottom-right"}
+                classNameTopRightGrid={"multigrid-top-right"}
+                classNameBottomLeftGrid={"multigrid-bottom-left"}
+                fullyLoaded={this.props.fullyLoaded}
+                styleTopRightGrid={{
+                  backgroundColor: "#f9f9f9",
+                  borderBottom: "3px solid #eee"
+                }}
+                styleBottomLeftGrid={{
+                  backgroundColor: shouldIDColBeGrey ? "#f9f9f9" : "white"
+                }}
+              />
+            );
+          }}
+        </AutoSizer>
+      </section>
     );
   }
 }

@@ -1,9 +1,11 @@
 import { Portal } from "react-portal";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+// import * as tableRowsWorker from "./tableRowsWorker";
+// import * as tableContextMenu from "./tableContextMenu";
+import listensToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
@@ -24,15 +26,14 @@ class Table extends Component {
   constructor(props) {
     super(props);
     this.headerDOMElement = null;
-    this.keyboardRecentlyUsedTimer = null;
     this.tableDOMNode = null;
     this.tableRowsDom = null; // scrolling rows container
 
     this.state = {
       windowHeight: window.innerHeight,
       scrolledHorizontal: 0,
-      selectedCellEditing: false,
       // needed for multilanguage cell selection
+      selectedCellExpandedRow: null,
       rowContextMenu: null,
       showScrollToLeftButton: false
     };
@@ -131,6 +132,13 @@ class Table extends Component {
     this.setState({ rowContextMenu: null });
   };
 
+  setSelectedCellExpandedRow = langtag => {
+    this.setState({
+      ...this.state,
+      selectedCellExpandedRow: langtag
+    });
+  };
+
   render() {
     const {
       actions,
@@ -159,13 +167,6 @@ class Table extends Component {
       <section
         id="table-wrapper"
         tabIndex="-1"
-        onKeyDown={
-          () =>
-            console.log(
-              "onKeyDown"
-            ) /*KeyboardShortcutsHelper.onKeyboardShortcut(tableNavigationWorker.getKeyboardShortcuts.bind(
-          this))*/
-        }
         onMouseDown={this.onMouseDownHandler}
       >
         <div className="tableaux-table">
@@ -178,10 +179,6 @@ class Table extends Component {
             ref={this.findAndStoreTableDiv}
             rows={rows}
             tableView={tableView}
-            focusTable={
-              () =>
-                null /*tableNavigationWorker.checkFocusInsideTable.call(this)*/
-            }
             displayValues={displayValues}
             table={table}
             tables={tables}
@@ -194,6 +191,8 @@ class Table extends Component {
             closeCellContextMenu={this.hideRowContextMenu}
             navigate={navigate}
             finishedLoading={finishedLoading}
+            selectedCellExpandedRow={this.state.selectedCellExpandedRow}
+            setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
           />
         </div>
         {this.noRowsInfo()}

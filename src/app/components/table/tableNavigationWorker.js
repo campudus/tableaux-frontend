@@ -1,148 +1,182 @@
+import React from "react";
 import f from "lodash/fp";
-import {ColumnKinds, DefaultLangtag, Directions, Langtags} from "../../constants/TableauxConstants";
-import App from "ampersand-app";
-import ActionCreator from "../../actions/ActionCreator";
-import {isLocked, unlockRow} from "../../helpers/annotationHelper";
-import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
-import {getUserLanguageAccess, isUserAdmin} from "../../helpers/accessManagementHelper";
-import {maybe} from "../../helpers/functools";
-import * as TableHistory from "./undo/tableHistory";
-import {KEYBOARD_TABLE_HISTORY} from "../../FeatureFlags";
+import {
+  ColumnKinds,
+  DefaultLangtag,
+  Directions,
+  Langtags,
+  FallbackLanguage
+} from "../../constants/TableauxConstants";
+import TableauxRouter from "../../router/router";
+import { isLocked } from "../../helpers/annotationHelper";
+import {
+  getUserLanguageAccess,
+  isUserAdmin
+} from "../../helpers/accessManagementHelper";
+import { maybe, doto } from "../../helpers/functools";
+import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
+import Header from "../overlay/Header";
+import TextEditOverlay from "../cells/text/TextEditOverlay";
+import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import { openLinkOverlay } from "../cells/link/LinkOverlay";
+import pasteCellValue from "../cells/cellCopyHelper";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
-  if (this.state.selectedCell !== null) {
-     const tableDOMNode = document.getElementById("table-wrapper");
-    let focusedElement = document.activeElement;
-    // happens in IE
-    if (focusedElement === null) {
+  if (!f.isEmpty(this.props.tableView.selectedCell)) {
+    const tableDOMNode = document.getElementById("virtual-table-wrapper");
+
+    if (tableDOMNode) {
       maybe(tableDOMNode).method("focus");
-    } else if (maybe(tableDOMNode)
-      .exec("contains", focusedElement)
-      .map((boolVal) => !boolVal)
-      .getOrElse(false)
-    ) {
-      // Is the focus outside the table or is body selected
-      // force table to be focused to get keyboard events
-      tableDOMNode.focus();
     }
   }
 }
 
 export function getKeyboardShortcuts() {
-  const {selectedCell, selectedCellEditing} = this.state;
-  const actionKey = (f.contains("Mac OS", navigator.userAgent))
+  const { actions, tableView } = this.props;
+  const { selectedCell } = tableView;
+  const selectedCellEditing = tableView.editing;
+  const actionKey = f.contains("Mac OS", navigator.userAgent)
     ? "metaKey"
     : "ctrlKey";
+
   return {
-    left: (event) => {
+    left: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          setNextSelectedCell.call(this, Directions.LEFT);
-        }
-      );
+      preventSleepingOnTheKeyboard.call(this, () => {
+        setNextSelectedCell.call(this, Directions.LEFT);
+      });
     },
-    right: (event) => {
+    right: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          setNextSelectedCell.call(this, Directions.RIGHT);
-        }
-      );
+      preventSleepingOnTheKeyboard.call(this, () => {
+        setNextSelectedCell.call(this, Directions.RIGHT);
+      });
     },
-    tab: (event) => {
+    tab: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          setNextSelectedCell.call(this, (event.shiftKey) ? Directions.LEFT : Directions.RIGHT);
-        }
-      );
+      preventSleepingOnTheKeyboard.call(this, () => {
+        setNextSelectedCell.call(
+          this,
+          event.shiftKey ? Directions.LEFT : Directions.RIGHT
+        );
+      });
     },
-    up: (event) => {
+    up: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          setNextSelectedCell.call(this, Directions.UP);
-        }
-      );
+      preventSleepingOnTheKeyboard.call(this, () => {
+        setNextSelectedCell.call(this, Directions.UP);
+      });
     },
-    down: (event) => {
+    down: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          setNextSelectedCell.call(this, Directions.DOWN);
-        }
-      );
+      preventSleepingOnTheKeyboard.call(this, () => {
+        setNextSelectedCell.call(this, Directions.DOWN);
+      });
     },
-    enter: (event) => {
+    enter: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          if (selectedCell && !selectedCellEditing) {
-            toggleCellEditing.call(this,
-              {
-                langtag: this.state.selectedCellExpandedRow || this.props.langtag,
-                event
-              });
+      preventSleepingOnTheKeyboard.call(this, () => {
+        if (isLastRowSelected.call(this) && selectedCellEditing) {
+          // if user is currently editing and presses enter in last row
+          // we create a new row and jump into that (like excel does)
+          createAndSelectNewRow.call(this);
+        } else {
+          if (selectedCell) {
+            toggleCellEditing.call(this, {
+              langtag: selectedCell.langtag || this.props.langtag,
+              event
+            });
           }
         }
-      );
+      });
     },
-    escape: (event) => {
+    escape: event => {
       event.preventDefault();
-      preventSleepingOnTheKeyboard.call(this,
-        () => {
-          if (selectedCell && selectedCellEditing) {
-            toggleCellEditing.call(this,
-              {
-                editing: false,
-                event
-              });
-          }
+      preventSleepingOnTheKeyboard.call(this, () => {
+        if (selectedCell && selectedCellEditing) {
+          toggleCellEditing.call(this, {
+            editing: false,
+            event
+          });
         }
-      );
+      });
     },
-    text: (event) => {
+    text: event => {
       if (!selectedCell) {
         return;
       }
       const hasActionKey = !!f.get(actionKey, event);
-      const isKeyPressed = (k) => (k >= "A" && k <= "Z")
-        ? f.matchesProperty("key", k)(event) || (f.matchesProperty("key", f.toLower(k))(event) && f.get("shiftKey", event))
-        : f.matchesProperty("key", k)(event);
-      const thisLangtag = this.props.langtag;
-      const systemPaste = selectedCellEditing
-        && f.contains(selectedCell.kind,
-          [ColumnKinds.text, ColumnKinds.richtext, ColumnKinds.shorttext, ColumnKinds.numeric]);
-      const langtag = this.state.selectedCellExpandedRow || thisLangtag;
+      const isKeyPressed = k =>
+        k >= "A" && k <= "Z"
+          ? f.matchesProperty("key", k)(event) ||
+            (f.matchesProperty("key", f.toLower(k))(event) &&
+              f.get("shiftKey", event))
+          : f.matchesProperty("key", k)(event);
 
-      if (hasActionKey && isKeyPressed("c") // Cell copy
-        && selectedCell.kind !== ColumnKinds.concat && !isTextSelected()) {
-        event.stopPropagation();
-        ActionCreator.copyCellContent(selectedCell, langtag);
-      } else if (!f.isEmpty(this.props.pasteOriginCell)
-        && !f.eq(this.props.pasteOriginCell, selectedCell)
-        && hasActionKey && isKeyPressed("v")
-        && !systemPaste) { // Cell paste
+      const systemPaste =
+        selectedCellEditing &&
+        f.contains(selectedCell.kind, [
+          ColumnKinds.text,
+          ColumnKinds.richtext,
+          ColumnKinds.shorttext,
+          ColumnKinds.numeric
+        ]);
+
+      if (
+        hasActionKey &&
+        isKeyPressed("c") &&
+        selectedCell.kind !== ColumnKinds.concat &&
+        !isTextSelected()
+      ) {
+        // Cell copy
         event.preventDefault();
         event.stopPropagation();
-        ActionCreator.pasteCellContent(selectedCell, langtag);
-      } else if (KEYBOARD_TABLE_HISTORY && hasActionKey && (isKeyPressed("z") || isKeyPressed("Z"))) { // note upper/lower case!
+        copySelectedCell.call(this);
+      } else if (
+        !f.isEmpty(this.props.tableView.copySource) &&
+        !f.eq(this.props.tableView.copySource, selectedCell) &&
+        hasActionKey &&
+        isKeyPressed("v") &&
+        !systemPaste
+      ) {
+        // Cell paste
+        event.preventDefault();
+        event.stopPropagation();
+        pasteSelectedCell.call(this);
+      } else if (
+        KEYBOARD_TABLE_HISTORY &&
+        hasActionKey &&
+        (isKeyPressed("z") || isKeyPressed("Z"))
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        // note upper/lower case!
         if (!selectedCellEditing) {
-          const undoFn = (isKeyPressed("Z")) ? TableHistory.redo : TableHistory.undo;
+          const undoFn = isKeyPressed("Z")
+            ? () => actions.modifyHistory("redo", tableView.currentTable)
+            : () => actions.modifyHistory("undo", tableView.currentTable);
           undoFn();
         }
-      } else if (KEYBOARD_TABLE_HISTORY && isKeyPressed("y") && event.ctrlKey && !selectedCellEditing) {
-        TableHistory.redo();
-      } else if (!selectedCellEditing // Other keypress
-        && (!event.altKey && !event.metaKey && !event.ctrlKey)
-        && (selectedCell.kind === ColumnKinds.text
-        || selectedCell.kind === ColumnKinds.shorttext
-        || selectedCell.kind === ColumnKinds.richtext
-        || selectedCell.kind === ColumnKinds.numeric)) {
-        toggleCellEditing.call(this, {event});
+      } else if (
+        KEYBOARD_TABLE_HISTORY &&
+        isKeyPressed("y") &&
+        event.ctrlKey &&
+        !selectedCellEditing
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        actions.modifyHistory("redo", tableView.currentTable);
+      } else if (
+        !selectedCellEditing && // Other keypress
+        (!event.altKey && !event.metaKey && !event.ctrlKey) &&
+        (selectedCell.kind === ColumnKinds.text ||
+          selectedCell.kind === ColumnKinds.shorttext ||
+          selectedCell.kind === ColumnKinds.richtext ||
+          selectedCell.kind === ColumnKinds.numeric)
+      ) {
+        toggleCellEditing.call(this);
       }
     }
   };
@@ -158,106 +192,195 @@ export function isTextSelected() {
 }
 
 export function isLastRowSelected() {
-  const rows = this.props.rows;
-  const numberOfRows = rows.length;
-  const currentRowId = getCurrentSelectedRowId.call(this);
-  let lastRowId;
-  if (numberOfRows <= 0) {
-    return true;
-  }
-  lastRowId = rows.at(numberOfRows - 1).getId();
-  return (currentRowId === lastRowId);
+  const { rows, tableView } = this.props;
+  const currentRowId = tableView.selectedCell.rowId;
+  const numberOfRows = f.size(rows);
+  const isTableEmpty = numberOfRows <= 0;
+  const currentRowIndex = f.findIndex(row => row.id === currentRowId, rows);
+
+  return isTableEmpty || currentRowIndex === numberOfRows - 1;
 }
 
-export function toggleCellSelection({selected, cell, langtag}) {
-  ActionCreator.setColumnsVisibility(true, [f.get(["column", "id"], cell)]);
-  const tableId = cell.tableId;
-  const columnId = cell.column.id;
-  const rowId = cell.row.id;
-  if (selected !== "NO_HISTORY_PUSH") {
-    const cellURL = `/${this.props.langtag}/tables/${tableId}/columns/${columnId}/rows/${rowId}`;
-    App.router.navigate(cellURL, {trigger: false});
-  }
-  if (!f.isNil(this.state.selectedCell) && !f.equals(this.state.selectedCell.row, cell.row)) {
-    unlockRow(this.state.selectedCell.row, false);
-  }
-  this.setState({
-    selectedCell: cell,
-    selectedCellEditing: false,
-    selectedCellExpandedRow: langtag || null
+export function toggleCellSelection({ cell, langtag }) {
+  const { actions, tableView, setSelectedCellExpandedRow } = this.props;
+  const tableId = tableView.currentTable;
+  const columnId = cell.columnId;
+  const rowId = cell.rowId;
+
+  TableauxRouter.selectCellHandler(tableId, rowId, columnId, langtag);
+
+  actions.toggleCellSelection({
+    columnId,
+    rowId,
+    langtag,
+    tableId
   });
+
+  setSelectedCellExpandedRow(langtag);
 }
 
 export function toggleCellEditing(params = {}) {
-  const canEdit = f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
-  const editVal = (f.isBoolean(params.editing)) ? params.editing : true;
-  const selectedCell = this.state.selectedCell;
-  const needsTranslation = f.contains(
-    params.langtag,
-    f.intersection(getUserLanguageAccess(), f.prop(["annotations", "translationNeeded", "langtags"], selectedCell))
-  );
-  if (selectedCell && canEdit) {
-    const noEditingModeNeeded = (f.contains(selectedCell.kind, [ColumnKinds.boolean, ColumnKinds.link, ColumnKinds.attachment]));
-    if ((!this.state.selectedCellEditing || !noEditingModeNeeded) // Editing requested or unnecessary
-      && isLocked(selectedCell.row) && !needsTranslation) { // needs_translation overrules final
-      askForSessionUnlock(selectedCell.row, f.prop(["event", "key"], params));
-      return;
-    }
-    if (!noEditingModeNeeded) {
-      this.setState({
-        selectedCellEditing: editVal
-      });
+  const canEdit =
+    f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
+  const editVal = f.isBoolean(params.editing) ? params.editing : true;
+  const { columns, rows, tableView, actions } = this.props;
+  const vColumns = f.filter("visible", columns);
+  const {
+    selectedCell: { columnId, rowId, langtag },
+    currentTable
+  } = tableView;
+
+  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
+  const rowIndex = f.findIndex(row => row.id === rowId, rows);
+
+  const selectedColumn = vColumns[columnIndex];
+  const selectedRow = rows[rowIndex];
+
+  const selectedCellObject = this.getCell(rowIndex, columnIndex);
+
+  if (canEdit && selectedCellObject) {
+    const selectedCellDisplayValues = selectedCellObject.displayValue;
+    const selectedCellRawValue = selectedCellObject.value;
+    const selectedCellKind = selectedCellObject.kind;
+    const table = selectedCellObject.table;
+
+    actions.toggleCellEditing({ editing: editVal, row: selectedRow });
+
+    if (!isLocked(selectedRow) && editVal) {
+      switch (selectedCellKind) {
+        case ColumnKinds.boolean:
+          actions.changeCellValue({
+            tableId: currentTable,
+            column: selectedColumn,
+            columnId: columnId,
+            rowId: rowId,
+            oldValue: selectedCellRawValue,
+            newValue: selectedCellObject.isMultiLanguage
+              ? { [langtag]: !selectedCellRawValue }
+              : !selectedCellRawValue,
+            kind: selectedCellKind
+          });
+          break;
+        case ColumnKinds.link:
+          openLinkOverlay({
+            cell: selectedCellObject,
+            langtag: langtag,
+            actions: actions
+          });
+          break;
+        case ColumnKinds.attachment:
+          actions.openOverlay({
+            head: <Header langtag={langtag} />,
+            body: (
+              <AttachmentOverlay
+                cell={selectedCellObject}
+                langtag={langtag}
+                folderId={null}
+                value={selectedCellDisplayValues}
+              />
+            ),
+            type: "full-height",
+            preferRight: true,
+            title: selectedCellObject
+          });
+          break;
+        case ColumnKinds.text:
+        case ColumnKinds.richtext:
+          actions.openOverlay({
+            head: (
+              <Header
+                context={doto(
+                  [
+                    table.displayName[langtag],
+                    table.displayName[FallbackLanguage],
+                    table.name
+                  ],
+                  f.compact,
+                  f.first,
+                  ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
+                )}
+                title={selectedCellDisplayValues[langtag]}
+                langtag={langtag}
+              />
+            ),
+            body: (
+              <TextEditOverlay
+                actions={actions}
+                value={selectedCellDisplayValues}
+                langtag={langtag}
+                cell={selectedCellObject}
+              />
+            ),
+            title: selectedCellObject,
+            type: "full-height"
+          });
+          break;
+      }
     }
   }
 }
 
 export function setNextSelectedCell(direction) {
-  if (!this.state.selectedCell) {
+  const { tableView, rows, columns } = this.props;
+  const { selectedCell } = tableView;
+  const { columnId, rowId, langtag } = selectedCell;
+
+  if (!columnId || !rowId) {
     return;
   }
 
-  let row;
-  let nextCellId;
   let rowCell = {
-    id: getCurrentSelectedRowId.call(this),
-    selectedCellExpandedRow: this.props.langtag
+    id: rowId,
+    selectedCellExpandedRow: langtag
   };
+
   let columnCell = {
-    id: getCurrentSelectedColumnId.call(this),
-    selectedCellExpandedRow: this.props.langtag
+    id: columnId,
+    selectedCellExpandedRow: langtag
   };
-  let newSelectedCellExpandedRow; // Either row or column switch changes the selected language
-  const {table} = this.props;
-  const currentSelectedColumnId = getCurrentSelectedColumnId.call(this);
-  const currentSelectedRowId = getCurrentSelectedRowId.call(this);
+
+  // Either row or column switch changes the selected language
+  let newSelectedCellExpandedRow;
 
   switch (direction) {
     case Directions.LEFT:
-      columnCell = getPreviousColumn.call(this, currentSelectedColumnId);
+      columnCell = getPreviousColumn.call(this);
       newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
       break;
 
     case Directions.RIGHT:
-      columnCell = getNextColumnCell.call(this, currentSelectedColumnId);
+      columnCell = getNextColumnCell.call(this);
       newSelectedCellExpandedRow = columnCell.selectedCellExpandedRow;
       break;
 
     case Directions.UP:
-      rowCell = getPreviousRow.call(this, currentSelectedRowId);
+      rowCell = getPreviousRow.call(this);
       newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
       break;
 
     case Directions.DOWN:
-      rowCell = getNextRowCell.call(this, currentSelectedRowId);
+      rowCell = getNextRowCell.call(this);
       newSelectedCellExpandedRow = rowCell.selectedCellExpandedRow;
       break;
   }
 
-  row = table.rows.get(rowCell.id);
-  nextCellId = "cell-" + table.getId() + "-" + columnCell.id + "-" + rowCell.id;
-  if (row) {
-    let nextCell = row.cells.get(nextCellId);
-    if (nextCell) {
+  const newRow = f.find(row => row.id === rowCell.id, rows);
+  const newColumn = f.find(col => col.id === columnCell.id, columns);
+
+  if (newRow && newColumn) {
+    const nextCell = {
+      rowId: rowCell.id,
+      columnId: columnCell.id,
+      langtag: newSelectedCellExpandedRow
+    };
+
+    var isValidCell = nextCell.rowId > 0 && nextCell.columnId > 0;
+    var isNewCell =
+      nextCell.columnId !== columnId ||
+      nextCell.rowId !== rowId ||
+      newSelectedCellExpandedRow !== langtag;
+
+    if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
         cell: nextCell,
         langtag: newSelectedCellExpandedRow
@@ -267,24 +390,37 @@ export function setNextSelectedCell(direction) {
 }
 
 // returns the next row and the next language cell when expanded
-export function getNextRowCell(currentRowId, getPrev) {
-  const {expandedRowIds, selectedCell, selectedCellExpandedRow} = this.state;
-  const {rows, langtag} = this.props;
-  const currentRow = rows.get(currentRowId);
-  const indexCurrentRow = rows.indexOf(currentRow);
+export function getNextRowCell(getPrev) {
+  const { tableView, rows, columns, selectedCellExpandedRow } = this.props;
+  const { selectedCell, expandedRowIds } = tableView;
+  const { rowId, langtag, columnId } = selectedCell;
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const selectedColumn = columns[columnIndex];
+
+  const indexCurrentRow = f.findIndex(
+    row => row.id === selectedCell.rowId,
+    rows
+  );
   const numberOfRows = rows.length;
   let nextSelectedCellExpandedRow;
   let nextIndex = getPrev ? indexCurrentRow - 1 : indexCurrentRow + 1;
-  let nextRowIndex;
-  let nextRowId;
   let jumpToNextRow = false;
 
   // are there expanded rows and is current selection inside of expanded row block
-  if (expandedRowIds && expandedRowIds.length > 0 && expandedRowIds.indexOf(currentRowId) > -1) {
+  if (
+    expandedRowIds &&
+    expandedRowIds.length > 0 &&
+    expandedRowIds.indexOf(rowId) > -1
+  ) {
     // get next (lower / upper) language position
-    let nextLangtagIndex = Langtags.indexOf(selectedCellExpandedRow) + (getPrev ? -1 : 1);
+    let nextLangtagIndex =
+      Langtags.indexOf(selectedCellExpandedRow) + (getPrev ? -1 : 1);
     // jump to new language inside expanded row - but just when cell is multilanguage
-    if (nextLangtagIndex >= 0 && nextLangtagIndex <= Langtags.length - 1 && selectedCell.isMultiLanguage) {
+    if (
+      nextLangtagIndex >= 0 &&
+      nextLangtagIndex <= Langtags.length - 1 &&
+      selectedColumn.multilanguage
+    ) {
       // keep the row
       nextIndex = indexCurrentRow;
       // set new language
@@ -297,15 +433,17 @@ export function getNextRowCell(currentRowId, getPrev) {
   }
 
   // Get the next row id
-  nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
-  nextRowId = rows.at(nextRowIndex).getId();
+  const nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
+  const nextRowId = rows[nextRowIndex].id;
 
   if (jumpToNextRow) {
     // Next row is expanded
     if (expandedRowIds && expandedRowIds.indexOf(nextRowId) > -1) {
       // Multilanguage cell
-      if (selectedCell.isMultiLanguage) {
-        nextSelectedCellExpandedRow = getPrev ? Langtags[Langtags.length - 1] : DefaultLangtag;
+      if (selectedColumn.multilanguage) {
+        nextSelectedCellExpandedRow = getPrev
+          ? Langtags[Langtags.length - 1]
+          : DefaultLangtag;
       } else {
         nextSelectedCellExpandedRow = DefaultLangtag;
       }
@@ -320,37 +458,47 @@ export function getNextRowCell(currentRowId, getPrev) {
   };
 }
 
-export function getPreviousRow(currentRowId) {
-  return getNextRowCell.call(this, currentRowId, true);
+export function getPreviousRow() {
+  return getNextRowCell.call(this, true);
 }
 
-export function getNextColumnCell(currentColumnId, getPrev) {
-  const columns = this.props.table.columns.filter(col => col.visible);
-  const {selectedCell, expandedRowIds, selectedCellExpandedRow} = this.state;
-  const indexCurrentColumn = f.findIndex(f.matchesProperty("id", currentColumnId), columns);
-  const numberOfColumns = columns.length;
+export function getNextColumnCell(getPrev) {
+  const { columns, tableView, selectedCellExpandedRow } = this.props;
+  const { selectedCell, expandedRowIds } = tableView;
+  const vColumns = f.filter("visible", columns);
+  const indexCurrentColumn = f.findIndex(
+    f.matchesProperty("id", selectedCell.columnId),
+    vColumns
+  );
+  const numberOfColumns = vColumns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
   const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
-  const nextColumn = f.nth(nextColumnIndex, columns);
+  const nextColumn = f.nth(nextColumnIndex, vColumns);
   const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
 
   // Not Multilanguage and row is expanded so jump to top language
-  if (!nextColumn.multilanguage && expandedRowIds && expandedRowIds.indexOf(currentSelectedRowId) > -1) {
+  if (
+    !nextColumn.multilanguage &&
+    expandedRowIds &&
+    expandedRowIds.indexOf(currentSelectedRowId) > -1
+  ) {
     newSelectedCellExpandedRow = DefaultLangtag;
   } else {
     newSelectedCellExpandedRow = selectedCellExpandedRow;
   }
 
-  return {
+  const result = {
     id: nextColumnId,
     selectedCellExpandedRow: newSelectedCellExpandedRow
   };
+
+  return result;
 }
 
-export function getPreviousColumn(currentColumnId) {
-  return getNextColumnCell.call(this, currentColumnId, true);
+export function getPreviousColumn() {
+  return getNextColumnCell.call(this, true);
 }
 
 /**
@@ -366,12 +514,61 @@ export function preventSleepingOnTheKeyboard(cb) {
   }
 }
 
-export function getCurrentSelectedRowId() {
-  const {selectedCell} = this.state;
-  return selectedCell ? selectedCell.rowId : 0;
+function copySelectedCell() {
+  const {
+    actions,
+    rows,
+    columns,
+    tableView: {
+      selectedCell: { columnId, rowId, langtag }
+    }
+  } = this.props;
+
+  const rowIndex = f.findIndex(row => row.id === rowId, rows);
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+
+  const cell = this.getCell(rowIndex, columnIndex);
+
+  actions.copyCellValue({
+    cell,
+    langtag
+  });
 }
 
-export function getCurrentSelectedColumnId() {
-  const {selectedCell} = this.state;
-  return selectedCell ? selectedCell.column.getId() : 0;
+function pasteSelectedCell() {
+  const {
+    rows,
+    columns,
+    tableView: {
+      selectedCell: { columnId, rowId, langtag },
+      copySource
+    }
+  } = this.props;
+
+  const rowIndex = f.findIndex(row => row.id === rowId, rows);
+  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+
+  const selectedCellObject = this.getCell(rowIndex, columnIndex);
+
+  pasteCellValue(
+    copySource.cell,
+    copySource.langtag,
+    selectedCellObject,
+    langtag
+  );
+}
+
+function createAndSelectNewRow() {
+  const {
+    actions,
+    tableView: { currentTable }
+  } = this.props;
+
+  actions.addEmptyRow(currentTable);
+  toggleCellEditing.call(this, { editing: false });
+
+  this.setState({
+    ...this.state,
+    newRowAdded: true
+  });
 }

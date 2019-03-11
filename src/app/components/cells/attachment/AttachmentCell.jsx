@@ -15,8 +15,7 @@ const AttachmentCell = props => {
     editing,
     selected,
     cell: { value },
-    langtag,
-    setCellKeyboardShortcuts
+    langtag
   } = props;
   const cellClass = classNames("cell-content", {
     editing: editing,
@@ -59,16 +58,6 @@ const AttachmentCell = props => {
     )
   );
 
-  setCellKeyboardShortcuts({
-    enter: event => {
-      if (!isLocked(cell.row)) {
-        event.stopPropagation();
-        event.preventDefault();
-        openOverlay();
-      }
-    }
-  });
-
   const handleClick = e => {
     if (editing || selected) {
       openOverlay(e);
@@ -99,8 +88,7 @@ AttachmentCell.propTypes = {
   cell: PropTypes.object.isRequired,
   editing: PropTypes.bool,
   langtag: PropTypes.string.isRequired,
-  selected: PropTypes.bool,
-  setCellKeyboardShortcuts: PropTypes.func.isRequired
+  selected: PropTypes.bool
 };
 
 export default AttachmentCell;

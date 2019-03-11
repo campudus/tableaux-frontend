@@ -12,7 +12,11 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
       const applyVisibility = (columns, visibleArray) =>
         f.map(
           column =>
-            f.assoc("visible", f.includes(column.id, visibleArray), column),
+            f.assoc(
+              "visible",
+              f.includes(column.id, visibleArray) || column.id === 1,
+              column
+            ),
           columns
         );
       return applyVisibility(

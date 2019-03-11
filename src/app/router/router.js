@@ -113,7 +113,7 @@ const extendedRouter = Router.extend({
           validColumnId +
           "/rows/" +
           validRowId,
-        { trigger: false }
+        { trigger: false, replace: true }
       );
     }
   },
