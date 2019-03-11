@@ -26,7 +26,9 @@ export function checkFocusInsideTable() {
   // Is a cell selected?
   if (!f.isEmpty(this.props.tableView.selectedCell)) {
     const tableDOMNode = document.getElementById("virtual-table-wrapper");
-    const columnFilterNode = document.getElementById("column-filter-popup-wrapper");
+    const columnFilterNode = document.getElementById(
+      "column-filter-popup-wrapper"
+    );
 
     if (tableDOMNode && !columnFilterNode) {
       maybe(tableDOMNode).method("focus");
