@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import ActionCreator from "../../actions/ActionCreator";
 import { translate } from "react-i18next";
 import {
   compose,
@@ -15,7 +14,8 @@ import f from "lodash/fp";
 const withFunctionality = compose(
   pure,
   setPropTypes({
-    table: PropTypes.object.isRequired,
+    showToast: PropTypes.func,
+    rows: PropTypes.array,
     onAdd: PropTypes.func
   }),
   translate(["table"]),
