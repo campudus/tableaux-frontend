@@ -380,7 +380,8 @@ export default (state = initialState, action, completeState) => {
         filters: [],
         sorting: [],
         displayValues: {},
-        history: []
+        history: [],
+        expandedRowIds: []
       };
     default:
       return state;
