@@ -30,6 +30,7 @@ const {
   CELL_SAVED_SUCCESSFULLY,
   ALL_ROWS_DATA_LOADED,
   ADDITIONAL_ROWS_DATA_LOADED,
+  ROW_CREATE_SUCCESS,
   SET_FILTERS_AND_SORTING,
   CLEAN_UP
 } = ActionTypes;
@@ -328,6 +329,13 @@ export default (state = initialState, action, completeState) => {
       return setLinkDisplayValues(state, action.displayValues);
     case ADDITIONAL_ROWS_DATA_LOADED:
       return insertSkeletonLinks(state, action, completeState);
+    case ROW_CREATE_SUCCESS:
+      return insertSkeletonLinks(
+        state,
+        { ...action, rows: [action.result] },
+        completeState
+      );
+
     case START_GENERATING_DISPLAY_VALUES:
       return { ...state, startedGeneratingDisplayValues: true };
     case SET_CURRENT_LANGUAGE:
