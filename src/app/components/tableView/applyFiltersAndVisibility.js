@@ -14,11 +14,12 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
           column =>
             f.assoc(
               "visible",
-              f.includes(column.id, visibleArray) || column.id === 1,
+              f.includes(column.id, visibleArray) || column.id === 0,
               column
             ),
           columns
         );
+
       return applyVisibility(
         columns,
         f.isEmpty(colsWithMatches) ? visibleColumns : colsWithMatches
