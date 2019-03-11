@@ -9,7 +9,7 @@ import Folder from "./folder/Folder.jsx";
 import LanguageSwitcher from "../header/LanguageSwitcher";
 import Navigation from "../../components/header/Navigation.jsx";
 import PageTitle from "../../components/header/PageTitle.jsx";
-import ConnectionStatus from "../header/ConnectionStatus";
+import { ConnectionStatus } from "../header/ConnectionStatus";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
@@ -26,7 +26,7 @@ const mapStateToProps = state => {
 
 const enhance = compose(
   withProps(() => {
-    return { requestUrl: apiUrl(route.toSetting("langtag")) };
+    return { requestUrl: apiUrl(route.toSetting("langtags")) };
   }),
   needsApiData
 );
