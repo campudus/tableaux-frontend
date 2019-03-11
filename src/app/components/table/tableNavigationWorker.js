@@ -207,15 +207,16 @@ export function isLastRowSelected() {
 export function toggleCellSelection({ cell, langtag }) {
   const { actions, tableView, setSelectedCellExpandedRow } = this.props;
   const tableId = tableView.currentTable;
+  const validLangtag = langtag || this.props.langtag;
   const columnId = cell.columnId;
   const rowId = cell.rowId;
 
-  TableauxRouter.selectCellHandler(tableId, rowId, columnId, langtag);
+  TableauxRouter.selectCellHandler(tableId, rowId, columnId, validLangtag);
 
   actions.toggleCellSelection({
     columnId,
     rowId,
-    langtag,
+    langtag: validLangtag,
     tableId
   });
 
