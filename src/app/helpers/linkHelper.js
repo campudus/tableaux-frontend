@@ -54,7 +54,6 @@ const identifyUniqueLinkedRows = (rows, columns) => {
     f.map(element => f.sortedUniqBy("id", f.sortBy("id", element))),
     f.map(f.flatten),
     f.zipAll,
-    // mapIndexed((element, index)=>{return {...element,}})
     f.map(f.props(linkIndexes)),
     f.map("values")
   )(rows);

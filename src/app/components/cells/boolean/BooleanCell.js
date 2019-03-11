@@ -25,12 +25,6 @@ const BooleanCell = props => {
   };
 
   const toggleCheckboxValue = () => {
-    // FIXME: Respect locking status
-    // if (isLocked(cell.row)) {
-    //   askForSessionUnlock(cell.row);
-    // } else if (selected) {
-    //   handleEditDone(!getCheckboxValue());
-    // }
     selected && handleEditDone(!getCheckboxValue());
   };
 

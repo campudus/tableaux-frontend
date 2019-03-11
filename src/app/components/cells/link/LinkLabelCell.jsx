@@ -3,7 +3,6 @@ import * as f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { module } from '../../../../../.storybook/webpack.config';
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
@@ -36,4 +35,4 @@ LinkLabelCell.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-module.exports = LinkLabelCell;
+export default LinkLabelCell;

@@ -27,17 +27,4 @@ export function duplicateRow(payload) {
       DuplicatedMessage: TranslatedDuplicatedMessage
     })
   );
-  //   const { rows } = this.props;
-  //   const { rowId } = payload;
-  //   const rowToCopy = rows.get(rowId);
-  //   rowToCopy.safelyDuplicate(row => {
-  //     ActionCreator.showToast(
-  //       <TranslatedDuplicatedMessage
-  //         row={row}
-  //         onJumpToRow={ActionCreator.jumpToDupe}
-  //       />,
-  //       3000,
-  //       true
-  //     );
-  //   });
 }

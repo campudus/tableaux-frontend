@@ -1,12 +1,8 @@
 import React from "react";
 import Loader from "react-loader";
-// import Dispatcher from "../../dispatcher/Dispatcher";
-import TableauxConstants from "../../constants/TableauxConstants";
-import {CSSTransition} from "react-transition-group";
-import {merge} from "lodash/fp";
+import { CSSTransition } from "react-transition-group";
+import { merge } from "lodash/fp";
 import PropTypes from "prop-types";
-
-const ActionTypes = TableauxConstants.ActionTypes;
 
 class Spinner extends React.Component {
   static spinnerOptions = {
@@ -35,58 +31,53 @@ class Spinner extends React.Component {
 
   constructor(props) {
     super(props);
-    // Dispatcher.on(ActionTypes.SPINNER_ON, this.spinnerOn, this);
-    // Dispatcher.on(ActionTypes.SPINNER_OFF, this.spinnerOff, this);
-    this.state = {isLoading: props.isLoading};
+    this.state = { isLoading: props.isLoading };
     this.spinnerElement = null;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const shouldRenderStateUpdate = nextState.isLoading !== this.state.isLoading;
+    const shouldRenderStateUpdate =
+      nextState.isLoading !== this.state.isLoading;
     return shouldRenderStateUpdate;
   }
 
-  componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.SPINNER_ON, this.spinnerOn, this);
-    // Dispatcher.off(ActionTypes.SPINNER_OFF, this.spinnerOff, this);
-  }
-
   spinnerOn() {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
   }
 
   spinnerOff() {
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isLoading !== this.props.isLoading) {
-      this.setState({isLoading: nextProps.isLoading});
+      this.setState({ isLoading: nextProps.isLoading });
     }
   }
 
   renderSpinner() {
     if (this.state.isLoading) {
-      const {customOptions} = this.props;
-      const options = (customOptions)
+      const { customOptions } = this.props;
+      const options = customOptions
         ? merge(Spinner.spinnerOptions, customOptions)
         : Spinner.spinnerOptions;
-      this.spinnerElement = this.spinnerElement
-        || <Loader loaded={false} options={options} className="actual-spinner"/>;
+      this.spinnerElement = this.spinnerElement || (
+        <Loader loaded={false} options={options} className="actual-spinner" />
+      );
       return (
         <div key="spinnerWrapper" className="spinner">
           {this.spinnerElement}
         </div>
       );
     } else {
-      return <div/>;
+      return <div />;
     }
   }
 
   render() {
     return (
       <div className="Tableaux-Spinner">
-        <CSSTransition classNames="spinner" timeout={{exit: 300, enter: 750}}>
+        <CSSTransition classNames="spinner" timeout={{ exit: 300, enter: 750 }}>
           {this.renderSpinner()}
         </CSSTransition>
       </div>
@@ -95,10 +86,10 @@ class Spinner extends React.Component {
 }
 
 export default Spinner;
-export const LoadingSpinner = (props) => <Spinner {...props} isLoading />;
+export const LoadingSpinner = props => <Spinner {...props} isLoading />;
 
 Spinner.propTypes = {
   isLoading: PropTypes.bool,
   customOptions: PropTypes.object
 };
-Spinner.defaultProps = {isLoading: false};
+Spinner.defaultProps = { isLoading: false };

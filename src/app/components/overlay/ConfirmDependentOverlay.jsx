@@ -71,7 +71,6 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
       actions.closeOverlay(overlayToCloseId);
     }
     // TODO: create a helper to set the URL to anything we like
-    // ActionCreator.resetTableURL();
   };
 
   const buttons = {

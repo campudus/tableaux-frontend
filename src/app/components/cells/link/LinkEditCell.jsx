@@ -36,7 +36,6 @@ const LinkEditCell = props => {
     ? value.map((element, index) => (
         <LinkLabelCell
           key={element.id}
-          clickable={false}
           linkElement={element}
           cell={cell}
           langtag={langtag}

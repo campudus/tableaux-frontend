@@ -1,6 +1,8 @@
 module.exports = {
   aliases: {
-    f: "lodash/fp"
+    f: "lodash/fp",
+    React: "react",
+    PropTypes: "prop-types"
   },
   environments: ["browser", "jest"],
   importDevDependencies: true

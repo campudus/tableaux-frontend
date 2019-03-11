@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-// import ActionCreator from "../../../actions/ActionCreator";
 import "react-virtualized/styles.css";
 import i18n from "i18next";
 import { FilterModes } from "../../../constants/TableauxConstants";
@@ -46,13 +45,13 @@ class SearchBar extends Component {
     this.setState({ popupOpen: false });
   };
 
-  handleClickOutside = event => {
+  handleClickOutside = () => {
     this.setState({ popupOpen: false });
   };
 
   renderSearchOptions = () => {
     const { popupOpen } = this.state;
-    const { filterValue, filterMode } = this.props;
+    const { filterMode } = this.props;
     const activeIndex = when(f.gt(0), f.always(0))(
       f.findIndex(f.eq(filterMode), SEARCH_FUNCTION_IDS)
     );
