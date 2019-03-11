@@ -99,8 +99,6 @@ class File extends Component {
     const title = retrieveTranslation(langtag, file.title);
     const imageUrl = apiUrl(retrieveTranslation(langtag, file.url));
 
-    console.log({ title });
-
     // delete and edit file
     const mediaOptions = (
       <div className="media-options">
