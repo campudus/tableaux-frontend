@@ -1,23 +1,15 @@
 import React from "react";
-import PropTypes from "prop-types";
-// import {loadAndOpenEntityView} from "../../overlay/EntityViewOverlay";
 import * as f from "lodash/fp";
-import { compose, pure, withHandlers } from "recompose";
-import Empty from "../../helperComponents/emptyEntry";
+
+import PropTypes from "prop-types";
+
+import { module } from '../../../../../.storybook/webpack.config';
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { when } from "../../../helpers/functools";
+import Empty from "../../helperComponents/emptyEntry";
 
 const LinkLabelCell = props => {
-  const {
-    value,
-    column,
-    clickable,
-    langtag,
-    linkElement,
-    linkIndexAt,
-    displayValue,
-    displayValues
-  } = props;
+  const { value, langtag, displayValue, displayValues } = props;
   const { id } = value;
   const linkName = f.isEmpty(displayValues)
     ? retrieveTranslation(langtag)(displayValue)
@@ -28,7 +20,7 @@ const LinkLabelCell = props => {
       )(displayValues);
 
   return (
-    <a href="#" onClick={() => console.log("onClick")} className="link-label">
+    <a href="#" className="link-label">
       <div className="label-text">
         {f.isEmpty(linkName) ? <Empty langtag={langtag} /> : linkName}
       </div>
@@ -36,39 +28,12 @@ const LinkLabelCell = props => {
   );
 };
 
-// LinkLabelCell.propTypes = {
-//   cell: PropTypes.object.isRequired,
-//   langtag: PropTypes.string.isRequired,
-//   linkIndexAt: PropTypes.number.isRequired,
-//   clickable: PropTypes.bool
-// };
-
-// const enhance = compose(
-//   withHandlers({
-//     onClick: ({cell, clickable, langtag, linkElement}) => event => {
-//       if (clickable) {
-//         event.stopPropagation();
-//         loadAndOpenEntityView(
-//           {
-//             tables: cell.tables,
-//             tableId: cell.column.toTable,
-//             rowId: linkElement.id
-//           },
-//           langtag
-//         );
-//       }
-//     },
-//     getLinkName: ({langtag, cell, linkIndexAt}) => () =>
-//       f.find(
-//         // first truthy value
-//         f.complement(f.isEmpty),
-//         [
-//           ...f.props([langtag, DefaultLangtag], cell.displayValue[linkIndexAt]),
-//           <Empty />
-//         ]
-//       )
-//   }),
-//   pure
-// );
+LinkLabelCell.propTypes = {
+  value: PropTypes.object.isRequired,
+  displayValue: PropTypes.object,
+  displayValues: PropTypes.array,
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired
+};
 
 module.exports = LinkLabelCell;

@@ -4,7 +4,7 @@ import f from "lodash/fp";
 
 // overwrite converter so we can parse express-cookies
 const Cookies = Keks.withConverter({
-  read: function(rawValue, name) {
+  read: function(rawValue) {
     const value = decodeURIComponent(rawValue);
     if (typeof value === "string" && f.startsWith("j:", value)) {
       let result = value;
@@ -21,7 +21,7 @@ const Cookies = Keks.withConverter({
       return value;
     }
   },
-  write: function(value, name) {
+  write: function(value) {
     return encodeURIComponent(value);
   }
 });
@@ -146,7 +146,6 @@ export function canUserChangeCell(cell) {
 
 // Reduce the value object before sending to server, so that just allowed languages gets sent
 export function reduceValuesToAllowedLanguages(valueToChange) {
-  console.log("valueToChange:", valueToChange);
   if (isUserAdmin()) {
     return valueToChange;
   } else {
@@ -167,7 +166,6 @@ export function reduceMediaValuesToAllowedLanguages(fileInfos) {
   if (isUserAdmin()) {
     return fileInfos;
   }
-  console.log("fileInfos:", fileInfos);
   return f.map(fileInfo => {
     if (f.isObject(fileInfo)) {
       return f.pick(getUserLanguageAccess(), fileInfo);

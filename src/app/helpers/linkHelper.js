@@ -1,17 +1,13 @@
 import f from "lodash/fp";
 import { ColumnKinds } from "../constants/TableauxConstants";
 
-const trace = (message = "") => traceable => {
-  console.log(message, traceable);
-  return traceable;
-};
 const mapIndexed = f.map.convert({ cap: false });
 const getLinkColumns = columns =>
   f.compose(
     f.compact,
     mapIndexed((column, index) => {
       const { kind } = column;
-      if (kind == ColumnKinds.link) {
+      if (kind === ColumnKinds.link) {
         const { toTable } = column;
         return { index: index, tableId: toTable };
       }
@@ -30,9 +26,8 @@ const mergeSameTables = allElements => {
       const merged = {
         ...val,
         values: f.compose(
-          f.flatten,
-          f.map("values"),
-          f.filter(element => element.tableId == tableId)
+          f.flatMap("values"),
+          f.filter(element => element.tableId === tableId)
         )(allElements)
       };
       return {
@@ -72,7 +67,7 @@ const combineDisplayValuesWithLinks = (allDisplayValues, columns, tableId) => {
   const findCells = (tableId, rowIds) => {
     const rows = f.get([tableId], allDisplayValues);
     return f.map(
-      id => f.head(f.get("values", f.find(element => element.id == id, rows))),
+      id => f.head(f.get("values", f.find(element => element.id === id, rows))),
       rowIds
     );
   };
@@ -81,7 +76,7 @@ const combineDisplayValuesWithLinks = (allDisplayValues, columns, tableId) => {
     return {
       id: row.id,
       values: mapIndexed((cell, index) => {
-        if (columns[index].kind != "link") {
+        if (columns[index].kind !== "link") {
           return cell;
         }
         const { tableId, rowIds } = cell;

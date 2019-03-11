@@ -84,15 +84,6 @@ const setTextAnnotation = change => action => (dispatch, getState) => {
   );
 
   const shouldDelete = change === Change.DELETE || action.setTo === false;
-  console.log(
-    "setTextAnnotation()",
-    action,
-    "shouldDelete?",
-    shouldDelete,
-    "existingAnnotation:",
-    existingAnnotation
-  );
-
   dispatch({
     promise: makeRequest(
       shouldDelete
@@ -116,7 +107,6 @@ const setTextAnnotation = change => action => (dispatch, getState) => {
 
 const getRequestParam = change => (cell, annotationObj) => {
   const { table, row, column } = cell;
-  console.log("Param for", change, "incoming annotation", annotationObj);
   const annotation = when(
     f.has("annotation"),
     f.prop("annotation"),
@@ -137,7 +127,6 @@ const getRequestParam = change => (cell, annotationObj) => {
     data: annotation
   };
 
-  console.log("Param:", param);
   return param;
 };
 
@@ -228,15 +217,6 @@ export const toggleAnnotationFlag = action => (dispatch, getState) => {
   const shouldDelete = f.isBoolean(annotation.setTo)
     ? annotation.setTo
     : !!existingAnnotation;
-
-  console.log(
-    "toggleAnnotationFlag",
-    action,
-    "existingAnnotation",
-    existingAnnotation,
-    "shouldDelete?",
-    shouldDelete
-  );
 
   const description = {
     promise: makeRequest(

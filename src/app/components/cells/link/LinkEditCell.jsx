@@ -43,7 +43,6 @@ const LinkEditCell = props => {
           displayValue={displayValue[index]}
           value={element}
           displayValues={allDisplayValues[cell.column.toTable]}
-          linkIndexAt={index}
         />
       ))
     : spy(

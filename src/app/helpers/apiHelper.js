@@ -57,12 +57,3 @@ export const makeRequest = async ({
     })
     .then(parseResponse);
 };
-
-const sendTestData = path => fileName => data =>
-  fetch("http://localhost:3004", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ data, path: path + fileName })
-  }).then(response => console.log(response));

@@ -9,7 +9,6 @@ import { openEntityView } from "../components/overlay/EntityViewOverlay";
 
 // ({ table, row, langtag}) -> (string) -> void
 export function initiateDeleteRow(rowSpecs, overlayToCloseId) {
-  console.log("initiateDeleteRow", rowSpecs, isUserAdmin());
   if (isUserAdmin()) {
     confirmDeleteRow(rowSpecs, overlayToCloseId);
   } else {
