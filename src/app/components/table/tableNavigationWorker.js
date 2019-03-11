@@ -224,7 +224,7 @@ export function toggleCellEditing(params = {}) {
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
-  const vColumns = f.filter("visible", columns);
+  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
   const {
     selectedCell: { columnId, rowId, langtag },
     currentTable
@@ -465,7 +465,7 @@ export function getPreviousRow() {
 export function getNextColumnCell(getPrev) {
   const { columns, tableView, selectedCellExpandedRow } = this.props;
   const { selectedCell, expandedRowIds } = tableView;
-  const vColumns = f.filter("visible", columns);
+  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
   const indexCurrentColumn = f.findIndex(
     f.matchesProperty("id", selectedCell.columnId),
     vColumns
