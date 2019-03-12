@@ -149,28 +149,10 @@ export const RowCreator = compose(
           column: { toTable }
         },
         langtag,
-        updateRowResults,
-        addLink
+        actions: { addEmptyRowAndOpenEntityView }
       } = props;
-      //      const linkNewRow = (row = {}) => {
-      //        const link = {
-      //          id: row.id,
-      //          value: null,
-      //          displayValue: {}
-      //        };
-      //        updateRowResults(old => [...old, link]);
-      //        addLink(false, link);
-      //
-      //        loadAndOpenEntityView(
-      //          {
-      //            tables: cell.tables,
-      //            tableId: toTable,
-      //            rowId: row.id
-      //          },
-      //          langtag
-      //        );
-      //      };
-      // ActionCreator.addRow(toTable, linkNewRow);
+
+      addEmptyRowAndOpenEntityView(toTable, langtag, cell);
     }
   })
 )(RowCreatorFrag);
