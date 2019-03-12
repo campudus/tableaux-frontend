@@ -59,7 +59,7 @@ const extendedRouter = Router.extend({
     );
   },
 
-  initialize: function(options) {
+  initialize: function() {
     const { loadTables, createDisplayValueWorker } = this.actions;
     loadTables();
     createDisplayValueWorker();
