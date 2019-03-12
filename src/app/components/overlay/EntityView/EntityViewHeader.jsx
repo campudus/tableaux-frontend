@@ -155,6 +155,8 @@ class EntityViewHeader extends PureComponent {
 
   render() {
     const {
+      id,
+      actions,
       canSwitchRows,
       hasMeaningfulLinks,
       sharedData,
@@ -166,7 +168,7 @@ class EntityViewHeader extends PureComponent {
     } = this.props;
     const tableId = f.prop(["table", "id"], cell);
     const table = f.prop(["tables", "data", tableId], grudData);
-    const { tableView } = grudData
+    const { tableView } = grudData;
 
     const components = (
       <div className="header-components">
@@ -174,12 +176,16 @@ class EntityViewHeader extends PureComponent {
         {canSwitchRows && !f.isEmpty(rows) ? (
           <RowSwitcher {...this.props} />
         ) : null}
-        <HistoryButtons tableView={tableView} actions={this.props.actions}/>
-        <FilterBar id={this.props.id} />
+        <HistoryButtons
+          tableView={tableView}
+          tableId={tableId}
+          actions={actions}
+        />
+        <FilterBar id={id} />
         <HeaderPopupMenu
           langtag={langtag}
           row={row}
-          id={this.props.id}
+          id={id}
           funcs={sharedData}
           hasMeaningfulLinks={hasMeaningfulLinks}
         />
