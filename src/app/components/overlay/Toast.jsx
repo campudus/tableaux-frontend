@@ -36,11 +36,13 @@ const selfHiding = compose(
       setTimer();
     },
     {
-      clearTimer: state =>
-        state && state.hidingTimer && clearInterval(state.hidingTimer),
+      clearTimer: (state, props) => () => {
+        state && state.hidingTimer && clearTimeout(state.hidingTimer);
+        props.actions.hideToast();
+      },
       resetTimer: (state, props) => () => {
-        const { setTimer = () => null } = props;
-        state && state.hidingTimer && clearInterval(state.hidingTimer);
+        const { setTimer } = props;
+        state && state.hidingTimer && clearTimeout(state.hidingTimer);
         return {
           hidingTimer: setTimer()
         };
