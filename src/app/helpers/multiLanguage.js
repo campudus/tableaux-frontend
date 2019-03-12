@@ -5,7 +5,7 @@ import { checkOrThrow } from "../specs/type";
 import { ifElse, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
 import TableauxConstants, {
-  DefaultLanguage,
+  DefaultLangtag,
   FallbackLanguage
 } from "../constants/TableauxConstants";
 
@@ -26,7 +26,7 @@ const retrieveTranslation = f.curryN(2, (langtag, json) => {
   const language = getLanguageOfLangtag(langtag);
 
   return f.flow(
-    f.props([langtag, language, DefaultLanguage, FallbackLanguage]),
+    f.props([langtag, language, DefaultLangtag, FallbackLanguage]),
     f.find(value => !f.isEmpty(value))
   )(json);
 });
