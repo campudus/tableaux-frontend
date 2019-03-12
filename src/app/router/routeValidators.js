@@ -31,13 +31,15 @@ async function validateLangtag(langtag) {
 
 async function validateTableId(tableId, propTables) {
   // if state has no tables yet we have to get them ourselves
-
   const tables = propTables.finishedLoading
     ? propTables.data
     : await getTables();
 
   const firstTableId = f.get("id", f.head(tables));
-  const result = f.isNil(tables[tableId]) ? firstTableId : tableId;
+  const result =
+    f.findIndex(table => table.id === tableId, tables) === -1
+      ? firstTableId
+      : tableId;
 
   return result;
 }
