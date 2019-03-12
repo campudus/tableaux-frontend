@@ -46,7 +46,6 @@ const closeOverlay = (state, action) => {
 const setOverlayState = (state, action) => {
   const id = f.prop("id", action);
   if (f.isEmpty(id) && !f.isInteger(id)) {
-    console.log("  -- id:", typeof id, id);
     console.warn("Trying to set overlay to", action, "but no id was given");
     return state;
   }

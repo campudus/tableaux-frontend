@@ -196,12 +196,6 @@ class Cell extends React.Component {
     );
   }
 
-  // componentDidUpdate = reportUpdateReasons(
-  //   `${this.props.cell.column.kind}-cell-${this.props.cell.row.id}-${
-  //     this.props.cell.column.id
-  //   }-${this.props.langtag}`
-  // );
-
   render() {
     const {
       annotationsOpen,
@@ -219,9 +213,6 @@ class Cell extends React.Component {
     const { column, row, table } = cell;
     const noKeyboard = [concat, "disabled", text, richtext];
     const kind = column.kind;
-    //       this.userCanEditValue() || column.kind === ColumnKinds.concat
-    //         ? column.kind
-    //         : "disabled";
     const { translationNeeded } = cell.annotations || {};
     const isPrimaryLanguage = langtag === f.first(Langtags);
     const needsTranslationOtherLanguages =

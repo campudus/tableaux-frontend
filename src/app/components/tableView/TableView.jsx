@@ -70,7 +70,6 @@ const mapStatetoProps = (state, props) => {
 };
 
 @applyFiltersAndVisibility
-// @canFocusCell
 class TableView extends PureComponent {
   constructor(props) {
     super(props);

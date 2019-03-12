@@ -30,14 +30,16 @@ const stacks = {
 
 let tableCollection = null;
 
-const getViewOfStack = ({tableId, rowId}, stackName) => f.filter(
-  ({cell}) => tableId === cell.tableId && (f.isNil(rowId) || rowId === cell.rowId),
-  f.get(stackName, stacks)
-);
+const getViewOfStack = ({ tableId, rowId }, stackName) =>
+  f.filter(
+    ({ cell }) =>
+      tableId === cell.tableId && (f.isNil(rowId) || rowId === cell.rowId),
+    f.get(stackName, stacks)
+  );
 
 const push = (stackName, data) => {
   const pushAndTrim = f.flow(
-    (s) => [...s, data],
+    s => [...s, data],
     f.takeRight(MAX_UNDO_STEPS)
   );
   updateStack(stackName, pushAndTrim);
@@ -58,9 +60,9 @@ const pop = (view, stackName) => {
 
 const peek = (view, stackName) => f.last(getViewOfStack(view, stackName));
 
-export const canUndo = (view) => !f.isEmpty(getViewOfStack(view, "undo"));
+export const canUndo = view => !f.isEmpty(getViewOfStack(view, "undo"));
 
-export const canRedo = (view) => !f.isEmpty(getViewOfStack(view, "redo"));
+export const canRedo = view => !f.isEmpty(getViewOfStack(view, "redo"));
 
 export async function undo(view) {
   return popAndApply(view, "undo");
@@ -72,7 +74,9 @@ export async function redo(view) {
 
 async function popAndApply(view, stackName) {
   if (f.isNil(tableCollection)) {
-    window.error("Tried to apply table history before initializing the table collection!");
+    window.error(
+      "Tried to apply table history before initializing the table collection!"
+    );
     return;
   }
 
@@ -82,34 +86,44 @@ async function popAndApply(view, stackName) {
   }
 
   const isUndo = stackName === "undo";
-  const {cell, value} = item;
+  const { cell, value } = item;
   // ActionCreator.toggleCellSelection(cell, true); // do that here to feel more responsive
-  const complementaryStack = (isUndo) ? "redo" : "undo";
-  push(complementaryStack, {cell, value: f.clone(cell.value)});
+  const complementaryStack = isUndo ? "redo" : "undo";
+  push(complementaryStack, { cell, value: f.clone(cell.value) });
   // Table might have been switched away and back; in this case cells have been reloaded, so we can't rely on
   // the stored cell reference
   const possiblyReloadedCell = tableCollection
     .get(cell.tableId)
     .rows.get(cell.row.id)
     .cells.get(cell.id);
-  // await changeCell({cell: possiblyReloadedCell, value, options: {type: "UNDO"}});
   const applied = pop(view, stackName);
-  // ActionCreator.broadcastHistoryEvent(canUndo(view), canRedo(view));
   return applied;
 }
 
-const reportStacks = (process.env.NODE_ENV === "production")
-  ? f.noop
-  : (action) => {
-    if (process.env.NODE_ENV !== "production") {
-      const undoVals = f.map(f.flow(f.props(["value", ["cell", "id"]]), f.join(" in ")), stacks.undo);
-      const redoVals = f.map(f.flow(f.props(["value", ["cell", "id"]]), f.join(" in ")), stacks.redo);
-      console.log(`After ${action}:\nUndoStack:`, undoVals, "\nRedoStack:", redoVals, "\n");
-    }
-  };
+const reportStacks =
+  process.env.NODE_ENV === "production"
+    ? f.noop
+    : action => {
+        if (process.env.NODE_ENV !== "production") {
+          const undoVals = f.map(
+            f.flow(
+              f.props(["value", ["cell", "id"]]),
+              f.join(" in ")
+            ),
+            stacks.undo
+          );
+          const redoVals = f.map(
+            f.flow(
+              f.props(["value", ["cell", "id"]]),
+              f.join(" in ")
+            ),
+            stacks.redo
+          );
+        }
+      };
 
-export const remember = ({cell, value}) => {
-  const {tableId} = cell;
+export const remember = ({ cell, value }) => {
+  const { tableId } = cell;
   push("undo", {
     cell,
     value: f.clone(value)
@@ -117,6 +131,6 @@ export const remember = ({cell, value}) => {
   // ActionCreator.broadcastHistoryEvent(canUndo({tableId}), canRedo({tableId}));
 };
 
-export const initHistoryOf = (tables) => {
+export const initHistoryOf = tables => {
   tableCollection = tables;
 };

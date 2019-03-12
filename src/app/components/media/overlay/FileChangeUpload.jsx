@@ -89,4 +89,4 @@ class FileChangeUpload extends PureComponent {
   }
 }
 
-module.exports = FileChangeUpload;
+export default FileChangeUpload;

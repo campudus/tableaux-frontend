@@ -1,6 +1,3 @@
-import i18n from "i18next";
-import f from "lodash/fp";
-import React from "react";
 import { AutoSizer, List } from "react-virtualized";
 import {
   compose,
@@ -9,18 +6,22 @@ import {
   withProps,
   withStateHandlers
 } from "recompose";
+import React from "react";
+import f from "lodash/fp";
+import i18n from "i18next";
+
 import { FilterModes } from "../../../constants/TableauxConstants";
-import { makeRequest } from "../../../helpers/apiHelper";
-import apiRoute from "../../../helpers/apiRoutes";
-import apiUrl from "../../../helpers/apiUrl";
+import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
 import { doto, forkJoin } from "../../../helpers/functools";
+import { makeRequest } from "../../../helpers/apiHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import AttachmentOverlayFilter from "./AttachmentOverlayFilter";
+import FileItem from "./AttachmentOverlayFileItem";
+import FolderList from "./AttachmentOverlayFolderList";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import Spinner from "../../header/Spinner";
-import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import FileItem from "./AttachmentOverlayFileItem";
-import AttachmentOverlayFilter from "./AttachmentOverlayFilter";
-import FolderList from "./AttachmentOverlayFolderList";
+import apiRoute from "../../../helpers/apiRoutes";
+import apiUrl from "../../../helpers/apiUrl";
 
 const NewAttachmentOverlay = props => {
   const {
@@ -54,8 +55,6 @@ const NewAttachmentOverlay = props => {
     filter.mode +
     filter.value +
     filter.sorting;
-
-  console.log("FILES KEY", filesKey);
 
   const backButton =
     folder && folder.name !== "root" ? (
@@ -93,7 +92,6 @@ const NewAttachmentOverlay = props => {
   const renderFileItem = ({ index, style }) => {
     const file = f.get(index, filteredFileList);
     if (!file) {
-      console.log("empty file", index);
       return null;
     }
     const imageUrl = apiUrl(retrieveTranslation(props.langtag, file.url));
@@ -113,8 +111,6 @@ const NewAttachmentOverlay = props => {
       />
     );
   };
-
-  console.log("File list:", filteredFileList);
 
   return (
     <div className="attachment-overlay-wrapper">
@@ -165,7 +161,6 @@ const withFolderLoader = compose(
         value = state.filter.value || "",
         sorting = state.filter.sorting || 0
       }) => {
-        console.log("Setting filter to", state.folder);
         const isLinked = file =>
           f.any(f.propEq("uuid", file.uuid), props.value);
 

@@ -65,4 +65,4 @@ TableSettingsPopup.propTypes = {
   outsideClickHandler: PropTypes.func.isRequired
 };
 
-module.exports = TableSettingsPopup;
+export default TableSettingsPopup;

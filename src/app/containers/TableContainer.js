@@ -1,9 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import f from "lodash/fp";
+
 import Spinner from "../components/header/Spinner";
-import reduxActionHoc from "../helpers/reduxActionHoc";
-import TableauxConstants from "../constants/TableauxConstants";
 import Tableaux from "../components/Tableaux";
+import TableauxConstants from "../constants/TableauxConstants";
+import reduxActionHoc from "../helpers/reduxActionHoc";
 
 const mapStateToProps = (state, props) => {
   const {
@@ -14,30 +15,22 @@ const mapStateToProps = (state, props) => {
   const columns = f.get(`columns.${tableId}.data`, state);
   const rows = f.get(`rows.${tableId}.data`, state);
   const tableView = f.get("tableView", state);
-  // return {...f.pick(["tables.data", "columns.1.data","rows.1.data"], state)}
   return { table, columns, rows, tables, tableView };
 };
 
-class TableContainer extends Component {
-  constructor(props) {
-    super(props);
+const TableContainer = props => {
+  const { actions, table, columns, rows } = props;
+  if (f.isEmpty(table) || f.isEmpty(rows) || f.isEmpty(columns)) {
+    return <Spinner isLoading />;
   }
-  render() {
-    const { actions, table, columns, rows } = this.props;
-    console.log(this.props);
-    if (f.isEmpty(table) || f.isEmpty(rows) || f.isEmpty(columns)) {
-      // return <div>waiting</div>
-      return <Spinner isLoading />;
-    }
-    TableauxConstants.initLangtags(table.langtags);
-    return (
-      <Tableaux
-        initialParams={{ ...this.props }}
-        initialViewName={"TABLE_VIEW"}
-        actions={actions}
-      />
-    );
-  }
-}
+  TableauxConstants.initLangtags(table.langtags);
+  return (
+    <Tableaux
+      initialParams={{ ...props }}
+      initialViewName={"TABLE_VIEW"}
+      actions={actions}
+    />
+  );
+};
 
 export default reduxActionHoc(TableContainer, mapStateToProps);

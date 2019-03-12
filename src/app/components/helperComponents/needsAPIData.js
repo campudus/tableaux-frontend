@@ -22,7 +22,6 @@ export default compose(
   lifecycle({
     componentWillMount() {
       const { addAbortableXhrRequest, requestUrl } = this.props;
-      console.log("needsAPIData: getting", requestUrl);
       const req = Request.get(requestUrl).end((error, response) => {
         if (error) {
           console.error(error);

@@ -9,7 +9,6 @@ import getDisplayValue from "./getDisplayValue";
 
 const rowConcatString = (idColumn, row, langtag) => {
   const firstCellValue = f.get(["values", 0], row);
-  console.log("rowConcatString", { idColumn, firstCellValue });
 
   return retrieveTranslation(
     langtag,

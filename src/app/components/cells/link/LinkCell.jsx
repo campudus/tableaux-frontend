@@ -1,7 +1,10 @@
 import React from "react";
-import LinkLabelCell from "./LinkLabelCell.jsx";
-import LinkEditCell from "./LinkEditCell.jsx";
 import * as f from "lodash/fp";
+
+import PropTypes from "prop-types";
+
+import LinkEditCell from "./LinkEditCell.jsx";
+import LinkLabelCell from "./LinkLabelCell.jsx";
 
 const LinkCell = props => {
   const {
@@ -22,10 +25,8 @@ const LinkCell = props => {
     .map((element, index) => (
       <LinkLabelCell
         key={element.id}
-        linkIndexAt={index}
         value={element}
         langtag={langtag}
-        clickable={false}
         displayValue={displayValue[index]}
         displayValues={allDisplayValues[cell.column.toTable]}
         cell={cell}
@@ -48,19 +49,13 @@ const LinkCell = props => {
   );
 };
 
-// LinkCell.propTypes = {
-//   cell: PropTypes.object.isRequired,
-//   langtag: PropTypes.string.isRequired,
-//   selected: PropTypes.bool.isRequired,
-//   editing: PropTypes.bool.isRequired,
-//   setCellKeyboardShortcuts: PropTypes.func
-// };
+LinkCell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  selected: PropTypes.bool.isRequired,
+  editing: PropTypes.bool.isRequired,
+  displayValues: PropTypes.array,
+  value: PropTypes.array.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func
+};
 export default LinkCell;
-
-// export default compose(
-//   branch(
-//     ({editing, selected}) => selected || editing,
-//     renderComponent(LinkEditCell)
-//   ),
-//   pure
-// )(LinkCell);

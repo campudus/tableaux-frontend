@@ -1,4 +1,3 @@
-import { Directions } from "../../../constants/TableauxConstants";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
 import { maybe } from "../../../helpers/functools";
@@ -38,7 +37,6 @@ class NumericEditCell extends React.Component {
       },
       enter: event => {
         this.doneEditing(event);
-        //        ActionCreator.selectNextCell(Directions.DOWN);
       },
       navigation: event => {
         this.doneEditing(event);
@@ -130,4 +128,4 @@ NumericEditCell.propTypes = {
   setCellKeyboardShortcuts: PropTypes.func
 };
 
-module.exports = NumericEditCell;
+export default NumericEditCell;

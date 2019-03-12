@@ -33,9 +33,6 @@ const NumericCell = props => {
     actions.toggleCellEditing({ editing: false });
   };
 
-  // TODO: remove logging
-  //  console.assert(typeof actions.toggleCellEditing === "function", actions);
-
   if (!editing) {
     return <div className="cell-content">{displayValue[langtag]}</div>;
   } else {

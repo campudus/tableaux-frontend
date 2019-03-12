@@ -167,7 +167,6 @@ const moustache = f.memoize(
 // Replace all moustache expressions "{{i}}" of the column's format string where i in [1,..,N], N = displayValue.length,
 // with displayValue[i]
 const format = f.curryN(2)((column, displayValue) => {
-  // console.log("orig",displayValue);
   const formatPattern = f.get("formatPattern", column);
   if (f.isEmpty(formatPattern)) {
     // no or empty format string => simple concat
@@ -193,7 +192,6 @@ const format = f.curryN(2)((column, displayValue) => {
   };
 
   const result = f.trim(applyFormat(formatPattern));
-  console.log("after format", result);
   return result;
 });
 

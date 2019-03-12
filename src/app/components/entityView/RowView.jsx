@@ -45,11 +45,10 @@ class View extends PureComponent {
 
   getViewId(someCell) {
     const cell = someCell || this.props.cell;
-    // return `view-${cell.column.kind}-${cell.row.id}`;
-    return "some-view";
+    return `view-${cell.column.kind}-${cell.id}`;
   }
 
-  componentDidCatch(err) {}
+  componentDidCatch() {}
 
   canEditValue = theoretically => {
     const { cell, langtag } = this.props;
@@ -91,8 +90,7 @@ class View extends PureComponent {
       langtag, // for view content
       uiLangtag, // for view headers
       setTranslationView,
-      hasFocusedChild,
-      value
+      hasFocusedChild
     } = this.props;
     const { kind, column } = cell;
     const views = {

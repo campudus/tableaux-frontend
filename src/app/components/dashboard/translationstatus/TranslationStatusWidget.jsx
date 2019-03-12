@@ -8,8 +8,6 @@ import { doto } from "../../../helpers/functools";
 import CircleGraph from "./CircleGraph";
 import Spinner from "../../header/Spinner";
 
-// const Langtags = ["de", "en", "en-US", "ch-IT", "fr"]; // for storybook
-
 const TranslationStatusWidget = ({ requestedData }) => (
   <div className="translation-status">
     <React.Fragment>

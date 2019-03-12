@@ -34,7 +34,6 @@ const showErrorToast = (msg, data = {}) => {
 };
 
 const changeCellValue = (cell, newValue) => {
-  console.log("Pasting", newValue, "to", cell, "which has", cell.value);
   store.dispatch(
     actions.changeCellValue({
       cell,

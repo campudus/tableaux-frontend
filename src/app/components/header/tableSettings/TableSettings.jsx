@@ -58,4 +58,4 @@ TableSettings.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-module.exports = TableSettings;
+export default TableSettings;

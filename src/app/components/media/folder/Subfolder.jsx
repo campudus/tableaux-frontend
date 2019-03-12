@@ -64,7 +64,7 @@ Subfolder.propTypes = {
   actions: PropTypes.object.isRequired
 };
 
-module.exports = compose(
+export default compose(
   translate(["media"]),
   pure
 )(Subfolder);

@@ -1,11 +1,13 @@
-import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import ViewRenderer from "./ViewRenderer.jsx";
-import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
+import React, { PureComponent } from "react";
 import f from "lodash/fp";
-import resources from "../../locales/index";
+import i18n from "i18next";
+
+import PropTypes from "prop-types";
+
 import Overlays from "./overlay/Overlays";
+import ViewRenderer from "./ViewRenderer.jsx";
+import resources from "../../locales/index";
 
 export default class Tableaux extends PureComponent {
   static propTypes = {
@@ -16,8 +18,6 @@ export default class Tableaux extends PureComponent {
   constructor(props) {
     super(props);
     this.currentLangtag = props.initialParams.langtag;
-
-    // Dispatcher.on(ActionTypes.SWITCH_VIEW, this.switchViewHandler, this);
 
     i18n.init({
       resources,
@@ -43,12 +43,7 @@ export default class Tableaux extends PureComponent {
     };
   }
 
-  componentWillUnmount() {
-    // Dispatcher.off(ActionTypes.SWITCH_VIEW, this.switchViewHandler);
-  }
-
   switchViewHandler(payload) {
-    console.log("switchViewHandler", payload);
     // check if language has changed
     if (this.currentLangtag !== payload.params.langtag) {
       // ActionCreator.spinnerOn();

@@ -38,7 +38,6 @@ const maybeUpdateConcats = (rows, action, completeState) => {
 
 const insertSkeletonRows = (state, action, completeState) => {
   const { tableId } = action;
-  console.log("insertSkeletonRows()", action);
   const table = f.prop(["tables", "data", tableId], completeState);
   const columns = f.prop(["columns", tableId, "data"], completeState);
   const rows = rowValuesToCells(table, columns)(action.rows);

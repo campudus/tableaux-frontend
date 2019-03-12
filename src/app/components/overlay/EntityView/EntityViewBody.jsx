@@ -95,8 +95,6 @@ class EntityViewBody extends Component {
     this.changeFocus(focusTarget);
   }
 
-  // componentDidUpdate = reportUpdateReasons("EntityViewBody");
-
   componentWillUnmount = () => {
     this.cancelClosingTimer();
     maybe(this.shakeTimerId).map(window.clearTimeout);

@@ -21,39 +21,44 @@ class GenericContextMenu extends React.Component {
   }
 
   componentDidMount() {
-    const {align, noClampX, noClampY, x, y} = this.props;
+    const { align, noClampX, noClampY, x, y } = this.props;
     const offset = this.props.offset || 0;
+    // Need findDOMNode to access rendered Node's properties
+    // eslint-disable-next-line react/no-find-dom-node
     const el = ReactDom.findDOMNode(this);
-    const dataWrapper = f.first(document.getElementsByClassName("ReactVirtualized__Grid"));
-    
+    const dataWrapper = f.first(
+      document.getElementsByClassName("ReactVirtualized__Grid")
+    );
+
     if (x) {
       const w = Math.max(this.props.minWidth || 1, el.offsetWidth);
-      const xShift = ((f.endsWith("RIGHT", align)) ? w : 0); // shift to align corner at (x,y)
-      const xPos = (noClampX)
+      const xShift = f.endsWith("RIGHT", align) ? w : 0; // shift to align corner at (x,y)
+      const xPos = noClampX
         ? x + offset - xShift
         : f.clamp(0, window.innerWidth - w, x + offset - xShift);
-      this.setState({x: xPos});
+      this.setState({ x: xPos });
     }
 
     if (y) {
       const h = el.offsetHeight;
-      const yShift = ((f.startsWith("LOWER", align)) ? h : 0);
-      const yPos = (noClampY)
+      const yShift = f.startsWith("LOWER", align) ? h : 0;
+      const yPos = noClampY
         ? y + offset - yShift
-        : f.clamp(0, window.innerHeight - h - dataWrapper.getBoundingClientRect().top, y + offset - yShift);
-      this.setState({y: yPos});
+        : f.clamp(
+            0,
+            window.innerHeight - h - dataWrapper.getBoundingClientRect().top,
+            y + offset - yShift
+          );
+      this.setState({ y: yPos });
     }
   }
 
   render() {
-    const {x, y} = this.state;
-    const cssStyle = f.reduce(
-      f.assign, {},
-      [
-        (x) ? {left: x} : null,
-        (y) ? {top: y} : null
-      ]
-    );
+    const { x, y } = this.state;
+    const cssStyle = f.reduce(f.assign, {}, [
+      x ? { left: x } : null,
+      y ? { top: y } : null
+    ]);
     return (
       <div className="context-menu row-context-menu" style={cssStyle}>
         {this.props.menuItems || this.props.children}
@@ -71,4 +76,4 @@ GenericContextMenu.propTypes = {
   minWidth: PropTypes.number
 };
 
-module.exports = GenericContextMenu;
+export default GenericContextMenu;

@@ -63,7 +63,6 @@ const extendedRouter = Router.extend({
     const { loadTables, createDisplayValueWorker } = this.actions;
     loadTables();
     createDisplayValueWorker();
-    console.log("initialize router", options);
   },
 
   switchLanguageHandler: function(newLangtag) {
@@ -78,7 +77,6 @@ const extendedRouter = Router.extend({
   switchTableHandler: async function(tableId, langtag) {
     const { tables } = store.getState();
     const validTableId = await validateTableId(tableId, tables);
-    console.log("switchTableHandler");
     Sentry.addBreadcrumb({ message: "Switch table", data: tableId });
     Sentry.captureMessage("Switch table", { level: "info" });
     router.navigate(langtag + "/tables/" + validTableId);
