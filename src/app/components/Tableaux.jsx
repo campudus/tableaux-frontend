@@ -2,9 +2,7 @@ import { I18nextProvider } from "react-i18next";
 import React, { PureComponent } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
-
 import PropTypes from "prop-types";
-
 import Overlays from "./overlay/Overlays";
 import ViewRenderer from "./ViewRenderer.jsx";
 import resources from "../../locales/index";
@@ -36,42 +34,16 @@ export default class Tableaux extends PureComponent {
         escapeValue: false // not needed for react!!
       }
     });
-
-    this.state = {
-      currentView: this.props.initialViewName,
-      currentViewParams: this.props.initialParams
-    };
-  }
-
-  switchViewHandler(payload) {
-    // check if language has changed
-    if (this.currentLangtag !== payload.params.langtag) {
-      // ActionCreator.spinnerOn();
-      i18n.changeLanguage(payload.params.langtag, () => {
-        // ActionCreator.spinnerOff();
-        this.currentLangtag = payload.params.langtag;
-        this.changeView(payload);
-      });
-    } else {
-      this.changeView(f.update("params", f.omit("urlOptions"), payload));
-    }
-  }
-
-  changeView(payload) {
-    this.setState({
-      currentView: payload.viewName,
-      currentViewParams: payload.params
-    });
   }
 
   render() {
-    const { currentView } = this.state;
-    const { initialParams, actions } = this.props;
+    const { initialParams, actions, initialViewName } = this.props;
+
     return (
       <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
           <ViewRenderer
-            viewName={currentView}
+            viewName={initialViewName}
             params={initialParams}
             actions={actions}
           />
