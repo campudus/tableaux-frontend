@@ -68,7 +68,12 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
       ]);
 
       const showCellJumpOverlay =
-        !finishedLoading && (!!selectedCell.rowId || !!selectedCell.columnId);
+        !(!!selectedCell.rowId || !!selectedCell.columnId) ||
+        (!f.flow(
+          f.map("id"),
+          f.includes(selectedCell.rowId)
+        )(rows) &&
+          !finishedLoading);
 
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
