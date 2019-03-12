@@ -35,13 +35,8 @@ async function validateTableId(tableId, propTables) {
     ? propTables.data
     : await getTables();
 
-  const firstTableId = f.get("id", f.head(tables));
-  const result =
-    f.findIndex(table => table.id === tableId, tables) === -1
-      ? firstTableId
-      : tableId;
-
-  return result;
+  const firstTableId = f.get([0, "id"], tables);
+  return f.find(table => table.id === tableId, tables) ? tableId : firstTableId;
 }
 
 const posOrNil = string => {
