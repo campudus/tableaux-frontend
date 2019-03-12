@@ -14,7 +14,6 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 import { openInNewTab } from "../../../helpers/apiUrl";
 import { isFinal } from "../../../helpers/annotationHelper";
 import { addCellId } from "../../../helpers/getCellId";
-import * as TableHistory from "../../table/undo/tableHistory";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -95,18 +94,33 @@ class HeaderPopupMenu extends Component {
     };
   };
 
-  handleUndo = () => TableHistory.undo(this.getHistoryView());
-  handleRedo = () => TableHistory.redo(this.getHistoryView());
-
   render() {
-    const { funcs, cell, langtag, hasMeaningfulLinks, row, id } = this.props;
+    const {
+      funcs,
+      cell,
+      langtag,
+      hasMeaningfulLinks,
+      row,
+      id,
+      actions
+    } = this.props;
+    const tableId = this.props.table.id;
     const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
     const translationInfo = {
       show: true,
       cell: addCellId(cell)
     };
-    const historyView = this.getHistoryView();
+    const canUndo = f.flow(
+      f.get(["tableView", "history", "undoQueue"]),
+      f.filter(action => action.tableId === tableId),
+      f.negate(f.isEmpty)
+    )(this.props);
+    const canRedo = f.flow(
+      f.get(["tableView", "history", "redoQueue"]),
+      f.filter(action => action.tableId === tableId),
+      f.negate(f.isEmpty)
+    )(this.props);
 
     return (
       <div className="header-popup-wrapper">
@@ -163,17 +177,17 @@ class HeaderPopupMenu extends Component {
                     fn: () => initiateDeleteRow(row, langtag, id),
                     icon: "trash"
                   })}
-              {TableHistory.canUndo(historyView)
+              {canUndo
                 ? this.mkEntry(3, {
                     title: "table:undo",
-                    fn: this.handleUndo,
+                    fn: () => actions.modifyHistory("undo",tableId),
                     icon: "undo"
                   })
                 : null}
-              {TableHistory.canRedo(historyView)
+              {canRedo
                 ? this.mkEntry(3, {
                     title: "table:redo",
-                    fn: this.handleRedo,
+                    fn: () => actions.modifyHistory("redo",tableId),
                     icon: "repeat"
                   })
                 : null}

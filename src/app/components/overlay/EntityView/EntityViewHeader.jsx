@@ -177,6 +177,7 @@ class EntityViewHeader extends PureComponent {
         <HistoryButtons tableView={tableView} actions={this.props.actions}/>
         <FilterBar id={this.props.id} />
         <HeaderPopupMenu
+          tableView={tableView}
           langtag={langtag}
           row={row}
           id={this.props.id}
