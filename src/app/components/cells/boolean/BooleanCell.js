@@ -43,8 +43,11 @@ const BooleanCell = props => {
 };
 
 BooleanCell.propTypes = {
-  // TODO-W fix PropTypes
-  cell: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  value: PropTypes.any.isRequired,
+  table: PropTypes.object.isRequired,
+  row: PropTypes.object.isRequired,
+  column: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
   selected: PropTypes.bool.isRequired
 };
