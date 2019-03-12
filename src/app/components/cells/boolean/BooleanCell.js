@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "../../../../scss/main.scss";
+import { isLocked } from "../../../helpers/annotationHelper";
 
 const BooleanCell = props => {
   const { actions, value, table, row, column, langtag, selected } = props;
@@ -25,7 +25,9 @@ const BooleanCell = props => {
   };
 
   const toggleCheckboxValue = () => {
-    selected && handleEditDone(!getCheckboxValue());
+    if (!isLocked(row)) {
+      selected && handleEditDone(!getCheckboxValue());
+    }
   };
 
   return (
@@ -41,6 +43,7 @@ const BooleanCell = props => {
 };
 
 BooleanCell.propTypes = {
+  // TODO-W fix PropTypes
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
   selected: PropTypes.bool.isRequired
