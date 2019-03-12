@@ -67,14 +67,15 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         columns
       ]);
 
-      const showCellJumpOverlay =
-        selectedCell.rowId &&
-        selectedCell.columnId &&
-        !finishedLoading &&
+      const showCellJumpOverlay = f.every(f.identity, [
+        selectedCell.rowId,
+        selectedCell.columnId,
+        !finishedLoading,
         !f.flow(
           f.map("id"),
           f.includes(selectedCell.rowId)
-        )(rows);
+        )(rows)
+      ]);
 
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
