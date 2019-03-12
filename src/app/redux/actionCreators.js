@@ -27,6 +27,7 @@ import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import TableauxRouter from "../router/router";
 import i18n from "i18next";
+import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 
 const {
   getAllTables,
@@ -60,7 +61,8 @@ const {
   COLUMN_EDIT,
   COLUMN_EDIT_SUCCESS,
   COLUMN_EDIT_ERROR,
-  SET_STATUS_INFO
+  SET_STATUS_INFO,
+  ROW_CREATE_SUCCESS
 } = actionTypes;
 
 const {
@@ -556,6 +558,19 @@ const editColumn = (columnId, tableId, data) => {
   };
 };
 
+export const addEmptyRowAndOpenEntityView = (
+  tableId,
+  langtag,
+  cellToUpdate
+) => async dispatch => {
+  dispatch(loadColumns(tableId));
+  const result = await makeRequest({
+    apiRoute: API_ROUTES.toRows(tableId),
+    method: "POST"
+  });
+  loadAndOpenEntityView({ tableId, rowId: result.id, langtag, cellToUpdate });
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -601,7 +616,8 @@ const actionCreators = {
   modifyHistory,
   addEmptyRow: addEmptyRow,
   setAllRowsFinal,
-  editColumn
+  editColumn,
+  addEmptyRowAndOpenEntityView
 };
 
 export default actionCreators;

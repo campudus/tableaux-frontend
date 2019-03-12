@@ -324,7 +324,8 @@ class LinkOverlay extends PureComponent {
       loading,
       unlinkedOrder,
       maxLinks,
-      grudData
+      grudData,
+      actions
     } = this.props;
 
     const targetTable = {
@@ -401,6 +402,7 @@ class LinkOverlay extends PureComponent {
           shiftUp={noForeignRows && !loading}
           updateRowResults={this.updateRowResults}
           addLink={this.addLinkValue}
+          actions={actions}
         />
       </div>
     );
@@ -438,7 +440,7 @@ const withDataRows = compose(
       setLoading,
       value,
       actions
-    }) => async () => {
+    }) => async shouldAddLink => {
       setLoading(true);
       const { column, table, row } = cell;
       const url =
@@ -448,7 +450,24 @@ const withDataRows = compose(
           rowId: row.id
         }) + "/foreignRows";
       const rows = await makeRequest({ apiRoute: url })
-        .then(f.prop("rows"))
+        .then(result => {
+          const { rows } = result;
+          return f.map(row => {
+            return { id: row.id, value: row.values[0] };
+          }, rows);
+        })
+        .then(rows => {
+          if (shouldAddLink) {
+            const last = f.last(rows);
+            const newRow = { ...last, label: getDisplayValue(last) };
+            actions.changeCellValue({
+              cell,
+              oldValue: value,
+              newValue: [...value, newRow]
+            });
+          }
+          return rows;
+        })
         .catch(err => {
           console.error("Error loading foreignRows:", err);
           return [];
@@ -466,10 +485,10 @@ const withDataRows = compose(
         displayValues: [
           {
             tableId: cell.column.toTable,
-            values: rows.map(foreignValue => ({
+            values: [...value, ...rows].map(foreignValue => ({
               id: foreignValue.id,
               values: [
-                getDisplayValue(cell.column.toColumn, foreignValue.values[0])
+                getDisplayValue(cell.column.toColumn, foreignValue.value)
               ]
             }))
           }
@@ -518,11 +537,8 @@ const withDataRows = compose(
         el => el.label && el.label.toLowerCase()
       ][sortMode];
 
-      const maxLinks = f.propOr(
-        Infinity,
-        ["column", "constraint", "cardinality", "to"],
-        cell
-      );
+      const maxLinks =
+        f.get(["column", "constraint", "cardinality", "to"], cell) || Infinity;
 
       const rowResults = doto(
         [...value, ...(value.length < maxLinks ? foreignRows : [])],
@@ -550,6 +566,13 @@ const withDataRows = compose(
     componentWillMount() {
       this.props.fetchColumnDescription();
       this.props.fetchForeignRows();
+    },
+    componentWillReceiveProps(nextProps) {
+      if (
+        this.props.grudData.overlays.length > nextProps.grudData.overlays.length
+      ) {
+        this.props.fetchForeignRows(true);
+      }
     }
   })
 );

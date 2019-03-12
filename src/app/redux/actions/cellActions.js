@@ -36,9 +36,10 @@ export const changeCellValue = action => (dispatch, getState) => {
     column.languageType === "country"
       ? reduceValuesToAllowedCountries
       : reduceValuesToAllowedLanguages;
-  const newValue = column.multilanguage
-    ? f.merge(action.oldValue, reduceValue(action.newValue))
+  const newValue = column.multilanguage && !column.kind === ColumnKinds.link
+    ? f.toArray(f.merge(action.oldValue, reduceValue(action.newValue)))
     : action.newValue;
+
 
   dispatch(
     dispatchCellValueChange({
@@ -52,7 +53,7 @@ export const changeCellValue = action => (dispatch, getState) => {
   );
 };
 
-const dispatchCellValueChange = action => {
+const dispatchCellValueChange = action => (dispatch,getState) =>{
   const { tableId, columnId, rowId, oldValue, newValue, column } = action;
   const update = calculateCellUpdate(action);
 
@@ -71,22 +72,25 @@ const dispatchCellValueChange = action => {
           .filter(k => f.isEmpty(action.oldValue[k]) && !f.isEmpty(newValue[k]))
       : null;
 
-  const maybeClearFreshTranslations = () => {
-    if (!f.isEmpty(freshlyTranslatedLangtags)) {
+  const annotations = f.get(["rows",tableId,"data",rowId,"annotations"],getState());
+
+  const maybeClearFreshTranslations = (res) => {
+    if (!f.isEmpty(freshlyTranslatedLangtags) && annotations) {
       removeTranslationNeeded(freshlyTranslatedLangtags, {
         column,
         row: { id: rowId },
         table: { id: tableId }
       });
     }
+    return res
   };
 
   // bail out if no updates needed
   return !needsUpdate
-    ? {
+    ? dispatch({
         type: "NOTHING_TO_DO"
-      }
-    : {
+      })
+    : dispatch({
         promise: makeRequest({
           apiRoute:
             route.toCell({ tableId, rowId, columnId }) +
@@ -100,7 +104,7 @@ const dispatchCellValueChange = action => {
           CELL_ROLLBACK_VALUE
         ],
         ...f.dissoc("type", action)
-      };
+      });
 };
 
 export const calculateCellUpdate = action => {

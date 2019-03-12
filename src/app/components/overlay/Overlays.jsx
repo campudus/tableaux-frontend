@@ -68,7 +68,8 @@ const OverlayRenderer = ({
       rows,
       tables,
       displayValues: displayValues,
-      tableView
+      tableView,
+      overlays
     };
 
     return overlays.map((overlayParams, idx) => {
