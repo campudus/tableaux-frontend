@@ -95,7 +95,7 @@ export const UnlinkedRows = branch(
 // Link count
 
 const LinkStatusCountFrag = ({ rowResults, maxLinks }) => {
-  console.log(maxLinks)
+  console.log(maxLinks);
   const [pre, middle, post] = i18n.t("table:link-overlay-count").split("|");
   return (
     <span className="link-status-count">
@@ -152,8 +152,8 @@ export const RowCreator = compose(
         langtag,
         actions: { addEmptyRowAndOpenEntityView }
       } = props;
-      
-      addEmptyRowAndOpenEntityView(toTable,langtag,cell);
+
+      addEmptyRowAndOpenEntityView(toTable, langtag, cell);
     }
   })
 )(RowCreatorFrag);

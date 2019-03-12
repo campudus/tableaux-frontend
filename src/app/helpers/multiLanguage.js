@@ -19,8 +19,8 @@ const langtagSeparatorRegex = /[-_]/;
  * @returns any
  */
 const retrieveTranslation = f.curryN(2, (langtag, json) => {
-  if(!json){
-    return ""
+  if (!json) {
+    return "";
   }
   checkOrThrow(getLangObjSpec(), json);
   const language = getLanguageOfLangtag(langtag);
