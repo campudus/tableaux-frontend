@@ -162,7 +162,7 @@ class HeaderPopupMenu extends Component {
                 title: "table:open-dataset",
                 fn: () =>
                   openInNewTab({
-                    tableId: row.tableId,
+                    tableId,
                     row,
                     langtag,
                     filter: true
