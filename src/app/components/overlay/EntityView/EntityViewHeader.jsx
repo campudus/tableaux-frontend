@@ -201,7 +201,7 @@ class EntityViewHeader extends PureComponent {
       f.find(f.propEq("id", row.id)),
       f.prop("values"),
       f.propOr({}, 0),
-      objValue => retrieveTranslation(langtag, objValue),
+      retrieveTranslation(langtag),
       f.defaultTo(<Empty langtag={langtag} />)
     );
 
@@ -218,7 +218,7 @@ class EntityViewHeader extends PureComponent {
 
 const getDisplayLabel = (row, langtag) => {
   const firstCell = f.prop(["values", 0], row);
-  return unless(f.isEmpty, objValue => retrieveTranslation(langtag, objValue))(
+  return unless(f.isEmpty, retrieveTranslation(langtag))(
     f.prop("displayValue", firstCell)
   );
 };

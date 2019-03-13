@@ -15,7 +15,7 @@ const LinkLabelCell = props => {
     : f.flow(
         f.find(f.propEq("id", id)),
         f.prop(["values", 0]),
-        when(f.isObject, objValue => retrieveTranslation(langtag, objValue))
+        when(f.isObject, retrieveTranslation(langtag))
       )(displayValues);
 
   return (

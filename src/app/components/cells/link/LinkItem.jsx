@@ -42,7 +42,7 @@ const SelectedItem = props => {
           <a href="#" draggable={false}>
             {unless(
               f.isString,
-              objValue => retrieveTranslation(props.langtag, objValue),
+              retrieveTranslation(props.langtag),
               props.label
             ) || <Empty langtag={props.langtag} />}
           </a>
@@ -85,7 +85,7 @@ const PlainItem = props => {
         <div className="link-label">
           {unless(
             f.isString,
-            objValue => retrieveTranslation(props.langtag, objValue),
+            retrieveTranslation(props.langtag),
             props.label
           ) || <Empty langtag={props.langtag} />}
         </div>
