@@ -40,7 +40,10 @@ class MetaCell extends PureComponent {
       <div className="delete-row">
         <button
           className="button"
-          onClick={() => initiateDeleteRow({ table, row, langtag })}
+          onClick={e => {
+            e.stopPropagation();
+            initiateDeleteRow({ table, row, langtag });
+          }}
         >
           <i className="fa fa-trash" />
         </button>
