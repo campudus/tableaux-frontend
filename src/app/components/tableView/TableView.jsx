@@ -162,10 +162,6 @@ class TableView extends PureComponent {
     }
   };
 
-  componentDidMount = () => {
-    initHistoryOf(this.props.tables);
-  };
-
   setDocumentTitleToTableName = () => {
     const { table = {}, langtag } = this.props;
 
