@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Empty from "../helperComponents/emptyEntry";
-import { DefaultLangtag } from "../../constants/TableauxConstants";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { compose, withProps, pure, withHandlers } from "recompose";
 import apiUrl from "../../helpers/apiUrl";
@@ -9,9 +8,8 @@ import apiUrl from "../../helpers/apiUrl";
 const enhance = compose(
   pure,
   withProps(({ file: { url }, langtag }) => {
-    const translate = retrieveTranslation(DefaultLangtag);
     return {
-      fileUrl: apiUrl(translate(url, langtag))
+      fileUrl: apiUrl(retrieveTranslation(langtag, url))
     };
   }),
   withHandlers({

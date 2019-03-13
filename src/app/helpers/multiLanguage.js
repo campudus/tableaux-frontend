@@ -5,7 +5,7 @@ import { checkOrThrow } from "../specs/type";
 import { ifElse, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
 import TableauxConstants, {
-  DefaultLanguage,
+  DefaultLangtag,
   FallbackLanguage
 } from "../constants/TableauxConstants";
 
@@ -26,7 +26,7 @@ const retrieveTranslation = f.curryN(2, (langtag, json) => {
   const language = getLanguageOfLangtag(langtag);
 
   return f.flow(
-    f.props([langtag, language, DefaultLanguage, FallbackLanguage]),
+    f.props([langtag, language, DefaultLangtag, FallbackLanguage]),
     f.find(value => !f.isEmpty(value))
   )(json);
 });
@@ -190,14 +190,12 @@ const getMultiLangValue = f.curry((langtag, defaultValue, element) =>
 /**
  * example usage:
  * let multiLanguage = require('./multiLanguage.js')
- * // define default language
- * let retrieveTranslation = multilanguage.retrieveTranslation('de_DE')
  *
  * let json = {
  *  "de_DE" : "Deutscher Inhalt",
  *  "en_GB" : null // no english value
  * }
- * let translation = retrieveTranslation(json, "en_GB")
+ * let translation = multilanguage.retrieveTranslation("en_GB", json)
  * // will print "Deutscher Inhalt" b/c of default language
  * Console.println(translation);
  */

@@ -26,14 +26,13 @@ class AttachmentView extends Component {
 
   render() {
     const { cell, langtag, value } = this.props;
-    const translate = retrieveTranslation(langtag);
 
     const attachments =
       f.size(value) === f.size(cell.displayValue)
         ? f.zip(value, cell.displayValue).map(([{ url }, displayValue]) => ({
             displayName: displayValue[langtag],
             linkTarget: f.isPlainObject(url)
-              ? apiUrl(translate(url, langtag))
+              ? apiUrl(retrieveTranslation(langtag, url))
               : ""
           }))
         : null;

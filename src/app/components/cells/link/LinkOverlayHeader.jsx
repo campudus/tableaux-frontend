@@ -26,7 +26,7 @@ const LinkOverlayHeader = props => {
     setFilterMode,
     setUnlinkedOrder
   } = sharedData;
-  const tableName = retrieveTranslation(langtag)(table.displayName);
+  const tableName = retrieveTranslation(langtag, table.displayName);
 
   return (
     <Header context={tableName} id={props.id} {...props}>

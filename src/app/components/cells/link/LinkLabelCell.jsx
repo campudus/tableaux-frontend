@@ -11,7 +11,7 @@ const LinkLabelCell = props => {
   const { value, langtag, displayValue, displayValues } = props;
   const { id } = value;
   const linkName = f.isEmpty(displayValues)
-    ? retrieveTranslation(langtag)(displayValue)
+    ? retrieveTranslation(langtag, displayValue)
     : f.flow(
         f.find(f.propEq("id", id)),
         f.prop(["values", 0]),
