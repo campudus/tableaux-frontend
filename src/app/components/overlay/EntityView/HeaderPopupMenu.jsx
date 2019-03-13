@@ -102,9 +102,10 @@ class HeaderPopupMenu extends Component {
       hasMeaningfulLinks,
       row,
       id,
-      actions
+      actions,
+      table
     } = this.props;
-    const tableId = this.props.table.id;
+    const tableId = table.id;
     const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
     const translationInfo = {
