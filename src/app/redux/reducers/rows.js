@@ -51,7 +51,10 @@ const insertSkeletonRows = (state, action, completeState) => {
         f.assoc(pathToData, f.__, state)
       )(rows)
     : f.assoc(pathToData, rows, state);
-  return f.merge({ finishedLoading: true, error: false }, skeletonRows);
+  return f.flow(
+    f.assoc([tableId, "finishedLoading"], true),
+    f.assoc([tableId, "error"], false)
+  )(skeletonRows);
 };
 
 const annotationsToObject = annotations => {
