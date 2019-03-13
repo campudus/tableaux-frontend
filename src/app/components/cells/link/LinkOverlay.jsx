@@ -527,7 +527,7 @@ const withDataRows = compose(
         f.props(["value", "values.0"]),
         f.find(f.identity),
         getDisplayValue(toIdColumn),
-        retrieveTranslation(langtag)
+        objValue => retrieveTranslation(langtag, objValue)
       );
 
       const linkedIds = f.map("id", value);
