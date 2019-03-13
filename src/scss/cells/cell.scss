@@ -3,7 +3,6 @@
 .cell-stack {
   display: flex;
   flex-direction: column;
-  height: 9 * 45px;
 
   .cell {
     background-color: lighten($color-background-very-light-grey, 1);
