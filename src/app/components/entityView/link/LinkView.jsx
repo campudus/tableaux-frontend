@@ -34,7 +34,9 @@ class LinkView extends Component {
   };
 
   mkLinkList = (cell, langtag) => {
-    const translate = when(f.isPlainObject, retrieveTranslation(langtag));
+    const translate = when(f.isPlainObject, objValue =>
+      retrieveTranslation(langtag, objValue)
+    );
     return cell.value.map((link, idx) => {
       const displayName = translate(cell.displayValue[idx]) || (
         <Empty langtag={langtag} />
