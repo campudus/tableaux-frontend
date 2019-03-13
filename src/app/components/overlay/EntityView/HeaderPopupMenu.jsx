@@ -12,7 +12,6 @@ import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { openInNewTab } from "../../../helpers/apiUrl";
-import { isFinal } from "../../../helpers/annotationHelper";
 import { addCellId } from "../../../helpers/getCellId";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
@@ -101,7 +100,6 @@ class HeaderPopupMenu extends Component {
       langtag,
       hasMeaningfulLinks,
       row,
-      id,
       actions,
       table
     } = this.props;
@@ -174,7 +172,7 @@ class HeaderPopupMenu extends Component {
                 ? null
                 : this.mkEntry(3, {
                     title: "table:delete_row",
-                    fn: () => initiateDeleteRow(row, langtag, id),
+                    fn: () => initiateDeleteRow({ table, row, langtag }),
                     icon: "trash"
                   })}
               {canUndo
@@ -200,7 +198,13 @@ class HeaderPopupMenu extends Component {
                 title: row.final
                   ? "table:final.set_not_final"
                   : "table:final.set_final",
-                fn: () => setRowAnnotation({ final: isFinal(row) }, row),
+                fn: () =>
+                  setRowAnnotation({
+                    table,
+                    row,
+                    flagName: "final",
+                    flagValue: !row.final
+                  }),
                 icon: "lock"
               })}
             </div>
