@@ -183,6 +183,7 @@ class EntityViewHeader extends PureComponent {
         />
         <FilterBar id={id} />
         <HeaderPopupMenu
+          tableView={tableView}
           langtag={langtag}
           row={row}
           id={id}
