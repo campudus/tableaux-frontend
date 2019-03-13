@@ -112,16 +112,15 @@ class HeaderPopupMenu extends Component {
       show: true,
       cell: addCellId(cell)
     };
-    const canUndo = f.flow(
-      f.get(["tableView", "history", "undoQueue"]),
-      f.filter(action => action.tableId === tableId),
-      f.negate(f.isEmpty)
-    )(this.props);
-    const canRedo = f.flow(
-      f.get(["tableView", "history", "redoQueue"]),
-      f.filter(action => action.tableId === tableId),
-      f.negate(f.isEmpty)
-    )(this.props);
+
+    const hasElements = queueName =>
+      f.flow(
+        f.get(["tableView", "history", queueName]),
+        f.filter(f.propEq("tableId", tableId)),
+        f.negate(f.isEmpty)
+      )(this.props);
+    const canUndo = hasElements("undoQueue");
+    const canRedo = hasElements("redoQueue");
 
     return (
       <div className="header-popup-wrapper">
@@ -181,14 +180,14 @@ class HeaderPopupMenu extends Component {
               {canUndo
                 ? this.mkEntry(3, {
                     title: "table:undo",
-                    fn: () => actions.modifyHistory("undo",tableId),
+                    fn: () => actions.modifyHistory("undo", tableId),
                     icon: "undo"
                   })
                 : null}
               {canRedo
                 ? this.mkEntry(3, {
                     title: "table:redo",
-                    fn: () => actions.modifyHistory("redo",tableId),
+                    fn: () => actions.modifyHistory("redo", tableId),
                     icon: "repeat"
                   })
                 : null}
