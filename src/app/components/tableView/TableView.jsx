@@ -5,7 +5,6 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import { getTableDisplayName } from "../../helpers/multiLanguage";
-import { initHistoryOf } from "../table/undo/tableHistory";
 import { showDialog } from "../overlay/GenericOverlay";
 import ColumnFilter from "../header/ColumnFilter";
 import { ConnectionStatus } from "../header/ConnectionStatus";
