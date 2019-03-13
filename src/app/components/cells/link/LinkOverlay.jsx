@@ -439,7 +439,8 @@ const withDataRows = compose(
       setForeignRows,
       setLoading,
       value,
-      actions
+      actions,
+      foreignRows
     }) => async shouldAddLink => {
       setLoading(true);
       const { column, table, row } = cell;
@@ -457,7 +458,10 @@ const withDataRows = compose(
           }, rows);
         })
         .then(rows => {
-          if (shouldAddLink) {
+          if (
+            shouldAddLink &&
+            foreignRows.length < [...value, ...rows].length
+          ) {
             const last = f.last(rows);
             const newRow = { ...last, label: getDisplayValue(last) };
             actions.changeCellValue({
