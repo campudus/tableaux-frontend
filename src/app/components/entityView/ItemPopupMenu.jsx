@@ -256,7 +256,7 @@ class ItemPopupMenu extends Component {
             {this.mkToggleFlagItem("important")}
             {this.mkToggleFlagItem("check-me")}
             {this.mkToggleFlagItem("postpone")}
-            {cell.column.multiLanguage &&
+            {cell.column.multilanguage &&
             canConvert(cell.kind, ColumnKinds.text) ? (
               <div>
                 <div className="separator">
