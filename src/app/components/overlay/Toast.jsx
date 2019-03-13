@@ -1,13 +1,8 @@
 import React from "react";
 import { translate } from "react-i18next";
 import PropTypes from "prop-types";
-import {
-  compose,
-  withHandlers,
-  withStateHandlers,
-  lifecycle,
-  onlyUpdateForKeys
-} from "recompose";
+import f from "lodash/fp";
+import { compose, withHandlers, withStateHandlers, lifecycle } from "recompose";
 
 const Toast = props => {
   const { content, clearTimer, setTimer } = props;
@@ -33,12 +28,16 @@ const selfHiding = compose(
   }),
   withStateHandlers(
     ({ setTimer }) => {
-      setTimer();
+      return {
+        hidingTimer: setTimer()
+      };
     },
     {
-      clearTimer: (state, props) => () => {
+      clearTimer: state => () => {
         state && state.hidingTimer && clearTimeout(state.hidingTimer);
-        props.actions.hideToast();
+        return {
+          hidingTimer: null
+        };
       },
       resetTimer: (state, props) => () => {
         const { setTimer } = props;
@@ -49,14 +48,18 @@ const selfHiding = compose(
       }
     }
   ),
-  onlyUpdateForKeys(["content"]), // else resetting timer will cause recursive redraws
   lifecycle({
     componentWillUpdate() {
       this.props.resetTimer();
     },
     componentWillUnmount() {
       const { hidingTimer } = this.props;
-      hidingTimer && clearInterval(hidingTimer);
+      hidingTimer && clearTimeout(hidingTimer);
+    },
+    shouldComponentUpdate(nextProps) {
+      // we only update if the content changed
+      // so the timer does not reset itself
+      return !f.isEqual(this.props.content, nextProps.content);
     }
   })
 );
