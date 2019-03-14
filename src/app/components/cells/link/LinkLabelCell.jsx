@@ -4,19 +4,13 @@ import * as f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
 
 const LinkLabelCell = props => {
-  const { value, langtag, displayValue, displayValues } = props;
-  const { id } = value;
-  const linkName = f.isEmpty(displayValues)
-    ? retrieveTranslation(langtag, displayValue)
-    : f.flow(
-        f.find(f.propEq("id", id)),
-        f.prop(["values", 0]),
-        when(f.isObject, retrieveTranslation(langtag))
-      )(displayValues);
+  const { langtag, displayValue } = props;
+  const linkName = f.isEmpty(displayValue)
+    ? null
+    : retrieveTranslation(langtag, displayValue);
 
   return (
     <a href="#" className="link-label">
