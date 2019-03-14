@@ -13,7 +13,9 @@
     "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "storybook": "start-storybook -p 3001 -s src",
-    "test": "jest"
+    "test": "jest",
+    "clean": "rm -fr .cache out",
+    "clean:project": "rm -fr .cache out node_modules; npm install && npm ci"
   },
   "staticFiles": {
     "staticPath": "src/static"
