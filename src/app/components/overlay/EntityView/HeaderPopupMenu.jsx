@@ -20,7 +20,7 @@ const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 class HeaderPopupMenu extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
-    row: PropTypes.object.isRequired,
+    grudData: PropTypes.object.isRequired,
     id: PropTypes.number.isRequired
   };
 
@@ -99,11 +99,14 @@ class HeaderPopupMenu extends Component {
       cell,
       langtag,
       hasMeaningfulLinks,
-      row,
+      grudData,
       actions,
       table
     } = this.props;
     const tableId = table.id;
+
+    const rowDataOfTable = grudData.rows[tableId].data;
+    const row = f.head(f.filter(row => row.id === cell.row.id, rowDataOfTable));
     const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
     const translationInfo = {
