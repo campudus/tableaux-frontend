@@ -171,8 +171,9 @@ $dist-from-top: 20px;
       .close-button {
         .svg-icon {
           width: 1em;
+
           .a {
-            fill:inherit;
+            fill: inherit;
           }
         }
         &:hover svg {
