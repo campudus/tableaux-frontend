@@ -1,10 +1,22 @@
 import React from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
-import { openEntityView } from "../../overlay/EntityViewOverlay";
+
+import { ColumnKinds } from "../../../constants/TableauxConstants";
 import { isLocked } from "../../../helpers/annotationHelper";
+import { openEntityView } from "../../overlay/EntityViewOverlay";
+import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 
 const IdentifierCell = props => {
-  const { langtag, cell, editing, selected, displayValue } = props;
+  const {
+    langtag,
+    cell,
+    editing,
+    selected,
+    foreignDisplayValues,
+    displayValue
+  } = props;
   const openEditor = () => {
     (selected || editing) && !isLocked(cell.row)
       ? openEntityView({
@@ -18,7 +30,10 @@ const IdentifierCell = props => {
 
   return (
     <div className="cell-content" onClick={openEditor}>
-      {displayValue[langtag]}
+      {cell.column.kind === ColumnKinds.concat &&
+      !f.isEmpty(foreignDisplayValues)
+        ? foreignDisplayValues
+        : displayValue[langtag]}
     </div>
   );
 };
@@ -30,4 +45,4 @@ IdentifierCell.propTypes = {
   displayValue: PropTypes.object.isRequired
 };
 
-export default IdentifierCell;
+export default withForeignDisplayValues(IdentifierCell);
