@@ -95,6 +95,7 @@ class HeaderPopupMenu extends Component {
 
   render() {
     const {
+      id,
       funcs,
       cell,
       langtag,
@@ -175,7 +176,7 @@ class HeaderPopupMenu extends Component {
                 ? null
                 : this.mkEntry(3, {
                     title: "table:delete_row",
-                    fn: () => initiateDeleteRow({ table, row, langtag }),
+                    fn: () => initiateDeleteRow({ table, row, langtag }, id),
                     icon: "trash"
                   })}
               {canUndo
