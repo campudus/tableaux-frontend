@@ -209,7 +209,8 @@ const loadAllRows = tableId => (dispatch, getState) => {
         );
 
       const validRowId = containsId(rowId)(rows) || f.get([0, "id"], rows);
-      const validColumnId = containsId(columnId)(columns) || 0;
+      const validColumnId =
+        containsId(columnId)(columns) || f.get([0, "id"], columns);
 
       if (!f.includes(validColumnId, visibleColumns)) {
         dispatch(setColumnsVisible(f.concat(visibleColumns, [validColumnId])));

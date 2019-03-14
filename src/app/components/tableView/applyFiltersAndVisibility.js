@@ -67,7 +67,7 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         columns
       ]);
 
-      const hasJumpTarget = !f.any(f.isNil, [
+      const hasJumpTarget = !f.every(f.isNil, [
         selectedCell.columnId,
         selectedCell.rowId
       ]);
