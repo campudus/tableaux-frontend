@@ -39,7 +39,7 @@ const withFunctionality = compose(
       }
       showToast({
         content: <div id="cell-jump-toast">{t("table:cant-add-row")}</div>,
-        duratin: 2000
+        duration: 2000
       });
     }
   })

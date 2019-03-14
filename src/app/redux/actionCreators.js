@@ -351,7 +351,7 @@ const showToast = data => {
     : {
         type: SHOW_TOAST,
         content: data.content,
-        duration: data.duratin || 2700
+        duration: data.duration || 2700
       };
 };
 
