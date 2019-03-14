@@ -14,7 +14,7 @@ export const connectOverlayToCellValue = withProps(props => {
 
     return {
       value: linkedRow.data[rowIdx].values[columnIdx],
-      row: linkedRow.data[0]
+      grudData: grudData
     };
   } catch (err) {
     console.error("Error connecting element:", err);
