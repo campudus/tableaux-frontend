@@ -170,10 +170,10 @@ $dist-from-top: 20px;
 
       .close-button {
         .svg-icon {
-          .a{
+          width: 1em;
+          .a {
             fill:inherit;
           }
-          width: 1em;
         }
         &:hover svg {
           fill: $color-text-medium-grey;
