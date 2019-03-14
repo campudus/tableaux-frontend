@@ -195,7 +195,13 @@ class HeaderPopupMenu extends Component {
                 : null}
               {this.mkEntry(4, {
                 title: "table:duplicate_row",
-                fn: () => initiateDuplicateRow(row, langtag),
+                fn: () =>
+                  initiateDuplicateRow({
+                    tableId,
+                    row,
+                    langtag,
+                    rowId: row.id
+                  }),
                 icon: "clone"
               })}
               {this.mkEntry(5, {
