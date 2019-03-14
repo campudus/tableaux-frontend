@@ -31,7 +31,7 @@ class View extends PureComponent {
     hasFocusedChild: PropTypes.bool.isRequired,
     funcs: PropTypes.object.isRequired,
     popupOpen: PropTypes.bool.isRequired,
-    lockStatus: PropTypes.any // just to signal a neccessary re-render when row (un-)locked
+    lockStatus: PropTypes.bool
   };
 
   constructor(props) {
@@ -90,7 +90,8 @@ class View extends PureComponent {
       langtag, // for view content
       uiLangtag, // for view headers
       setTranslationView,
-      hasFocusedChild
+      hasFocusedChild,
+      lockStatus
     } = this.props;
     const { kind, column } = cell;
     const views = {
@@ -107,7 +108,7 @@ class View extends PureComponent {
       [ColumnKinds.group]: GroupView
     };
 
-    const isDisabled = !this.canEditValue();
+    const isDisabled = !(this.canEditValue() && !lockStatus);
     const isMyTranslationNeeded =
       langtag !== f.first(Langtags) &&
       Annotations.isTranslationNeeded(langtag)(cell);
