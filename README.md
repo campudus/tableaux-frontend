@@ -22,9 +22,22 @@ Go to project directory and execute:
 
     npm run clean && npm run build
 
-or
+## Overview of npm tasks
 
-    npm run start
+``` shell
+npm run
+  start             # create production bundle and serve at serverPort
+  build             # create production bundle
+  dev               # create dev bundle and serve it at serverPort
+  lint              # lint all project source files
+  lint:changes      # lint all differences to master
+  lint:fix          # apply automated lint fixes to all project source files
+  lint:fix:changes  # fix all changes to master
+  storybook         # start storybook
+  test              # run tests with jest
+  clean             # clean build cache and out directory
+  clean:project     # clean build cache and out directory, reinstall all dependencies
+```
 
 ## Project configuration
 Default project configuration can be overwritten via a `config.json` in the base directory or via environment variables.
@@ -33,7 +46,7 @@ Default project configuration can be overwritten via a `config.json` in the base
 
 ```
 {
-  "outDir": "out",
+  "outDir": "out",     // build artefacts go here
   "host": "localhost",
   "apiPort": 8080,     // port of the backend service
   "serverPort": 3000   // port for the http frontend
@@ -51,6 +64,7 @@ Following variable names can be used:
 - APIPORT
 - SERVERPORT
 - OUTDIR
+- REDUX_DEVTOOLS=[true,false]
 
 ```
 HOST=localhost npm start dev
