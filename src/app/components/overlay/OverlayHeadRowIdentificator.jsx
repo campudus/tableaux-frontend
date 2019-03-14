@@ -3,24 +3,47 @@ import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { getColumnDisplayName } from "../../helpers/multiLanguage";
+import { ColumnKinds } from "../../constants/TableauxConstants";
+import {
+  getColumnDisplayName,
+  retrieveTranslation
+} from "../../helpers/multiLanguage";
+import { withForeignDisplayValues } from "../helperComponents/withForeignDisplayValues";
 import RowConcat from "../../helpers/RowConcatHelper";
 
 const OverlayHeadRowIdentificator = props => {
   const {
     cell,
     cell: { row, column, columns },
-    langtag
+    langtag,
+    foreignDisplayValues
   } = props;
   if (!cell) {
     return null;
   }
   const columnDisplayName = getColumnDisplayName(column, langtag);
+  console.log("render", f.prop("id", cell));
+
+  const isConcatCell =
+    !f.isNil(foreignDisplayValues) && column.kind === ColumnKinds.concat;
+  const isLinkCell =
+    !f.isNil(foreignDisplayValues) && column.kind === ColumnKinds.link;
+  const concatValue = isConcatCell ? (
+    foreignDisplayValues
+  ) : isLinkCell ? (
+    foreignDisplayValues.map(retrieveTranslation(langtag)).join(" ")
+  ) : (
+    <RowConcat row={row} langtag={langtag} idColumn={f.first(columns)} />
+  );
 
   return (
     <span>
       <span className="column-name">{columnDisplayName}: </span>
-      <RowConcat row={row} langtag={langtag} idColumn={f.first(columns)} />
+      {f.isString(concatValue) ? (
+        <span className="row-concat-string">{concatValue}</span>
+      ) : (
+        concatValue
+      )}
     </span>
   );
 };
@@ -30,4 +53,4 @@ OverlayHeadRowIdentificator.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default OverlayHeadRowIdentificator;
+export default withForeignDisplayValues(OverlayHeadRowIdentificator);
