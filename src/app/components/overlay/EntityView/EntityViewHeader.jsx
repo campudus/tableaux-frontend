@@ -185,7 +185,6 @@ class EntityViewHeader extends PureComponent {
         <HeaderPopupMenu
           tableView={tableView}
           langtag={langtag}
-          row={row}
           id={id}
           funcs={sharedData}
           hasMeaningfulLinks={hasMeaningfulLinks}
