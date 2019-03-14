@@ -587,7 +587,7 @@ export const openLinkOverlay = ({ cell, langtag, actions }) => {
   const overlayContent = <ReduxLinkOverlay cell={cell} langtag={langtag} />;
 
   actions.openOverlay({
-    head: <LinkOverlayHeader langtag={langtag} cell={cell} />,
+    head: <LinkOverlayHeader langtag={langtag} cell={cell} title={cell} />,
     body: overlayContent,
     type: "full-height",
     classes: "link-overlay",

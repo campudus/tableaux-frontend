@@ -14,6 +14,7 @@ const LinkOverlayHeader = props => {
     sharedData,
     updateSharedData,
     id,
+    cell,
     cell: { table },
     unlinkedOrder,
     filterMode,
@@ -29,7 +30,7 @@ const LinkOverlayHeader = props => {
   const tableName = retrieveTranslation(langtag, table.displayName);
 
   return (
-    <Header context={tableName} id={props.id} {...props}>
+    <Header context={tableName} id={props.id} {...props} title={cell}>
       <SearchBar
         langtag={langtag}
         id={id}
