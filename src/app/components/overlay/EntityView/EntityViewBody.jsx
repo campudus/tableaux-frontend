@@ -315,6 +315,7 @@ class EntityViewBody extends Component {
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
       "is-locked": isLocked(row)
     });
+
     return (
       <div
         className={evbClass}
@@ -389,11 +390,13 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
         )
       : findDisplayValue(table.id)(row.id)(columnIdx);
 
-  const rowData = doto(
-    grudData,
-    f.prop(["rows", table.id, "data"]),
-    f.find(f.propEq("id", row.id))
-  );
+  const rowData =
+    doto(
+      grudData,
+      f.prop(["rows", table.id, "data"]),
+      f.find(f.propEq("id", row.id))
+    ) || {};
+
   const cells = f
     .zip(rowData.cells, rowData.values)
     .map(([cell, cellValue], idx) => {
@@ -403,6 +406,7 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
         displayValue: getDisplayValue(cell.column, idx, cellValue)
       });
     });
+
   return { cells };
 })(EntityViewBody);
 
