@@ -87,3 +87,4 @@ rules:
   react/prop-types: off
   react/jsx-key: warn
   react/jsx-no-duplicate-props: error
+  react/display-name: off
