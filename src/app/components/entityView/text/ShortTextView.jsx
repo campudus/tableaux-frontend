@@ -29,14 +29,23 @@ const enhance = compose(
       },
       handleChange: () => event => ({ value: event.target.value }),
       saveChanges: ({ value, oldValue }, { actions, cell, langtag }) => () => {
+
         const newValue = cell.column.multilanguage
           ? { [langtag]: value }
           : value;
-        actions.changeCellValue({
-          cell,
-          oldValue,
-          newValue
-        });
+
+        const valueChanged = cell.column.multilanguage
+          ? !f.eq(newValue[langtag], oldValue[langtag])
+          : !f.eq(oldValue, newValue);
+
+        if (valueChanged) {
+          actions.changeCellValue({
+            cell,
+            oldValue,
+            newValue
+          });
+        }
+
         return {
           oldValue: cell.column.multilanguage
             ? f.merge(oldValue, newValue)
