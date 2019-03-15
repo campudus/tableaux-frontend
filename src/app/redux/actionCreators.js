@@ -174,45 +174,60 @@ const loadAllRows = tableId => (dispatch, getState) => {
 
     const validateSelectedCell = () => {
       const state = getState();
+
+      const dispatchToast = content =>
+        dispatch(
+          showToast({
+            content: <div id="cell-jump-toast">{content}</div>
+          })
+        );
+
+      const notFound = (id, validId) => !f.eq(validId, id) && !f.isNil(id);
+
       const [selectedCell, rows, columns, table, visibleColumns] = f.props(
         [
           ["tableView", "selectedCell"],
           ["rows", tableId, "data"],
           ["columns", tableId, "data"],
-          ["tables", tableId],
+          ["tables", "data", tableId],
           ["tableView", "visibleColumns"]
         ],
         state
       );
+
       const { rowId, columnId, langtag } = selectedCell;
-      if (!rowId && !columnId) {
+
+      if (f.isNil(rowId) && f.isNil(columnId)) {
         return;
       }
+
       const containsId = id =>
         f.flow(
           f.map("id"),
           f.includes(id),
           exists => (exists ? id : false)
         );
-      const validRowId = containsId(rowId)(rows) || f.get("id", f.first(rows));
-      const validColumnId = containsId(columnId)(columns) || 1;
-      f.includes(validColumnId, visibleColumns)
-        ? null
-        : dispatch(
-            setColumnsVisible(f.concat(visibleColumns, [validColumnId]))
-          );
-      if (!f.eq(validRowId, rowId) || !f.eq(validColumnId, columnId)) {
-        dispatch(
-          showToast({
-            content: (
-              <div id="cell-jump-toast">
-                {!f.eq(validRowId, rowId)
-                  ? i18n.t("table:jump.no_such_row", { row: rowId })
-                  : i18n.t("table:jump.no_such_column", { col: columnId })}
-              </div>
-            )
-          })
-        );
+
+      const validRowId = containsId(rowId)(rows) || f.get([0, "id"], rows);
+      const validColumnId =
+        containsId(columnId)(columns) || f.get([0, "id"], columns);
+
+      if (!f.includes(validColumnId, visibleColumns)) {
+        dispatch(setColumnsVisible(f.concat(visibleColumns, [validColumnId])));
+      }
+
+      if (notFound(rowId, validRowId)) {
+        dispatchToast(i18n.t("table:jump.no_such_row", { row: rowId }));
+      }
+
+      if (notFound(columnId, validColumnId)) {
+        dispatchToast(i18n.t("table:jump.no_such_column", { col: columnId }));
+      }
+
+      const anyIdChanged =
+        !f.eq(validRowId, rowId) || !f.eq(validColumnId, columnId);
+
+      if (anyIdChanged) {
         dispatch(
           dispatchParamsFor(TOGGLE_CELL_SELECTION)({
             tableId: table.id,
@@ -221,6 +236,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
             langtag
           })
         );
+
         TableauxRouter.selectCellHandler(
           table.id,
           validRowId,
