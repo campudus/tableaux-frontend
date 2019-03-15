@@ -30,7 +30,7 @@ class TableSettingsPopup extends PureComponent {
       actions: { setAllRowsFinal }
     } = this.props;
     return [
-      <a href="#" onClick={() => setAllRowsFinal(table)}>
+      <a key="i-need-no-key" href="#" onClick={() => setAllRowsFinal(table)}>
         {i18n.t("table:final.set_all_rows_final")}
       </a>,
       isUserAdmin() ? <NameEditor table={table} langtag={langtag} /> : null
