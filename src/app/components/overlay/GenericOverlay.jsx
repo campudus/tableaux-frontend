@@ -46,8 +46,8 @@ class GenericOverlay extends Component {
       contentWidth: 0,
       overlayIsNew: true,
       childrenProps: {
-        head: f.merge(f.get("props", props.head), sharedProps),
-        body: f.merge(f.get("props", props.body), sharedProps),
+        head: { ...f.get("props", props.head), ...sharedProps },
+        body: { ...f.get("props", props.body), ...sharedProps },
         footer: f.assoc(f.get(["footer", "props"], props), sharedProps)
       }
     };
