@@ -28,7 +28,7 @@ class LinkView extends Component {
     if (this.props.thisUserCantEdit) {
       return;
     }
-    const { cell, actions, value } = this.props;
+    const { cell, actions } = this.props;
     const newValue = f.pullAt(id, cell.value);
     actions.changeCellValue({ cell, oldValue: cell.value, newValue });
   };
