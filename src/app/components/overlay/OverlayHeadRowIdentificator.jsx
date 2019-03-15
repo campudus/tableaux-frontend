@@ -22,7 +22,6 @@ const OverlayHeadRowIdentificator = props => {
     return null;
   }
   const columnDisplayName = getColumnDisplayName(column, langtag);
-  console.log("render", f.prop("id", cell));
 
   const isConcatCell =
     !f.isNil(foreignDisplayValues) && column.kind === ColumnKinds.concat;
