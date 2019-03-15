@@ -195,10 +195,12 @@ const toggleLink = oldIds => newIds => {
       };
 };
 
-export const modifyHistory = (modifyAction, tableId) => (
+export const modifyHistory = (modifyAction, tableId, rowId) => (
   dispatch,
   getState
 ) => {
+  const rowSpecific = !f.isNil(rowId);
+  console.log("modifyHistory rowSpecific", rowSpecific, rowId);
   const historyAction = f.compose(
     f.findLast(action => action.tableId === tableId),
     f.get([
