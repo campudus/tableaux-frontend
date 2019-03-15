@@ -1,9 +1,12 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import {getCurrencyCode, getLanguageOrCountryIcon} from "../../../helpers/multiLanguage";
-import {splitPriceDecimals} from "./currencyHelper";
+import {
+  getCurrencyCode,
+  getLanguageOrCountryIcon
+} from "../../../helpers/multiLanguage";
+import { splitPriceDecimals } from "./currencyHelper";
 // import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";
-import {maybe} from "../../../helpers/functools";
+import { maybe } from "../../../helpers/functools";
 import f from "lodash/fp";
 
 export default class CurrencyRow extends PureComponent {
@@ -27,7 +30,10 @@ export default class CurrencyRow extends PureComponent {
   mergeSplittedCurrencyValues() {
     const integerVal = String(this.currencyInteger.value).trim();
     const decimalVal = String(this.currencyDecimals.value).trim();
-    const mergedVal = (integerVal === "" ? "0" : integerVal) + "." + (decimalVal === "" ? "00" : decimalVal);
+    const mergedVal =
+      (integerVal === "" ? "0" : integerVal) +
+      "." +
+      (decimalVal === "" ? "00" : decimalVal);
     return parseFloat(mergedVal);
   }
 
@@ -54,18 +60,23 @@ export default class CurrencyRow extends PureComponent {
   // };
   onKeyDownInput = () => console.log("onKeyDownInput");
 
-  currencyInputChanged = (e) => {
-    this.setState({modified: true});
-    this.props.updateValue(this.props.country, this.mergeSplittedCurrencyValues());
-    const {caretElement, caretPosition} = this.state;
+  currencyInputChanged = e => {
+    this.setState({ modified: true });
+    this.props.updateValue(
+      this.props.country,
+      this.mergeSplittedCurrencyValues()
+    );
+    const { caretElement, caretPosition } = this.state;
     if (!f.isNil(caretPosition)) {
       caretElement.setSelectionRange(caretPosition, caretPosition);
     }
   };
 
-  handleFocus = (selector) => () => {
+  handleFocus = selector => () => {
     const el = this[selector];
-    const l = maybe(el).map(x => x.value.length).getOrElse(0);
+    const l = maybe(el)
+      .map(x => x.value.length)
+      .getOrElse(0);
     maybe(el).method("setSelectionRange", l, l);
   };
 
@@ -74,23 +85,30 @@ export default class CurrencyRow extends PureComponent {
     this.handleFocus(id);
   };
 
-  currencyIntegerRef = (node) => this.inputRef("currencyInteger", node);
-  currencyDecimalsRef = (node) => this.inputRef("currencyDecimals", node);
+  currencyIntegerRef = node => this.inputRef("currencyInteger", node);
+  currencyDecimalsRef = node => this.inputRef("currencyDecimals", node);
 
   renderCurrencyValue(value) {
     const splittedValue = splitPriceDecimals(value);
 
     return (
       <div>
-        <input ref={this.currencyIntegerRef}
-          className="currency-input integer" type="text" value={splittedValue[0]}
-          onKeyDown={this.onKeyDownInput} onChange={this.currencyInputChanged}
+        <input
+          ref={this.currencyIntegerRef}
+          className="currency-input integer"
+          type="text"
+          value={splittedValue[0]}
+          onKeyDown={this.onKeyDownInput}
+          onChange={this.currencyInputChanged}
           onFocus={this.handleFocus("currencyInteger")}
         />
         <span className="delimiter">,</span>
-        <input ref={this.currencyDecimalsRef}
-          onChange={this.currencyInputChanged} className="currency-input decimals"
-          type="text" value={splittedValue[1]}
+        <input
+          ref={this.currencyDecimalsRef}
+          onChange={this.currencyInputChanged}
+          className="currency-input decimals"
+          type="text"
+          value={splittedValue[1]}
           onKeyDown={this.onKeyDownInput}
           onFocus={this.handleFocus("currencyDecimals")}
         />
@@ -99,12 +117,16 @@ export default class CurrencyRow extends PureComponent {
   }
 
   render() {
-    const {country, countryCurrencyValue, isFallbackValue} = this.props;
+    const { country, countryCurrencyValue, isFallbackValue } = this.props;
     const currencyCode = getCurrencyCode(country);
     let currencyValue = this.renderCurrencyValue(countryCurrencyValue);
 
     return (
-      <div className={`currency-row${(isFallbackValue && !this.state.modified) ? " grey-out" : ""}`}>
+      <div
+        className={`currency-row${
+          isFallbackValue && !this.state.modified ? " grey-out" : ""
+        }`}
+      >
         <div className="country-code">{getLanguageOrCountryIcon(country)}</div>
         <div className="currency-value">{currencyValue}</div>
         <div className="currency-code">{currencyCode}</div>

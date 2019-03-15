@@ -1,12 +1,14 @@
 import f from "lodash/fp";
-import {getFallbackCurrencyValue} from "../../../helpers/multiLanguage";
+import { getFallbackCurrencyValue } from "../../../helpers/multiLanguage";
 
-export function getCurrencyWithCountry(currencyObj, country, withFallback = false) {
+export function getCurrencyWithCountry(
+  currencyObj,
+  country,
+  withFallback = false
+) {
   const result = currencyObj[country] || null;
-  const fallBack = getFallbackCurrencyValue({country}, currencyObj) || null;
-  return (withFallback)
-    ? (result || fallBack)
-    : result;
+  const fallBack = getFallbackCurrencyValue({ country }, currencyObj) || null;
+  return withFallback ? result || fallBack : result;
 }
 
 export function splitPriceDecimals(priceValue) {

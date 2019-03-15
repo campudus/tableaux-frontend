@@ -106,6 +106,8 @@ export default class ColumnEntry extends React.PureComponent {
   };
 
   showDescription = show => event => {
+    // need real dom node here
+    // eslint-disable-next-line react/no-find-dom-node
     const headerNode = ReactDOM.findDOMNode(event.target);
     this.setState({
       showDescription: show && !f.isEmpty(this.props.description),
@@ -118,6 +120,8 @@ export default class ColumnEntry extends React.PureComponent {
       return;
     }
 
+    // need real dom node here
+    // eslint-disable-next-line react/no-find-dom-node
     const domNode = ReactDOM.findDOMNode(this.tooltip);
     const nodeRect = domNode.getBoundingClientRect();
     const nodeRight = nodeRect.right;

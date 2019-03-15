@@ -3,14 +3,14 @@
  */
 
 import React, { PureComponent } from "react";
-import NameEditor from "./NameEditor";
-import listensToClickOutside from "react-onclickoutside";
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
 import i18n from "i18next";
-import classNames from "classnames";
-import { setRowAnnotation } from "../../../helpers/annotationHelper";
-import Cookies from "js-cookie";
+import listensToClickOutside from "react-onclickoutside";
+
 import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import NameEditor from "./NameEditor";
 
 @listensToClickOutside
 class TableSettingsPopup extends PureComponent {

@@ -4,7 +4,6 @@ import f from "lodash/fp";
 import TableView from "./tableView/TableView.jsx";
 import MediaView from "../components/media/MediaView.jsx";
 import DashboardView from "./dashboard/DashboardView";
-import { pure } from "recompose";
 import reduxActionHoc from "../helpers/reduxActionHoc";
 
 const viewNameIs = name => f.matchesProperty("viewName", name);

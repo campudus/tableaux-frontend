@@ -29,7 +29,7 @@ const TextCell = props => {
 
 const enhance = withHandlers({
   openEditOverlay: props => event => {
-    const { actions, selected, column, cell, table, langtag, value } = props;
+    const { actions, selected, cell, table, langtag, value } = props;
 
     if (selected) {
       event && event.stopPropagation();
@@ -44,7 +44,6 @@ const enhance = withHandlers({
         f.first,
         ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
       );
-      const Wrapper = props => props.children; // Needed for internal structure of overlays
 
       actions.openOverlay({
         head: <Header context={context} langtag={langtag} />,

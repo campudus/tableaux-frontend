@@ -15,7 +15,7 @@ import {
   isUserAdmin
 } from "../../helpers/accessManagementHelper";
 import { makeRequest } from "../../helpers/apiHelper";
-import { mapPromise, propMatches, when } from "../../helpers/functools";
+import { mapPromise, propMatches } from "../../helpers/functools";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";

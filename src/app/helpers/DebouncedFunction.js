@@ -4,7 +4,7 @@
  * summing up of delays.
  */
 
-import {maybe} from "./functools";
+import { maybe } from "./functools";
 
 export default class DebouncedFunction {
   constructor(fn, delay = 50) {

@@ -1,8 +1,9 @@
 import { I18nextProvider } from "react-i18next";
 import React, { PureComponent } from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
+
 import PropTypes from "prop-types";
+
 import Overlays from "./overlay/Overlays";
 import ViewRenderer from "./ViewRenderer.jsx";
 import resources from "../../locales/index";

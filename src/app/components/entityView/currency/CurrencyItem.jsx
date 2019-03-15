@@ -49,7 +49,7 @@ class CurrencyItem extends PureComponent {
     this.setState(this.getCellValue(this.props.countryCode, cell));
   };
 
-  handleClickOutside = event => {
+  handleClickOutside = () => {
     const { editing, toggleEdit, countryCode, cell } = this.props;
     const { currencyValue } = this.state;
     const updateObject =

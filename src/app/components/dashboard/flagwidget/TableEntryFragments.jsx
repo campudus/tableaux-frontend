@@ -1,67 +1,80 @@
 import React from "react";
-import {getMultiLangValue} from "../../../helpers/multiLanguage";
-import {compose, pure, withHandlers} from "recompose";
+import { getMultiLangValue } from "../../../helpers/multiLanguage";
+import { compose, pure, withHandlers } from "recompose";
 import classNames from "classnames";
 import App from "ampersand-app";
 import f from "lodash/fp";
 import Header from "./HeaderFragments";
 import ElementCount from "./ElementCountFragments";
-import {Langtags} from "../../../constants/TableauxConstants";
-import {doto} from "../../../helpers/functools";
+import { Langtags } from "../../../constants/TableauxConstants";
+import { doto } from "../../../helpers/functools";
 
 const TableEntry = compose(
   pure,
   withHandlers({
-    onMouseEnter: ({handleMouseEnter, index}) => () => {
+    onMouseEnter: ({ handleMouseEnter, index }) => () => {
       handleMouseEnter(index);
     },
-    handleClick: ({table = {}, flag, langtag}) => (event) => {
+    handleClick: ({ table = {}, flag, langtag }) => event => {
       event.preventDefault();
       App.router.navigate(`/${langtag}/tables/${table.id}?filter:flag:${flag}`);
     }
   })
 )(
-  ({active, onMouseEnter, langtag, selectedLang, table = {}, style, selected, flag, perc}) => {
+  ({
+    active,
+    onMouseEnter,
+    langtag,
+    selectedLang,
+    table = {},
+    style,
+    selected,
+    flag
+  }) => {
     const latest = f.get(["annotationCount", "latest"], table);
-    const cellUrl = (flag === "comments" && f.isObject(latest))
-      ? `/columns/${latest.columnId}/rows/${latest.rowId}`
-      : "";
+    const cellUrl =
+      flag === "comments" && f.isObject(latest)
+        ? `/columns/${latest.columnId}/rows/${latest.rowId}`
+        : "";
 
-    const translationPercentage = (selectedLang === f.first(Langtags))
-      ? doto(table,
-        f.get("translationStatus"),
-        f.map(f.identity), // get values of all keys in undetermined order
-        f.reduce(f.add, -1),
-        f.divide(f, Math.max(f.size(Langtags) - 1, 1))
-        )
-      : f.getOr(0, ["translationStatus", selectedLang], table);
+    const translationPercentage =
+      selectedLang === f.first(Langtags)
+        ? doto(
+            table,
+            f.get("translationStatus"),
+            f.map(f.identity), // get values of all keys in undetermined order
+            f.reduce(f.add, -1),
+            f.divide(f, Math.max(f.size(Langtags) - 1, 1))
+          )
+        : f.getOr(0, ["translationStatus", selectedLang], table);
 
-    const href = `/${(flag === "needs-translation") 
-      ? selectedLang 
-      : langtag}/tables/${table.id}${cellUrl}?filter:flag:${flag}`;
+    const href = `/${
+      flag === "needs-translation" ? selectedLang : langtag
+    }/tables/${table.id}${cellUrl}?filter:flag:${flag}`;
 
     return (
-      <a className={classNames("table-entry",
-        {
+      <a
+        className={classNames("table-entry", {
           active,
           selected
         })}
-         href={href}
-         style={style}
-         onMouseEnter={onMouseEnter}
-         draggable={false}
+        href={href}
+        style={style}
+        onMouseEnter={onMouseEnter}
+        draggable={false}
       >
         <div className="label">
           {getMultiLangValue(langtag, table.name, table.displayName)}
         </div>
-        <ElementCount n={f.get(["annotationCount", "count"], table)}
-                      selected={selected}
-                      flag={flag}
-                      perc={(((1 - translationPercentage) * 1000) | 0) / 10} // remove  1 - ... to get "already translated"
+        <ElementCount
+          n={f.get(["annotationCount", "count"], table)}
+          selected={selected}
+          flag={flag}
+          perc={(((1 - translationPercentage) * 1000) | 0) / 10} // remove  1 - ... to get "already translated"
         />
       </a>
     );
   }
 );
 
-export {Header, TableEntry};
+export { Header, TableEntry };

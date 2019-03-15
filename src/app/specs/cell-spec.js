@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import { check, validate } from "./type";
-import { ColumnKinds, Langtags } from "../constants/TableauxConstants";
+import { ColumnKinds } from "../constants/TableauxConstants";
 
 const containsRowValues = candidate => f.isArray(candidate);
 const optionallyContainsRowAnnotations = v =>

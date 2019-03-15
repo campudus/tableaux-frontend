@@ -35,38 +35,36 @@ export const Popup = compose(
   }),
   withState("popupOpen", "updatePopupState", false),
   withHandlers({
-    openPopup: ({updatePopupState}) => () => updatePopupState(f.always(true)),
-    closePopup: ({updatePopupState, onClose}) => () => {
+    openPopup: ({ updatePopupState }) => () => updatePopupState(f.always(true)),
+    closePopup: ({ updatePopupState, onClose }) => () => {
       f.isFunction(onClose) && onClose();
       updatePopupState(f.always(false));
     }
   }),
   withHandlers({
-    togglePopup: ({popupOpen, openPopup, closePopup}) => () => ((popupOpen) ? closePopup : openPopup)()
+    togglePopup: ({ popupOpen, openPopup, closePopup }) => () =>
+      (popupOpen ? closePopup : openPopup)()
   })
-)(
-  (props) => {
-    const Container = componentFromProp("container");
-    const PopupElement = componentFromProp("popup");
+)(props => {
+  const Container = componentFromProp("container");
+  const PopupElement = componentFromProp("popup");
 
-    const PopupFragment = compose(
-      branch(
-        (props) => !props.popupOpen,
-        renderNothing
-      ),
-      withHandlers({handleClickOutside: ({closePopup}) => closePopup}),
-      listenToClickOutside
-    )(PopupElement);
+  const PopupFragment = compose(
+    branch(props => !props.popupOpen, renderNothing),
+    withHandlers({ handleClickOutside: ({ closePopup }) => closePopup }),
+    listenToClickOutside
+  )(PopupElement);
 
-    return (
-      <div
-        style={{cursor: "pointer"}}
-        className={`${props.containerClass || ""} ${(props.popupOpen) ? "popup-open ignore-react-onclickoutside" : ""}`}
-        onClick={props.togglePopup}
-      >
-        <Container {...props} />
-        <PopupFragment {...props} />
-      </div>
-    );
-  }
-);
+  return (
+    <div
+      style={{ cursor: "pointer" }}
+      className={`${props.containerClass || ""} ${
+        props.popupOpen ? "popup-open ignore-react-onclickoutside" : ""
+      }`}
+      onClick={props.togglePopup}
+    >
+      <Container {...props} />
+      <PopupFragment {...props} />
+    </div>
+  );
+});

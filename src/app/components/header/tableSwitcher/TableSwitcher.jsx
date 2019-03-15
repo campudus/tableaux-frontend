@@ -24,7 +24,7 @@ class TableSwitcherButton extends React.PureComponent {
     this.forceUpdate();
   };
 
-  onClickedOutside = event => {
+  onClickedOutside = () => {
     this.setState({ isOpen: false });
   };
 

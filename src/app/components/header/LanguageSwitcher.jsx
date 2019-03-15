@@ -26,7 +26,7 @@ const enhance = compose(
       }
       // }
     },
-    renderOption: props => option =>
+    renderOption: () => option =>
       getLanguageOrCountryIcon(option.value, "language")
   }),
   pure

@@ -15,7 +15,6 @@ import { addCellId } from "../../../helpers/getCellId";
 import { doto, maybe } from "../../../helpers/functools";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
-import { safeRender, reportUpdateReasons } from "../../../helpers/devWrappers";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import TranslationPopup from "../../entityView/TranslationPopup";
 import View from "../../entityView/RowView";

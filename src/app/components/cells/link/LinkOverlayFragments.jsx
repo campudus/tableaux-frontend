@@ -1,4 +1,4 @@
-import React from "react";
+import { AutoSizer, List } from "react-virtualized";
 import {
   branch,
   compose,
@@ -8,13 +8,13 @@ import {
   withHandlers,
   withProps
 } from "recompose";
+import React from "react";
 import f from "lodash/fp";
+import i18n from "i18next";
+
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import DragSortList from "./DragSortList";
 import Spinner from "../../header/Spinner";
-import { AutoSizer, List } from "react-virtualized";
-import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
-import DefaultLangtag from "../../../constants/TableauxConstants";
-import i18n from "i18next";
 import SvgIcon from "../../helperComponents/SvgIcon";
 
 // ---------------------------------------------------------------------------------------
@@ -124,8 +124,7 @@ const RowCreatorFrag = props => {
     },
     langtag
   } = props;
-  const linkTableName =
-    displayName[langtag] || displayName[DefaultLangtag] || "";
+  const linkTableName = retrieveTranslation(langtag, displayName);
   return (
     <div
       className={`row-creator-button${shiftUp ? " shift-up" : ""}`}

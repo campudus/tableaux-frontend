@@ -1,7 +1,7 @@
 import Moment from "moment";
-import {getMultiLangValue} from "../../../helpers/multiLanguage";
+import { getMultiLangValue } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-import {doto} from "../../../helpers/functools";
+import { doto } from "../../../helpers/functools";
 
 /**
  * A collection of message-of-the-day strings.
@@ -11,7 +11,7 @@ import {doto} from "../../../helpers/functools";
  * @type {{langtag: {generic: string[], mon: {name: string, values: Array}, tue: {name: string, values: Array}, wed: {name: string, values: Array}, thu: {name: string, values: Array}, fri: {name: string, values: string[]}, sat: {name: string, values: Array}, sun: {name: string, values: Array}}}}}
  */
 const defaultMessages = {
-  "de": {
+  de: {
     generic: [
       "lass uns loslegen.",
       "lass uns die Aufgaben angehen.",
@@ -79,10 +79,7 @@ const defaultMessages = {
     },
     fri: {
       name: "friday",
-      values: [
-        "yay, it's {{day}}!",
-        "let's finish strong"
-      ]
+      values: ["yay, it's {{day}}!", "let's finish strong"]
     },
     sat: {
       name: "saturday",
@@ -101,13 +98,22 @@ const defaultMessages = {
  * @param messages: Message object to use
  */
 const getMotd = (langtag, messages = defaultMessages) => {
-  const dayOfWeek = Moment().format("ddd").toLowerCase();
-  const messagesInMyLang = getMultiLangValue(langtag, {generic: ["You're using GRUD."]}, messages);
-  const messageArray = f.flatten(f.props(["generic", [dayOfWeek, "values"]], messagesInMyLang));
+  const dayOfWeek = Moment()
+    .format("ddd")
+    .toLowerCase();
+  const messagesInMyLang = getMultiLangValue(
+    langtag,
+    { generic: ["You're using GRUD."] },
+    messages
+  );
+  const messageArray = f.flatten(
+    f.props(["generic", [dayOfWeek, "values"]], messagesInMyLang)
+  );
   const n = f.size(messageArray);
   const messageIdx = Math.min((Math.random() * n) | 0, n - 1);
   const dayOfWeekName = f.get([dayOfWeek, "name"], messagesInMyLang);
-  return doto(messageArray,
+  return doto(
+    messageArray,
     f.getOr("", messageIdx),
     f.replace("{{day}}", dayOfWeekName),
     f.replace("{{Day}}", dayOfWeekName.replace(/./, f.toUpper))

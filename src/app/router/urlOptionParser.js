@@ -1,20 +1,27 @@
-import {doto} from "../helpers/functools";
-import {FilterModes} from "../constants/TableauxConstants";
+import { doto } from "../helpers/functools";
+import { FilterModes } from "../constants/TableauxConstants";
 import f from "lodash/fp";
 
 const parseOptions = optString => {
   if (!optString || f.isEmpty(optString)) {
     return {};
   }
-  const opts = ((optString[0] === "?") ? optString.substring(1) : optString).split("&");
+  const opts = (optString[0] === "?"
+    ? optString.substring(1)
+    : optString
+  ).split("&");
 
   const mergeOptions = (opts, moreOpts) => {
-    return (f.contains("filter", f.keys(moreOpts)))
-      ? f.update("filter", (oldFilters = []) => [...oldFilters, f.get("filter", moreOpts)], opts)
+    return f.contains("filter", f.keys(moreOpts))
+      ? f.update(
+          "filter",
+          (oldFilters = []) => [...oldFilters, f.get("filter", moreOpts)],
+          opts
+        )
       : f.merge(opts, moreOpts);
   };
 
-  const parseFilter = function (str) {
+  const parseFilter = function(str) {
     const [modeStr, ...params] = doto(str, f.split(":"), f.tail);
 
     if (!f.isNil(modeStr)) {
@@ -35,12 +42,12 @@ const parseOptions = optString => {
         };
       }
     } else {
-      return {filter: true};
+      return { filter: true };
     }
   }; // will get more complex once we implement filter routes
 
-  const parseEntityView = function (str) {
-    return {entityView: {focusElement: str.split(":").length > 1}};
+  const parseEntityView = function(str) {
+    return { entityView: { focusElement: str.split(":").length > 1 } };
   };
 
   const getOptions = f.cond([
@@ -51,13 +58,14 @@ const parseOptions = optString => {
   return f.reduce(mergeOptions, {}, f.map(getOptions, opts));
 };
 
-const getFilterMode = (flag) => f.get(flag, {
-  "needs-translation": FilterModes.UNTRANSLATED,
-  "check-me": FilterModes.CHECK_ME,
-  "comments": FilterModes.WITH_COMMENT,
-  "postpone": FilterModes.POSTPONE,
-  "important": FilterModes.IMPORTANT,
-  "final": FilterModes.FINAL
-});
+const getFilterMode = flag =>
+  f.get(flag, {
+    "needs-translation": FilterModes.UNTRANSLATED,
+    "check-me": FilterModes.CHECK_ME,
+    comments: FilterModes.WITH_COMMENT,
+    postpone: FilterModes.POSTPONE,
+    important: FilterModes.IMPORTANT,
+    final: FilterModes.FINAL
+  });
 
 export default parseOptions;

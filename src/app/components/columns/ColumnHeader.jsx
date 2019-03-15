@@ -37,7 +37,7 @@ export default class ColumnHeader extends PureComponent {
         className="tableHeader-inner"
         href={`/${langtag}/tables/${column.toTable}`}
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
       >
         <i className="fa fa-columns" />
         {getColumnDisplayName(column, langtag)}

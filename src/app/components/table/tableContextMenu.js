@@ -10,22 +10,26 @@ export function showRowContextMenu(payload) {
   });
 }
 
-export function closeRowContextMenu(payload) {
+export function closeRowContextMenu() {
   this.setState({
     rowContextMenu: null
   });
 }
 
 export function getRowContextMenu() {
-  const {rowContextMenu} = this.state;
+  const { rowContextMenu } = this.state;
   if (rowContextMenu !== null) {
-    return <RowContextMenuWithClickOutside
-      {...rowContextMenu}
-      handleClickOutside={() => { this.setState({rowContextMenu: null}); }}
-      pasteFrom={this.props.pasteOriginCell}
-      offsetY={30}
-      rows={this.props.rows}
-    />;
+    return (
+      <RowContextMenuWithClickOutside
+        {...rowContextMenu}
+        handleClickOutside={() => {
+          this.setState({ rowContextMenu: null });
+        }}
+        pasteFrom={this.props.pasteOriginCell}
+        offsetY={30}
+        rows={this.props.rows}
+      />
+    );
   } else {
     return null;
   }

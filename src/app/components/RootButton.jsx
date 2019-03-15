@@ -2,9 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 
-const RootButton = (props) => {
-  const {activeOverlays, closeOverlay} = props;
-  const bigOverlays = activeOverlays.filter(f.matchesProperty("type", "full-height"));
+const RootButton = props => {
+  const { activeOverlays, closeOverlay } = props;
+  const bigOverlays = activeOverlays.filter(
+    f.matchesProperty("type", "full-height")
+  );
   if (bigOverlays.length < 2) {
     return null;
   }
@@ -12,7 +14,8 @@ const RootButton = (props) => {
   // => first overlay must be the root
   const closeAllButRoot = () => {
     const closeNOverlays = n => {
-      closeOverlay().then(() => { // wait for setState to finish, to avoid messing with outdated transient data
+      closeOverlay().then(() => {
+        // wait for setState to finish, to avoid messing with outdated transient data
         if (n > 1) {
           closeNOverlays(n - 1);
         }
@@ -21,7 +24,7 @@ const RootButton = (props) => {
     closeNOverlays(activeOverlays.length - 1);
   };
 
-  const {context, title} = f.first(activeOverlays).head.props;
+  const { context, title } = f.first(activeOverlays).head.props;
   return (
     <div className="breadcrumb-wrapper">
       <a href="#" onClick={closeAllButRoot}>

@@ -11,7 +11,7 @@
  * containerClass="color-primary" are pre-defined.
  */
 
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 import request from "superagent";
@@ -38,42 +38,38 @@ class ImageCache {
 
   static cache(url, resolve, reject) {
     const subscribers = f.prop(["_subscribers", url], ImageCache) || [];
-    ImageCache._subscribers[url] = [...subscribers,
+    ImageCache._subscribers[url] = [
+      ...subscribers,
       {
         error: reject,
         success: resolve
       }
     ];
 
-    if (f.isEmpty(subscribers)) { // We're referring to the subscribers value BEFORE we added the current one
-      request
-        .get(url)
-        .end(
-          (error, response) => {
-            const subscribers = f.prop(["_subscribers", url], ImageCache);
-            if (error) {
-              subscribers.forEach(s => s.error(error));
-            } else {
-              ImageCache._cache[url] = response.text;
-              subscribers.forEach(s => s.success(response.text));
-            }
-          }
-        );
+    if (f.isEmpty(subscribers)) {
+      // We're referring to the subscribers value BEFORE we added the current one
+      request.get(url).end((error, response) => {
+        const subscribers = f.prop(["_subscribers", url], ImageCache);
+        if (error) {
+          subscribers.forEach(s => s.error(error));
+        } else {
+          ImageCache._cache[url] = response.text;
+          subscribers.forEach(s => s.success(response.text));
+        }
+      });
     }
   }
 
   static getOrFetch(identifier) {
     const url = f.prop(identifier, iconUrls) || identifier;
-    return new Promise(
-      (resolve, reject) => {
-        const cachedImg = ImageCache.getCached(url);
-        if (cachedImg) {
-          resolve(cachedImg);
-        } else {
-          ImageCache.cache(url, resolve, reject);
-        }
+    return new Promise((resolve, reject) => {
+      const cachedImg = ImageCache.getCached(url);
+      if (cachedImg) {
+        resolve(cachedImg);
+      } else {
+        ImageCache.cache(url, resolve, reject);
       }
-    );
+    });
   }
 }
 
@@ -89,24 +85,23 @@ class SvgIcon extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {loading: true};
+    this.state = { loading: true };
     this.setSvg(props.icon);
   }
 
-  setSvg = (fileName) => {
-    ImageCache
-      .getOrFetch(fileName)
-      .then(svg => {
-        if (!this.containerElement) { // Icon unmounted before svg was loaded
-          return;
-        }
-        this.containerElement.innerHTML = svg;
-        this.svgData = this.containerElement.children["0"];
-        this.setState({loading: false}, this.processImage);
-      });
+  setSvg = fileName => {
+    ImageCache.getOrFetch(fileName).then(svg => {
+      if (!this.containerElement) {
+        // Icon unmounted before svg was loaded
+        return;
+      }
+      this.containerElement.innerHTML = svg;
+      this.svgData = this.containerElement.children["0"];
+      this.setState({ loading: false }, this.processImage);
+    });
   };
 
-  componentWillReceiveProps = (newProps) => {
+  componentWillReceiveProps = newProps => {
     if (newProps.icon !== this.props.icon) {
       this.setSvg(newProps.icon);
     }
@@ -117,11 +112,13 @@ class SvgIcon extends Component {
       try {
         element.classList.add(className);
       } catch (e) {
-        const classNames = ` ${(element.classNames || "").toString()} ${className}`;
+        const classNames = ` ${(
+          element.classNames || ""
+        ).toString()} ${className}`;
         element.setAttribute("class", classNames.toString());
       }
     };
-    const {fillColor, center, svgClasses, title} = this.props;
+    const { fillColor, center, svgClasses, title } = this.props;
     addClass(this.svgData, "svg-icon-content");
     f.map(t => {
       t.innerHTML = f.defaultTo("", title);
@@ -139,7 +136,8 @@ class SvgIcon extends Component {
 
   render() {
     return (
-      <div className={"svg-icon " + (this.props.containerClasses || "")}
+      <div
+        className={"svg-icon " + (this.props.containerClasses || "")}
         ref={el => {
           this.containerElement = el;
         }}

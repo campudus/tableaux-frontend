@@ -17,6 +17,8 @@ class DateEditCell extends Component {
       return;
     }
 
+    // need real dom node for bounding rect
+    // eslint-disable-next-line react/no-find-dom-node
     const rect = ReactDOM.findDOMNode(node).getBoundingClientRect();
     const needsShiftUp = rect.bottom + 265 >= window.innerHeight;
     if (needsShiftUp !== this.state.shiftUp) {

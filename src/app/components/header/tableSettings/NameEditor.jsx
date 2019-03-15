@@ -37,7 +37,7 @@ class NameEditor extends PureComponent {
       f.cond([
         [f.eq("Enter"), this.saveAndClose],
         [f.eq("Escape"), this.stopEditing],
-        [f.stubTrue, x => null]
+        [f.stubTrue, () => null]
       ])(evt.key);
     }
   };

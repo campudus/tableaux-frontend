@@ -5,9 +5,9 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { doto, when } from "../../../helpers/functools";
 import { openLinkOverlay } from "../../cells/link/LinkOverlay";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
 import LinkList from "../../helperComponents/LinkList";
 

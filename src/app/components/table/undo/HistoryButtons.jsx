@@ -59,15 +59,15 @@ export default compose(
         )(props),
         active: true
       }),
-      undo: ({ active }, { actions: { modifyHistory },tableId }) => () => {
+      undo: ({ active }, { actions: { modifyHistory }, tableId }) => () => {
         if (active) {
-          modifyHistory("undo",tableId);
+          modifyHistory("undo", tableId);
           return { active: false };
         }
       },
-      redo: ({ active }, { actions: { modifyHistory },tableId }) => () => {
+      redo: ({ active }, { actions: { modifyHistory }, tableId }) => () => {
         if (active) {
-          modifyHistory("redo",tableId);
+          modifyHistory("redo", tableId);
           return { active: false };
         }
       }

@@ -89,7 +89,7 @@ const enhance = compose(
           completionSelected: false
         };
       },
-      placeCompletionList: ({ completions }) => node => {
+      placeCompletionList: () => node => {
         if (f.isNil(node)) {
           return;
         }

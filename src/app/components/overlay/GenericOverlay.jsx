@@ -64,6 +64,8 @@ class GenericOverlay extends Component {
   };
 
   componentDidMount = () => {
+    // need .contains of real dom node
+    // eslint-disable-next-line react/no-find-dom-node
     const overlayDOMNode = ReactDOM.findDOMNode(
       f.last(document.getElementsByClassName("overlay"))
     );
@@ -209,11 +211,7 @@ class GenericOverlay extends Component {
             </footer>
           ) : null}
         </div>
-        <div
-          ref="overlayBackground"
-          onClick={this.backgroundClick}
-          className="background"
-        />
+        <div onClick={this.backgroundClick} className="background" />
       </div>
     );
   }

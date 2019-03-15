@@ -179,6 +179,8 @@ class ItemPopupMenu extends Component {
     if (!this.nodeRef) {
       return;
     }
+    // Need real dom node for bounding rect
+    // eslint-disable-next-line react/no-find-dom-node
     const nodeDOM = ReactDOM.findDOMNode(this.nodeRef);
     const elRect = nodeDOM.getBoundingClientRect();
     if (!this.state.isOffScreen && elRect.bottom > window.innerHeight) {

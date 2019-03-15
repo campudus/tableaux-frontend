@@ -1,15 +1,16 @@
 import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import Header from "../Header";
-import { showDialog } from "../GenericOverlay";
-import i18n from "i18next";
 import f from "lodash/fp";
+import i18n from "i18next";
+
+import PropTypes from "prop-types";
+
+import { makeRequest } from "../../../helpers/apiHelper";
 import EntityViewBody from "./EntityViewBody";
 import EntityViewHeader from "./EntityViewHeader";
-import { makeRequest } from "../../../helpers/apiHelper";
-import route from "../../../helpers/apiRoutes";
-import getDisplayValue from "../../../helpers/getDisplayValue";
+import Header from "../Header";
 import Spinner from "../../header/Spinner";
+import getDisplayValue from "../../../helpers/getDisplayValue";
+import route from "../../../helpers/apiRoutes";
 
 /**
  * Manages loading of a foreign row
