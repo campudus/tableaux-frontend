@@ -1,17 +1,18 @@
+import { translate } from "react-i18next";
 import React from "react";
+import f from "lodash/fp";
 import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
 import {
   FallbackLanguage,
   FilterModes
 } from "../../../constants/TableauxConstants";
+import { forkJoin, maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import ReactDOM from "react-dom";
-import { translate } from "react-i18next";
-import f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import { forkJoin } from "../../../helpers/functools";
 import TableauxRouter from "../../../router/router";
-import PropTypes from "prop-types";
 
 @translate(["header"])
 @listensToClickOutside
@@ -31,18 +32,17 @@ class SwitcherPopup extends React.PureComponent {
 
   componentDidMount = () => {
     // scroll to current focus table (initially its the current table)
-    if (
-      this.state.focusTableId !== null &&
-      this.refs["table" + this.state.focusTableId]
-    ) {
-      ReactDOM.findDOMNode(
-        this.refs["table" + this.state.focusTableId]
-      ).focus();
-    }
+    // by setting temporary focus
+    maybe(this.state.focusTableId)
+      .map(id => this.tableRefs[id])
+      .method("focus");
 
-    // focus on filter input
-    const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
-    filterInput.focus();
+    // reset focus to filter input
+    this.focusFilterInput();
+  };
+
+  focusFilterInput = () => {
+    maybe(this.filterInput).method("focus");
   };
 
   componentDidUpdate = () => {
@@ -67,9 +67,7 @@ class SwitcherPopup extends React.PureComponent {
       filterTableName: ""
     });
 
-    // focus on filter input
-    const filterInput = ReactDOM.findDOMNode(this.refs.filterInput);
-    filterInput.focus();
+    this.focusFilterInput();
 
     const tableResults = this.getFilteredTables(group.id, "");
     // on click search gets cleared, so only matching tables are visible
@@ -268,6 +266,11 @@ class SwitcherPopup extends React.PureComponent {
     }
   };
 
+  storeTableRef = id => element => {
+    !this.tableRefs && (this.tableRefs = {});
+    this.tableRefs[id] = element;
+  };
+
   renderTables = (groups, tables) => {
     const { t, langtag } = this.props;
     const groupId = this.state.filterGroupId;
@@ -297,7 +300,7 @@ class SwitcherPopup extends React.PureComponent {
           className={isActive ? "active" : ""}
           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(onKeyDownFn)}
           tabIndex={0}
-          ref={`table${tableId}`}
+          ref={this.storeTableRef(tableId)}
         >
           <div onClick={this.onClickTable(table)}>{displayName}</div>
           <a target="_blank" rel="noopener noreferrer" href={newUrl}>
@@ -354,7 +357,7 @@ class SwitcherPopup extends React.PureComponent {
                 placeholder={t("tableSwitcher.search")}
                 type="text"
                 className="tableswitcher-input"
-                ref="filterInput"
+                ref={this.storeInputRef}
                 onChange={this.filterInputChange}
                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
                   this.getKeyboardShortcutsFilterTable
@@ -377,6 +380,10 @@ class SwitcherPopup extends React.PureComponent {
         </div>
       </div>
     );
+  };
+
+  storeInputRef = element => {
+    this.filterInput = element;
   };
 
   render() {
