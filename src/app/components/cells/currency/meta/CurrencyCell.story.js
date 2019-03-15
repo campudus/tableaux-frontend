@@ -1,6 +1,4 @@
-import {withInfo} from "@storybook/addon-info";
-import {withKnobs} from "@storybook/addon-knobs";
-import {storiesOf} from "@storybook/react";
+import { storiesOf } from "@storybook/react";
 
 import React from "react";
 import CurrencyCell from "../CurrencyCell";
@@ -9,7 +7,7 @@ storiesOf("CurrencyCell", module)
   .add("default", () => (
     <div className="cell cell-currency">
       <CurrencyCell
-        cell={{value: "test", column: {countryCodes: ["de"]}}}
+        cell={{ value: "test", column: { countryCodes: ["de"] } }}
         langtag="de"
       />
     </div>
@@ -17,7 +15,7 @@ storiesOf("CurrencyCell", module)
   .add("editing", () => (
     <div className="cell cell-currency">
       <CurrencyCell
-        cell={{value: "test", column: {countryCodes: ["de"]}}}
+        cell={{ value: "test", column: { countryCodes: ["de"] } }}
         langtag="de"
         editing={true}
       />

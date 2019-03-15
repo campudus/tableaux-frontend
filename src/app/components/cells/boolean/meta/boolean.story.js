@@ -1,6 +1,4 @@
-import {withInfo} from "@storybook/addon-info";
-import {withKnobs} from "@storybook/addon-knobs";
-import {storiesOf} from "@storybook/react";
+import { storiesOf } from "@storybook/react";
 
 import React from "react";
 import BooleanCell from "../BooleanCell";
@@ -10,7 +8,7 @@ storiesOf("boolean", module)
     <div className="cell cell-boolean">
       <BooleanCell
         toggleCheckboxValue={() => console.log("toggledCheckboxValue")}
-        cell={{value: true}}
+        cell={{ value: true }}
       />
     </div>
   ))
@@ -18,7 +16,7 @@ storiesOf("boolean", module)
     <div className="cell cell-boolean">
       <BooleanCell
         toggleCheckboxValue={() => console.log("toggledCheckboxValue")}
-        cell={{value: false}}
+        cell={{ value: false }}
       />
     </div>
   ));
