@@ -1,13 +1,15 @@
 import React, { PureComponent } from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
+
 import {
   getCurrencyCode,
   getLanguageOrCountryIcon
 } from "../../../helpers/multiLanguage";
-import { splitPriceDecimals } from "./currencyHelper";
-// import {isAllowedForNumberInput} from "../../../helpers/KeyboardShortcutsHelper";
+import { isAllowedForNumberInput } from "../../../helpers/KeyboardShortcutsHelper";
 import { maybe } from "../../../helpers/functools";
-import f from "lodash/fp";
+import { splitPriceDecimals } from "./currencyHelper";
 
 export default class CurrencyRow extends PureComponent {
   static propTypes = {
@@ -37,30 +39,30 @@ export default class CurrencyRow extends PureComponent {
     return parseFloat(mergedVal);
   }
 
-  // onKeyDownInput = (e) => {
-  //   if (!isAllowedForNumberInput(e)) {
-  //     this.setState({caretPosition: null});
-  //     e.preventDefault();
-  //   } else {
-  //     const input = e.target;
-  //     const modifier = f.cond([
-  //       [f.eq("Backspace"), f.always(-1)],
-  //       [f.eq("Delete"), f.always(0)],
-  //       [f.inRange("0", "9"), f.always(1)],
-  //       [f.stubTrue, f.always(null)]
-  //     ])(e.key);
-  //     const caretPosition = (f.isNil(modifier))
-  //       ? null
-  //       : input.selectionStart + modifier;
-  //     this.setState({
-  //       caretPosition,
-  //       caretElement: input
-  //     });
-  //   }
-  // };
+  onKeyDownInput = e => {
+    if (!isAllowedForNumberInput(e)) {
+      this.setState({ caretPosition: null });
+      e.preventDefault();
+    } else {
+      const input = e.target;
+      const modifier = f.cond([
+        [f.eq("Backspace"), f.always(-1)],
+        [f.eq("Delete"), f.always(0)],
+        [f.inRange("0", "9"), f.always(1)],
+        [f.stubTrue, f.always(null)]
+      ])(e.key);
+      const caretPosition = f.isNil(modifier)
+        ? null
+        : input.selectionStart + modifier;
+      this.setState({
+        caretPosition,
+        caretElement: input
+      });
+    }
+  };
   onKeyDownInput = () => console.log("onKeyDownInput");
 
-  currencyInputChanged = e => {
+  currencyInputChanged = () => {
     this.setState({ modified: true });
     this.props.updateValue(
       this.props.country,
