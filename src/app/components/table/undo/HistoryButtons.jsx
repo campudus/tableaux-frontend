@@ -35,15 +35,16 @@ const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
 
 const hasElements = (props, queueName) => {
   const rowSpecific = !f.isNil(props.rowId);
-  const checkRowAndTable = f.overEvery([
-    f.propEq("tableId", props.tableId),
-    f.propEq("rowId", props.rowId)
-  ]);
+  const filterFunc = rowSpecific
+    ? f.overEvery([
+        f.propEq("tableId", props.tableId),
+        f.propEq("rowId", props.rowId)
+      ])
+    : f.propEq("tableId", props.tableId);
+
   return f.flow(
     f.get(["tableView", "history", queueName]),
-    f.filter(
-      rowSpecific ? checkRowAndTable : f.propEq("tableId", props.tableId)
-    ),
+    f.filter(filterFunc),
     f.negate(f.isEmpty)
   )(props);
 };
