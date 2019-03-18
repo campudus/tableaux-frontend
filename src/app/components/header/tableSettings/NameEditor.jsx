@@ -72,13 +72,9 @@ class NameEditor extends PureComponent {
       return;
     } // guardian
 
-    const { table, langtag } = this.props;
+    const { table, langtag, changeTableName } = this.props;
     const patchObj = { displayName: { [langtag]: name } };
-    table.save(patchObj, {
-      patch: true,
-      wait: true,
-      success: () => null //ActionCreator.refreshTableNames()
-    });
+    changeTableName(table.id, patchObj);
   };
 
   renderOpenInput = () => {
