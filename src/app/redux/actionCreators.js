@@ -594,7 +594,7 @@ const changeTableName = (tableId, displayName) => ({
   promise: makeRequest({
     apiRoute: toTable({ tableId }),
     method: "POST",
-    data: { ...displayName }
+    data: displayName
   }),
   actionTypes: [
     TABLE_NAME_EDIT,
