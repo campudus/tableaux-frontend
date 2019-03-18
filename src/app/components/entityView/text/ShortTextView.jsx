@@ -10,6 +10,7 @@ import {
 import f from "lodash/fp";
 import i18n from "i18next";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import {merge} from "../../../helpers/functools"
 
 const enhance = compose(
   pure,
@@ -48,7 +49,7 @@ const enhance = compose(
 
         return {
           oldValue: cell.column.multilanguage
-            ? f.merge(oldValue, newValue)
+            ? merge(oldValue, newValue)
             : value
         };
       }

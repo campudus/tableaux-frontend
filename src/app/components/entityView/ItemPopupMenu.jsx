@@ -15,6 +15,7 @@ import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { canConvert } from "../../helpers/cellValueConverter";
 import SvgIcon from "../helperComponents/SvgIcon";
 import ReactDOM from "react-dom";
+import { merge } from "../../helpers/functools";
 
 @listenToClickOutside
 class MenuPopup extends Component {
@@ -154,7 +155,7 @@ class ItemPopupMenu extends Component {
     const deleteAnnotationFn = cellTranslationAnnotation
       ? () =>
           deleteCellAnnotation(
-            f.merge(cellTranslationAnnotation, {
+            merge(cellTranslationAnnotation, {
               type: "flag",
               value: "translationNeeded"
             }),

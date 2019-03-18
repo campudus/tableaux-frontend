@@ -9,6 +9,7 @@ import {
 import { removeTranslationNeeded } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
+import { merge } from "../../helpers/functools";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -38,7 +39,7 @@ export const changeCellValue = action => (dispatch, getState) => {
       : reduceValuesToAllowedLanguages;
   const newValue =
     column.multilanguage && !column.kind === ColumnKinds.link
-      ? f.toArray(f.merge(action.oldValue, reduceValue(action.newValue)))
+      ? f.toArray(merge(action.oldValue, reduceValue(action.newValue)))
       : action.newValue;
 
   dispatch(
@@ -121,11 +122,11 @@ export const calculateCellUpdate = action => {
 const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
   const reduceLangs = f.flow(
     reduceValuesToAllowedLanguages,
-    f.merge(oldValue)
+    merge(oldValue)
   );
   const reduceCountries = f.flow(
     reduceValuesToAllowedCountries,
-    f.merge(oldValue)
+    merge(oldValue)
   );
 
   const allowedChangeValue = f.cond([

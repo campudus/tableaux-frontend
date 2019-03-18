@@ -1,4 +1,4 @@
-import { doto } from "../helpers/functools";
+import { doto, merge } from "../helpers/functools";
 import { FilterModes } from "../constants/TableauxConstants";
 import f from "lodash/fp";
 
@@ -18,7 +18,7 @@ const parseOptions = optString => {
           (oldFilters = []) => [...oldFilters, f.get("filter", moreOpts)],
           opts
         )
-      : f.merge(opts, moreOpts);
+      : merge(opts, moreOpts);
   };
 
   const parseFilter = function(str) {

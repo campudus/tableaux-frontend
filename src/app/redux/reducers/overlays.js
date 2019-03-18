@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import actionTypes from "../actionTypes";
-import { doto, when } from "../../helpers/functools";
+import { doto, when, merge } from "../../helpers/functools";
 
 const {
   OPEN_OVERLAY,
@@ -55,9 +55,7 @@ const setOverlayState = (state, action) => {
   const overlayIdx = f.findIndex(f.propEq("id", id), state.overlays);
   return f.update(
     ["overlays", overlayIdx],
-    prev => {
-      return { ...prev, ...overlayState };
-    },
+    prev => merge(prev, overlayState),
     state
   );
 };

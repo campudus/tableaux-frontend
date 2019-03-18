@@ -25,6 +25,7 @@ import {
 import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { isUserAdmin } from "../../helpers/accessManagementHelper";
 import GenericContextMenu from "./GenericContextMenu";
+import { merge } from "../../helpers/functools";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -177,7 +178,7 @@ class RowContextMenu extends React.Component {
     ) {
       return null;
     }
-    const translationNeeded = f.merge(
+    const translationNeeded = merge(
       {
         type: "flag",
         value: "translationNeeded"
