@@ -33,8 +33,9 @@ const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
 
   const foreignDisplayValues = f.isEmpty(tableDisplayValues)
     ? null
-    : value.map(({ id }) =>
-        doto(tableDisplayValues, getRow(id), f.prop(["values", 0]))
+    : f.map(
+        ({ id }) => doto(tableDisplayValues, getRow(id), f.prop(["values", 0])),
+        value
       );
 
   return { foreignDisplayValues };
@@ -59,7 +60,7 @@ const getConcatDisplayValues = (
       if (isLinkColumn(column)) {
         return doto(
           state,
-          getLinkDisplayValues({ value: value[idx], column }),
+          getLinkDisplayValues({ value: f.nth(idx, value), column }),
           f.propOr([], "foreignDisplayValues"),
           flattenAndTranslate(langtag)
         );
@@ -78,6 +79,9 @@ const getConcatDisplayValues = (
 // HOC ({ column, tableId }) -> (Component) -> Component
 export const withForeignDisplayValues = Component => props => {
   const { cell, langtag } = props;
+  if (f.any(f.isEmpty, f.props(["column", "table", "row"], cell))) {
+    return <Component {...props} />;
+  }
 
   const mapStateToProps = isConcatColumn(cell.column)
     ? getConcatDisplayValues(cell, langtag)
