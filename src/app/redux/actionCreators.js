@@ -35,7 +35,8 @@ const {
   toRow,
   toFolder,
   toFile,
-  toColumn
+  toColumn,
+  toTable
 } = API_ROUTES;
 
 const {
@@ -61,7 +62,10 @@ const {
   COLUMN_EDIT,
   COLUMN_EDIT_SUCCESS,
   COLUMN_EDIT_ERROR,
-  SET_STATUS_INFO
+  SET_STATUS_INFO,
+  TABLE_NAME_EDIT,
+  TABLE_NAME_EDIT_SUCCESS,
+  TABLE_NAME_EDIT_ERROR
 } = actionTypes;
 
 const {
@@ -586,6 +590,20 @@ export const addEmptyRowAndOpenEntityView = (
   loadAndOpenEntityView({ tableId, rowId: result.id, langtag, cellToUpdate });
 };
 
+const changeTableName = (tableId, displayName) => ({
+  promise: makeRequest({
+    apiRoute: toTable({ tableId }),
+    method: "POST",
+    data: { ...displayName }
+  }),
+  actionTypes: [
+    TABLE_NAME_EDIT,
+    TABLE_NAME_EDIT_SUCCESS,
+    TABLE_NAME_EDIT_ERROR
+  ],
+  tableId
+});
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -632,7 +650,8 @@ const actionCreators = {
   addEmptyRow: addEmptyRow,
   setAllRowsFinal,
   editColumn,
-  addEmptyRowAndOpenEntityView
+  addEmptyRowAndOpenEntityView,
+  changeTableName
 };
 
 export default actionCreators;

@@ -27,13 +27,13 @@ class TableSettingsPopup extends PureComponent {
     const {
       table,
       langtag,
-      actions: { setAllRowsFinal }
+      actions: { setAllRowsFinal, changeTableName }
     } = this.props;
     return [
       <a key="i-need-no-key" href="#" onClick={() => setAllRowsFinal(table)}>
         {i18n.t("table:final.set_all_rows_final")}
       </a>,
-      isUserAdmin() ? <NameEditor table={table} langtag={langtag} /> : null
+      isUserAdmin() ? <NameEditor table={table} langtag={langtag} changeTableName={changeTableName}/> : null
     ];
   };
 
