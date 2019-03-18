@@ -13,7 +13,7 @@ import {
 } from "../../constants/TableauxConstants";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { isTranslationNeeded } from "../../helpers/annotationHelper";
-import { maybe } from "../../helpers/functools";
+import { maybe, merge } from "../../helpers/functools";
 import { safeRender } from "../../helpers/devWrappers";
 import Empty from "../helperComponents/emptyEntry";
 import MultiselectArea from "../MultiselectArea";
@@ -137,7 +137,7 @@ class TranslationPopup extends PureComponent {
   setAllTranslations = status => () => {
     const newLangState = f.flow(
       f.map(lt => ({ [lt]: status })),
-      f.reduce(f.merge, {})
+      f.reduce(merge, {})
     )(Langtags);
     this.setState({ translations: newLangState });
     this.storeTranslations(newLangState);

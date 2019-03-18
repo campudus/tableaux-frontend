@@ -399,6 +399,8 @@ const propMatches = curryN(3, (pred, path, obj) => pred(prop(path, obj)));
 const preventDefault = event => maybe(event).method("preventDefault");
 const stopPropagation = event => maybe(event).method("stopPropagation");
 
+const merge = curryN(2, (first, second) => ({ ...first, ...second }));
+
 export {
   Maybe,
   Just,
@@ -423,5 +425,6 @@ export {
   ifElse,
   propMatches,
   mapPromise,
-  tests
+  tests,
+  merge
 };

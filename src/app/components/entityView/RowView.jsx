@@ -205,7 +205,9 @@ class View extends PureComponent {
           funcs={this.props.funcs}
           thisUserCantEdit={isDisabled}
           value={
-            cell.column.multilanguage ? f.get(langtag, cell.value) : cell.value
+            cell.column.multilanguage && cell.column.languageType !== "country"
+              ? f.get(langtag, cell.value)
+              : cell.value
           }
         >
           <div className="action-tags">

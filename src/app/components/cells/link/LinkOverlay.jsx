@@ -11,7 +11,8 @@ import {
   maybe,
   preventDefault,
   stopPropagation,
-  when
+  when,
+  merge
 } from "../../../helpers/functools";
 import * as f from "lodash/fp";
 import SearchFunctions from "../../../helpers/searchFunctions";
@@ -63,8 +64,8 @@ class LinkOverlay extends PureComponent {
   componentDidMount = () => {
     const { handleMyKeys } = this;
     // Expose handlers to LinkOverlayHeader
-    this.props.updateSharedData(
-      f.merge(f.__, {
+    this.props.updateSharedData(obj =>
+      merge(obj, {
         passKeystrokeToBody: handleMyKeys,
         setFilterValue: this.props.setFilterValue,
         setFilterMode: this.props.setFilterMode,

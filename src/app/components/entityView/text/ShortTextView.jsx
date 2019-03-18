@@ -10,6 +10,7 @@ import {
 import f from "lodash/fp";
 import i18n from "i18next";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import { merge } from "../../../helpers/functools";
 
 const enhance = compose(
   pure,
@@ -32,14 +33,22 @@ const enhance = compose(
         const newValue = cell.column.multilanguage
           ? { [langtag]: value }
           : value;
-        actions.changeCellValue({
-          cell,
-          oldValue,
-          newValue
-        });
+
+        const valueChanged = cell.column.multilanguage
+          ? !f.eq(newValue[langtag], oldValue[langtag])
+          : !f.eq(oldValue, newValue);
+
+        if (valueChanged) {
+          actions.changeCellValue({
+            cell,
+            oldValue,
+            newValue
+          });
+        }
+
         return {
           oldValue: cell.column.multilanguage
-            ? f.merge(oldValue, newValue)
+            ? merge(oldValue, newValue)
             : value
         };
       }

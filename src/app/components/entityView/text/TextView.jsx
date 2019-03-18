@@ -72,9 +72,9 @@ const withEditFunction = withStateHandlers(
     }),
     saveEdits: ({ editValue }, { value, langtag, cell, actions }) => () => {
       const newValue = cell.column.multilanguage
-        ? { [langtag]: editValue }
+        ? { ...cell.value, [langtag]: editValue }
         : editValue;
-      actions.changeCellValue({ cell, newValue, oldValue: value });
+      actions.changeCellValue({ cell, newValue, oldValue: cell.value });
     }
   }
 );

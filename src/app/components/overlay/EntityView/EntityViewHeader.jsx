@@ -209,6 +209,7 @@ class EntityViewHeader extends PureComponent {
     return (
       <Header
         {...this.props}
+        cell={cell}
         context={tableName}
         components={components}
         title={title}

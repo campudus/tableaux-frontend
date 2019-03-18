@@ -12,7 +12,7 @@ import {
   FilterModes
 } from "../../../constants/TableauxConstants";
 import { addCellId } from "../../../helpers/getCellId";
-import { doto, maybe } from "../../../helpers/functools";
+import { doto, maybe, merge } from "../../../helpers/functools";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -74,7 +74,7 @@ class EntityViewBody extends Component {
 
   componentWillMount = () => {
     this.props.updateSharedData(
-      f.merge(f.__, {
+      obj => merge(obj, {
         setFilter: f.debounce(250, this.setColumnFilter),
         setContentLanguage: this.switchLang,
         setTranslationView: this.setTranslationView

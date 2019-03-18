@@ -7,7 +7,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
-import { maybe } from "../../helpers/functools";
+import { maybe, merge } from "../../helpers/functools";
 import * as Sentry from "@sentry/browser";
 import { when } from "../../helpers/functools";
 import { isCell } from "../../specs/cell-spec";
@@ -46,8 +46,8 @@ class GenericOverlay extends Component {
       contentWidth: 0,
       overlayIsNew: true,
       childrenProps: {
-        head: f.merge(f.get("props", props.head), sharedProps),
-        body: f.merge(f.get("props", props.body), sharedProps),
+        head: merge(f.get("props", props.head), sharedProps),
+        body: merge(f.get("props", props.body), sharedProps),
         footer: f.assoc(f.get(["footer", "props"], props), sharedProps)
       }
     };
@@ -95,7 +95,7 @@ class GenericOverlay extends Component {
 
   // FIXME: Isolated tabbing to prevent tabbing into browser url bar
   getKeyboardShortcuts = () => {
-    return f.merge(
+    return merge(
       {
         escape: event => {
           event.preventDefault();
