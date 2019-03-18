@@ -29,7 +29,6 @@ const RootButton = props => {
   };
 
   const { context, title, cell } = f.first(activeOverlays).head.props;
-  console.log("RootButton props", props, { cell });
   const titleToDisplay =
     title && isCell(title) ? (
       <OverlayHeadRowIdentificator cell={title} langtag={langtag} />
