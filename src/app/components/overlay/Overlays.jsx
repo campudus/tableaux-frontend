@@ -67,7 +67,7 @@ const OverlayRenderer = ({
       columns,
       rows,
       tables,
-      displayValues: displayValues,
+      displayValues,
       tableView,
       overlays
     };
@@ -89,10 +89,13 @@ const OverlayRenderer = ({
   return (
     <Fragment>
       {renderActiveOverlays()}
-      <RootButton
-        closeOverlay={actions.closeOverlay}
-        activeOverlays={overlays || []}
-      />
+      {f.isEmpty(overlays) ? null : (
+        <RootButton
+          closeOverlay={actions.closeOverlay}
+          activeOverlays={overlays || []}
+          langtag={f.prop("currentLanguage", tableView)}
+        />
+      )}
       {toast ? (
         <Toast
           content={toast.content}
