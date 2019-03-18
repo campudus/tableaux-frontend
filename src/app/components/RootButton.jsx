@@ -1,9 +1,13 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as f from "lodash/fp";
 
+import PropTypes from "prop-types";
+
+import { isCell } from "../specs/cell-spec";
+import OverlayHadRowIdentificator from "./overlay/OverlayHeadRowIdentificator";
+
 const RootButton = props => {
-  const { activeOverlays, closeOverlay } = props;
+  const { activeOverlays, closeOverlay, langtag } = props;
   const bigOverlays = activeOverlays.filter(
     f.matchesProperty("type", "full-height")
   );
@@ -24,14 +28,24 @@ const RootButton = props => {
     closeNOverlays(activeOverlays.length - 1);
   };
 
-  const { context, title } = f.first(activeOverlays).head.props;
+  const { context, title, cell } = f.first(activeOverlays).head.props;
+  console.log("RootButton props", props, { cell });
+  const titleToDisplay =
+    cell && isCell(cell) ? (
+      <OverlayHadRowIdentificator
+        cell={{ ...cell, value: f.prop(["row", "values", 0], cell) }}
+        langtag={langtag}
+      />
+    ) : (
+      title
+    );
   return (
     <div className="breadcrumb-wrapper">
       <a href="#" onClick={closeAllButRoot}>
         <div className="context">{context}</div>
         <div className="title">
           <i className="fa fa-long-arrow-left" />
-          {title}
+          {titleToDisplay}
         </div>
       </a>
     </div>
@@ -39,8 +53,9 @@ const RootButton = props => {
 };
 
 RootButton.propTypes = {
-  activeOverlays: PropTypes.array,
-  closeOverlay: PropTypes.func.isRequired
+  activeOverlays: PropTypes.array.isRequired,
+  closeOverlay: PropTypes.func.isRequired,
+  langtag: PropTypes.string.isRequired
 };
 
 export default RootButton;
