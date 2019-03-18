@@ -143,6 +143,7 @@ const isTranslationNeeded = langtag => cell => {
 };
 
 const isLocked = row =>
+  row &&
   row.final &&
   maybe(UnlockedRowManager.getUnlocked())
     .map(f.get("id"))
