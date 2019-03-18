@@ -10,7 +10,7 @@ import {
 import f from "lodash/fp";
 import i18n from "i18next";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import {merge} from "../../../helpers/functools"
+import { merge } from "../../../helpers/functools";
 
 const enhance = compose(
   pure,
@@ -30,7 +30,6 @@ const enhance = compose(
       },
       handleChange: () => event => ({ value: event.target.value }),
       saveChanges: ({ value, oldValue }, { actions, cell, langtag }) => () => {
-
         const newValue = cell.column.multilanguage
           ? { [langtag]: value }
           : value;
