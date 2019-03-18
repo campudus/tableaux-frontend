@@ -86,9 +86,11 @@ export default compose(
   ),
   lifecycle({
     componentDidUpdate(prevProps) {
-      // table switch
       const historyOf = f.prop("tableView.history");
-      if (!f.eq(historyOf(prevProps), historyOf(this.props))) {
+      const historyChanged = !f.eq(historyOf(prevProps), historyOf(this.props));
+      const rowChanged = prevProps.rowId !== this.props.rowId;
+
+      if (historyChanged || rowChanged) {
         this.props.updateButtonState();
       }
     }
