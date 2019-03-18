@@ -196,15 +196,12 @@ class EntityViewHeader extends PureComponent {
       ? table.name
       : retrieveTranslation(langtag, table.displayName) || table.name;
 
-    const displayValue = doto(
+    const title = doto(
       grudData,
       f.prop(["displayValues", table.id]),
       f.find(f.propEq("id", row.id)),
       f.prop("values"),
-      f.propOr({}, 0)
-    );
-    const title = doto(
-      displayValue,
+      f.propOr({}, 0),
       retrieveTranslation(langtag),
       f.defaultTo(<Empty langtag={langtag} />)
     );
@@ -212,7 +209,7 @@ class EntityViewHeader extends PureComponent {
     return (
       <Header
         {...this.props}
-        cell={{ ...cell, displayValue }}
+        cell={{ ...cell }}
         context={tableName}
         components={components}
         title={title}
