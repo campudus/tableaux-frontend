@@ -68,7 +68,7 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
   const onYesRowDelete = () => {
     store.dispatch(actions.deleteRow({ row, table }));
     if (overlayToCloseId) {
-      actions.closeOverlay(overlayToCloseId);
+      store.dispatch(actions.closeOverlay(overlayToCloseId));
     }
     // TODO: create a helper to set the URL to anything we like
   };

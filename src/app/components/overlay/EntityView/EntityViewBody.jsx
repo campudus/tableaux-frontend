@@ -265,8 +265,11 @@ class EntityViewBody extends Component {
   };
 
   renderUnlockBar = () => {
-    const { row } = this.props;
-    if (!isLocked(row)) {
+    const { row, entityViewIsLocked } = this.props;
+    const rowLockStatus = f.isNil(entityViewIsLocked)
+      ? isLocked(row)
+      : isLocked(row) && entityViewIsLocked;
+    if (!rowLockStatus) {
       return null;
     }
     const buttonClass = classNames("button", { shake: this.state.shaking });
@@ -303,8 +306,14 @@ class EntityViewBody extends Component {
   }
 
   render() {
-    const { row, actions, cells } = this.props;
-    const { filter, focused } = this.state;
+    const {
+      row,
+      actions,
+      cells,
+      entityViewIsLocked,
+      entityViewIsFinal
+    } = this.props;
+    const { filter, focused, langtag, itemWithPopup } = this.state;
     const { filterColumn, grudData } = this.props;
     const {
       enterItemPopupButton,
@@ -312,9 +321,16 @@ class EntityViewBody extends Component {
       openItemPopup,
       closeItemPopup
     } = this;
+    const rowLockStatus = f.isNil(entityViewIsLocked)
+      ? isLocked(row)
+      : isLocked(row) && entityViewIsLocked;
+    const rowFinalStatus = f.isNil(entityViewIsFinal)
+      ? row.isFinal
+      : entityViewIsFinal;
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
-      "is-locked": isLocked(row)
+      "is-locked": rowLockStatus
     });
+
     return (
       <div
         className={evbClass}
@@ -331,12 +347,12 @@ class EntityViewBody extends Component {
               <View
                 key={cell.id}
                 cell={cell}
-                langtag={this.state.langtag}
-                uiLangtag={this.props.langtag}
+                langtag={langtag}
+                uiLangtag={langtag}
                 setTranslationView={this.setTranslationView}
                 hasFocusedChild={f.eq(cell.id, focused)}
                 hasMeaningfulLinks={!filterColumn}
-                popupOpen={this.state.itemWithPopup === idx}
+                popupOpen={itemWithPopup === idx}
                 funcs={
                   this.funcs[idx] ||
                   (this.funcs[idx] = {
@@ -351,8 +367,8 @@ class EntityViewBody extends Component {
                     hintUnlockButton: this.shakeBar
                   })
                 }
-                lockStatus={isLocked(row)}
-                final={row.final}
+                lockStatus={rowLockStatus}
+                final={rowFinalStatus}
                 value={JSON.stringify(cell.value)}
                 annotations={JSON.stringify(cell.annotations)}
                 actions={actions}
@@ -389,11 +405,13 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
         )
       : findDisplayValue(table.id)(row.id)(columnIdx);
 
-  const rowData = doto(
-    grudData,
-    f.prop(["rows", table.id, "data"]),
-    f.find(f.propEq("id", row.id))
-  );
+  const rowData =
+    doto(
+      grudData,
+      f.prop(["rows", table.id, "data"]),
+      f.find(f.propEq("id", row.id))
+    ) || {};
+
   const cells = f
     .zip(rowData.cells, rowData.values)
     .map(([cell, cellValue], idx) => {
@@ -403,7 +421,14 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
         displayValue: getDisplayValue(cell.column, idx, cellValue)
       });
     });
-  return { cells };
+
+  return {
+    cells,
+    /* return if EntityView temporary unlocked the current row */
+    entityViewIsLocked: isLocked(rowData),
+    /* return if EntityView changed the locked-status of the current row */
+    entityViewIsFinal: rowData.final
+  };
 })(EntityViewBody);
 
 EntityViewBody.propTypes = {

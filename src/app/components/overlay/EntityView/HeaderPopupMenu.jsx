@@ -12,7 +12,6 @@ import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
 import listenToClickOutside from "react-onclickoutside";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { openInNewTab } from "../../../helpers/apiUrl";
-import { isFinal } from "../../../helpers/annotationHelper";
 import { addCellId } from "../../../helpers/getCellId";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
@@ -21,7 +20,7 @@ const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 class HeaderPopupMenu extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
-    row: PropTypes.object.isRequired,
+    grudData: PropTypes.object.isRequired,
     id: PropTypes.number.isRequired
   };
 
@@ -96,16 +95,19 @@ class HeaderPopupMenu extends Component {
 
   render() {
     const {
+      id,
       funcs,
       cell,
       langtag,
       hasMeaningfulLinks,
-      row,
-      id,
+      grudData,
       actions,
       table
     } = this.props;
     const tableId = table.id;
+
+    const rowDataOfTable = grudData.rows[tableId].data;
+    const row = f.head(f.filter(row => row.id === cell.row.id, rowDataOfTable));
     const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
     const translationInfo = {
@@ -149,7 +151,7 @@ class HeaderPopupMenu extends Component {
               {hasMeaningfulLinks
                 ? this.mkEntry(0, {
                     title: "table:show_dependency",
-                    fn: () => openShowDependency(row, langtag),
+                    fn: () => openShowDependency({ table, row, langtag }),
                     icon: "code-fork"
                   })
                 : null}
@@ -162,7 +164,7 @@ class HeaderPopupMenu extends Component {
                 title: "table:open-dataset",
                 fn: () =>
                   openInNewTab({
-                    tableId: row.tableId,
+                    tableId,
                     row,
                     langtag,
                     filter: true
@@ -174,7 +176,7 @@ class HeaderPopupMenu extends Component {
                 ? null
                 : this.mkEntry(3, {
                     title: "table:delete_row",
-                    fn: () => initiateDeleteRow(row, langtag, id),
+                    fn: () => initiateDeleteRow({ table, row, langtag }, id),
                     icon: "trash"
                   })}
               {canUndo
@@ -193,14 +195,26 @@ class HeaderPopupMenu extends Component {
                 : null}
               {this.mkEntry(4, {
                 title: "table:duplicate_row",
-                fn: () => initiateDuplicateRow(row, langtag),
+                fn: () =>
+                  initiateDuplicateRow({
+                    tableId,
+                    row,
+                    langtag,
+                    rowId: row.id
+                  }),
                 icon: "clone"
               })}
               {this.mkEntry(5, {
                 title: row.final
                   ? "table:final.set_not_final"
                   : "table:final.set_final",
-                fn: () => setRowAnnotation({ final: isFinal(row) }, row),
+                fn: () =>
+                  setRowAnnotation({
+                    table,
+                    row,
+                    flagName: "final",
+                    flagValue: !row.final
+                  }),
                 icon: "lock"
               })}
             </div>
