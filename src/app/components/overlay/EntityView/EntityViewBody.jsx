@@ -265,10 +265,10 @@ class EntityViewBody extends Component {
   };
 
   renderUnlockBar = () => {
-    const { row, rowIsLocked } = this.props;
-    const rowLockStatus = f.isNil(rowIsLocked)
+    const { row, entityViewIsLocked } = this.props;
+    const rowLockStatus = f.isNil(entityViewIsLocked)
       ? isLocked(row)
-      : isLocked(row) && rowIsLocked;
+      : isLocked(row) && entityViewIsLocked;
     if (!rowLockStatus) {
       return null;
     }
@@ -306,7 +306,13 @@ class EntityViewBody extends Component {
   }
 
   render() {
-    const { row, actions, cells, rowIsLocked, rowIsFinal } = this.props;
+    const {
+      row,
+      actions,
+      cells,
+      entityViewIsLocked,
+      entityViewIsFinal
+    } = this.props;
     const { filter, focused, langtag, itemWithPopup } = this.state;
     const { filterColumn, grudData } = this.props;
     const {
@@ -315,10 +321,12 @@ class EntityViewBody extends Component {
       openItemPopup,
       closeItemPopup
     } = this;
-    const rowLockStatus = f.isNil(rowIsLocked)
+    const rowLockStatus = f.isNil(entityViewIsLocked)
       ? isLocked(row)
-      : isLocked(row) && rowIsLocked;
-    const rowFinalStatus = f.isNil(rowIsFinal) ? row.isFinal : rowIsFinal;
+      : isLocked(row) && entityViewIsLocked;
+    const rowFinalStatus = f.isNil(entityViewIsFinal)
+      ? row.isFinal
+      : entityViewIsFinal;
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
       "is-locked": rowLockStatus
     });
@@ -414,7 +422,13 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
       });
     });
 
-  return { cells, rowIsLocked: isLocked(rowData), rowIsFinal: rowData.final };
+  return {
+    cells,
+    /* return if EntityView temporary unlocked the current row */
+    entityViewIsLocked: isLocked(rowData),
+    /* return if EntityView changed the locked-status of the current row */
+    entityViewIsFinal: rowData.final
+  };
 })(EntityViewBody);
 
 EntityViewBody.propTypes = {
