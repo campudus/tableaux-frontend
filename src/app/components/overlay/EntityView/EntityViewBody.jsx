@@ -13,6 +13,7 @@ import {
 } from "../../../constants/TableauxConstants";
 import { addCellId } from "../../../helpers/getCellId";
 import { doto, maybe, merge } from "../../../helpers/functools";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -27,6 +28,7 @@ const ARROW_HEIGHT_IN_PX = 50 / 2;
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       langtag: props.langtag,
       filter: {
@@ -36,9 +38,11 @@ class EntityViewBody extends Component {
       focused: null,
       itemWithPopup: null
     };
+
     this.focusElements = {};
     this.translationItem = null;
     this.funcs = [];
+
     props.registerForEvent({
       type: "scroll",
       handler: () => this.setTranslationItem()
@@ -405,25 +409,6 @@ class EntityViewBody extends Component {
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
 export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
-  const findDisplayValue = f.memoize(tableId => {
-    const tableDv = f.prop(["displayValues", tableId], grudData);
-    return f.memoize(rowId => {
-      const rowDv = f.find(f.propEq("id", rowId), tableDv);
-      return columnIdx => {
-        const dv = f.prop(["values", columnIdx], rowDv);
-        return dv;
-      };
-    });
-  });
-
-  const getDisplayValue = (column, columnIdx, value) =>
-    column.kind === "link"
-      ? f.map(
-          linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
-          value
-        )
-      : findDisplayValue(table.id)(row.id)(columnIdx);
-
   const rowData =
     doto(
       grudData,
@@ -433,11 +418,11 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
 
   const cells = f
     .zip(rowData.cells, rowData.values)
-    .map(([cell, cellValue], idx) => {
+    .map(([cell, cellValue]) => {
       return addCellId({
         ...cell,
         value: cellValue,
-        displayValue: getDisplayValue(cell.column, idx, cellValue)
+        displayValue: getDisplayValue(cell.column, cellValue)
       });
     });
 
