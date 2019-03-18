@@ -179,6 +179,7 @@ class EntityViewHeader extends PureComponent {
         <HistoryButtons
           tableView={tableView}
           tableId={tableId}
+          rowId={row.id}
           actions={actions}
         />
         <FilterBar id={id} />

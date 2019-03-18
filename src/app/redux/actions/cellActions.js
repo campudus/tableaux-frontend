@@ -195,20 +195,26 @@ const toggleLink = oldIds => newIds => {
       };
 };
 
-export const modifyHistory = (modifyAction, tableId) => (
+export const modifyHistory = (modifyAction, tableId, rowId) => (
   dispatch,
   getState
 ) => {
+  const rowSpecific = !f.isNil(rowId);
+  const findFn = rowSpecific
+    ? f.overEvery([f.propEq("tableId", tableId), f.propEq("rowId", rowId)])
+    : f.propEq("tableId", tableId);
   const historyAction = f.compose(
-    f.findLast(action => action.tableId === tableId),
+    f.findLast(findFn),
     f.get([
       "tableView",
       "history",
       modifyAction === "undo" ? "undoQueue" : "redoQueue"
     ])
   )(getState());
+
   if (!historyAction) {
     return;
   }
+
   dispatch(changeCellValue({ ...historyAction, modifyAction }));
 };

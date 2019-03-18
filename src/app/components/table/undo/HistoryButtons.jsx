@@ -6,6 +6,7 @@ import classNames from "classnames";
 
 const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
   const buttonBaseClass = classNames("button", { inactive: !active });
+
   return (
     <div className="history-buttons">
       <a
@@ -32,42 +33,52 @@ const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
   );
 };
 
+const hasElements = (props, queueName) => {
+  const rowSpecific = !f.isNil(props.rowId);
+  const filterFunc = rowSpecific
+    ? f.overEvery([
+        f.propEq("tableId", props.tableId),
+        f.propEq("rowId", props.rowId)
+      ])
+    : f.propEq("tableId", props.tableId);
+
+  return f.flow(
+    f.get(["tableView", "history", queueName]),
+    f.filter(filterFunc),
+    f.negate(f.isEmpty)
+  )(props);
+};
+
 export default compose(
   withStateHandlers(
     props => ({
-      canUndo: f.flow(
-        f.get(["tableView", "history", "undoQueue"]),
-        f.negate(f.isEmpty)
-      )(props),
-      canRedo: f.flow(
-        f.get(["tableView", "history", "redoQueue"]),
-        f.negate(f.isEmpty)
-      )(props),
+      canUndo: hasElements(props, "undoQueue"),
+      canRedo: hasElements(props, "redoQueue"),
       active: true
     }),
     {
-      updateButtonState: (state, props) => () => ({
-        canUndo: f.flow(
-          f.get(["tableView", "history", "undoQueue"]),
-          f.filter(action => action.tableId === props.tableId),
-          f.negate(f.isEmpty)
-        )(props),
-        canRedo: f.flow(
-          f.get(["tableView", "history", "redoQueue"]),
-          f.filter(action => action.tableId === props.tableId),
-          f.negate(f.isEmpty)
-        )(props),
-        active: true
-      }),
-      undo: ({ active }, { actions: { modifyHistory }, tableId }) => () => {
+      updateButtonState: (state, props) => () => {
+        return {
+          canUndo: hasElements(props, "undoQueue"),
+          canRedo: hasElements(props, "redoQueue"),
+          active: true
+        };
+      },
+      undo: (
+        { active },
+        { actions: { modifyHistory }, tableId, rowId }
+      ) => () => {
         if (active) {
-          modifyHistory("undo", tableId);
+          modifyHistory("undo", tableId, rowId);
           return { active: false };
         }
       },
-      redo: ({ active }, { actions: { modifyHistory }, tableId }) => () => {
+      redo: (
+        { active },
+        { actions: { modifyHistory }, tableId, rowId }
+      ) => () => {
         if (active) {
-          modifyHistory("redo", tableId);
+          modifyHistory("redo", tableId, rowId);
           return { active: false };
         }
       }
@@ -75,9 +86,11 @@ export default compose(
   ),
   lifecycle({
     componentDidUpdate(prevProps) {
-      // table switch
       const historyOf = f.prop("tableView.history");
-      if (!f.eq(historyOf(prevProps), historyOf(this.props))) {
+      const historyChanged = !f.eq(historyOf(prevProps), historyOf(this.props));
+      const rowChanged = prevProps.rowId !== this.props.rowId;
+
+      if (historyChanged || rowChanged) {
         this.props.updateButtonState();
       }
     }
@@ -85,6 +98,8 @@ export default compose(
 )(HistoryButtons);
 
 HistoryButtons.propTypes = {
+  actions: PropTypes.object.isRequired,
+  tableView: PropTypes.object.isRequired,
   tableId: PropTypes.number.isRequired,
   rowId: PropTypes.number
 };
