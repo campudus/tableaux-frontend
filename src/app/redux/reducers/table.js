@@ -29,7 +29,7 @@ const tables = (state = initialState, action) => {
     case TABLE_DATA_LOAD_ERROR:
       return { ...state, error: true, finishedLoading: true };
     case TABLE_NAME_EDIT_SUCCESS:
-      return f.set(["data", action.tableId], action.result, state);
+      return f.assoc(["data", action.tableId], action.result, state);
     default:
       return state;
   }
