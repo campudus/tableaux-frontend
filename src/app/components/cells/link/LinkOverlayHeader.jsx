@@ -30,7 +30,7 @@ const LinkOverlayHeader = props => {
   const tableName = retrieveTranslation(langtag, table.displayName);
 
   return (
-    <Header context={tableName} id={props.id} {...props} title={cell}>
+    <Header context={tableName} id={props.id} {...props}>
       <SearchBar
         langtag={langtag}
         id={id}

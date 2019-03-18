@@ -4,7 +4,7 @@ import * as f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { isCell } from "../specs/cell-spec";
-import OverlayHadRowIdentificator from "./overlay/OverlayHeadRowIdentificator";
+import OverlayHeadRowIdentificator from "./overlay/OverlayHeadRowIdentificator";
 
 const RootButton = props => {
   const { activeOverlays, closeOverlay, langtag } = props;
@@ -31,11 +31,10 @@ const RootButton = props => {
   const { context, title, cell } = f.first(activeOverlays).head.props;
   console.log("RootButton props", props, { cell });
   const titleToDisplay =
-    cell && isCell(cell) ? (
-      <OverlayHadRowIdentificator
-        cell={{ ...cell, value: f.prop(["row", "values", 0], cell) }}
-        langtag={langtag}
-      />
+    title && isCell(title) ? (
+      <OverlayHeadRowIdentificator cell={title} langtag={langtag} />
+    ) : cell && isCell(cell) ? (
+      <OverlayHeadRowIdentificator cell={cell} langtag={langtag} />
     ) : (
       title
     );

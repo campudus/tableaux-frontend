@@ -38,7 +38,8 @@ const OverlayHeadRowIdentificator = props => {
   return (
     <span>
       <span className="column-name">
-        {columnDisplayName ? `${columnDisplayName}:` : ""}
+        {columnDisplayName}
+        {f.any(f.isEmpty, [columnDisplayName, concatValue]) ? "" : ":"}
       </span>
       {f.isString(concatValue) ? (
         <span className="row-concat-string">{concatValue}</span>
