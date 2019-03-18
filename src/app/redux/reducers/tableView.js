@@ -192,15 +192,6 @@ const setInitialVisibleColumns = (state, action) =>
       )(action)
     : state;
 
-const toggleSingleColumn = (state, action) => {
-  const { columnId } = action;
-  const { visibleColumns } = state;
-  const updatedVisibleColumns = f.includes(columnId, visibleColumns)
-    ? f.without([columnId], visibleColumns)
-    : f.concat(visibleColumns, columnId);
-  return { ...state, visibleColumns: updatedVisibleColumns };
-};
-
 const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
   "displayValues",
   tableId,
@@ -316,7 +307,7 @@ const modifyHistory = action => state => {
 export default (state = initialState, action, completeState) => {
   switch (action.type) {
     case TOGGLE_COLUMN_VISIBILITY:
-      return toggleSingleColumn(state, action);
+      return f.assoc("visibleColumns", action.visibleColumns, state);
     case HIDE_ALL_COLUMNS:
       return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
     case SET_COLUMNS_VISIBLE:

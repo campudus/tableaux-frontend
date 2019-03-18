@@ -280,11 +280,21 @@ const loadAllRows = tableId => (dispatch, getState) => {
   fetchRowsPaginated(tableId, 4);
 };
 
-const toggleColumnVisibility = columnId => {
-  return {
-    type: TOGGLE_COLUMN_VISIBILITY,
-    columnId
+const toggleColumnVisibility = columnId => (dispatch, getState) => {
+  const state = getState();
+  const toggleSingleColumn = columnId => {
+    const visibleColumns = f.prop(["tableView", "visibleColumns"], state);
+    return f.includes(columnId, visibleColumns)
+      ? f.without([columnId], visibleColumns)
+      : f.concat(visibleColumns, columnId);
   };
+  const { currentTable } = state.tableView;
+  const updated = toggleSingleColumn(columnId);
+  saveColumnVisibility(currentTable, updated);
+  dispatch({
+    type: TOGGLE_COLUMN_VISIBILITY,
+    visibleColumns: updated
+  });
 };
 
 const cleanUp = () => (dispatch, getState) => {
@@ -305,6 +315,7 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
   saveColumnVisibility(tableId, columnIds);
 };
 const hideAllColumns = tableId => {
+  saveColumnVisibility(tableId, []);
   return {
     type: HIDE_ALL_COLUMNS,
     tableId
