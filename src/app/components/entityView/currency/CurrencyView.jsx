@@ -49,8 +49,8 @@ class CurrencyView extends Component {
         ? f.assoc(el, true, f.map(f.stubFalse, editing))
         : f.set(el, false, editing);
     if (f.isString(country) && f.isNumber(editValue)) {
-      const changes = { [country]: editValue };
-      actions.changeCellValue({ cell, oldValue: value, newValue: changes });
+      const newValue = { ...value, [country]: editValue };
+      actions.changeCellValue({ cell, oldValue: value, newValue });
     }
     if (editing[el] !== to) {
       this.setState({ editing: isEditing });
