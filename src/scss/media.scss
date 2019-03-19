@@ -1,31 +1,16 @@
 #media-wrapper {
   padding: 0px;
   top: $space-height-header + 50px;
-  position: absolute;
+  position: relative;
   background-color: #FFFFFF;
-  // max-width: 1200px;
-  height:100%;
-  width: 100%;
+  margin: 0 auto;
+  max-width: 1200px;
   z-index: 1;
   border: 3px solid $color-border-grey;
-  bottom: 105px;
 
   .modified-file {
     background-color: $color-selected-row;
   }
-}
-.wrap2{
-  height: 100%;
-}
-
-.wrap1 {
-  display: block;
-  justify-content: center;
-  width:100%;
-  height:100%;
-  position:relative;
-  max-width: 1200px;
-
 }
 
 .current-folder {

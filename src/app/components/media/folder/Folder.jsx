@@ -8,7 +8,7 @@ import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
 import PropTypes from "prop-types";
 import TableauxRouter from "../../../router/router";
-import { List, AutoSizer } from "react-virtualized";
+import { List, AutoSizer, WindowScroller } from "react-virtualized";
 
 @translate(["media"])
 class Folder extends Component {
@@ -80,9 +80,11 @@ class Folder extends Component {
     }
   };
 
-  renderFiles = stuff => {
-    const { index } = stuff;
-    console.log(stuff);
+  renderFiles = listCellProps => {
+    const { index, style } = listCellProps;
+
+    console.log("get File for index", index);
+
     const files = this.props.folder.files;
     const { langtag, actions, modifiedFiles } = this.props;
 
@@ -107,59 +109,67 @@ class Folder extends Component {
     //   f.reverse, // keep latest first
     //   f.sortBy(f.prop("updatedAt"))
     // );
+
     const file = files[index];
 
     if (files && f.size(files) > 0) {
       return (
-        <div className="media-switcher" style={stuff.style}>
-          <ol className="media-switcher-menu">
-            <li
+        <ol className="media-switcher-menu" style={style}>
+          <li
+            key={file.uuid}
+            className={
+              f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
+            }
+          >
+            <File
               key={file.uuid}
-              className={
-                f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
-              }
-            >
-              <File
-                key={file.uuid}
-                file={file}
-                langtag={langtag}
-                actions={actions}
-              />
-            </li>
-          </ol>
-        </div>
+              file={file}
+              langtag={langtag}
+              actions={actions}
+            />
+          </li>
+        </ol>
       );
     } else {
-      console.log("in else");
       return null;
     }
   };
 
   render() {
-    console.log(this.props.folder.files.length);
     const { folder, actions, langtag } = this.props;
     const newFolderAction = isUserAdmin() ? (
       <NewFolderAction parentFolder={folder} actions={actions} />
     ) : null;
+
     return (
       <div id="media-wrapper">
-        {this.renderCurrentFolder()}
-        {newFolderAction}
-        {this.renderSubfolders()}
-        <div className="wrap1">
-          <div className="wrap2">
-            <AutoSizer>
-              {({ height, width }) => (
-                <List
-                  width={width}
-                  height={height}
-                  rowCount={this.props.folder.files.length}
-                  overscanRowCount={30}
-                  rowHeight={69}
-                  rowRenderer={this.renderFiles}
-                />
+        <div className="media-switcher">
+          {this.renderCurrentFolder()}
+          {newFolderAction}
+          {this.renderSubfolders()}
+          <div className="media-switcher">
+            <WindowScroller>
+              {scrollerProps => (
+                <AutoSizer disableHeight>
+                  {sizerProps => {
+                    //console.log("scrollerProps", scrollerProps);
+                    //console.log("sizerProps", sizerProps);
+                    return (
+                      <List
+                        autoHeight
+                        width={sizerProps.width}
+                        height={scrollerProps.height}
+                        rowCount={this.props.folder.files.length}
+                        overscanRowCount={20}
+                        rowHeight={41}
+                        rowRenderer={this.renderFiles}
+                        scrollTop={scrollerProps.scrollTop}
+                      />
+                    );
+                  }}
+                </AutoSizer>
               )}
-            </AutoSizer>
+            </WindowScroller>
           </div>
         </div>
       </div>
