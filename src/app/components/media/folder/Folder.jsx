@@ -80,55 +80,66 @@ class Folder extends Component {
     }
   };
 
-  renderFiles = listCellProps => {
-    const { index, style } = listCellProps;
-
-    console.log("get File for index", index);
-
-    const files = this.props.folder.files;
+  renderFileForIndex = preparedFiles => ({ index, style }) => {
     const { langtag, actions, modifiedFiles } = this.props;
 
-    // const sortAndMarkup = f.compose(
-    //   f.map(file => {
-    //     return (
-    //       <li
-    //         key={file.uuid}
-    //         className={
-    //           f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
-    //         }
-    //       >
-    //         <File
-    //           key={file.uuid}
-    //           file={file}
-    //           langtag={langtag}
-    //           actions={actions}
-    //         />
-    //       </li>
-    //     );
-    //   }),
-    //   f.reverse, // keep latest first
-    //   f.sortBy(f.prop("updatedAt"))
-    // );
+    const file = preparedFiles[index];
 
-    const file = files[index];
+    return (
+      <ol key={index} className="media-switcher-menu" style={style}>
+        <li
+          key={file.uuid}
+          className={
+            f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
+          }
+        >
+          <File
+            key={file.uuid}
+            file={file}
+            langtag={langtag}
+            actions={actions}
+          />
+        </li>
+      </ol>
+    );
+  };
+
+  renderFiles = () => {
+    const {
+      folder: { files }
+    } = this.props;
+
+    const sortAndMarkup = f.flow(
+      f.sortBy(f.prop("updatedAt")),
+      f.reverse // keep latest first
+    );
+
+    const preparedFiled = sortAndMarkup(files);
 
     if (files && f.size(files) > 0) {
       return (
-        <ol className="media-switcher-menu" style={style}>
-          <li
-            key={file.uuid}
-            className={
-              f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
-            }
-          >
-            <File
-              key={file.uuid}
-              file={file}
-              langtag={langtag}
-              actions={actions}
-            />
-          </li>
-        </ol>
+        <WindowScroller>
+          {scrollerProps => (
+            <AutoSizer disableHeight>
+              {sizerProps => {
+                //console.log("scrollerProps", scrollerProps);
+                //console.log("sizerProps", sizerProps);
+                return (
+                  <List
+                    autoHeight
+                    width={sizerProps.width}
+                    height={scrollerProps.height}
+                    rowCount={this.props.folder.files.length}
+                    overscanRowCount={20}
+                    rowHeight={41}
+                    rowRenderer={this.renderFileForIndex(preparedFiled)}
+                    scrollTop={scrollerProps.scrollTop}
+                  />
+                );
+              }}
+            </AutoSizer>
+          )}
+        </WindowScroller>
       );
     } else {
       return null;
@@ -148,28 +159,8 @@ class Folder extends Component {
           {newFolderAction}
           {this.renderSubfolders()}
           <div className="media-switcher">
-            <WindowScroller>
-              {scrollerProps => (
-                <AutoSizer disableHeight>
-                  {sizerProps => {
-                    //console.log("scrollerProps", scrollerProps);
-                    //console.log("sizerProps", sizerProps);
-                    return (
-                      <List
-                        autoHeight
-                        width={sizerProps.width}
-                        height={scrollerProps.height}
-                        rowCount={this.props.folder.files.length}
-                        overscanRowCount={20}
-                        rowHeight={41}
-                        rowRenderer={this.renderFiles}
-                        scrollTop={scrollerProps.scrollTop}
-                      />
-                    );
-                  }}
-                </AutoSizer>
-              )}
-            </WindowScroller>
+            {this.renderFiles()}
+            <FileUpload langtag={langtag} actions={actions} folder={folder} />
           </div>
         </div>
       </div>
