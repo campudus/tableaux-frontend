@@ -314,8 +314,10 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
   const tableId = f.get(["tableView", "currentTable"], state);
   saveColumnVisibility(tableId, columnIds);
 };
-const hideAllColumns = tableId => {
-  saveColumnVisibility(tableId, []);
+
+const hideAllColumns = (tableId, columns) => {
+  // first/one column has to be always visible
+  saveColumnVisibility(tableId, [f.get("id", f.head(columns))]);
   return {
     type: HIDE_ALL_COLUMNS,
     tableId

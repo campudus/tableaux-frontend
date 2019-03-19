@@ -216,7 +216,7 @@ class ColumnFilterPopup extends React.Component {
             <a
               href="#"
               className="button neutral"
-              onClick={() => hideAllColumns(tableId)}
+              onClick={() => hideAllColumns(tableId, columns)}
             >
               {i18n.t("table:hide_all_columns")}
             </a>
