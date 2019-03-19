@@ -109,37 +109,36 @@ class Folder extends Component {
       folder: { files }
     } = this.props;
 
+    // show newest or recently updated files on top
     const sortAndMarkup = f.flow(
       f.sortBy(f.prop("updatedAt")),
-      f.reverse // keep latest first
+      f.reverse
     );
 
     const preparedFiled = sortAndMarkup(files);
 
     if (files && f.size(files) > 0) {
       return (
-        <WindowScroller>
-          {scrollerProps => (
-            <AutoSizer disableHeight>
-              {sizerProps => {
-                //console.log("scrollerProps", scrollerProps);
-                //console.log("sizerProps", sizerProps);
-                return (
+        <div className="media-switcher">
+          <WindowScroller>
+            {scrollerProps => (
+              <AutoSizer disableHeight>
+                {sizerProps => (
                   <List
                     autoHeight
                     width={sizerProps.width}
                     height={scrollerProps.height}
-                    rowCount={this.props.folder.files.length}
-                    overscanRowCount={20}
+                    rowCount={files.length}
+                    overscanRowCount={10}
                     rowHeight={41}
                     rowRenderer={this.renderFileForIndex(preparedFiled)}
                     scrollTop={scrollerProps.scrollTop}
                   />
-                );
-              }}
-            </AutoSizer>
-          )}
-        </WindowScroller>
+                )}
+              </AutoSizer>
+            )}
+          </WindowScroller>
+        </div>
       );
     } else {
       return null;
@@ -154,15 +153,11 @@ class Folder extends Component {
 
     return (
       <div id="media-wrapper">
-        <div className="media-switcher">
-          {this.renderCurrentFolder()}
-          {newFolderAction}
-          {this.renderSubfolders()}
-          <div className="media-switcher">
-            {this.renderFiles()}
-            <FileUpload langtag={langtag} actions={actions} folder={folder} />
-          </div>
-        </div>
+        {this.renderCurrentFolder()}
+        {newFolderAction}
+        {this.renderSubfolders()}
+        {this.renderFiles()}
+        <FileUpload langtag={langtag} actions={actions} folder={folder} />
       </div>
     );
   }
