@@ -124,10 +124,6 @@ export default class VirtualTable extends PureComponent {
     this.forceUpdate();
   };
 
-  componentDidMount = () => {
-    // Dispatcher.on(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
-  };
-
   setOpenAnnotations = cell => {
     if (f.isNil(cell) && !f.isEmpty(this.state.openAnnotations)) {
       this.setState({ openAnnotations: {} });
@@ -382,7 +378,7 @@ export default class VirtualTable extends PureComponent {
 
   getCell = (rowIndex, columnIndex) => {
     try {
-      const { rows, visibleRows } = this.props;
+      const { rows } = this.props;
       const values = rows[rowIndex].values;
       const cells = rows[rowIndex].cells;
       const value = this.getVisibleElement(values, columnIndex);
@@ -392,7 +388,7 @@ export default class VirtualTable extends PureComponent {
         value,
         row: rows[rowIndex],
         displayValue: this.getDisplayValueWithFallback(
-          visibleRows[rowIndex],
+          rows[rowIndex],
           columnIndex,
           cell.column,
           value
