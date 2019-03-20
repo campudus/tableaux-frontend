@@ -167,3 +167,16 @@ $space-height-link-delete-button: 23px;
     transform: translateX(-50%);
   }
 }
+
+@mixin clickable-svg-icon(
+  $color-unhovered: $color-primary-contrast-text,
+  $color-hovered: $color-text-medium-grey
+) {
+  .svg-icon-content * {
+    fill: $color-unhovered;
+  }
+
+  &:hover .svg-icon-content * {
+    fill: $color-hovered;
+  }
+}
