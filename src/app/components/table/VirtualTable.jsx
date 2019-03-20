@@ -378,7 +378,7 @@ export default class VirtualTable extends PureComponent {
 
   getCell = (rowIndex, columnIndex) => {
     try {
-      const { rows, visibleRows } = this.props;
+      const { rows } = this.props;
       const values = rows[rowIndex].values;
       const cells = rows[rowIndex].cells;
       const value = this.getVisibleElement(values, columnIndex);
@@ -388,7 +388,7 @@ export default class VirtualTable extends PureComponent {
         value,
         row: rows[rowIndex],
         displayValue: this.getDisplayValueWithFallback(
-          visibleRows[rowIndex],
+          rows[rowIndex],
           columnIndex,
           cell.column,
           value

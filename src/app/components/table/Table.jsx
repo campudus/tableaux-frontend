@@ -149,7 +149,6 @@ class Table extends Component {
       langtag,
       tableView,
       visibleColumns,
-      visibleRows,
       navigate,
       finishedLoading
     } = this.props;
@@ -159,7 +158,8 @@ class Table extends Component {
     const displayValues = doto(
       tableView,
       f.prop(["displayValues", table.id]),
-      f.filter(({ id }) => f.contains(id, rowIds)),
+      allDisplayValues =>
+        rowIds.map(id => f.find(f.propEq("id", id), allDisplayValues)),
       f.map("values")
     );
 
@@ -175,7 +175,6 @@ class Table extends Component {
             actions={actions}
             columns={columns}
             visibleColumns={visibleColumns}
-            visibleRows={visibleRows}
             ref={this.findAndStoreTableDiv}
             rows={rows}
             tableView={tableView}
