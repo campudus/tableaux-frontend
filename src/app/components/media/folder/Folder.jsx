@@ -8,6 +8,7 @@ import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
 import PropTypes from "prop-types";
 import TableauxRouter from "../../../router/router";
+import { List, AutoSizer, WindowScroller } from "react-virtualized";
 
 @translate(["media"])
 class Folder extends Component {
@@ -79,36 +80,64 @@ class Folder extends Component {
     }
   };
 
-  renderFiles = () => {
-    const files = this.props.folder.files;
+  renderFileForIndex = preparedFiles => ({ index, style }) => {
     const { langtag, actions, modifiedFiles } = this.props;
 
-    const sortAndMarkup = f.compose(
-      f.map(file => {
-        return (
-          <li
+    const file = preparedFiles[index];
+
+    return (
+      <ol key={index} className="media-switcher-menu" style={style}>
+        <li
+          key={file.uuid}
+          className={
+            f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
+          }
+        >
+          <File
             key={file.uuid}
-            className={
-              f.contains(file.uuid, modifiedFiles) ? "modified-file" : ""
-            }
-          >
-            <File
-              key={file.uuid}
-              file={file}
-              langtag={langtag}
-              actions={actions}
-            />
-          </li>
-        );
-      }),
-      f.reverse, // keep latest first
-      f.sortBy(f.prop("updatedAt"))
+            file={file}
+            langtag={langtag}
+            actions={actions}
+          />
+        </li>
+      </ol>
     );
+  };
+
+  renderFiles = () => {
+    const {
+      folder: { files }
+    } = this.props;
+
+    // show newest or recently updated files on top
+    const sortAndMarkup = f.flow(
+      f.sortBy(f.prop("updatedAt")),
+      f.reverse
+    );
+
+    const preparedFiled = sortAndMarkup(files);
 
     if (files && f.size(files) > 0) {
       return (
         <div className="media-switcher">
-          <ol className="media-switcher-menu">{sortAndMarkup(files)}</ol>
+          <WindowScroller>
+            {scrollerProps => (
+              <AutoSizer disableHeight>
+                {sizerProps => (
+                  <List
+                    autoHeight
+                    width={sizerProps.width}
+                    height={scrollerProps.height}
+                    rowCount={files.length}
+                    overscanRowCount={10}
+                    rowHeight={41}
+                    rowRenderer={this.renderFileForIndex(preparedFiled)}
+                    scrollTop={scrollerProps.scrollTop}
+                  />
+                )}
+              </AutoSizer>
+            )}
+          </WindowScroller>
         </div>
       );
     } else {
@@ -121,13 +150,14 @@ class Folder extends Component {
     const newFolderAction = isUserAdmin() ? (
       <NewFolderAction parentFolder={folder} actions={actions} />
     ) : null;
+
     return (
       <div id="media-wrapper">
         {this.renderCurrentFolder()}
         {newFolderAction}
         {this.renderSubfolders()}
         {this.renderFiles()}
-        <FileUpload folder={folder} actions={actions} langtag={langtag} />
+        <FileUpload langtag={langtag} actions={actions} folder={folder} />
       </div>
     );
   }
