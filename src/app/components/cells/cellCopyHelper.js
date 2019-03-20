@@ -259,7 +259,7 @@ const pasteCellValue = function(
       const srcTable = this.tables.get(src.column.toTable);
       const srcTableName = f.find(
         f.identity,
-        f.props([this.props.langtag, DefaultLangtag], srcTable.displayName)
+        f.props([dstLang, DefaultLangtag], srcTable.displayName)
       );
       showErrorToast("table:copy_links_error", { table: srcTableName });
     }
@@ -303,7 +303,7 @@ const pasteCellValue = function(
         head: <Header title={i18n.t("table:copy_cell")} />,
         body: (
           <PasteMultilanguageCellInfo
-            langtag={this.props.langtag}
+            langtag={dstLang}
             oldVals={dst.value}
             newVals={newValue}
             saveAndClose={save}
