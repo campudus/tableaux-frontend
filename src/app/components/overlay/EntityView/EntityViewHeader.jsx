@@ -10,11 +10,11 @@ import f from "lodash/fp";
 import { unlockRow } from "../../../helpers/annotationHelper";
 import Header from "../../overlay/Header";
 import HistoryButtons from "../../table/undo/HistoryButtons";
-import { rowConcatString } from "../../../helpers/RowConcatHelper";
+import RowConcat, { rowConcatString } from "../../../helpers/RowConcatHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { unless } from "../../../helpers/functools";
+import { unless, doto } from "../../../helpers/functools";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import Empty from "../../../components/helperComponents/emptyEntry";
+// import Empty from "../../../components/helperComponents/emptyEntry";
 
 @listensToClickOutside
 class LanguageSwitcher extends PureComponent {
@@ -198,9 +198,14 @@ class EntityViewHeader extends PureComponent {
       : retrieveTranslation(langtag, table.displayName) || table.name;
 
     const idColumn = f.prop(["columns", tableId, "data", 0], grudData);
-    const title = f.defaultTo(
-      <Empty langtag={langtag} />,
-      rowConcatString(idColumn, row, langtag)
+    const title = doto(
+      grudData,
+      f.prop(["displayValues", table.id]),
+      f.find(f.propEq("id", row.id)),
+      f.prop("values"),
+      f.propOr({}, 0),
+      retrieveTranslation(langtag),
+      f.defaultTo(<RowConcat langtag={langtag} idColumn={idColumn} row={row} />)
     );
 
     return (

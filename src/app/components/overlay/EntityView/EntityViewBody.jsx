@@ -409,6 +409,32 @@ class EntityViewBody extends Component {
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
 export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
+  const findDisplayValue = f.memoize(tableId => {
+    const tableDv = f.prop(["displayValues", tableId], grudData);
+    return f.memoize(rowId => {
+      const rowDv = f.find(f.propEq("id", rowId), tableDv);
+      return columnIdx => {
+        const dv = f.prop(["values", columnIdx], rowDv);
+        return dv;
+      };
+    });
+  });
+
+  const retrieveDisplayValue = (column, columnIdx, value) => {
+    const displayValue =
+      column.kind === "link"
+        ? f.map(
+            linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
+            value
+          )
+        : findDisplayValue(table.id)(row.id)(columnIdx);
+
+    // if displayValue was not found findDisplayValue returns either [] or [undefined]
+    const displayValueFound = !f.isEmpty(displayValue) && f.head(displayValue);
+
+    return displayValueFound ? displayValue : getDisplayValue(column, value);
+  };
+
   const rowData =
     doto(
       grudData,
@@ -418,11 +444,11 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
 
   const cells = f
     .zip(rowData.cells, rowData.values)
-    .map(([cell, cellValue]) => {
+    .map(([cell, cellValue], idx) => {
       return addCellId({
         ...cell,
         value: cellValue,
-        displayValue: getDisplayValue(cell.column, cellValue)
+        displayValue: retrieveDisplayValue(cell.column, idx, cellValue)
       });
     });
 
