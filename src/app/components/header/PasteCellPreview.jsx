@@ -15,6 +15,7 @@ import i18n from "i18next";
 import { openInNewTab } from "../../helpers/apiUrl";
 import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const ClearCellButton = props => (
   <div className="clear-pasted-button button neutral">
@@ -68,6 +69,7 @@ const CellPreview = props => {
   const langtag = props.pasteOriginCellLang;
 
   const CellType = cellRenderers[cell.kind];
+  const cellDisplayValue = getDisplayValue(cell.column, cell.value);
 
   return (
     <div className="cell-preview">
@@ -77,7 +79,7 @@ const CellPreview = props => {
           langtag={langtag}
           selected={false}
           editing={false}
-          value={cell.displayValue[langtag] || ""}
+          value={cellDisplayValue || ""}
           contentChanged={f.noop}
           setCellKeyboardShortcuts={f.noop}
           displayValue={cell.displayValue}
