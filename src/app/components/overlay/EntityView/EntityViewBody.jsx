@@ -136,7 +136,7 @@ class EntityViewBody extends Component {
     } else {
       // of no cell is selected yet we take the first one
       // this prevents a translationv-view with only ('empty') values
-      const firstFunc = f.get(0, this.funcs);
+      const firstFunc = f.first(this.funcs);
       const firstCell = f.get("cell", firstFunc);
 
       if (firstCell) {
