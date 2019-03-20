@@ -399,6 +399,21 @@ const propMatches = curryN(3, (pred, path, obj) => pred(prop(path, obj)));
 const preventDefault = event => maybe(event).method("preventDefault");
 const stopPropagation = event => maybe(event).method("stopPropagation");
 
+const memoizeWith = (keyFn, fn) => {
+  const cache = new Map();
+
+  return (...args) => {
+    const key = keyFn(...args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    } else {
+      const result = fn(...args);
+      cache.set(key, result);
+      return result;
+    }
+  };
+};
+
 const merge = curryN(2, (first, second) => ({ ...first, ...second }));
 
 export {
@@ -425,6 +440,7 @@ export {
   ifElse,
   propMatches,
   mapPromise,
-  tests,
-  merge
+  memoizeWith,
+  merge,
+  tests
 };

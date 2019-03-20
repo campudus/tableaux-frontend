@@ -9,18 +9,6 @@ import { doto } from "../../helpers/functools";
 import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
 
 class Header extends PureComponent {
-  static propTypes = {
-    title: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.element,
-      PropTypes.object // Passing a "Cell" object (containing row and table) will create a self-updateing default title
-    ]).isRequired, // main headline
-    context: PropTypes.string, // additional context info
-    actions: PropTypes.object, // map: {[positive|negative|neutral]: [text, function]} for buttons
-    components: PropTypes.element, // more components to display, e.g. search bar
-    id: PropTypes.number
-  };
-
   wrapButtonFn = (value, fn) => (...args) => {
     Sentry.addBreadcrumb({ message: "Header button: " + value });
     if (f.isFunction(fn)) {
@@ -32,7 +20,7 @@ class Header extends PureComponent {
   renderTitle = () => {
     const { title, langtag } = this.props;
     if (isCell(title)) {
-      const { table, column, row } = title;
+      const { table, row } = title;
       const [tableId, rowId] = [table.id, row.id];
       const [columns, rows] = doto(
         this.props.grudData,
@@ -45,7 +33,7 @@ class Header extends PureComponent {
       const dataRow = f.find(f.propEq("id", rowId), rows);
       return (
         <OverlayHeadRowIdentificator
-          cell={{ row: dataRow, column, columns }}
+          cell={{ ...title, row: dataRow, columns }}
           langtag={langtag}
         />
       );
@@ -120,3 +108,15 @@ class Header extends PureComponent {
 }
 
 export default Header;
+
+Header.propTypes = {
+  title: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.element,
+    PropTypes.object // Passing a "Cell" object (containing row and table) will create a self-updateing default title
+  ]),
+  context: PropTypes.string, // additional context info
+  actions: PropTypes.object, // map: {[positive|negative|neutral]: [text, function]} for buttons
+  components: PropTypes.element, // more components to display, e.g. search bar
+  id: PropTypes.number
+};

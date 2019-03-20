@@ -41,6 +41,7 @@ import apiRoute from "../../../helpers/apiRoutes";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
+import store from "../../../redux/store";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -586,12 +587,20 @@ export const openLinkOverlay = ({ cell, langtag, actions }) => {
   const ReduxLinkOverlay = withDataRows(LinkOverlay);
   const overlayContent = <ReduxLinkOverlay cell={cell} langtag={langtag} />;
 
+  const columns = f.prop(["columns", cell.table.id, "data"], store.getState());
+  const titleCell = {
+    column: f.first(columns),
+    table: cell.table,
+    row: cell.row,
+    value: f.first(cell.row.values)
+  };
+
   actions.openOverlay({
-    head: <LinkOverlayHeader langtag={langtag} cell={cell} />,
+    head: <LinkOverlayHeader langtag={langtag} cell={cell} title={cell} />,
     body: overlayContent,
     type: "full-height",
     classes: "link-overlay",
-    title: cell,
+    title: titleCell,
     filterMode: FilterModes.CONTAINS,
     unlinkedOrder: 1
   });

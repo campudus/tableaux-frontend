@@ -3,6 +3,7 @@ import * as f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
+import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkEditCell from "./LinkEditCell.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 
@@ -13,10 +14,10 @@ const LinkCell = props => {
     langtag,
     selected,
     editing,
-    displayValue,
-    allDisplayValues
+    foreignDisplayValues
   } = props;
 
+  const displayValue = foreignDisplayValues || props.displayValue;
   // Show a link preview for performance
   // const displayValues = getDisplayValue(column, value);
   const tooManyLinks = f.size(value) > 3;
@@ -28,7 +29,6 @@ const LinkCell = props => {
         value={element}
         langtag={langtag}
         displayValue={displayValue[index]}
-        displayValues={allDisplayValues[cell.column.toTable]}
         cell={cell}
       />
     ));
@@ -58,4 +58,4 @@ LinkCell.propTypes = {
   value: PropTypes.array.isRequired,
   setCellKeyboardShortcuts: PropTypes.func
 };
-export default LinkCell;
+export default withForeignDisplayValues(LinkCell);
