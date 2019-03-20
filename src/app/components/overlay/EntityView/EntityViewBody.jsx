@@ -73,8 +73,8 @@ class EntityViewBody extends Component {
   };
 
   componentWillMount = () => {
-    this.props.updateSharedData(
-      obj => merge(obj, {
+    this.props.updateSharedData(obj =>
+      merge(obj, {
         setFilter: f.debounce(250, this.setColumnFilter),
         setContentLanguage: this.switchLang,
         setTranslationView: this.setTranslationView
@@ -125,11 +125,29 @@ class EntityViewBody extends Component {
   setTranslationView = item => {
     const { actions, id } = this.props;
     const oldItem = this.props.translationView || {};
-    const newItem = {
-      show: f.isNil(item.show) ? f.prop("show", oldItem) : item.show,
-      cell: f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell
-    };
-    actions.setOverlayState({ id, translationView: newItem });
+    const show = f.isNil(item.show) ? f.prop("show", oldItem) : item.show;
+
+    if (item.cell && item.cell.value) {
+      const newItem = {
+        show: show,
+        cell: f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell
+      };
+      actions.setOverlayState({ id, translationView: newItem });
+    } else {
+      // of no cell is selected yet we take the first one
+      // this prevents a translationv-view with only ('empty') values
+      const firstFunc = f.get(0, this.funcs);
+      const firstCell = f.get("cell", firstFunc);
+
+      if (firstCell) {
+        firstFunc.focus(firstCell.id);
+        this.setTranslationItem(this.focusElements[firstCell.id]);
+        actions.setOverlayState({
+          id,
+          translationView: { show: show, cell: firstCell }
+        });
+      }
+    }
   };
 
   registerFocusable = id => el => {
@@ -360,6 +378,7 @@ class EntityViewBody extends Component {
                     register: this.registerFocusable(cell.id),
                     focus: this.changeFocus,
                     id: cell.id,
+                    cell: cell,
                     enterItemPopupButton: enterItemPopupButton(idx),
                     leaveItemPopupButton: leaveItemPopupButton(idx),
                     openItemPopup: openItemPopup(idx),
