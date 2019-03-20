@@ -124,10 +124,6 @@ export default class VirtualTable extends PureComponent {
     this.forceUpdate();
   };
 
-  componentDidMount = () => {
-    // Dispatcher.on(ActionTypes.JUMP_TO_DUPE, this.jumpToLastRow);
-  };
-
   setOpenAnnotations = cell => {
     if (f.isNil(cell) && !f.isEmpty(this.state.openAnnotations)) {
       this.setState({ openAnnotations: {} });
