@@ -222,6 +222,10 @@
 
       .singlefile-edit, .multifile-file-edit {
 
+        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+          max-height: 45vh;
+        }
+
         > div {
           text-align: left;
         }
