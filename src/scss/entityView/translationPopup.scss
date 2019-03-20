@@ -147,8 +147,8 @@ $arrow-height: 50px;
         }
       }
 
-      svg {
-        fill: $color-primary-contrast-text;
+      .pseudo-header__close-button {
+        @include clickable-svg-icon
       }
 
       a {
