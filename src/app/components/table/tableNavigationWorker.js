@@ -529,7 +529,8 @@ function copySelectedCell() {
   } = this.props;
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
+  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
 
   const cell = this.getCell(rowIndex, columnIndex);
 
@@ -550,7 +551,8 @@ function pasteSelectedCell() {
   } = this.props;
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const columnIndex = f.findIndex(col => col.id === columnId, columns);
+  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
+  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
 
