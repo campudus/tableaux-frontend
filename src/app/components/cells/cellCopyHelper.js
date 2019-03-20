@@ -240,7 +240,10 @@ const pasteCellValue = function(
   };
 
   if (isLocked(dst.row) && !canOverrideLock()) {
-    askForSessionUnlock(dst.row, { key: "v" });
+    const toastContent = askForSessionUnlock(dst.row);
+    if (toastContent) {
+      store.dispatch(actions.showToast(toastContent));
+    }
     return;
   }
 
