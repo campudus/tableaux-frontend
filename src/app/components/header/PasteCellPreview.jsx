@@ -30,7 +30,8 @@ const FocusCellButton = withHandlers({
     if (cell.table.id === tableId) {
       store.dispatch(
         actions.toggleCellSelection({
-          tableId: cell.tableId,
+          langtag: langtag,
+          tableId: cell.table.id,
           columnId: cell.column.id,
           rowId: cell.row.id
         })
@@ -77,7 +78,7 @@ const CellPreview = props => {
           langtag={langtag}
           selected={false}
           editing={false}
-          value={cell.displayValue[langtag] || ""}
+          value={cell.value || ""}
           contentChanged={f.noop}
           setCellKeyboardShortcuts={f.noop}
           displayValue={cell.displayValue}

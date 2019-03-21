@@ -2,13 +2,14 @@ import React from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 
-import { ColumnKinds, DefaultLangtag } from "../../constants/TableauxConstants";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
   isLocked
 } from "../../helpers/annotationHelper";
 import { canConvert, convert } from "../../helpers/cellValueConverter";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
 import {
   getUserLanguageAccess,
   hasUserAccessToLanguage,
@@ -240,7 +241,10 @@ const pasteCellValue = function(
   };
 
   if (isLocked(dst.row) && !canOverrideLock()) {
-    askForSessionUnlock(dst.row, { key: "v" });
+    const toastContent = askForSessionUnlock(dst.row);
+    if (toastContent) {
+      store.dispatch(actions.showToast(toastContent));
+    }
     return;
   }
 
@@ -253,11 +257,7 @@ const pasteCellValue = function(
     if (canCopyLinks(src, dst)) {
       copyLinks(src, dst);
     } else {
-      const srcTable = this.tables.get(src.column.toTable);
-      const srcTableName = f.find(
-        f.identity,
-        f.props([this.props.langtag, DefaultLangtag], srcTable.displayName)
-      );
+      const srcTableName = getTableDisplayName(src.table, i18n.language);
       showErrorToast("table:copy_links_error", { table: srcTableName });
     }
     return;
@@ -300,7 +300,7 @@ const pasteCellValue = function(
         head: <Header title={i18n.t("table:copy_cell")} />,
         body: (
           <PasteMultilanguageCellInfo
-            langtag={this.props.langtag}
+            langtag={dstLang}
             oldVals={dst.value}
             newVals={newValue}
             saveAndClose={save}
