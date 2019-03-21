@@ -2,7 +2,7 @@ import React from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 
-import { ColumnKinds, DefaultLangtag } from "../../constants/TableauxConstants";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
@@ -16,6 +16,7 @@ import {
 } from "../../helpers/accessManagementHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { mapPromise, propMatches } from "../../helpers/functools";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
@@ -256,11 +257,7 @@ const pasteCellValue = function(
     if (canCopyLinks(src, dst)) {
       copyLinks(src, dst);
     } else {
-      const srcTable = this.tables.get(src.column.toTable);
-      const srcTableName = f.find(
-        f.identity,
-        f.props([dstLang, DefaultLangtag], srcTable.displayName)
-      );
+      const srcTableName = retrieveTranslation(dstLang, src.table.displayName);
       showErrorToast("table:copy_links_error", { table: srcTableName });
     }
     return;
