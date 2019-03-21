@@ -13,6 +13,7 @@ import {
 } from "../../../constants/TableauxConstants";
 import { addCellId } from "../../../helpers/getCellId";
 import { doto, maybe, merge } from "../../../helpers/functools";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -27,6 +28,7 @@ const ARROW_HEIGHT_IN_PX = 50 / 2;
 class EntityViewBody extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       langtag: props.langtag,
       filter: {
@@ -36,9 +38,11 @@ class EntityViewBody extends Component {
       focused: null,
       itemWithPopup: null
     };
+
     this.focusElements = {};
     this.translationItem = null;
     this.funcs = [];
+
     props.registerForEvent({
       type: "scroll",
       handler: () => this.setTranslationItem()
@@ -416,13 +420,20 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
     });
   });
 
-  const getDisplayValue = (column, columnIdx, value) =>
-    column.kind === "link"
-      ? f.map(
-          linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
-          value
-        )
-      : findDisplayValue(table.id)(row.id)(columnIdx);
+  const retrieveDisplayValue = (column, columnIdx, value) => {
+    const displayValue =
+      column.kind === "link"
+        ? f.map(
+            linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
+            value
+          )
+        : findDisplayValue(table.id)(row.id)(columnIdx);
+
+    // if displayValue was not found findDisplayValue returns either [] or [undefined]
+    const displayValueFound = !f.isEmpty(displayValue) && f.head(displayValue);
+
+    return displayValueFound ? displayValue : getDisplayValue(column, value);
+  };
 
   const rowData =
     doto(
@@ -437,7 +448,7 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
       return addCellId({
         ...cell,
         value: cellValue,
-        displayValue: getDisplayValue(cell.column, idx, cellValue)
+        displayValue: retrieveDisplayValue(cell.column, idx, cellValue)
       });
     });
 
