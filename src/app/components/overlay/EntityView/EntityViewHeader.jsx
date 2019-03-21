@@ -1,18 +1,22 @@
 import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import { Directions, Langtags } from "../../../constants/TableauxConstants";
-import classNames from "classnames";
-import listensToClickOutside from "react-onclickoutside";
-import HeaderPopupMenu from "./HeaderPopupMenu";
-import FilterBar from "./FilterBar";
-import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-import { unlockRow } from "../../../helpers/annotationHelper";
-import Header from "../../overlay/Header";
-import HistoryButtons from "../../table/undo/HistoryButtons";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { unless, doto } from "../../../helpers/functools";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { Directions, Langtags } from "../../../constants/TableauxConstants";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
+import {
+  getLanguageOrCountryIcon,
+  retrieveTranslation
+} from "../../../helpers/multiLanguage";
+import { unless } from "../../../helpers/functools";
+import { unlockRow } from "../../../helpers/annotationHelper";
+import FilterBar from "./FilterBar";
+import Header from "../../overlay/Header";
+import HeaderPopupMenu from "./HeaderPopupMenu";
+import HistoryButtons from "../../table/undo/HistoryButtons";
 
 @listensToClickOutside
 class LanguageSwitcher extends PureComponent {
