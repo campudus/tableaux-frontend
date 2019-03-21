@@ -9,6 +9,7 @@ import {
   isLocked
 } from "../../helpers/annotationHelper";
 import { canConvert, convert } from "../../helpers/cellValueConverter";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
 import {
   getUserLanguageAccess,
   hasUserAccessToLanguage,
@@ -16,7 +17,6 @@ import {
 } from "../../helpers/accessManagementHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { mapPromise, propMatches } from "../../helpers/functools";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
@@ -257,7 +257,7 @@ const pasteCellValue = function(
     if (canCopyLinks(src, dst)) {
       copyLinks(src, dst);
     } else {
-      const srcTableName = retrieveTranslation(dstLang, src.table.displayName);
+      const srcTableName = getTableDisplayName(src.table, i18n.language);
       showErrorToast("table:copy_links_error", { table: srcTableName });
     }
     return;
