@@ -14,7 +14,6 @@ const LinkOverlayHeader = props => {
     sharedData,
     updateSharedData,
     id,
-    cell,
     cell: { table },
     unlinkedOrder,
     filterMode,

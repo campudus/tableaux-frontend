@@ -1,18 +1,22 @@
 import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import { Directions, Langtags } from "../../../constants/TableauxConstants";
-import classNames from "classnames";
-import listensToClickOutside from "react-onclickoutside";
-import HeaderPopupMenu from "./HeaderPopupMenu";
-import FilterBar from "./FilterBar";
-import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-import { unlockRow } from "../../../helpers/annotationHelper";
-import Header from "../../overlay/Header";
-import HistoryButtons from "../../table/undo/HistoryButtons";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { unless, doto } from "../../../helpers/functools";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { Directions, Langtags } from "../../../constants/TableauxConstants";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
+import {
+  getLanguageOrCountryIcon,
+  retrieveTranslation
+} from "../../../helpers/multiLanguage";
+import { unless } from "../../../helpers/functools";
+import { unlockRow } from "../../../helpers/annotationHelper";
+import FilterBar from "./FilterBar";
+import Header from "../../overlay/Header";
+import HeaderPopupMenu from "./HeaderPopupMenu";
+import HistoryButtons from "../../table/undo/HistoryButtons";
 
 @listensToClickOutside
 class LanguageSwitcher extends PureComponent {
@@ -53,34 +57,34 @@ class LanguageSwitcher extends PureComponent {
     this.setOpen(false)();
   };
 
-  render() {
-    const { open, langtag } = this.state;
-    const lswCssClass = classNames("eev-language-switcher", { open: open });
-    return (
-      <div className="eev-language-switcher-wrapper">
-        <div className={lswCssClass} onClick={this.toggleOpen}>
-          <div className="eev-label">
-            {getLanguageOrCountryIcon(langtag)}
-            <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
-          </div>
-          {open ? (
-            <div className="eev-dropdown">
-              {Langtags.filter(lt => lt !== langtag).map(lt => {
-                return (
-                  <div key={lt} className="menu-item">
-                    <a href="#" onClick={this.setLang(lt)}>
-                      {getLanguageOrCountryIcon(lt, "language")}
-                    </a>
-                  </div>
-                );
-              })}
+    render()} {
+        const { open, langtag } = this.state;
+        const lswCssClass = classNames("eev-language-switcher", { open: open });
+        return (
+            <div className="eev-language-switcher-wrapper">
+                <div className={lswCssClass} onClick={this.toggleOpen}>
+                    <div className="eev-label">
+                        {getLanguageOrCountryIcon(langtag)}
+                        <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
+                    </div>
+                    {open ? (
+                        <div className="eev-dropdown">
+                            {Langtags.filter(lt => lt !== langtag).map(lt => {
+                                return (
+                                    <div key={lt} className="menu-item">
+                                        <a href="#" onClick={this.setLang(lt)}>
+                                            {getLanguageOrCountryIcon(lt, "language")}
+                                        </a>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : null}
+                </div>
             </div>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-}
+        );
+    }
+
 
 class RowSwitcher extends PureComponent {
   static propTypes = {

@@ -70,7 +70,7 @@ const withEditFunction = withStateHandlers(
     handleChange: () => event => ({
       editValue: event.target.value
     }),
-    saveEdits: ({ editValue }, { value, langtag, cell, actions }) => () => {
+    saveEdits: ({ editValue }, { langtag, cell, actions }) => () => {
       const newValue = cell.column.multilanguage
         ? { ...cell.value, [langtag]: editValue }
         : editValue;
