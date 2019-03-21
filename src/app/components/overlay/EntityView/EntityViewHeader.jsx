@@ -57,34 +57,34 @@ class LanguageSwitcher extends PureComponent {
     this.setOpen(false)();
   };
 
-    render()} {
-        const { open, langtag } = this.state;
-        const lswCssClass = classNames("eev-language-switcher", { open: open });
-        return (
-            <div className="eev-language-switcher-wrapper">
-                <div className={lswCssClass} onClick={this.toggleOpen}>
-                    <div className="eev-label">
-                        {getLanguageOrCountryIcon(langtag)}
-                        <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
-                    </div>
-                    {open ? (
-                        <div className="eev-dropdown">
-                            {Langtags.filter(lt => lt !== langtag).map(lt => {
-                                return (
-                                    <div key={lt} className="menu-item">
-                                        <a href="#" onClick={this.setLang(lt)}>
-                                            {getLanguageOrCountryIcon(lt, "language")}
-                                        </a>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ) : null}
-                </div>
+  render() {
+    const { open, langtag } = this.state;
+    const lswCssClass = classNames("eev-language-switcher", { open: open });
+    return (
+      <div className="eev-language-switcher-wrapper">
+        <div className={lswCssClass} onClick={this.toggleOpen}>
+          <div className="eev-label">
+            {getLanguageOrCountryIcon(langtag)}
+            <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
+          </div>
+          {open ? (
+            <div className="eev-dropdown">
+              {Langtags.filter(lt => lt !== langtag).map(lt => {
+                return (
+                  <div key={lt} className="menu-item">
+                    <a href="#" onClick={this.setLang(lt)}>
+                      {getLanguageOrCountryIcon(lt, "language")}
+                    </a>
+                  </div>
+                );
+              })}
             </div>
-        );
-    }
-
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+}
 
 class RowSwitcher extends PureComponent {
   static propTypes = {
