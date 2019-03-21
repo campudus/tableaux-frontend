@@ -249,7 +249,7 @@ const pasteCellValue = function(
   }
 
   if (!dst.column.multilanguage && !hasUserAccessToLanguage(dstLang)) {
-    showErrorToast("table:translation.cant_access_language");
+    showErrorToast("common:access_management.cant_access_language");
     return;
   }
 
