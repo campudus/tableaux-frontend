@@ -228,16 +228,16 @@ export function toggleCellEditing(params = {}) {
     f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
-  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
+  const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
   const {
     selectedCell: { columnId, rowId, langtag },
     currentTable
   } = tableView;
 
-  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
+  const columnIndex = f.findIndex(col => col.id === columnId, visibleColumns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
 
-  const selectedColumn = vColumns[columnIndex];
+  const selectedColumn = visibleColumns[columnIndex];
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
@@ -469,15 +469,15 @@ export function getPreviousRow() {
 export function getNextColumnCell(getPrev) {
   const { columns, tableView, selectedCellExpandedRow } = this.props;
   const { selectedCell, expandedRowIds } = tableView;
-  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
+  const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
   const indexCurrentColumn = f.findIndex(
     f.matchesProperty("id", selectedCell.columnId),
-    vColumns
+    visibleColumns
   );
-  const numberOfColumns = vColumns.length;
+  const numberOfColumns = visibleColumns.length;
   const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
   const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
-  const nextColumn = f.nth(nextColumnIndex, vColumns);
+  const nextColumn = f.nth(nextColumnIndex, visibleColumns);
   const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
   let newSelectedCellExpandedRow;
@@ -529,8 +529,8 @@ function copySelectedCell() {
   } = this.props;
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
-  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
+  const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
+  const columnIndex = f.findIndex(col => col.id === columnId, visibleColumns);
 
   const cell = this.getCell(rowIndex, columnIndex);
 
