@@ -209,7 +209,11 @@ class TranslationPopup extends PureComponent {
     return (
       <div className="translation-view">
         <div className="pseudo-header">
-          <a href="#" onClick={() => setTranslationView({ show: false })}>
+          <a
+            className="pseudo-header__close-button"
+            href="#"
+            onClick={() => setTranslationView({ show: false })}
+          >
             <SvgIcon icon="cross" />
           </a>
           <div className="title">{title}</div>
