@@ -240,6 +240,13 @@ const pasteCellValue = function(
       : f.contains(dstLang, canTranslate);
   };
 
+  if (
+    (dst.kind === ColumnKinds.link || dst.kind === ColumnKinds.attachment) &&
+    !isUserAdmin()
+  ) {
+    return;
+  }
+
   if (isLocked(dst.row) && !canOverrideLock()) {
     const toastContent = askForSessionUnlock(dst.row);
     if (toastContent) {
