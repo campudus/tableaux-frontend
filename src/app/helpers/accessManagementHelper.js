@@ -7,16 +7,14 @@ const Cookies = Keks.withConverter({
   read: function(rawValue) {
     const value = decodeURIComponent(rawValue);
     if (typeof value === "string" && f.startsWith("j:", value)) {
-      let result = value;
-
       try {
         // remove j:
-        result = JSON.parse(value.substring(2));
+        return JSON.parse(value.substring(2));
       } catch (ex) {
         console.error("Keks couldn't be parsed!", ex);
       }
 
-      return result;
+      return [];
     } else {
       return value;
     }
@@ -43,12 +41,11 @@ export function initDevelopmentAccessCookies(cookieParams) {
       cookieParams
     );
 
-    console.log("dev:", { isAdmin, langtagsAccess, countryCodesAccess });
     Cookies.set("userAdmin", isAdmin);
-    Cookies.set("userLangtagsAccess", `j:[${langtagsAccess.join(",")}]`);
+    Cookies.set("userLangtagsAccess", `j:${JSON.stringify(langtagsAccess)}`);
     Cookies.set(
       "userCountryCodesAccess",
-      `j:[${countryCodesAccess.join(",")}]`
+      `j:${JSON.stringify(countryCodesAccess)}`
     );
   }
 }
