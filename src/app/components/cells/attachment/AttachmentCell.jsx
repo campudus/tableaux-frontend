@@ -23,7 +23,7 @@ const AttachmentCell = props => {
   });
 
   const openOverlay = (event, folderId) => {
-    if (isLocked(cell.row)) {
+    if (isLocked(cell.row) || !editing) {
       return;
     }
     maybe(event).method("stopPropagation");

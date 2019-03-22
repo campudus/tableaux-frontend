@@ -11,7 +11,9 @@ import TableauxRouter from "../../router/router";
 import { isLocked } from "../../helpers/annotationHelper";
 import {
   getUserLanguageAccess,
-  isUserAdmin
+  isUserAdmin,
+  hasUserAccessToCountryCode,
+  hasUserAccessToLanguage
 } from "../../helpers/accessManagementHelper";
 import { maybe, doto } from "../../helpers/functools";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
@@ -224,8 +226,6 @@ export function toggleCellSelection({ cell, langtag }) {
 }
 
 export function toggleCellEditing(params = {}) {
-  const canEdit =
-    f.contains(params.langtag, getUserLanguageAccess()) || isUserAdmin();
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
   const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
@@ -241,6 +241,20 @@ export function toggleCellEditing(params = {}) {
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
+  const userCanEditCell = cell => {
+    const { column } = cell;
+    if (column.kind === ColumnKinds.concat) {
+      return false;
+    }
+    if (isUserAdmin()) {
+      return true;
+    }
+    return (
+      (column.multilanguage && hasUserAccessToLanguage(langtag)) ||
+      (column.languageType === "country" && hasUserAccessToCountryCode(langtag))
+    );
+  };
+  const canEdit = userCanEditCell(selectedCellObject);
 
   if (canEdit && selectedCellObject) {
     const selectedCellDisplayValues = selectedCellObject.displayValue;
