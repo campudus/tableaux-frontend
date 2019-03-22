@@ -4,12 +4,18 @@ import * as f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 import Empty from "../../helperComponents/emptyEntry";
 
 const LinkLabelCell = props => {
-  const { langtag, displayValue } = props;
+  const {
+    langtag,
+    displayValue,
+    cell: { column },
+    value
+  } = props;
   const linkName = f.isEmpty(displayValue)
-    ? null
+    ? retrieveTranslation(langtag, f.first(getDisplayValue(column, [value])))
     : retrieveTranslation(langtag, displayValue);
 
   return (
