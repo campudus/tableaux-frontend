@@ -44,7 +44,7 @@ const AttachmentCell = props => {
     });
   };
 
-  const attachments = (editing || selected ? value : f.take(3)(value)).map(
+  const attachments = (editing && selected ? value : f.take(3)(value)).map(
     (element, idx) => (
       <AttachmentLabelCell
         key={idx}
@@ -54,12 +54,13 @@ const AttachmentCell = props => {
         openOverlay={openOverlay}
         selected={selected}
         cell={cell}
+        editing={editing}
       />
     )
   );
 
   const handleClick = e => {
-    if (editing || selected) {
+    if (editing && selected) {
       openOverlay(e);
     }
   };
@@ -74,7 +75,7 @@ const AttachmentCell = props => {
               &hellip;
             </span>
           ]}
-      {editing || selected ? (
+      {editing && selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
