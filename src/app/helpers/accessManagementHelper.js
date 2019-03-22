@@ -149,7 +149,7 @@ export function reduceValuesToAllowedLanguages(valueToChange) {
   if (isUserAdmin()) {
     return valueToChange;
   } else {
-    return { value: f.pick(getUserLanguageAccess(), valueToChange.value) };
+    return f.pick(getUserLanguageAccess(), valueToChange);
   }
 }
 
@@ -158,7 +158,7 @@ export function reduceValuesToAllowedCountries(valueToChange) {
   if (isUserAdmin()) {
     return valueToChange;
   } else {
-    return { value: f.pick(getUserCountryCodesAccess(), valueToChange.value) };
+    return f.pick(getUserCountryCodesAccess(), valueToChange);
   }
 }
 
