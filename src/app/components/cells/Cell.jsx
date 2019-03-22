@@ -258,7 +258,7 @@ class Cell extends React.Component {
           focusTable={focusTable}
           selected={selected}
           inSelectedRow={inSelectedRow}
-          editing={this.userCanEditValue && editing}
+          editing={this.userCanEditValue() && editing}
           isMultiLanguage={column.multilanguage}
           setCellKeyboardShortcuts={
             f.contains(kind, noKeyboard)
