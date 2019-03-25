@@ -132,7 +132,7 @@ const filterRows = props => {
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
     return {
       visibleRows: f.range(0, f.size(rows)),
-      filtering: !nothingToFilter
+      filtering: false
     };
   }
   const isFilterEmpty = filter =>
