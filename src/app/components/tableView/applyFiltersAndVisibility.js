@@ -61,7 +61,7 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         generateDisplayValues(rows, columns, table.id, langtag);
       }
 
-      const canRenderTable = f.every(f.negate(f.isEmpty), [
+      const canRenderTable = f.every(f.negate(f.isNil), [
         tables,
         rows,
         columns
