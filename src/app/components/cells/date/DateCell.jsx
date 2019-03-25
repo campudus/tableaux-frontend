@@ -29,6 +29,7 @@ const DateCellWrapper = props => {
       table={table}
       row={row}
       column={column}
+      showTime={showTime}
     />
   ) : (
     <div className="cell-content">

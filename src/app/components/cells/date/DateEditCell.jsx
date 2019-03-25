@@ -57,7 +57,8 @@ class DateEditCell extends Component {
   };
 
   render() {
-    const { value, Formats } = this.props;
+    // Datetime prop timeFormat: use locale's time format if true, nothing if false
+    const { value, Formats, showTime } = this.props;
     return (
       <div ref={this.checkPosition}>
         {f.isEmpty(value) ? "" : value.format(Formats.formatForUser)}
@@ -73,6 +74,7 @@ class DateEditCell extends Component {
             open
             input={false}
             value={value}
+            timeFormat={showTime}
           />
         </div>
       </div>
