@@ -107,8 +107,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
           CELL_SAVED_SUCCESSFULLY,
           CELL_ROLLBACK_VALUE
         ],
-        ...f.dissoc("type", action),
-        newValue: update.value.value
+        ...f.dissoc("type", action)
       });
 };
 
