@@ -42,8 +42,7 @@ const mapStatetoProps = (state, props) => {
     startedGeneratingDisplayValues,
     visibleColumns,
     filters,
-    sorting,
-    searchOverlayOpen
+    sorting
   } = tableView;
   const allDisplayValues = f.get(["tableView", "displayValues"], state);
 
@@ -62,7 +61,6 @@ const mapStatetoProps = (state, props) => {
     visibleColumns,
     filters,
     sorting,
-    searchOverlayOpen,
     finishedLoading,
     grudStatus
   };
@@ -76,8 +74,7 @@ class TableView extends PureComponent {
     this.state = {
       initialLoading: false,
       rowsCollection: null,
-      tableFullyLoaded: true,
-      searchOverlayOpen: false
+      tableFullyLoaded: true
     };
   }
 
@@ -175,12 +172,6 @@ class TableView extends PureComponent {
 
   componentDidUpdate = () => {
     this.setDocumentTitleToTableName();
-  };
-
-  displaySearchOverlay = (state = true, cb = f.noop) => {
-    this.setState({ searchOverlayOpen: state }, () =>
-      window.setTimeout(cb, 250)
-    );
   };
 
   changeFilter = (settings = {}, store = true) => {
@@ -305,11 +296,7 @@ class TableView extends PureComponent {
           <ConnectionStatus isConnected={connectedToBackend} />
         </header>
         {this.renderTableOrSpinner()}
-        <JumpSpinner
-          isOpen={
-            !!this.props.showCellJumpOverlay && !this.state.searchOverlayOpen
-          }
-        />
+        <JumpSpinner isOpen={!!this.props.showCellJumpOverlay} />
         <SearchOverlay isOpen={filtering} />
       </div>
     );

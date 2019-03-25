@@ -48,7 +48,6 @@ const initialState = {
   visibleRows: [],
   filters: [],
   sorting: [],
-  searchOverlayOpen: false,
   history: {
     undoQueue: [],
     redoQueue: []
