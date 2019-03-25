@@ -296,7 +296,7 @@ class TableView extends PureComponent {
           <ConnectionStatus isConnected={connectedToBackend} />
         </header>
         {this.renderTableOrSpinner()}
-        <JumpSpinner isOpen={!!this.props.showCellJumpOverlay} />
+        <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
         <SearchOverlay isOpen={filtering} />
       </div>
     );
