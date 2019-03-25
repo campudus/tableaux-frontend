@@ -52,8 +52,8 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
 
       // Start displayValue worker if neccessary
       if (
-        f.every(f.negate(f.isEmpty), [rows, columns]) &&
-        f.isEmpty(allDisplayValues[table.id]) &&
+        !f.isEmpty(columns) &&
+        f.isNil(allDisplayValues[table.id]) &&
         !startedGeneratingDisplayValues &&
         finishedLoading
       ) {
