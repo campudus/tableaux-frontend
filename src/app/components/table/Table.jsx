@@ -95,16 +95,19 @@ class Table extends Component {
   };
 
   noRowsInfo = () => {
-    const { rows, table } = this.props;
-    return this.props.fullyLoaded && f.isEmpty(rows) ? (
-      <Portal isOpened>
-        <div className="table-has-no-rows">
-          {rows === table.rows
-            ? i18n.t("table:has-no-rows")
-            : i18n.t("table:search_no_results")}
-        </div>
-      </Portal>
-    ) : null;
+    const { rows, finishedLoading, tableView } = this.props;
+    const result =
+      finishedLoading && f.isEmpty(rows) ? (
+        <Portal isOpened>
+          <div className="table-has-no-rows">
+            {f.isEmpty(tableView.filters)
+              ? i18n.t("table:has-no-rows")
+              : i18n.t("table:search_no_results")}
+          </div>
+        </Portal>
+      ) : null;
+
+    return result;
   };
 
   showRowContextMenu = openAnnotations => ({ langtag, cell }) => event => {
