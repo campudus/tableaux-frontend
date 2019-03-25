@@ -1,4 +1,4 @@
-import data from "./testData/winoraTable77.json";
+import data from "./testData/testData.json";
 import f from "lodash/fp";
 import getFilteredRows from "../../src/app/components/table/RowFilters";
 import testData from "./testData/index.js";
