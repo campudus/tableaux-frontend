@@ -393,7 +393,7 @@ const completeRowInformation = (columns, table, rows, allDisplayValues) => {
     f.memoize(linkId => {
       const dv = doto(
         allDisplayValues,
-        f.prop(["displayValues", tableId]),
+        f.prop([tableId]),
         f.find(f.propEq("id", linkId)),
         f.prop(["values", 0])
       );
