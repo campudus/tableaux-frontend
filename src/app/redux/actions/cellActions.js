@@ -133,7 +133,7 @@ const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
     [f.complement(f.isObject), f.identity],
     [() => column.languageType === "country", reduceCountries],
     [() => column.multilanguage, reduceLangs],
-    [f.always(true), f.identity]
+    [f.always, f.identity]
   ])(newValue);
 
   return {
