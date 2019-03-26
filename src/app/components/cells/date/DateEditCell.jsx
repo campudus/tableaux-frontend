@@ -1,82 +1,89 @@
 import Datetime from "react-datetime";
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import Moment from "moment";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
-import f from "lodash/fp";
+import { maybe, stopPropagation } from "../../../helpers/functools";
 
-import { stopPropagation } from "../../../helpers/functools";
+const DATE_PICKER_HEIGHT = 265;
 
-class DateEditCell extends Component {
-  state = {
-    shiftUp: false,
-    domNode: null
+const DateEditCell = props => {
+  const { actions, cell, langtag, Formats, showTime } = props;
+  const isMultiLanguage = cell.column.multilanguage;
+
+  const getValue = obj => (isMultiLanguage ? obj[langtag] : obj);
+
+  const [needsShiftUp, setShift] = useState(false);
+  // state value that doesn't trigger a re-render, so time picker won't close every click
+  const momentRef = useRef(
+    maybe(getValue(cell.value))
+      .map(str => Moment(str))
+      .getOrElse(null)
+  );
+  const setMoment = m => {
+    momentRef.current = m;
   };
 
-  checkPosition = (node = this.state.domNode) => {
-    if (f.isNil(node)) {
-      return;
-    }
-
-    // need real dom node for bounding rect
-    // eslint-disable-next-line react/no-find-dom-node
-    const rect = ReactDOM.findDOMNode(node).getBoundingClientRect();
-    const needsShiftUp = rect.bottom + 265 >= window.innerHeight;
-    if (needsShiftUp !== this.state.shiftUp) {
-      this.setState({
-        shiftUp: needsShiftUp,
-        domNode: node
-      });
-    } else if (f.isNil(this.state.domNode)) {
-      this.setState({ domNode: node });
-    }
-  };
-
-  getStyle = () => ({
-    position: "absolute",
-    top: this.state.shiftUp ? -265 : "100%"
+  const checkPosition = useCallback(node => {
+    if (!node) return;
+    const needsShiftUp =
+      node.getBoundingClientRect().bottom + DATE_PICKER_HEIGHT >=
+      window.innerHeight;
+    setShift(needsShiftUp);
   });
 
-  clearMoment = () => this.handleChange(null);
-
-  handleChange = momentToSet => {
-    const { Formats, actions, table, column, row, langtag, value } = this.props;
-    const momentString = momentToSet
-      ? momentToSet.format(Formats.formatForServer)
+  const saveValue = () => {
+    const momentString = momentRef.current
+      ? momentRef.current.format(Formats.formatForServer)
       : null;
-    const newValue = column.multilanguage
-      ? { [langtag]: momentString }
-      : momentString;
     actions.changeCellValue({
-      tableId: table.id,
-      column,
-      columnId: column.id,
-      rowId: row.id,
-      oldValue: f.isEmpty(value) ? null : value.format(Formats.formatForServe),
-      newValue
+      cell,
+      oldValue: cell.value,
+      newValue: isMultiLanguage ? { [langtag]: momentString } : momentString
     });
   };
 
-  render() {
-    const { value, Formats } = this.props;
-    return (
-      <div ref={this.checkPosition}>
-        {f.isEmpty(value) ? "" : value.format(Formats.formatForUser)}
-        <i className="fa fa-ban" onClick={this.clearMoment} />
+  const setAndSave = moment => {
+    setMoment(moment);
+    saveValue();
+  };
 
-        <div
-          className="time-picker-wrapper"
-          style={this.getStyle()}
-          onClick={stopPropagation}
-        >
-          <Datetime
-            onChange={this.handleChange}
-            open
-            input={false}
-            value={value}
-          />
-        </div>
+  useEffect(() => {
+    // cleanup gets called on unmount, so we won't save & re-render constantly
+    return () => {
+      if (
+        momentRef.current && // check this or next line might crash
+        !momentRef.current.isSame(Moment(getValue(cell.value)))
+      ) {
+        saveValue();
+      }
+    };
+  }, [momentRef]);
+
+  return (
+    <div ref={checkPosition}>
+      {maybe(getValue(cell.value))
+        .map(str => Moment(str))
+        .map(m => m.format(Formats.formatForUser))
+        .getOrElse("")}
+      <i className="fa fa-ban" onClick={() => setAndSave(null)} />
+      <div
+        className="time-picker-wrapper"
+        style={{
+          position: "absolute",
+          top: needsShiftUp ? -DATE_PICKER_HEIGHT : "100%"
+        }}
+        onClick={stopPropagation}
+      >
+        <Datetime
+          onChange={setMoment}
+          input={false}
+          defaultValue={momentRef.current || Moment()}
+          timeFormat={showTime}
+          open
+        />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
 export default DateEditCell;
