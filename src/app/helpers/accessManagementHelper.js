@@ -2,6 +2,7 @@ import Keks from "js-cookie";
 import f from "lodash/fp";
 
 import { getCountryOfLangtag } from "./multiLanguage";
+import { merge, when } from "./functools";
 import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
 
 // overwrite converter so we can parse express-cookies
@@ -26,6 +27,15 @@ const Cookies = Keks.withConverter({
   }
 });
 
+const mergeWithLocalDevSettings = params => {
+  try {
+    const localSettings = require("../../../devAccessSettings.json");
+    return merge(params, localSettings);
+  } catch (err) {
+    return params;
+  }
+};
+
 /**
  * Sets user access cookie in dev, when the server doesn't.
  * @params cookieParams: { isAdmin?: boolean
@@ -33,12 +43,13 @@ const Cookies = Keks.withConverter({
  *                         countryCodesAccess?: string[]
  *                       }
  **/
-export function initDevelopmentAccessCookies(cookieParams) {
+export function initDevelopmentAccessCookies(usersParams) {
   if (process.env.NODE_ENV !== "production") {
-    const isAdmin = f.getOr(true, "isAdmin", cookieParams);
-    const langtagsAccess = f.getOr(["en"], "langtagsAccess", cookieParams);
+    const cookieParams = mergeWithLocalDevSettings(usersParams);
+    const isAdmin = when(f.isNil, f.stubTue, f.get("isAdmin", cookieParams));
+    const langtagsAccess = f.getOr(["en_GB"], "langtagsAccess", cookieParams);
     const countryCodesAccess = f.getOr(
-      ["GB"],
+      ["en_GB"],
       "countryCodesAccess",
       cookieParams
     );
@@ -48,6 +59,14 @@ export function initDevelopmentAccessCookies(cookieParams) {
     Cookies.set(
       "userCountryCodesAccess",
       `j:${JSON.stringify(countryCodesAccess)}`
+    );
+
+    console.log(
+      "Dev access settings:",
+      isUserAdmin() ? "admin," : "user,",
+      isUserAdmin()
+        ? "all countries & langtags"
+        : `countries: ${getUserCountryCodesAccess()}, langtags: ${getUserLanguageAccess()}`
     );
   }
 }
