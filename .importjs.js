@@ -1,4 +1,5 @@
 module.exports = {
+  exclude: ["./out"],
   aliases: {
     f: "lodash/fp",
     React: "react",

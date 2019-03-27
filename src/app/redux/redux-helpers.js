@@ -1,5 +1,7 @@
 import f from "lodash/fp";
+
 import { ColumnKinds } from "../constants/TableauxConstants";
+import { merge } from "../helpers/functools";
 import getDisplayValue from "../helpers/getDisplayValue";
 
 /**
@@ -61,4 +63,17 @@ export const calcConcatValues = (action, completeState) => {
   } else {
     return null;
   }
+};
+
+// Conditionally merge cell values for multilang updates
+export const getUpdatedCellValueToSet = (
+  { column, oldValue, newValue },
+  isRollback = false
+) => {
+  const unmergeableTypes = [ColumnKinds.link, ColumnKinds.attachment];
+  const mergeCellValues = () =>
+    !column.multilanguage || f.contains(column.kind, unmergeableTypes)
+      ? newValue
+      : merge(oldValue, newValue);
+  return isRollback ? oldValue : mergeCellValues();
 };
