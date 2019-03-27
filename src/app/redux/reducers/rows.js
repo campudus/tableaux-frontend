@@ -1,8 +1,12 @@
 import f from "lodash/fp";
 
 import { addCellId } from "../../helpers/getCellId";
+import {
+  calcConcatValues,
+  getUpdatedCellValueToSet,
+  idsToIndices
+} from "../redux-helpers";
 import { doto, when } from "../../helpers/functools";
-import { idsToIndices, calcConcatValues } from "../redux-helpers";
 import actionTypes from "../actionTypes";
 
 const {
@@ -179,6 +183,15 @@ const insert = (prev, rows) => {
   }
 };
 
+const setCellValue = (state, action, completeState, isRollback = false) => {
+  console.log("setCellValue", action);
+  const [rowIdx, columnIdx] = idsToIndices(action, completeState);
+  const rowSelector = [action.tableId, "data", rowIdx, "values"];
+  const valueToSet = getUpdatedCellValueToSet(action, isRollback);
+
+  return f.update(rowSelector, f.assoc(columnIdx, valueToSet), state);
+};
+
 const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
     case ALL_ROWS_LOADING_DATA:
@@ -196,11 +209,8 @@ const rows = (state = initialState, action, completeState) => {
       return insertSkeletonRows(state, action, completeState);
     case DELETE_ROW:
       return deleteRow(action, state);
-    case CELL_SET_VALUE: {
-      const [rowIdx, columnIdx] = idsToIndices(action, completeState);
-      const rowSelector = [action.tableId, "data", rowIdx, "values"];
-      return f.update(rowSelector, f.assoc(columnIdx, action.newValue), state);
-    }
+    case CELL_SET_VALUE:
+      return setCellValue(state, action, completeState, false /*isRollback*/);
     case SET_CELL_ANNOTATION:
       return setCellAnnotation(state, action, completeState);
     case REMOVE_CELL_ANNOTATION:
@@ -228,11 +238,8 @@ const rows = (state = initialState, action, completeState) => {
         { ...action, response: action.annotation },
         completeState
       );
-    case CELL_ROLLBACK_VALUE: {
-      const [rowIdx, columnIdx] = idsToIndices(action, completeState);
-      const rowSelector = [action.tableId, "data", rowIdx, "values"];
-      return f.update(rowSelector, f.assoc(columnIdx, action.oldValue), state);
-    }
+    case CELL_ROLLBACK_VALUE:
+      return setCellValue(state, action, completeState, true /*isRollback*/);
     case CELL_SAVED_SUCCESSFULLY:
       return maybeUpdateConcats(state, action, completeState);
     case CLEAN_UP:
