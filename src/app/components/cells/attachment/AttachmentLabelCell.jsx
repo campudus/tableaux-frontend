@@ -13,9 +13,10 @@ const AttachmentLabelCell = props => {
     if (editing && selected) {
       evt.stopPropagation();
       openOverlay(evt, attachmentElement.folder);
-      return;
-    }
-    if (!editing && selected) {
+    } else if (!editing && selected) {
+      // User can't change cell, so the edit dialog won't open. Since keeping
+      // the editor closed will also keep the "preview" button ot of users'
+      // reach, we preview the attachment if non-admin klicks the file name
       doto(
         attachmentElement,
         f.get("url"),
