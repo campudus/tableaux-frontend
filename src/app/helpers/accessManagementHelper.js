@@ -44,7 +44,7 @@ const mergeWithLocalDevSettings = params => {
 export function initDevelopmentAccessCookies(usersParams) {
   if (process.env.NODE_ENV !== "production") {
     const cookieParams = mergeWithLocalDevSettings(usersParams);
-    const isAdmin = when(f.isNil, f.stubTue, f.get("isAdmin", cookieParams));
+    const isAdmin = when(f.isNil, f.stubTrue, f.get("isAdmin", cookieParams));
     const langtagsAccess = f.getOr(["en_GB"], "langtagsAccess", cookieParams);
     const countryCodesAccess = f.getOr(
       ["en_GB"],
