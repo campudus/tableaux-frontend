@@ -32,7 +32,7 @@ const withFunctionality = compose(
         ])(stuff);
         return res;
       };
-      const hasEmptyRow = f.every(isEmpty, f.last(rows).values);
+      const hasEmptyRow = f.every(isEmpty, f.prop("values", f.last(rows)));
       if (f.isEmpty(rows) || !hasEmptyRow) {
         onAdd();
         return;

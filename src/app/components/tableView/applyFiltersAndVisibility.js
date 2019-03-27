@@ -52,8 +52,8 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
 
       // Start displayValue worker if neccessary
       if (
-        f.every(f.negate(f.isEmpty), [rows, columns]) &&
-        f.isEmpty(allDisplayValues[table.id]) &&
+        !f.isEmpty(columns) &&
+        f.isNil(allDisplayValues[table.id]) &&
         !startedGeneratingDisplayValues &&
         finishedLoading
       ) {
@@ -61,7 +61,7 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         generateDisplayValues(rows, columns, table.id, langtag);
       }
 
-      const canRenderTable = f.every(f.negate(f.isEmpty), [
+      const canRenderTable = f.every(f.negate(f.isNil), [
         tables,
         rows,
         columns
@@ -132,7 +132,7 @@ const filterRows = props => {
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
     return {
       visibleRows: f.range(0, f.size(rows)),
-      filtering: !nothingToFilter
+      filtering: false
     };
   }
   const isFilterEmpty = filter =>
