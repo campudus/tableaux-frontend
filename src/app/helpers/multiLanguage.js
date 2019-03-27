@@ -1,10 +1,12 @@
 import React from "react";
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import { checkOrThrow } from "../specs/type";
-import { ifElse, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
+import { ifElse, when } from "./functools";
 import TableauxConstants, {
+  ColumnKinds,
   DefaultLangtag,
   FallbackLanguage
 } from "../constants/TableauxConstants";
@@ -39,7 +41,7 @@ function getLanguageOrCountryIcon(langtag, specific = "") {
   // ... if so return only the country
   // ... otherwise return just the language
   // unless asked for "language" or "country"
-  // ... in that case we return either language or country from full langtag
+  // ... in  that case we return either language or country from full langtag
   // ... or we expect the country to be expandable like de -> de_DE, it -> it_IT etc.
   const countryOrLanguage =
     langtagSplitted.length > 1 ? langtagSplitted[1] : langtagSplitted[0];
@@ -183,6 +185,11 @@ function getTableDisplayName(table, langtag) {
   }
 }
 
+const getColumnDisplayName = (column, langtag) =>
+  column.kind === ColumnKinds.concat
+    ? i18n.t("table:concat_column_name")
+    : getTableDisplayName(column, langtag);
+
 const getMultiLangValue = f.curry((langtag, defaultValue, element) =>
   when(f.isEmpty, f.always(defaultValue))(retrieveTranslation(langtag, element))
 );
@@ -245,7 +252,7 @@ export {
   getLanguageOrCountryIcon,
   getLanguageOfLangtag,
   getTableDisplayName,
-  getTableDisplayName as getColumnDisplayName,
+  getColumnDisplayName,
   getCountryOfLangtag,
   getCurrencyCode,
   getFallbackCurrencyValue,
