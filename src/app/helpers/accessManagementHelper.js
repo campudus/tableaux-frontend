@@ -2,25 +2,23 @@ import Keks from "js-cookie";
 import f from "lodash/fp";
 
 import { getCountryOfLangtag } from "./multiLanguage";
-import { merge, when } from "./functools";
+import { merge, when, withTryCatch } from "./functools";
 import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
 
 // overwrite converter so we can parse express-cookies
 const Cookies = Keks.withConverter({
   read: function(rawValue) {
     const value = decodeURIComponent(rawValue);
-    if (typeof value === "string" && f.startsWith("j:", value)) {
-      try {
-        // remove j:
-        return JSON.parse(value.substring(2));
-      } catch (ex) {
-        console.error("Keks couldn't be parsed!", ex);
-      }
-
-      return [];
-    } else {
-      return value;
-    }
+    return when(
+      f.allPass([f.isString, f.startsWith("j:")]),
+      withTryCatch(
+        v => JSON.parse(v.substring(2)), // remove starting j:
+        e => {
+          console.error("Access cookie couldn't be parsed:", e);
+        }
+      ),
+      value
+    );
   },
   write: function(value) {
     return encodeURIComponent(value);

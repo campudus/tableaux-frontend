@@ -322,13 +322,13 @@ const forkJoin = curryN(4, function(combine, f, g, x) {
   return combine(f(x), g(x));
 });
 
-const withTryCatch = (fn, onError = noop) => (...args) => {
+const withTryCatch = curryN(3, (fn, onError = noop, ...args) => {
   try {
     return fn(...args);
   } catch (e) {
     return onError(e);
   }
-};
+});
 
 // threading macro to create more readable code
 export const doto = (initialValue, ...fns) => {
