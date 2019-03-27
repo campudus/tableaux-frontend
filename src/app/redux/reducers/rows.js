@@ -184,7 +184,6 @@ const insert = (prev, rows) => {
 };
 
 const setCellValue = (state, action, completeState, isRollback = false) => {
-  console.log("setCellValue", action);
   const [rowIdx, columnIdx] = idsToIndices(action, completeState);
   const rowSelector = [action.tableId, "data", rowIdx, "values"];
   const valueToSet = getUpdatedCellValueToSet(action, isRollback);
