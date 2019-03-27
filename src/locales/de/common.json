@@ -1,6 +1,7 @@
 {
   "access_management": {
     "language_array_empty": "Nur Lesezugriff: Sie können keine Daten ändern.",
+    "cant_access_language": "Sie könnnen Daten dieser Sprache nicht ändern",
     "no_permission_saving_language_description": "Sie haben keine Berechtigung diesen Datensatz zu verändern. Nur Administratoren können Daten hinzufügen und löschen. Folgende Sprachinhalte dürfen Sie bearbeiten",
     "permission_denied_headline": "Zugriff verweigert",
     "countries": "Länder",

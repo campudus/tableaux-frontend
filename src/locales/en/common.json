@@ -1,6 +1,7 @@
 {
   "access_management": {
     "language_array_empty": "Read-only access: You can not change any data.",
+    "cant_access_language": "You are not allowed to change data for this language",
     "no_permission_saving_language_description": "You have no permission to change this data. Only administrating users can add or remove data. You can edit content of the following languages",
     "permission_denied_headline": "Access permission denied",
     "countries": "Countries",
