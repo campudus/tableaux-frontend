@@ -1,26 +1,22 @@
 import React from "react";
 import f from "lodash/fp";
+
 import {
   ColumnKinds,
   DefaultLangtag,
   Directions,
-  Langtags,
-  FallbackLanguage
+  Langtags
 } from "../../constants/TableauxConstants";
-import TableauxRouter from "../../router/router";
-import { isLocked } from "../../helpers/annotationHelper";
-import {
-  getUserLanguageAccess,
-  isUserAdmin,
-  hasUserAccessToCountryCode,
-  hasUserAccessToLanguage
-} from "../../helpers/accessManagementHelper";
-import { maybe, doto } from "../../helpers/functools";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
-import Header from "../overlay/Header";
-import TextEditOverlay from "../cells/text/TextEditOverlay";
-import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
+import { doto, maybe, unless } from "../../helpers/functools";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
+import { isLocked } from "../../helpers/annotationHelper";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
+import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import Header from "../overlay/Header";
+import TableauxRouter from "../../router/router";
+import TextEditOverlay from "../cells/text/TextEditOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
@@ -241,21 +237,7 @@ export function toggleCellEditing(params = {}) {
   const selectedRow = rows[rowIndex];
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
-  const userCanEditCell = cell => {
-    const { column } = cell;
-    if (column.kind === ColumnKinds.concat) {
-      return false;
-    }
-    if (isUserAdmin()) {
-      return true;
-    }
-    return (
-      (column.multilanguage && hasUserAccessToLanguage(langtag)) ||
-      (column.languageType === "country" && hasUserAccessToCountryCode(langtag))
-    );
-  };
-  const canEdit = userCanEditCell(selectedCellObject);
-
+  const canEdit = canUserChangeCell(selectedCellObject, langtag);
   if (canEdit && selectedCellObject) {
     const selectedCellDisplayValues = selectedCellObject.displayValue;
     const selectedCellRawValue = selectedCellObject.value;
@@ -308,14 +290,9 @@ export function toggleCellEditing(params = {}) {
             head: (
               <Header
                 context={doto(
-                  [
-                    table.displayName[langtag],
-                    table.displayName[FallbackLanguage],
-                    table.name
-                  ],
-                  f.compact,
-                  f.first,
-                  ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
+                  table,
+                  getTableDisplayName(langtag),
+                  unless(f.isString, f.toString)
                 )}
                 title={selectedCellDisplayValues[langtag]}
                 langtag={langtag}

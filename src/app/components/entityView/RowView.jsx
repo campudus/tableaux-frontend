@@ -1,27 +1,26 @@
 import React, { PureComponent } from "react";
+import * as f from "lodash/fp";
+import i18n from "i18next";
+
 import PropTypes from "prop-types";
-import {
-  ColumnKinds,
-  FallbackLanguage,
-  Langtags
-} from "../../constants/TableauxConstants";
-import ShortTextView from "./text/ShortTextView";
-import TextView from "./text/TextView";
-import NumericView from "./numeric/NumericView";
-import BooleanView from "./boolean/BooleanView";
-import LinkView from "./link/LinkView";
+import classNames from "classnames";
+
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { unless } from "../../helpers/functools";
+import * as Access from "../../helpers/accessManagementHelper";
+import * as Annotations from "../../helpers/annotationHelper";
 import AttachmentView from "./attachment/AttachmentView";
+import BooleanView from "./boolean/BooleanView";
 import CurrencyView from "./currency/CurrencyView";
 import DateView from "./date/DateView";
 import GroupView from "./group/GroupView";
+import LinkView from "./link/LinkView";
+import NumericView from "./numeric/NumericView";
 import RowHeadline from "./RowHeadline";
-import * as f from "lodash/fp";
-import * as Access from "../../helpers/accessManagementHelper";
-import * as Annotations from "../../helpers/annotationHelper";
-import { getCountryOfLangtag } from "../../helpers/multiLanguage";
-import classNames from "classnames";
-import i18n from "i18next";
-import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
+import ShortTextView from "./text/ShortTextView";
+import TextView from "./text/TextView";
 
 class View extends PureComponent {
   static propTypes = {
@@ -52,19 +51,7 @@ class View extends PureComponent {
 
   canEditValue = theoretically => {
     const { cell, langtag } = this.props;
-    const canEditUnlocked =
-      Access.isUserAdmin() ||
-      (Access.canUserChangeCell(cell) &&
-        f.cond([
-          [() => !cell.column.mulilanguage, () => false], // Non-admins can't change single-value items
-          [
-            () => cell.column.languageType === "country",
-            f.always(
-              Access.hasUserAccessToCountryCode(getCountryOfLangtag(langtag))
-            )
-          ],
-          [f.stubTrue, f.always(Access.hasUserAccessToLanguage(langtag))]
-        ])());
+    const canEditUnlocked = Access.canUserChangeCell(cell, langtag);
     return theoretically
       ? canEditUnlocked
       : canEditUnlocked &&
@@ -124,9 +111,9 @@ class View extends PureComponent {
         "has-mouse-pointer": this.state.hovered
       }
     );
-    const description =
-      f.get(["description", langtag], column) ||
-      f.get(["description", FallbackLanguage], column);
+    const description = unless(f.isNil, retrieveTranslation(langtag))(
+      column.description
+    );
 
     const translationTag =
       isMyTranslationNeeded || isAnyTranslationNeeded ? (

@@ -7,17 +7,13 @@ import {
   withHandlers
 } from "recompose";
 import React from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import f from "lodash/fp";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import {
-  hasUserAccessToCountryCode,
-  hasUserAccessToLanguage,
-  isUserAdmin
-} from "../../helpers/accessManagementHelper";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
@@ -180,20 +176,8 @@ class Cell extends React.Component {
   };
 
   userCanEditValue() {
-    const {
-      cell: { column },
-      langtag
-    } = this.props;
-    if (column.kind === ColumnKinds.concat) {
-      return false;
-    }
-    if (isUserAdmin()) {
-      return true;
-    }
-    return (
-      (column.multilanguage && hasUserAccessToLanguage(langtag)) ||
-      (column.languageType === "country" && hasUserAccessToCountryCode(langtag))
-    );
+    const { cell, langtag } = this.props;
+    return canUserChangeCell(cell, langtag);
   }
 
   render() {

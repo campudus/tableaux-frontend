@@ -1,6 +1,8 @@
-import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
 import Keks from "js-cookie";
 import f from "lodash/fp";
+
+import { getCountryOfLangtag } from "./multiLanguage";
+import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
 
 // overwrite converter so we can parse express-cookies
 const Cookies = Keks.withConverter({
@@ -112,8 +114,9 @@ export const hasUserAccessToLanguage = f.memoize(function(langtag) {
   }
 });
 
-// Is the user allowed to change this cell in general? Is it multilanguage and no link or attachment?
-export function canUserChangeCell(cell) {
+// No langtag: Is the user allowed to change this cell in general?
+// Langtag: Is the user allowed to change this cell in this language
+export function canUserChangeCell(cell, langtag) {
   if (!cell) {
     console.warn(
       "hasUserAccesToCell() called with invalid parameter cell:",
@@ -130,14 +133,17 @@ export function canUserChangeCell(cell) {
   // User is not admin
   // Links and attachments are considered single language
   return !!(
-    cell.isMultiLanguage &&
-    (cell.kind === ColumnKinds.text ||
-      cell.kind === ColumnKinds.shorttext ||
-      cell.kind === ColumnKinds.richtext ||
-      cell.kind === ColumnKinds.numeric ||
-      cell.kind === ColumnKinds.boolean ||
-      cell.kind === ColumnKinds.datetime ||
-      cell.kind === ColumnKinds.currency)
+    cell.column.multilanguage &&
+    (cell.column.kind === ColumnKinds.text ||
+      cell.column.kind === ColumnKinds.shorttext ||
+      cell.column.kind === ColumnKinds.richtext ||
+      cell.column.kind === ColumnKinds.numeric ||
+      cell.column.kind === ColumnKinds.boolean ||
+      cell.column.kind === ColumnKinds.datetime ||
+      cell.column.kind === ColumnKinds.currency) &&
+    (f.isNil(langtag) || cell.column.languageType === "country"
+      ? hasUserAccessToCountryCode(getCountryOfLangtag(langtag))
+      : hasUserAccessToLanguage(langtag))
   );
 }
 
