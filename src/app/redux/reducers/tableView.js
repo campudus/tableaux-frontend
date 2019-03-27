@@ -1,7 +1,11 @@
 import f from "lodash/fp";
 
 import { DefaultLangtag } from "../../constants/TableauxConstants";
-import { idsToIndices, calcConcatValues } from "../redux-helpers";
+import {
+  calcConcatValues,
+  getUpdatedCellValueToSet,
+  idsToIndices
+} from "../redux-helpers";
 import { ifElse, unless } from "../../helpers/functools";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
@@ -200,7 +204,10 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 ];
 
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
-  const value = f.prop(valueProp, action);
+  const value = getUpdatedCellValueToSet(
+    action,
+    valueProp === "oldValue" /*isRollback*/
+  );
   const { tableId, column } = action;
   const [columnIdx, dvRowIdx] = f.tail(idsToIndices(action, completeState));
   const pathToDv = displayValueSelector({
