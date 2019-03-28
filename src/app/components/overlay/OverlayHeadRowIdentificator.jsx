@@ -1,27 +1,32 @@
+import { compose, withProps } from "recompose";
 import React from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { doto } from "../../helpers/functools";
 import {
   getColumnDisplayName,
   retrieveTranslation
 } from "../../helpers/multiLanguage";
+import { isCell } from "../../specs/cell-spec";
 import { withForeignDisplayValues } from "../helperComponents/withForeignDisplayValues";
+import Empty from "../helperComponents/emptyEntry";
 import RowConcat from "../../helpers/RowConcatHelper";
+import store from "../../redux/store";
 
 const OverlayHeadRowIdentificator = props => {
   const {
     cell,
-    cell: { row, column, columns },
+    cell: { row, column },
     langtag,
-    foreignDisplayValues
+    foreignDisplayValues,
+    columnDisplayName
   } = props;
   if (!cell) {
     return null;
   }
-  const columnDisplayName = getColumnDisplayName(column, langtag);
 
   const isConcatCell =
     !f.isNil(foreignDisplayValues) && column.kind === ColumnKinds.concat;
@@ -32,7 +37,7 @@ const OverlayHeadRowIdentificator = props => {
   ) : isLinkCell ? (
     foreignDisplayValues.map(retrieveTranslation(langtag)).join(" ")
   ) : (
-    <RowConcat row={row} langtag={langtag} idColumn={f.first(columns)} />
+    <RowConcat row={row} langtag={langtag} idColumn={column} />
   );
 
   return (
@@ -55,4 +60,43 @@ OverlayHeadRowIdentificator.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default withForeignDisplayValues(OverlayHeadRowIdentificator);
+const setupIdProps = withProps(({ cell, title, langtag }) => {
+  const cellOrTitle = isCell(cell) ? cell : isCell(title) ? title : null;
+  if (!cellOrTitle) {
+    return <Empty />;
+  }
+
+  console.log({ cell, title });
+
+  const state = store.getState();
+  const { table, column, row } = cellOrTitle;
+  const columnDisplayName =
+    column.kind === ColumnKinds.concat
+      ? null
+      : getColumnDisplayName(cellOrTitle.column, langtag);
+  const firstColumn = f.prop(["columns", table.id, "data", 0], state);
+  const liveRow = doto(
+    state,
+    f.prop(["rows", table.id, "data"]),
+    f.find(f.propEq("id", row.id))
+  );
+
+  return firstColumn.id === column.id
+    ? {
+        cell: cellOrTitle,
+        columnDisplayName
+      }
+    : {
+        columnDisplayName,
+        cell: {
+          ...f.first(row.cells),
+          value: f.first(row.values),
+          row: liveRow
+        }
+      };
+});
+
+export default compose(
+  setupIdProps,
+  withForeignDisplayValues
+)(OverlayHeadRowIdentificator);
