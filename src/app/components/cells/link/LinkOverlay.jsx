@@ -587,20 +587,12 @@ export const openLinkOverlay = ({ cell, langtag, actions }) => {
   const ReduxLinkOverlay = withDataRows(LinkOverlay);
   const overlayContent = <ReduxLinkOverlay cell={cell} langtag={langtag} />;
 
-  const columns = f.prop(["columns", cell.table.id, "data"], store.getState());
-  const titleCell = {
-    column: f.first(columns),
-    table: cell.table,
-    row: cell.row,
-    value: f.first(cell.row.values)
-  };
-
   actions.openOverlay({
     head: <LinkOverlayHeader langtag={langtag} cell={cell} title={cell} />,
     body: overlayContent,
     type: "full-height",
     classes: "link-overlay",
-    title: titleCell,
+    title: cell,
     filterMode: FilterModes.CONTAINS,
     unlinkedOrder: 1
   });
