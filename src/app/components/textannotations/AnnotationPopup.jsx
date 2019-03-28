@@ -1,14 +1,14 @@
 import { Portal } from "react-portal";
+import FocusTrap from "focus-trap-react";
 import React, { Component } from "react";
+import f from "lodash/fp";
 import i18n from "i18next";
 import listenToClickOutside from "react-onclickoutside";
 
-import FocusTrap from "focus-trap-react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import f from "lodash/fp";
 
-import { doto, either, maybe } from "../../helpers/functools";
+import { doto, either, ifElse, maybe, when } from "../../helpers/functools";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { setCellAnnotation } from "../../helpers/annotationHelper";
 import AnnotationEntry from "./AnnotationEntry";
@@ -131,7 +131,16 @@ class AnnotationPopup extends Component {
       f.compact,
       f.sortBy("createdAt")
     )(cell.annotations);
-    const rowConcat = retrieveTranslation(langtag, cell.displayValue);
+    const translateArray = f.flow(
+      f.map("value"),
+      f.map(when(f.isPlainObject, retrieveTranslation(langtag)))
+    );
+    const rowConcat = ifElse(
+      f.isArray,
+      translateArray,
+      retrieveTranslation(langtag),
+      cell.displayValue
+    );
 
     const rect = maybe(this.state.container)
       .exec("getBoundingClientRect")
