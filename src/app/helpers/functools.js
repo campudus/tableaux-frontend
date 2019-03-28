@@ -1,7 +1,9 @@
 /* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
 
 import {
+  compact,
   curryN,
+  first,
   flow,
   identity,
   isEmpty,
@@ -10,6 +12,7 @@ import {
   noop,
   prop,
   propOr,
+  props,
   range
 } from "lodash/fp";
 
@@ -414,6 +417,15 @@ const memoizeWith = (keyFn, fn) => {
   };
 };
 
+const firstValidProp = curryN(2, (propsArray, obj) =>
+  first(compact(props(propsArray, obj)))
+);
+
+const firstValidPropOr = curryN(
+  3,
+  (elseValue, propsArray, obj) => firstValidProp(propsArray, obj) || elseValue
+);
+
 const merge = curryN(2, (first, second) => ({ ...first, ...second }));
 
 export {
@@ -442,5 +454,7 @@ export {
   mapPromise,
   memoizeWith,
   merge,
+  firstValidProp,
+  firstValidPropOr,
   tests
 };
