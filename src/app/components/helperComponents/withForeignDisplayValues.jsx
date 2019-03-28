@@ -25,7 +25,7 @@ const getColumnIdx = memoizeWith(tableColumnKey, (tableId, columnId, state) => {
 });
 
 const flattenAndTranslate = f.curryN(2, (langtag, value = []) => {
-  return value.map(retrieveTranslation(langtag)).join(" ");
+  return f.map(retrieveTranslation(langtag), value).join(" ");
 });
 
 const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
