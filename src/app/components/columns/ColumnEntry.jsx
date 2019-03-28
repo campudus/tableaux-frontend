@@ -1,7 +1,7 @@
 import { Rnd } from "react-rnd";
 import React from "react";
 import ReactDOM from "react-dom";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
