@@ -4,24 +4,26 @@
  * cell position indices.
  */
 
-import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import f from "lodash/fp";
-import Cell, { getAnnotationState } from "../cells/Cell";
-import MetaCell from "../cells/MetaCell";
-import ColumnHeader from "../columns/ColumnHeader";
 import { AutoSizer } from "react-virtualized";
+import React, { PureComponent } from "react";
+import f from "lodash/fp";
+
+import PropTypes from "prop-types";
+
 import {
   ColumnKinds,
   Langtags,
   Directions
 } from "../../constants/TableauxConstants";
-import { either, maybe } from "../../helpers/functools";
-import AddNewRowButton from "../rows/NewRow";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import MultiGrid from "./GrudGrid";
+import { doto, either, maybe } from "../../helpers/functools";
 import { isLocked } from "../../helpers/annotationHelper";
+import AddNewRowButton from "../rows/NewRow";
+import Cell, { getAnnotationState } from "../cells/Cell";
+import ColumnHeader from "../columns/ColumnHeader";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import MetaCell from "../cells/MetaCell";
+import MultiGrid from "./GrudGrid";
+import getDisplayValue from "../../helpers/getDisplayValue";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 
 const META_CELL_WIDTH = 80;
@@ -378,7 +380,7 @@ export default class VirtualTable extends PureComponent {
 
   getCell = (rowIndex, columnIndex) => {
     try {
-      const { rows } = this.props;
+      const { rows, table } = this.props;
       const values = rows[rowIndex].values;
       const cells = rows[rowIndex].cells;
       const value = this.getVisibleElement(values, columnIndex);
@@ -392,7 +394,10 @@ export default class VirtualTable extends PureComponent {
           columnIndex,
           cell.column,
           value
-        )
+        ),
+        isReadOnly:
+          table.type === "settings" &&
+          f.contains(cell.column.id, this.settingsColumnIds)
       };
     } catch (err) {
       console.error(
@@ -486,6 +491,11 @@ export default class VirtualTable extends PureComponent {
   storeGridElement = node => {
     this.multiGrid = node;
   };
+
+  componentDidMount() {
+    // Switching tables will remount virtual table
+    this.settingsColumnIds = doto(this.props.columns, f.take(2), f.map("id"));
+  }
 
   componentDidUpdate(prev) {
     // Release control of scrolling position once cell has been focused
