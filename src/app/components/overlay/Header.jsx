@@ -18,9 +18,10 @@ class Header extends PureComponent {
   };
 
   renderTitle = () => {
-    const { title, langtag } = this.props;
-    if (isCell(title)) {
-      const { table, row } = title;
+    const { title, langtag, cell } = this.props;
+    const cellOrTitle = isCell(cell) ? cell : isCell(title) ? title : null;
+    if (cellOrTitle) {
+      const { table, row } = cellOrTitle;
       const [tableId, rowId] = [table.id, row.id];
       const [columns, rows] = doto(
         this.props.grudData,
@@ -33,7 +34,7 @@ class Header extends PureComponent {
       const dataRow = f.find(f.propEq("id", rowId), rows);
       return (
         <OverlayHeadRowIdentificator
-          cell={{ ...title, row: dataRow, columns }}
+          cell={{ ...cellOrTitle, row: dataRow, columns }}
           langtag={langtag}
         />
       );
