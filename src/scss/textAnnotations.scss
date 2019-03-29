@@ -43,13 +43,7 @@ $annotation-popup-width: 300px;
     justify-content: center;
     align-items: center;
 
-    svg {
-      fill: $color-primary-contrast-text;
-    }
-
-    &:hover svg {
-      fill: $color-text-medium-grey;
-    }
+    @include clickable-svg-icon;
   }
 
   .annotation-popup-header, footer, &>div {
