@@ -142,6 +142,10 @@ export function canUserChangeCell(cell, langtag) {
     return false;
   }
 
+  if (cell.isReadOnly) {
+    return false;
+  }
+
   // Admins can do everything
   if (isUserAdmin()) {
     return true;
