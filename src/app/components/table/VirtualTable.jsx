@@ -349,11 +349,11 @@ export default class VirtualTable extends PureComponent {
 
   renderButton = ({ columnIndex }) => {
     const {
-      table: { id },
+      table: { id, type },
       actions: { addEmptyRow, showToast },
       rows
     } = this.props;
-    if (columnIndex === 1) {
+    if (type !== "settings" && columnIndex === 1) {
       return (
         <AddNewRowButton
           onAdd={() => {
