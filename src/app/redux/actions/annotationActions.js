@@ -210,9 +210,11 @@ export const setAllRowsFinal = table => dispatch => {
 export const toggleAnnotationFlag = action => (dispatch, getState) => {
   const { cell, annotation, onError, onSuccess } = action;
   const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
-  const existingAnnotation = annotations.find(
-    ann => ann.type === "flag" && ann.value === annotation.value
-  );
+  const existingAnnotation = annotations
+    ? annotations.find(
+        ann => ann.type === "flag" && ann.value === annotation.value
+      )
+    : [];
 
   const shouldDelete = f.isBoolean(annotation.setTo)
     ? annotation.setTo

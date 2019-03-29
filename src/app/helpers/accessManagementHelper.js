@@ -1,30 +1,38 @@
-import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
 import Keks from "js-cookie";
 import f from "lodash/fp";
+
+import { getCountryOfLangtag } from "./multiLanguage";
+import { merge, when, withTryCatch } from "./functools";
+import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
 
 // overwrite converter so we can parse express-cookies
 const Cookies = Keks.withConverter({
   read: function(rawValue) {
     const value = decodeURIComponent(rawValue);
-    if (typeof value === "string" && f.startsWith("j:", value)) {
-      let result = value;
-
-      try {
-        // remove j:
-        result = JSON.parse(value.substring(2));
-      } catch (ex) {
-        console.error("Keks couldn't be parsed!", ex);
-      }
-
-      return result;
-    } else {
-      return value;
-    }
+    return when(
+      f.allPass([f.isString, f.startsWith("j:")]),
+      withTryCatch(
+        v => JSON.parse(v.substring(2)), // remove starting j:
+        e => {
+          console.error("Access cookie couldn't be parsed:", e);
+        }
+      ),
+      value
+    );
   },
   write: function(value) {
     return encodeURIComponent(value);
   }
 });
+
+const mergeWithLocalDevSettings = params => {
+  try {
+    const localSettings = require("../../../devAccessSettings.json");
+    return merge(params, localSettings);
+  } catch (err) {
+    return params;
+  }
+};
 
 /**
  * Sets user access cookie in dev, when the server doesn't.
@@ -33,22 +41,30 @@ const Cookies = Keks.withConverter({
  *                         countryCodesAccess?: string[]
  *                       }
  **/
-export function initDevelopmentAccessCookies(cookieParams) {
+export function initDevelopmentAccessCookies(usersParams) {
   if (process.env.NODE_ENV !== "production") {
-    const isAdmin = f.getOr(true, "isAdmin", cookieParams);
-    const langtagsAccess = f.getOr(["en"], "langtagsAccess", cookieParams);
+    const cookieParams = mergeWithLocalDevSettings(usersParams);
+    const isAdmin = when(f.isNil, f.stubTrue, f.get("isAdmin", cookieParams));
+    const langtagsAccess = f.getOr(["en_GB"], "langtagsAccess", cookieParams);
     const countryCodesAccess = f.getOr(
-      ["GB"],
+      ["en_GB"],
       "countryCodesAccess",
       cookieParams
     );
 
-    console.log("dev:", { isAdmin, langtagsAccess, countryCodesAccess });
     Cookies.set("userAdmin", isAdmin);
-    Cookies.set("userLangtagsAccess", `j:[${langtagsAccess.join(",")}]`);
+    Cookies.set("userLangtagsAccess", `j:${JSON.stringify(langtagsAccess)}`);
     Cookies.set(
       "userCountryCodesAccess",
-      `j:[${countryCodesAccess.join(",")}]`
+      `j:${JSON.stringify(countryCodesAccess)}`
+    );
+
+    console.log(
+      "Dev access settings:",
+      isUserAdmin() ? "admin," : "user,",
+      isUserAdmin()
+        ? "all countries & langtags"
+        : `countries: ${getUserCountryCodesAccess()}, langtags: ${getUserLanguageAccess()}`
     );
   }
 }
@@ -115,13 +131,18 @@ export const hasUserAccessToLanguage = f.memoize(function(langtag) {
   }
 });
 
-// Is the user allowed to change this cell in general? Is it multilanguage and no link or attachment?
-export function canUserChangeCell(cell) {
+// No langtag: Is the user allowed to change this cell in general?
+// Langtag: Is the user allowed to change this cell in this language
+export function canUserChangeCell(cell, langtag) {
   if (!cell) {
     console.warn(
       "hasUserAccesToCell() called with invalid parameter cell:",
       cell
     );
+    return false;
+  }
+
+  if (cell.isReadOnly) {
     return false;
   }
 
@@ -133,14 +154,17 @@ export function canUserChangeCell(cell) {
   // User is not admin
   // Links and attachments are considered single language
   return !!(
-    cell.isMultiLanguage &&
-    (cell.kind === ColumnKinds.text ||
-      cell.kind === ColumnKinds.shorttext ||
-      cell.kind === ColumnKinds.richtext ||
-      cell.kind === ColumnKinds.numeric ||
-      cell.kind === ColumnKinds.boolean ||
-      cell.kind === ColumnKinds.datetime ||
-      cell.kind === ColumnKinds.currency)
+    cell.column.multilanguage &&
+    (cell.column.kind === ColumnKinds.text ||
+      cell.column.kind === ColumnKinds.shorttext ||
+      cell.column.kind === ColumnKinds.richtext ||
+      cell.column.kind === ColumnKinds.numeric ||
+      cell.column.kind === ColumnKinds.boolean ||
+      cell.column.kind === ColumnKinds.datetime ||
+      cell.column.kind === ColumnKinds.currency) &&
+    (f.isNil(langtag) || cell.column.languageType === "country"
+      ? hasUserAccessToCountryCode(getCountryOfLangtag(langtag))
+      : hasUserAccessToLanguage(langtag))
   );
 }
 
