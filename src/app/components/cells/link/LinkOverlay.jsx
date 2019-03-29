@@ -1,33 +1,4 @@
-import React, { PureComponent } from "react";
 import "react-virtualized/styles.css";
-import i18n from "i18next";
-import {
-  DefaultLangtag,
-  Directions,
-  FilterModes
-} from "../../../constants/TableauxConstants";
-import {
-  doto,
-  maybe,
-  preventDefault,
-  stopPropagation,
-  when,
-  merge
-} from "../../../helpers/functools";
-import * as f from "lodash/fp";
-import SearchFunctions from "../../../helpers/searchFunctions";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import { openInNewTab } from "../../../helpers/apiUrl";
-import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
-import LinkItem from "./LinkItem";
-import LinkOverlayHeader from "./LinkOverlayHeader";
-import * as Sentry from "@sentry/browser";
-import {
-  LinkedRows,
-  LinkStatus,
-  RowCreator,
-  UnlinkedRows
-} from "./LinkOverlayFragments";
 
 import {
   compose,
@@ -36,12 +7,40 @@ import {
   withProps,
   withStateHandlers
 } from "recompose";
-import { makeRequest } from "../../../helpers/apiHelper";
-import apiRoute from "../../../helpers/apiRoutes";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import getDisplayValue from "../../../helpers/getDisplayValue";
+import React, { PureComponent } from "react";
+import * as Sentry from "@sentry/browser";
+import * as f from "lodash/fp";
+import i18n from "i18next";
+
+import { Directions, FilterModes } from "../../../constants/TableauxConstants";
+import {
+  LinkedRows,
+  LinkStatus,
+  RowCreator,
+  UnlinkedRows
+} from "./LinkOverlayFragments";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import store from "../../../redux/store";
+import {
+  doto,
+  maybe,
+  preventDefault,
+  stopPropagation,
+  when,
+  merge
+} from "../../../helpers/functools";
+import {
+  getColumnDisplayName,
+  retrieveTranslation
+} from "../../../helpers/multiLanguage";
+import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
+import { makeRequest } from "../../../helpers/apiHelper";
+import { openInNewTab } from "../../../helpers/apiUrl";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import LinkItem from "./LinkItem";
+import LinkOverlayHeader from "./LinkOverlayHeader";
+import SearchFunctions from "../../../helpers/searchFunctions";
+import apiRoute from "../../../helpers/apiRoutes";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -318,9 +317,7 @@ class LinkOverlay extends PureComponent {
     const {
       cell,
       cell: { column },
-      cell: {
-        column: { displayName }
-      },
+
       langtag,
       rowResults = {},
       loading,
@@ -364,14 +361,14 @@ class LinkOverlay extends PureComponent {
             <span>
               {i18n.t("table:link-overlay-items-title")}
               {isToTableHidden ? (
-                displayName[langtag] || displayName[DefaultLangtag]
+                getColumnDisplayName(column, langtag)
               ) : (
                 <a
                   className="table-link"
                   href="#"
                   onClick={() => openInNewTab(targetTable)}
                 >
-                  {displayName[langtag] || displayName[DefaultLangtag]}
+                  {getColumnDisplayName(column, langtag)}
                 </a>
               )}
             </span>
@@ -587,20 +584,12 @@ export const openLinkOverlay = ({ cell, langtag, actions }) => {
   const ReduxLinkOverlay = withDataRows(LinkOverlay);
   const overlayContent = <ReduxLinkOverlay cell={cell} langtag={langtag} />;
 
-  const columns = f.prop(["columns", cell.table.id, "data"], store.getState());
-  const titleCell = {
-    column: f.first(columns),
-    table: cell.table,
-    row: cell.row,
-    value: f.first(cell.row.values)
-  };
-
   actions.openOverlay({
     head: <LinkOverlayHeader langtag={langtag} cell={cell} title={cell} />,
     body: overlayContent,
     type: "full-height",
     classes: "link-overlay",
-    title: titleCell,
+    title: cell,
     filterMode: FilterModes.CONTAINS,
     unlinkedOrder: 1
   });
