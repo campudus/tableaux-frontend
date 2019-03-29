@@ -204,7 +204,8 @@ class Cell extends React.Component {
     const cssClass = classNames(`cell cell-${kind} ${cell.id}`, {
       selected: selected,
       editing: this.userCanEditValue() && editing,
-      "in-selected-row": inSelectedRow
+      "in-selected-row": inSelectedRow,
+      "cell-disabled": cell.isReadOnly
     });
 
     const CellKind =
