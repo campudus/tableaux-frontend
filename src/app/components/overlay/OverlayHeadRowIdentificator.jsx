@@ -12,7 +12,6 @@ import {
 } from "../../helpers/multiLanguage";
 import { isCell } from "../../specs/cell-spec";
 import { withForeignDisplayValues } from "../helperComponents/withForeignDisplayValues";
-import Empty from "../helperComponents/emptyEntry";
 import RowConcat from "../../helpers/RowConcatHelper";
 import store from "../../redux/store";
 
@@ -63,10 +62,8 @@ OverlayHeadRowIdentificator.propTypes = {
 const setupIdProps = withProps(({ cell, title, langtag }) => {
   const cellOrTitle = isCell(cell) ? cell : isCell(title) ? title : null;
   if (!cellOrTitle) {
-    return <Empty />;
+    return {};
   }
-
-  console.log({ cell, title });
 
   const state = store.getState();
   const { table, column, row } = cellOrTitle;
