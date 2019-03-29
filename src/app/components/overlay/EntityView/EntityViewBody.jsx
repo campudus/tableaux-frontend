@@ -198,12 +198,18 @@ class EntityViewBody extends Component {
           style={{ transform: `translateY(${arrowPosition}px)` }}
         />
       ) : null;
+    const handleLanguageSwitch = nextLangtag => {
+      if (nextLangtag !== langtag) {
+        this.props.sharedData.setContentLanguage({ langtag: nextLangtag });
+      }
+    };
     return translationView.show ? (
       <div>
         <TranslationPopup
           cell={translationView.cell || {}}
           langtag={langtag}
           setTranslationView={this.setTranslationView}
+          switchLanguage={handleLanguageSwitch}
         />
         {arrow}
       </div>

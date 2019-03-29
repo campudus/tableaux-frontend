@@ -48,7 +48,7 @@ const displayCell = (cell, langtag) => {
 };
 
 const LanguageView = props => {
-  const { cell, isMain, langtag, toggleExpand } = props;
+  const { cell, isMain, langtag, toggleExpand, handleLanguageSwitch } = props;
   const value = f.get(["displayValue", langtag], cell);
   const wrapperClass = classNames("item translation-item", {
     "needs-translation": isTranslationNeeded(langtag)(cell)
@@ -56,7 +56,7 @@ const LanguageView = props => {
 
   const switchLanguage = event => {
     event.stopPropagation();
-    // switchEntityViewLanguage({langtag});
+    handleLanguageSwitch(langtag);
   };
 
   return (
@@ -102,11 +102,6 @@ SingleLanguageView.propTypes = {
 };
 
 class TranslationPopup extends PureComponent {
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired
-  };
-
   constructor(props) {
     super(props);
     this.state = { translations: this.loadTranslations() };
@@ -192,7 +187,7 @@ class TranslationPopup extends PureComponent {
   };
 
   render = safeRender(() => {
-    const { cell, langtag, setTranslationView } = this.props;
+    const { cell, langtag, setTranslationView, switchLanguage } = this.props;
     const title =
       f.prop(["column", "displayName", langtag], cell) ||
       f.prop(["column", "displayName", FallbackLanguage], cell) ||
@@ -244,6 +239,7 @@ class TranslationPopup extends PureComponent {
                 isExpanded={this.isExpanded(lt)}
                 toggleExpand={this.toggleTranslation(lt)}
                 isMain={langtag === lt}
+                handleLanguageSwitch={switchLanguage}
               />
             ))
           )}
@@ -254,3 +250,9 @@ class TranslationPopup extends PureComponent {
 }
 
 export default TranslationPopup;
+
+TranslationPopup.propTypes = {
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  switchLanguage: PropTypes.func.isRequired
+};
