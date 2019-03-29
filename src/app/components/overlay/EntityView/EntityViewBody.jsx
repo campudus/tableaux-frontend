@@ -454,6 +454,7 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
       return addCellId({
         ...cell,
         value: cellValue,
+        row: rowData,
         displayValue: retrieveDisplayValue(cell.column, idx, cellValue)
       });
     });
