@@ -1,19 +1,19 @@
-import anyColumnContainsLilou from "./anyColumnContainsLilou.json";
+import anyColumnContains from "./anyColumnContains.json";
 import booleanColumnIsFalse from "./booleanColumnIsFalse.json";
 import booleanColumnIsTrue from "./booleanColumnIsTrue.json";
 import concatColumnSortAsc from "./concatColumnSortAsc.json";
 import concatColumnSortDesc from "./concatColumnSortDesc.json";
-import concatColumnContainsLilou from "./concatColumnContainsLilou.json";
-import linkColumnContainsRage from "./linkColumnContainsRage.json";
+import concatColumnContains from "./concatColumnContains.json";
+import linkColumnContains from "./linkColumnContains.json";
 import linkColumnSortAsc from "./linkColumnSortAsc.json";
 import linkColumnSortDesc from "./linkColumnSortDesc.json";
-import numericColumnContainsThree from "./numericColumnContainsThree.json";
+import numericColumnContains from "./numericColumnContains.json";
 import numericColumnSortAsc from "./numericColumnSortAsc.json";
 import numericColumnSortDesc from "./numericColumnSortDesc.json";
-import shortTextColumnContainsRage from "./shortTextColumnContainsRage.json";
+import shortTextColumnContains from "./shortTextColumnContains.json";
 import shortTextColumnSortAsc from "./shortTextColumnSortAsc.json";
 import shortTextColumnSortDesc from "./shortTextColumnSortDesc.json";
-import textColumnContainsRage from "./textColumnContainsRage.json";
+import textColumnContains from "./textColumnContains.json";
 import textColumnSortAsc from "./textColumnSortAsc.json";
 import textColumnSortDesc from "./textColumnSortDesc.json";
 
@@ -28,14 +28,14 @@ const all = {
   linkColumnSortAsc,
   concatColumnSortDesc,
   concatColumnSortAsc,
-  textColumnContainsRage,
-  shortTextColumnContainsRage,
-  numericColumnContainsThree,
-  linkColumnContainsRage,
-  concatColumnContainsLilou,
+  textColumnContains,
+  shortTextColumnContains,
+  numericColumnContains,
+  linkColumnContains,
+  concatColumnContains,
   booleanColumnIsTrue,
   booleanColumnIsFalse,
-  anyColumnContainsLilou
+  anyColumnContains
 };
 
 export default all;

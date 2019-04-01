@@ -110,11 +110,21 @@ const getFilteredRows = (
   ]);
 
   const ordered = f.isFinite(sortColumnId)
-    ? f.orderBy(
-        [getCompareFunc(sortColumn.kind)],
-        [f.toLower(sortValue)],
-        filteredRows
-      )
+    ? f.flow(
+        f.orderBy([getCompareFunc(sortColumn.kind)], [f.toLower(sortValue)]),
+        sorted => {
+          if (f.toLower(sortValue) === "desc") {
+            return sorted;
+          }
+          const firstTruthy = f.findIndex(
+            getCompareFunc(sortColumn.kind),
+            sorted
+          );
+          const falsyValues = f.slice(0, firstTruthy, sorted);
+          const truthyValues = f.slice(firstTruthy, sorted.length, sorted);
+          return [...truthyValues, ...falsyValues];
+        }
+      )(filteredRows)
     : filteredRows;
   return {
     visibleRows: f.map("rowIndex", ordered),

@@ -1,16 +1,23 @@
-import data from "./testData/winoraTable77.json";
+import data from "./testData/testData.json";
 import f from "lodash/fp";
-// import getFilteredRows from "../../src/app/components/table/RowFilters";
+import getFilteredRows from "../../src/app/components/table/RowFilters";
 import testData from "./testData/index.js";
-const { rows, columns} = data;
-const langtag = "de";
-const currentTable = 77;
+const { rowsWithIndex, table, langtag, columns, rows } = data;
 
-// const filterRows = filters =>
-//   getFilteredRows(currentTable, rows, columns, langtag, filters);
-const filterRows = () => "empty"
+const rowIndices = f.map("id", rows);
+
+const filterRows = filters => {
+  const { visibleRows } = getFilteredRows(
+    table,
+    rowsWithIndex,
+    columns,
+    langtag,
+    filters
+  );
+  return f.map(rowIndex => rowIndices[rowIndex], visibleRows);
+};
+// const filterRows = () => "empty"
 /*eslint-disable no-undef*/
-
 describe("Filter:", () => {
   f.compose(
     f.each(arr => {
@@ -18,8 +25,7 @@ describe("Filter:", () => {
       if (!f.includes("Sort", description)) {
         const { visibleRows, rowsFilter } = values;
         test(description, () => {
-          const result = f.get("visibleRows", filterRows(rowsFilter));
-          expect(result).toEqual(visibleRows);
+          expect(filterRows(rowsFilter)).toEqual(visibleRows);
         });
       }
     }),
@@ -33,8 +39,7 @@ describe("Sorting:", () => {
       if (f.includes("Sort", description)) {
         const { visibleRows, rowsFilter } = values;
         test(description, () => {
-          const result = f.get("visibleRows", filterRows(rowsFilter));
-          expect(result).toEqual(visibleRows);
+          expect(filterRows(rowsFilter)).toEqual(visibleRows);
         });
       }
     }),
