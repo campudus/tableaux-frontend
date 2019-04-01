@@ -178,8 +178,8 @@ function getTableDisplayName(table, langtag) {
       retrieveTranslation(langtag)
     );
     const hasNoDisplayName = f.flow(
-      f.isEmpty,
-      getDisplayName
+      getDisplayName,
+      f.isEmpty
     );
     return ifElse(hasNoDisplayName, f.prop("name"), getDisplayName)(table);
   }

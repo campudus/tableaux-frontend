@@ -1,9 +1,14 @@
 import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import { ColumnKinds, DefaultLangtag } from "../../constants/TableauxConstants";
-import ColumnEntry from "./ColumnEntry";
 import f from "lodash/fp";
-import { getColumnDisplayName } from "../../helpers/multiLanguage";
+
+import PropTypes from "prop-types";
+
+import { ColumnKinds } from "../../constants/TableauxConstants";
+import {
+  getColumnDisplayName,
+  retrieveTranslation
+} from "../../helpers/multiLanguage";
+import ColumnEntry from "./ColumnEntry";
 
 export default class ColumnHeader extends PureComponent {
   static propTypes = {
@@ -29,8 +34,9 @@ export default class ColumnHeader extends PureComponent {
   mkLinkHeader = toTable => {
     const { langtag, column } = this.props;
     const key = `${column.id}-display-name`;
+    const displayName = getColumnDisplayName(column, langtag);
     return toTable.hidden ? (
-      <div key={key}>{getColumnDisplayName(column, langtag)}</div>
+      <div key={key}>{displayName}</div>
     ) : (
       <a
         key={key}
@@ -40,17 +46,9 @@ export default class ColumnHeader extends PureComponent {
         rel="noopener noreferrer"
       >
         <i className="fa fa-columns" />
-        {getColumnDisplayName(column, langtag)}
+        {displayName}
       </a>
     );
-  };
-
-  getDescription = () => {
-    const {
-      column: { description },
-      langtag
-    } = this.props;
-    return description[langtag] || description[DefaultLangtag];
   };
 
   render() {
@@ -72,20 +70,22 @@ export default class ColumnHeader extends PureComponent {
         ? f.find(table => table.id === column.toTable, tables)
         : {};
 
+    const displayName = getColumnDisplayName(column, langtag);
+
     const columnContent = [
       this.getIdentifierIcon(),
       column.kind === ColumnKinds.link
         ? this.mkLinkHeader(toTable)
-        : getColumnDisplayName(column, langtag)
+        : displayName
     ];
 
     return (
       <ColumnEntry
         style={style}
         columnContent={columnContent}
-        name={getColumnDisplayName(column, langtag) || ""}
+        name={displayName}
         column={column}
-        description={this.getDescription()}
+        description={retrieveTranslation(langtag, column.description || {})}
         langtag={langtag}
         isId={column.identifier}
         tables={tables}
