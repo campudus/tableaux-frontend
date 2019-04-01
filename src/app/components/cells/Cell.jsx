@@ -79,6 +79,7 @@ class Cell extends React.Component {
   shouldComponentUpdate = nextProps => {
     const cell = this.props.cell;
     const nextCell = nextProps.cell;
+    const getRelevantCellProps = f.pick(["value", "displayValue", "annotations"]);
 
     return (
       this.props.langtag !== nextProps.langtag ||
@@ -87,10 +88,10 @@ class Cell extends React.Component {
       this.props.inSelectedRow !== nextProps.inSelectedRow ||
       this.props.editing !== nextProps.editing ||
       this.props.annotationsOpen !== nextProps.annotationsOpen ||
-      !f.eq(cell.value, nextCell.value) ||
-      !f.eq(cell.displayValue, nextCell.displayValue) ||
-      !f.eq(cell.annotations, nextCell.annotations) ||
-      !f.eq(this.props.langtag, nextProps.langtag)
+      !f.isEqual(
+        getRelevantCellProps(this.props.cell),
+        getRelevantCellProps(nextProps.cell)
+      )
     );
   };
 

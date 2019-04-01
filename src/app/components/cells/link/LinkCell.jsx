@@ -2,6 +2,7 @@ import React from "react";
 import * as f from "lodash/fp";
 
 import PropTypes from "prop-types";
+import { compose, lifecycle } from "recompose";
 
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkEditCell from "./LinkEditCell.jsx";
@@ -58,4 +59,30 @@ LinkCell.propTypes = {
   value: PropTypes.array.isRequired,
   setCellKeyboardShortcuts: PropTypes.func
 };
-export default withForeignDisplayValues(LinkCell);
+export default compose(
+  withForeignDisplayValues,
+  lifecycle({
+    shouldComponentUpdate(nextProps) {
+      const cell = this.props.cell;
+      const nextCell = nextProps.cell;
+      const getRelevantCellProps = f.pick([
+        "value",
+        "displayValue",
+        "annotations"
+      ]);
+
+      return (
+        this.props.langtag !== nextProps.langtag ||
+        cell.id !== nextCell.id ||
+        this.props.selected !== nextProps.selected ||
+        this.props.inSelectedRow !== nextProps.inSelectedRow ||
+        this.props.editing !== nextProps.editing ||
+        this.props.annotationsOpen !== nextProps.annotationsOpen ||
+        !f.isEqual(
+          getRelevantCellProps(this.props.cell),
+          getRelevantCellProps(nextProps.cell)
+        )
+      );
+    }
+  })
+)(LinkCell);
