@@ -203,17 +203,17 @@ class EntityViewHeader extends PureComponent {
 
     const titleCell = {
       ...cell,
-      value: f.first(cell.row.values),
-      column: idColumn
+      value: f.first(row.values),
+      column: idColumn,
+      row
     };
 
     return (
       <Header
         {...this.props}
-        cell={cell}
+        cell={titleCell}
         context={tableName}
         components={components}
-        title={titleCell}
       />
     );
   }
