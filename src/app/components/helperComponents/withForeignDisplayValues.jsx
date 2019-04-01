@@ -53,7 +53,7 @@ const getConcatDisplayValues = (
     f.prop("values")
   );
   if (f.isEmpty(tableDisplayValues)) {
-    return { foreignDisplayValuen: null };
+    return { foreignDisplayValues: null };
   }
   const partialValues = concats
     .map((column, idx) => {
