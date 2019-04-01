@@ -320,7 +320,7 @@ export function setNextSelectedCell(direction) {
   const { selectedCell } = tableView;
   const { columnId, rowId, langtag } = selectedCell;
 
-  if (!columnId || !rowId) {
+  if (f.isNil(columnId) || f.isNil(rowId)) {
     return;
   }
 
@@ -369,11 +369,11 @@ export function setNextSelectedCell(direction) {
       langtag: newSelectedCellExpandedRow
     };
 
-    var isValidCell = nextCell.rowId > 0 && nextCell.columnId > 0;
-    var isNewCell =
-      nextCell.columnId !== columnId ||
-      nextCell.rowId !== rowId ||
-      newSelectedCellExpandedRow !== langtag;
+    var isValidCell = nextCell.rowId > 0 && nextCell.columnId >= 0;
+    var isNewCell = !f.isEqual(nextCell, selectedCell);
+    // nextCell.columnId !== columnId ||
+    // nextCell.rowId !== rowId ||
+    // newSelectedCellExpandedRow !== langtag;
 
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
@@ -471,18 +471,13 @@ export function getNextColumnCell(getPrev) {
   const nextColumn = f.nth(nextColumnIndex, visibleColumns);
   const nextColumnId = nextColumn.id;
   const currentSelectedRowId = selectedCell.rowId;
-  let newSelectedCellExpandedRow;
-
   // Not Multilanguage and row is expanded so jump to top language
-  if (
+  const newSelectedCellExpandedRow =
     !nextColumn.multilanguage &&
     expandedRowIds &&
     expandedRowIds.indexOf(currentSelectedRowId) > -1
-  ) {
-    newSelectedCellExpandedRow = DefaultLangtag;
-  } else {
-    newSelectedCellExpandedRow = selectedCellExpandedRow;
-  }
+      ? DefaultLangtag
+      : selectedCellExpandedRow || DefaultLangtag;
 
   const result = {
     id: nextColumnId,
