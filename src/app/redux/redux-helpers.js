@@ -38,21 +38,22 @@ export const idsToIndices = ({ tableId, columnId, rowId }, completeState) => {
 };
 
 export const calcConcatValues = (action, completeState) => {
-  const { tableId, columnId } = action;
+  const { tableId, columnId, column } = action;
   const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
   const columns = completeState.columns[tableId].data;
   const rows = completeState.rows[tableId].data;
 
   // if we changed an identifier cell and the table has an identifier cell
-  if (columns[columnIdx].identifier && columns[0].kind === ColumnKinds.concat) {
+  if (column.identifier && columns[0].kind === ColumnKinds.concat) {
     const concatColumn = completeState.columns[tableId].data[0];
     const entryIdx = f.findIndex(
       entry => entry.id === columnId,
       concatColumn.concats
     );
     const concatValue = rows[rowIdx].values[0];
+    const mergedNewValue = getUpdatedCellValueToSet(action);
 
-    const updatedConcatValue = f.assoc(entryIdx, action.newValue, concatValue);
+    const updatedConcatValue = f.assoc(entryIdx, mergedNewValue, concatValue);
 
     return {
       rowIdx,
