@@ -9,6 +9,7 @@ import i18n from "i18next";
 import ItemPopupMenu from "./ItemPopupMenu";
 import SvgIcon from "../helperComponents/SvgIcon";
 import PropTypes from "prop-types";
+import store from "../../redux/store";
 
 class RowHeadline extends React.Component {
   static propTypes = {
@@ -58,7 +59,10 @@ class RowHeadline extends React.Component {
     const { actions, cell, langtag, funcs, thisUserCantEdit } = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     const colName = this.getDisplayName(column);
-    const toTableVisible = !cell.table.hidden;
+    const toTableVisible = !f.prop(
+      ["tables", "data", column.toTable, "hidden"],
+      store.getState()
+    );
 
     return (
       <div className="item-header">
@@ -72,16 +76,19 @@ class RowHeadline extends React.Component {
             thisUserCantEdit={thisUserCantEdit}
             hasMeaningfulLinks={this.props.hasMeaningfulLinks}
           />
-          <a
-            className="title-wrapper"
-            href="#"
-            onClick={toTableVisible ? () => window.open(url, "_blank") : f.noop}
-          >
-            {colName}
-            {toTableVisible ? (
+          {toTableVisible ? (
+            <a
+              className="title-wrapper"
+              href="#"
+              onClick={() => window.open(url, "_blank")}
+            >
+              {colName}
+
               <SvgIcon icon="tablelink" containerClasses="color-primary" />
-            ) : null}
-          </a>
+            </a>
+          ) : (
+            <div clasName="title-wrapper">{colName}</div>
+          )}
         </div>
         {thisUserCantEdit ? (
           <a
