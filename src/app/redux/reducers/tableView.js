@@ -377,7 +377,8 @@ export default (state = initialState, action, completeState) => {
       return {
         ...state,
         filters: action.filters || state.filters,
-        sorting: action.sorting || state.sorting
+        sorting: action.sorting || state.sorting,
+        expandedRowIds: []
       };
     case CLEAN_UP:
       return {
