@@ -12,14 +12,14 @@ import {
   FilterModes
 } from "../../../constants/TableauxConstants";
 import { addCellId } from "../../../helpers/getCellId";
-import { doto, maybe, merge } from "../../../helpers/functools";
-import getDisplayValue from "../../../helpers/getDisplayValue";
+import { doto, ifElse, maybe, merge } from "../../../helpers/functools";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import TranslationPopup from "../../entityView/TranslationPopup";
 import View from "../../entityView/RowView";
 import columnFilter from "./columnFilter";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
@@ -314,17 +314,40 @@ class EntityViewBody extends Component {
     );
   };
 
-  // (filterColumn) -> (cell) -> boolean
-  groupFilter = filterColumn => {
+  // (filterColumn?: groupColumn, cells: cell[]) -> (cell) -> boolean
+  /**
+   * Create a filter to filter cells by group membership status.
+   * If filterColumn is a group column, the filter lets only this group's members pass (=> use EntityView as group editor)
+   * else let all cells pass which are not members of any groups, editing groups opens a group editor
+   */
+  groupFilter = (filterColumn, allCells) => {
+    // Columns that are members of any group
+    const groupColumnIds = doto(
+      allCells,
+      f.map("column"),
+      f.filter(f.prop("groups")),
+      f.map(
+        f.flow(
+          f.prop("groups"),
+          f.map("id")
+        )
+      ),
+      f.flatten
+    );
+
+    // Columns that are members of `filterColumn`'s group'
     const prefilteredIds = filterColumn
       ? f.map("id", filterColumn.concats || filterColumn.groups)
       : null;
 
-    return cell => {
-      return filterColumn
-        ? f.contains(f.get(["column", "id"], cell), prefilteredIds)
-        : !cell.column.isGroupMember;
-    };
+    return f.flow(
+      f.prop(["column", "id"]),
+      ifElse(
+        () => f.isNil(filterColumn),
+        id => !f.contains(id, groupColumnIds), // not filtering for a group, hide members of any groups
+        f.contains(f.__, prefilteredIds) // group edit - only show group's members
+      )
+    );
   };
 
   componentWillUpdate(nextProps) {
@@ -368,7 +391,7 @@ class EntityViewBody extends Component {
       >
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
-          .filter(this.groupFilter(filterColumn))
+          .filter(this.groupFilter(filterColumn, cells))
           .filter(columnFilter(filter.langtag || this.props.langtag, filter))
           .map((cell, idx) => {
             return (
