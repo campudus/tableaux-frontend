@@ -36,8 +36,8 @@ const maybeUpdateConcats = (rows, action, completeState) => {
   const { tableId } = action;
 
   return f.isEmpty(concatValues)
-    ? f.assoc([tableId, "data", rowIdx, 0], updatedConcatValue, rows)
-    : rows;
+    ? rows
+    : f.assoc([tableId, "data", rowIdx, "values", 0], updatedConcatValue, rows);
 };
 
 const insertSkeletonRows = (state, action, completeState) => {
