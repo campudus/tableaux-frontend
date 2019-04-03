@@ -32,12 +32,16 @@ const initialState = {};
 
 const maybeUpdateConcats = (rows, action, completeState) => {
   const concatValues = calcConcatValues(action, completeState) || {};
-  const { rowIdx, updatedConcatValue } = concatValues;
+  const { columnIdx, rowIdx, updatedConcatValue } = concatValues;
   const { tableId } = action;
 
   return f.isEmpty(concatValues)
     ? rows
-    : f.assoc([tableId, "data", rowIdx, "values", 0], updatedConcatValue, rows);
+    : f.assoc(
+        [tableId, "data", rowIdx, "values", columnIdx],
+        updatedConcatValue,
+        rows
+      );
 };
 
 const insertSkeletonRows = (state, action, completeState) => {
