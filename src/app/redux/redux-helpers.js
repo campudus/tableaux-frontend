@@ -111,19 +111,29 @@ export const calcConcatValues = (action, completeState) => {
   const columns = completeState.columns[tableId].data;
   const rows = completeState.rows[tableId].data;
 
-  // if we changed an identifier cell and the table has an identifier cell
-  if (column.identifier && columns[0].kind === ColumnKinds.concat) {
-    const concatColumn = completeState.columns[tableId].data[0];
+  // if we changed an identifier cell and the table has a concat column
+  const groupColumnId = getGroupColumn(action, completeState); // nil for non-group members
+  if (
+    (column.identifier && columns[0].kind === ColumnKinds.concat) ||
+    f.isInteger(groupColumnId)
+  ) {
+    const concatColumnIdx = f.isInteger(groupColumnId)
+      ? completeState.columns[tableId].data.findIndex(
+          f.propEq("id", groupColumnId)
+        )
+      : 0;
+    const concatColumn = completeState.columns[tableId].data[concatColumnIdx];
     const entryIdx = f.findIndex(
-      entry => entry.id === columnId,
-      concatColumn.concats
+      f.propEq("id", columnId),
+      f.isInteger(groupColumnId) ? concatColumn.groups : concatColumn.concats
     );
-    const concatValue = rows[rowIdx].values[0];
+    const concatValue = rows[rowIdx].values[concatColumnIdx];
     const mergedNewValue = getUpdatedCellValueToSet(action);
 
     const updatedConcatValue = f.assoc(entryIdx, mergedNewValue, concatValue);
 
     return {
+      columnIdx: concatColumnIdx,
       rowIdx,
       updatedConcatValue,
       dvRowIdx,
