@@ -1,9 +1,12 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import listenToClickOutside from "react-onclickoutside";
-import classNames from "classnames";
-import i18n from "i18next";
+import ReactDOM from "react-dom";
 import f from "lodash/fp";
+import i18n from "i18next";
+import listenToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+import classNames from "classnames";
+
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
@@ -11,11 +14,13 @@ import {
   setCellAnnotation,
   removeTranslationNeeded
 } from "../../helpers/annotationHelper";
-import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { canConvert } from "../../helpers/cellValueConverter";
-import SvgIcon from "../helperComponents/SvgIcon";
-import ReactDOM from "react-dom";
 import { merge } from "../../helpers/functools";
+import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
+import SvgIcon from "../helperComponents/SvgIcon";
+import actions from "../../redux/actionCreators";
+import store from "../../redux/store";
+import pasteCellValue from "../../components/cells/cellCopyHelper";
 
 @listenToClickOutside
 class MenuPopup extends Component {
@@ -215,6 +220,8 @@ class ItemPopupMenu extends Component {
     });
     const wrapperClass = classNames("entry-popup-wrapper");
 
+    const copySource = f.prop(["tableView", "copySource"], store.getState());
+
     return (
       <div className={wrapperClass}>
         <div
@@ -246,14 +253,21 @@ class ItemPopupMenu extends Component {
               : null}
             {this.mkEntry(1, {
               title: "table:copy_cell",
-              fn: () => null, //ActionCreator.copyCellContent(cell, langtag),
+              fn: () =>
+                store.dispatch(actions.copyCellValue({ cell, langtag })),
               icon: "files-o"
             })}
             {thisUserCantEdit
               ? null
               : this.mkEntry(2, {
                   title: "table:paste_cell",
-                  fn: () => null, //ActionCreator.pasteCellContent(cell, langtag),
+                  fn: () =>
+                    pasteCellValue(
+                      copySource.cell,
+                      copySource.langtag,
+                      cell,
+                      langtag
+                    ),
                   icon: "clipboard"
                 })}
             {this.mkToggleFlagItem("important")}
