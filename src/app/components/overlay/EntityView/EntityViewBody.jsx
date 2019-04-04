@@ -84,8 +84,6 @@ class EntityViewBody extends Component {
     };
   };
 
-  componentWillMount = () => {};
-
   componentDidMount() {
     const { cells, focusElementId } = this.props;
     const cellToFocus = focusElementId
