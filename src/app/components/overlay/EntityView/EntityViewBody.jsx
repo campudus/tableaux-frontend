@@ -29,8 +29,16 @@ class EntityViewBody extends Component {
   constructor(props) {
     super(props);
 
+    props.updateSharedData(obj =>
+      merge(obj, {
+        setFilter: f.debounce(250, this.setColumnFilter),
+        setContentLanguage: this.switchLang,
+        contentLanguage: this.props.langtag,
+        setTranslationView: this.setTranslationView
+      })
+    );
+
     this.state = {
-      langtag: props.langtag,
       filter: {
         value: "",
         mode: FilterModes.CONTAINS
@@ -76,15 +84,7 @@ class EntityViewBody extends Component {
     };
   };
 
-  componentWillMount = () => {
-    this.props.updateSharedData(obj =>
-      merge(obj, {
-        setFilter: f.debounce(250, this.setColumnFilter),
-        setContentLanguage: this.switchLang,
-        setTranslationView: this.setTranslationView
-      })
-    );
-  };
+  componentWillMount = () => {};
 
   componentDidMount() {
     const { cells, focusElementId } = this.props;
@@ -108,7 +108,7 @@ class EntityViewBody extends Component {
       filter: {
         value,
         mode: filterMode,
-        langtag: this.state.langtag
+        langtag: this.getContentLanguage()
       }
     });
   };
@@ -123,7 +123,7 @@ class EntityViewBody extends Component {
       ),
       duration: 2000
     });
-    this.setState({ langtag });
+    this.props.updateSharedData(f.assoc("contentLanguage", langtag));
   };
 
   setTranslationView = item => {
@@ -158,12 +158,15 @@ class EntityViewBody extends Component {
     this.focusElements = f.assoc(id, el, this.focusElements);
   };
 
+  getContentLanguage = () =>
+    this.props.sharedData.contentLanguage || this.props.langtag;
+
   getVisibleCells = () => {
     const { cells } = this.props;
-    const { filter, langtag } = this.state;
+    const { filter } = this.state;
     return cells
       .filter(this.groupFilter(this.props.filterColumn))
-      .filter(columnFilter(langtag, filter));
+      .filter(columnFilter(this.getContentLanguage(), filter));
   };
 
   changeFocus = dir => {
@@ -190,7 +193,8 @@ class EntityViewBody extends Component {
 
   renderTranslationView = () => {
     const { arrowPosition } = this.state;
-    const { langtag, translationView = {} } = this.props;
+    const { translationView = {} } = this.props;
+    const langtag = this.getContentLanguage();
     const arrow =
       f.isNumber(arrowPosition) && f.prop("show", translationView) ? (
         <div
@@ -364,7 +368,8 @@ class EntityViewBody extends Component {
       entityViewIsLocked,
       entityViewIsFinal
     } = this.props;
-    const { filter, focused, langtag, itemWithPopup } = this.state;
+    const { filter, focused, itemWithPopup } = this.state;
+    const langtag = this.getContentLanguage();
     const { filterColumn, grudData } = this.props;
     const {
       enterItemPopupButton,
@@ -392,7 +397,9 @@ class EntityViewBody extends Component {
         {cells
           .filter(cell => cell.kind !== ColumnKinds.concat)
           .filter(this.groupFilter(filterColumn, cells))
-          .filter(columnFilter(filter.langtag || this.props.langtag, filter))
+          .filter(
+            columnFilter(filter.langtag || this.getContentLanguage(), filter)
+          )
           .map((cell, idx) => {
             return (
               <View
