@@ -295,7 +295,6 @@ class EntityViewBody extends Component {
   };
 
   renderUnlockBar = row => {
-    console.log(row.final, isLocked(row));
     if (!isLocked(row)) {
       return null;
     }
@@ -369,8 +368,6 @@ class EntityViewBody extends Component {
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
       "is-locked": isLocked(row)
     });
-
-    console.log("isLocked:", isLocked(row), "final:", row.final);
 
     return (
       <div

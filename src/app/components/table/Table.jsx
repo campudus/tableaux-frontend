@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 // import * as tableRowsWorker from "./tableRowsWorker";
 // import * as tableContextMenu from "./tableContextMenu";
-import listensToClickOutside from "react-onclickoutside";
 import f from "lodash/fp";
 import i18n from "i18next";
 
@@ -43,20 +42,6 @@ class Table extends Component {
     window.addEventListener("resize", this.windowResize);
   }
 
-  handleClickOutside = () => {
-    const {
-      actions,
-      tableView: { selectedCell, editing }
-    } = this.props;
-    if (!f.isEmpty(selectedCell) && !editing) {
-      actions.toggleCellSelection({
-        selected: false,
-        pushHistory: false,
-        rowId: f.prop("rowId", selectedCell)
-      });
-    }
-  };
-
   onMouseDownHandler = e => {
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
     // in the header
@@ -72,7 +57,6 @@ class Table extends Component {
           .exec("contains", e.target)
           .getOrElse(false)
       ) {
-        this.handleClickOutside(e);
         e.preventDefault();
       }
 
@@ -218,4 +202,4 @@ Table.propTypes = {
   columns: PropTypes.array
 };
 
-export default listensToClickOutside(Table);
+export default Table;
