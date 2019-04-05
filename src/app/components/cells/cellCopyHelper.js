@@ -281,14 +281,14 @@ const pasteCellValue = function(
 
   if (canCopySafely(src, dst) || skipDialogs) {
     const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
-    if (!newValue) {
+    if (f.isNil(newValue) && !f.isNil(src.value)) {
       showErrorToast("table:copy_kind_error");
       return;
     }
     pasteValueAndTranslationStatus(src, dst, newValue);
   } else {
     const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
-    if (!newValue) {
+    if (f.isNil(newValue) && !f.isNil(src.value)) {
       showErrorToast("table:copy_kind_error");
       return;
     }

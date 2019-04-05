@@ -83,7 +83,7 @@ class RowHeadline extends React.Component {
               <SvgIcon icon="tablelink" containerClasses="color-primary" />
             </a>
           ) : (
-            <div clasName="title-wrapper">{colName}</div>
+            <div className="title-wrapper">{colName}</div>
           )}
         </div>
         {thisUserCantEdit ? (

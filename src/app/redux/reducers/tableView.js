@@ -221,11 +221,11 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
 // if an identifier cell was modified, we need to update the concat display value
 const maybeUpdateConcat = f.curryN(3, (action, completeState, tableView) => {
   const concatValues = calcConcatValues(action, completeState) || {};
-  const { dvRowIdx, displayValue } = concatValues;
+  const { dvRowIdx, displayValue, columnIdx } = concatValues;
   const pathToDv = displayValueSelector({
     tableId: action.tableId,
     dvRowIdx,
-    columnIdx: 0
+    columnIdx
   });
 
   return f.isEmpty(concatValues)

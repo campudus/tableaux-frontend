@@ -2,6 +2,7 @@
 extends:
   - "eslint:recommended"
   - "plugin:react/recommended"
+  - "plugin:jest/recommended"
 
 parser: babel-eslint
 
@@ -16,6 +17,7 @@ env:
   browser: true
   es6: true
   node: true
+  jest: true
 
 plugins:
   - standard
@@ -23,6 +25,7 @@ plugins:
   - eslint-plugin-react
   - prettier
   - lodash-fp
+  - jest
 
 settings:
   react:
