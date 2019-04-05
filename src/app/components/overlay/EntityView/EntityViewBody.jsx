@@ -129,7 +129,7 @@ class EntityViewBody extends Component {
     const oldItem = this.props.translationView || {};
     const show = f.isNil(item.show) ? f.prop("show", oldItem) : item.show;
 
-    if (item.cell && item.cell.value) {
+    if (!this.state.focused) {
       const newItem = {
         show: show,
         cell: f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell
@@ -142,7 +142,7 @@ class EntityViewBody extends Component {
       const firstCell = f.get("cell", firstFunc);
 
       if (firstCell) {
-        firstFunc.focus(firstCell.id);
+        firstFunc.focus();
         this.setTranslationItem(this.focusElements[firstCell.id]);
         actions.setOverlayState({
           id,
