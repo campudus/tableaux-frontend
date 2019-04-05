@@ -371,9 +371,6 @@ export function setNextSelectedCell(direction) {
 
     var isValidCell = nextCell.rowId > 0 && nextCell.columnId >= 0;
     var isNewCell = !f.isEqual(nextCell, selectedCell);
-    // nextCell.columnId !== columnId ||
-    // nextCell.rowId !== rowId ||
-    // newSelectedCellExpandedRow !== langtag;
 
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
@@ -499,7 +496,7 @@ export function preventSleepingOnTheKeyboard(cb) {
   if (this.keyboardRecentlyUsedTimer === null) {
     this.keyboardRecentlyUsedTimer = setTimeout(() => {
       this.keyboardRecentlyUsedTimer = null;
-    }, 100);
+    }, 10);
     cb();
   }
 }
