@@ -92,7 +92,7 @@ class EntityViewBody extends Component {
     const focusTarget =
       cellToFocus && cellToFocus.kind !== ColumnKinds.concat
         ? cellToFocus.id
-        : cells[0];
+        : cells[0].id;
     this.changeFocus(focusTarget);
   }
 
@@ -294,12 +294,8 @@ class EntityViewBody extends Component {
     this.forceUpdate();
   };
 
-  renderUnlockBar = () => {
-    const { row, entityViewIsLocked } = this.props;
-    const rowLockStatus = f.isNil(entityViewIsLocked)
-      ? isLocked(row)
-      : isLocked(row) && entityViewIsLocked;
-    if (!rowLockStatus) {
+  renderUnlockBar = row => {
+    if (!isLocked(row)) {
       return null;
     }
     const buttonClass = classNames("button", { shake: this.state.shaking });
@@ -359,13 +355,7 @@ class EntityViewBody extends Component {
   }
 
   render() {
-    const {
-      row,
-      actions,
-      cells,
-      entityViewIsLocked,
-      entityViewIsFinal
-    } = this.props;
+    const { row, actions, cells } = this.props;
     const { filter, focused, itemWithPopup } = this.state;
     const langtag = this.getContentLanguage();
     const { filterColumn, grudData } = this.props;
@@ -375,14 +365,8 @@ class EntityViewBody extends Component {
       openItemPopup,
       closeItemPopup
     } = this;
-    const rowLockStatus = f.isNil(entityViewIsLocked)
-      ? isLocked(row)
-      : isLocked(row) && entityViewIsLocked;
-    const rowFinalStatus = f.isNil(entityViewIsFinal)
-      ? row.isFinal
-      : entityViewIsFinal;
     const evbClass = classNames(`entity-view content-items ${this.props.id}`, {
-      "is-locked": rowLockStatus
+      "is-locked": isLocked(row)
     });
 
     return (
@@ -424,8 +408,8 @@ class EntityViewBody extends Component {
                     hintUnlockButton: this.shakeBar
                   })
                 }
-                lockStatus={rowLockStatus}
-                final={rowFinalStatus}
+                lockStatus={isLocked(row)}
+                final={row.final}
                 value={JSON.stringify(cell.value)}
                 annotations={JSON.stringify(cell.annotations)}
                 actions={actions}
@@ -433,7 +417,7 @@ class EntityViewBody extends Component {
               />
             );
           })}
-        {this.renderUnlockBar()}
+        {this.renderUnlockBar(row)}
         {this.renderTranslationView()}
       </div>
     );
@@ -487,13 +471,7 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
       });
     });
 
-  return {
-    cells,
-    /* return if EntityView temporary unlocked the current row */
-    entityViewIsLocked: isLocked(rowData),
-    /* return if EntityView changed the locked-status of the current row */
-    entityViewIsFinal: rowData.final
-  };
+  return { cells, row: rowData };
 })(EntityViewBody);
 
 EntityViewBody.propTypes = {
