@@ -6,7 +6,7 @@ const path = require("path");
 
 /**
  * Usage `node grud-frontend-server.js [--config=<path-to-config-file.json>]`
- * Accepted env Variables HOST, OUTDIR, APIPORT, SERVERPORT override config file
+ * Accepted env Variables APIHOST, OUTDIR, APIPORT, PORT, HOST override config file
  */
 
 // Apply settings --------------------------------------------------------------
@@ -14,9 +14,10 @@ const path = require("path");
 let config = {
   // Default config, overriden by config file
   outDir: __dirname, // path to serve static files from
-  host: "localhost", // api host
+  apiHost: "localhost", // api host
   apiPort: 8080,
-  serverPort: 3000
+  port: 3000,
+  host: "localhost"
 };
 
 try {
@@ -40,10 +41,11 @@ const overrideConfigWithEnv = envVar => {
   }
 };
 
-overrideConfigWithEnv("host");
 overrideConfigWithEnv("outDir");
+overrideConfigWithEnv("apiHost");
 overrideConfigWithEnv("apiPort");
-overrideConfigWithEnv("serverPort");
+overrideConfigWithEnv("port");
+overrideConfigWithEnv("host");
 
 console.log("GRUD frontend server with settings:\n", config);
 
@@ -65,7 +67,7 @@ proxy.on("error", (err, req, res) => {
 
 const proxyHandler = (req, res) => {
   return proxy.web(req, res, {
-    target: `http://${config.host}:${config.apiPort}`,
+    target: `http://${config.apiHost}:${config.apiPort}`,
     prependPath: true
   });
 };
@@ -97,4 +99,6 @@ app.use("/api", proxyHandler); // if api request, proxy it, else...
 app.use(resourceHandler); // if a file was requested, try to serve it, else...
 app.use(appHandler); // serve the single page app
 
-app.listen(config.serverPort);
+app.listen(config.port, config.host, () =>{
+  console.info(`Server listening on http://${config.host}:${config.port}.`);
+});
