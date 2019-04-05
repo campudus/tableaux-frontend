@@ -42,15 +42,17 @@ class LanguageSwitcher extends PureComponent {
   };
 
   handleLangtagSwitch = ({ langtag }) => {
-    if (this.state.langtag !== langtag) {
-      this.props.sharedData.setContentLanguage({ langtag });
+    const {
+      sharedData: { contentLanguage, setContentLanguage }
+    } = this.props;
+    if (contentLanguage !== langtag) {
+      setContentLanguage({ langtag });
     }
   };
 
   setLang = langtag => () => {
     this.handleLangtagSwitch({ langtag });
-    this.setState({ langtag });
-    this.setOpen(false)();
+    this.handleClickOutside();
   };
 
   handleClickOutside = () => {
@@ -58,18 +60,21 @@ class LanguageSwitcher extends PureComponent {
   };
 
   render() {
-    const { open, langtag } = this.state;
+    const { open } = this.state;
+    const {
+      sharedData: { contentLanguage }
+    } = this.props;
     const lswCssClass = classNames("eev-language-switcher", { open: open });
     return (
       <div className="eev-language-switcher-wrapper">
         <div className={lswCssClass} onClick={this.toggleOpen}>
           <div className="eev-label">
-            {getLanguageOrCountryIcon(langtag)}
+            {getLanguageOrCountryIcon(contentLanguage || this.props.langtag)}
             <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
           </div>
           {open ? (
             <div className="eev-dropdown">
-              {Langtags.filter(lt => lt !== langtag).map(lt => {
+              {Langtags.filter(lt => lt !== contentLanguage).map(lt => {
                 return (
                   <div key={lt} className="menu-item">
                     <a href="#" onClick={this.setLang(lt)}>
