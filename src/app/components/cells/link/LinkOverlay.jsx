@@ -213,10 +213,6 @@ class LinkOverlay extends PureComponent {
     const withoutLink = f.remove(f.matchesProperty("id", f.get("id", link)));
     const links = !shouldLink ? withoutLink(value) : [...value, link];
 
-    if (!shouldLink && f.get(["constraint", "deleteCascade"], cell.column)) {
-      this.updateRowResults(withoutLink);
-    }
-
     const { table, column, row } = cell;
     actions.changeCellValue({
       tableId: table.id,
@@ -225,6 +221,9 @@ class LinkOverlay extends PureComponent {
       oldValue: value,
       newValue: links
     });
+    if (!shouldLink && f.isFinite(maxLinks)) {
+      this.props.fetchForeignRows();
+    }
   };
 
   setActiveBox = val => e => {
