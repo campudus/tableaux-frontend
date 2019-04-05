@@ -67,7 +67,6 @@ export default compose(
       const nextCell = nextProps.cell;
       const getRelevantCellProps = f.pick([
         "value",
-        "displayValue",
         "annotations"
       ]);
 
@@ -78,6 +77,7 @@ export default compose(
         this.props.inSelectedRow !== nextProps.inSelectedRow ||
         this.props.editing !== nextProps.editing ||
         this.props.annotationsOpen !== nextProps.annotationsOpen ||
+        this.props.foreignDisplayValues !== nextProps.foreignDisplayValues ||
         !f.isEqual(
           getRelevantCellProps(this.props.cell),
           getRelevantCellProps(nextProps.cell)
