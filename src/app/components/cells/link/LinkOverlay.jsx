@@ -194,7 +194,7 @@ class LinkOverlay extends PureComponent {
     return f.size(this.props.rowResults.linked) < this.props.maxLinks;
   };
 
-  addLinkValue = (isAlreadyLinked, link, event) => {
+  addLinkValue =  (isAlreadyLinked, link, event) => {
     maybe(event).method("preventDefault");
     const shouldLink = !isAlreadyLinked;
     const { maxLinks, cell, actions, value } = this.props;
@@ -220,11 +220,13 @@ class LinkOverlay extends PureComponent {
       rowId: row.id,
       columnId: column.id,
       oldValue: value,
-      newValue: links
+      newValue: links,
+      onSuccess: () => {
+        if (!shouldLink && f.isFinite(maxLinks)) {
+          this.props.fetchForeignRows();
+        }
+      }
     });
-    if (!shouldLink && f.isFinite(maxLinks)) {
-      this.props.fetchForeignRows();
-    }
   };
 
   setActiveBox = val => e => {
@@ -545,7 +547,7 @@ const withDataRows = compose(
 
       const mapIndexed = f.map.convert({ cap: false });
 
-      const connectCellToDisplayValue = cell => {
+      const connectCellToDisplayValue = ( cell, value ) => {
         const state = store.getState();
         const tableDisplayValues = f.get(
           ["tableView", "displayValues", cell.column.toTable],
@@ -559,14 +561,14 @@ const withDataRows = compose(
             return f.get(["values", 0], displayValueObj);
           }
           return cell.displayValue[index];
-        }, cell.value);
+        }, value);
         const valueWithUpdatedLabels = mapIndexed((val, index) => {
           return { ...val, label: displayValue[index][langtag] };
-        }, cell.value);
+        }, value);
         return { ...cell, displayValue, value: valueWithUpdatedLabels };
       };
 
-      const updatedCell = connectCellToDisplayValue(cell);
+      const updatedCell = connectCellToDisplayValue(cell, value);
 
       const rowResults = doto(
         [
