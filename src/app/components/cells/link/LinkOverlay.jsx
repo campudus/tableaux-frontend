@@ -194,7 +194,7 @@ class LinkOverlay extends PureComponent {
     return f.size(this.props.rowResults.linked) < this.props.maxLinks;
   };
 
-  addLinkValue =  (isAlreadyLinked, link, event) => {
+  addLinkValue = (isAlreadyLinked, link, event) => {
     maybe(event).method("preventDefault");
     const shouldLink = !isAlreadyLinked;
     const { maxLinks, cell, actions, value } = this.props;
@@ -547,7 +547,7 @@ const withDataRows = compose(
 
       const mapIndexed = f.map.convert({ cap: false });
 
-      const connectCellToDisplayValue = ( cell, value ) => {
+      const connectCellToDisplayValue = (cell, value) => {
         const state = store.getState();
         const tableDisplayValues = f.get(
           ["tableView", "displayValues", cell.column.toTable],

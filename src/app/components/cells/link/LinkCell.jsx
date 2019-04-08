@@ -65,10 +65,7 @@ export default compose(
     shouldComponentUpdate(nextProps) {
       const cell = this.props.cell;
       const nextCell = nextProps.cell;
-      const getRelevantCellProps = f.pick([
-        "value",
-        "annotations"
-      ]);
+      const getRelevantCellProps = f.pick(["value", "annotations"]);
 
       return (
         this.props.langtag !== nextProps.langtag ||
