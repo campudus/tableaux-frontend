@@ -150,7 +150,7 @@ const setCellAnnotation = (state, action, completeState) => {
   const newCellAnnotations =
     annotationIdx >= 0
       ? f.assoc(annotationIdx, annotation, annotations)
-      : [...annotations, annotation];
+      : [...(annotations || []), annotation];
   return updateCellAnnotation(
     state,
     { ...action, newCellAnnotations },

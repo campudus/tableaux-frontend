@@ -206,11 +206,11 @@ class RowContextMenu extends React.Component {
 
   toggleFlagItem = flag => {
     const { cell } = this.props;
-    const flagValue = f.get(["annotations", flag], cell);
-    const toggleFn = flagValue
+    const existingAnnotation = f.get(["annotations", flag], cell);
+    const toggleFn = existingAnnotation
       ? () =>
           deleteCellAnnotation(
-            { type: "flag", value: flag, uuid: flagValue },
+            { type: "flag", value: flag, uuid: existingAnnotation },
             cell,
             "do-it!"
           )
@@ -219,7 +219,7 @@ class RowContextMenu extends React.Component {
       toggleFn,
       flag,
       "",
-      `dot ${flag} ${flagValue ? "active" : "inactive"}`
+      `dot ${flag} ${existingAnnotation ? "active" : "inactive"}`
     );
   };
 
