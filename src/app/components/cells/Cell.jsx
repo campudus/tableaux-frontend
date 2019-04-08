@@ -79,7 +79,11 @@ class Cell extends React.Component {
   shouldComponentUpdate = nextProps => {
     const cell = this.props.cell;
     const nextCell = nextProps.cell;
-    const getRelevantCellProps = f.pick(["value", "displayValue", "annotations"]);
+    const getRelevantCellProps = f.pick([
+      "value",
+      "displayValue",
+      "annotations"
+    ]);
 
     return (
       this.props.langtag !== nextProps.langtag ||

@@ -86,7 +86,7 @@ export const checkAnyOrThrow = f.curryN(2, (specs, value) => {
 // Basic checkers
 //
 
-const checkWithFunction = test => value => test(value);
+const checkWithFunction = testFn => value => testFn(value);
 
 const checkWithObject = (spec, testResult) => value => {
   if (!f.isObject(value) || f.isArray(value) || f.isNil(value)) {

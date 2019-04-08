@@ -11,6 +11,7 @@ import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";
 import i18n from "i18next";
+import store from "../../../redux/store";
 
 import { Directions, FilterModes } from "../../../constants/TableauxConstants";
 import {
@@ -213,17 +214,18 @@ class LinkOverlay extends PureComponent {
     const withoutLink = f.remove(f.matchesProperty("id", f.get("id", link)));
     const links = !shouldLink ? withoutLink(value) : [...value, link];
 
-    if (!shouldLink && f.get(["constraint", "deleteCascade"], cell.column)) {
-      this.updateRowResults(withoutLink);
-    }
-
     const { table, column, row } = cell;
     actions.changeCellValue({
       tableId: table.id,
       rowId: row.id,
       columnId: column.id,
       oldValue: value,
-      newValue: links
+      newValue: links,
+      onSuccess: () => {
+        if (!shouldLink && f.isFinite(maxLinks)) {
+          this.props.fetchForeignRows();
+        }
+      }
     });
   };
 
@@ -543,10 +545,40 @@ const withDataRows = compose(
       const maxLinks =
         f.get(["column", "constraint", "cardinality", "to"], cell) || Infinity;
 
+      const mapIndexed = f.map.convert({ cap: false });
+
+      const connectCellToDisplayValue = (cell, value) => {
+        const state = store.getState();
+        const tableDisplayValues = f.get(
+          ["tableView", "displayValues", cell.column.toTable],
+          state
+        );
+        const displayValue = mapIndexed((value, index) => {
+          const displayValueObj = f.find(displayValue => {
+            return displayValue.id === value.id;
+          }, tableDisplayValues);
+          if (!f.isNil(displayValueObj)) {
+            return f.get(["values", 0], displayValueObj);
+          }
+          return cell.displayValue[index];
+        }, value);
+        const valueWithUpdatedLabels = mapIndexed((val, index) => {
+          return { ...val, label: displayValue[index][langtag] };
+        }, value);
+        return { ...cell, displayValue, value: valueWithUpdatedLabels };
+      };
+
+      const updatedCell = connectCellToDisplayValue(cell, value);
+
       const rowResults = doto(
-        [...value, ...(value.length < maxLinks ? foreignRows : [])],
+        [
+          ...updatedCell.value,
+          ...(updatedCell.value.length < maxLinks ? foreignRows : [])
+        ],
         f.uniqBy(f.prop("id")),
-        f.forEach(link => (link.label = getCurrentDisplayValue(link))),
+        f.map(link => {
+          return { ...link, label: link.label || getCurrentDisplayValue(link) };
+        }),
         f.groupBy(link =>
           f.contains(link.id, linkedIds) ? "linked" : "unlinked"
         ),
@@ -560,6 +592,7 @@ const withDataRows = compose(
       );
 
       return {
+        cell: updatedCell,
         maxLinks,
         rowResults
       };
