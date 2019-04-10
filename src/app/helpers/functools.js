@@ -1,434 +1,456 @@
 /* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
 
 import {
-  compact,
-  curryN,
-  first,
-  flow,
-  identity,
-  isEmpty,
-  isFunction,
-  isNil,
-  map,
-  noop,
-  prop,
-  propOr,
-  props,
-  range
+compact,
+curryN,
+drop,
+first,
+flow,
+identity,
+isEmpty,
+isFunction,
+isNil,
+isInteger,
+map,
+noop,
+prop,
+propOr,
+props,
+range,
+take
 } from "lodash/fp";
 
 /* Maybe monad.
- * .of(val) - create from (safe!) value
- * .fromNullable(val) - create
- * .get() get Value, throws if trying to take from None
- * .getOrElse(alternate) - get value, if null return alternate
- * .map(function) - apply 1-aric function or return None
- */
+* .of(val) - create from (safe!) value
+* .fromNullable(val) - create
+* .get() get Value, throws if trying to take from None
+* .getOrElse(alternate) - get value, if null return alternate
+* .map(function) - apply 1-aric function or return None
+*/
 class Maybe {
-  static just(a) {
-    return new Just(a);
-  }
+static just(a) {
+return new Just(a);
+}
 
-  static none() {
-    return new None();
-  }
+static none() {
+return new None();
+}
 
-  static fromNullable(a) {
-    return a !== null && a !== undefined ? Maybe.just(a) : Maybe.none();
-  }
+static fromNullable(a) {
+return a !== null && a !== undefined ? Maybe.just(a) : Maybe.none();
+}
 
-  static of(a) {
-    return Maybe.just(a);
-  }
+static of(a) {
+return Maybe.just(a);
+}
 
-  get isNone() {
-    return false;
-  }
+get isNone() {
+return false;
+}
 
-  get isJust() {
-    return false;
-  }
+get isJust() {
+return false;
+}
 }
 
 class Just extends Maybe {
-  constructor(value) {
-    super();
-    this._value = value;
-  }
+constructor(value) {
+super();
+this._value = value;
+}
 
-  spy(text) {
-    console.log(text, this.toString(), this._value);
-    return this;
-  }
+spy(text) {
+console.log(text, this.toString(), this._value);
+return this;
+}
 
-  exec(fname) {
-    const fn = prop(fname, this._value);
-    if (isFunction(fn)) {
-      try {
-        const args = map(n => arguments[n], range(1, arguments.length));
-        return Maybe.fromNullable(fn.apply(this._value, args));
-      } catch (e) {
-        return Maybe.none();
-      }
-    } else {
-      return Maybe.none();
-    }
-  }
+exec(fname) {
+const fn = prop(fname, this._value);
+if (isFunction(fn)) {
+try {
+const args = map(n => arguments[n], range(1, arguments.length));
+return Maybe.fromNullable(fn.apply(this._value, args));
+} catch (e) {
+return Maybe.none();
+}
+} else {
+return Maybe.none();
+}
+}
 
-  set(field, value) {
-    try {
-      this._value[field] = value;
-      return this;
-    } catch (e) {
-      return Maybe.none();
-    }
-  }
+set(field, value) {
+try {
+this._value[field] = value;
+return this;
+} catch (e) {
+return Maybe.none();
+}
+}
 
-  method(fname) {
-    const fn = prop(fname, this._value);
-    if (isFunction(fn)) {
-      try {
-        const args = map(n => arguments[n], range(1, arguments.length));
-        fn.apply(this._value, args);
-        return this;
-      } catch (e) {
-        return Maybe.none();
-      }
-    } else {
-      return Maybe.none();
-    }
-  }
+method(fname) {
+const fn = prop(fname, this._value);
+if (isFunction(fn)) {
+try {
+const args = map(n => arguments[n], range(1, arguments.length));
+fn.apply(this._value, args);
+return this;
+} catch (e) {
+return Maybe.none();
+}
+} else {
+return Maybe.none();
+}
+}
 
-  get value() {
-    return this._value;
-  }
+get value() {
+return this._value;
+}
 
-  map(f) {
-    return Maybe.fromNullable(f(this.value));
-  }
+map(f) {
+return Maybe.fromNullable(f(this.value));
+}
 
-  getOrElse() {
-    return this.value;
-  }
+getOrElse() {
+return this.value;
+}
 
-  filter(f) {
-    return Maybe.fromNullable(f(this.value) ? this.value : null);
-  }
+filter(f) {
+return Maybe.fromNullable(f(this.value) ? this.value : null);
+}
 
-  get isJust() {
-    return true;
-  }
+get isJust() {
+return true;
+}
 
-  toString() {
-    return `Maybe.Just(${typeof this.value}, ${this._value})`;
-  }
+toString() {
+return `Maybe.Just(${typeof this.value}, ${this._value})`;
+}
 }
 
 class None extends Maybe {
-  map() {
-    return this;
-  }
+map() {
+return this;
+}
 
-  spy() {
-    console.log(this.toString());
-    return this;
-  }
+spy() {
+console.log(this.toString());
+return this;
+}
 
-  set() {
-    return this;
-  }
+set() {
+return this;
+}
 
-  exec() {
-    return this;
-  }
+exec() {
+return this;
+}
 
-  method() {
-    return this;
-  }
+method() {
+return this;
+}
 
-  get value() {
-    throw new TypeError("Can't extract value of Maybe.None");
-  }
+get value() {
+throw new TypeError("Can't extract value of Maybe.None");
+}
 
-  getOrElse(other) {
-    return other;
-  }
+getOrElse(other) {
+return other;
+}
 
-  filter() {
-    return this.value;
-  }
+filter() {
+return this.value;
+}
 
-  get isNone() {
-    return true;
-  }
+get isNone() {
+return true;
+}
 
-  toString() {
-    return "Maybe.None";
-  }
+toString() {
+return "Maybe.None";
+}
 }
 
 /* Either monad.
- * .of(val) - create from (safe!) value
- * .fromNullable(val) - create
- * .get() get Value, throws if trying to take from None
- * .getOrElse(alternate) - get value, if null return alternate
- * .getOrElseThrow(message) - get value, throw custom error if null
- * .orElse(function) - get value, else return another Either from function's result
- * .map(function) - apply 1-aric function or return None
- */
+* .of(val) - create from (safe!) value
+* .fromNullable(val) - create
+* .get() get Value, throws if trying to take from None
+* .getOrElse(alternate) - get value, if null return alternate
+* .getOrElseThrow(message) - get value, throw custom error if null
+* .orElse(function) - get value, else return another Either from function's result
+* .map(function) - apply 1-aric function or return None
+*/
 class Either {
-  constructor(value) {
-    this._value = value;
-  }
+constructor(value) {
+this._value = value;
+}
 
-  get value() {
-    return this._value;
-  }
+get value() {
+return this._value;
+}
 
-  static left(a) {
-    return new Left(a);
-  }
+static left(a) {
+return new Left(a);
+}
 
-  static right(a) {
-    return new Right(a);
-  }
+static right(a) {
+return new Right(a);
+}
 
-  static fromNullable(val) {
-    return val !== null && val !== undefined
-      ? Either.right(val)
-      : Either.left(val);
-  }
+static fromNullable(val) {
+return val !== null && val !== undefined
+? Either.right(val)
+: Either.left(val);
+}
 
-  static of(a) {
-    return Either.right(a);
-  }
+static of(a) {
+return Either.right(a);
+}
 }
 
 class Left extends Either {
-  map() {
-    return this;
-  }
+map() {
+return this;
+}
 
-  spy(msg = "") {
-    console.log(msg, this.toString());
-    return this;
-  }
+spy(msg = "") {
+console.log(msg, this.toString());
+return this;
+}
 
-  get value() {
-    throw new TypeError("Can't extract value of Left.");
-  }
+get value() {
+throw new TypeError("Can't extract value of Left.");
+}
 
-  orElse(f) {
-    const fOfVal = f(this._value);
-    return fOfVal !== null && fOfVal !== undefined
-      ? Either.right(fOfVal)
-      : this;
-  }
+orElse(f) {
+const fOfVal = f(this._value);
+return fOfVal !== null && fOfVal !== undefined
+? Either.right(fOfVal)
+: this;
+}
 
-  getOrElse(other) {
-    return other;
-  }
+getOrElse(other) {
+return other;
+}
 
-  chain() {
-    return this;
-  }
+chain() {
+return this;
+}
 
-  getOrElseThrow(a) {
-    throw new Error(a);
-  }
+getOrElseThrow(a) {
+throw new Error(a);
+}
 
-  filter() {
-    return this;
-  }
+filter() {
+return this;
+}
 
-  exec() {
-    return this;
-  }
+exec() {
+return this;
+}
 
-  toString() {
-    return "Either.Left()";
-  }
+toString() {
+return "Either.Left()";
+}
 }
 
 class Right extends Either {
-  map(f) {
-    try {
-      const result = f(this.value);
-      return result ? Either.right(result) : Either.left(this.value);
-    } catch (e) {
-      return Either.left(e);
-    }
-  }
+map(f) {
+try {
+const result = f(this.value);
+return result ? Either.right(result) : Either.left(this.value);
+} catch (e) {
+return Either.left(e);
+}
+}
 
-  spy(text = "") {
-    console.log(text, this.toString());
-    return this;
-  }
+spy(text = "") {
+console.log(text, this.toString());
+return this;
+}
 
-  getOrElse() {
-    return this.value;
-  }
+getOrElse() {
+return this.value;
+}
 
-  orElse() {
-    return this;
-  }
+orElse() {
+return this;
+}
 
-  chain(f) {
-    try {
-      return Either.fromNullable(f(this.value));
-    } catch (e) {
-      return Either.left(e);
-    }
-  }
+chain(f) {
+try {
+return Either.fromNullable(f(this.value));
+} catch (e) {
+return Either.left(e);
+}
+}
 
-  getOrElseThrow() {
-    return this.value;
-  }
+getOrElseThrow() {
+return this.value;
+}
 
-  filter(f) {
-    try {
-      return Either.fromNullable(f(this.value) ? this.value : null);
-    } catch (e) {
-      return Either.left(e);
-    }
-  }
+filter(f) {
+try {
+return Either.fromNullable(f(this.value) ? this.value : null);
+} catch (e) {
+return Either.left(e);
+}
+}
 
-  exec(methodName, ...params) {
-    try {
-      const result = this.value[methodName].call(this.value, ...params);
-      return Either.of(result);
-    } catch (err) {
-      return Either.Left(err);
-    }
-  }
+exec(methodName, ...params) {
+try {
+const result = this.value[methodName].call(this.value, ...params);
+return Either.of(result);
+} catch (err) {
+return Either.Left(err);
+}
+}
 
-  toString() {
-    return `Either.Right(${this.value})`;
-  }
+toString() {
+return `Either.Right(${this.value})`;
+}
 }
 
 const maybe = x => Maybe.fromNullable(x);
 const either = x => Either.fromNullable(x);
 const spy = (x, info) => {
-  console.log("I spy " + (info || ""), x);
-  return x;
+console.log("I spy " + (info || ""), x);
+return x;
 };
 
 const fspy = info => x => {
-  console.log("I spy " + (info || ""), x);
-  return x;
+console.log("I spy " + (info || ""), x);
+return x;
 };
 
 const logged = curryN(2)(
-  (msg, fn) =>
-    function(...args) {
-      if (!isFunction(fn)) {
-        console.error(fn, "is not a function");
-        return undefined;
-      }
-      const result = fn(...args);
-      console.log("Logging:", msg, "=>", result);
-      return result;
-    }
+(msg, fn) =>
+function(...args) {
+if (!isFunction(fn)) {
+console.error(fn, "is not a function");
+return undefined;
+}
+const result = fn(...args);
+console.log("Logging:", msg, "=>", result);
+return result;
+}
 );
 
 const forkJoin = curryN(4, function(combine, f, g, x) {
-  return combine(f(x), g(x));
+return combine(f(x), g(x));
 });
 
 const withTryCatch = curryN(3, (fn, onError = noop, ...args) => {
-  try {
-    return fn(...args);
-  } catch (e) {
-    return onError(e);
-  }
+try {
+return fn(...args);
+} catch (e) {
+return onError(e);
+}
 });
 
 // threading macro to create more readable code
 export const doto = (initialValue, ...fns) => {
-  const fnArray = isEmpty(fns) ? [identity] : fns;
-  return flow(...fnArray)(initialValue);
+const fnArray = isEmpty(fns) ? [identity] : fns;
+return flow(...fnArray)(initialValue);
 };
 
 /**
- * (<T1> -> bool) -> (<T1> -> <T2>) -> <T1> -> <T2>
- * If the predicate returns true for the input value, just return the input value
- * else apply the transducer to item
- *
- * unless(nameAlreadySet, setName("default"))(myObject)
- **/
-const unless = curryN(3, (predicate, transduce, value) =>
-  !predicate(value) ? transduce(value) : value
-);
+* (<T1> -> bool) -> (<T1> -> <T2>) -> <T1> -> <T2>
+    * If the predicate returns true for the input value, just return the input value
+    * else apply the transducer to item
+    *
+    * unless(nameAlreadySet, setName("default"))(myObject)
+    **/
+    const unless = curryN(3, (predicate, transduce, value) =>
+    !predicate(value) ? transduce(value) : value
+    );
 
-/**
- * (<T1> -> bool) -> (<T1> -> <T2>) -> <T1> -> <T2>
- * If the predicate returns false for the input value, just return the input value
- * else apply the transducer to item
- *
- * when(nameIsEmpty, setName("default")(myObject)
- **/
-const when = curryN(3, (predicate, transduce, value) =>
-  predicate(value) ? transduce(value) : value
-);
+    /**
+    * (<T1> -> bool) -> (<T1> -> <T2>) -> <T1> -> <T2>
+    * If the predicate returns false for the input value, just return the input value
+    * else apply the transducer to item
+    *
+    * when(nameIsEmpty, setName("default")(myObject)
+    **/
+    const when = curryN(3, (predicate, transduce, value) =>
+    predicate(value) ? transduce(value) : value
+    );
 
-const propSuffices = curryN(3, (predicate, propSelector, obj) =>
-  predicate(propOr(null, propSelector, obj))
-);
+    const propSuffices = curryN(3, (predicate, propSelector, obj) =>
+    predicate(propOr(null, propSelector, obj))
+    );
 
-// ((a) -> (idx) -> b) -> (a[]) -> b[]
-const mapIndexed = curryN(2, (fn, coll) => coll.map(fn));
+    // ((a) -> (idx) -> b) -> (a[]) -> b[]
+    const mapIndexed = curryN(2, (fn, coll) => coll.map(fn));
 
-// ((a) -> (idx) -> bool) -> (a[]) -> a[]
-const filterIndexed = curryN(2, (fn, coll) => coll.filter(fn));
+    // ((a) -> (idx) -> bool) -> (a[]) -> a[]
+    const filterIndexed = curryN(2, (fn, coll) => coll.filter(fn));
 
-const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
-  cond(value) ? ifFn(value) : elseFn(value)
-);
+    const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
+    cond(value) ? ifFn(value) : elseFn(value)
+    );
 
-const mapPromise = curryN(2, (promiseGenerator, inputs) =>
-  Promise.all((inputs || []).map(promiseGenerator))
-);
+    const mapPromise = curryN(2, (promiseGenerator, inputs) =>
+    Promise.all((inputs || []).map(promiseGenerator))
+    );
 
-// (T => boolean) -> (path) -> ({ [path] : T }) => boolean
-// propMatches(isNumber, "foo", { foo: 42 }) => true
-// propMatches(isNumber, "foo.bar", { foo: { bar: "imastring"}}) => false
-const propMatches = curryN(3, (pred, path, obj) => pred(prop(path, obj)));
+    // (T => boolean) -> (path) -> ({ [path] : T }) => boolean
+    // propMatches(isNumber, "foo", { foo: 42 }) => true
+    // propMatches(isNumber, "foo.bar", { foo: { bar: "imastring"}}) => false
+    const propMatches = curryN(3, (pred, path, obj) => pred(prop(path, obj)));
 
-const preventDefault = event => maybe(event).method("preventDefault");
-const stopPropagation = event => maybe(event).method("stopPropagation");
+    const preventDefault = event => maybe(event).method("preventDefault");
+    const stopPropagation = event => maybe(event).method("stopPropagation");
 
-const memoizeWith = (keyFn, fn) => {
-  const cache = new Map();
+    const memoizeWith = (keyFn, fn) => {
+    const cache = new Map();
 
-  return (...args) => {
+    return (...args) => {
     const key = keyFn(...args);
     if (cache.has(key)) {
-      return cache.get(key);
+    return cache.get(key);
     } else {
-      const result = fn(...args);
-      cache.set(key, result);
-      return result;
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
     }
-  };
-};
+    };
+    };
 
-const firstValidProp = curryN(2, (propsArray, obj) =>
-  first(compact(props(propsArray, obj)))
-);
+    const firstValidProp = curryN(2, (propsArray, obj) =>
+    first(compact(props(propsArray, obj)))
+    );
 
-const firstValidPropOr = curryN(
-  3,
-  (elseValue, propsArray, obj) => firstValidProp(propsArray, obj) || elseValue
-);
+    const firstValidPropOr = curryN(
+    3,
+    (elseValue, propsArray, obj) => firstValidProp(propsArray, obj) || elseValue
+    );
 
-const merge = curryN(2, (first, second) => ({ ...first, ...second }));
+    const merge = curryN(2, (first, second) => ({ ...first, ...second }));
 
-// (values: dict<string> -> key: string -> string) -> string
-const replaceMoustache = curryN(3, (values, pattern, string) => {
-  const value = (values || {})[pattern];
-  const re = new RegExp(`{{${pattern || ""}}}`, "g");
-  return isNil(value) || isNil(string) ? string : string.replace(re, value);
+    // (values: dict<string> -> key: string -> string) -> string
+    const replaceMoustache = curryN(3, (values, pattern, string) => {
+    const value = (values || {})[pattern];
+    const re = new RegExp(`{{${pattern || ""}}}`, "g");
+    return isNil(value) || isNil(string) ? string : string.replace(re, value);
+
+// (size: int) -> (step: int) -> (coll: any[]) -> any[][]
+// Recursive implementation. Might cause stack overflow when run against huge arrays
+// in browsers without tail end optimisation
+const slidingWindow = curryN(3, (size, step, coll, accum = []) => {
+  // window or step sizes < 1 will cause infinite loop
+  if (
+    !(coll instanceof Array) ||
+    !isInteger(size) ||
+    !isInteger(step) ||
+    size < 1 ||
+    step < 1
+  ) {
+    return [];
+  }
+
+  return coll.length < size
+    ? accum
+    : slidingWindow(size, step, drop(step, coll), [...accum, take(size, coll)]);
 });
 
 const match = curryN(2, (regex, str) =>
@@ -464,6 +486,7 @@ export {
   mapPromise,
   memoizeWith,
   merge,
+  slidingWindow,
   firstValidProp,
   firstValidPropOr,
   match,
