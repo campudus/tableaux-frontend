@@ -534,13 +534,12 @@ const withDataRows = compose(
       const linkedIds = f.map("id", value);
 
       const searchFunction = el =>
-        SearchFunctions[filterMode](filterValue, el.label);
+        SearchFunctions[filterMode](filterValue)(el.label);
       const filterFn = f.isEmpty(filterValue) ? f.stubTrue : searchFunction;
       const sortMode = when(f.isNil, f.always(0), unlinkedOrder);
-      const sortValue = [
-        f.prop("id"),
-        el => el.label && el.label.toLowerCase()
-      ][sortMode];
+      const sortValue = [f.prop("id"), el => el.label && f.toLower(el.label)][
+        sortMode
+      ];
 
       const maxLinks =
         f.get(["column", "constraint", "cardinality", "to"], cell) || Infinity;
@@ -577,7 +576,13 @@ const withDataRows = compose(
         ],
         f.uniqBy(f.prop("id")),
         f.map(link => {
-          return { ...link, label: link.label || getCurrentDisplayValue(link) };
+          return {
+            ...link,
+            label:
+              link.label && f.isString(link.label)
+                ? link.label
+                : getCurrentDisplayValue(link)
+          };
         }),
         f.groupBy(link =>
           f.contains(link.id, linkedIds) ? "linked" : "unlinked"
