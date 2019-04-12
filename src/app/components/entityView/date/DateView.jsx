@@ -17,7 +17,7 @@ class DateView extends Component {
   constructor(props) {
     super(props);
     this.displayName = props.time ? "DateTimeView" : "DateView";
-    this.state = { editing: false };
+    this.state = { editing: false, moment: new Moment(props.value) };
     this.Formats = props.time ? DateTimeFormats : DateFormats;
   }
 
@@ -82,20 +82,20 @@ class DateView extends Component {
     this.setEditing(false)();
   };
 
-  saveMoment = moment => {
-    const oldValue = this.getValue();
-    const value = moment
-      ? (moment.isValid() ? moment : Moment()).format(
-          this.Formats.formatForServer
-        )
+  getServerDateString = moment =>
+    moment && moment.isValid()
+      ? moment.format(this.Formats.formatForServer)
       : null;
+
+  saveMoment = moment => {
+    const oldValue = this.props.cell.value;
+    const value = this.getServerDateString(moment);
     const { cell, langtag, actions } = this.props;
-    const newValue = cell.isMultiLanguage ? { [langtag]: value } : value;
+    const newValue = cell.column.multilanguage ? { [langtag]: value } : value;
     actions.changeCellValue({ cell, oldValue, newValue });
   };
 
   handleChange = moment => {
-    this.saveMoment(moment);
     this.setState({ moment });
   };
 
@@ -149,8 +149,8 @@ class DateView extends Component {
             <Datetime
               onBlur={this.saveEditsAndClose}
               onChange={this.handleChange}
-              defaultValue={this.state.moment || Moment()}
               input={false}
+              value={this.state.moment}
             />
             <div
               className="clear-datetime"
