@@ -1,0 +1,25 @@
+.revision__item {
+  border: 1px solid red;
+}
+
+.revision-item__header {
+  display: flex;
+}
+
+.link-diff {
+  padding: 8px;
+  border-radius: 3px;
+  background-color: $color-primary;
+  color: $color-primary-contrast-text;
+}
+
+.content-diff--added {
+  background-color: $color-revision-added;
+  color: $color-primary-contrast-text;
+}
+
+.content-diff--deleted {
+  background-color: $color-revision-deleted;
+  text-decoration: line-through;
+  color: $color-primary-text;
+}
