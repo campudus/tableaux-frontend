@@ -87,4 +87,25 @@ describe("functools", () => {
       );
     });
   });
+
+  describe("where()", () => {
+    it("is nil safe", () => {
+      expect(where(null, null)).toBe(false);
+      expect(where(null, { foo: 1 })).toBe(false);
+      expect(where({}, null)).toBe(true);
+      expect(where({ foo: 1 }, null)).toBe(false);
+    });
+
+    it("is true for objects that match the description", () => {
+      const pattern = { foo: 1, bar: "two" };
+      expect(where(pattern, { foo: 1, bar: "two" })).toBe(true);
+      expect(where(pattern, { foo: 1, bar: "two", baz: "3" })).toBe(true);
+    });
+
+    it("is false for objects that don't match the description", () => {
+      const pattern = { foo: 1, bar: "two" };
+      expect(where(pattern, { foo: 1, bar: "one" })).toBe(false);
+      expect(where(pattern, { foo: "1", bar: "two", baz: "3" })).toBe(false);
+    });
+  });
 });

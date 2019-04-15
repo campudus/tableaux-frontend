@@ -1,6 +1,6 @@
 /* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
 
-import {
+import, fp {
 compact,
 curryN,
 drop,
@@ -433,32 +433,40 @@ return flow(...fnArray)(initialValue);
     const re = new RegExp(`{{${pattern || ""}}}`, "g");
     return isNil(value) || isNil(string) ? string : string.replace(re, value);
 
-// (size: int) -> (step: int) -> (coll: any[]) -> any[][]
-// Recursive implementation. Might cause stack overflow when run against huge arrays
-// in browsers without tail end optimisation
-const slidingWindow = curryN(3, (size, step, coll, accum = []) => {
-  // window or step sizes < 1 will cause infinite loop
-  if (
+    // (size: int) -> (step: int) -> (coll: any[]) -> any[][]
+    // Recursive implementation. Might cause stack overflow when run against huge arrays
+    // in browsers without tail end optimisation
+    const slidingWindow = curryN(3, (size, step, coll, accum = []) => {
+    // window or step sizes < 1 will cause infinite loop
+    if (
     !(coll instanceof Array) ||
     !isInteger(size) ||
     !isInteger(step) ||
     size < 1 ||
     step < 1
-  ) {
+    ) {
     return [];
-  }
+    }
 
-  return coll.length < size
+    return coll.length < size
     ? accum
     : slidingWindow(size, step, drop(step, coll), [...accum, take(size, coll)]);
-});
+    });
 
-const match = curryN(2, (regex, str) =>
-  either(str)
+    const match = curryN(2, (regex, str) =>
+    either(str)
     .exec("match", regex)
     .map(first)
     .getOrElse("")
-);
+    );
+
+    const where = curryN(2, (spec, obj) => {
+    const keys = fp.keys(spec);
+    return keys.reduce(
+    (coll, key) => coll && fp.propEq(key, spec[key])(obj),
+    !fp.isNil(spec)
+    );
+    });
 
 export {
   Maybe,
@@ -490,5 +498,6 @@ export {
   firstValidProp,
   firstValidPropOr,
   match,
-  replaceMoustache
+    replaceMoustache,
+    where
 };
