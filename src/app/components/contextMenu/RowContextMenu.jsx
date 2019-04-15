@@ -22,10 +22,11 @@ import {
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { isUserAdmin } from "../../helpers/accessManagementHelper";
-import GenericContextMenu from "./GenericContextMenu";
 import { merge } from "../../helpers/functools";
+import { openHistoryOverlay } from "../history/HistoryOverlay";
+import GenericContextMenu from "./GenericContextMenu";
+import pasteCellValue from "../../components/cells/cellCopyHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -48,6 +49,11 @@ class RowContextMenu extends React.Component {
   handleClickOutside() {
     this.props.onClickOutside();
   }
+
+  showHistory = () => {
+    const { cell, langtag } = this.props;
+    openHistoryOverlay({ cell, langtag });
+  };
 
   deleteRow = () => {
     const { cell, row, langtag } = this.props;
@@ -328,6 +334,7 @@ class RowContextMenu extends React.Component {
           : this.mkItem(deleteRow, "delete_row", "trash-o")}
         {this.mkItem(showDependency, "show_dependency", "code-fork")}
         {this.mkItem(showTranslations, "show_translation", "flag")}
+        {this.mkItem(this.showHistory, "show_history", "clock-o")}
         {this.setFinalItem()}
       </GenericContextMenu>
     );
