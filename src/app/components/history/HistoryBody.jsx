@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from "react";
 import f from "lodash/fp";
-import moment from "moment";
 
 import PropTypes from "prop-types";
 
 import { cellSpec } from "../../specs/cell-spec";
-import { doto, maybe, merge, when } from "../../helpers/functools";
+import { doto, when } from "../../helpers/functools";
+import {
+  filterAnnotations,
+  filterComments,
+  getCreationDay,
+  isCurrentEnough,
+  isOldEnough,
+  matchesLangtag,
+  matchesUser,
+  notEnoughEntries,
+  reduceRevisionHistory,
+  valueMatchesFilter
+} from './history-helpers';
 import { makeRequest } from "../../helpers/apiHelper";
 import { validateProp } from "../../specs/type";
+import HistoryFilterArea from "./HistoryFilterArea";
 import RevisionItemBlock from "./RevisionItemBlock";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import route from "../../helpers/apiRoutes";
@@ -62,6 +74,7 @@ const HistoryBody = props => {
 
   const filterFunction = f.allPass([
     filterAnnotations(filter),
+    filterComments(filter),
     matchesLangtag(contentLangtag),
     isCurrentEnough(filter),
     isOldEnough(filter),
@@ -88,6 +101,7 @@ const HistoryBody = props => {
 
   return (
     <div className="history-overlay__body">
+      <HistoryFilterArea {...props} />
       {doto(
         revisions,
         reduceRevisionHistory(column),
@@ -109,93 +123,6 @@ const HistoryBody = props => {
     </div>
   );
 };
-
-// Recursive reduction might cause stack overflow after a couple of
-// tens of thousands of cell revisions
-// This will track the current content status for all revisions, so we are able
-// to calculate correct diffs for each single revision even when interjacent
-// states are filtered out, or leave content unchanged
-export const reduceRevisionHistory = column => revisions => {
-  const n = (revisions || []).length;
-  const reducedRevisions = new Array(n);
-  const doReduce = (idx = 0, previousRevision = {}) => {
-    const rev = revisions[idx];
-    const cellContentChanged = rev.event === "cell_changed";
-    const isMultiLanguage =
-      rev.languageType === "language" || rev.languageType === "country";
-
-    const changedLangtags = cellContentChanged
-      ? isMultiLanguage
-        ? f.keys(rev.value)
-        : undefined
-      : undefined;
-    reducedRevisions[idx] = {
-      ...rev,
-      langtags: changedLangtags,
-      revertable: rev.valueType === column.kind,
-      prevContent: previousRevision.fullValue,
-      fullValue: cellContentChanged
-        ? isMultiLanguage
-          ? merge(previousRevision.fullValue || {}, rev.value)
-          : rev.value
-        : previousRevision.fullValue,
-      idx
-    };
-    if (idx < n - 1) {
-      doReduce(idx + 1, reducedRevisions[idx]);
-    }
-  };
-  n > 0 && doReduce(); // calling doReduce during loading will throw
-  return reducedRevisions;
-};
-
-export const notEnoughEntries = revs => revs.length < 2;
-
-export const getCreationDay = f.compose(
-  f.invokeArgs("substring", [0, 10]),
-  f.propOr("", [0, "timestamp"])
-);
-
-export const matchesLangtag = langtag => rev =>
-  rev.languageType === "language" ? f.has(langtag, rev.value) : true;
-
-export const matchesUser = filter =>
-  f.isEmpty(filter && filter.user) ? f.stubTrue : f.propEq("user", filter.user);
-
-export const filterHasValidDateProp = (prop, filter) =>
-  maybe(filter)
-    .map(f.prop(prop))
-    .method("isValid")
-    .getOrElse(false);
-
-export const isCurrentEnough = filter =>
-  filterHasValidDateProp("fromDate", filter)
-    ? revision => moment(revision.timestamp).isAfter(filter.fromDate)
-    : f.stubTrue;
-
-export const isOldEnough = filter =>
-  filterHasValidDateProp("toDate", filter)
-    ? revision => moment(revision.timestamp).isBefore(filter.toDate)
-    : f.stubTrue;
-
-export const filterAnnotations = filter => rev => {
-  const isAnnotationChange =
-    rev.event === "annotation_added" || rev.event === "annotation_removed";
-  const hasDesiredValue = f.isBoolean(filter && filter.showAnnotations)
-    ? isAnnotationChange === filter.showAnnotations
-    : true;
-  return hasDesiredValue;
-};
-
-export const valueMatchesFilter = (filter, contentLangtag) =>
-  f.isEmpty(filter && filter.value)
-    ? f.stubTrue
-    : revision =>
-        f.any(f.contains(filter.value), [
-          revision.displayValue[contentLangtag],
-          revision.prevDisplayValue[contentLangtag],
-          f.prop(contentLangtag, revision.value) || revision.value
-        ]);
 
 export default HistoryBody;
 HistoryBody.propTypes = {
