@@ -108,6 +108,28 @@ class Header extends PureComponent {
   }
 }
 
+export const SimpleHeader = props => {
+  const { title, id, actions, cssClass = "" } = props;
+  return (
+    <div className={"header-wrapper " + cssClass}>
+      <div className="close-button">
+        <a
+          href=""
+          onClick={() => {
+            actions.closeOverlay(id);
+          }}
+        >
+          <SvgIcon icon="cross" containerClasses="color-white" />
+        </a>
+      </div>
+      <div className="labels">
+        <div className="title">{title}</div>
+      </div>
+      {props.children}
+    </div>
+  );
+};
+
 export default Header;
 
 Header.propTypes = {
