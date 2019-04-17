@@ -41,7 +41,6 @@ const Diff = props => {
 };
 
 const ContentDiff = props => {
-  console.log("Diff props:", props);
   switch (props.cell.kind) {
     case ColumnKinds.link:
     case ColumnKinds.attachment:
