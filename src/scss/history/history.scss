@@ -23,3 +23,143 @@
   text-decoration: line-through;
   color: $color-primary-text;
 }
+
+
+
+
+.history-filter-area__context {
+  font-size: 14px;
+  color: $color-text-medium-grey;
+}
+
+.history-filter-area__title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.history-filter-area {
+  background-color: $color-revision-filter-background;
+  color: white;
+  padding: 15px 50px;
+}
+
+.history-popup__header {
+  margin-top: 20px;
+  display: flex;
+  align-items:center;
+}
+
+.history-filter__toggle-filters-button, .history-filter__clear-filters-button {
+  @include button-look();
+  display: flex;
+
+  .fa {
+    margin-right: 5px;
+  }
+}
+
+.toggle-filter-button__arrow {
+  margin-left: 5px
+}
+
+.history-filter__clear-filters-button {
+  background-color: transparent;
+  color: $color-text-medium-grey;
+  display: none;
+  border-radius: 3px 3px 0 0;
+
+  &.clear-filters-button--has-filters {
+    display: flex;
+  }
+
+  &:hover {
+    background-color: $color-text-light-grey;
+    color: $color-primary-contrast-text;
+  }
+}
+
+.history-filter__toggle-filters-button {
+  background-color: $color-text-light-grey;
+  color: $color-primary-text;
+
+  &.toggle-filters-button--open {
+    border-radius: 3px 3px 0 0;
+  }
+
+  &.toggle-filters-button--has-filters, &:hover {
+    background-color: $color-primary;
+    color: $color-primary-contrast-text;
+  }
+}
+
+
+.history-popup__body {
+  border-top: 2px solid $color-text-light-grey;
+  background-color: #2D3135;
+  padding: 10px;
+  padding-bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  &.popup-body--has-filters {
+    border-color: $color-primary;
+  }
+}
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar__input {
+  padding: 5px 10px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: none;
+  width: 100%;
+}
+
+.search-bar__icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: $color-text-medium-grey;
+  height: 28px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-popup-item__header {
+  text-transform: uppercase;
+  padding-bottom: 8px;
+  color: $color-text-medium-grey;
+  font-weight: bold;
+}
+
+.history-popup__item {
+  margin: 0 5px;
+  margin-bottom: 10px;
+  padding-bottom: 3px;
+
+  &.item__select-from, &.item__select-to, &.item__select-author {
+    border-bottom: 1px solid $color-primary;
+
+    .form-control, .search-bar__input {
+      color: $color-text-light-grey;
+      border-bottom: none !important;
+    }
+  }
+
+  &.item--large {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+
+  &.item__select-author {
+    .search-bar__input {
+      padding: 0;
+      background-color: transparent;
+    }
+  }
+}

@@ -2,10 +2,12 @@ import DatePicker from "react-datetime";
 import React, { useState } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
+import moment from "moment";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
+import { check, validate } from "../../specs/type";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 import SearchBar from "../helperComponents/SearchBar";
@@ -21,6 +23,7 @@ const HistoryFilterArea = props => {
   const updateFilter = f.curryN(2, (key, value) =>
     updateSharedData(f.assoc(["filter", key], value))
   );
+  const resetFilter = () => updateSharedData(f.assoc("filter", {}));
   const setFilterValue = updateFilter("value");
 
   const [filterSettingsOpen, setFilterSettingsOpen] = useState(false);
@@ -30,8 +33,12 @@ const HistoryFilterArea = props => {
 
   return (
     <div className="history-filter-area">
-      {getTableDisplayName(cell.table, langtag)}
-      <OverlayHeadRowIdentificator langtag={langtag} cell={cell} />
+      <div className="history-filter-area__context">
+        {getTableDisplayName(cell.table, langtag)}
+      </div>
+      <div className="history-filter-area__title">
+        <OverlayHeadRowIdentificator langtag={langtag} cell={cell} />
+      </div>
       <SearchBar
         onChange={setFilterValue}
         value={filter.value}
@@ -42,28 +49,42 @@ const HistoryFilterArea = props => {
         filterSettingsOpen={filterSettingsOpen}
         filter={filter}
         updateFilter={updateFilter}
+        resetFilter={resetFilter}
       />
     </div>
   );
+};
+
+const emptyFilterSpec = {
+  value: f.isEmpty,
+  author: f.isEmpty,
+  showAnnotations: f.complement(f.identity),
+  showComments: f.complement(f.identity),
+  fromDate: x => f.isEmpty(x) || !moment(x).isValid(),
+  toDate: x => f.isEmpty(x) || !moment(x).isValid()
 };
 
 const FilterArea = ({
   toggleFilterSettings,
   filterSettingsOpen,
   filter,
-  updateFilter
+  updateFilter,
+  resetFilter
 }) => {
+  const areFiltersSet = !validate(emptyFilterSpec, filter);
+  console.log(filter, check(emptyFilterSpec)(filter), areFiltersSet);
   const cssClass = classNames("button history-filter__toggle-filters-button", {
-    "toggle-filter-button--open": filterSettingsOpen
+    "toggle-filters-button--open": filterSettingsOpen,
+    "toggle-filters-button--has-filters": areFiltersSet
   });
 
   const arrowClass = classNames("toggle-filter-button__arrow fa", {
-    "fa-wedge-up": filterSettingsOpen,
-    "fe-wedge-down": !filterSettingsOpen
+    "fa-angle-up": filterSettingsOpen,
+    "fa-angle-down": !filterSettingsOpen
   });
 
   const clearButtonClass = classNames("history-filter__clear-filters-button", {
-    "clear-button__active": f.every(x => f.isEmpty(x) || !x, f.values(filter))
+    "clear-filters-button--has-filters": areFiltersSet
   });
 
   return (
@@ -76,16 +97,17 @@ const FilterArea = ({
           </div>
           <i className={arrowClass} />
         </div>
-      </div>
-      <div className={clearButtonClass}>
-        <i className="fa fa-clear" />
-        <div className="clear-filter-button__text">
-          {i18n.t("history:reset-filters")}
+        <div className={clearButtonClass} onClick={resetFilter}>
+          <i className="fa fa-minus-circle" />
+          <div className="clear-filter-button__text">
+            {i18n.t("history:reset-filters")}
+          </div>
         </div>
       </div>
+
       {filterSettingsOpen ? (
         <FilterPopup
-          {...filter}
+          areFiltersSet={areFiltersSet}
           filter={filter || {}}
           updateFilter={updateFilter}
         />
@@ -98,11 +120,17 @@ const FilterPopup = ({
   showAnnotations,
   showComments,
   filter,
-  updateFilter
+  updateFilter,
+  areFiltersSet
 }) => {
   const toggle = key => event => updateFilter(key, event.target.checked);
   return (
-    <div className="history-popup__body">
+    <div
+      className={
+        "history-popup__body" +
+        (areFiltersSet ? " popup-body--has-filters" : "")
+      }
+    >
       <div className="history-popup__item item--large item__select-author">
         <div className="history-popup-item__header">
           {i18n.t("history:filter-author")}
