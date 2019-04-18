@@ -28,17 +28,19 @@ const RevisionItem = props => {
     >
       <div className="revision-item__header">
         <div className="revision-item-header__dot" />
-        <div className="revision-item-header__time">
-          {getTime(revision.timestamp)}
+        <div className="revision-item-header__description">
+          <div className="revision-item-header__time">
+            {getTime(revision.timestamp)}
+          </div>
+          <div className="revision-item-header__title">
+            {i18n.t(`history:${revision.event}`)}
+          </div>
+          <div className="revision-item-header__separator">&mdash;</div>
+          <div className="revision-item-header__author">{revision.author}</div>
         </div>
-        <div className="revision-item-header__title">
-          {i18n.t(`history:${revision.event}`)}
-        </div>
-        --
-        <div className="revision-item-header__author">{revision.author}</div>
         <div className="revision-item-header__revert-button">
           <div className="revert-button__text">{i18n.t("history:revert")}</div>
-          <div className="revert-button__icon">ICON</div>
+          <i className="revert-button__icon fa fa-history" />
         </div>
       </div>
       <div className="revision-item__content">

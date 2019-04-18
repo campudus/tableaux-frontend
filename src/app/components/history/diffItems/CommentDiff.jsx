@@ -7,16 +7,13 @@ const CommentDiff = props => {
   } = props;
 
   return (
-    <div className="diff-comment-item">
-      <div className="diff-event">
-        {i18n.t(
-          `history:comment_${event.endsWith("added") ? "added" : "deleted"}`
-        )}
-      </div>
-      <div className="diff-comment-item__comment-value">
+    <div className={"diff-comment-item" + " " + event}>
+      <i className="fa fa-commenting diff-comment-item__icon" />
+      <div className={"diff-comment-item__comment-value" + " " + event}>
         {i18n.t(`history:${value}`)}
       </div>
     </div>
   );
 };
+
 export default CommentDiff;

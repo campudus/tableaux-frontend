@@ -18,7 +18,10 @@ const RevisionItemBlock = props => {
   return (
     <div className="revision-block">
       <div className="revision__item">
-        <div className="revision-block__header">{date}</div>
+        <div className="revision-block__header">
+          <div className="revision-block__header-date">{date}</div>
+          <div className="revision-block__header-separator" />
+        </div>
       </div>
       {revisions.map(rev => (
         <RevisionItem
