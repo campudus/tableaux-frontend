@@ -107,6 +107,7 @@ const FilterArea = ({
 
       {filterSettingsOpen ? (
         <FilterPopup
+          {...filter}
           areFiltersSet={areFiltersSet}
           filter={filter || {}}
           updateFilter={updateFilter}
