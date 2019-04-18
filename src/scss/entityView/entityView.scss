@@ -38,7 +38,10 @@
   padding-top: 10px;
   display: flex;
 
-  .action-item {
+
+}
+
+.action-item {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -82,7 +85,6 @@
       border-color: $color-postpone;
     }
   }
-}
 
 .overlay .entity-view {
   .rich-text-wrapper {
