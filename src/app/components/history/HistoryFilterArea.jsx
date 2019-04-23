@@ -93,7 +93,7 @@ const FilterArea = ({
         <div className={cssClass} onClick={toggleFilterSettings}>
           <i className="fa fa-filter" />
           <div className="toggle-filter-button__text">
-            {i18n.t("common:filter")}
+            {i18n.t("history:toggle-filter-display")}
           </div>
           <i className={arrowClass} />
         </div>
@@ -144,7 +144,7 @@ const FilterPopup = ({
       </div>
       <div className="history-popup__item item--small item__select-from">
         <div className="history-popup-item__header">
-          {i18n.t("common:from")}
+          {i18n.t("history:from-date")}
         </div>
         <DatePicker
           dateFormat={true}
@@ -154,7 +154,9 @@ const FilterPopup = ({
         />
       </div>
       <div className="history-popup__item item--small item__select-to">
-        <div className="history-popup-item__header">{i18n.t("common:to")}</div>
+        <div className="history-popup-item__header">
+          {i18n.t("history:to-date")}
+        </div>
         <DatePicker
           dateFormat={true}
           timeFormat={false}
@@ -164,7 +166,7 @@ const FilterPopup = ({
       </div>
       <div className="history-popup__item item--small item__select-annotations">
         <div className="history-popup-item__header">
-          {i18n.t("common:annotations")}
+          {i18n.t("history:show-annotations")}
         </div>
         <input
           key={showAnnotations ? "checked" : "unchecked"}
@@ -176,7 +178,7 @@ const FilterPopup = ({
       </div>
       <div className="history-popup__item item--small item__select-comments">
         <div className="history-popup-item__header">
-          {i18n.t("common:comments")}
+          {i18n.t("history:show-comments")}
         </div>
         <input
           key={showComments ? "checked" : "unchecked"}

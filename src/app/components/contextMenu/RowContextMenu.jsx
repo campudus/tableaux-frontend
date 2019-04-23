@@ -334,7 +334,7 @@ class RowContextMenu extends React.Component {
           : this.mkItem(deleteRow, "delete_row", "trash-o")}
         {this.mkItem(showDependency, "show_dependency", "code-fork")}
         {this.mkItem(showTranslations, "show_translation", "flag")}
-        {this.mkItem(this.showHistory, "show_history", "clock-o")}
+        {this.mkItem(this.showHistory, "history:show_history", "clock-o")}
         {this.setFinalItem()}
       </GenericContextMenu>
     );
