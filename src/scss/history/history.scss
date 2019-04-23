@@ -150,6 +150,13 @@
   background-color: $color-revision-filter-background;
   color: white;
   padding: 15px 50px;
+// The picker sets the same color to most elements inside the filter area
+.history-filter-area .rdtPicker {
+  color: black;
+  .rdtDay:hover {
+    background-color: $color-primary;
+    color: $color-primary-contrast-text;
+  }
 }
 
 .history-popup__header {
