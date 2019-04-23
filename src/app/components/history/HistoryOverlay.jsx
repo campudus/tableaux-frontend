@@ -19,7 +19,8 @@ export const openHistoryOverlay = ({ cell, langtag }) => {
       body: <HistoryBody cell={cell} langtag={langtag} />,
       cell,
       context: i18n.t("history:header-context"),
-      type: "full-height"
+      type: "full-height",
+      classes: "revision-history-overlay"
     })
   );
 };

@@ -1,3 +1,7 @@
+.revision-history-overlay .overlay-content {
+
+}
+
 .revision__item {
   margin: 0 0 0 20px;
   padding: 10px 20px;
@@ -146,10 +150,25 @@
   margin-bottom: 20px;
 }
 
+.revision-history-overlay .overlay-content .history-overlay__body {
+  margin: 0;
+}
+
+.revision-history-overlay .overlay-content {
+  overflow: hidden;
+}
+
+.history-overlay__content {
+  overflow-y: auto;
+}
+
 .history-filter-area {
   background-color: $color-revision-filter-background;
   color: white;
   padding: 15px 50px;
+  margin: 0;
+}
+
 // The picker sets the same color to most elements inside the filter area
 .history-filter-area .rdtPicker {
   color: black;

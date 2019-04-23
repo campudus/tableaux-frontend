@@ -16,7 +16,7 @@ import {
   notEnoughEntries,
   reduceRevisionHistory,
   valueMatchesFilter
-} from './history-helpers';
+} from "./history-helpers";
 import { makeRequest } from "../../helpers/apiHelper";
 import { validateProp } from "../../specs/type";
 import HistoryFilterArea from "./HistoryFilterArea";
@@ -102,24 +102,28 @@ const HistoryBody = props => {
   return (
     <div className="history-overlay__body">
       <HistoryFilterArea {...props} />
-      {doto(
-        revisions,
-        reduceRevisionHistory(column),
-        getVisibleRevisions,
-        f.groupBy(getCreationDay),
-        obj =>
-          f
-            .keys(obj)
-            .map(timestamp => (
-              <RevisionItemBlock
-                key={timestamp}
-                cell={cell}
-                date={timestamp}
-                revisions={obj[timestamp]}
-                langtag={contentLangtag}
-              />
-            ))
-      )}
+      <div className="history-overlay__content">
+        <div className="history-overlay__content-scroller">
+          {doto(
+            revisions,
+            reduceRevisionHistory(column),
+            getVisibleRevisions,
+            f.groupBy(getCreationDay),
+            obj =>
+              f
+                .keys(obj)
+                .map(timestamp => (
+                  <RevisionItemBlock
+                    key={timestamp}
+                    cell={cell}
+                    date={timestamp}
+                    revisions={obj[timestamp]}
+                    langtag={contentLangtag}
+                  />
+                ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };
