@@ -297,3 +297,44 @@
     }
   }
 }
+
+.confirm-revert {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+}
+
+.confirm-revert__preview {
+  width: 100%;
+  box-shadow: -7px 0px 15px $color-text-medium-grey;
+}
+
+.confirm-revert__preview .revision-item__content {
+  padding: 20px;
+  margin: 20px;
+}
+
+.confirm-revert-preview__header {
+  margin: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+  color: transparentize($color-very-dark, 0.3);
+}
+
+.confirm-revert-preview__date-string {
+  color: $color-text-medium-grey;
+  text-align: left;
+  display: flex;
+  margin: 20px;
+}
+
+.confirm-revert-preview__date {
+  margin: 0 5px;
+}
+
+.overlay .revision-history-overlay .confirm-revert {
+  padding: 0;
+  margin: 0
+}

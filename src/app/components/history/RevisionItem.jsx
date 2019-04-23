@@ -7,18 +7,25 @@ import classNames from "classnames";
 
 import { calcRevisionDiff } from "./differ";
 import { cellSpec } from "../../specs/cell-spec";
+import { confirmHistoryRevert } from "./HistoryOverlay";
 import { validateProp } from "../../specs/type";
 import Diff from "./diffItems/Diff";
 
 const RevisionItem = props => {
-  const { revision, langtag, revertHere, cell } = props;
+  const { revision, langtag, cell } = props;
   const [hovered, setHoverState] = useState(false);
 
   const cssClass = classNames("revision__item", {
-    "revision-item--hovered": hovered
+    "revision-item--hovered": hovered && revision.revertable
   });
 
   const diff = calcRevisionDiff(cell, langtag, revision);
+
+  console.log("revisionItem", props);
+
+  const revertHere = () => {
+    confirmHistoryRevert({ cell, langtag, revision });
+  };
 
   return (
     <div
@@ -38,10 +45,14 @@ const RevisionItem = props => {
           <div className="revision-item-header__separator">&mdash;</div>
           <div className="revision-item-header__author">{revision.author}</div>
         </div>
-        <div className="revision-item-header__revert-button">
+        <a
+          className="revision-item-header__revert-button"
+          href="#"
+          onClick={revertHere}
+        >
           <div className="revert-button__text">{i18n.t("history:revert")}</div>
           <i className="revert-button__icon fa fa-history" />
-        </div>
+        </a>
       </div>
       <div className="revision-item__content">
         <div className="revision-item__content-box">
