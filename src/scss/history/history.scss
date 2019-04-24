@@ -6,6 +6,11 @@
   margin: 0 0 0 20px;
   padding: 10px 20px;
   border-left: 3px solid lighten($color-primary, 5);
+  &:last-of-type {
+    border-color: transparent;
+    border-image-width: 20px;
+    border-image: linear-gradient(lighten($color-primary, 5) 20px, transparent 1px) 1;
+  }
 }
 
 .revision-block__header {
