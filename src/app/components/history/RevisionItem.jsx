@@ -16,12 +16,11 @@ const RevisionItem = props => {
   const [hovered, setHoverState] = useState(false);
 
   const cssClass = classNames("revision__item", {
-    "revision-item--hovered": hovered && revision.revertable
+    "revision-item--hovered": hovered && revision.revertable,
+    "revision-item--non-consecutive": !revision.isConsecutive
   });
 
   const diff = calcRevisionDiff(cell, langtag, revision);
-
-  console.log("revisionItem", props);
 
   const revertHere = () => {
     confirmHistoryRevert({ cell, langtag, revision });

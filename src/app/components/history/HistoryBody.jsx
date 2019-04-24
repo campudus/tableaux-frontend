@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { cellSpec } from "../../specs/cell-spec";
-import { doto, when } from "../../helpers/functools";
+import { doto, mapIndexed, when } from '../../helpers/functools';
 import {
   filterAnnotations,
   filterComments,
@@ -75,7 +75,6 @@ const HistoryBody = props => {
   const filterFunction = f.allPass([
     filterAnnotations(filter),
     filterComments(filter),
-    matchesLangtag(contentLangtag),
     isCurrentEnough(filter),
     isOldEnough(filter),
     matchesUser(filter),
@@ -95,6 +94,8 @@ const HistoryBody = props => {
       })
     ),
     f.map(retrieveDisplayValue),
+    f.filter(matchesLangtag(contentLangtag)),
+    mapIndexed((rev, idx) => ({ ...rev, idx })),
     f.filter(filterFunction),
     f.compact
   );
@@ -111,7 +112,7 @@ const HistoryBody = props => {
             f.groupBy(getCreationDay),
             obj =>
               f
-                .keys(obj)
+                .reverse(f.keys(obj))
                 .map(timestamp => (
                   <RevisionItemBlock
                     key={timestamp}
