@@ -3,7 +3,7 @@ import i18n from "i18next";
 
 import ConfirmRevertOverlay from "./ConfirmRevertOverlay";
 import Footer from "../overlay/Footer";
-import Header, { SimpleHeader } from '../overlay/Header';
+import Header, { SimpleHeader } from "../overlay/Header";
 import HistoryBody from "./HistoryBody";
 import action from "../../redux/actionCreators";
 import getDisplayValue from "../../helpers/getDisplayValue";
@@ -26,7 +26,7 @@ export const confirmHistoryRevert = props => {
         store.dispatch(
           action.changeCellValue({
             cell,
-            newValue: revision.fullValue,
+            newValue: revision.value,
             oldValue: cell.value
           })
         )
