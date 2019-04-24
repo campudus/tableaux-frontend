@@ -29,11 +29,14 @@
 }
 
 .revision-item-header__dot {
-  border: 8px red;
-  border-radius: 8px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background-color: $color-text-light-grey;
   position: absolute;
-  left: -20px;
-  top: 50%;
+  top: 1px;
+  left: -27px;
+  height: 7px;
+  width: 7px;
 }
 
 .revision-item-header__description {
