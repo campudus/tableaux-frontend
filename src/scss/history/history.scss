@@ -160,6 +160,9 @@
 
 .revision-history-overlay .overlay-content .history-overlay__body {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .revision-history-overlay .overlay-content {
