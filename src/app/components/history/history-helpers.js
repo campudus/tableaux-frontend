@@ -2,6 +2,9 @@ import f from "lodash/fp";
 import moment from "moment";
 
 import { maybe, merge, when } from "../../helpers/functools";
+import { ColumnKinds } from "../../constants/TableauxConstants";
+
+const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
 
 // Recursive reduction might cause stack overflow after a couple of
 // tens of thousands of cell revisions
@@ -26,8 +29,9 @@ export const reduceRevisionHistory = column => revisions => {
       ...rev,
       langtags: changedLangtags,
       revertable:
-        rev.historyType.startsWith("cell") &&
-        (rev.valueType === column.kind || rev.event.startsWith("annotation")),
+        rev.event === "cell_changed" && // only cell changes may be reverted
+        rev.valueType === column.kind && // when the column changed, the value is meaningless
+        !f.contains(column.kind, NON_REVERTABLE_COLUMNS), // links or files may no longer exist
       prevContent: previousRevision.fullValue,
       fullValue: cellContentChanged
         ? isMultiLanguage
