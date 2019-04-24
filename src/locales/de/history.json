@@ -21,5 +21,6 @@
     "show-comments": "Kommentare zeigen",
     "history-view": "Änderungsverlauf",
     "show_history": "Änderungsverlauf zeigen",
-    "toggle-filter-display": "Verlauf filtern"
+    "toggle-filter-display": "Verlauf filtern",
+    "current-status": "Stand zum aktuellen Zeitpunkt"
 }

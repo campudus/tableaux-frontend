@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
 import { cellSpec } from "../../specs/cell-spec";
-import { doto, mapIndexed, when } from '../../helpers/functools';
+import { doto, mapIndexed, when } from "../../helpers/functools";
 import {
   filterAnnotations,
   filterComments,
@@ -121,7 +122,19 @@ const HistoryBody = props => {
                     revisions={obj[timestamp]}
                     langtag={contentLangtag}
                   />
-                ))
+                )),
+            f.concat(
+              <div className="revision-block">
+                <div className="revision__item">
+                  <div className="revision-item__header">
+                    <div className="revision-item-header__dot" />
+                    <div className="revision-item-header__title">
+                      {i18n.t("history:current-status")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
           )}
         </div>
       </div>

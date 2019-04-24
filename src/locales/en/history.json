@@ -8,7 +8,7 @@
     "row_was_created": "The row was created",
     "annotation_added": "An annotation was added",
     "annotation_removed": "An annotation was removed",
-    "comment_added": "a comment was added",
+    "comment_added": "A comment was added",
     "comment_removed": "A comment was removed",
     "cell_changed": "The cell content changed",
     "filter": "Filter history",
@@ -21,5 +21,6 @@
     "show-comments": "Show comments",
     "history-view": "History of changes",
     "show_history": "Show history of changes",
-    "toggle-filter-display": "Filter history"
+    "toggle-filter-display": "Filter history",
+    "current-status": "Current state"
 }
