@@ -110,4 +110,4 @@ export const valueMatchesFilter = (filter, contentLangtag) =>
             )(revision)
           : revision.historyType === "cell_comment"
           ? f.contains(filter.value.toLowerCase(), revision.value.toLowerCase())
-          : false;
+          : true;

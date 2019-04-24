@@ -191,40 +191,29 @@ describe("Revision history filters", () => {
   });
 
   describe("valueMatchesFilter()", () => {
-    it("only respects changes to cell value or comments", () => {
-      const filteredRevisions = revisions.filter(
-        valueMatchesFilter({ value: "m" }, "de-DE")
-      ); // flag `important` would pass the value test for it contains `m`
-
-      filteredRevisions.forEach(({ historyType, event }) => {
-        expect(event === "cell_changed" || historyType === "cell_comment").toBe(
-          true
-        );
-      });
-    });
-
     it("filters values language specific", () => {
+      // Test contains 5 row events, which don't get eliminated by the filter
       expect(
         revisions.filter(valueMatchesFilter({ value: "München" }, "de-DE"))
           .length
-      ).toBe(29);
+      ).toBe(34);
       expect(
         revisions.filter(valueMatchesFilter({ value: "München" }, "en-GB"))
           .length
-      ).toBe(0);
+      ).toBe(5);
 
       expect(
         revisions.filter(valueMatchesFilter({ value: "Munich" }, "de-DE"))
           .length
-      ).toBe(0);
+      ).toBe(5);
       expect(
         revisions.filter(valueMatchesFilter({ value: "Munich" }, "en-GB"))
           .length
-      ).toBe(30);
+      ).toBe(35);
 
       expect(
         revisions.filter(valueMatchesFilter({ value: "erz" }, "de-DE")).length
-      ).toBe(5);
+      ).toBe(10);
 
       // `foo` matches only comments so it must appear in all langtags
       expect(
@@ -244,7 +233,7 @@ describe("Revision history filters", () => {
       expect(valueMatchesFilter({ value: null })()).toBe(true);
       expect(valueMatchesFilter({}, null)()).toBe(true);
       expect(valueMatchesFilter({ value: "something" }, null)()).toBe(true);
-      expect(valueMatchesFilter({ value: "something" }, "de")()).toBe(false);
+      expect(valueMatchesFilter({ value: "something" }, "de")()).toBe(true);
     });
   });
 
