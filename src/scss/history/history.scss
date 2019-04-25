@@ -107,6 +107,24 @@
   flex-wrap: wrap;
 }
 
+.country-diff__sub-header {
+  display: flex;
+  font-weight: bold;
+  margin: 5px 0;
+
+  .langtag-label {
+    margin: 0 5px;
+  }
+}
+
+.country-diff__group {
+  display: flex;
+
+  .content-diff {
+    margin-right: 5px;
+  }
+}
+
 .link-diff {
   margin: 2px;
   padding: 8px;
