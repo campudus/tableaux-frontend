@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { check, validate } from "../../specs/type";
+import { DateFormats } from "../../constants/TableauxConstants";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 import SearchBar from "../helperComponents/SearchBar";
@@ -118,6 +119,44 @@ const FilterArea = ({
   );
 };
 
+const HistoryDatePicker = props => {
+  const { value, handleChange, placeholder } = props;
+  const [open, setOpen] = useState(false);
+  const toggleOpen = () => setOpen(!open);
+
+  return (
+    <div className="history-date-picker">
+      <a
+        className="history-date-picker__picker-button"
+        href=""
+        onClick={toggleOpen}
+      >
+        <i className="fa fa-calendar history-date-picker__button-icon" />
+        <div className="history-date-picker__date">
+          {value
+            ? value.format(DateFormats.formatForUser)
+            : i18n.t(placeholder)}
+        </div>
+        {open && (
+          <DatePicker
+            open={true}
+            onChange={handleChange}
+            value={value}
+            timeFormat={false}
+          />
+        )}
+      </a>
+      <a
+        className="history-date-picker__clear-button history-date-picker__button-icon"
+        href=""
+        onClick={() => handleChange(null)}
+      >
+        <i className="fa fa-minus-circle history-date-picker__buton-icon" />
+      </a>
+    </div>
+  );
+};
+
 const FilterPopup = ({
   showAnnotations,
   showComments,
@@ -143,25 +182,23 @@ const FilterPopup = ({
           placeholder={i18n.t("history:type-or-pick")}
         />
       </div>
-      <div className="history-popup__item item--small item__select-from">
+      <div className="history-popup__item item--small history-popup-item--datepicker item__select-from">
         <div className="history-popup-item__header">
           {i18n.t("history:from-date")}
         </div>
-        <DatePicker
-          dateFormat={true}
-          timeFormat={false}
-          onChange={updateFilter("fromDate")}
+        <HistoryDatePicker
+          handleChange={updateFilter("fromDate")}
+          placeholder={"history:row_created"}
           value={filter.fromDate}
         />
       </div>
-      <div className="history-popup__item item--small item__select-to">
+      <div className="history-popup__item item--small history-popup-item--datepicker item__select-to">
         <div className="history-popup-item__header">
           {i18n.t("history:to-date")}
         </div>
-        <DatePicker
-          dateFormat={true}
-          timeFormat={false}
-          onChange={updateFilter("toDate")}
+        <HistoryDatePicker
+          handleChange={updateFilter("toDate")}
+          placeholder={"history:current-status"}
           value={filter.toDate}
         />
       </div>

@@ -300,7 +300,7 @@
   &.item__select-from, &.item__select-to, &.item__select-author {
     border-bottom: 1px solid $color-primary;
 
-    .form-control, .search-bar__input {
+    .search-bar__input {
       color: $color-text-light-grey;
       border-bottom: none !important;
     }
@@ -317,6 +317,43 @@
       background-color: transparent;
     }
   }
+}
+
+.history-date-picker {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
+
+.history-date-picker .rdt {
+  position: absolute;
+  left: 0;
+  top: 28px;
+}
+
+.history-date-picker__picker-button {
+  flex: 1;
+  display: flex;
+  margin: 3px 5px;
+}
+
+.history-date-picker__clear-button {
+  margin: 3px 5px;
+}
+
+.history-date-picker__button-icon {
+  color: $color-primary;
+}
+
+.history-date-picker__date {
+  margin-left: 5px;
+  color: $color-text-light-grey;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.form-control {
+  display: none;
 }
 
 .confirm-revert {
