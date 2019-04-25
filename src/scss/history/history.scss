@@ -3,6 +3,16 @@
   left: 35vw;
 }
 
+.revision-history__header {
+  display: flex;
+}
+
+.revision-history-header__icon {
+  color: $color-primary;
+  margin-right: 10px;
+  font-weight: normal;
+}
+
 .revision__item {
   margin: 0 0 0 20px;
   padding: 10px 20px;

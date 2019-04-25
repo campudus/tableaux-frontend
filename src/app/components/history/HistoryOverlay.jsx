@@ -61,7 +61,14 @@ export const openHistoryOverlay = ({ cell, langtag }) => {
       head: (
         <SimpleHeader
           langtag={langtag}
-          title={i18n.t("history:history-view")}
+          title={
+            <div className="revision-history__header">
+              <i className="fa fa-history revision-history-header__icon" />
+              <div className="revision-hisory-header__title">
+                {i18n.t("history:history-view")}
+              </div>
+            </div>
+          }
         />
       ),
       body: <HistoryBody cell={cell} langtag={langtag} />,
