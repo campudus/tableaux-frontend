@@ -5,7 +5,7 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import { cellSpec } from "../../specs/cell-spec";
-import { doto, mapIndexed, when } from "../../helpers/functools";
+import { doto, mapIndexed } from "../../helpers/functools";
 import {
   filterAnnotations,
   filterComments,
@@ -14,7 +14,6 @@ import {
   isOldEnough,
   matchesLangtag,
   matchesUser,
-  notEnoughEntries,
   reduceRevisionHistory,
   valueMatchesFilter
 } from "./history-helpers";
@@ -83,17 +82,6 @@ const HistoryBody = props => {
   ]);
 
   const getVisibleRevisions = f.pipe(
-    when(
-      // If no history exists yet, add current state
-      notEnoughEntries,
-      f.concat(f.__, {
-        value: cell.value,
-        columnType: cell.column.kind,
-        column_id: column.id, // eslint-disable-line camelcase
-        row_id: row.id, // eslint-disable-line camelcase
-        event: "cell_changed"
-      })
-    ),
     f.map(retrieveDisplayValue),
     f.filter(matchesLangtag(contentLangtag)),
     mapIndexed((rev, idx) => ({ ...rev, idx })),

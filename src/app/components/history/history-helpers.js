@@ -48,8 +48,6 @@ export const reduceRevisionHistory = column => revisions => {
   return reducedRevisions;
 };
 
-export const notEnoughEntries = revs => revs.length < 2;
-
 export const getCreationDay = f.compose(
   f.invokeArgs("substring", [0, 10]),
   f.propOr("", "timestamp")
