@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 import moment from "moment";
+import withClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -122,6 +123,9 @@ const HistoryDatePicker = props => {
   const { value, handleChange, placeholder } = props;
   const [open, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!open);
+  const closePopup = () => setOpen(false);
+
+  const SelfClosingDatePicker = withClickOutside(DatePicker);
 
   return (
     <div className="history-date-picker">
@@ -137,11 +141,12 @@ const HistoryDatePicker = props => {
             : i18n.t(placeholder)}
         </div>
         {open && (
-          <DatePicker
+          <SelfClosingDatePicker
             open={true}
             onChange={handleChange}
             value={value}
             timeFormat={false}
+            handleClickOutside={closePopup}
           />
         )}
       </a>
