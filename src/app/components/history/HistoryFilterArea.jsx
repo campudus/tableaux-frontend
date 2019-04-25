@@ -7,9 +7,9 @@ import moment from "moment";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { check, validate } from "../../specs/type";
 import { DateFormats } from "../../constants/TableauxConstants";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
+import { validate } from "../../specs/type";
 import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 import SearchBar from "../helperComponents/SearchBar";
 
@@ -74,7 +74,6 @@ const FilterArea = ({
   resetFilter
 }) => {
   const areFiltersSet = !validate(emptyFilterSpec, filter);
-  console.log(filter, check(emptyFilterSpec)(filter), areFiltersSet);
   const cssClass = classNames("button history-filter__toggle-filters-button", {
     "toggle-filters-button--open": filterSettingsOpen,
     "toggle-filters-button--has-filters": areFiltersSet

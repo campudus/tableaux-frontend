@@ -1,4 +1,4 @@
-/* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
+/* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity, lodash-fp/consistent-name */
 
 import, fp {
 compact,

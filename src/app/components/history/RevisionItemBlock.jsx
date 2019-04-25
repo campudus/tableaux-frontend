@@ -15,8 +15,6 @@ const RevisionItemBlock = props => {
   const revisions = f.compose(
     f.reverse,
     mapIndexed((rev, idx) => {
-      idx > 0 &&
-        console.log("revision", rev.idx, "=>", props.revisions[idx - 1].idx);
       return {
         ...rev,
         isConsecutive: idx === 0 || rev.idx === props.revisions[idx - 1].idx + 1

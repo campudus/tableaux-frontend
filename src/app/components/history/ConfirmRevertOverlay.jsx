@@ -18,7 +18,6 @@ const ConfirmRevertOverlay = ({ cell, langtag, revision }) => {
     prevDisplayValue: revision.displayValue
   });
 
-  console.log({ revision, diffLeft });
   return (
     <div className="confirm-revert">
       <div className="confirm-revert__preview confirm-revert-preview__left">
