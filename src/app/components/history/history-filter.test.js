@@ -30,14 +30,16 @@ describe("Revision history filters", () => {
     });
 
     it("flags changes which can not be reverted to", () => {
-      f.tail(revisions).forEach(rev => expect(rev.revertable).toBe(true));
+      f.tail(revisions).forEach(rev =>
+        expect(rev.revertable).toBe(rev.event === "cell_changed")
+      );
       for (let i = 0; i < 10; ++i) {
         const columnChanged =
           (((Math.random() * revisions.length) / 2) | 0) + revisions.length / 4;
 
         // Only change column type in cell changes before `columnChanged`
         const shouldKeepRevision = (idx, rev) =>
-          idx > columnChanged || rev.event !== "cell_changed";
+          idx > columnChanged && rev.event === "cell_changed";
 
         const changedRevisions = f.compose(
           reduceRevisionHistory(column),
