@@ -43,6 +43,7 @@ const HistoryFilterArea = props => {
         onChange={setFilterValue}
         value={filter.value}
         icon={<i className="fa fa-search" />}
+        placeholder={i18n.t("history:type-to-filter")}
       />
       <FilterArea
         toggleFilterSettings={toggleFilterSettings}
