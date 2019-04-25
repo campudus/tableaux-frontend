@@ -112,7 +112,7 @@ const HistoryBody = props => {
                   />
                 )),
             f.concat(
-              <div className="revision-block">
+              <div key="current-state" className="revision-block">
                 <div className="revision__item">
                   <div className="revision-item__header">
                     <div className="revision-item-header__dot" />
