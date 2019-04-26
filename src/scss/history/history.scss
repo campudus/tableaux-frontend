@@ -13,6 +13,12 @@
   font-weight: normal;
 }
 
+.revision-history-header__language-switcher {
+  grid-column-start: 4;
+  grid-column-end: 6;
+  -ms-grid-column: 4;
+}
+
 .revision__item {
   margin: 0 0 0 20px;
   padding: 10px 20px;

@@ -3,8 +3,9 @@ import i18n from "i18next";
 
 import ConfirmRevertOverlay from "./ConfirmRevertOverlay";
 import Footer from "../overlay/Footer";
-import Header, { SimpleHeader } from "../overlay/Header";
+import Header from "../overlay/Header";
 import HistoryBody from "./HistoryBody";
+import HistoryHeader from "./HistoryHeader";
 import action from "../../redux/actionCreators";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import store from "../../redux/store";
@@ -58,19 +59,7 @@ export const confirmHistoryRevert = props => {
 export const openHistoryOverlay = ({ cell, langtag }) => {
   store.dispatch(
     action.openOverlay({
-      head: (
-        <SimpleHeader
-          langtag={langtag}
-          title={
-            <div className="revision-history__header">
-              <i className="fa fa-history revision-history-header__icon" />
-              <div className="revision-hisory-header__title">
-                {i18n.t("history:history-view")}
-              </div>
-            </div>
-          }
-        />
-      ),
+      head: <HistoryHeader langtag={langtag} />,
       body: <HistoryBody cell={cell} langtag={langtag} />,
       cell,
       context: i18n.t("history:header-context"),
