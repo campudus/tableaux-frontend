@@ -52,6 +52,14 @@ class RowContextMenu extends React.Component {
 
   showHistory = () => {
     const { cell, langtag } = this.props;
+    // Scroll selected cell to the left so it's visible beneath the overlay
+    this.props.actions.toggleCellSelection({
+      columnId: cell.column.id,
+      rowId: cell.row.id,
+      langtag,
+      align: "start",
+      select: true
+    });
     openHistoryOverlay({ cell, langtag });
   };
 

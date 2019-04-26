@@ -163,11 +163,12 @@ const toggleSelectedCell = (state, action) => {
   return f.flow(
     f.assoc("editing", false),
     f.update("selectedCell", prevSelection =>
-      action.select !== false &&
-      (prevSelection.rowId !== action.rowId ||
-        prevSelection.columnId !== action.columnId ||
-        prevSelection.langtag !== action.langtag)
-        ? f.pick(["rowId", "columnId", "langtag"], action)
+      (action.select !== false &&
+        (prevSelection.rowId !== action.rowId ||
+          prevSelection.columnId !== action.columnId ||
+          prevSelection.langtag !== action.langtag)) ||
+      prevSelection.align !== action.align
+        ? f.pick(["rowId", "columnId", "langtag", "align"], action)
         : {}
     )
   )(state);

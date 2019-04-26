@@ -483,6 +483,7 @@ export default class VirtualTable extends PureComponent {
       scrolledCell: {
         columnIndex,
         rowIndex,
+        align: cell.align,
         scrolledCell: cell
       }
     });
@@ -541,7 +542,7 @@ export default class VirtualTable extends PureComponent {
       langtag
     } = this.props;
     const { openAnnotations, scrolledCell } = this.state;
-    const { columnIndex, rowIndex } = scrolledCell;
+    const { columnIndex, rowIndex, align } = scrolledCell;
     this.visibleColumnIndices = f
       .range(0, columns.length)
       .filter(this.filterVisibleCells);
@@ -593,6 +594,7 @@ export default class VirtualTable extends PureComponent {
                 openAnnotations={!!openAnnotations && openAnnotations.cellId}
                 scrollToRow={rowIndex}
                 scrollToColumn={columnIndex}
+                scrollToAlignment={align}
                 columnKeys={columnKeys}
                 overscanColumnCount={5}
                 overscanRowCount={6}
