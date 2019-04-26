@@ -17,6 +17,7 @@
   grid-column-start: 4;
   grid-column-end: 6;
   -ms-grid-column: 4;
+  -ms-grid-column-span: 3;
 }
 
 .revision__item {
@@ -288,7 +289,9 @@
   padding: 10px;
   padding-bottom: 0;
   display: grid;
+  display: -ms-grid;
   grid-template-columns: 1fr 1fr;
+  -ms-grid-columns: 1fr 1fr;
 
   &.popup-body--has-filters {
     border-color: $color-primary;
@@ -343,6 +346,8 @@
   &.item--large {
     grid-column-start: 1;
     grid-column-end: 3;
+    -ms-grid-column: 1;
+    -ms-grid-column-span: 3;
   }
 
   &.item__select-author {
@@ -392,8 +397,10 @@
 
 .confirm-revert {
   display: grid;
+  display: -ms-grid;
   width: 100%;
   grid-template-columns: 1fr 1fr;
+  -ms-grid-columns: 1fr 1fr;
   text-align: center;
 }
 
@@ -429,4 +436,45 @@
 .overlay .revision-history-overlay .confirm-revert {
   padding: 0;
   margin: 0
+}
+
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+// ------ IE needs every grid item to be placed manually
+
+  .item__select-from {
+    -ms-grid-column: 1;
+    -ms-grid-row: 2;
+  }
+
+  .item__select-to {
+    -ms-grid-column: 2;
+    -ms-grid-row: 2;
+  }
+
+  .item__select-annotations {
+    -ms-grid-column: 1;
+    -ms-grid-row: 3;
+  }
+
+  .item__select-comments {
+    -ms-grid-column: 2;
+    -ms-grid-row: 3;
+  }
+
+  .confirm-revert-preview__left {
+    -ms-grid-column: 1;
+  }
+
+  .confirm-revert-preview__right {
+    -ms-grid-column: 2;
+  }
+
+// ----- and ID places stuff wrong
+
+  .overlay .revision-history-overlay.overlay-wrapper.full-height.is-right:not(.is-left) {
+    transition: none;
+    left: 55vw;
+  }
+
 }
