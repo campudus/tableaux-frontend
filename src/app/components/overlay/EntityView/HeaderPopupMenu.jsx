@@ -112,7 +112,7 @@ class HeaderPopupMenu extends Component {
     const buttonClass = classNames("popup-button", { "is-open": open });
     const translationInfo = {
       show: true,
-      cell: addCellId(cell)
+      cell: addCellId(f.get(["row", "cells", 1], this.props))
     };
 
     const hasElements = queueName =>
