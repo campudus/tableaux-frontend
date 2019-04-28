@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import AnnotationPopup from "./AnnotationPopup";
 import f from "lodash/fp";
@@ -32,8 +31,9 @@ const TextAnnotationButton = props => {
         open ? "ignore-react-onclickoutside" : ""
       }`}
       onClick={handleClick}
+      ref={rememberNode}
     >
-      <i className="fa fa-commenting" ref={rememberNode} />
+      <i className="fa fa-commenting" />
       {open ? (
         <AnnotationPopup
           nAnnotations={f.size(annotations)}
