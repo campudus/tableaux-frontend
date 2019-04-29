@@ -110,9 +110,10 @@ class HeaderPopupMenu extends Component {
     const row = f.head(f.filter(row => row.id === cell.row.id, rowDataOfTable));
     const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
+    const cells = f.get(["row", "cells"], this.props);
     const translationInfo = {
       show: true,
-      cell: addCellId(f.get(["row", "cells", 1], this.props))
+      cell: addCellId(cells[1] || cells[0])
     };
 
     const hasElements = queueName =>
