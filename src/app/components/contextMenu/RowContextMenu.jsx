@@ -56,6 +56,7 @@ class RowContextMenu extends React.Component {
     this.props.actions.toggleCellSelection({
       columnId: cell.column.id,
       rowId: cell.row.id,
+      tableId: cell.table.id,
       langtag,
       align: "start",
       select: true
