@@ -414,6 +414,11 @@
   margin: 20px;
 }
 
+.revisin-item__content-box {
+  overflow: hidden;
+  overflow-x: auto;
+}
+
 .confirm-revert-preview__header {
   margin: 20px;
   font-size: 14px;
