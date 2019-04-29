@@ -10,7 +10,6 @@ const TextAnnotationButton = props => {
 
   const handleClick = event => {
     event.stopPropagation();
-    rememberNode(event.target);
     if (!open) {
       togglePopup(cell);
     } else {
