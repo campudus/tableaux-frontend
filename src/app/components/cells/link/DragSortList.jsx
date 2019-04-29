@@ -6,6 +6,7 @@ import { DragDropContext, DragSource, DropTarget } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import classNames from "classnames";
 import f from "lodash/fp";
+import { compose, withStateHandlers, lifecycle } from "recompose";
 
 const ItemType = "item-type";
 
@@ -15,6 +16,9 @@ const itemSource = {
       id: props.id,
       index: props.index
     };
+  },
+  endDrag(props) {
+    props.applySwap();
   }
 };
 
@@ -26,7 +30,9 @@ const itemTarget = {
     if (dragIndex === hoverIndex) {
       return;
     }
-    props.swapItems(dragIndex, hoverIndex);
+
+    props.swapOrdering(dragIndex, hoverIndex);
+    // props.swapItems(dragIndex, hoverIndex);
     monitor.getItem().index = hoverIndex;
   }
 };
@@ -77,9 +83,21 @@ class DragSortList extends Component {
   };
 
   render() {
-    const { renderListItem, swapItems, rowResults } = this.props;
+    const {
+      renderListItem,
+      swapItems,
+      rowResults: { linked },
+      ordering,
+      swapOrdering,
+      applySwap
+    } = this.props;
     const items = f
-      .defaultTo([])(rowResults.linked)
+      .defaultTo([])(
+        f.map(id => {
+          const item = f.find(linkedItem => linkedItem.id === id, linked);
+          return item;
+        }, ordering)
+      )
       .map((row = {}, index) => {
         return {
           index,
@@ -89,7 +107,13 @@ class DragSortList extends Component {
     return (
       <div className="link-list">
         {items.map((item, idx) => (
-          <DragItem key={idx} index={idx} swapItems={swapItems}>
+          <DragItem
+            key={idx}
+            index={idx}
+            swapItems={swapItems}
+            applySwap={applySwap(ordering)}
+            swapOrdering={swapOrdering}
+          >
             {renderListItem({
               index: item.index,
               key: idx
@@ -101,4 +125,28 @@ class DragSortList extends Component {
   }
 }
 
-export default DragSortList;
+export default compose(
+  withStateHandlers(
+    { ordering: [] },
+    {
+      setOrdering: () => ordering => ({
+        ordering
+      }),
+      swapOrdering: ({ ordering }) => (dragIndex, hoverIndex) => {
+        const rearranged = f.flow(
+          f.assoc(dragIndex, f.get(hoverIndex, ordering)),
+          f.assoc(hoverIndex, f.get(dragIndex, ordering))
+        )(ordering);
+        return { ordering: rearranged };
+      }
+    }
+  ),
+  lifecycle({
+    componentWillReceiveProps(nextProps) {
+      const getLinked = f.getOr([], ["rowResults", "linked"]);
+      if (getLinked(this.props).length !== getLinked(nextProps).length) {
+        this.props.setOrdering(f.map("id", nextProps.rowResults.linked));
+      }
+    }
+  })
+)(DragSortList);

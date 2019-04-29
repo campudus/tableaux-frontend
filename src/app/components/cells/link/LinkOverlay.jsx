@@ -298,6 +298,28 @@ class LinkOverlay extends PureComponent {
     });
   };
 
+  applySwap = ordering => () => {
+    const {
+      value,
+      rowResults,
+      actions,
+      cell: { table, row, column }
+    } = this.props;
+    const linkedItems = rowResults.linked;
+
+    const rearranged = f.map(
+      id => f.find(linkedItem => linkedItem.id === id, linkedItems),
+      ordering
+    );
+    actions.changeCellValue({
+      columnId: column.id,
+      rowId: row.id,
+      tableId: table.id,
+      oldValue: value,
+      newValue: rearranged
+    });
+  };
+
   render() {
     const {
       cell,
@@ -364,6 +386,7 @@ class LinkOverlay extends PureComponent {
             linkEmptyLines={linkEmptyLines}
             listItemRenderer={this.renderListItem}
             swapItems={this.swapLinkedItems}
+            applySwap={this.applySwap}
             rowResults={rowResults}
           />
         </div>
