@@ -211,7 +211,6 @@ describe("Revision history filters", () => {
         .forEach(values => {
           expect(f.isEmpty(values)).toBe(false);
           values.forEach(value => {
-            console.log(value);
             expect(f.isString(value)).toBe(true);
           });
         });

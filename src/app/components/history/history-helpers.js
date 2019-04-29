@@ -108,9 +108,16 @@ export const getSearchableValues = langtag => revision => {
       f.prop("value")
     )
   );
-  return f.any(f.isArray, candidates)
-    ? f.flatMap(getLinkValues, candidates)
-    : candidates.map(getValueForLangtag);
+
+  const isAttachment = c =>
+    f.any(f.isArray, c) && f.any(f.has("uuid"), f.flatten(c));
+  const getAttachmentValues = f.map(f.prop(["externalName", langtag]));
+
+  return f.cond([
+    [isAttachment, f.flatMap(getAttachmentValues)],
+    [f.any(f.isArray), f.flatMap(getLinkValues)],
+    [f.stubTrue, f.map(getValueForLangtag)]
+  ])(candidates);
 };
 
 export const valueMatchesFilter = (filter, contentLangtag) =>
