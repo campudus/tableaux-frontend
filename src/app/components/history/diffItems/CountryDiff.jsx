@@ -3,7 +3,7 @@ import f from "lodash/fp";
 
 import classNames from "classnames";
 
-import { doto } from "../../../helpers/functools";
+import { doto, unless } from "../../../helpers/functools";
 import {
   getCurrencyCode,
   getLanguageOrCountryIcon
@@ -12,12 +12,11 @@ import {
 const CountryDiff = props => {
   const { diff, noCurrency } = props;
   const countries = f.groupBy("country", diff);
-  console.log("countries:", countries);
   return doto(
     countries,
     f.keys,
     f.map(country => (
-      <div key={country} className="counry-diff-group">
+      <div key={country} className="country-diff-group">
         <div className="country-diff__sub-header">
           {getLanguageOrCountryIcon(country)}
           {!noCurrency && (
@@ -28,14 +27,13 @@ const CountryDiff = props => {
         </div>
         <div className="country-diff__group">
           {countries[country].map(({ add, del, value }, idx) => {
-            console.log("For", country, { add, del, value, idx });
             const cssClass = classNames("content-diff", {
               "content-diff--added": add,
               "content-diff--deleted": del
             });
             return (
               <div key={idx} className={cssClass}>
-                {value}
+                {unless(f.isNumber, () => "", value)}
               </div>
             );
           }, countries)}
