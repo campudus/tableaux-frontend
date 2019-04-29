@@ -6,6 +6,7 @@ import {
   filterComments,
   filterHasValidDateProp,
   getCreationDay,
+  getSearchableValues,
   isCurrentEnough,
   isOldEnough,
   matchesLangtag,
@@ -14,6 +15,7 @@ import {
   valueMatchesFilter
 } from "./history-helpers";
 import { mapIndexed } from "../../helpers/functools";
+import rawLinkRevision from "./__fixtures__/linkhistory.json";
 import rawRevisions from "./__fixtures__/multilanghistory.json";
 
 describe("Revision history filters", () => {
@@ -21,7 +23,12 @@ describe("Revision history filters", () => {
     kind: "shorttext",
     multilang: true
   };
+  const linkColumn = {
+    kind: "link"
+  };
+
   const revisions = reduceRevisionHistory(column)(rawRevisions);
+  const linkRevisions = reduceRevisionHistory(linkColumn)(rawLinkRevision);
 
   describe("reduceRevisionHistory()", () => {
     it("accumulates total value from all prior changes", () => {
@@ -192,6 +199,25 @@ describe("Revision history filters", () => {
     });
   });
 
+  describe("getSearchableValues", () => {
+    it("gets text values", () => {
+      expect(getSearchableValues("de-DE")(revisions[5])).toContain(
+        "München, Weltstadt"
+      );
+    });
+    it("gets link values", () => {
+      f.tail(linkRevisions)
+        .map(getSearchableValues("de-DE"))
+        .forEach(values => {
+          expect(f.isEmpty(values)).toBe(false);
+          values.forEach(value => {
+            console.log(value);
+            expect(f.isString(value)).toBe(true);
+          });
+        });
+    });
+  });
+
   describe("valueMatchesFilter()", () => {
     it("filters values language specific", () => {
       // Test contains 5 row events, which don't get eliminated by the filter
@@ -228,6 +254,20 @@ describe("Revision history filters", () => {
           valueMatchesFilter({ value: "foo" }, "no-such-langtag")
         ).length
       ).toBeGreaterThan(0);
+    });
+
+    it("Extracts link values correctly", () => {
+      expect(
+        valueMatchesFilter({ value: "franken" }, "de-DE")(linkRevisions[2])
+      ).toBe(false);
+      expect(
+        linkRevisions.filter(valueMatchesFilter({ value: "bayern" }, "de-DE"))
+          .length
+      ).toBe(linkRevisions.length);
+      expect(
+        linkRevisions.filter(valueMatchesFilter({ value: "franken" }, "de-DE"))
+          .length
+      ).toBe(linkRevisions.length - 2);
     });
 
     it("is nil safe", () => {

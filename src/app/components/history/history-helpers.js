@@ -1,8 +1,8 @@
 import f from "lodash/fp";
 import moment from "moment";
 
-import { maybe, merge, when } from "../../helpers/functools";
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { fspy, maybe, merge, when } from "../../helpers/functools";
 
 const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
 
@@ -94,6 +94,25 @@ export const matchesUser = filter =>
         f.prop("author")
       );
 
+export const getSearchableValues = langtag => revision => {
+  const candidates = [
+    revision.displayValue,
+    revision.prevDisplayValue,
+    revision.value,
+    revision.prevContent
+  ];
+  const getValueForLangtag = when(f.isObject, f.prop(langtag));
+  const getLinkValues = f.map(
+    f.compose(
+      getValueForLangtag,
+      f.prop("value")
+    )
+  );
+  return f.any(f.isArray, candidates)
+    ? f.flatMap(getLinkValues, candidates)
+    : candidates.map(getValueForLangtag);
+};
+
 export const valueMatchesFilter = (filter, contentLangtag) =>
   f.isEmpty(filter && filter.value) || f.isEmpty(contentLangtag)
     ? f.stubTrue
@@ -102,13 +121,7 @@ export const valueMatchesFilter = (filter, contentLangtag) =>
           ? f.compose(
               f.any(f.contains(filter.value.toLowerCase())),
               f.map(f.toLower),
-              f.map(when(f.isObject, f.prop(contentLangtag))),
-              f.props([
-                "displayValue",
-                "prevDisplayValue",
-                "value",
-                "prevContent"
-              ])
+              getSearchableValues(contentLangtag)
             )(revision)
           : revision.historyType === "cell_comment"
           ? f.contains(filter.value.toLowerCase(), revision.value.toLowerCase())
