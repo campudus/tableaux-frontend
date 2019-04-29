@@ -2,6 +2,7 @@ import f from "lodash/fp";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { makeRequest } from "../../helpers/apiHelper";
+import { merge, when } from "../../helpers/functools";
 import {
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
@@ -9,7 +10,6 @@ import {
 import { removeTranslationNeeded } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
-import { merge } from "../../helpers/functools";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -56,13 +56,18 @@ export const changeCellValue = action => (dispatch, getState) => {
 
 const dispatchCellValueChange = action => (dispatch, getState) => {
   const { tableId, columnId, rowId, oldValue, newValue, column } = action;
+
   const update = calculateCellUpdate(action);
+  const changedKeys = column.multilanguage
+    ? f
+        .union(f.keys(newValue), f.keys(oldValue))
+        .filter(k => !f.equals(oldValue[k], update.value.value[k])) // Only post valid changes
+    : [];
+
+  console.log("ChangedKeys", JSON.stringify(changedKeys));
 
   const needsUpdate = column.multilanguage
-    ? !f.every(
-        k => f.isEqual(oldValue[k], newValue[k]),
-        f.union(f.keys(newValue), f.keys(oldValue))
-      )
+    ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);
 
   // Automatic workflow to remove "translation needed" from newly written values
@@ -100,7 +105,11 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
             route.toCell({ tableId, rowId, columnId }) +
             (update.pathPostfix || ""),
           method: update.method,
-          data: update.value
+          data: when(
+            () => column.multilanguage,
+            f.update("value", f.pick(changedKeys)),
+            update.value
+          )
         }).then(maybeClearFreshTranslations),
         actionTypes: [
           CELL_SET_VALUE,
