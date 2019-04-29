@@ -325,7 +325,12 @@ class RowContextMenu extends React.Component {
               "commenting-o"
             )
           : null}
-        {this.mkItem(this.showHistory, "history:show_history", "clock-o")}
+        {!f.contains(this.props.cell.kind, [
+          ColumnKinds.group,
+          ColumnKinds.concat
+        ])
+          ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
+          : null}
         {this.requestTranslationsItem()}
         {this.removeTranslationNeededItem()}
         {this.toggleFlagItem("important")}
