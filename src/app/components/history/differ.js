@@ -1,5 +1,6 @@
 import diff from "fast-diff";
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
@@ -18,6 +19,8 @@ export const calcRevisionDiff = f.curry((cell, langtag, revision) => {
       return calcAttachmentDiff(revision, langtag);
     case ColumnKinds.currency:
       return calcCountryDiff(revision);
+    case ColumnKinds.boolean:
+      return showBooleanDiff(revision, langtag);
     case ColumnKinds.numeric:
     default:
       return showCompleteReplacement(revision, langtag);
@@ -82,6 +85,11 @@ const calcTextDiff = ({ displayValue, prevDisplayValue }, langtag) => {
   } catch (err) {
     return { add: true, value: displayValue[langtag] || "" };
   }
+};
+
+const showBooleanDiff = ({ value }, langtag) => {
+  const boolValue = !!(f.isObject(value) ? value[langtag] : value);
+  return [{ add: true, value: i18n.t(boolValue ? "common:yes" : "common:no") }];
 };
 
 const showCompleteReplacement = ({ displayValue, prevDisplayValue }, langtag) =>
