@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { calcRevisionDiff } from "./differ";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import { cellSpec } from "../../specs/cell-spec";
 import { confirmHistoryRevert } from "./HistoryOverlay";
 import { validateProp } from "../../specs/type";
@@ -16,7 +17,8 @@ const RevisionItem = props => {
   const [hovered, setHoverState] = useState(false);
 
   const cssClass = classNames("revision__item", {
-    "revision-item--hovered": hovered && revision.revertable,
+    "revision-item--hovered":
+      hovered && revision.revertable && canUserChangeCell(cell, langtag),
     "revision-item--non-consecutive": !revision.isConsecutive
   });
 
