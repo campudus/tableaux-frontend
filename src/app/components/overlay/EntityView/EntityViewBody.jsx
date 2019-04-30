@@ -129,27 +129,19 @@ class EntityViewBody extends Component {
     const oldItem = this.props.translationView || {};
     const show = f.isNil(item.show) ? f.prop("show", oldItem) : item.show;
 
-    if (!this.state.focused) {
-      const newItem = {
-        show: show,
-        cell: f.isNil(item.cell) ? f.prop("cell", oldItem) : item.cell
-      };
-      actions.setOverlayState({ id, translationView: newItem });
-    } else {
-      // of no cell is selected yet we take the first one
-      // this prevents a translationv-view with only ('empty') values
-      const firstFunc = f.first(this.funcs);
-      const firstCell = f.get("cell", firstFunc);
-
-      if (firstCell) {
-        firstFunc.focus();
-        this.setTranslationItem(this.focusElements[firstCell.id]);
-        actions.setOverlayState({
-          id,
-          translationView: { show: show, cell: firstCell }
-        });
+    const func = f.find(funcItem => {
+      if (f.get(["cell", "id"], item) === funcItem.id) {
+        return true;
       }
-    }
+      return false;
+    }, this.funcs);
+    func && func.focus();
+    const newItem = {
+      show: show,
+      cell: func ? func.cell : oldItem.cell
+    };
+    this.setTranslationItem(this.focusElements[newItem.cell.id]);
+    actions.setOverlayState({ id, translationView: newItem });
   };
 
   registerFocusable = id => el => {
