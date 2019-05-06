@@ -457,6 +457,9 @@ $dist-from-top: 20px;
       }
     }
   }
+  .sortable {
+    @import "./linkList.scss";
+  }
 
   .link-list {
     max-height: 430px;

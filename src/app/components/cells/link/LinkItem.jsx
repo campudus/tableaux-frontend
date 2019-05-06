@@ -37,7 +37,9 @@ const SelectedItem = props => {
         <div
           className={mainButtonClass}
           onMouseEnter={props.mouseOverHandler.box(MAIN_BUTTON)}
-          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
+          onClick={evt =>
+            props.clickHandler(props.isLinked, props.row, evt)
+          }
         >
           <a href="#" draggable={false}>
             {unless(

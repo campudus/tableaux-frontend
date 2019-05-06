@@ -89,21 +89,26 @@ class DragSortList extends Component {
       rowResults: { linked },
       ordering,
       swapOrdering,
-      applySwap
+      applySwap,
+      rowsToRender = ordering.length
     } = this.props;
-    const items = f
-      .defaultTo([])(
-        f.map(id => {
-          const item = f.find(linkedItem => linkedItem.id === id, linked);
-          return item;
-        }, ordering)
-      )
-      .map((row = {}, index) => {
-        return {
-          index,
-          id: row.id
-        };
-      });
+    const items = f.flow(
+      ordering =>
+        f
+          .defaultTo([])(
+            f.map(id => {
+              const item = f.find(linkedItem => linkedItem.id === id, linked);
+              return item;
+            }, ordering)
+          )
+          .map((row = {}, index) => {
+            return {
+              index,
+              id: row.id
+            };
+          }),
+      f.take(rowsToRender)
+    )(ordering);
     return (
       <div className="link-list">
         {items.map((item, idx) => (
@@ -142,6 +147,9 @@ export default compose(
     }
   ),
   lifecycle({
+    componentWillMount() {
+      this.props.setOrdering(f.map("id", this.props.rowResults.linked));
+    },
     componentWillReceiveProps(nextProps) {
       const getLinked = f.getOr([], ["rowResults", "linked"]);
       if (getLinked(this.props).length !== getLinked(nextProps).length) {
