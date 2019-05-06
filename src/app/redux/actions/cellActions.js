@@ -64,8 +64,6 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
         .filter(k => !f.equals(oldValue[k], update.value.value[k])) // Only post valid changes
     : [];
 
-  console.log("ChangedKeys", JSON.stringify(changedKeys));
-
   const needsUpdate = column.multilanguage
     ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);

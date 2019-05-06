@@ -10,6 +10,8 @@ import action from "../../redux/actionCreators";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import store from "../../redux/store";
 
+export const HISTORY_OVERLAY_NAME = "__HISTORY__OVERLAY__";
+
 export const confirmHistoryRevert = props => {
   const { cell, langtag } = props;
   // create a preview revision from current value to the revision that should be reverted to
@@ -23,14 +25,16 @@ export const confirmHistoryRevert = props => {
   const buttonActions = {
     positive: [
       i18n.t("history:revert"),
-      () =>
+      () => {
         store.dispatch(
           action.changeCellValue({
             cell,
             newValue: revision.value,
             oldValue: cell.value
           })
-        )
+        );
+        store.dispatch(action.closeOverlay(HISTORY_OVERLAY_NAME));
+      }
     ],
     neutral: [i18n.t("common:cancel"), () => null]
   };
@@ -65,7 +69,8 @@ export const openHistoryOverlay = ({ cell, langtag }) => {
       context: i18n.t("history:header-context"),
       type: "full-height",
       classes: "revision-history-overlay",
-      preferRight: true
+      preferRight: true,
+      name: HISTORY_OVERLAY_NAME
     })
   );
 };
