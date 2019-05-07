@@ -1,12 +1,11 @@
-import i18n from "i18next";
 import React from "react";
+import i18n from "i18next";
 
 import PropTypes from "prop-types";
-import moment from "moment";
 
 import { calcRevisionDiff } from "./differ";
+import { formatDateTime } from "../../helpers/multiLanguage";
 import Diff from "./diffItems/Diff";
-import { DateTimeFormats } from "../../constants/TableauxConstants";
 
 const ConfirmRevertOverlay = ({ cell, langtag, revision }) => {
   const diffLeft = calcRevisionDiff(cell, langtag, revision);
@@ -50,7 +49,7 @@ const ConfirmRevertOverlay = ({ cell, langtag, revision }) => {
             {i18n.t("history:revision-from")}
           </div>
           <div className="confirm-revert-preview__date">
-            {moment(revision.timestamp).format(DateTimeFormats.formatForUser)}
+            {formatDateTime(revision.timestamp)}
           </div>
         </div>
       </div>

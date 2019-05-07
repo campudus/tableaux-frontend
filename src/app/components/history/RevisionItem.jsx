@@ -9,6 +9,7 @@ import { calcRevisionDiff } from "./differ";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import { cellSpec } from "../../specs/cell-spec";
 import { confirmHistoryRevert } from "./HistoryOverlay";
+import { formatTimeShort } from "../../helpers/multiLanguage";
 import { validateProp } from "../../specs/type";
 import Diff from "./diffItems/Diff";
 
@@ -38,7 +39,7 @@ const RevisionItem = props => {
         <div className="revision-item-header__dot" />
         <div className="revision-item-header__description">
           <div className="revision-item-header__time">
-            {getTime(revision.timestamp)}
+            {formatTimeShort(revision.timestamp)}
           </div>
           <div className="revision-item-header__title">
             {i18n.t(`history:${revision.event}`)}
@@ -64,7 +65,6 @@ const RevisionItem = props => {
   );
 };
 
-const getTime = (dateString = "") => dateString.substr(11, 5);
 export default withHandlers({ revertHere: () => () => null })(RevisionItem);
 RevisionItem.propTypes = {
   langtag: PropTypes.string.isRequired,
