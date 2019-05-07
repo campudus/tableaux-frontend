@@ -212,10 +212,10 @@ map() {
 return this;
 }
 
-spy(msg = "") {
-console.log(msg, this.toString());
-return this;
-}
+  spy(msg = "") {
+    console.log(msg, this.toString());
+    return this;
+  }
 
 get value() {
 throw new TypeError("Can't extract value of Left.");
@@ -248,9 +248,13 @@ exec() {
 return this;
 }
 
-toString() {
-return "Either.Left()";
-}
+  exec() {
+    return this;
+  }
+
+  toString() {
+    return "Either.Left()";
+  }
 }
 
 class Right extends Either {
@@ -305,9 +309,18 @@ return Either.Left(err);
 }
 }
 
-toString() {
-return `Either.Right(${this.value})`;
-}
+  exec(methodName, ...params) {
+    try {
+      const result = this.value[methodName].call(this.value, ...params);
+      return Either.of(result);
+    } catch (err) {
+      return Either.Left(err);
+    }
+  }
+
+  toString() {
+    return `Either.Right(${this.value})`;
+  }
 }
 
 const maybe = x => Maybe.fromNullable(x);
