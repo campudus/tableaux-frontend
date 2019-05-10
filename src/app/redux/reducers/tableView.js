@@ -66,13 +66,27 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     (acc, val) => {
       const { values, tableId } = val;
       const linesExist = !f.isEmpty(acc[tableId]);
+
+      // extract column count from nested param
+      const updatedColumnCount = f.compose(
+        f.size,
+        f.first,
+        f.prop("values"),
+        f.first
+      );
+
       acc[tableId] = f.map(
         f.pick(["id", "values"]),
         linesExist
           ? // Function might be called by "getForeignRows", thus
             // delivering only a subset of existing rows. In this case,
             // we just cache the new values
-            f.uniqBy(f.prop("id"), [...acc[tableId], ...values])
+            f.uniqBy(
+              f.prop("id"),
+              updatedColumnCount(values) >= f.size(f.first(acc[tableId]))
+                ? [...values, ...acc[tableId]] // extend existing displayValues
+                : [...acc[tableId], ...values] // don't overwrite full values with "first column"
+            )
           : values
       );
       return acc;

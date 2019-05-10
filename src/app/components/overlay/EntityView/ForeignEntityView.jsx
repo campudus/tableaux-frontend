@@ -45,7 +45,9 @@ export class ForeignEntityViewBody extends PureComponent {
 
       // Cache display values for loaded row
       actions.addDisplayValues({
-        [tableId]: [{ id: rowId, values: displayValues }]
+        displayValues: [
+          { tableId, values: [{ id: rowId, values: displayValues }] }
+        ]
       });
 
       // set retrieved values as overlay props so we can fallback to
