@@ -1,0 +1,32 @@
+FROM node:10.15.0-alpine AS build
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
+
+WORKDIR /usr/app
+
+COPY package* ./
+COPY getCommitHash.sh .
+COPY .babelrc .
+COPY .git .git
+COPY src src
+
+RUN npm ci
+RUN npm run build
+RUN npm prune --production
+
+FROM node:10.15.0-alpine
+
+WORKDIR /usr/app
+
+RUN addgroup -g 1234 campudus && \
+    adduser -u 5678 -S campudus -G campudus -s /bin/bash -h /usr/app campudus && \
+    chown -R campudus:campudus /usr/app
+
+COPY --from=build /usr/app/node_modules /usr/app/node_modules
+COPY --from=build /usr/app/package.json /usr/app/package.json
+COPY --from=build /usr/app/out /usr/app/out
+
+USER campudus
+
+CMD [ "npm", "run", "start"]

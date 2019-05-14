@@ -9,3 +9,6 @@ package-lock.json
 .eslintrc.yaml
 tags
 devAccessSettings.json
+*.iml
+.idea
+/config.json
