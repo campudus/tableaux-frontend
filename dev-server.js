@@ -6,8 +6,9 @@ const Bundler = require("parcel-bundler");
 let config = {
   outDir: "out",
   host: "localhost",
-  apiPort: 8080,
-  serverPort: 3000
+  port: 3000,
+  apiHost: "localhost",
+  apiPort: 8080
 };
 
 try {
@@ -23,9 +24,10 @@ const overrideConfigWithEnv = envVar => {
 };
 
 overrideConfigWithEnv("host");
+overrideConfigWithEnv("port");
 overrideConfigWithEnv("outDir");
+overrideConfigWithEnv("apiHost");
 overrideConfigWithEnv("apiPort");
-overrideConfigWithEnv("serverPort");
 
 switch (process.env.NODE_ENV) {
   case "production":
@@ -80,7 +82,7 @@ proxy.on("error", (err, req, res) => {
 const server = createServer((req, res) => {
   if (req.url.includes("/api")) {
     proxy.web(req, res, {
-      target: `http://${config.host}:${config.apiPort}`,
+      target: `http://${config.apiHost}:${config.apiPort}`,
       prependPath: true
     });
   } else {
@@ -93,6 +95,9 @@ const server = createServer((req, res) => {
 });
 
 console.log(
-  "dev proxy server operating at: http://localhost:" + config.serverPort
+  "dev proxy server operating at: " + config.host + ":" + config.port
 );
-server.listen(config.serverPort);
+
+server.listen(config.port, config.host, () => {
+  console.info(`dev proxy server operating at ${config.host}:${config.port}.`);
+});
