@@ -23,18 +23,18 @@ const router = new Router();
 
 const extendedRouter = Router.extend({
   routes: {
-    "(:langtag)(/)": "home",
     "(:langtag/)dashboard(/)": "dashboard",
     "(:langtag/)tables(/:tableid)(/columns/:columnid)(/rows/:rowid)(/)(?:options)":
       "tableBrowser",
 
-    ":langtag/media(/)": "mediaBrowser",
-    ":langtag/media/:folderid": "mediaBrowser",
+    "(:langtag/)media(/)": "mediaBrowser",
+    "(:langtag/)media/:folderid": "mediaBrowser",
     "(:langtag/)table(/)": "redirectToNewUrl",
-    "(:langtag/)table/*rest": "redirectToNewUrl"
+    "(:langtag/)table/*rest": "redirectToNewUrl",
+    "(:langtag)(/)": "home"
   },
 
-  home: function() {
+  home: function(...args) {
     ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
 
