@@ -46,28 +46,29 @@ Default project configuration can be overwritten via a `config.json` in the base
 
 ```
 {
-  "outDir": "out",     // build artefacts go here
-  "host": "localhost",
-  "apiPort": 8080,     // port of the backend service
-  "serverPort": 3000   // port for the http frontend
+  "outDir": "out",        // build artefacts go here
+  "host": "localhost",    // host of the http frontend
+  "port": 3000,           // port for the http frontent
+  "apiHost": "localhost", // 
+  "apiPort": 8080,        // port of the backend service
 }
 ```
 
 **Example for environment variables**
 
-That's very usefull if you for example want to start multiple
-instances, what implies that you also have to use different ports.
+Environment variables can be used to start multiple instances, listening on multiple ports.
 
 Following variable names can be used:
 
 - HOST
+- PORT
+- APIHOST
 - APIPORT
-- SERVERPORT
 - OUTDIR
 - REDUX_DEVTOOLS=[true,false]
 
 ```
-HOST=localhost npm start dev
+PORT=3001 npm run start
 ```
 
 ## License
