@@ -113,7 +113,7 @@ class HeaderPopupMenu extends Component {
     const cells = f.get(["row", "cells"], this.props);
     const translationInfo = {
       show: true,
-      cell: addCellId(cells[1] || cells[0])
+      cell: addCellId((cells && (cells[1] || cells[0])) || {})
     };
 
     const hasElements = queueName =>
