@@ -55,6 +55,8 @@ $annotation-popup-width: 300px;
   .annotation-popup-header {
     padding: 15px;
     border-bottom: 1px solid transparentize($color-text-medium-grey, 0.5);
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     .annotation-header-title {
       color: $color-text-medium-grey;
