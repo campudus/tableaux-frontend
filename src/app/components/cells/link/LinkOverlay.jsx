@@ -500,10 +500,10 @@ const withDataRows = compose(
         ]
       });
     },
-    setFilterValue: ({ id, actions }) => filterValue =>
-      actions.setOverlayState({ id, filterValue }),
-    setFilterMode: ({ id, actions }) => filterMode =>
-      actions.setOverlayState({ id, filterMode }),
+    setFilterValue: ({ id, actions, filterMode }) => filterValue =>
+      actions.setOverlayState({ id, filterValue, filterMode }),
+    setFilterMode: ({ id, actions, filterValue }) => filterMode =>
+      actions.setOverlayState({ id, filterValue, filterMode }),
     setUnlinkedOrder: ({ id, actions }) => unlinkedOrder =>
       actions.setOverlayState({ id, unlinkedOrder })
   }),

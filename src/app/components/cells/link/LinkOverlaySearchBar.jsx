@@ -1,73 +1,55 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
 import "react-virtualized/styles.css";
-import i18n from "i18next";
-import { FilterModes } from "../../../constants/TableauxConstants";
+
+import React, { Component } from "react";
 import * as f from "lodash/fp";
+import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { FilterModes } from "../../../constants/TableauxConstants";
+import {
+  either,
+  maybe,
+  preventDefault,
+  stopPropagation,
+  when
+} from "../../../helpers/functools";
 import SearchFunctions, {
   SEARCH_FUNCTION_IDS
 } from "../../../helpers/searchFunctions";
-import classNames from "classnames";
-import listensToClickOutside from "react-onclickoutside";
-import {
-  when,
-  stopPropagation,
-  preventDefault,
-  maybe
-} from "../../../helpers/functools";
 
-@listensToClickOutside
-class SearchBar extends Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    id: PropTypes.number.isRequired
-  };
+const SearchModePopup = ({
+  closePopup,
+  popupOpen,
+  filterMode,
+  setFilterMode
+}) => {
+  const activeIdx = f.compose(
+    when(f.gt(0), () => 0),
+    f.findIndex(f.eq(filterMode))
+  )(SEARCH_FUNCTION_IDS);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      popupOpen: false
-    };
-  }
+  const updateFilter = React.useCallback(mode => () => {
+    setFilterMode(mode);
+    closePopup();
+  });
 
-  componentDidMount = () => {
-    this.props.updateSharedData(f.assoc("focusInput", this.focusInput));
-  };
-
-  updateFilter = ({ mode, value }) => {
-    const { filterMode, filterValue } = this.props;
-    if (mode !== filterMode) {
-      this.props.setFilterMode(mode);
-    }
-    if (value !== filterValue) {
-      this.props.setFilterValue(value);
-    }
-    this.setState({ popupOpen: false });
-  };
-
-  handleClickOutside = () => {
-    this.setState({ popupOpen: false });
-  };
-
-  renderSearchOptions = () => {
-    const { popupOpen } = this.state;
-    const { filterMode } = this.props;
-    const activeIndex = when(f.gt(0), f.always(0))(
-      f.findIndex(f.eq(filterMode), SEARCH_FUNCTION_IDS)
-    );
-    return popupOpen ? (
+  return (
+    popupOpen && (
       <div className="filter-option-popup">
         {SEARCH_FUNCTION_IDS.map((id, idx) => {
           const name = i18n.t(SearchFunctions[id].displayName);
           const itemClass = classNames("menu-item", {
-            active: idx === activeIndex
+            active: idx === activeIdx
           });
           return (
             <div className={itemClass} key={id}>
               <a
                 className="menu-item-inner"
                 href="#"
-                onClick={() => this.updateFilter({ mode: id })}
+                onClick={updateFilter(id)}
               >
                 {name}
               </a>
@@ -75,24 +57,48 @@ class SearchBar extends Component {
           );
         })}
       </div>
-    ) : null;
+    )
+  );
+};
+
+const SearchBar = ({
+  filterMode,
+  filterValue,
+  setFilterMode,
+  setFilterValue,
+  onKeyStroke,
+  updateSharedData
+}) => {
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  const inputRef = React.useRef();
+  const closePopup = React.useCallback(() => setPopupOpen(false));
+  const togglePopup = () => {
+    setPopupOpen(!popupOpen);
   };
+  const focusInput = React.useCallback(() =>
+    maybe(inputRef.current).method("focus")
+  );
+  const handleChange = React.useCallback(event =>
+    setFilterValue(event.target.value)
+  );
 
-  handleInputKeys = event => {
+  React.useEffect(() => {
+    updateSharedData(f.assoc("focusInput", focusInput));
+  }, [inputRef.current]);
+
+  const handleInputKeys = React.useCallback(event => {
     const clearOrClose = () => {
-      if (!f.isEmpty(this.props.filterValue)) {
-        this.props.setFilterValue({ value: "" });
-
+      if (!f.isEmpty(filterValue)) {
+        setFilterValue("");
         preventDefault(event);
         stopPropagation(event);
       }
     };
-
     const passOnKey = event => {
       preventDefault(event);
       stopPropagation(event);
-      this.props.onKeystroke(event);
-      this.focusInput();
+      onKeyStroke && onKeyStroke(event);
+      focusInput();
     };
 
     const isIn = x => y => f.contains(f.toLower(y), f.map(f.toLower, x));
@@ -102,47 +108,51 @@ class SearchBar extends Component {
       [isIn(["arrowup", "arrowdown", "tab", "enter"]), () => passOnKey],
       [f.stubTrue, () => f.noop]
     ])(event.key)(event);
-  };
+  });
 
-  saveRef = ref => {
-    this.inputField = ref;
-  };
+  const filterName = either(SearchFunctions[filterMode || FilterModes.CONTAINS])
+    .map(f.prop("displayName"))
+    .map(x => i18n.t(x))
 
-  focusInput = () => {
-    maybe(this.inputField).method("focus");
-  };
+    .getOrElse("unknown search value: " + filterMode);
 
-  render() {
-    const { popupOpen } = this.state;
-    const { filterMode, filterValue } = this.props;
-    const filterName = i18n.t(
-      SearchFunctions[filterMode || FilterModes.CONTAINS].displayName
-    );
+  const FilterPopup = listensToClickOutside(SearchModePopup);
 
-    return (
-      <div className="filter-bar">
-        <input
-          ref={this.saveRef}
-          type="text"
-          className="header-input"
-          autoFocus
-          value={filterValue}
-          placeholder={filterName}
-          onKeyDown={this.handleInputKeys}
-          onChange={event => this.updateFilter({ value: event.target.value })}
-        />
-        <a
-          href="#"
-          className="popup-button"
-          onClick={() => this.setState({ popupOpen: !popupOpen })}
-        >
-          <i className="fa fa-search" />
-          <i className="fa fa-angle-down" />
-        </a>
-        {this.renderSearchOptions()}
-      </div>
-    );
-  }
-}
+  return (
+    <div className="filter-bar">
+      <input
+        className="header-input"
+        type="text"
+        value={filterValue || ""}
+        autoFocus
+        ref={inputRef}
+        placeholder={filterName}
+        onKeyDown={handleInputKeys}
+        onChange={handleChange}
+      />
+      <a className="popup-button" href="#" onClick={togglePopup}>
+        <i className="fa fa-search" />
+        <i className="fa fa-angle-down" />
+      </a>
+      <FilterPopup
+        closePopup={closePopup}
+        popupOpen={popupOpen}
+        handleClickOutside={closePopup}
+        filterMode={filterMode}
+        setFilterMode={setFilterMode}
+      />
+    </div>
+  );
+};
+
+SearchBar.propTypes = {
+  id: PropTypes.number.isRequired,
+  filterMode: PropTypes.string,
+  filterValue: PropTypes.string,
+  setFilterMode: PropTypes.func,
+  setFilterValue: PropTypes.func,
+  onKeyStroke: PropTypes.func,
+  updateSharedData: PropTypes.func.isRequired
+};
 
 export default SearchBar;
