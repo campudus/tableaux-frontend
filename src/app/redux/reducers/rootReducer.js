@@ -1,4 +1,4 @@
-import { frontendServices } from './frontendServices';
+import { frontendServices } from "./frontendServices";
 import { omniscentReducer } from "./omniscentReducer";
 import columns from "./columns";
 import grudStatus from "./grudStatus";
