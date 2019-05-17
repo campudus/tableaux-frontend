@@ -1,20 +1,23 @@
 import "babel-polyfill";
-import React from "react";
-import ReactDOM from "react-dom";
-import TableauxConstants from "../constants/TableauxConstants";
-import * as Sentry from "@sentry/browser";
-import Router from "ampersand-router";
-import f from "lodash/fp";
-import parseOptions from "./urlOptionParser";
-import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
-import { ENABLE_DASHBOARD } from "../FeatureFlags";
+
 import { Provider } from "react-redux";
 import { bindActionCreators } from "redux";
-import store from "../redux/store.js";
-import actionCreators from "../redux/actionCreators";
-import Tableaux from "../components/Tableaux";
-import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+import React from "react";
+import ReactDOM from "react-dom";
+import Router from "ampersand-router";
+import * as Sentry from "@sentry/browser";
+import f from "lodash/fp";
 import i18n from "i18next";
+
+import { ENABLE_DASHBOARD } from "../FeatureFlags";
+import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
+import { requestAvailableServices } from "../frontendServiceRegistry/frontendServices";
+import Tableaux from "../components/Tableaux";
+import TableauxConstants from "../constants/TableauxConstants";
+import actionCreators from "../redux/actionCreators";
+import parseOptions from "./urlOptionParser";
+import store from "../redux/store.js";
 
 initDevelopmentAccessCookies();
 
@@ -199,5 +202,6 @@ const extendedRouter = Router.extend({
 
 const GRUDRouter = new extendedRouter();
 GRUDRouter.history.start();
+requestAvailableServices();
 
 export default GRUDRouter;

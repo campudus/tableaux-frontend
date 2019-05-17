@@ -1,11 +1,12 @@
-import tables from "./table";
+import { frontendServices } from './frontendServices';
+import { omniscentReducer } from "./omniscentReducer";
 import columns from "./columns";
+import grudStatus from "./grudStatus";
+import media from "./media";
+import overlays from "./overlays";
 import rows from "./rows";
 import tableView from "./tableView";
-import overlays from "./overlays";
-import media from "./media";
-import grudStatus from "./grudStatus";
-import { omniscentReducer } from "./omniscentReducer";
+import tables from "./table";
 
 // const rootReducer = combineReducers({ tables, columns, rows, tableView });
 const rootReducer = omniscentReducer({
@@ -15,7 +16,8 @@ const rootReducer = omniscentReducer({
   tableView,
   overlays,
   media,
-  grudStatus
+  grudStatus,
+  frontendServices
 });
 
 export default rootReducer;

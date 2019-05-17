@@ -29,6 +29,8 @@ const toFile = (fileId, langtag) =>
   (fileId ? `/files/${fileId}` : "/files") +
   (langtag ? "?langtag=" + langtag : "");
 
+const toServiceRegistry = () => "/system/services";
+
 const API_ROUTES = {
   getAllTables,
   getAllColumnsForTable,
@@ -39,7 +41,8 @@ const API_ROUTES = {
   toCell,
   toFolder,
   toFile,
-  toSetting
+  toSetting,
+  toServiceRegistry
 };
 
 export default API_ROUTES;
