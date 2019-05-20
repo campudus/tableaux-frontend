@@ -146,10 +146,15 @@ export default compose(
       };
       return sortable ? sortableLink() : nonSortableLink();
     },
-    renderSortableLink: ({ links, cell, langtag, actions, setHovered, hovered }) => () => ({
-      index,
-      style = {}
-    }) => {
+    renderSortableLink: ({
+      links,
+      cell,
+      langtag,
+      actions,
+      setHovered,
+      hovered,
+      isAttachment
+    }) => () => ({ index, style = {} }) => {
       const link = links[index];
       const {
         linkTarget: { tableId, rowId }
@@ -163,14 +168,14 @@ export default compose(
           rowId,
           columnId: cell.column.id,
           oldValue: cell.value,
-          newValue: f.remove(f.matchesProperty("id", f.get("id", link)))(
-            cell.value
-          )
+          newValue: f.remove(
+            f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
+          )(cell.value)
         });
       };
       return (
         <LinkItem
-          row={{ id: link.linkTarget.rowId }}
+          row={{ id: link.linkTarget.rowId || link.uuid }}
           cell={cell}
           toTable={link.linkTarget.tableId}
           label={link.label || link.displayName}
@@ -178,12 +183,16 @@ export default compose(
           clickHandler={clickHandler}
           mouseOverHandler={{
             box: () => null, //mouseOverBoxHandler,
-            item: () => setHovered(link.linkTarget.rowId)
+            item: () =>
+              setHovered(isAttachment ? link.uuid : link.linkTarget.rowId)
           }}
           style={style}
           isLinked
-          isSelected={hovered === link.linkTarget.rowId}
+          isSelected={
+            hovered === (isAttachment ? link.uuid : link.linkTarget.rowId)
+          }
           selectedMode={0}
+          isAttachment={isAttachment}
         />
       );
     },
@@ -231,7 +240,6 @@ export default compose(
               rowsToRender={4}
               listItemRenderer={renderSortableLink}
               loading={false}
-              swapItems={() => console.log("swapOrdering")}
               applySwap={applySwap}
             />
           </div>
@@ -260,7 +268,6 @@ export default compose(
               rowsToRender={nLinks}
               listItemRenderer={renderSortableLink}
               loading={false}
-              swapItems={() => console.log("swapOrdering")}
               applySwap={applySwap}
             />
           </div>

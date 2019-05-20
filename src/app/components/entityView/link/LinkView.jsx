@@ -45,7 +45,7 @@ class LinkView extends Component {
         label={link.label}
         langtag={langtag}
         mouseOverHandler={{
-          box: () => null, //mouseOverBoxHandler,
+          box: () => null,
           item: () => null
         }}
         style={style}
@@ -76,7 +76,13 @@ class LinkView extends Component {
   };
 
   render() {
-    const { value, actions, langtag, linkList, cell } = this.props;
+    const {
+      actions,
+      langtag,
+      linkList,
+      cell,
+      cell: { value }
+    } = this.props;
 
     return f.isEmpty(linkList) ? (
       <div className="item-description">
@@ -94,13 +100,6 @@ class LinkView extends Component {
           value={value}
           sortable
         />
-        {/*<LinkedRows
-          rowResults={{ linked: linkList }}
-          listItemRenderer={this.listRenderer(linkList)}
-          loading={false}
-          swapItems={() => console.log("swapOrdering")}
-          applySwap={this.applySwap}
-        />*/}
         {this.props.children}
       </div>
     );

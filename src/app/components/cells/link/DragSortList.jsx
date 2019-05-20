@@ -32,7 +32,6 @@ const itemTarget = {
     }
 
     props.swapOrdering(dragIndex, hoverIndex);
-    // props.swapItems(dragIndex, hoverIndex);
     monitor.getItem().index = hoverIndex;
   }
 };
@@ -78,8 +77,7 @@ class DragItem extends Component {
 class DragSortList extends Component {
   static propTypes = {
     rowResults: PropTypes.object.isRequired,
-    renderListItem: PropTypes.func.isRequired,
-    swapItems: PropTypes.func.isRequired
+    renderListItem: PropTypes.func.isRequired
   };
 
   render() {
@@ -92,28 +90,26 @@ class DragSortList extends Component {
       applySwap,
       rowsToRender = ordering.length
     } = this.props;
+
     const items = f.flow(
       ordering =>
-        f
-          .defaultTo([])(
-            f.map(id => {
-              const item = f.find(linkedItem => linkedItem.id === id, linked);
-              return item;
-            }, ordering)
-          )
-          .map((row = {}, index) => {
-            return {
-              index,
-              id: row.id
-            };
-          }),
+        f.defaultTo([])(
+          f.map(id => {
+            const itemIdx = f.findIndex(
+              linkedItem => linkedItem === null || linkedItem.id === id,
+              linked
+            );
+            return { id: f.get([itemIdx, "id"], linked), index: itemIdx };
+          }, ordering)
+        ),
       f.take(rowsToRender)
     )(ordering);
+
     return (
       <div className="link-list">
         {items.map((item, idx) => (
           <DragItem
-            key={idx}
+            key={item.id}
             index={idx}
             swapItems={swapItems}
             applySwap={applySwap(ordering)}
@@ -121,7 +117,7 @@ class DragSortList extends Component {
           >
             {renderListItem({
               index: item.index,
-              key: idx
+              key: item.id
             })}
           </DragItem>
         ))}
