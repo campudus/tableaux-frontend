@@ -60,6 +60,7 @@
     "parcel-bundler": "^1.11.0",
     "parcel-plugin-static-files-copy": "^2.0.0",
     "prettier": "^1.15.1",
+    "react-iframe": "^1.8.0",
     "rxjs": "^6.4.0",
     "sass": "^1.17.2",
     "storybook": "^1.0.0",

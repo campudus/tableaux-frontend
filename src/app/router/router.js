@@ -34,10 +34,11 @@ const extendedRouter = Router.extend({
     "(:langtag/)media/:folderid": "mediaBrowser",
     "(:langtag/)table(/)": "redirectToNewUrl",
     "(:langtag/)table/*rest": "redirectToNewUrl",
-    "(:langtag)(/)": "home"
+    "(:langtag/)services/:id": "frontendService",
+    "*anything": "home"
   },
 
-  home: function(...args) {
+  home: function() {
     ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
 
@@ -194,6 +195,25 @@ const extendedRouter = Router.extend({
       langtag: validLangtag
     });
     this.history.navigate("/" + validLangtag + "/dashboard", {
+      trigger: false,
+      replace: true
+    });
+  },
+
+  frontendService: async function(langtag, serviceId) {
+    if (f.isEmpty(serviceId)) {
+      return this.home(langtag());
+    }
+
+    const validLangtag = await validateLangtag(langtag);
+    currentLangtag = validLangtag;
+    const id = parseInt(serviceId);
+    console.log("router", { id });
+    this.renderOrSwitchView(TableauxConstants.ViewNames.FRONTEND_SERVICE_VIEW, {
+      langtag: validLangtag,
+      id
+    });
+    this.history.navigate("/" + validLangtag + "/services/" + serviceId, {
       trigger: false,
       replace: true
     });
