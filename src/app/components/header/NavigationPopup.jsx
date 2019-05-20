@@ -1,12 +1,16 @@
-import React from "react";
 import { translate } from "react-i18next";
-import SvgIcon from "../helperComponents/SvgIcon";
+import React from "react";
+
 import PropTypes from "prop-types";
-import Link from "../helperComponents/Link";
+
 import { ENABLE_DASHBOARD } from "../../FeatureFlags";
+import Link from "../helperComponents/Link";
+import MainMenuEntry from "../frontendService/MainMenuEntry";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 const NavigationPopup = props => {
-  const { langtag, t } = props;
+  const { langtag, t, services = [] } = props;
+
   return (
     <div id="main-navigation">
       <div id="logo">
@@ -35,6 +39,14 @@ const NavigationPopup = props => {
             {t("header:menu.media")}
           </Link>
         </li>
+
+        {services.map(service => (
+          <MainMenuEntry
+            key={service.name}
+            langtag={langtag}
+            service={service}
+          />
+        ))}
       </ul>
     </div>
   );
@@ -42,7 +54,8 @@ const NavigationPopup = props => {
 
 NavigationPopup.propTypes = {
   langtag: PropTypes.string.isRequired,
-  t: PropTypes.func
+  services: PropTypes.arrayOf(PropTypes.object).isRequired,
+  navigationOpen: PropTypes.bool
 };
 
 export default translate(["header"])(NavigationPopup);

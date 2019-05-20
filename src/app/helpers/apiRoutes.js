@@ -30,6 +30,7 @@ const toFile = (fileId, langtag) =>
   (langtag ? "?langtag=" + langtag : "");
 
 const toServiceRegistry = () => "/system/services";
+const toFrontendServiceView = id => toServiceRegistry() + "/" + id;
 
 const API_ROUTES = {
   getAllTables,
@@ -42,7 +43,8 @@ const API_ROUTES = {
   toFolder,
   toFile,
   toSetting,
-  toServiceRegistry
+  toServiceRegistry,
+  toFrontendServiceView
 };
 
 export default API_ROUTES;

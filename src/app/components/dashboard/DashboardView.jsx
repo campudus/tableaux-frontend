@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import FetchStatusData from "./RequestStatusData";
 import FlagWidget from "./flagwidget/FlagWidget";
 import GreeterWidget from "./greeter/GreeterWidget";
-import GrudHeader from '../GrudHeader';
+import GrudHeader from "../GrudHeader";
 import SupportWidget from "./support/SupportWidget";
 import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
