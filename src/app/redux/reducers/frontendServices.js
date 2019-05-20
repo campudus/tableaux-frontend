@@ -3,7 +3,7 @@ const {
   frontendServices: { FRONTEND_SERVICES_LOADED }
 } = actionTypes;
 
-const initialState = {};
+const initialState = [];
 
 export const frontendServices = (state = initialState, action) => {
   switch (action.type) {
