@@ -1,26 +1,22 @@
 import { compose, withProps } from "recompose";
 import React, { Component } from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
-import f from "lodash/fp";
 
 import { simpleError } from "../overlay/ConfirmationOverlay";
 import Folder from "./folder/Folder.jsx";
-import LanguageSwitcher from "../header/LanguageSwitcher";
-import Navigation from "../../components/header/Navigation.jsx";
-import PageTitle from "../../components/header/PageTitle.jsx";
-import { ConnectionStatus } from "../header/ConnectionStatus";
+import GrudHeader from "../GrudHeader";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
 import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
+import apiUrl from "../../helpers/apiUrl";
 import needsApiData from "../helperComponents/needsAPIData";
 import route from "../../helpers/apiRoutes";
-import apiUrl from "../../helpers/apiUrl";
 
 const mapStateToProps = state => {
   return {
-    media: f.get("media", state),
-    isConnected: !!f.get(["grudStatus", "connectedToBackend"], state)
+    media: f.get("media", state)
   };
 };
 
@@ -77,7 +73,7 @@ class MediaView extends Component {
   }
 
   render() {
-    const { langtag, media, actions, requestedData, isConnected } = this.props;
+    const { langtag, media, actions, requestedData } = this.props;
     const { modifiedFiles } = this.state;
 
     if (requestedData) {
@@ -91,16 +87,11 @@ class MediaView extends Component {
     if (media.finishedLoading && requestedData) {
       return (
         <div>
-          <header>
-            <Navigation langtag={langtag} />
-            <div className="header-separator" />
-            <PageTitle titleKey="pageTitle.media" />
-            <LanguageSwitcher
-              langtag={langtag}
-              onChange={this.onLanguageSwitch}
-            />
-            <ConnectionStatus isConnected={isConnected} />
-          </header>
+          <GrudHeader
+            langtag={langtag}
+            handleLanguageSwitch={this.onLanguageSwitch}
+            pageTitle="pageTitle.media"
+          />
           <Folder
             folder={media.data}
             langtag={langtag}

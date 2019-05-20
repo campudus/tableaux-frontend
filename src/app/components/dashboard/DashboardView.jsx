@@ -7,16 +7,14 @@ import PropTypes from "prop-types";
 import FetchStatusData from "./RequestStatusData";
 import FlagWidget from "./flagwidget/FlagWidget";
 import GreeterWidget from "./greeter/GreeterWidget";
-import LanguageSwitcher from "../header/LanguageSwitcher";
-import Navigation from "../header/Navigation";
-import PageTitle from "../header/PageTitle";
+import GrudHeader from '../GrudHeader';
 import SupportWidget from "./support/SupportWidget";
 import TableauxConstants from "../../constants/TableauxConstants";
 import TableauxRouter from "../../router/router";
 import TranslationStatusWidget from "./translationstatus/TranslationStatusWidget";
+import apiUrl from "../../helpers/apiUrl";
 import needsApiData from "../helperComponents/needsAPIData";
 import route from "../../helpers/apiRoutes";
-import apiUrl from "../../helpers/apiUrl";
 
 const WidgetColletion = ({ langtag, requestedData }) => (
   <div className="widgets-wrapper">
@@ -61,12 +59,11 @@ const DashboardView = props => {
 
   return requestedData ? (
     <React.Fragment>
-      <header>
-        <Navigation langtag={langtag} />
-        <div className="header-separator" />
-        <PageTitle titleKey="Dashboard" />
-        <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} />
-      </header>
+      <GrudHeader
+        pageTitle="Dashboard"
+        langtag={langtag}
+        handleLanguageSwitch={handleLanguageSwitch}
+      />
       <div id="dashboard-view" className={"wrapper"}>
         <FetchStatusData>
           <WidgetColletion langtag={langtag} />
