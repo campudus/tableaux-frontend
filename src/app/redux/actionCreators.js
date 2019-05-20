@@ -270,6 +270,10 @@ const loadAllRows = tableId => (dispatch, getState) => {
         recReq();
       });
     };
+    if (totalSize <= 30) {
+      dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
+      return;
+    }
     f.forEach(
       recReq,
       new Array(
