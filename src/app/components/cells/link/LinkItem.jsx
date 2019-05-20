@@ -111,10 +111,10 @@ const LinkItem = props => {
 
 LinkItem.propTypes = {
   mouseOverHandler: PropTypes.object.isRequired,
-  refIfLinked: PropTypes.func.isRequired,
+  refIfLinked: PropTypes.func,
   clickHandler: PropTypes.func,
-  isLinked: PropTypes.bool.isRequired,
-  isSelected: PropTypes.bool.isRequired,
+  isLinked: PropTypes.bool,
+  isSelected: PropTypes.bool,
   row: PropTypes.object.isRequired,
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
