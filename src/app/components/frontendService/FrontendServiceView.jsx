@@ -9,7 +9,14 @@ import { retrieveTranslation } from "../../helpers/multiLanguage";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
 
-const FrontendServiceView = ({ id, langtag, frontendServices }) => {
+const FrontendServiceView = ({
+  id,
+  langtag,
+  frontendServices,
+  tableId,
+  columnId,
+  rowId
+}) => {
   const noop = React.useCallback(() => null);
   const [service, setService] = React.useState();
 

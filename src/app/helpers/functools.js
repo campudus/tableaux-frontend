@@ -441,6 +441,13 @@ const firstValidPropOr = curryN(
 
 const merge = curryN(2, (first, second) => ({ ...first, ...second }));
 
+// (values: dict<string> -> key: string -> string) -> string
+const replaceMoustache = curryN(3, (values, pattern, string) => {
+  const value = (values || {})[pattern];
+  const re = new RegExp(`{{${pattern || ""}}}`, "g");
+  return isNil(value) || isNil(string) ? string : string.replace(re, value);
+});
+
 const match = curryN(2, (regex, str) =>
   either(str)
     .exec("match", regex)
@@ -477,5 +484,6 @@ export {
   firstValidProp,
   firstValidPropOr,
   match,
-  tests
+  tests,
+  replaceMoustache
 };

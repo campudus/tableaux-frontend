@@ -13,6 +13,7 @@ import { ENABLE_DASHBOARD } from "../FeatureFlags";
 import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
 import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
 import { requestAvailableServices } from "../frontendServiceRegistry/frontendServices";
+import { when } from "../helpers/functools";
 import Tableaux from "../components/Tableaux";
 import TableauxConstants from "../constants/TableauxConstants";
 import actionCreators from "../redux/actionCreators";
@@ -34,7 +35,9 @@ const extendedRouter = Router.extend({
     "(:langtag/)media/:folderid": "mediaBrowser",
     "(:langtag/)table(/)": "redirectToNewUrl",
     "(:langtag/)table/*rest": "redirectToNewUrl",
-    "(:langtag/)services/:id": "frontendService",
+    "(:langtag/)services/:id(/)": "frontendService",
+    "(:langtag/)services/:id(/tables/:tableId)(/columns/:columnId)(/rows/:rowId)":
+      "frontendService",
     "*anything": "home"
   },
 
@@ -200,17 +203,28 @@ const extendedRouter = Router.extend({
     });
   },
 
-  frontendService: async function(langtag, serviceId) {
+  frontendService: async function(
+    langtag,
+    serviceId,
+    tableId,
+    columnId,
+    rowId
+  ) {
     if (f.isEmpty(serviceId)) {
       return this.home(langtag());
     }
 
+    const { tables } = store.getState();
     const validLangtag = await validateLangtag(langtag);
+    const validTableId = await validateTableId(parseInt(tableId, 10), tables);
     currentLangtag = validLangtag;
+
     const id = parseInt(serviceId);
-    console.log("router", { id });
     this.renderOrSwitchView(TableauxConstants.ViewNames.FRONTEND_SERVICE_VIEW, {
       langtag: validLangtag,
+      tableId: f.isString(tableId) ? validTableId : null,
+      columnId: when(f.isString, f.parseInt(10), columnId),
+      rowId: when(f.isString, f.parseInt(10), rowId),
       id
     });
     this.history.navigate("/" + validLangtag + "/services/" + serviceId, {
