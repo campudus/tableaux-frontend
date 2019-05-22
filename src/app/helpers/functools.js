@@ -8,6 +8,7 @@ import {
   identity,
   isEmpty,
   isFunction,
+  isNil,
   map,
   noop,
   prop,
@@ -381,24 +382,6 @@ const mapIndexed = curryN(2, (fn, coll) => coll.map(fn));
 // ((a) -> (idx) -> bool) -> (a[]) -> a[]
 const filterIndexed = curryN(2, (fn, coll) => coll.filter(fn));
 
-const tests = {
-  title: "Monads",
-  tests: [
-    [
-      "is",
-      "foobarbaz",
-      logged("log test", (x, y, z) => x + y + z),
-      ["foo", "bar", "baz"]
-    ],
-    [
-      "is",
-      "FOOfoo",
-      forkJoin,
-      [(a, b) => a + b, x => x.toUpperCase(), x => x.toLowerCase(), "Foo"]
-    ]
-  ]
-};
-
 const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
   cond(value) ? ifFn(value) : elseFn(value)
 );
@@ -484,6 +467,5 @@ export {
   firstValidProp,
   firstValidPropOr,
   match,
-  tests,
   replaceMoustache
 };
