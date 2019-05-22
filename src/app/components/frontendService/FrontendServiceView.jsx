@@ -36,8 +36,6 @@ const FrontendServiceView = ({
     ? expandServiceUrl({ tableId, columnId, rowId }, service.config.url)
     : "";
 
-  console.log({ serviceUrl });
-
   return (
     <>
       <GrudHeader

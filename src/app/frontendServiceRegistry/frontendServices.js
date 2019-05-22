@@ -21,7 +21,6 @@ export const getMainMenuEntryServices = () =>
   )(store.getState());
 
 export const expandServiceUrl = f.curryN(2, (values, serviceUrl) => {
-  console.log({ values });
   const replace = replaceMoustache(values || {});
   return f.compose(
     replace("tableId"),
