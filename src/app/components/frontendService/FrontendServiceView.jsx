@@ -5,6 +5,7 @@ import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
+import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServices";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
@@ -31,7 +32,11 @@ const FrontendServiceView = ({
   const pageTitle = f.isEmpty(service)
     ? "Frontend Service"
     : retrieveTranslation(langtag, service.displayName);
-  const serviceUrl = serviceLoaded ? service.config.url : "";
+  const serviceUrl = serviceLoaded
+    ? expandServiceUrl({ tableId, columnId, rowId }, service.config.url)
+    : "";
+
+  console.log({ serviceUrl });
 
   return (
     <>
