@@ -7,6 +7,7 @@ import {
   DateFormats,
   DateTimeFormats
 } from "../../../constants/TableauxConstants";
+import { formatDate, formatDateTime } from "../../../helpers/multiLanguage";
 import { maybe, when } from "../../../helpers/functools";
 import DateEditCell from "./DateEditCell";
 
@@ -18,6 +19,7 @@ const DateCellWrapper = props => {
     .map(when(() => cell.column.multilanguage, f.prop(langtag)))
     .map(str => Moment(str))
     .getOrElse(null);
+  const format = showTime ? formatDateTime : formatDate;
 
   return editing ? (
     <DateEditCell
@@ -28,11 +30,7 @@ const DateCellWrapper = props => {
       showTime={showTime}
     />
   ) : (
-    <div className="cell-content">
-      {f.isEmpty(validatedValue)
-        ? ""
-        : validatedValue.format(Formats.formatForUser)}
-    </div>
+    <div className="cell-content">{format(validatedValue)}</div>
   );
 };
 

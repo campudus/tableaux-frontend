@@ -1,15 +1,18 @@
+import { translate } from "react-i18next";
 import React from "react";
 import ReactDOM from "react-dom";
+import f from "lodash/fp";
+import onClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
 import {
   getCountryOfLangtag,
-  getCurrencyCode
+  getCurrencyCode,
+  getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
-import CurrencyEditCell from "./CurrencyEditCell";
 import { getCurrencyWithCountry, splitPriceDecimals } from "./currencyHelper";
-import onClickOutside from "react-onclickoutside";
-import { translate } from "react-i18next";
-import PropTypes from "prop-types";
-import f from "lodash/fp";
+import CurrencyEditCell from "./CurrencyEditCell";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
@@ -90,7 +93,8 @@ export default class CurrencyCell extends React.PureComponent {
       <div className={`currency-wrapper${value[country] ? "" : " grey-out"}`}>
         <span className="currency-value">{splittedValueAsString[0]}</span>
         <span className="currency-value-decimals">
-          ,{splittedValueAsString[1]}
+          {getLocaleDecimalSeparator()}
+          {splittedValueAsString[1]}
         </span>
         <span className="currency-code">{currencyCode}</span>
         <i className="open-country fa fa-angle-down" />

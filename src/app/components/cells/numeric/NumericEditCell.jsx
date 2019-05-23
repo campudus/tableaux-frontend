@@ -1,14 +1,17 @@
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
-import { maybe } from "../../../helpers/functools";
+
 import PropTypes from "prop-types";
-import { filterAllowedKeys } from "../numericInput";
+
+import NumberInput from "../../helperComponents/NumberInput";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
   constructor(props) {
     super(props);
-    this.MAX_DIGIT_LENGTH = 15;
+    this.state = {
+      value: this.getValue()
+    };
   }
 
   componentDidMount = () => {
@@ -37,6 +40,7 @@ class NumericEditCell extends React.Component {
       },
       enter: event => {
         this.doneEditing(event);
+        event.stopPropagation();
       },
       navigation: event => {
         this.doneEditing(event);
@@ -48,30 +52,9 @@ class NumericEditCell extends React.Component {
     this.doneEditing(event);
   };
 
-  filterKeys = event => {
-    filterAllowedKeys(event.target.value)(event);
-  };
-
-  formatNumberCell = input => {
-    let result = null;
-    const curr = input.value;
-    const currLength = curr.trim().length;
-
-    if (currLength > this.MAX_DIGIT_LENGTH) {
-      throw new Error("MAX_DIGIT_LENGTH reached: " + this.MAX_DIGIT_LENGTH);
-    } else if (currLength >= 0) {
-      const formattedNumber = this.correctNumberFormat(curr);
-      const realNumber = parseFloat(formattedNumber);
-      if (!isNaN(realNumber)) {
-        result = realNumber;
-      }
-    }
-    input.value = result === null ? "" : result;
-    return result;
-  };
-
   doneEditing = () => {
-    this.props.onSave(this.formatNumberCell(this.input));
+    this.props.actions.toggleCellEditing({ editing: false });
+    this.props.onSave(this.state.value);
   };
 
   getValue = () => {
@@ -79,43 +62,20 @@ class NumericEditCell extends React.Component {
     return (isMultiLanguage ? value[langtag] : value) || "";
   };
 
-  correctNumberFormat = value => {
-    const result = String(value)
-      .replace(/,/g, ".")
-      .match(/\d+(\.\d*)?/);
-    return (result && result[0]) || "";
-  };
-
-  onChangeHandler = e => {
-    const curr = e.target.value;
-    const formattedNumber = this.correctNumberFormat(curr);
-
-    if (formattedNumber.length > this.MAX_DIGIT_LENGTH) {
-      alert("Numbers can't be greater than 15 decimal values.");
-      e.target.value = formattedNumber.substring(0, this.MAX_DIGIT_LENGTH);
-    }
-  };
-
-  moveCaretToEnd = () => {
-    const l = this.getValue().toString().length;
-    maybe(this.input).method("setSelectionRange", l, l);
-  };
+  updateValueState = value => this.setState({ value });
 
   render = () => {
+    const { isYear } = this.props;
     return (
       <div className={"cell-content editing"}>
-        <input
+        <NumberInput
           autoFocus
           onFocus={this.moveCaretToEnd}
           className="input"
-          name={this.inputName}
-          defaultValue={this.getValue()}
-          onChange={this.onChangeHandler}
-          onKeyDown={this.filterKeys}
-          ref={input => {
-            this.input = input;
-            this.moveCaretToEnd();
-          }}
+          value={this.state.value}
+          onChange={this.updateValueState}
+          integer={isYear}
+          localize={!isYear}
         />
       </div>
     );
@@ -125,6 +85,7 @@ class NumericEditCell extends React.Component {
 NumericEditCell.propTypes = {
   langtag: PropTypes.string.isRequired,
   onSave: PropTypes.func.isRequired,
+  isYear: PropTypes.bool,
   setCellKeyboardShortcuts: PropTypes.func
 };
 

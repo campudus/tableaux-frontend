@@ -1,5 +1,11 @@
 import React from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
+
+import { formatNumber } from "../../../helpers/multiLanguage";
+import { isYearColumn } from '../../../helpers/columnHelper';
+import { unless, when } from '../../../helpers/functools';
 import NumericEditCell from "./NumericEditCell.jsx";
 
 const NumericCell = props => {
@@ -16,8 +22,9 @@ const NumericCell = props => {
   } = props;
 
   const isMultiLanguage = column.multilanguage;
+  const isYear = isYearColumn(column);
 
-  const handleEditDone = newValue => {
+  const handleEditDone = React.useCallback(newValue => {
     const oldValue = isMultiLanguage ? value[langtag] : value;
     const valueToSave = isMultiLanguage ? { [langtag]: newValue } : newValue;
 
@@ -31,14 +38,22 @@ const NumericCell = props => {
     });
 
     actions.toggleCellEditing({ editing: false });
-  };
+  });
 
   if (!editing) {
-    return <div className="cell-content">{displayValue[langtag]}</div>;
+    return (
+      <div className="cell-content">
+        {f.compose(
+          when(f.contains(f.__, ["0", "NaN"]), () => ""),
+          unless(() => isYear, formatNumber)
+        )(displayValue[langtag])}
+      </div>
+    );
   } else {
     return (
       <NumericEditCell
         langtag={langtag}
+        actions={actions}
         value={value}
         isMultiLanguage={isMultiLanguage}
         onSave={handleEditDone}

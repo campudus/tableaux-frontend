@@ -2,6 +2,7 @@ import Datetime from "react-datetime";
 import Moment from "moment";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
+import { formatDate, formatDateTime } from "../../../helpers/multiLanguage";
 import { maybe, stopPropagation } from "../../../helpers/functools";
 
 const DATE_PICKER_HEIGHT = 265;
@@ -63,11 +64,11 @@ const DateEditCell = props => {
     };
   }, []);
 
+  const format = showTime ? formatDateTime : formatDate;
+
   return (
     <div ref={checkPosition}>
-      {maybe(selectedMoment)
-        .map(m => m.format(Formats.formatForUser))
-        .getOrElse("")}
+      {format(selectedMoment)}
       <i className="fa fa-ban" onClick={() => setAndSave(null)} />
       <div
         className="time-picker-wrapper"

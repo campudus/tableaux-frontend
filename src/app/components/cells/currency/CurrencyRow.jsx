@@ -5,7 +5,8 @@ import PropTypes from "prop-types";
 
 import {
   getCurrencyCode,
-  getLanguageOrCountryIcon
+  getLanguageOrCountryIcon,
+  getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
 import { isAllowedForNumberInput } from "../../../helpers/KeyboardShortcutsHelper";
 import { maybe } from "../../../helpers/functools";
@@ -104,7 +105,7 @@ export default class CurrencyRow extends PureComponent {
           onChange={this.currencyInputChanged}
           onFocus={this.handleFocus("currencyInteger")}
         />
-        <span className="delimiter">,</span>
+        <span className="delimiter">{getLocaleDecimalSeparator()}</span>
         <input
           ref={this.currencyDecimalsRef}
           onChange={this.currencyInputChanged}

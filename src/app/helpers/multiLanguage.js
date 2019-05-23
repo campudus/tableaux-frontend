@@ -1,10 +1,11 @@
+import Moment from "moment";
 import React from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 
 import { checkOrThrow } from "../specs/type";
+import { either, ifElse, match, memoizeWith, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
-import { ifElse, when } from "./functools";
 import TableauxConstants, {
   ColumnKinds,
   DefaultLangtag,
@@ -246,6 +247,82 @@ const isMultiCountry = value => {
   return f.isObject(value) && f.all(f.contains(f.__, countries), f.keys(value));
 };
 
+const toPlainDate = timestamp => {
+  if (timestamp instanceof Date) {
+    return timestamp;
+  } else if (timestamp instanceof Moment) {
+    return new Date(timestamp);
+  } else if (f.isString(timestamp)) {
+    const m = Moment(timestamp);
+    if (m.isValid()) return new Date(m);
+  }
+  throw new Error(
+    `toPlainDate(${timestamp}): expected Moment, Date, or parseable date string, but got ${typeof timestamp}`
+  );
+};
+
+// Formatters. Locale is automatically chosen by routing. It should
+// only be passed for tests.
+const formatDate = (timestamp, locale = i18n.language) =>
+  either(timestamp)
+    .map(toPlainDate)
+    .exec("toLocaleDateString", locale)
+    .getOrElse("");
+
+const formatTime = (timestamp, locale = i18n.language) =>
+  either(timestamp)
+    .map(toPlainDate)
+    .exec("toLocaleTimeString", locale)
+    .getOrElse("");
+
+const formatTimeShort = (timestamp, locale = i18n.language) =>
+  either(timestamp)
+    .map(toPlainDate)
+    .exec("toLocaleTimeString", locale, { hour: "2-digit", minute: "2-digit" })
+    .getOrElse("");
+
+const formatDateTime = (timestamp, locale = i18n.language) =>
+  either(timestamp)
+    .map(toPlainDate)
+    .exec("toLocaleString", locale)
+    .getOrElse("");
+
+const formatNumber = (number, locale = i18n.language) =>
+  f.isNil(number) ? "NaN" : f.toNumber(number).toLocaleString(locale);
+
+const readLocalizedNumber = (
+  localizedNumericString = "",
+  locale = i18n.language
+) => {
+  try {
+    const decimalSeparator = getLocaleDecimalSeparator(locale);
+    const formattingCharRegex = new RegExp(
+      "[^0-9" + decimalSeparator + "-]",
+      "g"
+    );
+    const numberRegex = new RegExp("^-?\\d+(" + decimalSeparator + "\\d+)?");
+
+    const numericString = f.compose(
+      f.replace(decimalSeparator, "."), // normalise separator
+      match(numberRegex), // assure only one separator exists
+      f.replace(formattingCharRegex, "") // remove all chars which are not number or separator
+    )(localizedNumericString);
+
+    return parseFloat(numericString);
+  } catch {
+    return NaN;
+  }
+};
+
+// Need this to pick a memoize key when calling getLocaleDecimalSeparator(),
+// else calling without argument will always return first locale's separator
+const languageKey = (locale = i18n.language) => locale;
+
+const getLocaleDecimalSeparator = memoizeWith(
+  languageKey,
+  (locale = i18n.language) => formatNumber(1.1, locale)[1]
+);
+
 export {
   retrieveTranslation,
   getMultiLangValue,
@@ -258,5 +335,13 @@ export {
   getFallbackCurrencyValue,
   tests,
   isMultiLanguage,
-  isMultiCountry
+  isMultiCountry,
+  formatDate,
+  formatTime,
+  formatTimeShort,
+  formatDateTime,
+  formatNumber,
+  toPlainDate,
+  getLocaleDecimalSeparator,
+  readLocalizedNumber
 };
