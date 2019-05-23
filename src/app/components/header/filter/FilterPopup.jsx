@@ -3,6 +3,7 @@ import * as f from "lodash/fp";
 import listensToClickOutside from "react-onclickoutside";
 import Select from "react-select";
 import { translate } from "react-i18next";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import TableauxConstants, {
   ColumnKinds,
   FilterModes,
@@ -167,17 +168,13 @@ class FilterPopup extends React.Component {
   }
 
   buildColumnOptions(filterFn) {
-    const { t, columns, langtag } = this.props;
+    const { columns, langtag } = this.props;
 
     return columns.map(column => {
-      // Show display name with fallback to machine name
-      const columnDisplayName = column.displayName[langtag] || column.name;
-      // ID Column gets translated name
-      const labelName =
-        column.id === 0 ? t("table:concat_column_name") : columnDisplayName;
+      const columnDisplayName = getColumnDisplayName(column, langtag);
 
       return {
-        label: labelName,
+        label: columnDisplayName,
         value: f.toString(column.id),
         kind: column.kind,
         disabled: !filterFn(column)

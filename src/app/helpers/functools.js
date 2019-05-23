@@ -208,8 +208,8 @@ class Left extends Either {
     return this;
   }
 
-  spy() {
-    console.log(this.toString());
+  spy(msg = "") {
+    console.log(msg, this.toString());
     return this;
   }
 
@@ -240,6 +240,10 @@ class Left extends Either {
     return this;
   }
 
+  exec() {
+    return this;
+  }
+
   toString() {
     return "Either.Left()";
   }
@@ -255,7 +259,7 @@ class Right extends Either {
     }
   }
 
-  spy(text) {
+  spy(text = "") {
     console.log(text, this.toString());
     return this;
   }
@@ -285,6 +289,15 @@ class Right extends Either {
       return Either.fromNullable(f(this.value) ? this.value : null);
     } catch (e) {
       return Either.left(e);
+    }
+  }
+
+  exec(methodName, ...params) {
+    try {
+      const result = this.value[methodName].call(this.value, ...params);
+      return Either.of(result);
+    } catch (err) {
+      return Either.Left(err);
     }
   }
 
@@ -428,6 +441,13 @@ const firstValidPropOr = curryN(
 
 const merge = curryN(2, (first, second) => ({ ...first, ...second }));
 
+const match = curryN(2, (regex, str) =>
+  either(str)
+    .exec("match", regex)
+    .map(first)
+    .getOrElse("")
+);
+
 export {
   Maybe,
   Just,
@@ -456,5 +476,6 @@ export {
   merge,
   firstValidProp,
   firstValidPropOr,
+  match,
   tests
 };

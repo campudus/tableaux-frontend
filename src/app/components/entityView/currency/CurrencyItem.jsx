@@ -1,15 +1,18 @@
 import React, { PureComponent } from "react";
+import * as f from "lodash/fp";
+import listensToClickOutside from "react-onclickoutside";
+
 import PropTypes from "prop-types";
-import { getCurrencyWithCountry } from "../../cells/currency/currencyHelper";
+import classNames from "classnames";
+
+import { Directions } from "../../../constants/TableauxConstants";
 import {
   getCurrencyCode,
-  getLanguageOrCountryIcon
+  getLanguageOrCountryIcon,
+  getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
-import classNames from "classnames";
-import listensToClickOutside from "react-onclickoutside";
-import * as f from "lodash/fp";
+import { getCurrencyWithCountry } from "../../cells/currency/currencyHelper";
 import { hasUserAccessToCountryCode } from "../../../helpers/accessManagementHelper";
-import { Directions } from "../../../constants/TableauxConstants";
 
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
@@ -155,7 +158,7 @@ class CurrencyItem extends PureComponent {
 
   valueToString = (pre, post) => {
     const postString = parseInt(post) ? post.toString() : "00";
-    return `${(pre || 0).toString()},${
+    return `${(pre || 0).toString()}${getLocaleDecimalSeparator()}${
       postString.length === 2 ? postString : postString + "0"
     }`;
   };

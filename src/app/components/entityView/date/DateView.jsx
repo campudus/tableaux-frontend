@@ -1,15 +1,17 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import Datetime from "react-datetime";
 import Moment from "moment";
+import React, { Component } from "react";
+import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+import classNames from "classnames";
+
 import {
   DateFormats,
   DateTimeFormats
 } from "../../../constants/TableauxConstants";
-import Datetime from "react-datetime";
-import listensToClickOutside from "react-onclickoutside";
-import i18n from "i18next";
-import classNames from "classnames";
-import * as f from "lodash/fp";
+import { formatDate, formatTimeShort } from "../../../helpers/multiLanguage";
 import { stopPropagation } from "../../../helpers/functools";
 
 @listensToClickOutside
@@ -41,12 +43,6 @@ class DateView extends Component {
       ? cell.value[langtag]
       : cell.value;
     return this.momentFromString(currValue);
-  };
-
-  stringFromMoment = moment => {
-    return moment && moment.isValid()
-      ? moment.format(this.Formats.formatForUser)
-      : "";
   };
 
   momentFromString = string => {
@@ -110,9 +106,7 @@ class DateView extends Component {
   render() {
     const { editing } = this.state;
     const { funcs, thisUserCantEdit } = this.props;
-    const value = editing
-      ? this.stringFromMoment(this.state.moment)
-      : this.stringFromMoment(this.getValue());
+    const value = editing ? this.state.moment : this.getValue();
     const cssClass = classNames("item-content datetime", {
       disabled: thisUserCantEdit
     });
@@ -131,12 +125,12 @@ class DateView extends Component {
             <div className="content">
               <div>
                 <i className="fa fa-calendar" />
-                <span>{f.first(value.split(" - "))}</span>
+                <span>{formatDate(value)}</span>
               </div>
               {this.props.time ? (
                 <div>
                   <i className="fa fa-clock-o" />
-                  <span>{f.last(value.split(" - "))}</span>
+                  <span>{formatTimeShort(value)}</span>
                 </div>
               ) : null}
             </div>

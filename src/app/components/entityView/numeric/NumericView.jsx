@@ -1,5 +1,3 @@
-import React from "react";
-import PropTypes from "prop-types";
 import {
   compose,
   lifecycle,
@@ -7,10 +5,16 @@ import {
   withHandlers,
   withStateHandlers
 } from "recompose";
+import React from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+
+import PropTypes from "prop-types";
+
+import { isYearColumn } from '../../../helpers/columnHelper';
 import { maybe } from "../../../helpers/functools";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import NumberInput from "../../helperComponents/NumberInput";
 
 const enhance = compose(
   pure,
@@ -28,22 +32,14 @@ const enhance = compose(
       registerInput: (state, { funcs }) => node => {
         funcs.register(node);
       },
-      handleChange: () => event => {
-        const inputString = event.target.value.replace(/,/g, ".");
-        const value =
-          inputString.split(".").length > 2
-            ? inputString.substr(0, inputString.length - 1)
-            : inputString;
+      handleChange: () => value => {
         return { value };
       },
       saveChanges: ({ oldValue, value }, props) => () => {
         const { actions, cell, langtag } = props;
-        // value might have been converted to string in the meantime; this is necessary to be able to
-        // add a decimal seperator with the editor still behaving naturally
-        const _value = parseFloat(value);
         const newValue = cell.column.multiLanguage
-          ? { [langtag]: _value }
-          : _value;
+          ? { [langtag]: value }
+          : value;
 
         actions.changeCellValue({
           cell,
@@ -65,9 +61,7 @@ const enhance = compose(
         escape: captureEventAnd(saveChanges),
         enter: captureEventAnd(saveChanges)
       };
-    }
-  }),
-  withHandlers({
+    },
     isKeyAllowed: () => event => {
       const numbers = f.map(f.toString, f.range(0, 10));
       const allowedKeys = [
@@ -114,22 +108,27 @@ const NumericView = ({
   thisUserCantEdit,
   children,
   handleKeyDown,
-  saveChanges
-}) => (
-  <div className="item-content shorttext" tabIndex={1}>
-    <input
-      type="text"
-      ref={registerInput}
-      disabled={thisUserCantEdit}
-      value={value}
-      placeholder={i18n.t("table:empty.number")}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      onBlur={saveChanges}
-    />
-    {children}
-  </div>
-);
+  saveChanges,
+  cell
+}) => {
+  const isYear = isYearColumn(cell.column);
+  return (
+    <div className="item-content shorttext numeric" tabIndex={1}>
+      <NumberInput
+        ref={registerInput}
+        disabled={thisUserCantEdit}
+        value={value}
+        placeholder={i18n.t("table:empty.number")}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        onBlur={saveChanges}
+        integer={isYear}
+        localize={!isYear}
+      />
+      {children}
+    </div>
+  );
+};
 
 export default enhance(NumericView);
 
