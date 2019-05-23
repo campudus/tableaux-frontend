@@ -11,7 +11,6 @@ const {
 } = actionTypes;
 
 export const queryFrontendServices = () => {
-  console.log("query frontend service");
   return {
     promise: makeRequest({
       apiRoute: route.toServiceRegistry()
