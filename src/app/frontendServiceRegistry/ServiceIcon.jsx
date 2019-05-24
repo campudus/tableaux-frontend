@@ -14,21 +14,27 @@ const ImageTypes = {
 const ImageIcon = ({ url, base64 }) => {
   const src = base64 || url;
   const type =
-    src === url && src.endsWith(".svg") ? ImageTypes.svg : ImageTypes.raster;
+    src && src === url && src.endsWith(".svg")
+      ? ImageTypes.SVG
+      : ImageTypes.RASTER;
 
-  return type === ImageTypes.svg ? <SvgIcon src={src} /> : <img src={src} />;
+
+  return type === ImageTypes.svg ? <SvgIcon icon={src} /> : <img src={src} />;
 };
 
 const FontIcon = ({ fontIconKey }) => <i className={"fa " + fontIconKey} />;
 
-const ServiceIcon = service => {
-  const serviceHasIcon = !(
-    service.icon &&
-    f.any(f.identity, f.pick(["url", "base64", "fontAwesome"], service.icon))
-  );
+const ServiceIcon = ({ service }) => {
+  const iconConfig = f.prop(["config", "icon"], service);
+  const serviceHasIcon =
+    iconConfig &&
+    f.compose(
+      f.any(f.identity),
+      f.props(["url", "base64", "fontAwesome"])
+    )(iconConfig);
 
-  const iconType = service.icon
-    ? !f.isEmpty(service.icon.fontAwesome)
+  const iconType = iconConfig
+    ? !f.isEmpty(iconConfig.fontAwesome)
       ? ImageTypes.FONT
       : "image"
     : ImageTypes.IMAGE;
@@ -37,9 +43,9 @@ const ServiceIcon = service => {
     <div className="service-icon">
       {serviceHasIcon ? (
         iconType === ImageTypes.FONT ? (
-          <FontIcon fontIconKey={service.icon.fontAwesoe} />
+          <FontIcon fontIconKey={iconConfig.fontAwesome} />
         ) : (
-          <ImageIcon {...service.icon} />
+          <ImageIcon {...iconConfig} />
         )
       ) : (
         <FontIcon fontIconKey="fa-external-link" />
