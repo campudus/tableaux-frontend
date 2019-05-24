@@ -110,7 +110,12 @@ class TranslationPopup extends PureComponent {
     maybe(window.localStorage)
       .exec("getItem", KEY)
       .map(JSON.parse)
-      .getOrElse({});
+      .getOrElse(
+        Langtags.reduce((accum, langtag) => {
+          accum[langtag] = true;
+          return accum;
+        }, {})
+      );
 
   storeTranslations = translations =>
     maybe(window.localStorage).exec(
