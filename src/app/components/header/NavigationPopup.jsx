@@ -13,28 +13,37 @@ const NavigationPopup = props => {
 
   return (
     <div id="main-navigation">
-      <div id="logo">
+      <div className="main-navigation__logo">
         <SvgIcon icon={"/img/GRUD-Logo.svg"} />
       </div>
-      <ul id="main-navigation-list">
+      <ul className="main-navigation__list">
         {ENABLE_DASHBOARD ? (
-          <li>
-            <Link href={"/" + langtag + "/dashboard"}>
+          <li className="main-navigation__entry">
+            <Link
+              href={"/" + langtag + "/dashboard"}
+              className="main-navigation__entry-button"
+            >
               <i className="fa fa-dashboard" />
               {t("header:menu.dashboard")}
             </Link>
           </li>
         ) : null}
 
-        <li>
-          <Link href={"/" + langtag + "/table"}>
+        <li className="main-navigation__entry">
+          <Link
+            href={"/" + langtag + "/table"}
+            className="main-navigation__entry-button"
+          >
             <i className="fa fa-columns" />
             {t("header:menu.tables")}
           </Link>
         </li>
 
-        <li>
-          <Link href={"/" + langtag + "/media"}>
+        <li className="main-navigation__entry">
+          <Link
+            href={"/" + langtag + "/media"}
+            className="main-navigation__entry-button"
+          >
             <i className="fa fa-file" />
             {t("header:menu.media")}
           </Link>
