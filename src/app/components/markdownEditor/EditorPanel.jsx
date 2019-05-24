@@ -1,6 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Editor, EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import {
+  Editor,
+  EditorState,
+  convertFromRaw,
+  convertToRaw,
+  RichUtils
+} from "draft-js";
 import { markdownToDraft, draftToMarkdown } from "markdown-draft-js";
 import f from "lodash/fp";
 
@@ -24,9 +30,24 @@ const EditorPanel = ({ initialMarkdown, onChange }) => {
     onChange(stateToMarkdown(newState.getCurrentContent()));
   });
 
+  const handleKeyCommand = React.useCallback((command, transientState) => {
+    const newState = RichUtils.handleKeyCommand(transientState, command);
+    if (newState) {
+      setEditorState(newState);
+      return "handled";
+    }
+    return "not-handled";
+  });
+
   console.log({ initialMarkdown, editorState });
 
-  return <Editor editorState={editorState} onChange={handleChange} />;
+  return (
+    <Editor
+      editorState={editorState}
+      onChange={handleChange}
+      handleKeyCommand={handleKeyCommand}
+    />
+  );
 };
 
 export default EditorPanel;
