@@ -9,6 +9,8 @@ import { doto } from "../../../helpers/functools";
 import "../../../../scss/main.scss";
 import { withHandlers } from "recompose";
 
+import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
+
 const TextCell = props => {
   const { langtag, displayValue, selected, openEditOverlay } = props;
   const isMultiLine = f.contains("\n", displayValue[langtag]);
@@ -47,14 +49,22 @@ const enhance = withHandlers({
 
       actions.openOverlay({
         head: <Header context={context} langtag={langtag} />,
-        body: (
-          <TextEditOverlay
-            actions={actions}
-            value={value}
-            langtag={langtag}
-            cell={cell}
-          />
-        ),
+        body:
+          cell.column.kind === "richtext" ? (
+            <MarkdownEditor
+              actions={actions}
+              value={value}
+              langtag={langtag}
+              cell={cell}
+            />
+          ) : (
+            <TextEditOverlay
+              actions={actions}
+              value={value}
+              langtag={langtag}
+              cell={cell}
+            />
+          ),
         title: cell,
         type: "full-height"
       });
