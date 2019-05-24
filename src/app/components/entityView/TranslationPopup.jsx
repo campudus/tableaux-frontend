@@ -6,12 +6,11 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import * as f from "lodash/fp";
 
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
-  ColumnKinds,
-  FallbackLanguage,
-  Langtags
-} from "../../constants/TableauxConstants";
-import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+  getColumnDisplayName,
+  getLanguageOrCountryIcon
+} from "../../helpers/multiLanguage";
 import { isTranslationNeeded } from "../../helpers/annotationHelper";
 import { maybe, merge } from "../../helpers/functools";
 import { safeRender } from "../../helpers/devWrappers";
@@ -188,10 +187,8 @@ class TranslationPopup extends PureComponent {
 
   render = safeRender(() => {
     const { cell, langtag, setTranslationView, switchLanguage } = this.props;
-    const title =
-      f.prop(["column", "displayName", langtag], cell) ||
-      f.prop(["column", "displayName", FallbackLanguage], cell) ||
-      "";
+    const title = getColumnDisplayName(cell.column, langtag);
+
     const { translations } = this.state;
 
     const isAnyCollapsed = f.flow(
