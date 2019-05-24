@@ -242,7 +242,7 @@ class TableView extends PureComponent {
         <GrudHeader
           langtag={langtag}
           handleLanguageSwitch={this.onLanguageSwitch}
-          pageTitle="pageTitle.tables"
+          pageTitleOrKey="pageTitle.tables"
         >
           <TableSwitcher
             langtag={langtag}

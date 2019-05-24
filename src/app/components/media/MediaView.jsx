@@ -90,7 +90,7 @@ class MediaView extends Component {
           <GrudHeader
             langtag={langtag}
             handleLanguageSwitch={this.onLanguageSwitch}
-            pageTitle="pageTitle.media"
+            pageTitleOrKey="pageTitle.media"
           />
           <Folder
             folder={media.data}

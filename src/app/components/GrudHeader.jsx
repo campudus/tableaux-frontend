@@ -26,7 +26,7 @@ const GrudHeader = ({
   children,
   handleLanguageSwitch,
   langtag,
-  pageTitle,
+  pageTitleOrKey,
   connectedToBackend,
   services
 }) => (
@@ -37,7 +37,7 @@ const GrudHeader = ({
         services={services.filter(filterMainMenuEntries)}
       />
       {children || <div className="header-separator" />}
-      <PageTitle titleKey={pageTitle} />
+      <PageTitle titleKey={pageTitleOrKey} />
       <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} />
       <ConnectionStatus isConnected={connectedToBackend} />
     </header>
@@ -47,7 +47,7 @@ const GrudHeader = ({
 export default connect(mapStateToProps)(GrudHeader);
 
 GrudHeader.propTypes = {
-  pageTitle: PropTypes.string.isRequired,
+  pageTitleOrKey: PropTypes.string.isRequired,
   langtag: PropTypes.string.isRequired,
   handleLanguageSwitch: PropTypes.func.isRequired
 };
