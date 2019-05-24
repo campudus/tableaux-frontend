@@ -6,12 +6,14 @@ RUN apk update && apk upgrade && \
 WORKDIR /usr/app
 
 COPY package* ./
+
+RUN npm ci
+
 COPY getCommitHash.sh .
 COPY .babelrc .
 COPY .git .git
 COPY src src
 
-RUN npm ci
 RUN npm run build
 RUN npm prune --production
 
