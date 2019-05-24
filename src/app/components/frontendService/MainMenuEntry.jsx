@@ -4,12 +4,13 @@ import PropTypes from "prop-types";
 
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import Link from "../helperComponents/Link";
+import ServiceIcon from "../../frontendServiceRegistry/ServiceIcon";
 import route from "../../helpers/apiRoutes";
 
-const MainMenuEntry = ({ service: { displayName, id }, langtag }) => (
+const MainMenuEntry = ({ service, service: { displayName, id }, langtag }) => (
   <li>
     <Link href={route.toFrontendServiceView(id)}>
-      <i className="fa fa-external-link" />
+      <ServiceIcon service={service} />
       {retrieveTranslation(langtag, displayName)}
     </Link>
   </li>
