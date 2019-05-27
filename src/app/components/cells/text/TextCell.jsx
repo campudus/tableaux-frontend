@@ -4,12 +4,13 @@ import { withHandlers } from "recompose";
 import React from "react";
 import f from "lodash/fp";
 
-import { getTableDisplayName } from "../../../helpers/multiLanguage";
+import { FallbackLanguage } from "../../../constants/TableauxConstants";
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
+import { doto } from "../../../helpers/functools";
 import ExpandButton from "./ExpandButton.jsx";
 import Header from "../../overlay/Header";
-import TextEditOverlay from "./TextEditOverlay";
-
 import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
+import TextEditOverlay from "./TextEditOverlay";
 
 const TextCell = props => {
   const { langtag, displayValue, selected, openEditOverlay } = props;
@@ -48,6 +49,7 @@ const enhance = withHandlers({
             value={value}
             langtag={langtag}
             cell={cell}
+            readOnly={!canUserChangeCell(cell, langtag)}
           />
         ) : (
           <TextEditOverlay
@@ -55,6 +57,7 @@ const enhance = withHandlers({
             value={value}
             langtag={langtag}
             cell={cell}
+            readOnly={!canUserChangeCell(cell, langtag)}
           />
         ),
         title: cell,
