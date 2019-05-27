@@ -202,10 +202,10 @@ export default compose(
       actions,
       cell: { table, row, column }
     }) => ordering => () => {
-      const rearranged = f.map(
-        id => f.find(linkedItem => linkedItem.id === id, links),
-        ordering
-      );
+      const rearranged = f
+        .map(id => f.find(linkedItem => linkedItem.id === id, links), ordering)
+        .map((el, idx) => ({ ...el, ordering: idx + 1 }));
+
       actions.changeCellValue({
         columnId: column.id,
         rowId: row.id,

@@ -134,11 +134,23 @@ export default compose(
         ordering
       }),
       swapOrdering: ({ ordering }) => (dragIndex, hoverIndex) => {
-        const rearranged = f.flow(
-          f.assoc(dragIndex, f.get(hoverIndex, ordering)),
-          f.assoc(hoverIndex, f.get(dragIndex, ordering))
-        )(ordering);
-        return { ordering: rearranged };
+        if (dragIndex > hoverIndex) {
+          const first = f.slice(0, hoverIndex, ordering);
+          const element = ordering[dragIndex];
+          const second = f.pull(
+            element,
+            f.slice(hoverIndex, ordering.length, ordering)
+          );
+          return { ordering: [...first, element, ...second] };
+        } else {
+          const first = f.slice(0, dragIndex, ordering);
+          const element = ordering[hoverIndex];
+          const second = f.pull(
+            element,
+            f.slice(dragIndex, ordering.length, ordering)
+          );
+          return { ordering: [...first, element, ...second] };
+        }
       }
     }
   ),

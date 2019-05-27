@@ -10,6 +10,8 @@ import {
 import { removeTranslationNeeded } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
+import { merge } from "../../helpers/functools";
+import { createLinkOrderRequest } from "../../helpers/linkHelper";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -181,15 +183,13 @@ const resetLinkValue = newIds => {
 };
 
 const reorderLinks = oldIds => newIds => {
-  const [swapee, successor] = f.flow(
-    f.dropWhile(([a, b]) => a === b),
-    f.take(2),
-    f.map(f.nth(1))
-  )([oldIds, newIds]);
-
+  const [swapee, successor, location] = f.props(
+    ["id", "successorId", "location"],
+    createLinkOrderRequest({ original: oldIds, changed: newIds })
+  );
   return {
     method: "PUT",
-    value: { location: "before", id: successor },
+    value: { location, id: successor },
     pathPostfix: `/link/${swapee}/order`
   };
 };

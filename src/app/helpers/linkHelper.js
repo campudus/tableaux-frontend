@@ -84,6 +84,64 @@ const combineDisplayValuesWithLinks = (allDisplayValues, columns, tableId) => {
     };
   }, currentDisplayValues);
 };
-export { combineDisplayValuesWithLinks };
+
+const reduce = f.reduce.convert({ cap: false });
+
+const getShiftDistance = (id, originalIdx, changed) =>
+  f.compose(
+    newIndex => (originalIdx - newIndex) * -1,
+    f.findIndex(changedEl => changedEl === id)
+  )(changed);
+
+const getShiftedElement = distanceTable =>
+  reduce(
+    (acc, val, key) => {
+      if (
+        f.isNil(acc.distance) ||
+        Math.abs(val.distance) >= Math.abs(acc.distance)
+      ) {
+        return { ...val, id: key };
+      }
+      return acc;
+    },
+    { originalIdx: null, distance: null, id: null },
+    distanceTable
+  );
+
+const calcDistanceTable = ({ original, changed }) =>
+  reduce(
+    (acc, val, idx) => {
+      const distance = getShiftDistance(val, idx, changed);
+      return { ...acc, [val]: { originalIdx: idx, distance } };
+    },
+    {},
+    original
+  );
+
+//if there was a location: "after", this would look way better
+const buildRequestParam = ({ original }) => ({ originalIdx, distance, id }) => {
+  if (originalIdx + distance < original.length - 1) {
+    return {
+      id,
+      successorId: original[originalIdx + distance + (distance > 0 ? 1 : 0)],
+      location: "before"
+    };
+  } else {
+    return {
+      id,
+      successorId: original[originalIdx + distance],
+      location: "end"
+    };
+  }
+};
+
+const createLinkOrderRequest = data =>
+  f.compose(
+    buildRequestParam(data),
+    getShiftedElement,
+    calcDistanceTable
+  )(data);
+
+export { combineDisplayValuesWithLinks, createLinkOrderRequest };
 
 export default identifyUniqueLinkedRows;
