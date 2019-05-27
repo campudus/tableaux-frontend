@@ -3,14 +3,23 @@ import PropTypes from "prop-types";
 
 import EditorPanel from "./EditorPanel";
 
-const MarkdownEditor = ({ value, cell, actions, langtag }) => {
+const MarkdownEditor = ({ value, cell, actions, langtag }, ref) => {
   const isMultiLanguage = cell.column.multilanguage;
   const theMarkdown = React.useRef(
     (isMultiLanguage ? value[langtag] : value) || ""
   );
 
+  const editorRef = React.useRef();
+  React.useImperativeHandle(ref, () => ({
+    focus: editorRef.current && editorRef.current.focus()
+  }));
+
   const handleChange = React.useCallback(markdown => {
     theMarkdown.current = markdown;
+  });
+
+  const focusInput = React.useCallback(() => {
+    editorRef.current && editorRef.current.focus && editorRef.current.focus();
   });
 
   React.useEffect(() => {
@@ -23,12 +32,14 @@ const MarkdownEditor = ({ value, cell, actions, langtag }) => {
         cell
       });
     };
+    focusInput();
     return onUnmount;
   }, []);
 
   return (
-    <div className="markdown-editor">
+    <div className="markdown-editor" onClick={focusInput}>
       <EditorPanel
+        ref={editorRef}
         initialMarkdown={theMarkdown.current}
         onChange={handleChange}
       />
@@ -36,7 +47,7 @@ const MarkdownEditor = ({ value, cell, actions, langtag }) => {
   );
 };
 
-export default MarkdownEditor;
+export default React.forwardRef(MarkdownEditor);
 
 MarkdownEditor.propTypes = {
   value: PropTypes.oneOf([PropTypes.object, PropTypes.string]),

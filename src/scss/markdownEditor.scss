@@ -1,11 +1,25 @@
+$editor-margin: 20px;
+$block-margin: 8px;
+$block-margin-narrow: 5px;
+
+.text-editor-overlay .overlay-content {
+  display: flex;
+  flex-direction: column;
+}
+
 .markdown-editor {
   margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .richtext-toggle-style__bar {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   padding: 5px;
   margin-bottom: 10px;
   box-shadow: 0 0 10px 10px $color-text-light-grey;
@@ -16,6 +30,7 @@
   background-color: $color-primary-contrast-text;
   color: $color-text-medium-grey;
   margin: 5px;
+  font-family: "serif";
 
   &.style-button--active {
     background-color: $color-primary;
@@ -29,5 +44,65 @@
 }
 
 .DraftEditor-root {
-  padding: 20px;
+  padding: $editor-margin;
+  flex: 1;
+  position: relative;
+}
+
+.public-DraftEditorPlaceholder-root {
+  color: $color-text-medium-grey;
+  position: absolute;
+  top: 28px;
+}
+
+.public-DraftStyleDefault-block {
+  margin: $block-margin 0;
+}
+
+.public-DraftStyleDefault-ul, .public-DraftStyleDefault-ol {
+  margin-left: $editor-margin;
+  list-style: outside;
+  padding: $block-margin-narrow 0;
+
+  .public-DraftStyleDefault-block {
+    margin: $block-margin-narrow 0;
+  }
+}
+
+.public-DraftStyleDefault-unorderedListItem {
+  list-style-type: circle;
+}
+
+.public-DraftStyleDefault-orderedListItem {
+  list-style-type: decimal;
+}
+
+.DraftEditor-root {
+  h1 {
+    font-weight: bold;
+    font-size: xx-large;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: x-large;
+  }
+
+  h3 {
+    font-weight: bold;
+    font-size: large;
+  }
+
+  blockquote {
+    .public-DraftStyleDefault-block {
+      color: $color-text-medium-grey;
+      border-left: solid 2px $color-text-medium-grey;
+      margin: 0;
+      margin-left: 10px;
+      padding-left: 10px;
+      padding-bottom: $block-margin-narrow;
+      font-style: italic;
+      font-size: larger;
+    }
+  }
 }

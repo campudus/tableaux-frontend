@@ -47,26 +47,28 @@ const enhance = withHandlers({
         ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
       );
 
+      const isRichText = cell.column.kind === "richtext";
+
       actions.openOverlay({
         head: <Header context={context} langtag={langtag} />,
-        body:
-          cell.column.kind === "richtext" ? (
-            <MarkdownEditor
-              actions={actions}
-              value={value}
-              langtag={langtag}
-              cell={cell}
-            />
-          ) : (
-            <TextEditOverlay
-              actions={actions}
-              value={value}
-              langtag={langtag}
-              cell={cell}
-            />
-          ),
+        body: isRichText ? (
+          <MarkdownEditor
+            actions={actions}
+            value={value}
+            langtag={langtag}
+            cell={cell}
+          />
+        ) : (
+          <TextEditOverlay
+            actions={actions}
+            value={value}
+            langtag={langtag}
+            cell={cell}
+          />
+        ),
         title: cell,
-        type: "full-height"
+        type: "full-height",
+        classes: isRichText ? "text-editor-overlay" : ""
       });
     }
   }
