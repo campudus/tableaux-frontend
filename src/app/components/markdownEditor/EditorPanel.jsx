@@ -24,7 +24,10 @@ const stateToMarkdown = f.compose(
   convertToRaw
 );
 
-const EditorPanel = ({ initialMarkdown, onChange, hideToolbar }, ref) => {
+const EditorPanel = (
+  { initialMarkdown, onChange, hideToolbar, readOnly },
+  ref
+) => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createWithContent(markdownToState(initialMarkdown))
   );
@@ -75,6 +78,7 @@ const EditorPanel = ({ initialMarkdown, onChange, hideToolbar }, ref) => {
         />
       )}
       <Editor
+        readOnly={readOnly}
         ref={editorRef}
         editorState={editorState}
         onChange={handleChange}
@@ -90,5 +94,6 @@ export default React.forwardRef(EditorPanel);
 EditorPanel.propTypes = {
   initialMarkdown: PropTypes.string,
   onChange: PropTypes.func,
-  hideToolbar: PropTypes.bool
+  hideToolbar: PropTypes.bool,
+  readOnly: PropTypes.bool
 };
