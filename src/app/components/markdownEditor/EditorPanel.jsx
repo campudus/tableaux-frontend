@@ -8,6 +8,7 @@ import {
 import { markdownToDraft, draftToMarkdown } from "markdown-draft-js";
 import React from "react";
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
@@ -23,10 +24,14 @@ const stateToMarkdown = f.compose(
   convertToRaw
 );
 
-const EditorPanel = ({ initialMarkdown, onChange, hideToolbar }) => {
+const EditorPanel = ({ initialMarkdown, onChange, hideToolbar }, ref) => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createWithContent(markdownToState(initialMarkdown))
   );
+  const editorRef = React.useRef();
+  React.useImperativeHandle(ref, () => ({
+    focus: editorRef.current && editorRef.current.focus()
+  }));
 
   const handleChange = React.useCallback(newState => {
     setEditorState(newState);
@@ -70,15 +75,17 @@ const EditorPanel = ({ initialMarkdown, onChange, hideToolbar }) => {
         />
       )}
       <Editor
+        ref={editorRef}
         editorState={editorState}
         onChange={handleChange}
         handleKeyCommand={handleKeyCommand}
+        placeholder={i18n.t("table:empty.text")}
       />
     </>
   );
 };
 
-export default EditorPanel;
+export default React.forwardRef(EditorPanel);
 
 EditorPanel.propTypes = {
   initialMarkdown: PropTypes.string,
