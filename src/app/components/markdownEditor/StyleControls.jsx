@@ -49,8 +49,9 @@ const StyleControls = ({ editorState, toggleBlockType, toggleInlineStyle }) => {
   ];
   const inlineStyles = [
     { type: "BOLD", icon: "fa-bold" },
-    { type: "ITALIC", icon: "fa-italic" },
-    { type: "UNDERLINE", icon: "fa-underline" }
+    { type: "ITALIC", icon: "fa-italic" }
+    // There is no standard markdown for underline
+    // { type: "UNDERLINE", icon: "fa-underline" }
   ];
   const inlineStyle = editorState.getCurrentInlineStyle();
   const blockType = editorState
