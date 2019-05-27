@@ -95,7 +95,6 @@ const EntityViewHeader = props => {
 
   const getLanguage = () => {
     const result = contentLanguage || langtag;
-    console.log("wazmylang?", result);
     return result;
   };
 
