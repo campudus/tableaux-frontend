@@ -1,0 +1,33 @@
+.markdown-editor {
+  margin-top: 0 !important;
+}
+
+.richtext-toggle-style__bar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 10px 10px $color-text-light-grey;
+}
+
+.richtext-toggle-style-button {
+  @include button-look();
+  background-color: $color-primary-contrast-text;
+  color: $color-text-medium-grey;
+  margin: 5px;
+
+  &.style-button--active {
+    background-color: $color-primary;
+    color: $color-primary-contrast-text;
+  }
+
+  &:hover {
+    background-color: lighten($color-primary, 20);
+    color: $color-primary-contrast-text;
+  }
+}
+
+.DraftEditor-root {
+  padding: 20px;
+}
