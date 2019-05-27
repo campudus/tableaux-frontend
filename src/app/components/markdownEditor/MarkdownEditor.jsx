@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import EditorPanel from "./EditorPanel";
 
-const MarkdownEditor = ({ value, cell, actions, langtag }, ref) => {
+const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   const isMultiLanguage = cell.column.multilanguage;
   const theMarkdown = React.useRef(
     (isMultiLanguage ? value[langtag] : value) || ""
@@ -36,12 +36,17 @@ const MarkdownEditor = ({ value, cell, actions, langtag }, ref) => {
     return onUnmount;
   }, []);
 
+  const cssClass =
+    "markdown-editor " + (readOnly ? "markdown-editor--disabled" : "");
+
   return (
-    <div className="markdown-editor" onClick={focusInput}>
+    <div className={cssClass} onClick={focusInput}>
       <EditorPanel
         ref={editorRef}
         initialMarkdown={theMarkdown.current}
         onChange={handleChange}
+        readOnly={readOnly}
+        hideToolbar={readOnly}
       />
     </div>
   );
@@ -53,5 +58,6 @@ MarkdownEditor.propTypes = {
   value: PropTypes.oneOf([PropTypes.object, PropTypes.string]),
   cell: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  readOnly: PropTypes.bool
 };
