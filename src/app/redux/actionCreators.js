@@ -1,5 +1,6 @@
-import f from "lodash/fp";
 import React from "react";
+import f from "lodash/fp";
+import i18n from "i18next";
 
 import { Langtags } from "../constants/TableauxConstants";
 import {
@@ -20,14 +21,14 @@ import {
   saveColumnVisibility
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
+import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
+import { queryFrontendServices } from "./actions/frontendServices";
 import API_ROUTES from "../helpers/apiRoutes";
+import TableauxRouter from "../router/router";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
-import TableauxRouter from "../router/router";
-import i18n from "i18next";
-import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 
 const {
   getAllTables,
@@ -668,7 +669,8 @@ const actionCreators = {
   setAllRowsFinal,
   editColumn,
   addEmptyRowAndOpenEntityView,
-  changeTableName
+  changeTableName,
+  queryFrontendServices
 };
 
 export default actionCreators;

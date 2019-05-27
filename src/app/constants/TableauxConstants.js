@@ -38,7 +38,8 @@ const grudConstants = {
   ViewNames: keyMirror({
     TABLE_VIEW: null,
     MEDIA_VIEW: null,
-    DASHBOARD_VIEW: null
+    DASHBOARD_VIEW: null,
+    FRONTEND_SERVICE_VIEW: null
   }),
 
   Alignments: keyMirror({

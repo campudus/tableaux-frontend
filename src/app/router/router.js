@@ -1,20 +1,24 @@
 import "babel-polyfill";
-import React from "react";
-import ReactDOM from "react-dom";
-import TableauxConstants from "../constants/TableauxConstants";
-import * as Sentry from "@sentry/browser";
-import Router from "ampersand-router";
-import f from "lodash/fp";
-import parseOptions from "./urlOptionParser";
-import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
-import { ENABLE_DASHBOARD } from "../FeatureFlags";
+
 import { Provider } from "react-redux";
 import { bindActionCreators } from "redux";
-import store from "../redux/store.js";
-import actionCreators from "../redux/actionCreators";
-import Tableaux from "../components/Tableaux";
-import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+import React from "react";
+import ReactDOM from "react-dom";
+import Router from "ampersand-router";
+import * as Sentry from "@sentry/browser";
+import f from "lodash/fp";
 import i18n from "i18next";
+
+import { ENABLE_DASHBOARD } from "../FeatureFlags";
+import { initDevelopmentAccessCookies } from "../helpers/accessManagementHelper";
+import { posOrNil, validateLangtag, validateTableId } from "./routeValidators";
+import { requestAvailableServices } from "../frontendServiceRegistry/frontendServices";
+import { when } from "../helpers/functools";
+import Tableaux from "../components/Tableaux";
+import TableauxConstants from "../constants/TableauxConstants";
+import actionCreators from "../redux/actionCreators";
+import parseOptions from "./urlOptionParser";
+import store from "../redux/store.js";
 
 initDevelopmentAccessCookies();
 
@@ -31,10 +35,13 @@ const extendedRouter = Router.extend({
     "(:langtag/)media/:folderid": "mediaBrowser",
     "(:langtag/)table(/)": "redirectToNewUrl",
     "(:langtag/)table/*rest": "redirectToNewUrl",
-    "(:langtag)(/)": "home"
+    "(:langtag/)services/:id(/)": "frontendService",
+    "(:langtag/)services/:id(/tables/:tableId)(/columns/:columnId)(/rows/:rowId)":
+      "frontendService",
+    "*anything": "home"
   },
 
-  home: function(...args) {
+  home: function() {
     ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
 
@@ -194,10 +201,41 @@ const extendedRouter = Router.extend({
       trigger: false,
       replace: true
     });
+  },
+
+  frontendService: async function(
+    langtag,
+    serviceId,
+    tableId,
+    columnId,
+    rowId
+  ) {
+    if (f.isEmpty(serviceId)) {
+      return this.home(langtag());
+    }
+
+    const { tables } = store.getState();
+    const validLangtag = await validateLangtag(langtag);
+    const validTableId = await validateTableId(parseInt(tableId, 10), tables);
+    currentLangtag = validLangtag;
+
+    const id = parseInt(serviceId);
+    this.renderOrSwitchView(TableauxConstants.ViewNames.FRONTEND_SERVICE_VIEW, {
+      langtag: validLangtag,
+      tableId: f.isString(tableId) ? validTableId : null,
+      columnId: when(f.isString, f.parseInt(10), columnId),
+      rowId: when(f.isString, f.parseInt(10), rowId),
+      id
+    });
+    this.history.navigate("/" + validLangtag + "/services/" + serviceId, {
+      trigger: false,
+      replace: true
+    });
   }
 });
 
 const GRUDRouter = new extendedRouter();
 GRUDRouter.history.start();
+requestAvailableServices();
 
 export default GRUDRouter;

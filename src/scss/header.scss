@@ -98,9 +98,10 @@ header {
     display: none;
     left: 0;
     max-width: 600px;
+    padding: 0;
 
-    #logo {
-      margin-bottom: 20px;
+    .main-navigation__logo {
+      padding: 20px;
       .svg-icon {
         width: 92px;
         max-width: none;
@@ -112,16 +113,36 @@ header {
       }
     }
 
-    #main-navigation-list {
+    .main-navigation__list {
       line-height: 3em;
-      a {
-        display: block;
-      }
-      i {
-        margin-right: 1em;
-      }
+
     }
   }
+
+  .main-navigation__entry-button {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    &:hover {
+      background-color: $color-hover-background;
+    }
+    i, img {
+      margin-right: 1em;
+    }
+  }
+
+  .service-icon {
+    max-width: 1em;
+    position: relative;
+    margin-right: 1em;
+
+    &>*:first-child {
+      max-width: 1em;
+      height: 1em;
+      max-height: 1em;
+    }
+  }
+
 
   #header-pagename {
     margin-right: 20px;

@@ -49,6 +49,7 @@ class Navigation extends Component {
           langtag={langtag}
           handleClickOutside={onClickOutside}
           navigationOpen={navigationOpen}
+          services={this.props.services || []}
         />
       </nav>
     );

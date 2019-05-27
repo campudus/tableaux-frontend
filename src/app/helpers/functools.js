@@ -8,6 +8,7 @@ import {
   identity,
   isEmpty,
   isFunction,
+  isNil,
   map,
   noop,
   prop,
@@ -381,24 +382,6 @@ const mapIndexed = curryN(2, (fn, coll) => coll.map(fn));
 // ((a) -> (idx) -> bool) -> (a[]) -> a[]
 const filterIndexed = curryN(2, (fn, coll) => coll.filter(fn));
 
-const tests = {
-  title: "Monads",
-  tests: [
-    [
-      "is",
-      "foobarbaz",
-      logged("log test", (x, y, z) => x + y + z),
-      ["foo", "bar", "baz"]
-    ],
-    [
-      "is",
-      "FOOfoo",
-      forkJoin,
-      [(a, b) => a + b, x => x.toUpperCase(), x => x.toLowerCase(), "Foo"]
-    ]
-  ]
-};
-
 const ifElse = curryN(4, (cond, ifFn, elseFn, value) =>
   cond(value) ? ifFn(value) : elseFn(value)
 );
@@ -441,6 +424,13 @@ const firstValidPropOr = curryN(
 
 const merge = curryN(2, (first, second) => ({ ...first, ...second }));
 
+// (values: dict<string> -> key: string -> string) -> string
+const replaceMoustache = curryN(3, (values, pattern, string) => {
+  const value = (values || {})[pattern];
+  const re = new RegExp(`{{${pattern || ""}}}`, "g");
+  return isNil(value) || isNil(string) ? string : string.replace(re, value);
+});
+
 const match = curryN(2, (regex, str) =>
   either(str)
     .exec("match", regex)
@@ -477,5 +467,5 @@ export {
   firstValidProp,
   firstValidPropOr,
   match,
-  tests
+  replaceMoustache
 };

@@ -97,7 +97,10 @@ class SvgIcon extends Component {
       }
       this.containerElement.innerHTML = svg;
       this.svgData = this.containerElement.children["0"];
-      this.setState({ loading: false }, this.processImage);
+      this.setState(
+        { loading: false },
+        () => this.svgData && this.processImage()
+      );
     });
   };
 
@@ -113,9 +116,10 @@ class SvgIcon extends Component {
         element.classList.add(className);
       } catch (e) {
         const classNames = ` ${(
-          element.classNames || ""
+          (element && element.classNames) ||
+          ""
         ).toString()} ${className}`;
-        element.setAttribute("class", classNames.toString());
+        element && element.setAttribute("class", classNames.toString());
       }
     };
     const { fillColor, center, svgClasses, title } = this.props;

@@ -7,13 +7,10 @@ import PropTypes from "prop-types";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { showDialog } from "../overlay/GenericOverlay";
 import ColumnFilter from "../header/ColumnFilter";
-import { ConnectionStatus } from "../header/ConnectionStatus";
 import Filter from "../header/filter/Filter.jsx";
+import GrudHeader from "../GrudHeader";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import JumpSpinner from "./JumpSpinner";
-import LanguageSwitcher from "../header/LanguageSwitcher.jsx";
-import Navigation from "../header/Navigation.jsx";
-import PageTitle from "../header/PageTitle.jsx";
 import PasteCellIcon from "../header/PasteCellIcon";
 import SearchOverlay from "./SearchOverlay";
 import Spinner from "../header/Spinner.jsx";
@@ -37,7 +34,6 @@ const mapStatetoProps = (state, props) => {
   const rows = f.get(`rows.${tableId}.data`, state);
   const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
-  const grudStatus = f.get("grudStatus", state);
   const {
     startedGeneratingDisplayValues,
     visibleColumns,
@@ -61,8 +57,7 @@ const mapStatetoProps = (state, props) => {
     visibleColumns,
     filters,
     sorting,
-    finishedLoading,
-    grudStatus
+    finishedLoading
   };
 };
 
@@ -221,8 +216,7 @@ class TableView extends PureComponent {
       actions,
       allDisplayValues,
       filtering,
-      tableView,
-      grudStatus: { connectedToBackend }
+      tableView
     } = this.props;
     const columnActions = f.pick(
       ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
@@ -245,8 +239,11 @@ class TableView extends PureComponent {
 
     return (
       <div>
-        <header>
-          <Navigation langtag={langtag} />
+        <GrudHeader
+          langtag={langtag}
+          handleLanguageSwitch={this.onLanguageSwitch}
+          pageTitleOrKey="pageTitle.tables"
+        >
           <TableSwitcher
             langtag={langtag}
             currentTable={table}
@@ -282,19 +279,13 @@ class TableView extends PureComponent {
           />
           <div className="header-separator" />
           <Spinner isLoading={f.isEmpty(allDisplayValues)} />
-          <PageTitle titleKey="pageTitle.tables" />
-          <LanguageSwitcher
-            langtag={langtag}
-            onChange={this.onLanguageSwitch}
-          />
           <PasteCellIcon
             clearCellClipboard={this.clearCellClipboard}
             pasteOriginCell={pasteOriginCell}
             pasteOriginCellLang={pasteOriginCellLang}
             tableId={table.id}
           />
-          <ConnectionStatus isConnected={connectedToBackend} />
-        </header>
+        </GrudHeader>
         {this.renderTableOrSpinner()}
         <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
         <SearchOverlay isOpen={filtering} />
