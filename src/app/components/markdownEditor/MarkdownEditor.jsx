@@ -10,7 +10,6 @@ const MarkdownEditor = ({ value, cell, actions, langtag }) => {
   );
 
   const handleChange = React.useCallback(markdown => {
-    console.log("Markdown changed:", markdown);
     theMarkdown.current = markdown;
   });
 
