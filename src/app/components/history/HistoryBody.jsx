@@ -5,7 +5,13 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import { cellSpec } from "../../specs/cell-spec";
-import { doto, mapIndexed } from "../../helpers/functools";
+import {
+  doto,
+  forkJoin,
+  ifElse,
+  mapIndexed,
+  unless
+} from "../../helpers/functools";
 import {
   filterAnnotations,
   filterComments,
@@ -97,9 +103,10 @@ const HistoryBody = props => {
         <div className="history-overlay__content-scroller">
           {doto(
             revisions,
+            unless(f.isEmpty, duplicateLastRevision),
             reduceRevisionHistory(column),
             getVisibleRevisions,
-            f.groupBy(getCreationDay),
+            f.groupBy(ifElse(f.prop("isCurrent"), () => null, getCreationDay)),
             obj =>
               f
                 .reverse(f.keys(obj))
@@ -130,6 +137,16 @@ const HistoryBody = props => {
     </div>
   );
 };
+
+const duplicateLastRevision = forkJoin(
+  f.concat,
+  f.identity,
+  f.compose(
+    f.assoc("isCurrent", true),
+    f.update("revision", f.add(1)),
+    f.last
+  )
+);
 
 export default HistoryBody;
 HistoryBody.propTypes = {
