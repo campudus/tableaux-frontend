@@ -47,6 +47,7 @@ const API_ROUTES = {
   toRows,
   toTable,
   toColumn,
+  toAllColumns: getAllColumnsForTable,
   toRow,
   toCell,
   toFolder,

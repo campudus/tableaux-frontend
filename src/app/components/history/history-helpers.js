@@ -2,7 +2,10 @@ import f from "lodash/fp";
 import moment from "moment";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
-import { fspy, maybe, merge, when } from "../../helpers/functools";
+import { composeP, mapP, maybe, merge, when } from "../../helpers/functools";
+import { makeRequest } from "../../helpers/apiHelper";
+import getDisplayValue from "../../helpers/getDisplayValue";
+import route from "../../helpers/apiRoutes";
 
 const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
 
@@ -52,6 +55,54 @@ export const getCreationDay = f.compose(
   f.invokeArgs("substring", [0, 10]),
   f.propOr("", "timestamp")
 );
+
+// Add current display values to link items
+export const maybeAddLinkLabels = column =>
+  column.kind !== ColumnKinds.link
+    ? f.identity
+    : async revisions => {
+        const linkIdColumn = await composeP(
+          f.first,
+          f.prop("columns"),
+          makeRequest
+        )({
+          apiRoute: route.toAllColumns(column.toTable)
+        });
+
+        const relevantIds = f.compose(
+          f.uniq,
+          f.flatMap(getIdsFromRevision)
+        )(revisions);
+
+        const currentDisplayValues = await composeP(
+          f.reduce(merge, {}),
+          mapP(
+            getCurrentDisplayValue({
+              tableId: column.toTable,
+              column: linkIdColumn
+            })
+          )
+        )(relevantIds);
+
+        return revisions.map(
+          f.assoc("currentDisplayValues", currentDisplayValues)
+        );
+      };
+
+const getIdsFromRevision = f.compose(
+  f.map("id"),
+  f.prop("value")
+);
+
+const getCurrentDisplayValue = ({ tableId, column }) => rowId => {
+  const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
+  return composeP(
+    displayValue => ({ [rowId]: displayValue }),
+    getDisplayValue(column),
+    f.prop("value"),
+    makeRequest
+  )({ apiRoute }).catch(() => {}); // fulfill request promises to deleted rows
+};
 
 //------------------------------------------------------------------------------
 // Revision filters. For easy combination, those are drop-filters.
