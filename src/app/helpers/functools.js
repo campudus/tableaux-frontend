@@ -461,6 +461,15 @@ const match = curryN(2, (regex, str) =>
     .getOrElse("")
 );
 
+const composeP = (...promises) => value => {
+  const initialPromise = fp.last(promises);
+  return fp.compose(
+    fp.reduce((p, next) => p.then(next), initialPromise(value)),
+    fp.tail,
+    fp.reverse
+  )(promises);
+};
+
 const where = curryN(2, (spec, obj) => {
   const keys = fp.keys(spec);
   return keys.reduce(
@@ -500,5 +509,6 @@ export {
   firstValidPropOr,
   match,
   replaceMoustache,
-  where
+  where,
+  composeP
 };

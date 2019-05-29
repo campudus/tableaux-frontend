@@ -1,8 +1,72 @@
 import f from "lodash/fp";
 
-import { forkJoin, replaceMoustache, slidingWindow, where } from "./functools";
+import {
+  composeP,
+  forkJoin,
+  replaceMoustache,
+  slidingWindow,
+  where
+} from "./functools";
 
 describe("functools", () => {
+  describe("composeP()", () => {
+    const p = async val => ({
+      foo: {
+        bar: {
+          baz: val
+        }
+      }
+    });
+
+    it("composes functions on an initial promise", async () => {
+      expect.assertions(2);
+
+      await expect(
+        composeP(
+          f.prop("baz"),
+          f.prop("bar"),
+          f.prop("foo"),
+          p
+        )("my-val")
+      ).resolves.toEqual("my-val");
+
+      await expect(
+        composeP(
+          f.join(""),
+          f.map(f.toUpper),
+          async a => a
+        )(["foo", "bar"])
+      ).resolves.toEqual("FOOBAR");
+    });
+
+    it("allows to chain promises", async () => {
+      expect.assertions(1);
+      await expect(
+        composeP(
+          async a => a,
+          f.prop("baz"),
+          f.prop("bar"),
+          f.prop("foo"),
+          p,
+          async a => a
+        )("the-result")
+      ).resolves.toEqual("the-result");
+    });
+
+    it("throws if first function does not return a promise", async () => {
+      expect(() =>
+        composeP(
+          async a => a,
+          f.prop("baz"),
+          f.prop("bar"),
+          f.prop("foo"),
+          p,
+          a => a
+        )("the-result")
+      ).toThrow();
+    });
+  });
+
   describe("forkjoin()", () => {
     it("simple test", () => {
       expect(forkJoin(f.add, f.toUpper, f.toLower, "fOo")).toEqual("FOOfoo");
