@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 
-import { forkJoin, replaceMoustache, slidingWindow } from "./functools";
+import { forkJoin, replaceMoustache, slidingWindow, where } from "./functools";
 
 describe("functools", () => {
   describe("forkjoin()", () => {
