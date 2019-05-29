@@ -35,6 +35,7 @@ const HistoryBody = props => {
   } = props;
   const { table, column, row } = cell;
   const [revisions, setRevisions] = useState([]);
+  const contentLangtag = sharedData.contentLangtag || langtag;
 
   // Init shared data for header, filter and body
   useEffect(() => {
@@ -51,7 +52,7 @@ const HistoryBody = props => {
       })
     })
       .then(f.prop("rows"))
-      .then(maybeAddLinkLabels(column))
+      .then(maybeAddLinkLabels(column, contentLangtag))
       .then(setRevisions)
       .catch(console.error);
   }, []);
@@ -71,8 +72,6 @@ const HistoryBody = props => {
           : {}
       )
     )(rev);
-
-  const contentLangtag = sharedData.contentLangtag || langtag;
 
   const filterFunction = f.allPass([
     filterAnnotations(filter),

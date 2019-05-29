@@ -1,3 +1,4 @@
+import React from "react";
 import f from "lodash/fp";
 import moment from "moment";
 
@@ -6,6 +7,7 @@ import { composeP, mapP, maybe, merge, when } from "../../helpers/functools";
 import { makeRequest } from "../../helpers/apiHelper";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import route from "../../helpers/apiRoutes";
+import Empty from "../helperComponents/emptyEntry";
 
 const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
 
@@ -57,7 +59,7 @@ export const getCreationDay = f.compose(
 );
 
 // Add current display values to link items
-export const maybeAddLinkLabels = column =>
+export const maybeAddLinkLabels = (column, langtag) =>
   column.kind !== ColumnKinds.link
     ? f.identity
     : async revisions => {
@@ -79,7 +81,8 @@ export const maybeAddLinkLabels = column =>
           mapP(
             getCurrentDisplayValue({
               tableId: column.toTable,
-              column: linkIdColumn
+              column: linkIdColumn,
+              langtag
             })
           )
         )(relevantIds);
@@ -94,10 +97,18 @@ const getIdsFromRevision = f.compose(
   f.prop("value")
 );
 
-const getCurrentDisplayValue = ({ tableId, column }) => rowId => {
+const getCurrentDisplayValue = ({ tableId, column, langtag }) => rowId => {
   const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
   return composeP(
     displayValue => ({ [rowId]: displayValue }),
+    when(
+      f.compose(
+        f.isEmpty,
+        f.trim
+      ),
+      () => <Empty langtag={langtag} />
+    ),
+    f.prop(langtag),
     getDisplayValue(column),
     f.prop("value"),
     makeRequest

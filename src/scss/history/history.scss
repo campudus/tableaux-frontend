@@ -132,15 +132,35 @@
   }
 }
 
+@mixin link-diff-color($basecolor) {
+  background-color: $basecolor;
+
+  &.content-diff--foreign-row-deleted {
+    background-color: transparentize($basecolor, 0.3);
+  }
+}
+
 .link-diff {
   margin: 2px;
   padding: 8px;
   border-radius: 3px;
-  background-color: $color-primary;
   color: $color-primary-contrast-text;
+  @include link-diff-color($color-primary);
 
   &.content-diff--added {
-    background-color: $color-revision-link-added;
+    @include link-diff-color($color-revision-link-added)
+  }
+
+  &.content-diff--deleted {
+    @include link-diff-color($color-revision-deleted)
+  }
+
+  .link-diff__icon {
+    margin-right: 5px;
+
+    svg {
+      fill: $color-primary-contrast-text;
+    }
   }
 }
 
