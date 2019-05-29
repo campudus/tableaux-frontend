@@ -470,6 +470,10 @@ const composeP = (...promises) => value => {
   )(promises);
 };
 
+const mapP = curryN(2, (promiseGenerator, coll) =>
+  Promise.all(coll.map(promiseGenerator))
+);
+
 const where = curryN(2, (spec, obj) => {
   const keys = fp.keys(spec);
   return keys.reduce(
@@ -510,5 +514,6 @@ export {
   match,
   replaceMoustache,
   where,
-  composeP
+  composeP,
+  mapP
 };
