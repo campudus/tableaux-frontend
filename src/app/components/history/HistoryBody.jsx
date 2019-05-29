@@ -10,7 +10,8 @@ import {
   forkJoin,
   ifElse,
   mapIndexed,
-  unless
+  unless,
+  when
 } from "../../helpers/functools";
 import {
   filterAnnotations,
@@ -103,8 +104,8 @@ const HistoryBody = props => {
         <div className="history-overlay__content-scroller">
           {doto(
             revisions,
-            unless(f.isEmpty, duplicateLastRevision),
             reduceRevisionHistory(column),
+            unless(f.isEmpty, duplicateLastRevision(contentLangtag)),
             getVisibleRevisions,
             f.groupBy(ifElse(f.prop("isCurrent"), () => null, getCreationDay)),
             obj =>
@@ -138,15 +139,25 @@ const HistoryBody = props => {
   );
 };
 
-const duplicateLastRevision = forkJoin(
-  f.concat,
-  f.identity,
+const duplicateLastRevision = langtag =>
   f.compose(
-    f.assoc("isCurrent", true),
-    f.update("revision", f.add(1)),
-    f.last
-  )
-);
+    f.tap(x => console.log("after duplication", x)),
+    forkJoin(
+      f.concat,
+      f.identity,
+      f.compose(
+        f.assoc("isCurrent", true),
+        f.update("revision", f.add(1)),
+        f.update(
+          "value",
+          when(f.isObject, value => ({ [langtag]: f.first(f.values(value)) }))
+        ),
+        rev => f.assoc("prevContent", rev.fullValue, rev),
+        f.last
+      )
+    ),
+    f.tap(x => console.log("before duplication", x))
+  );
 
 export default HistoryBody;
 HistoryBody.propTypes = {
