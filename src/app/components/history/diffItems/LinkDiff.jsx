@@ -5,7 +5,7 @@ import classNames from "classnames";
 
 import { ifElse, when } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import SvgIcon from '../../helperComponents/SvgIcon';
+import SvgIcon from "../../helperComponents/SvgIcon";
 
 const LinkState = {
   FOREIGN_ROW_DELETED: 1,
@@ -42,7 +42,7 @@ const LinkDiff = props => {
       const stateIcon =
         state === LinkState.FOREIGN_ROW_DELETED ? (
           <SvgIcon icon="deletedFile" containerClasses="link-diff__icon" />
-        ) : state === LinkState.CHANGED && !f.isEmpty(f.trim(revisionValue)) ? (
+        ) : state === LinkState.CHANGED && !f.isEmpty(revisionValue) ? (
           <i className="link-diff__icon fa fa-history" />
         ) : null;
 

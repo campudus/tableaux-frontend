@@ -101,13 +101,7 @@ const getCurrentDisplayValue = ({ tableId, column, langtag }) => rowId => {
   const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
   return composeP(
     displayValue => ({ [rowId]: displayValue }),
-    when(
-      f.compose(
-        f.isEmpty,
-        f.trim
-      ),
-      () => <Empty langtag={langtag} />
-    ),
+    when(f.isEmpty, () => <Empty langtag={langtag} />),
     f.prop(langtag),
     getDisplayValue(column),
     f.prop("value"),
