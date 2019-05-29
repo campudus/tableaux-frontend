@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { ifElse, when } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import TooltipBubble from "../../helperComponents/TooltipBubble";
 
 const LinkState = {
   FOREIGN_ROW_DELETED: 1,
@@ -26,6 +27,15 @@ const LinkDiff = props => {
         value
       );
 
+      const [hovered, setHovered] = React.useState(false);
+      const handleMouseEnter = React.useCallback(() => {
+        setHovered(true);
+      });
+
+      const handleMouseLeave = React.useCallback(() => {
+        setHovered(false);
+      });
+
       const state = f.isEmpty(displayValue)
         ? LinkState.FOREIGN_ROW_DELETED
         : displayValue !== revisionValue
@@ -36,19 +46,40 @@ const LinkDiff = props => {
         "content-diff--added": add,
         "content-diff--deleted": del,
         "content-diff--foreign-row-deleted":
-          state === LinkState.FOREIGN_ROW_DELETED
+          state === LinkState.FOREIGN_ROW_DELETED,
+        "content-diff--with-tooltip": hovered
       });
 
       const stateIcon =
         state === LinkState.FOREIGN_ROW_DELETED ? (
-          <SvgIcon icon="deletedFile" containerClasses="link-diff__icon" />
+          <SvgIcon icon="deletedFile" />
         ) : state === LinkState.CHANGED && !f.isEmpty(revisionValue) ? (
-          <i className="link-diff__icon fa fa-history" />
+          <i className="fa fa-info-circle" />
+        ) : null;
+
+      const tooltipMessage =
+        state === LinkState.FOREIGN_ROW_DELETED
+          ? ["history:remote-row-deleted"]
+          : ["history:outdated-value", revisionValue];
+
+      const tooltipBubble =
+        state !== LinkState.DEFAULT && hovered ? (
+          <TooltipBubble messages={tooltipMessage} />
         ) : null;
 
       return (
-        <div className={cssClass} key={id}>
-          {stateIcon}
+        <div
+          className={cssClass}
+          key={id}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {stateIcon && (
+            <div className="link-diff__icon">
+              {tooltipBubble}
+              {stateIcon}
+            </div>
+          )}
           {state === LinkState.FOREIGN_ROW_DELETED
             ? when(f.isEmpty, () => displayValue, revisionValue)
             : displayValue}

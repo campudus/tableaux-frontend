@@ -23,5 +23,7 @@
     "history-view": "Änderungsverlauf",
     "show_history": "Änderungsverlauf zeigen",
     "toggle-filter-display": "Verlauf filtern",
-    "current-status": "Aktueller Stand"
+    "current-status": "Aktueller Stand",
+    "outdated-value": "Ehemals:",
+    "remote-row-deleted": "Datensatz wurde gelöscht"
 }
