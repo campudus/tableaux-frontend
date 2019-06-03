@@ -601,11 +601,18 @@ export const addEmptyRowAndOpenEntityView = (
   cellToUpdate
 ) => async dispatch => {
   dispatch(loadColumns(tableId));
-  const result = await makeRequest({
+  const freshRow = await makeRequest({
     apiRoute: API_ROUTES.toRows(tableId),
     method: "POST"
   });
-  loadAndOpenEntityView({ tableId, rowId: result.id, langtag, cellToUpdate });
+  loadAndOpenEntityView({ tableId, rowId: freshRow.id, langtag, cellToUpdate });
+  dispatch(
+    changeCellValue({
+      cell: cellToUpdate,
+      oldValue: cellToUpdate.value,
+      newValue: [...cellToUpdate.value, { id: freshRow.id, label: "" }]
+    })
+  );
 };
 
 const changeTableName = (tableId, displayName) => ({
