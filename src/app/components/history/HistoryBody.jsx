@@ -10,8 +10,8 @@ import {
   forkJoin,
   ifElse,
   mapIndexed,
-  unless,
-  when
+  merge,
+  unless
 } from "../../helpers/functools";
 import {
   filterAnnotations,
@@ -105,7 +105,7 @@ const HistoryBody = props => {
           {doto(
             revisions,
             reduceRevisionHistory(column),
-            unless(f.isEmpty, duplicateLastRevision(contentLangtag)),
+            unless(f.isEmpty, duplicateLastRevision),
             getVisibleRevisions,
             f.groupBy(ifElse(f.prop("isCurrent"), () => null, getCreationDay)),
             obj =>
@@ -139,25 +139,20 @@ const HistoryBody = props => {
   );
 };
 
-const duplicateLastRevision = langtag =>
-  f.compose(
-    f.tap(x => console.log("after duplication", x)),
-    forkJoin(
-      f.concat,
-      f.identity,
-      f.compose(
-        f.assoc("isCurrent", true),
-        f.update("revision", f.add(1)),
-        f.update(
-          "value",
-          when(f.isObject, value => ({ [langtag]: f.first(f.values(value)) }))
-        ),
-        rev => f.assoc("prevContent", rev.fullValue, rev),
-        f.last
-      )
-    ),
-    f.tap(x => console.log("before duplication", x))
-  );
+const duplicateLastRevision = f.compose(
+  f.tap(x => console.log("after duplication", x)),
+  forkJoin(
+    f.concat,
+    f.identity,
+    f.compose(
+      f.assoc("isCurrent", true),
+      f.update("revision", f.add(1)),
+      rev => merge(rev, { prevContent: rev.fullValue, value: rev.fullValue }),
+      f.last
+    )
+  ),
+  f.tap(x => console.log("before duplication", x))
+);
 
 export default HistoryBody;
 HistoryBody.propTypes = {
