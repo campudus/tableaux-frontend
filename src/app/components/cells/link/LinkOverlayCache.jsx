@@ -106,12 +106,7 @@ const withCachedLinks = Component => props => {
     : doto(
         [...cell.value, ...(cell.value.length < maxLinks ? foreignRows : [])],
         f.uniqBy(f.prop("id")),
-        f.map(
-          f.compose(
-            f.tap(console.log),
-            addDisplayValues
-          )
-        ),
+        f.map(addDisplayValues),
         f.groupBy(link =>
           f.contains(link.id, linkedIds) ? "linked" : "unlinked"
         ),
