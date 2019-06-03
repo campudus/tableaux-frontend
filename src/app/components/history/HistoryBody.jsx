@@ -139,19 +139,15 @@ const HistoryBody = props => {
   );
 };
 
-const duplicateLastRevision = f.compose(
-  f.tap(x => console.log("after duplication", x)),
-  forkJoin(
-    f.concat,
-    f.identity,
-    f.compose(
-      f.assoc("isCurrent", true),
-      f.update("revision", f.add(1)),
-      rev => merge(rev, { prevContent: rev.fullValue, value: rev.fullValue }),
-      f.last
-    )
-  ),
-  f.tap(x => console.log("before duplication", x))
+const duplicateLastRevision = forkJoin(
+  f.concat,
+  f.identity,
+  f.compose(
+    f.assoc("isCurrent", true),
+    f.update("revision", f.add(1)),
+    rev => merge(rev, { prevContent: rev.fullValue, value: rev.fullValue }),
+    f.last
+  )
 );
 
 export default HistoryBody;
