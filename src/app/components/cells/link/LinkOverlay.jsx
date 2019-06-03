@@ -1,17 +1,9 @@
 import "react-virtualized/styles.css";
 
-import {
-  compose,
-  lifecycle,
-  withHandlers,
-  withProps,
-  withStateHandlers
-} from "recompose";
 import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import store from "../../../redux/store";
 
 import { Directions, FilterModes } from "../../../constants/TableauxConstants";
 import {
@@ -20,28 +12,19 @@ import {
   RowCreator,
   UnlinkedRows
 } from "./LinkOverlayFragments";
-import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
+import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import {
-  doto,
   maybe,
   preventDefault,
   stopPropagation,
-  when,
   merge
 } from "../../../helpers/functools";
-import {
-  getColumnDisplayName,
-  retrieveTranslation
-} from "../../../helpers/multiLanguage";
-import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
-import { makeRequest } from "../../../helpers/apiHelper";
 import { openInNewTab } from "../../../helpers/apiUrl";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import LinkItem from "./LinkItem";
 import LinkOverlayHeader from "./LinkOverlayHeader";
-import SearchFunctions from "../../../helpers/searchFunctions";
-import apiRoute from "../../../helpers/apiRoutes";
-import getDisplayValue from "../../../helpers/getDisplayValue";
+import withCachedLinks from "./LinkOverlayCache.jsx";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -395,6 +378,7 @@ class LinkOverlay extends PureComponent {
           activeBox={UNLINKED_ITEMS}
           selectedBox={this.state.activeBox}
           selectedMode={this.state.selectedMode}
+          rowResults={rowResults}
         />
         <RowCreator
           langtag={langtag}
@@ -410,216 +394,8 @@ class LinkOverlay extends PureComponent {
   }
 }
 
-const withDataRows = compose(
-  withStateHandlers(
-    {
-      foreignRows: null,
-      toIdColumn: null,
-      loading: true
-    },
-    {
-      setForeignRows: () => foreignRows => ({ foreignRows }),
-      setLoading: () => loading => ({ loading }),
-      setToIdColumn: () => toIdColumn => ({ toIdColumn })
-    }
-  ),
-  connectOverlayToCellValue,
-  withHandlers({
-    fetchColumnDescription: ({ cell, setToIdColumn }) => () => {
-      const { column } = cell;
-      const url = apiRoute.toColumn({
-        tableId: column.toTable,
-        columnId: column.toColumn.id
-      });
-      makeRequest({
-        apiRoute: url
-      }).then(setToIdColumn);
-    },
-    fetchForeignRows: ({
-      cell,
-      setForeignRows,
-      setLoading,
-      value,
-      actions,
-      foreignRows
-    }) => async shouldAddLink => {
-      setLoading(true);
-      const { column, table, row } = cell;
-      const url =
-        apiRoute.toCell({
-          tableId: table.id,
-          columnId: column.id,
-          rowId: row.id
-        }) + "/foreignRows";
-      const rows = await makeRequest({ apiRoute: url })
-        .then(result => {
-          const { rows } = result;
-          return f.map(row => {
-            return { id: row.id, value: row.values[0] };
-          }, rows);
-        })
-        .then(rows => {
-          if (
-            shouldAddLink &&
-            foreignRows.length < [...value, ...rows].length
-          ) {
-            const last = f.last(rows);
-            const newRow = { ...last, label: getDisplayValue(last) };
-            actions.changeCellValue({
-              cell,
-              oldValue: value,
-              newValue: [...value, newRow]
-            });
-          }
-          return rows;
-        })
-        .catch(err => {
-          console.error("Error loading foreignRows:", err);
-          return [];
-        });
-      // Maximum available rows: rows from initial value plus
-      // available ones. Otherwise we lose available items when we
-      // remove links from `value`
-
-      setForeignRows([...value, ...rows]);
-      setLoading(false);
-      // Add the foreign values to the link's displayValues cache,
-      // else they might display <empty> when they were not linked by
-      // another row before
-      actions.addDisplayValues({
-        displayValues: [
-          {
-            tableId: cell.column.toTable,
-            values: [...value, ...rows].map(foreignValue => ({
-              id: foreignValue.id,
-              values: [
-                getDisplayValue(cell.column.toColumn, foreignValue.value)
-              ]
-            }))
-          }
-        ]
-      });
-    },
-    setFilterValue: ({ id, actions, filterMode }) => filterValue =>
-      actions.setOverlayState({ id, filterValue, filterMode }),
-    setFilterMode: ({ id, actions, filterValue }) => filterMode =>
-      actions.setOverlayState({ id, filterValue, filterMode }),
-    setUnlinkedOrder: ({ id, actions }) => unlinkedOrder =>
-      actions.setOverlayState({ id, unlinkedOrder })
-  }),
-  withProps(
-    // Apply filtering, sorting, and displayValue extraction to all available links
-    ({
-      langtag,
-      filterValue,
-      filterMode = FilterModes.CONTAINS,
-      unlinkedOrder,
-      foreignRows = [],
-      value,
-      toIdColumn,
-      cell,
-      loading
-    }) => {
-      if (loading || f.isNil(toIdColumn)) {
-        return { rowResults: {}, maxLinks };
-      }
-
-      const getCurrentDisplayValue = f.flow(
-        f.props(["value", "values.0"]),
-        f.find(f.identity),
-        getDisplayValue(toIdColumn),
-        retrieveTranslation(langtag)
-      );
-
-      const linkedIds = f.map("id", value);
-
-      const searchFunction = el =>
-        SearchFunctions[filterMode](filterValue)(el.label);
-      const filterFn = f.isEmpty(filterValue) ? f.stubTrue : searchFunction;
-      const sortMode = when(f.isNil, f.always(0), unlinkedOrder);
-      const sortValue = [f.prop("id"), el => el.label && f.toLower(el.label)][
-        sortMode
-      ];
-
-      const maxLinks =
-        f.get(["column", "constraint", "cardinality", "to"], cell) || Infinity;
-
-      const mapIndexed = f.map.convert({ cap: false });
-
-      const connectCellToDisplayValue = (cell, value) => {
-        const state = store.getState();
-        const tableDisplayValues = f.get(
-          ["tableView", "displayValues", cell.column.toTable],
-          state
-        );
-        const displayValue = mapIndexed((value, index) => {
-          const displayValueObj = f.find(displayValue => {
-            return displayValue.id === value.id;
-          }, tableDisplayValues);
-          if (!f.isNil(displayValueObj)) {
-            return f.get(["values", 0], displayValueObj);
-          }
-          return cell.displayValue[index];
-        }, value);
-        const valueWithUpdatedLabels = mapIndexed((val, index) => {
-          return { ...val, label: displayValue[index][langtag] };
-        }, value);
-        return { ...cell, displayValue, value: valueWithUpdatedLabels };
-      };
-
-      const updatedCell = connectCellToDisplayValue(cell, value);
-
-      const rowResults = doto(
-        [
-          ...updatedCell.value,
-          ...(updatedCell.value.length < maxLinks ? foreignRows : [])
-        ],
-        f.uniqBy(f.prop("id")),
-        f.map(link => {
-          return {
-            ...link,
-            label:
-              link.label && f.isString(link.label)
-                ? link.label
-                : getCurrentDisplayValue(link)
-          };
-        }),
-        f.groupBy(link =>
-          f.contains(link.id, linkedIds) ? "linked" : "unlinked"
-        ),
-        f.update(
-          "unlinked",
-          f.flow(
-            f.filter(filterFn),
-            f.sortBy(sortValue)
-          )
-        )
-      );
-
-      return {
-        cell: updatedCell,
-        maxLinks,
-        rowResults
-      };
-    }
-  ),
-  lifecycle({
-    componentWillMount() {
-      this.props.fetchColumnDescription();
-      this.props.fetchForeignRows();
-    },
-    componentWillReceiveProps(nextProps) {
-      if (
-        this.props.grudData.overlays.length > nextProps.grudData.overlays.length
-      ) {
-        this.props.fetchForeignRows(true);
-      }
-    }
-  })
-);
-
 export const openLinkOverlay = ({ cell, langtag, actions }) => {
-  const ReduxLinkOverlay = withDataRows(LinkOverlay);
+  const ReduxLinkOverlay = withCachedLinks(LinkOverlay);
   const overlayContent = <ReduxLinkOverlay cell={cell} langtag={langtag} />;
 
   actions.openOverlay({
@@ -633,4 +409,4 @@ export const openLinkOverlay = ({ cell, langtag, actions }) => {
   });
 };
 
-export default withDataRows(LinkOverlay);
+export default withCachedLinks(LinkOverlay);

@@ -54,12 +54,14 @@ const UnlinkedRowsFrag = ({
   scrollToIndex,
   selectedMode,
   selectedBox,
-  order
+  order,
+  rowResults
 }) => (
   <div className="unlinked-items" onMouseEnter={onMouseEnter}>
     <AutoSizer>
       {({ width, height }) => (
         <List
+          redrawProp={rowResults}
           width={width}
           height={height}
           rowCount={rowCount}

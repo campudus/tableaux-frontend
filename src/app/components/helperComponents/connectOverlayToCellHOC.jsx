@@ -11,10 +11,12 @@ export const connectOverlayToCellValue = withProps(props => {
       grudData
     );
     const linkedRow = rows[table.id];
+    const value = linkedRow.data[rowIdx].values[columnIdx];
 
     return {
-      value: linkedRow.data[rowIdx].values[columnIdx],
-      grudData: grudData
+      value,
+      grudData: grudData,
+      cell: { ...cell, value }
     };
   } catch (err) {
     console.error("Error connecting element:", err);
