@@ -482,6 +482,22 @@ const where = curryN(2, (spec, obj) => {
   );
 });
 
+/**
+ * Replace all values of first array with values of second array.
+ * Result will be all values of second array followed by leftover
+ * values from right array.
+ * mergeArrays([1,2,3], ["a","b"]) -> ["a", "b", 3]
+ * mergeArrays(["a","b"], [1,2,3]) -> [1, 2, 3]
+ */
+const mergeArrays = (oldColl, coll) => {
+  const l = coll ? coll.length : 0;
+  const result = oldColl ? oldColl.slice(0) : []; // clone
+  for (let i = 0; i < l; ++i) {
+    result[i] = coll[i];
+  }
+  return result;
+};
+
 export {
   Maybe,
   Just,
@@ -515,5 +531,6 @@ export {
   replaceMoustache,
   where,
   composeP,
-  mapP
+  mapP,
+  mergeArrays
 };

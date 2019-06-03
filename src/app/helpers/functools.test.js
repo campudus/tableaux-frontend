@@ -5,7 +5,8 @@ import {
   forkJoin,
   replaceMoustache,
   slidingWindow,
-  where
+  where,
+  mergeArrays
 } from "./functools";
 
 describe("functools", () => {
@@ -67,7 +68,7 @@ describe("functools", () => {
     });
   });
 
-  describe("forkjoin()", () => {
+  describe("forkJoin()", () => {
     it("simple test", () => {
       expect(forkJoin(f.add, f.toUpper, f.toLower, "fOo")).toEqual("FOOfoo");
       expect(forkJoin(f.add, f.add(5), f.multiply(10), 1)).toBe(16);
@@ -112,7 +113,7 @@ describe("functools", () => {
       ]);
     });
 
-    it("can deal with undefull arrays", () => {
+    it("can deal with underfull arrays", () => {
       expect(slidingWindow(10, 1, [1, 2, 3])).toEqual([]);
       expect(slidingWindow(2, 10, [1, 2, 3])).toEqual([[1, 2]]);
     });
@@ -170,6 +171,19 @@ describe("functools", () => {
       const pattern = { foo: 1, bar: "two" };
       expect(where(pattern, { foo: 1, bar: "one" })).toBe(false);
       expect(where(pattern, { foo: "1", bar: "two", baz: "3" })).toBe(false);
+    });
+  });
+
+  describe("mergeArrays()", () => {
+    it("is nil safe", () => {
+      expect(mergeArrays()).toEqual([]);
+      expect(mergeArrays([1, 2, 3])).toEqual([1, 2, 3]);
+      expect(mergeArrays(null, [1, 2, 3])).toEqual([1, 2, 3]);
+    });
+
+    it("merges arrays", () => {
+      expect(mergeArrays([0, 1, 2, 3, 4], [5, 6, 7])).toEqual([5, 6, 7, 3, 4]);
+      expect(mergeArrays([1, 2, 3], [4, 5, 6, 7, 8])).toEqual([4, 5, 6, 7, 8]);
     });
   });
 });
