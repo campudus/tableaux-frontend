@@ -1,34 +1,22 @@
 import { compose, withHandlers } from "recompose";
-import { connect } from "react-redux";
 import React from "react";
 import f from "lodash/fp";
 
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import { doto, when } from "../../../helpers/functools";
+import { doto, when } from '../../../helpers/functools';
 import { makeRequest } from "../../../helpers/apiHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import route from "../../../helpers/apiRoutes";
 
-const mapStateToProps = (state, props) => {
-  const {
-    cell: {
-      column: { toTable }
-    }
-  } = props;
-  return {
-    toTableDisplayValues: f.prop(["tableView", "displayValues", toTable], state)
-  };
-};
-
 const withCachedLinks = Component => props => {
   const {
     actions,
     cell,
     cell: { column, table, row },
-    toTableDisplayValues,
+    grudData,
     langtag,
     unlinkedOrder,
     filterMode = FilterModes.CONTAINS,
@@ -86,8 +74,9 @@ const withCachedLinks = Component => props => {
     label: f.compose(
       retrieveTranslation(langtag),
       f.prop(["values", 0]),
-      f.find(f.propEq("id", link.id))
-    )(toTableDisplayValues)
+      f.find(f.propEq("id", link.id)),
+      f.prop(["displayValues", column.toTable])
+    )(grudData)
   });
 
   const linkedIds = f.map("id", cell.value);
@@ -142,6 +131,5 @@ export default compose(
       actions.setOverlayState({ id, unlinkedOrder })
   }),
   connectOverlayToCellValue,
-  connect(mapStateToProps),
   withCachedLinks
 );
