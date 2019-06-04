@@ -57,20 +57,25 @@ export const changeCellValue = action => (dispatch, getState) => {
 const dispatchCellValueChange = action => (dispatch, getState) => {
   const { tableId, columnId, rowId, oldValue, newValue, column } = action;
 
+  // The additional checks help normalising bad link columns' values
+  const isMultiLanguage =
+    column.multilanguage && (f.isPlainObject(newValue) || f.isNil(newValue));
+
   const update = calculateCellUpdate(action);
-  const changedKeys = column.multilanguage
-    ? f
-        .union(f.keys(newValue), f.keys(oldValue))
-        .filter(k => !f.equals(oldValue[k], update.value.value[k])) // Only post valid changes
+  const changedKeys = isMultiLanguage
+    ? f.compose(
+        f.filter(k => !f.equals(oldValue[k], update.value.value[k])),
+        f.union
+      )(f.keys(newValue), f.keys(oldValue))
     : [];
 
-  const needsUpdate = column.multilanguage
+  const needsUpdate = isMultiLanguage
     ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);
 
   // Automatic workflow to remove "translation needed" from newly written values
   const freshlyTranslatedLangtags =
-    needsUpdate && column.multilanguage
+    needsUpdate && isMultiLanguage
       ? f
           .keys(newValue)
           .filter(k => f.isEmpty(action.oldValue[k]) && !f.isEmpty(newValue[k]))
@@ -104,7 +109,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
             (update.pathPostfix || ""),
           method: update.method,
           data: when(
-            () => column.multilanguage,
+            () => isMultiLanguage,
             f.update("value", f.pick(changedKeys)),
             update.value
           )
