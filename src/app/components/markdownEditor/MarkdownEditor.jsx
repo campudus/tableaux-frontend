@@ -1,12 +1,16 @@
 import React from "react";
-import classNames from "classnames";
 
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
+import { StyleIcon } from "./StyleControls";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { useLocalStorage } from "../../helpers/useLocalStorage";
 import EditorPanel from "./EditorPanel";
+import Header from "../overlay/Header";
 import PlainMarkdownEditor from "./PlainMarkdownEditor";
-import { StyleIcon } from "./StyleControls";
+import actions from "../../redux/actionCreators";
+import store from "../../redux/store";
 
 const MarkdownEditors = {
   WYSIWYG: "WYSIWYG",
@@ -139,6 +143,39 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
         }
       />
     </div>
+  );
+};
+
+export const openMarkdownEditor = ({
+  cell,
+  cell: { table, value },
+  langtag,
+  readOnly
+}) => {
+  const context = getTableDisplayName(table, langtag) || "";
+  const editActions = {
+    changeCellValue(...args) {
+      store.dispatch(actions.changeCellValue(...args));
+    }
+  };
+  const MarkdownEditorWithRef = React.forwardRef(MarkdownEditor);
+
+  store.dispatch(
+    actions.openOverlay({
+      head: <Header context={context} langtag={langtag} />,
+      body: (
+        <MarkdownEditorWithRef
+          actions={editActions}
+          value={value}
+          langtag={langtag}
+          cell={cell}
+          readOnly={!!readOnly}
+        />
+      ),
+      title: cell,
+      type: "full-height",
+      classes: "text-editor-overlay"
+    })
   );
 };
 
