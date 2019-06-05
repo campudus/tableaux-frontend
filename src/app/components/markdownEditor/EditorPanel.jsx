@@ -25,7 +25,7 @@ const stateToMarkdown = f.compose(
 );
 
 const EditorPanel = (
-  { initialMarkdown, onChange, hideToolbar, readOnly },
+  { controlButtons, initialMarkdown, onChange, hideToolbar, readOnly },
   ref
 ) => {
   const [editorState, setEditorState] = React.useState(
@@ -75,6 +75,7 @@ const EditorPanel = (
           toggleBlockType={toggleBlockType}
           toggleInlineStyle={toggleInlineStyle}
           editorState={editorState}
+          additionalButtons={controlButtons}
         />
       )}
       <Editor
@@ -95,5 +96,6 @@ EditorPanel.propTypes = {
   initialMarkdown: PropTypes.string,
   onChange: PropTypes.func,
   hideToolbar: PropTypes.bool,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  controlButtons: PropTypes.array
 };
