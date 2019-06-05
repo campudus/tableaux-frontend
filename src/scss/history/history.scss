@@ -146,6 +146,7 @@
   border-radius: 3px;
   color: $color-primary-contrast-text;
   @include link-diff-color($color-primary);
+  display: flex;
 
   &.content-diff--added {
     @include link-diff-color($color-revision-link-added)
@@ -157,6 +158,7 @@
 
   .link-diff__icon {
     margin-right: 5px;
+    position: relative;
 
     svg {
       fill: $color-primary-contrast-text;

@@ -23,5 +23,7 @@
     "history-view": "History of changes",
     "show_history": "Show history of changes",
     "toggle-filter-display": "Filter history",
-    "current-status": "Current state"
+    "current-status": "Current state",
+    "outdated-value": "Formerly:",
+    "remote-row-deleted": "Linked data was deleted"
 }
