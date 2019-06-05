@@ -1,4 +1,5 @@
 import "../node_modules/react-select/dist/react-select.css";
+import "../node_modules/codemirror/lib/codemirror.css";
 import "./app/router/router";
 import * as Sentry from "@sentry/browser";
 import { makeRequest } from "./app/helpers/apiHelper";

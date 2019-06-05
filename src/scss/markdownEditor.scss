@@ -2,12 +2,13 @@ $editor-margin: 20px;
 $block-margin: 8px;
 $block-margin-narrow: 5px;
 
-.text-editor-overlay .overlay-content {
+.overlay .text-editor-overlay .overlay-content {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-.markdown-editor {
+.text-editor-overlay .markdown-editor {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   display: flex;
@@ -17,12 +18,16 @@ $block-margin-narrow: 5px;
 
 .richtext-toggle-style__bar {
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 5px;
-  margin-bottom: 10px;
-  box-shadow: 0 0 10px 10px $color-text-light-grey;
+  border-bottom: 1px solid $color-text-light-grey;
+}
+
+.richtext-toggle-style__placeholder {
+  flex: 1;
 }
 
 .richtext-toggle-style-button {
@@ -47,6 +52,7 @@ $block-margin-narrow: 5px;
   padding: $editor-margin;
   flex: 1;
   position: relative;
+  overflow-y: auto;
 }
 
 .public-DraftEditorPlaceholder-root {
@@ -55,29 +61,7 @@ $block-margin-narrow: 5px;
   top: 28px;
 }
 
-.public-DraftStyleDefault-block {
-  margin: $block-margin 0;
-}
-
-.public-DraftStyleDefault-ul, .public-DraftStyleDefault-ol {
-  margin-left: $editor-margin;
-  list-style: outside;
-  padding: $block-margin-narrow 0;
-
-  .public-DraftStyleDefault-block {
-    margin: $block-margin-narrow 0;
-  }
-}
-
-.public-DraftStyleDefault-unorderedListItem {
-  list-style-type: circle;
-}
-
-.public-DraftStyleDefault-orderedListItem {
-  list-style-type: decimal;
-}
-
-.DraftEditor-root {
+.DraftEditor-root, .plain-markdown-editor {
   h1 {
     font-weight: bold;
     font-size: xx-large;
@@ -94,15 +78,141 @@ $block-margin-narrow: 5px;
   }
 
   blockquote {
+    color: $color-text-medium-grey;
+    border-left: solid 2px $color-text-medium-grey;
+    margin: 0;
+    margin-left: 10px;
+    padding-left: 10px;
+    padding-bottom: $block-margin-narrow;
+    font-style: italic;
+    font-size: larger;
+  }
+
+  .public-DraftStyleDefault-block, p {
+    margin: $block-margin 0;
+  }
+
+  .public-DraftStyleDefault-ul, .public-DraftStyleDefault-ol, ol, ul {
+    margin-left: $editor-margin;
+    list-style: outside;
+    padding: $block-margin-narrow 0;
+
     .public-DraftStyleDefault-block {
-      color: $color-text-medium-grey;
-      border-left: solid 2px $color-text-medium-grey;
-      margin: 0;
-      margin-left: 10px;
-      padding-left: 10px;
-      padding-bottom: $block-margin-narrow;
-      font-style: italic;
-      font-size: larger;
+      margin: $block-margin-narrow 0;
     }
   }
+
+  .public-DraftStyleDefault-unorderedListItem, li {
+    list-style-type: circle;
+  }
+
+  .public-DraftStyleDefault-orderedListItem, ol li {
+    list-style-type: decimal;
+  }
+}
+
+.plain-markdown-editor {
+  em, i {
+    font-style: italic;
+  }
+  strong, b {
+    font-weight: bold;
+  }
+
+  code {
+    font-family: monospace;
+  }
+
+  a {
+    color: $color-primary;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.entity-view.content-items .markdown-editor {
+  min-height: 150px;
+  border-bottom: 1px solid transparent;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  &:hover {
+    border-color: $color-primary;
+  }
+
+  .public-DraftEditorPlaceholder-root {
+    top: 0;
+  }
+
+
+  .richtext-toggle-style__bar {
+    justify-content: left;
+    padding: 5px 0;
+
+    .richtext-toggle-style-button:first-of-type {
+      margin-left: 0;
+    }
+  }
+
+  .DraftEditor-root {
+    padding: 0;
+  }
+
+  &.markdown-editor--disabled {
+    * {
+      font-weight: normal;
+      font-style: normal;
+      font-size: $font-size-standard;
+      margin-left: 0;
+      color: $color-primary-text;
+    }
+  }
+}
+
+.markdown-editor {
+  flex: 1;
+  overflow: hidden;
+  &.markdown-editor--hide-preview {
+    .plain-markdown-editor__preview {
+      display: none;
+    }
+    .ReactCodeMirror {
+      width: 100%;
+    }
+  }
+
+  &.markdown-editor--split-v .plain-markdown-editor {
+    flex-direction: column;
+    .plain-markdown-editor__preview {
+      border-top: 1px solid $color-text-light-grey;
+    }
+  }
+
+  &.markdown-editor--split-h .plain-markdown-editor {
+    flex-direction: row;
+    .plain-markdown-editor__preview {
+      border-left: 1px solid $color-text-light-grey;
+    }
+  }
+}
+
+.plain-markdown-editor {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  overflow-y: auto;
+  .ReactCodeMirror, .plain-markdown-editor__preview {
+    padding: $editor-margin;
+    flex: 1;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+}
+
+.CodeMirror {
+  background-color: transparent;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
 }

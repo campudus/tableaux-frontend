@@ -5,8 +5,13 @@ import PropTypes from "prop-types";
 
 import { preventDefault } from "../../helpers/functools";
 
-const StyleIcon = ({ toggleStyle, styleToToggle, label, icon, active }) => {
-  console.table("StyleIcon", { label, icon, active, styleToToggle });
+export const StyleIcon = ({
+  toggleStyle,
+  styleToToggle,
+  label,
+  icon,
+  active
+}) => {
   const handleClick = React.useCallback(event => {
     preventDefault(event);
     toggleStyle(styleToToggle);
@@ -34,7 +39,12 @@ StyleIcon.propTypes = {
   label: PropTypes.string
 };
 
-const StyleControls = ({ editorState, toggleBlockType, toggleInlineStyle }) => {
+const StyleControls = ({
+  editorState,
+  toggleBlockType,
+  toggleInlineStyle,
+  additionalButtons
+}) => {
   const blockTypes = [
     { type: "header-one", label: "H1" },
     { type: "header-two", label: "H2" },
@@ -81,6 +91,12 @@ const StyleControls = ({ editorState, toggleBlockType, toggleInlineStyle }) => {
           label={style.label}
         />
       ))}
+      {additionalButtons && (
+        <>
+          <div className="richtext-toggle-style__placeholder" />
+          {additionalButtons}
+        </>
+      )}
     </div>
   );
 };
@@ -90,5 +106,6 @@ export default StyleControls;
 StyleControls.propTypes = {
   toggleBlockType: PropTypes.func.isRequired,
   toggleInlineStyle: PropTypes.func.isRequired,
-  editorState: PropTypes.object.isRequired
+  editorState: PropTypes.object.isRequired,
+  additionalButtons: PropTypes.array
 };
