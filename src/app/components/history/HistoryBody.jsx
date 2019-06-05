@@ -5,7 +5,14 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import { cellSpec } from "../../specs/cell-spec";
-import { doto, mapIndexed } from "../../helpers/functools";
+import {
+  doto,
+  forkJoin,
+  ifElse,
+  mapIndexed,
+  merge,
+  unless
+} from "../../helpers/functools";
 import {
   filterAnnotations,
   filterComments,
@@ -98,8 +105,9 @@ const HistoryBody = props => {
           {doto(
             revisions,
             reduceRevisionHistory(column),
+            unless(f.isEmpty, duplicateLastRevision),
             getVisibleRevisions,
-            f.groupBy(getCreationDay),
+            f.groupBy(ifElse(f.prop("isCurrent"), () => null, getCreationDay)),
             obj =>
               f
                 .reverse(f.keys(obj))
@@ -130,6 +138,17 @@ const HistoryBody = props => {
     </div>
   );
 };
+
+const duplicateLastRevision = forkJoin(
+  f.concat,
+  f.identity,
+  f.compose(
+    f.assoc("isCurrent", true),
+    f.update("revision", f.add(1)),
+    rev => merge(rev, { prevContent: rev.fullValue, value: rev.fullValue }),
+    f.last
+  )
+);
 
 export default HistoryBody;
 HistoryBody.propTypes = {

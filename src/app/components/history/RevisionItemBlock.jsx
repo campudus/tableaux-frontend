@@ -22,12 +22,17 @@ const RevisionItemBlock = props => {
   )(props.revisions);
   return (
     <div className="revision-block">
-      <div className="revision__item">
-        <div className="revision-block__header">
-          <div className="revision-block__header-date">{formatDate(date)}</div>
-          <div className="revision-block__header-separator" />
+      {date && date !== "null" && (
+        <div className="revision__item">
+          <div className="revision-block__header">
+            <div className="revision-block__header-date">
+              {formatDate(date)}
+            </div>
+
+            <div className="revision-block__header-separator" />
+          </div>
         </div>
-      </div>
+      )}
       {revisions.map(rev => (
         <RevisionItem
           cell={cell}
@@ -42,7 +47,7 @@ const RevisionItemBlock = props => {
 
 export default RevisionItemBlock;
 RevisionItemBlock.propTypes = {
-  date: PropTypes.string.isRequired,
+  date: PropTypes.string,
   langtag: PropTypes.string.isRequired,
   revisions: PropTypes.array.isRequired,
   cell: validateProp(cellSpec)

@@ -19,7 +19,10 @@ const RevisionItem = props => {
 
   const cssClass = classNames("revision__item", {
     "revision-item--hovered":
-      hovered && revision.revertable && canUserChangeCell(cell, langtag),
+      hovered &&
+      revision.revertable &&
+      !revision.isCurrent &&
+      canUserChangeCell(cell, langtag),
     "revision-item--non-consecutive": !revision.isConsecutive
   });
 
@@ -35,27 +38,33 @@ const RevisionItem = props => {
       onMouseEnter={() => setHoverState(true)}
       onMouseLeave={() => setHoverState(false)}
     >
-      <div className="revision-item__header">
-        <div className="revision-item-header__dot" />
-        <div className="revision-item-header__description">
-          <div className="revision-item-header__time">
-            {formatTimeShort(revision.timestamp)}
+      {!revision.isCurrent && (
+        <div className="revision-item__header">
+          <div className="revision-item-header__dot" />
+          <div className="revision-item-header__description">
+            <div className="revision-item-header__time">
+              {formatTimeShort(revision.timestamp)}
+            </div>
+            <div className="revision-item-header__title">
+              {i18n.t(`history:${revision.event}`)}
+            </div>
+            <div className="revision-item-header__separator">&mdash;</div>
+            <div className="revision-item-header__author">
+              {revision.author}
+            </div>
           </div>
-          <div className="revision-item-header__title">
-            {i18n.t(`history:${revision.event}`)}
-          </div>
-          <div className="revision-item-header__separator">&mdash;</div>
-          <div className="revision-item-header__author">{revision.author}</div>
+          <a
+            className="revision-item-header__revert-button"
+            href="#"
+            onClick={revertHere}
+          >
+            <div className="revert-button__text">
+              {i18n.t("history:revert")}
+            </div>
+            <i className="revert-button__icon fa fa-history" />
+          </a>
         </div>
-        <a
-          className="revision-item-header__revert-button"
-          href="#"
-          onClick={revertHere}
-        >
-          <div className="revert-button__text">{i18n.t("history:revert")}</div>
-          <i className="revert-button__icon fa fa-history" />
-        </a>
-      </div>
+      )}
       <div className="revision-item__content">
         <div className="revision-item__content-box">
           <Diff revision={revision} diff={diff} cell={cell} />
