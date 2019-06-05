@@ -162,6 +162,23 @@ class RowHeadline extends React.Component {
       {this.getColumnIcon(this.props.cell.column)}
     </BasicHeadline>
   );
+
+  mkRichtextHeader = () => (
+    <BasicHeadline {...this.props}>
+      <a
+        className="column-icon button"
+        href=""
+        onClick={() =>
+          openMarkdownEditor({
+            cell: this.props.cell,
+            langtag: this.props.langtag,
+            readOnly: this.props.thisUserCantEdit
+          })
+        }
+      >
+        {i18n.t("table:open-markdown-editor")}
+      </a>
+    </BasicHeadline>
   );
 
   render = () => {
@@ -169,6 +186,7 @@ class RowHeadline extends React.Component {
     return f.cond([
       [f.matchesProperty("kind", "link"), this.mkLinkHeader],
       [f.matchesProperty("kind", "attachment"), this.mkAttachmentHeader],
+      [f.matchesProperty("kind", "richtext"), this.mkRichtextHeader],
       [f.stubTrue, this.mkDefaultHeader]
     ])(column);
   };
