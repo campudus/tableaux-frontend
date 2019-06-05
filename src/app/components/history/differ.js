@@ -27,21 +27,26 @@ export const calcRevisionDiff = f.curry((cell, langtag, revision) => {
   }
 });
 
-const calcLinkDiff = ({ fullValue = [], prevContent = [] }) => {
+const calcLinkDiff = revision => {
+  const { fullValue = [], prevContent = [], currentDisplayValues } = revision;
   const added = f.differenceBy("id", fullValue, prevContent);
   const removed = f.differenceBy("id", prevContent, fullValue);
-  const unchanged = f.intersectionBy("id", prevContent, fullValue);
+  const unchanged = f.intersectionBy("id", fullValue, prevContent);
+
   return [
     ...removed.map(link => ({
       del: true,
-      value: link
+      value: link,
+      currentDisplayValues
     })),
     ...added.map(link => ({
       add: true,
-      value: link
+      value: link,
+      currentDisplayValues
     })),
     ...unchanged.map(link => ({
-      value: link
+      value: link,
+      currentDisplayValues
     }))
   ];
 };

@@ -25,7 +25,8 @@ const iconUrls = {
   plus: "/img/icons/plus.svg",
   addTranslation: "/img/icons/translation-add.svg",
   compareTranslation: "/img/icons/translation-compare.svg",
-  vdots: "/img/icons/vertical-dots.svg"
+  vdots: "/img/icons/vertical-dots.svg",
+  deletedFile: "/img/icons/icon-deleted-file.svg"
 };
 
 class ImageCache {
