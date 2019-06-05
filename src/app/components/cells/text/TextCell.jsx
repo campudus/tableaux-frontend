@@ -4,9 +4,8 @@ import { withHandlers } from "recompose";
 import React from "react";
 import f from "lodash/fp";
 
-import { FallbackLanguage } from "../../../constants/TableauxConstants";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
-import { doto } from "../../../helpers/functools";
+import { getTableDisplayName } from "../../../helpers/multiLanguage";
 import ExpandButton from "./ExpandButton.jsx";
 import Header from "../../overlay/Header";
 import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
@@ -39,16 +38,7 @@ const enhance = withHandlers({
     if (selected) {
       event && event.stopPropagation();
 
-      const context = doto(
-        [
-          table.displayName[langtag],
-          table.displayName[FallbackLanguage],
-          table.name
-        ],
-        f.compact,
-        f.first,
-        ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
-      );
+      const context = getTableDisplayName(table, langtag) || "";
 
       const isRichText = cell.column.kind === "richtext";
 
