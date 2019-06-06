@@ -1,64 +1,37 @@
-import React, { Component } from "react";
+import React from "react";
 import NavigationPopup from "./NavigationPopup";
 import PropTypes from "prop-types";
-import { withState, withHandlers, compose, pure } from "recompose";
-import f from "lodash/fp";
+import listensToClickOutside from "react-onclickoutside";
 
-const withPopupChild = compose(
-  withState("navigationOpen", "setPopup", false),
-  withHandlers({
-    onButtonClicked: ({ setPopup }) => event => {
-      event.preventDefault();
-      setPopup(open => !open);
-    },
-    onClickOutside: ({ setPopup }) => () => setPopup(f.always(false))
-  }),
-  pure
-);
+const SelfClosingNavigationPopup = listensToClickOutside(NavigationPopup);
 
-class Navigation extends Component {
-  state = {
-    navigationOpen: false
-  };
+const Navigation = ({ langtag, services }) => {
+  const [popupOpen, setPopup] = React.useState(false);
+  const closePopup = React.useCallback(() => setPopup(false));
+  const togglePopup = React.useCallback(() => setPopup(!popupOpen));
 
-  onButtonClicked = event => {
-    event.preventDefault();
-    this.setState(prevState => {
-      return { navigationOpen: !prevState.navigationOpen };
-    });
-  };
-
-  render() {
-    const { langtag, onClickOutside } = this.props;
-    const { navigationOpen } = this.state;
-
-    return (
-      <nav
-        id="main-navigation-wrapper"
-        className={navigationOpen ? "active" : ""}
+  return (
+    <nav id="main-navigation-wrapper" className={popupOpen ? "active" : ""}>
+      <a
+        id="burger"
+        className={popupOpen ? "ignore-react-onclickoutside" : ""}
+        href="#"
+        onClick={togglePopup}
       >
-        <a
-          id="burger"
-          className="ignore-react-onclickoutside"
-          href="#"
-          onClick={this.onButtonClicked}
-        >
-          <i className="fa fa-bars" />
-        </a>
-        <NavigationPopup
-          langtag={langtag}
-          handleClickOutside={onClickOutside}
-          navigationOpen={navigationOpen}
-          services={this.props.services || []}
-        />
-      </nav>
-    );
-  }
-}
-
-Navigation.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  onClickOutside: PropTypes.func
+        <i className="fa fa-bars" />
+      </a>
+      <SelfClosingNavigationPopup
+        langtag={langtag}
+        handleClickOutside={closePopup}
+        navigationOpen={popupOpen}
+        services={services || []}
+      />
+    </nav>
+  );
 };
 
-export default withPopupChild(Navigation);
+Navigation.propTypes = {
+  langtag: PropTypes.string.isRequired
+};
+
+export default Navigation;
