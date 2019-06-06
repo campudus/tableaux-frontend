@@ -332,6 +332,10 @@ class FilterPopup extends React.Component {
     }
   };
 
+  clearSorting = () => {
+    this.onChangeSelectSortColumn({});
+  };
+
   render() {
     const { t } = this.props;
     const { sorting } = this.state;
@@ -436,6 +440,15 @@ class FilterPopup extends React.Component {
               placeholder=""
             />
             <span className="filter-array-button empty" />
+            {sortColumnSelected ? (
+              <div className="filter-array-button" onClick={this.clearSorting}>
+                <a href="#">
+                  <i className="fa fa-ban" />
+                </a>
+              </div>
+            ) : (
+              <span className="filter-array-button empty" />
+            )}
             <span className="filter-array-button empty" />
           </div>
         </div>

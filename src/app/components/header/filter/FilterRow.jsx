@@ -55,6 +55,12 @@ class FilterRow extends Component {
     this.filterInput && this.filterInput.focus();
   };
 
+  clearFilter = () => {
+    const { onChangeValue, onChangeColumn } = this.props;
+    onChangeValue && onChangeValue({});
+    onChangeColumn && onChangeColumn({});
+  };
+
   render() {
     const {
       filter,
@@ -122,6 +128,15 @@ class FilterRow extends Component {
           <span className="filter-array-button" onClick={onRemoveFilter}>
             <a href="#">
               <i className="fa fa-minus" />
+            </a>
+          </span>
+        ) : (
+          <span className="filter-array-button empty" />
+        )}
+        {!f.isEmpty(columnId) ? (
+          <span className="filter-array-button" onClick={this.clearFilter}>
+            <a href="#">
+              <i className="fa fa-ban" />
             </a>
           </span>
         ) : (
