@@ -15,7 +15,7 @@ const ColumnEditorOverlay = props => {
 
   const setDomElValue = setState => event => {
     setState(event.target.value);
-    handleInput({ columnName, description });
+    handleInput({ displayValue:columnName, description });
   };
 
   const handleNameChange = setDomElValue(setName);

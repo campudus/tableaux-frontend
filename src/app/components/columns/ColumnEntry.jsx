@@ -13,7 +13,6 @@ import {
   ContextMenuButton,
   DescriptionTooltip
 } from "./ColumnHeaderFragments";
-import { firstValidPropOr } from "../../helpers/functools";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import Header from "../overlay/Header";
 
@@ -21,19 +20,21 @@ export default class ColumnEntry extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      columnName: firstValidPropOr(
-        "",
-        [["displayName", props.langtag], "name"],
-        props.column
-      ),
-      description: f.propOr("", ["description", props.langtag], props.column),
+      displayValue: f.get(["column", "displayName"], props),
+      description: f.get(["column", "description"], props),
       contextMenu: null,
       showDescription: false
     };
   }
 
-  handleInput = inputState => {
-    this.setState(inputState);
+  handleInput = ({ displayValue, description }) => {
+    const { langtag } = this.props;
+    this.setState(
+      f.compose(
+        f.assoc(["displayValue", langtag], displayValue),
+        f.assoc(["description", langtag], description)
+      )
+    );
   };
 
   saveEdit = () => {
@@ -44,14 +45,16 @@ export default class ColumnEntry extends React.PureComponent {
       actions: { editColumn },
       tableId
     } = this.props;
-    const { description } = this.state;
-    const name = this.state.columnName;
+    const [displayValue, description] = f.props(
+      [["displayValue", langtag], ["description", langtag]],
+      this.state
+    );
     if (
-      name !== f.prop(["displayValue", langtag], column) ||
+      displayValue !== f.prop(["displayValue", langtag], column) ||
       description !== (["description", langtag], column)
     )
       editColumn(id, tableId, {
-        displayName: { ...displayName, [langtag]: f.trim(name) },
+        displayName: { ...displayName, [langtag]: f.trim(displayValue) },
         description: { ...column.description, [langtag]: f.trim(description) }
       });
   };
@@ -64,6 +67,10 @@ export default class ColumnEntry extends React.PureComponent {
     } = this.props;
     const name = column.displayName[langtag] || column.name;
 
+    const [displayValue, description] = f.props(
+      [["displayValue", langtag], ["description", langtag]],
+      this.state
+    );
     const buttons = {
       positive: [i18n.t("common:save"), this.saveEdit],
       neutral: [i18n.t("common:cancel"), null]
@@ -79,9 +86,10 @@ export default class ColumnEntry extends React.PureComponent {
       ),
       body: (
         <ColumnEditorOverlay
-          columnName={this.state.columnName}
-          description={this.state.description}
+          columnName={displayValue}
+          description={description}
           handleInput={this.handleInput}
+          langtag={langtag}
         />
       ),
       type: "normal"
