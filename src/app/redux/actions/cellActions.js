@@ -10,7 +10,6 @@ import {
 import { removeTranslationNeeded } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
-import { merge } from "../../helpers/functools";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
 
 const {
