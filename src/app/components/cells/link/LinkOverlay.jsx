@@ -223,7 +223,7 @@ class LinkOverlay extends PureComponent {
       isLinked ? "linked" : "unlinked",
       this.props.rowResults
     );
-    const row = rowResults[index];
+    const row = f.get(index, rowResults);
 
     if (f.isEmpty(rowResults) || f.isEmpty(row)) {
       return null;
@@ -289,6 +289,28 @@ class LinkOverlay extends PureComponent {
       f.assoc(a, f.get(b, linkedItems))
     )(linkedItems);
 
+    actions.changeCellValue({
+      columnId: column.id,
+      rowId: row.id,
+      tableId: table.id,
+      oldValue: value,
+      newValue: rearranged
+    });
+  };
+
+  applySwap = ordering => () => {
+    const {
+      value,
+      rowResults,
+      actions,
+      cell: { table, row, column }
+    } = this.props;
+    const linkedItems = rowResults.linked;
+
+    const rearranged = f.map(
+      id => f.find(linkedItem => linkedItem.id === id, linkedItems),
+      ordering
+    );
     actions.changeCellValue({
       columnId: column.id,
       rowId: row.id,
@@ -364,6 +386,7 @@ class LinkOverlay extends PureComponent {
             linkEmptyLines={linkEmptyLines}
             listItemRenderer={this.renderListItem}
             swapItems={this.swapLinkedItems}
+            applySwap={this.applySwap}
             rowResults={rowResults}
           />
         </div>

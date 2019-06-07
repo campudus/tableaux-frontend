@@ -7,6 +7,8 @@ import Empty from "../../helperComponents/emptyEntry";
 import { unless } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
+import { doto } from "../../../helpers/functools";
+import apiUrl from "../../../helpers/apiUrl";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -58,11 +60,19 @@ const SelectedItem = props => {
           draggable={false}
           onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
           onClick={() => {
-            loadAndOpenEntityView({
-              tableId: props.cell.column.toTable,
-              rowId: props.row.id,
-              langtag: props.langtag
-            });
+            props.isAttachment
+              ? doto(
+                  f.find(val => val.uuid === props.row.id, props.cell.value),
+                  f.get("url"),
+                  retrieveTranslation(props.langtag),
+                  apiUrl,
+                  window.open
+                )
+              : loadAndOpenEntityView({
+                  tableId: props.cell.column.toTable,
+                  rowId: props.row.id,
+                  langtag: props.langtag
+                });
           }}
         >
           <i className="fa fa-long-arrow-right" />
@@ -101,10 +111,10 @@ const LinkItem = props => {
 
 LinkItem.propTypes = {
   mouseOverHandler: PropTypes.object.isRequired,
-  refIfLinked: PropTypes.func.isRequired,
+  refIfLinked: PropTypes.func,
   clickHandler: PropTypes.func,
-  isLinked: PropTypes.bool.isRequired,
-  isSelected: PropTypes.bool.isRequired,
+  isLinked: PropTypes.bool,
+  isSelected: PropTypes.bool,
   row: PropTypes.object.isRequired,
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,

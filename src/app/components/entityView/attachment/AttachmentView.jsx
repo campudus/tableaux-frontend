@@ -25,14 +25,16 @@ class AttachmentView extends Component {
   };
 
   render() {
-    const { cell, langtag, value } = this.props;
+    const { cell, langtag, value, actions } = this.props;
 
     const attachments =
       f.size(value) === f.size(cell.displayValue)
-        ? f.zip(value, cell.displayValue).map(([{ url }, displayValue]) => ({
+        ? f.zip(value, cell.displayValue).map(([value, displayValue]) => ({
+            ...value,
+            id: value.uuid,
             displayName: displayValue[langtag],
-            linkTarget: f.isPlainObject(url)
-              ? apiUrl(retrieveTranslation(langtag, url))
+            linkTarget: f.isPlainObject(value.url)
+              ? apiUrl(retrieveTranslation(langtag, value.url))
               : ""
           }))
         : null;
@@ -43,7 +45,15 @@ class AttachmentView extends Component {
       </div>
     ) : (
       <div className="item-content link">
-        <LinkList links={attachments} langtag={langtag} />
+        <LinkList
+          links={attachments}
+          langtag={langtag}
+          sortable
+          cell={cell}
+          value={value}
+          actions={actions}
+          isAttachment
+        />
         {this.props.children}
       </div>
     );
