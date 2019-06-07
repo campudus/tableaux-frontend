@@ -75,7 +75,7 @@ proxy.on("error", (err, req, res) => {
     .writeHead(500, {
       "Content-Type": "text/plain"
     })
-    .end(JSON.stringify(err));
+    res && res.end(JSON.stringify(err));
 });
 
 // serve
