@@ -4,7 +4,7 @@ import f from "lodash/fp";
 
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import { doto, when } from '../../../helpers/functools';
+import { doto, when } from "../../../helpers/functools";
 import { makeRequest } from "../../../helpers/apiHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SearchFunctions from "../../../helpers/searchFunctions";
@@ -81,6 +81,11 @@ const withCachedLinks = Component => props => {
 
   const linkedIds = f.map("id", cell.value);
 
+  const cacheNewForeignRow = row => {
+    const link = addDisplayValues(row);
+    setForeignRows([...foreignRows, link]);
+  };
+
   const searchFunction = loading
     ? f.stubTrue
     : el => SearchFunctions[filterMode](filterValue)(el.label);
@@ -117,6 +122,7 @@ const withCachedLinks = Component => props => {
       maxLinks={maxLinks}
       fetchForeignRows={fetchForeignRows}
       value={cell.value}
+      cacheNewForeignRow={cacheNewForeignRow}
     />
   );
 };

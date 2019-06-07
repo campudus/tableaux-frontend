@@ -145,6 +145,7 @@ export const RowCreator = compose(
   withHandlers({
     addAndLinkRow: props => () => {
       const {
+        cacheNewForeignRow,
         cell,
         cell: {
           column: { toTable }
@@ -153,7 +154,12 @@ export const RowCreator = compose(
         actions: { addEmptyRowAndOpenEntityView }
       } = props;
 
-      addEmptyRowAndOpenEntityView(toTable, langtag, cell);
+      addEmptyRowAndOpenEntityView(
+        toTable,
+        langtag,
+        cell,
+        cacheNewForeignRow /* onSuccess */
+      );
     }
   })
 )(RowCreatorFrag);

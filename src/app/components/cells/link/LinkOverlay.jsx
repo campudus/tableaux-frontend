@@ -387,6 +387,7 @@ class LinkOverlay extends PureComponent {
           shiftUp={noForeignRows && !loading}
           updateRowResults={this.updateRowResults}
           addLink={this.addLinkValue}
+          cacheNewForeignRow={this.props.cacheNewForeignRow}
           actions={actions}
         />
       </div>

@@ -598,7 +598,8 @@ const editColumn = (columnId, tableId, data) => {
 export const addEmptyRowAndOpenEntityView = (
   tableId,
   langtag,
-  cellToUpdate
+  cellToUpdate,
+  onSuccess
 ) => async dispatch => {
   dispatch(loadColumns(tableId));
   const freshRow = await makeRequest({
@@ -613,6 +614,7 @@ export const addEmptyRowAndOpenEntityView = (
       newValue: [...cellToUpdate.value, { id: freshRow.id, label: "" }]
     })
   );
+  onSuccess && onSuccess(freshRow);
 };
 
 const changeTableName = (tableId, displayName) => ({
