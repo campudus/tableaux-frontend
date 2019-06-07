@@ -31,7 +31,7 @@ const NavigationPopup = props => {
 
         <li className="main-navigation__entry">
           <Link
-            href={"/" + langtag + "/table"}
+            href={"/" + langtag + "/tables"}
             className="main-navigation__entry-button"
           >
             <i className="fa fa-columns" />

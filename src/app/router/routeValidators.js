@@ -31,8 +31,12 @@ async function validateLangtag(langtag) {
 
 async function validateTableId(tableId, propTables) {
   // if state has no tables yet we have to get them ourselves
+  const objToArray = f.compose(
+    f.sortBy(f.prop("id")),
+    f.values
+  );
   const tables = propTables.finishedLoading
-    ? propTables.data
+    ? objToArray(propTables.data)
     : await getTables();
 
   const firstTableId = f.get([0, "id"], tables);
