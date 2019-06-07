@@ -45,9 +45,11 @@ const extendedRouter = Router.extend({
     ENABLE_DASHBOARD ? this.dashboard() : this.tableBrowser();
   },
 
-  redirectToNewUrl: function(langtag = null, rest = null) {
+  redirectToNewUrl: async function(langtag = null, rest = null) {
+    const { tables } = store.getState();
+    const validTableId = await validateTableId(null, tables);
     const prefix = langtag ? `${langtag}/` : "";
-    const suffix = rest || "";
+    const suffix = rest || validTableId;
     return this.redirectTo(`${prefix}tables/${suffix}`);
   },
   actions: bindActionCreators(actionCreators, store.dispatch),
@@ -167,7 +169,7 @@ const extendedRouter = Router.extend({
       TableauxConstants.ViewNames.TABLE_VIEW,
       tableParams
     );
-    this.history.navigate(fullUrl, { trigger: false, replace: true });
+    this.history.navigate(fullUrl, { trigger: true, replace: true });
   },
 
   mediaBrowser: async function(langtag, folderid) {
