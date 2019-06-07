@@ -140,7 +140,6 @@ const extendedRouter = Router.extend({
     if (currentTable !== validTableId || !currentTable) {
       const { loadCompleteTable, toggleCellSelection, cleanUp } = this.actions;
       cleanUp(validTableId);
-      console.log({validTableId});
       loadCompleteTable(validTableId, f.get("filter", urlOptions));
 
       // when table changes set initial selected cell to values from url
