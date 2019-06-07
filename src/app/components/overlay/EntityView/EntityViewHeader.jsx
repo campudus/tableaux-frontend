@@ -1,95 +1,18 @@
 import React, { PureComponent } from "react";
 import f from "lodash/fp";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
-import classNames from "classnames";
 
-import { Directions, Langtags } from "../../../constants/TableauxConstants";
+import { Directions } from "../../../constants/TableauxConstants";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import {
-  getLanguageOrCountryIcon,
-  retrieveTranslation
-} from "../../../helpers/multiLanguage";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { unless } from "../../../helpers/functools";
 import { unlockRow } from "../../../helpers/annotationHelper";
 import FilterBar from "./FilterBar";
 import Header from "../../overlay/Header";
 import HeaderPopupMenu from "./HeaderPopupMenu";
 import HistoryButtons from "../../table/undo/HistoryButtons";
-
-@listensToClickOutside
-class LanguageSwitcher extends PureComponent {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-      langtag: props.langtag
-    };
-  }
-
-  toggleOpen = () => {
-    const { open } = this.state;
-    this.setOpen(!open)();
-  };
-
-  setOpen = open => () => {
-    this.setState({ open });
-  };
-
-  handleLangtagSwitch = ({ langtag }) => {
-    const {
-      sharedData: { contentLanguage, setContentLanguage }
-    } = this.props;
-    if (contentLanguage !== langtag) {
-      setContentLanguage({ langtag });
-    }
-  };
-
-  setLang = langtag => () => {
-    this.handleLangtagSwitch({ langtag });
-    this.handleClickOutside();
-  };
-
-  handleClickOutside = () => {
-    this.setOpen(false)();
-  };
-
-  render() {
-    const { open } = this.state;
-    const {
-      sharedData: { contentLanguage }
-    } = this.props;
-    const lswCssClass = classNames("eev-language-switcher", { open: open });
-    return (
-      <div className="eev-language-switcher-wrapper">
-        <div className={lswCssClass} onClick={this.toggleOpen}>
-          <div className="eev-label">
-            {getLanguageOrCountryIcon(contentLanguage || this.props.langtag)}
-            <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
-          </div>
-          {open ? (
-            <div className="eev-dropdown">
-              {Langtags.filter(lt => lt !== contentLanguage).map(lt => {
-                return (
-                  <div key={lt} className="menu-item">
-                    <a href="#" onClick={this.setLang(lt)}>
-                      {getLanguageOrCountryIcon(lt, "language")}
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-}
+import OverlayHeaderLanguageSwitcher from "../OverlayHeaderLanguageSwitcher";
 
 class RowSwitcher extends PureComponent {
   static propTypes = {
@@ -152,77 +75,86 @@ class RowSwitcher extends PureComponent {
   }
 }
 
-@connectOverlayToCellValue
-class EntityViewHeader extends PureComponent {
-  static propTypes = {
-    canSwitchRows: PropTypes.bool,
-    hasMeaningfulLinks: PropTypes.any,
-    row: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired
+const EntityViewHeader = props => {
+  const {
+    id,
+    actions,
+    canSwitchRows,
+    hasMeaningfulLinks,
+    sharedData,
+    sharedData: { contentLanguage, setContentLanguage },
+    langtag,
+    row,
+    rows,
+    grudData,
+    cell
+  } = props;
+  const tableId = f.prop(["table", "id"], cell);
+  const table = f.prop(["tables", "data", tableId], grudData);
+  const { tableView } = grudData;
+
+  const getLanguage = () => {
+    const result = contentLanguage || langtag;
+    return result;
   };
 
-  render() {
-    const {
-      id,
-      actions,
-      canSwitchRows,
-      hasMeaningfulLinks,
-      sharedData,
-      langtag,
-      row,
-      rows,
-      grudData,
-      cell
-    } = this.props;
-    const tableId = f.prop(["table", "id"], cell);
-    const table = f.prop(["tables", "data", tableId], grudData);
-    const { tableView } = grudData;
-
-    const components = (
-      <div className="header-components">
-        <LanguageSwitcher langtag={langtag} />
-        {canSwitchRows && !f.isEmpty(rows) ? (
-          <RowSwitcher {...this.props} />
-        ) : null}
-        <HistoryButtons
-          tableView={tableView}
-          tableId={tableId}
-          rowId={row.id}
-          actions={actions}
-        />
-        <FilterBar id={id} />
-        <HeaderPopupMenu
-          tableView={tableView}
-          langtag={langtag}
-          id={id}
-          funcs={sharedData}
-          hasMeaningfulLinks={hasMeaningfulLinks}
-        />
-      </div>
-    );
-    const tableName = f.isEmpty(table.displayName)
-      ? table.name
-      : retrieveTranslation(langtag, table.displayName) || table.name;
-
-    const idColumn = f.prop(["columns", tableId, "data", 0], grudData);
-
-    const titleCell = {
-      ...cell,
-      value: f.first(row.values),
-      column: idColumn,
-      row
-    };
-
-    return (
-      <Header
-        {...this.props}
-        cell={titleCell}
-        context={tableName}
-        components={components}
+  const components = (
+    <div className="header-components">
+      <OverlayHeaderLanguageSwitcher
+        key={getLanguage()}
+        contentLangtag={getLanguage()}
+        handleChange={lt => {
+          setContentLanguage({ langtag: lt });
+        }}
+        classes="eev-language-switcher"
       />
-    );
-  }
-}
+      {canSwitchRows && !f.isEmpty(rows) ? <RowSwitcher {...props} /> : null}
+      <HistoryButtons
+        tableView={tableView}
+        tableId={tableId}
+        rowId={row.id}
+        actions={actions}
+      />
+      <FilterBar id={id} />
+      <HeaderPopupMenu
+        tableView={tableView}
+        langtag={langtag}
+        id={id}
+        funcs={sharedData}
+        hasMeaningfulLinks={hasMeaningfulLinks}
+      />
+    </div>
+  );
+
+  const tableName = f.isEmpty(table.displayName)
+    ? table.name
+    : retrieveTranslation(langtag, table.displayName) || table.name;
+
+  const idColumn = f.prop(["columns", tableId, "data", 0], grudData);
+
+  const titleCell = {
+    ...cell,
+    value: f.first(row.values),
+    column: idColumn,
+    row
+  };
+
+  return (
+    <Header
+      {...props}
+      cell={titleCell}
+      context={tableName}
+      components={components}
+    />
+  );
+};
+
+EntityViewHeader.propTypes = {
+  canSwitchRows: PropTypes.bool,
+  hasMeaningfulLinks: PropTypes.any,
+  row: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired
+};
 
 const getDisplayLabel = (row, langtag) => {
   const firstCell = f.prop(["values", 0], row);
@@ -232,4 +164,4 @@ const getDisplayLabel = (row, langtag) => {
 };
 
 export { getDisplayLabel };
-export default EntityViewHeader;
+export default connectOverlayToCellValue(EntityViewHeader);

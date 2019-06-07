@@ -171,7 +171,10 @@ const format = f.curryN(2)((column, displayValue) => {
   if (f.isEmpty(formatPattern)) {
     // no or empty format string => simple concat
     return f.isArray(displayValue)
-      ? displayValue.map(str => f.trim(str)).join(" ")
+      ? displayValue
+          .map(str => f.trim(str))
+          .join(" ")
+          .trim()
       : f.trim(displayValue);
   }
 

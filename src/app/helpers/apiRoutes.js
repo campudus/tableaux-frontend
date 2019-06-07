@@ -7,15 +7,21 @@ const cleanUrlPart = f.flow(
 const joinUrlParts = (...args) => args.map(cleanUrlPart).join("/");
 
 const getAllTables = () => "/tables";
+
 const getAllColumnsForTable = tableId => "/tables/" + tableId + "/columns";
+
 const toRows = tableId => "/tables/" + tableId + "/rows";
+
 const toTable = ({ tableId }) => "/tables/" + tableId;
+
 const toColumn = ({ tableId, columnId }) =>
   f.isInteger(columnId)
     ? "/" + joinUrlParts("tables", tableId, "columns", columnId)
     : "/" + joinUrlParts("tables", tableId, "columns");
+
 const toRow = ({ tableId, rowId }) =>
   "/" + joinUrlParts("tables", tableId, "rows", rowId);
+
 const toCell = ({ tableId, rowId, columnId }) =>
   "/" + joinUrlParts("tables", tableId, "columns", columnId, "rows", rowId);
 
@@ -32,19 +38,24 @@ const toFile = (fileId, langtag) =>
 const toServiceRegistry = () => "/system/services";
 const toFrontendServiceView = id => toServiceRegistry() + "/" + id;
 
+const toCellHistory = ({ tableId, rowId, columnId }) =>
+  toCell({ tableId, rowId, columnId }) + "/history";
+
 const API_ROUTES = {
   getAllTables,
   getAllColumnsForTable,
   toRows,
   toTable,
   toColumn,
+  toAllColumns: getAllColumnsForTable,
   toRow,
   toCell,
   toFolder,
   toFile,
   toSetting,
   toServiceRegistry,
-  toFrontendServiceView
+  toFrontendServiceView,
+  toCellHistory
 };
 
 export default API_ROUTES;

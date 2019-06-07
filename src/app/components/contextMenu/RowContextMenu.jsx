@@ -22,10 +22,11 @@ import {
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { isUserAdmin } from "../../helpers/accessManagementHelper";
-import GenericContextMenu from "./GenericContextMenu";
 import { merge } from "../../helpers/functools";
+import { openHistoryOverlay } from "../history/HistoryOverlay";
+import GenericContextMenu from "./GenericContextMenu";
+import pasteCellValue from "../../components/cells/cellCopyHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -48,6 +49,20 @@ class RowContextMenu extends React.Component {
   handleClickOutside() {
     this.props.onClickOutside();
   }
+
+  showHistory = () => {
+    const { cell, langtag } = this.props;
+    // Scroll selected cell to the left so it's visible beneath the overlay
+    this.props.actions.toggleCellSelection({
+      columnId: cell.column.id,
+      rowId: cell.row.id,
+      tableId: cell.table.id,
+      langtag,
+      align: "start",
+      select: true
+    });
+    openHistoryOverlay({ cell, langtag });
+  };
 
   deleteRow = () => {
     const { cell, row, langtag } = this.props;
@@ -309,6 +324,12 @@ class RowContextMenu extends React.Component {
               "show-comments",
               "commenting-o"
             )
+          : null}
+        {!f.contains(this.props.cell.kind, [
+          ColumnKinds.group,
+          ColumnKinds.concat
+        ])
+          ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
           : null}
         {this.requestTranslationsItem()}
         {this.removeTranslationNeededItem()}

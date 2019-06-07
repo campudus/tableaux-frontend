@@ -6,7 +6,7 @@ import {
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
-import { ifElse, unless } from "../../helpers/functools";
+import { ifElse, mergeArrays, unless } from "../../helpers/functools";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import TableauxRouter from "../../router/router";
@@ -58,6 +58,19 @@ const initialState = {
   }
 };
 
+const mergeDisplayValues = (oldDisplayValues, newDisplayValues) =>
+  f.compose(
+    f.values,
+    f.reduce((accum, { id, values }) => {
+      const oldValues = f.prop([id, "values"], accum);
+      accum[id] = {
+        id,
+        values: f.isEmpty(oldValues) ? values : mergeArrays(oldValues, values)
+      };
+      return accum;
+    }, {})
+  )([...oldDisplayValues, ...newDisplayValues]);
+
 // This sets display values for foreign tables, allowing us to track
 // changes made by entity views onto them
 const setLinkDisplayValues = (state, linkDisplayValues) => {
@@ -67,27 +80,9 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
       const { values, tableId } = val;
       const linesExist = !f.isEmpty(acc[tableId]);
 
-      // extract column count from nested param
-      const updatedColumnCount = f.compose(
-        f.size,
-        f.first,
-        f.prop("values"),
-        f.first
-      );
-
       acc[tableId] = f.map(
         f.pick(["id", "values"]),
-        linesExist
-          ? // Function might be called by "getForeignRows", thus
-            // delivering only a subset of existing rows. In this case,
-            // we just cache the new values
-            f.uniqBy(
-              f.prop("id"),
-              updatedColumnCount(values) >= f.size(f.first(acc[tableId]))
-                ? [...values, ...acc[tableId]] // extend existing displayValues
-                : [...acc[tableId], ...values] // don't overwrite full values with "first column"
-            )
-          : values
+        linesExist ? mergeDisplayValues(acc[tableId], values) : values
       );
       return acc;
     },
@@ -163,11 +158,12 @@ const toggleSelectedCell = (state, action) => {
   return f.flow(
     f.assoc("editing", false),
     f.update("selectedCell", prevSelection =>
-      action.select !== false &&
-      (prevSelection.rowId !== action.rowId ||
-        prevSelection.columnId !== action.columnId ||
-        prevSelection.langtag !== action.langtag)
-        ? f.pick(["rowId", "columnId", "langtag"], action)
+      (action.select !== false &&
+        (prevSelection.rowId !== action.rowId ||
+          prevSelection.columnId !== action.columnId ||
+          prevSelection.langtag !== action.langtag)) ||
+      prevSelection.align !== action.align
+        ? f.pick(["rowId", "columnId", "langtag", "align"], action)
         : {}
     )
   )(state);

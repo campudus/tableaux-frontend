@@ -2,6 +2,7 @@ import f from "lodash/fp";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { makeRequest } from "../../helpers/apiHelper";
+import { merge, when } from "../../helpers/functools";
 import {
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
@@ -9,7 +10,6 @@ import {
 import { removeTranslationNeeded } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
-import { merge } from "../../helpers/functools";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -56,18 +56,26 @@ export const changeCellValue = action => (dispatch, getState) => {
 
 const dispatchCellValueChange = action => (dispatch, getState) => {
   const { tableId, columnId, rowId, oldValue, newValue, column } = action;
-  const update = calculateCellUpdate(action);
 
-  const needsUpdate = column.multilanguage
-    ? !f.every(
-        k => f.isEqual(oldValue[k], newValue[k]),
-        f.union(f.keys(newValue), f.keys(oldValue))
-      )
+  // The additional checks help normalising bad link columns' values
+  const isMultiLanguage =
+    column.multilanguage && (f.isPlainObject(newValue) || f.isNil(newValue));
+
+  const update = calculateCellUpdate(action);
+  const changedKeys = isMultiLanguage
+    ? f.compose(
+        f.filter(k => !f.equals(oldValue[k], update.value.value[k])),
+        f.union
+      )(f.keys(newValue), f.keys(oldValue))
+    : [];
+
+  const needsUpdate = isMultiLanguage
+    ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);
 
   // Automatic workflow to remove "translation needed" from newly written values
   const freshlyTranslatedLangtags =
-    needsUpdate && column.multilanguage
+    needsUpdate && isMultiLanguage
       ? f
           .keys(newValue)
           .filter(k => f.isEmpty(action.oldValue[k]) && !f.isEmpty(newValue[k]))
@@ -100,7 +108,11 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
             route.toCell({ tableId, rowId, columnId }) +
             (update.pathPostfix || ""),
           method: update.method,
-          data: update.value
+          data: when(
+            () => isMultiLanguage,
+            f.update("value", f.pick(changedKeys)),
+            update.value
+          )
         }).then(maybeClearFreshTranslations),
         actionTypes: [
           CELL_SET_VALUE,

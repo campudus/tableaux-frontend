@@ -1,0 +1,213 @@
+[
+  {
+    "revision": 7,
+    "rowId": 2,
+    "event": "row_created",
+    "historyType": "row",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:26.897+02:00"
+  },
+  {
+    "revision": 101,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.600+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      }
+    ]
+  },
+  {
+    "revision": 102,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.660+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      },
+      {
+        "id": 2,
+        "value": "Niederbayern Landshut"
+      }
+    ]
+  },
+  {
+    "revision": 103,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.711+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      },
+      {
+        "id": 2,
+        "value": "Niederbayern Landshut"
+      },
+      {
+        "id": 3,
+        "value": "Oberfranken Bayreuth"
+      }
+    ]
+  },
+  {
+    "revision": 104,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.763+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      },
+      {
+        "id": 2,
+        "value": "Niederbayern Landshut"
+      },
+      {
+        "id": 3,
+        "value": "Oberfranken Bayreuth"
+      },
+      {
+        "id": 4,
+        "value": "Mittelfranken Ansbach"
+      }
+    ]
+  },
+  {
+    "revision": 105,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.818+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      },
+      {
+        "id": 2,
+        "value": "Niederbayern Landshut"
+      },
+      {
+        "id": 3,
+        "value": "Oberfranken Bayreuth"
+      },
+      {
+        "id": 4,
+        "value": "Mittelfranken Ansbach"
+      },
+      {
+        "id": 5,
+        "value": "Unterfranken Würzburg"
+      }
+    ]
+  },
+  {
+    "revision": 106,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.872+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      },
+      {
+        "id": 2,
+        "value": "Niederbayern Landshut"
+      },
+      {
+        "id": 3,
+        "value": "Oberfranken Bayreuth"
+      },
+      {
+        "id": 4,
+        "value": "Mittelfranken Ansbach"
+      },
+      {
+        "id": 5,
+        "value": "Unterfranken Würzburg"
+      },
+      {
+        "id": 6,
+        "value": "Oberpfalz Regensburg"
+      }
+    ]
+  },
+  {
+    "revision": 107,
+    "rowId": 2,
+    "event": "cell_changed",
+    "historyType": "cell",
+    "author": "dev",
+    "timestamp": "2019-04-24T07:09:28.928+02:00",
+    "columnId": 5,
+    "valueType": "link",
+    "languageType": "neutral",
+    "value": [
+      {
+        "id": 1,
+        "value": "Oberbayern München"
+      },
+      {
+        "id": 2,
+        "value": "Niederbayern Landshut"
+      },
+      {
+        "id": 3,
+        "value": "Oberfranken Bayreuth"
+      },
+      {
+        "id": 4,
+        "value": "Mittelfranken Ansbach"
+      },
+      {
+        "id": 5,
+        "value": "Unterfranken Würzburg"
+      },
+      {
+        "id": 6,
+        "value": "Oberpfalz Regensburg"
+      },
+      {
+        "id": 7,
+        "value": "Schwaben Augsburg"
+      }
+    ]
+  }
+]

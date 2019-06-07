@@ -1,12 +1,16 @@
 import React, { PureComponent } from "react";
+import * as Sentry from "@sentry/browser";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import f from "lodash/fp";
-import SvgIcon from "../helperComponents/SvgIcon";
-import * as Sentry from "@sentry/browser";
-import { isCell } from "../../specs/cell-spec";
+
 import { doto } from "../../helpers/functools";
+import { isCell } from "../../specs/cell-spec";
 import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
+import ReduxAction from "../../redux/actionCreators";
+import SvgIcon from "../helperComponents/SvgIcon";
+import store from "../../redux/store";
 
 class Header extends PureComponent {
   wrapButtonFn = (value, fn) => (...args) => {
@@ -107,6 +111,28 @@ class Header extends PureComponent {
     );
   }
 }
+
+export const SimpleHeader = props => {
+  const { title, id, cssClass = "" } = props;
+  return (
+    <div className={"header-wrapper " + cssClass}>
+      <div className="close-button">
+        <a
+          href=""
+          onClick={() => {
+            store.dispatch(ReduxAction.closeOverlay(id));
+          }}
+        >
+          <SvgIcon icon="cross" containerClasses="color-white" />
+        </a>
+      </div>
+      <div className="labels">
+        <div className="title">{title}</div>
+      </div>
+      {props.children}
+    </div>
+  );
+};
 
 export default Header;
 

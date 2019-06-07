@@ -1,20 +1,23 @@
-/* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity */
+/* eslint-disable lodash-fp/prefer-constant, lodash-fp/prefer-identity, lodash-fp/consistent-name */
 
-import {
+import fp, {
   compact,
   curryN,
+  drop,
   first,
   flow,
   identity,
   isEmpty,
   isFunction,
   isNil,
+  isInteger,
   map,
   noop,
   prop,
   propOr,
   props,
-  range
+  range,
+  take
 } from "lodash/fp";
 
 /* Maybe monad.
@@ -431,12 +434,69 @@ const replaceMoustache = curryN(3, (values, pattern, string) => {
   return isNil(value) || isNil(string) ? string : string.replace(re, value);
 });
 
+// (size: int) -> (step: int) -> (coll: any[]) -> any[][]
+// Recursive implementation. Might cause stack overflow when run against huge arrays
+// in browsers without tail end optimisation
+const slidingWindow = curryN(3, (size, step, coll, accum = []) => {
+  // window or step sizes < 1 will cause infinite loop
+  if (
+    !(coll instanceof Array) ||
+    !isInteger(size) ||
+    !isInteger(step) ||
+    size < 1 ||
+    step < 1
+  ) {
+    return [];
+  }
+
+  return coll.length < size
+    ? accum
+    : slidingWindow(size, step, drop(step, coll), [...accum, take(size, coll)]);
+});
+
 const match = curryN(2, (regex, str) =>
   either(str)
     .exec("match", regex)
     .map(first)
     .getOrElse("")
 );
+
+const composeP = (...promises) => value => {
+  const initialPromise = fp.last(promises);
+  return fp.compose(
+    fp.reduce((p, next) => p.then(next), initialPromise(value)),
+    fp.tail,
+    fp.reverse
+  )(promises);
+};
+
+const mapP = curryN(2, (promiseGenerator, coll) =>
+  Promise.all(coll.map(promiseGenerator))
+);
+
+const where = curryN(2, (spec, obj) => {
+  const keys = fp.keys(spec);
+  return keys.reduce(
+    (coll, key) => coll && fp.propEq(key, spec[key])(obj),
+    !fp.isNil(spec)
+  );
+});
+
+/**
+ * Replace all values of first array with values of second array.
+ * Result will be all values of second array followed by leftover
+ * values from right array.
+ * mergeArrays([1,2,3], ["a","b"]) -> ["a", "b", 3]
+ * mergeArrays(["a","b"], [1,2,3]) -> [1, 2, 3]
+ */
+const mergeArrays = (oldColl, coll) => {
+  const l = coll ? coll.length : 0;
+  const result = oldColl ? oldColl.slice(0) : []; // clone
+  for (let i = 0; i < l; ++i) {
+    result[i] = coll[i];
+  }
+  return result;
+};
 
 export {
   Maybe,
@@ -464,8 +524,13 @@ export {
   mapPromise,
   memoizeWith,
   merge,
+  slidingWindow,
   firstValidProp,
   firstValidPropOr,
   match,
-  replaceMoustache
+  replaceMoustache,
+  where,
+  composeP,
+  mapP,
+  mergeArrays
 };

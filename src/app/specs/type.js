@@ -102,3 +102,21 @@ const checkWithObject = (spec, testResult) => value => {
   conditions && conditions.forEach(fn => (testResult[fn.name] = fn(value)));
   return testResult;
 };
+
+//
+// Checker for react prop types
+//
+
+export const validateProp = spec => (props, propName, componentName) => {
+  if (!validate(spec, props[propName])) {
+    return new Error(
+      "Invalid prop `" +
+        propName +
+        "` supplied to" +
+        " `" +
+        componentName +
+        "\n" +
+        JSON.stringify(check(spec)(props[propName]), null, 2)
+    );
+  }
+};

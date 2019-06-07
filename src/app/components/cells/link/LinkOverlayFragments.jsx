@@ -54,12 +54,14 @@ const UnlinkedRowsFrag = ({
   scrollToIndex,
   selectedMode,
   selectedBox,
-  order
+  order,
+  rowResults
 }) => (
   <div className="unlinked-items" onMouseEnter={onMouseEnter}>
     <AutoSizer>
       {({ width, height }) => (
         <List
+          redrawProp={rowResults}
           width={width}
           height={height}
           rowCount={rowCount}
@@ -143,6 +145,7 @@ export const RowCreator = compose(
   withHandlers({
     addAndLinkRow: props => () => {
       const {
+        cacheNewForeignRow,
         cell,
         cell: {
           column: { toTable }
@@ -151,7 +154,12 @@ export const RowCreator = compose(
         actions: { addEmptyRowAndOpenEntityView }
       } = props;
 
-      addEmptyRowAndOpenEntityView(toTable, langtag, cell);
+      addEmptyRowAndOpenEntityView(
+        toTable,
+        langtag,
+        cell,
+        cacheNewForeignRow /* onSuccess */
+      );
     }
   })
 )(RowCreatorFrag);
