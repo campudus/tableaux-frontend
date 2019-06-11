@@ -43,16 +43,17 @@ const FilterPresetList = ({ langtag }) => {
 
   const availableFilters = [...filterTemplates, ...(userFilters || [])];
   console.log({ availableFilters });
-  return availableFilters.map(template => {
-    console.log("Map:", template);
-    return (
-      <FilterPresetListItem
-        template={template}
-        applyTemplate={applyFilterTemplate}
-        deleteTemplate={deleteFilterTemplate}
-      />
-    );
-  });
+  return (
+    <div className="filter-preset-list">
+      {availableFilters.map(template => (
+        <FilterPresetListItem
+          template={template}
+          applyTemplate={applyFilterTemplate}
+          deleteTemplate={deleteFilterTemplate}
+        />
+      ))}
+    </div>
+  );
 };
 
 const FilterPresetButton = listensToClickOutside(

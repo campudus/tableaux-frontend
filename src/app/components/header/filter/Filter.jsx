@@ -77,16 +77,14 @@ class FilterButton extends React.PureComponent {
     });
 
     return (
-      <>
-        <div id="filter-wrapper" className={cssClass}>
-          <a href="#" className={buttonClass} onClick={this.toggleFilter}>
-            <i className="fa fa-filter" />
-            {t("button.title")}
-          </a>
-          {this.renderFilterPopup()}
-        </div>
+      <div id="filter-wrapper" className={cssClass}>
+        <a href="#" className={buttonClass} onClick={this.toggleFilter}>
+          <i className="fa fa-filter" />
+          {t("button.title")}
+        </a>
+        {this.renderFilterPopup()}
         <FilterPresetList langtag={langtag} />
-      </>
+      </div>
     );
   }
 }

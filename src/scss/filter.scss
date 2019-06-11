@@ -1,7 +1,7 @@
 @import "variables";
 
 #filter-wrapper {
-  display: inline-block;
+  display: flex;
 
   margin: 10px 20px;
   margin-bottom: 0;
@@ -253,4 +253,48 @@
     }
   }
 
+}
+
+.filter-popup__button {
+  @include header-button-look()
+  // position: relative;
+
+  &.filter-popup-button--open {
+    background-color: $color-primary-text;
+    color: $color-primary-contrast-text;
+    border-color: transparent;
+  }
+}
+
+.filter-preset-list {
+  position: absolute;
+  @include header-panel-look();
+  padding: 0;
+  margin-left: -14px;
+}
+
+.filter-preset-list__item {
+  display: flex;
+  justify-content: space-between;
+
+  background-color: $color-primary-contrast-text;
+  padding: 0 15px;
+  color: $color-primary-text;;
+
+  &:hover {
+    background-color: $color-hover-background
+  }
+}
+
+.filter-preset-item__button {
+  // border: 1px solid $color-border-grey;
+  color: $color-text-medium-grey;
+  border-radius: 3px;
+  padding: 0 5px;
+  font-size: smaller;
+
+  &:hover {
+    background: $color-primary;
+    color: $color-primary-contrast-text;
+  }
 }
