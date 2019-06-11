@@ -1,11 +1,14 @@
-import React from "react";
-import FilterPopup from "./FilterPopup.jsx";
 import { translate } from "react-i18next";
-import { FilterModes } from "../../../constants/TableauxConstants";
-import classNames from "classnames";
-import { either } from "../../../helpers/functools";
+import React from "react";
 import * as f from "lodash/fp";
+
 import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { FilterModes } from "../../../constants/TableauxConstants";
+import { either } from "../../../helpers/functools";
+import FilterPopup from "./FilterPopup.jsx";
+import FilterPresetList from "./FilterPresetList";
 
 class FilterButton extends React.PureComponent {
   state = {
@@ -56,7 +59,7 @@ class FilterButton extends React.PureComponent {
   };
 
   render() {
-    const { t, currentFilter } = this.props;
+    const { t, currentFilter, langtag } = this.props;
     const { open } = this.state;
 
     let buttonClass = "button";
@@ -74,13 +77,16 @@ class FilterButton extends React.PureComponent {
     });
 
     return (
-      <div id="filter-wrapper" className={cssClass}>
-        <a href="#" className={buttonClass} onClick={this.toggleFilter}>
-          <i className="fa fa-filter" />
-          {t("button.title")}
-        </a>
-        {this.renderFilterPopup()}
-      </div>
+      <>
+        <div id="filter-wrapper" className={cssClass}>
+          <a href="#" className={buttonClass} onClick={this.toggleFilter}>
+            <i className="fa fa-filter" />
+            {t("button.title")}
+          </a>
+          {this.renderFilterPopup()}
+        </div>
+        <FilterPresetList langtag={langtag} />
+      </>
     );
   }
 }
