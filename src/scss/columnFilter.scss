@@ -1,0 +1,135 @@
+@import "variables";
+
+#column-filter-wrapper {
+  display: inline-block;
+
+  margin-top: 10px;
+  margin-right: 20px;
+
+  outline-style: none;
+
+  .button {
+    @include header-button-look();
+
+  }
+
+  .infotext {
+    box-sizing: border-box;
+    padding-left: 7px;
+  }
+
+  &.active {
+    .button {
+      @include header-button-active();
+    }
+  }
+
+  &.has-filter {
+    .button {
+      @include header-button-active();
+      background-color: $color-primary;
+      color: $color-primary-contrast-text;
+    }
+  }
+
+  #column-filter-popup-wrapper {
+    @include header-panel-look();
+    overflow: visible;
+    display: block;
+    margin: 0;
+    padding: 0;
+    max-height: none;
+
+    div {
+      outline: none;
+    }
+
+    .no-column-search-result {
+      width: 100%;
+      padding: 25px 0;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .wrap-me-grey {
+      box-sizing: border-box;
+      padding: 0 15px;
+      width: 100%;
+      background-color: $color-background-very-light-grey;
+      border-top: 1px solid $color-border-grey;
+      border-bottom: 1px solid $color-border-grey;
+    }
+
+    .button {
+      @include button-look();
+      margin: 10px 20px;
+    }
+
+    .input {
+      box-sizing: border-box;
+      padding: 10px;
+      font: inherit;
+      height: 90%;
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      resize: none;
+      line-height: 1.5em;
+
+      outline: none;
+      background-color: white;
+
+      border: 1px solid $color-text-medium-grey;
+      border-radius: 3px;
+
+      &:focus {
+        border: 1px solid $color-primary;
+        @include box-shadow(inset 0px 0px 7px 0px rgba(50, 150, 220, 0.6));
+      }
+    }
+
+    .row {
+      padding: 15px 0;
+
+      &.infotext {
+        border-top: 1px solid $color-border-grey;
+        padding: 15px 20px;
+        font-size: $font-size-standard;
+      }
+
+      &.header-text {
+        width: 100%;
+        font-weight: bold;
+        color: $color-dark;
+
+        i {
+          padding-right: 8px;
+        }
+      }
+    }
+
+    .column-filter-checkbox-wrapper {
+      padding: 0 10px;
+      input {
+        width: 30px;
+      }
+
+      &.even {
+        background-color: $color-background-very-light-grey;
+      }
+
+      &.selected {
+        background-color: $color-light-link-color;
+      }
+    }
+
+    .column-checkbox-list {
+      width: 100%;
+      line-height: 30px;
+
+      div {
+        width: 100%;
+      }
+    }
+  }
+}

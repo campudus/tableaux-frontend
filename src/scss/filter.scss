@@ -1,0 +1,256 @@
+@import "variables";
+
+#filter-wrapper {
+  display: inline-block;
+
+  margin-top: 10px;
+  margin-right: 20px;
+
+  outline-style: none;
+
+  .button {
+    @include header-button-look();
+
+    i {
+      margin-right: 10px;
+    }
+  }
+
+  &.active {
+    .button {
+      @include header-button-active();
+    }
+  }
+
+  &.has-filter {
+    .button {
+      @include header-button-active();
+      background-color: $color-primary;
+      color: $color-primary-contrast-text;
+    }
+  }
+
+  #filter-popup {
+    @include header-panel-look();
+    max-width: 700px;
+    overflow: visible;
+
+    .filter-options {
+      position: relative;
+      width: 100%;
+    }
+
+    button {
+      @include button-look();
+      float: right;
+    }
+
+    .filter-mode-wrapper {
+      position: relative;
+
+      input {
+        height: 28px;
+      }
+
+      .filter-mode-button {
+        padding: 7px;
+        position: absolute;
+        display: inline-block;
+        right: 0;
+
+        a {
+          padding: 8px;
+        }
+
+        i {
+          color: darkgrey;
+        }
+      }
+    }
+
+    .bool-input {
+      a {
+        @include button-look();
+        background-color: $color-button-grey;
+        padding: 8px 30px;
+
+        &.yes {
+          margin-right: 30px;
+        }
+
+        &.active {
+          &.yes {
+            background-color: $color-green;
+          }
+          &.no {
+            background-color: $color-red;
+          }
+        }
+      }
+    }
+
+    .context-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      width: 220px;
+      color: black;
+      border: 1px solid lightgrey;
+      border-top: none;
+      border-bottom-left-radius: 3px;
+      border-bottom-right-radius: 3px;
+      @include box-shadow(0px 0px 50px rgba(black, 0.2));
+
+      background-color: $color-primary-contrast-text;
+      padding: 0;
+
+      .filter-mode-popup .item, .item a {
+        &.active {
+          color: $color-primary-contrast-text;
+          background-color: $color-primary;
+        }
+
+        &:hover {
+          color: $color-hover-foreground;
+          background-color: $color-hover-background;
+        }
+      }
+    }
+  }
+
+  .wip-filter-message {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    background-color: $color-background-very-light-grey;
+  }
+
+  .filter-row, .sort-row {
+    overflow: visible;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+
+    .filter-array-button {
+      width: 20px;
+      height: 20px;
+      border: 1px solid $color-border-grey;
+      border-radius: 3px;
+      margin-left: 3px;
+      &.empty {
+        border-color: transparent;
+      }
+      a {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        i {
+          font-size: x-small;
+          color: $color-text-medium-grey;
+        }
+      }
+
+      &:hover:not(.empty) {
+        border-color: $color-primary;
+        background-color: $color-primary;
+        i {
+          color: $color-primary-contrast-text;
+        }
+      }
+    }
+
+    .filter-input {
+      height: 30px;
+      padding: 0 10px;
+      line-height: 30px;
+      border: 1px solid $color-grey-dark;
+      @include border-radius(3px);
+      width: 200px;
+
+      &:focus, &:active {
+        border-color: $color-primary-lighter;
+      }
+
+      &:disabled {
+        background-color: $color-background-disabled;
+
+        &:active {
+          border-color: $color-grey-dark;
+        }
+      }
+    }
+
+    .filter-select {
+      width: 220px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .separator {
+      display: inline-block;
+      vertical-align: middle;
+      color: $color-text-light-grey;
+      max-width: 200px;
+      padding: 0 20px;
+      text-align: left;
+      line-height: 1.2;
+      width: 55px;
+    }
+
+    .bool-input {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      width: 222px;
+
+      .selection-text {
+        font-style: italic;
+        color: $color-text-medium-grey;
+      }
+
+      .checkbox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 26px;
+        height: 26px;
+        border: 1px solid $color-text-light-grey;
+        border-radius: 3px;
+        margin-right: 10px;
+
+        &.checked:before {
+          font-family: FontAwesome;
+          content: "\f00c";
+          color: $color-primary-text;
+        }
+      }
+    }
+  }
+
+  .description-row {
+    .info {
+      color: $color-text-light-grey;
+      padding-top: 20px;
+      margin-top: 20px;
+      border-top: 2px solid $color-border-grey;
+      line-height: 1.5em;
+      width: 100%;
+
+      .text {
+        width: 50%;
+        float: left;
+      }
+    }
+
+    .filter-go {
+      margin-right: 20px;
+    }
+  }
+
+}

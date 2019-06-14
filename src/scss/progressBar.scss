@@ -1,0 +1,16 @@
+.progressbar-container {
+  width: 90%;
+  margin: 5px 0;
+  height: 20px;
+  position: absolute;
+  left: 50%;
+  @include transform(translateX(-50%));
+  text-align: center;
+
+  .progressbar-progress {
+    height: 100%;
+    background-color: $color-success;
+    color: #fff;
+    line-height: 20px;
+  }
+}

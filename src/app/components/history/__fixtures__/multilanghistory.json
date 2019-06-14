@@ -1,0 +1,521 @@
+[
+    {
+        "revision": 7,
+        "rowId": 2,
+        "event": "row_created",
+        "historyType": "row",
+        "author": "dev",
+        "timestamp": "2019-04-16T09:00:54.238+02:00"
+    },
+    {
+        "revision": 11,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T09:00:54.247+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 12,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T09:00:54.247+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 111,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:37.976+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München, Weltstadt"
+        }
+    },
+    {
+        "revision": 112,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:37.976+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 113,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:42.244+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München, Weltstadt ohne Herz"
+        }
+    },
+    {
+        "revision": 114,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:42.244+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 115,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:48.704+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 116,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:48.704+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München, Weltstadt des Schmerzes"
+        }
+    },
+    {
+        "revision": 117,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:56.220+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München, Bonzistan"
+        }
+    },
+    {
+        "revision": 118,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-16T11:50:56.220+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 119,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "test",
+        "timestamp": "2019-04-16T11:50:58.955+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 120,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "devil",
+        "timestamp": "2019-04-16T11:50:58.955+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 121,
+        "rowId": 2,
+        "event": "annotation_added",
+        "historyType": "cell_flag",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:00:53.168+02:00",
+        "columnId": 2,
+        "languageType": "language",
+        "value": {
+            "en-GB": "needs_translation"
+        },
+        "uuid": "9f874562-51f9-4f42-96c2-f559f085fb9b"
+    },
+    {
+        "revision": 122,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:00:58.243+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 123,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:00:58.243+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München translate"
+        }
+    },
+    {
+        "revision": 124,
+        "rowId": 2,
+        "event": "annotation_removed",
+        "historyType": "cell_flag",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:01.489+02:00",
+        "columnId": 2,
+        "languageType": "language",
+        "value": {
+            "en-GB": "needs_translation"
+        },
+        "uuid": "9f874562-51f9-4f42-96c2-f559f085fb9b"
+    },
+    {
+        "revision": 125,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:04.776+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 126,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:04.776+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 127,
+        "rowId": 2,
+        "event": "annotation_added",
+        "historyType": "cell_flag",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:07.427+02:00",
+        "columnId": 2,
+        "languageType": "neutral",
+        "value": "important",
+        "uuid": "39341e88-0697-457d-87f5-22ccfcef3913"
+    },
+    {
+        "revision": 128,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:09.892+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 129,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:09.892+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 130,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:15.515+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 131,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:15.515+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München important"
+        }
+    },
+    {
+        "revision": 132,
+        "rowId": 2,
+        "event": "annotation_removed",
+        "historyType": "cell_flag",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:17.986+02:00",
+        "columnId": 2,
+        "languageType": "neutral",
+        "value": "important",
+        "uuid": "39341e88-0697-457d-87f5-22ccfcef3913"
+    },
+    {
+        "revision": 133,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:21.757+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 134,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:21.757+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 135,
+        "rowId": 2,
+        "event": "annotation_added",
+        "historyType": "cell_comment",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:26.177+02:00",
+        "columnId": 2,
+        "valueType": "info",
+        "languageType": "neutral",
+        "value": "foo",
+        "uuid": "9d30dee8-8ea5-490f-8d70-ed16dae23b91"
+    },
+    {
+        "revision": 136,
+        "rowId": 2,
+        "event": "annotation_added",
+        "historyType": "cell_comment",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:27.487+02:00",
+        "columnId": 2,
+        "valueType": "info",
+        "languageType": "neutral",
+        "value": "bar",
+        "uuid": "5fde6583-c2aa-46aa-aa6c-32c9f6838810"
+    },
+    {
+        "revision": 137,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:33.511+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 138,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:33.511+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München x"
+        }
+    },
+    {
+        "revision": 139,
+        "rowId": 2,
+        "event": "annotation_removed",
+        "historyType": "cell_comment",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:39.113+02:00",
+        "columnId": 2,
+        "valueType": "info",
+        "languageType": "neutral",
+        "value": "foo",
+        "uuid": "9d30dee8-8ea5-490f-8d70-ed16dae23b91"
+    },
+    {
+        "revision": 140,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "test",
+        "timestamp": "2019-04-17T08:01:43.680+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    },
+    {
+        "revision": 141,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:01:43.680+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 142,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:06:03.143+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 143,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:06:03.143+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich in English"
+        }
+    },
+    {
+        "revision": 144,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:06:08.995+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "de-DE": "München"
+        }
+    },
+    {
+        "revision": 145,
+        "rowId": 2,
+        "event": "cell_changed",
+        "historyType": "cell",
+        "author": "dev",
+        "timestamp": "2019-04-17T08:06:08.995+02:00",
+        "columnId": 2,
+        "valueType": "shorttext",
+        "languageType": "language",
+        "value": {
+            "en-GB": "Munich"
+        }
+    }
+]

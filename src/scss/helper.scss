@@ -1,0 +1,174 @@
+@mixin header-button-look() {
+  height: $space-height-header-buttons;
+  border: 1px solid $color-grey-dark;
+  line-height: $space-height-header-buttons;
+  padding: 0 1em;
+  display: inline-block;
+  color: $color-primary-text;
+  white-space: nowrap;
+  @include border-radius(3px);
+  @include box-sizing(border-box);
+}
+
+@mixin grud-shadow($shiftX: 0, $shiftY: 0, $fade: 50px) {
+  box-shadow: $shiftX $shiftY $fade transparentize(black, 0.7);
+}
+
+@mixin header-button-active() {
+  color: white;
+  background-color: $color-very-dark;
+}
+
+@mixin context-menu-look() {
+  display: block;
+  background-color: white;
+  min-width: 200px;
+  @include grud-shadow();
+  max-height: 400px;
+  overflow: hidden;
+}
+
+@mixin header-panel-look() {
+  @include context-menu-look;
+  position: absolute;
+  padding: 30px;
+  top: 50px;
+  border-top: 5px solid $color-very-dark;
+  max-height: 400px;
+}
+
+@mixin setBgColorAndHover($baseColor) {
+  background-color: $baseColor;
+  &:hover {
+    background-color: darken($baseColor, 5%)
+  }
+}
+
+@mixin button-look() {
+  height: 30px;
+  font-size: 1em;
+  line-height: 1;
+  font-family: $font-main;
+  padding: 7px 15px;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  border: 0;
+  outline-style: none;
+  @include box-sizing(border-box);
+
+  @include border-radius(3px);
+  @include transition(all 250ms ease-out);
+
+  //default
+  @include setBgColorAndHover($color-primary);
+
+  &.standard {
+    @include setBgColorAndHover($color-very-dark);
+  }
+
+  &.neutral, &.cancel {
+    @include setBgColorAndHover($color-button-grey);
+  }
+
+  &.positive {
+    @include setBgColorAndHover($color-green);
+  }
+
+  &.negative {
+    @include setBgColorAndHover($color-red);
+  }
+
+  &.white {
+    color: $color-very-dark;
+    @include setBgColorAndHover(#fff);
+  }
+
+  &:active, &:focus {
+    @include grud-shadow(0, 5px);
+  }
+
+}
+
+@mixin link-look() {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+  box-sizing: border-box;
+  margin-right: 12px;
+
+  color: $color-primary-contrast-text;
+  background-color: $color-primary;
+
+  @include border-radius(3px);
+
+  &:hover {
+    color: $color-primary-contrast-text;
+    background-color: $color-primary-darker;
+  }
+
+  i {
+    float: right;
+    display: initial;
+    padding: 3px 5px;
+    margin-top: 1px;
+    margin-right: 1px;
+    margin-left: 5px;
+    @include border-radius(3px);
+    background-color: $color-primary;
+
+    &:hover {
+      background-color: $color-primary-contrast-text;
+      color: $color-primary;
+    }
+  }
+}
+
+@mixin popup-menu {
+  @include rounded-lower-borders;
+  background-color: $color-white;
+  position: absolute;
+  @include grud-shadow(0, 5px, 15px);
+  border-top: 3px solid $color-primary;
+  z-index: 6;
+
+  .entry {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+    z-index: 100;
+    box-sizing: border-box;
+    &:last-of-type {
+      @include rounded-lower-borders();
+    }
+
+    i {
+      color: $color-text-medium-grey;
+      width: 25px;
+      position: relative;
+      
+      &.dot.important { @include status-dot($color-important, $color-primary-contrast-text); }
+      &.dot.translation { @include status-dot($color-needs-translation, $color-primary-contrast-text); }
+      &.dot.postpone { @include status-dot($color-postpone, $color-primary-contrast-text); }
+      &.dot.check-me { @include status-dot($color-checkme, $color-primary-contrast-text); }
+    }
+
+    &:hover, &.active {
+      background-color: $color-hover-background;
+      color: $color-hover-foreground;
+
+      .dot.important { @include status-dot-hovered($color-important, $color-hover-background); }
+      .dot.translation { @include status-dot-hovered($color-needs-translation, $color-hover-background); }
+      .dot.postpone { @include status-dot-hovered($color-postpone, $color-hover-background); }
+      .dot.check-me { @include status-dot-hovered($color-checkme, $color-hover-background); }
+    }
+  }
+}
+
+@mixin flex-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

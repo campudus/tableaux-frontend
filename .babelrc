@@ -1,20 +1,16 @@
 {
-  "plugins": [
-    "react-hot-loader/babel",
-    "transform-decorators-legacy",
-    "transform-runtime",
-    "es6-promise"
-  ],
   "presets": [
-    "es2015",
-    "react",
-    "stage-0"
+      ["@babel/preset-env",
+       {
+           "targets": [
+               "IE >= 11"
+           ]
+       }],
+    "@babel/preset-react"
   ],
-  "env": {
-    "production": {
-      "plugins": [
-        "transform-react-inline-elements"
-      ]
-    }
-  }
+    "plugins": [
+      "@babel/plugin-proposal-function-bind",
+      ["@babel/plugin-proposal-decorators", { "legacy": true }],
+      ["@babel/plugin-proposal-class-properties", { "loose": true }]
+  ]
 }

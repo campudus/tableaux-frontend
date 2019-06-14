@@ -1,0 +1,38 @@
+{
+  "access_management": {
+    "language_array_empty": "Read-only access: You can not change any data.",
+    "cant_access_language": "You are not allowed to change data for this language",
+    "no_permission_saving_language_description": "You have no permission to change this data. Only administrating users can add or remove data. You can edit content of the following languages",
+    "permission_denied_headline": "Access permission denied",
+    "countries": "Countries",
+    "languages": "Languages"
+  },
+  "cancel": "Cancel",
+  "delete_yes_explicit": "Yes, delete",
+  "error": "Error",
+  "info": "Info",
+  "warning": "Warning",
+  "no": "No",
+  "save": "Save",
+  "yes": "Yes",
+  "ok": "Ok",
+  "close": "Close",
+  "edit": "Edit",
+  "current_selection": "Current selection",
+  "empty": "Empty",
+  "loading": "Loading...",
+  "add": "Add",
+  "multiselect": {
+    "no-selection": "Click to select...",
+    "all-selected": "Nothing left to select",
+    "select-translation": "Click to select visible translations",
+    "all-translations-open": "All available translations are visible"
+  },
+    "connection": {
+    "status": "Network connection",
+    "reconnected-title": "Connection to server re-established",
+    "reconnected-message": "You may now safely continue working.",
+    "disconnected-title": "Connection to server lost",
+    "disconnected-message": "Changes since {{time}} might have been lost. Please check your network connection."
+  }
+}
