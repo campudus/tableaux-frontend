@@ -92,6 +92,7 @@ const SearchBar = ({
         setFilterValue("");
         preventDefault(event);
         stopPropagation(event);
+        focusInput();
       }
     };
     const passOnKey = event => {
