@@ -33,7 +33,7 @@ const LinkOverlayHeader = props => {
       <SearchBar
         langtag={langtag}
         id={id}
-        onKeystroke={passKeystrokeToBody}
+        onKeyStroke={passKeystrokeToBody}
         setFilterValue={setFilterValue}
         setFilterMode={setFilterMode}
         filterMode={filterMode}
