@@ -39,26 +39,6 @@ const SelectedItem = props => {
         <div
           className={mainButtonClass}
           onMouseEnter={props.mouseOverHandler.box(MAIN_BUTTON)}
-          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
-        >
-          <a href="#" draggable={false}>
-            {unless(
-              f.isString,
-              retrieveTranslation(props.langtag),
-              props.label
-            ) || <Empty langtag={props.langtag} />}
-          </a>
-          {props.isLinked ? (
-            <SvgIcon icon="cross" containerClasses="color-primary" />
-          ) : (
-            <SvgIcon icon="check" containerClasses="color-primary" />
-          )}
-        </div>
-        <a
-          href="#"
-          className={linkButtonClass}
-          draggable={false}
-          onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
           onClick={() => {
             props.isAttachment
               ? doto(
@@ -75,7 +55,27 @@ const SelectedItem = props => {
                 });
           }}
         >
+          <a href="#" draggable={false}>
+            {unless(
+              f.isString,
+              retrieveTranslation(props.langtag),
+              props.label
+            ) || <Empty langtag={props.langtag} />}
+          </a>
           <i className="fa fa-long-arrow-right" />
+        </div>
+        <a
+          href="#"
+          className={linkButtonClass}
+          draggable={false}
+          onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
+          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
+        >
+          {props.isLinked ? (
+            <SvgIcon icon="cross" containerClasses="color-primary" />
+          ) : (
+            <SvgIcon icon="check" containerClasses="color-primary" />
+          )}
         </a>
       </div>
     </div>
