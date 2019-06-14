@@ -1,0 +1,27 @@
+{
+  "button": {
+    "clearFilter": "Filter löschen",
+    "doFilter": "Filter anwenden",
+    "title": "Filtern & Sortieren"
+  },
+  "help": {
+    "contains": "enthält",
+    "note": "Filtern und suchen Sie nach unterstützten Feldtypen.",
+    "sort": "sortiert",
+    "sortasc": "aufsteigend (A-Z bzw. 0-9)",
+    "sortdesc": "absteigend (Z-A bzw. 9-0)"
+  },
+  "input": {
+    "filter": "Filtern nach...",
+    "noResult": "Keine Spalte mit diesem Namen vorhanden",
+    "sort": "Sortieren nach..."
+  },
+  "large-table": {
+    "title": "Komplexe Filterfunktion",
+    "header": "Fortfahren?.",
+    "message": "Das Filtern dieser Tabelle kann bis zu einigen Minuten dauern."
+  },
+  "searching": "Filtere Tabelleneinträge",
+  "searching-sub": "Einen Moment bitte...",
+  "has-comments": "Wurde kommentiert"
+}

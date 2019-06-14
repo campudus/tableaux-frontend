@@ -1,0 +1,39 @@
+@import "../variables";
+@import "../helper";
+
+.cell.cell-link, .cell.cell-attachment {
+
+  //Overwrite editing styling because editing mode is with overlay
+  &.cell-link.editing .cell-content {
+    @include box-shadow(none);
+  }
+
+  //Label
+  .link-label {
+    @include link-look();
+    max-width: 240px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: baseline;
+    text-wrap: none;
+    line-height: 1em;
+    margin: 0 6px 0 0;
+
+    .label-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 6px 8px;
+    }
+  }
+
+  &.selected, &.editing {
+    .cell-content {
+      flex-flow: row wrap;
+      padding-bottom: 3px;
+
+      .link-label {
+        margin-bottom: 6px;
+      }
+    }
+  }
+}

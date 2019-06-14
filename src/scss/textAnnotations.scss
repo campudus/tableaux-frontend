@@ -1,0 +1,172 @@
+.text-annotation-button {
+  padding: 0 4px;
+  color: $color-overlay-header;
+}
+
+$annotation-popup-width: 300px;
+
+.annotation-popup {
+  position: absolute;
+  background-color: $color-overlay-header;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: $annotation-popup-width;
+  color: $color-text-light-grey;
+  border-radius: 3px;
+  transform: translateX(-100%);
+  &:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 10px solid $color-overlay-header;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    left: 100%;
+    top: 16px;
+    position: absolute;
+  }
+
+  &.shift-up:before {
+    top: auto;
+    bottom: 8px;
+  }
+
+  .close-icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: xx-small;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @include clickable-svg-icon;
+  }
+
+  .annotation-popup-header, footer, &>div {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .annotation-popup-header {
+    padding: 15px;
+    border-bottom: 1px solid transparentize($color-text-medium-grey, 0.5);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    .annotation-header-title {
+      color: $color-text-medium-grey;
+      i {
+        margin-right: 5px;
+      }
+    }
+    .annotation-label {
+      color: $color-primary-contrast-text;
+      overflow: hidden;
+    }
+  }
+
+  .annotation-popup-list {
+    flex: 1;
+    overflow: hidden;
+    overflow-y: auto;
+    min-height: 100px;
+    max-height: 50vh;
+  }
+
+  footer {
+    background-color: $color-hover-dark;
+    padding: 15px;
+    border-radius: 0 0 3px 3px;
+
+    input {
+      box-sizing: border-box;
+      outline: none;
+      border: none;
+      border-radius: 3px;
+      padding: 5px 10px;
+      width: 100%;
+    }
+    .button {
+      margin-top: 8px;
+      float: right;
+      @include button-look();
+      font-weight: normal;
+    }
+  }
+
+  .annotation-item {
+    box-sizing: border-box;
+    padding: 15px 0;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    color: $color-text-medium-grey;
+    border-left: 3px solid transparent;
+
+    &:not(:first-of-type) {
+      border-top: 1px solid transparentize($color-text-medium-grey, 0.5);
+    }
+
+    &:hover {
+      border-left: 3px solid transparentize($color-primary, 0.3);
+    }
+
+    &>i, .info-column {
+      width: 40px;
+      text-align: center;
+    }
+
+    .info-column {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .delete-button {
+        padding: 15px;
+        &:hover .delete-icon {
+          color: $color-primary;
+        }
+      }
+
+      div {
+        position: absolute;
+        right: 15px;
+        bottom: 15px;
+      }
+    }
+
+    &.info .message-icon {
+      color: $color-primary;
+    }
+
+    &.warning .message-icon {
+      color: $color-overlay-question;
+    }
+
+    &.error .message-icon {
+      color: $color-overlay-warning;
+    }
+
+    .message {
+      padding-right: 40px;
+      flex: 1;
+      .text-label {
+        color: $color-primary-contrast-text;
+        font-weight: bold;
+        margin-bottom: 8px;
+        white-space: normal;
+        word-break: break-word;
+      }
+    }
+  }
+}

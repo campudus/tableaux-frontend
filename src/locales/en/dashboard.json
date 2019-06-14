@@ -1,0 +1,29 @@
+{
+  "greeter": {
+    "hello": "Hi",
+    "info": "The dashboard lets you see important things to do."
+  },
+  "support": {
+    "heading": "Support & Feedback",
+    "info": "Help us make GRUD even better",
+    "contact-infos": "Technical Support",
+    "phone": "Phone",
+    "email": "Email",
+    "feedback-placeholder": "Report a bug, send us a note, or give us kudos :)",
+    "submit-feedback": "Feedback abschicken",
+    "feedback-sent": "Thank you for giving us feedback"
+  },
+  "translation": {
+    "heading": "Translation status"
+  },
+  "flag": {
+    "goto-comment": "To table",
+    "goto-table": "To table",
+    "heading-comments": "Comments",
+    "heading-important": "$t(table:important)",
+    "heading-needs-translation": "Needs translation",
+    "heading-check-me": "$t(table:check-me)",
+    "heading-postpone": "$t(table:postpone)"
+  },
+  "footer-text": "GRUD is an innovative product created and developed by Campudus GmbH"
+}

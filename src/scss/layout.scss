@@ -1,0 +1,53 @@
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: $color-body-background;
+}
+
+body * {
+  outline: none;
+  outline-style: none;
+}
+
+header {
+  @include user-select(none);
+}
+
+.initial-loader {
+  background-color: $color-background-very-light-grey;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+
+.clearfix {
+  clear: both;
+}
+
+input, textarea {
+  font-family: $font-main;
+  font-size: $font-size-standard;
+
+  &::-ms-clear {
+    display: none;
+  }
+}
+
+.empty-item {
+  text-transform: uppercase;
+  font-style: italic;
+  font-weight: lighter;
+}
+
+.ReactVirtualized__List {
+  overflow: hidden !important;
+
+  &:hover {
+    overflow: auto !important;
+  }
+}
