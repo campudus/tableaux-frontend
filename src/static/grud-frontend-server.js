@@ -62,7 +62,8 @@ proxy.on("proxyReq", proxyReq => {
 
 proxy.on("error", (err, req, res) => {
   console.error("Could not proxy API request to", req.url, err);
-  res.status(500).send(err);
+  res.status(500);
+  res.send(err);
 });
 
 const proxyHandler = (req, res) => {
@@ -99,6 +100,6 @@ app.use("/api", proxyHandler); // if api request, proxy it, else...
 app.use(resourceHandler); // if a file was requested, try to serve it, else...
 app.use(appHandler); // serve the single page app
 
-app.listen(config.port, config.host, () =>{
+app.listen(config.port, config.host, () => {
   console.info(`Server listening on http://${config.host}:${config.port}.`);
 });
