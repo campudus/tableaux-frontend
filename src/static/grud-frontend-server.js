@@ -3,6 +3,7 @@ const { createProxyServer } = require("http-proxy");
 const serveStatic = require("serve-static");
 const finalhandler = require("finalhandler");
 const path = require("path");
+const ServerConfigTool = require("./ServerConfigTool");
 
 /**
  * Usage `node grud-frontend-server.js [--config=<path-to-config-file.json>]`
@@ -11,41 +12,14 @@ const path = require("path");
 
 // Apply settings --------------------------------------------------------------
 
-let config = {
-  // Default config, overriden by config file
+const config = ServerConfigTool.enrichConfig({
+  // Default config, overriden by config file and env params
   outDir: __dirname, // path to serve static files from
   apiHost: "localhost", // api host
   apiPort: 8080,
   port: 3000,
   host: "localhost"
-};
-
-try {
-  const configPrefix = "--config=";
-  const configFile =
-    process.argv
-      .filter(arg => arg.startsWith(configPrefix))
-      .map(arg => arg.replace(configPrefix, ""))[0] || "../config.json";
-  console.log("Config file path", configFile);
-  const localConfig = require(configFile);
-  config = { ...config, ...localConfig };
-} catch (err) {
-  console.log("Warning: Could not read config file, using defaults");
-}
-
-const overrideConfigWithEnv = envVar => {
-  const envValue = process.env[envVar.toUpperCase()];
-  if (envValue) {
-    console.log("Overriding", envVar, "with", envValue, "from environment");
-    config[envVar] = envValue;
-  }
-};
-
-overrideConfigWithEnv("outDir");
-overrideConfigWithEnv("apiHost");
-overrideConfigWithEnv("apiPort");
-overrideConfigWithEnv("port");
-overrideConfigWithEnv("host");
+});
 
 console.log("GRUD frontend server with settings:\n", config);
 
