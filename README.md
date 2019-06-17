@@ -51,6 +51,7 @@ Default project configuration can be overwritten via a `config.json` in the base
   "port": 3000,           // port for the http frontent
   "apiHost": "localhost", // 
   "apiPort": 8080,        // port of the backend service
+  "webhookUrl": ".."      // url for Slack webhook to recieve user feedback
 }
 ```
 
@@ -65,6 +66,7 @@ Following variable names can be used:
 - APIHOST
 - APIPORT
 - OUTDIR
+- WEBHOOKURL
 - REDUX_DEVTOOLS=[true,false]
 
 ```
