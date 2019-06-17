@@ -47,7 +47,6 @@
     top: 5px;
     display: inline-block;
     vertical-align: bottom;
-    position: relative;
   }
 
   .input {
@@ -98,7 +97,6 @@
     display: block;
     position: relative;
     white-space: nowrap;
-    text-overflow: ellipsis;
     width: 100%;
 
     .grey-out, .grey-out input {
