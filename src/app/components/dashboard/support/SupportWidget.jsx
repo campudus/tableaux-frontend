@@ -8,6 +8,8 @@ import PropTypes from "prop-types";
 import { getUserName } from "../../../helpers/userNameHelper";
 import { makeRequest } from "../../../helpers/apiHelper";
 
+const webhookUrl = process.env.webhookUrl;
+
 const enhance = compose(
   pure,
   withProps({
@@ -22,24 +24,22 @@ const enhance = compose(
       feedback: f.getOr(feedback, ["target", "value"], event)
     }),
     handleSubmit: ({ feedback }) => () => {
-      const webhookUrl = process.env.webhookUrl;
-      if (!f.isEmpty(feedback) && !f.isEmpty(webhookUrl)) {
-        makeRequest({
-          url: webhookUrl,
-          method: "post",
-          responseType: "text",
-          data: {
-            text: "Feedback",
-            attachments: [
-              {
-                text: feedback,
-                title: location.href, // contains GRUD instance and user langtag
-                author_name: getUserName() // eslint-disable-line camelcase
-              }
-            ]
-          }
-        });
-      }
+      makeRequest({
+        url: webhookUrl,
+        method: "post",
+        responseType: "text",
+        data: {
+          text: "Feedback",
+          attachments: [
+            {
+              text: feedback,
+              title: location.href, // contains GRUD instance and user langtag
+              author_name: getUserName() // eslint-disable-line camelcase
+            }
+          ]
+        }
+      });
+
       return { feedback: "" };
     }
   })
@@ -79,22 +79,24 @@ const SupportWidget = ({
           </div>
         </div>
       </div>
+      {webhookUrl && !f.isEmpty(webhookUrl) && (
+        <>
+          <div className="separator" />
 
-      <div className="separator" />
-
-      <div className="feedback">
-        <div className="heading">Feedback</div>
-        <textarea
-          disabled={f.isEmpty(process.env.webhookUrl)}
-          className="input"
-          value={feedback}
-          onChange={handleChange}
-          placeholder={i18n.t("dashboard:support.feedback-placeholder")}
-        />
-        <div className="submit-button" onClick={handleSubmit}>
-          {i18n.t("dashboard:support.submit-feedback")}
-        </div>
-      </div>
+          <div className="feedback">
+            <div className="heading">Feedback</div>
+            <textarea
+              className="input"
+              value={feedback}
+              onChange={handleChange}
+              placeholder={i18n.t("dashboard:support.feedback-placeholder")}
+            />
+            <div className="submit-button" onClick={handleSubmit}>
+              {i18n.t("dashboard:support.submit-feedback")}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   </div>
 );

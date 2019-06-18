@@ -37,7 +37,11 @@ const enrichConfig = config => {
     }
   };
 
-  const passConfigParamToApp = param => (process.env[param] = config[param]);
+  const passConfigParamToApp = param => {
+    if (config[param]) {
+      process.env[param] = config[param];
+    }
+  };
 
   envParams.forEach(overrideConfigWithEnv);
   appParams.forEach(passConfigParamToApp);
