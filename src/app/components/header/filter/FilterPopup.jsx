@@ -1,20 +1,23 @@
-import React from "react";
-import * as f from "lodash/fp";
-import listensToClickOutside from "react-onclickoutside";
-import Select from "react-select";
 import { translate } from "react-i18next";
+import React from "react";
+import Select from "react-select";
+import * as f from "lodash/fp";
+import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
+import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
+import { either } from "../../../helpers/functools";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
+import FilterPopupFooter from "./FilterPopupFooter";
+import FilterRow, { BOOL, TEXT } from "./FilterRow";
 import TableauxConstants, {
   ColumnKinds,
   FilterModes,
   Langtags,
   SortValues
 } from "../../../constants/TableauxConstants";
-import i18n from "i18next";
-import { either } from "../../../helpers/functools";
-import FilterRow, { BOOL, TEXT } from "./FilterRow";
-import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
-import PropTypes from "prop-types";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -363,6 +366,8 @@ class FilterPopup extends React.Component {
     const canApplyFilter = sortColumnSelected || anyFilterHasValue;
     const sortOptions = this.getSortOptions();
 
+    console.log({ canApplyFilter, sortColumnSelected, anyFilterHasValue });
+
     const allColumns = this.getSearchableColumns();
     const selectedByOtherFilters = idx =>
       f.flow(
@@ -452,22 +457,13 @@ class FilterPopup extends React.Component {
             <span className="filter-array-button empty" />
           </div>
         </div>
-        <div className="description-row">
-          <p className="info">
-            <span className="text">{t("help.note")}</span>
-          </p>
-          <button tabIndex="1" className="neutral" onClick={this.clearFilter}>
-            {t("button.clearFilter")}
-          </button>
-          <button
-            tabIndex="0"
-            className={canApplyFilter ? "filter-go" : "filter-go neutral"}
-            disabled={!canApplyFilter}
-            onClick={this.applyFilters}
-          >
-            {t("button.doFilter")}
-          </button>
-        </div>
+        <FilterPopupFooter
+          canApplyFilters={!!canApplyFilter}
+          applyFilters={this.applyFilters}
+          clearFilters={this.clearFilter}
+          filters={filters}
+          sorting={sorting}
+        />
       </div>
     );
   }
