@@ -1,6 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
+import f from "lodash/fp";
 import i18n from "i18next";
+import { useSelector } from "react-redux";
+
+import PropTypes from "prop-types";
+
+import { useLocalStorage } from "../../../helpers/useLocalStorage";
 
 const FilterPopupFooter = ({
   filters,
@@ -18,7 +23,8 @@ const FilterPopupFooter = ({
     sorting,
     canApplyFilters,
     applyFilters,
-    clearFilters
+    clearFilters,
+    useSelector
   });
   return (
     <div className="description-row">
@@ -79,14 +85,38 @@ const DefaultFooter = ({
   </>
 );
 
-const SaveFiltersFooter = ({ leaveSaveMode }) => {
+const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
   const [presetName, setPresetName] = React.useState("");
   const handleNameChange = React.useCallback(event => {
     const { value } = event.target;
     setPresetName(value);
   });
+
+  const [savedFilters, setSavedFilters] = useLocalStorage("savedFilters", []);
+  const filterNames = (savedFilters || []).map(f.prop("title"));
+
+  const filterNameExists = f.contains(presetName, filterNames);
+
+  const handleSaveFilters = React.useCallback(() => {
+    const filterTemplate = {
+      title: presetName,
+      filters: filterSettings.filters,
+      sorting: filterSettings.sorting
+    };
+    const filtersToSave = f.compose(
+      f.concat(filterTemplate),
+      f.reject(f.propEq("title", presetName))
+    )(savedFilters);
+
+    setSavedFilters(filtersToSave);
+    leaveSaveMode();
+  });
+
   return (
     <>
+      {filterNameExists && (
+        <span class="text">{i18n.t("filters:filter-exists")}</span>
+      )}
       <button
         className="filter-popup__cancel-persist-button neutral"
         onClick={leaveSaveMode}
@@ -101,7 +131,10 @@ const SaveFiltersFooter = ({ leaveSaveMode }) => {
         onClick
         placeholder={i18n.t("filters:enter-filter-name")}
       />
-      <button className="filter-popup__persist-filters-button positiove">
+      <button
+        className="filter-popup__persist-filters-button positiove"
+        onClick={handleSaveFilters}
+      >
         {i18n.t("filter:button.persist-filter")}
       </button>
     </>
