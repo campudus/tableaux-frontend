@@ -41,7 +41,7 @@ const FrontendServiceView = ({
       <GrudHeader
         handleLanguageSwitch={noop}
         langtag={langtag}
-        pageTitle={pageTitle}
+        pageTitleOrKey={pageTitle}
       />
       <div className="frontend-service-main-view wrapper">
         {serviceLoaded ? (
