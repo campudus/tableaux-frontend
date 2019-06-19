@@ -21,7 +21,7 @@ import {
   isOldEnough,
   matchesLangtag,
   matchesUser,
-  maybeAddLinkLabels,
+  maybeAddLabels,
   reduceRevisionHistory,
   valueMatchesFilter
 } from "./history-helpers";
@@ -59,7 +59,7 @@ const HistoryBody = props => {
       })
     })
       .then(f.prop("rows"))
-      .then(maybeAddLinkLabels(column, contentLangtag))
+      .then(maybeAddLabels(column, contentLangtag))
       .then(setRevisions)
       .catch(console.error);
   }, []);

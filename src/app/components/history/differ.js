@@ -51,7 +51,10 @@ const calcLinkDiff = revision => {
   ];
 };
 
-const calcAttachmentDiff = ({ fullValue = [], prevContent = [] }, langtag) => {
+const calcAttachmentDiff = (
+  { fullValue = [], prevContent = [], currentDisplayValues },
+  langtag
+) => {
   const added = f.differenceBy("uuid", fullValue, prevContent);
   const removed = f.differenceBy("uuid", prevContent, fullValue);
   const unchanged = f.intersectionBy("uuid", prevContent, fullValue);
@@ -65,14 +68,17 @@ const calcAttachmentDiff = ({ fullValue = [], prevContent = [] }, langtag) => {
   return [
     ...removed.map(attachment => ({
       del: true,
-      value: retrieveDisplayValue(attachment)
+      value: retrieveDisplayValue(attachment),
+      currentDisplayValues
     })),
     ...added.map(attachment => ({
       add: true,
-      value: retrieveDisplayValue(attachment)
+      value: retrieveDisplayValue(attachment),
+      currentDisplayValues
     })),
     ...unchanged.map(attachment => ({
-      value: retrieveDisplayValue(attachment)
+      value: retrieveDisplayValue(attachment),
+      currentDisplayValues
     }))
   ];
 };
