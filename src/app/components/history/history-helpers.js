@@ -5,9 +5,10 @@ import moment from "moment";
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { composeP, mapP, maybe, merge, when } from "../../helpers/functools";
 import { makeRequest } from "../../helpers/apiHelper";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import Empty from "../helperComponents/emptyEntry";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import route from "../../helpers/apiRoutes";
-import Empty from "../helperComponents/emptyEntry";
 
 const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
 
@@ -59,45 +60,63 @@ export const getCreationDay = f.compose(
 );
 
 // Add current display values to link items
-export const maybeAddLinkLabels = (column, langtag) =>
-  column.kind !== ColumnKinds.link
-    ? f.identity
-    : async revisions => {
-        const linkIdColumn = await composeP(
-          f.first,
-          f.prop("columns"),
-          makeRequest
-        )({
-          apiRoute: route.toAllColumns(column.toTable)
-        });
+export const maybeAddLabels = (column, langtag) =>
+  column.kind === ColumnKinds.link
+    ? addLinkLabels(column, langtag)
+    : column.kind === ColumnKinds.attachment
+    ? addAttachmentLabels(column, langtag)
+    : f.identity;
 
-        const relevantIds = f.compose(
-          f.uniq,
-          f.flatMap(getIdsFromRevision)
-        )(revisions);
+const addLinkLabels = (column, langtag) => async revisions => {
+  const linkIdColumn = await composeP(
+    f.first,
+    f.prop("columns"),
+    makeRequest
+  )({
+    apiRoute: route.toAllColumns(column.toTable)
+  });
 
-        const currentDisplayValues = await composeP(
-          f.reduce(merge, {}),
-          mapP(
-            getCurrentDisplayValue({
-              tableId: column.toTable,
-              column: linkIdColumn,
-              langtag
-            })
-          )
-        )(relevantIds);
+  const relevantIds = f.compose(
+    f.uniq,
+    f.flatMap(getIdsFromRevision)
+  )(revisions);
 
-        return revisions.map(
-          f.assoc("currentDisplayValues", currentDisplayValues)
-        );
-      };
+  const currentDisplayValues = await composeP(
+    f.reduce(merge, {}),
+    mapP(
+      getCurrentLinkDisplayValue({
+        tableId: column.toTable,
+        column: linkIdColumn,
+        langtag
+      })
+    )
+  )(relevantIds);
+
+  return revisions.map(f.assoc("currentDisplayValues", currentDisplayValues));
+};
+
+const addAttachmentLabels = (column, langtag) => async revisions => {
+  const currentDisplayValues = f.compose(
+    f.reduce(merge, {}),
+    f.flatMap(getCurrentAttachmentDisplayValue(langtag)),
+    f.compact,
+    f.map("value")
+  )(revisions);
+
+  return revisions.map(f.assoc("currentDisplayValues", currentDisplayValues));
+};
+
+const getCurrentAttachmentDisplayValue = langtag =>
+  f.map(({ uuid, title }) => ({
+    [uuid]: retrieveTranslation(langtag, title)
+  }));
 
 const getIdsFromRevision = f.compose(
   f.map("id"),
   f.prop("value")
 );
 
-const getCurrentDisplayValue = ({ tableId, column, langtag }) => rowId => {
+const getCurrentLinkDisplayValue = ({ tableId, column, langtag }) => rowId => {
   const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
   return composeP(
     displayValue => ({ [rowId]: displayValue }),
