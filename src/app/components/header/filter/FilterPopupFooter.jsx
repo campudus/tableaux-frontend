@@ -85,6 +85,12 @@ const DefaultFooter = ({
   </>
 );
 
+const tableColumnsSelector = state => {
+  const tableId = state.tableView.currentTable;
+  const columns = state.columns[tableId].data;
+  return columns;
+};
+
 const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
   const [presetName, setPresetName] = React.useState("");
   const handleNameChange = React.useCallback(event => {
@@ -115,7 +121,7 @@ const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
   return (
     <>
       {filterNameExists && (
-        <span class="text">{i18n.t("filters:filter-exists")}</span>
+        <span className="text">{i18n.t("filters:filter-exists")}</span>
       )}
       <button
         className="filter-popup__cancel-persist-button neutral"
