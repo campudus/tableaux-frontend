@@ -2,32 +2,15 @@ const { createServer } = require("http");
 const { createProxyServer } = require("http-proxy");
 const Path = require("path");
 const Bundler = require("parcel-bundler");
+const GRUDServer = require("./src/static/ServerConfigTool.js");
 
-let config = {
+const config = GRUDServer.enrichConfig({
   outDir: "out",
   host: "localhost",
   port: 3000,
   apiHost: "localhost",
   apiPort: 8080
-};
-
-try {
-  const localConfig = require("../config.json");
-  config = { ...config, ...localConfig };
-} catch (err) {
-  // pass
-}
-
-const overrideConfigWithEnv = envVar => {
-  const envValue = process.env[envVar.toUpperCase()];
-  envValue && (config[envVar] = envValue);
-};
-
-overrideConfigWithEnv("host");
-overrideConfigWithEnv("port");
-overrideConfigWithEnv("outDir");
-overrideConfigWithEnv("apiHost");
-overrideConfigWithEnv("apiPort");
+});
 
 switch (process.env.NODE_ENV) {
   case "production":
@@ -71,11 +54,10 @@ proxy.on("proxyReq", proxyReq => {
 
 proxy.on("error", (err, req, res) => {
   console.error("Proxy error:", err);
-  res
-    .writeHead(500, {
-      "Content-Type": "text/plain"
-    })
-    res && res.end(JSON.stringify(err));
+  res.writeHead(500, {
+    "Content-Type": "text/plain"
+  });
+  res && res.end(JSON.stringify(err));
 });
 
 // serve
