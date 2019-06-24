@@ -1,4 +1,3 @@
-import { List } from "react-virtualized";
 import React from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
@@ -7,11 +6,17 @@ import listensToClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { Directions, FilterModes } from "../../constants/TableauxConstants";
 import { either } from "../../helpers/functools";
+import { List } from "react-virtualized";
+import DragSortList from "../cells/link/DragSortList";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import {
+  Directions,
+  FallbackLanguage,
+  FilterModes
+} from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
 @listensToClickOutside
 class ColumnFilterPopup extends React.Component {
@@ -95,6 +100,57 @@ class ColumnFilterPopup extends React.Component {
     };
   };
 
+  renderColumnList = (filteredColumns, selectedIndex) => {
+    const {
+      columns,
+      columnActions: { setColumnOrdering },
+      columnOrdering
+    } = this.props;
+    if (f.isEmpty(filteredColumns)) {
+      return (
+        <div className="no-column-search-result">
+          {i18n.t("table:no-column-search-result")}
+        </div>
+      );
+    } else if (columns.length - 1 !== filteredColumns.length) {
+      return (
+        <List
+          className="column-checkbox-list"
+          ref={list => {
+            this.list = list;
+          }}
+          width={440}
+          height={300}
+          rowCount={filteredColumns.length}
+          rowHeight={30}
+          scrollToIndex={selectedIndex}
+          rowRenderer={this.renderCheckboxItems(filteredColumns)}
+          style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
+        />
+      );
+    } else {
+      return (
+        <DragSortList
+          className="column-checkbox-list"
+          wrapperClass="column-checkbox-list"
+          ref={list => {
+            this.list = list;
+          }}
+          width={440}
+          height={300}
+          rowCount={filteredColumns.length}
+          rowHeight={30}
+          scrollToIndex={selectedIndex}
+          renderListItem={this.renderCheckboxItems(columns)}
+          applySwap={newOrdering => () =>
+            setColumnOrdering(f.concat([{ id: 0, idx: 0 }], newOrdering))}
+          entries={f.tail(columnOrdering)}
+          style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
+        />
+      );
+    }
+  };
+
   getColName = col =>
     either(col)
       .map(_column => getColumnDisplayName(_column, this.props.langtag))
@@ -146,7 +202,6 @@ class ColumnFilterPopup extends React.Component {
       tableId
     } = this.props;
     const { filter, selectedIndex } = this.state;
-
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),
@@ -179,25 +234,7 @@ class ColumnFilterPopup extends React.Component {
             />
           </div>
         </div>
-        {f.isEmpty(filteredColumns) ? (
-          <div className="no-column-search-result">
-            {i18n.t("table:no-column-search-result")}
-          </div>
-        ) : (
-          <List
-            className="column-checkbox-list"
-            ref={list => {
-              this.list = list;
-            }}
-            width={440}
-            height={300}
-            rowCount={filteredColumns.length}
-            rowHeight={30}
-            scrollToIndex={selectedIndex}
-            rowRenderer={this.renderCheckboxItems(filteredColumns)}
-            style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
-          />
-        )}
+        {this.renderColumnList(filteredColumns, selectedIndex)}
         <div className="row infotext">
           <span>{nHidden + " " + i18n.t("table:hidden_items")}</span>
         </div>
