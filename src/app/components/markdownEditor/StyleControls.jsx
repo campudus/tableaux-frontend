@@ -59,7 +59,8 @@ const StyleControls = ({
   ];
   const inlineStyles = [
     { type: "BOLD", icon: "fa-bold" },
-    { type: "ITALIC", icon: "fa-italic" }
+    { type: "ITALIC", icon: "fa-italic" },
+    { type: "STRIKETHROUGH", icon: "fa-strikethrough" }
     // There is no standard markdown for underline
     // { type: "UNDERLINE", icon: "fa-underline" }
   ];
