@@ -36,7 +36,8 @@ const {
   ADDITIONAL_ROWS_DATA_LOADED,
   ROW_CREATE_SUCCESS,
   SET_FILTERS_AND_SORTING,
-  CLEAN_UP
+  CLEAN_UP,
+  SET_COLUMN_ORDERING
 } = ActionTypes;
 
 const initialState = {
@@ -44,6 +45,7 @@ const initialState = {
   copySource: {},
   editing: false,
   visibleColumns: [],
+  columnOrdering: [],
   currentTable: null,
   displayValues: {},
   expandedRowIds: [],
@@ -206,13 +208,22 @@ const toggleCellEditing = (state, action, completeState) => {
   }
 };
 
-const setInitialVisibleColumns = (state, action) =>
+const setInitialVisibleColumns = action => state =>
   f.isEmpty(f.get("visibleColumns", state))
     ? f.flow(
         f.prop(["result", "columns"]),
         f.slice(0, 10),
         f.map("id"),
         ids => f.assoc("visibleColumns")(ids)(state)
+      )(action)
+    : state;
+
+const setInitialColumnOrdering = action => state =>
+  f.isEmpty(f.get("columnOrdering", state))
+    ? f.flow(
+        f.prop(["result", "columns"]),
+        columns => columns.map((column, idx) => ({ idx, id: column.id })),
+        ids => f.assoc("columnOrdering")(ids)(state)
       )(action)
     : state;
 
@@ -339,10 +350,15 @@ export default (state = initialState, action, completeState) => {
       return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
     case SET_COLUMNS_VISIBLE:
       return { ...state, visibleColumns: action.columnIds };
+    case SET_COLUMN_ORDERING:
+      return { ...state, columnOrdering: action.columnIds };
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:
-      return setInitialVisibleColumns(state, action);
+      return f.compose(
+        setInitialVisibleColumns(action),
+        setInitialColumnOrdering(action)
+      )(state);
     case GENERATED_DISPLAY_VALUES:
       return setLinkDisplayValues(state, action.displayValues);
     case ADDITIONAL_ROWS_DATA_LOADED:

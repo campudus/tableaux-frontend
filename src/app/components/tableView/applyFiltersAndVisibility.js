@@ -8,7 +8,13 @@ import { mapIndexed } from "../../helpers/functools";
 const applyFiltersAndVisibility = function(ComposedComponent) {
   return class FilteredTableView extends React.Component {
     applyColumnVisibility = () => {
-      const { columns, visibleColumns, colsWithMatches } = this.props;
+      const {
+        columns,
+        visibleColumns,
+        colsWithMatches,
+        columnOrdering
+      } = this.props;
+
       const applyVisibility = (columns, visibleArray) =>
         f.map(
           column =>
@@ -47,9 +53,22 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         table,
         langtag,
         finishedLoading,
-        tableView: { selectedCell }
+        tableView: { selectedCell },
+        columnOrdering,
+        visibleColumns
       } = this.props;
 
+      // console.log({columnOrdering,visibleColumns})
+      const sortedVisibleColumns = f.reduce(
+        (acc, val) => {
+          if (f.contains(val.id, visibleColumns)) {
+            return f.concat(acc, [val.idx]);
+          }
+          return acc;
+        },
+        [],
+        columnOrdering
+      );
       // Start displayValue worker if neccessary
       if (
         !f.isEmpty(columns) &&
@@ -90,7 +109,9 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
               rows: f.map(rowIndex => rows[rowIndex], this.props.visibleRows),
               visibleRows: this.props.visibleRows,
               canRenderTable,
-              showCellJumpOverlay
+              showCellJumpOverlay,
+              visibleColumnOrdering: sortedVisibleColumns,
+              columnOrdering: columnOrdering
             }}
           />
         );

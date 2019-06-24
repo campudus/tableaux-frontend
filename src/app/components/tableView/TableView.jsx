@@ -38,7 +38,8 @@ const mapStatetoProps = (state, props) => {
     startedGeneratingDisplayValues,
     visibleColumns,
     filters,
-    sorting
+    sorting,
+    columnOrdering
   } = tableView;
   const allDisplayValues = f.get(["tableView", "displayValues"], state);
 
@@ -57,7 +58,8 @@ const mapStatetoProps = (state, props) => {
     visibleColumns,
     filters,
     sorting,
-    finishedLoading
+    finishedLoading,
+    columnOrdering
   };
 };
 
@@ -113,7 +115,8 @@ class TableView extends PureComponent {
       visibleColumns,
       visibleRows,
       navigate,
-      finishedLoading
+      finishedLoading,
+      visibleColumnOrdering
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -148,6 +151,7 @@ class TableView extends PureComponent {
             tables={tables}
             navigate={navigate}
             finishedLoading={finishedLoading}
+            visibleColumnOrdering={visibleColumnOrdering}
           />
         </div>
       );
@@ -216,10 +220,16 @@ class TableView extends PureComponent {
       actions,
       allDisplayValues,
       filtering,
-      tableView
+      tableView,
+      columnOrdering
     } = this.props;
     const columnActions = f.pick(
-      ["toggleColumnVisibility", "setColumnsVisible", "hideAllColumns"],
+      [
+        "toggleColumnVisibility",
+        "setColumnsVisible",
+        "hideAllColumns",
+        "setColumnOrdering"
+      ],
       actions
     );
     const copySource = f.propOr({}, "copySource", tableView);
@@ -268,6 +278,7 @@ class TableView extends PureComponent {
               columns={columns}
               tableId={tableId}
               columnActions={columnActions}
+              columnOrdering={columnOrdering}
             />
           ) : (
             <div />

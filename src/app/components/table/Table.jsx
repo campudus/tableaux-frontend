@@ -137,7 +137,8 @@ class Table extends Component {
       tableView,
       visibleColumns,
       navigate,
-      finishedLoading
+      finishedLoading,
+      visibleColumnOrdering
     } = this.props;
     const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
@@ -179,6 +180,7 @@ class Table extends Component {
             finishedLoading={finishedLoading}
             selectedCellExpandedRow={this.state.selectedCellExpandedRow}
             setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
+            visibleColumnOrdering={visibleColumnOrdering}
           />
         </div>
         {this.noRowsInfo()}

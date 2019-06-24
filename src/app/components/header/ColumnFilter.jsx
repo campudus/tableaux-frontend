@@ -19,7 +19,7 @@ class ColumnFilter extends React.Component {
   };
 
   render = () => {
-    const { langtag, columns, tableId, columnActions } = this.props;
+    const { langtag, columns, tableId, columnActions, columnOrdering } = this.props;
     const { open } = this.state;
     const nHidden = f.flow(
       f.drop(1),
@@ -48,6 +48,7 @@ class ColumnFilter extends React.Component {
             columnActions={columnActions}
             close={this.handleClickedOutside}
             columns={this.props.columns}
+            columnOrdering={columnOrdering}
           />
         ) : null}
       </div>

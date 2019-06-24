@@ -417,7 +417,7 @@ export default class VirtualTable extends PureComponent {
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
   getVisibleElement = (elements, idx) =>
-    elements[this.visibleColumnIndices[idx]];
+    elements[this.props.visibleColumnOrdering[idx]];
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -538,13 +538,15 @@ export default class VirtualTable extends PureComponent {
       selectedCell,
       selectedCellEditing,
       selectedCellExpandedRow,
-      langtag
+      langtag,
+      visibleColumnOrdering
     } = this.props;
     const { openAnnotations, scrolledCell } = this.state;
     const { columnIndex, rowIndex, align } = scrolledCell;
-    this.visibleColumnIndices = f
-      .range(0, columns.length)
-      .filter(this.filterVisibleCells);
+    // this.visibleColumnIndices = f
+    //   .range(0, columns.length)
+    //   .filter(this.filterVisibleCells);
+    this.visibleColumnIndices = visibleColumnOrdering;
 
     const columnCount = f.size(this.visibleColumnIndices) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line

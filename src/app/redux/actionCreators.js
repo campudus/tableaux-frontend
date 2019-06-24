@@ -66,7 +66,8 @@ const {
   SET_STATUS_INFO,
   TABLE_NAME_EDIT,
   TABLE_NAME_EDIT_SUCCESS,
-  TABLE_NAME_EDIT_ERROR
+  TABLE_NAME_EDIT_ERROR,
+  SET_COLUMN_ORDERING
 } = actionTypes;
 
 const {
@@ -321,6 +322,10 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
   const state = getState();
   const tableId = f.get(["tableView", "currentTable"], state);
   saveColumnVisibility(tableId, columnIds);
+};
+
+const setColumnOrdering = columnIds => (dispatch, getState) => {
+  dispatch({ type: SET_COLUMN_ORDERING, columnIds });
 };
 
 const hideAllColumns = (tableId, columns) => {
@@ -684,7 +689,8 @@ const actionCreators = {
   editColumn,
   addEmptyRowAndOpenEntityView,
   changeTableName,
-  queryFrontendServices
+  queryFrontendServices,
+  setColumnOrdering
 };
 
 export default actionCreators;
