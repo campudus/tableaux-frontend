@@ -11,8 +11,6 @@ import Header from "../../overlay/Header";
 import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
 import TextEditOverlay from "./TextEditOverlay";
 
-import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
-
 const TextCell = props => {
   const { langtag, displayValue, selected, openEditOverlay } = props;
   const isMultiLine = f.contains("\n", displayValue[langtag]);
