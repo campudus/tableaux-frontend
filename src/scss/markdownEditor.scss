@@ -2,6 +2,13 @@ $editor-margin: 20px;
 $block-margin: 8px;
 $block-margin-narrow: 5px;
 
+@mixin richtext-link-style {
+  color: $color-primary;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .overlay .text-editor-overlay .overlay-content {
   display: flex;
   flex-direction: column;
@@ -90,6 +97,10 @@ $block-margin-narrow: 5px;
 
   .public-DraftStyleDefault-block, p {
     margin: $block-margin 0;
+
+    a {
+      @include richtext-link-style();
+    }
   }
 
   .public-DraftStyleDefault-ul, .public-DraftStyleDefault-ol, ol, ul {
@@ -124,10 +135,7 @@ $block-margin-narrow: 5px;
   }
 
   a {
-    color: $color-primary;
-    &:hover {
-      text-decoration: underline;
-    }
+    @include richtext-link-style();
   }
 }
 
