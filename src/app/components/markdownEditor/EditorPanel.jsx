@@ -54,16 +54,12 @@ class EditorPanel extends React.PureComponent {
       { strategy: findLinkEntities, component: Link }
     ]);
 
-    console.log(decorator);
-
     this.state = {
       editorState: EditorState.createWithContent(
         markdownToState(initialMarkdown),
         decorator
       )
     };
-
-    console.log(this.state.editorState);
   }
 
   handleChange = (newState, callback) => {
@@ -108,8 +104,6 @@ class EditorPanel extends React.PureComponent {
       handleChange,
       handleKeyCommand
     } = this;
-
-    console.log(editorState.getLastChangeType());
 
     return (
       <div onMouseDown={stopPropagation} onClick={stopPropagation}>
