@@ -1,22 +1,24 @@
 import React from "react";
-import classNames from "classnames";
 
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
 import { preventDefault } from "../../helpers/functools";
+import LinkEditor from "./LinkEditor";
 
 export const StyleIcon = ({
   toggleStyle,
   styleToToggle,
   label,
   icon,
-  active
+  active,
+  className = ""
 }) => {
   const handleClick = React.useCallback(event => {
     preventDefault(event);
     toggleStyle(styleToToggle);
   });
-  const cssClass = classNames("richtext-toggle-style-button", {
+  const cssClass = classNames(className, "richtext-toggle-style-button", {
     "style-button--active": active
   });
   return (
@@ -36,14 +38,16 @@ StyleIcon.propTypes = {
   styleToToggle: PropTypes.string.isRequired,
   active: PropTypes.bool,
   icon: PropTypes.string,
-  label: PropTypes.string
+  label: PropTypes.string,
+  className: PropTypes.string
 };
 
 const StyleControls = ({
   editorState,
   toggleBlockType,
   toggleInlineStyle,
-  additionalButtons
+  additionalButtons,
+  setEditorState
 }) => {
   const blockTypes = [
     { type: "header-one", label: "H1" },
@@ -92,6 +96,7 @@ const StyleControls = ({
           label={style.label}
         />
       ))}
+      <LinkEditor editorState={editorState} setEditorState={setEditorState} />
       {additionalButtons && (
         <>
           <div className="richtext-toggle-style__placeholder" />
@@ -108,5 +113,6 @@ StyleControls.propTypes = {
   toggleBlockType: PropTypes.func.isRequired,
   toggleInlineStyle: PropTypes.func.isRequired,
   editorState: PropTypes.object.isRequired,
-  additionalButtons: PropTypes.array
+  additionalButtons: PropTypes.array,
+  setEditorState: PropTypes.func.isRequired
 };
