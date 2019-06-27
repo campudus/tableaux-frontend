@@ -12,9 +12,11 @@
  */
 
 import React, { Component } from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
-import * as f from "lodash/fp";
-import request from "superagent";
+
+import { makeRequest } from "../../helpers/apiHelper";
 
 const iconUrls = {
   arrow: "/img/icons/arrow-long.svg",
@@ -49,15 +51,19 @@ class ImageCache {
 
     if (f.isEmpty(subscribers)) {
       // We're referring to the subscribers value BEFORE we added the current one
-      request.get(url).end((error, response) => {
-        const subscribers = f.prop(["_subscribers", url], ImageCache);
-        if (error) {
-          subscribers.forEach(s => s.error(error));
-        } else {
-          ImageCache._cache[url] = response.text;
-          subscribers.forEach(s => s.success(response.text));
-        }
-      });
+      makeRequest({ url, responseType: "text" })
+        .then(responseText => {
+          // subscribers might have changed since fetch was initialised
+          const subscribersNow = f.prop(["_subscribers", url], ImageCache);
+          ImageCache._cache[url] = responseText;
+          subscribersNow.forEach(subscriber =>
+            subscriber.success(responseText)
+          );
+        })
+        .catch(error => {
+          const subscribersNow = f.prop(["_subscribers", url], ImageCache);
+          subscribersNow.forEach(subscriber => subscriber.error(error));
+        });
     }
   }
 
