@@ -1,13 +1,14 @@
 @import "helper";
 @import "variables";
 
-header {
+.grud-header {
   @include box-sizing(border-box);
   background-color: white;
   width: 100%;
   height: $space-height-header;
   padding: 0 20px;
-  border-bottom: 5px solid $color-primary;
+  border-bottom: 5px solid $color-primary; // set border width and fallback color
+  border-image: linear-gradient(to right, $color-header-gradient-start, $color-header-gradient-end) 1;
   position: fixed;
   z-index: 9;
   overflow: visible;
