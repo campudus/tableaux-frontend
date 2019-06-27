@@ -1,60 +1,57 @@
 import React from "react";
-import { compose, lifecycle, pure, withStateHandlers } from "recompose";
 import f from "lodash/fp";
-import request from "superagent";
-import { doto } from "../../helpers/functools";
-import apiUrl from "../../helpers/apiUrl";
-import * as Sentry from "@sentry/browser";
 
-const FetchStatusData = ({ children, requestedData }) => (
-  <React.Fragment>
-    {React.cloneElement(children, { requestedData })}
-  </React.Fragment>
+import { makeRequest } from "../../helpers/apiHelper";
+import { mapP, usePropAsKey } from "../../helpers/functools";
+
+const routeToTranslation = "/tables/translationStatus";
+const routeToAnnotations = "/tables/annotationCount";
+
+//--- Higher Order Component ---
+const withDashboardStatusData = Component => props => {
+  const [dashboardStatus, setDashboardStatus] = React.useState();
+
+  // equivalent to "componentDidMount"
+  React.useEffect(() => {
+    buildDashboardStatus().then(setDashboardStatus);
+  }, []);
+
+  return <Component {...props} requestedData={dashboardStatus} />;
+};
+
+//--- Local helper functions ---
+
+const buildDashboardStatus = async () => {
+  // send both requests in parallel
+  const [rawAnnotationCounts, rawTranslationStates] = await mapP(
+    makeGetRequestFromRoute
+  )([routeToAnnotations, routeToTranslation]);
+
+  return {
+    tables: mergeCounts(rawAnnotationCounts, rawTranslationStates),
+    translationStatus: extractTotalTranslationStatus(rawTranslationStates)
+  };
+};
+
+const makeGetRequestFromRoute = apiRoute => makeRequest({ apiRoute });
+
+const mergeCounts = (rawAnnotationCounts, rawTranslationStates) => {
+  const annotationCounts = extractTableProp(rawAnnotationCounts);
+  const translationLookupMap = buildIdLookupMap(rawTranslationStates);
+
+  return annotationCounts.map(table => ({
+    ...table,
+    translationStatus: translationLookupMap[table.id]
+  }));
+};
+
+const extractTableProp = f.prop("tables");
+
+const extractTotalTranslationStatus = f.prop("translationStatus");
+
+const buildIdLookupMap = f.compose(
+  usePropAsKey("id"),
+  extractTableProp
 );
 
-const withApiData = compose(
-  pure,
-  withStateHandlers(f.always({ requestedData: undefined }), {
-    setRequestedData: () => data => ({ requestedData: data })
-  }),
-  lifecycle({
-    componentWillMount: async function() {
-      const { setRequestedData } = this.props;
-      const mergeTableTranslationStatus = allTranslations => table => {
-        const translationForTable = doto(
-          allTranslations,
-          f.get("tables"),
-          f.find(f.matchesProperty("id", table.id)),
-          f.get("translationStatus")
-        );
-        return f.assoc("translationStatus", translationForTable, table);
-      };
-
-      const getJson = async url =>
-        doto(await request.get(apiUrl(url)), f.get("text"), JSON.parse);
-
-      try {
-        const annotationCounts = await getJson("/tables/annotationCount");
-        const translationStatus = await getJson("/tables/translationStatus");
-
-        setRequestedData(
-          doto(
-            {},
-            f.assoc("tables", f.get("tables", annotationCounts)),
-            f.update(
-              "tables",
-              f.map(mergeTableTranslationStatus(translationStatus))
-            ),
-            f.assoc("translationStatus", translationStatus.translationStatus)
-          )
-        );
-      } catch (err) {
-        console.error(err);
-        Sentry.captureException(err);
-        setRequestedData({});
-      }
-    }
-  })
-);
-
-export default withApiData(FetchStatusData);
+export default withDashboardStatusData;
