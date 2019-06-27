@@ -1,12 +1,3 @@
-import ProgressBar from "../ProgressBar.jsx";
-import apiUrl from "../../../helpers/apiUrl";
-import request from "superagent";
-import Dropzone from "react-dropzone";
-import React from "react";
-import { translate } from "react-i18next";
-import { DefaultLangtag } from "../../../constants/TableauxConstants";
-import PropTypes from "prop-types";
-import f from "lodash/fp";
 import {
   branch,
   compose,
@@ -15,6 +6,17 @@ import {
   withHandlers,
   withState
 } from "recompose";
+import { translate } from "react-i18next";
+import Dropzone from "react-dropzone";
+import React from "react";
+import f from "lodash/fp";
+
+import PropTypes from "prop-types";
+
+import { DefaultLangtag } from "../../../constants/TableauxConstants";
+import { makeRequest } from "../../../helpers/apiHelper";
+import ProgressBar from "../ProgressBar.jsx";
+import route from "../../../helpers/apiRoutes";
 
 const withUploadHandlers = compose(
   withState("runningUploads", "applyUploadUpdater", {}),
@@ -41,43 +43,35 @@ const withUploadHandlers = compose(
 const withDropHandlers = withHandlers({
   onDrop: props => files => {
     // upload with default language
-    files.forEach(file => {
-      // upload each file on its own
-
-      const json = f.flow(
+    files.forEach(async file => {
+      // Backend accepts only single file uploads
+      const fileMetadata = f.flow(
         f.assoc(["title", DefaultLangtag], file.name),
         f.assoc(["description", DefaultLangtag], ""),
         f.assoc("folder", props.folder.id)
       )({});
 
-      request
-        .post(apiUrl("/files"))
-        .send(json)
-        .end(function(err, res) {
-          if (err) {
-            console.error("Create file handle failed.", err);
-            return;
-          }
+      const onProgress = progress => {
+        props.updateUploads(
+          f.assoc(uuid, {
+            progress: parseInt(progress.percent),
+            name: file.name
+          })
+        );
+      };
 
-          const result = res.body;
-          const uuid = result.uuid;
-          const uploadUrl = apiUrl("/files/" + uuid + "/" + DefaultLangtag);
+      const fileNode = await makeRequest({
+        apiRoute: route.toFile(),
+        method: "POST",
+        data: fileMetadata
+      });
 
-          request
-            .put(uploadUrl)
-            .on("progress", e =>
-              props.updateUploads(
-                f.assoc(uuid, {
-                  progress: parseInt(e.percent),
-                  name: file.name
-                })
-              )
-            )
-            .attach("file", file, file.name)
-            .end(function(err, res) {
-              props.uploadCallback(err, res, uuid);
-            });
-        });
+      const { uuid } = fileNode;
+      const uploadUrl = route.toFile() + "/" + uuid + "/" + DefaultLangtag;
+
+      makeRequest({ apiRoute: uploadUrl, method: "PUT", file, onProgress })
+        .then(response => props.uploadCallback(null, response, uuid))
+        .catch(err => props.uploadCallback(err, null, uuid));
     });
   }
 });
