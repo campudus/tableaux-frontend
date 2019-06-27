@@ -1,4 +1,5 @@
 import fetch from "cross-fetch";
+import request from "superagent";
 import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import { doto } from "./functools.js";
@@ -29,6 +30,7 @@ const paramsToString = params =>
  * @param {url?: string} Fetch url directly, without api prefix
  * @param {method?: string = "GET"}
  * @param {data?: any} Request body data, must be JSON.stringify-able
+ * @param {body?: any} Request body to send as-is
  * @param {responseType?: string = "JSON"} One of ["json", "text"]
  * @returns Promise<:responseType>
  **/
@@ -38,22 +40,49 @@ export const makeRequest = async ({
   method = "GET",
   params,
   data,
-  responseType = "JSON"
+  responseType = "JSON",
+  file,
+  onProgress
 }) => {
   const targetUrl =
     (f.isString(apiRoute) ? buildURL(apiRoute) : url) + paramsToString(params);
+
+  const needsSuperagentRequest =
+    method.toLowerCase() !== "get" && (onProgress || file);
+  const body = f.isNil(data) ? undefined : JSON.stringify(data);
+
+  return needsSuperagentRequest
+    ? superagentRequest({ method, targetUrl, file, onProgress, responseType })
+    : fetchRequest({ method, targetUrl, body, responseType });
+};
+
+const fetchRequest = ({ method, targetUrl, body, responseType }) => {
   console.log("apiHelper", method.toUpperCase(), targetUrl);
+
   const parseResponse = response => response[responseType.toLowerCase()]();
-  return fetch(targetUrl, {
-    method,
-    body: f.isNil(data) ? undefined : JSON.stringify(data)
-  })
+  return fetch(targetUrl, { method, body })
     .then(response => {
       if (!response.ok) {
-        throw new Error(`Request error: ${url}: ${response.statusName}`);
+        throw new Error(`Request error: ${targetUrl}: ${response.statusName}`);
       } else {
         return response;
       }
     })
     .then(parseResponse);
 };
+
+// fetch-API does not yet support progress
+const superagentRequest = ({ method, targetUrl, file, onProgress }) =>
+  new Promise((resolve, reject) => {
+    console.log("apiHelper - superAgent", method.toUpperCase(), targetUrl);
+    request[method.toLowerCase()](targetUrl)
+      .on("progress", progress => onProgress && onProgress(progress))
+      .attach("file", file, file.name)
+      .end((err, response) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(response);
+        }
+      });
+  });
