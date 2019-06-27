@@ -33,7 +33,10 @@ const FrontendServiceView = ({
     ? "Frontend Service"
     : retrieveTranslation(langtag, service.displayName);
   const serviceUrl = serviceLoaded
-    ? expandServiceUrl({ tableId, columnId, rowId }, service.config.url)
+    ? expandServiceUrl(
+        { tableId, columnId, rowId, langtag },
+        service.config.url
+      )
     : "";
 
   return (
