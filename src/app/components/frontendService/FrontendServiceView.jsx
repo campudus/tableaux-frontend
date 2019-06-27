@@ -5,7 +5,7 @@ import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServices";
+import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
