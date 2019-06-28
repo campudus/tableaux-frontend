@@ -51,14 +51,20 @@ export const makeRequest = async ({
     method.toLowerCase() !== "get" && (onProgress || file);
   const body = f.isNil(data) ? undefined : JSON.stringify(data);
 
-  return needsSuperagentRequest
-    ? superagentRequest({ method, targetUrl, file, onProgress, responseType })
-    : fetchRequest({ method, targetUrl, body, responseType });
+  const fetchMethod = logDevRoute(
+    needsSuperagentRequest ? superagentRequest : fetchRequest
+  );
+  return fetchMethod({
+    method,
+    targetUrl,
+    body,
+    file,
+    onProgress,
+    responseType
+  });
 };
 
 const fetchRequest = ({ method, targetUrl, body, responseType }) => {
-  console.log("apiHelper", method.toUpperCase(), targetUrl);
-
   const parseResponse = response => response[responseType.toLowerCase()]();
   return fetch(targetUrl, { method, body })
     .then(response => {
@@ -74,7 +80,6 @@ const fetchRequest = ({ method, targetUrl, body, responseType }) => {
 // fetch-API does not yet support progress
 const superagentRequest = ({ method, targetUrl, file, onProgress }) =>
   new Promise((resolve, reject) => {
-    console.log("apiHelper - superAgent", method.toUpperCase(), targetUrl);
     request[method.toLowerCase()](targetUrl)
       .on("progress", progress => onProgress && onProgress(progress))
       .attach("file", file, file.name)
@@ -86,3 +91,18 @@ const superagentRequest = ({ method, targetUrl, file, onProgress }) =>
         }
       });
   });
+
+const logDevRoute = fetchFn => {
+  if (process.env.NODE_ENV !== "production") {
+    return fetchParams => {
+      console.log(
+        `(${fetchFn.name}) ${fetchParams.method.toUpperCase()} ${
+          fetchParams.targetUrl
+        }`
+      );
+      return fetchFn(fetchParams);
+    };
+  } else {
+    return fetchFn;
+  }
+};
