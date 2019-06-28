@@ -9,6 +9,7 @@ import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceH
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
+import GrudRouter from "../../router/router";
 
 const FrontendServiceView = ({
   id,
@@ -18,7 +19,10 @@ const FrontendServiceView = ({
   columnId,
   rowId
 }) => {
-  const noop = React.useCallback(() => null);
+  const handleLanguageSwitch = React.useCallback(
+    newLangtag =>
+      langtag !== newLangtag && GrudRouter.switchLanguageHandler(newLangtag)
+  );
   const [service, setService] = React.useState();
 
   // when service was unknown and services change (= init or service loading finished)
@@ -42,7 +46,7 @@ const FrontendServiceView = ({
   return (
     <>
       <GrudHeader
-        handleLanguageSwitch={noop}
+        handleLanguageSwitch={handleLanguageSwitch}
         langtag={langtag}
         pageTitleOrKey={pageTitle}
       />
