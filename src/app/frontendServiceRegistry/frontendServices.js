@@ -1,6 +1,5 @@
 import f from "lodash/fp";
 
-import { replaceMoustache } from "../helpers/functools";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
 
@@ -19,15 +18,6 @@ export const getMainMenuEntryServices = () =>
     filterMainMenuEntries,
     getServiceArray
   )(store.getState());
-
-export const expandServiceUrl = f.curryN(2, (values, serviceUrl) => {
-  const replace = replaceMoustache(values || {});
-  return f.compose(
-    replace("tableId"),
-    replace("columnId"),
-    replace("rowId")
-  )(serviceUrl);
-});
 
 const getServiceArray = f.prop("frontendServices");
 const isGlobalService = f.propEq(["scope", "type"], "global");

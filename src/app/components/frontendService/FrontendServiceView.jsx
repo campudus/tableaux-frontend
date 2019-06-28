@@ -5,10 +5,11 @@ import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServices";
+import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
+import GrudRouter from "../../router/router";
 
 const FrontendServiceView = ({
   id,
@@ -18,7 +19,10 @@ const FrontendServiceView = ({
   columnId,
   rowId
 }) => {
-  const noop = React.useCallback(() => null);
+  const handleLanguageSwitch = React.useCallback(
+    newLangtag =>
+      langtag !== newLangtag && GrudRouter.switchLanguageHandler(newLangtag)
+  );
   const [service, setService] = React.useState();
 
   // when service was unknown and services change (= init or service loading finished)
@@ -33,13 +37,16 @@ const FrontendServiceView = ({
     ? "Frontend Service"
     : retrieveTranslation(langtag, service.displayName);
   const serviceUrl = serviceLoaded
-    ? expandServiceUrl({ tableId, columnId, rowId }, service.config.url)
+    ? expandServiceUrl(
+        { tableId, columnId, rowId, langtag },
+        service.config.url
+      )
     : "";
 
   return (
     <>
       <GrudHeader
-        handleLanguageSwitch={noop}
+        handleLanguageSwitch={handleLanguageSwitch}
         langtag={langtag}
         pageTitleOrKey={pageTitle}
       />

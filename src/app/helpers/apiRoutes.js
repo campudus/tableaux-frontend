@@ -36,7 +36,8 @@ const toFile = (fileId, langtag) =>
   (langtag ? "?langtag=" + langtag : "");
 
 const toServiceRegistry = () => "/system/services";
-const toFrontendServiceView = id => toServiceRegistry() + "/" + id;
+const toFrontendServiceView = (id, langtag) =>
+  "/" + langtag + "/services/" + id;
 
 const toCellHistory = ({ tableId, rowId, columnId }) =>
   toCell({ tableId, rowId, columnId }) + "/history";

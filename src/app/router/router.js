@@ -213,7 +213,7 @@ const extendedRouter = Router.extend({
     rowId
   ) {
     if (f.isEmpty(serviceId)) {
-      return this.home(langtag());
+      return this.home(langtag);
     }
 
     const { tables } = store.getState();
