@@ -247,7 +247,8 @@ class ItemPopupMenu extends Component {
             {hasMeaningfulLinks
               ? this.mkEntry(0, {
                   title: "table:show_dependency",
-                  fn: () => openShowDependency(row, langtag),
+                  fn: () =>
+                    openShowDependency({ table: cell.table, row, langtag }),
                   icon: "code-fork"
                 })
               : null}
