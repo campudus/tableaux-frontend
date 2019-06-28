@@ -10,7 +10,7 @@ import route from "../../helpers/apiRoutes";
 const MainMenuEntry = ({ service, service: { displayName, id }, langtag }) => (
   <li className="main-navigation__entry">
     <Link
-      href={route.toFrontendServiceView(id)}
+      href={route.toFrontendServiceView(id, langtag)}
       className="main-navigation__entry-button"
     >
       <ServiceIcon service={service} />
