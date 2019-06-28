@@ -1,15 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Dropzone from "react-dropzone";
-import LanguageSwitcher from "../../header/LanguageSwitcher";
 import { compose, pure, withHandlers, withStateHandlers } from "recompose";
 import { translate } from "react-i18next";
-import { DefaultLangtag, Langtags } from "../../../constants/TableauxConstants";
-import withAbortableXhrRequests from "../../helperComponents/withAbortableXhrRequests";
-import apiUrl from "../../../helpers/apiUrl";
-import Request from "superagent";
-import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
+import Dropzone from "react-dropzone";
+import React from "react";
 import f from "lodash/fp";
+
+import PropTypes from "prop-types";
+
+import { DefaultLangtag, Langtags } from "../../../constants/TableauxConstants";
+import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
+import { makeRequest } from "../../../helpers/apiHelper";
+import route from "../../../helpers/apiHelper";
+import LanguageSwitcher from "../../header/LanguageSwitcher";
 
 const enhance = compose(
   withStateHandlers(
@@ -43,18 +44,16 @@ const enhance = compose(
   }),
   withHandlers({
     handleDrop: ({
-      addAbortableXhrRequest,
       file: { uuid },
       langtag,
       uploadCallback,
       actions
     }) => files => {
-      const uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
+      const uploadUrl = route.toFile() + uuid + "/" + langtag;
       files.forEach(file => {
-        const req = Request.put(uploadUrl)
-          .attach("file", file, file.name)
-          .end(uploadCallback(actions));
-        addAbortableXhrRequest(req);
+        makeRequest({ apiRoute: uploadUrl, method: "PUT", file }).then(
+          uploadCallback(actions)
+        );
       });
     }
   })
@@ -87,7 +86,6 @@ const MultilangFileDropzone = ({
 
 export default compose(
   pure,
-  withAbortableXhrRequests,
   enhance,
   translate(["media"])
 )(MultilangFileDropzone);

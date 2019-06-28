@@ -1,4 +1,5 @@
 import fetch from "cross-fetch";
+import request from "superagent";
 import f from "lodash/fp";
 import apiUrl from "./apiUrl";
 import { doto } from "./functools.js";
@@ -29,6 +30,7 @@ const paramsToString = params =>
  * @param {url?: string} Fetch url directly, without api prefix
  * @param {method?: string = "GET"}
  * @param {data?: any} Request body data, must be JSON.stringify-able
+ * @param {body?: any} Request body to send as-is
  * @param {responseType?: string = "JSON"} One of ["json", "text"]
  * @returns Promise<:responseType>
  **/
@@ -38,22 +40,69 @@ export const makeRequest = async ({
   method = "GET",
   params,
   data,
-  responseType = "JSON"
+  responseType = "JSON",
+  file,
+  onProgress
 }) => {
   const targetUrl =
     (f.isString(apiRoute) ? buildURL(apiRoute) : url) + paramsToString(params);
-  console.log("apiHelper", method.toUpperCase(), targetUrl);
-  const parseResponse = response => response[responseType.toLowerCase()]();
-  return fetch(targetUrl, {
+
+  const needsSuperagentRequest =
+    method.toLowerCase() !== "get" && (onProgress || file);
+  const body = f.isNil(data) ? undefined : JSON.stringify(data);
+
+  const fetchMethod = logDevRoute(
+    needsSuperagentRequest ? superagentRequest : fetchRequest
+  );
+  return fetchMethod({
     method,
-    body: f.isNil(data) ? undefined : JSON.stringify(data)
-  })
+    targetUrl,
+    body,
+    file,
+    onProgress,
+    responseType
+  });
+};
+
+const fetchRequest = ({ method, targetUrl, body, responseType }) => {
+  const parseResponse = response => response[responseType.toLowerCase()]();
+  return fetch(targetUrl, { method, body })
     .then(response => {
       if (!response.ok) {
-        throw new Error(`Request error: ${url}: ${response.statusName}`);
+        throw new Error(`Request error: ${targetUrl}: ${response.statusName}`);
       } else {
         return response;
       }
     })
     .then(parseResponse);
+};
+
+// fetch-API does not yet support progress
+const superagentRequest = ({ method, targetUrl, file, onProgress }) =>
+  new Promise((resolve, reject) => {
+    request[method.toLowerCase()](targetUrl)
+      .on("progress", progress => onProgress && onProgress(progress))
+      .attach("file", file, file.name)
+      .end((err, response) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(response);
+        }
+      });
+  });
+
+const logDevRoute = fetchFn => {
+  if (process.env.NODE_ENV !== "production") {
+    return fetchParams => {
+      console.log(
+        `(${fetchFn.name}) ${fetchParams.method.toUpperCase()} ${
+          fetchParams.targetUrl
+        }`
+      );
+      return fetchFn(fetchParams);
+    };
+  } else {
+    return fetchFn;
+  }
 };

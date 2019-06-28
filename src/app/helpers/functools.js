@@ -498,6 +498,15 @@ const mergeArrays = (oldColl, coll) => {
   return result;
 };
 
+const usePropAsKey = propName => coll =>
+  propName
+    ? (coll || []).reduce((accum, el) => {
+        const key = el[propName];
+        accum[key] = el;
+        return accum;
+      }, {})
+    : {};
+
 export {
   Maybe,
   Just,
@@ -532,5 +541,6 @@ export {
   where,
   composeP,
   mapP,
-  mergeArrays
+  mergeArrays,
+  usePropAsKey
 };

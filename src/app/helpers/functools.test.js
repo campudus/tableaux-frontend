@@ -3,10 +3,12 @@ import f from "lodash/fp";
 import {
   composeP,
   forkJoin,
+  mergeArrays,
   replaceMoustache,
   slidingWindow,
+  usePropAsKey,
   where,
-  mergeArrays
+  withPropAsKey
 } from "./functools";
 
 describe("functools", () => {
@@ -184,6 +186,23 @@ describe("functools", () => {
     it("merges arrays", () => {
       expect(mergeArrays([0, 1, 2, 3, 4], [5, 6, 7])).toEqual([5, 6, 7, 3, 4]);
       expect(mergeArrays([1, 2, 3], [4, 5, 6, 7, 8])).toEqual([4, 5, 6, 7, 8]);
+    });
+  });
+
+  describe("usePropAsKey()", () => {
+    const el1 = { foo: 1, bar: "c" };
+    const el2 = { foo: 2, bar: "b" };
+    const el3 = { foo: 3, bar: "a" };
+    const arr = [el1, el2, el3];
+
+    it("transforms arrays to object maps", () => {
+      expect(usePropAsKey("foo")(arr)).toEqual({ 1: el1, 2: el2, 3: el3 });
+      expect(usePropAsKey("bar")(arr)).toEqual({ a: el3, b: el2, c: el1 });
+    });
+
+    it("is nil safe", () => {
+      expect(usePropAsKey()(arr)).toEqual({});
+      expect(usePropAsKey("foo")()).toEqual({});
     });
   });
 });

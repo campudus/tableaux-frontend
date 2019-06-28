@@ -1,13 +1,15 @@
-import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import Dropzone from "react-dropzone";
-import request from "superagent";
-import apiUrl from "../../../helpers/apiUrl";
-import ProgressBar from "../ProgressBar.jsx";
-import FileIcon from "../folder/FileIcon.jsx";
-import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
-import { DefaultLangtag } from "../../../constants/TableauxConstants";
 import { translate } from "react-i18next";
+import Dropzone from "react-dropzone";
+import React, { PureComponent } from "react";
+
+import PropTypes from "prop-types";
+
+import { DefaultLangtag } from "../../../constants/TableauxConstants";
+import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
+import { makeRequest } from "../../../helpers/apiHelper";
+import FileIcon from "../folder/FileIcon.jsx";
+import ProgressBar from "../ProgressBar.jsx";
+import route from "../../../helpers/apiRoutes";
 
 @translate(["media"])
 class FileChangeUpload extends PureComponent {
@@ -28,19 +30,16 @@ class FileChangeUpload extends PureComponent {
     const { langtag, uuid } = this.props;
 
     files.forEach(file => {
-      const uploadUrl = apiUrl("/files/" + uuid + "/" + langtag);
+      const uploadUrl = route.toFile() + uuid + "/" + langtag;
+      const onProgress = progress => {
+        this.setState({ uploadProgress: parseInt(progress.percent) });
+      };
+
       this.setState({
         uploadProgress: 0
       });
-      request
-        .put(uploadUrl)
-        .on("progress", e => {
-          this.setState({
-            uploadProgress: parseInt(e.percent)
-          });
-        })
-        .attach("file", file, file.name)
-        .end(this.uploadCallback);
+
+      makeRequest({ method: "PUT", apiRoute: uploadUrl, file, onProgress });
     });
   };
 

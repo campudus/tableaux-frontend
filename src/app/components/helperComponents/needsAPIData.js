@@ -1,36 +1,21 @@
-import {
-  branch,
-  compose,
-  lifecycle,
-  renderNothing,
-  withStateHandlers
-} from "recompose";
+import { branch, compose, renderNothing } from 'recompose';
+import React from 'react';
 import f from "lodash/fp";
-import Request from "superagent";
-import withAbortableXhrRequests from "./withAbortableXhrRequests";
+
+import { makeRequest } from '../../helpers/apiHelper';
+
+const needsApiData = Component => props => {
+  const { requestUrl } = props;
+  const [requestedData, setRequestedData] = React.useState();
+
+  React.useEffect(() => {
+    makeRequest({ url: requestUrl }).then(setRequestedData);
+  }, []);
+
+  return <Component {...props} requestedData={requestedData} />;
+};
 
 export default compose(
-  withAbortableXhrRequests,
-  withStateHandlers(() => ({ requestedData: undefined }), {
-    setRequestData: () => response => ({
-      requestedData: f.flow(
-        f.get("text"),
-        JSON.parse
-      )(response)
-    })
-  }),
-  lifecycle({
-    componentWillMount() {
-      const { addAbortableXhrRequest, requestUrl } = this.props;
-      const req = Request.get(requestUrl).end((error, response) => {
-        if (error) {
-          console.error(error);
-        } else {
-          this.props.setRequestData(response);
-        }
-      });
-      addAbortableXhrRequest(req);
-    }
-  }),
-  branch(props => f.isEmpty(props.requestUrl), renderNothing)
+  branch(props => f.isEmpty(props.requestUrl), renderNothing),
+  needsApiData
 );
