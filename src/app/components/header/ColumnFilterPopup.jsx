@@ -100,12 +100,18 @@ class ColumnFilterPopup extends React.Component {
     };
   };
 
+  applyColumnOrdering = columns => newOrdering => _ =>
+    f.compose(
+      f.get(["columnActions", "setColumnOrdering"], this.props),
+      f.map(colId => ({
+        id: colId,
+        idx: f.findIndex(({ id }) => id === colId, columns)
+      })),
+      f.concat([0])
+    )(newOrdering);
+
   renderColumnList = (filteredColumns, selectedIndex) => {
-    const {
-      columns,
-      columnActions: { setColumnOrdering },
-      columnOrdering
-    } = this.props;
+    const { columns, columnOrdering } = this.props;
     if (f.isEmpty(filteredColumns)) {
       return (
         <div className="no-column-search-result">
@@ -142,9 +148,11 @@ class ColumnFilterPopup extends React.Component {
           rowHeight={30}
           scrollToIndex={selectedIndex}
           renderListItem={this.renderCheckboxItems(columns)}
-          applySwap={newOrdering => () =>
-            setColumnOrdering(f.concat([{ id: 0, idx: 0 }], newOrdering))}
-          entries={f.tail(columnOrdering)}
+          applySwap={this.applyColumnOrdering(columns)}
+          entries={f.compose(
+            f.tail,
+            f.map("id")
+          )(columnOrdering)}
           style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
         />
       );
@@ -157,7 +165,7 @@ class ColumnFilterPopup extends React.Component {
       .getOrElseThrow("Could not extract displayName or name from  " + col);
 
   renderCheckboxItems = columns => ({ key, index, style }) => {
-    const col = columns[index];
+    const col = f.find(({ id }) => id === key, columns);
     const name = this.getColName(col);
     const {
       columnActions: { toggleColumnVisibility }

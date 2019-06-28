@@ -58,7 +58,6 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         visibleColumns
       } = this.props;
 
-      // console.log({columnOrdering,visibleColumns})
       const sortedVisibleColumns = f.reduce(
         (acc, val) => {
           if (f.contains(val.id, visibleColumns)) {

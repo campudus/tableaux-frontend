@@ -92,17 +92,17 @@ class DragSortList extends Component {
 
     return (
       <div className={wrapperClass /*link-list*/}>
-        {ordering.map((item, idx) => (
+        {ordering.map((id, idx) => (
           <DragItem
-            key={item.id}
+            key={id}
             index={idx}
             swapItems={swapItems}
             applySwap={applySwap(ordering)}
             swapOrdering={swapOrdering}
           >
             {renderListItem({
-              index: item.idx,
-              key: item.id
+              index: idx,
+              key: id
             })}
           </DragItem>
         ))}
@@ -146,7 +146,7 @@ export default compose(
     componentWillReceiveProps(nextProps) {
       const getEntries = f.getOr([], ["entries"]);
       if (getEntries(this.props).length !== getEntries(nextProps).length) {
-        this.props.setOrdering(this.props.entries);
+        this.props.setOrdering(nextProps.entries);
       }
     }
   })
