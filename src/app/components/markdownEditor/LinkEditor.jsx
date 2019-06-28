@@ -34,10 +34,6 @@ const UrlInput = listensToClickOutsice(
     );
     const handleChange = React.useCallback(event => setUrl(event.target.value));
     const closeInput = handleClickOutside;
-    const setLinkUrlAndClose = React.useCallback(() => {
-      setLinkUrl(url);
-      closeInput();
-    });
 
     return (
       <div className="link-editor__input">
@@ -56,7 +52,7 @@ const UrlInput = listensToClickOutsice(
         />
         <button
           className="link-editor__confirm-button button positive"
-          onClick={setLinkUrlAndClose}
+          onClick={() => setLinkUrl(url)}
         >
           {i18n.t("common:ok")}
         </button>
@@ -72,10 +68,22 @@ UrlInput.propTypes = {
 
 const LinkEditor = ({ editorState, setEditorState }) => {
   const [showUrlInput, setShowUrlInput] = React.useState(false);
-  const toggleUrlInput = React.useCallback(() =>
-    setShowUrlInput(!showUrlInput)
+
+  const toggleFakeSelectionStyle = () =>
+    RichUtils.toggleInlineStyle(editorState, "UNDERLINE");
+
+  const toggleFakeSelectionAnd = handler => (...args) => {
+    handler(...args);
+    setEditorState(toggleFakeSelectionStyle());
+  };
+
+  const isTextSelected = React.useCallback(
+    () => !editorState.getSelection().isCollapsed()
   );
-  const closeUrlInput = React.useCallback(() => setShowUrlInput(false));
+
+  const openUrlInput = () => setShowUrlInput(true);
+
+  const closeUrlInput = () => setShowUrlInput(false);
 
   const removeLink = React.useCallback(() => {
     const selection = editorState.getSelection();
@@ -84,8 +92,10 @@ const LinkEditor = ({ editorState, setEditorState }) => {
     }
   });
 
-  const setLinkUrl = React.useCallback(url => {
-    const content = editorState.getCurrentContent();
+  const setLinkUrl = url => {
+    // disable fake selection before proceeding
+    console.log("Linking url:", url);
+    const content = toggleFakeSelectionStyle().getCurrentContent();
     const contentWithNewLink = content.createEntity("LINK", "MUTABLE", { url });
     const entityKey = contentWithNewLink.getLastCreatedEntityKey();
     const newEditorState = EditorState.set(editorState, {
@@ -98,22 +108,32 @@ const LinkEditor = ({ editorState, setEditorState }) => {
         entityKey
       )
     );
-  });
+    closeUrlInput();
+  };
+
+  const handleOpenUrlInput = toggleFakeSelectionAnd(openUrlInput);
+  const handleCloseUrlInput = toggleFakeSelectionAnd(closeUrlInput);
 
   return (
     <div className="link-editor">
       <StyleIcon
-        toggleStyle={toggleUrlInput}
+        toggleStyle={showUrlInput ? handleCloseUrlInput : handleOpenUrlInput}
         className={showUrlInput ? "ignore-react-onclickoutside" : undefined}
         styleToToggle=""
         icon="fa-link"
+        disabled={!isTextSelected()}
       />
-      <StyleIcon toggleStyle={removeLink} styleToToggle="" icon="fa-unlink" />
+      <StyleIcon
+        toggleStyle={removeLink}
+        styleToToggle=""
+        icon="fa-unlink"
+        disabled={!isTextSelected()}
+      />
       {showUrlInput && (
         <UrlInput
           editorState={editorState}
           setLinkUrl={setLinkUrl}
-          handleClickOutside={closeUrlInput}
+          handleClickOutside={handleCloseUrlInput}
         />
       )}
     </div>

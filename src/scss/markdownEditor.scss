@@ -99,6 +99,13 @@ $block-margin-narrow: 5px;
     font-size: larger;
   }
 
+  // our fake selection
+  span[style="text-decoration: underline;"] {
+    background-color: lighten($color-primary, 20);
+    color: darken($color-primary-contrast-text, 0);
+    text-decoration-color: transparent !important;
+  }
+
   .public-DraftStyleDefault-block, p {
     margin: $block-margin 0;
 
