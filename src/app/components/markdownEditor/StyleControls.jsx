@@ -1,4 +1,5 @@
 import React from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -12,17 +13,19 @@ export const StyleIcon = ({
   label,
   icon,
   active,
-  className = ""
+  className = "",
+  disabled
 }) => {
   const handleClick = React.useCallback(event => {
     preventDefault(event);
     toggleStyle(styleToToggle);
   });
   const cssClass = classNames(className, "richtext-toggle-style-button", {
-    "style-button--active": active
+    "style-button--active": active,
+    "style-button--disabled": disabled
   });
   return (
-    <div className={cssClass} onClick={handleClick}>
+    <div className={cssClass} onClick={disabled ? f.noop : handleClick}>
       {label ? (
         <span style={{ fontWeight: "bold" }}>{label}</span>
       ) : icon ? (
@@ -39,7 +42,8 @@ StyleIcon.propTypes = {
   active: PropTypes.bool,
   icon: PropTypes.string,
   label: PropTypes.string,
-  className: PropTypes.string
+  className: PropTypes.string,
+  disabled: PropTypes.bool
 };
 
 const StyleControls = ({

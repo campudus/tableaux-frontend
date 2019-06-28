@@ -53,6 +53,10 @@ $block-margin-narrow: 5px;
     background-color: lighten($color-primary, 20);
     color: $color-primary-contrast-text;
   }
+
+  &.style-button--disabled {
+    background-color: lighten($color-text-medium-grey, 25);
+  }
 }
 
 .DraftEditor-root {
