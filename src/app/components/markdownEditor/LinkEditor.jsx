@@ -69,9 +69,12 @@ UrlInput.propTypes = {
 const LinkEditor = ({ editorState, setEditorState }) => {
   const [showUrlInput, setShowUrlInput] = React.useState(false);
 
+  // (void) -> EditorState
   const toggleFakeSelectionStyle = () =>
     RichUtils.toggleInlineStyle(editorState, "UNDERLINE");
 
+  // ((any) -> any) -> void
+  // side-effects
   const toggleFakeSelectionAnd = handler => (...args) => {
     handler(...args);
     setEditorState(toggleFakeSelectionStyle());
@@ -92,11 +95,15 @@ const LinkEditor = ({ editorState, setEditorState }) => {
     }
   });
 
-  const setLinkUrl = url => {
-    // disable fake selection before proceeding
-    console.log("Linking url:", url);
-    const content = toggleFakeSelectionStyle().getCurrentContent();
-    const contentWithNewLink = content.createEntity("LINK", "MUTABLE", { url });
+  // Update editor state with link, close link input
+  const setLinkUrl = React.useCallback(url => {
+    // Disable fake selection before proceeding. DraftJS state is
+    // immutable, so subsequent changes must be chained to avoid race
+    // conditions
+    const contentWithNewLink = toggleFakeSelectionStyle()
+      .getCurrentContent()
+      .createEntity("LINK", "MUTABLE", { url });
+
     const entityKey = contentWithNewLink.getLastCreatedEntityKey();
     const newEditorState = EditorState.set(editorState, {
       currentContent: contentWithNewLink
@@ -109,7 +116,7 @@ const LinkEditor = ({ editorState, setEditorState }) => {
       )
     );
     closeUrlInput();
-  };
+  });
 
   const handleOpenUrlInput = toggleFakeSelectionAnd(openUrlInput);
   const handleCloseUrlInput = toggleFakeSelectionAnd(closeUrlInput);
