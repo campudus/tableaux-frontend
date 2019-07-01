@@ -1,8 +1,10 @@
+import f from "lodash/fp";
 import fetch from "cross-fetch";
 import request from "superagent";
-import f from "lodash/fp";
-import apiUrl from "./apiUrl";
+
 import { doto } from "./functools.js";
+import { getLogin } from "./authenticate";
+import apiUrl from "./apiUrl";
 
 const buildURL = apiRoute => apiUrl(apiRoute);
 
@@ -64,9 +66,15 @@ export const makeRequest = async ({
   });
 };
 
+const calcAuthHeader = () => "Bearer " + getLogin().token;
+
 const fetchRequest = ({ method, targetUrl, body, responseType }) => {
   const parseResponse = response => response[responseType.toLowerCase()]();
-  return fetch(targetUrl, { method, body })
+  return fetch(targetUrl, {
+    method,
+    body,
+    headers: { Authorization: calcAuthHeader() }
+  })
     .then(response => {
       if (!response.ok) {
         throw new Error(`Request error: ${targetUrl}: ${response.statusName}`);
@@ -81,6 +89,7 @@ const fetchRequest = ({ method, targetUrl, body, responseType }) => {
 const superagentRequest = ({ method, targetUrl, file, onProgress }) =>
   new Promise((resolve, reject) => {
     request[method.toLowerCase()](targetUrl)
+      .set("Authorization", calcAuthHeader())
       .on("progress", progress => onProgress && onProgress(progress))
       .attach("file", file, file.name)
       .end((err, response) => {
