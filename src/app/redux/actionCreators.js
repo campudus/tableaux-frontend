@@ -66,6 +66,7 @@ const {
   SET_STATUS_INFO,
   TABLE_NAME_EDIT,
   TABLE_NAME_EDIT_SUCCESS,
+  SET_USER_AUTHENTICATED,
   TABLE_NAME_EDIT_ERROR
 } = actionTypes;
 
@@ -684,6 +685,7 @@ const actionCreators = {
   editColumn,
   addEmptyRowAndOpenEntityView,
   changeTableName,
+  setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
   queryFrontendServices
 };
 
