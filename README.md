@@ -52,6 +52,8 @@ Default project configuration can be overwritten via a `config.json` in the base
   "apiHost": "localhost", // 
   "apiPort": 8080,        // port of the backend service
   "webhookUrl": ".."      // url for Slack webhook to recieve user feedback
+  "authServerUrl": "http://localhost:8081/auth" // Keycloak
+  "authRealm": "GRUD"     // Keycloak realm
 }
 ```
 
@@ -63,11 +65,13 @@ Following variable names can be used:
 
 - HOST
 - PORT
-- APIHOST
-- APIPORT
-- OUTDIR
-- WEBHOOKURL
+- API_HOST
+- API_PORT
+- OUT_DIR
+- WEBHOOK_URL
 - REDUX_DEVTOOLS=[true,false]
+- AUTH_SERVER_URL
+- AUTH_REALM
 
 ```
 PORT=3001 npm run start
