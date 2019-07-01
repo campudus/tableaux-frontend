@@ -2,6 +2,7 @@ import React from "react";
 import f from "lodash/fp";
 
 import { ViewNames } from "../constants/TableauxConstants";
+import { withUserAuthentication } from "../helpers/authenticate";
 import DashboardView from "./dashboard/DashboardView";
 import FrontendServiceView from "./frontendService/FrontendServiceView";
 import MediaView from "../components/media/MediaView.jsx";
@@ -25,12 +26,14 @@ const renderFrontendService = ({ params }) => (
   <FrontendServiceView {...params} />
 );
 
-const ViewRenderer = f.cond([
-  [viewNameIs(ViewNames.TABLE_VIEW), renderTableView],
-  [viewNameIs(ViewNames.MEDIA_VIEW), renderMediaView],
-  [viewNameIs(ViewNames.DASHBOARD_VIEW), renderDashboard],
-  [viewNameIs(ViewNames.FRONTEND_SERVICE_VIEW), renderFrontendService]
-]);
+const ViewRenderer = withUserAuthentication(
+  f.cond([
+    [viewNameIs(ViewNames.TABLE_VIEW), renderTableView],
+    [viewNameIs(ViewNames.MEDIA_VIEW), renderMediaView],
+    [viewNameIs(ViewNames.DASHBOARD_VIEW), renderDashboard],
+    [viewNameIs(ViewNames.FRONTEND_SERVICE_VIEW), renderFrontendService]
+  ])
+);
 
 export default reduxActionHoc(ViewRenderer, () => {
   return {};
