@@ -34,6 +34,10 @@ const UrlInput = listensToClickOutsice(
     );
     const handleChange = React.useCallback(event => setUrl(event.target.value));
     const closeInput = handleClickOutside;
+    const handleKeyDown = React.useCallback(
+      event => event.key === "Enter" && setLinkUrl(url),
+      [url]
+    );
 
     return (
       <div className="link-editor__input">
@@ -49,6 +53,7 @@ const UrlInput = listensToClickOutsice(
           type="text"
           value={url}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
         <button
           className="link-editor__confirm-button button positive"
