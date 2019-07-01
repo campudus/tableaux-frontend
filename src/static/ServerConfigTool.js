@@ -7,11 +7,13 @@ const envParams = [
   "apiPort",
   "host",
   "port",
-  "webhookUrl"
+  "webhookUrl",
+  "authServerUrl",
+  "authRealm"
 ];
 
 // These config params will be passed on to the build artefact
-const appParams = ["webhookUrl"];
+const appParams = ["webhookUrl", "authServerUrl", "authRealm"];
 
 const enrichConfig = config => {
   try {
@@ -30,7 +32,8 @@ const enrichConfig = config => {
   }
 
   const overrideConfigWithEnv = envVar => {
-    const envValue = process.env[envVar.toUpperCase()];
+    const envValue =
+      process.env[envVar.replace(/([A-Z])/g, "_$1").toUpperCase()];
     if (envValue) {
       console.log("Overriding", envVar, "with", envValue, "from environment");
       config[envVar] = envValue;
