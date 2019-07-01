@@ -33,7 +33,8 @@ const enrichConfig = config => {
 
   const overrideConfigWithEnv = envVar => {
     const envValue =
-      process.env[envVar.replace(/([A-Z])/g, "_$1").toUpperCase()];
+      process.env[envVar.replace(/([A-Z])/g, "_$1").toUpperCase()] ||
+      process.env[envVar.toUpperCase()];
     if (envValue) {
       console.log("Overriding", envVar, "with", envValue, "from environment");
       config[envVar] = envValue;
