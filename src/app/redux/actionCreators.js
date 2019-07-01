@@ -68,6 +68,7 @@ const {
   TABLE_NAME_EDIT,
   TABLE_NAME_EDIT_SUCCESS,
   TABLE_NAME_EDIT_ERROR,
+  SET_USER_AUTHENTICATED,
   SET_COLUMN_ORDERING
 } = actionTypes;
 
@@ -698,6 +699,7 @@ const actionCreators = {
   addEmptyRowAndOpenEntityView,
   changeTableName,
   queryFrontendServices,
+  setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
   setColumnOrdering
 };
 

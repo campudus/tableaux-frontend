@@ -13,6 +13,9 @@ export default (state = initialState, action) => {
       const { key, value } = action;
       return f.assoc(key, value, state);
     }
+    case "SET_USER_AUTHENTICATED": {
+      return f.assoc("authenticated", action.status, state);
+    }
     default:
       return state;
   }
