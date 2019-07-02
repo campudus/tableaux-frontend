@@ -22,39 +22,44 @@ const keycloakSettings = {
 
 const keycloakInitOptions = { onLoad: "login-required" };
 
-// () => bool
+// (state) => bool
 // react-redux@7 selector
 export const authSelector = f.propOr(false, ["grudStatus", "authenticated"]);
 
+export const noAuthNeeded = f.memoize(
+  () => process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE
+);
+
 // () => Keycloak
 // Side effects: Will login on first load and memoize the result
-export const getLogin = f.memoize(() => {
-  const keycloak = Keycloak(keycloakSettings);
-  keycloak
-    .init(keycloakInitOptions)
-    .success(status => {
-      store.dispatch(actions.setUserAuthenticated({ status }));
-    })
-    .error(err => {
-      console.error("Error authenticating user:", err);
-      store.dispatch(actions.setUserAuthenticated({ status: false }));
-    });
+export const getLogin = f.memoize(
+  noAuthNeeded()
+    ? f.always({})
+    : () => {
+        const keycloak = Keycloak(keycloakSettings);
+        keycloak
+          .init(keycloakInitOptions)
+          .success(status => {
+            store.dispatch(actions.setUserAuthenticated({ status }));
+          })
+          .error(err => {
+            console.error("Error authenticating user:", err);
+            store.dispatch(actions.setUserAuthenticated({ status: false }));
+          });
 
-  keycloak.onAuthLogout = () => {
-    store.dispatch(actions.setUserAuthenticated({ status: false }));
-  };
+        keycloak.onAuthLogout = () => {
+          store.dispatch(actions.setUserAuthenticated({ status: false }));
+        };
 
-  keycloak.onTokenExpired = () => {
-    keycloak.updateToken();
-  };
+        keycloak.onTokenExpired = () => {
+          keycloak.updateToken();
+        };
 
-  return keycloak;
-});
+        return keycloak;
+      }
+);
 
-const ignoreAuth =
-  process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE;
-
-export const withUserAuthentication = ignoreAuth
+export const withUserAuthentication = noAuthNeeded()
   ? f.identity
   : Component => props => {
       const keycloakRef = React.useRef(getLogin());
