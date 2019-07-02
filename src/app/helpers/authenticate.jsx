@@ -26,15 +26,9 @@ const keycloakInitOptions = { onLoad: "login-required" };
 // react-redux@7 selector
 export const authSelector = f.propOr(false, ["grudStatus", "authenticated"]);
 
-export const noAuthNeeded = f.memoize(() => {
-  const result = process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE;
-  console.log("No auth needed?", {
-    NODE_ENV: process.env.NODE_ENV,
-    NO_AUTH_IN_DEV_MODE,
-    result
-  });
-  return result;
-});
+export const noAuthNeeded = f.memoize(
+  () => process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE
+);
 
 // () => Keycloak
 // Side effects: Will login on first load and memoize the result
@@ -68,7 +62,6 @@ export const getLogin = f.memoize(
 export const withUserAuthentication = noAuthNeeded()
   ? f.identity
   : Component => props => {
-      console.log("Wrapping app with authentication");
       const keycloakRef = React.useRef(getLogin());
       const keycloak = keycloakRef.current;
       const isLoggedIn = useSelector(authSelector);
