@@ -57,30 +57,16 @@ const ignoreAuth =
 export const withUserAuthentication = ignoreAuth
   ? f.identity
   : Component => props => {
-      const keycloakRef = React.useRef(getLogin());
-      const keycloak = keycloakRef.current;
+      const keycloakRef = React.useRef();
       const isLoggedIn = useSelector(authSelector);
+
+      React.useEffect(() => {
+        keycloakRef.current = getLogin();
+      }, []);
 
       return isLoggedIn ? (
         <Component {...props} />
       ) : (
-        <div className="auth-screen">
-          <button
-            className="auth-screen__login-button"
-            onClick={() => {
-              keycloak.login();
-            }}
-          >
-            Log in
-          </button>
-          <button
-            className="auth-screen__logout-button"
-            onClick={() => {
-              keycloak.logout();
-            }}
-          >
-            Log out
-          </button>
-        </div>
+        <div className="auth-screen" />
       );
     };
