@@ -2,9 +2,8 @@ import f from "lodash/fp";
 import fetch from "cross-fetch";
 import request from "superagent";
 
-import { NO_AUTH_IN_DEV_MODE } from "../FeatureFlags";
 import { doto } from "./functools.js";
-import { getLogin } from "./authenticate";
+import { getLogin, noAuthNeeded } from "./authenticate";
 import apiUrl from "./apiUrl";
 
 const buildURL = apiRoute => apiUrl(apiRoute);
@@ -68,9 +67,7 @@ export const makeRequest = async ({
 };
 
 const calcAuthHeader = () =>
-  process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE
-    ? "disabled-for-dev-mode"
-    : "Bearer " + getLogin().token;
+  noAuthNeeded() ? "disabled-for-dev-mode" : "Bearer " + getLogin().token;
 
 const fetchRequest = ({ method, targetUrl, body, responseType }) => {
   const parseResponse = response => response[responseType.toLowerCase()]();
