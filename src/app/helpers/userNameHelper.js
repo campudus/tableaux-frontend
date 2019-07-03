@@ -1,13 +1,12 @@
-import { NO_AUTH_IN_DEV_MODE } from "../FeatureFlags";
 import { firstValidPropOr } from "./functools";
-import { getLogin } from "./authenticate";
+import { getLogin, noAuthNeeded } from "./authenticate";
 
 export const getUserName = (onlyFirstName = false) => {
   const keycloak = getLogin();
 
   const fallbackUserName =
     process.env.NODE_ENV === "production" ? "John Doe" : "GRUDling";
-  return process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE
+  return noAuthNeeded()
     ? fallbackUserName
     : firstValidPropOr(
         fallbackUserName,
