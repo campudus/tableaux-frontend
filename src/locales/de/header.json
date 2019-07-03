@@ -2,7 +2,8 @@
   "menu": {
     "media": "Medien",
     "tables": "Tabellen",
-    "dashboard": "Dashboard"
+      "dashboard": "Dashboard",
+      "logout": "Ausloggen"
   },
   "pageTitle": {
     "media": "Medien Management",

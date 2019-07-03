@@ -1,3 +1,16 @@
-import Cookie from "js-cookie";
+import { firstValidPropOr } from "./functools";
+import { getLogin, noAuthNeeded } from "./authenticate";
 
-export const getUserName = () => Cookie.get("userName") || "John Doe";
+export const getUserName = (onlyFirstName = false) => {
+  const keycloak = getLogin();
+
+  const fallbackUserName =
+    process.env.NODE_ENV === "production" ? "John Doe" : "GRUDling";
+  return noAuthNeeded()
+    ? fallbackUserName
+    : firstValidPropOr(
+        fallbackUserName,
+        [onlyFirstName ? "given_name" : "name", "preferred_username"],
+        keycloak.idTokenParsed
+      );
+};
