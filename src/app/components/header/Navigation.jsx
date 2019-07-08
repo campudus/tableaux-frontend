@@ -12,13 +12,13 @@ const Navigation = ({ langtag, services }) => {
 
   return (
     <nav id="main-navigation-wrapper" className={popupOpen ? "active" : ""}>
-      <div
+      <button
         id="burger"
         className={popupOpen ? "ignore-react-onclickoutside" : ""}
         onClick={togglePopup}
       >
         <i className="fa fa-bars" />
-      </div>
+      </button>
       <SelfClosingNavigationPopup
         langtag={langtag}
         handleClickOutside={closePopup}
