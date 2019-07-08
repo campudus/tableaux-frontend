@@ -1,20 +1,16 @@
-import { compose, pure, withHandlers, withProps } from "recompose";
+import { withRouter, Redirect } from "react-router-dom";
 import React from "react";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import withDashboardStatusData from "./RequestStatusData";
+import { switchLanguageHandler } from "../Router";
 import FlagWidget from "./flagwidget/FlagWidget";
 import GreeterWidget from "./greeter/GreeterWidget";
 import GrudHeader from "../GrudHeader";
 import SupportWidget from "./support/SupportWidget";
-import TableauxConstants from "../../constants/TableauxConstants";
-import TableauxRouter from "../../router/router";
 import TranslationStatusWidget from "./translationstatus/TranslationStatusWidget";
-import apiUrl from "../../helpers/apiUrl";
-import needsApiData from "../helperComponents/needsAPIData";
-import route from "../../helpers/apiRoutes";
+import withDashboardStatusData from "./RequestStatusData";
 
 const WidgetColletion = withDashboardStatusData(
   ({ langtag, requestedData }) => (
@@ -51,18 +47,18 @@ const WidgetColletion = withDashboardStatusData(
         langtag={langtag}
         requestedData={requestedData}
       />
+      <Redirect to={`${langtag}/dashboard`} />
     </div>
   )
 );
 
 const DashboardView = props => {
-  const { langtag, handleLanguageSwitch, requestedData } = props;
+  const { history, langtag } = props;
+  const handleLanguageSwitch = React.useCallback(newLangtag =>
+    switchLanguageHandler(history, newLangtag)
+  );
 
-  if (requestedData) {
-    TableauxConstants.initLangtags(requestedData.value);
-  }
-
-  return requestedData ? (
+  return (
     <React.Fragment>
       <GrudHeader
         pageTitleOrKey="Dashboard"
@@ -78,7 +74,7 @@ const DashboardView = props => {
         </footer>
       </div>
     </React.Fragment>
-  ) : null;
+  );
 };
 
 DashboardView.propTypes = {
@@ -86,17 +82,4 @@ DashboardView.propTypes = {
   requestedData: PropTypes.object
 };
 
-const enhance = compose(
-  pure,
-  withHandlers({
-    handleLanguageSwitch: () => newLangtag => {
-      TableauxRouter.switchLanguageHandler(newLangtag);
-    }
-  }),
-  withProps(() => {
-    return { requestUrl: apiUrl(route.toSetting("langtags")) };
-  }),
-  needsApiData
-);
-
-export default enhance(DashboardView);
+export default withRouter(DashboardView);
