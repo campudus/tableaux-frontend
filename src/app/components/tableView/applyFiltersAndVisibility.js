@@ -3,107 +3,92 @@ import { compose, withPropsOnChange } from "recompose";
 import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 import f from "lodash/fp";
 
-import { mapIndexed } from "../../helpers/functools";
+const applyFiltersAndVisibility = Component =>
+  React.memo(props => {
+    const {
+      tables, // all tables
+      rows, // all rows with cell values
+      columns, // all columns without visibility information
+      allDisplayValues,
+      actions,
+      startedGeneratingDisplayValues,
+      table,
+      langtag,
+      finishedLoading,
+      tableView: { selectedCell },
+      visibleColumns,
+      colsWithMatches
+    } = props;
 
-const applyFiltersAndVisibility = function(ComposedComponent) {
-  return class FilteredTableView extends React.Component {
-    applyColumnVisibility = () => {
-      const { columns, visibleColumns, colsWithMatches } = this.props;
-      const applyVisibility = (columns, visibleArray) =>
-        f.map(
-          column =>
-            f.assoc(
-              "visible",
-              f.includes(column.id, visibleArray) || column.id === 0,
-              column
-            ),
-          columns
-        );
+    const applyColumnVisibility = React.useCallback(() => {
+      const applyVisibility = visibleColumnIds => {
+        const isColumnVisible = ({ id }) =>
+          id === 0 || f.includes(id, visibleColumnIds);
+        const setColumnVisibility = column =>
+          f.assoc("visible", isColumnVisible(column), column);
+
+        return f.map(setColumnVisibility, columns);
+      };
 
       return applyVisibility(
-        columns,
         f.isEmpty(colsWithMatches) ? visibleColumns : colsWithMatches
       );
-    };
+    });
 
-    updateColumnVisibility = (visibleRows, columnsWithVisibility) =>
-      visibleRows.map(
-        f.update(
-          "cells",
-          mapIndexed((cell, idx) =>
-            f.assoc("column", columnsWithVisibility[idx], cell)
-          )
-        )
+    // Start displayValue worker if neccessary
+    if (
+      !f.isEmpty(columns) &&
+      f.isNil(allDisplayValues[table.id]) &&
+      !startedGeneratingDisplayValues &&
+      finishedLoading
+    ) {
+      const { generateDisplayValues } = actions;
+      generateDisplayValues(rows, columns, table.id, langtag);
+    }
+
+    const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+
+    const hasJumpTarget = !f.every(f.isNil, [
+      selectedCell.columnId,
+      selectedCell.rowId
+    ]);
+    const jumpTargetIsIn = f.any(f.propEq("id", selectedCell.rowId)); // Don't calculate immediately for performance
+
+    const showCellJumpOverlay =
+      !finishedLoading && hasJumpTarget && !jumpTargetIsIn(rows);
+
+    if (canRenderTable) {
+      const { visibleRows } = props;
+      const columnsWithVisibility = applyColumnVisibility();
+      const columnRenderKey = f.flow(
+        f.filter("visible"),
+        f.map("id"),
+        f.join(";")
+      )(columnsWithVisibility);
+      const orderedFilteredRows = f.map(
+        rowIndex => rows[rowIndex],
+        visibleRows
       );
 
-    render() {
-      const {
-        tables, // all tables
-        rows, // all rows with cell values
-        columns, // all columns without visibility information
-        allDisplayValues,
-        actions,
-        startedGeneratingDisplayValues,
-        table,
-        langtag,
-        finishedLoading,
-        tableView: { selectedCell }
-      } = this.props;
-
-      // Start displayValue worker if neccessary
-      if (
-        !f.isEmpty(columns) &&
-        f.isNil(allDisplayValues[table.id]) &&
-        !startedGeneratingDisplayValues &&
-        finishedLoading
-      ) {
-        const { generateDisplayValues } = actions;
-        generateDisplayValues(rows, columns, table.id, langtag);
-      }
-
-      const canRenderTable = f.every(f.negate(f.isNil), [
-        tables,
-        rows,
-        columns
-      ]);
-
-      const hasJumpTarget = !f.every(f.isNil, [
-        selectedCell.columnId,
-        selectedCell.rowId
-      ]);
-      const jumpTargetIsIn = f.any(f.propEq("id", selectedCell.rowId)); // Don't calculate immediately for performance
-      const showCellJumpOverlay =
-        !finishedLoading && hasJumpTarget && !jumpTargetIsIn(rows);
-
-      if (canRenderTable) {
-        const columnsWithVisibility = this.applyColumnVisibility();
-        return (
-          <ComposedComponent
-            {...{
-              ...this.props,
-              columns: columnsWithVisibility,
-              visibleColumns: f.flow(
-                f.filter("visible"),
-                f.map("id"),
-                f.join(";")
-              )(columnsWithVisibility),
-              rows: f.map(rowIndex => rows[rowIndex], this.props.visibleRows),
-              visibleRows: this.props.visibleRows,
-              canRenderTable,
-              showCellJumpOverlay
-            }}
-          />
-        );
-      } else {
-        return (
-          <ComposedComponent
-            {...{ ...this.props, canRenderTable, showCellJumpOverlay }}
-          />
-        );
-      }
+      return (
+        <Component
+          {...{
+            ...props,
+            columns: columnsWithVisibility,
+            visibleColumns: columnRenderKey,
+            orderedFilteredRows,
+            visibleRows,
+            canRenderTable,
+            showCellJumpOverlay
+          }}
+        />
+      );
+    } else {
+      return (
+        <Component {...{ ...props, canRenderTable, showCellJumpOverlay }} />
+      );
     }
-  };
-};
+  });
 
 const tableOrFiltersChanged = (props, nextProps) => {
   if (!props || !nextProps) {
