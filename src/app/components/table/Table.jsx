@@ -1,8 +1,6 @@
 import { Portal } from "react-portal";
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import ReactDOM from "react-dom";
-// import * as tableRowsWorker from "./tableRowsWorker";
-// import * as tableContextMenu from "./tableContextMenu";
 import f from "lodash/fp";
 import i18n from "i18next";
 
@@ -17,7 +15,7 @@ import {
 import RowContextMenu from "../contextMenu/RowContextMenu";
 import VirtualTable from "./VirtualTable";
 
-class Table extends Component {
+class Table extends PureComponent {
   /**
    * This is an anti-pattern on purpose
    * Don't change this, its more performant than using this.state !
