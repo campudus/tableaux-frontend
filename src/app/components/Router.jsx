@@ -7,11 +7,13 @@ import i18n from "i18next";
 
 import { ViewNames, Langtags } from "../constants/TableauxConstants";
 import { initGrud } from "../initGrud";
+import { unless } from "../helpers/functools";
 import { withUserAuthentication } from "../helpers/authenticate";
 import Spinner from "./header/Spinner";
 import Tableaux from "./Tableaux";
 import actionCreators from "../redux/actionCreators";
 import store from "../redux/store";
+import parseOptions from "../router/urlOptionParser";
 
 const tablesSelector = state => state.tables;
 const currentTableSelector = state => state.tableView.currentTable;
@@ -26,7 +28,7 @@ const GRUDRouter = React.memo(() => {
   }, []);
 
   const renderView = viewName => routeProps =>
-    renderComponent(routerProps, routeProps.match, viewName);
+    renderComponent(routerProps, routeProps, viewName);
 
   const renderDashboard = React.useCallback(
     renderView(ViewNames.DASHBOARD_VIEW)
@@ -36,13 +38,16 @@ const GRUDRouter = React.memo(() => {
     const validParams = validateRouteParams(routeProps.match.params, tables);
     const { tableId } = validParams;
     const currentTable = currentTableSelector(store.getState());
+    const urlOptions = parseOptions(routeProps.location.search);
 
     if (!currentTable || tableId !== currentTable) {
       batch(() => {
         switchTable(tableId);
         store.dispatch(actionCreators.cleanUp(tableId));
         store.dispatch(actionCreators.toggleCellSelection(validParams));
-        store.dispatch(actionCreators.loadCompleteTable(tableId, []));
+        store.dispatch(
+          actionCreators.loadCompleteTable(tableId, urlOptions.filter)
+        );
       });
     }
 
@@ -88,21 +93,24 @@ const GRUDRouter = React.memo(() => {
   );
 });
 
-const renderComponent = (routerProps, routerMatch, viewName) => {
-  const { params } = routerMatch;
+const renderComponent = (routerProps, routingResult, viewName) => {
+  const {
+    location,
+    match: { params }
+  } = routingResult;
   const { tables } = routerProps;
   const validParams = validateRouteParams(params, tables);
+  const tableauxParams = {
+    ...validParams,
+    queryParams: getQueryParams(location.search)
+  };
   const actions = bindActionCreators(actionCreators, store.dispatch);
-  console.log("Rendering", viewName, {
-    params,
-    validParams
-  });
 
   return (
     <Provider store={store}>
       <Tableaux
         initialViewName={viewName}
-        initialParams={validParams}
+        initialParams={tableauxParams}
         actions={actions}
       />
     </Provider>
@@ -127,6 +135,15 @@ const validateRouteParams = (routeParams, tables) => {
     folderId: validateNumber(folderId)
   };
 };
+
+const getQueryParams = f.compose(
+  f.mapValues(unless(arr => arr.length > 1, f.head)),
+  f.mapValues(f.map(f.nth(1))),
+  f.groupBy(f.first),
+  f.map(f.split("=")),
+  f.split("&"),
+  f.replace(/^\?/, "")
+);
 
 const isValidLangtag = langtag =>
   /[a-z]{2}(-[A-Z]{2})?/.test() && f.contains(langtag, Langtags);
