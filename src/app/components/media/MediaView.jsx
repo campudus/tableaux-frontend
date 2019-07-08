@@ -70,7 +70,6 @@ class MediaView extends Component {
   };
 
   render() {
-    console.log(this.getFolderUrl());
     const { langtag, media, actions } = this.props;
     const { modifiedFiles } = this.state;
 
