@@ -72,27 +72,11 @@ const GRUDRouter = React.memo(() => {
       <Switch>
         <Route path="/:langtag?/dashboard" render={renderDashboard} />
         <Route
-          path="/:langtag?/(table|tables)/:tableId/columns?/:columnId?/(rows)?/:rowId?"
+          path="/:langtag?/(table|tables)/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?"
           render={renderTableView}
         />
         <Route
-          path="/:langtag?/(table|tables)/:tableId/(rows)?/:rowId?"
-          render={renderTableView}
-        />
-        <Route
-          path="/:langtag?/(table|tables)/:tableId?"
-          render={renderTableView}
-        />
-        <Route
-          path="/:langtag?/(service|services)/:serviceId/columns?/:columnId?/(rows)?/:rowId?"
-          render={renderServiceView}
-        />
-        <Route
-          path="/:langtag?/(service|services)/:serviceId/(rows)?/:rowId?"
-          render={renderServiceView}
-        />
-        <Route
-          path="/:langtag?/(service|services)/:serviceId?"
+          path="/:langtag?/(service|services)/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?        "
           render={renderServiceView}
         />
         <Route path="/:langtag?/media/:folderId?" render={renderMediaView} />
