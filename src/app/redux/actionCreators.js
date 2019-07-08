@@ -471,7 +471,8 @@ const getMediaFolder = (folderId, langtag) => {
       MEDIA_FOLDER_GET,
       MEDIA_FOLDER_GET_SUCCESS,
       MEDIA_FOLDER_GET_ERROR
-    ]
+    ],
+    folderId: folderId || "root-folder"
   };
 };
 
