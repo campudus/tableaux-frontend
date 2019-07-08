@@ -108,18 +108,17 @@ const renderComponent = (routerProps, routerMatch, viewName) => {
   const { params } = routerMatch;
   const { tables } = routerProps;
   const validParams = validateRouteParams(params, tables);
-  const tableauxParams = { ...validParams };
   const actions = bindActionCreators(actionCreators, store.dispatch);
   console.log("Rendering", viewName, {
     params,
-    tableauxParams
+    validParams
   });
 
   return (
     <Provider store={store}>
       <Tableaux
         initialViewName={viewName}
-        initialParams={tableauxParams}
+        initialParams={validParams}
         actions={actions}
       />
     </Provider>
