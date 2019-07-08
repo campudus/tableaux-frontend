@@ -20,7 +20,10 @@ const keycloakSettings = {
   "confidential-port": 0
 };
 
-const keycloakInitOptions = { onLoad: "login-required" };
+const keycloakInitOptions = {
+  onLoad: "login-required",
+  checkLoginIframe: false
+};
 
 // (state) => bool
 // react-redux@7 selector
