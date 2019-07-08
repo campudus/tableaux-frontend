@@ -225,8 +225,6 @@ export function toggleCellSelection({ cell, langtag }) {
   const columnId = cell.columnId;
   const rowId = cell.rowId;
 
-  TableauxRouter.selectCellHandler(tableId, rowId, columnId, validLangtag);
-
   actions.toggleCellSelection({
     columnId,
     rowId,
