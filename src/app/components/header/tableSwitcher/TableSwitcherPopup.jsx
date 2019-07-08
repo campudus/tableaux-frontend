@@ -2,6 +2,7 @@ import { translate } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
 import listensToClickOutside from "react-onclickoutside";
+import { withRouter } from "react-router-dom";
 
 import PropTypes from "prop-types";
 
@@ -13,10 +14,11 @@ import {
 } from "../../../helpers/multiLanguage";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import TableauxRouter from "../../../router/router";
+import route from "../../../helpers/apiRoutes";
 
 @translate(["header"])
 @listensToClickOutside
+@withRouter
 class SwitcherPopup extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -90,11 +92,12 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   onClickTable = table => () => {
-    TableauxRouter.switchTableHandler(table.id, this.props.langtag);
+    const { langtag, history } = this.props;
     this.setState({
       focusTableId: table.id
     });
     this.handleClickOutside(null);
+    history.push(route.toTable({ langtag, tableId: table.id }));
   };
 
   filterInputChange = event => {
