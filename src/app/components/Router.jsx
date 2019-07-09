@@ -54,8 +54,9 @@ const GRUDRouter = React.memo(() => {
     return renderView(ViewNames.TABLE_VIEW)(routeProps);
   });
 
-  const renderServiceView = () =>
-    React.useCallback(renderView(ViewNames.SERVICE_VIEW));
+  const renderServiceView = React.useCallback(
+    renderView(ViewNames.FRONTEND_SERVICE_VIEW)
+  );
 
   const renderMediaView = React.useCallback(routeProps => {
     const currentFolderId = currentFolderSelector(store.getState());
@@ -81,7 +82,7 @@ const GRUDRouter = React.memo(() => {
           render={renderTableView}
         />
         <Route
-          path="/:langtag?/(service|services)/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?        "
+          path="/:langtag?/(service|services)/:serviceId?/(table|tables)?/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?"
           render={renderServiceView}
         />
         <Route path="/:langtag?/media/:folderId?" render={renderMediaView} />
@@ -118,7 +119,14 @@ const renderComponent = (routerProps, routingResult, viewName) => {
 };
 
 const validateRouteParams = (routeParams, tables) => {
-  const { langtag, tableId, columnId, rowId, folderId } = routeParams;
+  const {
+    langtag,
+    tableId,
+    columnId,
+    rowId,
+    folderId,
+    serviceId
+  } = routeParams;
   const getFirstTableId = f.compose(
     f.prop("id"),
     f.first,
@@ -132,7 +140,8 @@ const validateRouteParams = (routeParams, tables) => {
       : getFirstTableId(tables),
     columnId: validateNumber(columnId),
     rowId: validateNumber(rowId),
-    folderId: validateNumber(folderId)
+    folderId: validateNumber(folderId),
+    serviceId: validateNumber(serviceId)
   };
 };
 
