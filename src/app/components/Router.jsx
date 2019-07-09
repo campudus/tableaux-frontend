@@ -54,8 +54,9 @@ const GRUDRouter = React.memo(() => {
     return renderView(ViewNames.TABLE_VIEW)(routeProps);
   });
 
-  const renderServiceView = () =>
-    React.useCallback(renderView(ViewNames.SERVICE_VIEW));
+  const renderServiceView = React.useCallback(
+    renderView(ViewNames.FRONTEND_SERVICE_VIEW)
+  );
 
   const renderMediaView = React.useCallback(routeProps => {
     const currentFolderId = currentFolderSelector(store.getState());
