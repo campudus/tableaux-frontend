@@ -1,18 +1,14 @@
-import { compose, withProps } from "recompose";
+import { withRouter, Redirect } from "react-router-dom";
 import React, { Component } from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
 import { simpleError } from "../overlay/ConfirmationOverlay";
+import { switchLanguageHandler } from "../Router";
 import Folder from "./folder/Folder.jsx";
 import GrudHeader from "../GrudHeader";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
-import TableauxConstants from "../../constants/TableauxConstants";
-import TableauxRouter from "../../router/router";
-import apiUrl from "../../helpers/apiUrl";
-import needsApiData from "../helperComponents/needsAPIData";
-import route from "../../helpers/apiRoutes";
 
 const mapStateToProps = state => {
   return {
@@ -20,13 +16,7 @@ const mapStateToProps = state => {
   };
 };
 
-const enhance = compose(
-  withProps(() => {
-    return { requestUrl: apiUrl(route.toSetting("langtags")) };
-  }),
-  needsApiData
-);
-
+@withRouter
 class MediaView extends Component {
   constructor(props) {
     super(props);
@@ -68,23 +58,26 @@ class MediaView extends Component {
     }
   }
 
-  onLanguageSwitch(newLangtag) {
-    TableauxRouter.switchLanguageHandler(newLangtag);
-  }
+  onLanguageSwitch = newLangtag => {
+    switchLanguageHandler(this.props.history, newLangtag);
+  };
+
+  getFolderUrl = () => {
+    const { langtag, media } = this.props;
+    const suffix =
+      media.finishedLoading && media.data.id ? `/${media.data.id}` : "";
+    return `/${langtag}/media` + suffix;
+  };
 
   render() {
-    const { langtag, media, actions, requestedData } = this.props;
+    const { langtag, media, actions } = this.props;
     const { modifiedFiles } = this.state;
-
-    if (requestedData) {
-      TableauxConstants.initLangtags(this.props.requestedData.value);
-    }
 
     if (media.error) {
       simpleError(actions);
     }
 
-    if (media.finishedLoading && requestedData) {
+    if (media.finishedLoading) {
       return (
         <div>
           <GrudHeader
@@ -98,6 +91,7 @@ class MediaView extends Component {
             actions={actions}
             modifiedFiles={modifiedFiles}
           />
+          <Redirect to={this.getFolderUrl()} />
         </div>
       );
     } else {
@@ -114,4 +108,4 @@ MediaView.propTypes = {
   folderId: PropTypes.number
 };
 
-export default compose(enhance)(ReduxActionHoc(MediaView, mapStateToProps));
+export default ReduxActionHoc(MediaView, mapStateToProps);

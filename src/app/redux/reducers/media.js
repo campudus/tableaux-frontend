@@ -37,6 +37,12 @@ const mediaReducer = (state = initialState, action) => {
 
   switch (type) {
     case MEDIA_FOLDER_GET:
+      return {
+        ...state,
+        error: false,
+        finishedLoading: false,
+        currentFolderId: action.folderId || "root-folder"
+      };
     case MEDIA_FOLDER_CREATE:
     case MEDIA_FOLDER_EDIT:
     case MEDIA_FOLDER_DELETE:

@@ -6,6 +6,7 @@
   display: inline-block;
   color: $color-primary-text;
   white-space: nowrap;
+  background-color: transparent;
   @include border-radius(3px);
   @include box-sizing(border-box);
 }
@@ -148,7 +149,7 @@
       color: $color-text-medium-grey;
       width: 25px;
       position: relative;
-      
+
       &.dot.important { @include status-dot($color-important, $color-primary-contrast-text); }
       &.dot.translation { @include status-dot($color-needs-translation, $color-primary-contrast-text); }
       &.dot.postpone { @include status-dot($color-postpone, $color-primary-contrast-text); }

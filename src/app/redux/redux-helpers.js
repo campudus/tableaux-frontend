@@ -3,6 +3,7 @@ import f from "lodash/fp";
 import { ColumnKinds } from "../constants/TableauxConstants";
 import { doto, memoizeWith, merge, when } from "../helpers/functools";
 import getDisplayValue from "../helpers/getDisplayValue";
+import store from "./store";
 
 /**
  * @params { tableId, columnId, rowId }
@@ -156,3 +157,17 @@ export const getUpdatedCellValueToSet = (
       : merge(oldValue, newValue);
   return isRollback ? oldValue : mergeCellValues();
 };
+
+export const promisifyAction = actionCreator => (...params) =>
+  new Promise((resolve, reject) => {
+    const action = doto(
+      actionCreator(...params),
+      f.assoc("onSuccess", resolve),
+      f.assoc("onError", reject)
+    );
+    store.dispatch(action);
+    if (!action.promise) {
+      console.warn("Promisified synchronous action:", action.type);
+      resolve();
+    }
+  });

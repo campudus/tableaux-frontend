@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { ENABLE_DASHBOARD } from "../../FeatureFlags";
 import { getLogin, noAuthNeeded } from "../../helpers/authenticate";
 import { getUserName } from "../../helpers/userNameHelper";
-import Link from "../helperComponents/Link";
+import { Link } from "react-router-dom";
 import MainMenuEntry from "../frontendService/MainMenuEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 
@@ -26,7 +26,7 @@ const NavigationPopup = props => {
         {ENABLE_DASHBOARD ? (
           <li className="main-navigation__entry">
             <Link
-              href={"/" + langtag + "/dashboard"}
+              to={"/" + langtag + "/dashboard"}
               className="main-navigation__entry-button"
             >
               <i className="fa fa-dashboard" />
@@ -37,7 +37,7 @@ const NavigationPopup = props => {
 
         <li className="main-navigation__entry">
           <Link
-            href={"/" + langtag + "/tables"}
+            to={"/" + langtag + "/tables"}
             className="main-navigation__entry-button"
           >
             <i className="fa fa-columns" />
@@ -47,7 +47,7 @@ const NavigationPopup = props => {
 
         <li className="main-navigation__entry">
           <Link
-            href={"/" + langtag + "/media"}
+            to={"/" + langtag + "/media"}
             className="main-navigation__entry-button"
           >
             <i className="fa fa-file" />
