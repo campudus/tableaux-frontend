@@ -1,3 +1,4 @@
+import { Redirect, withRouter } from "react-router-dom";
 import React, { PureComponent } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
@@ -6,6 +7,7 @@ import PropTypes from "prop-types";
 
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { showDialog } from "../overlay/GenericOverlay";
+import { switchLanguageHandler } from "../Router";
 import ColumnFilter from "../header/ColumnFilter";
 import Filter from "../header/filter/Filter.jsx";
 import GrudHeader from "../GrudHeader";
@@ -20,7 +22,6 @@ import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import TableauxConstants, {
   FilterModes
 } from "../../constants/TableauxConstants";
-import TableauxRouter from "../../router/router";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import pasteCellValue from "../cells/cellCopyHelper";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
@@ -62,6 +63,7 @@ const mapStatetoProps = (state, props) => {
 };
 
 @applyFiltersAndVisibility
+@withRouter
 class TableView extends PureComponent {
   constructor(props) {
     super(props);
@@ -89,15 +91,6 @@ class TableView extends PureComponent {
 
   clearCellClipboard = () => {
     this.props.actions.copyCellValue({});
-  };
-
-  resetURL = () => {
-    const history = TableauxRouter.history;
-    const clearedUrl = history.getPath().replace(/\?*/, "");
-    TableauxRouter.history.navigate(clearedUrl, {
-      trigger: false,
-      replace: true
-    });
   };
 
   renderTableOrSpinner = () => {
@@ -128,7 +121,6 @@ class TableView extends PureComponent {
         f.toString
       )(rows);
       const columnKeys = f.flow(
-        // f.filter((col, idx) => col.visible || idx === 0),
         f.map(f.get("id")),
         f.toString
       )(columns);
@@ -202,7 +194,25 @@ class TableView extends PureComponent {
   };
 
   onLanguageSwitch = newLangtag => {
-    TableauxRouter.switchLanguageHandler(newLangtag);
+    const { history } = this.props;
+    switchLanguageHandler(history, newLangtag);
+  };
+
+  getCellUrl = () => {
+    const {
+      langtag,
+      table,
+      tableView: {
+        selectedCell: { columnId, rowId }
+      }
+    } = this.props;
+
+    return (
+      `/${langtag}` +
+      `/tables/${table.id}` +
+      (columnId ? `/columns/${columnId}` : "") +
+      (rowId ? `/rows/${rowId}` : "")
+    );
   };
 
   render = () => {
@@ -289,6 +299,7 @@ class TableView extends PureComponent {
         {this.renderTableOrSpinner()}
         <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
         <SearchOverlay isOpen={filtering} />
+        <Redirect to={this.getCellUrl()} />
       </div>
     );
   };

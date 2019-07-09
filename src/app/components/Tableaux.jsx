@@ -1,5 +1,6 @@
 import { I18nextProvider } from "react-i18next";
-import React, { PureComponent } from "react";
+import React from "react";
+import f from "lodash/fp";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
@@ -8,15 +9,24 @@ import Overlays from "./overlay/Overlays";
 import ViewRenderer from "./ViewRenderer.jsx";
 import resources from "../../locales/index";
 
-export default class Tableaux extends PureComponent {
+export default class Tableaux extends React.Component {
   static propTypes = {
     initialViewName: PropTypes.string.isRequired,
     initialParams: PropTypes.object.isRequired
   };
 
+  shouldComponentUpdate(nextProps) {
+    const { initialViewName, initialParams } = this.props;
+
+    const updateRequired =
+      initialViewName !== nextProps.initialViewName ||
+      !f.equals(initialParams, nextProps.initialParams);
+
+    return updateRequired;
+  }
+
   constructor(props) {
     super(props);
-    this.currentLangtag = props.initialParams.langtag;
 
     i18n.init({
       resources,
