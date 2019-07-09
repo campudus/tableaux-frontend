@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import IFrame from "react-iframe";
 import React from "react";
 import f from "lodash/fp";
@@ -13,7 +13,7 @@ import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
 
 const FrontendServiceView = ({
-  id,
+  serviceId,
   langtag,
   frontendServices,
   tableId,
@@ -29,7 +29,7 @@ const FrontendServiceView = ({
   // when service was unknown and services change (= init or service loading finished)
   React.useEffect(() => {
     if (service) return; // don't updated if service existed before
-    const serviceToSet = f.find(f.propEq("id", id), frontendServices);
+    const serviceToSet = f.find(f.propEq("id", serviceId), frontendServices);
     setService(serviceToSet);
   }, [frontendServices]);
 
@@ -43,6 +43,12 @@ const FrontendServiceView = ({
         service.config.url
       )
     : "";
+
+  const routeToService =
+    `/${langtag}/services/${serviceId}` +
+    (tableId ? `/tables/${tableId}` : "") +
+    (columnId ? `/columns/${columnId}` : "") +
+    (rowId ? `/rows/${rowId}` : "");
 
   return (
     <>
@@ -58,12 +64,13 @@ const FrontendServiceView = ({
           <Spinner loading={true} />
         )}
       </div>
+      <Redirect to={routeToService} />
     </>
   );
 };
 
 FrontendServiceView.propTypes = {
-  id: PropTypes.number.isRequired,
+  serviceId: PropTypes.number.isRequired,
   langtag: PropTypes.string.isRequired
 };
 
