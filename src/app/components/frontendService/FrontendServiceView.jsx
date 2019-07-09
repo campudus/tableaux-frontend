@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import IFrame from "react-iframe";
 import React from "react";
 import f from "lodash/fp";
@@ -7,9 +8,9 @@ import PropTypes from "prop-types";
 
 import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { switchLanguageHandler } from "../Router";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
-import GrudRouter from "../../router/router";
 
 const FrontendServiceView = ({
   id,
@@ -17,11 +18,11 @@ const FrontendServiceView = ({
   frontendServices,
   tableId,
   columnId,
-  rowId
+  rowId,
+  history
 }) => {
-  const handleLanguageSwitch = React.useCallback(
-    newLangtag =>
-      langtag !== newLangtag && GrudRouter.switchLanguageHandler(newLangtag)
+  const handleLanguageSwitch = React.useCallback(newLangtag =>
+    switchLanguageHandler(history, newLangtag)
   );
   const [service, setService] = React.useState();
 
@@ -66,4 +67,7 @@ FrontendServiceView.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default connect(f.pick(["frontendServices"]))(FrontendServiceView);
+export default f.pipe(
+  connect(f.pick(["frontendServices"])),
+  withRouter
+)(FrontendServiceView);
