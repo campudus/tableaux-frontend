@@ -152,14 +152,6 @@ const insertSkeletonLinks = (state, action, completeState) => {
 };
 
 const toggleSelectedCell = (state, action) => {
-  // if (action.select !== false) {
-  //   TableauxRouter.selectCellHandler(
-  //     action.tableId,
-  //     action.rowId,
-  //     action.columnId,
-  //     action.langtag
-  //   );
-  // }
   unlockRow(action.rowId, false);
   return f.flow(
     f.assoc("editing", false),
