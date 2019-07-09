@@ -76,7 +76,7 @@ const applyFiltersAndVisibility = Component =>
             ...props,
             columns: columnsWithVisibility,
             visibleColumns: columnRenderKey,
-            orderedFilteredRows,
+            rows: orderedFilteredRows,
             visibleRows,
             canRenderTable,
             showCellJumpOverlay
