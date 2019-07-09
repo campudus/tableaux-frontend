@@ -14,7 +14,7 @@ export const queryFrontendServices = () => {
   return {
     promise: makeRequest({
       apiRoute: route.toServiceRegistry()
-    }),
+    }).catch(() => []),
     actionTypes: [
       QUERY_FRONTEND_SERVICES,
       FRONTEND_SERVICES_LOADED,

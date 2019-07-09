@@ -1,26 +1,30 @@
+import { List, AutoSizer, WindowScroller } from "react-virtualized";
+import { translate } from "react-i18next";
 import React, { Component } from "react";
 import f from "lodash/fp";
-import NewFolderAction from "./NewFolderAction.jsx";
+
+import PropTypes from "prop-types";
+
 import { isUserAdmin } from "../../../helpers/accessManagementHelper";
-import { translate } from "react-i18next";
-import Subfolder from "./Subfolder.jsx";
+import { switchFolderHandler } from "../../Router";
+import { withRouter } from "react-router-dom";
 import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
-import PropTypes from "prop-types";
-import TableauxRouter from "../../../router/router";
-import { List, AutoSizer, WindowScroller } from "react-virtualized";
+import NewFolderAction from "./NewFolderAction.jsx";
+import Subfolder from "./Subfolder.jsx";
 
 @translate(["media"])
+@withRouter
 class Folder extends Component {
   constructor(props) {
     super(props);
   }
 
   backFolderHandler = e => {
-    const { langtag, folder } = this.props;
+    const { langtag, folder, history } = this.props;
     const parentId = f.get("parent", folder);
 
-    TableauxRouter.switchFolderHandler(parentId, langtag);
+    switchFolderHandler(history, langtag, parentId);
     e.preventDefault();
   };
 
