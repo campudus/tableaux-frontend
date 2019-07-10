@@ -7,7 +7,7 @@ import { NO_AUTH_IN_DEV_MODE } from "../FeatureFlags";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
 
-const authServerUrl = process.env.authServerUrl || "http://localhost:8081/auth";
+const authServerUrl = "/auth";
 const authRealm = process.env.authRealm || "GRUD";
 
 const keycloakSettings = {
