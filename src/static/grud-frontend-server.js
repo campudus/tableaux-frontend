@@ -1,5 +1,4 @@
 const express = require("express");
-const { createProxyServer } = require("http-proxy");
 const serveStatic = require("serve-static");
 const finalhandler = require("finalhandler");
 const path = require("path");
@@ -21,6 +20,22 @@ const config = ServerConfigTool.enrichConfig({
   host: "localhost"
 });
 
+const proxyDestinations = [
+  {
+    prefix: "/api",
+    handler: {
+      target: `http://${config.apiHost}:${config.apiPort}`,
+      prependPath: true
+    }
+  },
+  {
+    prefix: "/auth",
+    handler: {
+      target: config.authServerUrl
+    }
+  }
+];
+
 console.log("GRUD frontend server with settings:\n", config);
 
 // Init server -----------------------------------------------------------------
@@ -28,24 +43,7 @@ console.log("GRUD frontend server with settings:\n", config);
 const app = express();
 const serveStaticFile = serveStatic(config.outDir);
 
-const proxy = createProxyServer();
-// event handler to prevent that /api gets proxied to <api>/api
-proxy.on("proxyReq", proxyReq => {
-  proxyReq.path = proxyReq.path.replace(/^\/api/, "");
-});
-
-proxy.on("error", (err, req, res) => {
-  console.error("Could not proxy API request to", req.url, err);
-  res.status(500);
-  res.send(err);
-});
-
-const proxyHandler = (req, res) => {
-  return proxy.web(req, res, {
-    target: `http://${config.apiHost}:${config.apiPort}`,
-    prependPath: true
-  });
-};
+const proxyHandler = ServerConfigTool.configProxy(proxyDestinations);
 
 // serve index.html of webapp
 const appHandler = (req, res) => {
@@ -70,7 +68,7 @@ const resourceHandler = (req, res, next) => {
 //   console.log(req.url);
 //   next();
 // });
-app.use("/api", proxyHandler); // if api request, proxy it, else...
+app.use(proxyHandler); // if api request, proxy it, else...
 app.use(resourceHandler); // if a file was requested, try to serve it, else...
 app.use(appHandler); // serve the single page app
 
