@@ -1,4 +1,5 @@
 const path = require("path");
+const { createProxyServer } = require("http-proxy");
 
 // These config params can be overwritten by env params
 const envParams = [
@@ -24,11 +25,11 @@ const enrichConfig = config => {
         .filter(arg => arg.startsWith(configPrefix))
         .map(arg => arg.replace(configPrefix, ""))[0] ||
       path.join(projectBaseDir, "config.json");
-    console.log("Config file path", configFile);
+    console.error("Config file path", configFile);
     const localConfig = require(configFile);
     config = { ...config, ...localConfig };
   } catch (err) {
-    console.log("Warning: Could not read config file, using defaults");
+    console.error("Warning: Could not read config file, using defaults");
   }
 
   const overrideConfigWithEnv = envVar => {
@@ -36,7 +37,7 @@ const enrichConfig = config => {
       process.env[envVar.replace(/([A-Z])/g, "_$1").toUpperCase()] ||
       process.env[envVar.toUpperCase()];
     if (envValue) {
-      console.log("Overriding", envVar, "with", envValue, "from environment");
+      console.error("Overriding", envVar, "with", envValue, "from environment");
       config[envVar] = envValue;
     }
   };
@@ -52,4 +53,34 @@ const enrichConfig = config => {
   return config;
 };
 
-module.exports = { enrichConfig };
+const stripProxyPrefixes = prefixes => proxyReq => {
+  prefixes.forEach(
+    prefix => (proxyReq.path = proxyReq.path.replace(prefix, ""))
+  );
+};
+
+const configProxy = (routes, defaultHandler) => {
+  const proxy = createProxyServer();
+  const prefixRegexes = routes.map(({ prefix }) => new RegExp("^" + prefix));
+
+  proxy.on("proxyReq", stripProxyPrefixes(prefixRegexes));
+
+  proxy.on("error", (err, req, res) => {
+    console.error("Proxy error:", err);
+    res.writeHead(500, {
+      "Content-Type": "text/plain"
+    });
+    res && res.end(JSON.stringify(err));
+  });
+
+  return (req, res, next) => {
+    const requestHandler = routes.reduce((_handler, { prefix, handler }) => {
+      return _handler || (req.url.includes(prefix) ? handler : null);
+    }, null);
+
+    const proxyHandler = requestHandler || defaultHandler;
+    return proxyHandler ? proxy.web(req, res, proxyHandler) : next();
+  };
+};
+
+module.exports = { enrichConfig, configProxy };
