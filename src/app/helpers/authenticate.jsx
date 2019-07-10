@@ -3,12 +3,12 @@ import Keycloak from "keycloak-js";
 import React from "react";
 import f from "lodash/fp";
 
+import { config } from "../constants/TableauxConstants";
 import { NO_AUTH_IN_DEV_MODE } from "../FeatureFlags";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
 
-const authServerUrl = "/auth";
-const authRealm = process.env.authRealm || "GRUD";
+const { authServerUrl, authRealm } = config;
 
 const keycloakSettings = {
   realm: authRealm,

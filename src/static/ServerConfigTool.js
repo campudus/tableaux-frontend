@@ -13,9 +13,6 @@ const envParams = [
   "authRealm"
 ];
 
-// These config params will be passed on to the build artefact
-const appParams = ["webhookUrl", "authServerUrl", "authRealm"];
-
 const enrichConfig = config => {
   try {
     const configPrefix = "--config=";
@@ -42,14 +39,7 @@ const enrichConfig = config => {
     }
   };
 
-  const passConfigParamToApp = param => {
-    if (config[param]) {
-      process.env[param] = config[param];
-    }
-  };
-
   envParams.forEach(overrideConfigWithEnv);
-  appParams.forEach(passConfigParamToApp);
   return config;
 };
 
