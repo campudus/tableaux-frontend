@@ -47,7 +47,7 @@ const WidgetColletion = withDashboardStatusData(
         langtag={langtag}
         requestedData={requestedData}
       />
-      <Redirect to={`${langtag}/dashboard`} />
+      <Redirect to={`/${langtag}/dashboard`} />
     </div>
   )
 );
