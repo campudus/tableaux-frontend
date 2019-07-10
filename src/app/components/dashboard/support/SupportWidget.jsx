@@ -7,8 +7,7 @@ import PropTypes from "prop-types";
 
 import { getUserName } from "../../../helpers/userNameHelper";
 import { makeRequest } from "../../../helpers/apiHelper";
-
-const webhookUrl = process.env.webhookUrl;
+import { config } from "../../../constants/TableauxConstants";
 
 const enhance = compose(
   pure,
@@ -25,7 +24,7 @@ const enhance = compose(
     }),
     handleSubmit: ({ feedback }) => () => {
       makeRequest({
-        url: webhookUrl,
+        url: config.webhookUrl,
         method: "post",
         responseType: "text",
         data: {
@@ -50,56 +49,59 @@ const SupportWidget = ({
   handleChange,
   feedback = "",
   details: { title, phone, email }
-}) => (
-  <div className="support">
-    <div className="header">
-      <div className="heading">{i18n.t("dashboard:support.heading")}</div>
-      <div className="info-text">{i18n.t("dashboard:support.info")}</div>
-    </div>
-
-    <div className="tiles">
-      <div className="contact-info">
-        <div className="heading">
-          {i18n.t("dashboard:support.contact-infos")}
-        </div>
-        <div className="contact-data">
-          <div className="details title">{title}</div>
-          <div>
-            <a href={`tel:${phone.replace(/ /g, "")}`} className="details">
-              <i className="fa fa-phone" />
-              <span>{phone}</span>
-            </a>
-          </div>
-
-          <div>
-            <a href={`mailto:${email}`} className="details">
-              <i className="fa fa-envelope-open" />
-              <span>{email}</span>
-            </a>
-          </div>
-        </div>
+}) => {
+  const { webhookUrl } = config;
+  return (
+    <div className="support">
+      <div className="header">
+        <div className="heading">{i18n.t("dashboard:support.heading")}</div>
+        <div className="info-text">{i18n.t("dashboard:support.info")}</div>
       </div>
-      {webhookUrl && !f.isEmpty(webhookUrl) && (
-        <>
-          <div className="separator" />
 
-          <div className="feedback">
-            <div className="heading">Feedback</div>
-            <textarea
-              className="input"
-              value={feedback}
-              onChange={handleChange}
-              placeholder={i18n.t("dashboard:support.feedback-placeholder")}
-            />
-            <div className="submit-button" onClick={handleSubmit}>
-              {i18n.t("dashboard:support.submit-feedback")}
+      <div className="tiles">
+        <div className="contact-info">
+          <div className="heading">
+            {i18n.t("dashboard:support.contact-infos")}
+          </div>
+          <div className="contact-data">
+            <div className="details title">{title}</div>
+            <div>
+              <a href={`tel:${phone.replace(/ /g, "")}`} className="details">
+                <i className="fa fa-phone" />
+                <span>{phone}</span>
+              </a>
+            </div>
+
+            <div>
+              <a href={`mailto:${email}`} className="details">
+                <i className="fa fa-envelope-open" />
+                <span>{email}</span>
+              </a>
             </div>
           </div>
-        </>
-      )}
+        </div>
+        {webhookUrl && !f.isEmpty(webhookUrl) && (
+          <>
+            <div className="separator" />
+
+            <div className="feedback">
+              <div className="heading">Feedback</div>
+              <textarea
+                className="input"
+                value={feedback}
+                onChange={handleChange}
+                placeholder={i18n.t("dashboard:support.feedback-placeholder")}
+              />
+              <div className="submit-button" onClick={handleSubmit}>
+                {i18n.t("dashboard:support.submit-feedback")}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 SupportWidget.propTypes = {
   langtag: PropTypes.string.isRequired
