@@ -1,4 +1,5 @@
-const { createServer } = require("http");
+// const { createServer } = require("http");
+const express = require("express");
 const Path = require("path");
 const Bundler = require("parcel-bundler");
 const GRUDServer = require("./src/static/ServerConfigTool.js");
@@ -65,10 +66,12 @@ bundler.serve();
 
 // serve
 
-const server = createServer(
-  GRUDServer.configProxy(proxyHandlers, defaultHandler)
-);
+const app = express();
+const proxyHandler = GRUDServer.configProxy(proxyHandlers, defaultHandler);
 
-server.listen(config.port, config.host, () => {
+app.use("/config.json", (req, res) => res.json(config));
+app.use(proxyHandler);
+
+app.listen(config.port, config.host, () => {
   console.info(`dev proxy server operating at ${config.host}:${config.port}.`);
 });

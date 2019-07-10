@@ -59,7 +59,7 @@ const stripProxyPrefixes = prefixes => proxyReq => {
   );
 };
 
-const configProxy = (routes, defaultHandler) => {
+const configProxy = (routes, defaultHandler = null) => {
   const proxy = createProxyServer();
   const prefixRegexes = routes.map(({ prefix }) => new RegExp("^" + prefix));
 

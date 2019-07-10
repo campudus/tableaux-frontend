@@ -69,6 +69,7 @@ const resourceHandler = (req, res, next) => {
 //   next();
 // });
 app.use(proxyHandler); // if api request, proxy it, else...
+app.use("/config.json", (req, res) => res.json(config)); // serve local config at runtime
 app.use(resourceHandler); // if a file was requested, try to serve it, else...
 app.use(appHandler); // serve the single page app
 
