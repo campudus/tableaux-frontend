@@ -3,22 +3,10 @@ import Keycloak from "keycloak-js";
 import React from "react";
 import f from "lodash/fp";
 
+import { config } from "../constants/TableauxConstants";
 import { NO_AUTH_IN_DEV_MODE } from "../FeatureFlags";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
-
-const authServerUrl = process.env.authServerUrl || "http://localhost:8081/auth";
-const authRealm = process.env.authRealm || "GRUD";
-
-const keycloakSettings = {
-  realm: authRealm,
-  url: authServerUrl,
-  resource: "grud-frontend",
-  clientId: "grud-frontend",
-  "ssl-required": "external",
-  "public-client": true,
-  "confidential-port": 0
-};
 
 const keycloakInitOptions = {
   onLoad: "login-required",
@@ -39,6 +27,16 @@ export const getLogin = f.memoize(
   noAuthNeeded()
     ? f.always({})
     : () => {
+        const keycloakSettings = {
+          realm: config.authRealm,
+          url: "/auth",
+          resource: "grud-frontend",
+          clientId: "grud-frontend",
+          "ssl-required": "external",
+          "public-client": true,
+          "confidential-port": 0
+        };
+
         const keycloak = Keycloak(keycloakSettings);
         keycloak
           .init(keycloakInitOptions)
