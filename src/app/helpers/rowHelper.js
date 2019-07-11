@@ -1,15 +1,19 @@
 import {
+  canUserCreateRow,
+  canUserDeleteRow,
+  getUserLanguageAccess
+} from "./accessManagementHelper";
+import {
   confirmDeleteRow,
   openShowDependency
 } from "../components/overlay/ConfirmDependentOverlay.jsx";
 import { duplicateRow } from "../components/table/tableRowsWorker";
-import { getUserLanguageAccess, isUserAdmin } from "./accessManagementHelper";
 import { noPermissionAlertWithLanguage } from "../components/overlay/ConfirmationOverlay.jsx";
 import { openEntityView } from "../components/overlay/EntityViewOverlay";
 
 // ({ table, row, langtag}) -> (string) -> void
 export function initiateDeleteRow(rowSpecs, overlayToCloseId) {
-  if (isUserAdmin()) {
+  if (canUserDeleteRow(rowSpecs)) {
     confirmDeleteRow(rowSpecs, overlayToCloseId);
   } else {
     noPermissionAlertWithLanguage(getUserLanguageAccess());
@@ -18,10 +22,10 @@ export function initiateDeleteRow(rowSpecs, overlayToCloseId) {
 
 // ({ tableId, rowId, langtag }) -> void
 export function initiateDuplicateRow(payload) {
-  if (isUserAdmin()) {
+  if (canUserCreateRow(payload)) {
     duplicateRow(payload);
   } else {
-    noPermissionAlertWithLanguage(getUserLanguageAccess());
+    noPermissionAlertWithLanguage([]); // TODO: find a way around this
   }
 }
 
