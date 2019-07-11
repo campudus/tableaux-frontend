@@ -4,8 +4,8 @@ import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { isLocked } from "../../../helpers/annotationHelper";
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
 import { openLinkOverlay } from "./LinkOverlay.jsx";
 import { spy } from "../../../helpers/functools";
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
@@ -17,7 +17,7 @@ const withOverlayOpener = compose(
       event && event.stopPropagation();
     },
     openOverlay: ({ cell, langtag, actions }) => () => {
-      if (isUserAdmin() && !isLocked(cell.row)) {
+      if (canUserChangeCell(cell) && !isLocked(cell.row)) {
         openLinkOverlay({ cell, langtag, actions });
       }
     }
