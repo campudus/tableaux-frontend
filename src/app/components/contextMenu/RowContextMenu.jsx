@@ -18,12 +18,15 @@ import {
 } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
 import {
+  canUserChangeCell,
+  canUserEditRowAnnotations
+} from "../../helpers/accessManagementHelper";
+import {
   initiateDeleteRow,
   initiateDuplicateRow,
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import { isUserAdmin } from "../../helpers/accessManagementHelper";
 import { merge } from "../../helpers/functools";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
@@ -141,7 +144,8 @@ class RowContextMenu extends React.Component {
 
   canTranslate = cell =>
     cell.column.multilanguage &&
-    /*cell.isEditable &&*/ !translationNeverNeeded(cell);
+    !translationNeverNeeded(cell) &&
+    canUserChangeCell(cell);
 
   requestTranslationsItem = () => {
     const { langtag, cell, t } = this.props;
@@ -194,12 +198,13 @@ class RowContextMenu extends React.Component {
     ) {
       return null;
     }
+    const annotations = f.propOr({}, cell);
     const translationNeeded = merge(
       {
         type: "flag",
         value: "translationNeeded"
       },
-      cell.annotations.translationNeeded
+      annotations.translationNeeded
     );
     const remainingLangtags = f.remove(
       f.eq(langtag),
@@ -248,7 +253,7 @@ class RowContextMenu extends React.Component {
   };
 
   setFinalItem = () => {
-    if (!isUserAdmin()) {
+    if (!canUserEditRowAnnotations(this.props.cell)) {
       return null;
     }
     const {
