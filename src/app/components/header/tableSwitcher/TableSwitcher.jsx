@@ -2,11 +2,11 @@ import { translate } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
 
+import { getTableDisplayName } from "../../../helpers/multiLanguage";
+
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { getTableDisplayName } from "../../../helpers/multiLanguage";
-import * as AccessControl from "../../../helpers/accessManagementHelper";
 import TableSwitcherPopup from "./TableSwitcherPopup";
 import TableauxConstants from "../../../constants/TableauxConstants";
 
@@ -105,8 +105,7 @@ class TableSwitcherButton extends React.PureComponent {
     const table = this.props.currentTable;
     const tableDisplayName = getTableDisplayName(table, this.props.langtag);
     const cssClass = classNames("", {
-      active: this.state.isOpen,
-      "admin-mode": AccessControl.isUserAdmin()
+      active: this.state.isOpen
     });
     return (
       <div id="tableswitcher-wrapper" className={cssClass}>
