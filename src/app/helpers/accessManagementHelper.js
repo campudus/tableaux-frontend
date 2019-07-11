@@ -95,39 +95,27 @@ export const canUserEditTableDisplayProperty = getPermission([
 ]);
 export const canUserChangeTableDisplayName = canUserEditTableDisplayProperty;
 
-export const getUserCountryCodesAccess = f.memoize(function() {
-  if (isUserAdmin()) {
-    return []; // there's no "all available country codes" because it's bound to a column
-  } else {
-    return Cookies.getJSON("userCountryCodesAccess") || [];
-  }
-});
+        const foundTable = table || unless(f.isNil, lookUpTable, tblId);
+        const foundColumn =
+          column || unless(missingColumnIds, lookUpColumns, colId);
 
-export const hasUserAccessToCountryCode = f.memoize(function(countryCode) {
-  if (isUserAdmin()) {
-    return true;
-  }
+        return {
+          tables: permissionsOf(tables),
+          columns: permissionsOf(columns),
+          table: permissionsOf(foundTable),
+          column: permissionsOf(foundColumn)
+        };
+      });
 
-  if (f.isString(countryCode)) {
-    const userCountryCodes = getUserCountryCodesAccess();
-    return userCountryCodes && userCountryCodes.length > 0
-      ? userCountryCodes.indexOf(countryCode) > -1
-      : false;
-  } else {
-    console.error(
-      "hasUserAccessToCountryCode() has been called with unknown parameter countryCode:",
-      countryCode
-    );
-    return false;
-  }
-});
+      // assumption: table structure won't change during session
+      return lookupStructureCached(_tableId, _columnId);
+    };
 
-export const isUserAdmin = f.memoize(function() {
-  const isAdminFromCookie = Cookies.getJSON("userAdmin");
-  if (!f.isNil(isAdminFromCookie)) {
-    return isAdminFromCookie;
-  } else return false;
-});
+const getPermission = pathToPermission =>
+  f.compose(
+    f.propOr(false, pathToPermission),
+    lookUpPermissions
+  );
 
 // (tableData: table | number) => boolean
 export const canUserSeeTable = memoizeWith(f.identity, tableData => {
