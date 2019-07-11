@@ -3,12 +3,9 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { DefaultLangtag } from "../../constants/TableauxConstants";
 import {
   canUserDeleteRow,
-  canUserEditRows,
-  hasUserAccessToLanguage,
-  isUserAdmin
+  canUserEditRows
 } from "../../helpers/accessManagementHelper";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
