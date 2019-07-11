@@ -7,7 +7,6 @@
 import * as Sentry from "@sentry/browser";
 
 import { getUserName } from "./helpers/userNameHelper";
-import { initDevelopmentAccessCookies } from "./helpers/accessManagementHelper";
 import { makeRequest } from "./helpers/apiHelper";
 import { promisifyAction } from "./redux/redux-helpers";
 import TableauxConstants from "./constants/TableauxConstants";
@@ -25,7 +24,6 @@ export const initGrud = async setSuccess => {
     const maybeInitSentry = initSentry(process.env.NODE_ENV === "production");
 
     store.dispatch(actions.createDisplayValueWorker());
-    initDevelopmentAccessCookies(); // TODO: Replace that with real auth
 
     await Promise.all([
       loadServices,

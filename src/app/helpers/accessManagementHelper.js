@@ -1,4 +1,3 @@
-import Keks from "js-cookie";
 import f from "lodash/fp";
 
 import { Langtags } from "../constants/TableauxConstants";
