@@ -2,11 +2,13 @@
  * Context menu for column options. Opened by ColumnEntry.
  */
 import React from "react";
-import listensToClickOutside from "react-onclickoutside";
-import * as AccessControl from "../../helpers/accessManagementHelper";
-import i18n from "i18next";
-import PropTypes from "prop-types";
 import f from "lodash/fp";
+import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
+
+import PropTypes from "prop-types";
+
+import { canUserEditColumnDisplayProperty } from "../../helpers/accessManagementHelper";
 import TableauxConstants from "../../constants/TableauxConstants";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
@@ -43,7 +45,7 @@ class ColumnContextMenu extends React.Component {
       toTable
     } = this.props;
     const canEdit =
-      AccessControl.isUserAdmin() &&
+      canUserEditColumnDisplayProperty({ column }) &&
       !f.contains(column.kind, PROTECTED_CELL_KINDS);
     const editorItem = canEdit ? (
       <div>
