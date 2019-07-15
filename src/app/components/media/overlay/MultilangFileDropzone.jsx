@@ -95,7 +95,7 @@ const MultilangFileDropzone = ({
 
 export default compose(
   pure,
-  branch(canUserCreateMedia(), renderNothing),
+  branch(() => !canUserCreateMedia(), renderNothing),
   enhance,
   translate(["media"])
 )(MultilangFileDropzone);
