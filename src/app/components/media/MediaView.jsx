@@ -9,6 +9,7 @@ import { switchLanguageHandler } from "../Router";
 import Folder from "./folder/Folder.jsx";
 import GrudHeader from "../GrudHeader";
 import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
+import Spinner from "../header/Spinner";
 
 const mapStateToProps = state => {
   return {
@@ -77,27 +78,26 @@ class MediaView extends Component {
       simpleError(actions);
     }
 
-    if (media.finishedLoading) {
-      return (
-        <div>
-          <GrudHeader
-            langtag={langtag}
-            handleLanguageSwitch={this.onLanguageSwitch}
-            pageTitleOrKey="pageTitle.media"
-          />
+    return (
+      <div>
+        <GrudHeader
+          langtag={langtag}
+          handleLanguageSwitch={this.onLanguageSwitch}
+          pageTitleOrKey="pageTitle.media"
+        />
+        {media.finishedLoading ? (
           <Folder
             folder={media.data}
             langtag={langtag}
             actions={actions}
             modifiedFiles={modifiedFiles}
           />
-          <Redirect to={this.getFolderUrl()} />
-        </div>
-      );
-    } else {
-      // show spinner while waiting for state to finish loading
-      return null;
-    }
+        ) : (
+          <Spinner isLoading />
+        )}
+        <Redirect to={this.getFolderUrl()} />
+      </div>
+    );
   }
 }
 
