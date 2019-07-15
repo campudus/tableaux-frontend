@@ -5,9 +5,8 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { getUserName } from "../../../helpers/userNameHelper";
-import { makeRequest } from "../../../helpers/apiHelper";
 import { config } from "../../../constants/TableauxConstants";
+import { getUserName } from "../../../helpers/userNameHelper";
 
 const enhance = compose(
   pure,
@@ -23,11 +22,9 @@ const enhance = compose(
       feedback: f.getOr(feedback, ["target", "value"], event)
     }),
     handleSubmit: ({ feedback }) => () => {
-      makeRequest({
-        url: config.webhookUrl,
-        method: "post",
-        responseType: "text",
-        data: {
+      fetch(config.webhookUrl, {
+        method: "POST",
+        body: JSON.stringify({
           text: "Feedback",
           attachments: [
             {
@@ -36,7 +33,7 @@ const enhance = compose(
               author_name: getUserName() // eslint-disable-line camelcase
             }
           ]
-        }
+        })
       });
 
       return { feedback: "" };
