@@ -3,14 +3,8 @@ import React from "react";
 import f from "lodash/fp";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import TableSwitcherPopup from "./TableSwitcherPopup";
-import { translate } from "react-i18next";
-import * as AccessControl from "../../../helpers/accessManagementHelper";
 import classNames from "classnames";
 import PropTypes from "prop-types";
-import classNames from "classnames";
-
-import TableSwitcherPopup from "./TableSwitcherPopup";
-import TableauxConstants from "../../../constants/TableauxConstants";
 
 @translate(["header"])
 class TableSwitcherButton extends React.PureComponent {
