@@ -1,4 +1,11 @@
-import { compose, pure, withHandlers, withStateHandlers } from "recompose";
+import {
+  branch,
+  compose,
+  pure,
+  renderNothing,
+  withHandlers,
+  withStateHandlers
+} from "recompose";
 import { translate } from "react-i18next";
 import Dropzone from "react-dropzone";
 import React from "react";
@@ -7,16 +14,18 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { DefaultLangtag, Langtags } from "../../../constants/TableauxConstants";
-import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
-import { makeRequest } from "../../../helpers/apiHelper";
-import route from "../../../helpers/apiHelper";
+import {
+  canUserCreateMedia,
+  canUserEditFiles
+} from "../../../helpers/accessManagementHelper";
 import LanguageSwitcher from "../../header/LanguageSwitcher";
+import route, { makeRequest } from "../../../helpers/apiHelper";
 
 const enhance = compose(
   withStateHandlers(
     () => {
       const langOptions = Langtags.filter(
-        lt => lt !== DefaultLangtag && hasUserAccessToLanguage(lt)
+        lt => lt !== DefaultLangtag && canUserEditFiles(lt)
       );
 
       return {
@@ -86,6 +95,7 @@ const MultilangFileDropzone = ({
 
 export default compose(
   pure,
+  branch(canUserCreateMedia(), renderNothing),
   enhance,
   translate(["media"])
 )(MultilangFileDropzone);

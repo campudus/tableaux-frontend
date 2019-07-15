@@ -1,7 +1,7 @@
 import React from "react";
 import MediaLink from "../MediaLink";
 import f from "lodash/fp";
-import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
+import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 import { branch, compose, renderNothing, withStateHandlers } from "recompose";
 import LanguageSwitcher from "../../header/LanguageSwitcher";
 import FileChangeUpload from "./FileChangeUpload";
@@ -41,7 +41,7 @@ const MultifileFileEdit = props => {
     t,
     actions
   } = props;
-  const mayChange = hasUserAccessToLanguage(langtag);
+  const mayChange = canUserEditFiles(langtag);
 
   return (
     <div className="multifile-file-edit item">
@@ -74,7 +74,7 @@ const MultifileFileEdit = props => {
             langtag={fileLangtag}
             onChange={props.switchLang}
             options={unsetLangs
-              .filter(hasUserAccessToLanguage)
+              .filter(canUserEditFiles)
               .map(lt => ({ value: lt, label: lt }))}
           />
         )}

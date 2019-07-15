@@ -1,13 +1,13 @@
 import { List, AutoSizer, WindowScroller } from "react-virtualized";
 import { translate } from "react-i18next";
+import { withRouter } from "react-router-dom";
 import React, { Component } from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import { canUserCreateFolders } from "../../../helpers/accessManagementHelper";
 import { switchFolderHandler } from "../../Router";
-import { withRouter } from "react-router-dom";
 import File from "./File.jsx";
 import FileUpload from "./FileUpload.jsx";
 import NewFolderAction from "./NewFolderAction.jsx";
@@ -151,7 +151,7 @@ class Folder extends Component {
 
   render() {
     const { folder, actions, langtag } = this.props;
-    const newFolderAction = isUserAdmin() ? (
+    const newFolderAction = canUserCreateFolders() ? (
       <NewFolderAction parentFolder={folder} actions={actions} />
     ) : null;
 

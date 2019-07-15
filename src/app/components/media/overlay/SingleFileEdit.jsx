@@ -1,11 +1,14 @@
 import React from "react";
-import PropTypes from "prop-types";
-import SingleFileTextInput from "./SingleFileTextInput";
-import FileChangeUpload from "./FileChangeUpload";
-import i18n from "i18next";
-import MediaLink from "../MediaLink";
 import f from "lodash/fp";
+import i18n from "i18next";
+
+import PropTypes from "prop-types";
+
+import { canUserCreateMedia } from "../../../helpers/accessManagementHelper";
+import FileChangeUpload from "./FileChangeUpload";
+import MediaLink from "../MediaLink";
 import MultilangFileDropzone from "./MultilangFileDropzone";
+import SingleFileTextInput from "./SingleFileTextInput";
 
 const SingleFileEdit = ({
   file,
@@ -62,7 +65,13 @@ const SingleFileEdit = ({
         />
       </div>
 
-      <MultilangFileDropzone file={file} langtag={langtag} actions={actions} />
+      {canUserCreateMedia() && (
+        <MultilangFileDropzone
+          file={file}
+          langtag={langtag}
+          actions={actions}
+        />
+      )}
     </div>
   );
 };
