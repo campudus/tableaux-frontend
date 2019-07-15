@@ -2,6 +2,7 @@ import { Redirect, withRouter } from "react-router-dom";
 import React, { PureComponent } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
+import { branch, renderComponent } from "recompose";
 
 import PropTypes from "prop-types";
 
@@ -316,6 +317,28 @@ class TableView extends PureComponent {
   };
 }
 
+const EmptyTableView = withRouter(({ langtag, history }) => {
+  const handleLanguageSwitch = React.useCallback(langtag =>
+    switchLanguageHandler(history, langtag)
+  );
+
+  return (
+    <>
+      <GrudHeader
+        langtag={langtag}
+        handleLanguageSwitch={handleLanguageSwitch}
+        pageTitleOrKey="pageTitle.tables"
+      />
+      <div className="initial-loader">
+        <div className="centered-user-message">
+          {i18n.t("table:no-tables-found")}
+        </div>
+      </div>
+      <Redirect to={`/${langtag}/tables`} />
+    </>
+  );
+});
+
 TableView.propTypes = {
   langtag: PropTypes.string.isRequired,
   overlayOpen: PropTypes.bool.isRequired,
@@ -323,4 +346,7 @@ TableView.propTypes = {
   projection: PropTypes.object
 };
 
-export default reduxActionHoc(TableView, mapStatetoProps);
+export default branch(
+  props => f.isNil(props.tableId),
+  renderComponent(EmptyTableView)
+)(reduxActionHoc(TableView, mapStatetoProps));
