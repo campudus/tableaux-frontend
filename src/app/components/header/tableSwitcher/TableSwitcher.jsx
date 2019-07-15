@@ -1,5 +1,11 @@
 import React from "react";
 import f from "lodash/fp";
+
+import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { canUserSeeTable } from "../../../helpers/accessManagementHelper";
+import TableSwitcherPopup from "./TableSwitcherPopup";
 import TableauxConstants from "../../../constants/TableauxConstants";
 import TableSwitcherPopup from "./TableSwitcherPopup";
 import { translate } from "react-i18next";
@@ -41,7 +47,7 @@ class TableSwitcherButton extends React.PureComponent {
     const { t, langtag, tables, currentTable, navigate } = this.props;
 
     const groups = f.flow(
-      f.reject("hidden"), //   ...of visible tables
+      f.filter(canUserSeeTable), //   ...of visible tables
       f.map("group"), //   ...from group data
       f.compact, //   ...of non-null groups
       f.reject(f.matchesProperty("id", 0)), //   ...with valid ids

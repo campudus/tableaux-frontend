@@ -1,8 +1,8 @@
 import { translate } from "react-i18next";
+import { withRouter } from "react-router-dom";
 import React from "react";
 import f from "lodash/fp";
 import listensToClickOutside from "react-onclickoutside";
-import { withRouter } from "react-router-dom";
 
 import PropTypes from "prop-types";
 
@@ -10,7 +10,9 @@ import {
   FallbackLanguage,
   FilterModes
 } from "../../../constants/TableauxConstants";
+import { canUserSeeTable } from "../../../helpers/accessManagementHelper";
 import { forkJoin, maybe } from "../../../helpers/functools";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import route from "../../../helpers/apiRoutes";
@@ -30,6 +32,8 @@ class SwitcherPopup extends React.PureComponent {
       filterTableName: "",
       focusTableId: props.currentTable ? props.currentTable.id : null
     };
+
+    this.tableRefs = {};
   }
 
   componentDidMount = () => {
@@ -188,14 +192,8 @@ class SwitcherPopup extends React.PureComponent {
 
   getFilteredTables = (filterGroupId, filterTableName) => {
     const { langtag, tables } = this.props;
-    const getDisplayNameOrFallback = f.flow(
-      f.props([
-        ["displayName", langtag],
-        ["displayName", FallbackLanguage],
-        " "
-      ]),
-      f.find(f.identity)
-    );
+    const getDisplayNameOrFallback = ({ displayName }) =>
+      retrieveTranslation(langtag, displayName);
     const matchesQuery = query =>
       f.flow(
         forkJoin(
@@ -209,7 +207,7 @@ class SwitcherPopup extends React.PureComponent {
     const isInGroup = f.matchesProperty(["group", "id"], filterGroupId);
 
     const tableResults = f.flow(
-      f.reject("hidden"),
+      f.filter(canUserSeeTable),
       f.filter(matchesQuery(filterTableName))
     )(tables);
 
@@ -223,8 +221,7 @@ class SwitcherPopup extends React.PureComponent {
     const { t, langtag } = this.props;
 
     const renderGroup = group => {
-      const groupDisplayName =
-        group.displayName[langtag] || group.displayName[FallbackLanguage];
+      const groupDisplayName = retrieveTranslation(langtag, group.displayName);
 
       const isNoGroupGroup = group.id === 0;
       const isActive = this.state.filterGroupId === group.id;
