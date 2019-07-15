@@ -129,5 +129,6 @@
   "open-link-filtered": "Open linked data",
   "open-dataset": "Open table with this dataset",
   "undo": "Undo last data change",
-  "redo": "Redo last data change"
+  "redo": "Redo last data change",
+  "no-tables-found": "There are no visible tables"
 }
