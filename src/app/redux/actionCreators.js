@@ -26,7 +26,7 @@ import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import { queryFrontendServices } from "./actions/frontendServices";
 import API_ROUTES from "../helpers/apiRoutes";
-import TableauxRouter from "../router/router";
+
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 
@@ -240,13 +240,6 @@ const loadAllRows = tableId => (dispatch, getState) => {
             rowId: validRowId,
             langtag
           })
-        );
-
-        TableauxRouter.selectCellHandler(
-          table.id,
-          validRowId,
-          validColumnId,
-          langtag
         );
       }
     };

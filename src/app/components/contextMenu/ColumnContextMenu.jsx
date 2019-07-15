@@ -8,7 +8,10 @@ import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
-import { canUserEditColumnDisplayProperty } from "../../helpers/accessManagementHelper";
+import {
+  canUserEditColumnDisplayProperty,
+  canUserSeeTable
+} from "../../helpers/accessManagementHelper";
 import TableauxConstants from "../../constants/TableauxConstants";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
@@ -62,7 +65,8 @@ class ColumnContextMenu extends React.Component {
     ) : null;
 
     const followLinkItem =
-      column.kind === TableauxConstants.ColumnKinds.link && !toTable.hidden ? (
+      column.kind === TableauxConstants.ColumnKinds.link &&
+      canUserSeeTable(toTable.id) ? (
         <div>
           <a
             href="#"
