@@ -6,25 +6,25 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import {
+  canUserDeleteFiles,
+  getUserLanguageAccess
+} from "../../../helpers/accessManagementHelper";
+import {
   confirmDeleteFile,
   noPermissionAlertWithLanguage
 } from "../../../components/overlay/ConfirmationOverlay";
-import {
-  getUserLanguageAccess,
-  isUserAdmin
-} from "../../../helpers/accessManagementHelper";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import FileEdit from "../overlay/FileEdit.jsx";
 import Footer from "../../overlay/Footer";
 import Header from "../../overlay/Header";
 import apiUrl from "../../../helpers/apiUrl";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 const enhance = withState("saveChanges", "setSaveChanges", false);
 
 @translate(["media"])
 class File extends Component {
   onRemove = () => {
-    if (isUserAdmin()) {
+    if (canUserDeleteFiles()) {
       confirmDeleteFile(
         retrieveTranslation(this.props.langtag, this.props.file.title),
         () => {
@@ -115,7 +115,7 @@ class File extends Component {
           <i className="icon fa fa-external-link" />
           {t("show_file")}
         </a>
-        {isUserAdmin() ? (
+        {canUserDeleteFiles() ? (
           <span
             className="button"
             onClick={this.onRemove}

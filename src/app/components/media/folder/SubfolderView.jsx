@@ -1,16 +1,16 @@
 import { branch, compose, pure, renderNothing, withHandlers } from "recompose";
 import { translate } from "react-i18next";
-import React from "react";
 import { withRouter } from "react-router-dom";
+import React from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import { canUserEditMedia } from "../../../helpers/accessManagementHelper";
 import { switchFolderHandler } from "../../Router";
 
 const MediaOptions = compose(
-  branch(() => !isUserAdmin(), renderNothing),
+  branch(() => !canUserEditMedia(), renderNothing),
   pure
 )(props => (
   <div className="media-options">
