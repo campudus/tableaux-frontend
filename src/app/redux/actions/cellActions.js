@@ -40,7 +40,12 @@ export const changeCellValue = action => (dispatch, getState) => {
       : reduceValuesToAllowedLanguages;
   const newValue =
     column.multilanguage && !column.kind === ColumnKinds.link
-      ? f.toArray(merge(action.oldValue, reduceValue(action.newValue)))
+      ? f.toArray(
+          merge(
+            action.oldValue,
+            reduceValue({ column, tableId }, action.newValue)
+          )
+        )
       : action.newValue;
 
   dispatch(
@@ -135,13 +140,14 @@ export const calculateCellUpdate = action => {
   ])(action);
 };
 
-const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
+const calculateDefaultCellUpdate = context => {
+  const { column, oldValue, newValue, method } = context;
   const reduceLangs = f.flow(
-    reduceValuesToAllowedLanguages,
+    reduceValuesToAllowedLanguages(context),
     merge(oldValue)
   );
   const reduceCountries = f.flow(
-    reduceValuesToAllowedCountries,
+    reduceValuesToAllowedCountries(context),
     merge(oldValue)
   );
 
