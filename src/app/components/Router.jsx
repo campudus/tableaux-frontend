@@ -52,10 +52,7 @@ const GRUDRouter = React.memo(() => {
       });
     }
 
-    return renderView(
-      // TableView will crash when we're not allowed to see any table
-      ViewNames.TABLE_VIEW
-    )(routeProps);
+    return renderView(ViewNames.TABLE_VIEW)(routeProps);
   });
 
   const renderServiceView = React.useCallback(
