@@ -36,7 +36,6 @@ const _lookUpPermissions = params => {
     const foundColumn =
       column || unless(missingColumnIds, lookUpColumns, colId);
 
-    return ALLOW_ANYTHING; // TODO: remove once backend delivers permissions
     return {
       tables: permissionsOf(tables),
       columns: permissionsOf(columns),
