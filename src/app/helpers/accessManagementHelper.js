@@ -10,47 +10,48 @@ import store from "../redux/store";
 const lookupKey = (columnId, tableId, rowId) =>
   `${tableId}-${columnId}-${rowId}}`;
 
-const lookUpPermissions = noAuthNeeded
-  ? ALLOW_ANYTHING
-  : params => {
-      const { columnId, tableId, column, table, row, rowId } = params;
-      // we can do this as our DB-indices are one-based
-      const _columnId = columnId || (column && column.id);
-      const _tableId = tableId || (table && table.id);
-      const _rowId = rowId || (row && row.id);
+// we need to dispatch that on runtime
+const lookUpPermissions = params =>
+  noAuthNeeded() ? ALLOW_ANYTHING : _lookUpPermissions(params);
+const _lookUpPermissions = params => {
+  const { columnId, tableId, column, table, row, rowId } = params;
+  // we can do this as our DB-indices are one-based
+  const _columnId = columnId || (column && column.id);
+  const _tableId = tableId || (table && table.id);
+  const _rowId = rowId || (row && row.id);
 
-      const permissionsOf = f.propOr({}, "permissions");
+  const permissionsOf = f.propOr({}, "permissions");
 
-      const lookupStructureCached = memoizeWith(lookupKey, (tblId, colId) => {
-        const state = store.getState();
-        const tables = state.tables.data;
-        const columns = state.columns[tblId];
-        const rows = (tblId && state.rows[tblId].data) || {};
+  const lookupStructureCached = memoizeWith(lookupKey, (tblId, colId) => {
+    const state = store.getState();
+    const tables = state.tables.data;
+    const columns = state.columns[tblId];
+    const rows = (tblId && state.rows[tblId].data) || {};
 
-        const lookUpTable = id => f.find(f.propEq("id", id), tables);
-        const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
-        const lookUpColumns = id => f.find(f.propEq("id", id), columns);
+    const lookUpTable = id => f.find(f.propEq("id", id), tables);
+    const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
+    const lookUpColumns = id => f.find(f.propEq("id", id), columns);
 
-        const foundTable = table || unless(f.isNil, lookUpTable, tblId);
-        const foundColumn =
-          column || unless(missingColumnIds, lookUpColumns, colId);
+    const foundTable = table || unless(f.isNil, lookUpTable, tblId);
+    const foundColumn =
+      column || unless(missingColumnIds, lookUpColumns, colId);
 
-        return ALLOW_ANYTHING; // TODO: remove once backend delivers permissions
-        return {
-          tables: permissionsOf(tables),
-          columns: permissionsOf(columns),
-          table: permissionsOf(foundTable),
-          column: permissionsOf(foundColumn),
-          rows: permissionsOf(rows),
-          row: row && permissionsOf(row)
-        };
-      });
-
-      // assumption: table structure & permissions won't change during session
-      return noAuthNeeded
-        ? ALLOW_ANYTHING
-        : lookupStructureCached(_tableId, _columnId, _rowId);
+    return ALLOW_ANYTHING; // TODO: remove once backend delivers permissions
+    return {
+      tables: permissionsOf(tables),
+      columns: permissionsOf(columns),
+      table: permissionsOf(foundTable),
+      column: permissionsOf(foundColumn),
+      rows: permissionsOf(rows),
+      row: row && permissionsOf(row)
     };
+  });
+
+  // assumption: table structure & permissions won't change during session
+  return noAuthNeeded()
+    ? ALLOW_ANYTHING
+    : lookupStructureCached(_tableId, _columnId, _rowId);
+};
 
 const getPermission = pathToPermission =>
   f.compose(
@@ -66,7 +67,7 @@ export const canUserChangeCell = (cellInfo, langtag) => {
     ? f.isPlainObject(editCellValue) && editCellValue[langtag]
     : editCellValue;
 
-  return allowed || noAuthNeeded; // this special case is not caught by ALLOW_ANYTHING
+  return allowed || noAuthNeeded(); // this special case is not caught by ALLOW_ANYTHING
 };
 
 export const canUserEditColumnDisplayProperty = getPermission([
@@ -118,13 +119,14 @@ export const canUserSeeTable = memoizeWith(f.identity, tableData => {
 
 // Media permissions
 
-const lookupMediaPermissions = noAuthNeeded
-  ? () => alwaysTrue
-  : () => {
-      const state = store.getState();
-      const permissions = f.propOr({}, ["media", "data", "permission"], state);
-      return permissions;
-    };
+// must be dispatched at runtime
+const lookupMediaPermissions = () =>
+  noAuthNeeded() ? alwaysTrue : _lookupMediaPermissions();
+const _lookupMediaPermissions = () => {
+  const state = store.getState();
+  const permissions = f.propOr({}, ["media", "data", "permission"], state);
+  return permissions;
+};
 
 const getMediaPermission = action => () => {
   const allowed = f.propOr(false, action, lookupMediaPermissions());
