@@ -152,6 +152,7 @@ export const reduceValuesToAllowedLanguages = f.curryN(2, (context, value) => {
   const accessibleLangs = Langtags.filter(langtag =>
     canUserChangeCell(context, langtag)
   );
+
   return f.pick(accessibleLangs, value);
 });
 // With new per-column permission model, both functions are equivalent
