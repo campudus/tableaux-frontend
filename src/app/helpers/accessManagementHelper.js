@@ -20,15 +20,15 @@ const _lookUpPermissions = params => {
   const _tableId = tableId || (table && table.id);
   const _rowId = rowId || (row && row.id);
 
-  const permissionsOf = f.propOr({}, "permissions");
+  const permissionsOf = f.propOr({}, "permission");
 
   const lookupStructureCached = memoizeWith(lookupKey, (tblId, colId) => {
     const state = store.getState();
-    const tables = state.tables.data;
+    const tables = state.tables;
     const columns = state.columns[tblId];
     const rows = (tblId && state.rows[tblId].data) || {};
 
-    const lookUpTable = id => f.find(f.propEq("id", id), tables);
+    const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
     const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
     const lookUpColumns = id => f.find(f.propEq("id", id), columns);
 
