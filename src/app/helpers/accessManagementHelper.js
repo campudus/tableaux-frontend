@@ -30,7 +30,11 @@ const _lookUpPermissions = params => {
 
     const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
     const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
-    const lookUpColumns = id => f.find(f.propEq("id", id), columns);
+    const lookUpColumns = id =>
+      f.compose(
+        f.prop("data"),
+        f.find(f.propEq("id", id))
+      )(columns);
 
     const foundTable = table || unless(f.isNil, lookUpTable, tblId);
     const foundColumn =
