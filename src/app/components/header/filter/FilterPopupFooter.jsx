@@ -31,7 +31,7 @@ const FilterPopupFooter = ({
       <p className="info">
         {canApplyFilters && saveMode ? (
           <SaveFiltersFooter
-            filterSetting={{ filters, sorting }}
+            filterSettings={{ filters, sorting }}
             leaveSaveMode={leaveSaveMode}
           />
         ) : (
@@ -134,7 +134,6 @@ const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
         type="text"
         value={presetName}
         onChange={handleNameChange}
-        onClick
         placeholder={i18n.t("filters:enter-filter-name")}
       />
       <button
