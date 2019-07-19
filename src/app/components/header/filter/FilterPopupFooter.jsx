@@ -1,10 +1,11 @@
+import { useSelector } from "react-redux";
 import React from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
-import { useSelector } from "react-redux";
 
 import PropTypes from "prop-types";
 
+import { fspy } from "../../../helpers/functools";
 import { useLocalStorage } from "../../../helpers/useLocalStorage";
 
 const FilterPopupFooter = ({
@@ -18,14 +19,6 @@ const FilterPopupFooter = ({
   const enterSaveMode = React.useCallback(() => setSaveMode(true));
   const leaveSaveMode = React.useCallback(() => setSaveMode(false));
 
-  console.log({
-    filters,
-    sorting,
-    canApplyFilters,
-    applyFilters,
-    clearFilters,
-    useSelector
-  });
   return (
     <div className="description-row">
       <p className="info">
@@ -98,17 +91,32 @@ const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
     setPresetName(value);
   });
 
+  const columns = useSelector(tableColumnsSelector);
+
   const [savedFilters, setSavedFilters] = useLocalStorage("savedFilters", []);
   const filterNames = (savedFilters || []).map(f.prop("title"));
 
   const filterNameExists = f.contains(presetName, filterNames);
 
   const handleSaveFilters = React.useCallback(() => {
+    const columnIdAsNumber = f.compose(
+      f.parseInt(10),
+      f.prop("columnId")
+    );
+    const filterColumnIds = f.map(columnIdAsNumber, filterSettings.filters);
+
+    const columnInfo = f.compose(
+      f.map(f.pick(["name", "kind"])),
+      f.filter(({ id }) => f.contains(id, filterColumnIds))
+    )(columns);
+
     const filterTemplate = {
+      columnInfo,
       title: presetName,
       filters: filterSettings.filters,
       sorting: filterSettings.sorting
     };
+
     const filtersToSave = f.compose(
       f.concat(filterTemplate),
       f.reject(f.propEq("title", presetName))
