@@ -3,11 +3,12 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const FilterPresetListItem = ({ template, deleteTemplate, applyTemplate }) => {
-  console.log("FilterItem", template);
   const handleDeleteTemplate = React.useCallback(() =>
     !template.isSystemTemplate ? deleteTemplate(template) : () => null
   );
-  const handleApplyTemplate = React.useCallback(() => applyTemplate(template));
+  const handleApplyTemplate = React.useCallback(() => {
+    applyTemplate(template);
+  });
 
   return (
     <div className="filter-preset-list__item">

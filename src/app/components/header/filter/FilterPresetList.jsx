@@ -7,6 +7,8 @@ import classNames from "classnames";
 import { getFilterTemplates, FILTER_TEMPLATES_KEY } from "./FilterPresets";
 import { useLocalStorage } from "../../../helpers/useLocalStorage";
 import FilterPresetListItem from "./FilterPresetListItem";
+import store from "../../../redux/store";
+import actions from "../../../redux/actionCreators";
 
 const FilterPresets = ({ langtag }) => {
   const [open, setOpen] = React.useState(false);
@@ -39,10 +41,10 @@ const FilterPresetList = ({ langtag }) => {
     }
   };
 
-  const applyFilterTemplate = () => null;
+  const applyFilterTemplate = ({ filters, sorting }) =>
+    store.dispatch(actions.setFiltersAndSorting(filters, sorting));
 
   const availableFilters = [...filterTemplates, ...(userFilters || [])];
-  console.log({ availableFilters });
   return (
     <div className="filter-preset-list">
       {availableFilters.map(template => (
