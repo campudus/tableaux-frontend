@@ -6,13 +6,13 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { Directions } from "../../../constants/TableauxConstants";
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import {
   getCurrencyCode,
   getLanguageOrCountryIcon,
   getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
 import { getCurrencyWithCountry } from "../../cells/currency/currencyHelper";
-import { hasUserAccessToCountryCode } from "../../../helpers/accessManagementHelper";
 
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
@@ -166,7 +166,7 @@ class CurrencyItem extends PureComponent {
   render() {
     const { cell, countryCode, editing } = this.props;
     const isDisabled =
-      this.props.isDisabled || !hasUserAccessToCountryCode(countryCode);
+      this.props.isDisabled || !canUserChangeCell(cell, countryCode);
     const { preComma, postComma } = this.state;
     const currencyString = this.valueToString(preComma, postComma);
     const currencyCode = getCurrencyCode(countryCode);

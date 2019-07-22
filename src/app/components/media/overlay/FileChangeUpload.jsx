@@ -5,7 +5,7 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 
 import { DefaultLangtag } from "../../../constants/TableauxConstants";
-import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
+import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 import { makeRequest } from "../../../helpers/apiHelper";
 import FileIcon from "../folder/FileIcon.jsx";
 import ProgressBar from "../ProgressBar.jsx";
@@ -65,8 +65,8 @@ class FileChangeUpload extends PureComponent {
     const { t } = this.props;
 
     if (
-      (isSingleFile && hasUserAccessToLanguage(DefaultLangtag)) ||
-      (!isSingleFile && hasUserAccessToLanguage(langtag))
+      (isSingleFile && canUserEditFiles(DefaultLangtag)) ||
+      (!isSingleFile && canUserEditFiles(langtag))
     ) {
       const progressBar = uploadProgress ? (
         <ProgressBar progress={uploadProgress} />

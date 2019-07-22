@@ -24,7 +24,8 @@ const tables = (state = initialState, action) => {
         ...state,
         error: false,
         finishedLoading: true,
-        data: toObjectById(action.result.tables)
+        data: toObjectById(action.result.tables),
+        permission: action.result.permission
       };
     case TABLE_DATA_LOAD_ERROR:
       return { ...state, error: true, finishedLoading: true };

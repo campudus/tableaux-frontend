@@ -40,7 +40,8 @@ const GRUDRouter = React.memo(() => {
     const currentTable = currentTableSelector(store.getState());
     const urlOptions = parseOptions(routeProps.location.search);
 
-    if (!currentTable || tableId !== currentTable) {
+    // only load table if we're allowed to see at least one
+    if ((!currentTable || tableId !== currentTable) && tableId) {
       batch(() => {
         switchTable(tableId);
         store.dispatch(actionCreators.cleanUp(tableId));
@@ -168,7 +169,7 @@ const isValidTableId = (tableId, tables) => {
 const isNumeric = str => /^\d+$/.test(str); // regex coerces nil values
 const validateNumber = str => (isNumeric(str) ? parseInt(str) : undefined);
 
-export const switchTable = ({ tableId }) => {
+export const switchTable = ({ tableId } = {}) => {
   store.dispatch(actionCreators.setCurrentTable(tableId));
 };
 

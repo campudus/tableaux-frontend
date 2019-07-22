@@ -4,6 +4,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { canUserSeeTable } from "../../helpers/accessManagementHelper";
 import {
   getColumnDisplayName,
   retrieveTranslation
@@ -35,7 +36,7 @@ export default class ColumnHeader extends PureComponent {
     const { langtag, column } = this.props;
     const key = `${column.id}-display-name`;
     const displayName = getColumnDisplayName(column, langtag);
-    return toTable.hidden ? (
+    return !canUserSeeTable(toTable) ? (
       <div key={key}>{displayName}</div>
     ) : (
       <a

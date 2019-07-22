@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-import { hasUserAccessToLanguage } from "../../../helpers/accessManagementHelper";
+import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 import { Langtags } from "../../../constants/TableauxConstants";
 import { compose, pure, withHandlers, withStateHandlers } from "recompose";
 
@@ -19,7 +19,7 @@ const SFTIInputField = compose(
     <div className="item-content">
       <div onClick={handleToggle}>{getLanguageOrCountryIcon(langtag)}</div>
       <input
-        disabled={!hasUserAccessToLanguage(langtag)}
+        disabled={!canUserEditFiles(langtag)}
         type={"text"}
         value={f.getOr("", langtag, value)}
         onChange={handleChange}

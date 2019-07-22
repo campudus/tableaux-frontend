@@ -129,5 +129,6 @@
   "open-link-filtered": "Öffne verknüpfte Datensätze",
   "open-dataset": "Tabelle mit diesem Datensatz öffnen",
   "redo": "Letzte Änderung wiederholen",
-  "undo": "Letzte Änderung rückgängig machen"
+  "undo": "Letzte Änderung rückgängig machen",
+  "no-tables-found": "Es existieren keine sichtbaren Tabellen"
 }
