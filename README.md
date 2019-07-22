@@ -22,18 +22,25 @@ Go to project directory and execute:
 
     npm run clean && npm run build
 
+## Build project without user authentication
+
+Build artefact with
+
+    AUTH_REQUIRED=false npm run build
+
+then serve normally with `npm run start`.
+
 ## Overview of npm tasks
 
 ``` shell
 npm run
-  start             # create production bundle and serve at serverPort
   build             # create production bundle
+  start             # serve production bundle at serverPort
   dev               # create dev bundle and serve it at serverPort
   lint              # lint all project source files
-  lint:changes      # lint all differences to master
+  lint:changes      # lint all differences to head of master
   lint:fix          # apply automated lint fixes to all project source files
-  lint:fix:changes  # fix all changes to master
-  storybook         # start storybook
+  lint:fix:changes  # fix all differences to head of master
   test              # run tests with jest
   clean             # clean build cache and out directory
   clean:project     # clean build cache and out directory, reinstall all dependencies
@@ -72,6 +79,9 @@ Following variable names can be used:
 - REDUX_DEVTOOLS=[true,false]
 - AUTH_SERVER_URL
 - AUTH_REALM
+- AUTH_REQUIRED=[true,false] (ignored in production when not present at build time)
+
+Example:
 
 ```
 PORT=3001 npm run start
