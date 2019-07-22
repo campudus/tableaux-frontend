@@ -67,11 +67,13 @@ connectionStatus
     });
   });
 
-if (process.env.NODE_ENV === "production") {
-  connectionStatus.next({
-    connected: true,
-    time: new Moment()
-  });
-  pingDelayed(getPingDelay("assumeConnected"));
-  console.log(`Keepalive ping every ~${AVG_PING_DELAY}s`);
-}
+export const watchServerConnection = () => {
+  if (process.env.NODE_ENV === "production") {
+    connectionStatus.next({
+      connected: true,
+      time: new Moment()
+    });
+    pingDelayed(getPingDelay("assumeConnected"));
+    console.log(`Keepalive ping every ~${AVG_PING_DELAY}s`);
+  }
+};

@@ -10,6 +10,7 @@ import { getUserName } from "./helpers/userNameHelper";
 import { initDevelopmentAccessCookies } from "./helpers/accessManagementHelper";
 import { makeRequest } from "./helpers/apiHelper";
 import { promisifyAction } from "./redux/redux-helpers";
+import { watchServerConnection } from "./helpers/connectionWatcher";
 import TableauxConstants from "./constants/TableauxConstants";
 import actions from "./redux/actionCreators";
 import route from "./helpers/apiRoutes";
@@ -33,6 +34,8 @@ export const initGrud = async setSuccess => {
       loadTables,
       maybeInitSentry
     ]);
+
+    watchServerConnection();
     setSuccess(true);
     return true;
   } catch (err) {
