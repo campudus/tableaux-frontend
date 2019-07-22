@@ -29,8 +29,16 @@ export const getLogin = f.memoize(
   noAuthNeeded()
     ? f.always({})
     : () => {
+        if (f.any(f.isEmpty, [config.authRealm, config.authServerUrl])) {
+          alert(
+            "This GRUD instance is configured to use keycloak authentication, " +
+              "but authentication settings were not configured correctly.\n" +
+              "Things can and possibly will break. Proceed at your own risk."
+          );
+        }
+
         const keycloakSettings = {
-          realm: config.authRealm,
+          realm: config.authRealm || "grud",
           url: "/auth",
           resource: "grud-frontend",
           clientId: "grud-frontend",
