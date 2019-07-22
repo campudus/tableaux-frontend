@@ -5,6 +5,7 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { canUserSeeTable } from "../../helpers/accessManagementHelper";
 import {
   getColumnDisplayName,
   getTableDisplayName
@@ -14,7 +15,6 @@ import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import Header from "../overlay/Header";
 import ItemPopupMenu from "./ItemPopupMenu";
 import SvgIcon from "../helperComponents/SvgIcon";
-import store from "../../redux/store";
 
 class RowHeadline extends React.Component {
   static propTypes = {
@@ -55,10 +55,7 @@ class RowHeadline extends React.Component {
     const { actions, cell, langtag, funcs, thisUserCantEdit } = this.props;
     const url = `/${langtag}/tables/${column.toTable}`;
     const colName = getColumnDisplayName(column, langtag);
-    const toTableVisible = !f.prop(
-      ["tables", "data", column.toTable, "hidden"],
-      store.getState()
-    );
+    const toTableVisible = canUserSeeTable(column.toTable);
 
     return (
       <div className="item-header">
