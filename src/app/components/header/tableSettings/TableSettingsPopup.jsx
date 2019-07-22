@@ -9,7 +9,7 @@ import listensToClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import { canUserEditTableDisplayProperty } from "../../../helpers/accessManagementHelper";
 import NameEditor from "./NameEditor";
 
 @listensToClickOutside
@@ -33,7 +33,7 @@ class TableSettingsPopup extends PureComponent {
       <a key="i-need-no-key" href="#" onClick={() => setAllRowsFinal(table)}>
         {i18n.t("table:final.set_all_rows_final")}
       </a>,
-      isUserAdmin() ? (
+      canUserEditTableDisplayProperty(this.props) ? (
         <NameEditor
           table={table}
           langtag={langtag}
