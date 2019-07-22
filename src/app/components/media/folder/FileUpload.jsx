@@ -14,6 +14,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { DefaultLangtag } from "../../../constants/TableauxConstants";
+import { canUserCreateMedia } from "../../../helpers/accessManagementHelper";
 import { makeRequest } from "../../../helpers/apiHelper";
 import ProgressBar from "../ProgressBar.jsx";
 import route from "../../../helpers/apiRoutes";
@@ -117,6 +118,7 @@ FileUpload.propTypes = {
 };
 
 export default compose(
+  branch(() => !canUserCreateMedia(), renderNothing),
   withUploadHandlers,
   withDropHandlers,
   pure,
