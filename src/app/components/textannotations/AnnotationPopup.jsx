@@ -210,23 +210,26 @@ class AnnotationPopup extends Component {
                   />
                 ))}
               </div>
-              {canUserEditCellAnnotations(cell) && (
-                <footer tabIndex="1">
-                  <input
-                    type="text"
-                    ref={this.rememberInput}
-                    onChange={this.handleInputChange}
-                    autoFocus
-                    placeholder={i18n.t("table:new-comment")}
-                    onKeyDown={this.handleInputKeys}
-                    value={this.state.comment}
-                    onBlur={this.focusInput}
-                  />
-                  <div className="button" onClick={this.saveComment}>
-                    {i18n.t("common:add")}
-                  </div>
-                </footer>
-              )}
+
+              <footer tabIndex="1">
+                {canUserEditCellAnnotations(cell) && (
+                  <>
+                    <input
+                      type="text"
+                      ref={this.rememberInput}
+                      onChange={this.handleInputChange}
+                      autoFocus
+                      placeholder={i18n.t("table:new-comment")}
+                      onKeyDown={this.handleInputKeys}
+                      value={this.state.comment}
+                      onBlur={this.focusInput}
+                    />
+                    <div className="button" onClick={this.saveComment}>
+                      {i18n.t("common:add")}
+                    </div>
+                  </>
+                )}
+              </footer>
             </div>
           </div>
         </FocusTrap>
