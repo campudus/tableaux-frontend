@@ -1,4 +1,4 @@
-import { compose } from "recompose";
+import { compose, withProps } from "recompose";
 import { translate } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
@@ -20,6 +20,7 @@ import {
   canUserChangeCell,
   canUserDeleteRow,
   canUserDuplicateRows,
+  canUserEditCellAnnotations,
   canUserEditRowAnnotations
 } from "../../helpers/accessManagementHelper";
 import {
@@ -31,6 +32,7 @@ import {
 import { merge } from "../../helpers/functools";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
+import RowContextMenuItem from "./RowContextMenuItem";
 import pasteCellValue from "../../components/cells/cellCopyHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
@@ -118,29 +120,33 @@ class RowContextMenu extends React.Component {
 
   copyItem = () => {
     const { actions, cell, table, langtag } = this.props;
-    return table.type !== "settings" && cell.kind !== ColumnKinds.concat
-      ? this.mkItem(
-          () => actions.copyCellValue({ cell, langtag }),
-          "copy_cell",
-          "files-o"
-        )
-      : null;
+    const isValidCopySource =
+      table.type !== "settings" && cell.kind !== ColumnKinds.concat;
+    return {
+      itemAction: isValidCopySource
+        ? () => actions.copyCellValue({ cell, langtag })
+        : null,
+      label: "copy_cell",
+      icon: "files-o"
+    };
   };
 
   pasteItem = () => {
-    const { cell, table, copySource, langtag } = this.props;
-    return table.type !== "settings" &&
+    const { cell, copySource, langtag } = this.props;
+    const canPaste =
+      canUserChangeCell(cell) &&
       copySource &&
       !f.isEmpty(copySource) &&
       canConvert(copySource.cell.kind, cell.kind) &&
-      !f.eq(cell.id, copySource.cell.id)
-      ? this.mkItem(
-          () =>
-            pasteCellValue(copySource.cell, copySource.langtag, cell, langtag),
-          "paste_cell",
-          "clipboard"
-        )
-      : null;
+      !f.eq(cell.id, copySource.cell.id);
+    return {
+      itemAction: canPaste
+        ? () =>
+            pasteCellValue(copySource.cell, copySource.langtag, cell, langtag)
+        : null,
+      label: "paste_cell",
+      icon: "clipboard"
+    };
   };
 
   canTranslate = cell =>
@@ -149,56 +155,47 @@ class RowContextMenu extends React.Component {
     canUserChangeCell(cell);
 
   requestTranslationsItem = () => {
-    const { langtag, cell, t } = this.props;
+    const { langtag, cell } = this.props;
     const translationNeededLangtags = f.get(
       ["annotations", "translationNeeded", "langtags"],
       cell
     );
-    if (
+    const cannotSetFlags =
       !this.canTranslate(cell) ||
-      f.contains(langtag, translationNeededLangtags)
-    ) {
-      return null;
-    }
+      f.contains(langtag, translationNeededLangtags);
     const isPrimaryLanguage = langtag === f.first(Langtags);
     const neededTranslations = isPrimaryLanguage
       ? f.drop(1)(Langtags)
       : [langtag];
-    if (
+    const areAllFlagsSet =
       isPrimaryLanguage &&
-      f.isEmpty(f.xor(neededTranslations, translationNeededLangtags))
-    ) {
-      // all langs need translation
-      return null;
-    }
+      f.isEmpty(f.xor(neededTranslations, translationNeededLangtags));
     const fn = () => addTranslationNeeded(neededTranslations, cell);
-    return this.mkItem(
-      fn,
-      isPrimaryLanguage
+    return {
+      hide: areAllFlagsSet || cannotSetFlags,
+      itemAction: fn,
+      label: isPrimaryLanguage
         ? "translations.translation_needed"
-        : t("translations.this_translation_needed", { langtag }),
-      "",
-      isPrimaryLanguage && !f.isEmpty(translationNeededLangtags)
-        ? "dot translation"
-        : "dot translation inactive"
-    );
+        : ["translations.this_translation_needed", { langtag }],
+      iconClass:
+        isPrimaryLanguage && !f.isEmpty(translationNeededLangtags)
+          ? "dot translation"
+          : "dot translation inactive"
+    };
   };
 
   removeTranslationNeededItem = () => {
-    const { langtag, cell, t } = this.props;
+    const { langtag, cell } = this.props;
     const isPrimaryLanguage = langtag === f.first(Langtags);
     const neededTranslations = f.prop(
       ["annotations", "translationNeeded", "langtags"],
       cell
     );
-    if (
+    const cannotRemoveFlags =
       !this.canTranslate(cell) ||
       (!f.contains(langtag, neededTranslations) && !isPrimaryLanguage) ||
       (isPrimaryLanguage &&
-        !f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))))
-    ) {
-      return null;
-    }
+        !f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))));
     const annotations = f.propOr({}, cell);
     const translationNeeded = merge(
       {
@@ -216,14 +213,15 @@ class RowContextMenu extends React.Component {
       isPrimaryLanguage || f.isEmpty(remainingLangtags)
         ? () => deleteCellAnnotation(translationNeeded, cell, true)
         : () => removeTranslationNeeded(langtag, cell);
-    return this.mkItem(
-      fn,
-      isPrimaryLanguage
-        ? t("translations.no_translation_needed")
-        : t("translations.this_translation_needed", { langtag }),
-      "",
-      "dot translation active"
-    );
+    return {
+      hide: cannotRemoveFlags,
+      itemAction: fn,
+      label: isPrimaryLanguage
+        ? "translations.no_translation_needed"
+        : ["translations.this_translation_needed", { langtag }],
+
+      iconClass: "dot translation active"
+    };
   };
 
   toggleFlagItem = flag => {
@@ -237,12 +235,11 @@ class RowContextMenu extends React.Component {
             "do-it!"
           )
       : () => setCellAnnotation({ type: "flag", value: flag }, cell);
-    return this.mkItem(
-      toggleFn,
-      flag,
-      "",
-      `dot ${flag} ${existingAnnotation ? "active" : "inactive"}`
-    );
+    return {
+      itemAction: canUserEditCellAnnotations(cell) ? toggleFn : null,
+      label: flag,
+      iconClass: `dot ${flag} ${existingAnnotation ? "active" : "inactive"}`
+    };
   };
 
   setFinal = valueToSet => () => {
@@ -254,46 +251,42 @@ class RowContextMenu extends React.Component {
   };
 
   setFinalItem = () => {
-    if (!canUserEditRowAnnotations(this.props.cell)) {
-      return null;
-    }
     const {
       t,
+      cell,
       cell: {
         row: { final }
       }
     } = this.props;
     const label = final ? t("final.set_not_final") : t("final.set_final");
-    return this.mkItem(this.setFinal(!final), label, "lock");
+    return {
+      itemAction: canUserEditRowAnnotations(cell)
+        ? this.setFinal(!final)
+        : null,
+      label,
+      icon: "lock"
+    };
   };
 
   openLinksFilteredItem = () => {
     const { cell, langtag } = this.props;
-    if (cell.kind !== ColumnKinds.link || f.isEmpty(cell.value)) {
-      return null;
-    }
-    const linkedIds = f.join(":", cell.value.map(f.get("id")));
-    const toTable = cell.column.toTable;
+    const isNoLink = cell.kind !== ColumnKinds.link || f.isEmpty(cell.value);
+    const linkedIds = f.compose(
+      f.join,
+      f.map("id"),
+      f.prop("value")
+    )(cell);
+    const toTable = f.prop(["column", "toTable"], cell);
     const url = `/${langtag}/tables/${toTable}?filter:id:${linkedIds}`;
     const doOpen = () => {
       window.open(url);
     };
-    return this.mkItem(doOpen, "table:open-link-filtered", "external-link");
-  };
-
-  mkItem = (action, label, icon, classes = "") => {
-    return (
-      <a
-        href="#"
-        onClick={f.compose(
-          this.closeRowContextMenu,
-          action
-        )}
-      >
-        <i className={`fa fa-${icon} ${classes}`} />
-        <div className="item-label">{this.props.t(label)}</div>
-      </a>
-    );
+    return {
+      hide: isNoLink,
+      itemAction: doOpen,
+      label: "table:open-link-filtered",
+      icon: "external-link"
+    };
   };
 
   render = () => {
@@ -306,6 +299,13 @@ class RowContextMenu extends React.Component {
       props: { cell, t }
     } = this;
 
+    const MenuItem = withProps(({ itemAction }) => ({
+      t,
+      closeMenu: this.closeRowContextMenu,
+      enabled: !f.isNil(itemAction),
+      itemAction: itemAction || f.noop
+    }))(RowContextMenuItem);
+
     return (
       <GenericContextMenu
         x={this.props.x}
@@ -314,46 +314,69 @@ class RowContextMenu extends React.Component {
         minWidth={230}
       >
         <div className="separator">{t("cell")}</div>
-        {this.openLinksFilteredItem()}
-        {this.copyItem()}
-        {this.pasteItem()}
-        {this.mkItem(
-          () => this.props.openAnnotations(cell),
-          "add-comment",
-          "commenting"
-        )}
+        <MenuItem {...this.openLinksFilteredItem()} />
+        <MenuItem {...this.copyItem()} />
+        <MenuItem {...this.pasteItem()} />
+        <MenuItem
+          itemAction={() => this.props.openAnnotations(cell)}
+          label="add-comment"
+          icon="commenting"
+        />
+
         {f.any(
           f.complement(f.isEmpty),
           f.props(["info", "error", "warning"], cell.annotations)
-        )
-          ? this.mkItem(
-              () => this.props.openAnnotations(cell),
-              "show-comments",
-              "commenting-o"
-            )
-          : null}
+        ) && (
+          <MenuItem
+            itemAction={() => this.props.openAnnotations(cell)}
+            label="show-comments"
+            icon="commenting-o"
+          />
+        )}
         {!f.contains(this.props.cell.kind, [
           ColumnKinds.group,
           ColumnKinds.concat
-        ])
-          ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
-          : null}
-        {this.requestTranslationsItem()}
-        {this.removeTranslationNeededItem()}
-        {this.toggleFlagItem("important")}
-        {this.toggleFlagItem("check-me")}
-        {this.toggleFlagItem("postpone")}
-
-        <div className="separator with-line">{t("menus.data_set")}</div>
-        {this.props.table.type !== "settings" &&
-          this.mkItem(showEntityView, "show_entity_view", "server")}
-        {canUserDuplicateRows(cell) &&
-          this.mkItem(duplicateRow, "duplicate_row", "clone")}
-        {canUserDeleteRow(cell) &&
-          this.mkItem(deleteRow, "delete_row", "trash-o")}
-        {this.mkItem(showDependency, "show_dependency", "code-fork")}
-        {this.mkItem(showTranslations, "show_translation", "flag")}
-        {this.setFinalItem()}
+        ]) && (
+          <MenuItem
+            itemAction={this.showHistory}
+            label="history:show_history"
+            icon="clock-o"
+          />
+        )}
+        <MenuItem {...this.requestTranslationsItem()} />
+        <MenuItem {...this.removeTranslationNeededItem()} />
+        {["important", "check-me", "postpone"].map(flag => (
+          <MenuItem key={flag} {...this.toggleFlagItem(flag)} />
+        ))}
+        <div className="separator">{t("menus.data_set")}</div>
+        {this.props.table.type !== "settings" && (
+          <MenuItem
+            itemAction={showEntityView}
+            label="show_entity_view"
+            icon="server"
+          />
+        )}
+        {canUserDuplicateRows(cell) && (
+          <MenuItem
+            itemAction={duplicateRow}
+            label="duplicate_row"
+            icon="clone"
+          />
+        )}
+        {canUserDeleteRow(cell) && (
+          <MenuItem itemAction={deleteRow} label="delete_row" icon="trash-o" />
+        )}
+        <MenuItem
+          itemAction={showDependency}
+          label="show_dependency"
+          icon="code-fork"
+        />
+        <MenuItem
+          itemAction={showTranslations}
+          label="show_translation"
+          icon="flag"
+        />
+        <MenuItem {...this.setFinalItem()} />
       </GenericContextMenu>
     );
   };

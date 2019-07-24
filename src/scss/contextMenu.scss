@@ -7,12 +7,13 @@
   border-radius: 4px;
   padding: 20px 0;
 
-  a {
+  .context-menu__item {
     display: flex;
     padding: 10px 25px;
     align-items: center;
+    cursor: pointer;
 
-    i {
+    .context-menu-item__icon {
       width: 20px;
       color: $color-text-medium-grey;
       position: relative;
@@ -20,21 +21,21 @@
       &.dot.translation {
         @include status-dot($color-needs-translation, $color-overlay-header)
       }
-      
+
       &.dot.important {
         @include status-dot($color-important, $color-overlay-header);
       }
-      
+
       &.dot.check-me {
         @include status-dot($color-checkme, $color-overlay-header);
       }
-      
+
       &.dot.postpone {
         @include status-dot($color-postpone, $color-overlay-header);
       }
     }
 
-    .item-label {
+    .context-menu-item__label {
       color: $color-primary-contrast-text;
     }
 
@@ -56,6 +57,17 @@
       .dot.postpone {
         @include status-dot-hovered($color-postpone, $color-hover-dark);
       }
+    }
+  }
+
+  .context-menu__item--disabled {
+    cursor: default;
+    color: darken($color-text-medium-grey, 10);
+    .context-menu-item__label {
+      color: darken($color-text-medium-grey, 10);
+    }
+    &:hover {
+      background-color: transparent;
     }
   }
 
@@ -83,7 +95,7 @@
   top: 40px;
   z-index: 2;
 
-  a {
+  a, .context-menu__item {
     border: none;
     display: block;
     padding: 10px 10px;
