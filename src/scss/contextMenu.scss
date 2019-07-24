@@ -7,69 +7,7 @@
   border-radius: 4px;
   padding: 20px 0;
 
-  .context-menu__item {
-    display: flex;
-    padding: 10px 25px;
-    align-items: center;
-    cursor: pointer;
 
-    .context-menu-item__icon {
-      width: 20px;
-      color: $color-text-medium-grey;
-      position: relative;
-
-      &.dot.translation {
-        @include status-dot($color-needs-translation, $color-overlay-header)
-      }
-
-      &.dot.important {
-        @include status-dot($color-important, $color-overlay-header);
-      }
-
-      &.dot.check-me {
-        @include status-dot($color-checkme, $color-overlay-header);
-      }
-
-      &.dot.postpone {
-        @include status-dot($color-postpone, $color-overlay-header);
-      }
-    }
-
-    .context-menu-item__label {
-      color: $color-primary-contrast-text;
-    }
-
-    &:hover {
-      background-color: $color-hover-dark;
-
-      .dot.translation {
-        @include status-dot-hovered($color-needs-translation, $color-hover-dark)
-      }
-
-      .dot.important {
-        @include status-dot-hovered($color-important, $color-hover-dark);
-      }
-
-      .dot.check-me {
-        @include status-dot-hovered($color-checkme, $color-hover-dark);
-      }
-
-      .dot.postpone {
-        @include status-dot-hovered($color-postpone, $color-hover-dark);
-      }
-    }
-  }
-
-  .context-menu__item--disabled {
-    cursor: default;
-    color: darken($color-text-medium-grey, 10);
-    .context-menu-item__label {
-      color: darken($color-text-medium-grey, 10);
-    }
-    &:hover {
-      background-color: transparent;
-    }
-  }
 
   .separator {
     padding: 10px 25px 10px 45px;
@@ -88,20 +26,103 @@
 }
 
 .column-head .context-menu {
-  @include context-menu-look();
+  // @include context-menu-look();
   position: absolute;
   font-weight: normal;
   right: 0;
   top: 40px;
   z-index: 2;
 
-  a, .context-menu__item {
-    border: none;
-    display: block;
-    padding: 10px 10px;
+}
+
+@mixin context-menu-item-look(
+  $cmi-text-color,
+  $cmi-hover-text-color,
+  $cmi-hover-background-color,
+  $cmi-disabled-text-color
+) {
+  .context-menu__item {
+    display: flex;
+    padding: 10px 25px;
+    align-items: center;
+    cursor: pointer;
+    box-sizing: border-box;
+
+    .context-menu-item__icon {
+      width: 20px;
+      color: $color-text-medium-grey;
+      position: relative;
+
+      &.dot.translation {
+        @include status-dot($color-needs-translation, transparent)
+      }
+
+      &.dot.important {
+        @include status-dot($color-important, transparent);
+      }
+
+      &.dot.check-me {
+        @include status-dot($color-checkme, transparent);
+      }
+
+      &.dot.postpone {
+        @include status-dot($color-postpone, transparent);
+      }
+    }
+
+    .context-menu-item__label {
+      color: $cmi-text-color;
+    }
 
     &:hover {
-      background-color: $color-select-list-selected;
+      background-color: $cmi-hover-background-color;
+
+      .dot.translation {
+        @include status-dot-hovered($color-needs-translation, $cmi-hover-background-color)
+      }
+
+      .dot.important {
+        @include status-dot-hovered($color-important, $cmi-hover-background-color);
+      }
+
+      .dot.check-me {
+        @include status-dot-hovered($color-checkme, $cmi-hover-background-color);
+      }
+
+      .dot.postpone {
+        @include status-dot-hovered($color-postpone, $cmi-hover-background-color);
+      }
     }
   }
+
+  .context-menu__item--disabled {
+    cursor: default;
+    color: $cmi-disabled-text-color;
+    .context-menu-item__label {
+      color: $cmi-disabled-text-color;
+    }
+    &:hover {
+      background-color: transparent;
+      .context-menu-item__label {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.row-context-menu {
+  @include context-menu-item-look(
+    $color-text-light-grey,
+    $color-text-medium-grey,
+    $color-hover-dark,
+    darken($color-text-medium-grey, 10))
+}
+
+.column-header-context-menu {
+  @include context-menu-item-look(
+    $color-very-dark,
+    $color-hover-foreground,
+    $color-hover-background,
+    $color-text-medium-grey
+  )
 }
