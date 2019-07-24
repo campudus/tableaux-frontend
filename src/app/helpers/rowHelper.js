@@ -1,8 +1,8 @@
 import {
-  canUserCreateRow,
   canUserDeleteRow,
+  canUserDuplicateRows,
   getUserLanguageAccess
-} from "./accessManagementHelper";
+} from './accessManagementHelper';
 import {
   confirmDeleteRow,
   openShowDependency
@@ -22,7 +22,7 @@ export function initiateDeleteRow(rowSpecs, overlayToCloseId) {
 
 // ({ tableId, rowId, langtag }) -> void
 export function initiateDuplicateRow(payload) {
-  if (canUserCreateRow(payload)) {
+  if (canUserDuplicateRows(payload)) {
     duplicateRow(payload);
   } else {
     noPermissionAlertWithLanguage([]); // TODO: find a way around this

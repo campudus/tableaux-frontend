@@ -18,6 +18,8 @@ import {
 import { canConvert } from "../../helpers/cellValueConverter";
 import {
   canUserChangeCell,
+  canUserDeleteRow,
+  canUserDuplicateRows,
   canUserEditRowAnnotations
 } from "../../helpers/accessManagementHelper";
 import {
@@ -343,15 +345,12 @@ class RowContextMenu extends React.Component {
         {this.toggleFlagItem("postpone")}
 
         <div className="separator with-line">{t("menus.data_set")}</div>
-        {this.props.table.type === "settings"
-          ? ""
-          : this.mkItem(showEntityView, "show_entity_view", "server")}
-        {this.props.table.type === "settings"
-          ? ""
-          : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-        {this.props.table.type === "settings"
-          ? ""
-          : this.mkItem(deleteRow, "delete_row", "trash-o")}
+        {this.props.table.type !== "settings" &&
+          this.mkItem(showEntityView, "show_entity_view", "server")}
+        {canUserDuplicateRows(cell) &&
+          this.mkItem(duplicateRow, "duplicate_row", "clone")}
+        {canUserDeleteRow(cell) &&
+          this.mkItem(deleteRow, "delete_row", "trash-o")}
         {this.mkItem(showDependency, "show_dependency", "code-fork")}
         {this.mkItem(showTranslations, "show_translation", "flag")}
         {this.setFinalItem()}

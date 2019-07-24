@@ -93,6 +93,11 @@ export const canUserEditRows = memoizeWith(
   }
 );
 
+export const canUserDuplicateRows = f.allPass([
+  canUserEditRows,
+  canUserCreateRow
+]);
+
 export const canUserEditTableDisplayProperty = getPermission([
   "table",
   "editDisplayProperty"
