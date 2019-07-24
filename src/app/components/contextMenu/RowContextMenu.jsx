@@ -32,7 +32,7 @@ import {
 import { merge } from "../../helpers/functools";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
-import RowContextMenuItem from "./RowContextMenuItem";
+import ContextMenuItem from "./ContextMenuItem";
 import pasteCellValue from "../../components/cells/cellCopyHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
@@ -304,7 +304,7 @@ class RowContextMenu extends React.Component {
       closeMenu: this.closeRowContextMenu,
       enabled: !f.isNil(itemAction),
       itemAction: itemAction || f.noop
-    }))(RowContextMenuItem);
+    }))(ContextMenuItem);
 
     return (
       <GenericContextMenu
