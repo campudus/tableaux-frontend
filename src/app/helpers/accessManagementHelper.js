@@ -66,9 +66,11 @@ const getPermission = pathToPermission =>
 export const canUserChangeCell = (cellInfo, langtag) => {
   const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
 
-  const allowed = langtag
-    ? f.isPlainObject(editCellValue) && editCellValue[langtag]
-    : editCellValue;
+  const allowed = f.isBoolean(editCellValue)
+    ? editCellValue
+    : langtag
+    ? editCellValue && editCellValue[langtag]
+    : false;
 
   return allowed || noAuthNeeded(); // this special case is not caught by ALLOW_ANYTHING
 };
