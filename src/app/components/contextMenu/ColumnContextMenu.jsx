@@ -1,9 +1,9 @@
 /*
  * Context menu for column options. Opened by ColumnEntry.
  */
+import { translate } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
-import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
@@ -12,6 +12,7 @@ import {
   canUserEditColumnDisplayProperty,
   canUserSeeTable
 } from "../../helpers/accessManagementHelper";
+import ContextMenuItem from "./ContextMenuItem";
 import TableauxConstants from "../../constants/TableauxConstants";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
@@ -47,53 +48,21 @@ class ColumnContextMenu extends React.Component {
       navigate,
       toTable
     } = this.props;
+
     const canEdit =
       canUserEditColumnDisplayProperty({ column }) &&
       !f.contains(column.kind, PROTECTED_CELL_KINDS);
-    const editorItem = canEdit ? (
-      <div>
-        <a
-          href="#"
-          onClick={f.flow(
-            editHandler,
-            closeHandler
-          )}
-        >
-          {i18n.t("table:editor.edit_column")}
-        </a>
-      </div>
-    ) : null;
 
-    const followLinkItem =
-      column.kind === TableauxConstants.ColumnKinds.link &&
-      canUserSeeTable(toTable.id) ? (
-        <div>
-          <a
-            href="#"
-            onClick={f.flow(
-              () => navigate("/" + langtag + "/tables/" + column.toTable),
-              closeHandler
-            )}
-          >
-            {i18n.t("table:switch_table")}
-            <i className="fa fa-angle-right" style={{ float: "right" }} />
-          </a>
-        </div>
-      ) : null;
-
-    const hideColumnItem = this.props.isId ? null : (
-      <div>
-        <a
-          href="#"
-          onClick={f.flow(
-            () => toggleColumnVisibility(column.id),
-            closeHandler
-          )}
-        >
-          {i18n.t("table:hide_column")}
-        </a>
-      </div>
-    );
+    const MenuItem = translate(["tables"])(props => {
+      console.log("MenuItem", props);
+      return (
+        <ContextMenuItem
+          {...props}
+          closeMenu={closeHandler}
+          enabled={props.itemAction}
+        />
+      );
+    });
 
     return (
       <div
@@ -104,9 +73,26 @@ class ColumnContextMenu extends React.Component {
           transform: "translateX(-100%)"
         }}
       >
-        {editorItem}
-        {followLinkItem}
-        {hideColumnItem}
+        <MenuItem
+          itemAction={editHandler}
+          label="table:editor.edit_column"
+          hide={!canEdit}
+          icon="edit"
+        />
+        <MenuItem
+          itemAction={() => navigate(`/${langtag}/tables/${toTable}`)}
+          label="table:switch_table"
+          icon="long-arrow-right"
+          hide={
+            column.kind !== TableauxConstants.ColumnKinds.link ||
+            !canUserSeeTable(column.toTable)
+          }
+        />
+        <MenuItem
+          itemAction={() => toggleColumnVisibility(column.id)}
+          label="table:hide_column"
+          icon="eye"
+        />
       </div>
     );
   };

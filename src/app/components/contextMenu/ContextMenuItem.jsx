@@ -28,7 +28,7 @@ const RowContextMenuItem = ({
   return (
     !hide && (
       <div className={cssClass} onClick={handleClick}>
-        <i className={iconCssClass}></i>
+        <i className={iconCssClass} />
         <div className="context-menu-item__label">
           {f.isArray(label) ? t(...label) : t(label)}
         </div>

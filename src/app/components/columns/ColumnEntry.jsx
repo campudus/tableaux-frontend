@@ -13,6 +13,7 @@ import {
   ContextMenuButton,
   DescriptionTooltip
 } from "./ColumnHeaderFragments";
+import { canUserEditColumnDisplayProperty } from "../../helpers/accessManagementHelper";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import Header from "../overlay/Header";
 
@@ -237,7 +238,11 @@ export default class ColumnEntry extends React.PureComponent {
           <ContextMenu
             menuOpen={menuOpen}
             closeHandler={this.closeContextMenu}
-            editHandler={this.editColumn}
+            editHandler={
+              canUserEditColumnDisplayProperty({ column })
+                ? this.editColumn
+                : null
+            }
             column={column}
             langtag={langtag}
             isId={this.props.isId}
