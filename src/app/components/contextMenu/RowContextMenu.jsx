@@ -360,16 +360,16 @@ class RowContextMenu extends React.Component {
             icon="server"
           />
         )}
-        {canUserDuplicateRows(cell) && (
-          <MenuItem
-            itemAction={duplicateRow}
-            label="duplicate_row"
-            icon="clone"
-          />
-        )}
-        {canUserDeleteRow(cell) && (
-          <MenuItem itemAction={deleteRow} label="delete_row" icon="trash-o" />
-        )}
+        <MenuItem
+          itemAction={canUserDuplicateRows(cell) ? duplicateRow : null}
+          label="duplicate_row"
+          icon="clone"
+        />
+        <MenuItem
+          itemAction={canUserDeleteRow(cell) ? deleteRow : null}
+          label="delete_row"
+          icon="trash-o"
+        />
         <MenuItem
           itemAction={showDependency}
           label="show_dependency"
