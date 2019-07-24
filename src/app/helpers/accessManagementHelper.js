@@ -181,17 +181,3 @@ export const getUserLanguageAccess = () => Langtags;
 export const reduceMediaValuesToAllowedLanguages = f.identity;
 
 export const hasUserAccessToLanguage = f.stubTrue;
-
-// export function reduceMediaValuesToAllowedLanguages(fileInfos) {
-// if (isUserAdmin()) {
-//   return fileInfos;
-// }
-// return f.map(fileInfo => {
-//   if (f.isObject(fileInfo)) {
-//     return f.pick(getUserLanguageAccess(), fileInfo);
-//   } else {
-//     return fileInfo;
-//   }
-// }, fileInfos);
-//   return fileInfos;
-// }
