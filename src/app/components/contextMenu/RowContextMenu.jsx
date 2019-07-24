@@ -319,7 +319,7 @@ class RowContextMenu extends React.Component {
         <MenuItem {...this.pasteItem()} />
         <MenuItem
           itemAction={
-            canUserEditRowAnnotations(cell)
+            canUserEditCellAnnotations(cell)
               ? () => this.props.openAnnotations(cell)
               : null
           }
