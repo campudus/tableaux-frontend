@@ -468,15 +468,21 @@ export default class VirtualTable extends PureComponent {
       return false;
     }
 
-    const { columns, rows } = this.props;
+    const { rows, columns, visibleColumnOrdering } = this.props;
     const rowIndex = f.add(
       1,
       f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows)
     );
-    const columnIndex = f.add(
-      1,
-      f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns)
-    );
+    const columnIndex = f.compose(
+      f.add(1),
+      f.get("orderIdx"),
+      f.find(({ id }) => id === this.selectedIds.column),
+      f.zipWith(
+        (orderIdx, obj) => ({ ...obj, orderIdx }),
+        f.range(0, visibleColumnOrdering.length + 1)
+      ),
+      f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
+    )(visibleColumnOrdering);
 
     this.setState({
       scrolledCell: {

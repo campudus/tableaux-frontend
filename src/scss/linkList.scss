@@ -32,8 +32,12 @@
         align-items: flex-start;
       }
     }
+  }
 
     .draggable {
+      display:flex;
+      align-items: center;
+      margin-bottom: 5px;
       .drag-handle {
         cursor: pointer;
         margin-right: 5px;
@@ -97,7 +101,6 @@
       color: $color-primary;
     }
   }
-}
 
 .list-item {
   display: flex;

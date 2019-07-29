@@ -18,7 +18,8 @@ import { doto } from "../helpers/functools";
 import {
   getStoredViewObject,
   saveFilterSettings,
-  saveColumnVisibility
+  saveColumnVisibility,
+  saveColumnOrdering
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
@@ -326,6 +327,8 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
 
 const setColumnOrdering = columnIds => (dispatch, getState) => {
   dispatch({ type: SET_COLUMN_ORDERING, columnIds });
+  const tableId = f.get(["tableView", "currentTable"], getState());
+  saveColumnOrdering(tableId, columnIds)
 };
 
 const hideAllColumns = (tableId, columns) => {
@@ -371,7 +374,7 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
   await dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
 
-  const { visibleColumns, rowsFilter } = getStoredViewObject(tableId);
+  const { visibleColumns, rowsFilter, columnOrdering } = getStoredViewObject(tableId);
   if (urlFilters) {
     dispatch(setFiltersAndSorting(urlFilters, null));
   } else {
@@ -380,6 +383,7 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
       dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
     }
   }
+ dispatch(setColumnOrdering(columnOrdering))
   if (!f.isEmpty(visibleColumns)) {
     dispatch(setColumnsVisible(visibleColumns));
   }

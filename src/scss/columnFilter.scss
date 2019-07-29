@@ -111,8 +111,12 @@
     .draggable {
       display: flex;
       align-items: center;
+      &:nth-child(odd){
+        .drag-handle{
+          background-color: $color-background-very-light-grey;
+        }
+      }
       .column-filter-checkbox-wrapper {
-        padding: 0 10px;
         input {
           width: 30px;
         }
@@ -128,7 +132,6 @@
     }
 
     .column-checkbox-list {
-      // width: 100%;
       line-height: 30px;
       height: 300px;
       width: 440px;

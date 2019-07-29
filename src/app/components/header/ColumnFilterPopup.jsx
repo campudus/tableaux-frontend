@@ -130,7 +130,7 @@ class ColumnFilterPopup extends React.Component {
           rowCount={filteredColumns.length}
           rowHeight={30}
           scrollToIndex={selectedIndex}
-          rowRenderer={this.renderCheckboxItems(filteredColumns)}
+          rowRenderer={this.renderCheckboxItems(filteredColumns)(true)}
           style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
         />
       );
@@ -147,7 +147,7 @@ class ColumnFilterPopup extends React.Component {
           rowCount={filteredColumns.length}
           rowHeight={30}
           scrollToIndex={selectedIndex}
-          renderListItem={this.renderCheckboxItems(columns)}
+          renderListItem={this.renderCheckboxItems(columns)(false)}
           applySwap={this.applyColumnOrdering(columns)}
           entries={f.compose(
             f.tail,
@@ -164,8 +164,10 @@ class ColumnFilterPopup extends React.Component {
       .map(_column => getColumnDisplayName(_column, this.props.langtag))
       .getOrElseThrow("Could not extract displayName or name from  " + col);
 
-  renderCheckboxItems = columns => ({ key, index, style }) => {
-    const col = f.find(({ id }) => id === key, columns);
+  renderCheckboxItems = columns => renderByIndex => ({ key, index, style }) => {
+    const col = renderByIndex
+      ? columns[index]
+      : f.find(({ id }) => id === key, columns);
     const name = this.getColName(col);
     const {
       columnActions: { toggleColumnVisibility }
