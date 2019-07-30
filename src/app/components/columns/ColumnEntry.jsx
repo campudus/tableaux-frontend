@@ -194,7 +194,7 @@ export default class ColumnEntry extends React.PureComponent {
           bottomLeft: false,
           bottomRight: false,
           left: false,
-          right: this.props.index !== 1,
+          right: true,
           top: false,
           topLeft: false,
           topRight: false

@@ -123,6 +123,9 @@ export default class VirtualTable extends PureComponent {
     maybe(this.multiGrid)
       .method("recomputeGridSize")
       .method("invalidateCellSizeAfterRender");
+    if (index === 1) {
+      this.multiGrid.forceUpdate();
+    }
   };
 
   setOpenAnnotations = cell => {
