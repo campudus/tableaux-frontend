@@ -6,7 +6,12 @@ import {
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
-import { ifElse, mergeArrays, unless } from "../../helpers/functools";
+import {
+  ifElse,
+  mergeArrays,
+  unless,
+  mapIndexed
+} from "../../helpers/functools";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import TableauxRouter from "../../router/router";
@@ -222,8 +227,8 @@ const setInitialColumnOrdering = action => state =>
   f.isEmpty(f.get("columnOrdering", state))
     ? f.flow(
         f.prop(["result", "columns"]),
-        columns => columns.map((column, idx) => ({ idx, id: column.id })),
-        ids => f.assoc("columnOrdering")(ids)(state)
+        mapIndexed(({ id }, idx) => ({ id, idx })),
+        ids => f.assoc("columnOrdering", ids, state)
       )(action)
     : state;
 

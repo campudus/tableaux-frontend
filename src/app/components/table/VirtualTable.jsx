@@ -15,7 +15,7 @@ import {
   Langtags,
   Directions
 } from "../../constants/TableauxConstants";
-import { doto, either, maybe } from "../../helpers/functools";
+import { doto, either, maybe, mapIndexed } from "../../helpers/functools";
 import { isLocked } from "../../helpers/annotationHelper";
 import AddNewRowButton from "../rows/NewRow";
 import Cell, { getAnnotationState } from "../cells/Cell";
@@ -477,10 +477,7 @@ export default class VirtualTable extends PureComponent {
       f.add(1),
       f.get("orderIdx"),
       f.find(({ id }) => id === this.selectedIds.column),
-      f.zipWith(
-        (orderIdx, obj) => ({ ...obj, orderIdx }),
-        f.range(0, visibleColumnOrdering.length + 1)
-      ),
+      mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
       f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
     )(visibleColumnOrdering);
 
@@ -549,12 +546,8 @@ export default class VirtualTable extends PureComponent {
     } = this.props;
     const { openAnnotations, scrolledCell } = this.state;
     const { columnIndex, rowIndex, align } = scrolledCell;
-    // this.visibleColumnIndices = f
-    //   .range(0, columns.length)
-    //   .filter(this.filterVisibleCells);
-    this.visibleColumnIndices = visibleColumnOrdering;
 
-    const columnCount = f.size(this.visibleColumnIndices) + 1;
+    const columnCount = f.size(visibleColumnOrdering) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
     const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
