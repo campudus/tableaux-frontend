@@ -328,7 +328,7 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
 const setColumnOrdering = columnIds => (dispatch, getState) => {
   dispatch({ type: SET_COLUMN_ORDERING, columnIds });
   const tableId = f.get(["tableView", "currentTable"], getState());
-  saveColumnOrdering(tableId, columnIds)
+  saveColumnOrdering(tableId, columnIds);
 };
 
 const hideAllColumns = (tableId, columns) => {
@@ -374,7 +374,9 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
   await dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
 
-  const { visibleColumns, rowsFilter, columnOrdering } = getStoredViewObject(tableId);
+  const { visibleColumns, rowsFilter, columnOrdering } = getStoredViewObject(
+    tableId
+  );
   if (urlFilters) {
     dispatch(setFiltersAndSorting(urlFilters, null));
   } else {

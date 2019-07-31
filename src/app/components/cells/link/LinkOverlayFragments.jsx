@@ -32,13 +32,11 @@ const NoLinkedRows = ({ linkEmptyLines }) => (
 
 export const LinkedRows = compose(
   branch(
-    ({ loading, entries }) =>
-      !loading && f.isEmpty(entries),
+    ({ loading, entries }) => !loading && f.isEmpty(entries),
     renderComponent(NoLinkedRows)
   ),
   withHandlers({
-    renderListItem: ({ renderListItem }) =>
-      renderListItem({ isLinked: true })
+    renderListItem: ({ renderListItem }) => renderListItem({ isLinked: true })
   })
 )(DragSortList);
 

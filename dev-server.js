@@ -35,8 +35,7 @@ const entryFiles = [
 // parcel options
 const options = {
   sourceMaps: true,
-  outDir: config.outDir,
-  hmr: false
+  outDir: config.outDir
 };
 
 // init the bundler
