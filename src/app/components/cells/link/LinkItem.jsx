@@ -1,13 +1,15 @@
 import React from "react";
+import f from "lodash/fp";
+
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import SvgIcon from "../../helperComponents/SvgIcon";
+
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
+import { doto, unless } from "../../../helpers/functools";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
-import Empty from "../../helperComponents/emptyEntry";
-import { unless } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import f from "lodash/fp";
-import { doto } from "../../../helpers/functools";
+import Empty from "../../helperComponents/emptyEntry";
+import SvgIcon from "../../helperComponents/SvgIcon";
 import apiUrl from "../../../helpers/apiUrl";
 
 const MAIN_BUTTON = 0;
@@ -28,6 +30,10 @@ const SelectedItem = props => {
     "has-focus": props.selectedMode === 1,
     linked: props.isLinked
   });
+
+  const handleClick = React.useCallback(evt =>
+    props.clickHandler(props.isLinked, props.row, evt)
+  );
   return (
     <div
       style={props.style}
@@ -69,7 +75,7 @@ const SelectedItem = props => {
           className={linkButtonClass}
           draggable={false}
           onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
-          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
+          onClick={handleClick}
         >
           {props.isLinked ? (
             <SvgIcon icon="cross" containerClasses="color-primary" />
@@ -105,7 +111,10 @@ const PlainItem = props => {
 };
 
 const LinkItem = props => {
-  const Item = props.isSelected ? SelectedItem : PlainItem;
+  const Item =
+    !props.isSelected || !canUserChangeCell(props.cell)
+      ? PlainItem
+      : SelectedItem;
   return <Item {...props} key={props.row.id} />;
 };
 
