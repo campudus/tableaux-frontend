@@ -122,20 +122,23 @@ const loadTables = () => {
   };
 };
 
-const loadColumns = tableId => {
-  return {
-    promise: makeRequest({
-      apiRoute: getAllColumnsForTable(tableId),
-      method: "GET"
-    }),
-    actionTypes: [
-      COLUMNS_LOADING_DATA,
-      COLUMNS_DATA_LOADED,
-      COLUMNS_DATA_LOAD_ERROR
-    ],
-    tableId
-  };
-};
+const loadColumns = tableId => dispatch =>
+  new Promise((resolve, reject) => {
+    dispatch({
+      promise: makeRequest({
+        apiRoute: getAllColumnsForTable(tableId),
+        method: "GET"
+      }),
+      actionTypes: [
+        COLUMNS_LOADING_DATA,
+        COLUMNS_DATA_LOADED,
+        COLUMNS_DATA_LOAD_ERROR
+      ],
+      tableId,
+      onSuccess: resolve,
+      onError: reject
+    });
+  });
 
 const addRows = (tableId, rows) => {
   return {
@@ -358,9 +361,9 @@ const generateDisplayValues = (rows, columns, tableId) => (
   };
 };
 
-const loadCompleteTable = (tableId, urlFilters) => dispatch => {
+const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
   dispatch(setCurrentTable(tableId));
-  dispatch(loadColumns(tableId));
+  await dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
 
   const { visibleColumns, rowsFilter } = getStoredViewObject(tableId);
