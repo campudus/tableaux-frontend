@@ -101,13 +101,16 @@ class ColumnFilterPopup extends React.Component {
   };
 
   applyColumnOrdering = columns => newOrdering => () => {
+    const {
+      columnActions: { setColumnOrdering }
+    } = this.props;
     const mapOrderingToIndices = f.map(colId => ({
       id: colId,
       idx: f.findIndex(({ id }) => id === colId, columns)
     }));
 
     return f.compose(
-      f.get(["columnActions", "setColumnOrdering"], this.props),
+      setColumnOrdering,
       mapOrderingToIndices,
       f.concat([0])
     )(newOrdering);
