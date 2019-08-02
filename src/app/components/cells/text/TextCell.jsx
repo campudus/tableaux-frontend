@@ -1,13 +1,13 @@
-import React from "react";
-import TextEditOverlay from "./TextEditOverlay";
-import ExpandButton from "./ExpandButton.jsx";
-import f from "lodash/fp";
-import { FallbackLanguage } from "../../../constants/TableauxConstants";
-import Header from "../../overlay/Header";
-import { doto } from "../../../helpers/functools";
-
 import "../../../../scss/main.scss";
+
 import { withHandlers } from "recompose";
+import React from "react";
+import f from "lodash/fp";
+
+import { getTableDisplayName } from "../../../helpers/multiLanguage";
+import ExpandButton from "./ExpandButton.jsx";
+import Header from "../../overlay/Header";
+import TextEditOverlay from "./TextEditOverlay";
 
 const TextCell = props => {
   const { langtag, displayValue, selected, openEditOverlay } = props;
@@ -34,16 +34,7 @@ const enhance = withHandlers({
     if (selected) {
       event && event.stopPropagation();
 
-      const context = doto(
-        [
-          table.displayName[langtag],
-          table.displayName[FallbackLanguage],
-          table.name
-        ],
-        f.compact,
-        f.first,
-        ctx => (f.isString(ctx) ? ctx : f.toString(ctx))
-      );
+      const context = getTableDisplayName(table, langtag);
 
       actions.openOverlay({
         head: <Header context={context} langtag={langtag} />,
