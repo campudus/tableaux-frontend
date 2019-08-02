@@ -5,11 +5,12 @@ import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
-import {
-  FallbackLanguage,
-  FilterModes
-} from "../../../constants/TableauxConstants";
+import { FilterModes } from "../../../constants/TableauxConstants";
 import { forkJoin, maybe } from "../../../helpers/functools";
+import {
+  getTableDisplayName,
+  retrieveTranslation
+} from "../../../helpers/multiLanguage";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import TableauxRouter from "../../../router/router";
@@ -185,14 +186,8 @@ class SwitcherPopup extends React.PureComponent {
 
   getFilteredTables = (filterGroupId, filterTableName) => {
     const { langtag, tables } = this.props;
-    const getDisplayNameOrFallback = f.flow(
-      f.props([
-        ["displayName", langtag],
-        ["displayName", FallbackLanguage],
-        " "
-      ]),
-      f.find(f.identity)
-    );
+    const getDisplayNameOrFallback = table =>
+      getTableDisplayName(table, langtag);
     const matchesQuery = query =>
       f.flow(
         forkJoin(
@@ -220,8 +215,7 @@ class SwitcherPopup extends React.PureComponent {
     const { t, langtag } = this.props;
 
     const renderGroup = group => {
-      const groupDisplayName =
-        group.displayName[langtag] || group.displayName[FallbackLanguage];
+      const groupDisplayName = retrieveTranslation(langtag, group);
 
       const isNoGroupGroup = group.id === 0;
       const isActive = this.state.filterGroupId === group.id;
@@ -283,10 +277,7 @@ class SwitcherPopup extends React.PureComponent {
     const hasResults = hasGroupResults || hasOtherResults;
 
     const renderTable = (table, index) => {
-      const displayName =
-        table.displayName[langtag] ||
-        table.displayName[FallbackLanguage] ||
-        table.name;
+      const displayName = getTableDisplayName(table, langtag);
       const tableId = table.id;
       const isActive = f.every(f.identity, [
         f.matchesProperty("id", focusTableId)(table),
@@ -326,11 +317,7 @@ class SwitcherPopup extends React.PureComponent {
               query: this.state.filterTableName,
               group: f.flow(
                 f.find(f.matchesProperty("id", groupId)),
-                f.props([
-                  ["displayName", langtag],
-                  ["displayName", FallbackLanguage]
-                ]),
-                f.find(f.identity)
+                retrieveTranslation(langtag)
               )(groups)
             })}
           </div>

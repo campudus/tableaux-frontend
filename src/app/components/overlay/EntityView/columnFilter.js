@@ -1,7 +1,4 @@
-import {
-  ColumnKinds,
-  FallbackLanguage
-} from "../../../constants/TableauxConstants";
+import { ColumnKinds } from "../../../constants/TableauxConstants";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import * as f from "lodash/fp";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
@@ -23,8 +20,7 @@ const joinAttachmentFileNames = langtag =>
     f.map(
       v =>
         f.prop(["title", langtag], v) ||
-        f.prop(["externalName", langtag], v) ||
-        f.prop(["externalName", FallbackLanguage], v)
+        retrieveTranslation(langtag, v.externalName)
     ),
     f.trim,
     f.defaultTo("")

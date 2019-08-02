@@ -1,18 +1,17 @@
+import { List } from "react-virtualized";
 import React from "react";
-import listensToClickOutside from "react-onclickoutside";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import { either } from "../../helpers/functools";
-import { List } from "react-virtualized";
-import {
-  Directions,
-  FallbackLanguage,
-  FilterModes
-} from "../../constants/TableauxConstants";
-import SearchFunctions from "../../helpers/searchFunctions";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
-import classNames from "classnames";
+import listensToClickOutside from "react-onclickoutside";
+
 import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import { Directions, FilterModes } from "../../constants/TableauxConstants";
+import { either } from "../../helpers/functools";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import SearchFunctions from "../../helpers/searchFunctions";
 
 @listensToClickOutside
 class ColumnFilterPopup extends React.Component {
@@ -98,9 +97,7 @@ class ColumnFilterPopup extends React.Component {
 
   getColName = col =>
     either(col)
-      .map(f.prop(["displayName", this.props.langtag]))
-      .orElse(f.prop(["displayName", FallbackLanguage]))
-      .orElse(f.prop(["name"]))
+      .map(_column => getColumnDisplayName(_column, this.props.langtag))
       .getOrElseThrow("Could not extract displayName or name from  " + col);
 
   renderCheckboxItems = columns => ({ key, index, style }) => {
