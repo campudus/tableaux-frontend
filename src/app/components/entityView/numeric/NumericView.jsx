@@ -11,7 +11,7 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { isYearColumn } from '../../../helpers/columnHelper';
+import { isYearColumn } from "../../../helpers/columnHelper";
 import { maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import NumberInput from "../../helperComponents/NumberInput";
@@ -66,6 +66,7 @@ const enhance = compose(
       const numbers = f.map(f.toString, f.range(0, 10));
       const allowedKeys = [
         ...numbers,
+        "-",
         ".",
         ",",
         "ArrowLeft",

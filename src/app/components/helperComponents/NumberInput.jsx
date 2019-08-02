@@ -16,7 +16,7 @@ import {
 import { maybe, when } from "../../helpers/functools";
 
 export const MAX_DIGIT_LENGTH = 20; // 15 digits + 15 / 3 = 5 group separators
-const allowedSymbols = "0123456789";
+const allowedSymbols = "-0123456789";
 const allowedKeys = [
   "Enter",
   "Escape",
@@ -50,6 +50,19 @@ const NumberInput = (props, ref) => {
   );
   const handleChange = event => {
     const inputValue = event.target.value;
+
+    const fixSign = numericString => {
+      // whenever user hits `minus`, toggle sign
+      const numDashes = f.filter(f.eq("-"), numericString).length;
+      const cleanString = numericString.replace(/-/g, "");
+      return numDashes % 2 === 0 ? cleanString : "-" + cleanString;
+    };
+
+    const readNumericString = f.compose(
+      readLocalizedNumber,
+      fixSign
+    );
+
     const formattedInput = f.compose(
       when(
         () => f.last(inputValue) === decimalSeparator,
@@ -58,10 +71,10 @@ const NumberInput = (props, ref) => {
       f.join(""),
       f.take(MAX_DIGIT_LENGTH),
       formatNumber,
-      readLocalizedNumber
+      readNumericString
     )(inputValue);
 
-    onChange(readLocalizedNumber(inputValue));
+    onChange(readNumericString(inputValue));
     const stateValue = f.contains(formattedInput, ["", "0", "NaN"])
       ? ""
       : localize
