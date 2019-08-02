@@ -54,7 +54,6 @@ class ColumnContextMenu extends React.Component {
       !f.contains(column.kind, PROTECTED_CELL_KINDS);
 
     const MenuItem = translate(["tables"])(props => {
-      console.log("MenuItem", props);
       return (
         <ContextMenuItem
           {...props}
