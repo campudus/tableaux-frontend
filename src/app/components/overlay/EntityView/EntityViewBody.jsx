@@ -183,7 +183,7 @@ class EntityViewBody extends Component {
 
   renderTranslationView = () => {
     const { arrowPosition } = this.state;
-    const { translationView = {} } = this.props;
+    const { translationView = {}, cells } = this.props;
     const langtag = this.getContentLanguage();
     const arrow =
       f.isNumber(arrowPosition) && f.prop("show", translationView) ? (
@@ -197,10 +197,15 @@ class EntityViewBody extends Component {
         this.props.sharedData.setContentLanguage({ langtag: nextLangtag });
       }
     };
+    const cell =
+      (translationView.cell &&
+        translationView.cell.id &&
+        f.find(f.propEq("id", translationView.cell.id), cells)) ||
+      {};
     return translationView.show ? (
       <div>
         <TranslationPopup
-          cell={translationView.cell || {}}
+          cell={cell}
           langtag={langtag}
           setTranslationView={this.setTranslationView}
           switchLanguage={handleLanguageSwitch}
