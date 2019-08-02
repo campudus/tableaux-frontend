@@ -57,12 +57,16 @@ export const changeCellValue = action => (dispatch, getState) => {
 
 const dispatchCellValueChange = action => (dispatch, getState) => {
   const { tableId, columnId, rowId, oldValue, newValue, column } = action;
+  console.log(action);
 
   // The additional checks help normalising bad link columns' values
   const isMultiLanguage =
     column.multilanguage && (f.isPlainObject(newValue) || f.isNil(newValue));
 
   const update = calculateCellUpdate(action);
+  if (f.isNil(update)) {
+    return;
+  }
   const changedKeys = isMultiLanguage
     ? f.compose(
         f.filter(k => !f.equals(oldValue[k], update.value.value[k])),
