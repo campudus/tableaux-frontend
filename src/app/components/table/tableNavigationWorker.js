@@ -9,7 +9,7 @@ import {
 } from "../../constants/TableauxConstants";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
-import { doto, maybe, unless } from "../../helpers/functools";
+import { doto, maybe, memoizeWith, unless } from "../../helpers/functools";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { isLocked } from "../../helpers/annotationHelper";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
@@ -18,6 +18,7 @@ import Header from "../overlay/Header";
 import TableauxRouter from "../../router/router";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
+import store from "../../redux/store";
 
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
@@ -33,6 +34,20 @@ export function checkFocusInsideTable() {
     }
   }
 }
+
+const tableColumnKey = (tableId, columnId) => `${tableId}-${columnId}`;
+const lookUpCellKind = memoizeWith(tableColumnKey, (tableId, columnId) =>
+  doto(
+    store.getState(),
+    f.prop(["columns", tableId, "data"]),
+    f.find(f.propEq("id", columnId)),
+    f.prop("kind")
+  )
+);
+const getCellKind = ({ currentTable, selectedCell }) =>
+  f.isEmpty(selectedCell)
+    ? null
+    : lookUpCellKind(currentTable, selectedCell.columnId);
 
 export function getKeyboardShortcuts() {
   const { actions, tableView } = this.props;
@@ -108,6 +123,7 @@ export function getKeyboardShortcuts() {
       if (!selectedCell) {
         return;
       }
+      const cellKind = getCellKind(tableView);
       const hasActionKey = !!f.get(actionKey, event);
       const isKeyPressed = k =>
         k >= "A" && k <= "Z"
@@ -118,7 +134,7 @@ export function getKeyboardShortcuts() {
 
       const systemPaste =
         selectedCellEditing &&
-        f.contains(selectedCell.kind, [
+        f.contains(cellKind, [
           ColumnKinds.text,
           ColumnKinds.richtext,
           ColumnKinds.shorttext,
@@ -128,7 +144,7 @@ export function getKeyboardShortcuts() {
       if (
         hasActionKey &&
         isKeyPressed("c") &&
-        selectedCell.kind !== ColumnKinds.concat &&
+        cellKind !== ColumnKinds.concat &&
         !isTextSelected()
       ) {
         // Cell copy
@@ -172,10 +188,10 @@ export function getKeyboardShortcuts() {
       } else if (
         !selectedCellEditing && // Other keypress
         (!event.altKey && !event.metaKey && !event.ctrlKey) &&
-        (selectedCell.kind === ColumnKinds.text ||
-          selectedCell.kind === ColumnKinds.shorttext ||
-          selectedCell.kind === ColumnKinds.richtext ||
-          selectedCell.kind === ColumnKinds.numeric)
+        (cellKind === ColumnKinds.text ||
+          cellKind === ColumnKinds.shorttext ||
+          cellKind === ColumnKinds.richtext ||
+          cellKind === ColumnKinds.numeric)
       ) {
         toggleCellEditing.call(this);
       }
