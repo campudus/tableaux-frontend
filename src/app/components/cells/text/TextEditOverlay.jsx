@@ -1,15 +1,18 @@
-import React from "react";
 import { compose, lifecycle, withStateHandlers } from "recompose";
+import React from "react";
 import i18n from "i18next";
 
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
+
 const TextEditOverlay = props => {
-  const { editedValue, setValue, saveEdits } = props;
+  const { editedValue, setValue, saveEdits, cell } = props;
 
   return (
     <div className="content-items richtext-cell-editor">
       <div className="item">
         <div className="item-content shorttext" tabIndex={1}>
           <textarea
+            disabled={!canUserChangeCell(cell)}
             value={editedValue}
             placeholder={i18n.t("table:empty.text")}
             onChange={setValue}
