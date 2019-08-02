@@ -1,16 +1,20 @@
 import f from "lodash/fp";
 
-import { ColumnKinds } from "../../constants/TableauxConstants";
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { makeRequest } from "../../helpers/apiHelper";
 import { merge, when } from "../../helpers/functools";
 import {
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
 } from "../../helpers/accessManagementHelper";
-import { removeTranslationNeeded } from "../../helpers/annotationHelper";
+import {
+  removeTranslationNeeded,
+  addTranslationNeeded
+} from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
+import openTranslationDialog from "../../components/overlay/TranslationDialog";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -50,13 +54,18 @@ export const changeCellValue = action => (dispatch, getState) => {
       columnId,
       rowId,
       tableId,
-      newValue
+      newValue,
+      cell: action.cell || {
+        column,
+        table: { id: tableId },
+        row: { id: rowId }
+      }
     })
   );
 };
 
 const dispatchCellValueChange = action => (dispatch, getState) => {
-  const { tableId, columnId, rowId, oldValue, newValue, column } = action;
+  const { tableId, columnId, rowId, oldValue, newValue, column, cell } = action;
 
   // The additional checks help normalising bad link columns' values
   const isMultiLanguage =
@@ -82,21 +91,40 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
     needsUpdate && isMultiLanguage
       ? f
           .keys(newValue)
-          .filter(k => f.isEmpty(action.oldValue[k]) && !f.isEmpty(newValue[k]))
-      : null;
+          .filter(k => !f.isEqual(action.oldValue[k], newValue[k]))
+      : // .filter(k => !f.isEmpty(newValue[k]) && f.isEmpty(oldValue[k]))
+        null;
+  const translations = f.omit([f.head(Langtags)], oldValue);
+  const mainLang = f.head(Langtags);
 
-  const annotations = f.get(
-    ["rows", tableId, "data", rowId, "annotations"],
-    getState()
-  );
+  if (
+    isMultiLanguage &&
+    !f.isEmpty(translations) &&
+    newValue[mainLang] &&
+    !f.isEqual(oldValue[mainLang], newValue[mainLang])
+  ) {
+    openTranslationDialog(
+      null,
+      () => addTranslationNeeded(f.tail(Langtags), cell),
+      () => null
+    );
+  }
+
+  const annotations = f.compose(
+    f.get("annotations"),
+    f.find(f.propEq("id", rowId)),
+    f.get(["rows", tableId, "data"])
+  )(getState());
+
+  const annotation = f.compose(
+    colIdx => annotations[colIdx],
+    f.findIndex(f.propEq("id", columnId)),
+    f.get(["columns", tableId, "data"])
+  )(getState());
 
   const maybeClearFreshTranslations = res => {
-    if (!f.isEmpty(freshlyTranslatedLangtags) && annotations) {
-      removeTranslationNeeded(freshlyTranslatedLangtags, {
-        column,
-        row: { id: rowId },
-        table: { id: tableId }
-      });
+    if (!f.isEmpty(freshlyTranslatedLangtags) && annotation) {
+      removeTranslationNeeded(freshlyTranslatedLangtags, cell);
     }
     return res;
   };

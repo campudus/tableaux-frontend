@@ -16,7 +16,7 @@ const openTranslationDialog = (context, confirm, cancel = function() {}) => {
     title: i18n.t("table:translations.dialog_headline"),
     message: i18n.t("table:translations.dialog_question"),
     type: "question",
-    actions: buttons
+    buttonActions: buttons
   });
 };
 

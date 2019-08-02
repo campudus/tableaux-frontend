@@ -24,9 +24,9 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
     annotation.value
   );
 
-  const existingAnnotation = annotations.find(
-    ann => ann.type === "flag" && ann.value === valueKey
-  );
+  const existingAnnotation = !annotations
+    ? []
+    : annotations.find(ann => ann.type === "flag" && ann.value === valueKey);
 
   const oldLangtags = f.propOr([], "langtags", existingAnnotation);
   const newLangtags = annotation.langtags;
@@ -39,6 +39,7 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
   const shouldDelete = f.isEmpty(langtags) || action.setTo === false;
   const couldFindUuid =
     annotation.uuid || (existingAnnotation && existingAnnotation.uuid);
+
 
   const promise = shouldDelete
     ? makeRequest(paramToDeleteAnnotation(cell, annotation))
@@ -79,8 +80,9 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
 const setTextAnnotation = change => action => (dispatch, getState) => {
   const { cell, annotation, onError, onSuccess } = action;
   const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
-  const existingAnnotation = annotations.find(
-    ann => ann.type === annotation.type && ann.uuid === annotation.uuid
+  const existingAnnotation = f.find(
+    ann => ann.type === annotation.type && ann.uuid === annotation.uuid,
+    annotations
   );
 
   const shouldDelete = change === Change.DELETE || action.setTo === false;
