@@ -1,8 +1,8 @@
-import { branch, compose, renderNothing } from 'recompose';
-import React from 'react';
+import { branch, compose, renderNothing } from "recompose";
+import React from "react";
 import f from "lodash/fp";
 
-import { makeRequest } from '../../helpers/apiHelper';
+import { makeRequest } from "../../helpers/apiHelper";
 
 const needsApiData = Component => props => {
   const { requestUrl } = props;

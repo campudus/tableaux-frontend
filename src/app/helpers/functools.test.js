@@ -7,8 +7,7 @@ import {
   replaceMoustache,
   slidingWindow,
   usePropAsKey,
-  where,
-  withPropAsKey
+  where
 } from "./functools";
 
 describe("functools", () => {
