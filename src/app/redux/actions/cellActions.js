@@ -118,7 +118,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   )(getState());
 
   const annotation = f.compose(
-    colIdx => annotations[colIdx],
+    colIdx => f.get([colIdx], annotations),
     f.findIndex(f.propEq("id", columnId)),
     f.get(["columns", tableId, "data"])
   )(getState());
