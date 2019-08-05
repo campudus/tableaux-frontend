@@ -375,7 +375,9 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
       dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
     }
   }
-  dispatch(setColumnsVisible(visibleColumns));
+  if (!f.isEmpty(visibleColumns)) {
+    dispatch(setColumnsVisible(visibleColumns));
+  }
 };
 
 const setCurrentLanguage = lang => {
