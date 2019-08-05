@@ -49,7 +49,7 @@ Default project configuration can be overwritten via a `config.json` in the base
   "outDir": "out",        // build artefacts go here
   "host": "localhost",    // host of the http frontend
   "port": 3000,           // port for the http frontent
-  "apiHost": "localhost", // 
+  "apiHost": "localhost", //
   "apiPort": 8080,        // port of the backend service
   "webhookUrl": ".."      // url for Slack webhook to recieve user feedback
 }
@@ -67,7 +67,9 @@ Following variable names can be used:
 - APIPORT
 - OUTDIR
 - WEBHOOKURL
-- REDUX_DEVTOOLS=[true,false]
+- REDUX_DEVTOOLS=[true,false] # "false" disable dev tools integration for dev performance. Default: true
+- ENABLE_HISTORY=[true,false] # Show or hide cell history button in cotext menu. Default: true
+- SHOW_TABLE_DROPDOWN=[true,false] # Show confusing table settings dropdown. Default: true
 
 ```
 PORT=3001 npm run start

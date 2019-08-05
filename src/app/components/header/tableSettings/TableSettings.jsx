@@ -1,8 +1,11 @@
 /** Displays a cogwheel icon that, when clicked, displays an instance of TableSettingsPopup */
-import React from "react";
-import TableSettingsPopup from "./TableSettingsPopup";
 import { contains } from "lodash/fp";
+import React from "react";
+
 import PropTypes from "prop-types";
+
+import { SHOW_TABLE_DROPDOWN } from "../../../FeatureFlags";
+import TableSettingsPopup from "./TableSettingsPopup";
 
 class TableSettings extends React.Component {
   constructor(props) {
@@ -29,26 +32,28 @@ class TableSettings extends React.Component {
   render = () => {
     const { open } = this.state;
     return (
-      <div id="table-settings-wrapper" onClick={this.toggleSettingsPopup}>
-        <a
-          id="table-settings"
-          className={open ? "button active" : "button"}
-          ref={tableSettings => {
-            this.tableSettings = tableSettings;
-          }}
-          href="#"
-        >
-          <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
-        </a>
-        {open ? (
-          <TableSettingsPopup
-            table={this.props.table}
-            langtag={this.props.langtag}
-            outsideClickHandler={this.onClickOutside}
-            actions={this.props.actions}
-          />
-        ) : null}
-      </div>
+      SHOW_TABLE_DROPDOWN && (
+        <div id="table-settings-wrapper" onClick={this.toggleSettingsPopup}>
+          <a
+            id="table-settings"
+            className={open ? "button active" : "button"}
+            ref={tableSettings => {
+              this.tableSettings = tableSettings;
+            }}
+            href="#"
+          >
+            <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
+          </a>
+          {open ? (
+            <TableSettingsPopup
+              table={this.props.table}
+              langtag={this.props.langtag}
+              outsideClickHandler={this.onClickOutside}
+              actions={this.props.actions}
+            />
+          ) : null}
+        </div>
+      )
     );
   };
 }
