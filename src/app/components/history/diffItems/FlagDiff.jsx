@@ -2,7 +2,7 @@ import React from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 
-import { unless, when } from "../../../helpers/functools";
+import { ifElse, when } from "../../../helpers/functools";
 
 const FlagDiff = props => {
   const {
@@ -10,14 +10,15 @@ const FlagDiff = props => {
     revision: { event }
   } = props;
 
-  const value = unless(
+  const value = ifElse(
     f.isString,
+    when(f.eq("final"), () => "final.final"),
     f.compose(
       when(f.eq("needs_translation"), () => "translations.translation_needed"),
       f.first,
       f.values
     ),
-    revision.value
+    revision.value || revision.valueType
   );
 
   return (
