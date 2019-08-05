@@ -86,14 +86,19 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
     ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);
 
-  const translations = f.omit([f.head(Langtags)], oldValue);
   const mainLang = f.head(Langtags);
+  const onlyMainLangChanged = f.equals(changedKeys, [mainLang]);
+  const hasTranslations = f.compose(
+    f.every(f.negate(f.isEmpty)),
+    f.values,
+    f.omit([f.head(Langtags)])
+  )(oldValue);
 
   if (
     isMultiLanguage &&
-    !f.isEmpty(translations) &&
+    hasTranslations &&
     newValue[mainLang] &&
-    !f.isEqual(oldValue[mainLang], newValue[mainLang])
+    onlyMainLangChanged
   ) {
     openTranslationDialog(
       null,
@@ -115,11 +120,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   )(getState());
 
   const maybeClearFreshTranslations = res => {
-    if (
-      !f.isEmpty(changedKeys) &&
-      !f.includes(mainLang, changedKeys) &&
-      annotation
-    ) {
+    if (!f.isEmpty(changedKeys) && !onlyMainLangChanged && annotation) {
       removeTranslationNeeded(changedKeys, cell);
     }
     return res;
