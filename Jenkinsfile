@@ -7,6 +7,15 @@ IMAGE_NAME=SERVICE_NAME
 ARCHIVE_FILENAME_DOCKER="${IMAGE_NAME}-docker.tar.gz"
 ARCHIVE_FILENAME_DIST="${IMAGE_NAME}-dist.tar.gz"
 
+def slackParams = { GString message, String color ->
+  [
+    tokenCredentialId : "${env.SLACK_GRUD_INTEGRATION_ID}",
+    channel           : "#grud",
+    color             : color,
+    message           : message
+  ]
+}
+
 pipeline {
   agent any
 
@@ -19,6 +28,10 @@ pipeline {
     stage('Init Build') {
       steps {
         sh "mkdir -p ${DEPLOY_DIR}"
+
+        // cleanup docker
+        sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
+        sh "docker rmi -f \$(docker images -qa --filter=reference='${IMAGE_NAME}') || true"
       }
     }
 
@@ -56,6 +69,26 @@ pipeline {
     stage('Cleanup') {
       steps {
         sh "rm -rf build"
+      }
+    }
+  }
+
+  post {
+    success {
+      wrap([$class: 'BuildUser']) {
+        script {
+          sh "echo successful"
+          slackSend(slackParams("Build successful: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "good"))
+        }
+      }
+    }
+
+    failure {
+      wrap([$class: 'BuildUser']) {
+        script {
+          sh "echo failed"
+          slackSend(slackParams("Build failed: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "danger"))
+        }
       }
     }
   }
