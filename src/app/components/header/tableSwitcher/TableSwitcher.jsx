@@ -79,7 +79,7 @@ class TableSwitcherButton extends React.PureComponent {
         groups={[noGroup, ...sortedGroups]}
         tables={sortedTables}
         currentTable={currentTable}
-        onClickedOutside={this.onClickedOutside}
+        handleClickOutside={this.onClickedOutside}
         onClickedGroup={this.onClickedGroup}
         currentGroupId={this.state.currentGroupId}
         navigate={navigate}
