@@ -32,10 +32,11 @@ const enhance = compose(
         const { editedValue } = state;
         const {
           langtag,
-          cell: { column, row, table },
+          cell,
           value,
           actions
         } = props;
+        const { column, row, table } = cell;
 
         const newValue = column.multilanguage
           ? { [langtag]: editedValue }
@@ -46,7 +47,8 @@ const enhance = compose(
           newValue,
           tableId: table.id,
           columnId: column.id,
-          rowId: row.id
+          rowId: row.id,
+          cell
         });
       }
     }

@@ -1,16 +1,20 @@
 import f from "lodash/fp";
 
-import { ColumnKinds } from "../../constants/TableauxConstants";
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { makeRequest } from "../../helpers/apiHelper";
 import { merge, when } from "../../helpers/functools";
 import {
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
 } from "../../helpers/accessManagementHelper";
-import { removeTranslationNeeded } from "../../helpers/annotationHelper";
+import {
+  removeTranslationNeeded,
+  addTranslationNeeded
+} from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
+import openTranslationDialog from "../../components/overlay/TranslationDialog";
 
 const {
   CELL_ROLLBACK_VALUE,
@@ -50,13 +54,18 @@ export const changeCellValue = action => (dispatch, getState) => {
       columnId,
       rowId,
       tableId,
-      newValue
+      newValue,
+      cell: action.cell || {
+        column,
+        table: { id: tableId },
+        row: { id: rowId }
+      }
     })
   );
 };
 
 const dispatchCellValueChange = action => (dispatch, getState) => {
-  const { tableId, columnId, rowId, oldValue, newValue, column } = action;
+  const { tableId, columnId, rowId, oldValue, newValue, column, cell } = action;
 
   // The additional checks help normalising bad link columns' values
   const isMultiLanguage =
@@ -77,26 +86,46 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
     ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);
 
-  // Automatic workflow to remove "translation needed" from newly written values
-  const freshlyTranslatedLangtags =
-    needsUpdate && isMultiLanguage
-      ? f
-          .keys(newValue)
-          .filter(k => f.isEmpty(action.oldValue[k]) && !f.isEmpty(newValue[k]))
-      : null;
+  const mainLang = f.head(Langtags);
+  const onlyMainLangChanged = f.equals(changedKeys, [mainLang]);
+  const hasTranslations = f.compose(
+    f.some(f.negate(f.isEmpty)),
+    f.values,
+    f.omit([f.head(Langtags)])
+  )(oldValue);
 
-  const annotations = f.get(
-    ["rows", tableId, "data", rowId, "annotations"],
-    getState()
-  );
+  const mainLangChecks =
+    isMultiLanguage && newValue[mainLang] && onlyMainLangChanged;
+
+  //ask if cell should be marked with translation_needed, when there's a change in the main language
+  if (mainLangChecks && hasTranslations) {
+    openTranslationDialog(
+      null,
+      () => addTranslationNeeded(f.tail(Langtags), cell),
+      () => null
+    );
+  }
+
+  //automatically add translation_needed if cell is new
+  if (mainLangChecks && !hasTranslations) {
+    addTranslationNeeded(addTranslationNeeded(f.tail(Langtags), cell));
+  }
+
+  const annotations = f.compose(
+    f.get("annotations"),
+    f.find(f.propEq("id", rowId)),
+    f.get(["rows", tableId, "data"])
+  )(getState());
+
+  const annotation = f.compose(
+    colIdx => f.get([colIdx], annotations),
+    f.findIndex(f.propEq("id", columnId)),
+    f.get(["columns", tableId, "data"])
+  )(getState());
 
   const maybeClearFreshTranslations = res => {
-    if (!f.isEmpty(freshlyTranslatedLangtags) && annotations) {
-      removeTranslationNeeded(freshlyTranslatedLangtags, {
-        column,
-        row: { id: rowId },
-        table: { id: tableId }
-      });
+    if (!f.isEmpty(changedKeys) && !onlyMainLangChanged && annotation) {
+      removeTranslationNeeded(changedKeys, cell);
     }
     return res;
   };
