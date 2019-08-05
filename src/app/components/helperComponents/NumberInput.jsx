@@ -75,12 +75,18 @@ const NumberInput = (props, ref) => {
     )(inputValue);
 
     onChange(readNumericString(inputValue));
-    const stateValue = f.contains(formattedInput, ["", "0", "NaN"])
-      ? ""
-      : localize
-      ? formattedInput
-      : inputValue;
-    setValue(stateValue);
+
+    const calculateDisplayedString = () => {
+      // special case: started typing negative number
+      if (inputValue === "-") return inputValue;
+      // safety hatch for badly parsed input
+      else if (f.contains(formattedInput, ["", "0", "NaN"])) return "";
+      // localise if neccessary
+      else if (localize) return formattedInput;
+      else return inputValue;
+    };
+
+    setValue(calculateDisplayedString());
   };
 
   const inputRef = useRef();
