@@ -53,7 +53,7 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   handleClickOutside = event => {
-    this.props.onClickedOutside(event);
+    this.props.handleClickOutside(event);
   };
 
   onClickGroup = group => () => {
@@ -395,7 +395,7 @@ class SwitcherPopup extends React.PureComponent {
 }
 
 SwitcherPopup.propTypes = {
-  onClickedOutside: PropTypes.func.isRequired,
+  handleClickOutside: PropTypes.func.isRequired,
   langtag: PropTypes.string.isRequired,
   tables: PropTypes.array.isRequired,
   groups: PropTypes.array.isRequired,
