@@ -89,22 +89,26 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   const mainLang = f.head(Langtags);
   const onlyMainLangChanged = f.equals(changedKeys, [mainLang]);
   const hasTranslations = f.compose(
-    f.every(f.negate(f.isEmpty)),
+    f.some(f.negate(f.isEmpty)),
     f.values,
     f.omit([f.head(Langtags)])
   )(oldValue);
 
-  if (
-    isMultiLanguage &&
-    hasTranslations &&
-    newValue[mainLang] &&
-    onlyMainLangChanged
-  ) {
+  const mainLangChecks =
+    isMultiLanguage && newValue[mainLang] && onlyMainLangChanged;
+
+  //ask if cell should be marked with translation_needed, when there's a change in the main language
+  if (mainLangChecks && hasTranslations) {
     openTranslationDialog(
       null,
       () => addTranslationNeeded(f.tail(Langtags), cell),
       () => null
     );
+  }
+
+  //automatically add translation_needed if cell is new
+  if (mainLangChecks && !hasTranslations) {
+    addTranslationNeeded(addTranslationNeeded(f.tail(Langtags), cell));
   }
 
   const annotations = f.compose(
