@@ -64,7 +64,6 @@ export const withUserAuthentication = noAuthNeeded()
   ? f.identity
   : Component => props => {
       const keycloakRef = React.useRef(getLogin());
-      const keycloak = keycloakRef.current;
       const isLoggedIn = useSelector(authSelector);
 
       React.useEffect(() => {
