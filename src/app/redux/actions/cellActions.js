@@ -86,14 +86,6 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
     ? !f.isEmpty(changedKeys)
     : !f.isEqual(oldValue, newValue);
 
-  // Automatic workflow to remove "translation needed" from newly written values
-  const freshlyTranslatedLangtags =
-    needsUpdate && isMultiLanguage
-      ? f
-          .keys(newValue)
-          .filter(k => !f.isEqual(action.oldValue[k], newValue[k]))
-      : // .filter(k => !f.isEmpty(newValue[k]) && f.isEmpty(oldValue[k]))
-        null;
   const translations = f.omit([f.head(Langtags)], oldValue);
   const mainLang = f.head(Langtags);
 
@@ -123,8 +115,12 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   )(getState());
 
   const maybeClearFreshTranslations = res => {
-    if (!f.isEmpty(freshlyTranslatedLangtags) && annotation) {
-      removeTranslationNeeded(freshlyTranslatedLangtags, cell);
+    if (
+      !f.isEmpty(changedKeys) &&
+      !f.includes(mainLang, changedKeys) &&
+      annotation
+    ) {
+      removeTranslationNeeded(changedKeys, cell);
     }
     return res;
   };
