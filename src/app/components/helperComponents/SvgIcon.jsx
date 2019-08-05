@@ -131,7 +131,7 @@ class SvgIcon extends Component {
     };
     const { fillColor, center, svgClasses, title } = this.props;
     addClass(this.svgData, "svg-icon-content");
-    f.map(t => {
+    f.forEach(t => {
       t.innerHTML = f.defaultTo("", title);
     }, this.svgData.getElementsByTagName("title"));
     if (fillColor) {

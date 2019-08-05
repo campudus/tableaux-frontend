@@ -18,7 +18,6 @@ const ImageIcon = ({ url, base64 }) => {
       ? ImageTypes.SVG
       : ImageTypes.RASTER;
 
-
   return type === ImageTypes.svg ? <SvgIcon icon={src} /> : <img src={src} />;
 };
 

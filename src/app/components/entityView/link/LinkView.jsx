@@ -10,7 +10,6 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
 import LinkList from "../../helperComponents/LinkList";
-import { LinkedRows } from "../../cells/link/LinkOverlayFragments";
 import LinkItem from "../../cells/link/LinkItem";
 
 class LinkView extends Component {
@@ -35,7 +34,7 @@ class LinkView extends Component {
     actions.changeCellValue({ cell, oldValue: cell.value, newValue });
   };
 
-  listRenderer = links => () => ({ key, index, style = {} }) => {
+  listRenderer = links => () => ({ index, style = {} }) => {
     const { cell, langtag } = this.props;
     const link = links[index];
     return (

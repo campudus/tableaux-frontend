@@ -4,8 +4,8 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { formatNumber } from "../../../helpers/multiLanguage";
-import { isYearColumn } from '../../../helpers/columnHelper';
-import { unless, when } from '../../../helpers/functools';
+import { isYearColumn } from "../../../helpers/columnHelper";
+import { unless, when } from "../../../helpers/functools";
 import NumericEditCell from "./NumericEditCell.jsx";
 
 const NumericCell = props => {
