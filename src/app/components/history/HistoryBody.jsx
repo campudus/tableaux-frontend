@@ -144,6 +144,7 @@ const duplicateLastRevision = forkJoin(
   f.identity,
   f.compose(
     f.assoc("isCurrent", true),
+    unless(rev => f.isEmpty(rev.fullValue), f.assoc("event", "cell_changed")),
     f.update("revision", f.add(1)),
     rev => merge(rev, { prevContent: rev.fullValue, value: rev.fullValue }),
     f.last
