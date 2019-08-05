@@ -385,7 +385,9 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
       dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
     }
   }
- dispatch(setColumnOrdering(columnOrdering))
+  if (!f.isEmpty(columnOrdering)) {
+    dispatch(setColumnOrdering(columnOrdering));
+  }
   if (!f.isEmpty(visibleColumns)) {
     dispatch(setColumnsVisible(visibleColumns));
   }
