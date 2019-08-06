@@ -5,14 +5,12 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
-COPY .npmrc ./
-COPY package* ./
+COPY .npmrc package* ./
+COPY .npm_cache/ ./
 
-RUN npm config ls -l
-RUN npm ci -ddd
+RUN npm ci -d
 
-COPY getCommitHash.sh .
-COPY .babelrc .
+COPY getCommitHash.sh .babelrc ./
 COPY .git .git
 COPY src src
 
