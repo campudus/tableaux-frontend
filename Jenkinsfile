@@ -22,6 +22,7 @@ pipeline {
   options {
     timestamps()
     buildDiscarder(logRotator(numToKeepStr: '10'))
+    timeout(time: 15, unit: 'MINUTES')
   }
 
   stages {
@@ -78,7 +79,7 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           sh "echo successful"
-          slackSend(slackParams("Build successful: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "good"))
+          //slackSend(slackParams("Build successful: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "good"))
         }
       }
     }
@@ -87,7 +88,7 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           sh "echo failed"
-          slackSend(slackParams("Build failed: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "danger"))
+          //slackSend(slackParams("Build failed: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "danger"))
         }
       }
     }
