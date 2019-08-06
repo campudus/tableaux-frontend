@@ -12,4 +12,3 @@ devAccessSettings.json
 *.iml
 .idea
 /config.json
-.npm_cache

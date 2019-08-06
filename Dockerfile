@@ -5,15 +5,18 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
-COPY .npmrc package* ./
-COPY .npm_cache/ ./
+COPY .npmrc ./
+COPY package* ./
 
 RUN npm ci -d
 
-COPY getCommitHash.sh .babelrc ./
-COPY .git .git
+COPY .babelrc .
 COPY src src
 
+ARG BUILD_ID=unknown
+ENV BUILD_ID=${BUILD_ID}
+
+RUN echo "Build with BUILD_ID: $BUILD_ID"
 RUN npm run build
 RUN npm prune --production
 
