@@ -25,14 +25,15 @@ pipeline {
     timeout(time: 15, unit: 'MINUTES')
   }
 
+  environment {
+    COMMIT_INFO = sh(returnStdout: true, script: './getCommitHash.sh').trim()
+  }
+
   stages {
     stage('Init Build') {
       steps {
+        echo "Build with BUILD_ID: $COMMIT_INFO"
         sh "mkdir -p ${DEPLOY_DIR}"
-        sh "mkdir -p .npm_cache"
-
-        // Remove frequently changed files from cache, so docker cache can be used
-        sh "rm -fR .npm_cache/_logs .npm_cache/*.json"
 
         // cleanup docker
         sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
@@ -43,7 +44,7 @@ pipeline {
     stage('Build dist') {
       steps {
         script {
-          def image = docker.build("${IMAGE_NAME}builder", "--target build -f Dockerfile .")
+          def image = docker.build("${IMAGE_NAME}builder", "--target build -f Dockerfile . --build-arg BUILD_ID=${COMMIT_INFO}")
 
           image.inside {
             /*
@@ -52,7 +53,6 @@ pipeline {
             * because Jenkins runs the docker container automatically within the WORKSPACE directory.
             */
             sh "cd /usr/app && ls -la && tar -czf ${WORKSPACE}/${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST} node_modules out package.json"
-            sh "cd /usr/app && cp -R .npm_cache ${WORKSPACE}"
           }
         }
       }
@@ -60,7 +60,7 @@ pipeline {
 
     stage('Build docker image') {
       steps {
-        sh "docker build -t ${IMAGE_NAME} -f Dockerfile --rm ."
+        sh "docker build -t ${IMAGE_NAME} -f Dockerfile --rm . --build-arg BUILD_ID=${COMMIT_INFO}"
         sh "docker save ${IMAGE_NAME} | gzip -c > ${DEPLOY_DIR}/${ARCHIVE_FILENAME_DOCKER}"
       }
     }
@@ -84,7 +84,7 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           sh "echo successful"
-          //slackSend(slackParams("Build successful: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "good"))
+          slackSend(slackParams("Build successful: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "good"))
         }
       }
     }
@@ -93,7 +93,7 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           sh "echo failed"
-          //slackSend(slackParams("Build failed: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "danger"))
+          slackSend(slackParams("Build failed: ${env.JOB_NAME} @ ${env.BUILD_NUMBER} (${BUILD_USER})", "danger"))
         }
       }
     }
