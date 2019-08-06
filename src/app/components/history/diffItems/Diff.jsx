@@ -16,6 +16,7 @@ import TextDiff from "./TextDiff";
 const Diff = props => {
   const TheDiff = f.cond([
     [f.propEq("event", "cell_changed"), () => ContentDiff],
+    [where({ historyType: "row_flag" }), () => FlagDiff],
     [
       where({ event: "annotation_added", historyType: "cell_flag" }),
       () => FlagDiff

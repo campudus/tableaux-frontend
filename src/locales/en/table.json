@@ -42,6 +42,7 @@
   "show_all_items": "Show all {{nItems}} items",
   "show_less": "Show less",
   "final": {
+    "final": "Finalized",
     "set_final": "Mark as \"final\"",
     "set_not_final": "Remove \"final\" mark",
     "unlock_header": "Row protected from modifications",

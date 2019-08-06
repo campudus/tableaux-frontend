@@ -156,7 +156,9 @@ export const isOldEnough = filter =>
     : f.stubTrue;
 
 export const filterAnnotations = filter => rev =>
-  rev.historyType === "cell_flag" ? !!(filter && filter.showAnnotations) : true;
+  f.contains(rev.historyType, ["cell_flag", "row_flag"])
+    ? !!(filter && filter.showAnnotations)
+    : true;
 
 export const filterComments = filter => rev =>
   rev.historyType === "cell_comment" ? !!(filter && filter.showComments) : true;

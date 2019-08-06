@@ -42,6 +42,7 @@
   "show_all_items": "Alle {{nItems}} anzeigen",
   "show_less": "weniger anzeigen",
   "final": {
+    "final": "Freigegeben",
     "set_final": "Markierung \"Final\" setzen",
     "set_not_final": "Markierung \"Final\" entfernen",
     "unlock_header": "Datensatz ist vor Änderungen geschützt",
