@@ -29,6 +29,10 @@ pipeline {
     stage('Init Build') {
       steps {
         sh "mkdir -p ${DEPLOY_DIR}"
+        sh "mkdir -p .npm_cache"
+
+        // Remove frequently changed files from cache, so docker cache can be used
+        sh "rm -fR .npm_cache/_logs .npm_cache/*.json"
 
         // cleanup docker
         sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
@@ -48,6 +52,7 @@ pipeline {
             * because Jenkins runs the docker container automatically within the WORKSPACE directory.
             */
             sh "cd /usr/app && ls -la && tar -czf ${WORKSPACE}/${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST} node_modules out package.json"
+            sh "cd /usr/app && cp -R .npm_cache ${WORKSPACE}"
           }
         }
       }
