@@ -7,7 +7,8 @@ WORKDIR /usr/app
 
 COPY package* ./
 
-RUN npm ci --verbose
+RUN npm config ls -l
+RUN npm ci -ddd
 
 COPY getCommitHash.sh .
 COPY .babelrc .
