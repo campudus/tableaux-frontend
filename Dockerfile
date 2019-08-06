@@ -5,6 +5,7 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
+COPY .npmrc ./
 COPY package* ./
 
 RUN npm config ls -l
