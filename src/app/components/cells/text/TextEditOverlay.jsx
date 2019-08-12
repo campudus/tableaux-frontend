@@ -30,12 +30,7 @@ const enhance = compose(
       setValue: () => event => ({ editedValue: event.target.value }),
       saveEdits: (state, props) => () => {
         const { editedValue } = state;
-        const {
-          langtag,
-          cell,
-          value,
-          actions
-        } = props;
+        const { langtag, cell, value, actions } = props;
         const { column, row, table } = cell;
 
         const newValue = column.multilanguage
