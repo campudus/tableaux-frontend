@@ -14,6 +14,7 @@
     "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "storybook": "start-storybook -p 3001 -s src",
     "test": "NODE_ICU_DATA=node_modules/full-icu jest",
+    "test:ci": "JEST_JUNIT_OUTPUT=./output/coverage/junit.xml NODE_ICU_DATA=node_modules/full-icu jest --ci --reporters=default --reporters=jest-junit",
     "clean": "rm -fr .cache out",
     "clean:project": "rm -fr .cache out node_modules; npm install && npm ci"
   },
@@ -62,10 +63,12 @@
     "full-icu": "^1.3.0",
     "i18next": "^10.5.0",
     "jest": "^23.6.0",
+    "jest-junit": "7.0.0",
     "js-cookie": "^2.2.0",
     "keymirror": "^0.1.1",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
+    "node-sass": "^4.10.0",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.11.0",
     "parcel-plugin-static-files-copy": "^2.0.0",
@@ -93,8 +96,7 @@
     "rxjs": "^6.4.0",
     "sass": "^1.17.2",
     "storybook": "^1.0.0",
-    "superagent": "^4.0.0",
-    "node-sass": "^4.10.0"
+    "superagent": "^4.0.0"
   },
   "dependencies": {
     "express": "^4.16.4",
