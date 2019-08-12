@@ -2,6 +2,7 @@ SERVICE_TAG = "frontend"
 SERVICE_NAME = "grud-${SERVICE_TAG}"
 
 DEPLOY_DIR = 'build/deploy'
+TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
 IMAGE_NAME=SERVICE_NAME
 ARCHIVE_FILENAME_DOCKER="${IMAGE_NAME}-docker.tar.gz"
@@ -53,7 +54,13 @@ pipeline {
             * because Jenkins runs the docker container automatically within the WORKSPACE directory.
             */
             sh "cd /usr/app && ls -la && tar -czf ${WORKSPACE}/${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST} node_modules out package.json"
+            sh "cd /usr/app && ls -la && cp ${TEST_COVERAGE_FILE} ${WORKSPACE}/${TEST_COVERAGE_FILE}"
           }
+        }
+      }
+      post {
+        always {
+          junit TEST_COVERAGE_FILE
         }
       }
     }

@@ -17,6 +17,8 @@ ARG BUILD_ID=unknown
 ENV BUILD_ID=${BUILD_ID}
 
 RUN echo "Build with BUILD_ID: $BUILD_ID"
+RUN npm run lint
+RUN npm run test:ci
 RUN npm run build
 RUN npm prune --production
 
