@@ -35,6 +35,7 @@ pipeline {
       steps {
         echo "Build with BUILD_ID: $COMMIT_INFO"
         sh "mkdir -p ${DEPLOY_DIR}"
+        sh "mkdir -p output/coverage"
 
         // cleanup docker
         sh 'docker rmi $(docker images -f "dangling=true" -q) || true'

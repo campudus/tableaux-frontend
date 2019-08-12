@@ -10,7 +10,7 @@ COPY package* ./
 
 RUN npm ci -d
 
-COPY .babelrc .
+COPY [".babelrc", ".eslint*", ".prettierrc", "./"]
 COPY src src
 
 ARG BUILD_ID=unknown
