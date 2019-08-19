@@ -52,9 +52,7 @@ const subscribeToTable = ({
       (cell && cell.id === cellToWatch.id) ||
       (!cellToWatch.id &&
         cell.id ===
-          `cell-${cellToWatch.tableId}-${cellToWatch.columnId}-${
-            cellToWatch.rowId
-          }`);
+          `cell-${cellToWatch.tableId}-${cellToWatch.columnId}-${cellToWatch.rowId}`);
 
     updateData = ({ cell, row }) => {
       // dont't update if the changed element is not the watched element
