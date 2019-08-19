@@ -154,7 +154,7 @@ export default compose(
       setHovered,
       hovered,
       isAttachment
-    }) => () => ({ key, index, style = {} }) => {
+    }) => () => ({ key, style = {} }) => {
       const link = f.find(f.propEq("id", key), links);
       const {
         linkTarget: { tableId, rowId }

@@ -10,11 +10,7 @@ import { either } from "../../helpers/functools";
 import { List } from "react-virtualized";
 import DragSortList from "../cells/link/DragSortList";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
-import {
-  Directions,
-  FallbackLanguage,
-  FilterModes
-} from "../../constants/TableauxConstants";
+import { Directions, FilterModes } from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 

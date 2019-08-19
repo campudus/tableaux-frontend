@@ -8,12 +8,7 @@ import { mapIndexed } from "../../helpers/functools";
 const applyFiltersAndVisibility = function(ComposedComponent) {
   return class FilteredTableView extends React.Component {
     applyColumnVisibility = () => {
-      const {
-        columns,
-        visibleColumns,
-        colsWithMatches,
-        columnOrdering
-      } = this.props;
+      const { columns, visibleColumns, colsWithMatches } = this.props;
 
       const applyVisibility = (columns, visibleArray) =>
         f.map(
