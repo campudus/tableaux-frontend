@@ -471,20 +471,31 @@ export function getPreviousRow() {
 }
 
 export function getNextColumnCell(getPrev) {
-  const { columns, tableView, selectedCellExpandedRow } = this.props;
+  const {
+    columns,
+    tableView,
+    selectedCellExpandedRow,
+    visibleColumnOrdering
+  } = this.props;
   const { selectedCell, expandedRowIds } = tableView;
-  const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
-  const indexCurrentColumn = f.findIndex(
-    f.matchesProperty("id", selectedCell.columnId),
-    visibleColumns
-  );
-  const numberOfColumns = visibleColumns.length;
-  const nextIndex = getPrev ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
-  const nextColumnIndex = f.clamp(0, nextIndex, numberOfColumns - 1);
-  const nextColumn = f.nth(nextColumnIndex, visibleColumns);
-  const nextColumnId = nextColumn.id;
+
+  const getNextColumnId = (visibleColumnOrdering, columns) => {
+    const clampToVisibleRange = range => index => f.clamp(0, index, range);
+    const orderedVisibleColumns = f.map(
+      columnIdx => columns[columnIdx],
+      visibleColumnOrdering
+    );
+    return f.compose(
+      nextIndex => orderedVisibleColumns[nextIndex],
+      clampToVisibleRange(orderedVisibleColumns.length - 1),
+      f.add(getPrev ? -1 : 1),
+      f.findIndex(f.propEq("id", selectedCell.columnId))
+    )(orderedVisibleColumns);
+  };
+
   const currentSelectedRowId = selectedCell.rowId;
-  // Not Multilanguage and row is expanded so jump to top language
+  const nextColumn = getNextColumnId(visibleColumnOrdering, columns);
+
   const newSelectedCellExpandedRow =
     !nextColumn.multilanguage &&
     expandedRowIds &&
@@ -492,12 +503,10 @@ export function getNextColumnCell(getPrev) {
       ? DefaultLangtag
       : selectedCellExpandedRow || DefaultLangtag;
 
-  const result = {
-    id: nextColumnId,
+  return {
+    id: f.get("id", nextColumn),
     selectedCellExpandedRow: newSelectedCellExpandedRow
   };
-
-  return result;
 }
 
 export function getPreviousColumn() {

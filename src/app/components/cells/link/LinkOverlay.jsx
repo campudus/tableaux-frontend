@@ -223,7 +223,7 @@ class LinkOverlay extends PureComponent {
       isLinked ? "linked" : "unlinked",
       this.props.rowResults
     );
-    const row = f.get(index, rowResults);
+    const row = f.find(f.propEq("id", key), rowResults);
 
     if (f.isEmpty(rowResults) || f.isEmpty(row)) {
       return null;
@@ -308,7 +308,7 @@ class LinkOverlay extends PureComponent {
     const linkedItems = rowResults.linked;
 
     const rearranged = f.map(
-      id => f.find(linkedItem => linkedItem.id === id, linkedItems),
+      id => f.find(el => el.id === id, linkedItems),
       ordering
     );
     actions.changeCellValue({
@@ -326,14 +326,13 @@ class LinkOverlay extends PureComponent {
       cell: { column },
 
       langtag,
-      rowResults = {},
+      rowResults = { linked: [], unlinked: [] },
       loading,
       unlinkedOrder,
       maxLinks,
       grudData,
       actions
     } = this.props;
-
     const targetTable = {
       tableId: column.toTable,
       langtag
@@ -384,10 +383,10 @@ class LinkOverlay extends PureComponent {
           <LinkedRows
             loading={loading}
             linkEmptyLines={linkEmptyLines}
-            listItemRenderer={this.renderListItem}
+            renderListItem={this.renderListItem}
             swapItems={this.swapLinkedItems}
             applySwap={this.applySwap}
-            rowResults={rowResults}
+            entries={f.map("id", rowResults.linked)}
           />
         </div>
         <UnlinkedRows

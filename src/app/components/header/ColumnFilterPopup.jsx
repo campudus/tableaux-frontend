@@ -1,4 +1,3 @@
-import { List } from "react-virtualized";
 import React from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
@@ -7,11 +6,13 @@ import listensToClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { Directions, FilterModes } from "../../constants/TableauxConstants";
 import { either } from "../../helpers/functools";
+import { List } from "react-virtualized";
+import DragSortList from "../cells/link/DragSortList";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import { Directions, FilterModes } from "../../constants/TableauxConstants";
 import SearchFunctions from "../../helpers/searchFunctions";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 
 @listensToClickOutside
 class ColumnFilterPopup extends React.Component {
@@ -95,13 +96,74 @@ class ColumnFilterPopup extends React.Component {
     };
   };
 
+  applyColumnOrdering = columns => newOrdering => () => {
+    const {
+      columnActions: { setColumnOrdering }
+    } = this.props;
+    const mapOrderingToIndices = f.map(colId => ({
+      id: colId,
+      idx: f.findIndex(({ id }) => id === colId, columns)
+    }));
+
+    return f.compose(
+      setColumnOrdering,
+      mapOrderingToIndices,
+      f.concat([0])
+    )(newOrdering);
+  };
+
+  assignListRef = list => (this.list = list);
+
+  renderColumnList = (filteredColumns, selectedIndex) => {
+    const { columns, columnOrdering } = this.props;
+    const sharedListProps = {
+      className: "column-checkbox-list",
+      width: 440,
+      height: 300,
+      rowCount: filteredColumns.length,
+      rowHeight: 30,
+      scrollToIndex: selectedIndex,
+      style: { overflowX: "hidden" },
+      ref: this.assignListRef
+    };
+    if (f.isEmpty(filteredColumns)) {
+      return (
+        <div className="no-column-search-result">
+          {i18n.t("table:no-column-search-result")}
+        </div>
+      );
+    } else if (columns.length - 1 !== filteredColumns.length) {
+      return (
+        <List
+          {...sharedListProps}
+          rowRenderer={this.renderCheckboxItems(filteredColumns, true)}
+        />
+      );
+    } else {
+      return (
+        <DragSortList
+          {...sharedListProps}
+          wrapperClass="column-checkbox-list"
+          renderListItem={this.renderCheckboxItems(columns, false)}
+          applySwap={this.applyColumnOrdering(columns)}
+          entries={f.compose(
+            f.tail,
+            f.map("id")
+          )(columnOrdering)}
+        />
+      );
+    }
+  };
+
   getColName = col =>
     either(col)
       .map(_column => getColumnDisplayName(_column, this.props.langtag))
       .getOrElseThrow("Could not extract displayName or name from  " + col);
 
-  renderCheckboxItems = columns => ({ key, index, style }) => {
-    const col = columns[index];
+  renderCheckboxItems = (columns, renderByIndex) => ({ key, index, style }) => {
+    const col = renderByIndex
+      ? columns[index]
+      : f.find(({ id }) => id === key, columns);
     const name = this.getColName(col);
     const {
       columnActions: { toggleColumnVisibility }
@@ -146,7 +208,6 @@ class ColumnFilterPopup extends React.Component {
       tableId
     } = this.props;
     const { filter, selectedIndex } = this.state;
-
     const nHidden = f.flow(
       f.drop(1),
       f.reject("visible"),
@@ -179,25 +240,7 @@ class ColumnFilterPopup extends React.Component {
             />
           </div>
         </div>
-        {f.isEmpty(filteredColumns) ? (
-          <div className="no-column-search-result">
-            {i18n.t("table:no-column-search-result")}
-          </div>
-        ) : (
-          <List
-            className="column-checkbox-list"
-            ref={list => {
-              this.list = list;
-            }}
-            width={440}
-            height={300}
-            rowCount={filteredColumns.length}
-            rowHeight={30}
-            scrollToIndex={selectedIndex}
-            rowRenderer={this.renderCheckboxItems(filteredColumns)}
-            style={{ overflowX: "hidden" }} // react-virtualized will override CSS overflow style, so set it here
-          />
-        )}
+        {this.renderColumnList(filteredColumns, selectedIndex)}
         <div className="row infotext">
           <span>{nHidden + " " + i18n.t("table:hidden_items")}</span>
         </div>

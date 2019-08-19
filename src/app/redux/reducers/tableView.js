@@ -6,7 +6,12 @@ import {
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
-import { ifElse, mergeArrays, unless } from "../../helpers/functools";
+import {
+  ifElse,
+  mergeArrays,
+  unless,
+  mapIndexed
+} from "../../helpers/functools";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import TableauxRouter from "../../router/router";
@@ -36,7 +41,8 @@ const {
   ADDITIONAL_ROWS_DATA_LOADED,
   ROW_CREATE_SUCCESS,
   SET_FILTERS_AND_SORTING,
-  CLEAN_UP
+  CLEAN_UP,
+  SET_COLUMN_ORDERING
 } = ActionTypes;
 
 const initialState = {
@@ -44,6 +50,7 @@ const initialState = {
   copySource: {},
   editing: false,
   visibleColumns: [],
+  columnOrdering: [],
   currentTable: null,
   displayValues: {},
   expandedRowIds: [],
@@ -206,13 +213,22 @@ const toggleCellEditing = (state, action, completeState) => {
   }
 };
 
-const setInitialVisibleColumns = (state, action) =>
+const setInitialVisibleColumns = action => state =>
   f.isEmpty(f.get("visibleColumns", state))
     ? f.flow(
         f.prop(["result", "columns"]),
         f.slice(0, 10),
         f.map("id"),
         ids => f.assoc("visibleColumns")(ids)(state)
+      )(action)
+    : state;
+
+const setInitialColumnOrdering = action => state =>
+  f.isEmpty(f.get("columnOrdering", state))
+    ? f.flow(
+        f.prop(["result", "columns"]),
+        mapIndexed(({ id }, idx) => ({ id, idx })),
+        ids => f.assoc("columnOrdering", ids, state)
       )(action)
     : state;
 
@@ -339,10 +355,15 @@ export default (state = initialState, action, completeState) => {
       return { ...state, visibleColumns: [f.head(state.visibleColumns)] };
     case SET_COLUMNS_VISIBLE:
       return { ...state, visibleColumns: action.columnIds };
+    case SET_COLUMN_ORDERING:
+      return { ...state, columnOrdering: action.columnIds };
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:
-      return setInitialVisibleColumns(state, action);
+      return f.compose(
+        setInitialVisibleColumns(action),
+        setInitialColumnOrdering(action)
+      )(state);
     case GENERATED_DISPLAY_VALUES:
       return setLinkDisplayValues(state, action.displayValues);
     case ADDITIONAL_ROWS_DATA_LOADED:

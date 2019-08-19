@@ -18,7 +18,8 @@ import { doto } from "../helpers/functools";
 import {
   getStoredViewObject,
   saveFilterSettings,
-  saveColumnVisibility
+  saveColumnVisibility,
+  saveColumnOrdering
 } from "../helpers/localStorage";
 import { isLocked } from "../helpers/annotationHelper";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
@@ -66,7 +67,8 @@ const {
   SET_STATUS_INFO,
   TABLE_NAME_EDIT,
   TABLE_NAME_EDIT_SUCCESS,
-  TABLE_NAME_EDIT_ERROR
+  TABLE_NAME_EDIT_ERROR,
+  SET_COLUMN_ORDERING
 } = actionTypes;
 
 const {
@@ -323,6 +325,12 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
   saveColumnVisibility(tableId, columnIds);
 };
 
+const setColumnOrdering = columnIds => (dispatch, getState) => {
+  dispatch({ type: SET_COLUMN_ORDERING, columnIds });
+  const tableId = f.get(["tableView", "currentTable"], getState());
+  saveColumnOrdering(tableId, columnIds);
+};
+
 const hideAllColumns = (tableId, columns) => {
   // first/one column has to be always visible
   saveColumnVisibility(tableId, [f.get("id", f.head(columns))]);
@@ -366,7 +374,9 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
   await dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
 
-  const { visibleColumns, rowsFilter } = getStoredViewObject(tableId);
+  const { visibleColumns, rowsFilter, columnOrdering } = getStoredViewObject(
+    tableId
+  );
   if (urlFilters) {
     dispatch(setFiltersAndSorting(urlFilters, null));
   } else {
@@ -374,6 +384,9 @@ const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
       const { filters, sortColumnId, sortValue } = rowsFilter;
       dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
     }
+  }
+  if (!f.isEmpty(columnOrdering)) {
+    dispatch(setColumnOrdering(columnOrdering));
   }
   if (!f.isEmpty(visibleColumns)) {
     dispatch(setColumnsVisible(visibleColumns));
@@ -684,7 +697,8 @@ const actionCreators = {
   editColumn,
   addEmptyRowAndOpenEntityView,
   changeTableName,
-  queryFrontendServices
+  queryFrontendServices,
+  setColumnOrdering
 };
 
 export default actionCreators;

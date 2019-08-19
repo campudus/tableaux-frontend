@@ -37,4 +37,19 @@ const saveColumnVisibility = (tableId, view, name = "default") => {
     f.set([tableId, name, "visibleColumns"], view, savedViews)
   );
 };
-export { getStoredViewObject, saveFilterSettings, saveColumnVisibility };
+
+const saveColumnOrdering = (tableId, ordering = [], name = "default") => {
+  if (!localStorage) {
+    return;
+  }
+  const savedViews = getStoredViewObject(null, name);
+  localStorage["tableViews"] = JSON.stringify(
+    f.set([tableId, name, "columnOrdering"], ordering, savedViews)
+  );
+};
+export {
+  getStoredViewObject,
+  saveFilterSettings,
+  saveColumnVisibility,
+  saveColumnOrdering
+};

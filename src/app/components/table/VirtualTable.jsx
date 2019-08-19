@@ -15,7 +15,7 @@ import {
   Langtags,
   Directions
 } from "../../constants/TableauxConstants";
-import { doto, either, maybe } from "../../helpers/functools";
+import { doto, either, maybe, mapIndexed } from "../../helpers/functools";
 import { isLocked } from "../../helpers/annotationHelper";
 import AddNewRowButton from "../rows/NewRow";
 import Cell, { getAnnotationState } from "../cells/Cell";
@@ -417,7 +417,7 @@ export default class VirtualTable extends PureComponent {
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
   getVisibleElement = (elements, idx) =>
-    elements[this.visibleColumnIndices[idx]];
+    elements[this.props.visibleColumnOrdering[idx]];
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -468,15 +468,18 @@ export default class VirtualTable extends PureComponent {
       return false;
     }
 
-    const { columns, rows } = this.props;
+    const { rows, columns, visibleColumnOrdering } = this.props;
     const rowIndex = f.add(
       1,
       f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows)
     );
-    const columnIndex = f.add(
-      1,
-      f.findIndex(f.matchesProperty("id", this.selectedIds.column), columns)
-    );
+    const columnIndex = f.compose(
+      f.add(1),
+      f.get("orderIdx"),
+      f.find(({ id }) => id === this.selectedIds.column),
+      mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
+      f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
+    )(visibleColumnOrdering);
 
     this.setState({
       scrolledCell: {
@@ -538,15 +541,13 @@ export default class VirtualTable extends PureComponent {
       selectedCell,
       selectedCellEditing,
       selectedCellExpandedRow,
-      langtag
+      langtag,
+      visibleColumnOrdering
     } = this.props;
     const { openAnnotations, scrolledCell } = this.state;
     const { columnIndex, rowIndex, align } = scrolledCell;
-    this.visibleColumnIndices = f
-      .range(0, columns.length)
-      .filter(this.filterVisibleCells);
 
-    const columnCount = f.size(this.visibleColumnIndices) + 1;
+    const columnCount = f.size(visibleColumnOrdering) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
     const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;

@@ -154,8 +154,8 @@ export default compose(
       setHovered,
       hovered,
       isAttachment
-    }) => () => ({ index, style = {} }) => {
-      const link = links[index];
+    }) => () => ({ key, style = {} }) => {
+      const link = f.find(f.propEq("id", key), links);
       const {
         linkTarget: { tableId, rowId }
       } = link;
@@ -236,9 +236,9 @@ export default compose(
         <div className="sortable">
           <div className="linked-items `${cssClass}`">
             <LinkedRows
-              rowResults={{ linked: links }}
+              entries={f.map("id", links)}
               rowsToRender={4}
-              listItemRenderer={renderSortableLink}
+              renderListItem={renderSortableLink}
               loading={false}
               applySwap={applySwap}
             />
@@ -264,9 +264,9 @@ export default compose(
         <div className="sortable">
           <div className="linked-items">
             <LinkedRows
-              rowResults={{ linked: links }}
+              entries={f.map("id", links)}
               rowsToRender={nLinks}
-              listItemRenderer={renderSortableLink}
+              renderListItem={renderSortableLink}
               loading={false}
               applySwap={applySwap}
             />

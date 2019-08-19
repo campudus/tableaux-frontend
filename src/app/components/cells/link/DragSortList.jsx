@@ -76,7 +76,7 @@ class DragItem extends Component {
 @DragDropContext(HTML5Backend)
 class DragSortList extends Component {
   static propTypes = {
-    rowResults: PropTypes.object.isRequired,
+    entries: PropTypes.array.isRequired,
     renderListItem: PropTypes.func.isRequired
   };
 
@@ -84,40 +84,25 @@ class DragSortList extends Component {
     const {
       renderListItem,
       swapItems,
-      rowResults: { linked },
       ordering,
       swapOrdering,
       applySwap,
-      rowsToRender = ordering.length
+      wrapperClass
     } = this.props;
 
-    const items = f.flow(
-      ordering =>
-        f.defaultTo([])(
-          f.map(id => {
-            const itemIdx = f.findIndex(
-              linkedItem => linkedItem === null || linkedItem.id === id,
-              linked
-            );
-            return { id: f.get([itemIdx, "id"], linked), index: itemIdx };
-          }, ordering)
-        ),
-      f.take(rowsToRender)
-    )(ordering);
-
     return (
-      <div className="link-list">
-        {items.map((item, idx) => (
+      <div className={wrapperClass /*link-list*/}>
+        {ordering.map((id, idx) => (
           <DragItem
-            key={item.id}
+            key={id}
             index={idx}
             swapItems={swapItems}
             applySwap={applySwap(ordering)}
             swapOrdering={swapOrdering}
           >
             {renderListItem({
-              index: item.index,
-              key: item.id
+              index: idx,
+              key: id
             })}
           </DragItem>
         ))}
@@ -156,12 +141,12 @@ export default compose(
   ),
   lifecycle({
     componentWillMount() {
-      this.props.setOrdering(f.map("id", this.props.rowResults.linked));
+      this.props.setOrdering(this.props.entries);
     },
     componentWillReceiveProps(nextProps) {
-      const getLinked = f.getOr([], ["rowResults", "linked"]);
-      if (getLinked(this.props).length !== getLinked(nextProps).length) {
-        this.props.setOrdering(f.map("id", nextProps.rowResults.linked));
+      const getEntries = f.getOr([], ["entries"]);
+      if (getEntries(this.props).length !== getEntries(nextProps).length) {
+        this.props.setOrdering(nextProps.entries);
       }
     }
   })
