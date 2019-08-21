@@ -111,6 +111,9 @@
     .draggable {
       display: flex;
       align-items: center;
+      .drag-handle{
+        cursor: pointer;
+      }
       &:nth-child(odd){
         .drag-handle{
           background-color: $color-background-very-light-grey;
