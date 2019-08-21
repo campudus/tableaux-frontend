@@ -427,6 +427,7 @@ export default (state = initialState, action, completeState) => {
         ...state,
         filters: [],
         sorting: [],
+        columnOrdering: [],
         displayValues: {},
         history: [],
         expandedRowIds: []
