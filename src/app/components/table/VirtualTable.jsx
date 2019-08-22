@@ -40,7 +40,8 @@ export default class VirtualTable extends PureComponent {
       openAnnotations: {},
       scrolledCell: {},
       lastScrolledCell: {},
-      newRowAdded: false
+      newRowAdded: false,
+      showResizeBar: false
     };
   }
 
@@ -79,8 +80,16 @@ export default class VirtualTable extends PureComponent {
     );
   }
 
-  saveColWidths = () => {
+  setBarOffset = event => {
+    this.divRef.style.left = event.clientX + "px";
+  };
+
+  saveColWidths = index => {
     this.columnStartSize = null;
+    if (index === 1) {
+      window.removeEventListener("mousemove", this.setBarOffset);
+      this.setState({ showResizeBar: false });
+    }
     if (!localStorage) {
       return;
     }
@@ -113,6 +122,11 @@ export default class VirtualTable extends PureComponent {
   };
 
   calcColWidth = ({ index }) => this.colWidths.get(index) || CELL_WIDTH;
+
+  moveResizeBar = () => {
+    this.setState({ showResizeBar: true });
+    window.addEventListener("mousemove", this.setBarOffset);
+  };
 
   updateColWidth = (index, dx) => {
     if (!this.columnStartSize) {
@@ -189,6 +203,7 @@ export default class VirtualTable extends PureComponent {
         langtag={this.props.langtag}
         tables={tables}
         tableId={table.id}
+        resizeIdHandler={this.moveResizeBar}
         resizeHandler={this.updateColWidth}
         resizeFinishedHandler={this.saveColWidths}
         index={columnIndex + 1}
@@ -498,6 +513,7 @@ export default class VirtualTable extends PureComponent {
   componentDidMount() {
     // Switching tables will remount virtual table
     this.settingsColumnIds = doto(this.props.columns, f.take(2), f.map("id"));
+    this.divRef = document.getElementById("resize-bar");
   }
 
   componentDidUpdate(prev) {
@@ -532,6 +548,8 @@ export default class VirtualTable extends PureComponent {
     });
   };
 
+  divRef = null;
+
   render() {
     const {
       rows,
@@ -544,7 +562,7 @@ export default class VirtualTable extends PureComponent {
       langtag,
       visibleColumnOrdering
     } = this.props;
-    const { openAnnotations, scrolledCell } = this.state;
+    const { openAnnotations, scrolledCell, showResizeBar } = this.state;
     const { columnIndex, rowIndex, align } = scrolledCell;
 
     const columnCount = f.size(visibleColumnOrdering) + 1;
@@ -559,6 +577,10 @@ export default class VirtualTable extends PureComponent {
         )}-${selectedCellEditing}-${selectedCellExpandedRow}`
       : "";
 
+    const resizeBarClass = showResizeBar
+      ? "resize-bar"
+      : "resize-bar-invisible";
+
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
@@ -571,6 +593,7 @@ export default class VirtualTable extends PureComponent {
           tableNavigationWorker.getKeyboardShortcuts.bind(this)
         )}
       >
+        <div id="resize-bar" className={resizeBarClass} />
         <AutoSizer>
           {({ height, width }) => {
             return (

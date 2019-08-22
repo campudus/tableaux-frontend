@@ -18,9 +18,16 @@ import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 class ColumnFilterPopup extends React.Component {
   constructor(props) {
     super(props);
+    const firstId = f.compose(
+      f.get("id"),
+      f.head,
+      f.get("columns")
+    )(props);
+
     this.state = {
       filter: null,
-      selectedIndex: 0
+      selectedIndex: 0,
+      selectedId: firstId
     };
   }
 
@@ -150,6 +157,7 @@ class ColumnFilterPopup extends React.Component {
             f.tail,
             f.map("id")
           )(columnOrdering)}
+          mouseOverHandler={this.mouseOverHandler}
         />
       );
     }
@@ -160,6 +168,10 @@ class ColumnFilterPopup extends React.Component {
       .map(_column => getColumnDisplayName(_column, this.props.langtag))
       .getOrElseThrow("Could not extract displayName or name from  " + col);
 
+  mouseOverHandler = (key, index) => {
+    this.setState({ selectedIndex: index, selectedId: key });
+  };
+
   renderCheckboxItems = (columns, renderByIndex) => ({ key, index, style }) => {
     const col = renderByIndex
       ? columns[index]
@@ -168,12 +180,12 @@ class ColumnFilterPopup extends React.Component {
     const {
       columnActions: { toggleColumnVisibility }
     } = this.props;
-    const { selectedIndex } = this.state;
+    const { selectedId } = this.state;
 
     const cssClass = classNames("column-filter-checkbox-wrapper", {
-      even: index % 2 === 0 && index !== selectedIndex,
-      odd: index % 2 === 1 && index !== selectedIndex,
-      selected: index === selectedIndex
+      even: index % 2 === 0 && key !== selectedId,
+      odd: index % 2 === 1 && key !== selectedId,
+      selected: key === selectedId
     });
 
     return (
@@ -182,7 +194,7 @@ class ColumnFilterPopup extends React.Component {
         key={key}
         style={style}
         onClick={() => toggleColumnVisibility(col.id)}
-        onMouseEnter={() => this.setState({ selectedIndex: index })}
+        onMouseEnter={() => this.mouseOverHandler(key, index)}
       >
         <input
           type="checkbox"

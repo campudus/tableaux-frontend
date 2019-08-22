@@ -63,7 +63,8 @@ export default class ColumnHeader extends PureComponent {
       width,
       actions,
       navigate,
-      tableId
+      tableId,
+      resizeIdHandler
     } = this.props;
     const toTable =
       column.kind === "link"
@@ -90,6 +91,7 @@ export default class ColumnHeader extends PureComponent {
         isId={column.identifier}
         tables={tables}
         resizeHandler={resizeHandler}
+        resizeIdHandler={resizeIdHandler}
         resizeFinishedHandler={resizeFinishedHandler}
         index={index}
         width={width}
