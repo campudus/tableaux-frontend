@@ -41,9 +41,6 @@ class BooleanView extends PureComponent {
 
   render() {
     const { t, funcs, thisUserCantEdit, value } = this.props;
-    // const selected = cell.column.multilanguage
-    //   ? f.get(["value", langtag], cell)
-    //   : value;
     const selected = !!value;
     const checkboxCss = classNames("checkbox", {
       checked: selected,
