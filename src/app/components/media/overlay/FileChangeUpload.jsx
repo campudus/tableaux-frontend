@@ -30,7 +30,7 @@ class FileChangeUpload extends PureComponent {
     const { langtag, uuid } = this.props;
 
     files.forEach(file => {
-      const uploadUrl = route.toFile() + uuid + "/" + langtag;
+      const uploadUrl = route.toFile() + "/" + uuid + "/" + langtag;
       const onProgress = progress => {
         this.setState({ uploadProgress: parseInt(progress.percent) });
       };
