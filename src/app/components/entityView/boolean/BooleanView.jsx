@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { translate } from "react-i18next";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import f from "lodash/fp";
 
 @translate(["common"])
 class BooleanView extends PureComponent {
@@ -24,8 +25,8 @@ class BooleanView extends PureComponent {
     }
 
     const valueToSet = !(column.multilanguage
-      ? cell.value[langtag]
-      : cell.value);
+      ? f.get(["value", langtag], cell)
+      : f.get("value", cell));
     const newValue = column.multilanguage
       ? { [langtag]: valueToSet }
       : valueToSet;
@@ -39,8 +40,8 @@ class BooleanView extends PureComponent {
   };
 
   render() {
-    const { t, funcs, thisUserCantEdit, value, langtag, cell } = this.props;
-    const selected = cell.column.multilanguage ? value[langtag] : value;
+    const { t, funcs, thisUserCantEdit, value } = this.props;
+    const selected = !!value;
     const checkboxCss = classNames("checkbox", {
       checked: selected,
       disabled: thisUserCantEdit

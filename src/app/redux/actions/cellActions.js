@@ -108,7 +108,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
 
   //automatically add translation_needed if cell is new
   if (mainLangChecks && !hasTranslations) {
-    addTranslationNeeded(addTranslationNeeded(f.tail(Langtags), cell));
+    addTranslationNeeded(f.tail(Langtags), cell);
   }
 
   const annotations = f.compose(

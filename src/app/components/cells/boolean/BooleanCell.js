@@ -6,7 +6,7 @@ const BooleanCell = props => {
   const { actions, value, table, row, column, langtag, selected } = props;
 
   const handleEditDone = newValue => {
-    const valueToSave = column.isMultiLanguage
+    const valueToSave = column.multilanguage
       ? { [langtag]: newValue }
       : newValue;
     actions.changeCellValue({
@@ -21,7 +21,7 @@ const BooleanCell = props => {
   };
 
   const getCheckboxValue = () => {
-    return !!(column.isMultiLanguage ? value[langtag] : value);
+    return !!(column.multilanguage ? value[langtag] : value);
   };
 
   const toggleCheckboxValue = () => {
