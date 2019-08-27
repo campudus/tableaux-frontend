@@ -30,7 +30,6 @@ class BooleanView extends PureComponent {
     const newValue = column.multilanguage
       ? { [langtag]: valueToSet }
       : valueToSet;
-    console.log({ newValue });
     actions.changeCellValue({ cell, oldValue: cell.value, newValue });
   };
 
@@ -42,11 +41,9 @@ class BooleanView extends PureComponent {
 
   render() {
     const { t, funcs, thisUserCantEdit, value, langtag, cell } = this.props;
-    console.log({ cell });
     const selected = cell.column.multilanguage
       ? f.get(["value", langtag], cell)
       : value;
-    console.log(value, langtag, f.get(langtag, cell.value));
     const checkboxCss = classNames("checkbox", {
       checked: selected,
       disabled: thisUserCantEdit
