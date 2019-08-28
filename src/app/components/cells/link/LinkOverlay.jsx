@@ -223,7 +223,9 @@ class LinkOverlay extends PureComponent {
       isLinked ? "linked" : "unlinked",
       this.props.rowResults
     );
-    const row = f.find(f.propEq("id", key), rowResults);
+    const row = isLinked
+      ? f.find(f.propEq("id", key), rowResults)
+      : rowResults[index];
 
     if (f.isEmpty(rowResults) || f.isEmpty(row)) {
       return null;
