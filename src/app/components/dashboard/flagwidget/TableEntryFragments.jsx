@@ -51,7 +51,6 @@ const TableEntry = compose(
             ["translationStatus", "translationStatus", selectedLang],
             table
           );
-    console.log({ translationPercentage });
 
     const href = `/${
       flag === "needs-translation" ? selectedLang : langtag
