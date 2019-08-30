@@ -42,7 +42,7 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
     annotation.uuid || (existingAnnotation && existingAnnotation.uuid);
 
   const promise = shouldDelete
-    ? makeRequest(paramToDeleteAnnotation(cell, annotation))
+    ? makeRequest(paramToDeleteAnnotation(cell, existingAnnotation))
     : change === Change.ADD
     ? makeRequest(paramToSetAnnotation(cell, annotation))
     : // else remove individual tags
@@ -134,19 +134,21 @@ const getRequestParam = change => (cell, annotationObj) => {
 
 const paramToSetAnnotation = getRequestParam(Change.ADD);
 const paramToDeleteAnnotation = getRequestParam(Change.DELETE);
-const paramToDeleteAnnotationLangtag = (cell, annotationObj, langtag) => ({
-  method: "DELETE",
-  apiRoute:
-    route.toCell({
-      tableId: cell.table.id,
-      columnId: cell.column.id,
-      rowId: cell.row.id
-    }) +
-    "/annotations/" +
-    annotationObj.uuid +
-    "/" +
-    langtag
-});
+const paramToDeleteAnnotationLangtag = (cell, annotationObj, langtag) => {
+  return {
+    method: "DELETE",
+    apiRoute:
+      route.toCell({
+        tableId: cell.table.id,
+        columnId: cell.column.id,
+        rowId: cell.row.id
+      }) +
+      "/annotations/" +
+      annotationObj.uuid +
+      "/" +
+      langtag
+  };
+};
 
 const findAnnotations = (getState, action) => {
   const { cell } = action;
