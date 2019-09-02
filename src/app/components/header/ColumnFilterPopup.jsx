@@ -115,7 +115,7 @@ class ColumnFilterPopup extends React.Component {
     return f.compose(
       setColumnOrdering,
       mapOrderingToIndices,
-      f.concat([0])
+      f.concat(f.prop("id", f.head(columns)))
     )(newOrdering);
   };
 
