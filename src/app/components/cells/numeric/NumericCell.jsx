@@ -44,7 +44,7 @@ const NumericCell = props => {
     return (
       <div className="cell-content">
         {f.compose(
-          when(f.contains(f.__, ["0", "NaN"]), () => ""),
+          when(f.eq("NaN"), () => ""),
           unless(() => isYear, formatNumber)
         )(displayValue[langtag])}
       </div>

@@ -80,7 +80,7 @@ const NumberInput = (props, ref) => {
       // special case: started typing negative number
       if (inputValue === "-") return inputValue;
       // safety hatch for badly parsed input
-      else if (f.contains(formattedInput, ["", "0", "NaN"])) return "";
+      else if (f.contains(formattedInput, ["", "NaN"])) return "";
       // localise if neccessary
       else if (localize) return formattedInput;
       else return inputValue;
