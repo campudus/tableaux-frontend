@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useState,
   useRef,
   forwardRef,
@@ -48,11 +49,12 @@ const NumberInput = (props, ref) => {
   const [formattedValue, setValue] = useState(
     when(() => localize, formatNumber, value)
   );
-  const handleChange = event => {
+
+  const handleChange = useCallback(event => {
     const inputValue = event.target.value;
 
     const fixSign = numericString => {
-      // whenever user hits `minus`, toggle sign
+      //  whenever user hits `minus`, toggle sign
       const numDashes = f.filter(f.eq("-"), numericString).length;
       const cleanString = numericString.replace(/-/g, "");
       return numDashes % 2 === 0 ? cleanString : "-" + cleanString;
@@ -77,17 +79,17 @@ const NumberInput = (props, ref) => {
     onChange(readNumericString(inputValue));
 
     const calculateDisplayedString = () => {
-      // special case: started typing negative number
+      //  special case: started typing negative number
       if (inputValue === "-") return inputValue;
-      // safety hatch for badly parsed input
+      //  safety hatch for badly parsed input
       else if (f.contains(formattedInput, ["", "NaN"])) return "";
-      // localise if neccessary
+      //  localise if neccessary
       else if (localize) return formattedInput;
       else return inputValue;
     };
 
     setValue(calculateDisplayedString());
-  };
+  });
 
   const inputRef = useRef();
   // expose the focus() method to parents using ref
@@ -97,16 +99,16 @@ const NumberInput = (props, ref) => {
     }
   }));
 
-  const moveCaretToEnd = () => {
+  const moveCaretToEnd = useCallback(() => {
     const l = formattedValue.length;
     maybe(inputRef.current).method("setSelectionrange", l, l);
     onFocus && onFocus();
-  };
+  });
 
-  const filterAllowedKeys = event => {
+  const filterAllowedKeys = useCallback(event => {
     const hasComma = f.contains(decimalSeparator, event.target.value);
 
-    // If a decimal separator is already in the number, ignore it
+    //  If a decimal separator is already in the number, ignore it
     const allowedKeyStrokes = [
       ...(hasComma || integer ? [] : [decimalSeparator]),
       ...allowedSymbols,
@@ -121,11 +123,42 @@ const NumberInput = (props, ref) => {
       return false;
     }
     return true;
-  };
+  });
+
+  const previousState = useRef();
+  const rememberState = event =>
+    (previousState.current = {
+      value: formattedValue,
+      selectionStart: event.target.selectionStart
+    });
 
   const maybeIgnoreKeyEvent = event => {
-    filterAllowedKeys(event) && onKeyDown && onKeyDown(event);
+    const shouldProcessKeyPress = filterAllowedKeys(event);
+    shouldProcessKeyPress && onKeyDown && onKeyDown(event);
+    return shouldProcessKeyPress;
   };
+
+  // side effect: remembers caret position and state
+  const handleKeyDown = useCallback(event => {
+    maybeIgnoreKeyEvent(event) && rememberState(event);
+  });
+
+  // side effect: set correct caret position
+  const handleKeyUp = useCallback(event => {
+    if (f.isNil(previousState.current)) {
+      return;
+    }
+    const oldPos = previousState.current.selectionStart;
+    const newPos = event.target.selectionStart;
+    const delta = newPos - oldPos;
+    if (Math.abs(delta) > 1) {
+      const dir = formattedValue.length - previousState.current.value.length;
+      const fixedPos = oldPos + dir; // modify caret position by string length difference
+      event.target.selectionStart = fixedPos;
+      event.target.selectionEnd = fixedPos;
+    }
+    previousState.current = null;
+  });
 
   return (
     <input
@@ -136,7 +169,8 @@ const NumberInput = (props, ref) => {
       onFocus={moveCaretToEnd}
       onBlur={onBlur}
       onChange={handleChange}
-      onKeyDown={maybeIgnoreKeyEvent}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
       value={formattedValue}
       ref={inputRef}
       placeholder={placeholder}
