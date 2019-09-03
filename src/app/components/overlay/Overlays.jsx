@@ -20,7 +20,10 @@ const OverlayRenderer = ({
       return null;
     }
 
-    const exitingOverlays = overlays.filter(f.propEq("exiting", true));
+    const exitingOverlays = f.compose(
+      f.map("id"),
+      f.filter(f.propEq("exiting", true))
+    )(overlays);
     const bigOverlayIdces = overlays
       .map((ol, idx) => (ol.type === "full-height" ? idx : null))
       .filter(f.isInteger); // 0 is falsy
