@@ -25,7 +25,6 @@ const NumericCell = props => {
   const isYear = isYearColumn(column);
 
   const handleEditDone = React.useCallback(newValue => {
-    const oldValue = isMultiLanguage ? value[langtag] : value;
     const valueToSave = isMultiLanguage ? { [langtag]: newValue } : newValue;
 
     actions.changeCellValue({
@@ -33,7 +32,7 @@ const NumericCell = props => {
       columnId: column.id,
       rowId: row.id,
       tableId: table.id,
-      oldValue,
+      oldValue: value,
       newValue: valueToSave
     });
 
