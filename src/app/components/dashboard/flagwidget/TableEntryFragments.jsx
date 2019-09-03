@@ -41,7 +41,7 @@ const TableEntry = compose(
       selectedLang === f.first(Langtags)
         ? doto(
             table,
-            f.get(["translationStatus"]),
+            f.get("translationStatus"),
             f.map(f.identity), // get values of all keys in undetermined order
             f.reduce(f.add, -1),
             f.divide(f, Math.max(f.size(Langtags) - 1, 1))
