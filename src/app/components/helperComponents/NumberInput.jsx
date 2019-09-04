@@ -11,10 +11,24 @@ import PropTypes from "prop-types";
 
 import {
   formatNumber,
-  getLocaleDecimalSeparator,
-  readLocalizedNumber
+  getLocaleDecimalSeparator
 } from "../../helpers/multiLanguage";
 import { when } from "../../helpers/functools";
+
+const formatValueString = (
+  localize = true,
+  valueString = "",
+  addComma = false
+) =>
+  f.compose(
+    when(() => addComma, str => str + getLocaleDecimalSeparator()),
+    f.cond([
+      [f.isEmpty, () => ""],
+      [f.eq("-"), f.identity],
+      [() => localize, formatNumber],
+      [() => true, str => String(parseFloat(str))]
+    ])
+  )(valueString);
 
 export const MAX_DIGIT_LENGTH = 20; // 15 digits + 15 / 3 = 5 group separators
 const digits = "0123456789";
@@ -46,10 +60,13 @@ const NumberInput = (props, ref) => {
   } = props;
 
   const decimalSeparator = getLocaleDecimalSeparator();
-
-  const [formattedValue, setValue] = useState(
-    when(() => localize, formatNumber, value)
+  const [valueString, setValueString] = useState(String(value || 0));
+  const formattedValue = formatValueString(
+    localize,
+    valueString,
+    !integer && valueString.endsWith(".")
   );
+
   const [negative, setIsNegative] = useState(f.isNumber(value) && value < 0);
 
   const [caretPosition, setCaretPosition] = useState();
@@ -61,13 +78,9 @@ const NumberInput = (props, ref) => {
     }
   }));
 
-  // Read formatted string to internal number representation and cast it to string
-  const getValueString = () =>
-    when(f.eq("NaN"), () => "", String(readLocalizedNumber(formattedValue)));
-
   React.useEffect(() => {
-    onChange && onChange(readLocalizedNumber(formattedValue));
-  }, [formattedValue]);
+    onChange && onChange(parseFloat(valueString));
+  }, [valueString]);
 
   // Set DOM caret to logical caret position
   React.useEffect(() => {
@@ -89,16 +102,19 @@ const NumberInput = (props, ref) => {
   }, [caretPosition]);
 
   const setCaret = position => {
-    console.log("setCaret", caretPosition, "->", position, "@");
-    if (position === "end") {
-      setCaretPosition(formattedValue.length);
-    } else {
-      setCaretPosition(f.clamp(0, getValueString().length + 1, position));
-    }
-  };
-
-  const setFormattedValue = value => {
-    setValue(f.isEmpty(value) || value === "-" ? value : formatNumber(value));
+    const newCaretPosition =
+      position === "end"
+        ? valueString.length
+        : f.clamp(0, valueString.length + 2, position);
+    console.log(
+      "setCaret",
+      caretPosition,
+      "->",
+      position,
+      "->",
+      newCaretPosition
+    );
+    setCaretPosition(newCaretPosition);
   };
 
   const handleKeyDown = useCallback(event => {
@@ -106,7 +122,7 @@ const NumberInput = (props, ref) => {
     event.preventDefault();
     console.log("Pressed:", event.key);
     onKeyDown && onKeyDown(event);
-    const hasDecimalPoint = f.contains(decimalSeparator, formattedValue);
+    const hasDecimalPoint = f.contains(".", valueString);
     if (
       !f.contains(event.key, [
         ...allowedSymbols,
@@ -118,12 +134,12 @@ const NumberInput = (props, ref) => {
     }
 
     const formattedValueWithout = position =>
-      deleteCharAt(position, getValueString());
+      deleteCharAt(position, valueString);
 
     const negateValue = () => {
-      setCaret(negative ? caretPosition - 1 : caretPosition + 1);
+      setCaret(negative ? Math.max(caretPosition - 1, 0) : caretPosition + 1);
       setIsNegative(!negative);
-      setFormattedValue(String(-readLocalizedNumber(formattedValue)));
+      setValueString(String(-parseFloat(valueString)));
     };
 
     if (event.key === "-") {
@@ -138,7 +154,7 @@ const NumberInput = (props, ref) => {
       if (negative && caretPosition === 1) {
         negateValue();
       } else {
-        setFormattedValue(formattedValueWithout(caretPosition - 1));
+        setValueString(formattedValueWithout(caretPosition - 1));
         setCaret(caretPosition - 1);
       }
     } else if (event.key === "Delete") {
@@ -146,12 +162,14 @@ const NumberInput = (props, ref) => {
         negateValue();
         setCaret(0);
       } else {
-        setFormattedValue(formattedValueWithout(caretPosition));
+        setValueString(formattedValueWithout(caretPosition));
       }
-    } else if (f.contains(event.key, digits)) {
-      setFormattedValue(
-        insertCharAt(caretPosition, event.key, getValueString())
-      );
+    } else if (
+      f.contains(event.key, digits) ||
+      (!integer && event.key === decimalSeparator)
+    ) {
+      const toInsert = event.key === decimalSeparator ? "." : event.key;
+      setValueString(insertCharAt(caretPosition, toInsert, valueString));
       setCaret(caretPosition + 1);
     }
   });
@@ -162,7 +180,7 @@ const NumberInput = (props, ref) => {
   });
 
   const handleChange = useCallback(() => {
-    const asNumber = readLocalizedNumber(formattedValue);
+    const asNumber = parseFloat(valueString);
     onChange && onChange(asNumber);
   });
 
