@@ -20,7 +20,7 @@ console.warn(
 
 const handleScrollLater = new DebouncedFunction(function(self, scrollPosition) {
   self._originalScrollHandler(scrollPosition);
-}, 50);
+});
 
 const scrollingEvents = new Subject();
 const IMMEDIATE_RENDER_SPEED = 8; // px/scroll event
@@ -87,7 +87,7 @@ export default class GrudGrid extends MultiGrid {
     this.translateElement(this._brgParent, null);
     this.translateElement(this._trgParent, null);
     this.setState(newPosition);
-  }, 50);
+  });
 
   translateElement(element, position) {
     if (element && element.firstChild) {
