@@ -14,10 +14,11 @@ import {
   getLocaleDecimalSeparator,
   readLocalizedNumber
 } from "../../helpers/multiLanguage";
-import { maybe, when } from "../../helpers/functools";
+import { when } from "../../helpers/functools";
 
 export const MAX_DIGIT_LENGTH = 20; // 15 digits + 15 / 3 = 5 group separators
-const allowedSymbols = "-0123456789";
+const digits = "0123456789";
+const allowedSymbols = "-" + digits;
 const allowedKeys = [
   "Enter",
   "Escape",
@@ -49,48 +50,9 @@ const NumberInput = (props, ref) => {
   const [formattedValue, setValue] = useState(
     when(() => localize, formatNumber, value)
   );
+  const [negative, setIsNegative] = useState(f.isNumber(value) && value < 0);
 
-  const handleChange = useCallback(event => {
-    const inputValue = event.target.value;
-
-    const fixSign = numericString => {
-      //  whenever user hits `minus`, toggle sign
-      const numDashes = f.filter(f.eq("-"), numericString).length;
-      const cleanString = numericString.replace(/-/g, "");
-      return numDashes % 2 === 0 ? cleanString : "-" + cleanString;
-    };
-
-    const readNumericString = f.compose(
-      readLocalizedNumber,
-      fixSign
-    );
-
-    const formattedInput = f.compose(
-      when(
-        () => f.last(inputValue) === decimalSeparator,
-        str => str + decimalSeparator
-      ),
-      f.join(""),
-      f.take(MAX_DIGIT_LENGTH),
-      formatNumber,
-      readNumericString
-    )(inputValue);
-
-    onChange(readNumericString(inputValue));
-
-    const calculateDisplayedString = () => {
-      //  special case: started typing negative number
-      if (inputValue === "-") return inputValue;
-      //  safety hatch for badly parsed input
-      else if (f.contains(formattedInput, ["", "NaN"])) return "";
-      //  localise if neccessary
-      else if (localize) return formattedInput;
-      else return inputValue;
-    };
-
-    setValue(calculateDisplayedString());
-  });
-
+  const [caretPosition, setCaretPosition] = useState();
   const inputRef = useRef();
   // expose the focus() method to parents using ref
   useImperativeHandle(ref, () => ({
@@ -99,65 +61,109 @@ const NumberInput = (props, ref) => {
     }
   }));
 
-  const moveCaretToEnd = useCallback(() => {
-    const l = formattedValue.length;
-    maybe(inputRef.current).method("setSelectionrange", l, l);
-    onFocus && onFocus();
-  });
+  // Read formatted string to internal number representation and cast it to string
+  const getValueString = () =>
+    when(f.eq("NaN"), () => "", String(readLocalizedNumber(formattedValue)));
 
-  const filterAllowedKeys = useCallback(event => {
-    const hasComma = f.contains(decimalSeparator, event.target.value);
+  React.useEffect(() => {
+    onChange && onChange(readLocalizedNumber(formattedValue));
+  }, [formattedValue]);
 
-    //  If a decimal separator is already in the number, ignore it
-    const allowedKeyStrokes = [
-      ...(hasComma || integer ? [] : [decimalSeparator]),
-      ...allowedSymbols,
-      ...allowedKeys
-    ];
-    if (
-      !(event.altKey || event.ctrlKey || event.metaKey) &&
-      !f.contains(event.key, allowedKeyStrokes)
-    ) {
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
+  // Set DOM caret to logical caret position
+  React.useEffect(() => {
+    if (!inputRef.current) return;
+    const visualCaretPosition = when(
+      f.isNil,
+      () => formattedValue.length,
+      getDigitPositionInString(formattedValue, caretPosition)
+    );
+    console.log(
+      "Setting DOM caret to",
+      caretPosition,
+      visualCaretPosition,
+      formattedValue,
+      formattedValue.length
+    );
+    inputRef.current.selectionStart = visualCaretPosition;
+    inputRef.current.selectionEnd = visualCaretPosition;
+  }, [caretPosition]);
+
+  const setCaret = position => {
+    console.log("setCaret", caretPosition, "->", position, "@");
+    if (position === "end") {
+      setCaretPosition(formattedValue.length);
+    } else {
+      setCaretPosition(f.clamp(0, getValueString().length + 1, position));
     }
-    return true;
-  });
-
-  const previousState = useRef();
-  const rememberState = event =>
-    (previousState.current = {
-      value: formattedValue,
-      selectionStart: event.target.selectionStart
-    });
-
-  const maybeIgnoreKeyEvent = event => {
-    const shouldProcessKeyPress = filterAllowedKeys(event);
-    shouldProcessKeyPress && onKeyDown && onKeyDown(event);
-    return shouldProcessKeyPress;
   };
 
-  // side effect: remembers caret position and state
-  const handleKeyDown = useCallback(event => {
-    maybeIgnoreKeyEvent(event) && rememberState(event);
-  });
+  const setFormattedValue = value => {
+    setValue(f.isEmpty(value) || value === "-" ? value : formatNumber(value));
+  };
 
-  // side effect: set correct caret position
-  const handleKeyUp = useCallback(event => {
-    if (f.isNil(previousState.current)) {
+  const handleKeyDown = useCallback(event => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return; // let browser commands pass
+    event.preventDefault();
+    console.log("Pressed:", event.key);
+    onKeyDown && onKeyDown(event);
+    const hasDecimalPoint = f.contains(decimalSeparator, formattedValue);
+    if (
+      !f.contains(event.key, [
+        ...allowedSymbols,
+        ...allowedKeys,
+        ...(integer || hasDecimalPoint ? [] : [decimalSeparator])
+      ])
+    ) {
       return;
     }
-    const oldPos = previousState.current.selectionStart;
-    const newPos = event.target.selectionStart;
-    const delta = newPos - oldPos;
-    if (Math.abs(delta) > 1) {
-      const dir = formattedValue.length - previousState.current.value.length;
-      const fixedPos = oldPos + dir; // modify caret position by string length difference
-      event.target.selectionStart = fixedPos;
-      event.target.selectionEnd = fixedPos;
+
+    const formattedValueWithout = position =>
+      deleteCharAt(position, getValueString());
+
+    const negateValue = () => {
+      setCaret(negative ? caretPosition - 1 : caretPosition + 1);
+      setIsNegative(!negative);
+      setFormattedValue(String(-readLocalizedNumber(formattedValue)));
+    };
+
+    if (event.key === "-") {
+      negateValue();
+    } else if (event.key === "ArrowLeft") {
+      event.stopPropagation();
+      setCaret(caretPosition - 1);
+    } else if (event.key === "ArrowRight") {
+      event.stopPropagation();
+      setCaret(caretPosition + 1);
+    } else if (event.key === "Backspace") {
+      if (negative && caretPosition === 1) {
+        negateValue();
+      } else {
+        setFormattedValue(formattedValueWithout(caretPosition - 1));
+        setCaret(caretPosition - 1);
+      }
+    } else if (event.key === "Delete") {
+      if (negative && caretPosition === 0) {
+        negateValue();
+        setCaret(0);
+      } else {
+        setFormattedValue(formattedValueWithout(caretPosition));
+      }
+    } else if (f.contains(event.key, digits)) {
+      setFormattedValue(
+        insertCharAt(caretPosition, event.key, getValueString())
+      );
+      setCaret(caretPosition + 1);
     }
-    previousState.current = null;
+  });
+
+  const handleFocus = useCallback(event => {
+    setCaret("end");
+    onFocus && onFocus(event);
+  });
+
+  const handleChange = useCallback(() => {
+    const asNumber = readLocalizedNumber(formattedValue);
+    onChange && onChange(asNumber);
   });
 
   return (
@@ -166,11 +172,10 @@ const NumberInput = (props, ref) => {
       className={"formatted-numeric-input " + className}
       autoFocus={autoFocus || false}
       disabled={disabled || false}
-      onFocus={moveCaretToEnd}
+      onFocus={handleFocus}
       onBlur={onBlur}
-      onChange={handleChange}
       onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
+      onChange={handleChange}
       value={formattedValue}
       ref={inputRef}
       placeholder={placeholder}
@@ -192,3 +197,47 @@ NumberInput.propTypes = {
   integer: PropTypes.bool,
   localize: PropTypes.bool
 };
+
+export const getDigitPositionInString = (numberString, digitPosition) => {
+  const getDigitPositionInStringImpl = (n, val = numberString, i = 0) => {
+    const firstChar = f.head(val);
+    const isFistCharDigit = f.contains(firstChar, allowedSymbols);
+    if (f.isNil(numberString[i])) return numberString.length;
+    else if (n === 0 && isFistCharDigit) return i;
+    else
+      return getDigitPositionInStringImpl(
+        isFistCharDigit ? n - 1 : n,
+        f.tail(val),
+        i + 1
+      );
+  };
+  const p = getDigitPositionInStringImpl(digitPosition, numberString);
+  // console.log(
+  //   "digit no.",
+  //   digitPosition,
+  //   "in",
+  //   typeof numberString,
+  //   numberString,
+  //   "is at position",
+  //   p
+  // );
+  return p;
+};
+
+export const insertCharAt = f.curryN(3, (position, char, string = "") =>
+  string
+    ? position >= 0
+      ? string.slice(0, position) + char + string.slice(position)
+      : string
+    : char
+);
+
+export const deleteCharAt = f.curryN(2, (position, string = "") =>
+  string
+    ? position >= 0
+      ? position < string.length
+        ? string.slice(0, position) + string.slice(position + 1)
+        : string.slice(0, string.length - 1)
+      : string
+    : null
+);
