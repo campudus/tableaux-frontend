@@ -41,7 +41,10 @@ const mergeCounts = (rawAnnotationCounts, rawTranslationStates) => {
 
   return annotationCounts.map(table => ({
     ...table,
-    translationStatus: translationLookupMap[table.id]
+    translationStatus: f.prop(
+      "translationStatus",
+      translationLookupMap[table.id]
+    )
   }));
 };
 
