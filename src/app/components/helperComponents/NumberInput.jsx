@@ -15,21 +15,6 @@ import {
 } from "../../helpers/multiLanguage";
 import { when } from "../../helpers/functools";
 
-const formatValueString = (
-  localize = true,
-  valueString = "",
-  addComma = false
-) =>
-  f.compose(
-    when(() => addComma, str => str + getLocaleDecimalSeparator()),
-    f.cond([
-      [f.isEmpty, () => ""],
-      [f.eq("-"), f.identity],
-      [() => localize, formatNumber],
-      [() => true, str => String(parseFloat(str))]
-    ])
-  )(valueString);
-
 export const MAX_DIGIT_LENGTH = 20; // 15 digits + 15 / 3 = 5 group separators
 const digits = "0123456789";
 const allowedSymbols = "-" + digits;
@@ -60,12 +45,23 @@ const NumberInput = (props, ref) => {
   } = props;
 
   const decimalSeparator = getLocaleDecimalSeparator();
-  const [valueString, setValueString] = useState(String(value || 0));
+  const [valueString, setValueString_] = useState(String(value || 0));
   const formattedValue = formatValueString(
     localize,
     valueString,
     !integer && valueString.endsWith(".")
   );
+
+  const setValueString = useCallback(string => {
+    setValueString_(string);
+    if (
+      caretPosition >
+      formatValueString(localize, string, !integer && string.endsWith("."))
+        .length
+    ) {
+      setCaret(string.length);
+    }
+  });
 
   const [negative, setIsNegative] = useState(f.isNumber(value) && value < 0);
 
@@ -217,9 +213,12 @@ NumberInput.propTypes = {
 };
 
 export const getDigitPositionInString = (numberString, digitPosition) => {
+  const localeGroupSeparator = getLocaleDecimalSeparator() === "," ? "." : ",";
   const getDigitPositionInStringImpl = (n, val = numberString, i = 0) => {
     const firstChar = f.head(val);
-    const isFistCharDigit = f.contains(firstChar, allowedSymbols);
+    const isFistCharDigit =
+      f.contains(firstChar, allowedSymbols) ||
+      firstChar === localeGroupSeparator;
     if (f.isNil(numberString[i])) return numberString.length;
     else if (n === 0 && isFistCharDigit) return i;
     else
@@ -229,17 +228,7 @@ export const getDigitPositionInString = (numberString, digitPosition) => {
         i + 1
       );
   };
-  const p = getDigitPositionInStringImpl(digitPosition, numberString);
-  // console.log(
-  //   "digit no.",
-  //   digitPosition,
-  //   "in",
-  //   typeof numberString,
-  //   numberString,
-  //   "is at position",
-  //   p
-  // );
-  return p;
+  return getDigitPositionInStringImpl(digitPosition, numberString);
 };
 
 export const insertCharAt = f.curryN(3, (position, char, string = "") =>
@@ -259,3 +248,32 @@ export const deleteCharAt = f.curryN(2, (position, string = "") =>
       : string
     : null
 );
+
+const formatValueString = (
+  localize = true,
+  valueString = "",
+  addDecimalSeparator = false
+) => {
+  const hasDecimalSeparator = f.contains(".", valueString);
+  const trailingZeroes =
+    !addDecimalSeparator && hasDecimalSeparator
+      ? f.takeRightWhile(f.eq("0"), valueString).length
+      : 0;
+  const mustAddDecimalSeparator =
+    addDecimalSeparator ||
+    (hasDecimalSeparator &&
+      f.last(f.dropRightWhile(f.eq("0"), valueString)) === ".");
+  return f.compose(
+    str => str + f.repeat(trailingZeroes, "0"),
+    when(
+      () => mustAddDecimalSeparator,
+      str => str + getLocaleDecimalSeparator()
+    ),
+    f.cond([
+      [f.isEmpty, () => ""],
+      [f.eq("-"), f.identity],
+      [() => localize, formatNumber],
+      [() => true, str => String(parseFloat(str))]
+    ])
+  )(valueString);
+};
