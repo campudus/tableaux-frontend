@@ -333,4 +333,11 @@ body div div.column-header-context-menu {
       overflow: visible !important;
     }
   }
+  &.multigrid-bottom-left {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  &.multigrid-bottom-left::-webkit-scrollbar {
+    width: 0 !important;
+  }
 }
