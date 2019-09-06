@@ -1,5 +1,6 @@
+import NumberFormat from "react-number-format";
 import React, {
-  useState,
+  useCallback,
   useRef,
   forwardRef,
   useImperativeHandle
@@ -13,20 +14,9 @@ import {
   getLocaleDecimalSeparator,
   readLocalizedNumber
 } from "../../helpers/multiLanguage";
-import { maybe, when } from "../../helpers/functools";
+import { doto, when } from "../../helpers/functools";
 
-export const MAX_DIGIT_LENGTH = 20; // 15 digits + 15 / 3 = 5 group separators
-const allowedSymbols = "-0123456789";
-const allowedKeys = [
-  "Enter",
-  "Escape",
-  "ArrowUp",
-  "ArrowDown",
-  "ArrowLeft",
-  "ArrowRight",
-  "Backspace",
-  "Delete"
-];
+const MAX_DIGITS = 14;
 
 const NumberInput = (props, ref) => {
   const {
@@ -44,102 +34,68 @@ const NumberInput = (props, ref) => {
   } = props;
 
   const decimalSeparator = getLocaleDecimalSeparator();
+  const thousandSeparator = decimalSeparator === "," ? "." : ",";
 
-  const [formattedValue, setValue] = useState(
-    when(() => localize, formatNumber, value)
-  );
   const handleChange = event => {
-    const inputValue = event.target.value;
-
-    const fixSign = numericString => {
-      // whenever user hits `minus`, toggle sign
-      const numDashes = f.filter(f.eq("-"), numericString).length;
-      const cleanString = numericString.replace(/-/g, "");
-      return numDashes % 2 === 0 ? cleanString : "-" + cleanString;
-    };
-
-    const readNumericString = f.compose(
-      readLocalizedNumber,
-      fixSign
-    );
-
-    const formattedInput = f.compose(
-      when(
-        () => f.last(inputValue) === decimalSeparator,
-        str => str + decimalSeparator
-      ),
-      f.join(""),
-      f.take(MAX_DIGIT_LENGTH),
-      formatNumber,
-      readNumericString
-    )(inputValue);
-
-    onChange(readNumericString(inputValue));
-
-    const calculateDisplayedString = () => {
-      // special case: started typing negative number
-      if (inputValue === "-") return inputValue;
-      // safety hatch for badly parsed input
-      else if (f.contains(formattedInput, ["", "0", "NaN"])) return "";
-      // localise if neccessary
-      else if (localize) return formattedInput;
-      else return inputValue;
-    };
-
-    setValue(calculateDisplayedString());
+    onChange && onChange(readLocalizedNumber(event.target.value));
   };
 
   const inputRef = useRef();
-  // expose the focus() method to parents using ref
+
   useImperativeHandle(ref, () => ({
-    focus() {
-      inputRef.current.focus();
-    }
+    focus: () => inputRef.current && inputRef.current.focus()
   }));
 
-  const moveCaretToEnd = () => {
-    const l = formattedValue.length;
-    maybe(inputRef.current).method("setSelectionrange", l, l);
-    onFocus && onFocus();
-  };
+  // Assure that we don't type more than MAX_DIGITS digits before the
+  // decimal separator
+  const handleKeyDown = useCallback(event => {
+    const isDigit = f.contains(f.__, "0123456789");
+    const formattedNumber = formatNumber(value);
+    const caretPosition = event.target.selectionStart;
 
-  const filterAllowedKeys = event => {
-    const hasComma = f.contains(decimalSeparator, event.target.value);
+    // When no decimal separator is typed yet, we assume it at the end
+    // of the number
+    const decimalPosition = when(
+      f.gt(0),
+      () => formattedNumber.length,
+      f.findIndex(f.eq(decimalSeparator), formattedNumber)
+    );
 
-    // If a decimal separator is already in the number, ignore it
-    const allowedKeyStrokes = [
-      ...(hasComma || integer ? [] : [decimalSeparator]),
-      ...allowedSymbols,
-      ...allowedKeys
-    ];
+    const preDecimalDigits = doto(
+      formattedNumber,
+      f.take(decimalPosition),
+      f.filter(isDigit),
+      f.size
+    );
+
     if (
-      !(event.altKey || event.ctrlKey || event.metaKey) &&
-      !f.contains(event.key, allowedKeyStrokes)
+      isDigit(event.key) &&
+      preDecimalDigits >= MAX_DIGITS &&
+      caretPosition <= decimalPosition
     ) {
       event.preventDefault();
       event.stopPropagation();
-      return false;
+    } else {
+      onKeyDown && onKeyDown(event);
     }
-    return true;
-  };
-
-  const maybeIgnoreKeyEvent = event => {
-    filterAllowedKeys(event) && onKeyDown && onKeyDown(event);
-  };
+  });
 
   return (
-    <input
-      type="text"
-      className={"formatted-numeric-input " + className}
-      autoFocus={autoFocus || false}
-      disabled={disabled || false}
-      onFocus={moveCaretToEnd}
+    <NumberFormat
+      ref={inputRef}
+      thousandSeparator={localize ? thousandSeparator : false}
+      decimalSeparator={decimalSeparator}
+      value={value}
+      defaultValue={0}
+      decimalScale={integer ? 0 : 3}
       onBlur={onBlur}
       onChange={handleChange}
-      onKeyDown={maybeIgnoreKeyEvent}
-      value={formattedValue}
-      ref={inputRef}
       placeholder={placeholder}
+      autoFocus={autoFocus}
+      className={"formatted-numeric-input " + className}
+      disabled={disabled}
+      onKeyDown={handleKeyDown}
+      onFocus={onFocus}
     />
   );
 };
