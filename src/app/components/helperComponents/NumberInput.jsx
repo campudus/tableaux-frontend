@@ -43,7 +43,7 @@ const NumberInput = (props, ref) => {
       decimalSeparator={decimalSeparator}
       value={value}
       defaultValue={0}
-      decimalScale={integer ? 0 : undefined}
+      decimalScale={integer ? 0 : 3}
       onBlur={onBlur}
       onChange={handleChange}
       placeholder={placeholder}
