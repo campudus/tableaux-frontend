@@ -598,6 +598,7 @@ export default class VirtualTable extends PureComponent {
           {({ height, width }) => {
             return (
               <MultiGrid
+                enableFixedColumnScroll={true}
                 langtag={langtag}
                 ref={this.storeGridElement}
                 key={columnCount < 3 ? "no-fixed-rows" : "with-fixed-rows"}

@@ -56,17 +56,17 @@ scrollingEvents
 Grid.prototype._originalScrollHandler = Grid.prototype.handleScrollEvent;
 
 Grid.prototype.handleScrollEvent = function(trigger) {
-  if (!this._mainGridNode) {
-    this._mainGridNode = document.getElementsByClassName(
-      "ReactVirtualized__Grid"
-    )[3];
+  if (!this._mainGridNode || !this.leftGridNode) {
+    const gridNode = document.getElementsByClassName("ReactVirtualized__Grid");
+    this._mainGridNode = gridNode[3];
+    this.leftGridNode = gridNode[2];
   }
   const scrollInfo = {
     scrollTop: trigger.scrollTop,
     scrollLeft: trigger.scrollLeft
   };
 
-  if (trigger === this._mainGridNode) {
+  if (trigger === this._mainGridNode || trigger === this.leftGridNode) {
     this.props.onScroll(scrollInfo);
     const self = this;
     handleScrollLater.start(self, scrollInfo);
@@ -84,12 +84,9 @@ export default class GrudGrid extends MultiGrid {
 
   recalculateScrollPosition = new DebouncedFunction(newPosition => {
     this.translateElement(this._blgParent, null);
+    this.translateElement(this._brgParent, null);
     this.translateElement(this._trgParent, null);
-    this.setState(newPosition, () => {
-      if (this.props.fullyLoaded) {
-        // spinnerOff();
-      }
-    });
+    this.setState(newPosition);
   });
 
   translateElement(element, position) {
@@ -103,18 +100,21 @@ export default class GrudGrid extends MultiGrid {
   }
 
   _onScroll({ scrollLeft, scrollTop }) {
-    if (!this._trgParent) {
+    if (!this._trgParent || !this._blgParent || !this._brgParent) {
       // this needs to access the real DOM nodes, not React's virtual ones
       // eslint-disable-next-line react/no-find-dom-node
       this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
       // eslint-disable-next-line react/no-find-dom-node
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
+      // eslint-disable-next-line react/no-find-dom-node
+      this._brgParent = ReactDOM.findDOMNode(this._bottomRightGrid);
     }
 
     const y = this.state.scrollTop - scrollTop;
     const x = this.state.scrollLeft - scrollLeft;
 
     this.translateElement(this._blgParent, `translateY(${y}px)`);
+    this.translateElement(this._brgParent, `translateY(${y}px)`);
     this.translateElement(this._trgParent, `translateX(${x}px)`);
     this.recalculateScrollPosition.start({ scrollLeft, scrollTop });
   }
