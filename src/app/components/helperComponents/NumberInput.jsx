@@ -1,12 +1,22 @@
 import NumberFormat from "react-number-format";
-import React, { useRef, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useCallback,
+  useRef,
+  forwardRef,
+  useImperativeHandle
+} from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
 import {
+  formatNumber,
   getLocaleDecimalSeparator,
   readLocalizedNumber
 } from "../../helpers/multiLanguage";
+import { doto, when } from "../../helpers/functools";
+
+const MAX_DIGITS = 15;
 
 const NumberInput = (props, ref) => {
   const {
@@ -36,6 +46,40 @@ const NumberInput = (props, ref) => {
     focus: () => inputRef.current && inputRef.current.focus()
   }));
 
+  // Assure that we don't type more than MAX_DIGITS digits before the
+  // decimal separator
+  const handleKeyDown = useCallback(event => {
+    const isDigit = f.contains(f.__, "0123456789");
+    const formattedNumber = formatNumber(value);
+    const caretPosition = event.target.selectionStart;
+
+    // When no decimal separator is typed yet, we assume it at the end
+    // of the number
+    const decimalPosition = when(
+      f.gt(0),
+      () => formattedNumber.length,
+      f.findIndex(f.eq(decimalSeparator), formattedNumber)
+    );
+
+    const preDecimalDigits = doto(
+      formattedNumber,
+      f.take(decimalPosition),
+      f.filter(isDigit),
+      f.size
+    );
+
+    if (
+      isDigit(event.key) &&
+      preDecimalDigits >= MAX_DIGITS &&
+      caretPosition <= decimalPosition
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      onKeyDown && onKeyDown(event);
+    }
+  });
+
   return (
     <NumberFormat
       ref={inputRef}
@@ -50,7 +94,7 @@ const NumberInput = (props, ref) => {
       autoFocus={autoFocus}
       className={"formatted-numeric-input " + className}
       disabled={disabled}
-      onKeyDown={onKeyDown}
+      onKeyDown={handleKeyDown}
       onFocus={onFocus}
     />
   );
