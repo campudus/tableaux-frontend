@@ -44,6 +44,10 @@ const lookUpCellKind = memoizeWith(tableColumnKey, (tableId, columnId) =>
     f.prop("kind")
   )
 );
+const isSettingsTable = f.compose(
+  f.propEq("type", "settings"),
+  f.prop(["props", "table"])
+);
 const getCellKind = ({ currentTable, selectedCell }) =>
   f.isEmpty(selectedCell)
     ? null
@@ -94,8 +98,12 @@ export function getKeyboardShortcuts() {
     enter: event => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (isLastRowSelected.call(this) && selectedCellEditing) {
-          // if user is currently editing and presses enter in last row
+        if (
+          isLastRowSelected.call(this) &&
+          !isSettingsTable(this) &&
+          selectedCellEditing
+        ) {
+          // if user is currently editing and presses enter in last row in a non-setting table
           // we create a new row and jump into that (like excel does)
           createAndSelectNewRow.call(this);
         } else {
