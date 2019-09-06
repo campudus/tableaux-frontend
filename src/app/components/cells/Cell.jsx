@@ -279,7 +279,6 @@ const isRepeaterCell = ({ cell, isExpandedCell }) =>
   (!cell.column.multilanguage ||
     f.contains(cell.kind, [
       ColumnKinds.link,
-      ColumnKinds.boolean,
       ColumnKinds.attachment
     ]));
 
