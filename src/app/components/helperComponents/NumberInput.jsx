@@ -16,7 +16,7 @@ import {
 } from "../../helpers/multiLanguage";
 import { doto, when } from "../../helpers/functools";
 
-const MAX_DIGITS = 15;
+const MAX_DIGITS = 14;
 
 const NumberInput = (props, ref) => {
   const {
