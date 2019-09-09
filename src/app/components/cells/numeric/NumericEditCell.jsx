@@ -1,5 +1,6 @@
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
@@ -59,13 +60,18 @@ class NumericEditCell extends React.Component {
 
   getValue = () => {
     const { value, isMultiLanguage, langtag } = this.props;
-    return (isMultiLanguage ? value[langtag] : value) || "";
+    const intermediateValue = isMultiLanguage ? value[langtag] : value;
+    if (f.isNil(intermediateValue) || f.isNaN(intermediateValue)) {
+      return "";
+    }
+    return intermediateValue;
   };
 
   updateValueState = value => this.setState({ value });
 
   render = () => {
     const { isYear } = this.props;
+    console.log(this.state.value);
     return (
       <div className={"cell-content editing"}>
         <NumberInput
