@@ -287,8 +287,11 @@ const formatDateTime = (timestamp, locale = i18n.language) =>
     .exec("toLocaleString", locale)
     .getOrElse("");
 
-const formatNumber = (number, locale = i18n.language) =>
-  f.isNil(number) ? "NaN" : f.toNumber(number).toLocaleString(locale);
+const formatNumber = (number, locale = i18n.language) => {
+  return f.isNil(number) || f.isNaN(number) || number === ""
+    ? ""
+    : f.toNumber(number).toLocaleString(locale);
+};
 
 const readLocalizedNumber = (
   localizedNumericString = "",

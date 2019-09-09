@@ -61,7 +61,9 @@ const getValueForLang = (obj, lt, column) =>
 // Return cell.value
 const getDefaultValue = column => value =>
   applyToAllLangs(lt => {
-    const val = getValueForLang(value, lt, column) || "";
+    const val = f.isNumber(value)
+      ? value
+      : getValueForLang(value, lt, column) || "";
 
     return f.isEmpty(val) && !f.isNumber(val) ? "" : format(column, val);
   });
