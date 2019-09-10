@@ -25,7 +25,7 @@ const enhance = compose(
         oldValue,
         value: maybe(value)
           .map(parseFloat)
-          .getOrElse(0)
+          .getOrElse(NaN)
       };
     },
     {
@@ -37,9 +37,10 @@ const enhance = compose(
       },
       saveChanges: ({ oldValue, value }, props) => () => {
         const { actions, cell, langtag } = props;
+        const validatedValue = f.isNil(value) || f.isNaN(value) ? null : value;
         const newValue = cell.column.multiLanguage
-          ? { [langtag]: value }
-          : value;
+          ? { [langtag]: validatedValue }
+          : validatedValue;
 
         actions.changeCellValue({
           cell,

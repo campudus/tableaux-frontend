@@ -25,7 +25,11 @@ const NumericCell = props => {
   const isYear = isYearColumn(column);
 
   const handleEditDone = React.useCallback(newValue => {
-    const valueToSave = isMultiLanguage ? { [langtag]: newValue } : newValue;
+    const validatedValue =
+      f.isNil(newValue) || f.isNaN(newValue) ? null : newValue;
+    const valueToSave = isMultiLanguage
+      ? { [langtag]: validatedValue }
+      : validatedValue;
 
     actions.changeCellValue({
       column,
@@ -43,7 +47,7 @@ const NumericCell = props => {
     return (
       <div className="cell-content">
         {f.compose(
-          when(f.eq("NaN"), () => ""),
+          when(f.overSome([f.isNil, f.isNaN]), () => ""),
           unless(() => isYear, formatNumber)
         )(displayValue[langtag])}
       </div>
