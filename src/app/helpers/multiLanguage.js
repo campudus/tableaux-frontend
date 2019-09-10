@@ -288,7 +288,10 @@ const formatDateTime = (timestamp, locale = i18n.language) =>
     .getOrElse("");
 
 const formatNumber = (number, locale = i18n.language) => {
-  return f.isNil(number) || f.isNaN(number) || number === ""
+  return f.isNil(number) ||
+    f.isNaN(number) ||
+    (!f.isNumber(number) && f.isEmpty(number)) ||
+    f.isObject(number)
     ? ""
     : f.toNumber(number).toLocaleString(locale);
 };
