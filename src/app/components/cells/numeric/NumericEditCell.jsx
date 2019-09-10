@@ -71,7 +71,6 @@ class NumericEditCell extends React.Component {
 
   render = () => {
     const { isYear } = this.props;
-    console.log(this.state.value);
     return (
       <div className={"cell-content editing"}>
         <NumberInput
