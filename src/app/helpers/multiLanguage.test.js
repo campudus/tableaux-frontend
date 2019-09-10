@@ -145,9 +145,9 @@ describe("multiLanguage.js", () => {
     });
 
     it("handles non-numbers gracefully", () => {
-      expect(formatNumber(null)).toEqual("NaN");
-      expect(formatNumber({})).toEqual("NaN");
-      expect(formatNumber(undefined)).toEqual("NaN");
+      expect(formatNumber(null)).toEqual("");
+      expect(formatNumber({})).toEqual("");
+      expect(formatNumber(undefined)).toEqual("");
     });
 
     it("formats numbers correctly", () => {
