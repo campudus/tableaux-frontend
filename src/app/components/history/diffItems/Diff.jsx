@@ -12,6 +12,7 @@ import FlagDiff from "./FlagDiff";
 import LinkDiff from "./LinkDiff";
 import RowCreatedDiff from "./RowCreatedDiff";
 import TextDiff from "./TextDiff";
+import NumberDiff from "./NumberDiff";
 
 const Diff = props => {
   const TheDiff = f.cond([
@@ -48,10 +49,11 @@ const ContentDiff = props => {
       return <LinkDiff {...props} />;
     case ColumnKinds.currency:
       return <CountryDiff {...props} />;
+    case ColumnKinds.numeric:
+      return <NumberDiff {...props} isRevertable={props.revision.revertable} />;
     case ColumnKinds.text:
     case ColumnKinds.shorttext:
     case ColumnKinds.richtext:
-    case ColumnKinds.number:
     case ColumnKinds.date:
     case ColumnKinds.datetime:
     default:
