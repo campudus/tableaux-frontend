@@ -13,8 +13,6 @@ const NumberDiff = props => {
       "content-diff--deleted": del
     });
 
-    console.log("value:", typeof value, value, formatNumber(value));
-
     return (
       <span key={idx} className={cssClass}>
         {formatNumber(value)}
