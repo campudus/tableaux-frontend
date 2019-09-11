@@ -11,7 +11,8 @@ import {
   ifElse,
   mapIndexed,
   merge,
-  unless
+  unless,
+  when
 } from "../../helpers/functools";
 import {
   filterAnnotations,
@@ -65,20 +66,19 @@ const HistoryBody = props => {
   }, []);
 
   const retrieveDisplayValue = rev =>
-    f.pipe(
-      f.assoc(
-        "displayValue",
-        f.propEq("valueType", column.kind)
-          ? getDisplayValue(column, rev.fullValue || {})
-          : {}
-      ),
-      f.assoc(
-        "prevDisplayValue",
-        f.propEq("valueType", column.kind)
-          ? getDisplayValue(column, rev.prevContent || {})
-          : {}
-      )
-    )(rev);
+    rev
+    |> f.assoc(
+      "displayValue",
+      f.propEq("valueType", column.kind)
+        ? getDisplayValue(column, when(f.isNil, () => {}, rev.fullValue))
+        : {}
+    )
+    |> f.assoc(
+      "prevDisplayValue",
+      f.propEq("valueType", column.kind)
+        ? getDisplayValue(column, when(f.isNil, () => {}, rev.prevContent))
+        : {}
+    );
 
   const filterFunction = f.allPass([
     filterAnnotations(filter),
