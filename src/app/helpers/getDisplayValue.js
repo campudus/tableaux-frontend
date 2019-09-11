@@ -34,6 +34,8 @@ const retrieveDisplayValue = column => value => {
       return getAttachmentFileName(column)(value);
     case ColumnKinds.currency:
       return getCurrencyValue(column)(value);
+    case ColumnKinds.numeric:
+      return getNumberValue(column)(value);
     default:
       if (f.startsWith("date", column.kind)) {
         return getDateValue(column)(value);
@@ -57,6 +59,14 @@ const isLangObj = column => column.multilanguage; //!f.isEmpty(f.intersection(f.
 // If both are unset, return null if obj has language keys but not langtag or DefaultLangtag, else return obj
 const getValueForLang = (obj, lt, column) =>
   f.get(lt, obj) || (isLangObj(column) ? null : obj) || "";
+
+const getNumberValue = column => value => {
+  const getNumber = lt => {
+    const number = column.multilanguage ? value && value[lt] : value;
+    return f.isNumber(number) && !f.isNaN(number) ? String(number) : "";
+  };
+  return applyToAllLangs(getNumber);
+};
 
 // Return cell.value
 const getDefaultValue = column => value =>
