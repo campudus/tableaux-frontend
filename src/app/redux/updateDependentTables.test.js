@@ -8,6 +8,7 @@ describe("Dependent state updates", () => {
     it("does stuff", () => {
       const dependencyMap = calcColumnDependencies(columnCollection);
       expect(dependencyMap[69][95]).toEqual([60]);
+      expect(dependencyMap).toMatchSnapshot();
     });
   });
 });
