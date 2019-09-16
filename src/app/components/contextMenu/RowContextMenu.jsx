@@ -297,62 +297,65 @@ class RowContextMenu extends React.Component {
       deleteRow,
       showDependency,
       showEntityView,
-      props: { cell, t }
+      props: { cell, t },
+      closeRowContextMenu
     } = this;
 
     return (
-      <GenericContextMenu
-        x={this.props.x}
-        y={this.props.y - 60}
-        offset={CLICK_OFFSET}
-        minWidth={230}
-      >
-        <div className="separator">{t("cell")}</div>
-        {this.openLinksFilteredItem()}
-        {this.copyItem()}
-        {this.pasteItem()}
-        {this.mkItem(
-          () => this.props.openAnnotations(cell),
-          "add-comment",
-          "commenting"
-        )}
-        {f.any(
-          f.complement(f.isEmpty),
-          f.props(["info", "error", "warning"], cell.annotations)
-        )
-          ? this.mkItem(
-              () => this.props.openAnnotations(cell),
-              "show-comments",
-              "commenting-o"
-            )
-          : null}
-        {ENABLE_HISTORY &&
-        !f.contains(this.props.cell.kind, [
-          ColumnKinds.group,
-          ColumnKinds.concat
-        ])
-          ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
-          : null}
-        {this.requestTranslationsItem()}
-        {this.removeTranslationNeededItem()}
-        {this.toggleFlagItem("important")}
-        {this.toggleFlagItem("check-me")}
-        {this.toggleFlagItem("postpone")}
+      <div className="prevent-scroll" onClick={closeRowContextMenu}>
+        <GenericContextMenu
+          x={this.props.x}
+          y={this.props.y - 60}
+          offset={CLICK_OFFSET}
+          minWidth={230}
+        >
+          <div className="separator">{t("cell")}</div>
+          {this.openLinksFilteredItem()}
+          {this.copyItem()}
+          {this.pasteItem()}
+          {this.mkItem(
+            () => this.props.openAnnotations(cell),
+            "add-comment",
+            "commenting"
+          )}
+          {f.any(
+            f.complement(f.isEmpty),
+            f.props(["info", "error", "warning"], cell.annotations)
+          )
+            ? this.mkItem(
+                () => this.props.openAnnotations(cell),
+                "show-comments",
+                "commenting-o"
+              )
+            : null}
+          {ENABLE_HISTORY &&
+          !f.contains(this.props.cell.kind, [
+            ColumnKinds.group,
+            ColumnKinds.concat
+          ])
+            ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
+            : null}
+          {this.requestTranslationsItem()}
+          {this.removeTranslationNeededItem()}
+          {this.toggleFlagItem("important")}
+          {this.toggleFlagItem("check-me")}
+          {this.toggleFlagItem("postpone")}
 
-        <div className="separator with-line">{t("menus.data_set")}</div>
-        {this.props.table.type === "settings"
-          ? ""
-          : this.mkItem(showEntityView, "show_entity_view", "server")}
-        {this.props.table.type === "settings"
-          ? ""
-          : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-        {this.props.table.type === "settings"
-          ? ""
-          : this.mkItem(deleteRow, "delete_row", "trash-o")}
-        {this.mkItem(showDependency, "show_dependency", "code-fork")}
-        {this.mkItem(showTranslations, "show_translation", "flag")}
-        {this.setFinalItem()}
-      </GenericContextMenu>
+          <div className="separator with-line">{t("menus.data_set")}</div>
+          {this.props.table.type === "settings"
+            ? ""
+            : this.mkItem(showEntityView, "show_entity_view", "server")}
+          {this.props.table.type === "settings"
+            ? ""
+            : this.mkItem(duplicateRow, "duplicate_row", "clone")}
+          {this.props.table.type === "settings"
+            ? ""
+            : this.mkItem(deleteRow, "delete_row", "trash-o")}
+          {this.mkItem(showDependency, "show_dependency", "code-fork")}
+          {this.mkItem(showTranslations, "show_translation", "flag")}
+          {this.setFinalItem()}
+        </GenericContextMenu>
+      </div>
     );
   };
 }
