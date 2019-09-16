@@ -1,5 +1,3 @@
-import "react-virtualized/styles.css";
-
 import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";

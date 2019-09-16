@@ -1,5 +1,6 @@
 import "babel-polyfill";
 import "../node_modules/react-select/dist/react-select.css";
+import "react-virtualized/styles.css";
 import "./app/helpers/connectionWatcher";
 import { initConfig } from "./app/constants/TableauxConstants";
 
