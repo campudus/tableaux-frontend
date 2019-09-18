@@ -3,16 +3,6 @@
 import f from "lodash/fp";
 
 import { ColumnKinds } from "../constants/TableauxConstants";
-import type {
-  DependencyMap,
-  Transducer,
-  ColumnDataState,
-  ReduxTableData,
-  ReduxDataState,
-  TableId,
-  ColumnId,
-  RowId
-} from "./redux.flowtypes";
 import {
   mapIndexed,
   mapPromise,
@@ -23,9 +13,7 @@ import { makeRequest } from "../helpers/apiHelper";
 import getDisplayValue from "../helpers/getDisplayValue";
 import route from "../helpers/apiRoutes.js";
 
-export const calcColumnDependencies = (
-  columnCollection: ColumnDataState
-): DependencyMap => {
+export const calcColumnDependencies = columnCollection => {
   const filterLinkColumns = ([tableId, { data }]) => [
     f.parseInt(10, tableId),
     f.filter(isLinkColumn, data)
@@ -34,11 +22,7 @@ export const calcColumnDependencies = (
   const extractToTables = ([tableId, data]) =>
     f.map(({ id, toTable }) => ({ tableId, toTable, columnId: id }), data);
 
-  const toDependencyMap: ({
-    tableId: TableId,
-    columnId: ColumnId,
-    toTable: TableId
-  }) => DependencyMap = f.reduce((accum, { tableId, toTable, columnId }) => {
+  const toDependencyMap = f.reduce((accum, { tableId, toTable, columnId }) => {
     accum[toTable] = accum[toTable] || {};
     const existingColumns = accum[toTable][tableId];
     accum[toTable][tableId] = existingColumns
@@ -62,26 +46,22 @@ const listOfTableIds = f.compose(
   f.keys
 );
 
-const getCachedDependencyMap: ColumnDataState => DependencyMap = memoizeWith(
+const getCachedDependencyMap = memoizeWith(
   listOfTableIds,
   calcColumnDependencies
 );
 
 const isLinkColumn = f.propEq("kind", ColumnKinds.link);
 
-export const performRowDeletion = (
-  tableId: number,
-  rowId: number,
-  state: ReduxTableData
-): ReduxTableData => {
+export const performRowDeletion = (tableId, rowId, state) => {
   const dependencies = getCachedDependencyMap(state.columns);
 
-  const removeRowFromState: Transducer<ReduxTableData> = f.update(
+  const removeRowFromState = f.update(
     ["rows", tableId, "data"],
     f.remove(f.propEq("id", rowId))
   );
 
-  const hasDependants: () => boolean = () => !f.isEmpty(dependencies[tableId]);
+  const hasDependants = () => !f.isEmpty(dependencies[tableId]);
 
   return (
     state
@@ -94,7 +74,7 @@ const nativeClone = value => value |> JSON.stringify |> JSON.parse;
 
 export const propagateRowDelete = f.curryN(
   3,
-  (originTableId: TableId, originRowId: RowId, state: ReduxTableData) => {
+  (originTableId, originRowId, state) => {
     const updatedRows = nativeClone(state.rows);
     const removeLinkFrom = f.remove(f.propEq("id", originRowId));
 
@@ -122,10 +102,7 @@ export const propagateRowDelete = f.curryN(
   }
 );
 
-export const hasTransitiveDependencies = (
-  tableId: TableId,
-  state: ReduxDataState
-): boolean => {
+export const hasTransitiveDependencies = (tableId, state) => {
   const dependencies = getCachedDependencyMap(state);
   const primaryDependencies = dependencies[tableId] |> f.keys;
   const transitiveDependencies =
@@ -136,20 +113,16 @@ export const hasTransitiveDependencies = (
 };
 
 export const refreshDependentRows = async (
-  changeOrigin: TableId,
-  changedRows: [RowId],
-  state: ReduxTableData
+  changeOrigin,
+  changedRows,
+  state
 ) => {
   const dependentTables = getCachedDependencyMap(state.columns);
   if (f.isEmpty(dependentTables[changeOrigin])) return state;
 
   const clonedState = nativeClone(state);
 
-  const fetchChangedRows = async (
-    tableId: TableId,
-    parentTable: TableId,
-    changedParentRows: [RowId]
-  ) => {
+  const fetchChangedRows = async (tableId, parentTable, changedParentRows) => {
     const columns = state.columns[tableId].data;
     const linkColumnIndices =
       columns
