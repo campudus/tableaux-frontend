@@ -26,7 +26,8 @@ const {
   ANNOTATION_ERROR,
   CLEAN_UP,
   ADD_ROWS,
-  ROW_CREATE_SUCCESS
+  ROW_CREATE_SUCCESS,
+  SET_STATE
 } = actionTypes;
 
 const initialState = {};
@@ -198,6 +199,8 @@ const setCellValue = (state, action, completeState, isRollback = false) => {
 
 const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
+    case SET_STATE:
+      return action.state.rows;
     case ALL_ROWS_LOADING_DATA:
       return {
         [action.tableId]: { error: false, finishedLoading: false }

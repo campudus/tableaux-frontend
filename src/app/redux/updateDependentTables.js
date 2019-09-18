@@ -1,27 +1,27 @@
 // @flow
 
+import f from "lodash/fp";
+
+import { ColumnKinds } from "../constants/TableauxConstants";
 import type {
   DependencyMap,
   Transducer,
-  Cell,
-  Column,
   ColumnDataState,
-  RowDataState,
-  TableViewDataState,
   ReduxTableData,
-  Value,
+  ReduxDataState,
   TableId,
   ColumnId,
   RowId
 } from "./redux.flowtypes";
-import { unless, when } from "../helpers/functools";
-
-type Link = "link";
-
-import f from "lodash/fp";
-
-import { ColumnKinds } from "../constants/TableauxConstants";
-import { memoizeWith } from "../helpers/functools";
+import {
+  mapIndexed,
+  mapPromise,
+  memoizeWith,
+  when
+} from "../helpers/functools";
+import { makeRequest } from "../helpers/apiHelper";
+import getDisplayValue from "../helpers/getDisplayValue";
+import route from "../helpers/apiRoutes.js";
 
 export const calcColumnDependencies = (
   columnCollection: ColumnDataState
@@ -47,15 +47,14 @@ export const calcColumnDependencies = (
     return accum;
   }, {});
 
-  return f.compose(
-    toDependencyMap,
-    f.flatMap(extractToTables),
-    f.map(filterLinkColumns),
-    f.toPairs
-  )(columnCollection);
+  return (
+    columnCollection
+    |> f.toPairs
+    |> f.map(filterLinkColumns)
+    |> f.flatMap(extractToTables)
+    |> toDependencyMap
+  );
 };
-
-const hasTransientDependency = (a: TableId, b: TableId) => {};
 
 const listOfTableIds = f.compose(
   f.join(","),
@@ -123,105 +122,91 @@ export const propagateRowDelete = f.curryN(
   }
 );
 
-/**
- * Propagates a cell display value change to all elements that link to
- * the original cell.
- * @param state: ReduxTableData Complete redux state
- * @param cell: Cell The cell that introduced the original change
- * @param changeFn: Function that will be applied to link cells'
- *           values. Should either be identity or a link cell modifier.
- * @return { rows, tableView } Updated rows and display values after
- *           propagation
- */
-// Closures inside this function are mutative for sake of
-// performance. Don't refactor them out of the function body!
-export const propagateCellChange = (
-  state: ReduxTableData,
-  cell: Cell,
-  changeFn: Transducer<Value<Link>>
-): { rows: RowDataState, tableView: TableViewDataState } => {
+export const hasTransitiveDependencies = (
+  tableId: TableId,
+  state: ReduxDataState
+): boolean => {
+  const dependencies = getCachedDependencyMap(state);
+  const primaryDependencies = dependencies[tableId] |> f.keys;
+  const transitiveDependencies =
+    primaryDependencies
+    |> f.map(tblId => dependencies[tblId])
+    |> f.reject(f.isEmpty);
+  return !f.isEmpty(transitiveDependencies);
+};
+
+export const refreshDependentRows = async (
+  changeOrigin: TableId,
+  changedRows: [RowId],
+  state: ReduxTableData
+) => {
+  const dependentTables = getCachedDependencyMap(state.columns);
+  if (f.isEmpty(dependentTables[changeOrigin])) return state;
+
   const clonedState = nativeClone(state);
-  const dependencyMap = getCachedDependencyMap(state.columns);
 
-  const getCellValue = (tableId, columnIdx, rowIdx, _state = clonedState) =>
-    _state.rows[tableId].data[rowIdx].values[columnIdx];
-  const updateCellValue = (tableId, columnIdx, rowIdx, updateFn) => {
-    const updatedValue = updateFn(getCellValue(tableId, columnIdx, rowIdx));
-
-    clonedState.rows[tableId].data[rowIdx].values[columnIdx] = updatedValue;
-    return updatedValue;
-  };
-
-  const updateDisplayValue = (tableId, columnIdx, rowId, value) => {};
-
-  const getColumnIdx = (tableId: TableId, columnId: ColumnId): number =>
-    f.findIndex(f.propEq("id", columnId), state.columns[tableId].data);
-
-  const getColumnAt = (tableId: TableId, columnIdx: number): Column =>
-    state.columns[tableId].data[columnIdx];
-
-  const updateConcatCell = (tableId: TableId, rowIdx: number): void => {
+  const fetchChangedRows = async (
+    tableId: TableId,
+    parentTable: TableId,
+    changedParentRows: [RowId]
+  ) => {
     const columns = state.columns[tableId].data;
-    const concatColumn = f.head(columns);
-    if (concatColumn.kind !== "concat") return;
-    const concatIndices =
-      concatColumn
-      |> f.map("id")
-      |> f.map(id => f.findIndex(f.propEq("id", id), columns));
+    const linkColumnIndices =
+      columns
+      |> mapIndexed((column, idx) => ({ ...column, idx }))
+      |> f.filter(f.propEq("toTable", parentTable))
+      |> f.map("idx");
+    const getLinkCellValues = row =>
+      f.flatMap(
+        idx => f.nth(idx, row.values) |> f.map(f.prop("id")),
+        linkColumnIndices
+      );
+    const linksToChangedRow = row =>
+      row |> getLinkCellValues |> f.any(f.contains(f.__, changedParentRows));
+    const rowsToUpdate = clonedState.rows[tableId].data.filter(
+      linksToChangedRow
+    );
+    const fetchRows = mapPromise(({ id }) =>
+      makeRequest({ apiRoute: route.toRow({ tableId, rowId: id }) })
+    );
+    const freshRows = await fetchRows(rowsToUpdate);
+    const freshDisplayValues = freshRows.map(({ values }) =>
+      mapIndexed(
+        (cellValue, idx) => getDisplayValue(columns[idx], cellValue),
+        values
+      )
+    );
 
-    const concatValue = concatColumn.concats.map((column, idx) =>
-      getCellValue(tableId, concatIndices[idx], rowIdx)
+    freshRows.forEach((row, ii) => {
+      const rowIdx = f.findIndex(
+        f.propEq("id", row.id),
+        state.rows[tableId].data
+      );
+      clonedState.rows[tableId].data[rowIdx].values = row.values;
+      const dvIdx = f.findIndex(
+        f.propEq("id", row.id),
+        state.tableView.displayValues[tableId]
+      );
+      clonedState.tableView.displayValues[tableId][dvIdx].values =
+        freshDisplayValues[ii];
+    });
+
+    const subDependencies = dependentTables[tableId];
+    return (
+      subDependencies
+      |> f.keys
+      |> f.filter(tblId => hasTransitiveDependencies(tblId, state.columns))
+      |> mapPromise(tblId =>
+        fetchChangedRows(tblId, tableId, rowsToUpdate.map("id"))
+      )
     );
   };
 
-  const __updateCellsInPlace = (
-    linkedTables: [{ tableId: TableId, columns: [ColumnId] }],
-    changedRows: [RowId],
-    calcNewCellValue: Transducer<Value<Link>>
-  ) => {
-    const _changedRows = [];
-    const _affectedTables = [];
-    linkedTables.forEach(({ tableId, columns }) => {
-      columns.forEach(columnId => {
-        const columnIdx = getColumnIdx(tableId, columnId);
-        state.rows[tableId].data
-          |> f.keys
-          |> (arr =>
-            arr.forEach((rowId, rowIdx) => {
-              // skip links without modified target
-              if (
-                !f.contains(
-                  rowId,
-                  getCellValue(tableId, rowIdx, columnIdx, clonedState)
-                )
-              ) {
-                return;
-              }
-
-              _changedRows.push(rowId);
-              const newValue = updateCellValue(
-                tableId,
-                columnIdx,
-                rowIdx,
-                calcNewCellValue
-              );
-              const column = getColumnAt(tableId, columnIdx);
-              if (column.identifier) {
-                updateConcatCell(tableId, rowIdx, newValue);
-                unless(f.isEmpty, _affectedTables.push, dependencyMap(tableId));
-              }
-            }));
-        if (!f.isEmpty(_affectedTables)) {
-          __updateCellsInPlace(_affectedTables, _changedRows, f.identity);
-        }
-      });
-    });
-  };
-
-  const primaryDependents = dependencyMap[cell.table.id];
-  const linkedTables =
-    primaryDependents
-    |> f.map(f.toPairs)
-    |> f.map(([tableId, columns]) => ({ tableId, columns }));
-  return __updateCellsInPlace(linkedTables, [cell.row.id], changeFn);
+  if (hasTransitiveDependencies(changeOrigin, state.columns)) {
+    await mapPromise(
+      tableId => fetchChangedRows(tableId, changeOrigin, changedRows),
+      f.keys(dependentTables[changeOrigin])
+    );
+  }
+  return clonedState;
 };
