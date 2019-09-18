@@ -65,7 +65,6 @@ const getPermission = pathToPermission =>
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = (cellInfo, langtag) => {
   const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
-  langtag ? null : console.log(cellInfo)
 
   const allowed = f.isBoolean(editCellValue)
     ? editCellValue
