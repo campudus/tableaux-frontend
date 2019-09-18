@@ -182,8 +182,7 @@ class Cell extends React.Component {
 
   userCanEditValue() {
     const { cell, langtag } = this.props;
-    const { column } = cell;
-    return canUserChangeCell(cell, column.multilanguage ? langtag : null);
+    return canUserChangeCell(cell, langtag);
   }
 
   render() {

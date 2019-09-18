@@ -17,7 +17,7 @@ const withOverlayOpener = compose(
       event && event.stopPropagation();
     },
     openOverlay: ({ cell, langtag, actions }) => () => {
-      if (canUserChangeCell(cell) && !isLocked(cell.row)) {
+      if (canUserChangeCell(cell,langtag) && !isLocked(cell.row)) {
         openLinkOverlay({ cell, langtag, actions });
       }
     }
