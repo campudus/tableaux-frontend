@@ -9,19 +9,12 @@ import { useLocalStorage } from "../../helpers/useLocalStorage";
 import EditorPanel from "./EditorPanel";
 import Header from "../overlay/Header";
 import PlainMarkdownEditor from "./PlainMarkdownEditor";
-import SvgIcon from "../helperComponents/SvgIcon";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 
 const MarkdownEditors = {
   WYSIWYG: "WYSIWYG",
   DIRECT: "DIRECT"
-};
-
-const PreviewModes = {
-  HORIZONTAL: "HORIZONTAL",
-  VERTICAL: "VERTICAL",
-  NONE: "NONE"
 };
 
 const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
@@ -33,11 +26,6 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   const [preferredEditor, setPreferredEditor] = useLocalStorage(
     "markdownEditor",
     MarkdownEditors.DIRECT
-  );
-
-  const [markdownPreview, setMarkdownPreview] = useLocalStorage(
-    "markdownPreview",
-    PreviewModes.HORIZONTAL
   );
 
   const editorRef = React.useRef();
@@ -73,16 +61,7 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
       : PlainMarkdownEditor;
 
   const cssClass = classNames("markdown-editor", {
-    "markdown-editor--disabled": readOnly,
-    "markdown-editor--split-h":
-      preferredEditor === MarkdownEditors.DIRECT &&
-      markdownPreview === PreviewModes.HORIZONTAL,
-    "markdown-editor--split-v":
-      preferredEditor === MarkdownEditors.DIRECT &&
-      markdownPreview === PreviewModes.VERTICAL,
-    "markdown-editor--hide-preview":
-      preferredEditor === MarkdownEditors.DIRECT &&
-      markdownPreview === PreviewModes.NONE
+    "markdown-editor--disabled": readOnly
   });
 
   const editorSelectorControls = [
@@ -102,35 +81,6 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
     }
   ];
 
-  const previewSelectorControls = [
-    {
-      key: PreviewModes.NONE,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.NONE,
-      active: markdownPreview === PreviewModes.NONE,
-      iconComponent: <SvgIcon icon="layoutPlain" />
-    },
-    {
-      key: PreviewModes.VERTICAL,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.VERTICAL,
-      active: markdownPreview === PreviewModes.VERTICAL,
-      iconComponent: <SvgIcon icon="layoutV" />
-    },
-    {
-      key: PreviewModes.HORIZONTAL,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.HORIZONTAL,
-      active: markdownPreview === PreviewModes.HORIZONTAL,
-      iconComponent: <SvgIcon icon="layoutH" />
-    }
-  ];
-
-  const editorControls =
-    preferredEditor === MarkdownEditors.DIRECT
-      ? [...previewSelectorControls, ...editorSelectorControls]
-      : editorSelectorControls;
-
   return (
     <div className={cssClass} onClick={focusInput}>
       <UserEditor
@@ -140,7 +90,10 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
         readOnly={readOnly}
         hideToolbar={readOnly}
         controlButtons={
-          !readOnly && editorControls.map(button => <StyleIcon {...button} />)
+          !readOnly &&
+          editorSelectorControls.map((button, idx) => (
+            <StyleIcon key={idx} {...button} />
+          ))
         }
       />
     </div>

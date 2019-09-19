@@ -207,6 +207,15 @@ $block-margin-narrow: 5px;
 .markdown-editor {
   flex: 1;
   overflow: hidden;
+
+}
+
+.plain-markdown-editor {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  overflow-y: auto;
+
   &.markdown-editor--hide-preview {
     .plain-markdown-editor__preview {
       display: none;
@@ -216,26 +225,20 @@ $block-margin-narrow: 5px;
     }
   }
 
-  &.markdown-editor--split-v .plain-markdown-editor {
+  &.markdown-editor--split-v {
     flex-direction: column;
     .plain-markdown-editor__preview {
       border-top: 1px solid $color-text-light-grey;
     }
   }
 
-  &.markdown-editor--split-h .plain-markdown-editor {
+  &.markdown-editor--split-h {
     flex-direction: row;
     .plain-markdown-editor__preview {
       border-left: 1px solid $color-text-light-grey;
     }
   }
-}
 
-.plain-markdown-editor {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  overflow-y: auto;
   .ReactCodeMirror, .plain-markdown-editor__preview {
     padding: $editor-margin;
     flex: 1;

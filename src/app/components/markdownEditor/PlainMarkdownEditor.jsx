@@ -1,10 +1,21 @@
+import "codemirror/mode/markdown/markdown";
+
 import CodeMirror from "react-codemirror";
-import "codemirror/mode/markdown/markdown"; // must be after "import CodeMirror"
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
+
+import { StyleIcon } from "./StyleControls";
+import { useLocalStorage } from "../../helpers/useLocalStorage";
+import SvgIcon from "../helperComponents/SvgIcon";
+
+const PreviewModes = {
+  HORIZONTAL: "HORIZONTAL",
+  VERTICAL: "VERTICAL",
+  NONE: "NONE"
+};
 
 const PlainMarkdownEditor = (
   { controlButtons, initialMarkdown, className, onChange, readOnly },
@@ -13,7 +24,16 @@ const PlainMarkdownEditor = (
   const [markdown, setMarkdown] = React.useState(initialMarkdown || "");
   const editorRef = React.useRef();
 
-  const cssClass = classNames("plain-markdown-editor", className);
+  const [markdownPreview, setMarkdownPreview] = useLocalStorage(
+    "markdownPreview",
+    PreviewModes.HORIZONTAL
+  );
+
+  const cssClass = classNames("plain-markdown-editor", className, {
+    "markdown-editor--split-h": markdownPreview === PreviewModes.HORIZONTAL,
+    "markdown-editor--split-v": markdownPreview === PreviewModes.VERTICAL,
+    "markdown-editor--hide-preview": markdownPreview === PreviewModes.NONE
+  });
 
   const editorOptions = {
     lineNumbers: false,
@@ -26,15 +46,46 @@ const PlainMarkdownEditor = (
     focus: () => editorRef.current && editorRef.current.focus()
   }));
 
-  const handleChange = newValue => {
+  const handleChange = React.useCallback(newValue => {
     setMarkdown(newValue);
     onChange(newValue);
-  };
+  });
+
+  const previewSelectorControls = [
+    {
+      key: PreviewModes.NONE,
+      toggleStyle: setMarkdownPreview,
+      styleToToggle: PreviewModes.NONE,
+      active: markdownPreview === PreviewModes.NONE,
+      iconComponent: <SvgIcon icon="layoutPlain" />
+    },
+    {
+      key: PreviewModes.VERTICAL,
+      toggleStyle: setMarkdownPreview,
+      styleToToggle: PreviewModes.VERTICAL,
+      active: markdownPreview === PreviewModes.VERTICAL,
+      iconComponent: <SvgIcon icon="layoutV" />
+    },
+    {
+      key: PreviewModes.HORIZONTAL,
+      toggleStyle: setMarkdownPreview,
+      styleToToggle: PreviewModes.HORIZONTAL,
+      active: markdownPreview === PreviewModes.HORIZONTAL,
+      iconComponent: <SvgIcon icon="layoutH" />
+    }
+  ];
+
+  console.log({ markdownPreview, cssClass });
 
   return (
     <>
-      {" "}
-      <div className="richtext-toggle-style__bar">{controlButtons}</div>
+      <header className="richtext-toggle-style__bar">
+        {previewSelectorControls.map(buttonProps => (
+          <StyleIcon key={buttonProps.key} {...buttonProps} />
+        ))}
+        <div className="richtext-toggle-style__placeholder" />
+        <div>{controlButtons}</div>
+      </header>
       <div className={cssClass}>
         <CodeMirror
           ref={editorRef}

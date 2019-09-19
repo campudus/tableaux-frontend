@@ -25,7 +25,6 @@ export const StyleIcon = ({
     "style-button--active": active,
     "style-button--disabled": disabled
   });
-  console.log(typeof iconComponent, iconComponent);
   return (
     <div className={cssClass} onClick={disabled ? f.noop : handleClick}>
       {label ? (
