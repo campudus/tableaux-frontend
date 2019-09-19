@@ -19,7 +19,8 @@ import {
 import { canConvert } from "../../helpers/cellValueConverter";
 import {
   canUserChangeCell,
-  canUserEditRowAnnotations
+  canUserEditRowAnnotations,
+  canUserEditCellAnnotations
 } from "../../helpers/accessManagementHelper";
 import {
   initiateDeleteRow,
@@ -227,6 +228,9 @@ class RowContextMenu extends React.Component {
 
   toggleFlagItem = flag => {
     const { cell } = this.props;
+    if (!canUserEditCellAnnotations(cell)) {
+      return;
+    }
     const existingAnnotation = f.get(["annotations", flag], cell);
     const toggleFn = existingAnnotation
       ? () =>
