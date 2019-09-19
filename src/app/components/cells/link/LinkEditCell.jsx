@@ -13,7 +13,7 @@ import LinkLabelCell from "./LinkLabelCell.jsx";
 
 const withOverlayOpener = compose(
   withHandlers({
-    catchStrolling: () => event => {
+    catchScrolling: () => event => {
       event && event.stopPropagation();
     },
     openOverlay: ({ cell, langtag, actions }) => () => {
