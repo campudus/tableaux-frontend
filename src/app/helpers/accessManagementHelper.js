@@ -110,7 +110,7 @@ export const canUserEditCellAnnotations = getPermission([
 
 export const canUserEditRowAnnotations = getPermission([
   "table",
-  "editRowAnnotations"
+  "editRowAnnotation"
 ]);
 
 // (tableData: table | number) => boolean
