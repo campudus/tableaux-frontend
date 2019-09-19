@@ -1,9 +1,11 @@
 import React from "react";
 import { compose, lifecycle, withStateHandlers } from "recompose";
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper.js";
+import f from "lodash/fp";
 import i18n from "i18next";
 
 const TextEditOverlay = props => {
-  const { editedValue, setValue, saveEdits } = props;
+  const { editedValue, setValue, saveEdits, cell, langtag } = props;
 
   return (
     <div className="content-items richtext-cell-editor">
@@ -12,7 +14,7 @@ const TextEditOverlay = props => {
           <textarea
             value={editedValue}
             placeholder={i18n.t("table:empty.text")}
-            onChange={setValue}
+            onChange={canUserChangeCell(cell, langtag) ? setValue : f.noop}
             onBlur={saveEdits}
           />
         </div>
