@@ -30,7 +30,7 @@ $block-margin-narrow: 5px;
   flex-wrap: wrap;
   justify-content: flex-end;
   padding: 5px;
-  border-bottom: 1px solid $color-text-light-grey;
+  background-color: $color-primary-contrast-text;
 }
 
 .richtext-toggle-style__placeholder {
@@ -43,19 +43,34 @@ $block-margin-narrow: 5px;
   color: $color-text-medium-grey;
   margin: 5px;
   font-family: "serif";
+  border: 1px solid $color-text-medium-grey;
+  transition: border-color 0.3s;
+  .svg-icon-content * {
+    fill: $color-text-medium-grey;
+  }
 
   &.style-button--active {
     background-color: $color-primary;
     color: $color-primary-contrast-text;
+    border-color: transparent;
+    transition: border-color 0.2s;
+    .svg-icon-content * {
+      fill: $color-primary-contrast-text;
+    }
   }
 
   &:hover {
     background-color: lighten($color-primary, 20);
     color: $color-primary-contrast-text;
+    border-color: transparent;
+    .svg-icon-content * {
+      fill: $color-primary-contrast-text;
+    }
   }
 
   &.style-button--disabled {
     background-color: lighten($color-text-medium-grey, 25);
+    border-color: transparent;
   }
 }
 

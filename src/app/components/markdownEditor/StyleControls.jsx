@@ -12,6 +12,7 @@ export const StyleIcon = ({
   styleToToggle,
   label,
   icon,
+  iconComponent,
   active,
   className = "",
   disabled
@@ -24,6 +25,7 @@ export const StyleIcon = ({
     "style-button--active": active,
     "style-button--disabled": disabled
   });
+  console.log(typeof iconComponent, iconComponent);
   return (
     <div className={cssClass} onClick={disabled ? f.noop : handleClick}>
       {label ? (
@@ -31,7 +33,7 @@ export const StyleIcon = ({
       ) : icon ? (
         <i className={"fa " + icon} />
       ) : (
-        styleToToggle
+        iconComponent || styleToToggle
       )}
     </div>
   );
@@ -42,6 +44,7 @@ StyleIcon.propTypes = {
   active: PropTypes.bool,
   icon: PropTypes.string,
   label: PropTypes.string,
+  iconComponent: PropTypes.element,
   className: PropTypes.string,
   disabled: PropTypes.bool
 };

@@ -9,6 +9,7 @@ import { useLocalStorage } from "../../helpers/useLocalStorage";
 import EditorPanel from "./EditorPanel";
 import Header from "../overlay/Header";
 import PlainMarkdownEditor from "./PlainMarkdownEditor";
+import SvgIcon from "../helperComponents/SvgIcon";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 
@@ -107,21 +108,21 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
       toggleStyle: setMarkdownPreview,
       styleToToggle: PreviewModes.NONE,
       active: markdownPreview === PreviewModes.NONE,
-      label: "X"
+      iconComponent: <SvgIcon icon="layoutPlain" />
     },
     {
       key: PreviewModes.VERTICAL,
       toggleStyle: setMarkdownPreview,
       styleToToggle: PreviewModes.VERTICAL,
       active: markdownPreview === PreviewModes.VERTICAL,
-      label: "V"
+      iconComponent: <SvgIcon icon="layoutV" />
     },
     {
       key: PreviewModes.HORIZONTAL,
       toggleStyle: setMarkdownPreview,
       styleToToggle: PreviewModes.HORIZONTAL,
       active: markdownPreview === PreviewModes.HORIZONTAL,
-      icon: "fa-columns"
+      iconComponent: <SvgIcon icon="layoutH" />
     }
   ];
 
