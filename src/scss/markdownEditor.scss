@@ -43,8 +43,8 @@ $block-margin-narrow: 5px;
   color: $color-text-medium-grey;
   margin: 5px;
   font-family: "serif";
-  border: 1px solid $color-text-medium-grey;
-  transition: border-color 0.3s;
+  border: 1px solid  $color-text-medium-grey;
+  // transition: border-color 0.2s;
   .svg-icon-content * {
     fill: $color-text-medium-grey;
   }
@@ -52,7 +52,7 @@ $block-margin-narrow: 5px;
   &.style-button--active {
     background-color: $color-primary;
     color: $color-primary-contrast-text;
-    border-color: transparent;
+    border: 1px solid $color-primary;
     transition: border-color 0.2s;
     .svg-icon-content * {
       fill: $color-primary-contrast-text;
@@ -62,7 +62,7 @@ $block-margin-narrow: 5px;
   &:hover {
     background-color: lighten($color-primary, 20);
     color: $color-primary-contrast-text;
-    border-color: transparent;
+    border: 1px solid lighten($color-primary, 20);
     .svg-icon-content * {
       fill: $color-primary-contrast-text;
     }
@@ -70,7 +70,7 @@ $block-margin-narrow: 5px;
 
   &.style-button--disabled {
     background-color: lighten($color-text-medium-grey, 25);
-    border-color: transparent;
+    border: 1px solid transparent;
   }
 }
 
@@ -252,4 +252,25 @@ $block-margin-narrow: 5px;
   height: 100%;
   overflow: hidden;
   overflow-y: auto;
+}
+
+.CodeMirrow-scroll {
+
+}
+
+.toggle-editor-buttons {
+  .richtext-toggle-style-button {
+    margin: 5px 0;
+    font-family: "Roboto";
+    font-weight: 300;
+    border-color: $color-text-medium-grey;
+
+    &:first-of-type {
+      border-radius: 5px 0 0 5px;
+    }
+    &:last-of-type {
+      border-radius: 0 5px 5px 0;
+      margin-left: -1px;
+    }
+  }
 }

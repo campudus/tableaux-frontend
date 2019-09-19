@@ -56,7 +56,7 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   }, []);
 
   const UserEditor =
-    preferredEditor === MarkdownEditors.WYSIWYG
+    preferredEditor === MarkdownEditors.WYSIWYG && !readOnly
       ? EditorPanel
       : PlainMarkdownEditor;
 
@@ -70,14 +70,14 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
       toggleStyle: setPreferredEditor,
       styleToToggle: MarkdownEditors.DIRECT,
       active: preferredEditor === MarkdownEditors.DIRECT,
-      label: "PRO"
+      label: "Markdown"
     },
     {
       key: MarkdownEditors.WYSIWYG,
       toggleStyle: setPreferredEditor,
       styleToToggle: MarkdownEditors.WYSIWYG,
       active: preferredEditor === MarkdownEditors.WYSIWYG,
-      label: "NOOB"
+      label: "RichText"
     }
   ];
 
@@ -90,10 +90,13 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
         readOnly={readOnly}
         hideToolbar={readOnly}
         controlButtons={
-          !readOnly &&
-          editorSelectorControls.map((button, idx) => (
-            <StyleIcon key={idx} {...button} />
-          ))
+          !readOnly && (
+            <div className="toggle-editor-buttons">
+              {editorSelectorControls.map((button, idx) => (
+                <StyleIcon key={idx} {...button} />
+              ))}
+            </div>
+          )
         }
       />
     </div>

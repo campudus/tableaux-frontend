@@ -84,7 +84,7 @@ const PlainMarkdownEditor = (
           <StyleIcon key={buttonProps.key} {...buttonProps} />
         ))}
         <div className="richtext-toggle-style__placeholder" />
-        <div>{controlButtons}</div>
+        {controlButtons}
       </header>
       <div className={cssClass}>
         <CodeMirror
