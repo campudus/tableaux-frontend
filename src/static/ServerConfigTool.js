@@ -50,7 +50,9 @@ const stripProxyPrefixes = prefixes => proxyReq => {
 };
 
 const configProxy = (routes, defaultHandler = null) => {
-  const proxy = createProxyServer();
+  const proxy = createProxyServer({
+    changeOrigin: true // changes the origin of the host header to the target URL
+  });
   const prefixRegexes = routes.map(({ prefix }) => new RegExp("^" + prefix));
 
   proxy.on("proxyReq", stripProxyPrefixes(prefixRegexes));
