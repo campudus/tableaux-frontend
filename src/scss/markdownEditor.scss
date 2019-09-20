@@ -329,6 +329,7 @@ $block-margin-narrow: 5px;
     padding: $link-editor-inner-padding;
     display: grid;
     grid-template-columns: 50px auto;
+    -ms-grid-columns: 50px 1fr;
     grid-row-gap: 8px;
     grid-column-gap: 8px;
   }

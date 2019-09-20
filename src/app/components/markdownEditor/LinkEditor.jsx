@@ -15,7 +15,7 @@ const UrlInput = listensToClickOutsice(
         // Adapted from DraftJS link example
         // https://github.com/facebook/draft-js/blob/ceaeebf1f50fee452d92d71c5e2008e3d4fb6d9f/examples/draft-0-10-0/link/link.html#L76
         const content = editorState.getCurrentContent();
-        const startKey = selection().getStartKey();
+        const startKey = selection.getStartKey();
         const startOffset = selection.getStartOffset();
         const blockWithLinkAtBeginning = content.getBlockForKey(startKey);
         const linkKey = blockWithLinkAtBeginning.getEntityAt(startOffset);
@@ -27,11 +27,24 @@ const UrlInput = listensToClickOutsice(
       }
     };
 
+    const extractSelectedText = selection => {
+      const content = editorState.getCurrentContent();
+      const startKey = selection.getStartKey();
+      const startOffset = selection.getStartOffset();
+      const endOffset = selection.getEndOffset();
+      const contentBlock = content.getBlockForKey(startKey);
+      return either(contentBlock)
+        .map(block => block.getText())
+        .map(string => string.slice(startOffset, endOffset))
+        .getOrElse("");
+    };
+
     const [url, setUrl] = React.useState(
       either(editorState.getSelection())
         .map(getUrlAtPoint)
         .getOrElse("")
     );
+    const linkTitle = extractSelectedText(editorState.getSelection());
     const handleChange = React.useCallback(event => setUrl(event.target.value));
     const closeInput = handleClickOutside;
     const handleKeyDown = React.useCallback(
@@ -72,7 +85,7 @@ const UrlInput = listensToClickOutsice(
             placeholder={i18n.t("common:url")}
             className="link-editor__input"
             type="text"
-            value={"foobarbaz"}
+            value={linkTitle}
             disabled={true}
           />
         </section>

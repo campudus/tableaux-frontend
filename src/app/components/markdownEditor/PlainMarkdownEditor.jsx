@@ -75,8 +75,6 @@ const PlainMarkdownEditor = (
     }
   ];
 
-  console.log({ markdownPreview, cssClass });
-
   return (
     <>
       <header className="richtext-toggle-style__bar">
@@ -109,5 +107,5 @@ PlainMarkdownEditor.propTypes = {
   className: PropTypes.string,
   readOnly: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  controlButtons: PropTypes.array
+  controlButtons: PropTypes.element
 };

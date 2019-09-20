@@ -137,5 +137,5 @@ EditorPanel.propTypes = {
   onChange: PropTypes.func,
   hideToolbar: PropTypes.bool,
   readOnly: PropTypes.bool,
-  controlButtons: PropTypes.array
+  controlButtons: PropTypes.element
 };
