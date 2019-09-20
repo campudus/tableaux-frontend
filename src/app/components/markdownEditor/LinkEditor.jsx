@@ -170,7 +170,7 @@ const LinkEditor = ({ editorState, setEditorState }) => {
   const handleCloseUrlInput = toggleFakeSelectionAnd(closeUrlInput);
 
   return (
-    <div className="link-editor">
+    <>
       <StyleIcon
         toggleStyle={showUrlInput ? handleCloseUrlInput : handleOpenUrlInput}
         className={showUrlInput ? "ignore-react-onclickoutside" : undefined}
@@ -178,12 +178,14 @@ const LinkEditor = ({ editorState, setEditorState }) => {
         icon="fa-link"
         disabled={!isTextSelected()}
       />
+
       <StyleIcon
         toggleStyle={removeLink}
         styleToToggle=""
         icon="fa-unlink"
         disabled={!isTextSelected()}
       />
+
       {showUrlInput && (
         <UrlInput
           editorState={editorState}
@@ -191,7 +193,7 @@ const LinkEditor = ({ editorState, setEditorState }) => {
           handleClickOutside={handleCloseUrlInput}
         />
       )}
-    </div>
+    </>
   );
 };
 

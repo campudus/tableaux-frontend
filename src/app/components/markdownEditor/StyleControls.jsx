@@ -82,27 +82,30 @@ const StyleControls = ({
 
   return (
     <div className="richtext-toggle-style__bar">
-      {blockTypes.map(style => (
-        <StyleIcon
-          key={style.type}
-          toggleStyle={toggleBlockType}
-          styleToToggle={style.type}
-          active={blockType === style.type}
-          icon={style.icon}
-          label={style.label}
-        />
-      ))}
-      {inlineStyles.map(style => (
-        <StyleIcon
-          key={style.type}
-          toggleStyle={toggleInlineStyle}
-          styleToToggle={style.type}
-          active={inlineStyle.has(style.type)}
-          icon={style.icon}
-          label={style.label}
-        />
-      ))}
-      <LinkEditor editorState={editorState} setEditorState={setEditorState} />
+      <div className="richtext-style-controls">
+        {blockTypes.map(style => (
+          <StyleIcon
+            key={style.type}
+            toggleStyle={toggleBlockType}
+            styleToToggle={style.type}
+            active={blockType === style.type}
+            icon={style.icon}
+            label={style.label}
+          />
+        ))}
+        {inlineStyles.map(style => (
+          <StyleIcon
+            key={style.type}
+            toggleStyle={toggleInlineStyle}
+            styleToToggle={style.type}
+            active={inlineStyle.has(style.type)}
+            icon={style.icon}
+            label={style.label}
+          />
+        ))}
+        <LinkEditor editorState={editorState} setEditorState={setEditorState} />
+      </div>
+
       {additionalButtons && (
         <>
           <div className="richtext-toggle-style__placeholder" />
