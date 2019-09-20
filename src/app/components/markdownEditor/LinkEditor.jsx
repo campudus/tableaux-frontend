@@ -40,27 +40,57 @@ const UrlInput = listensToClickOutsice(
     );
 
     return (
-      <div className="link-editor__input">
-        <button
-          className="link-editor__cancel-button button"
-          onClick={closeInput}
-        >
-          {i18n.t("common:cancel")}
-        </button>
-        <input
-          placeholder={i18n.t("common:url")}
-          className="link-editor__input"
-          type="text"
-          value={url}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
-        <button
-          className="link-editor__confirm-button button positive"
-          onClick={() => setLinkUrl(url)}
-        >
-          {i18n.t("common:ok")}
-        </button>
+      <div className="link-editor-popup">
+        <header className="link-editor__header">
+          <i className="link-editor__header-icon fa fa-link" />
+          {i18n.t("table:link-editor.headline")}
+        </header>
+        <section className="link-editor__body">
+          <div className="link-editor-body__placeholder" />
+          <div className="link-editor-body__heading">
+            {i18n.t("table:link-editor.enter-link")}
+          </div>
+          <div className="link-editor-body__label">
+            <div className="link-editor-label__text">
+              {i18n.t("common:url")}
+            </div>
+          </div>
+          <input
+            placeholder="https://"
+            className="link-editor__input"
+            type="text"
+            value={url}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+          />
+          <div className="link-editor-body__label">
+            <div className="link-editor-label__text">
+              {i18n.t("table:link-editor.linked-text")}
+            </div>
+          </div>
+          <input
+            placeholder={i18n.t("common:url")}
+            className="link-editor__input"
+            type="text"
+            value={"foobarbaz"}
+            disabled={true}
+          />
+        </section>
+        <footer className="link-editor__footer">
+          <button
+            className="link-editor__cancel-button button neutral"
+            onClick={closeInput}
+          >
+            {i18n.t("common:cancel")}
+          </button>
+
+          <button
+            className="link-editor__confirm-button button"
+            onClick={() => setLinkUrl(url)}
+          >
+            {i18n.t("table:link-editor.insert-link")}
+          </button>
+        </footer>
       </div>
     );
   }
