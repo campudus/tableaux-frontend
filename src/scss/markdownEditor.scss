@@ -164,8 +164,17 @@ $block-margin-narrow: 5px;
   }
 }
 
+.markdown-editor-wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .draft-editor-wrapper {
   flex: 1;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .DraftEditor-editorContainer {
@@ -214,6 +223,7 @@ $block-margin-narrow: 5px;
 .markdown-editor {
   flex: 1;
   overflow: hidden;
+  display: flex;
 
 }
 
