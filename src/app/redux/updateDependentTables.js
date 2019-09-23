@@ -121,8 +121,15 @@ export const refreshDependentRows = async (
   if (f.isEmpty(dependentTables[changeOrigin])) return state;
 
   const clonedState = nativeClone(state);
+  const refreshedTables = new Set();
 
   const fetchChangedRows = async (tableId, parentTable, changedParentRows) => {
+    // assure we terminate in case of cyclic links
+    if (refreshedTables.has(tableId)) {
+      return;
+    }
+    refreshedTables.add(tableId);
+
     const columns = state.columns[tableId].data;
     const linkColumnIndices =
       columns
