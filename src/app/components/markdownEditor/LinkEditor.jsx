@@ -59,31 +59,31 @@ const UrlInput = listensToClickOutsice(
           {i18n.t("table:link-editor.headline")}
         </header>
         <section className="link-editor__body">
-          <div className="link-editor-body__placeholder" />
-          <div className="link-editor-body__heading">
+          <div className="link-editor-body__placeholder col-one row-one" />
+          <div className="link-editor-body__heading col-two row-one">
             {i18n.t("table:link-editor.enter-link")}
           </div>
-          <div className="link-editor-body__label">
+          <div className="link-editor-body__label col-one row-two">
             <div className="link-editor-label__text">
               {i18n.t("common:url")}
             </div>
           </div>
           <input
             placeholder="https://"
-            className="link-editor__input"
+            className="link-editor__input right col-two row-two"
             type="text"
             value={url}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
           />
-          <div className="link-editor-body__label">
+          <div className="link-editor-body__label col-one row-three">
             <div className="link-editor-label__text">
               {i18n.t("table:link-editor.linked-text")}
             </div>
           </div>
           <input
             placeholder={i18n.t("common:url")}
-            className="link-editor__input"
+            className="link-editor__input col-two row-three"
             type="text"
             value={linkTitle}
             disabled={true}
