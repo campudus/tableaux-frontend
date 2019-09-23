@@ -81,7 +81,9 @@ class File extends Component {
         <Footer
           buttonActions={{
             neutral: [i18n.t("common:cancel"), null],
-            positive: [i18n.t("common:save"), this.onSave]
+            positive: canUserDeleteFiles()
+              ? [i18n.t("common:save"), this.onSave]
+              : null
           }}
         />
       ),
