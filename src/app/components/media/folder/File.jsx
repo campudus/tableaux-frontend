@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 
 import {
   canUserDeleteFiles,
+  canUserEditFiles,
   getUserLanguageAccess
 } from "../../../helpers/accessManagementHelper";
 import {
@@ -81,7 +82,7 @@ class File extends Component {
         <Footer
           buttonActions={{
             neutral: [i18n.t("common:cancel"), null],
-            positive: canUserDeleteFiles()
+            positive: canUserEditFiles()
               ? [i18n.t("common:save"), this.onSave]
               : null
           }}
