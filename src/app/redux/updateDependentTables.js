@@ -170,7 +170,7 @@ export const refreshDependentRows = async (
       |> f.keys
       |> f.filter(tblId => hasTransitiveDependencies(tblId, state.columns))
       |> mapPromise(tblId =>
-        fetchChangedRows(tblId, tableId, rowsToUpdate.map("id"))
+        fetchChangedRows(tblId, tableId, rowsToUpdate.map(f.prop("id")))
       )
     );
   };
