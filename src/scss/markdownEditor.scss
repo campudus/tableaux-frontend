@@ -257,18 +257,21 @@ $block-margin-narrow: 5px;
   }
 
   .ReactCodeMirror, .plain-markdown-editor__preview {
-    padding: $editor-margin;
+
     flex: 1;
     overflow: hidden;
+  }
+
+  .plain-markdown-editor__preview {
     overflow-y: auto;
+    padding: $editor-margin;
   }
 }
 
 .CodeMirror {
+  padding: $editor-margin;
   background-color: transparent;
   height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
 }
 
 .CodeMirrow-scroll {
