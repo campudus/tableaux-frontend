@@ -272,6 +272,7 @@ $block-margin-narrow: 5px;
   padding: $editor-margin;
   background-color: transparent;
   height: 100%;
+  box-sizing: border-box;
 }
 
 .CodeMirrow-scroll {
