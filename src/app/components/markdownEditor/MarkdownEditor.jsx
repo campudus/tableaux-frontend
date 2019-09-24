@@ -17,12 +17,6 @@ const MarkdownEditors = {
   DIRECT: "DIRECT"
 };
 
-const PreviewModes = {
-  HORIZONTAL: "HORIZONTAL",
-  VERTICAL: "VERTICAL",
-  NONE: "NONE"
-};
-
 const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   const isMultiLanguage = cell.column.multilanguage;
   const theMarkdown = React.useRef(
@@ -32,11 +26,6 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   const [preferredEditor, setPreferredEditor] = useLocalStorage(
     "markdownEditor",
     MarkdownEditors.DIRECT
-  );
-
-  const [markdownPreview, setMarkdownPreview] = useLocalStorage(
-    "markdownPreview",
-    PreviewModes.HORIZONTAL
   );
 
   const editorRef = React.useRef();
@@ -67,21 +56,12 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   }, []);
 
   const UserEditor =
-    preferredEditor === MarkdownEditors.WYSIWYG
+    preferredEditor === MarkdownEditors.WYSIWYG && !readOnly
       ? EditorPanel
       : PlainMarkdownEditor;
 
   const cssClass = classNames("markdown-editor", {
-    "markdown-editor--disabled": readOnly,
-    "markdown-editor--split-h":
-      preferredEditor === MarkdownEditors.DIRECT &&
-      markdownPreview === PreviewModes.HORIZONTAL,
-    "markdown-editor--split-v":
-      preferredEditor === MarkdownEditors.DIRECT &&
-      markdownPreview === PreviewModes.VERTICAL,
-    "markdown-editor--hide-preview":
-      preferredEditor === MarkdownEditors.DIRECT &&
-      markdownPreview === PreviewModes.NONE
+    "markdown-editor--disabled": readOnly
   });
 
   const editorSelectorControls = [
@@ -90,45 +70,16 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
       toggleStyle: setPreferredEditor,
       styleToToggle: MarkdownEditors.DIRECT,
       active: preferredEditor === MarkdownEditors.DIRECT,
-      label: "PRO"
+      label: "Markdown"
     },
     {
       key: MarkdownEditors.WYSIWYG,
       toggleStyle: setPreferredEditor,
       styleToToggle: MarkdownEditors.WYSIWYG,
       active: preferredEditor === MarkdownEditors.WYSIWYG,
-      label: "NOOB"
+      label: "RichText"
     }
   ];
-
-  const previewSelectorControls = [
-    {
-      key: PreviewModes.NONE,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.NONE,
-      active: markdownPreview === PreviewModes.NONE,
-      label: "X"
-    },
-    {
-      key: PreviewModes.VERTICAL,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.VERTICAL,
-      active: markdownPreview === PreviewModes.VERTICAL,
-      label: "V"
-    },
-    {
-      key: PreviewModes.HORIZONTAL,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.HORIZONTAL,
-      active: markdownPreview === PreviewModes.HORIZONTAL,
-      icon: "fa-columns"
-    }
-  ];
-
-  const editorControls =
-    preferredEditor === MarkdownEditors.DIRECT
-      ? [...previewSelectorControls, ...editorSelectorControls]
-      : editorSelectorControls;
 
   return (
     <div className={cssClass} onClick={focusInput}>
@@ -139,7 +90,13 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
         readOnly={readOnly}
         hideToolbar={readOnly}
         controlButtons={
-          !readOnly && editorControls.map(button => <StyleIcon {...button} />)
+          !readOnly && (
+            <div className="toggle-editor-buttons">
+              {editorSelectorControls.map((button, idx) => (
+                <StyleIcon key={idx} {...button} />
+              ))}
+            </div>
+          )
         }
       />
     </div>

@@ -27,14 +27,13 @@ $block-margin-narrow: 5px;
   width: 100%;
   box-sizing: border-box;
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-end;
   padding: 5px;
-  border-bottom: 1px solid $color-text-light-grey;
+  background-color: $color-primary-contrast-text;
 }
 
 .richtext-toggle-style__placeholder {
-  flex: 1;
+  flex: 1 0 15px;
 }
 
 .richtext-toggle-style-button {
@@ -43,19 +42,34 @@ $block-margin-narrow: 5px;
   color: $color-text-medium-grey;
   margin: 5px;
   font-family: "serif";
+  border: 1px solid  $color-text-medium-grey;
+  // transition: border-color 0.2s;
+  .svg-icon-content * {
+    fill: $color-text-medium-grey;
+  }
 
   &.style-button--active {
     background-color: $color-primary;
     color: $color-primary-contrast-text;
+    border: 1px solid $color-primary;
+    transition: border-color 0.2s;
+    .svg-icon-content * {
+      fill: $color-primary-contrast-text;
+    }
   }
 
   &:hover {
     background-color: lighten($color-primary, 20);
     color: $color-primary-contrast-text;
+    border: 1px solid lighten($color-primary, 20);
+    .svg-icon-content * {
+      fill: $color-primary-contrast-text;
+    }
   }
 
   &.style-button--disabled {
     background-color: lighten($color-text-medium-grey, 25);
+    border: 1px solid transparent;
   }
 }
 
@@ -150,6 +164,23 @@ $block-margin-narrow: 5px;
   }
 }
 
+.markdown-editor-wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.draft-editor-wrapper {
+  flex: 1;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.DraftEditor-editorContainer {
+  overflow-y: auto;
+}
+
 .entity-view.content-items .markdown-editor {
   min-height: 150px;
   border-bottom: 1px solid transparent;
@@ -192,6 +223,16 @@ $block-margin-narrow: 5px;
 .markdown-editor {
   flex: 1;
   overflow: hidden;
+  display: flex;
+
+}
+
+.plain-markdown-editor {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  overflow-y: auto;
+
   &.markdown-editor--hide-preview {
     .plain-markdown-editor__preview {
       display: none;
@@ -201,37 +242,133 @@ $block-margin-narrow: 5px;
     }
   }
 
-  &.markdown-editor--split-v .plain-markdown-editor {
+  &.markdown-editor--split-v {
     flex-direction: column;
     .plain-markdown-editor__preview {
       border-top: 1px solid $color-text-light-grey;
     }
   }
 
-  &.markdown-editor--split-h .plain-markdown-editor {
+  &.markdown-editor--split-h {
     flex-direction: row;
     .plain-markdown-editor__preview {
       border-left: 1px solid $color-text-light-grey;
     }
   }
-}
 
-.plain-markdown-editor {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  overflow-y: auto;
   .ReactCodeMirror, .plain-markdown-editor__preview {
-    padding: $editor-margin;
+
     flex: 1;
     overflow: hidden;
+  }
+
+  .plain-markdown-editor__preview {
     overflow-y: auto;
+    padding: $editor-margin;
   }
 }
 
 .CodeMirror {
+  padding: $editor-margin;
   background-color: transparent;
   height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
+}
+
+.CodeMirrow-scroll {
+
+}
+
+.toggle-editor-buttons {
+  flex: 0 0 180px;
+
+  .richtext-toggle-style-button {
+    margin: 5px 0;
+    font-family: "Roboto";
+    font-weight: 300;
+    border-color: $color-text-medium-grey;
+    display: inline-flex;
+
+    &:first-of-type {
+      border-radius: 5px 0 0 5px;
+    }
+    &:last-of-type {
+      border-radius: 0 5px 5px 0;
+      margin-left: -1px;
+    }
+  }
+}
+
+.link-editor .link-editor-popup .link-editor__body .link-editor__input {
+  // border: 1px solid transparentize($color-text-medium-grey, 0.3) !important;
+  border-radius: 3px;
+  padding: 3px 8px;
+  width: auto;
+  margin: 0;
+}
+
+.link-editor-popup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  z-index: 2;
+  box-shadow: 0 0 10px 4px $color-text-medium-grey;
+  border-radius: 3px;
+  width: 60%;
+  $link-editor-inner-padding: 20px;
+
+  .link-editor__header {
+    background-color: $color-overlay-header;
+    padding: $link-editor-inner-padding;
+    color: $color-primary-contrast-text;
+    font-size: 16px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .link-editor__footer {
+    padding: $link-editor-inner-padding;
+    padding-top: 0;
+    text-align: right;
+    border: none;
+
+    .button {
+      margin-left: 8px;
+    }
+  }
+
+  .link-editor__header-icon {
+    margin-right: 15px;
+  }
+
+  .link-editor__body {
+    padding: $link-editor-inner-padding;
+    display: grid;
+    display: -ms-grid;
+    grid-template-columns: 50px auto;
+    -ms-grid-columns: 50px 1fr;
+    grid-row-gap: 8px;
+    grid-column-gap: 8px;
+  }
+
+  .link-editor-body__heading {
+    color: $color-text-medium-grey;
+  }
+
+  .link-editor-body__label {
+    color: $color-text-medium-grey;
+    font-weight: bold;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .link-editor-label__text {
+    white-space: nowrap;
+  }
+
+  .button {
+    @include button-look();
+  }
 }

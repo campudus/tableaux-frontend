@@ -15,7 +15,7 @@ const UrlInput = listensToClickOutsice(
         // Adapted from DraftJS link example
         // https://github.com/facebook/draft-js/blob/ceaeebf1f50fee452d92d71c5e2008e3d4fb6d9f/examples/draft-0-10-0/link/link.html#L76
         const content = editorState.getCurrentContent();
-        const startKey = selection().getStartKey();
+        const startKey = selection.getStartKey();
         const startOffset = selection.getStartOffset();
         const blockWithLinkAtBeginning = content.getBlockForKey(startKey);
         const linkKey = blockWithLinkAtBeginning.getEntityAt(startOffset);
@@ -27,11 +27,24 @@ const UrlInput = listensToClickOutsice(
       }
     };
 
+    const extractSelectedText = selection => {
+      const content = editorState.getCurrentContent();
+      const startKey = selection.getStartKey();
+      const startOffset = selection.getStartOffset();
+      const endOffset = selection.getEndOffset();
+      const contentBlock = content.getBlockForKey(startKey);
+      return either(contentBlock)
+        .map(block => block.getText())
+        .map(string => string.slice(startOffset, endOffset))
+        .getOrElse("");
+    };
+
     const [url, setUrl] = React.useState(
       either(editorState.getSelection())
         .map(getUrlAtPoint)
         .getOrElse("")
     );
+    const linkTitle = extractSelectedText(editorState.getSelection());
     const handleChange = React.useCallback(event => setUrl(event.target.value));
     const closeInput = handleClickOutside;
     const handleKeyDown = React.useCallback(
@@ -40,27 +53,57 @@ const UrlInput = listensToClickOutsice(
     );
 
     return (
-      <div className="link-editor__input">
-        <button
-          className="link-editor__cancel-button button"
-          onClick={closeInput}
-        >
-          {i18n.t("common:cancel")}
-        </button>
-        <input
-          placeholder={i18n.t("common:url")}
-          className="link-editor__input"
-          type="text"
-          value={url}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
-        <button
-          className="link-editor__confirm-button button positive"
-          onClick={() => setLinkUrl(url)}
-        >
-          {i18n.t("common:ok")}
-        </button>
+      <div className="link-editor-popup">
+        <header className="link-editor__header">
+          <i className="link-editor__header-icon fa fa-link" />
+          {i18n.t("table:link-editor.headline")}
+        </header>
+        <section className="link-editor__body">
+          <div className="link-editor-body__placeholder col-one row-one" />
+          <div className="link-editor-body__heading col-two row-one">
+            {i18n.t("table:link-editor.enter-link")}
+          </div>
+          <div className="link-editor-body__label col-one row-two">
+            <div className="link-editor-label__text">
+              {i18n.t("common:url")}
+            </div>
+          </div>
+          <input
+            placeholder="https://"
+            className="link-editor__input right col-two row-two"
+            type="text"
+            value={url}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+          />
+          <div className="link-editor-body__label col-one row-three">
+            <div className="link-editor-label__text">
+              {i18n.t("table:link-editor.linked-text")}
+            </div>
+          </div>
+          <input
+            placeholder={i18n.t("common:url")}
+            className="link-editor__input col-two row-three"
+            type="text"
+            value={linkTitle}
+            disabled={true}
+          />
+        </section>
+        <footer className="link-editor__footer">
+          <button
+            className="link-editor__cancel-button button neutral"
+            onClick={closeInput}
+          >
+            {i18n.t("common:cancel")}
+          </button>
+
+          <button
+            className="link-editor__confirm-button button"
+            onClick={() => setLinkUrl(url)}
+          >
+            {i18n.t("table:link-editor.insert-link")}
+          </button>
+        </footer>
       </div>
     );
   }
@@ -127,7 +170,7 @@ const LinkEditor = ({ editorState, setEditorState }) => {
   const handleCloseUrlInput = toggleFakeSelectionAnd(closeUrlInput);
 
   return (
-    <div className="link-editor">
+    <>
       <StyleIcon
         toggleStyle={showUrlInput ? handleCloseUrlInput : handleOpenUrlInput}
         className={showUrlInput ? "ignore-react-onclickoutside" : undefined}
@@ -135,12 +178,14 @@ const LinkEditor = ({ editorState, setEditorState }) => {
         icon="fa-link"
         disabled={!isTextSelected()}
       />
+
       <StyleIcon
         toggleStyle={removeLink}
         styleToToggle=""
         icon="fa-unlink"
         disabled={!isTextSelected()}
       />
+
       {showUrlInput && (
         <UrlInput
           editorState={editorState}
@@ -148,7 +193,7 @@ const LinkEditor = ({ editorState, setEditorState }) => {
           handleClickOutside={handleCloseUrlInput}
         />
       )}
-    </div>
+    </>
   );
 };
 

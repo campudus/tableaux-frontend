@@ -106,7 +106,11 @@ class EditorPanel extends React.PureComponent {
     } = this;
 
     return (
-      <div onMouseDown={stopPropagation} onClick={stopPropagation}>
+      <div
+        className="markdown-editor-wrapper"
+        onMouseDown={stopPropagation}
+        onClick={stopPropagation}
+      >
         {!hideToolbar && (
           <StyleControls
             toggleBlockType={toggleBlockType}
@@ -117,14 +121,16 @@ class EditorPanel extends React.PureComponent {
           />
         )}
 
-        <Editor
-          readOnly={readOnly}
-          ref={editorRef}
-          editorState={editorState}
-          onChange={handleChange}
-          handleKeyCommand={handleKeyCommand}
-          placeholder={i18n.t("table:empty.text")}
-        />
+        <div className="draft-editor-wrapper">
+          <Editor
+            readOnly={readOnly}
+            ref={editorRef}
+            editorState={editorState}
+            onChange={handleChange}
+            handleKeyCommand={handleKeyCommand}
+            placeholder={i18n.t("table:empty.text")}
+          />
+        </div>
       </div>
     );
   }
@@ -137,5 +143,5 @@ EditorPanel.propTypes = {
   onChange: PropTypes.func,
   hideToolbar: PropTypes.bool,
   readOnly: PropTypes.bool,
-  controlButtons: PropTypes.array
+  controlButtons: PropTypes.element
 };
