@@ -93,6 +93,10 @@ class EditorPanel extends React.PureComponent {
     });
   };
 
+  focusEditor = () => {
+    this.editorRefElement.focus();
+  };
+
   render() {
     const { hideToolbar, readOnly, controlButtons } = this.props;
     const { editorState } = this.state;
@@ -121,7 +125,7 @@ class EditorPanel extends React.PureComponent {
           />
         )}
 
-        <div className="draft-editor-wrapper">
+        <div className="draft-editor-wrapper" onClick={this.focusEditor}>
           <Editor
             readOnly={readOnly}
             ref={editorRef}
