@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { preventDefault } from "../../helpers/functools";
+import { either, preventDefault } from "../../helpers/functools";
 import LinkEditor from "./LinkEditor";
 
 export const StyleIcon = ({
@@ -80,6 +80,14 @@ const StyleControls = ({
     .getBlockForKey(editorState.getSelection().getStartKey())
     .getType();
 
+  const isTextSelected = React.useCallback(() =>
+    either(editorState)
+      .exec("getSelection")
+      .exec("isCollapsed")
+      .map(isCollapsed => !isCollapsed)
+      .getOrElse(false)
+  );
+
   return (
     <div className="richtext-toggle-style__bar">
       <div className="richtext-style-controls">
@@ -99,6 +107,7 @@ const StyleControls = ({
             toggleStyle={toggleInlineStyle}
             styleToToggle={style.type}
             active={inlineStyle.has(style.type)}
+            disabled={!isTextSelected()}
             icon={style.icon}
             label={style.label}
           />
