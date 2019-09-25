@@ -7,6 +7,7 @@ import {
   idsToIndices
 } from "../redux-helpers";
 import { doto, when } from "../../helpers/functools";
+import { performRowDeletion } from "../updateDependentTables";
 import actionTypes from "../actionTypes";
 
 const {
@@ -25,7 +26,8 @@ const {
   ANNOTATION_ERROR,
   CLEAN_UP,
   ADD_ROWS,
-  ROW_CREATE_SUCCESS
+  ROW_CREATE_SUCCESS,
+  SET_STATE
 } = actionTypes;
 
 const initialState = {};
@@ -158,9 +160,9 @@ const setCellAnnotation = (state, action, completeState) => {
   );
 };
 
-const deleteRow = (action, state) => {
+const deleteRow = (action, completeState) => {
   const { table, row } = action;
-  return f.update([table.id, "data"], f.remove(f.propEq("id", row.id)), state);
+  return performRowDeletion(table.id, row.id, completeState);
 };
 
 const addRows = (completeState, state, action) => {
@@ -197,6 +199,8 @@ const setCellValue = (state, action, completeState, isRollback = false) => {
 
 const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
+    case SET_STATE:
+      return action.state.rows;
     case ALL_ROWS_LOADING_DATA:
       return {
         [action.tableId]: { error: false, finishedLoading: false }
@@ -211,7 +215,7 @@ const rows = (state = initialState, action, completeState) => {
     case ADDITIONAL_ROWS_DATA_LOADED:
       return insertSkeletonRows(state, action, completeState);
     case DELETE_ROW:
-      return deleteRow(action, state);
+      return deleteRow(action, completeState);
     case CELL_SET_VALUE:
       return setCellValue(state, action, completeState, false /*isRollback*/);
     case SET_CELL_ANNOTATION:

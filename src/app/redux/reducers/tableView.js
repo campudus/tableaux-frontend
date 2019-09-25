@@ -25,6 +25,7 @@ const {
   COPY_CELL_VALUE_TO_CLIPBOARD
 } = ActionTypes.tableView;
 const {
+  SET_STATE,
   TOGGLE_COLUMN_VISIBILITY,
   HIDE_ALL_COLUMNS,
   SET_COLUMNS_VISIBLE,
@@ -349,6 +350,8 @@ const modifyHistory = action => state => {
 
 export default (state = initialState, action, completeState) => {
   switch (action.type) {
+    case SET_STATE:
+      return action.state.tableView;
     case TOGGLE_COLUMN_VISIBILITY:
       return f.assoc("visibleColumns", action.visibleColumns, state);
     case HIDE_ALL_COLUMNS:

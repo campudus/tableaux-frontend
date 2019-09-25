@@ -1,0 +1,5297 @@
+{
+  "columns": [
+    {
+      "id": 0,
+      "ordering": 0,
+      "name": "ID",
+      "kind": "concat",
+      "multilanguage": false,
+      "identifier": true,
+      "displayName": null,
+      "description": null,
+      "concats": [
+        {
+          "id": 1,
+          "ordering": 10,
+          "name": "brand",
+          "kind": "link",
+          "multilanguage": false,
+          "identifier": true,
+          "displayName": {
+            "de": "Marke",
+            "en": "brand",
+            "fr": "marque",
+            "es": "marca"
+          },
+          "description": null,
+          "toTable": 5,
+          "toColumn": {
+            "id": 1,
+            "ordering": 1,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null
+          },
+          "constraint": {
+            "cardinality": {
+              "from": 0,
+              "to": 1
+            },
+            "deleteCascade": false
+          }
+        },
+        {
+          "id": 2,
+          "ordering": 20,
+          "name": "modelName",
+          "kind": "shorttext",
+          "multilanguage": false,
+          "identifier": true,
+          "displayName": {
+            "de": "Modellname",
+            "en": "Model name",
+            "fr": "Nom du modèle",
+            "es": "Modelo"
+          },
+          "description": null
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "ordering": 10,
+      "name": "brand",
+      "kind": "link",
+      "multilanguage": false,
+      "identifier": true,
+      "displayName": {
+        "de": "Marke",
+        "en": "brand",
+        "fr": "marque",
+        "es": "marca"
+      },
+      "description": null,
+      "toTable": 5,
+      "toColumn": {
+        "id": 1,
+        "ordering": 1,
+        "name": "identifier",
+        "kind": "shorttext",
+        "multilanguage": false,
+        "identifier": true,
+        "displayName": {
+          "de": "Bezeichnung",
+          "en": "Identifier",
+          "fr": "Désignation",
+          "es": "Descripción"
+        },
+        "description": null
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 2,
+      "ordering": 20,
+      "name": "modelName",
+      "kind": "shorttext",
+      "multilanguage": false,
+      "identifier": true,
+      "displayName": {
+        "de": "Modellname",
+        "en": "Model name",
+        "fr": "Nom du modèle",
+        "es": "Modelo"
+      },
+      "description": null
+    },
+    {
+      "id": 3,
+      "ordering": 30,
+      "name": "modelYear",
+      "kind": "link",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Modelljahre",
+        "en": "Model years",
+        "fr": "Années modèles",
+        "es": "Años de modelo"
+      },
+      "description": null,
+      "toTable": 84,
+      "toColumn": {
+        "id": 1,
+        "ordering": 10,
+        "name": "identifier",
+        "kind": "numeric",
+        "multilanguage": false,
+        "identifier": true,
+        "displayName": {
+          "de": "Bezeichnung",
+          "en": "Identifier",
+          "fr": "Désignation",
+          "es": "Descripción"
+        },
+        "description": null
+      }
+    },
+    {
+      "id": 4,
+      "ordering": 40,
+      "name": "variants",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Variante",
+        "en": "Variant",
+        "fr": "Variante",
+        "es": "Variante"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 94,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "articleNumber",
+            "kind": "shorttext",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Artikelnummer",
+              "en": "Article number",
+              "fr": "Réf. article",
+              "es": "N° de artículo"
+            },
+            "description": null
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 1,
+          "to": 0
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 5,
+      "ordering": 50,
+      "name": "rrp",
+      "kind": "currency",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "EVP",
+        "en": "RRP",
+        "fr": "PVC",
+        "es": "PVP"
+      },
+      "description": null,
+      "languageType": "country",
+      "countryCodes": [
+        "DE",
+        "US",
+        "GB",
+        "FR",
+        "ES",
+        "AT",
+        "CH"
+      ]
+    },
+    {
+      "id": 6,
+      "ordering": 60,
+      "name": "marketingCategory",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Marketingkategorie",
+        "en": "Marketing category",
+        "fr": "Catégorie Marketing",
+        "es": "Categoría Marketing"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 78,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 6,
+            "ordering": 60,
+            "name": "sorting",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Sortierung",
+              "en": "Sorting",
+              "fr": "Tri",
+              "es": "Clasificación"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 7,
+      "ordering": 65,
+      "name": "b2bShopCategory",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "B2B-Shop Kategorie",
+        "en": "B2B-Shop category",
+        "fr": "B2B-Shop Catégorie",
+        "es": "B2B-Shop Categoría"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 79,
+      "toColumn": {
+        "id": 1,
+        "ordering": 10,
+        "name": "identifier",
+        "kind": "shorttext",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": {
+          "de": "Bezeichnung",
+          "en": "Identifier",
+          "fr": "Désignation",
+          "es": "Descripción"
+        },
+        "description": null,
+        "languageType": "language"
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 8,
+      "ordering": 70,
+      "name": "bikeType",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Fahrradtyp (ISO)",
+        "en": "Bike type",
+        "fr": "Type de vélo",
+        "es": "Tipo de bicicleta"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 80,
+      "toColumn": {
+        "id": 1,
+        "ordering": 10,
+        "name": "identifier",
+        "kind": "shorttext",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": {
+          "de": "Bezeichnung",
+          "en": "Identifier",
+          "fr": "Désignation",
+          "es": "Descripción"
+        },
+        "description": null,
+        "languageType": "language"
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 9,
+      "ordering": 80,
+      "name": "bidexProductCode",
+      "kind": "shorttext",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Bidex Warenschlüssel",
+        "en": "Bidex Product Code",
+        "fr": "Code des marchandises de Bidex",
+        "es": "Código de producto Bidex"
+      },
+      "description": null
+    },
+    {
+      "id": 10,
+      "ordering": 90,
+      "name": "description",
+      "kind": "text",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Beschreibung",
+        "en": "Description",
+        "fr": "Description",
+        "es": "Descripción"
+      },
+      "description": null,
+      "languageType": "language"
+    },
+    {
+      "id": 11,
+      "ordering": 100,
+      "name": "weight",
+      "kind": "numeric",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Gewicht (Z in kg)",
+        "en": "Weight (Z in kg)",
+        "fr": "Poids (in kg)",
+        "es": "Peso (en kg)"
+      },
+      "description": null
+    },
+    {
+      "id": 12,
+      "ordering": 110,
+      "name": "permittedTotalWeight",
+      "kind": "numeric",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Zul. Gesamtgewicht (Z in kg)",
+        "en": "Permitted total weight",
+        "fr": "Poids total autorisé (in kg)",
+        "es": "Peso máximo (en kg)"
+      },
+      "description": null
+    },
+    {
+      "id": 13,
+      "ordering": 120,
+      "name": "numberOfGears",
+      "kind": "numeric",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Gänge (Z)",
+        "en": "Number of gears (Z)",
+        "fr": "Nombre de vitesses (Z)",
+        "es": "Número de velocidades (Z)"
+      },
+      "description": null
+    },
+    {
+      "id": 14,
+      "ordering": 1010,
+      "name": "brakeLever",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Bremshebel",
+        "en": "Brake lever",
+        "fr": "Levier de frein",
+        "es": "Maneta de freno"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 23,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "gripWidth",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Griffweite",
+              "en": "Grip width",
+              "fr": "Largeur du manche",
+              "es": "Ancho de agarre"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 22,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 4,
+            "ordering": 40,
+            "name": "gripWidthAdjustable",
+            "kind": "boolean",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Griffweite einstellbar",
+              "en": "Adjustable grip width",
+              "fr": "Garde réglable",
+              "es": "Ancho de agarre ajustable"
+            },
+            "description": null
+          },
+          {
+            "id": 7,
+            "ordering": 70,
+            "name": "assemblySide",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Montageseite",
+              "en": "Assembly side",
+              "fr": "Site de montage",
+              "es": "Puerta de montaje"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 21,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 15,
+      "ordering": 1020,
+      "name": "brakeFront",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Bremse (vorne)",
+        "en": "Brake (front)",
+        "fr": "Frein (avant)",
+        "es": "Freno (delantero)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 25,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 16,
+      "ordering": 1030,
+      "name": "brakeRear",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Bremse (hinten)",
+        "en": "Brake (rear)",
+        "fr": "Frein (arrière)",
+        "es": "Freno (trasero)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 25,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 17,
+      "ordering": 1040,
+      "name": "isCoasterBrake",
+      "kind": "boolean",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Rücktrittbremse",
+        "en": "Back pedal brake",
+        "fr": "Frein à rétropédalage",
+        "es": "Freno contrapedal"
+      },
+      "description": null
+    },
+    {
+      "id": 18,
+      "ordering": 1050,
+      "name": "brakeDiscFront",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Bremsscheibe (vorne)",
+        "en": "Brake disc (front)",
+        "fr": "Disque de frein (avant)",
+        "es": "Disco de freno (delantero)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 28,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 19,
+      "ordering": 1060,
+      "name": "brakeDiscRear",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Bremsscheibe (hinten)",
+        "en": "Brake disc (rear)",
+        "fr": "Disque de frein (arrière)",
+        "es": "Disco de freno (trasero)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 28,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 20,
+      "ordering": 2010,
+      "name": "derailleur",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Umwerfer",
+        "en": "Derailleur",
+        "fr": "Dérailleur avant",
+        "es": "Desviador"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 32,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "derailleurType",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Umwerfer Typ",
+              "en": "Derailleur type",
+              "fr": "Type de dérailleur",
+              "es": "Tipo de desviador"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 31,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 21,
+      "ordering": 2020,
+      "name": "gearHub",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schaltnabe",
+        "en": "Gear hub",
+        "fr": "Pour moyeu",
+        "es": "Para carrete"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 34,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 22,
+      "ordering": 2030,
+      "name": "rearDerailleur",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schaltwerk",
+        "en": "Rear Derailleur",
+        "fr": "Dérailleur arrière",
+        "es": "Cambio"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 33,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 23,
+      "ordering": 2040,
+      "name": "sprocket",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Zahnkranz",
+        "en": "Sprocket",
+        "fr": "Jante dentée",
+        "es": "Corona dentada"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 36,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "numberOfTeeth",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Zähnezahl",
+              "en": "Number of teeth",
+              "fr": "Nombre de dents",
+              "es": "Cantidad de dientes"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 24,
+      "ordering": 2050,
+      "name": "cassette",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kassette",
+        "en": "Cassette",
+        "fr": "Cassette",
+        "es": "Cassette"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 35,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "numberOfGears",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Gänge (Z)",
+              "en": "Number of gears (Z)",
+              "fr": "Nombre de vitesses (Z)",
+              "es": "Número de velocidades (Z)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 25,
+      "ordering": 2060,
+      "name": "chainRing",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kettenblatt",
+        "en": "Chainring",
+        "fr": "Plateau",
+        "es": "Plato"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 39,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 26,
+      "ordering": 2070,
+      "name": "crankset",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kurbelgarnitur",
+        "en": "crankset",
+        "fr": "Biela",
+        "es": "Pédalier"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 37,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 4,
+            "ordering": 40,
+            "name": "numberOfTeethLarge",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Zähnezahl (groß)",
+              "en": "Number of teeth (large)",
+              "fr": "Nombre de dents (grand)",
+              "es": "Cantidad de dientes (grande)"
+            },
+            "description": null
+          },
+          {
+            "id": 5,
+            "ordering": 50,
+            "name": "numberOfTeethMedium",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Zähnezahl (mittel, optional)",
+              "en": "Number of teeth (medium, optional)",
+              "fr": "Nombre de dents (moyen, optionnelle)",
+              "es": "Cantidad de dientes (medio, opcional)"
+            },
+            "description": null
+          },
+          {
+            "id": 6,
+            "ordering": 60,
+            "name": "numberOfTeethSmall",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Zähnezahl (klein, optional)",
+              "en": "Number of teeth (small, optional)",
+              "fr": "Nombre de dents (petit, optionnelle)",
+              "es": "Cantidad de dientes (pequeño, opcional)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 27,
+      "ordering": 2080,
+      "name": "gearLeverLeft",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schalthebel (links)",
+        "en": "Gear lever (left)",
+        "fr": "Manette de dérailleur (gauche)",
+        "es": "Maneta de cambio (izquierdo)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 30,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 28,
+      "ordering": 2090,
+      "name": "gearLeverRight",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schalthebel (rechts)",
+        "en": "Gear lever (right)",
+        "fr": "Manette de dérailleur (droite)",
+        "es": "Maneta de cambio (derecha)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 30,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 29,
+      "ordering": 2100,
+      "name": "crankArms",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kurbelarme",
+        "en": "Crank arms",
+        "fr": "Bras de manivelle",
+        "es": "Brazos de biela"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 41,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 30,
+      "ordering": 2110,
+      "name": "bottomBracket",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Innenlager",
+        "en": "Bottom bracket",
+        "fr": "Boîtier de pédalier",
+        "es": "Eje de pedalier"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 43,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "bottomBracketSystem",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Innenlagersystem",
+              "en": "Bottom bracket system",
+              "fr": "Système de boîtier de pédalier",
+              "es": "Sistema eje de pedalier"
+            },
+            "description": null,
+            "toTable": 42,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 4,
+            "ordering": 40,
+            "name": "axleLength",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Achslänge (Z in mm)",
+              "en": "Axle Length (Z in mm)",
+              "fr": "Longueur d'axe (en mm)",
+              "es": "Longitud de eje (en mm)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 31,
+      "ordering": 3010,
+      "name": "headSet",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Steuersatz",
+        "en": "Head Set",
+        "fr": "Jeu de direction",
+        "es": "Dirección"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 7,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 32,
+      "ordering": 3020,
+      "name": "engine",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Motor",
+        "en": "Engine",
+        "fr": "Moteur",
+        "es": "Motor"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 6,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "power",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Leistung (Z in Watt)",
+              "en": "Power (Z in Watt)",
+              "fr": "Puissance (en Watt)",
+              "es": "Rendimiento (en vatios)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 33,
+      "ordering": 3030,
+      "name": "display",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Display",
+        "en": "Display",
+        "fr": "Écran",
+        "es": "Pantalla"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 10,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "connectivity",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Konnektivität",
+              "en": "Connectivity",
+              "fr": "connectivité",
+              "es": "conexión"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 8,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 34,
+      "ordering": 3035,
+      "name": "controlUnit",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Bedieneinheit",
+        "en": "Contol unit",
+        "fr": "unité de commande",
+        "es": "Unidad de mando"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 70,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 35,
+      "ordering": 3040,
+      "name": "charger",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Ladegerät",
+        "en": "Charger",
+        "fr": "Chargeur",
+        "es": "Cargador"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 92,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 36,
+      "ordering": 3050,
+      "name": "fork",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Gabel",
+        "en": "Fork",
+        "fr": "Fourche",
+        "es": "Horquilla"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 16,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "springMedium",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Federmedium",
+              "en": "Spring medium",
+              "fr": "Moyen d'amortissement",
+              "es": "Medio de amortiguación"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 12,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 4,
+            "ordering": 40,
+            "name": "forkLength",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Federweg (Z in mm)",
+              "en": "Fork length (Z in mm)",
+              "fr": "Débattement (en mm)",
+              "es": "Recorrido (en mm)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 37,
+      "ordering": 3060,
+      "name": "damper",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Dämpfer",
+        "en": "Damper",
+        "fr": "Amortisseur",
+        "es": "Amortiguador"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 17,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "springMedium",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Federmedium",
+              "en": "Spring medium",
+              "fr": "Moyen d'amortissement",
+              "es": "Medio de amortiguación"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 12,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 38,
+      "ordering": 3070,
+      "name": "chainGuard",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kettenschutz",
+        "en": "Chain guard",
+        "fr": "Carter",
+        "es": "Guardacadena"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 19,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 39,
+      "ordering": 3080,
+      "name": "chain",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kette",
+        "en": "Chain",
+        "fr": "Chaîne",
+        "es": "Cadena"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 20,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 40,
+      "ordering": 3090,
+      "name": "chainGuide",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Kettenführung",
+        "en": "Chain guide",
+        "fr": "Guide-chaîne",
+        "es": "Guía de cadena"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 18,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 41,
+      "ordering": 4010,
+      "name": "systemWheelSet",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Systemlaufradsatz",
+        "en": "System wheel set",
+        "fr": "Paire de roues système",
+        "es": "Sistema de set de ruedas"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 44,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 42,
+      "ordering": 4020,
+      "name": "wheelSet",
+      "kind": "link",
+      "multilanguage": false,
+      "identifier": false,
+      "displayName": {
+        "de": "Laufradsatz",
+        "en": "Wheel set",
+        "fr": "Paire de roues",
+        "es": "Set de ruedas"
+      },
+      "description": null,
+      "toTable": 51,
+      "toColumn": {
+        "id": 1,
+        "ordering": 10,
+        "name": "internalName",
+        "kind": "shorttext",
+        "multilanguage": false,
+        "identifier": true,
+        "displayName": {
+          "de": "Marketingbezeichnung",
+          "en": "Marketing Identifier",
+          "fr": "Désignation Marketing",
+          "es": "Descripción Marketing"
+        },
+        "description": null
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 43,
+      "ordering": 5010,
+      "name": "tire",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Reifen",
+        "en": "Tire",
+        "fr": "Pneu",
+        "es": "Cubierta"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 52,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "sizeEtrto",
+            "kind": "shorttext",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Größe (ETRTO)",
+              "en": "Size (ETRTO)",
+              "fr": "Dimensions (ETRTO)",
+              "es": "Tamaño (ETRTO)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 44,
+      "ordering": 5020,
+      "name": "rearTire",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Reifen (hinten, falls abweichend)",
+        "en": "Tire (rear, if different)",
+        "fr": "Pneu (arrière, si différents)",
+        "es": "Cubierta (traseros, si son diferentes)"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 52,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "sizeEtrto",
+            "kind": "shorttext",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Größe (ETRTO)",
+              "en": "Size (ETRTO)",
+              "fr": "Dimensions (ETRTO)",
+              "es": "Tamaño (ETRTO)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 45,
+      "ordering": 5030,
+      "name": "tube",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schlauch",
+        "en": "Tube",
+        "fr": "Chambre à air",
+        "es": "Cámara"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 54,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 46,
+      "ordering": 5040,
+      "name": "handlebar",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Lenker",
+        "en": "Handlebar",
+        "fr": "Cintre",
+        "es": "Manillar"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 56,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 47,
+      "ordering": 5050,
+      "name": "grips",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Griffe",
+        "en": "Grips",
+        "fr": "Poignées",
+        "es": "Puños"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 55,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 48,
+      "ordering": 5060,
+      "name": "stem",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Vorbau",
+        "en": "Stem",
+        "fr": "Potence",
+        "es": "Potencia"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 59,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 4,
+            "ordering": 40,
+            "name": "stemSystem",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Vorbausytem",
+              "en": "Stem system",
+              "fr": "Système de potence",
+              "es": "Sistema de potencia"
+            },
+            "description": null,
+            "toTable": 58,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 49,
+      "ordering": 5070,
+      "name": "spacer",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Spacer",
+        "en": "Spacer",
+        "fr": "Spacer",
+        "es": "Spacer"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 60,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 50,
+      "ordering": 5080,
+      "name": "saddle",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Sattel",
+        "en": "Saddle",
+        "fr": "Selle",
+        "es": "Sillín"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 57,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 51,
+      "ordering": 5090,
+      "name": "seatPost",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Sattelstütze",
+        "en": "Seat post",
+        "fr": "Tige de selle",
+        "es": "Tija de sillín"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 64,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 52,
+      "ordering": 5100,
+      "name": "saddleClamp",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Sattelklemmschelle",
+        "en": "saddle clamp",
+        "fr": "collier de selle",
+        "es": "abrazadera de montura"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 62,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 53,
+      "ordering": 5110,
+      "name": "headlight",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Scheinwerfer",
+        "en": "Headlight",
+        "fr": "Eclairage avant",
+        "es": "Faro"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 67,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 54,
+      "ordering": 5120,
+      "name": "rearlight",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Rücklicht",
+        "en": "Rearlight",
+        "fr": "Eclairage arrière",
+        "es": "Luz trasera"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 66,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 55,
+      "ordering": 5130,
+      "name": "dynamo",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Dynamo",
+        "en": "Dynamo",
+        "fr": "Dynamo",
+        "es": "Dinamo"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 65,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "power",
+            "kind": "numeric",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Leistung (Z in Watt)",
+              "en": "Power (Z in Watt)",
+              "fr": "Puissance (en Watt)",
+              "es": "Rendimiento (en vatios)"
+            },
+            "description": null
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 56,
+      "ordering": 5140,
+      "name": "carrier",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Gepäckträger",
+        "en": "Carrier",
+        "fr": "Porte-bagages",
+        "es": "Portaequipaje"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 77,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 4,
+            "ordering": 40,
+            "name": "carrierSystem",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Gepäckträgersystem",
+              "en": "Carrier system",
+              "fr": "Système de porte-bagages",
+              "es": "Sistema portaequipaje"
+            },
+            "description": null,
+            "toTable": 76,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 57,
+      "ordering": 5150,
+      "name": "mudguard",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schutzbleche",
+        "en": "Mudguard",
+        "fr": "Garde-boue",
+        "es": "Guardabarros"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 75,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 58,
+      "ordering": 5160,
+      "name": "kickstand",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Ständer",
+        "en": "Kick stand",
+        "fr": "Béquille",
+        "es": "Caballete"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 74,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          },
+          {
+            "id": 3,
+            "ordering": 30,
+            "name": "standType",
+            "kind": "link",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Ständertyp",
+              "en": "Stand type",
+              "fr": "Type de béquille",
+              "es": "Tipo de caballete"
+            },
+            "description": null,
+            "languageType": "language",
+            "toTable": 73,
+            "toColumn": {
+              "id": 1,
+              "ordering": 20,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null,
+              "languageType": "language"
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 59,
+      "ordering": 5170,
+      "name": "pedals",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Pedale",
+        "en": "Pedals",
+        "fr": "Pédales",
+        "es": "Pedales"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 72,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 60,
+      "ordering": 5180,
+      "name": "lock",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Schloss",
+        "en": "Lock",
+        "fr": "Antivol",
+        "es": "Antirrobo"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 69,
+      "toColumn": {
+        "id": 0,
+        "ordering": 0,
+        "name": "ID",
+        "kind": "concat",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": null,
+        "description": null,
+        "languageType": "language",
+        "concats": [
+          {
+            "id": 1,
+            "ordering": 10,
+            "name": "manufacturer",
+            "kind": "link",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {
+              "de": "Hersteller",
+              "en": "Manufacturer",
+              "fr": "Fabricant",
+              "es": "Fabricante"
+            },
+            "description": null,
+            "toTable": 5,
+            "toColumn": {
+              "id": 1,
+              "ordering": 1,
+              "name": "identifier",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de": "Bezeichnung",
+                "en": "Identifier",
+                "fr": "Désignation",
+                "es": "Descripción"
+              },
+              "description": null
+            },
+            "constraint": {
+              "cardinality": {
+                "from": 0,
+                "to": 1
+              },
+              "deleteCascade": false
+            }
+          },
+          {
+            "id": 2,
+            "ordering": 20,
+            "name": "identifier",
+            "kind": "shorttext",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {
+              "de": "Bezeichnung",
+              "en": "Identifier",
+              "fr": "Désignation",
+              "es": "Descripción"
+            },
+            "description": null,
+            "languageType": "language"
+          }
+        ]
+      },
+      "constraint": {
+        "cardinality": {
+          "from": 0,
+          "to": 1
+        },
+        "deleteCascade": false
+      }
+    },
+    {
+      "id": 61,
+      "ordering": 5190,
+      "name": "accessory",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Zubehör",
+        "en": "Accessories",
+        "fr": "Accessoires",
+        "es": "Accesorio"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 71,
+      "toColumn": {
+        "id": 1,
+        "ordering": 20,
+        "name": "identifier",
+        "kind": "shorttext",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": {
+          "de": "Bezeichnung",
+          "en": "Identifier",
+          "fr": "Désignation",
+          "es": "Descripción"
+        },
+        "description": null,
+        "languageType": "language"
+      }
+    },
+    {
+      "id": 62,
+      "ordering": 5200,
+      "name": "award",
+      "kind": "link",
+      "multilanguage": true,
+      "identifier": false,
+      "displayName": {
+        "de": "Auszeichnungen",
+        "en": "Awards",
+        "fr": "Récompenses",
+        "es": "Honores"
+      },
+      "description": null,
+      "languageType": "language",
+      "toTable": 85,
+      "toColumn": {
+        "id": 1,
+        "ordering": 10,
+        "name": "identifier",
+        "kind": "shorttext",
+        "multilanguage": true,
+        "identifier": true,
+        "displayName": {
+          "de": "Bezeichnung",
+          "en": "Identifier",
+          "fr": "Désignation",
+          "es": "Descripción"
+        },
+        "description": null,
+        "languageType": "language"
+      }
+    }
+  ],
+  "status": "ok"
+}
