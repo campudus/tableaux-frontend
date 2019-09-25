@@ -131,6 +131,6 @@ StyleControls.propTypes = {
   toggleBlockType: PropTypes.func.isRequired,
   toggleInlineStyle: PropTypes.func.isRequired,
   editorState: PropTypes.object.isRequired,
-  additionalButtons: PropTypes.array,
+  additionalButtons: PropTypes.element,
   setEditorState: PropTypes.func.isRequired
 };
