@@ -2,11 +2,7 @@ import f from "lodash/fp";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
-import {
-  hasTransitiveDependencies,
-  propagateLinkCellChange,
-  refreshDependentRows
-} from "../updateDependentTables";
+import { refreshDependentRows } from "../updateDependentTables";
 import { makeRequest } from "../../helpers/apiHelper";
 import { merge, when } from "../../helpers/functools";
 import {
@@ -20,7 +16,7 @@ import {
 import ActionTypes from "../actionTypes";
 import openTranslationDialog from "../../components/overlay/TranslationDialog";
 import route from "../../helpers/apiRoutes";
-import state from "../__fixtures/state.json";
+
 import store from "../store";
 
 const {
