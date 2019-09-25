@@ -1,10 +1,12 @@
 import React from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { StyleIcon } from "./StyleControls";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
+import { ifElse } from "../../helpers/functools";
 import { useLocalStorage } from "../../helpers/useLocalStorage";
 import EditorPanel from "./EditorPanel";
 import Header from "../overlay/Header";
@@ -43,11 +45,15 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
 
   React.useEffect(() => {
     const onUnmount = () => {
+      const valueToSave = ifElse(
+        f.isString,
+        f.trim,
+        () => "",
+        theMarkdown.current
+      );
       actions.changeCellValue({
         oldValue: value,
-        newValue: isMultiLanguage
-          ? { [langtag]: theMarkdown.current }
-          : theMarkdown.current,
+        newValue: isMultiLanguage ? { [langtag]: valueToSave } : valueToSave,
         cell
       });
     };
