@@ -93,7 +93,9 @@ const PlainMarkdownEditor = (
           autoFocus={true}
         />
         <div className="plain-markdown-editor__preview">
-          <ReactMarkdown source={markdown} />
+          <div className="plain-markdown-editor-preview__react-markdown">
+            <ReactMarkdown source={markdown} />
+          </div>
         </div>
       </div>
     </>
