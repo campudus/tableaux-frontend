@@ -4,6 +4,7 @@ import f from "lodash/fp";
 import i18n from "i18next";
 
 import { FilterModes, Langtags } from "../../../constants/TableauxConstants";
+import { where } from "../../../helpers/functools";
 
 export const FILTER_TEMPLATES_KEY = "savedFilters";
 
@@ -39,18 +40,60 @@ export const getFilterTemplates = f.memoize(langtag => {
 });
 
 export const filterListToTemplate = (title, filters, columns) => {
-  const filterColumnIds = filters.map(f.prop("column"));
+  const filterColumnIds = filters |> f.map("columnId") |> f.map(f.parseInt(10));
+
   const columnInfo =
     columns
     |> f.filter(({ id }) => f.contains(id, filterColumnIds))
-    |> f.map(f.pick(["name", "kind"]));
+    |> f.map(f.pick(["name", "kind", "id"]));
+
+  return {
+    filters:
+      filters
+      |> f.reject(f.isEmpty)
+      |> f.reject(
+        filter => f.isEmpty(filter.value) || f.isEmpty(filter.columnId)
+      ),
+    title,
+    columnInfo
+  };
 };
 
-export const canApplyTemplateToTable = (columns, template) => {};
+export const canApplyTemplateToTable = f.curryN(2, (columns, template = {}) => {
+  const { columnInfo } = template;
+
+  const hasMatchingColumn = info => f.any(where(info), columns);
+  return template.isSystemTemplate || f.every(hasMatchingColumn, columnInfo);
+});
+
+// convert a template's filter column ids by name and kind
+export const adaptTemplateToTable = f.curryN(2, (columns, template) => {
+  const idMap =
+    template.columnInfo.map(({ id, name, kind }) => ({
+      id,
+      name,
+      kind,
+      idHere: columns |> f.find(where({ kind, name })) |> f.prop("id")
+    }))
+    |> f.reduce((accum, next) => {
+      accum[next.id] = next;
+      return accum;
+    }, {});
+
+  return f.update(
+    "filters",
+    f.map(filter => ({
+      ...filter,
+      columnId: f.prop([filter.columnId, "idHere"], idMap) |> f.parseInt(10)
+    })),
+    template
+  );
+});
 
 export type ColumnInfo = {
   name: string,
-  type: string
+  type: string,
+  id: number
 };
 
 export type Filter = {

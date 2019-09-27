@@ -3,9 +3,13 @@ import React from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 
-import { getFilterTemplates, FILTER_TEMPLATES_KEY } from "./FilterPresets";
+import {
+  FILTER_TEMPLATES_KEY,
+  adaptTemplateToTable,
+  canApplyTemplateToTable,
+  getFilterTemplates
+} from "./FilterPresets";
 import { useLocalStorage } from "../../../helpers/useLocalStorage";
-import { where } from "../../../helpers/functools";
 import FilterPresetListItem from "./FilterPresetListItem";
 import actions from "../../../redux/actionCreators";
 import store from "../../../redux/store";
@@ -36,15 +40,14 @@ const FilterPresetList = ({ langtag }) => {
   const applyFilterTemplate = ({ filters, sorting }) =>
     store.dispatch(actions.setFiltersAndSorting(filters, sorting));
 
-  const availableInThisTable = ({ columnInfo }) => {
-    const suchColumnExists = description => columns.find(where(description));
-    return f.all(suchColumnExists, columnInfo);
-  };
-
   const availableFilters = [
     ...filterTemplates,
-    ...(userFilters || []).filter(availableInThisTable)
+    ...(userFilters
+      |> f.defaultTo([])
+      |> f.filter(canApplyTemplateToTable(columns))
+      |> f.map(adaptTemplateToTable(columns)))
   ];
+
   return (
     <section className="filter-popup__content-section filter-popup__preset-list">
       <button
