@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import { either } from "../../../helpers/functools";
 import Select from "react-select";
@@ -42,7 +42,8 @@ class FilterRow extends Component {
         applyFilters();
       },
       escape: () => {
-        this.filterInput.value = "";
+        const { onChangeValue } = this.props;
+        onChangeValue && onChangeValue({});
       }
     };
   };
@@ -61,11 +62,15 @@ class FilterRow extends Component {
     onChangeColumn && onChangeColumn({});
   };
 
+  clearOrRemoveFilter = () => {
+    const { onRemoveFilter } = this.props;
+    onRemoveFilter ? onRemoveFilter() : this.clearFilter();
+  };
+
   render() {
     const {
       filter,
       onAddFilter,
-      onRemoveFilter,
       onChangeColumn,
       onChangeValue,
       searchableColumns,
@@ -79,8 +84,24 @@ class FilterRow extends Component {
     const filterColumnSelected =
       f.isInteger(parseInt(columnId)) ||
       (f.isString(columnId) && !f.isEmpty(columnId));
+
+    //         <Popup
+    //           filterColumnSelected={filterColumnSelected}
+    //                filter={this.props.filter}
+    //                onChangeMode={this.props.onChangeMode}
+    //                 containerClass={"filter-mode-button"}
+    //                   container={FilterModeButton}
+    //                   popup={FilterModePopupFrag}
+    //                 />
     return (
       <div className="filter-row">
+        <button
+          className="filter-array-button"
+          onClick={this.clearOrRemoveFilter}
+        >
+          <i className="fa fa-trash" />
+        </button>
+
         <Select
           className="filter-select"
           options={searchableColumns}
@@ -93,7 +114,11 @@ class FilterRow extends Component {
           valueRenderer={valueRenderer}
           noResultsText={t("input.noResult")}
         />
-        <span className="separator">{t(filterInfoString)}</span>
+        {filter.columnKind === TEXT ? (
+          <Select />
+        ) : (
+          <div className="placeholder" />
+        )}
 
         {filter.columnKind === BOOL ? (
           <BoolInput
@@ -114,42 +139,13 @@ class FilterRow extends Component {
               )}
               onClick={this.focusFilterInput}
             />
-            <Popup
-              filterColumnSelected={filterColumnSelected}
-              filter={this.props.filter}
-              onChangeMode={this.props.onChangeMode}
-              containerClass={"filter-mode-button"}
-              container={FilterModeButton}
-              popup={FilterModePopupFrag}
-            />
           </span>
         )}
-        {onRemoveFilter ? (
-          <span className="filter-array-button" onClick={onRemoveFilter}>
-            <a href="#">
-              <i className="fa fa-minus" />
-            </a>
-          </span>
-        ) : (
-          <span className="filter-array-button empty" />
-        )}
-        {!f.isEmpty(columnId) ? (
-          <span className="filter-array-button" onClick={this.clearFilter}>
-            <a href="#">
-              <i className="fa fa-ban" />
-            </a>
-          </span>
-        ) : (
-          <span className="filter-array-button empty" />
-        )}
-        {onAddFilter ? (
-          <span className="filter-array-button" onClick={onAddFilter}>
-            <a href="#">
-              <i className="fa fa-plus" />
-            </a>
-          </span>
-        ) : (
-          <span className="filter-array-button empty" />
+
+        {onAddFilter && (
+          <button className="filter-array-button" onClick={onAddFilter}>
+            <i className="fa fa-plus" />
+          </button>
         )}
       </div>
     );

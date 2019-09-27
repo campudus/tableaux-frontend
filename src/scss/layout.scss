@@ -8,8 +8,15 @@ body {
 }
 
 body * {
-  outline: none;
-  outline-style: none;
+  outline: none !important;
+  outline-style: none !important;
+}
+
+a, button {
+  &:active {
+    outline: none !important;
+    outline-style: none !important;
+  }
 }
 
 header {

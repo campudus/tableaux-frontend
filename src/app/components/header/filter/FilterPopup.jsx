@@ -11,6 +11,7 @@ import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
 import { either } from "../../../helpers/functools";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import FilterPopupFooter from "./FilterPopupFooter";
+import FilterPresetList from "./FilterPresetList";
 import FilterRow, { BOOL, TEXT } from "./FilterRow";
 import TableauxConstants, {
   ColumnKinds,
@@ -383,8 +384,18 @@ class FilterPopup extends React.Component {
       f.reject(isSelectedByOtherFilter(idx), allColumns);
 
     return (
-      <div id="filter-popup">
-        <div className="filter-options">
+      <div className="filter-popup">
+        <section className="filter-popup__content-section">
+          <header className="filter-popup__header">
+            <div className="filter-popup__heading">
+              {i18n.t("table:filter.filters")}
+            </div>
+            <button className="filter-popup__save-link-button">
+              <i className="fa fa-save" />
+              Filter speichern
+            </button>
+          </header>
+
           {filters.map((filter, idx) => {
             const isIDFilter = either(filter)
               .map(f.matchesProperty("mode", FilterModes.ID_ONLY))
@@ -417,7 +428,18 @@ class FilterPopup extends React.Component {
               />
             );
           })}
+        </section>
+
+        <section className="filter-popup__content-section filter-popup-sorting-section">
+          <header className="filter-popup__header">
+            <div className="filter-popup__heading">
+              {i18n.t("table:filter.sorting")}
+            </div>
+          </header>
           <div className="sort-row">
+            <button className="filter-array-button" onClick={this.clearSorting}>
+              <i className="fa fa-trash" />
+            </button>
             <Select
               className="filter-select"
               options={this.getSortableColumns()}
@@ -430,7 +452,7 @@ class FilterPopup extends React.Component {
               noResultsText={t("filter:input.noResult")}
               placeholder={t("filter:input.sort")}
             />
-            <span className="separator">{t("help.sort")}</span>
+            <div className="separator"></div>
             <Select
               disabled={!sortColumnSelected}
               className="filter-select"
@@ -444,19 +466,9 @@ class FilterPopup extends React.Component {
               noResultsText={t("filter:input.noResult")}
               placeholder=""
             />
-            <span className="filter-array-button empty" />
-            {sortColumnSelected ? (
-              <div className="filter-array-button" onClick={this.clearSorting}>
-                <a href="#">
-                  <i className="fa fa-ban" />
-                </a>
-              </div>
-            ) : (
-              <span className="filter-array-button empty" />
-            )}
-            <span className="filter-array-button empty" />
           </div>
-        </div>
+        </section>
+
         <FilterPopupFooter
           canApplyFilters={!!canApplyFilter}
           applyFilters={this.applyFilters}
@@ -464,6 +476,8 @@ class FilterPopup extends React.Component {
           filters={filters}
           sorting={sorting}
         />
+
+        <FilterPresetList langtag={this.props.langtag} />
       </div>
     );
   }

@@ -5,9 +5,6 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { fspy } from "../../../helpers/functools";
-import { useLocalStorage } from "../../../helpers/useLocalStorage";
-
 const FilterPopupFooter = ({
   filters,
   sorting,
@@ -40,24 +37,8 @@ const FilterPopupFooter = ({
   );
 };
 
-const DefaultFooter = ({
-  clearFilters,
-  canApplyFilters,
-  applyFilters,
-  enterSaveMode
-}) => (
+const DefaultFooter = ({ clearFilters, canApplyFilters, applyFilters }) => (
   <>
-    <span className="text">{i18n.t("filter:help.note")}</span>
-    <button
-      className={
-        "filter-popup__persist-filters-button " +
-        (canApplyFilters ? "" : "neutral")
-      }
-      onClick={enterSaveMode}
-      disabled={!canApplyFilters}
-    >
-      {i18n.t("filter:button.persist-filters")}
-    </button>
     <button
       className="filter-popup__clear-filters-button neutral"
       onClick={clearFilters}
@@ -84,7 +65,12 @@ const tableColumnsSelector = state => {
   return columns;
 };
 
-const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
+const SaveFiltersFooter = ({
+  leaveSaveMode,
+  filterSettings,
+  savedFilters,
+  setSavedFilters
+}) => {
   const [presetName, setPresetName] = React.useState("");
   const handleNameChange = React.useCallback(event => {
     const { value } = event.target;
@@ -93,7 +79,6 @@ const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
 
   const columns = useSelector(tableColumnsSelector);
 
-  const [savedFilters, setSavedFilters] = useLocalStorage("savedFilters", []);
   const filterNames = (savedFilters || []).map(f.prop("title"));
 
   const filterNameExists = f.contains(presetName, filterNames);
@@ -161,5 +146,7 @@ FilterPopupFooter.propTypes = {
   clearFilters: PropTypes.func.isRequired,
   canApplyFilters: PropTypes.bool.isRequired,
   filters: PropTypes.arrayOf(PropTypes.object).isRequired,
-  sorting: PropTypes.object.isRequired
+  sorting: PropTypes.object.isRequired,
+  savedFilters: PropTypes.array.isRequired,
+  setSavedFilters: PropTypes.func.isRequired
 };
