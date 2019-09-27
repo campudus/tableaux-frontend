@@ -351,3 +351,34 @@
   padding: 15px;
   padding-bottom: 20px;
 }
+
+.save-template-popup {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  box-shadow: 0 0 150px 10px $color-text-medium-grey;
+  padding: 20px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  .button {
+    @include button-look();
+
+    &:not(:first-of-type) {
+      margin-left: 20px;
+    }
+  }
+}
+
+.save-template-popup__header {
+  font-weight: bold;
+  color: $color-text-medium-grey;
+  margin-bottom: 20px;
+}
+
+.save-template__name-input {
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}

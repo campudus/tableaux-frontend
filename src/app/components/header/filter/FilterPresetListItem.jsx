@@ -11,20 +11,14 @@ const FilterPresetListItem = ({ template, deleteTemplate, applyTemplate }) => {
   });
 
   return (
-    <div className="filter-preset-list__item">
+    <div className="filter-preset-list__item" onClick={handleApplyTemplate}>
       <div className="filter-preset-item__title">{template.title}</div>
-      <div
-        className="filter-preset-item__button filter-preset-item__button-apply"
-        onClick={handleApplyTemplate}
-      >
-        <i className="fa fa-check" />
-      </div>
       {!template.isSystemTemplate && (
         <div
           className="filter-preset-item__button filter-preset-item__button-delete"
           onClick={handleDeleteTemplate}
         >
-          <i className="fa fa-cross" />
+          <i className="fa fa-trash" />
         </div>
       )}
     </div>
