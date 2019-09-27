@@ -269,6 +269,7 @@ $block-margin-narrow: 5px;
 
   .plain-markdown-editor-preview__react-markdown {
     overflow: hidden;
+    word-wrap: break-word;
   }
 }
 
