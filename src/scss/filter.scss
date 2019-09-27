@@ -44,21 +44,6 @@
       input {
         height: 28px;
       }
-
-      .filter-mode-button {
-        padding: 7px;
-        position: absolute;
-        display: inline-block;
-        right: 0;
-
-        a {
-          padding: 8px;
-        }
-
-        i {
-          color: darkgrey;
-        }
-      }
     }
 
     .bool-input {
@@ -381,4 +366,22 @@
   margin-bottom: 20px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.filter-input__clear-button {
+  background: white;
+  position: absolute;
+  top: 1px;
+  right: 13px;
+  border: none;
+  padding: 6px 5px;
+  z-index: 2;
+
+  .svg-icon {
+    fill: $color-text-medium-grey;
+  }
+
+  &:hover .svg-icon {
+    fill: $color-primary;
+  }
 }

@@ -1,18 +1,19 @@
 import { translate } from "react-i18next";
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import Select from "react-select";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { BoolInput } from './FilterFragments';
+import { BoolInput } from "./FilterFragments";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import SvgIcon from '../../helperComponents/SvgIcon';
 
 export const BOOL = "boolean";
 export const TEXT = "text";
 
 @translate(["table", "filter"])
-class FilterRow extends Component {
+class FilterRow extends PureComponent {
   static propTypes = {
     searchableColumns: PropTypes.array.isRequired,
     valueRenderer: PropTypes.func.isRequired,
@@ -124,6 +125,14 @@ class FilterRow extends Component {
               )}
               onClick={this.focusFilterInput}
             />
+            {!f.isNil(columnId) && (
+              <button
+                onClick={() => onChangeValue({ target: { value: "" } })}
+                className="filter-input__clear-button"
+              >
+                <SvgIcon icon="cross" />
+              </button>
+            )}
           </span>
         )}
 
