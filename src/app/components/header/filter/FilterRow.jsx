@@ -1,17 +1,12 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import SearchFunctions from "../../../helpers/searchFunctions";
-import f from "lodash/fp";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import { either } from "../../../helpers/functools";
-import Select from "react-select";
 import { translate } from "react-i18next";
-import {
-  BoolInput,
-  FilterModeButton,
-  FilterModePopupFrag
-} from "./FilterFragments";
-import { Popup } from "../../helperComponents/commonPatterns";
+import React, { Component } from "react";
+import Select from "react-select";
+import f from "lodash/fp";
+
+import PropTypes from "prop-types";
+
+import { BoolInput } from './FilterFragments';
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
@@ -77,22 +72,12 @@ class FilterRow extends Component {
       t,
       valueRenderer
     } = this.props;
-    const { mode, columnId } = this.props.filter;
-    const filterInfoString = either(mode)
-      .map(mode => f.prop([mode, "displayName"], SearchFunctions))
-      .getOrElse("");
+    const { columnId } = this.props.filter;
+
     const filterColumnSelected =
       f.isInteger(parseInt(columnId)) ||
       (f.isString(columnId) && !f.isEmpty(columnId));
 
-    //         <Popup
-    //           filterColumnSelected={filterColumnSelected}
-    //                filter={this.props.filter}
-    //                onChangeMode={this.props.onChangeMode}
-    //                 containerClass={"filter-mode-button"}
-    //                   container={FilterModeButton}
-    //                   popup={FilterModePopupFrag}
-    //                 />
     return (
       <div className="filter-row">
         <button

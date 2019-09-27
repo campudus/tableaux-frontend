@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import FilterPopup from "./FilterPopup.jsx";
-import { useLocalStorage } from "../../../helpers/useLocalStorage";
 
 const FilterButton = ({
   langtag,
@@ -23,8 +22,6 @@ const FilterButton = ({
   const buttonCssClass = classNames("filter-popup-button", {
     "ignore-react-onclickoutside": open
   });
-
-  const [savedFilters, setSavedFilters] = useLocalStorage("savedFilters", []);
 
   const hasFilter =
     !f.isEmpty(currentFilter) &&
@@ -51,8 +48,6 @@ const FilterButton = ({
           currentFilter={currentFilter}
           actions={actions}
           setRowFilter={setRowFilter}
-          savedFilter={savedFilters}
-          setSavedFilters={setSavedFilters}
         />
       )}
     </div>
