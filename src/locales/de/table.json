@@ -81,7 +81,9 @@
     "is_final": "Als freigegeben markiert",
     "row-contains": "Irgendeine Spalte enthält...",
     "generic": "Allgemeine Filter",
-    "specific": "Spaltenwerte"
+    "specific": "Spaltenwerte",
+    "toggle-list": "Bestehende Filter wählen",
+    "save-filter": "Filter speichern"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",

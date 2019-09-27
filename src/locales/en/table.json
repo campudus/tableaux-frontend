@@ -81,7 +81,9 @@
     "is_final": "Is marked as final",
     "row-contains": "Any row contains...",
     "generic": "Generic filters",
-    "specific": "Row values"
+    "specific": "Row values",
+    "toggle-list": "Choose existing filter",
+    "save-filter": "Save filter"
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",
