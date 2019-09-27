@@ -264,15 +264,15 @@
 }
 
 .filter-preset-item__button {
-  // border: 1px solid $color-border-grey;
   color: $color-text-medium-grey;
   border-radius: 3px;
   padding: 0 5px;
-  font-size: smaller;
+  border: none;
+  background-color: transparent;
 
   &:hover {
-    background: $color-primary;
-    color: $color-primary-contrast-text;
+    color: $color-primary;
+    cursor: pointer;
   }
 }
 
