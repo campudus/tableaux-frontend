@@ -20,7 +20,8 @@ import { canConvert } from "../../helpers/cellValueConverter";
 import {
   canUserChangeCell,
   canUserEditRowAnnotations,
-  canUserEditCellAnnotations
+  canUserEditCellAnnotations,
+  canUserCreateRow
 } from "../../helpers/accessManagementHelper";
 import {
   initiateDeleteRow,
@@ -90,7 +91,13 @@ class RowContextMenu extends React.Component {
       cell,
       cell: { table }
     } = this.props;
-    initiateDuplicateRow({ cell, tableId: table.id, rowId: row.id, langtag });
+    initiateDuplicateRow({
+      ...cell,
+      cell,
+      tableId: table.id,
+      rowId: row.id,
+      langtag
+    });
     this.closeRowContextMenu();
   };
 
@@ -310,7 +317,11 @@ class RowContextMenu extends React.Component {
       deleteRow,
       showDependency,
       showEntityView,
-      props: { cell, t }
+      props: {
+        cell,
+        t,
+        cell: { table }
+      }
     } = this;
 
     return (
@@ -356,7 +367,7 @@ class RowContextMenu extends React.Component {
         {this.props.table.type === "settings"
           ? ""
           : this.mkItem(showEntityView, "show_entity_view", "server")}
-        {this.props.table.type === "settings"
+        {this.props.table.type === "settings" || !canUserCreateRow({ table })
           ? ""
           : this.mkItem(duplicateRow, "duplicate_row", "clone")}
         {this.props.table.type === "settings"
