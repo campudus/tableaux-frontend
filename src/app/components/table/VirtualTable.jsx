@@ -25,6 +25,7 @@ import MetaCell from "../cells/MetaCell";
 import MultiGrid from "./GrudGrid";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import * as tableNavigationWorker from "./tableNavigationWorker";
+import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -366,10 +367,15 @@ export default class VirtualTable extends PureComponent {
   renderButton = ({ columnIndex }) => {
     const {
       table: { id, type },
+      table,
       actions: { addEmptyRow, showToast },
       rows
     } = this.props;
-    if (type !== "settings" && columnIndex === 1) {
+    if (
+      type !== "settings" &&
+      columnIndex === 1 &&
+      canUserCreateRow({ table })
+    ) {
       return (
         <AddNewRowButton
           onAdd={() => {
