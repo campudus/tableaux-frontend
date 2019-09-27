@@ -130,5 +130,12 @@
   "open-link-filtered": "Öffne verknüpfte Datensätze",
   "open-dataset": "Tabelle mit diesem Datensatz öffnen",
   "redo": "Letzte Änderung wiederholen",
-  "undo": "Letzte Änderung rückgängig machen"
+  "undo": "Letzte Änderung rückgängig machen",
+  "open-markdown-editor": "In Editor öffnen",
+  "link-editor": {
+    "headline": "Link bearbeiten/hinzufügen",
+    "enter-link": "Hier URL eingeben",
+    "linked-text": "Linktext",
+    "insert-link": "Link hinzufügen"
+  }
 }

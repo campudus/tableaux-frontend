@@ -1,5 +1,5 @@
 import React from "react";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
@@ -10,27 +10,29 @@ import {
   getTableDisplayName
 } from "../../helpers/multiLanguage";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
+import { openMarkdownEditor } from "../markdownEditor/MarkdownEditor";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import Header from "../overlay/Header";
 import ItemPopupMenu from "./ItemPopupMenu";
 import SvgIcon from "../helperComponents/SvgIcon";
 import store from "../../redux/store";
 
-class RowHeadline extends React.Component {
-  static propTypes = {
-    column: PropTypes.object.isRequired,
-    cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    setTranslationView: PropTypes.func.isRequired,
-    funcs: PropTypes.object.isRequired,
-    thisUserCantEdit: PropTypes.bool,
-    popupOpen: PropTypes.bool.isRequired
-  };
+const BasicHeadline = props => (
+  <div className="item-header">
+    <div className="title-wrapper">
+      <ItemPopupMenu {...f.omit(["children", "columnName"], props)} />
+      {props.columnName ||
+        getColumnDisplayName(props.cell.column, props.langtag)}
+    </div>
+    {props.children}
+  </div>
+);
 
+class RowHeadline extends React.Component {
   getColumnIcon = column => {
     const columnIcons = {
       [ColumnKinds.text]: <i className="column-icon fa fa-paragraph" />,
-      [ColumnKinds.richtext]: <i className="column-icon fa fa-paragraph" />,
+      [ColumnKinds.richtext]: <i className="column-icon fa fa-edit" />,
       [ColumnKinds.shorttext]: <i className="column-icon fa fa-font" />,
       [ColumnKinds.link]: <i className="column-icon fa fa-link" />,
       [ColumnKinds.numeric]: <i className="column-icon fa fa-hashtag" />,
@@ -61,18 +63,10 @@ class RowHeadline extends React.Component {
     );
 
     return (
-      <div className="item-header">
-        <div className="title-wrapper">
-          <ItemPopupMenu
-            langtag={this.props.langtag}
-            cell={this.props.cell}
-            setTranslationView={this.props.setTranslationView}
-            funcs={this.props.funcs}
-            popupOpen={this.props.popupOpen}
-            thisUserCantEdit={thisUserCantEdit}
-            hasMeaningfulLinks={this.props.hasMeaningfulLinks}
-          />
-          {toTableVisible ? (
+      <BasicHeadline
+        {...this.props}
+        columName={
+          toTableVisible ? (
             <a
               className="title-wrapper"
               href="#"
@@ -84,8 +78,9 @@ class RowHeadline extends React.Component {
             </a>
           ) : (
             <div className="title-wrapper">{colName}</div>
-          )}
-        </div>
+          )
+        }
+      >
         {thisUserCantEdit ? (
           <a
             className="column-icon button neutral"
@@ -109,7 +104,7 @@ class RowHeadline extends React.Component {
             {i18n.t("table:edit_links", { title: colName })}
           </a>
         )}
-      </div>
+      </BasicHeadline>
     );
   };
 
@@ -131,28 +126,10 @@ class RowHeadline extends React.Component {
     });
   };
 
-  mkAttachmentHeader = column => {
-    const {
-      funcs,
-      cell,
-      setTranslationView,
-      thisUserCantEdit,
-      langtag,
-      popupOpen
-    } = this.props;
+  mkAttachmentHeader = () => {
+    const { funcs, thisUserCantEdit } = this.props;
     return (
-      <div className="item-header">
-        <div className="title-wrapper">
-          <ItemPopupMenu
-            langtag={langtag}
-            cell={cell}
-            setTranslationView={setTranslationView}
-            funcs={funcs}
-            popupOpen={popupOpen}
-            thisUserCantEdit={thisUserCantEdit}
-          />
-          {getColumnDisplayName(column, langtag)}
-        </div>
+      <BasicHeadline {...this.props}>
         {thisUserCantEdit ? (
           <a
             className="button neutral column-icon"
@@ -176,25 +153,32 @@ class RowHeadline extends React.Component {
             {i18n.t("table:edit_attachments")}
           </a>
         )}
-      </div>
+      </BasicHeadline>
     );
   };
 
-  mkDefaultHeader = column => (
-    <div className="item-header">
-      <div className="title-wrapper">
-        <ItemPopupMenu
-          langtag={this.props.langtag}
-          cell={this.props.cell}
-          setTranslationView={this.props.setTranslationView}
-          funcs={this.props.funcs}
-          popupOpen={this.props.popupOpen}
-          thisUserCantEdit={this.props.thisUserCantEdit}
-        />
-        {getColumnDisplayName(column, this.props.langtag)}
-      </div>
-      {this.getColumnIcon(column)}
-    </div>
+  mkDefaultHeader = () => (
+    <BasicHeadline {...this.props}>
+      {this.getColumnIcon(this.props.cell.column)}
+    </BasicHeadline>
+  );
+
+  mkRichtextHeader = () => (
+    <BasicHeadline {...this.props}>
+      <a
+        className="column-icon button"
+        href=""
+        onClick={() =>
+          openMarkdownEditor({
+            cell: this.props.cell,
+            langtag: this.props.langtag,
+            readOnly: this.props.thisUserCantEdit
+          })
+        }
+      >
+        {i18n.t("table:open-markdown-editor")}
+      </a>
+    </BasicHeadline>
   );
 
   render = () => {
@@ -202,9 +186,20 @@ class RowHeadline extends React.Component {
     return f.cond([
       [f.matchesProperty("kind", "link"), this.mkLinkHeader],
       [f.matchesProperty("kind", "attachment"), this.mkAttachmentHeader],
+      [f.matchesProperty("kind", "richtext"), this.mkRichtextHeader],
       [f.stubTrue, this.mkDefaultHeader]
     ])(column);
   };
 }
 
 export default RowHeadline;
+
+RowHeadline.propTypes = {
+  column: PropTypes.object.isRequired,
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  setTranslationView: PropTypes.func.isRequired,
+  funcs: PropTypes.object.isRequired,
+  thisUserCantEdit: PropTypes.bool,
+  popupOpen: PropTypes.bool.isRequired
+};

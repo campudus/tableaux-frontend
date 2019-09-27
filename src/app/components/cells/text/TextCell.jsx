@@ -4,9 +4,11 @@ import { withHandlers } from "recompose";
 import React from "react";
 import f from "lodash/fp";
 
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
 import ExpandButton from "./ExpandButton.jsx";
 import Header from "../../overlay/Header";
+import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
 import TextEditOverlay from "./TextEditOverlay";
 
 const TextCell = props => {
@@ -36,18 +38,30 @@ const enhance = withHandlers({
 
       const context = getTableDisplayName(table, langtag);
 
+      const isRichText = cell.column.kind === "richtext";
+
       actions.openOverlay({
         head: <Header context={context} langtag={langtag} />,
-        body: (
+        body: isRichText ? (
+          <MarkdownEditor
+            actions={actions}
+            value={value}
+            langtag={langtag}
+            cell={cell}
+            readOnly={!canUserChangeCell(cell, langtag)}
+          />
+        ) : (
           <TextEditOverlay
             actions={actions}
             value={value}
             langtag={langtag}
             cell={cell}
+            readOnly={!canUserChangeCell(cell, langtag)}
           />
         ),
         title: cell,
-        type: "full-height"
+        type: "full-height",
+        classes: isRichText ? "text-editor-overlay" : ""
       });
     }
   }
