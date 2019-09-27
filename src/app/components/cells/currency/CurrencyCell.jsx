@@ -17,7 +17,7 @@ import CurrencyEditCell from "./CurrencyEditCell";
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
 @translate(["table"])
-export default class CurrencyCell extends React.PureComponent {
+class CurrencyCell extends React.PureComponent {
   static propTypes = {
     cell: PropTypes.object.isRequired,
     langtag: PropTypes.string.isRequired,
@@ -176,3 +176,4 @@ export default class CurrencyCell extends React.PureComponent {
     );
   }
 }
+export default CurrencyCell;
