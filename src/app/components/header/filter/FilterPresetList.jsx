@@ -19,7 +19,7 @@ const tableColumnsSelector = state => {
   return state.columns[tableId].data;
 };
 
-const FilterPresetList = ({ langtag }) => {
+const FilterPresetList = ({ langtag, closeFilterPopup }) => {
   const filterTemplates = getFilterTemplates(langtag);
   const [userFilters, setUserFilters] = useLocalStorage(
     FILTER_TEMPLATES_KEY,
@@ -37,8 +37,10 @@ const FilterPresetList = ({ langtag }) => {
     }
   };
 
-  const applyFilterTemplate = ({ filters, sorting }) =>
+  const applyFilterTemplate = ({ filters, sorting }) => {
     store.dispatch(actions.setFiltersAndSorting(filters, sorting));
+    closeFilterPopup();
+  };
 
   const availableFilters = [
     ...filterTemplates,

@@ -498,7 +498,10 @@ class FilterPopup extends React.Component {
           sorting={sorting}
         />
 
-        <FilterPresetList langtag={this.props.langtag} />
+        <FilterPresetList
+          langtag={this.props.langtag}
+          closeFilterPopup={this.handleClickOutside}
+        />
       </div>
     );
   }
