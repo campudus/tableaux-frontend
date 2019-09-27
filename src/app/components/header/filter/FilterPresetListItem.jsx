@@ -3,9 +3,13 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const FilterPresetListItem = ({ template, deleteTemplate, applyTemplate }) => {
-  const handleDeleteTemplate = React.useCallback(() =>
-    !template.isSystemTemplate ? deleteTemplate(template) : () => null
-  );
+  const handleDeleteTemplate = React.useCallback(event => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!template.isSystemTemplate) {
+      deleteTemplate(template);
+    }
+  });
   const handleApplyTemplate = React.useCallback(() => {
     applyTemplate(template);
   });
@@ -16,7 +20,7 @@ const FilterPresetListItem = ({ template, deleteTemplate, applyTemplate }) => {
       {!template.isSystemTemplate && (
         <button
           className="filter-preset-item__button filter-preset-item__button-delete"
-          onClick={handleDeleteTemplate}
+          onMouseDown={handleDeleteTemplate}
         >
           <i className="fa fa-trash" />
         </button>
