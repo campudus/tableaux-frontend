@@ -194,6 +194,7 @@
     font-family: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
     font-size: 1.3rem; // ??? why?
     background-color: transparent;
+    margin-left: 20px;
 
     i {
       margin-right: 10px;
@@ -366,6 +367,9 @@
   margin-bottom: 20px;
   width: 100%;
   box-sizing: border-box;
+  padding: 5px 15px;
+  border: 1px solid $color-text-light-grey;
+  border-radius: 3px;
 }
 
 .filter-input__clear-button {

@@ -85,7 +85,8 @@
     "toggle-list": "Choose existing filter",
     "save-filter": "Save filter",
     "filters": "Filters",
-    "sorting": "Sorting"
+    "sorting": "Sorting",
+    "enter-name": "Enter filter title..."
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",

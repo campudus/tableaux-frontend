@@ -85,7 +85,8 @@
     "toggle-list": "Bestehende Filter wählen",
     "save-filter": "Filter speichern",
     "filters": "Filter",
-    "sorting": "Sortierung"
+    "sorting": "Sortierung",
+    "enter-name": "Filternamen eingeben"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",

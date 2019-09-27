@@ -41,6 +41,7 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
         type="text"
         value={title}
         onChange={handleTitleChange}
+        placeholder={i18n.t("table:filter.enter-name")}
       />
       <footer className="save-template-popup__footer">
         <button
