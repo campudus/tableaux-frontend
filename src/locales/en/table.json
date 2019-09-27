@@ -83,7 +83,9 @@
     "generic": "Generic filters",
     "specific": "Row values",
     "toggle-list": "Choose existing filter",
-    "save-filter": "Save filter"
+    "save-filter": "Save filter",
+    "filters": "Filters",
+    "sorting": "Sorting"
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",

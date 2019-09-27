@@ -83,7 +83,9 @@
     "generic": "Allgemeine Filter",
     "specific": "Spaltenwerte",
     "toggle-list": "Bestehende Filter wählen",
-    "save-filter": "Filter speichern"
+    "save-filter": "Filter speichern",
+    "filters": "Filter",
+    "sorting": "Sortierung"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",
