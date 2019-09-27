@@ -143,10 +143,14 @@ class RowContextMenu extends React.Component {
       : null;
   };
 
-  canTranslate = cell =>
-    cell.column.multilanguage &&
-    !translationNeverNeeded(cell) &&
-    canUserChangeCell(cell);
+  canTranslate = cell => {
+    const { langtag } = this.props;
+    return (
+      cell.column.multilanguage &&
+      !translationNeverNeeded(cell) &&
+      canUserChangeCell(cell, langtag)
+    );
+  };
 
   requestTranslationsItem = () => {
     const { langtag, cell, t } = this.props;
