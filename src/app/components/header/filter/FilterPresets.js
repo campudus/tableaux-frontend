@@ -1,3 +1,5 @@
+// @flow
+
 import f from "lodash/fp";
 import i18n from "i18next";
 
@@ -19,7 +21,7 @@ export const getFilterTemplates = f.memoize(langtag => {
     { mode: FilterModes.FINAL, title: "table:filter.is_final" },
     { mode: FilterModes.IMPORTANT, title: "table:important" },
     { mode: FilterModes.CHECK_ME, title: "table:check-me" },
-    { mode: FilterModes.LATER, table: "table:postpone" },
+    { mode: FilterModes.LATER, title: "table:postpone" },
     { mode: FilterModes.WITH_COMMENTS, title: "filter:has-comments" }
   ];
 
@@ -35,3 +37,37 @@ export const getFilterTemplates = f.memoize(langtag => {
     ]
   }));
 });
+
+export const filterListToTemplate = (title, filters, columns) => {
+  const filterColumnIds = filters.map(f.prop("column"));
+  const columnInfo =
+    columns
+    |> f.filter(({ id }) => f.contains(id, filterColumnIds))
+    |> f.map(f.pick(["name", "kind"]));
+};
+
+export const canApplyTemplateToTable = (columns, template) => {};
+
+export type ColumnInfo = {
+  name: string,
+  type: string
+};
+
+export type Filter = {
+  mode: string,
+  value: string | boolean,
+  columnKind: string
+};
+
+type FilterTemplate_ = {
+  title: string,
+  filters: [Filter]
+};
+
+export type SystemFilterTemplate = FilterTemplate_ & { isSystemTemplate: true };
+export type UserFilterTemplate = FilterTemplate_ & {
+  isSystemTemplate: ?boolean,
+  columnInfo: ColumnInfo
+};
+
+export type FilterTemplate = SystemFilterTemplate | UserFilterTemplate;
