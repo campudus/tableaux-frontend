@@ -2,12 +2,14 @@ import { translate } from "react-i18next";
 import React, { PureComponent } from "react";
 import Select from "react-select";
 import f from "lodash/fp";
+import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
 import { BoolInput } from "./FilterFragments";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import SvgIcon from '../../helperComponents/SvgIcon';
+import SearchFunctions from "../../../helpers/searchFunctions";
+import SvgIcon from "../../helperComponents/SvgIcon";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
@@ -63,6 +65,10 @@ class FilterRow extends PureComponent {
     onRemoveFilter ? onRemoveFilter() : this.clearFilter();
   };
 
+  handleFilterModeChange = mode => {
+    this.props.onChangeMode(mode.value);
+  };
+
   render() {
     const {
       filter,
@@ -78,6 +84,14 @@ class FilterRow extends PureComponent {
     const filterColumnSelected =
       f.isInteger(parseInt(columnId)) ||
       (f.isString(columnId) && !f.isEmpty(columnId));
+
+    const filterModeOptions =
+      SearchFunctions
+      |> f.keys
+      |> f.map(key => ({
+        value: key,
+        label: i18n.t(SearchFunctions[key].displayName)
+      }));
 
     return (
       <div className="filter-row">
@@ -101,7 +115,15 @@ class FilterRow extends PureComponent {
           noResultsText={t("input.noResult")}
         />
         {filter.columnKind === TEXT ? (
-          <Select />
+          <Select
+            className="filter-row__mode-select"
+            searchable={false}
+            clearable={false}
+            openOnFocus
+            value={filter.mode}
+            options={filterModeOptions}
+            onChange={this.handleFilterModeChange}
+          />
         ) : (
           <div className="placeholder" />
         )}

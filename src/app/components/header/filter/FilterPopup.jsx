@@ -343,7 +343,6 @@ class FilterPopup extends React.Component {
   };
 
   toggleFilterSavingPopup = () => {
-    console.log("open popup");
     this.setState(f.update("savePopupOpen", open => !open));
   };
   closeFilterSavingPopup = () => this.setState(f.assoc("savePopupOpen", false));
