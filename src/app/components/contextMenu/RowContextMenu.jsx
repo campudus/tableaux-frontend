@@ -21,7 +21,8 @@ import {
   canUserChangeCell,
   canUserEditRowAnnotations,
   canUserEditCellAnnotations,
-  canUserCreateRow
+  canUserCreateRow,
+  canUserDeleteRow
 } from "../../helpers/accessManagementHelper";
 import {
   initiateDeleteRow,
@@ -370,7 +371,7 @@ class RowContextMenu extends React.Component {
         {this.props.table.type === "settings" || !canUserCreateRow({ table })
           ? ""
           : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-        {this.props.table.type === "settings"
+        {this.props.table.type === "settings" || !canUserDeleteRow({ table })
           ? ""
           : this.mkItem(deleteRow, "delete_row", "trash-o")}
         {this.mkItem(showDependency, "show_dependency", "code-fork")}
