@@ -83,6 +83,7 @@ class NameEditor extends PureComponent {
 
   render = () => {
     const { active } = this.state;
+    const { locked } = this.props;
     return (
       <a
         href="#"
@@ -90,7 +91,7 @@ class NameEditor extends PureComponent {
         className={active ? "active" : ""}
         onClick={this.startEditing}
       >
-        {active ? (
+        {active && !locked ? (
           this.renderOpenInput()
         ) : (
           <span> {i18n.t("table:editor.rename_table")} </span>

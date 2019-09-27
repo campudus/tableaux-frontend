@@ -7,9 +7,11 @@ import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
-import classNames from "classnames";
 
-import { canUserEditTableDisplayProperty } from "../../../helpers/accessManagementHelper";
+import {
+  canUserEditTableDisplayProperty,
+  canUserEditRowAnnotations
+} from "../../../helpers/accessManagementHelper";
 import NameEditor from "./NameEditor";
 
 @listensToClickOutside
@@ -23,43 +25,40 @@ class TableSettingsPopup extends PureComponent {
     this.props.outsideClickHandler(evt);
   };
 
-  menuItemContents = () => {
+  render() {
     const {
       table,
       langtag,
       actions: { setAllRowsFinal, changeTableName }
     } = this.props;
-    return [
-      <a key="i-need-no-key" href="#" onClick={() => setAllRowsFinal(table)}>
-        {i18n.t("table:final.set_all_rows_final")}
-      </a>,
-      canUserEditTableDisplayProperty(this.props) ? (
-        <NameEditor
-          table={table}
-          langtag={langtag}
-          changeTableName={changeTableName}
-        />
-      ) : null
-    ];
-  };
-
-  render() {
+    const canEditRowAnnotations = canUserEditRowAnnotations({ table });
+    const canEditTableDisplayProperty = canUserEditTableDisplayProperty({
+      table
+    });
     return (
       <div id="table-settings-popup">
-        {this.menuItemContents().map((item, id) => {
-          const cssClass = classNames("menu-item", {
-            active: this.state.selected === id
-          });
-          return (
-            <div
-              key={id}
-              className={cssClass}
-              onMouseEnter={() => this.setState({ selected: id })}
-            >
-              {item}
-            </div>
-          );
-        })}
+        <div
+          className={canEditRowAnnotations ? "menu-item" : "menu-item-disabled"}
+          onClick={() =>
+            canEditRowAnnotations ? setAllRowsFinal(table) : null
+          }
+        >
+          <a key="i-need-no-key" href="#">
+            {i18n.t("table:final.set_all_rows_final")}
+          </a>
+        </div>
+        <div
+          className={
+            canEditTableDisplayProperty ? "menu-item" : "menu-item-disabled"
+          }
+        >
+          <NameEditor
+            table={table}
+            langtag={langtag}
+            changeTableName={changeTableName}
+            locked={!canEditTableDisplayProperty}
+          />
+        </div>
       </div>
     );
   }
