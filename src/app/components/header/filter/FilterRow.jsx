@@ -96,14 +96,14 @@ class FilterRow extends PureComponent {
     return (
       <div className="filter-row">
         <button
-          className="filter-array-button"
+          className="filter-array-button col-one"
           onClick={this.clearOrRemoveFilter}
         >
           <i className="fa fa-trash" />
         </button>
 
         <Select
-          className="filter-select"
+          className="filter-select col-two"
           options={searchableColumns}
           searchable={true}
           clearable={false}
@@ -114,9 +114,9 @@ class FilterRow extends PureComponent {
           valueRenderer={valueRenderer}
           noResultsText={t("input.noResult")}
         />
-        {filter.columnKind === TEXT ? (
+        {filter.columnKind === TEXT && (
           <Select
-            className="filter-row__mode-select"
+            className="filter-row__mode-select col-three"
             searchable={false}
             clearable={false}
             openOnFocus
@@ -124,8 +124,6 @@ class FilterRow extends PureComponent {
             options={filterModeOptions}
             onChange={this.handleFilterModeChange}
           />
-        ) : (
-          <div className="placeholder" />
         )}
 
         {filter.columnKind === BOOL ? (
@@ -134,7 +132,7 @@ class FilterRow extends PureComponent {
             onChangeValue={this.props.onChangeValue}
           />
         ) : (
-          <span className="filter-mode-wrapper">
+          <span className="filter-mode-wrapper col-four">
             <input
               value={f.isString(filter.value) ? filter.value : ""}
               type="text"
@@ -150,7 +148,7 @@ class FilterRow extends PureComponent {
             {!f.isNil(columnId) && (
               <button
                 onClick={() => onChangeValue({ target: { value: "" } })}
-                className="filter-input__clear-button"
+                className="filter-input__clear-button col-five"
               >
                 <SvgIcon icon="cross" />
               </button>

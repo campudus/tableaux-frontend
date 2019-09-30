@@ -59,22 +59,62 @@ input, textarea {
   }
 }
 
+@mixin grid-row($row-number, $row-gap: 8px) {
+  grid-row: $row-number;
+
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    -ms-grid-row: $row-number;
+    &:not(:first-of-type) {
+      margin-top: $row-gap;
+    }
+    &:not(:last-of-type) {
+      margin-bottom: $row-gap;
+    }
+  }
+}
+
+@mixin grid-column($col-number, $col-gap: 8px) {
+  grid-column: $col-number;
+
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    -ms-grid-column: $col-number;
+    &:not(:first-of-type) {
+      margin-left: $col-gap;
+    }
+    &:not(:last-of-type) {
+      margin-right: $col-gap;
+    }
+  }
+}
+
 .row-one {
-  -ms-grid-row: 1;
+  @include grid-row(1);
 }
 
 .row-two {
-  -ms-grid-row: 2;
+  @inclue grid-row(2);
 }
 
 .row-three {
-  -ms-grid-row: 3;
+  @include grid-row(3);
 }
 
 .col-one {
-  -ms-grid-column: 1;
+  @include grid-column(1);
 }
 
 .col-two {
-  -ms-grid-column: 2;
+  @include grid-column(2);
+}
+
+.col-three {
+  @include grid-column(3);
+}
+
+.col-four {
+  @include grid-column(4);
+}
+
+.col-five {
+  @include grid-column(5);
 }
