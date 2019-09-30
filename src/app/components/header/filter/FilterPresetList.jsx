@@ -26,7 +26,7 @@ const FilterPresetList = ({ langtag, closeFilterPopup }) => {
     []
   );
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useLocalStorage("filter-presets-open", false);
   const toggleListItems = React.useCallback(() => setOpen(!open));
 
   const columns = useSelector(tableColumnsSelector);
