@@ -132,6 +132,14 @@
   }
 }
 
+.country-diff-group {
+  padding: 5px;
+
+  &:nth-child(even) {
+    background-color: transparentize($color-text-light-grey, 0.7);
+  }
+}
+
 @mixin link-diff-color($basecolor) {
   background-color: $basecolor;
 

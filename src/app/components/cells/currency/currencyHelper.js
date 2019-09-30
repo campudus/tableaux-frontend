@@ -6,7 +6,7 @@ export function getCurrencyWithCountry(
   country,
   withFallback = false
 ) {
-  const result = currencyObj[country] || null;
+  const result = f.getOr(null, country, currencyObj);
   const fallBack = getFallbackCurrencyValue({ country }, currencyObj) || null;
   return withFallback ? result || fallBack : result;
 }
@@ -16,6 +16,8 @@ export function splitPriceDecimals(priceValue) {
     return ["0", "00"];
   }
   let priceValueAsArray = String(priceValue).split(".");
-  priceValueAsArray.length === 1 ? priceValueAsArray.push("00") : null;
-  return priceValueAsArray;
+
+  return priceValueAsArray.length === 1
+    ? [...priceValueAsArray, "00"]
+    : priceValueAsArray;
 }
