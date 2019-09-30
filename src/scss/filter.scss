@@ -373,12 +373,12 @@
 }
 
 .filter-input__clear-button {
-  background: white;
+  background: transparentize(white, 0.3);
   position: absolute;
   top: 1px;
   right: 13px;
   border: none;
-  padding: 6px 5px;
+  padding: 4px 5px;
   z-index: 2;
 
   .svg-icon {
