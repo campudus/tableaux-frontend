@@ -26,7 +26,7 @@ const FilterButton = ({
   const hasFilter =
     !f.isEmpty(currentFilter) &&
     (!f.isEmpty(currentFilter.filters) ||
-      f.isInteger(currentFilter.sortColumnId)) &&
+      f.isInteger(f.prop(["sorting", "columnId"], currentFilter))) &&
     !open;
 
   const cssClass = classNames("filter-wrapper", {

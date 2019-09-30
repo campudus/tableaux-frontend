@@ -91,6 +91,34 @@ class ColumnContextMenu extends React.Component {
       />
     );
 
+    const sortByThisColumn = direction => () => {
+      const currentFilters =
+        store.getState() |> f.prop(["tableView", "filters"]);
+      store.dispatch(
+        actions.setFiltersAndSorting(currentFilters, {
+          columnId: column.id,
+          value: direction
+        })
+      );
+    };
+
+    const sortingItems = (
+      <>
+        <ContextMenuItem
+          closeMenu={closeHandler}
+          onClick={sortByThisColumn("ASC")}
+          iconName="fa-sort-alpha-asc"
+          title="filter:help.sortasc"
+        />
+        <ContextMenuItem
+          closeMenu={closeHandler}
+          onClick={sortByThisColumn("DESC")}
+          iconName="fa-sort-alpha-desc"
+          title="filter:help.sortdesc"
+        />
+      </>
+    );
+
     return (
       <div
         className="column-header-context-menu context-menu"
@@ -100,6 +128,7 @@ class ColumnContextMenu extends React.Component {
           transform: "translateX(-100%)"
         }}
       >
+        {sortingItems}
         {editorItem}
         {followLinkItem}
         {hideColumnItem}
