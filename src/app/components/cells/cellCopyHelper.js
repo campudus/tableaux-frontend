@@ -238,7 +238,7 @@ const pasteCellValue = function(
       : false;
   };
 
-  if (canUserChangeCell(dst, dstLang)) {
+  if (!canUserChangeCell(dst, dstLang)) {
     dst.column.multilanguage &&
       showErrorToast("common:access_management.cant_access_language");
     return;
