@@ -114,19 +114,25 @@ const showCompleteReplacement = ({ displayValue, prevDisplayValue }, langtag) =>
 const calcCountryDiff = ({ fullValue, prevContent }) => {
   const countries = f.union(f.keys(fullValue), f.keys(prevContent));
   return f.flow(
-    f.flatMap(ctry => {
-      const valueFrom = f.propOr({}, ctry);
+    f.flatMap(country => {
+      const valueFrom = f.propOr({}, country);
+
       const oldVal = valueFrom(prevContent);
       const newVal = valueFrom(fullValue);
-      return oldVal === newVal // We display a minimal subset of changes for country specific items
-        ? null
-        : f.isNumber(oldVal) || !f.isEmpty(oldVal) // Number is empty. Don't ask me why
+
+      if (oldVal === newVal) {
+        // hide all changes except for the "current value" duplicate
+        return f.equals(fullValue, prevContent)
+          ? { value: oldVal, country }
+          : null;
+      }
+      return f.isNumber(oldVal) || !f.isEmpty(oldVal) // Number is empty. Don't ask me why
         ? // We can do this because of flatMap
           [
-            { del: true, value: oldVal, country: ctry },
-            { add: true, value: newVal, country: ctry }
+            { del: true, value: oldVal, country },
+            { add: true, value: newVal, country }
           ]
-        : { add: true, value: newVal, country: ctry };
+        : { add: true, value: newVal, country };
     }),
     f.compact
   )(countries);
