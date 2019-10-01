@@ -9,7 +9,7 @@ const FADE_OUT_TIME = 200; // milliseconds
 
 const AnnotationEntry = props => {
   const [confirmed, setConfirmed] = useState(false);
-  const { cell, annotation, idx } = props;
+  const { cell, annotation, idx, canDelete } = props;
 
   const confirm = () => {
     setConfirmed(true);
@@ -47,9 +47,13 @@ const AnnotationEntry = props => {
         <div className="date-label">{timeString}</div>
       </div>
       <div className="info-column">
-        <a href="#" className="delete-button" onClick={confirm}>
-          <i className="fa fa-trash delete-icon" />
-        </a>
+        {canDelete ? (
+          <a href="#" className="delete-button" onClick={confirm}>
+            <i className="fa fa-trash delete-icon" />
+          </a>
+        ) : (
+          <a href="#" />
+        )}
         <div className="number-label">{`#${idx}`}</div>
       </div>
     </div>
