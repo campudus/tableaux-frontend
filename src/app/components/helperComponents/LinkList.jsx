@@ -14,6 +14,7 @@ import { List } from "react-virtualized";
 import SvgIcon from "../helperComponents/SvgIcon";
 import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 import LinkItem from "../cells/link/LinkItem";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -144,7 +145,9 @@ export default compose(
           </div>
         );
       };
-      return sortable ? sortableLink() : nonSortableLink();
+      return sortable && canUserChangeCell(cell, langtag)
+        ? sortableLink()
+        : nonSortableLink();
     },
     renderSortableLink: ({
       links,
@@ -223,7 +226,9 @@ export default compose(
       renderLink,
       renderSortableLink,
       sortable,
-      applySwap
+      applySwap,
+      cell,
+      langtag
     }) => () => {
       const nLinks = links.length;
       const canExpand = nLinks > MAX_DISPLAYED_LINKS;
@@ -232,7 +237,7 @@ export default compose(
       const renderedLinks = f
         .range(0, f.min([nLinks, MAX_DISPLAYED_LINKS]))
         .map(index => renderFn({ index }));
-      return sortable ? (
+      return sortable && canUserChangeCell(cell, langtag) ? (
         <div className="sortable">
           <div className="linked-items `${cssClass}`">
             <LinkedRows
@@ -256,11 +261,13 @@ export default compose(
       renderLink,
       renderSortableLink,
       sortable,
-      applySwap
+      applySwap,
+      cell,
+      langtag
     }) => () => {
       const nLinks = links.length;
 
-      return sortable ? (
+      return sortable && canUserChangeCell(cell, langtag) ? (
         <div className="sortable">
           <div className="linked-items">
             <LinkedRows
