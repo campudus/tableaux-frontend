@@ -336,11 +336,13 @@ class RowContextMenu extends React.Component {
         {this.openLinksFilteredItem()}
         {this.copyItem()}
         {this.pasteItem()}
-        {this.mkItem(
-          () => this.props.openAnnotations(cell),
-          "add-comment",
-          "commenting"
-        )}
+        {canUserEditCellAnnotations(cell)
+          ? this.mkItem(
+              () => this.props.openAnnotations(cell),
+              "add-comment",
+              "commenting"
+            )
+          : null}
         {f.any(
           f.complement(f.isEmpty),
           f.props(["info", "error", "warning"], cell.annotations)
