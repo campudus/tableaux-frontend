@@ -3,7 +3,16 @@ import PropTypes from "prop-types";
 import { isLocked } from "../../../helpers/annotationHelper";
 
 const BooleanCell = props => {
-  const { actions, value, table, row, column, langtag, selected } = props;
+  const {
+    actions,
+    value,
+    table,
+    row,
+    column,
+    langtag,
+    selected,
+    editing
+  } = props;
 
   const handleEditDone = newValue => {
     const valueToSave = column.multilanguage
@@ -25,7 +34,7 @@ const BooleanCell = props => {
   };
 
   const toggleCheckboxValue = () => {
-    if (!isLocked(row)) {
+    if (!isLocked(row) && editing) {
       selected && handleEditDone(!getCheckboxValue());
     }
   };
