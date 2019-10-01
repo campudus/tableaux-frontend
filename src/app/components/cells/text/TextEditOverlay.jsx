@@ -16,6 +16,7 @@ const TextEditOverlay = props => {
             placeholder={i18n.t("table:empty.text")}
             onChange={canUserChangeCell(cell, langtag) ? setValue : f.noop}
             onBlur={saveEdits}
+            disabled
           />
         </div>
       </div>
