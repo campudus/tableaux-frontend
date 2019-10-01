@@ -129,7 +129,7 @@ class Cell extends React.Component {
         langtag,
         tableId: table.id
       });
-    } else if (!withRightClick) {
+    } else if (!withRightClick && this.userCanEditValue()) {
       actions.toggleCellEditing({ row });
     }
 
