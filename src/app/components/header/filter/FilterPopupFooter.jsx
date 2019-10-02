@@ -17,27 +17,34 @@ const FilterPopupFooter = ({ canApplyFilters, applyFilters, clearFilters }) => {
   );
 };
 
-const DefaultFooter = ({ clearFilters, canApplyFilters, applyFilters }) => (
-  <>
-    <button
-      className="filter-popup__clear-filters-button neutral"
-      onClick={clearFilters}
-      disabled={!canApplyFilters}
-    >
-      {i18n.t("filter:button.clearFilter")}
-    </button>
-    <button
-      className={
-        "filter-popup__apply-filters-button " +
-        (canApplyFilters ? "" : "neutral")
-      }
-      onClick={applyFilters}
-      disabled={!canApplyFilters}
-    >
-      {i18n.t("filter:button.doFilter")}
-    </button>
-  </>
-);
+const DefaultFooter = ({ clearFilters, canApplyFilters, applyFilters }) => {
+  const handleApplyFilters = React.useCallback(() => {
+    if (canApplyFilters) {
+      applyFilters();
+    } else {
+      clearFilters();
+    }
+  });
+  return (
+    <>
+      <button
+        className="filter-popup__clear-filters-button neutral"
+        onClick={clearFilters}
+      >
+        {i18n.t("filter:button.clearFilter")}
+      </button>
+      <button
+        className={
+          "filter-popup__apply-filters-button " +
+          (canApplyFilters ? "" : "neutral")
+        }
+        onClick={handleApplyFilters}
+      >
+        {i18n.t("filter:button.doFilter")}
+      </button>
+    </>
+  );
+};
 
 export default FilterPopupFooter;
 

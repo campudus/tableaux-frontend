@@ -34,7 +34,13 @@ const registerStream = (key, raw, initialValue) => {
   localStore
     .getItem(key)
     .then(ifElse(f.isNil, () => initialValue, readValue(raw)))
-    .then(x => subject.next(x))
+    .then(x => {
+      try {
+        subject.next(x);
+      } catch {
+        // pass
+      }
+    })
     .then(() => {
       subject.subscribe(value => {
         localStore.setItem(key, toWriteable(raw)(value));
