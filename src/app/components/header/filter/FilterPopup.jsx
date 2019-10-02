@@ -410,6 +410,7 @@ class FilterPopup extends React.Component {
                 (this.state.savePopupOpen ? " ignore-react-onclickoutside" : "")
               }
               onClick={this.toggleFilterSavingPopup}
+              disabled={!canApplyFilter}
             >
               <i className="fa fa-save" />
               {i18n.t("table:filter.save-filter")}
