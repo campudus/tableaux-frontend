@@ -93,6 +93,8 @@ class FilterRow extends PureComponent {
         label: i18n.t(SearchFunctions[key].displayName)
       }));
 
+    console.log(filter);
+
     return (
       <div className="filter-row">
         <button
@@ -114,17 +116,19 @@ class FilterRow extends PureComponent {
           valueRenderer={valueRenderer}
           noResultsText={t("input.noResult")}
         />
-        {filter.columnKind === TEXT && (
-          <Select
-            className="filter-row__mode-select col-three"
-            searchable={false}
-            clearable={false}
-            openOnFocus
-            value={filter.mode}
-            options={filterModeOptions}
-            onChange={this.handleFilterModeChange}
-          />
-        )}
+        {filter.columnKind !== BOOL &&
+          !f.isNil(filter.columnId) &&
+          Number(filter.columnId) >= 0 && (
+            <Select
+              className="filter-row__mode-select col-three"
+              searchable={false}
+              clearable={false}
+              openOnFocus
+              value={filter.mode}
+              options={filterModeOptions}
+              onChange={this.handleFilterModeChange}
+            />
+          )}
 
         {filter.columnKind === BOOL ? (
           <BoolInput
