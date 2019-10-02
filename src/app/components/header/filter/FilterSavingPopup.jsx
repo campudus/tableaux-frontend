@@ -31,6 +31,18 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
     handleClickOutside();
   });
 
+  const handleKeyDown = useCallback(({ key }) => {
+    if (key === "Enter" && !f.isEmpty(title)) {
+      handleSaveTemplate();
+    } else if (key === "Escape") {
+      if (f.isEmpty(title)) {
+        handleClickOutside();
+      } else {
+        setTitle("");
+      }
+    }
+  });
+
   return (
     <div className="save-template-popup">
       <header className="save-template-popup__header">
@@ -43,6 +55,7 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
         onChange={handleTitleChange}
         placeholder={i18n.t("table:filter.enter-name")}
         autoFocus
+        onKeyDown={handleKeyDown}
       />
       <footer className="save-template-popup__footer">
         <button
