@@ -63,6 +63,12 @@ class File extends Component {
   onEdit = () => {
     const { file, langtag, actions } = this.props;
 
+    if (!canUserEditFiles()) {
+      const imageUrl = apiUrl(retrieveTranslation(langtag, file.url));
+      window.open(imageUrl, "_blank");
+      return;
+    }
+
     actions.openOverlay({
       head: (
         <Header
@@ -109,15 +115,17 @@ class File extends Component {
           <i className="icon fa fa-pencil-square-o" />
           {t("change_file")}
         </span>
-        <a
-          href={imageUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="button"
-        >
-          <i className="icon fa fa-external-link" />
-          {t("show_file")}
-        </a>
+        {canUserEditFiles() && (
+          <a
+            href={imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button"
+          >
+            <i className="icon fa fa-external-link" />
+            {t("show_file")}
+          </a>
+        )}
         {canUserDeleteFiles() ? (
           <span
             className="button"

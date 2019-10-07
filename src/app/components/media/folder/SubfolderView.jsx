@@ -1,4 +1,4 @@
-import { branch, compose, pure, renderNothing, withHandlers } from "recompose";
+import { compose, pure, withHandlers } from "recompose";
 import { translate } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import React from "react";
@@ -6,27 +6,31 @@ import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
-import { canUserEditMedia } from "../../../helpers/accessManagementHelper";
+import {
+  canUserDeleteFolders,
+  canUserEditFolders
+} from "../../../helpers/accessManagementHelper";
 import { switchFolderHandler } from "../../Router";
 
-const MediaOptions = compose(
-  branch(() => !canUserEditMedia(), renderNothing),
-  pure
-)(props => (
+const MediaOptions = props => (
   <div className="media-options">
-    <span className="button" onClick={props.onEdit} alt="edit">
-      <i className="icon fa fa-pencil-square-o" />
-      {props.t("rename_folder")}
-    </span>
-    <span
-      className="button"
-      onClick={props.onRemove}
-      alt={props.t("delete_folder")}
-    >
-      <i className="fa fa-trash" />
-    </span>
+    {canUserEditFolders() && (
+      <span className="button" onClick={props.onEdit} alt="edit">
+        <i className="icon fa fa-pencil-square-o" />
+        {props.t("rename_folder")}
+      </span>
+    )}
+    {canUserDeleteFolders() && (
+      <span
+        className="button"
+        onClick={props.onRemove}
+        alt={props.t("delete_folder")}
+      >
+        <i className="fa fa-trash" />
+      </span>
+    )}
   </div>
-));
+);
 
 const enhance = compose(
   withRouter,
