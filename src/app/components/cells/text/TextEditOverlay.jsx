@@ -1,7 +1,6 @@
 import React from "react";
 import { compose, lifecycle, withStateHandlers } from "recompose";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper.js";
-import f from "lodash/fp";
 import i18n from "i18next";
 
 const TextEditOverlay = props => {
@@ -14,9 +13,9 @@ const TextEditOverlay = props => {
           <textarea
             value={editedValue}
             placeholder={i18n.t("table:empty.text")}
-            onChange={canUserChangeCell(cell, langtag) ? setValue : f.noop}
+            onChange={setValue}
             onBlur={saveEdits}
-            disabled
+            disabled={!canUserChangeCell(cell, langtag)}
           />
         </div>
       </div>
