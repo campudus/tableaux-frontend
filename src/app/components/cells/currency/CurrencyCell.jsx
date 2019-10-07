@@ -7,6 +7,7 @@ import onClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 
 import {
+  formatNumber,
   getCountryOfLangtag,
   getCurrencyCode,
   getLocaleDecimalSeparator
@@ -88,10 +89,11 @@ class CurrencyCell extends React.PureComponent {
       );
     }
 
-    // TODO: localization
     return (
       <div className={`currency-wrapper${value[country] ? "" : " grey-out"}`}>
-        <span className="currency-value">{splittedValueAsString[0]}</span>
+        <span className="currency-value">
+          {formatNumber(splittedValueAsString[0])}
+        </span>
         <span className="currency-value-decimals">
           {getLocaleDecimalSeparator()}
           {splittedValueAsString[1]}

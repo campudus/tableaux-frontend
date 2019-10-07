@@ -155,13 +155,15 @@ export const canUserDeleteFolders = canUserDeleteMedia;
 
 // (context: {column, tableId}) -> (value: {}) -> {}
 // Ensure we only send changes that the user is allowed to send to the backend
-export const reduceValuesToAllowedLanguages = f.curryN(2, (context, value) => {
-  const accessibleLangs = Langtags.filter(langtag =>
-    canUserChangeCell(context, langtag)
-  );
+export const reduceValuesToAllowedLanguages = f.curryN(2, (context, value) =>
+  f.keys(value).reduce((valueObj, langtag) => {
+    if (canUserChangeCell(context, langtag)) {
+      valueObj[langtag] = value[langtag];
+    }
+    return valueObj;
+  }, {})
+);
 
-  return f.pick(accessibleLangs, value);
-});
 // With new per-column permission model, both functions are equivalent
 export const reduceValuesToAllowedCountries = reduceValuesToAllowedLanguages;
 
