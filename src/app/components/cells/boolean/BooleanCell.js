@@ -1,18 +1,12 @@
 import React from "react";
+
 import PropTypes from "prop-types";
+
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { isLocked } from "../../../helpers/annotationHelper";
 
 const BooleanCell = props => {
-  const {
-    actions,
-    value,
-    table,
-    row,
-    column,
-    langtag,
-    selected,
-    editing
-  } = props;
+  const { actions, value, table, row, column, langtag, selected, cell } = props;
 
   const handleEditDone = newValue => {
     const valueToSave = column.multilanguage
@@ -34,7 +28,7 @@ const BooleanCell = props => {
   };
 
   const toggleCheckboxValue = () => {
-    if (!isLocked(row) && editing) {
+    if (!isLocked(row) && canUserChangeCell(cell, langtag)) {
       selected && handleEditDone(!getCheckboxValue());
     }
   };
@@ -45,7 +39,7 @@ const BooleanCell = props => {
         className="checkbox"
         type="checkbox"
         checked={getCheckboxValue()}
-        readOnly="readOnly"
+        readOnly={true}
       />
     </div>
   );
