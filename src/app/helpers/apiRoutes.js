@@ -43,6 +43,7 @@ const toCellHistory = ({ tableId, rowId, columnId }) =>
   toCell({ tableId, rowId, columnId }) + "/history";
 
 const API_ROUTES = {
+  joinUrlParts,
   getAllTables,
   getAllColumnsForTable,
   toRows,

@@ -131,5 +131,12 @@
   "open-dataset": "Tabelle mit diesem Datensatz öffnen",
   "redo": "Letzte Änderung wiederholen",
   "undo": "Letzte Änderung rückgängig machen",
-  "no-tables-found": "Es existieren keine sichtbaren Tabellen"
+  "no-tables-found": "Es existieren keine sichtbaren Tabellen",
+  "open-markdown-editor": "In Editor öffnen",
+  "link-editor": {
+    "headline": "Link bearbeiten/hinzufügen",
+    "enter-link": "Hier URL eingeben",
+    "linked-text": "Linktext",
+    "insert-link": "Link hinzufügen"
+  }
 }

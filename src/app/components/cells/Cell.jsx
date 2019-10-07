@@ -277,11 +277,7 @@ class Cell extends React.Component {
 const isRepeaterCell = ({ cell, isExpandedCell }) =>
   isExpandedCell &&
   (!cell.column.multilanguage ||
-    f.contains(cell.kind, [
-      ColumnKinds.link,
-      ColumnKinds.boolean,
-      ColumnKinds.attachment
-    ]));
+    f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.attachment]));
 
 const RepeaterCell = withHandlers({
   onContextMenu: ({

@@ -60,3 +60,23 @@ input, textarea {
     overflow: auto !important;
   }
 }
+
+.row-one {
+  -ms-grid-row: 1;
+}
+
+.row-two {
+  -ms-grid-row: 2;
+}
+
+.row-three {
+  -ms-grid-row: 3;
+}
+
+.col-one {
+  -ms-grid-column: 1;
+}
+
+.col-two {
+  -ms-grid-column: 2;
+}

@@ -131,5 +131,12 @@
   "open-dataset": "Open table with this dataset",
   "undo": "Undo last data change",
   "redo": "Redo last data change",
-  "no-tables-found": "There are no visible tables"
+  "no-tables-found": "There are no visible tables",
+  "open-markdown-editor": "Open in editor",
+  "link-editor": {
+    "headline": "Edit/add link",
+    "enter-link": "Enter URL here",
+    "linked-text": "Link text",
+    "insert-link": "Add link"
+  }
 }

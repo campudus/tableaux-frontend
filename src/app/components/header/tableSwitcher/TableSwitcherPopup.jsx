@@ -218,7 +218,10 @@ class SwitcherPopup extends React.PureComponent {
     const { t, langtag } = this.props;
 
     const renderGroup = group => {
-      const groupDisplayName = retrieveTranslation(langtag, group);
+      const groupDisplayName = retrieveTranslation(
+        langtag,
+        f.get("displayName", group)
+      );
 
       const isNoGroupGroup = group.id === 0;
       const isActive = this.state.filterGroupId === group.id;

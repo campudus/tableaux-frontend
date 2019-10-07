@@ -1,6 +1,8 @@
 import f from "lodash/fp";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import { createLinkOrderRequest } from "../../helpers/linkHelper";
+import { refreshDependentRows } from "../updateDependentTables";
 import { makeRequest } from "../../helpers/apiHelper";
 import { merge, when } from "../../helpers/functools";
 import {
@@ -12,11 +14,13 @@ import {
   addTranslationNeeded
 } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
-import route from "../../helpers/apiRoutes";
-import { createLinkOrderRequest } from "../../helpers/linkHelper";
 import openTranslationDialog from "../../components/overlay/TranslationDialog";
+import route from "../../helpers/apiRoutes";
+
+import store from "../store";
 
 const {
+  SET_STATE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
   CELL_SET_VALUE
@@ -102,7 +106,8 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   const mainLangChecks =
     isMultiLanguage && newValue[mainLang] && onlyMainLangChanged;
 
-  //ask if cell should be marked with translation_needed, when there's a change in the main language
+  // ask if cell should be marked with translation_needed, when
+  // there's a change in the main language
   if (mainLangChecks && hasTranslations) {
     openTranslationDialog(
       null,
@@ -111,7 +116,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
     );
   }
 
-  //automatically add translation_needed if cell is new
+  // automatically add translation_needed if cell is new
   if (mainLangChecks && !hasTranslations) {
     addTranslationNeeded(f.tail(Langtags), cell);
   }
@@ -136,11 +141,14 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   };
 
   // bail out if no updates needed
-  return !needsUpdate
-    ? dispatch({
+  return new Promise((resolve, reject) => {
+    if (!needsUpdate) {
+      dispatch({
         type: "NOTHING_TO_DO"
-      })
-    : dispatch({
+      });
+      resolve();
+    } else {
+      dispatch({
         promise: makeRequest({
           apiRoute:
             route.toCell({ tableId, rowId, columnId }) +
@@ -152,6 +160,8 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
             update.value
           )
         }).then(maybeClearFreshTranslations),
+        onSuccess: resolve,
+        onError: reject,
         actionTypes: [
           CELL_SET_VALUE,
           CELL_SAVED_SUCCESSFULLY,
@@ -159,6 +169,10 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
         ],
         ...f.dissoc("type", action)
       });
+    }
+  })
+    .then(() => refreshDependentRows(tableId, [rowId], store.getState()))
+    .then(state => dispatch({ type: SET_STATE, state }));
 };
 
 export const calculateCellUpdate = action => {
