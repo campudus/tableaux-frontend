@@ -205,11 +205,17 @@ async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
     const srcLangtags = f.get("langtags", srcTranslation);
 
     // Remove existing translation status and replace it with src's
-    deleteCellAnnotation(dstTranslation, dst).then(() => {
+    if (!f.isEmpty(dstTranslation)) {
+      deleteCellAnnotation(dstTranslation, dst).then(() => {
+        if (!f.isEmpty(srcLangtags)) {
+          addTranslationNeeded(srcLangtags, dst);
+        }
+      });
+    } else {
       if (!f.isEmpty(srcLangtags)) {
         addTranslationNeeded(srcLangtags, dst);
       }
-    });
+    }
   }
 }
 
@@ -220,6 +226,7 @@ const pasteCellValue = function(
   dstLang,
   skipDialogs = false
 ) {
+  console.log({ src });
   // The lock can be overridden, if a user has access to the langtag and it is flagged as "needs translation"
   const canOverrideLock = () => {
     const untranslated = f.prop([
@@ -238,7 +245,7 @@ const pasteCellValue = function(
       : false;
   };
 
-  if (canUserChangeCell(dst, dstLang)) {
+  if (!canUserChangeCell(dst, dstLang)) {
     dst.column.multilanguage &&
       showErrorToast("common:access_management.cant_access_language");
     return;
@@ -291,7 +298,13 @@ const pasteCellValue = function(
       pasteValueAndTranslationStatus(src, dst, newValue);
     };
     const buttons = {
-      positive: [i18n.t("common:save"), save],
+      positive: [
+        i18n.t("common:save"),
+        () => {
+          store.dispatch(actions.closeOverlay());
+          save();
+        }
+      ],
       neutral: [i18n.t("common:cancel"), null]
     };
     store.dispatch(
@@ -304,6 +317,7 @@ const pasteCellValue = function(
             newVals={newValue}
             saveAndClose={save}
             kind={dst.kind}
+            cell={src}
           />
         ),
         footer: <Footer buttonActions={buttons} />,

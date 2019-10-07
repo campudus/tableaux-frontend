@@ -49,8 +49,9 @@ class MetaCell extends PureComponent {
   }
 
   mkLockStatusIcon = () => {
-    const { row, selected, expanded, table } = this.props;
-    const cantTranslate = (selected || expanded) && !canUserEditRows({ table });
+    const { row, selected, expanded, table, langtag } = this.props;
+    const cantTranslate =
+      (selected || expanded) && !canUserEditRows({ table }, langtag);
     if (cantTranslate) {
       return <i className="fa fa-ban access-denied-icon" />;
     } else if (row.final) {

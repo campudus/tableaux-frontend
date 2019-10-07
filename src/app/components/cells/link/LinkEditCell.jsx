@@ -13,11 +13,11 @@ import LinkLabelCell from "./LinkLabelCell.jsx";
 
 const withOverlayOpener = compose(
   withHandlers({
-    catchStrolling: () => event => {
+    catchScrolling: () => event => {
       event && event.stopPropagation();
     },
     openOverlay: ({ cell, langtag, actions }) => () => {
-      if (canUserChangeCell(cell) && !isLocked(cell.row)) {
+      if (canUserChangeCell(cell, langtag) && !isLocked(cell.row)) {
         openLinkOverlay({ cell, langtag, actions });
       }
     }
@@ -62,12 +62,14 @@ const LinkEditCell = props => {
       onScroll={catchScrolling}
       onClick={openOverlay}
     >
-      {[
-        ...links,
-        <button key={"add-btn"} className="edit">
-          <span className="fa fa-pencil" />
-        </button>
-      ]}
+      {canUserChangeCell(cell, langtag)
+        ? [
+            ...links,
+            <button key={"add-btn"} className="edit">
+              <span className="fa fa-pencil" />
+            </button>
+          ]
+        : links}
     </div>
   );
 };

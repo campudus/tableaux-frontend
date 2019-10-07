@@ -19,7 +19,10 @@ import {
 import { canConvert } from "../../helpers/cellValueConverter";
 import {
   canUserChangeCell,
-  canUserEditRowAnnotations
+  canUserEditRowAnnotations,
+  canUserEditCellAnnotations,
+  canUserCreateRow,
+  canUserDeleteRow
 } from "../../helpers/accessManagementHelper";
 import {
   initiateDeleteRow,
@@ -89,7 +92,13 @@ class RowContextMenu extends React.Component {
       cell,
       cell: { table }
     } = this.props;
-    initiateDuplicateRow({ cell, tableId: table.id, rowId: row.id, langtag });
+    initiateDuplicateRow({
+      ...cell,
+      cell,
+      tableId: table.id,
+      rowId: row.id,
+      langtag
+    });
     this.closeRowContextMenu();
   };
 
@@ -142,10 +151,14 @@ class RowContextMenu extends React.Component {
       : null;
   };
 
-  canTranslate = cell =>
-    cell.column.multilanguage &&
-    !translationNeverNeeded(cell) &&
-    canUserChangeCell(cell);
+  canTranslate = cell => {
+    const { langtag } = this.props;
+    return (
+      cell.column.multilanguage &&
+      !translationNeverNeeded(cell) &&
+      canUserChangeCell(cell, langtag)
+    );
+  };
 
   requestTranslationsItem = () => {
     const { langtag, cell, t } = this.props;
@@ -227,6 +240,9 @@ class RowContextMenu extends React.Component {
 
   toggleFlagItem = flag => {
     const { cell } = this.props;
+    if (!canUserEditCellAnnotations(cell)) {
+      return;
+    }
     const existingAnnotation = f.get(["annotations", flag], cell);
     const toggleFn = existingAnnotation
       ? () =>
@@ -302,7 +318,11 @@ class RowContextMenu extends React.Component {
       deleteRow,
       showDependency,
       showEntityView,
-      props: { cell, t }
+      props: {
+        cell,
+        t,
+        cell: { table }
+      }
     } = this;
 
     return (
@@ -316,11 +336,13 @@ class RowContextMenu extends React.Component {
         {this.openLinksFilteredItem()}
         {this.copyItem()}
         {this.pasteItem()}
-        {this.mkItem(
-          () => this.props.openAnnotations(cell),
-          "add-comment",
-          "commenting"
-        )}
+        {canUserEditCellAnnotations(cell)
+          ? this.mkItem(
+              () => this.props.openAnnotations(cell),
+              "add-comment",
+              "commenting"
+            )
+          : null}
         {f.any(
           f.complement(f.isEmpty),
           f.props(["info", "error", "warning"], cell.annotations)
@@ -348,10 +370,10 @@ class RowContextMenu extends React.Component {
         {this.props.table.type === "settings"
           ? ""
           : this.mkItem(showEntityView, "show_entity_view", "server")}
-        {this.props.table.type === "settings"
+        {this.props.table.type === "settings" || !canUserCreateRow({ table })
           ? ""
           : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-        {this.props.table.type === "settings"
+        {this.props.table.type === "settings" || !canUserDeleteRow({ table })
           ? ""
           : this.mkItem(deleteRow, "delete_row", "trash-o")}
         {this.mkItem(showDependency, "show_dependency", "code-fork")}

@@ -14,7 +14,8 @@ const lookupKey = (columnId, tableId, rowId) =>
 const lookUpPermissions = params =>
   noAuthNeeded() ? ALLOW_ANYTHING : _lookUpPermissions(params);
 const _lookUpPermissions = params => {
-  const { columnId, tableId, column, table, row, rowId } = params;
+  const { columnId, tableId, column = {}, table = {}, row = {}, rowId } =
+    params || {};
   // we can do this as our DB-indices are one-based
   const _columnId = columnId || (column && column.id);
   const _tableId = tableId || (table && table.id);
@@ -66,9 +67,9 @@ const getPermission = pathToPermission =>
 export const canUserChangeCell = (cellInfo, langtag) => {
   const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
 
-  const allowed = langtag
-    ? f.isPlainObject(editCellValue) && editCellValue[langtag]
-    : editCellValue;
+  const allowed = f.isBoolean(editCellValue)
+    ? editCellValue
+    : f.isPlainObject(editCellValue) && editCellValue[langtag];
 
   return allowed || noAuthNeeded(); // this special case is not caught by ALLOW_ANYTHING
 };
@@ -82,12 +83,13 @@ export const canUserChangeColumnDescription = canUserEditColumnDisplayProperty;
 
 export const canUserEditRows = memoizeWith(
   f.prop(["table", "id"]),
-  cellInfo => {
+  (cellInfo, langtag) => {
     const tableId = cellInfo.tableId || (cellInfo.table && cellInfo.table.id);
     const columns = store.getState().columns[tableId].data;
     return columns.reduce(
       (allowed, nextColumn) =>
-        allowed && canUserChangeCell({ ...cellInfo, column: nextColumn }),
+        allowed &&
+        canUserChangeCell({ ...cellInfo, column: nextColumn }, langtag),
       true
     );
   }
@@ -110,7 +112,7 @@ export const canUserEditCellAnnotations = getPermission([
 
 export const canUserEditRowAnnotations = getPermission([
   "table",
-  "editRowAnnotations"
+  "editRowAnnotation"
 ]);
 
 // (tableData: table | number) => boolean

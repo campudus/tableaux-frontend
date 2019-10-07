@@ -39,16 +39,20 @@
 
     .menu-item {
       width: 100%;
-      padding: 8px;
-
-      &.active {
-        background-color: $color-light-link-color;
+      padding: 10px 10px;
+      cursor: pointer;
+    }
+    .menu-item-disabled {
+      width: 100%;
+      padding: 10px 10px;
+      opacity: 0.5;
+      a {
+        cursor: default;
       }
     }
-  }
-
-  a {
-    padding: 20px 10px;
+    .menu-item:hover{
+      background-color: $color-light-link-color;
+    }
   }
 
 }

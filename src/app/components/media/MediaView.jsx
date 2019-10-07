@@ -95,7 +95,7 @@ class MediaView extends Component {
         ) : (
           <Spinner isLoading />
         )}
-        <Redirect to={this.getFolderUrl()} />
+        {media.finishedLoading && <Redirect to={this.getFolderUrl()} />}
       </div>
     );
   }
