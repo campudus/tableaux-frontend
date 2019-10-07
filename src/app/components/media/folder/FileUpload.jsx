@@ -88,18 +88,17 @@ const RunningUploadPanel = compose(
 ));
 
 const FileUpload = props => {
-  let uploads = [];
   const { runningUploads, t, onDrop } = props;
-  for (let uploadUuid in runningUploads) {
-    if (runningUploads.hasOwnProperty(uploadUuid)) {
-      uploads.push(
-        <div className="file-upload" key={uploadUuid}>
-          <span>{runningUploads[uploadUuid].name}</span>
-          <ProgressBar progress={runningUploads[uploadUuid].progress} />
-        </div>
-      );
-    }
-  }
+
+  const uploads =
+    runningUploads
+    |> f.keys
+    |> f.map(uploadUuid => (
+      <div className="file-upload" key={uploadUuid}>
+        <span>{runningUploads[uploadUuid].name}</span>
+        <ProgressBar progress={runningUploads[uploadUuid].progress} />
+      </div>
+    ));
 
   return (
     <div className="file-uploads">
