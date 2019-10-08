@@ -80,7 +80,13 @@ const stripProxyPrefixes = prefixes => proxyReq => {
 
 const configProxy = (routes, defaultHandler = null) => {
   const proxy = createProxyServer({
-    changeOrigin: true // changes the origin of the host header to the target URL
+    changeOrigin: true,
+    xfwd: true,
+    // if keycloak's env PROXY_ADDRESS_FORWARDING=true then keycloak will set
+    // the cookie for the given `X-Forwarded-Url`
+    onProxyReq: (proxyReq, req) => {
+      proxyReq.setHeader("X-Forwarded-Url", req.originalUrl);
+    }
   });
   const prefixRegexes = routes.map(({ prefix }) => new RegExp("^" + prefix));
 
