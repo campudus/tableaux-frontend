@@ -22,8 +22,8 @@ export const getFilterTemplates = f.memoize(langtag => {
     { mode: FilterModes.FINAL, title: "table:filter.is_final" },
     { mode: FilterModes.IMPORTANT, title: "table:important" },
     { mode: FilterModes.CHECK_ME, title: "table:check-me" },
-    { mode: FilterModes.LATER, title: "table:postpone" },
-    { mode: FilterModes.WITH_COMMENTS, title: "filter:has-comments" }
+    { mode: FilterModes.POSTPONE, title: "table:postpone" },
+    { mode: FilterModes.WITH_COMMENT, title: "filter:has-comments" }
   ];
 
   return filters.map(({ title, mode }) => ({
