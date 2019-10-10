@@ -4,6 +4,7 @@ import "../node_modules/codemirror/lib/codemirror.css";
 import "react-virtualized/styles.css";
 import "./app/helpers/connectionWatcher";
 import { initConfig } from "./app/constants/TableauxConstants";
+import fetch from "cross-fetch";
 
 import { Provider } from "react-redux";
 import React from "react";
