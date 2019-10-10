@@ -61,7 +61,6 @@ export default class CurrencyRow extends PureComponent {
       });
     }
   };
-  onKeyDownInput = () => console.log("onKeyDownInput");
 
   currencyInputChanged = () => {
     this.setState({ modified: true });
