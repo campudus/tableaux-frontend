@@ -36,11 +36,8 @@ const proxyDestinations = [
   }
 ];
 
-console.log("GRUD frontend server with settings:\n", config);
-
 // Init server -----------------------------------------------------------------
 
-const app = express();
 const serveStaticFile = serveStatic(config.outDir);
 
 const proxyHandler = ServerConfigTool.configProxy(proxyDestinations);
@@ -62,17 +59,8 @@ const resourceHandler = (req, res, next) => {
   }
 };
 
-// Serve -----------------------------------------------------------------------
-
-// app.use((req, res, next) => {
-//   console.log(req.url);
-//   next();
-// });
-app.use(proxyHandler); // if api request, proxy it, else...
-app.use("/config.json", (req, res) => res.json(config)); // serve local config at runtime
-app.use(resourceHandler); // if a file was requested, try to serve it, else...
-app.use(appHandler); // serve the single page app
-
-app.listen(config.port, config.host, () => {
-  console.info(`Server listening on http://${config.host}:${config.port}.`);
-});
+ServerConfigTool.startServer(config, [
+  proxyHandler,
+  resourceHandler,
+  appHandler
+]);

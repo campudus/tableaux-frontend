@@ -1,5 +1,20 @@
 const path = require("path");
 const { createProxyServer } = require("http-proxy");
+const express = require("express");
+const session = require("express-session");
+const LokiStore = require("connect-loki")(session);
+const uuid = require("uuid");
+
+const SESSION_LIVE_TIME_SECONDS = 60; // in production, pings will keep the session alive
+const lokiOptions = { autosave: false, ttl: SESSION_LIVE_TIME_SECONDS };
+const sessionOptions = {
+  store: new LokiStore(lokiOptions),
+  secret: uuid(),
+  resave: true,
+  saveUninitialized: false,
+  unset: "destroy",
+  proxy: true
+};
 
 // These config params can be overwritten by env params
 const envParams = [
@@ -43,6 +58,20 @@ const enrichConfig = config => {
   return config;
 };
 
+const upgradeAuthHeaders = req => {
+  const authorizationToken = req.headers.authorization || "";
+  if (authorizationToken) {
+    // Despite the look, no session data leaks to the client, only a session id gets attached
+    // (see https://github.com/expressjs/session#readme)
+    req.session.token = authorizationToken;
+  } else {
+    const { token } = req.session;
+    if (token) {
+      req.headers.authorization = token;
+    }
+  }
+};
+
 const stripProxyPrefixes = prefixes => proxyReq => {
   prefixes.forEach(
     prefix => (proxyReq.path = proxyReq.path.replace(prefix, ""))
@@ -59,13 +88,18 @@ const configProxy = (routes, defaultHandler = null) => {
 
   proxy.on("error", (err, req, res) => {
     console.error("Proxy error:", err);
-    res.writeHead(500, {
-      "Content-Type": "text/plain"
-    });
+    res &&
+      res.writeHead(500, {
+        "Content-Type": "text/plain"
+      });
     res && res.end(JSON.stringify(err));
   });
 
   return (req, res, next) => {
+    if (req.url.includes("/api")) {
+      upgradeAuthHeaders(req);
+    }
+
     const requestHandler = routes.reduce((_handler, { prefix, handler }) => {
       return _handler || (req.url.includes(prefix) ? handler : null);
     }, null);
@@ -75,4 +109,16 @@ const configProxy = (routes, defaultHandler = null) => {
   };
 };
 
-module.exports = { enrichConfig, configProxy };
+const app = express();
+
+const startServer = (config, handlers) => {
+  console.log("GRUD server options:", config);
+  app.use(session(sessionOptions));
+  app.get("/config.json", (req, res) => res.json(config));
+  handlers.forEach(handler => app.use(handler));
+  app.listen(config.port, config.host, () => {
+    console.log(`GRUD server listening at ${config.host}:${config.port}`);
+  });
+};
+
+module.exports = { enrichConfig, configProxy, startServer };

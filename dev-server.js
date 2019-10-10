@@ -2,9 +2,9 @@
 const express = require("express");
 const Path = require("path");
 const Bundler = require("parcel-bundler");
-const GRUDServer = require("./src/static/ServerConfigTool.js");
+const ServerConfigTool = require("./src/static/ServerConfigTool.js");
 
-const config = GRUDServer.enrichConfig({
+const config = ServerConfigTool.enrichConfig({
   outDir: "out",
   host: "localhost",
   port: 3000,
@@ -51,8 +51,6 @@ switch (process.env.NODE_ENV) {
 }
 console.log("Build id:", process.env.BUILD_ID);
 
-console.log("using config:", config);
-
 // point parcel at its input
 const entryFiles = [
   Path.join(__dirname, "src", "index.html"),
@@ -66,12 +64,9 @@ bundler.serve();
 
 // serve
 
-const app = express();
-const proxyHandler = GRUDServer.configProxy(proxyHandlers, defaultHandler);
+const proxyHandler = ServerConfigTool.configProxy(
+  proxyHandlers,
+  defaultHandler
+);
 
-app.use("/config.json", (req, res) => res.json(config));
-app.use(proxyHandler);
-
-app.listen(config.port, config.host, () => {
-  console.info(`dev proxy server operating at ${config.host}:${config.port}.`);
-});
+ServerConfigTool.startServer(config, [proxyHandler]);
