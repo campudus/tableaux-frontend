@@ -1,4 +1,3 @@
-const express = require("express");
 const serveStatic = require("serve-static");
 const finalhandler = require("finalhandler");
 const path = require("path");
