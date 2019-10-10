@@ -52,8 +52,11 @@ class View extends PureComponent {
 
   canEditValue = theoretically => {
     const { cell, langtag } = this.props;
-    const langtagOrCountry =
-      cell.kind === "currency" ? getCountryOfLangtag(langtag) : langtag;
+    const langtagOrCountry = f.propEq(["column", "languageType"], "country")(
+      cell
+    )
+      ? getCountryOfLangtag(langtag)
+      : langtag;
     const canEditUnlocked = Access.canUserChangeCell(cell, langtagOrCountry);
     return theoretically
       ? canEditUnlocked

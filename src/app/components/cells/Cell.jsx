@@ -183,8 +183,11 @@ class Cell extends React.Component {
 
   userCanEditValue() {
     const { cell, langtag } = this.props;
-    const langtagOrCountry =
-      cell.kind === "currency" ? getCountryOfLangtag(langtag) : langtag;
+    const langtagOrCountry = f.propEq(["column", "languageType"], "country")(
+      cell
+    )
+      ? getCountryOfLangtag(langtag)
+      : langtag;
     return canUserChangeCell(cell, langtagOrCountry);
   }
 
