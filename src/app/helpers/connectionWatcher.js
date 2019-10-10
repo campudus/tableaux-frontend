@@ -12,6 +12,7 @@ import i18n from "i18next";
 const LOST_DIALOG_NAME = "connection-lost-dialog";
 const RECONNECTED_DIALOG_NAME = "reconnected-dialog";
 const AVG_PING_DELAY = 20; // s
+const ERROR_PING_DELAY = 500;
 
 const connectionStatus = new Subject();
 
@@ -25,8 +26,18 @@ const pingDelayed = delay =>
     const connected = await makeRequest({ apiRoute: "/system/versions" })
       .then(() => true)
       .catch(() => false);
-    connectionStatus.next({ connected, time: new Moment() });
-    pingDelayed(getPingDelay(connected));
+    if (!connected) {
+      window.setTimeout(async () => {
+        const connected = await makeRequest({ apiRoute: "/system/versions" })
+          .then(() => true)
+          .catch(() => false);
+        connectionStatus.next({ connected, time: new Moment() });
+        pingDelayed(getPingDelay(connected));
+      }, ERROR_PING_DELAY);
+    } else {
+      connectionStatus.next({ connected, time: new Moment() });
+      pingDelayed(getPingDelay(connected));
+    }
   }, delay);
 
 connectionStatus
