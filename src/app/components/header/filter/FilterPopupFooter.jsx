@@ -1,154 +1,46 @@
-import { useSelector } from "react-redux";
 import React from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { fspy } from "../../../helpers/functools";
-import { useLocalStorage } from "../../../helpers/useLocalStorage";
-
-const FilterPopupFooter = ({
-  filters,
-  sorting,
-  canApplyFilters,
-  applyFilters,
-  clearFilters
-}) => {
-  const [saveMode, setSaveMode] = React.useState(false);
-  const enterSaveMode = React.useCallback(() => setSaveMode(true));
-  const leaveSaveMode = React.useCallback(() => setSaveMode(false));
-
+const FilterPopupFooter = ({ canApplyFilters, applyFilters, clearFilters }) => {
   return (
     <div className="description-row">
       <p className="info">
-        {canApplyFilters && saveMode ? (
-          <SaveFiltersFooter
-            filterSettings={{ filters, sorting }}
-            leaveSaveMode={leaveSaveMode}
-          />
-        ) : (
-          <DefaultFooter
-            applyFilters={applyFilters}
-            clearFilters={clearFilters}
-            canApplyFilters={canApplyFilters}
-            enterSaveMode={enterSaveMode}
-          />
-        )}
+        <DefaultFooter
+          applyFilters={applyFilters}
+          clearFilters={clearFilters}
+          canApplyFilters={canApplyFilters}
+        />
       </p>
     </div>
   );
 };
 
-const DefaultFooter = ({
-  clearFilters,
-  canApplyFilters,
-  applyFilters,
-  enterSaveMode
-}) => (
-  <>
-    <span className="text">{i18n.t("filter:help.note")}</span>
-    <button
-      className={
-        "filter-popup__persist-filters-button " +
-        (canApplyFilters ? "" : "neutral")
-      }
-      onClick={enterSaveMode}
-      disabled={!canApplyFilters}
-    >
-      {i18n.t("filter:button.persist-filters")}
-    </button>
-    <button
-      className="filter-popup__clear-filters-button neutral"
-      onClick={clearFilters}
-      disabled={!canApplyFilters}
-    >
-      {i18n.t("filter:button.clearFilter")}
-    </button>
-    <button
-      className={
-        "filter-popup__apply-filters-button " +
-        (canApplyFilters ? "" : "neutral")
-      }
-      onClick={applyFilters}
-      disabled={!canApplyFilters}
-    >
-      {i18n.t("filter:button.doFilter")}
-    </button>
-  </>
-);
-
-const tableColumnsSelector = state => {
-  const tableId = state.tableView.currentTable;
-  const columns = state.columns[tableId].data;
-  return columns;
-};
-
-const SaveFiltersFooter = ({ leaveSaveMode, filterSettings }) => {
-  const [presetName, setPresetName] = React.useState("");
-  const handleNameChange = React.useCallback(event => {
-    const { value } = event.target;
-    setPresetName(value);
+const DefaultFooter = ({ clearFilters, canApplyFilters, applyFilters }) => {
+  const handleApplyFilters = React.useCallback(() => {
+    if (canApplyFilters) {
+      applyFilters();
+    } else {
+      clearFilters();
+    }
   });
-
-  const columns = useSelector(tableColumnsSelector);
-
-  const [savedFilters, setSavedFilters] = useLocalStorage("savedFilters", []);
-  const filterNames = (savedFilters || []).map(f.prop("title"));
-
-  const filterNameExists = f.contains(presetName, filterNames);
-
-  const handleSaveFilters = React.useCallback(() => {
-    const columnIdAsNumber = f.compose(
-      f.parseInt(10),
-      f.prop("columnId")
-    );
-    const filterColumnIds = f.map(columnIdAsNumber, filterSettings.filters);
-
-    const columnInfo = f.compose(
-      f.map(f.pick(["name", "kind"])),
-      f.filter(({ id }) => f.contains(id, filterColumnIds))
-    )(columns);
-
-    const filterTemplate = {
-      columnInfo,
-      title: presetName,
-      filters: filterSettings.filters,
-      sorting: filterSettings.sorting
-    };
-
-    const filtersToSave = f.compose(
-      f.concat(filterTemplate),
-      f.reject(f.propEq("title", presetName))
-    )(savedFilters);
-
-    setSavedFilters(filtersToSave);
-    leaveSaveMode();
-  });
-
   return (
     <>
-      {filterNameExists && (
-        <span className="text">{i18n.t("filters:filter-exists")}</span>
-      )}
       <button
-        className="filter-popup__cancel-persist-button neutral"
-        onClick={leaveSaveMode}
+        className="filter-popup__clear-filters-button neutral"
+        onClick={clearFilters}
       >
-        {i18n.t("common:cancel")}
+        {i18n.t("filter:button.clearFilter")}
       </button>
-      <input
-        className="filter-popup__persisted-filter-title"
-        type="text"
-        value={presetName}
-        onChange={handleNameChange}
-        placeholder={i18n.t("filters:enter-filter-name")}
-      />
       <button
-        className="filter-popup__persist-filters-button positiove"
-        onClick={handleSaveFilters}
+        className={
+          "filter-popup__apply-filters-button " +
+          (canApplyFilters ? "" : "neutral")
+        }
+        onClick={handleApplyFilters}
       >
-        {i18n.t("filter:button.persist-filter")}
+        {i18n.t("filter:button.doFilter")}
       </button>
     </>
   );

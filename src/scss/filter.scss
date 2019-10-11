@@ -1,49 +1,41 @@
 @import "variables";
 
-#filter-wrapper {
+.filter-wrapper {
   display: flex;
 
-  margin: 10px 20px;
-  margin-bottom: 0;
+
+  margin-top: 10px;
+  margin-right: 20px;
 
   outline-style: none;
 
-  .button {
-    @include header-button-look();
 
-    i {
-      margin-right: 10px;
-    }
-  }
 
   &.active {
-    .button {
+    .filter-popup-button {
       @include header-button-active();
     }
   }
 
   &.has-filter {
-    .button {
+    .filter-popup-button {
       @include header-button-active();
       background-color: $color-primary;
       color: $color-primary-contrast-text;
     }
   }
 
-  #filter-popup {
+  .filter-popup {
     @include header-panel-look();
     width: 700px;
     box-sizing: border-box;
     overflow: visible;
+    padding: 15px;
+    max-height: 70vh;
 
     .filter-options {
       position: relative;
       width: 100%;
-    }
-
-    button {
-      @include button-look();
-      float: right;
     }
 
     .filter-mode-wrapper {
@@ -51,21 +43,6 @@
 
       input {
         height: 28px;
-      }
-
-      .filter-mode-button {
-        padding: 7px;
-        position: absolute;
-        display: inline-block;
-        right: 0;
-
-        a {
-          padding: 8px;
-        }
-
-        i {
-          color: darkgrey;
-        }
       }
     }
 
@@ -119,51 +96,40 @@
     }
   }
 
-  .wip-filter-message {
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    background-color: $color-background-very-light-grey;
-  }
-
   .filter-row, .sort-row {
+    $button-radius: 30px;
     overflow: visible;
     width: 100%;
-    display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-    align-items: center;
+    display: grid;
+    grid-template-columns: $button-radius 3fr 2fr 5fr $button-radius;
+    grid-column-gap: 8px;
+
 
     .filter-array-button {
-      width: 20px;
-      height: 20px;
-      border: 1px solid $color-border-grey;
-      border-radius: 3px;
-      margin-left: 3px;
-      &.empty {
-        border-color: transparent;
-      }
-      a {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        justify-content: center;
-        align-items: center;
-        i {
-          font-size: x-small;
-          color: $color-text-medium-grey;
-        }
+      border-radius: 50%;
+      background-color: transparent;
+      border: 1px solid $color-text-light-grey;
+      color: $color-text-light-grey;
+      width: $button-radius;
+      height: $button-radius;
+      padding: 0;
+
+      position: relative;
+
+      &:hover {
+        color: $color-primary;
+        border-color: $color-primary;
       }
 
-      &:hover:not(.empty) {
-        border-color: $color-primary;
-        background-color: $color-primary;
-        i {
-          color: $color-primary-contrast-text;
-        }
+      i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
       }
+
     }
 
     .filter-input {
@@ -191,17 +157,6 @@
       width: 220px;
       display: inline-block;
       vertical-align: middle;
-    }
-
-    .separator {
-      display: inline-block;
-      vertical-align: middle;
-      color: $color-text-light-grey;
-      max-width: 200px;
-      padding: 0 20px;
-      text-align: left;
-      line-height: 1.2;
-      width: 55px;
     }
 
     .bool-input {
@@ -234,10 +189,22 @@
     }
   }
 
+  .filter-popup-button {
+    @include header-button-look();
+    font-family: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 1.3rem; // ??? why?
+    background-color: transparent;
+    margin-left: 20px;
+
+    i {
+      margin-right: 10px;
+    }
+  }
+
   .description-row {
     .info {
       color: $color-text-light-grey;
-      padding-top: 20px;
+      padding: 20px 0;
       margin-top: 20px;
       border-top: 2px solid $color-border-grey;
       line-height: 1.5em;
@@ -252,6 +219,8 @@
 
       button {
         margin: 0 10px;
+        @include button-look();
+        float: right;
       }
 
       .filter-popup__persisted-filter-title {
@@ -265,7 +234,7 @@
 }
 
 .filter-popup__button {
-  @include header-button-look()
+  @include header-button-look();
   // position: relative;
 
   &.filter-popup-button--open {
@@ -276,10 +245,10 @@
 }
 
 .filter-preset-list {
-  position: absolute;
-  @include header-panel-look();
   padding: 0;
-  margin-left: -14px;
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .filter-preset-list__item {
@@ -287,7 +256,7 @@
   justify-content: space-between;
 
   background-color: $color-primary-contrast-text;
-  padding: 0 15px;
+  padding: 8px 20px;
   color: $color-primary-text;;
 
   &:hover {
@@ -296,14 +265,127 @@
 }
 
 .filter-preset-item__button {
-  // border: 1px solid $color-border-grey;
   color: $color-text-medium-grey;
   border-radius: 3px;
   padding: 0 5px;
-  font-size: smaller;
+  border: none;
+  background-color: transparent;
 
   &:hover {
-    background: $color-primary;
-    color: $color-primary-contrast-text;
+    color: $color-primary;
+    cursor: pointer;
+  }
+}
+
+.filter-popup__header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.filter-popup__heading {
+  font-weight: bold;
+}
+
+.filter-popup__content-section {
+  padding: 15px;
+
+  &.filter-popup-sorting-section {
+    background-color: $color-background-very-light-grey;
+  }
+}
+
+.filter-wrapper .filter-popup {
+  .filter-popup__save-link-button, .filter-popup__toggle-list-button {
+    background-color: transparent;
+    border: none;
+    color: $color-text-light-grey;
+    text-decoration: underline;
+    box-shadow: none !important;
+
+    .fa {
+      margin-right: 5px;
+    }
+
+    &:hover {
+      background-color: transparent;
+      color: $color-primary;
+    }
+  }
+
+  .filter-popup__save-link-button {
+    padding: 0;
+  }
+
+  .filter-popup__toggle-list-button {
+    font-weight: bold;
+    color: $color-text-medium-grey;
+    font-size: 1.3rem;
+    text-decoration: none;
+    margin-left: 7px;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+}
+
+.filter-popup__preset-list {
+  background-color: $color-background-very-light-grey;
+  margin: 0 -15px -15px -15px;
+  padding: 15px;
+  padding-bottom: 20px;
+}
+
+.save-template-popup {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  box-shadow: 0 0 150px 10px $color-text-medium-grey;
+  padding: 20px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  .button {
+    @include button-look();
+
+    &:not(:first-of-type) {
+      margin-left: 20px;
+    }
+  }
+}
+
+.save-template-popup__header {
+  font-weight: bold;
+  color: $color-text-medium-grey;
+  margin-bottom: 20px;
+}
+
+.save-template__name-input {
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 15px;
+  border: 1px solid $color-text-light-grey;
+  border-radius: 3px;
+}
+
+.filter-input__clear-button {
+  background: transparentize(white, 0.3);
+  position: absolute;
+  top: 1px;
+  right: 13px;
+  border: none;
+  padding: 4px 5px;
+  z-index: 2;
+
+  .svg-icon {
+    fill: $color-text-medium-grey;
+  }
+
+  &:hover .svg-icon {
+    fill: $color-primary;
   }
 }

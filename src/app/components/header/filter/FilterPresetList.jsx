@@ -1,13 +1,15 @@
 import { useSelector } from "react-redux";
 import React from "react";
 import f from "lodash/fp";
-import listensToClickOutside from "react-onclickoutside";
+import i18n from "i18next";
 
-import classNames from "classnames";
-
-import { getFilterTemplates, FILTER_TEMPLATES_KEY } from "./FilterPresets";
+import {
+  FILTER_TEMPLATES_KEY,
+  adaptTemplateToTable,
+  canApplyTemplateToTable,
+  getFilterTemplates
+} from "./FilterPresets";
 import { useLocalStorage } from "../../../helpers/useLocalStorage";
-import { where } from "../../../helpers/functools";
 import FilterPresetListItem from "./FilterPresetListItem";
 import actions from "../../../redux/actionCreators";
 import store from "../../../redux/store";
@@ -17,30 +19,15 @@ const tableColumnsSelector = state => {
   return state.columns[tableId].data;
 };
 
-const FilterPresets = ({ langtag }) => {
-  const [open, setOpen] = React.useState(false);
-  const closePopup = React.useCallback(() => setOpen(false));
-  const togglePopup = React.useCallback(() => setOpen(!open));
-
-  const ClosingFilterPresetButton = listensToClickOutside(FilterPresetButton);
-
-  return (
-    <ClosingFilterPresetButton
-      handleClickOutside={closePopup}
-      open={open}
-      togglePopup={togglePopup}
-    >
-      {open && <FilterPresetList langtag={langtag} />}
-    </ClosingFilterPresetButton>
-  );
-};
-
-const FilterPresetList = ({ langtag }) => {
+const FilterPresetList = ({ langtag, closeFilterPopup }) => {
   const filterTemplates = getFilterTemplates(langtag);
   const [userFilters, setUserFilters] = useLocalStorage(
     FILTER_TEMPLATES_KEY,
     []
   );
+
+  const [open, setOpen] = useLocalStorage("filter-presets-open", false);
+  const toggleListItems = React.useCallback(() => setOpen(!open));
 
   const columns = useSelector(tableColumnsSelector);
 
@@ -50,51 +37,40 @@ const FilterPresetList = ({ langtag }) => {
     }
   };
 
-  const applyFilterTemplate = ({ filters, sorting }) =>
+  const applyFilterTemplate = ({ filters, sorting }) => {
     store.dispatch(actions.setFiltersAndSorting(filters, sorting));
-
-  const availableInThisTable = ({ columnInfo }) => {
-    const suchColumnExists = description => columns.find(where(description));
-    return f.all(suchColumnExists, columnInfo);
+    closeFilterPopup();
   };
 
   const availableFilters = [
     ...filterTemplates,
-    ...(userFilters || []).filter(availableInThisTable)
+    ...(userFilters
+      |> f.defaultTo([])
+      |> f.filter(canApplyTemplateToTable(columns))
+      |> f.map(adaptTemplateToTable(columns)))
   ];
+
   return (
-    <div className="filter-preset-list">
-      {availableFilters.map(template => (
-        <FilterPresetListItem
-          template={template}
-          applyTemplate={applyFilterTemplate}
-          deleteTemplate={deleteFilterTemplate}
-        />
-      ))}
-    </div>
+    <section className="filter-popup__content-section filter-popup__preset-list">
+      <button
+        className="filter-popup__toggle-list-button"
+        onClick={toggleListItems}
+      >
+        {i18n.t("table:filter.toggle-list")}
+      </button>
+      <div className="filter-preset-list">
+        {open &&
+          availableFilters.map(template => (
+            <FilterPresetListItem
+              key={template.title}
+              template={template}
+              applyTemplate={applyFilterTemplate}
+              deleteTemplate={deleteFilterTemplate}
+            />
+          ))}
+      </div>
+    </section>
   );
 };
 
-const FilterPresetButton = listensToClickOutside(
-  ({ open, children, togglePopup }) => {
-    const className = classNames("filter-popup__button", {
-      "filter-popup-button--open": open,
-      "ignore-react-onclickoutside": open
-    });
-    const arrowClass = classNames("filter-popup-button__arrow-icon", "fa", {
-      "fa-angle-down": !open,
-      "fa-angle-up": open
-    });
-
-    return (
-      <div className={className} onClick={togglePopup}>
-        <a className="filter-popup-button__inner-button" href="#">
-          <i className={arrowClass} />
-        </a>
-        {children}
-      </div>
-    );
-  }
-);
-
-export default FilterPresets;
+export default FilterPresetList;
