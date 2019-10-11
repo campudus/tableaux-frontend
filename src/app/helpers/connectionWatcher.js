@@ -2,12 +2,14 @@
 
 import { Subject } from "rxjs";
 import { bufferCount } from "rxjs/operators";
-import { makeRequest } from "./apiHelper";
 import Moment from "moment";
-import store from "../redux/store";
-import actions from "../redux/actionCreators";
-import { showDialog } from "../components/overlay/GenericOverlay";
 import i18n from "i18next";
+
+import { formatDateTime } from "./multiLanguage";
+import { makeRequest } from "./apiHelper";
+import { showDialog } from "../components/overlay/GenericOverlay";
+import actions from "../redux/actionCreators";
+import store from "../redux/store";
 
 const LOST_DIALOG_NAME = "connection-lost-dialog";
 const RECONNECTED_DIALOG_NAME = "reconnected-dialog";
@@ -71,7 +73,7 @@ connectionStatus
         connected
           ? "common:connection.reconnected-message"
           : "common:connection.disconnected-message",
-        { time: statusBefore.time.toString() }
+        { time: formatDateTime(statusBefore.time) }
       ),
       buttonActions: {
         [connected ? "positive" : "negative"]: [i18n.t("common:ok"), () => null]
