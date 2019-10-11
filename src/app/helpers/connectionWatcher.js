@@ -12,7 +12,7 @@ import i18n from "i18next";
 const LOST_DIALOG_NAME = "connection-lost-dialog";
 const RECONNECTED_DIALOG_NAME = "reconnected-dialog";
 const AVG_PING_DELAY = 20; // s
-const ERROR_PING_DELAY = 500;
+const ERROR_PING_DELAY = 1000; // ms
 
 const connectionStatus = new Subject();
 
@@ -21,23 +21,24 @@ const getPingDelay = connected =>
     ? AVG_PING_DELAY * 0.75 + AVG_PING_DELAY * Math.random() * 500
     : AVG_PING_DELAY * 500;
 
-const pingDelayed = delay =>
+const pingDelayed = (delay, connectedBefore = false) =>
   window.setTimeout(async () => {
     const connected = await makeRequest({ apiRoute: "/system/versions" })
       .then(() => true)
       .catch(() => false);
-    if (!connected) {
-      window.setTimeout(async () => {
-        const connected = await makeRequest({ apiRoute: "/system/versions" })
-          .then(() => true)
-          .catch(() => false);
-        connectionStatus.next({ connected, time: new Moment() });
-        pingDelayed(getPingDelay(connected));
-      }, ERROR_PING_DELAY);
-    } else {
+
+    // Don't immediately report loss of connection, but wait half a
+    // second, in case we just ran into a race condition with token
+    // refresh
+    const shouldReportConnectionStatus = connected || !connectedBefore;
+
+    if (shouldReportConnectionStatus) {
       connectionStatus.next({ connected, time: new Moment() });
-      pingDelayed(getPingDelay(connected));
     }
+    pingDelayed(
+      shouldReportConnectionStatus ? getPingDelay(connected) : ERROR_PING_DELAY,
+      connected
+    );
   }, delay);
 
 connectionStatus
