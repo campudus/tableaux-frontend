@@ -2,7 +2,7 @@
  * Content for the TableSettings menu. Entries are individual React items with specific functions.
  */
 
-import React, { PureComponent } from "react";
+import React from "react";
 import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
 

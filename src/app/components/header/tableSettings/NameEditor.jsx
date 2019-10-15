@@ -1,11 +1,4 @@
-/*
- * Menu entry for the TableSettingsPopup
- * Displays a menu entry with localized text, turns into input when clicked.
- * Input value gets saved as current locale display name when input loses focus or recieves "Enter" key.
- * Aborts input on "Escape" key.
- */
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
 
