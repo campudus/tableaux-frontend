@@ -4,102 +4,96 @@
  * Input value gets saved as current locale display name when input loses focus or recieves "Enter" key.
  * Aborts input on "Escape" key.
  */
-import React, { PureComponent } from "react";
-import * as f from "lodash/fp";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import f from "lodash/fp";
 import i18n from "i18next";
+import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
+import { preventDefault, stopPropagation } from "../../../helpers/functools";
 
-class NameEditor extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.saveAndClose = f.flow(
-      this.stopEditing,
-      this.saveTableName
-    );
-    this.state = {
-      active: false,
-      name: null
-    };
-  }
+const NameEditorInput = listensToClickOutside(
+  ({ onChange, onKeyDown, value }) => (
+    <input
+      type="text"
+      className="input"
+      value={value}
+      autoFocus
+      onKeyDown={onKeyDown}
+      onChange={onChange}
+    />
+  )
+);
 
-  startEditing = evt => {
-    this.setState({
-      active: true,
-      name: getTableDisplayName(this.props.table, this.props.langtag)
-    });
-    evt.stopPropagation();
-  };
+const NameEditor = ({ table, langtag, changeTableName, locked }) => {
+  const [editMode, setEditMode] = useState(false);
 
-  handleInput = evt => {
-    if (evt && evt.key) {
-      f.cond([
-        [f.eq("Enter"), this.saveAndClose],
-        [f.eq("Escape"), this.stopEditing],
-        [f.stubTrue, () => null]
-      ])(evt.key);
+  const exitEditMode = useCallback(() => setEditMode(false));
+  const enterEditMode = useCallback(event => {
+    stopPropagation(event);
+    preventDefault(event);
+    console.log("enter edit mode");
+    !locked && setEditMode(true);
+  });
+
+  const [value, setValue] = useState(getTableDisplayName(table, langtag) || "");
+  const valueRef = useRef(value); // double housekeeping for the unmount lifecycle
+  const handleChange = useCallback(event => setValue(event.target.value));
+  const clearInput = useCallback(() => setValue(""));
+
+  const saveAndClose = useCallback(event => {
+    console.log("saveAndClose", value);
+    preventDefault(event);
+    stopPropagation(event);
+    exitEditMode();
+    saveValue(value);
+  });
+
+  const saveValue = valueToSave => {
+    console.log(`saveValue(${valueToSave})`);
+    if (valueToSave !== getTableDisplayName(table, langtag)) {
+      changeTableName(table.id, { displayName: { [langtag]: valueToSave } });
     }
   };
 
-  saveAndClose = function() {}; // composed by constructor
-
-  handleTextChange = evt => {
-    if (evt && evt.target) {
-      this.setState({ name: evt.target.value });
+  const handleKeyDown = useCallback(({ key }) => {
+    if (key === "Enter") {
+      preventDefault(event);
+      return saveAndClose();
+    } else if (key === "Escape") {
+      return clearInput();
     }
-  };
+  });
 
-  stopEditing = () => {
-    this.setState({ active: false });
-  };
+  useEffect(() => () => saveValue(valueRef.current), []);
 
-  saveTableName = () => {
-    const { name } = this.state;
-    const { table, langtag, changeTableName } = this.props;
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
-    if (getTableDisplayName(table, langtag) === name) {
-      return;
-    } // guardian
+  const cssClass = classNames("table-rename-wrapper menu-item", {
+    "menu-item--disabled": locked,
+    active: editMode
+  });
 
-    const patchObj = { displayName: { [langtag]: name } };
-    changeTableName(table.id, patchObj);
-  };
-
-  renderOpenInput = () => {
-    return (
-      <input
-        type="text"
-        className="input"
-        autoFocus
-        onChange={this.handleTextChange}
-        onKeyDown={this.handleInput}
-        value={this.state.name}
-        onBlur={this.saveAndClose}
-      />
-    );
-  };
-
-  render = () => {
-    const { active } = this.state;
-    const { locked } = this.props;
-    return (
-      <a
-        href="#"
-        id="table-rename-wrapper"
-        className={active ? "active" : ""}
-        onClick={this.startEditing}
-      >
-        {active && !locked ? (
-          this.renderOpenInput()
-        ) : (
-          <span> {i18n.t("table:editor.rename_table")} </span>
-        )}
-      </a>
-    );
-  };
-}
+  return (
+    <button className={cssClass} onClick={enterEditMode}>
+      {editMode ? (
+        <NameEditorInput
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          value={value}
+          handleClickOutside={saveAndClose}
+        />
+      ) : (
+        <span> {i18n.t("table:editor.rename_table")} </span>
+      )}
+    </button>
+  );
+};
 
 NameEditor.propTypes = {
   table: PropTypes.object.isRequired,

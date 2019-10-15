@@ -53,6 +53,17 @@ input, textarea {
   font-weight: lighter;
 }
 
+button {
+  background-color: transparent;
+  border: none;
+  padding: none;
+  margin: none;
+  font-size: 1.3rem;
+  font-family: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
 .ReactVirtualized__List {
   overflow: hidden !important;
 

@@ -14,60 +14,41 @@ import {
 } from "../../../helpers/accessManagementHelper";
 import NameEditor from "./NameEditor";
 
-@listensToClickOutside
-class TableSettingsPopup extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = { selected: null };
-  }
+const TableSettingsPopup = ({
+  table,
+  langtag,
+  actions: { setAllRowsFinal, changeTableName }
+}) => {
+  const canEditRowAnnotations = canUserEditRowAnnotations({ table });
+  const canEditTableDisplayProperty = canUserEditTableDisplayProperty({
+    table
+  });
+  return (
+    <div id="table-settings-popup">
+      <button
+        key="i-need-no-key"
+        className={
+          "menu-item " + (canEditRowAnnotations ? "" : "menu-item--disabled")
+        }
+        onClick={() => (canEditRowAnnotations ? setAllRowsFinal(table) : null)}
+      >
+        {i18n.t("table:final.set_all_rows_final")}
+      </button>
 
-  handleClickOutside = evt => {
-    this.props.outsideClickHandler(evt);
-  };
-
-  render() {
-    const {
-      table,
-      langtag,
-      actions: { setAllRowsFinal, changeTableName }
-    } = this.props;
-    const canEditRowAnnotations = canUserEditRowAnnotations({ table });
-    const canEditTableDisplayProperty = canUserEditTableDisplayProperty({
-      table
-    });
-    return (
-      <div id="table-settings-popup">
-        <div
-          className={canEditRowAnnotations ? "menu-item" : "menu-item-disabled"}
-          onClick={() =>
-            canEditRowAnnotations ? setAllRowsFinal(table) : null
-          }
-        >
-          <a key="i-need-no-key" href="#">
-            {i18n.t("table:final.set_all_rows_final")}
-          </a>
-        </div>
-        <div
-          className={
-            canEditTableDisplayProperty ? "menu-item" : "menu-item-disabled"
-          }
-        >
-          <NameEditor
-            table={table}
-            langtag={langtag}
-            changeTableName={changeTableName}
-            locked={!canEditTableDisplayProperty}
-          />
-        </div>
-      </div>
-    );
-  }
-}
+      <NameEditor
+        table={table}
+        langtag={langtag}
+        changeTableName={changeTableName}
+        locked={!canEditTableDisplayProperty}
+      />
+    </div>
+  );
+};
 
 TableSettingsPopup.propTypes = {
   table: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  outsideClickHandler: PropTypes.func.isRequired
+  handleClickOutside: PropTypes.func.isRequired
 };
 
-export default TableSettingsPopup;
+export default listensToClickOutside(TableSettingsPopup);

@@ -48,7 +48,7 @@ class TableSettings extends React.Component {
             <TableSettingsPopup
               table={this.props.table}
               langtag={this.props.langtag}
-              outsideClickHandler={this.onClickOutside}
+              handleClickOutside={this.onClickOutside}
               actions={this.props.actions}
             />
           ) : null}
