@@ -37,7 +37,6 @@ const NameEditor = ({ table, langtag, changeTableName, locked }) => {
   const clearInput = useCallback(() => setValue(""));
 
   const saveAndClose = useCallback(event => {
-    console.log("saveAndClose", value);
     preventDefault(event);
     stopPropagation(event);
     exitEditMode();
