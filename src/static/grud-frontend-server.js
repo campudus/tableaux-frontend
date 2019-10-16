@@ -11,12 +11,7 @@ const ServerConfigTool = require("./ServerConfigTool");
 // Apply settings --------------------------------------------------------------
 
 const config = ServerConfigTool.enrichConfig({
-  // Default config, overriden by config file and env params
-  outDir: __dirname, // path to serve static files from
-  apiHost: "localhost", // api host
-  apiPort: 8080,
-  port: 3000,
-  host: "localhost"
+  outDir: __dirname // path to serve static files from
 });
 
 const proxyDestinations = [

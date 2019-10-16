@@ -4,13 +4,7 @@ const Path = require("path");
 const Bundler = require("parcel-bundler");
 const ServerConfigTool = require("./src/static/ServerConfigTool.js");
 
-const config = ServerConfigTool.enrichConfig({
-  outDir: "out",
-  host: "localhost",
-  port: 3000,
-  apiHost: "localhost",
-  apiPort: 8080
-});
+const config = ServerConfigTool.enrichConfig({});
 
 const proxyHandlers = [
   {
