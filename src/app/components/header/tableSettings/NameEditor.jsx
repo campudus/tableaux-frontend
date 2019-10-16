@@ -44,7 +44,6 @@ const NameEditor = ({ table, langtag, changeTableName, locked }) => {
   });
 
   const saveValue = valueToSave => {
-    console.log(`saveValue(${valueToSave})`);
     if (valueToSave !== getTableDisplayName(table, langtag)) {
       changeTableName(table.id, { displayName: { [langtag]: valueToSave } });
     }
