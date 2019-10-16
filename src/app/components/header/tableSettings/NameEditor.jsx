@@ -28,7 +28,6 @@ const NameEditor = ({ table, langtag, changeTableName, locked }) => {
   const enterEditMode = useCallback(event => {
     stopPropagation(event);
     preventDefault(event);
-    console.log("enter edit mode");
     !locked && setEditMode(true);
   });
 
