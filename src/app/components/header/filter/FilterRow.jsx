@@ -93,7 +93,6 @@ class FilterRow extends PureComponent {
         label: i18n.t(SearchFunctions[key].displayName)
       }));
 
-
     return (
       <div className="filter-row">
         <button
