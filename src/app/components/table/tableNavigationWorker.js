@@ -307,7 +307,7 @@ export function toggleCellEditing(params = {}) {
               <Header
                 context={doto(
                   table,
-                  getTableDisplayName(langtag),
+                  tbl => getTableDisplayName(tbl, langtag),
                   unless(f.isString, f.toString)
                 )}
                 title={selectedCellDisplayValues[langtag]}
