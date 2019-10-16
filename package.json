@@ -14,6 +14,7 @@
     "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "storybook": "start-storybook -p 3001 -s src",
     "test": "NODE_ICU_DATA=node_modules/full-icu jest",
+    "test:ci": "JEST_JUNIT_OUTPUT=./output/coverage/junit.xml NODE_ICU_DATA=node_modules/full-icu jest --ci --reporters=default --reporters=jest-junit",
     "clean": "rm -fr .cache out",
     "clean:project": "rm -fr .cache out node_modules; npm install && npm ci"
   },
