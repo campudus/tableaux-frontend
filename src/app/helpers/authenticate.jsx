@@ -4,7 +4,6 @@ import React from "react";
 import f from "lodash/fp";
 
 import { config } from "../constants/TableauxConstants";
-import { NO_AUTH_IN_DEV_MODE } from "../FeatureFlags";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
 
@@ -17,9 +16,7 @@ const keycloakInitOptions = {
 // react-redux@7 selector
 export const authSelector = f.propOr(false, ["grudStatus", "authenticated"]);
 
-export const noAuthNeeded = f.memoize(
-  () => process.env.NODE_ENV === "development" && NO_AUTH_IN_DEV_MODE
-);
+export const noAuthNeeded = f.memoize(() => config.disableAuth);
 
 // () => Keycloak
 // Side effects: Will login on first load and memoize the result

@@ -7,7 +7,7 @@ import withClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { ENABLE_HISTORY } from "../../FeatureFlags";
+import { config } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
@@ -355,7 +355,7 @@ class RowContextMenu extends React.Component {
                 "commenting-o"
               )
             : null}
-          {ENABLE_HISTORY &&
+          {config.enableHistory &&
           !f.contains(this.props.cell.kind, [
             ColumnKinds.group,
             ColumnKinds.concat

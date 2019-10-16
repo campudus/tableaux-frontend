@@ -4,7 +4,7 @@ import React from "react";
 
 import PropTypes from "prop-types";
 
-import { SHOW_TABLE_DROPDOWN } from "../../../FeatureFlags";
+import { config } from "../../../constants/TableauxConstants";
 import TableSettingsPopup from "./TableSettingsPopup";
 
 class TableSettings extends React.Component {
@@ -32,7 +32,7 @@ class TableSettings extends React.Component {
   render = () => {
     const { open } = this.state;
     return (
-      SHOW_TABLE_DROPDOWN && (
+      config.showTableDropdown && (
         <div id="table-settings-wrapper" onClick={this.toggleSettingsPopup}>
           <a
             id="table-settings"
