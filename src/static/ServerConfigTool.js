@@ -25,8 +25,21 @@ const envParams = [
   "port",
   "webhookUrl",
   "authServerUrl",
-  "authRealm"
+  "authRealm",
+  "enableHistory",
+  "showTableDropdown",
+  "disableAuth"
 ];
+
+const configDefaults = {
+  enableHistory: true,
+  showTableDropdown: true,
+  outDir: "out",
+  apiHost: "localhost",
+  apiPort: 8080,
+  host: "0.0.0.0",
+  port: "3000"
+};
 
 const enrichConfig = config => {
   try {
@@ -39,7 +52,10 @@ const enrichConfig = config => {
       path.join(projectBaseDir, "config.json");
     console.error("Config file path", configFile);
     const localConfig = require(configFile);
-    config = { ...config, ...localConfig };
+    config = {
+      ...config,
+      ...localConfig
+    };
   } catch (err) {
     console.error("Warning: Could not read config file, using defaults");
   }
@@ -50,12 +66,17 @@ const enrichConfig = config => {
       process.env[envVar.toUpperCase()];
     if (envValue) {
       console.error("Overriding", envVar, "with", envValue, "from environment");
-      config[envVar] = envValue;
+      config[envVar] = envValue === "false" ? false : envValue;
+      try {
+        config[envVar] = JSON.parse(envValue); // extract bools and numbers
+      } catch {
+        config[envVar] = envValue;
+      }
     }
   };
 
   envParams.forEach(overrideConfigWithEnv);
-  return config;
+  return { ...configDefaults, ...config };
 };
 
 const upgradeAuthHeaders = req => {
