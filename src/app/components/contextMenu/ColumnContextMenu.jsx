@@ -14,7 +14,24 @@ import {
 } from "../../helpers/accessManagementHelper";
 import TableauxConstants from "../../constants/TableauxConstants";
 
+import store from "../../redux/store";
+import actions from "../../redux/actionCreators";
+
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
+
+const ContextMenuItem = ({ iconName, title, onClick, closeMenu, children }) => {
+  const handleClick = React.useCallback(() => {
+    onClick();
+    closeMenu();
+  });
+  return (
+    <div className="column-context-menu__item" onMouseDown={handleClick}>
+      <i className={"column-context-menu-item__icon fa " + iconName} />
+      <div className="column-context-menut-item__title">{i18n.t(title)}</div>
+      {children}
+    </div>
+  );
+};
 
 @listensToClickOutside
 class ColumnContextMenu extends React.Component {
@@ -51,48 +68,61 @@ class ColumnContextMenu extends React.Component {
       canUserEditColumnDisplayProperty({ column }) &&
       !f.contains(column.kind, PROTECTED_CELL_KINDS);
     const editorItem = canEdit ? (
-      <div>
-        <a
-          href="#"
-          onClick={f.flow(
-            editHandler,
-            closeHandler
-          )}
-        >
-          {i18n.t("table:editor.edit_column")}
-        </a>
-      </div>
+      <ContextMenuItem
+        closeMenu={closeHandler}
+        onClick={editHandler}
+        title="table:editor.edit_column"
+        iconName="fa-edit"
+      />
     ) : null;
 
     const followLinkItem =
       column.kind === TableauxConstants.ColumnKinds.link &&
       canUserSeeTable(toTable.id) ? (
-        <div>
-          <a
-            href="#"
-            onClick={f.flow(
-              () => navigate("/" + langtag + "/tables/" + column.toTable),
-              closeHandler
-            )}
-          >
-            {i18n.t("table:switch_table")}
-            <i className="fa fa-angle-right" style={{ float: "right" }} />
-          </a>
-        </div>
+        <ContextMenuItem
+          closeMenu={closeHandler}
+          onClick={() => navigate("/" + langtag + "/tables/" + column.toTable)}
+          title="table:switch_table"
+        >
+          <i className="fa fa-angle-right column-context-menu-item__icon" />
+        </ContextMenuItem>
       ) : null;
 
     const hideColumnItem = this.props.isId ? null : (
-      <div>
-        <a
-          href="#"
-          onClick={f.flow(
-            () => toggleColumnVisibility(column.id),
-            closeHandler
-          )}
-        >
-          {i18n.t("table:hide_column")}
-        </a>
-      </div>
+      <ContextMenuItem
+        closeMenu={closeHandler}
+        onClick={() => toggleColumnVisibility(column.id)}
+        title="table:hide_column"
+        iconName="fa-eye"
+      />
+    );
+
+    const sortByThisColumn = direction => () => {
+      const currentFilters =
+        store.getState() |> f.prop(["tableView", "filters"]);
+      store.dispatch(
+        actions.setFiltersAndSorting(currentFilters, {
+          columnId: column.id,
+          value: direction
+        })
+      );
+    };
+
+    const sortingItems = (
+      <>
+        <ContextMenuItem
+          closeMenu={closeHandler}
+          onClick={sortByThisColumn("ASC")}
+          iconName="fa-sort-alpha-asc"
+          title="filter:help.sortasc"
+        />
+        <ContextMenuItem
+          closeMenu={closeHandler}
+          onClick={sortByThisColumn("DESC")}
+          iconName="fa-sort-alpha-desc"
+          title="filter:help.sortdesc"
+        />
+      </>
     );
 
     return (
@@ -104,6 +134,7 @@ class ColumnContextMenu extends React.Component {
           transform: "translateX(-100%)"
         }}
       >
+        {sortingItems}
         {editorItem}
         {followLinkItem}
         {hideColumnItem}

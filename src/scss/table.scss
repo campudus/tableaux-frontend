@@ -68,6 +68,21 @@ body div div.column-header-context-menu {
   padding: 0;
 }
 
+.column-context-menu__item {
+  padding: 8px 15px;
+  display: flex;
+  cursor: pointer;
+
+  .column-context-menu-item__icon {
+    width: 20px;
+    color: $color-text-medium-grey;
+
+    &:nth-of-type(2) {
+      text-align: center;
+    }
+  }
+}
+
 .tableaux-table {
   background-color: white;
   position: absolute;

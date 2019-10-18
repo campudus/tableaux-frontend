@@ -12,7 +12,7 @@ export const BoolInput = props => {
   const isYesSelected = value;
   const checkboxCss = classNames("checkbox", { checked: isYesSelected });
   return (
-    <span className="bool-input" onClick={onChangeValue}>
+    <span className="bool-input col-four" onClick={onChangeValue}>
       <div className={checkboxCss} />
       <div className="selection-text">
         ({i18n.t(isYesSelected ? "common:yes" : "common:no")})

@@ -13,3 +13,4 @@ devAccessSettings.json
 .idea
 /config.json
 /.indium.json
+output/
