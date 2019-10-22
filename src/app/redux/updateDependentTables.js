@@ -67,6 +67,7 @@ export const performRowDeletion = (tableId, rowId, state) => {
     state
     |> removeRowFromState
     |> when(hasDependants, propagateRowDelete(tableId, rowId))
+    |> f.prop("rows")
   );
 };
 
