@@ -90,7 +90,6 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
   };
 
   const itemName = getRowConcat(table, row, langtag);
-  console.log("tcs", actions.toggleCellSelection);
 
   store.dispatch(
     actions.openOverlay({
