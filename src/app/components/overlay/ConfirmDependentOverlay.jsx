@@ -66,11 +66,22 @@ const getRowConcat = (table, row, langtag) => {
 
 export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
   const onYesRowDelete = () => {
+    const { id: tableId } = table;
+    const { id: rowId } = row;
+
+    const rows = store.getState() |> f.get(["rows", tableId, "data"]);
+    const rowIdx = f.findIndex(f.propEq("id", rowId))(rows);
+    const neighborRowId =
+      rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id");
+
+    store.dispatch(
+      actions.toggleCellSelection({ rowId: neighborRowId, langtag })
+    );
+
     store.dispatch(actions.deleteRow({ row, table }));
     if (overlayToCloseId) {
       store.dispatch(actions.closeOverlay(overlayToCloseId));
     }
-    // TODO: create a helper to set the URL to anything we like
   };
 
   const buttons = {
@@ -79,6 +90,7 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
   };
 
   const itemName = getRowConcat(table, row, langtag);
+  console.log("tcs", actions.toggleCellSelection);
 
   store.dispatch(
     actions.openOverlay({
