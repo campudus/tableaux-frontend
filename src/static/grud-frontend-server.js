@@ -21,12 +21,6 @@ const proxyDestinations = [
       target: `http://${config.apiHost}:${config.apiPort}`,
       prependPath: true
     }
-  },
-  {
-    prefix: "/auth",
-    handler: {
-      target: config.authServerUrl
-    }
   }
 ];
 
