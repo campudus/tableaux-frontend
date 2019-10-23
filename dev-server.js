@@ -1,5 +1,3 @@
-// const { createServer } = require("http");
-const express = require("express");
 const Path = require("path");
 const Bundler = require("parcel-bundler");
 const ServerConfigTool = require("./src/static/ServerConfigTool.js");
@@ -12,12 +10,6 @@ const proxyHandlers = [
     handler: {
       target: `http://${config.apiHost}:${config.apiPort}`,
       prependPath: true
-    }
-  },
-  {
-    prefix: "/auth",
-    handler: {
-      target: config.authServerUrl
     }
   }
 ];
