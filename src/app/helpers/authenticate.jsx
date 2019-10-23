@@ -9,7 +9,7 @@ import store from "../redux/store";
 
 const keycloakInitOptions = {
   onLoad: "login-required",
-  checkLoginIframe: false
+  checkLoginIframe: true
 };
 
 // (state) => bool
@@ -26,7 +26,7 @@ export const getLogin = f.memoize(
     : () => {
         const keycloakSettings = {
           realm: config.authRealm,
-          url: "/auth",
+          url: config.authServerUrl,
           resource: "grud-frontend",
           clientId: "grud-frontend",
           "ssl-required": "external",
