@@ -190,6 +190,10 @@ class ColumnFilterPopup extends React.Component {
       selected: key === selectedId
     });
 
+    const buttonClass = classNames("column-filter__to-column-item", {
+      "to-column-item--visible": col.visible
+    });
+
     const focusColumn = event => {
       stopPropagation(event);
       store.dispatch(actions.toggleCellSelection({ columnId: col.id }));
@@ -209,9 +213,9 @@ class ColumnFilterPopup extends React.Component {
           onChange={f.noop} // to avoid React warning "unmanaged input"
         />
         {name}
-        <button className="column-filter__to-column-item" onClick={focusColumn}>
+        <button className={buttonClass} onClick={focusColumn}>
           {i18n.t("table:go-to-column")}
-          <i className="fa fa-long-arrow-right" />
+          <i className="to-column-item__icon fa fa-long-arrow-right" />
         </button>
       </div>
     );

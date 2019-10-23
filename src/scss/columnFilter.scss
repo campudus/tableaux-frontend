@@ -130,6 +130,10 @@
 
         &.selected {
           background-color: $color-light-link-color;
+
+          .to-column-item--visible {
+            display: flex;
+          }
         }
       }
     }
@@ -141,7 +145,7 @@
       overflow-y:scroll;
       margin-left: 15px;
 
-      .column-filter-checkbox-wrapper{
+      .column-filter-checkbox-wrapper {
         width: 100%;
         &.even {
           background-color: $color-background-very-light-grey;
@@ -154,4 +158,20 @@
     }
   }
 
+}
+
+.column-filter__to-column-item {
+  display: none;
+  float: right;
+  height: 30px;
+  color: $color-text-medium-grey;
+  align-items: center;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.to-column-item__icon {
+  margin-left: 5px;
 }
