@@ -12,5 +12,4 @@ devAccessSettings.json
 *.iml
 .idea
 /config.json
-/.indium.json
 output/

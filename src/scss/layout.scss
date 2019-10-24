@@ -54,6 +54,17 @@ input, textarea {
   }
 }
 
+button {
+  background-color: transparent;
+  border: none;
+  padding: none;
+  margin: none;
+  font-size: 1.3rem;
+  font-family: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
 .empty-item {
   text-transform: uppercase;
   font-style: italic;

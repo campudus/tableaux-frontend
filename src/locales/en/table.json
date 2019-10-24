@@ -138,6 +138,7 @@
   "redo": "Redo last data change",
   "no-tables-found": "There are no visible tables",
   "open-markdown-editor": "Open in editor",
+  "go-to-column": "Go to column",
   "link-editor": {
     "headline": "Edit/add link",
     "enter-link": "Enter URL here",
