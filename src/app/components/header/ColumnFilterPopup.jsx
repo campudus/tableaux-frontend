@@ -1,18 +1,20 @@
+import { List } from "react-virtualized";
 import React from "react";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { either } from "../../helpers/functools";
-import { List } from "react-virtualized";
-import DragSortList from "../cells/link/DragSortList";
-import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import { Directions, FilterModes } from "../../constants/TableauxConstants";
-import SearchFunctions from "../../helpers/searchFunctions";
+import { either, stopPropagation } from "../../helpers/functools";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
+import DragSortList from "../cells/link/DragSortList";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import SearchFunctions from "../../helpers/searchFunctions";
+import store from "../../redux/store";
+import actions from "../../redux/actionCreators";
 
 @listensToClickOutside
 class ColumnFilterPopup extends React.Component {
@@ -188,6 +190,15 @@ class ColumnFilterPopup extends React.Component {
       selected: key === selectedId
     });
 
+    const buttonClass = classNames("column-filter__to-column-item", {
+      "to-column-item--visible": col.visible
+    });
+
+    const focusColumn = event => {
+      stopPropagation(event);
+      store.dispatch(actions.toggleCellSelection({ columnId: col.id }));
+    };
+
     return (
       <div
         className={cssClass}
@@ -199,9 +210,13 @@ class ColumnFilterPopup extends React.Component {
         <input
           type="checkbox"
           checked={col.visible}
-          onChange={() => {}} // to avoid React warning "unmanaged input"
+          onChange={f.noop} // to avoid React warning "unmanaged input"
         />
         {name}
+        <button className={buttonClass} onClick={focusColumn}>
+          {i18n.t("table:go-to-column")}
+          <i className="to-column-item__icon fa fa-long-arrow-right" />
+        </button>
       </div>
     );
   };
