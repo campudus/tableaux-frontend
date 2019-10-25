@@ -13,7 +13,10 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { canUserChangeCell } from "../../helpers/accessManagementHelper";
+import {
+  canUserChangeCell,
+  canUserChangeAnyCountryTypeCell
+} from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
@@ -182,13 +185,14 @@ class Cell extends React.Component {
   };
 
   userCanEditValue() {
-    const { cell, langtag } = this.props;
-    const langtagOrCountry = f.propEq(["column", "languageType"], "country")(
-      cell
-    )
-      ? getCountryOfLangtag(langtag)
-      : langtag;
-    return canUserChangeCell(cell, langtagOrCountry);
+    const {
+      cell,
+      cell: { column },
+      langtag
+    } = this.props;
+    return column.multilanguage && column.languageType === "country"
+      ? canUserChangeAnyCountryTypeCell(cell)
+      : canUserChangeCell(cell, langtag);
   }
 
   render() {

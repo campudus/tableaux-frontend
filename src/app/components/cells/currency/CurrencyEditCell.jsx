@@ -1,6 +1,7 @@
 import React from "react";
 import CurrencyRow from "./CurrencyRow";
 import { getCurrencyWithCountry } from "./currencyHelper";
+import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 
@@ -82,6 +83,9 @@ export default class CurrencyEditCell extends React.PureComponent {
         countryCode,
         "withFallback"
       );
+
+      const isDisabled = canUserChangeCountryTypeCell(cell, countryCode);
+
       return (
         <CurrencyRow
           key={index}
@@ -89,6 +93,7 @@ export default class CurrencyEditCell extends React.PureComponent {
           isFallbackValue={!f.get(["value", countryCode], cell)}
           countryCurrencyValue={currencyValue}
           updateValue={this.updateCurrencyValue}
+          isDisabled={isDisabled}
         />
       );
     });

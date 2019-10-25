@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import f from "lodash/fp";
+import classNames from "classnames";
 
 import PropTypes from "prop-types";
 
@@ -91,6 +92,7 @@ export default class CurrencyRow extends PureComponent {
   currencyDecimalsRef = node => this.inputRef("currencyDecimals", node);
 
   renderCurrencyValue(value) {
+    const { isDisabled } = this.props;
     const splittedValue = splitPriceDecimals(value);
 
     return (
@@ -103,6 +105,7 @@ export default class CurrencyRow extends PureComponent {
           onKeyDown={this.onKeyDownInput}
           onChange={this.currencyInputChanged}
           onFocus={this.handleFocus("currencyInteger")}
+          disabled={isDisabled}
         />
         <span className="delimiter">{getLocaleDecimalSeparator()}</span>
         <input
@@ -113,22 +116,31 @@ export default class CurrencyRow extends PureComponent {
           value={splittedValue[1]}
           onKeyDown={this.onKeyDownInput}
           onFocus={this.handleFocus("currencyDecimals")}
+          disabled={isDisabled}
         />
       </div>
     );
   }
 
   render() {
-    const { country, countryCurrencyValue, isFallbackValue } = this.props;
+    const {
+      country,
+      countryCurrencyValue,
+      isFallbackValue,
+      isDisabled
+    } = this.props;
+
     const currencyCode = getCurrencyCode(country);
-    let currencyValue = this.renderCurrencyValue(countryCurrencyValue);
+
+    const currencyValue = this.renderCurrencyValue(countryCurrencyValue);
+
+    const rowClass = classNames("currency-row", {
+      "grey-out": isFallbackValue && !this.state.modified,
+      disabled: isDisabled
+    });
 
     return (
-      <div
-        className={`currency-row${
-          isFallbackValue && !this.state.modified ? " grey-out" : ""
-        }`}
-      >
+      <div className={rowClass}>
         <div className="country-code">{getLanguageOrCountryIcon(country)}</div>
         <div className="currency-value">{currencyValue}</div>
         <div className="currency-code">{currencyCode}</div>
