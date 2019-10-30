@@ -99,7 +99,7 @@
     "react-router": "^5.0.1",
     "react-router-dom": "5.1.2",
     "react-select": "1.2.1",
-    "react-virtualized": "9.18.5",
+    "react-virtualized": "9.21.1",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
     "rxjs": "^6.5.2",

@@ -40,10 +40,11 @@ export default class VirtualTable extends PureComponent {
     this.state = {
       openAnnotations: {},
       scrolledCell: {},
-      lastScrolledCell: {},
       newRowAdded: false,
       showResizeBar: false
     };
+
+    this.lastScrolledCell = {};
 
     this.getStoredView()
       |> f.get("columnWidths")
@@ -438,26 +439,6 @@ export default class VirtualTable extends PureComponent {
   getVisibleElement = (elements, idx) =>
     elements[this.props.visibleColumnOrdering[idx]];
 
-  componentWillReceiveProps(next) {
-    const newPropKeys = f.keys(next);
-    const changeInRowSelection =
-      f.contains("expandedRowIds", newPropKeys) &&
-      !f.isEmpty(f.xor(next.expandedRowIds, this.props.expandedRowIds));
-
-    if (
-      f.contains("selectedCell", newPropKeys) &&
-      !changeInRowSelection &&
-      next.tableView.selectedCell !== this.state.lastScrolledCell
-    ) {
-      this.scrollToCell(
-        next.tableView.selectedCell,
-        next.selectedCellExpandedRow
-      );
-    } else if (changeInRowSelection) {
-      maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
-    }
-  }
-
   updateSelectedCell = (
     cell,
     selectedLang = this.props.selectedCellExpandedRow
@@ -476,13 +457,11 @@ export default class VirtualTable extends PureComponent {
 
   scrollToCell = (cell, langtag = this.props.selectedCellExpandedRow) => {
     this.updateSelectedCell(cell, langtag);
-    const { lastScrolledCell } = this.state;
 
     if (f.isEmpty(cell)) {
       // when called by cell deselection
       this.setState({
-        scrolledCell: {},
-        lastScrolledCell
+        scrolledCell: {}
       });
       return false;
     }
@@ -521,6 +500,24 @@ export default class VirtualTable extends PureComponent {
   }
 
   componentDidUpdate(prev) {
+    const newPropKeys = f.keys(this.props);
+    const changeInRowSelection =
+      f.contains("expandedRowIds", newPropKeys) &&
+      !f.isEmpty(f.xor(prev.expandedRowIds, this.props.expandedRowIds));
+
+    if (
+      f.contains("selectedCell", newPropKeys) &&
+      !changeInRowSelection &&
+      this.props.tableView.selectedCell !== this.lastScrolledCell
+    ) {
+      this.scrollToCell(
+        prev.tableView.selectedCell,
+        prev.selectedCellExpandedRow
+      );
+    } else if (changeInRowSelection) {
+      maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
+    }
+
     // Release control of scrolling position once cell has been focused
     // Has to be done this way as Grid.scrollToCell() is not exposed properly
     // by MultiGrid
@@ -528,10 +525,11 @@ export default class VirtualTable extends PureComponent {
       // release after table was rendered once for real
       requestAnimationFrame(() =>
         this.setState({
-          scrolledCell: {},
-          lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
+          scrolledCell: {}
         })
       );
+
+      this.lastScrolledCell = f.get("scrolledCell", this.state.scrolledCell);
     }
 
     // jump one row down if a new one was created from keyboardnavigation
