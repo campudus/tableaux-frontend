@@ -49,7 +49,7 @@ const selfHiding = compose(
     }
   ),
   lifecycle({
-    componentWillUpdate() {
+    componentDidUpdate() {
       this.props.resetTimer();
     },
     componentWillUnmount() {

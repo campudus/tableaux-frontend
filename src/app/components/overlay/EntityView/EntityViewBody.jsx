@@ -345,8 +345,8 @@ class EntityViewBody extends Component {
     );
   };
 
-  componentWillUpdate(nextProps) {
-    if (this.props.row.id !== nextProps.row.id) {
+  componentDidUpdate(prevProps) {
+    if (this.props.row.id !== prevProps.row.id) {
       this.funcs = [];
     }
   }

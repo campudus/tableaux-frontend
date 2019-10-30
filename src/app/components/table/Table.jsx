@@ -36,7 +36,7 @@ class Table extends PureComponent {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener("resize", this.windowResize);
   }
 

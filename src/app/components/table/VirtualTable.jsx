@@ -44,6 +44,13 @@ export default class VirtualTable extends PureComponent {
       newRowAdded: false,
       showResizeBar: false
     };
+
+    this.getStoredView()
+      |> f.get("columnWidths")
+      |> f.toPairs
+      |> f.forEach(([idx, width]) =>
+        this.colWidths.set(f.toNumber(idx), width)
+      );
   }
 
   isInSelectedRow = (rowId, langtag) => {
@@ -71,15 +78,6 @@ export default class VirtualTable extends PureComponent {
       .map(JSON.parse)
       .map(f.get([this.props.table.id, "default"]))
       .getOrElse({});
-
-  componentWillMount() {
-    f.flow(
-      f.get("columnWidths"),
-      f.toPairs
-    )(this.getStoredView()).forEach(([idx, width]) =>
-      this.colWidths.set(f.toNumber(idx), width)
-    );
-  }
 
   setBarOffset = event => {
     this.divRef.style.left = event.clientX + "px";

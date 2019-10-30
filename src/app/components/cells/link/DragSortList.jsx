@@ -139,7 +139,7 @@ export default compose(
     }
   ),
   lifecycle({
-    componentWillMount() {
+    componentDidMount() {
       this.props.setOrdering(this.props.entries);
     },
     componentWillReceiveProps(nextProps) {

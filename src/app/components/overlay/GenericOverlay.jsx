@@ -55,13 +55,10 @@ class GenericOverlay extends Component {
     this.allowedTypes = ["normal", "full-height"];
     this.focusedElementBeforeOverlayOpens = null;
     this.childrenEventHandlers = {};
+    this.focusedElementBeforeOverlayOpens = document.activeElement;
 
     window.setTimeout(() => this.setState({ overlayIsNew: false }), 400);
   }
-
-  componentWillMount = () => {
-    this.focusedElementBeforeOverlayOpens = document.activeElement;
-  };
 
   componentDidMount = () => {
     // need .contains of real dom node
