@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
@@ -18,7 +18,9 @@ const DuplicatedMessage = props => {
   );
 };
 
-const TranslatedDuplicatedMessage = translate(["table"])(DuplicatedMessage);
+const TranslatedDuplicatedMessage = withTranslation(["table"])(
+  DuplicatedMessage
+);
 
 export function duplicateRow(payload) {
   store.dispatch(

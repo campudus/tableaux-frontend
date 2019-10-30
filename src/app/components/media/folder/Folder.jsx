@@ -1,5 +1,5 @@
 import { List, AutoSizer, WindowScroller } from "react-virtualized";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import React, { Component } from "react";
 import f from "lodash/fp";
@@ -13,7 +13,7 @@ import FileUpload from "./FileUpload.jsx";
 import NewFolderAction from "./NewFolderAction.jsx";
 import Subfolder from "./Subfolder.jsx";
 
-@translate(["media"])
+@withTranslation(["media"])
 @withRouter
 class Folder extends Component {
   constructor(props) {

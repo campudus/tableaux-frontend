@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
@@ -95,7 +95,7 @@ const DependentRowsList = props => {
   );
 };
 
-export default translate("table")(DependentRowsList);
+export default withTranslation("table")(DependentRowsList);
 DependentRowsList.propTypes = {
   row: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,

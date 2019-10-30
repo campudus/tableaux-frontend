@@ -6,7 +6,7 @@ import {
   withHandlers,
   withStateHandlers
 } from "recompose";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import Dropzone from "react-dropzone";
 import React from "react";
 import f from "lodash/fp";
@@ -97,7 +97,7 @@ export default compose(
   pure,
   branch(() => !canUserCreateMedia(), renderNothing),
   enhance,
-  translate(["media"])
+  withTranslation(["media"])
 )(MultilangFileDropzone);
 
 MultilangFileDropzone.propTypes = {

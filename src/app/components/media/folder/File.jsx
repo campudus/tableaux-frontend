@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import { withState } from "recompose";
 import React, { Component } from "react";
 import i18n from "i18next";
@@ -22,7 +22,7 @@ import apiUrl from "../../../helpers/apiUrl";
 
 const enhance = withState("saveChanges", "setSaveChanges", false);
 
-@translate(["media"])
+@withTranslation(["media"])
 class File extends Component {
   onRemove = () => {
     if (canUserDeleteFiles()) {

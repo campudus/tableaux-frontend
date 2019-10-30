@@ -6,7 +6,7 @@ import {
   withHandlers,
   withState
 } from "recompose";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import Dropzone from "react-dropzone";
 import React from "react";
 import f from "lodash/fp";
@@ -121,5 +121,5 @@ export default compose(
   withUploadHandlers,
   withDropHandlers,
   pure,
-  translate(["media"])
+  withTranslation(["media"])
 )(FileUpload);

@@ -1,5 +1,5 @@
 import React from "react";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
 import { compose, withHandlers, withStateHandlers, lifecycle } from "recompose";
@@ -66,5 +66,5 @@ const selfHiding = compose(
 
 export default compose(
   selfHiding,
-  translate(["table"])
+  withTranslation(["table"])
 )(Toast);

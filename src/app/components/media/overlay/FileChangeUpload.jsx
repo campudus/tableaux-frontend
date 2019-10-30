@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import Dropzone from "react-dropzone";
 import React, { PureComponent } from "react";
 
@@ -11,7 +11,7 @@ import FileIcon from "../folder/FileIcon.jsx";
 import ProgressBar from "../ProgressBar.jsx";
 import route from "../../../helpers/apiRoutes";
 
-@translate(["media"])
+@withTranslation(["media"])
 class FileChangeUpload extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,

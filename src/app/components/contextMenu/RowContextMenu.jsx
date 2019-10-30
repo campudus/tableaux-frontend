@@ -1,5 +1,5 @@
 import { compose } from "recompose";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
 import withClickOutside from "react-onclickoutside";
@@ -401,6 +401,6 @@ RowContextMenu.propTypes = {
 };
 
 export default compose(
-  translate(["table"]),
+  withTranslation(["table"]),
   withClickOutside
 )(RowContextMenu);

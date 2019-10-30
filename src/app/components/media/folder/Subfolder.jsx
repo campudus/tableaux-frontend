@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import SubfolderView from "./SubfolderView";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import SubfolderEdit from "./SubfolderEdit.jsx";
 import { confirmDeleteFolder } from "../../../components/overlay/ConfirmationOverlay";
 import {
@@ -65,6 +65,6 @@ Subfolder.propTypes = {
 };
 
 export default compose(
-  translate(["media"]),
+  withTranslation(["media"]),
   pure
 )(Subfolder);

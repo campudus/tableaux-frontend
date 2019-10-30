@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 
 import PropTypes from "prop-types";
@@ -85,4 +85,4 @@ NavigationPopup.propTypes = {
   navigationOpen: PropTypes.bool
 };
 
-export default translate(["header"])(NavigationPopup);
+export default withTranslation(["header"])(NavigationPopup);

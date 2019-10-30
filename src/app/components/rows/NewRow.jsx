@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import {
   compose,
   pure,
@@ -18,7 +18,7 @@ const withFunctionality = compose(
     rows: PropTypes.array,
     onAdd: PropTypes.func
   }),
-  translate(["table"]),
+  withTranslation(["table"]),
   withHandlers({
     addNewRow: props => () => {
       const { t, showToast, rows, onAdd } = props;

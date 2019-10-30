@@ -1,5 +1,5 @@
 import { compose, pure, withHandlers } from "recompose";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import React from "react";
 import f from "lodash/fp";
@@ -44,7 +44,7 @@ const enhance = compose(
     }
   }),
   pure,
-  translate(["media"])
+  withTranslation(["media"])
 );
 
 const SubfolderView = props => {

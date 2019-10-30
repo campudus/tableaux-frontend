@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
 import TableauxConstants from "../../../constants/TableauxConstants";
@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
 
-@translate(["header"])
+@withTranslation(["header"])
 class TableSwitcherButton extends React.PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,

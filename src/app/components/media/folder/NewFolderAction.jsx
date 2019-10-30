@@ -4,7 +4,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { pure, compose, withHandlers, withState } from "recompose";
 import f from "lodash/fp";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 
 const withEditMode = compose(
   withState("edit", "updateEdit", false),
@@ -63,5 +63,5 @@ NewFolderAction.propTypes = {
 export default compose(
   pure,
   withEditMode,
-  translate(["media"])
+  withTranslation(["media"])
 )(NewFolderAction);

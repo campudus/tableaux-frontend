@@ -1,11 +1,11 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import f from "lodash/fp";
 
-@translate(["common"])
+@withTranslation(["common"])
 class BooleanView extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,

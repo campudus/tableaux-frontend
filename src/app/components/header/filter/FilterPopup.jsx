@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import Select from "react-select";
 import * as f from "lodash/fp";
@@ -34,7 +34,7 @@ const SPECIAL_SEARCHES = [
 
 const SPECIAL_TEXT_SEARCHES = [FilterModes.ROW_CONTAINS];
 
-@translate(["filter", "table"])
+@withTranslation(["filter", "table"])
 @listensToClickOutside
 class FilterPopup extends React.Component {
   static isSortableColumn = column =>

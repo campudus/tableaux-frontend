@@ -1,9 +1,9 @@
 import SvgIcon from "../../helperComponents/SvgIcon";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import i18n from "i18next";
 import React from "react";
 
-const FileItem = translate(["media", "common"])(props => {
+const FileItem = withTranslation(["media", "common"])(props => {
   const { isLinked, toggleAttachment, title, url, editorUrl, style } = props;
 
   return (

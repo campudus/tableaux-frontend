@@ -5,7 +5,7 @@ import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 import { branch, compose, renderNothing, withStateHandlers } from "recompose";
 import LanguageSwitcher from "../../header/LanguageSwitcher";
 import FileChangeUpload from "./FileChangeUpload";
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 
 const enhance = compose(
   branch(
@@ -26,7 +26,7 @@ const enhance = compose(
       switchLang: () => fileLangtag => ({ fileLangtag })
     }
   ),
-  translate(["media"])
+  withTranslation(["media"])
 );
 
 const MultifileFileEdit = props => {

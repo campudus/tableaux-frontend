@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import ReactDOM from "react-dom";
 import f from "lodash/fp";
@@ -17,7 +17,7 @@ import CurrencyEditCell from "./CurrencyEditCell";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
-@translate(["table"])
+@withTranslation(["table"])
 class CurrencyCell extends React.PureComponent {
   static propTypes = {
     cell: PropTypes.object.isRequired,

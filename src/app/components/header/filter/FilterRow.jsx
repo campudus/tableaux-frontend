@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React, { PureComponent } from "react";
 import Select from "react-select";
 import f from "lodash/fp";
@@ -14,7 +14,7 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 export const BOOL = "boolean";
 export const TEXT = "text";
 
-@translate(["table", "filter"])
+@withTranslation(["table", "filter"])
 class FilterRow extends PureComponent {
   static propTypes = {
     searchableColumns: PropTypes.array.isRequired,

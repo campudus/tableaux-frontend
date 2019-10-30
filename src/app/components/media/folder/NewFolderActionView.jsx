@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { translate } from "react-i18next";
-import { compose } from "recompose";
+import { withTranslation } from "react-i18next";
 
 const NewFolderActionView = props => (
   <div className="new-folder-button" onClick={props.callback}>
@@ -15,4 +14,4 @@ NewFolderActionView.propTypes = {
   t: PropTypes.func.isRequired
 };
 
-export default compose(translate(["media"]))(NewFolderActionView);
+export default withTranslation(["media"])(NewFolderActionView);

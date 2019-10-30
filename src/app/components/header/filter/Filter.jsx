@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
 
@@ -54,7 +54,7 @@ const FilterButton = ({
   );
 };
 
-export default translate(["filter"])(FilterButton);
+export default withTranslation(["filter"])(FilterButton);
 
 FilterButton.propTypes = {
   langtag: PropTypes.string.isRequired,

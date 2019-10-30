@@ -1,4 +1,4 @@
-import { translate } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
 import listensToClickOutside from "react-onclickoutside";
@@ -16,7 +16,7 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import route from "../../../helpers/apiRoutes";
 
-@translate(["header"])
+@withTranslation(["header"])
 @listensToClickOutside
 @withRouter
 class SwitcherPopup extends React.PureComponent {
