@@ -114,9 +114,9 @@ class SvgIcon extends Component {
     });
   };
 
-  componentWillReceiveProps = newProps => {
-    if (newProps.icon !== this.props.icon) {
-      this.setSvg(newProps.icon);
+  componentDidUpdate = prevProps => {
+    if (prevProps.icon !== this.props.icon) {
+      this.setSvg(this.props.icon);
     }
   };
 

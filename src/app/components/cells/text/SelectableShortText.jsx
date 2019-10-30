@@ -115,12 +115,12 @@ const enhance = compose(
     }
   }),
   lifecycle({
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(prevProps) {
       if (
-        f.isNil(this.props.requestedData) &&
-        !f.isNil(nextProps.requestedData)
+        f.isNil(prevProps.requestedData) &&
+        !f.isNil(this.props.requestedData)
       ) {
-        this.props.setInitialCompletionList(nextProps.requestedData);
+        this.props.setInitialCompletionList(this.props.requestedData);
       }
     },
     componentDidMount() {

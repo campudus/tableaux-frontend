@@ -128,12 +128,12 @@ class MultiselectArea extends PureComponent {
     );
   };
 
-  componentWillReceiveProps = next => {
+  componentDidUpdate = prevProps => {
     if (
-      !f.every(f.isNil, [next.selection, this.props.selection]) &&
-      !f.equals(next.selection, this.props.selection)
+      !f.every(f.isNil, [prevProps.selection, this.props.selection]) &&
+      !f.equals(prevProps.selection, this.props.selection)
     ) {
-      this.setState({ selection: next.selection });
+      this.setState({ selection: this.props.selection });
     }
   };
 

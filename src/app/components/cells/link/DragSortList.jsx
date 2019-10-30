@@ -142,10 +142,10 @@ export default compose(
     componentDidMount() {
       this.props.setOrdering(this.props.entries);
     },
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(prevProps) {
       const getEntries = f.getOr([], ["entries"]);
-      if (getEntries(this.props).length !== getEntries(nextProps).length) {
-        this.props.setOrdering(nextProps.entries);
+      if (getEntries(this.props).length !== getEntries(prevProps).length) {
+        this.props.setOrdering(this.props.entries);
       }
     }
   })
