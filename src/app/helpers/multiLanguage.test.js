@@ -5,6 +5,10 @@ import {
   formatDateTime,
   formatNumber,
   formatTime,
+  getCountryOfLangtag,
+  getLanguageOfLangtag,
+  isCountryTag,
+  isLangtag,
   readLocalizedNumber,
   toPlainDate
 } from "./multiLanguage";
@@ -186,6 +190,62 @@ describe("multiLanguage.js", () => {
         readLocalizedNumber("Hey stupid! What you're gonna do?", "en-US")
       ).toEqual(NaN);
       expect(readLocalizedNumber("123.45.67.890", "en-US")).toEqual(123.45);
+    });
+  });
+
+  describe("isLangtag()", () => {
+    it("is nil safe", () => {
+      expect(isLangtag()).toBe(false);
+      expect(isLangtag(null)).toBe(false);
+      expect(isLangtag(12345)).toBe(false);
+    });
+    it("matches specifically", () => {
+      expect(isLangtag("de")).toBe(true);
+      expect(isLangtag("de-DE")).toBe(true);
+      expect(isLangtag("DE")).toBe(false);
+      expect(isLangtag("gude-DEMONSTRATION")).toBe(false);
+    });
+  });
+
+  describe("isCountryTag()", () => {
+    it("is nil safe", () => {
+      expect(isCountryTag()).toBe(false);
+      expect(isCountryTag(null)).toBe(false);
+      expect(isCountryTag(12345)).toBe(false);
+    });
+    it("matches specifically", () => {
+      expect(isCountryTag("DE")).toBe(true);
+      expect(isCountryTag("de-DE")).toBe(true);
+      expect(isCountryTag("de")).toBe(false);
+      expect(isCountryTag("gude-DEMONSTRATION")).toBe(false);
+    });
+  });
+
+  describe("getCountryOfLangtag()", () => {
+    it("is nil safe", () => {
+      expect(getCountryOfLangtag()).toBe(null);
+      expect(getCountryOfLangtag(null)).toBe(null);
+      expect(getCountryOfLangtag(123)).toBe(null);
+    });
+    it("extracts relevant substrings", () => {
+      expect(getCountryOfLangtag("DE")).toEqual("DE");
+      expect(getCountryOfLangtag("de-DE")).toEqual("DE");
+      expect(getCountryOfLangtag("de")).toBe(null);
+      expect(getCountryOfLangtag("bad string")).toBe(null);
+    });
+  });
+
+  describe("getLanguageOfLangtag()", () => {
+    it("is nil safe", () => {
+      expect(getLanguageOfLangtag()).toBe(null);
+      expect(getLanguageOfLangtag(null)).toBe(null);
+      expect(getLanguageOfLangtag(123)).toBe(null);
+    });
+    it("extracts relevant substrings", () => {
+      expect(getLanguageOfLangtag("de-DE")).toEqual("de");
+      expect(getLanguageOfLangtag("de")).toEqual("de");
+      expect(getLanguageOfLangtag("DE")).toBe(null);
+      expect(getLanguageOfLangtag("bad string")).toBe(null);
     });
   });
 });

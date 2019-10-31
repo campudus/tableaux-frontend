@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import i18n from "i18next";
 
 import { checkOrThrow } from "../specs/type";
-import { either, ifElse, match, memoizeWith, when } from "./functools";
+import { either, ifElse, match, maybe, memoizeWith, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
 import TableauxConstants, {
   ColumnKinds,
@@ -34,36 +34,57 @@ const retrieveTranslation = f.curryN(2, (langtag, json) => {
   )(json);
 });
 
-function getLanguageOrCountryIcon(langtag, specific = "") {
-  // we try to split on "-" (dash) character
-  const langtagSplitted = langtag.split(langtagSeparatorRegex);
+const languagePartRegex = /[a-z]{2}/;
+const countryPartRegex = /[A-Z]{2}/;
+const matchWholeString = (...matchers) =>
+  new RegExp(
+    ["^", ...matchers, "$"].reduce(
+      (accum, nextMatcher) =>
+        accum +
+        (nextMatcher instanceof RegExp ? nextMatcher.source : nextMatcher)
+    )
+  );
+const languageRegex = matchWholeString(languagePartRegex);
+const countryRegex = matchWholeString(countryPartRegex);
+const fullLangtagRegex = matchWholeString(
+  languagePartRegex,
+  "-",
+  countryPartRegex
+);
 
-  // check if we got a full langtag, e.g. de-CH
-  // ... if so return only the country
-  // ... otherwise return just the language
-  // unless asked for "language" or "country"
-  // ... in  that case we return either language or country from full langtag
-  // ... or we expect the country to be expandable like de -> de_DE, it -> it_IT etc.
-  const countryOrLanguage =
-    langtagSplitted.length > 1 ? langtagSplitted[1] : langtagSplitted[0];
+const matchesRegex = regex => string =>
+  f.isString(string) && regex.test(string);
 
-  const getResult = ([lang]) => {
-    if (specific.startsWith("c")) {
-      return getCountryOfLangtag(langtag);
-    } else if (specific.startsWith("l")) {
-      return lang;
-    } else {
-      return countryOrLanguage;
-    }
-  };
+const isLangtag = input =>
+  matchesRegex(fullLangtagRegex)(input) || matchesRegex(languageRegex)(input);
+const isCountryTag = input =>
+  matchesRegex(fullLangtagRegex)(input) || matchesRegex(countryRegex)(input);
 
-  const icon = countryOrLanguage.toLowerCase() + ".png";
-  const result = countryOrLanguage || getResult(langtagSplitted);
+/**
+ * Try to return a matching country icon, falling back to languag icon.
+ * @param langtag string, language or country tag (ln, ln-CT or CT)
+ * @param specific ["language", "country"] which tag to prefer, default = "country"
+ * @returns React element with flag icon and country/language string
+ **/
+function getLanguageOrCountryIcon(langtag, specific = "country") {
+  const languagePart = getLanguageOfLangtag(langtag);
+  const countryPart = getCountryOfLangtag(langtag);
+
+  const countryOrLanguageTag =
+    specific.startsWith("l") || !countryPart ? languagePart : countryPart;
+  const iconUrl = maybe(countryOrLanguageTag)
+    .exec("toLowerCase")
+    .map(basename => "/img/flags/" + basename + ".png")
+    .getOrElse(null);
+
+  if (f.isNil(countryOrLanguageTag)) {
+    console.warn("No", specific, "icon for input", typeof langtag, langtag);
+  }
 
   return (
     <span className="langtag">
-      <img src={"/img/flags/" + icon} alt={result} />
-      <span className="langtag-label">{result}</span>
+      <img src={iconUrl} alt={countryOrLanguageTag} />
+      <span className="langtag-label">{countryOrLanguageTag}</span>
     </span>
   );
 }
@@ -155,14 +176,11 @@ function getCurrencyCode(country) {
 // converts en-US to US or en to EN
 // TODO Map EN to GB or
 function getCountryOfLangtag(langtag) {
-  const splittedLangtag = langtag.split(langtagSeparatorRegex);
-  return splittedLangtag.length > 1
-    ? splittedLangtag[1]
-    : String(splittedLangtag[0]).toUpperCase();
+  return isCountryTag(langtag) ? langtag.match(countryPartRegex)[0] : null;
 }
 
 function getLanguageOfLangtag(langtag) {
-  return langtag.split(langtagSeparatorRegex)[0];
+  return isLangtag(langtag) ? langtag.match(languagePartRegex)[0] : null;
 }
 
 // data structure for columns is identical
@@ -349,5 +367,7 @@ export {
   formatNumber,
   toPlainDate,
   getLocaleDecimalSeparator,
-  readLocalizedNumber
+  readLocalizedNumber,
+  isLangtag,
+  isCountryTag
 };
