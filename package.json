@@ -98,7 +98,7 @@
     "react-rnd": "^9.1.2",
     "react-router": "^5.0.1",
     "react-router-dom": "5.1.2",
-    "react-select": "1.2.1",
+    "react-select": "3.0.8",
     "react-virtualized": "9.21.1",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",

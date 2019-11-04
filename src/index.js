@@ -1,5 +1,4 @@
 import "babel-polyfill";
-import "../node_modules/react-select/dist/react-select.css";
 import "../node_modules/codemirror/lib/codemirror.css";
 import "react-virtualized/styles.css";
 import "./app/helpers/connectionWatcher";
