@@ -17,9 +17,7 @@ const Option = props => {
   );
 };
 
-// const DropdownIndicator = () => <i className="fa fa-arrow-down" />;
 const IndicatorSeparator = () => null;
-const DropdownIndicator = () => <i className="fa fa-sort-down" />; // TODO: change to fa-sort-down after FA-upgrade
 
 const LanguageSwitcher = props => {
   const { limitLanguages, disabled, langtag, onChange, openOnTop } = props;
