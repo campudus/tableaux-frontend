@@ -1,6 +1,6 @@
 .language-switcher {
   position: relative;
-  width: 80px;
+  // width: 110px;
 
   .langtag-label {
     margin-left: 0.3em;
@@ -9,7 +9,61 @@
 
 header {
   .language-switcher {
-    margin-top: 10px;
+    margin-top: 12px;
     float: right;
+  }
+
+  .language-switcher__main {
+  }
+
+  .language-switcher__control,
+  .language-switcher__control--is-focused {
+    cursor: pointer;
+    height: 28px;
+    min-height: 0;
+    border-radius: 3px;
+    border-color: transparentize($color-primary, 0.5);
+  }
+
+  .language-switcher__control:hover,
+  .language-switcher__control--menu-is-open {
+    box-shadow: none;
+    border-color: transparentize($color-primary, 0.15);
+  }
+
+  .language-switcher__control--menu-is-open {
+    border-radius: 3px 3px 0 0;
+  }
+
+  .language-switcher__indicator {
+    padding: 4px;
+  }
+
+  .language-switcher__item {
+    width: 100%;
+    padding: 3px 5px;
+    text-align: center;
+
+    &:hover {
+      color: $color-hover-foreground;
+      background-color: $color-hover-background;
+    }
+  }
+
+  .language-switcher__menu {
+    margin: 0;
+    border-radius: 0 0 3px 3px;
+  }
+
+  .language-switcher__value-container {
+    padding: 0;
+    height: 24px;
+
+    .language-switcher__item {
+      &:hover {
+        color: inherit;
+        background-color: inherit;
+      }
+    }
   }
 }

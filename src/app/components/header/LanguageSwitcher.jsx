@@ -1,73 +1,76 @@
 import f from "lodash/fp";
 import Select from "react-select";
-import React from "react";
+import React, { useCallback } from "react";
 import PropTypes from "prop-types";
-import { compose, withHandlers, pure, setPropTypes } from "recompose";
 
 import { Langtags } from "./../../constants/TableauxConstants";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 
-const enhance = compose(
-  setPropTypes({
-    langtag: PropTypes.string.isRequired,
-    onChange: PropTypes.func,
-    openOnTop: PropTypes.bool,
-    options: PropTypes.array,
-    disabled: PropTypes.bool,
-    limitLanguages: PropTypes.array
-  }),
-  withHandlers({
-    onChange: props => langObj => {
-      // prevents undefined language tag: we just want to switch the language when there is actually something selected
-      // if (!f.isEmpty(langObj)) {
-      const langtag = langObj.value;
-      if (props.onChange) {
-        props.onChange(langtag);
-      }
-      // }
-    },
-    renderOption: () => option =>
-      getLanguageOrCountryIcon(option.value, "language")
-  }),
-  pure
-);
+const Option = props => {
+  const { value, selectOption, getValue } = props;
+  const handleClick = useCallback(() => selectOption(value));
+  const selectedValue = getValue() |> f.head |> f.prop("value");
+  return (
+    <button className="language-switcher__item" onMouseDown={handleClick}>
+      {getLanguageOrCountryIcon(value || selectedValue, "language")}
+    </button>
+  );
+};
+
+// const DropdownIndicator = () => <i className="fa fa-arrow-down" />;
+const IndicatorSeparator = () => null;
+const DropdownIndicator = () => <i className="fa fa-sort-down" />; // TODO: change to fa-sort-down after FA-upgrade
 
 const LanguageSwitcher = props => {
-  const {
-    limitLanguages,
-    disabled,
-    langtag,
-    onChange,
-    renderOption,
-    openOnTop
-  } = props;
+  const { limitLanguages, disabled, langtag, onChange, openOnTop } = props;
+
+  const handleChange = useCallback(option => {
+    if (f.isFunction(onChange)) {
+      onChange(option);
+    }
+  });
+
   const languages = f.isNil(props.languages) ? Langtags : props.languages;
   // Inside select box show user just the languages he has access to
   const languagesToDisplay =
     !disabled && limitLanguages ? limitLanguages : languages;
 
+  const mkOption = optionLangtag => ({
+    value: optionLangtag,
+    label: optionLangtag
+  });
+
   const options =
     props.options ||
-    languagesToDisplay.map(langtag => ({
-      value: langtag,
-      label: langtag
-    }));
+    languagesToDisplay.filter(f.complement(f.equals(langtag))).map(mkOption);
+
+  const selectedOption = mkOption(langtag);
 
   return (
     <div className="language-switcher">
       <Select
-        className={openOnTop ? "open-on-top" : ""}
+        className={
+          "language-switcher__main" + (openOnTop ? " open-on-top" : "")
+        }
+        classNamePrefix="language-switcher"
         options={options}
-        searchable={false}
-        clearable={false}
-        value={langtag}
-        onChange={onChange}
-        optionRenderer={renderOption}
-        valueRenderer={renderOption}
+        isSearchable={false}
+        isClearable={false}
+        value={langtag && selectedOption}
+        onChange={handleChange}
         disabled={disabled}
+        components={{ Option, SingleValue: Option, IndicatorSeparator }}
       />
     </div>
   );
 };
 
-export default enhance(LanguageSwitcher);
+LanguageSwitcher.propTypes = {
+  limitLanguages: PropTypes.arrayOf(PropTypes.string),
+  disabled: PropTypes.bool,
+  langtag: PropTypes.string,
+  onChange: PropTypes.func,
+  openOnTop: PropTypes.bool
+};
+
+export default LanguageSwitcher;
