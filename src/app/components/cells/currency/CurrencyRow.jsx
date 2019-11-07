@@ -11,7 +11,6 @@ import {
 } from "../../../helpers/multiLanguage";
 import { isAllowedForNumberInput } from "../../../helpers/KeyboardShortcutsHelper";
 import { maybe } from "../../../helpers/functools";
-import { splitPriceDecimals } from "./currencyHelper";
 
 export default class CurrencyRow extends PureComponent {
   static propTypes = {
@@ -28,17 +27,6 @@ export default class CurrencyRow extends PureComponent {
       caretPosition: null,
       caretElement: null
     };
-  }
-
-  // returns float 0 when nothing has ever been entered for this country
-  mergeSplittedCurrencyValues() {
-    const integerVal = String(this.currencyInteger.value).trim();
-    const decimalVal = String(this.currencyDecimals.value).trim();
-    const mergedVal =
-      (integerVal === "" ? "0" : integerVal) +
-      "." +
-      (decimalVal === "" ? "00" : decimalVal);
-    return parseFloat(mergedVal);
   }
 
   onKeyDownInput = e => {
@@ -65,10 +53,10 @@ export default class CurrencyRow extends PureComponent {
 
   currencyInputChanged = () => {
     this.setState({ modified: true });
-    this.props.updateValue(
-      this.props.country,
-      this.mergeSplittedCurrencyValues()
-    );
+    this.props.updateValue(this.props.country, [
+      this.currencyInteger.value,
+      this.currencyDecimals.value
+    ]);
     const { caretElement, caretPosition } = this.state;
     if (!f.isNil(caretPosition)) {
       caretElement.setSelectionRange(caretPosition, caretPosition);
@@ -93,7 +81,6 @@ export default class CurrencyRow extends PureComponent {
 
   renderCurrencyValue(value) {
     const { isDisabled } = this.props;
-    const splittedValue = splitPriceDecimals(value);
 
     return (
       <div>
@@ -101,11 +88,12 @@ export default class CurrencyRow extends PureComponent {
           ref={this.currencyIntegerRef}
           className="currency-input integer"
           type="text"
-          value={splittedValue[0]}
+          value={value[0]}
           onKeyDown={this.onKeyDownInput}
           onChange={this.currencyInputChanged}
           onFocus={this.handleFocus("currencyInteger")}
           disabled={isDisabled}
+          placeholder="0"
         />
         <span className="delimiter">{getLocaleDecimalSeparator()}</span>
         <input
@@ -113,10 +101,12 @@ export default class CurrencyRow extends PureComponent {
           onChange={this.currencyInputChanged}
           className="currency-input decimals"
           type="text"
-          value={splittedValue[1]}
+          value={value[1]}
           onKeyDown={this.onKeyDownInput}
           onFocus={this.handleFocus("currencyDecimals")}
           disabled={isDisabled}
+          placeholder="00"
+          maxLength="2"
         />
       </div>
     );

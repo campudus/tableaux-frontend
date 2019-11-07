@@ -30,7 +30,6 @@ import LinkCell from "./link/LinkCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
-import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 
 const ExpandCorner = compose(
   branch(({ show }) => !show, renderNothing),
