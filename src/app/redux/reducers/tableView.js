@@ -14,7 +14,6 @@ import {
 } from "../../helpers/functools";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
-import TableauxRouter from "../../router/router";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 import getDisplayValue from "../../helpers/getDisplayValue";
 
@@ -154,14 +153,6 @@ const insertSkeletonLinks = (state, action, completeState) => {
 };
 
 const toggleSelectedCell = (state, action) => {
-  if (action.select !== false) {
-    TableauxRouter.selectCellHandler(
-      action.tableId,
-      action.rowId,
-      action.columnId,
-      action.langtag
-    );
-  }
   unlockRow(action.rowId, false);
   return f.flow(
     f.assoc("editing", false),
@@ -433,7 +424,8 @@ export default (state = initialState, action, completeState) => {
         columnOrdering: [],
         displayValues: {},
         history: [],
-        expandedRowIds: []
+        expandedRowIds: [],
+        visibleColumns: []
       };
     default:
       return state;
