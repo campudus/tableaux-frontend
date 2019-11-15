@@ -1,12 +1,15 @@
+// @flow
+
 import { withTranslation } from "react-i18next";
-import React, { PureComponent } from "react";
-import Select from "react-select";
+import React, { PureComponent, useCallback } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
 import { BoolInput } from "./FilterFragments";
+import { type Filter, FilterTypes, type FilterValue } from "./filter.flowtypes";
+import GrudSelect from "../../helperComponents/GrudSelect";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -76,8 +79,7 @@ class FilterRow extends PureComponent {
       onChangeColumn,
       onChangeValue,
       searchableColumns,
-      t,
-      valueRenderer
+      t
     } = this.props;
     const { columnId } = this.props.filter;
 
@@ -93,6 +95,14 @@ class FilterRow extends PureComponent {
         label: i18n.t(SearchFunctions[key].displayName)
       }));
 
+    const selectedMode = filterModeOptions.find(f.propEq("value"), filter.mode);
+
+    const toOption = ({ label, value, kind, isDisabled }) => ({
+      label,
+      isDisabled,
+      value: { value, kind }
+    });
+
     return (
       <div className="filter-row">
         <button
@@ -102,29 +112,28 @@ class FilterRow extends PureComponent {
           <i className="fa fa-trash" />
         </button>
 
-        <Select
-          className="filter-select col-two"
-          options={searchableColumns}
+        <GrudSelect
+          className="filter-select-wrapper col-two"
+          classNamePrefix="filter-select"
+          options={searchableColumns.map(toOption)}
           searchable={true}
-          clearable={false}
-          openOnFocus
-          value={columnId}
+          value={filter}
           onChange={onChangeColumn}
           placeholder={t("filter:input.filter")}
-          valueRenderer={valueRenderer}
+          mkOption={f.identity}
           noResultsText={t("input.noResult")}
         />
         {filter.columnKind !== BOOL &&
           !f.isNil(filter.columnId) &&
           Number(filter.columnId) >= 0 && (
-            <Select
-              className="filter-row__mode-select col-three"
-              searchable={false}
-              clearable={false}
+            <GrudSelect // Filter mode selector
+              className="filter-select-wrapper filter-row__mode-select col-three"
+              classPrefix="filter-select"
               openOnFocus
-              value={filter.mode}
+              value={selectedMode}
               options={filterModeOptions}
               onChange={this.handleFilterModeChange}
+              mkOption={f.identity}
             />
           )}
 
@@ -168,4 +177,115 @@ class FilterRow extends PureComponent {
   }
 }
 
-export default FilterRow;
+type ColumnSelectProps = {
+  filter: Filter,
+  options: Array<Filter>,
+  onChange: any
+};
+const ColumnSelect = ({ filter, options, onChange }: ColumnSelectProps) => (
+  <GrudSelect
+    options={options}
+    placeholder={i18n.t("filter:input.filter")}
+    onChange={onChange}
+    value={filter}
+  />
+);
+
+type ModeSelectProps = {
+  filter: Filter,
+  onChange: any
+};
+const ModeSelect = ({ filter, onChange }: ModeSelectProps) => null;
+
+type FilterInputProps = {
+  filter: Filter,
+  onChange: FilterValue => void
+};
+const FilterInput = (props: FilterInputProps) => {
+  const InputForFilter = f.cond([
+    [f.propEq(["kind"], FilterTypes.BOOL), () => BoolInput],
+    [f.propEq(["kind"], FilterTypes.TEXT), () => TextInput],
+    [f.stubTrue, () => NoInput]
+  ])(props.filter);
+
+  return <InputForFilter {...props} />;
+};
+
+const NoInput = () => null;
+
+const TextInput = ({ filter, onChange }: FilterInputProps) => {
+  const handleChange = useCallback(event => onChange(event.target.value));
+  const filterColumnSelected = !f.isNil(filter.columnId);
+
+  return (
+    <span className="filter-mode-wrapper col-four">
+      <input
+        type="text"
+        value={filter.value || ""}
+        onChange={handleChange}
+        disabled={!filterColumnSelected}
+      />
+      {filterColumnSelected && (
+        <button className="filter-input__clear-button col-five">
+          <SvgIcon icon="cross" />
+        </button>
+      )}
+    </span>
+  );
+};
+
+export const FilterRow2 = props => {
+  const {
+    columnOptions,
+    filter,
+    onChangeFilterValue,
+    onChangeColumn,
+    onChangeFilterMode,
+    onCreateFilter,
+    onDeleteFilter,
+    idx
+  } = props;
+  console.log("FilterRow2 props", props);
+
+  const clearFilter = () => {
+    onChangeColumn(idx, null);
+  };
+
+  const clearOrRemoveFilter = useCallback(() => {
+    if (onDeleteFilter) {
+      onDeleteFilter(idx);
+    } else {
+      clearFilter();
+    }
+  });
+
+  return (
+    <div className="filter-row">
+      <button
+        className="filter-array-button col-one"
+        onClick={clearOrRemoveFilter}
+      >
+        <i className="fa fa-trash" />
+      </button>
+
+      <ColumnSelect
+        options={columnOptions}
+        onChange={onChangeColumn}
+        filter={filter}
+      />
+      <ModeSelect filter={filter} onChange={onChangeFilterMode} />
+      <FilterInput onChange={onChangeFilterValue} filter={filter} />
+
+      {onCreateFilter && (
+        <button
+          className="filter-array-button col-five"
+          onClick={onCreateFilter}
+        >
+          <i className="fa fa-plus" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default FilterRow2;

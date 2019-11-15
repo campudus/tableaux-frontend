@@ -1,26 +1,37 @@
-import { withTranslation } from "react-i18next";
-import React from "react";
-import Select from "react-select";
-import * as f from "lodash/fp";
+// @flow
+
+import { useSelector } from "react-redux";
+import React, { useState, useCallback, useRef } from "react";
+import f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
-import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
-import { either } from "../../../helpers/functools";
-import { getColumnDisplayName } from "../../../helpers/multiLanguage";
-import FilterPopupFooter from "./FilterPopupFooter";
-import FilterPresetList from "./FilterPresetList";
-import FilterRow, { BOOL, TEXT } from "./FilterRow";
-import FilterSavingPopup from "./FilterSavingPopup";
-import TableauxConstants, {
+import {
+  type ApplicableFilter,
+  type Filter,
+  type FilterKind,
+  type FilterMode,
+  FilterTypes,
+  type FilterValue,
+  SearchModes,
+  type Sorting,
+  type SortingDirection
+} from "./filter.flowtypes";
+import type { Column, ColumnId, Langtag } from "../../../redux/redux.flowtypes";
+import {
   ColumnKinds,
   FilterModes,
-  Langtags,
-  SortValues
+  Langtags
 } from "../../../constants/TableauxConstants";
+import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
+import { doto, either, merge, when } from "../../../helpers/functools";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
+import FilterPopup from "./FilterPopup";
+import FilterRow, { BOOL, TEXT } from "./FilterRow";
+import FilterSavingPopup from "./FilterSavingPopup";
 
+const SPECIAL_TEXT_SEARCHES = [FilterModes.ROW_CONTAINS];
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
   FilterModes.UNTRANSLATED,
@@ -28,12 +39,11 @@ const SPECIAL_SEARCHES = [
   FilterModes.IMPORTANT,
   FilterModes.CHECK_ME,
   FilterModes.POSTPONE,
-  FilterModes.ROW_CONTAINS,
-  FilterModes.WITH_COMMENT
+  FilterModes.WITH_COMMENT,
+  ...SPECIAL_TEXT_SEARCHES
 ];
 
-const SPECIAL_TEXT_SEARCHES = [FilterModes.ROW_CONTAINS];
-
+/*
 @withTranslation(["filter", "table"])
 @listensToClickOutside
 class FilterPopup extends React.Component {
@@ -120,7 +130,7 @@ class FilterPopup extends React.Component {
     return [
       {
         label: f.toUpper(this.props.t("table:filter.generic")),
-        disabled: true
+        isDisabled: true
       },
       langtag !== f.first(Langtags)
         ? {
@@ -162,7 +172,7 @@ class FilterPopup extends React.Component {
       },
       {
         label: f.toUpper(this.props.t("table:filter.specific")),
-        disabled: true
+        isDisabled: true
       },
       {
         label: this.props.t("table:filter.row-contains"),
@@ -204,6 +214,7 @@ class FilterPopup extends React.Component {
   }
 
   changeFilterValue = idx => event => {
+    console.log("changeFilterValue", idx, event);
     const hasNodeType = tag => f.matchesProperty(["target", "tagName"], tag);
     f.cond([
       [hasNodeType("INPUT"), this.changeTextFilterValue(idx)],
@@ -284,6 +295,7 @@ class FilterPopup extends React.Component {
   };
 
   onChangeFilterColumn = idx => option => {
+    console.log("changeFilterColumn", idx, option);
     const { value, kind } = option;
     const oldFilter = f.defaultTo({})(f.get(["filters", idx]));
     if (f.contains(value, SPECIAL_SEARCHES)) {
@@ -461,12 +473,10 @@ class FilterPopup extends React.Component {
             <button className="filter-array-button" onClick={this.clearSorting}>
               <i className="fa fa-trash" />
             </button>
-            <Select
-              className="filter-select"
+            <GrudSelect
+              className="filter-select-wrapper"
               options={this.getSortableColumns()}
               searchable={true}
-              openOnFocus
-              clearable={false}
               value={sorting.columnId}
               onChange={this.onChangeSelectSortColumn}
               valueRenderer={this.selectFilterValueRenderer}
@@ -474,12 +484,10 @@ class FilterPopup extends React.Component {
               placeholder={t("filter:input.sort")}
             />
             <div className="separator"></div>
-            <Select
+            <GrudSelect
               disabled={!sortColumnSelected}
-              className="filter-select"
+              className="filter-select-wrapper"
               options={sortOptions}
-              searchable={false}
-              clearable={false}
               value={sortColumnSelected ? sorting.value : ""}
               onChange={this.onChangeSelectSortValue}
               valueRenderer={this.selectSortValueRenderer}
@@ -506,13 +514,257 @@ class FilterPopup extends React.Component {
     );
   }
 }
+*/
 
-export default FilterPopup;
+// FilterPopup2.propTypes = {
+//   langtag: PropTypes.string.isRequired,
+//   onClickedOutside: PropTypes.func.isRequired,
+//   columns: PropTypes.array.isRequired,
+//   setRowFilter: PropTypes.func.isRequired,
+//   currentFilter: PropTypes.object
+// };
 
-FilterPopup.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  onClickedOutside: PropTypes.func.isRequired,
-  columns: PropTypes.array.isRequired,
-  setRowFilter: PropTypes.func.isRequired,
-  currentFilter: PropTypes.object
+const currentFilterSelector = f.propOr([], ["tableView", "filters"]);
+const currentSortingSelector = f.propOr({}, ["tableView", "sorting"]);
+
+const canSortByColumn: Column => boolean = (column = {}) =>
+  f.contains(column.kind, SortableCellKinds);
+
+const canFilterByColumn: Column => boolean = (column = {}) =>
+  f.contains(column.kind, FilterableCellKinds);
+
+const filterTemplates = langtag => [
+  {
+    label: f.toUpper(i18n.t("table:filter.generic")),
+    isDisabled: true
+  },
+  langtag !== f.first(Langtags)
+    ? {
+        label: i18n.t("table:translations.this_translation_needed", {
+          langtag
+        }),
+        mode: FilterModes.UNTRANSLATED,
+        kind: BOOL
+      }
+    : {
+        label: i18n.t("table:filter.needs_translation"),
+        mode: FilterModes.ANY_UNTRANSLATED,
+        kind: BOOL
+      },
+  {
+    label: i18n.t("table:filter.is_final"),
+    mode: FilterModes.FINAL,
+    kind: BOOL
+  },
+  {
+    label: i18n.t("table:important"),
+    mode: FilterModes.IMPORTANT,
+    kind: BOOL
+  },
+  {
+    label: i18n.t("table:check-me"),
+    mode: FilterModes.CHECK_ME,
+    kind: BOOL
+  },
+  {
+    label: i18n.t("table:postpone"),
+    mode: FilterModes.POSTPONE,
+    kind: BOOL
+  },
+  {
+    label: i18n.t("filter:has-comments"),
+    mode: FilterModes.WITH_COMMENT,
+    kind: BOOL
+  },
+  {
+    label: f.toUpper(i18n.t("table:filter.specific")),
+    isDisabled: true
+  },
+  {
+    label: i18n.t("table:filter.row-contains"),
+    mode: FilterModes.ROW_CONTAINS,
+    kind: TEXT
+  }
+];
+
+// at the moment we support only text and boolan filters
+const hasBooleans: Column => boolean = f.propEq("kind", ColumnKinds.boolean);
+const hasTextValues: Column => Boolean = f.complement(hasBooleans);
+
+const getFilterType: Column => FilterKind = f.cond([
+  [hasBooleans, () => FilterTypes.BOOL],
+  [f.stubTrue, () => FilterTypes.TEXT]
+]);
+
+const getDefaultValue: Column => FilterValue = f.cond([
+  [hasBooleans, () => true],
+  [f.stubTrue, () => ""]
+]);
+
+const defaultTextSearchMode = SearchModes[0];
+
+const getDefaultMode: Column => FilterMode = f.cond([
+  [hasTextValues, () => defaultTextSearchMode],
+  [f.stubTrue, f.prop("mode")]
+]);
+
+const mkFilterForColumn: Langtag => Column => Filter = langtag => column => ({
+  label: getColumnDisplayName(column, langtag),
+  value: getDefaultValue(column),
+  kind: getFilterType(column),
+  mode: getDefaultMode(column),
+  columnId: column.id,
+  columnKind: column.kind,
+  isDisabled: false
+});
+
+const isTemplateFilter: Filter => boolean = (filter = {}) =>
+  f.contains(filter.mode, SPECIAL_SEARCHES);
+
+const isTemplateTextFilter: Filter => boolean = (filter = {}) =>
+  f.contains(filter.mode, SPECIAL_TEXT_SEARCHES);
+
+export const isTextFilter: Filter => boolean = (filter = {}) =>
+  filter.kind === FilterTypes.TEXT;
+export const isBooleanFilter: Filter => boolean = (filter = {}) =>
+  filter.kind === FilterTypes.BOOL;
+
+export const getFilterDefault: Filter => Filter = f.cond([
+  [isTemplateTextFilter, f.assoc("value", "")],
+  [isBooleanFilter, f.assoc("value", true)],
+  [
+    isTextFilter,
+    filter => merge(filter, { value: "", mode: defaultTextSearchMode })
+  ],
+  [f.stubTrue, f.identity]
+]);
+
+const toApplicableFilter: Filter => ApplicableFilter = filter =>
+  isTemplateFilter(filter) ? filter : f.pick(["value", "columnId", "mode"]);
+
+const hasValue: Filter => boolean = f.cond([
+  [isBooleanFilter, ({ value }) => f.isBoolean(value)],
+  [isTextFilter, ({ value }) => f.isString(value) && !f.isEmpty(value)]
+]);
+
+const isNumerical = value => !isNaN(when(f.isString, f.parseInt(10), value));
+
+const canApplyFilters: (Filter[]) => boolean = filters =>
+  doto(filters, f.filter(isApplicable), f.complement(f.isEmpty));
+
+const isApplicable: Filter => boolean = filter =>
+  hasValue(filter) &&
+  (isTemplateFilter(filter) || isNumerical(filter.columnId));
+
+const FilterPopup2: any => any = ({ columns, langtag }) => {
+  const [filters, setFilters] = useState<Filter[]>(
+    useSelector(currentFilterSelector)
+  );
+  const [sorting, setSorting] = useState<Sorting>(
+    useSelector(currentSortingSelector)
+  );
+
+  const setSortingColumn: ColumnId => void = useCallback(columnId =>
+    setSorting({ ...sorting, columnId })
+  );
+
+  const setSortingDirection: SortingDirection => void = useCallback(direction =>
+    setSorting({ ...sorting, direction })
+  );
+
+  const addEmptyFilter = useCallback(() => setFilters([...filters, {}]));
+  const removeFilter: number => void = useCallback(idx =>
+    setFilters(filters.filter((_, ii) => ii !== idx))
+  );
+
+  const modifyFilter: number => ($Shape<Filter>) => void = idx => newFilter =>
+    setFilters(f.update(idx, filter => ({ ...filter, ...newFilter })));
+
+  const resetFilters: number => void = useCallback(() => setFilters([{}]));
+
+  const changeFilterColumn = useCallback(filterIdx => null);
+
+  const columnFilters = useRef(
+    columns.filter(canFilterByColumn).map(mkFilterForColumn(langtag))
+  );
+  const usedColumnFilters: ColumnId[] = filters
+    .filter(f.complement(isTemplateFilter))
+    .map(f.prop("columnId"));
+  const usedFilterTemplates: FilterMode[] = filters
+    .filter(isTemplateFilter)
+    .map(f.prop("mode"));
+  const filterOptions: Filter[] = [
+    ...filterTemplates(langtag).filter(
+      ({ value }) => !f.contains(value, usedFilterTemplates)
+    ),
+    ...columnFilters.current.filter(
+      ({ columnId }) => !f.contains(columnId, usedColumnFilters)
+    )
+  ].map((filter, idx) => ({ ...filter, idx }));
+
+  const [savePopupOpen, setSavePopupOpen] = useState<boolean>(false);
+  const toggleFilterSavingPopup = useCallback(() =>
+    setSavePopupOpen(!savePopupOpen)
+  );
+  const closeFilterSavingPopup = useCallback(() => setSavePopupOpen(false));
+
+  return (
+    <div className="filter-popup">
+      {savePopupOpen && (
+        <FilterSavingPopup
+          filters={filters}
+          templates={[]}
+          saveTemplate={() => null}
+          columns={columns}
+          handleClickOutside={closeFilterSavingPopup}
+        />
+      )}
+
+      <section className="filter-popup__content-section">
+        <header className="filter-popup__header">
+          <div className="filter-popup__heading">
+            {i18n.t("table:filter.filters")}
+          </div>
+          <button
+            className={
+              "filter-popup__save-link-button" +
+              (savePopupOpen ? " ignore-react-onclickoutside" : "")
+            }
+            onClick={toggleFilterSavingPopup}
+            disabled={!canApplyFilters(filters)}
+          >
+            <i className="fa fa-save" />
+            {i18n.t("table:filter.save-filter")}
+          </button>
+        </header>
+
+        {when(f.isEmpty, () => [{}], filters).map((filter, idx) => {
+          const isIDFilter = either(filter)
+            .map(f.matchesProperty("mode", FilterModes.ID_ONLY))
+            .getOrElse(false);
+          return isIDFilter ? (
+            <div className="wip-filter-message" key={idx}>
+              {i18n.t("table:filter.rows_hidden", {
+                rowId: filter.value
+              })}
+            </div>
+          ) : (
+            <FilterRow
+              key={filter.columnId + "-" + idx}
+              filter={filter}
+              onChangeFilterValue={console.log}
+              onChangeFilterMode={console.log}
+              onCreateFilter={console.log}
+              onDeleteFilter={console.log}
+              onChangeColumn={console.log}
+              columnOptions={filterOptions}
+              idx={idx}
+            />
+          );
+        })}
+      </section>
+    </div>
+  );
 };
+
+export default FilterPopup2;

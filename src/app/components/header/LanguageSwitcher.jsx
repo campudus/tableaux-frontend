@@ -1,10 +1,10 @@
 import f from "lodash/fp";
-import Select from "react-select";
 import React, { useCallback } from "react";
 import PropTypes from "prop-types";
 
 import { Langtags } from "./../../constants/TableauxConstants";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+import GrudSelect from "../helperComponents/GrudSelect";
 
 const Option = props => {
   const { value, selectOption, getValue } = props;
@@ -16,8 +16,6 @@ const Option = props => {
     </button>
   );
 };
-
-const IndicatorSeparator = () => null;
 
 const LanguageSwitcher = props => {
   const { limitLanguages, disabled, langtag, onChange, openOnTop } = props;
@@ -33,31 +31,21 @@ const LanguageSwitcher = props => {
   const languagesToDisplay =
     !disabled && limitLanguages ? limitLanguages : languages;
 
-  const mkOption = optionLangtag => ({
-    value: optionLangtag,
-    label: optionLangtag
-  });
+  const options = languagesToDisplay.filter(f.complement(f.equals(langtag)));
 
-  const options =
-    props.options ||
-    languagesToDisplay.filter(f.complement(f.equals(langtag))).map(mkOption);
-
-  const selectedOption = mkOption(langtag);
+  const selectedOption = langtag;
 
   return (
     <div className="language-switcher">
-      <Select
+      <GrudSelect
         className={
           "language-switcher__main" + (openOnTop ? " open-on-top" : "")
         }
         classNamePrefix="language-switcher"
         options={options}
-        isSearchable={false}
-        isClearable={false}
-        value={langtag && selectedOption}
+        value={selectedOption}
         onChange={handleChange}
-        disabled={disabled}
-        components={{ Option, SingleValue: Option, IndicatorSeparator }}
+        OptionComponent={Option}
       />
     </div>
   );

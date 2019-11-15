@@ -13,36 +13,10 @@ header {
     float: right;
   }
 
-  .language-switcher__main {
-  }
-
-  .language-switcher__control,
-  .language-switcher__control--is-focused {
-    cursor: pointer;
-    height: 28px;
-    min-height: 0;
-    border-radius: 3px;
-    border-color: transparentize($color-primary, 0.5);
-  }
-
-  .language-switcher__control:hover,
-  .language-switcher__control--menu-is-open {
-    box-shadow: none;
-    border-color: transparentize($color-primary, 0.15);
-  }
-
-  .language-switcher__control--menu-is-open {
-    border-radius: 3px 3px 0 0;
-  }
-
-  .language-switcher__indicator {
-    padding: 4px;
-  }
-
   .language-switcher__item {
-    width: 100%;
     padding: 3px 5px;
     text-align: center;
+    width: 100%;
 
     &:hover {
       color: $color-hover-foreground;
@@ -50,20 +24,9 @@ header {
     }
   }
 
-  .language-switcher__menu {
-    margin: 0;
-    border-radius: 0 0 3px 3px;
-  }
-
-  .language-switcher__value-container {
-    padding: 0;
-    height: 24px;
-
-    .language-switcher__item {
-      &:hover {
-        color: inherit;
-        background-color: inherit;
-      }
-    }
+  .language-switcher__value-container .language-switcher__item {
+    width: auto;
+    color: inherit;
+    background-color: inherit;
   }
 }

@@ -153,10 +153,14 @@
       }
     }
 
-    .filter-select {
+    .filter-select-wrapper {
       width: 220px;
       display: inline-block;
       vertical-align: middle;
+
+      &.col-three {
+        width: auto
+      }
     }
 
     .bool-input {
@@ -186,6 +190,10 @@
           color: $color-primary-text;
         }
       }
+    }
+
+    .filter-select__indicator-separator {
+      display: none;
     }
   }
 
