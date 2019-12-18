@@ -15,9 +15,10 @@ import {
 import {
   getCurrencyWithCountry,
   splitPriceDecimals,
-  evtlAddZeroToDecimals
+  maybeAddZeroToDecimals
 } from "./currencyHelper";
 import CurrencyEditCell from "./CurrencyEditCell";
+import { when } from "../../../helpers/functools.js";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
@@ -82,8 +83,8 @@ class CurrencyCell extends React.PureComponent {
     const splittedValueAsString =
       currencyValue
       |> splitPriceDecimals
-      |> f.map(val => (f.isEmpty(val) ? "00" : val))
-      |> evtlAddZeroToDecimals;
+      |> f.map(when(f.isEmpty, () => "00"))
+      |> maybeAddZeroToDecimals;
 
     const currencyCode = getCurrencyCode(country);
     const { value, t } = this.props;

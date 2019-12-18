@@ -21,7 +21,7 @@ export function splitPriceDecimals(priceValue) {
     : splittedValue;
 }
 
-export const evtlAddZeroToDecimals = splittedValue => {
+export const maybeAddZeroToDecimals = splittedValue => {
   const [currencyInteger, currencyDecimals] = splittedValue;
   if (currencyDecimals.length === 1) {
     return [currencyInteger, currencyDecimals + "0"];

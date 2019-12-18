@@ -2,7 +2,7 @@ import React from "react";
 import CurrencyRow from "./CurrencyRow";
 import {
   getCurrencyWithCountry,
-  evtlAddZeroToDecimals
+  maybeAddZeroToDecimals
 } from "./currencyHelper";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import f from "lodash/fp";
@@ -24,7 +24,7 @@ export default class CurrencyEditCell extends React.PureComponent {
     this.state = {
       currencyValues: f.mapValues(
         f.compose(
-          evtlAddZeroToDecimals,
+          maybeAddZeroToDecimals,
           this.splitFloat
         ),
         props.cell.value
@@ -59,7 +59,7 @@ export default class CurrencyEditCell extends React.PureComponent {
   saveCell = () => {
     const { cell, saveCell } = this.props;
     const { currencyValues } = this.state;
-    const numberCurrencyValues = f.mapValues(
+    const numericCurrencyValues = f.mapValues(
       f.compose(
         f.toNumber,
         f.join("."),
@@ -68,13 +68,13 @@ export default class CurrencyEditCell extends React.PureComponent {
       currencyValues
     );
 
-    if (f.equals(cell.value, numberCurrencyValues)) {
+    if (f.equals(cell.value, numericCurrencyValues)) {
       return;
     }
 
     const updateObj = f.pickBy(
       (val, ctry) => val !== cell.value[ctry],
-      numberCurrencyValues
+      numericCurrencyValues
     );
     saveCell(updateObj);
   };

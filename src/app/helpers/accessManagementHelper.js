@@ -80,10 +80,7 @@ export const canUserChangeAnyCountryTypeCell = cellInfo =>
   |> f.values
   |> f.any(f.identity);
 
-export const canUserChangeCountryTypeCell = (cellInfo, countryTag) =>
-  cellInfo
-  |> getPermission(["column", "editCellValue"])
-  |> f.negate(f.get(countryTag));
+export const canUserChangeCountryTypeCell = canUserChangeCell;
 
 export const canUserEditColumnDisplayProperty = getPermission([
   "column",
