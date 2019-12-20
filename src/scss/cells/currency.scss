@@ -22,12 +22,16 @@ $currencyWidth: 50px;
     background-color: white;
     box-shadow: none;
   }
+  .disabled {
+    opacity: 0.5;
+  }
 
   .currency-row {
     position: relative;
     height: $space-height-cell;
     border-bottom: 1px solid $color-border-grey;
     line-height: $space-height-cell;
+
 
     .country-code,
     .currency-value,

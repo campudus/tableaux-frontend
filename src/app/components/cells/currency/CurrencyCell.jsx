@@ -12,8 +12,13 @@ import {
   getCurrencyCode,
   getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
-import { getCurrencyWithCountry, splitPriceDecimals } from "./currencyHelper";
+import {
+  getCurrencyWithCountry,
+  splitPriceDecimals,
+  maybeAddZeroToDecimals
+} from "./currencyHelper";
 import CurrencyEditCell from "./CurrencyEditCell";
+import { when } from "../../../helpers/functools.js";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
@@ -75,7 +80,12 @@ class CurrencyCell extends React.PureComponent {
       country,
       "withFallback"
     );
-    const splittedValueAsString = splitPriceDecimals(currencyValue);
+    const splittedValueAsString =
+      currencyValue
+      |> splitPriceDecimals
+      |> f.map(when(f.isEmpty, () => "00"))
+      |> maybeAddZeroToDecimals;
+
     const currencyCode = getCurrencyCode(country);
     const { value, t } = this.props;
     if (!currencyCode) {
