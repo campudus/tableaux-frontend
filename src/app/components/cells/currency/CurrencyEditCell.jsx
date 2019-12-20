@@ -110,7 +110,7 @@ export default class CurrencyEditCell extends React.PureComponent {
         "withFallback"
       );
 
-      const isDisabled = canUserChangeCountryTypeCell(cell, countryCode);
+      const isDisabled = !canUserChangeCountryTypeCell(cell, countryCode);
 
       return (
         <CurrencyRow

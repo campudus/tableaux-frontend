@@ -81,7 +81,6 @@ export const canUserChangeAnyCountryTypeCell = cellInfo =>
   |> f.any(f.identity);
 
 export const canUserChangeCountryTypeCell = canUserChangeCell;
-
 export const canUserEditColumnDisplayProperty = getPermission([
   "column",
   "editDisplayProperty"
