@@ -18,7 +18,9 @@ const config = ServerConfigTool.enrichConfig({
   apiHost: "localhost", // api host
   apiPort: 8080,
   port: 3000,
-  host: "localhost"
+  host: "localhost",
+  enableHistory: true,
+  showTableDropdown: true
 });
 
 console.log("GRUD frontend server with settings:\n", config);
@@ -70,6 +72,7 @@ const resourceHandler = (req, res, next) => {
 //   console.log(req.url);
 //   next();
 // });
+app.get("/config.json", (req, res) => res.json(config));
 app.use("/api", proxyHandler); // if api request, proxy it, else...
 app.use(resourceHandler); // if a file was requested, try to serve it, else...
 app.use(appHandler); // serve the single page app

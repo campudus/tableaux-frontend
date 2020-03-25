@@ -9,7 +9,9 @@ const config = GRUDServer.enrichConfig({
   host: "localhost",
   port: 3000,
   apiHost: "localhost",
-  apiPort: 8080
+  apiPort: 8080,
+  enableHistory: true,
+  showTableDropdown: true
 });
 
 switch (process.env.NODE_ENV) {
