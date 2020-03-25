@@ -72,7 +72,7 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
 
   // We can't check cardinality without loading and parsing all linked tables recursively,
   // so we don't copy links with cardinality
-  const duplicatedValues = row.values.filter(
+  const duplicatedValues = row.filter(
     (value, idx) => !canNotCopy(columns[idx])
   );
   return {
@@ -169,14 +169,16 @@ const copyLinks = (src, dst) => {
 // entries in their respective tables and link the duplicates in the
 // pasted cell to avoid violating constraints
 const createEntriesAndCopy = async (src, dst, constrainedValue) => {
-  const toTable = src.tables.get(src.column.toTable);
-  const columns = await makeRequest({
-    apiRoute: route.toTable({ tableId: toTable.id })
+  const { tables } = store.getState();
+
+  const toTable = f.get(["data", src.column.toTable, "id"], tables);
+  const { columns } = await makeRequest({
+    apiRoute: route.toAllColumns(toTable)
   });
 
   const linkIds = f.map("id", constrainedValue);
   const fetchLinkData = rowId =>
-    makeRequest({ apiRoute: route.toRow({ tableId: toTable.id, rowId }) }).then(
+    makeRequest({ apiRoute: route.toRow({ tableId: toTable, rowId }) }).then(
       f.prop("values")
     );
 
@@ -184,18 +186,19 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
     .then(f.map(row => getSaveableRowDuplicate({ columns, row })))
     // Reduce all saveable rows into an array so we need only one POST to duplicate them
     .then(
-      f.reduce((accum, nextRow) => ({
-        columns: nextRow.columns,
-        rows: [...f.propOr([], "rows", accum), f.prop("row.0", nextRow)]
-      }))
+      f.reduce(
+        (accum, nextRow) => ({
+          columns: nextRow.columns,
+          rows: [...f.propOr([], "rows", accum), f.prop(["rows", 0], nextRow)]
+        }),
+        []
+      )
     )
     .then(rowsToCopy =>
       makeRequest({
-        apiRoute: route.toRows({
-          tableId: toTable.id,
-          data: rowsToCopy,
-          method: "POST"
-        })
+        apiRoute: route.toRows(toTable),
+        data: rowsToCopy,
+        method: "POST"
       })
     )
     .then(f.prop("rows"))
