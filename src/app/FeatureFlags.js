@@ -5,7 +5,7 @@ export let ENABLE_HISTORY = process.env.ENABLE_HISTORY !== "false";
 export let SHOW_TABLE_DROPDOWN = process.env.SHOW_TABLE_DROPDOWN !== "false";
 //overwrite with values from config in production mode
 if (process.env.NODE_ENV !== "development") {
-  fetch("/config.json")
+  fetch("/featureFlags")
     .then(res => res.json())
     .then(({ enableHistory, showTableDropdown }) => {
       ENABLE_HISTORY = enableHistory !== "false";

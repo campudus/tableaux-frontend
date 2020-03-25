@@ -72,7 +72,10 @@ const resourceHandler = (req, res, next) => {
 //   console.log(req.url);
 //   next();
 // });
-app.get("/config.json", (req, res) => res.json(config));
+app.get("/featureFlags", (req, res) => {
+  const { showTableDropdown, enableHistory } = config;
+  res.json({ showTableDropdown, enableHistory });
+});
 app.use("/api", proxyHandler); // if api request, proxy it, else...
 app.use(resourceHandler); // if a file was requested, try to serve it, else...
 app.use(appHandler); // serve the single page app
