@@ -223,7 +223,8 @@ export default compose(
       renderLink,
       renderSortableLink,
       sortable,
-      applySwap
+      applySwap,
+      setHovered
     }) => () => {
       const nLinks = links.length;
       const canExpand = nLinks > MAX_DISPLAYED_LINKS;
@@ -234,7 +235,10 @@ export default compose(
         .map(index => renderFn({ index }));
       return sortable ? (
         <div className="sortable">
-          <div className="linked-items `${cssClass}`">
+          <div
+            className="linked-items `${cssClass}`"
+            onMouseLeave={() => setHovered(null)}
+          >
             <LinkedRows
               entries={f.map("id", links)}
               rowsToRender={4}
@@ -256,13 +260,14 @@ export default compose(
       renderLink,
       renderSortableLink,
       sortable,
-      applySwap
+      applySwap,
+      setHovered
     }) => () => {
       const nLinks = links.length;
 
       return sortable ? (
         <div className="sortable">
-          <div className="linked-items">
+          <div className="linked-items" onMouseLeave={() => setHovered(null)}>
             <LinkedRows
               entries={f.map("id", links)}
               rowsToRender={nLinks}
