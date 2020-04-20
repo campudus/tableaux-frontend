@@ -52,12 +52,14 @@ export default compose(
   withStateHandlers(
     {
       expanded: false,
-      hovered: null
+      hovered: null,
+      hoveredElement: 0
     },
     {
       setExpanded: () => expanded => ({ expanded }),
       toggleExpand: ({ expanded }) => () => ({ expanded: !expanded }),
-      setHovered: () => hovered => ({ hovered })
+      setHovered: () => hovered => ({ hovered }),
+      setHoveredElement: () => hoveredElement => ({ hoveredElement })
     }
   ),
   withHandlers({
@@ -86,7 +88,9 @@ export default compose(
       hovered,
       langtag,
       sortable,
-      cell
+      cell,
+      hoveredElement,
+      setHoveredElement
     }) => ({ index, key = index, style }) => {
       const link = links[index];
       const { displayName, linkTarget } = link;
@@ -134,12 +138,12 @@ export default compose(
               label={link.label || link.displayName}
               langtag={langtag}
               mouseOverHandler={{
-                box: () => null, //mouseOverBoxHandler,
+                box: () => setHoveredElement(0), //mouseOverBoxHandler,
                 item: () => null
               }}
               style={style}
               isLinked
-              selectedMode={0}
+              selectedMode={hoveredElement}
             />
           </div>
         );
@@ -153,7 +157,9 @@ export default compose(
       actions,
       setHovered,
       hovered,
-      isAttachment
+      isAttachment,
+      hoveredElement,
+      setHoveredElement
     }) => () => ({ key, style = {} }) => {
       const link = f.find(f.propEq("id", key), links);
       const {
@@ -182,7 +188,7 @@ export default compose(
           langtag={langtag}
           clickHandler={clickHandler}
           mouseOverHandler={{
-            box: () => null, //mouseOverBoxHandler,
+            box: setHoveredElement,
             item: () =>
               setHovered(isAttachment ? link.uuid : link.linkTarget.rowId)
           }}
@@ -191,7 +197,7 @@ export default compose(
           isSelected={
             hovered === (isAttachment ? link.uuid : link.linkTarget.rowId)
           }
-          selectedMode={0}
+          selectedMode={hoveredElement}
           isAttachment={isAttachment}
         />
       );
@@ -245,6 +251,7 @@ export default compose(
               renderListItem={renderSortableLink}
               loading={false}
               applySwap={applySwap}
+              setHovered={setHovered}
             />
           </div>
         </div>
@@ -274,6 +281,7 @@ export default compose(
               renderListItem={renderSortableLink}
               loading={false}
               applySwap={applySwap}
+              setHovered={setHovered}
             />
           </div>
         </div>

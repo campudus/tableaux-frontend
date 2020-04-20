@@ -38,7 +38,7 @@ const SelectedItem = props => {
       <div className={getCssClass(props)}>
         <div
           className={mainButtonClass}
-          onMouseEnter={props.mouseOverHandler.box(MAIN_BUTTON)}
+          onMouseEnter={() => props.mouseOverHandler.box(MAIN_BUTTON)}
           onClick={() => {
             props.isAttachment
               ? doto(
@@ -68,7 +68,7 @@ const SelectedItem = props => {
           href="#"
           className={linkButtonClass}
           draggable={false}
-          onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
+          onMouseEnter={() => props.mouseOverHandler.box(LINK_BUTTON)}
           onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
         >
           {props.isLinked ? (
