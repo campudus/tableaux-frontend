@@ -17,7 +17,8 @@ import fp, {
   propOr,
   props,
   range,
-  take
+  take,
+  tail
 } from "lodash/fp";
 
 /* Maybe monad.
@@ -416,6 +417,20 @@ const memoizeWith = (keyFn, fn) => {
   };
 };
 
+const memoizeOne = fn => {
+  let key;
+  let cache;
+  return (...args) => {
+    if (key === args[0]) {
+      return cache;
+    } else {
+      key = args[0];
+      cache = fn(...args);
+      return cache;
+    }
+  };
+};
+
 const firstValidProp = curryN(2, (propsArray, obj) =>
   first(compact(props(propsArray, obj)))
 );
@@ -532,6 +547,7 @@ export {
   propMatches,
   mapPromise,
   memoizeWith,
+  memoizeOne,
   merge,
   slidingWindow,
   firstValidProp,
