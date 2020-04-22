@@ -239,7 +239,7 @@ class TableView extends PureComponent {
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
     // without adding event listeners
-    if (f.isEmpty(table)) {
+    if (f.isEmpty(table) || f.isEmpty(columns)) {
       return (
         <div className="initial-loader">
           <Spinner isLoading={true} />
