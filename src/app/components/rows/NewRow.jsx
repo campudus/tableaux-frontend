@@ -22,16 +22,14 @@ const withFunctionality = compose(
   withHandlers({
     addNewRow: props => () => {
       const { t, showToast, rows, onAdd } = props;
-      const isEmpty = stuff => {
-        const res = f.cond([
-          [
-            f.isArray,
-            element => f.isEmpty(element) || f.every(f.isEmpty, element)
-          ],
-          [f.stubTrue, f.isEmpty]
-        ])(stuff);
-        return res;
-      };
+      const isEmpty = f.cond([
+        [
+          f.isArray,
+          element => f.isEmpty(element) || f.every(f.isEmpty, element)
+        ],
+        [f.isNumber, f.stubFalse],
+        [f.stubTrue, f.isEmpty]
+      ]);
       const hasEmptyRow = f.every(isEmpty, f.prop("values", f.last(rows)));
       if (f.isEmpty(rows) || !hasEmptyRow) {
         onAdd();
