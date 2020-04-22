@@ -160,6 +160,7 @@ class ColumnFilterPopup extends React.Component {
             f.map("id")
           )(columnOrdering)}
           mouseOverHandler={this.mouseOverHandler}
+          setHovered={this.mouseOverHandler}
         />
       );
     }
