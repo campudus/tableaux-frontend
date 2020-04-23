@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import i18n from "i18next";
 
 import { checkOrThrow } from "../specs/type";
-import { either, ifElse, match, memoizeWith, when } from "./functools";
+import { either, match, memoizeWith, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
 import TableauxConstants, {
   ColumnKinds,

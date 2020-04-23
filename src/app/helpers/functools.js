@@ -17,8 +17,7 @@ import fp, {
   propOr,
   props,
   range,
-  take,
-  tail
+  take
 } from "lodash/fp";
 
 /* Maybe monad.
