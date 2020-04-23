@@ -4,7 +4,7 @@
  *        links: [{displayName, linkTarget: url-string},...]
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { compose, withStateHandlers, withHandlers } from "recompose";
 import classNames from "classnames";
 import i18n from "i18next";
@@ -18,13 +18,25 @@ import LinkItem from "../cells/link/LinkItem";
 const MAX_DISPLAYED_LINKS = 4;
 
 const LinkList = props => {
-  const { links, expanded, renderAll, renderPreview, toggleExpand } = props;
+  const {
+    links,
+    expanded,
+    renderAll,
+    renderPreview,
+    toggleExpand,
+    setHovered,
+    setHoveredElement
+  } = props;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
+  const onMouseLeave = useCallback(() => setHovered(null), []);
+  const boxHandler = useCallback(() => setHoveredElement(0), []);
 
   return (
     <div className="link-list">
-      {expanded ? renderAll() : renderPreview()}
+      {expanded
+        ? renderAll(onMouseLeave, boxHandler)
+        : renderPreview(onMouseLeave, boxHandler)}
       {canExpand ? (
         <a className="expand-button" href="#" onClick={toggleExpand}>
           <i className={expanded ? "fa fa-angle-up" : "fa fa-angle-down"} />
@@ -89,9 +101,8 @@ export default compose(
       langtag,
       sortable,
       cell,
-      hoveredElement,
-      setHoveredElement
-    }) => ({ index, key = index, style }) => {
+      hoveredElement
+    }) => boxHandler => ({ index, key = index, style }) => {
       const link = links[index];
       const { displayName, linkTarget } = link;
       const isHovered = hovered === index;
@@ -138,8 +149,8 @@ export default compose(
               label={link.label || link.displayName}
               langtag={langtag}
               mouseOverHandler={{
-                box: () => setHoveredElement(0), //mouseOverBoxHandler,
-                item: () => null
+                box: boxHandler,
+                item: f.noop
               }}
               style={style}
               isLinked
@@ -231,10 +242,10 @@ export default compose(
       sortable,
       applySwap,
       setHovered
-    }) => () => {
+    }) => (onMouseLeave, boxHandler) => {
       const nLinks = links.length;
       const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-      const renderFn = unlink ? renderInteractiveLink : renderLink;
+      const renderFn = unlink ? renderInteractiveLink(boxHandler) : renderLink;
       const cssClass = classNames("item-content", { "can-expand": canExpand });
       const renderedLinks = f
         .range(0, f.min([nLinks, MAX_DISPLAYED_LINKS]))
@@ -243,7 +254,7 @@ export default compose(
         <div className="sortable">
           <div
             className="linked-items `${cssClass}`"
-            onMouseLeave={() => setHovered(null)}
+            onMouseLeave={onMouseLeave}
           >
             <LinkedRows
               entries={f.map("id", links)}
@@ -269,12 +280,12 @@ export default compose(
       sortable,
       applySwap,
       setHovered
-    }) => () => {
+    }) => onMouseLeave => {
       const nLinks = links.length;
 
       return sortable ? (
         <div className="sortable">
-          <div className="linked-items" onMouseLeave={() => setHovered(null)}>
+          <div className="linked-items" onMouseLeave={onMouseLeave}>
             <LinkedRows
               entries={f.map("id", links)}
               rowsToRender={nLinks}
