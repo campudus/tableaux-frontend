@@ -252,7 +252,6 @@ class FilterPopup extends React.Component {
   };
 
   selectFilterValueRenderer = option => {
-    console.log(option.label)
     return (
       <div>
         <span>{option.label}</span>

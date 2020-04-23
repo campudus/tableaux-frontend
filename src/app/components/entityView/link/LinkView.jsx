@@ -44,7 +44,7 @@ class LinkView extends Component {
         label={link.label}
         langtag={langtag}
         mouseOverHandler={{
-          box: () => console.log("box"),
+          box: () => f.noop,
           item: () => null
         }}
         style={style}
