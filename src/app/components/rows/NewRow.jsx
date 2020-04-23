@@ -23,10 +23,7 @@ const withFunctionality = compose(
     addNewRow: props => () => {
       const { t, showToast, rows, onAdd } = props;
       const isEmpty = f.cond([
-        [
-          f.isArray,
-          element => f.isEmpty(element) || f.every(f.isEmpty, element)
-        ],
+        [f.isArray, element => f.isEmpty(element) || f.every(isEmpty, element)],
         [f.isNumber, f.stubFalse],
         [f.stubTrue, f.isEmpty]
       ]);
