@@ -40,6 +40,7 @@
         overflow-y: auto;
         background-color: $color-white;
         border-bottom: 3px solid $color-text-light-grey;
+        padding: 0px 50px 0px 25px;
 
         &.no-unlinked {
           max-height: none;

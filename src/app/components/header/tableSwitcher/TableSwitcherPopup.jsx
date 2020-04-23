@@ -20,6 +20,7 @@ import TableauxRouter from "../../../router/router";
 class SwitcherPopup extends React.PureComponent {
   constructor(props) {
     super(props);
+    const focusTableId = props.currentTable ? props.currentTable.id : null;
 
     this.state = {
       filterGroupId:
@@ -27,7 +28,8 @@ class SwitcherPopup extends React.PureComponent {
           ? props.currentGroupId
           : null,
       filterTableName: "",
-      focusTableId: props.currentTable ? props.currentTable.id : null
+      focusTableId,
+      filteredTables: this.getFilteredTables(focusTableId, "")
     };
   }
 
@@ -77,14 +79,18 @@ class SwitcherPopup extends React.PureComponent {
     const { focusTableId } = this.state;
     const currentTableId = f.get("id", currentTable);
     if (isDeselection && currentTable) {
-      this.setState({ focusTableId: currentTableId });
+      this.setState({
+        focusTableId: currentTableId,
+        filteredTables: tableResults
+      });
     } else {
       this.setState({
         focusTableId: f.contains(currentTableId, tableIds)
           ? currentTableId
           : f.contains(focusTableId, tableIds)
           ? focusTableId
-          : f.first(tableIds)
+          : f.first(tableIds),
+        filteredTables: tableResults
       });
     }
   };
@@ -113,15 +119,13 @@ class SwitcherPopup extends React.PureComponent {
 
     this.setState({
       focusTableId: focusTableId,
-      filterTableName: event.target.value
+      filterTableName: event.target.value,
+      filteredTables
     });
   };
 
   onUpDownNavigation = nextFocusTableIndexFn => {
-    const filteredTables = this.getFilteredTables(
-      this.state.filterGroupId,
-      this.state.filterTableName
-    );
+    const { filteredTables } = this.state;
     const allResults = [
       ...(filteredTables.inGroup || []),
       ...(filteredTables.notInGroup || [])
@@ -200,14 +204,13 @@ class SwitcherPopup extends React.PureComponent {
 
     const isInGroup = f.matchesProperty(["group", "id"], filterGroupId);
 
-    const tableResults = f.flow(
-      f.reject("hidden"),
-      f.filter(matchesQuery(filterTableName))
-    )(tables);
+    const tableResults = f.filter(matchesQuery(filterTableName), tables);
 
     return {
-      inGroup: f.filter(isInGroup, tableResults),
-      notInGroup: f.reject(isInGroup, tableResults)
+      inGroup: filterGroupId ? f.filter(isInGroup, tableResults) : [],
+      notInGroup: filterGroupId
+        ? f.reject(isInGroup, tableResults)
+        : tableResults
     };
   };
 
@@ -378,16 +381,13 @@ class SwitcherPopup extends React.PureComponent {
 
   render() {
     const groups = this.props.groups;
-    const tables = this.getFilteredTables(
-      this.state.filterGroupId,
-      this.state.filterTableName
-    );
+    const { filteredTables } = this.state;
 
     return (
       <div id="tableswitcher-popup">
         <div id="tableswitcher-popup-internal-wrapper">
           {this.renderGroups(groups)}
-          {this.renderTables(groups, tables)}
+          {this.renderTables(groups, filteredTables)}
         </div>
       </div>
     );

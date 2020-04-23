@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -20,6 +20,14 @@ const getCssClass = ({ isLinked, isSelected }) =>
   });
 
 const SelectedItem = props => {
+  const handleMouseEnterMain = useCallback(
+    () => props.mouseOverHandler.box(MAIN_BUTTON),
+    [props.mouseOverHandler]
+  );
+  const handleMouseEnterLink = useCallback(
+    () => props.mouseOverHandler.box(LINK_BUTTON),
+    [props.mouseOverHandler]
+  );
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
@@ -38,7 +46,7 @@ const SelectedItem = props => {
       <div className={getCssClass(props)}>
         <div
           className={mainButtonClass}
-          onMouseEnter={props.mouseOverHandler.box(MAIN_BUTTON)}
+          onMouseEnter={handleMouseEnterMain}
           onClick={() => {
             props.isAttachment
               ? doto(
@@ -68,7 +76,7 @@ const SelectedItem = props => {
           href="#"
           className={linkButtonClass}
           draggable={false}
-          onMouseEnter={props.mouseOverHandler.box(LINK_BUTTON)}
+          onMouseEnter={handleMouseEnterLink}
           onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
         >
           {props.isLinked ? (

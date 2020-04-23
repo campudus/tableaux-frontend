@@ -174,15 +174,7 @@ function getTableDisplayName(table, langtag) {
       langtag
     );
   } else {
-    const getDisplayName = f.flow(
-      f.propOr({}, "displayName"),
-      retrieveTranslation(langtag)
-    );
-    const hasNoDisplayName = f.flow(
-      getDisplayName,
-      f.isEmpty
-    );
-    return ifElse(hasNoDisplayName, f.prop("name"), getDisplayName)(table);
+    return retrieveTranslation(langtag, table.displayName || {}) || table.name;
   }
 }
 

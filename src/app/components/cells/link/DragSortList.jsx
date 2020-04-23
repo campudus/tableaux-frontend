@@ -52,7 +52,8 @@ class DragItem extends Component {
       connectDragSource,
       connectDropTarget,
       connectDragPreview,
-      isHovered
+      isHovered,
+      onMouseOver
     } = this.props;
     const itemClass = classNames("draggable", {
       "is-dragging": isDragging,
@@ -60,7 +61,7 @@ class DragItem extends Component {
     });
     return connectDragPreview(
       connectDropTarget(
-        <div className={itemClass}>
+        <div className={itemClass} onMouseOver={onMouseOver}>
           {connectDragSource(
             <div className="drag-handle">
               <SvgIcon icon="burger" />
@@ -87,18 +88,21 @@ class DragSortList extends Component {
       ordering,
       swapOrdering,
       applySwap,
-      wrapperClass
+      wrapperClass,
+      rowsToRender,
+      setHovered
     } = this.props;
 
     return (
       <div className={wrapperClass /*link-list*/}>
-        {ordering.map((id, idx) => (
+        {f.slice(0, rowsToRender, ordering).map((id, idx) => (
           <DragItem
             key={id}
             index={idx}
             swapItems={swapItems}
             applySwap={applySwap(ordering)}
             swapOrdering={swapOrdering}
+            onMouseOver={() => setHovered(id)}
           >
             {renderListItem({
               index: idx,

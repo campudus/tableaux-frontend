@@ -72,7 +72,7 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
 
   // We can't check cardinality without loading and parsing all linked tables recursively,
   // so we don't copy links with cardinality
-  const duplicatedValues = row.filter(
+  const duplicatedValues = row.values.filter(
     (value, idx) => !canNotCopy(columns[idx])
   );
   return {

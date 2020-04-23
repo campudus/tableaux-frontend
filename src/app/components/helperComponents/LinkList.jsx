@@ -4,7 +4,7 @@
  *        links: [{displayName, linkTarget: url-string},...]
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { compose, withStateHandlers, withHandlers } from "recompose";
 import classNames from "classnames";
 import i18n from "i18next";
@@ -18,13 +18,25 @@ import LinkItem from "../cells/link/LinkItem";
 const MAX_DISPLAYED_LINKS = 4;
 
 const LinkList = props => {
-  const { links, expanded, renderAll, renderPreview, toggleExpand } = props;
+  const {
+    links,
+    expanded,
+    renderAll,
+    renderPreview,
+    toggleExpand,
+    setHovered,
+    setHoveredElement
+  } = props;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
+  const onMouseLeave = useCallback(() => setHovered(null), []);
+  const boxHandler = useCallback(() => setHoveredElement(0), []);
 
   return (
     <div className="link-list">
-      {expanded ? renderAll() : renderPreview()}
+      {expanded
+        ? renderAll(onMouseLeave, boxHandler)
+        : renderPreview(onMouseLeave, boxHandler)}
       {canExpand ? (
         <a className="expand-button" href="#" onClick={toggleExpand}>
           <i className={expanded ? "fa fa-angle-up" : "fa fa-angle-down"} />
@@ -52,12 +64,14 @@ export default compose(
   withStateHandlers(
     {
       expanded: false,
-      hovered: null
+      hovered: null,
+      hoveredElement: 0
     },
     {
       setExpanded: () => expanded => ({ expanded }),
       toggleExpand: ({ expanded }) => () => ({ expanded: !expanded }),
-      setHovered: () => hovered => ({ hovered })
+      setHovered: () => hovered => ({ hovered }),
+      setHoveredElement: () => hoveredElement => ({ hoveredElement })
     }
   ),
   withHandlers({
@@ -86,8 +100,9 @@ export default compose(
       hovered,
       langtag,
       sortable,
-      cell
-    }) => ({ index, key = index, style }) => {
+      cell,
+      hoveredElement
+    }) => boxHandler => ({ index, key = index, style }) => {
       const link = links[index];
       const { displayName, linkTarget } = link;
       const isHovered = hovered === index;
@@ -134,12 +149,12 @@ export default compose(
               label={link.label || link.displayName}
               langtag={langtag}
               mouseOverHandler={{
-                box: () => null, //mouseOverBoxHandler,
-                item: () => null
+                box: boxHandler,
+                item: f.noop
               }}
               style={style}
               isLinked
-              selectedMode={0}
+              selectedMode={hoveredElement}
             />
           </div>
         );
@@ -153,7 +168,9 @@ export default compose(
       actions,
       setHovered,
       hovered,
-      isAttachment
+      isAttachment,
+      hoveredElement,
+      setHoveredElement
     }) => () => ({ key, style = {} }) => {
       const link = f.find(f.propEq("id", key), links);
       const {
@@ -182,7 +199,7 @@ export default compose(
           langtag={langtag}
           clickHandler={clickHandler}
           mouseOverHandler={{
-            box: () => null, //mouseOverBoxHandler,
+            box: setHoveredElement,
             item: () =>
               setHovered(isAttachment ? link.uuid : link.linkTarget.rowId)
           }}
@@ -191,7 +208,7 @@ export default compose(
           isSelected={
             hovered === (isAttachment ? link.uuid : link.linkTarget.rowId)
           }
-          selectedMode={0}
+          selectedMode={hoveredElement}
           isAttachment={isAttachment}
         />
       );
@@ -223,24 +240,29 @@ export default compose(
       renderLink,
       renderSortableLink,
       sortable,
-      applySwap
-    }) => () => {
+      applySwap,
+      setHovered
+    }) => (onMouseLeave, boxHandler) => {
       const nLinks = links.length;
       const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-      const renderFn = unlink ? renderInteractiveLink : renderLink;
+      const renderFn = unlink ? renderInteractiveLink(boxHandler) : renderLink;
       const cssClass = classNames("item-content", { "can-expand": canExpand });
       const renderedLinks = f
         .range(0, f.min([nLinks, MAX_DISPLAYED_LINKS]))
         .map(index => renderFn({ index }));
       return sortable ? (
         <div className="sortable">
-          <div className="linked-items `${cssClass}`">
+          <div
+            className="linked-items `${cssClass}`"
+            onMouseLeave={onMouseLeave}
+          >
             <LinkedRows
               entries={f.map("id", links)}
               rowsToRender={4}
               renderListItem={renderSortableLink}
               loading={false}
               applySwap={applySwap}
+              setHovered={setHovered}
             />
           </div>
         </div>
@@ -256,19 +278,21 @@ export default compose(
       renderLink,
       renderSortableLink,
       sortable,
-      applySwap
-    }) => () => {
+      applySwap,
+      setHovered
+    }) => onMouseLeave => {
       const nLinks = links.length;
 
       return sortable ? (
         <div className="sortable">
-          <div className="linked-items">
+          <div className="linked-items" onMouseLeave={onMouseLeave}>
             <LinkedRows
               entries={f.map("id", links)}
               rowsToRender={nLinks}
               renderListItem={renderSortableLink}
               loading={false}
               applySwap={applySwap}
+              setHovered={setHovered}
             />
           </div>
         </div>
