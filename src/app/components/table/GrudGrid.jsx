@@ -106,21 +106,21 @@ export default class GrudGrid extends MultiGrid {
       // eslint-disable-next-line react/no-find-dom-node
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
       if (this._trgParent) {
-        this._trgParent.onmouseover = () => (this.hovered = this._blgParent);
+        this._trgParent.onmouseenter = () => (this.hovered = this._blgParent);
       }
     }
     if (!this._blgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
       if (this._blgParent) {
-        this._blgParent.onmouseover = () => (this.hovered = this._blgParent);
+        this._blgParent.onmouseenter = () => (this.hovered = this._blgParent);
       }
     }
     if (!this._brgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._brgParent = ReactDOM.findDOMNode(this._bottomRightGrid);
       if (this._brgParent) {
-        this._brgParent.onmouseover = () => (this.hovered = this._brgParent);
+        this._brgParent.onmouseenter = () => (this.hovered = this._brgParent);
       }
     }
 
