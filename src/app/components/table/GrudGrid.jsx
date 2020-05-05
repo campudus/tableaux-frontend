@@ -81,6 +81,8 @@ Grid.prototype.handleScrollEvent = function(trigger) {
 export default class GrudGrid extends MultiGrid {
   _blgParent = null;
   _trgParent = null;
+  _brgParent = null;
+  hovered = null;
 
   recalculateScrollPosition = new DebouncedFunction(newPosition => {
     this.translateElement(this._blgParent, null);
@@ -100,21 +102,37 @@ export default class GrudGrid extends MultiGrid {
   }
 
   _onScroll({ scrollLeft, scrollTop }) {
-    if (!this._trgParent || !this._blgParent || !this._brgParent) {
-      // this needs to access the real DOM nodes, not React's virtual ones
-      // eslint-disable-next-line react/no-find-dom-node
-      this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
+    if (!this._trgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
+      if (this._trgParent) {
+        this._trgParent.onmouseenter = () => (this.hovered = this._blgParent);
+      }
+    }
+    if (!this._blgParent) {
+      // eslint-disable-next-line react/no-find-dom-node
+      this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
+      if (this._blgParent) {
+        this._blgParent.onmouseenter = () => (this.hovered = this._blgParent);
+      }
+    }
+    if (!this._brgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._brgParent = ReactDOM.findDOMNode(this._bottomRightGrid);
+      if (this._brgParent) {
+        this._brgParent.onmouseenter = () => (this.hovered = this._brgParent);
+      }
     }
 
     const y = this.state.scrollTop - scrollTop;
     const x = this.state.scrollLeft - scrollLeft;
 
-    this.translateElement(this._blgParent, `translateY(${y}px)`);
-    this.translateElement(this._brgParent, `translateY(${y}px)`);
+    if (this.hovered !== this._blgParent) {
+      this.translateElement(this._blgParent, `translateY(${y}px)`);
+    }
+    if (this.hovered !== this._brgParent) {
+      this.translateElement(this._brgParent, `translateY(${y}px)`);
+    }
     this.translateElement(this._trgParent, `translateX(${x}px)`);
     this.recalculateScrollPosition.start({ scrollLeft, scrollTop });
   }
