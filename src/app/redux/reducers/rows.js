@@ -102,7 +102,7 @@ const rowValuesToCells = (table, columns) => rows => {
       values: row.values,
       cells: row.values.map((cellValue, idx) =>
         addCellId({
-          kind: columns[idx].kind,
+          kind: columns[idx] && columns[idx].kind,
           column: columns[idx],
           table,
           row: fakeRow,

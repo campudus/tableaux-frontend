@@ -14,6 +14,7 @@ import { setCellAnnotation } from "../../helpers/annotationHelper";
 import AnnotationEntry from "./AnnotationEntry";
 import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
+import { canUserEditCellAnnotations } from "../../helpers/accessManagementHelper";
 
 @listenToClickOutside
 class AnnotationPopup extends Component {
@@ -159,6 +160,7 @@ class AnnotationPopup extends Component {
         "in-first-row": false // row.id === cell.tables.get(cell.tableId).rows.at(0).id
       }
     );
+    const canEditAnnotations = canUserEditCellAnnotations(cell);
 
     return (
       <Portal isOpened>
@@ -206,24 +208,27 @@ class AnnotationPopup extends Component {
                     key={ann.uuid}
                     cell={cell}
                     idx={f.size(annotations) - idx}
+                    canDelete={canEditAnnotations}
                   />
                 ))}
               </div>
-              <footer tabIndex="1">
-                <input
-                  type="text"
-                  ref={this.rememberInput}
-                  onChange={this.handleInputChange}
-                  autoFocus
-                  placeholder={i18n.t("table:new-comment")}
-                  onKeyDown={this.handleInputKeys}
-                  value={this.state.comment}
-                  onBlur={this.focusInput}
-                />
-                <div className="button" onClick={this.saveComment}>
-                  {i18n.t("common:add")}
-                </div>
-              </footer>
+              {canEditAnnotations ? (
+                <footer tabIndex="1">
+                  <input
+                    type="text"
+                    ref={this.rememberInput}
+                    onChange={this.handleInputChange}
+                    autoFocus
+                    placeholder={i18n.t("table:new-comment")}
+                    onKeyDown={this.handleInputKeys}
+                    value={this.state.comment}
+                    onBlur={this.focusInput}
+                  />
+                  <div className="button" onClick={this.saveComment}>
+                    {i18n.t("common:add")}
+                  </div>
+                </footer>
+              ) : null}
             </div>
           </div>
         </FocusTrap>

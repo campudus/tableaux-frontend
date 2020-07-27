@@ -9,12 +9,8 @@ import {
   isLocked
 } from "../../helpers/annotationHelper";
 import { canConvert, convert } from "../../helpers/cellValueConverter";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
-import {
-  getUserLanguageAccess,
-  hasUserAccessToLanguage,
-  isUserAdmin
-} from "../../helpers/accessManagementHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { mapPromise, propMatches } from "../../helpers/functools";
 import Footer from "../overlay/Footer";
@@ -83,11 +79,8 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
 };
 
 const calcNewValue = function(src, srcLang, dst, dstLang) {
-  const untranslated = f.prop(["annotations", "translationNeeded", "langtags"]);
   const getAllowedValue = langtag =>
-    hasUserAccessToLanguage(langtag) ||
-    isUserAdmin() ||
-    f.contains(langtag, untranslated)
+    canUserChangeCell(dst, langtag)
       ? f.prop(["value", langtag], src)
       : f.prop(["value", langtag], dst);
   if (!src.column.multilanguage && !dst.column.multilanguage) {
@@ -215,11 +208,17 @@ async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
     const srcLangtags = f.get("langtags", srcTranslation);
 
     // Remove existing translation status and replace it with src's
-    deleteCellAnnotation(dstTranslation, dst).then(() => {
+    if (!f.isEmpty(dstTranslation)) {
+      deleteCellAnnotation(dstTranslation, dst).then(() => {
+        if (!f.isEmpty(srcLangtags)) {
+          addTranslationNeeded(srcLangtags, dst);
+        }
+      });
+    } else {
       if (!f.isEmpty(srcLangtags)) {
         addTranslationNeeded(srcLangtags, dst);
       }
-    });
+    }
   }
 }
 
@@ -230,23 +229,28 @@ const pasteCellValue = function(
   dstLang,
   skipDialogs = false
 ) {
+  console.log({ src });
+  // The lock can be overridden, if a user has access to the langtag and it is flagged as "needs translation"
   const canOverrideLock = () => {
     const untranslated = f.prop([
       "annotations",
       "translationNeeded",
       "langtags"
     ]);
-    const canTranslate = f.intersection(untranslated, getUserLanguageAccess());
+    const translatableLangtags = f.filter(
+      lt => canUserChangeCell(dst, lt),
+      untranslated
+    );
     return dst.column.multilanguage
-      ? (src.column.multilanguage && !f.isEmpty(canTranslate)) ||
-          (!src.column.multilanguage && f.contains(dstLang, canTranslate))
-      : f.contains(dstLang, canTranslate);
+      ? (src.column.multilanguage && !f.isEmpty(translatableLangtags)) ||
+          (!src.column.multilanguage &&
+            f.contains(dstLang, translatableLangtags))
+      : false;
   };
 
-  if (
-    (dst.kind === ColumnKinds.link || dst.kind === ColumnKinds.attachment) &&
-    !isUserAdmin()
-  ) {
+  if (!canUserChangeCell(dst, dstLang)) {
+    dst.column.multilanguage &&
+      showErrorToast("common:access_management.cant_access_language");
     return;
   }
 
@@ -255,11 +259,6 @@ const pasteCellValue = function(
     if (toastContent) {
       store.dispatch(actions.showToast(toastContent));
     }
-    return;
-  }
-
-  if (!dst.column.multilanguage && !hasUserAccessToLanguage(dstLang)) {
-    showErrorToast("common:access_management.cant_access_language");
     return;
   }
 
@@ -302,7 +301,13 @@ const pasteCellValue = function(
       pasteValueAndTranslationStatus(src, dst, newValue);
     };
     const buttons = {
-      positive: [i18n.t("common:save"), save],
+      positive: [
+        i18n.t("common:save"),
+        () => {
+          store.dispatch(actions.closeOverlay());
+          save();
+        }
+      ],
       neutral: [i18n.t("common:cancel"), null]
     };
     store.dispatch(
@@ -315,6 +320,7 @@ const pasteCellValue = function(
             newVals={newValue}
             saveAndClose={save}
             kind={dst.kind}
+            cell={src}
           />
         ),
         footer: <Footer buttonActions={buttons} />,

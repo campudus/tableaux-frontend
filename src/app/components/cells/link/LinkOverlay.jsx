@@ -1,5 +1,3 @@
-import "react-virtualized/styles.css";
-
 import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";
@@ -12,6 +10,7 @@ import {
   RowCreator,
   UnlinkedRows
 } from "./LinkOverlayFragments";
+import { canUserSeeTable } from "../../../helpers/accessManagementHelper";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import {
@@ -332,15 +331,12 @@ class LinkOverlay extends PureComponent {
       loading,
       unlinkedOrder,
       maxLinks,
-      grudData,
       actions
     } = this.props;
     const targetTable = {
       tableId: column.toTable,
       langtag
     };
-
-    const isToTableHidden = grudData.tables.data[column.toTable].hidden;
 
     // there are no unlinked rows or link cardinality reached
     const noForeignRows = f.isEmpty(rowResults.unlinked) || !this.canAddLink();
@@ -368,7 +364,7 @@ class LinkOverlay extends PureComponent {
           <span className="items-title">
             <span>
               {i18n.t("table:link-overlay-items-title")}
-              {isToTableHidden ? (
+              {!canUserSeeTable(column.toTable) ? (
                 getColumnDisplayName(column, langtag)
               ) : (
                 <a

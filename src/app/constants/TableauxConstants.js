@@ -6,6 +6,7 @@ var keyMirror = require("keymirror");
  * Also, this is the order an expanded row shows the languages
  */
 let languagetags;
+let _config = {};
 
 const grudConstants = {
   Directions: keyMirror({
@@ -97,7 +98,13 @@ const grudConstants = {
     WITH_COMMENT: null,
     ROW_CONTAINS: null,
     TRANSLATOR_FILTER: null
-  })
+  }),
+
+  get config() {
+    return _config;
+  },
+
+  initConfig: config => (_config = config)
 };
 
 module.exports = grudConstants;

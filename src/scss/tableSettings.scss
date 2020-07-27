@@ -1,14 +1,15 @@
 @import "helper";
 @import "variables";
 
-#table-rename-wrapper {
+.table-rename-wrapper {
   input {
     height: 30px;
     line-height: 30px;
     border: 1px solid $color-grey-dark;
     @include border-radius(3px);
     outline: none;
-    width: 200px;
+    width: 100%;
+    box-sizing: border-box;
     padding: 0 10px;
 
     &:focus, &:active {
@@ -32,23 +33,25 @@
       @include header-button-active();
     }
   }
+}
 
-  #table-settings-popup {
-    @include header-panel-look();
-    padding: 10px 0;
+#table-settings-popup {
+  @include header-panel-look();
+  padding: 0;
+  width: 200px;
 
-    .menu-item {
-      width: 100%;
-      padding: 8px;
-
-      &.active {
-        background-color: $color-light-link-color;
-      }
-    }
+  .menu-item {
+    width: 100%;
+    padding: 10px 10px;
+    cursor: pointer;
   }
 
-  a {
-    padding: 20px 10px;
+  .menu-item--disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 
+  .menu-item:hover{
+    background-color: $color-light-link-color;
+  }
 }

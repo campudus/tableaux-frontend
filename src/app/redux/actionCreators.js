@@ -27,7 +27,6 @@ import { makeRequest } from "../helpers/apiHelper";
 import { overlayParamsSpec } from "./reducers/overlays";
 import { queryFrontendServices } from "./actions/frontendServices";
 import API_ROUTES from "../helpers/apiRoutes";
-import TableauxRouter from "../router/router";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 
@@ -68,6 +67,7 @@ const {
   TABLE_NAME_EDIT,
   TABLE_NAME_EDIT_SUCCESS,
   TABLE_NAME_EDIT_ERROR,
+  SET_USER_AUTHENTICATED,
   SET_COLUMN_ORDERING
 } = actionTypes;
 
@@ -244,13 +244,6 @@ const loadAllRows = tableId => (dispatch, getState) => {
             rowId: validRowId,
             langtag
           })
-        );
-
-        TableauxRouter.selectCellHandler(
-          table.id,
-          validRowId,
-          validColumnId,
-          langtag
         );
       }
     };
@@ -483,7 +476,8 @@ const getMediaFolder = (folderId, langtag) => {
       MEDIA_FOLDER_GET,
       MEDIA_FOLDER_GET_SUCCESS,
       MEDIA_FOLDER_GET_ERROR
-    ]
+    ],
+    folderId: folderId || "root-folder"
   };
 };
 
@@ -698,6 +692,7 @@ const actionCreators = {
   addEmptyRowAndOpenEntityView,
   changeTableName,
   queryFrontendServices,
+  setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
   setColumnOrdering
 };
 

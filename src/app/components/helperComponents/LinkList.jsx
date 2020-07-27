@@ -4,33 +4,26 @@
  *        links: [{displayName, linkTarget: url-string},...]
  */
 
-import React, { useCallback } from "react";
-import { compose, withStateHandlers, withHandlers } from "recompose";
+import React, { useCallback, useState } from "react";
+import { compose, withStateHandlers, withHandlers, mapProps } from "recompose";
 import classNames from "classnames";
 import i18n from "i18next";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
 import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { List } from "react-virtualized";
 import SvgIcon from "../helperComponents/SvgIcon";
 import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 import LinkItem from "../cells/link/LinkItem";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 
 const MAX_DISPLAYED_LINKS = 4;
 
 const LinkList = props => {
-  const {
-    links,
-    expanded,
-    renderAll,
-    renderPreview,
-    toggleExpand,
-    setHovered,
-    setHoveredElement
-  } = props;
+  const { links, renderAll, renderPreview } = props;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-  const onMouseLeave = useCallback(() => setHovered(null), []);
-  const boxHandler = useCallback(() => setHoveredElement(0), []);
+  const [expanded, setExpanded] = useState(false);
+  const toggleExpand = useCallback(() => setExpanded(!expanded));
 
   return (
     <div className="link-list">
@@ -48,6 +41,7 @@ const LinkList = props => {
     </div>
   );
 };
+
 const proceedTo = (linkTarget, langtag) => evt => {
   if (f.isEmpty(linkTarget)) {
     return;
@@ -61,17 +55,19 @@ const proceedTo = (linkTarget, langtag) => evt => {
 };
 
 export default compose(
+  mapProps(props => ({
+    ...props,
+    sortable:
+      props.sortable &&
+      props.cell &&
+      canUserChangeCell(props.cell, props.langtag)
+  })),
   withStateHandlers(
     {
-      expanded: false,
-      hovered: null,
-      hoveredElement: 0
+      hovered: null
     },
     {
-      setExpanded: () => expanded => ({ expanded }),
-      toggleExpand: ({ expanded }) => () => ({ expanded: !expanded }),
-      setHovered: () => hovered => ({ hovered }),
-      setHoveredElement: () => hoveredElement => ({ hoveredElement })
+      setHovered: () => hovered => ({ hovered })
     }
   ),
   withHandlers({
@@ -159,7 +155,9 @@ export default compose(
           </div>
         );
       };
-      return sortable ? sortableLink() : nonSortableLink();
+      return sortable && canUserChangeCell(cell, langtag)
+        ? sortableLink()
+        : nonSortableLink();
     },
     renderSortableLink: ({
       links,
@@ -241,16 +239,19 @@ export default compose(
       renderSortableLink,
       sortable,
       applySwap,
-      setHovered
-    }) => (onMouseLeave, boxHandler) => {
+      cell,
+      langtag
+    }) => () => {
+      const areChangesAllowed = canUserChangeCell(cell, langtag);
       const nLinks = links.length;
       const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-      const renderFn = unlink ? renderInteractiveLink(boxHandler) : renderLink;
+      const renderFn =
+        unlink && areChangesAllowed ? renderInteractiveLink : renderLink;
       const cssClass = classNames("item-content", { "can-expand": canExpand });
       const renderedLinks = f
         .range(0, f.min([nLinks, MAX_DISPLAYED_LINKS]))
         .map(index => renderFn({ index }));
-      return sortable ? (
+      return sortable && areChangesAllowed ? (
         <div className="sortable">
           <div
             className="linked-items `${cssClass}`"
@@ -279,11 +280,12 @@ export default compose(
       renderSortableLink,
       sortable,
       applySwap,
-      setHovered
-    }) => onMouseLeave => {
+      cell,
+      langtag
+    }) => () => {
       const nLinks = links.length;
 
-      return sortable ? (
+      return sortable && canUserChangeCell(cell, langtag) ? (
         <div className="sortable">
           <div className="linked-items" onMouseLeave={onMouseLeave}>
             <LinkedRows

@@ -4,6 +4,7 @@ import RootButton from "../RootButton";
 import Toast from "./Toast";
 import withReduxState from "../../helpers/reduxActionHoc";
 import f from "lodash/fp";
+import i18n from "i18next";
 
 const OverlayRenderer = ({
   overlays,
@@ -96,7 +97,7 @@ const OverlayRenderer = ({
         <RootButton
           closeOverlay={actions.closeOverlay}
           activeOverlays={overlays || []}
-          langtag={f.prop("currentLanguage", tableView)}
+          langtag={i18n.language}
         />
       )}
       {toast ? (

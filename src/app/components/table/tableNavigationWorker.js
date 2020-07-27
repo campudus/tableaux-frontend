@@ -15,7 +15,6 @@ import { isLocked } from "../../helpers/annotationHelper";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import Header from "../overlay/Header";
-import TableauxRouter from "../../router/router";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
 import store from "../../redux/store";
@@ -224,8 +223,6 @@ export function toggleCellSelection({ cell, langtag }) {
   const validLangtag = langtag || this.props.langtag;
   const columnId = cell.columnId;
   const rowId = cell.rowId;
-
-  TableauxRouter.selectCellHandler(tableId, rowId, columnId, validLangtag);
 
   actions.toggleCellSelection({
     columnId,

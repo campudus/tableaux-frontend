@@ -23,6 +23,8 @@ class Header extends PureComponent {
 
   renderTitle = () => {
     const { title, langtag, cell } = this.props;
+    const getLanguage = () =>
+      f.get(["props", "sharedData", "contentLanguage"], this) || langtag;
     const cellOrTitle = isCell(cell) ? cell : isCell(title) ? title : null;
     if (cellOrTitle) {
       const { table, row } = cellOrTitle;
@@ -39,7 +41,7 @@ class Header extends PureComponent {
       return (
         <OverlayHeadRowIdentificator
           cell={{ ...cellOrTitle, row: dataRow, columns }}
-          langtag={langtag}
+          langtag={getLanguage()}
         />
       );
     } else {

@@ -1,11 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import i18n from "i18next";
 import { branch, compose, pure, renderNothing, withProps } from "recompose";
-import f from "lodash/fp";
-import getMotd from "./Messages";
+import React from "react";
+import i18n from "i18next";
+
+import PropTypes from "prop-types";
+
 import { SHOW_DASHBOARD_USER_NAME } from "../../../FeatureFlags";
 import { getUserName } from "../../../helpers/userNameHelper";
+import getMotd from "./Messages";
 
 const GreeterWidget = ({ userName, motd }) => {
   return (
@@ -30,7 +31,7 @@ const UserName = branch(() => !SHOW_DASHBOARD_USER_NAME, renderNothing)(
 const enhance = compose(
   pure,
   withProps(props => ({
-    userName: f.getOr("GRUDling", ["user", "id"], getUserName()),
+    userName: getUserName(true /* onlyFirstName */),
     motd: getMotd(props.langtag)
   }))
 );

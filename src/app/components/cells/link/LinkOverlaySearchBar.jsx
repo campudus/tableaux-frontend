@@ -1,5 +1,3 @@
-import "react-virtualized/styles.css";
-
 import React from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";

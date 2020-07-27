@@ -6,25 +6,26 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import {
+  canUserDeleteFiles,
+  canUserEditFiles,
+  getUserLanguageAccess
+} from "../../../helpers/accessManagementHelper";
+import {
   confirmDeleteFile,
   noPermissionAlertWithLanguage
 } from "../../../components/overlay/ConfirmationOverlay";
-import {
-  getUserLanguageAccess,
-  isUserAdmin
-} from "../../../helpers/accessManagementHelper";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import FileEdit from "../overlay/FileEdit.jsx";
 import Footer from "../../overlay/Footer";
 import Header from "../../overlay/Header";
 import apiUrl from "../../../helpers/apiUrl";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 const enhance = withState("saveChanges", "setSaveChanges", false);
 
 @translate(["media"])
 class File extends Component {
   onRemove = () => {
-    if (isUserAdmin()) {
+    if (canUserDeleteFiles()) {
       confirmDeleteFile(
         retrieveTranslation(this.props.langtag, this.props.file.title),
         () => {
@@ -62,6 +63,12 @@ class File extends Component {
   onEdit = () => {
     const { file, langtag, actions } = this.props;
 
+    if (!canUserEditFiles()) {
+      const imageUrl = apiUrl(retrieveTranslation(langtag, file.url));
+      window.open(imageUrl, "_blank");
+      return;
+    }
+
     actions.openOverlay({
       head: (
         <Header
@@ -81,7 +88,9 @@ class File extends Component {
         <Footer
           buttonActions={{
             neutral: [i18n.t("common:cancel"), null],
-            positive: [i18n.t("common:save"), this.onSave]
+            positive: canUserEditFiles()
+              ? [i18n.t("common:save"), this.onSave]
+              : null
           }}
         />
       ),
@@ -106,16 +115,18 @@ class File extends Component {
           <i className="icon fa fa-pencil-square-o" />
           {t("change_file")}
         </span>
-        <a
-          href={imageUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="button"
-        >
-          <i className="icon fa fa-external-link" />
-          {t("show_file")}
-        </a>
-        {isUserAdmin() ? (
+        {canUserEditFiles() && (
+          <a
+            href={imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button"
+          >
+            <i className="icon fa fa-external-link" />
+            {t("show_file")}
+          </a>
+        )}
+        {canUserDeleteFiles() ? (
           <span
             className="button"
             onClick={this.onRemove}
