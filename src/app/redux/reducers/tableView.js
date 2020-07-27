@@ -16,7 +16,6 @@ import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 import getDisplayValue from "../../helpers/getDisplayValue";
-import TableauxRouter from "../../router/router";
 
 const {
   TOGGLE_CELL_SELECTION,
@@ -155,8 +154,6 @@ const insertSkeletonLinks = (state, action, completeState) => {
 
 const toggleSelectedCell = (state, action) => {
   unlockRow(action.rowId, false);
-  const { tableId, rowId, columnId, langtag } = action;
-  TableauxRouter.selectCellHandler(tableId, rowId, columnId, langtag);
   return f.flow(
     f.assoc("editing", false),
     f.update("selectedCell", prevSelection =>

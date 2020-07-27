@@ -7,16 +7,10 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
-import * as AccessControl from "../../../helpers/accessManagementHelper";
-import TableSwitcherPopup from "./TableSwitcherPopup";
-import TableauxConstants from "../../../constants/TableauxConstants";
 import { memoizeOne } from "../../../helpers/functools.js";
 
 const sortTables = memoizeOne((langtag, tables, getDisplayName) =>
-  f.compose(
-    f.sortBy(getDisplayName(langtag)),
-    f.reject("hidden")
-  )(tables)
+  f.compose(f.sortBy(getDisplayName(langtag)), f.reject("hidden"))(tables)
 );
 
 @translate(["header"])
@@ -77,11 +71,7 @@ class TableSwitcherButton extends React.PureComponent {
     );
 
     const getDisplayName = langtag =>
-      f.pipe(
-        table => getTableDisplayName(table, langtag),
-        f.deburr,
-        f.toLower
-      );
+      f.pipe(table => getTableDisplayName(table, langtag), f.deburr, f.toLower);
 
     const sortedTables = sortTables(langtag, tables, getDisplayName);
 
