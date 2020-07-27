@@ -281,7 +281,9 @@ export default compose(
       sortable,
       applySwap,
       cell,
-      langtag
+      langtag,
+      onMouseLeave,
+      setHovered
     }) => () => {
       const nLinks = links.length;
 
