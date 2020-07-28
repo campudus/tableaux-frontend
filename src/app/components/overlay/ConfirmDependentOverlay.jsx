@@ -30,7 +30,6 @@ const RowsOverlay = props => {
   const idColumn = f.prop(["columns", table.id, "data", 0], grudData);
 
   const rowDisplayLabel = rowConcatString(idColumn, row, langtag);
-  console.log({ depMessage });
 
   return (
     <div className="delete-row-confirmation">
