@@ -17,16 +17,20 @@ const RowsOverlay = props => {
     <p>{i18n.t("table:fetching_dependent_rows")}</p>
   );
 
+  const { table, row, langtag, deleteInfo, grudData } = props;
+
   const hasDependencies = () =>
     setDepMessage(<p>{i18n.t("table:delete_row_dependent_text")}</p>);
 
   const hasNoDependencies = () =>
-    setDepMessage(<p>{i18n.t("table:no_dependent_text")}</p>);
+    setDepMessage(
+      <p>{i18n.t(`table:${deleteInfo && "delete_"}no_dependent_text`)}</p>
+    );
 
-  const { table, row, langtag, deleteInfo, grudData } = props;
   const idColumn = f.prop(["columns", table.id, "data", 0], grudData);
 
   const rowDisplayLabel = rowConcatString(idColumn, row, langtag);
+  console.log({ depMessage });
 
   return (
     <div className="delete-row-confirmation">
