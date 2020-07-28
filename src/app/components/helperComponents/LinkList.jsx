@@ -19,7 +19,7 @@ import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 const MAX_DISPLAYED_LINKS = 4;
 
 const LinkList = props => {
-  const { links, renderAll, renderPreview } = props;
+  const { links, renderAll, renderPreview, onMouseLeave, boxHandler } = props;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
   const [expanded, setExpanded] = useState(false);
@@ -240,7 +240,9 @@ export default compose(
       sortable,
       applySwap,
       cell,
-      langtag
+      langtag,
+      setHovered,
+      onMouseLeave
     }) => () => {
       const areChangesAllowed = canUserChangeCell(cell, langtag);
       const nLinks = links.length;
