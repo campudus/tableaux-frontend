@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>edit</title>
+    <g id="edit" stroke="none" stroke-width="1">
+        <path d="M8.775,0.225 C8.475,-0.075 8.025,-0.075 7.725,0.225 L0.225,7.725 C0.075,7.875 0,8.025 0,8.25 L0,11.25 C0,11.7 0.3,12 0.75,12 L3.75,12 C3.975,12 4.125,11.925 4.275,11.775 L11.775,4.275 C12.075,3.975 12.075,3.525 11.775,3.225 L8.775,0.225 Z M3.45,10.5 L1.5,10.5 L1.5,8.55 L6,4.05 L7.95,6 L3.45,10.5 Z M9,4.95 L7.05,3 L8.25,1.8 L10.2,3.75 L9,4.95 Z"></path>
+    </g>
+</svg>

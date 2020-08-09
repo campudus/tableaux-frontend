@@ -101,7 +101,7 @@ class DragSortList extends Component {
             swapItems={swapItems}
             applySwap={applySwap(ordering)}
             swapOrdering={swapOrdering}
-            onMouseOver={() => setHovered(id)}
+            onMouseOver={() => setHovered && setHovered(id)}
           >
             {renderListItem({
               index: idx,

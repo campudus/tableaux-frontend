@@ -25,6 +25,8 @@ const iconUrls = {
   cross: "/img/icons/cross.svg",
   tablelink: "/img/icons/goto-table.svg",
   plus: "/img/icons/plus.svg",
+  minus: "/img/icons/minus.svg",
+  edit: "/img/icons/edit.svg",
   addTranslation: "/img/icons/translation-add.svg",
   compareTranslation: "/img/icons/translation-compare.svg",
   vdots: "/img/icons/vertical-dots.svg",
