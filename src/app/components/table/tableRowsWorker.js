@@ -21,10 +21,14 @@ const DuplicatedMessage = props => {
 const TranslatedDuplicatedMessage = translate(["table"])(DuplicatedMessage);
 
 export function duplicateRow(payload) {
-  store.dispatch(
-    actions.duplicateRow({
-      ...payload,
-      DuplicatedMessage: TranslatedDuplicatedMessage
-    })
-  );
+  return new Promise((resolve, reject) => {
+    store.dispatch(
+      actions.duplicateRow({
+        ...payload,
+        DuplicatedMessage: TranslatedDuplicatedMessage,
+        onSuccess: resolve,
+        onError: reject
+      })
+    );
+  });
 }

@@ -158,6 +158,22 @@ const copyLinks = (src, dst) => {
   }
 };
 
+// optionally curried function
+export function createRowDuplicatesRequest(
+  tableId,
+  dataToPost // Result of getSaveableRowDuplicate({columns, row})
+) {
+  if (arguments.length === 1) {
+    return dataToPost_ => createRowDuplicatesRequest(tableId, dataToPost_);
+  }
+
+  return makeRequest({
+    apiRoute: route.toRows(tableId),
+    data: f.pick(["columns", "rows"], dataToPost),
+    method: "POST"
+  });
+}
+
 // When links have a backlink/left constraint, we duplicate the linked
 // entries in their respective tables and link the duplicates in the
 // pasted cell to avoid violating constraints
@@ -187,13 +203,7 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
         []
       )
     )
-    .then(rowsToCopy =>
-      makeRequest({
-        apiRoute: route.toRows(toTable),
-        data: rowsToCopy,
-        method: "POST"
-      })
-    )
+    .then(createRowDuplicatesRequest(toTable))
     .then(f.prop("rows"))
     .then(f.map(row => ({ id: row.id, value: f.first(row.values) })));
 
