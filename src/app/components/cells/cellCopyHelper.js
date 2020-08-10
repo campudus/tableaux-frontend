@@ -187,9 +187,7 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
 
   const linkIds = f.map("id", constrainedValue);
   const fetchLinkData = rowId =>
-    makeRequest({ apiRoute: route.toRow({ tableId: toTable, rowId }) }).then(
-      f.prop("values")
-    );
+    makeRequest({ apiRoute: route.toRow({ tableId: toTable, rowId }) });
 
   const copiedLinkValues = await mapPromise(fetchLinkData, linkIds)
     .then(f.map(row => getSaveableRowDuplicate({ columns, row })))
