@@ -174,6 +174,33 @@ export function createRowDuplicatesRequest(
   });
 }
 
+const maybeChangeBacklink = ({ src, dst }) => saveableRowDuplicate => {
+  const { columns, rows } = saveableRowDuplicate;
+  const { backlinkIndices } = f.reduce(
+    (acc, column) => {
+      const { idx, backlinkIndices } = acc;
+      const newVal =
+        column.kind === ColumnKinds.link && column.toTable === src.table.id
+          ? f.concat(backlinkIndices, idx)
+          : backlinkIndices;
+      return { idx: idx + 1, backlinkIndices: newVal };
+    },
+    { idx: 0, backlinkIndices: [] },
+    columns
+  );
+  if (f.isEmpty(backlinkIndices)) {
+    return saveableRowDuplicate;
+  }
+  const newRow = f.reduce(
+    (acc, val) => {
+      return f.assoc([val, 0, "id"], dst.row.id, acc);
+    },
+    rows[0].values,
+    backlinkIndices
+  );
+  return { ...saveableRowDuplicate, rows: [{ values: newRow }] };
+};
+
 // When links have a backlink/left constraint, we duplicate the linked
 // entries in their respective tables and link the duplicates in the
 // pasted cell to avoid violating constraints
@@ -190,7 +217,14 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
     makeRequest({ apiRoute: route.toRow({ tableId: toTable, rowId }) });
 
   const copiedLinkValues = await mapPromise(fetchLinkData, linkIds)
-    .then(f.map(row => getSaveableRowDuplicate({ columns, row })))
+    .then(
+      f.map(row =>
+        f.compose(
+          maybeChangeBacklink({ src, dst }),
+          getSaveableRowDuplicate
+        )({ columns, row })
+      )
+    )
     // Reduce all saveable rows into an array so we need only one POST to duplicate them
     .then(
       f.reduce(
@@ -237,7 +271,6 @@ const pasteCellValue = function(
   dstLang,
   skipDialogs = false
 ) {
-  console.log({ src });
   // The lock can be overridden, if a user has access to the langtag and it is flagged as "needs translation"
   const canOverrideLock = () => {
     const untranslated = f.prop([
