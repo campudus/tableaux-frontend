@@ -20,6 +20,7 @@ import actions from "../../redux/actionCreators";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import route from "../../helpers/apiRoutes";
 import store from "../../redux/store";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -138,6 +139,7 @@ const copyGroupColumn = (src, srcLang, dst, dstLang) => {
 
 // (cell, cell) -> nil
 const copyLinks = (src, dst) => {
+  console.log(src);
   const cardinality = f.get(["column", "constraint", "cardinality"], dst);
   if (f.isEmpty(cardinality)) {
     changeCellValue(dst, src.value);
@@ -240,6 +242,23 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
     .then(f.map(row => ({ id: row.id, value: f.first(row.values) })));
 
   changeCellValue(dst, copiedLinkValues);
+  const displayValues = f.map(
+    ({ id, value }) => ({
+      id,
+      values: [getDisplayValue(src.column.toColumn, value)]
+    }),
+    copiedLinkValues
+  );
+  store.dispatch(
+    actions.addDisplayValues({
+      displayValues: [
+        {
+          tableId: toTable,
+          values: displayValues
+        }
+      ]
+    })
+  );
 };
 
 async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
