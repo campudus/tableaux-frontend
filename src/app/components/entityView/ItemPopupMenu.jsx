@@ -248,7 +248,12 @@ class ItemPopupMenu extends Component {
               ? this.mkEntry(0, {
                   title: "table:show_dependency",
                   fn: () =>
-                    openShowDependency({ table: cell.table, row, langtag }),
+                    openShowDependency({
+                      table: cell.table,
+                      row,
+                      langtag,
+                      cell
+                    }),
                   icon: "code-fork"
                 })
               : null}

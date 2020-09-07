@@ -18,7 +18,7 @@ const LinkList = props => {
   const { links, cell, langtag, actions, isAttachment } = props;
   const { column, row, table, value } = cell;
   const changeCellAuthorized = canUserChangeCell(props.cell, props.langtag);
-  const sortable = props.sortable && props.cell && changeCellAuthorized;
+  const sortable = props.sortable && cell && changeCellAuthorized;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
   const [expanded, setExpanded] = useState(false);

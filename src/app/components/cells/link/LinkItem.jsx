@@ -82,7 +82,6 @@ const LinkItem = props => {
 };
 
 LinkItem.propTypes = {
-  mouseOverHandler: PropTypes.object.isRequired,
   refIfLinked: PropTypes.func,
   clickHandler: PropTypes.func,
   isLinked: PropTypes.bool,
