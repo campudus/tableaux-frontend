@@ -139,7 +139,6 @@ const copyGroupColumn = (src, srcLang, dst, dstLang) => {
 
 // (cell, cell) -> nil
 const copyLinks = (src, dst) => {
-  console.log(src);
   const cardinality = f.get(["column", "constraint", "cardinality"], dst);
   if (f.isEmpty(cardinality)) {
     changeCellValue(dst, src.value);
