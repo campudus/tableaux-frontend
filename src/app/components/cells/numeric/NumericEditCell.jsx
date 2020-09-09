@@ -71,8 +71,7 @@ class NumericEditCell extends React.Component {
   updateValueState = value => this.setState({ value });
 
   render = () => {
-    const { isYear } = this.props;
-
+    const { isYear, separator } = this.props;
     return (
       <div className={"cell-content editing"}>
         <NumberInput
@@ -83,8 +82,7 @@ class NumericEditCell extends React.Component {
           onChange={this.updateValueState}
           integer={isYear}
           localize={!isYear}
-          onClick={stopPropagation}
-          onMouseDown={stopPropagation}
+          separator={separator}
         />
       </div>
     );
@@ -95,7 +93,8 @@ NumericEditCell.propTypes = {
   langtag: PropTypes.string.isRequired,
   onSave: PropTypes.func.isRequired,
   isYear: PropTypes.bool,
-  setCellKeyboardShortcuts: PropTypes.func
+  setCellKeyboardShortcuts: PropTypes.func,
+  separator: PropTypes.bool
 };
 
 export default NumericEditCell;

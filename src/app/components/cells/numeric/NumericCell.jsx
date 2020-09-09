@@ -48,7 +48,7 @@ const NumericCell = props => {
       <div className="cell-content">
         {f.compose(
           when(f.overSome([f.isNil, f.isNaN]), () => ""),
-          unless(() => isYear, formatNumber)
+          unless(() => isYear || column.separator, formatNumber)
         )(displayValue[langtag])}
       </div>
     );
@@ -61,6 +61,7 @@ const NumericCell = props => {
         isMultiLanguage={isMultiLanguage}
         onSave={handleEditDone}
         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+        separator={column.separator}
       />
     );
   }

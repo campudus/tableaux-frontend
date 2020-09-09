@@ -31,8 +31,7 @@ const NumberInput = (props, ref) => {
     placeholder,
     localize = true,
     integer = false,
-    onClick = f.noop,
-    onMouseDown = f.noop
+    separator
   } = props;
 
   const decimalSeparator = getLocaleDecimalSeparator();
@@ -81,11 +80,12 @@ const NumberInput = (props, ref) => {
       onKeyDown && onKeyDown(event);
     }
   });
+  console.log(separator)
 
   return (
     <NumberFormat
       ref={inputRef}
-      thousandSeparator={localize ? thousandSeparator : false}
+      thousandSeparator={localize && !separator ? thousandSeparator : false}
       decimalSeparator={decimalSeparator}
       value={value}
       defaultValue={0}
