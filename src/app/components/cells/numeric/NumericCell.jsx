@@ -23,6 +23,7 @@ const NumericCell = props => {
 
   const isMultiLanguage = column.multilanguage;
   const isYear = isYearColumn(column);
+  const isInteger = column.kind === "integer";
 
   const handleEditDone = React.useCallback(newValue => {
     const validatedValue =
@@ -62,6 +63,7 @@ const NumericCell = props => {
         onSave={handleEditDone}
         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
         separator={column.separator}
+        isInteger={isInteger}
       />
     );
   }

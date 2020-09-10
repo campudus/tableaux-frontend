@@ -80,7 +80,6 @@ const NumberInput = (props, ref) => {
       onKeyDown && onKeyDown(event);
     }
   });
-  console.log(separator)
 
   return (
     <NumberFormat
