@@ -71,7 +71,7 @@ class NumericEditCell extends React.Component {
   updateValueState = value => this.setState({ value });
 
   render = () => {
-    const { isYear, separator } = this.props;
+    const { isYear, separator, isInteger } = this.props;
     return (
       <div className={"cell-content editing"}>
         <NumberInput
@@ -80,7 +80,7 @@ class NumericEditCell extends React.Component {
           className="input"
           value={this.state.value}
           onChange={this.updateValueState}
-          integer={isYear}
+          integer={isYear || isInteger}
           localize={!isYear}
           separator={separator}
         />

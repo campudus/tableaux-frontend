@@ -172,6 +172,7 @@ class Cell extends React.Component {
     [ColumnKinds.link]: LinkCell,
     [ColumnKinds.attachment]: AttachmentCell,
     [ColumnKinds.numeric]: NumericCell,
+    [ColumnKinds.integer]: NumericCell,
     [ColumnKinds.boolean]: BooleanCell,
     [ColumnKinds.date]: DateCell,
     [ColumnKinds.datetime]: DateCell,
