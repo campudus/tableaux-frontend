@@ -7,6 +7,7 @@ import overlays from "./overlays";
 import rows from "./rows";
 import tableView from "./tableView";
 import tables from "./table";
+import selectedCell from "./selectedCell";
 
 // const rootReducer = combineReducers({ tables, columns, rows, tableView });
 const rootReducer = omniscentReducer({
@@ -17,7 +18,8 @@ const rootReducer = omniscentReducer({
   overlays,
   media,
   grudStatus,
-  frontendServices
+  frontendServices,
+  selectedCell
 });
 
 export default rootReducer;

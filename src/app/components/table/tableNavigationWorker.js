@@ -22,7 +22,10 @@ import store from "../../redux/store";
 // Takes care that we never loose focus of the table to guarantee keyboard events are triggered
 export function checkFocusInsideTable() {
   // Is a cell selected?
-  if (!f.isEmpty(this.props.tableView.selectedCell)) {
+  const {
+    selectedCell: { selectedCell }
+  } = store.getState();
+  if (!f.isEmpty(selectedCell)) {
     const tableDOMNode = document.getElementById("virtual-table-wrapper");
     const columnFilterNode = document.getElementById(
       "column-filter-popup-wrapper"
@@ -50,7 +53,9 @@ const getCellKind = ({ currentTable, selectedCell }) =>
 
 export function getKeyboardShortcuts() {
   const { actions, tableView } = this.props;
-  const { selectedCell } = tableView;
+  const {
+    selectedCell: { selectedCell }
+  } = store.getState();
   const selectedCellEditing = tableView.editing;
   const actionKey = f.contains("Mac OS", navigator.userAgent)
     ? "metaKey"
@@ -208,8 +213,11 @@ export function isTextSelected() {
 }
 
 export function isLastRowSelected() {
-  const { rows, tableView } = this.props;
-  const currentRowId = tableView.selectedCell.rowId;
+  const { rows } = this.props;
+  const {
+    selectedCell: { selectedCell }
+  } = store.getState();
+  const currentRowId = selectedCell.rowId;
   const numberOfRows = f.size(rows);
   const isTableEmpty = numberOfRows <= 0;
   const currentRowIndex = f.findIndex(row => row.id === currentRowId, rows);
@@ -238,10 +246,12 @@ export function toggleCellEditing(params = {}) {
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
   const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
+  const { currentTable } = tableView;
   const {
-    selectedCell: { columnId, rowId, langtag },
-    currentTable
-  } = tableView;
+    selectedCell: {
+      selectedCell: { columnId, rowId, langtag }
+    }
+  } = store.getState();
 
   const columnIndex = f.findIndex(col => col.id === columnId, visibleColumns);
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
@@ -330,7 +340,9 @@ export function toggleCellEditing(params = {}) {
 
 export function setNextSelectedCell(direction) {
   const { tableView, rows, columns } = this.props;
-  const { selectedCell } = tableView;
+  const {
+    selectedCell: { selectedCell }
+  } = store.getState();
   const { columnId, rowId, langtag } = selectedCell;
 
   if (f.isNil(columnId) || f.isNil(rowId)) {
@@ -397,7 +409,10 @@ export function setNextSelectedCell(direction) {
 // returns the next row and the next language cell when expanded
 export function getNextRowCell(getPrev) {
   const { tableView, rows, columns, selectedCellExpandedRow } = this.props;
-  const { selectedCell, expandedRowIds } = tableView;
+  const { expandedRowIds } = tableView;
+  const {
+    selectedCell: { selectedCell }
+  } = store.getState();
   const { rowId, langtag, columnId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const selectedColumn = columns[columnIndex];
@@ -474,7 +489,10 @@ export function getNextColumnCell(getPrev) {
     selectedCellExpandedRow,
     visibleColumnOrdering
   } = this.props;
-  const { selectedCell, expandedRowIds } = tableView;
+  const { expandedRowIds } = tableView;
+  const {
+    selectedCell: { selectedCell }
+  } = store.getState();
 
   const getNextColumnId = (visibleColumnOrdering, columns) => {
     const clampToVisibleRange = range => index => f.clamp(0, index, range);

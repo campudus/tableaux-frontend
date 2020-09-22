@@ -30,6 +30,19 @@ import LinkCell from "./link/LinkCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
+
+const mapStateToProps = (state, props) => {
+  const { cell } = props;
+  const {
+    selectedCell: { selectedCell }
+  } = state;
+  const rowId = cell.row.id;
+  const columnId = cell.column.id;
+  const selected =
+    selectedCell.rowId === rowId && columnId === selectedCell.columnId;
+  return { selected };
+};
 
 const ExpandCorner = compose(
   branch(({ show }) => !show, renderNothing),
@@ -308,7 +321,7 @@ const RepeaterCell = withHandlers({
 export default compose(
   branch(isRepeaterCell, renderComponent(pure(RepeaterCell))),
   pure
-)(Cell);
+)(reduxActionHoc(Cell, mapStateToProps));
 
 Cell.propTypes = {
   cell: PropTypes.object.isRequired,
