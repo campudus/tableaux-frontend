@@ -26,6 +26,7 @@ import TableauxConstants, {
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import pasteCellValue from "../cells/cellCopyHelper";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
+import store from "../../redux/store";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -204,17 +205,16 @@ class TableView extends PureComponent {
   };
 
   getCellUrl = () => {
+    const { langtag, table } = this.props;
+    console.log(store.getState())
     const {
-      langtag,
-      table,
-      tableView: {
-        selectedCell: { columnId, rowId }
+      selectedCell: {
+        selectedCell: { rowId, columnId }
       }
-    } = this.props;
+    } = store.getState();
 
     return (
-      `/${langtag}` +
-      `/tables/${table.id}` +
+      `/${langtag}` + `/tables/${table.id}` +
       (columnId ? `/columns/${columnId}` : "") +
       (rowId ? `/rows/${rowId}` : "")
     );

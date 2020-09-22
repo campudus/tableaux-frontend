@@ -195,7 +195,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
 
       const [selectedCell, rows, columns, table, visibleColumns] = f.props(
         [
-          ["tableView", "selectedCell"],
+          ["selectedCell", "selectedCell"],
           ["rows", tableId, "data"],
           ["columns", tableId, "data"],
           ["tables", "data", tableId],
@@ -657,7 +657,16 @@ const actionCreators = {
   setCurrentLanguage: setCurrentLanguage,
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
-  toggleCellSelection: dispatchParamsFor(TOGGLE_CELL_SELECTION),
+  toggleCellSelection: data => {
+    const { rowId, columnId, tableId, langtag } = data;
+    const url =
+      `/${langtag}` +
+      `/tables/${tableId}` +
+      (columnId ? `/columns/${columnId}` : "") +
+      (rowId ? `/rows/${rowId}` : "");
+    window.history.pushState({}, null,url);
+    return dispatchParamsFor(TOGGLE_CELL_SELECTION)(data);
+  },
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   copyCellValue: dispatchParamsFor(COPY_CELL_VALUE_TO_CLIPBOARD),
