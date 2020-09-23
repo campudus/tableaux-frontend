@@ -206,7 +206,6 @@ class TableView extends PureComponent {
 
   getCellUrl = () => {
     const { langtag, table } = this.props;
-    console.log(store.getState())
     const {
       selectedCell: {
         selectedCell: { rowId, columnId }

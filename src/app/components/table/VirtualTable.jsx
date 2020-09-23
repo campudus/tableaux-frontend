@@ -163,6 +163,20 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderGridCell = gridData => {
+    // if (gridData.isVisible) {
+    //   if (gridData.rowIndex > this.lastVisibleRowIndex) {
+    //     this.lastVisibleRowIndex = gridData.rowIndex;
+    //   }
+    //   if (gridData.rowIndex < this.firstVisibleRowIndex) {
+    //     this.firstVisibleRowIndex = gridData.rowIndex;
+    //   }
+    //   if (gridData.columnIndex > this.lastVisibleColumnIndex) {
+    //     this.lastVisibleColumnIndex = gridData.columnIndex;
+    //   }
+    //   if (gridData.columnIndex < this.firstVisibleColumnIndex) {
+    //     this.firstVisibleColumnIndex = gridData.columnIndex;
+    //   }
+    // }
     // if we're below all rows, render buttons
     if (gridData.rowIndex > f.size(this.props.rows)) {
       return this.renderButton(gridData);
@@ -495,21 +509,38 @@ export default class VirtualTable extends PureComponent {
       f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows)
     );
     const columnIndex = f.compose(
-      f.add(1),
       f.get("orderIdx"),
       f.find(({ id }) => id === this.selectedIds.column),
       mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
       f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
     )(visibleColumnOrdering);
 
-    this.setState({
-      scrolledCell: {
-        columnIndex,
-        rowIndex,
-        align: cell.align,
-        scrolledCell: cell
-      }
-    });
+    // const t1 = performance.now();
+    const grid = this.multiGrid._bottomRightGrid;
+    const shouldScroll =
+      !f.inRange(
+        grid._renderedRowStartIndex,
+        grid._renderedRowStopIndex,
+        rowIndex - 1
+      ) ||
+      (!f.inRange(
+        grid._renderedColumnStartIndex,
+        grid._renderedColumnStopIndex,
+        columnIndex - 1
+      ) &&
+        columnIndex !== 0);
+
+
+    if (shouldScroll) {
+      this.setState({
+        scrolledCell: {
+          columnIndex: columnIndex + 1,
+          rowIndex,
+          align: cell.align,
+          scrolledCell: cell
+        }
+      });
+    }
   };
 
   storeGridElement = node => {
@@ -604,6 +635,7 @@ export default class VirtualTable extends PureComponent {
           {({ height, width }) => {
             return (
               <MultiGrid
+                isScrollingOptOut={true}
                 enableFixedColumnScroll={true}
                 langtag={langtag}
                 ref={this.storeGridElement}
