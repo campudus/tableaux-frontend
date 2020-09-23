@@ -208,6 +208,7 @@ class Cell extends React.Component {
   }
 
   render() {
+    // console.log("cellRender")
     const {
       annotationsOpen,
       cell,
