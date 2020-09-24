@@ -1,6 +1,10 @@
 import React from "react";
 import CurrencyRow from "./CurrencyRow";
-import { getCurrencyWithCountry } from "./currencyHelper";
+import {
+  getCurrencyWithCountry,
+  maybeAddZeroToDecimals
+} from "./currencyHelper";
+import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 
@@ -16,8 +20,15 @@ export default class CurrencyEditCell extends React.PureComponent {
 
   constructor(props) {
     super(props);
+
     this.state = {
-      currencyValues: props.cell.value
+      currencyValues: f.mapValues(
+        f.compose(
+          maybeAddZeroToDecimals,
+          this.splitFloat
+        ),
+        props.cell.value
+      )
     };
   }
 
@@ -38,17 +49,32 @@ export default class CurrencyEditCell extends React.PureComponent {
     });
   }
 
+  splitFloat = f.compose(
+    splittedValue =>
+      splittedValue.length === 1 ? f.concat(splittedValue, "") : splittedValue,
+    f.split("."),
+    f.toString
+  );
+
   saveCell = () => {
     const { cell, saveCell } = this.props;
     const { currencyValues } = this.state;
+    const numericCurrencyValues = f.mapValues(
+      f.compose(
+        f.toNumber,
+        f.join("."),
+        f.map(stringVal => (f.isEmpty(stringVal) ? "0" : stringVal))
+      ),
+      currencyValues
+    );
 
-    if (f.equals(cell.value, currencyValues)) {
+    if (f.equals(cell.value, numericCurrencyValues)) {
       return;
     }
 
     const updateObj = f.pickBy(
       (val, ctry) => val !== cell.value[ctry],
-      currencyValues
+      numericCurrencyValues
     );
     saveCell(updateObj);
   };
@@ -62,6 +88,7 @@ export default class CurrencyEditCell extends React.PureComponent {
 
   updateCurrencyValue = (country, value) => {
     const { currencyValues } = this.state;
+
     const newValue = f.assoc(country, value, currencyValues);
     this.setState({ currencyValues: newValue });
   };
@@ -82,13 +109,17 @@ export default class CurrencyEditCell extends React.PureComponent {
         countryCode,
         "withFallback"
       );
+
+      const isDisabled = !canUserChangeCountryTypeCell(cell, countryCode);
+
       return (
         <CurrencyRow
           key={index}
           country={countryCode}
           isFallbackValue={!f.get(["value", countryCode], cell)}
-          countryCurrencyValue={currencyValue}
+          countryCurrencyValue={currencyValue || ["", ""]}
           updateValue={this.updateCurrencyValue}
+          isDisabled={isDisabled}
         />
       );
     });

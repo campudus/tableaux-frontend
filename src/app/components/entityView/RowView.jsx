@@ -21,6 +21,7 @@ import NumericView from "./numeric/NumericView";
 import RowHeadline from "./RowHeadline";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
+import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 
 class View extends PureComponent {
   static propTypes = {
@@ -51,7 +52,12 @@ class View extends PureComponent {
 
   canEditValue = theoretically => {
     const { cell, langtag } = this.props;
-    const canEditUnlocked = Access.canUserChangeCell(cell, langtag);
+    const langtagOrCountry = f.propEq(["column", "languageType"], "country")(
+      cell
+    )
+      ? getCountryOfLangtag(langtag)
+      : langtag;
+    const canEditUnlocked = Access.canUserChangeCell(cell, langtagOrCountry);
     return theoretically
       ? canEditUnlocked
       : canEditUnlocked &&

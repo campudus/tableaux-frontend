@@ -1,27 +1,28 @@
+import "babel-polyfill";
 import "../node_modules/react-select/dist/react-select.css";
 import "../node_modules/codemirror/lib/codemirror.css";
-import "./app/router/router";
-import * as Sentry from "@sentry/browser";
-import { makeRequest } from "./app/helpers/apiHelper";
-import route from "./app/helpers/apiRoutes";
-import { getUserName } from "./app/helpers/userNameHelper";
-import "./app/helpers/connectionWatcher"; // start watcher
+import "react-virtualized/styles.css";
+import "./app/helpers/connectionWatcher";
+import { initConfig } from "./app/constants/TableauxConstants";
+import fetch from "cross-fetch";
 
-async function initSentry(noDryRun = true) {
-  const username = getUserName();
-  const dsn = (await makeRequest({ apiRoute: route.toSetting("sentryUrl") }))
-    .value;
-  if (noDryRun) {
-    Sentry.init({
-      dsn,
-      release: process.env.BUILD_ID
-    });
-    Sentry.configureScope(scope => scope.setUser({ username }));
-    Sentry.captureMessage("Sentry initialised");
-  } else {
-    console.log("Project Sentry url:", dsn);
-  }
-}
+import { Provider } from "react-redux";
+import React from "react";
+import ReactDOM from "react-dom";
+
+import GRUDRouter from "./app/components/Router.jsx";
+import store from "./app/redux/store";
 
 console.log("Campudus GRUD frontend", process.env.BUILD_ID);
-initSentry(process.env.NODE_ENV === "production");
+
+fetch("/config.json")
+  .then(response => response.json())
+  .then(initConfig)
+  .then(() => {
+    ReactDOM.render(
+      <Provider store={store}>
+        <GRUDRouter />
+      </Provider>,
+      document.querySelector("#tableaux")
+    );
+  });

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import i18n from "i18next";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import {
   findIndex,
   map,
@@ -16,7 +17,8 @@ import {
   identity,
   always,
   stubTrue,
-  zip
+  zip,
+  filter
 } from "lodash/fp";
 import {
   ColumnKinds,
@@ -30,7 +32,7 @@ const { date, datetime } = ColumnKinds;
 import InfoBox from "./InfoBox";
 
 const PasteMultilanguageCellInfo = props => {
-  const { oldVals, newVals, kind } = props;
+  const { oldVals, newVals, kind, cell } = props;
 
   const renderEntry = kind => ([key, value]) => {
     if (kind === "flag") {
@@ -78,6 +80,7 @@ const PasteMultilanguageCellInfo = props => {
     compose(
       map(renderEntry(kind)),
       sortBy(langtagComparator),
+      filter(([langtag]) => canUserChangeCell(cell, langtag)),
       entries
     );
 

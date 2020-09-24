@@ -1,13 +1,14 @@
 import React, { PureComponent } from "react";
+
 import PropTypes from "prop-types";
+import classNames from "classnames";
+
+import {
+  canUserDeleteRow,
+  canUserEditRows
+} from "../../helpers/accessManagementHelper";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
-import {
-  hasUserAccessToLanguage,
-  isUserAdmin
-} from "../../helpers/accessManagementHelper";
-import { DefaultLangtag } from "../../constants/TableauxConstants";
-import classNames from "classnames";
 import { isLocked } from "../../helpers/annotationHelper";
 
 class MetaCell extends PureComponent {
@@ -30,11 +31,7 @@ class MetaCell extends PureComponent {
 
   mkDeleteRowButton() {
     const { langtag, selected, row, expanded, table } = this.props;
-    const userCanDeleteRow =
-      table.type !== "settings" &&
-      selected &&
-      isUserAdmin() &&
-      (langtag === DefaultLangtag || !expanded);
+    const userCanDeleteRow = !expanded && canUserDeleteRow({ table });
 
     return userCanDeleteRow && !row.final && selected ? (
       <div className="delete-row">
@@ -52,11 +49,9 @@ class MetaCell extends PureComponent {
   }
 
   mkLockStatusIcon = () => {
-    const { langtag, row, selected, expanded } = this.props;
+    const { row, selected, expanded, table, langtag } = this.props;
     const cantTranslate =
-      !isUserAdmin() &&
-      (selected || expanded) &&
-      !hasUserAccessToLanguage(langtag);
+      (selected || expanded) && !canUserEditRows({ table }, langtag);
     if (cantTranslate) {
       return <i className="fa fa-ban access-denied-icon" />;
     } else if (row.final) {

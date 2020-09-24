@@ -2,73 +2,53 @@
  * Content for the TableSettings menu. Entries are individual React items with specific functions.
  */
 
-import React, { PureComponent } from "react";
+import React from "react";
 import i18n from "i18next";
 import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
-import classNames from "classnames";
 
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import {
+  canUserEditTableDisplayProperty,
+  canUserEditRowAnnotations
+} from "../../../helpers/accessManagementHelper";
 import NameEditor from "./NameEditor";
 
-@listensToClickOutside
-class TableSettingsPopup extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = { selected: null };
-  }
-
-  handleClickOutside = evt => {
-    this.props.outsideClickHandler(evt);
-  };
-
-  menuItemContents = () => {
-    const {
-      table,
-      langtag,
-      actions: { setAllRowsFinal, changeTableName }
-    } = this.props;
-    return [
-      <a key="i-need-no-key" href="#" onClick={() => setAllRowsFinal(table)}>
+const TableSettingsPopup = ({
+  table,
+  langtag,
+  actions: { setAllRowsFinal, changeTableName }
+}) => {
+  const canEditRowAnnotations = canUserEditRowAnnotations({ table });
+  const canEditTableDisplayProperty = canUserEditTableDisplayProperty({
+    table
+  });
+  return (
+    <div id="table-settings-popup">
+      <button
+        key="i-need-no-key"
+        className={
+          "menu-item " + (canEditRowAnnotations ? "" : "menu-item--disabled")
+        }
+        onClick={() => (canEditRowAnnotations ? setAllRowsFinal(table) : null)}
+      >
         {i18n.t("table:final.set_all_rows_final")}
-      </a>,
-      isUserAdmin() ? (
-        <NameEditor
-          table={table}
-          langtag={langtag}
-          changeTableName={changeTableName}
-        />
-      ) : null
-    ];
-  };
+      </button>
 
-  render() {
-    return (
-      <div id="table-settings-popup">
-        {this.menuItemContents().map((item, id) => {
-          const cssClass = classNames("menu-item", {
-            active: this.state.selected === id
-          });
-          return (
-            <div
-              key={id}
-              className={cssClass}
-              onMouseEnter={() => this.setState({ selected: id })}
-            >
-              {item}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-}
+      <NameEditor
+        table={table}
+        langtag={langtag}
+        changeTableName={changeTableName}
+        locked={!canEditTableDisplayProperty}
+      />
+    </div>
+  );
+};
 
 TableSettingsPopup.propTypes = {
   table: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  outsideClickHandler: PropTypes.func.isRequired
+  handleClickOutside: PropTypes.func.isRequired
 };
 
-export default TableSettingsPopup;
+export default listensToClickOutside(TableSettingsPopup);

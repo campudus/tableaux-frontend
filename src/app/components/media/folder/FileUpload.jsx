@@ -14,6 +14,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { DefaultLangtag } from "../../../constants/TableauxConstants";
+import { canUserCreateMedia } from "../../../helpers/accessManagementHelper";
 import { makeRequest } from "../../../helpers/apiHelper";
 import ProgressBar from "../ProgressBar.jsx";
 import route from "../../../helpers/apiRoutes";
@@ -87,18 +88,17 @@ const RunningUploadPanel = compose(
 ));
 
 const FileUpload = props => {
-  let uploads = [];
   const { runningUploads, t, onDrop } = props;
-  for (let uploadUuid in runningUploads) {
-    if (runningUploads.hasOwnProperty(uploadUuid)) {
-      uploads.push(
-        <div className="file-upload" key={uploadUuid}>
-          <span>{runningUploads[uploadUuid].name}</span>
-          <ProgressBar progress={runningUploads[uploadUuid].progress} />
-        </div>
-      );
-    }
-  }
+
+  const uploads =
+    runningUploads
+    |> f.keys
+    |> f.map(uploadUuid => (
+      <div className="file-upload" key={uploadUuid}>
+        <span>{runningUploads[uploadUuid].name}</span>
+        <ProgressBar progress={runningUploads[uploadUuid].progress} />
+      </div>
+    ));
 
   return (
     <div className="file-uploads">
@@ -117,6 +117,7 @@ FileUpload.propTypes = {
 };
 
 export default compose(
+  branch(() => !canUserCreateMedia(), renderNothing),
   withUploadHandlers,
   withDropHandlers,
   pure,

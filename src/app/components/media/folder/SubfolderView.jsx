@@ -1,36 +1,45 @@
-import React from "react";
-import PropTypes from "prop-types";
-import f from "lodash/fp";
-import { isUserAdmin } from "../../../helpers/accessManagementHelper";
+import { compose, pure, withHandlers } from "recompose";
 import { translate } from "react-i18next";
-import { branch, compose, pure, renderNothing, withHandlers } from "recompose";
-import TableauxRouter from "../../../router/router";
+import { withRouter } from "react-router-dom";
+import React from "react";
+import f from "lodash/fp";
 
-const MediaOptions = compose(
-  branch(() => !isUserAdmin(), renderNothing),
-  pure
-)(props => (
+import PropTypes from "prop-types";
+
+import {
+  canUserDeleteFolders,
+  canUserEditFolders
+} from "../../../helpers/accessManagementHelper";
+import { switchFolderHandler } from "../../Router";
+
+const MediaOptions = props => (
   <div className="media-options">
-    <span className="button" onClick={props.onEdit} alt="edit">
-      <i className="icon fa fa-pencil-square-o" />
-      {props.t("rename_folder")}
-    </span>
-    <span
-      className="button"
-      onClick={props.onRemove}
-      alt={props.t("delete_folder")}
-    >
-      <i className="fa fa-trash" />
-    </span>
+    {canUserEditFolders() && (
+      <span className="button" onClick={props.onEdit} alt="edit">
+        <i className="icon fa fa-pencil-square-o" />
+        {props.t("rename_folder")}
+      </span>
+    )}
+    {canUserDeleteFolders() && (
+      <span
+        className="button"
+        onClick={props.onRemove}
+        alt={props.t("delete_folder")}
+      >
+        <i className="fa fa-trash" />
+      </span>
+    )}
   </div>
-));
+);
 
 const enhance = compose(
+  withRouter,
   withHandlers({
     onFolderClick: props => event => {
       const folderId = f.get(["folder", "id"], props);
+      const { langtag, history } = props;
 
-      TableauxRouter.switchFolderHandler(folderId, f.get("langtag", props));
+      switchFolderHandler(history, langtag, folderId);
       event.preventDefault();
     }
   }),

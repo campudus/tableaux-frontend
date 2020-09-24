@@ -52,6 +52,8 @@ Default project configuration can be overwritten via a `config.json` in the base
   "apiHost": "localhost", //
   "apiPort": 8080,        // port of the backend service
   "webhookUrl": ".."      // url for Slack webhook to recieve user feedback
+  "authServerUrl": "http://localhost:8081/auth" // Keycloak
+  "authRealm": "GRUD"     // Keycloak realm
 }
 ```
 
@@ -70,6 +72,8 @@ Following variable names can be used:
 - REDUX_DEVTOOLS=[true,false] # "false" disable dev tools integration for dev performance. Default: true
 - ENABLE_HISTORY=[true,false] # Show or hide cell history button in cotext menu. Default: true
 - SHOW_TABLE_DROPDOWN=[true,false] # Show confusing table settings dropdown. Default: true
+- AUTH_SERVER_URL
+- AUTH_REALM
 
 ```
 PORT=3001 npm run start

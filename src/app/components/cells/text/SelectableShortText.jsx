@@ -1,6 +1,6 @@
-import React from "react";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
+import React from "react";
 import {
   compose,
   lifecycle,
@@ -8,10 +8,10 @@ import {
   withProps,
   withStateHandlers
 } from "recompose";
-import { maybe } from "../../../helpers/functools";
-import needsAPIData from "../../helperComponents/needsAPIData";
-import SearchFunctions from "../../../helpers/searchFunctions";
 import { FilterModes } from "../../../constants/TableauxConstants";
+import { maybe, stopPropagation } from "../../../helpers/functools";
+import SearchFunctions from "../../../helpers/searchFunctions";
+import needsAPIData from "../../helperComponents/needsAPIData";
 import SelectableCompletionList, {
   ROW_HEIGHT
 } from "./SelectableCompletionList";
@@ -185,6 +185,8 @@ const SelectableShortText = ({
         ref={setCaret}
         value={curValue}
         onChange={handleChange}
+        onMouseDown={stopPropagation}
+        onClick={stopPropagation}
         autoFocus
       />
       {!f.isNil(requestedData) && f.isEmpty(completions) ? null : (

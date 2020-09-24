@@ -17,13 +17,16 @@ const RowsOverlay = props => {
     <p>{i18n.t("table:fetching_dependent_rows")}</p>
   );
 
+  const { table, row, langtag, deleteInfo, grudData, cell } = props;
+
   const hasDependencies = () =>
     setDepMessage(<p>{i18n.t("table:delete_row_dependent_text")}</p>);
 
   const hasNoDependencies = () =>
-    setDepMessage(<p>{i18n.t("table:no_dependent_text")}</p>);
+    setDepMessage(
+      <p>{i18n.t(`table:${deleteInfo && "delete_"}no_dependent_text`)}</p>
+    );
 
-  const { table, row, langtag, deleteInfo, grudData } = props;
   const idColumn = f.prop(["columns", table.id, "data", 0], grudData);
 
   const rowDisplayLabel = rowConcatString(idColumn, row, langtag);
@@ -47,6 +50,7 @@ const RowsOverlay = props => {
         langtag={langtag}
         hasDependency={hasDependencies}
         hasNoDependency={hasNoDependencies}
+        cell={cell}
       />
     </div>
   );
@@ -108,13 +112,15 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
   );
 }
 
-export function openShowDependency({ table, row, langtag }) {
+export function openShowDependency({ table, row, langtag, cell }) {
   const itemName = getRowConcat(table, row, langtag);
 
   store.dispatch(
     actions.openOverlay({
       head: <Header context={i18n.t("table:dependencies")} title={itemName} />,
-      body: <RowsOverlay row={row} table={table} langtag={langtag} />,
+      body: (
+        <RowsOverlay row={row} table={table} langtag={langtag} cell={cell} />
+      ),
       type: "full-height"
     })
   );

@@ -48,8 +48,14 @@ export const changeCellValue = action => (dispatch, getState) => {
       : reduceValuesToAllowedLanguages;
   const newValue =
     column.multilanguage && !column.kind === ColumnKinds.link
-      ? f.toArray(merge(action.oldValue, reduceValue(action.newValue)))
+      ? f.toArray(
+          merge(
+            action.oldValue,
+            reduceValue({ column, tableId }, action.newValue)
+          )
+        )
       : action.newValue;
+
 
   dispatch(
     dispatchCellValueChange({
@@ -178,13 +184,14 @@ export const calculateCellUpdate = action => {
   ])(action);
 };
 
-const calculateDefaultCellUpdate = ({ column, oldValue, newValue, method }) => {
+const calculateDefaultCellUpdate = context => {
+  const { column, oldValue, newValue, method } = context;
   const reduceLangs = f.flow(
-    reduceValuesToAllowedLanguages,
+    reduceValuesToAllowedLanguages(context),
     merge(oldValue)
   );
   const reduceCountries = f.flow(
-    reduceValuesToAllowedCountries,
+    reduceValuesToAllowedCountries(context),
     merge(oldValue)
   );
 
@@ -209,11 +216,14 @@ const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
     linkList.length > 1 &&
     f.intersection(oldIds, linkList).length === linkList.length;
   const isMultiSet = linkList => f.xor(linkList, oldIds).length > 1;
+  //Backend fails sometimes on a patch with the first link
+  const isFirstLink = linkList => f.isEmpty(oldIds) && linkList.length === 1;
 
   const action = f.cond([
     [f.equals(oldIds), f.noop],
     [isReordering, reorderLinks(oldIds)],
     [isMultiSet, resetLinkValue],
+    [isFirstLink,resetLinkValue],
     [f.stubTrue, toggleLink(oldIds)]
   ])(newIds);
 

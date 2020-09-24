@@ -5,6 +5,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import NumberInput from "../../helperComponents/NumberInput";
+import { stopPropagation } from "../../../helpers/functools";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
@@ -71,6 +72,7 @@ class NumericEditCell extends React.Component {
 
   render = () => {
     const { isYear } = this.props;
+
     return (
       <div className={"cell-content editing"}>
         <NumberInput
@@ -81,6 +83,8 @@ class NumericEditCell extends React.Component {
           onChange={this.updateValueState}
           integer={isYear}
           localize={!isYear}
+          onClick={stopPropagation}
+          onMouseDown={stopPropagation}
         />
       </div>
     );

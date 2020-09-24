@@ -12,7 +12,8 @@
   "delete_row_dependent_text": "Dieser Datensatz ist bereits in folgenden Tabellen verknüpft. Die Verknüpfung wird automatisch gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
   "show_entity_view": "Zeige Details",
   "entity_view": "Details",
-  "no_dependent_text": "Dieser Datensatz ist bisher nicht verknüpft. Das Löschen kann nicht rückgängig gemacht werden.",
+  "no_dependent_text": "Dieser Datensatz ist bisher nicht verknüpft.",
+  "delete_no_dependent_text": "Dieser Datensatz ist bisher nicht verknüpft. Das Löschen kann nicht rückgängig gemacht werden.",
   "duplicate_row": "Zeile duplizieren",
   "error_occured_hl": "Es ist ein Fehler aufgetreten",
   "error_saving_cell": "Die Zelle konnte nicht gespeichert werden. Jetzt den Browser aktualisieren?",
@@ -136,6 +137,7 @@
   "open-dataset": "Tabelle mit diesem Datensatz öffnen",
   "redo": "Letzte Änderung wiederholen",
   "undo": "Letzte Änderung rückgängig machen",
+  "no-tables-found": "Es existieren keine sichtbaren Tabellen",
   "open-markdown-editor": "In Editor öffnen",
   "go-to-column": "Zur Spalte",
   "link-editor": {

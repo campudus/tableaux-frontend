@@ -10,29 +10,18 @@ import f from "lodash/fp";
 import { doto } from "../../../helpers/functools";
 import apiUrl from "../../../helpers/apiUrl";
 
-const MAIN_BUTTON = 0;
-const LINK_BUTTON = 1;
-
 const getCssClass = ({ isLinked, isSelected }) =>
   classNames("list-item", {
     isLinked: isLinked,
     selected: isSelected
   });
 
-const SelectedItem = props => {
-  const handleMouseEnterMain = useCallback(
-    () => props.mouseOverHandler.box(MAIN_BUTTON),
-    [props.mouseOverHandler]
-  );
-  const handleMouseEnterLink = useCallback(
-    () => props.mouseOverHandler.box(LINK_BUTTON),
-    [props.mouseOverHandler]
-  );
+const LinkItem = props => {
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
   });
-  const linkButtonClass = classNames("right", {
+  const linkButtonClass = classNames("linkButton", {
     "has-focus": props.selectedMode === 1,
     linked: props.isLinked
   });
@@ -44,9 +33,22 @@ const SelectedItem = props => {
       tabIndex={props.isLinked ? 1 : -1}
     >
       <div className={getCssClass(props)}>
-        <div
-          className={mainButtonClass}
-          onMouseEnter={handleMouseEnterMain}
+        <a
+          href="#"
+          className={linkButtonClass + " roundCorners"}
+          draggable={false}
+          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
+        >
+          {props.isLinked ? (
+            <SvgIcon icon="minus" containerClasses="color-primary" />
+          ) : (
+            <SvgIcon icon="plus" containerClasses="color-primary" />
+          )}
+        </a>
+        <a
+          href="#"
+          className={linkButtonClass}
+          draggable={false}
           onClick={() => {
             props.isAttachment
               ? doto(
@@ -63,6 +65,9 @@ const SelectedItem = props => {
                 });
           }}
         >
+          <SvgIcon icon="edit" containerClasses="color-primary" />
+        </a>
+        <div className={mainButtonClass}>
           <a href="#" draggable={false}>
             {unless(
               f.isString,
@@ -70,55 +75,13 @@ const SelectedItem = props => {
               props.label
             ) || <Empty langtag={props.langtag} />}
           </a>
-          <i className="fa fa-long-arrow-right" />
-        </div>
-        <a
-          href="#"
-          className={linkButtonClass}
-          draggable={false}
-          onMouseEnter={handleMouseEnterLink}
-          onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
-        >
-          {props.isLinked ? (
-            <SvgIcon icon="cross" containerClasses="color-primary" />
-          ) : (
-            <SvgIcon icon="check" containerClasses="color-primary" />
-          )}
-        </a>
-      </div>
-    </div>
-  );
-};
-
-const PlainItem = props => {
-  return (
-    <div
-      style={props.style}
-      key={props.row.id}
-      tabIndex={1}
-      onMouseOver={props.mouseOverHandler.item}
-      ref={props.refIfLinked}
-    >
-      <div className={getCssClass(props)}>
-        <div className="link-label">
-          {unless(
-            f.isString,
-            retrieveTranslation(props.langtag),
-            props.label
-          ) || <Empty langtag={props.langtag} />}
         </div>
       </div>
     </div>
   );
-};
-
-const LinkItem = props => {
-  const Item = props.isSelected ? SelectedItem : PlainItem;
-  return <Item {...props} key={props.row.id} />;
 };
 
 LinkItem.propTypes = {
-  mouseOverHandler: PropTypes.object.isRequired,
   refIfLinked: PropTypes.func,
   clickHandler: PropTypes.func,
   isLinked: PropTypes.bool,

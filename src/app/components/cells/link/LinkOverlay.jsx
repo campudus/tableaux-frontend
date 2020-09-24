@@ -1,5 +1,3 @@
-import "react-virtualized/styles.css";
-
 import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";
@@ -12,6 +10,7 @@ import {
   RowCreator,
   UnlinkedRows
 } from "./LinkOverlayFragments";
+import { canUserSeeTable } from "../../../helpers/accessManagementHelper";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import {
@@ -242,27 +241,9 @@ class LinkOverlay extends PureComponent {
       }
     };
 
-    const mouseOverBoxHandler = val => e => {
-      this.setState({
-        selectedMode: val,
-        activeBox: isLinked ? LINKED_ITEMS : UNLINKED_ITEMS
-      });
-      e.stopPropagation();
-    };
-
-    const mouseOverItemHandler = index => e => {
-      this.setSelectedId(index);
-      this.setState({ activeBox: isLinked ? LINKED_ITEMS : UNLINKED_ITEMS });
-      e.stopPropagation();
-    };
-
     return (
       <LinkItem
         key={`${key}-${row.id}`}
-        mouseOverHandler={{
-          box: mouseOverBoxHandler,
-          item: mouseOverItemHandler(index)
-        }}
         refIfLinked={refIfLinked}
         clickHandler={this.addLinkValue}
         isLinked={isLinked}
@@ -332,15 +313,12 @@ class LinkOverlay extends PureComponent {
       loading,
       unlinkedOrder,
       maxLinks,
-      grudData,
       actions
     } = this.props;
     const targetTable = {
       tableId: column.toTable,
       langtag
     };
-
-    const isToTableHidden = grudData.tables.data[column.toTable].hidden;
 
     // there are no unlinked rows or link cardinality reached
     const noForeignRows = f.isEmpty(rowResults.unlinked) || !this.canAddLink();
@@ -368,7 +346,7 @@ class LinkOverlay extends PureComponent {
           <span className="items-title">
             <span>
               {i18n.t("table:link-overlay-items-title")}
-              {isToTableHidden ? (
+              {!canUserSeeTable(column.toTable) ? (
                 getColumnDisplayName(column, langtag)
               ) : (
                 <a

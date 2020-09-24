@@ -13,11 +13,19 @@ export function getCurrencyWithCountry(
 
 export function splitPriceDecimals(priceValue) {
   if (!f.isFinite(priceValue)) {
-    return ["0", "00"];
+    return ["", ""];
   }
-  let priceValueAsArray = String(priceValue).split(".");
+  const priceValueAsArray = String(priceValue).split(".");
 
   return priceValueAsArray.length === 1
     ? [...priceValueAsArray, "00"]
     : priceValueAsArray;
 }
+
+export const maybeAddZeroToDecimals = splittedValue => {
+  const [currencyInteger, currencyDecimals] = splittedValue;
+  if (currencyDecimals.length === 1) {
+    return [currencyInteger, currencyDecimals + "0"];
+  }
+  return splittedValue;
+};

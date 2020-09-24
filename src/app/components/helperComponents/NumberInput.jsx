@@ -30,7 +30,9 @@ const NumberInput = (props, ref) => {
     onBlur,
     placeholder,
     localize = true,
-    integer = false
+    integer = false,
+    onClick = f.noop,
+    onMouseDown = f.noop
   } = props;
 
   const decimalSeparator = getLocaleDecimalSeparator();
@@ -96,6 +98,8 @@ const NumberInput = (props, ref) => {
       disabled={disabled}
       onKeyDown={handleKeyDown}
       onFocus={onFocus}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
     />
   );
 };

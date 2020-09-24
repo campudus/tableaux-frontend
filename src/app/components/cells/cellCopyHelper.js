@@ -9,12 +9,8 @@ import {
   isLocked
 } from "../../helpers/annotationHelper";
 import { canConvert, convert } from "../../helpers/cellValueConverter";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
-import {
-  getUserLanguageAccess,
-  hasUserAccessToLanguage,
-  isUserAdmin
-} from "../../helpers/accessManagementHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { mapPromise, propMatches } from "../../helpers/functools";
 import Footer from "../overlay/Footer";
@@ -24,6 +20,7 @@ import actions from "../../redux/actionCreators";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import route from "../../helpers/apiRoutes";
 import store from "../../redux/store";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -83,11 +80,8 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
 };
 
 const calcNewValue = function(src, srcLang, dst, dstLang) {
-  const untranslated = f.prop(["annotations", "translationNeeded", "langtags"]);
   const getAllowedValue = langtag =>
-    hasUserAccessToLanguage(langtag) ||
-    isUserAdmin() ||
-    f.contains(langtag, untranslated)
+    canUserChangeCell(dst, langtag)
       ? f.prop(["value", langtag], src)
       : f.prop(["value", langtag], dst);
   if (!src.column.multilanguage && !dst.column.multilanguage) {
@@ -165,6 +159,49 @@ const copyLinks = (src, dst) => {
   }
 };
 
+// optionally curried function
+export function createRowDuplicatesRequest(
+  tableId,
+  dataToPost // Result of getSaveableRowDuplicate({columns, row})
+) {
+  if (arguments.length === 1) {
+    return dataToPost_ => createRowDuplicatesRequest(tableId, dataToPost_);
+  }
+
+  return makeRequest({
+    apiRoute: route.toRows(tableId),
+    data: f.pick(["columns", "rows"], dataToPost),
+    method: "POST"
+  });
+}
+
+const maybeChangeBacklink = ({ src, dst }) => saveableRowDuplicate => {
+  const { columns, rows } = saveableRowDuplicate;
+  const { backlinkIndices } = f.reduce(
+    (acc, column) => {
+      const { idx, backlinkIndices } = acc;
+      const newVal =
+        column.kind === ColumnKinds.link && column.toTable === src.table.id
+          ? f.concat(backlinkIndices, idx)
+          : backlinkIndices;
+      return { idx: idx + 1, backlinkIndices: newVal };
+    },
+    { idx: 0, backlinkIndices: [] },
+    columns
+  );
+  if (f.isEmpty(backlinkIndices)) {
+    return saveableRowDuplicate;
+  }
+  const newRow = f.reduce(
+    (acc, val) => {
+      return f.assoc([val, 0, "id"], dst.row.id, acc);
+    },
+    rows[0].values,
+    backlinkIndices
+  );
+  return { ...saveableRowDuplicate, rows: [{ values: newRow }] };
+};
+
 // When links have a backlink/left constraint, we duplicate the linked
 // entries in their respective tables and link the duplicates in the
 // pasted cell to avoid violating constraints
@@ -178,12 +215,17 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
 
   const linkIds = f.map("id", constrainedValue);
   const fetchLinkData = rowId =>
-    makeRequest({ apiRoute: route.toRow({ tableId: toTable, rowId }) }).then(
-      f.prop("values")
-    );
+    makeRequest({ apiRoute: route.toRow({ tableId: toTable, rowId }) });
 
   const copiedLinkValues = await mapPromise(fetchLinkData, linkIds)
-    .then(f.map(row => getSaveableRowDuplicate({ columns, row })))
+    .then(
+      f.map(row =>
+        f.compose(
+          maybeChangeBacklink({ src, dst }),
+          getSaveableRowDuplicate
+        )({ columns, row })
+      )
+    )
     // Reduce all saveable rows into an array so we need only one POST to duplicate them
     .then(
       f.reduce(
@@ -194,17 +236,28 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
         []
       )
     )
-    .then(rowsToCopy =>
-      makeRequest({
-        apiRoute: route.toRows(toTable),
-        data: rowsToCopy,
-        method: "POST"
-      })
-    )
+    .then(createRowDuplicatesRequest(toTable))
     .then(f.prop("rows"))
     .then(f.map(row => ({ id: row.id, value: f.first(row.values) })));
 
   changeCellValue(dst, copiedLinkValues);
+  const displayValues = f.map(
+    ({ id, value }) => ({
+      id,
+      values: [getDisplayValue(src.column.toColumn, value)]
+    }),
+    copiedLinkValues
+  );
+  store.dispatch(
+    actions.addDisplayValues({
+      displayValues: [
+        {
+          tableId: toTable,
+          values: displayValues
+        }
+      ]
+    })
+  );
 };
 
 async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
@@ -215,11 +268,17 @@ async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
     const srcLangtags = f.get("langtags", srcTranslation);
 
     // Remove existing translation status and replace it with src's
-    deleteCellAnnotation(dstTranslation, dst).then(() => {
+    if (!f.isEmpty(dstTranslation)) {
+      deleteCellAnnotation(dstTranslation, dst).then(() => {
+        if (!f.isEmpty(srcLangtags)) {
+          addTranslationNeeded(srcLangtags, dst);
+        }
+      });
+    } else {
       if (!f.isEmpty(srcLangtags)) {
         addTranslationNeeded(srcLangtags, dst);
       }
-    });
+    }
   }
 }
 
@@ -230,23 +289,27 @@ const pasteCellValue = function(
   dstLang,
   skipDialogs = false
 ) {
+  // The lock can be overridden, if a user has access to the langtag and it is flagged as "needs translation"
   const canOverrideLock = () => {
     const untranslated = f.prop([
       "annotations",
       "translationNeeded",
       "langtags"
     ]);
-    const canTranslate = f.intersection(untranslated, getUserLanguageAccess());
+    const translatableLangtags = f.filter(
+      lt => canUserChangeCell(dst, lt),
+      untranslated
+    );
     return dst.column.multilanguage
-      ? (src.column.multilanguage && !f.isEmpty(canTranslate)) ||
-          (!src.column.multilanguage && f.contains(dstLang, canTranslate))
-      : f.contains(dstLang, canTranslate);
+      ? (src.column.multilanguage && !f.isEmpty(translatableLangtags)) ||
+          (!src.column.multilanguage &&
+            f.contains(dstLang, translatableLangtags))
+      : false;
   };
 
-  if (
-    (dst.kind === ColumnKinds.link || dst.kind === ColumnKinds.attachment) &&
-    !isUserAdmin()
-  ) {
+  if (!canUserChangeCell(dst, dstLang)) {
+    dst.column.multilanguage &&
+      showErrorToast("common:access_management.cant_access_language");
     return;
   }
 
@@ -255,11 +318,6 @@ const pasteCellValue = function(
     if (toastContent) {
       store.dispatch(actions.showToast(toastContent));
     }
-    return;
-  }
-
-  if (!dst.column.multilanguage && !hasUserAccessToLanguage(dstLang)) {
-    showErrorToast("common:access_management.cant_access_language");
     return;
   }
 
@@ -302,7 +360,13 @@ const pasteCellValue = function(
       pasteValueAndTranslationStatus(src, dst, newValue);
     };
     const buttons = {
-      positive: [i18n.t("common:save"), save],
+      positive: [
+        i18n.t("common:save"),
+        () => {
+          store.dispatch(actions.closeOverlay());
+          save();
+        }
+      ],
       neutral: [i18n.t("common:cancel"), null]
     };
     store.dispatch(
@@ -315,6 +379,7 @@ const pasteCellValue = function(
             newVals={newValue}
             saveAndClose={save}
             kind={dst.kind}
+            cell={src}
           />
         ),
         footer: <Footer buttonActions={buttons} />,

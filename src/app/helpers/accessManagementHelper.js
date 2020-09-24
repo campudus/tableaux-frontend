@@ -1,200 +1,203 @@
-import Keks from "js-cookie";
 import f from "lodash/fp";
 
-import { getCountryOfLangtag } from "./multiLanguage";
-import { merge, when, withTryCatch } from "./functools";
-import TableauxConstants, { ColumnKinds } from "../constants/TableauxConstants";
+import { Langtags } from "../constants/TableauxConstants";
+import { memoizeWith, unless } from "./functools";
+import { noAuthNeeded } from "./authenticate";
+import store from "../redux/store";
 
-// overwrite converter so we can parse express-cookies
-const Cookies = Keks.withConverter({
-  read: function(rawValue) {
-    const value = decodeURIComponent(rawValue);
-    return when(
-      f.allPass([f.isString, f.startsWith("j:")]),
-      withTryCatch(
-        v => JSON.parse(v.substring(2)), // remove starting j:
-        e => {
-          console.error("Access cookie couldn't be parsed:", e);
-        }
-      ),
-      value
-    );
-  },
-  write: function(value) {
-    return encodeURIComponent(value);
-  }
-});
+// Table data editing permissions
 
-const mergeWithLocalDevSettings = params => {
-  try {
-    const localSettings = require("../../../devAccessSettings.json");
-    return merge(params, localSettings);
-  } catch (err) {
-    return params;
-  }
+const lookupKey = (columnId, tableId, rowId) =>
+  `${tableId}-${columnId}-${rowId}}`;
+
+// we need to dispatch that on runtime
+const lookUpPermissions = params =>
+  noAuthNeeded() ? ALLOW_ANYTHING : _lookUpPermissions(params);
+const _lookUpPermissions = params => {
+  const { columnId, tableId, column = {}, table = {}, row = {}, rowId } =
+    params || {};
+  // we can do this as our DB-indices are one-based
+  const _columnId = columnId || (column && column.id);
+  const _tableId = tableId || (table && table.id);
+  const _rowId = rowId || (row && row.id);
+
+  const permissionsOf = f.propOr({}, "permission");
+
+  const lookupStructureCached = memoizeWith(lookupKey, (tblId, colId) => {
+    const state = store.getState();
+    const tables = state.tables;
+    const columns = state.columns[tblId];
+    const rows = (tblId && state.rows[tblId].data) || {};
+
+    const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
+    const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
+    const lookUpColumns = id =>
+      f.compose(
+        f.prop("data"),
+        f.find(f.propEq("id", id))
+      )(columns);
+
+    const foundTable = table || unless(f.isNil, lookUpTable, tblId);
+    const foundColumn =
+      column || unless(missingColumnIds, lookUpColumns, colId);
+
+    return {
+      tables: permissionsOf(tables),
+      columns: permissionsOf(columns),
+      table: permissionsOf(foundTable),
+      column: permissionsOf(foundColumn),
+      rows: permissionsOf(rows),
+      row: row && permissionsOf(row)
+    };
+  });
+
+  // assumption: table structure & permissions won't change during session
+  return noAuthNeeded()
+    ? ALLOW_ANYTHING
+    : lookupStructureCached(_tableId, _columnId, _rowId);
 };
 
-/**
- * Sets user access cookie in dev, when the server doesn't.
- * @params cookieParams: { isAdmin?: boolean
- *                         langtagsAccess?: string[]
- *                         countryCodesAccess?: string[]
- *                       }
- **/
-export function initDevelopmentAccessCookies(usersParams) {
-  if (process.env.NODE_ENV !== "production") {
-    const cookieParams = mergeWithLocalDevSettings(usersParams);
-    const isAdmin = when(f.isNil, f.stubTrue, f.get("isAdmin", cookieParams));
-    const langtagsAccess = f.getOr(["en_GB"], "langtagsAccess", cookieParams);
-    const countryCodesAccess = f.getOr(
-      ["en_GB"],
-      "countryCodesAccess",
-      cookieParams
-    );
-
-    Cookies.set("userAdmin", isAdmin);
-    Cookies.set("userLangtagsAccess", `j:${JSON.stringify(langtagsAccess)}`);
-    Cookies.set(
-      "userCountryCodesAccess",
-      `j:${JSON.stringify(countryCodesAccess)}`
-    );
-
-    console.log(
-      "Dev access settings:",
-      isUserAdmin() ? "admin," : "user,",
-      isUserAdmin()
-        ? "all countries & langtags"
-        : `countries: ${getUserCountryCodesAccess()}, langtags: ${getUserLanguageAccess()}`
-    );
-  }
-}
-
-export const getUserLanguageAccess = f.memoize(function() {
-  if (isUserAdmin()) {
-    return TableauxConstants.Langtags;
-  } else {
-    return Cookies.getJSON("userLangtagsAccess") || [];
-  }
-});
-
-export const getUserCountryCodesAccess = f.memoize(function() {
-  if (isUserAdmin()) {
-    return []; // there's no "all available country codes" because it's bound to a column
-  } else {
-    return Cookies.getJSON("userCountryCodesAccess") || [];
-  }
-});
-
-export const hasUserAccessToCountryCode = f.memoize(function(countryCode) {
-  if (isUserAdmin()) {
-    return true;
-  }
-
-  if (f.isString(countryCode)) {
-    const userCountryCodes = getUserCountryCodesAccess();
-    return userCountryCodes && userCountryCodes.length > 0
-      ? userCountryCodes.indexOf(countryCode) > -1
-      : false;
-  } else {
-    console.error(
-      "hasUserAccessToCountryCode() has been called with unknown parameter countryCode:",
-      countryCode
-    );
-    return false;
-  }
-});
-
-export const isUserAdmin = f.memoize(function() {
-  const isAdminFromCookie = Cookies.getJSON("userAdmin");
-  if (!f.isNil(isAdminFromCookie)) {
-    return isAdminFromCookie;
-  } else return false;
-});
-
-// Can a user edit the given langtag
-export const hasUserAccessToLanguage = f.memoize(function(langtag) {
-  if (isUserAdmin()) {
-    return true;
-  }
-
-  if (f.isString(langtag)) {
-    const userLanguages = getUserLanguageAccess();
-    return userLanguages && userLanguages.length > 0
-      ? userLanguages.indexOf(langtag) > -1
-      : false;
-  } else {
-    console.error(
-      "hasUserAccessToLanguage() has been called with unknown parameter langtag:",
-      langtag
-    );
-    return false;
-  }
-});
-
-// No langtag: Is the user allowed to change this cell in general?
-// Langtag: Is the user allowed to change this cell in this language
-export function canUserChangeCell(cell, langtag) {
-  if (!cell) {
-    console.warn(
-      "hasUserAccesToCell() called with invalid parameter cell:",
-      cell
-    );
-    return false;
-  }
-
-  if (cell.isReadOnly) {
-    return false;
-  }
-
-  // Admins can do everything
-  if (isUserAdmin()) {
-    return true;
-  }
-
-  // User is not admin
-  // Links and attachments are considered single language
-  return !!(
-    cell.column.multilanguage &&
-    (cell.column.kind === ColumnKinds.text ||
-      cell.column.kind === ColumnKinds.shorttext ||
-      cell.column.kind === ColumnKinds.richtext ||
-      cell.column.kind === ColumnKinds.numeric ||
-      cell.column.kind === ColumnKinds.boolean ||
-      cell.column.kind === ColumnKinds.datetime ||
-      cell.column.kind === ColumnKinds.currency) &&
-    (f.isNil(langtag) || cell.column.languageType === "country"
-      ? hasUserAccessToCountryCode(getCountryOfLangtag(langtag))
-      : hasUserAccessToLanguage(langtag))
+const getPermission = pathToPermission =>
+  f.compose(
+    f.propOr(false, pathToPermission),
+    lookUpPermissions
   );
-}
 
-// Reduce the value object before sending to server, so that just allowed languages gets sent
-export function reduceValuesToAllowedLanguages(valueToChange) {
-  if (isUserAdmin()) {
-    return valueToChange;
-  } else {
-    return f.pick(getUserLanguageAccess(), valueToChange);
-  }
-}
+// (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
+export const canUserChangeCell = (cellInfo, langtag) => {
+  const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
 
-// Reduce the value object before sending to server, so that just allowed countries gets sent
-export function reduceValuesToAllowedCountries(valueToChange) {
-  if (isUserAdmin()) {
-    return valueToChange;
-  } else {
-    return f.pick(getUserCountryCodesAccess(), valueToChange);
-  }
-}
+  const allowed = f.isBoolean(editCellValue)
+    ? editCellValue
+    : f.isPlainObject(editCellValue) && editCellValue[langtag];
 
-export function reduceMediaValuesToAllowedLanguages(fileInfos) {
-  if (isUserAdmin()) {
-    return fileInfos;
+  return allowed || noAuthNeeded(); // this special case is not caught by ALLOW_ANYTHING
+};
+
+export const canUserChangeAnyCountryTypeCell = cellInfo =>
+  cellInfo
+  |> getPermission(["column", "editCellValue"])
+  |> f.values
+  |> f.any(f.identity);
+
+export const canUserChangeCountryTypeCell = canUserChangeCell;
+export const canUserEditColumnDisplayProperty = getPermission([
+  "column",
+  "editDisplayProperty"
+]);
+export const canUserChangeColumnDisplayName = canUserEditColumnDisplayProperty;
+export const canUserChangeColumnDescription = canUserEditColumnDisplayProperty;
+
+export const canUserEditRows = memoizeWith(
+  f.prop(["table", "id"]),
+  (cellInfo, langtag) => {
+    const tableId = cellInfo.tableId || (cellInfo.table && cellInfo.table.id);
+    const columns = store.getState().columns[tableId].data;
+    return columns.reduce(
+      (allowed, nextColumn) =>
+        allowed &&
+        canUserChangeCell({ ...cellInfo, column: nextColumn }, langtag),
+      true
+    );
   }
-  return f.map(fileInfo => {
-    if (f.isObject(fileInfo)) {
-      return f.pick(getUserLanguageAccess(), fileInfo);
-    } else {
-      return fileInfo;
+);
+
+export const canUserEditTableDisplayProperty = getPermission([
+  "table",
+  "editDisplayProperty"
+]);
+export const canUserChangeTableDisplayName = canUserEditTableDisplayProperty;
+
+export const canUserCreateRow = getPermission(["table", "createRow"]);
+
+export const canUserDeleteRow = getPermission(["table", "deleteRow"]);
+
+export const canUserEditCellAnnotations = getPermission([
+  "table",
+  "editCellAnnotation"
+]);
+
+export const canUserEditRowAnnotations = getPermission([
+  "table",
+  "editRowAnnotation"
+]);
+
+// (tableData: table | number) => boolean
+export const canUserSeeTable = memoizeWith(f.identity, tableData => {
+  const tableId = f.isObject(tableData) ? tableData.id : tableData;
+  const state = store.getState();
+  return !!f.prop(["tables", "data", tableId], state);
+});
+
+// Media permissions
+
+// must be dispatched at runtime
+const lookupMediaPermissions = () =>
+  noAuthNeeded() ? alwaysTrue : _lookupMediaPermissions();
+const _lookupMediaPermissions = () => {
+  const state = store.getState();
+  const permissions = f.propOr({}, ["media", "data", "permission"], state);
+  return permissions;
+};
+
+const getMediaPermission = action => () => {
+  const allowed = f.propOr(false, action, lookupMediaPermissions());
+  return allowed;
+};
+
+export const canUserCreateMedia = getMediaPermission("create");
+export const canUserCreateFiles = canUserCreateMedia;
+export const canUserCreateFolders = canUserCreateMedia;
+
+export const canUserEditMedia = getMediaPermission("edit");
+export const canUserEditFiles = canUserEditMedia;
+export const canUserEditFolders = canUserEditMedia;
+
+export const canUserEditMediaMetadata = getMediaPermission(
+  "editDisplayProperty"
+);
+export const canUserDeleteMedia = getMediaPermission("delete");
+export const canUserDeleteFiles = canUserDeleteMedia;
+export const canUserDeleteFolders = canUserDeleteMedia;
+
+// (context: {column, tableId}) -> (value: {}) -> {}
+// Ensure we only send changes that the user is allowed to send to the backend
+export const reduceValuesToAllowedLanguages = f.curryN(2, (context, value) =>
+  f.keys(value).reduce((valueObj, langtag) => {
+    if (canUserChangeCell(context, langtag)) {
+      valueObj[langtag] = value[langtag];
     }
-  }, fileInfos);
-}
+    return valueObj;
+  }, {})
+);
+
+// With new per-column permission model, both functions are equivalent
+export const reduceValuesToAllowedCountries = reduceValuesToAllowedLanguages;
+
+// For dev only. Create a permission object that always returns true for
+// arbitrary permission[scope][action]
+const trueTrap = { get: () => true };
+const alwaysTrue = new Proxy({}, trueTrap); // permission[action] -> true
+const trueTrapTrap = { get: () => alwaysTrue };
+const ALLOW_ANYTHING = new Proxy({}, trueTrapTrap);
+
+// TODO: implement this stuff
+export const getUserLanguageAccess = () => Langtags;
+// export const getUserCountryCodeAccess = () => []; // unused?
+export const reduceMediaValuesToAllowedLanguages = f.identity;
+
+export const hasUserAccessToLanguage = f.stubTrue;
+
+// export function reduceMediaValuesToAllowedLanguages(fileInfos) {
+// if (isUserAdmin()) {
+//   return fileInfos;
+// }
+// return f.map(fileInfo => {
+//   if (f.isObject(fileInfo)) {
+//     return f.pick(getUserLanguageAccess(), fileInfo);
+//   } else {
+//     return fileInfo;
+//   }
+// }, fileInfos);
+//   return fileInfos;
+// }

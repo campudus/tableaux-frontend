@@ -30,6 +30,15 @@ header {
   top: 0;
   left: 0;
   position: absolute;
+
+  .centered-user-message {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: x-large;
+    color: $color-text-medium-grey;
+  }
 }
 
 .clearfix {
@@ -60,6 +69,17 @@ button {
   text-transform: uppercase;
   font-style: italic;
   font-weight: lighter;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  padding: none;
+  margin: none;
+  font-size: 1.3rem;
+  font-family: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
 }
 
 .ReactVirtualized__List {

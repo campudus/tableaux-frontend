@@ -1,21 +1,16 @@
 import { translate } from "react-i18next";
 import React from "react";
 import f from "lodash/fp";
-
-import PropTypes from "prop-types";
+import TableauxConstants from "../../../constants/TableauxConstants";
+import TableSwitcherPopup from "./TableSwitcherPopup";
 import classNames from "classnames";
+import PropTypes from "prop-types";
 
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
-import * as AccessControl from "../../../helpers/accessManagementHelper";
-import TableSwitcherPopup from "./TableSwitcherPopup";
-import TableauxConstants from "../../../constants/TableauxConstants";
 import { memoizeOne } from "../../../helpers/functools.js";
 
 const sortTables = memoizeOne((langtag, tables, getDisplayName) =>
-  f.compose(
-    f.sortBy(getDisplayName(langtag)),
-    f.reject("hidden")
-  )(tables)
+  f.compose(f.sortBy(getDisplayName(langtag)), f.reject("hidden"))(tables)
 );
 
 @translate(["header"])
@@ -76,11 +71,7 @@ class TableSwitcherButton extends React.PureComponent {
     );
 
     const getDisplayName = langtag =>
-      f.pipe(
-        table => getTableDisplayName(table, langtag),
-        f.deburr,
-        f.toLower
-      );
+      f.pipe(table => getTableDisplayName(table, langtag), f.deburr, f.toLower);
 
     const sortedTables = sortTables(langtag, tables, getDisplayName);
 
@@ -90,7 +81,7 @@ class TableSwitcherButton extends React.PureComponent {
         groups={[noGroup, ...sortedGroups]}
         tables={sortedTables}
         currentTable={currentTable}
-        onClickedOutside={this.onClickedOutside}
+        handleClickOutside={this.onClickedOutside}
         onClickedGroup={this.onClickedGroup}
         currentGroupId={this.state.currentGroupId}
         navigate={navigate}
@@ -114,8 +105,7 @@ class TableSwitcherButton extends React.PureComponent {
     const table = this.props.currentTable;
     const tableDisplayName = getTableDisplayName(table, this.props.langtag);
     const cssClass = classNames("", {
-      active: this.state.isOpen,
-      "admin-mode": AccessControl.isUserAdmin()
+      active: this.state.isOpen
     });
     return (
       <div id="tableswitcher-wrapper" className={cssClass}>

@@ -7,7 +7,7 @@ import withClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { ENABLE_HISTORY } from "../../FeatureFlags";
+import { config } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
@@ -18,12 +18,18 @@ import {
 } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
 import {
+  canUserChangeCell,
+  canUserEditRowAnnotations,
+  canUserEditCellAnnotations,
+  canUserCreateRow,
+  canUserDeleteRow
+} from "../../helpers/accessManagementHelper";
+import {
   initiateDeleteRow,
   initiateDuplicateRow,
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import { isUserAdmin } from "../../helpers/accessManagementHelper";
 import { merge } from "../../helpers/functools";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
@@ -86,17 +92,24 @@ class RowContextMenu extends React.Component {
       cell,
       cell: { table }
     } = this.props;
-    initiateDuplicateRow({ cell, tableId: table.id, rowId: row.id, langtag });
+    initiateDuplicateRow({
+      ...cell,
+      cell,
+      tableId: table.id,
+      rowId: row.id,
+      langtag
+    });
     this.closeRowContextMenu();
   };
 
   showDependency = () => {
     const {
       cell: { table },
+      cell,
       row,
       langtag
     } = this.props;
-    initiateRowDependency({ table, row, langtag });
+    initiateRowDependency({ table, row, langtag, cell });
     this.closeRowContextMenu();
   };
 
@@ -139,9 +152,14 @@ class RowContextMenu extends React.Component {
       : null;
   };
 
-  canTranslate = cell =>
-    cell.column.multilanguage &&
-    /*cell.isEditable &&*/ !translationNeverNeeded(cell);
+  canTranslate = cell => {
+    const { langtag } = this.props;
+    return (
+      cell.column.multilanguage &&
+      !translationNeverNeeded(cell) &&
+      canUserChangeCell(cell, langtag)
+    );
+  };
 
   requestTranslationsItem = () => {
     const { langtag, cell, t } = this.props;
@@ -194,12 +212,13 @@ class RowContextMenu extends React.Component {
     ) {
       return null;
     }
+    const annotations = f.propOr({}, cell);
     const translationNeeded = merge(
       {
         type: "flag",
         value: "translationNeeded"
       },
-      cell.annotations.translationNeeded
+      annotations.translationNeeded
     );
     const remainingLangtags = f.remove(
       f.eq(langtag),
@@ -222,6 +241,9 @@ class RowContextMenu extends React.Component {
 
   toggleFlagItem = flag => {
     const { cell } = this.props;
+    if (!canUserEditCellAnnotations(cell)) {
+      return;
+    }
     const existingAnnotation = f.get(["annotations", flag], cell);
     const toggleFn = existingAnnotation
       ? () =>
@@ -248,7 +270,7 @@ class RowContextMenu extends React.Component {
   };
 
   setFinalItem = () => {
-    if (!isUserAdmin()) {
+    if (!canUserEditRowAnnotations(this.props.cell)) {
       return null;
     }
     const {
@@ -297,7 +319,11 @@ class RowContextMenu extends React.Component {
       deleteRow,
       showDependency,
       showEntityView,
-      props: { cell, t },
+      props: {
+        cell,
+        t,
+        cell: { table }
+      },
       closeRowContextMenu
     } = this;
 
@@ -313,11 +339,13 @@ class RowContextMenu extends React.Component {
           {this.openLinksFilteredItem()}
           {this.copyItem()}
           {this.pasteItem()}
-          {this.mkItem(
-            () => this.props.openAnnotations(cell),
-            "add-comment",
-            "commenting"
-          )}
+          {canUserEditCellAnnotations(cell)
+            ? this.mkItem(
+                () => this.props.openAnnotations(cell),
+                "add-comment",
+                "commenting"
+              )
+            : null}
           {f.any(
             f.complement(f.isEmpty),
             f.props(["info", "error", "warning"], cell.annotations)
@@ -328,7 +356,7 @@ class RowContextMenu extends React.Component {
                 "commenting-o"
               )
             : null}
-          {ENABLE_HISTORY &&
+          {config.enableHistory &&
           !f.contains(this.props.cell.kind, [
             ColumnKinds.group,
             ColumnKinds.concat
@@ -345,10 +373,10 @@ class RowContextMenu extends React.Component {
           {this.props.table.type === "settings"
             ? ""
             : this.mkItem(showEntityView, "show_entity_view", "server")}
-          {this.props.table.type === "settings"
+          {this.props.table.type === "settings" || !canUserCreateRow({ table })
             ? ""
             : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-          {this.props.table.type === "settings"
+          {this.props.table.type === "settings" || !canUserDeleteRow({ table })
             ? ""
             : this.mkItem(deleteRow, "delete_row", "trash-o")}
           {this.mkItem(showDependency, "show_dependency", "code-fork")}

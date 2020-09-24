@@ -7,12 +7,18 @@ import onClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 
 import {
+  formatNumber,
   getCountryOfLangtag,
   getCurrencyCode,
   getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
-import { getCurrencyWithCountry, splitPriceDecimals } from "./currencyHelper";
+import {
+  getCurrencyWithCountry,
+  splitPriceDecimals,
+  maybeAddZeroToDecimals
+} from "./currencyHelper";
 import CurrencyEditCell from "./CurrencyEditCell";
+import { when } from "../../../helpers/functools.js";
 
 const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
 
@@ -74,7 +80,12 @@ class CurrencyCell extends React.PureComponent {
       country,
       "withFallback"
     );
-    const splittedValueAsString = splitPriceDecimals(currencyValue);
+    const splittedValueAsString =
+      currencyValue
+      |> splitPriceDecimals
+      |> f.map(when(f.isEmpty, () => "00"))
+      |> maybeAddZeroToDecimals;
+
     const currencyCode = getCurrencyCode(country);
     const { value, t } = this.props;
     if (!currencyCode) {
@@ -88,10 +99,11 @@ class CurrencyCell extends React.PureComponent {
       );
     }
 
-    // TODO: localization
     return (
       <div className={`currency-wrapper${value[country] ? "" : " grey-out"}`}>
-        <span className="currency-value">{splittedValueAsString[0]}</span>
+        <span className="currency-value">
+          {formatNumber(splittedValueAsString[0])}
+        </span>
         <span className="currency-value-decimals">
           {getLocaleDecimalSeparator()}
           {splittedValueAsString[1]}

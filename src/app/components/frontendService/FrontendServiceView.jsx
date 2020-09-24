@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import { withRouter, Redirect } from "react-router-dom";
 import IFrame from "react-iframe";
 import React from "react";
 import f from "lodash/fp";
@@ -7,28 +8,28 @@ import PropTypes from "prop-types";
 
 import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { switchLanguageHandler } from "../Router";
 import GrudHeader from "../GrudHeader";
 import Spinner from "../header/Spinner";
-import GrudRouter from "../../router/router";
 
 const FrontendServiceView = ({
-  id,
+  serviceId,
   langtag,
   frontendServices,
   tableId,
   columnId,
-  rowId
+  rowId,
+  history
 }) => {
-  const handleLanguageSwitch = React.useCallback(
-    newLangtag =>
-      langtag !== newLangtag && GrudRouter.switchLanguageHandler(newLangtag)
+  const handleLanguageSwitch = React.useCallback(newLangtag =>
+    switchLanguageHandler(history, newLangtag)
   );
   const [service, setService] = React.useState();
 
   // when service was unknown and services change (= init or service loading finished)
   React.useEffect(() => {
     if (service) return; // don't updated if service existed before
-    const serviceToSet = f.find(f.propEq("id", id), frontendServices);
+    const serviceToSet = f.find(f.propEq("id", serviceId), frontendServices);
     setService(serviceToSet);
   }, [frontendServices]);
 
@@ -42,6 +43,12 @@ const FrontendServiceView = ({
         service.config.url
       )
     : "";
+
+  const routeToService =
+    `/${langtag}/services/${serviceId}` +
+    (tableId ? `/tables/${tableId}` : "") +
+    (columnId ? `/columns/${columnId}` : "") +
+    (rowId ? `/rows/${rowId}` : "");
 
   return (
     <>
@@ -57,13 +64,17 @@ const FrontendServiceView = ({
           <Spinner loading={true} />
         )}
       </div>
+      <Redirect to={routeToService} />
     </>
   );
 };
 
 FrontendServiceView.propTypes = {
-  id: PropTypes.number.isRequired,
+  serviceId: PropTypes.number.isRequired,
   langtag: PropTypes.string.isRequired
 };
 
-export default connect(f.pick(["frontendServices"]))(FrontendServiceView);
+export default f.pipe(
+  connect(f.pick(["frontendServices"])),
+  withRouter
+)(FrontendServiceView);
