@@ -56,6 +56,7 @@ export const changeCellValue = action => (dispatch, getState) => {
         )
       : action.newValue;
 
+
   dispatch(
     dispatchCellValueChange({
       ...action,
@@ -215,11 +216,14 @@ const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
     linkList.length > 1 &&
     f.intersection(oldIds, linkList).length === linkList.length;
   const isMultiSet = linkList => f.xor(linkList, oldIds).length > 1;
+  //Backend fails sometimes on a patch with the first link
+  const isFirstLink = linkList => f.isEmpty(oldIds) && linkList.length === 1;
 
   const action = f.cond([
     [f.equals(oldIds), f.noop],
     [isReordering, reorderLinks(oldIds)],
     [isMultiSet, resetLinkValue],
+    [isFirstLink,resetLinkValue],
     [f.stubTrue, toggleLink(oldIds)]
   ])(newIds);
 

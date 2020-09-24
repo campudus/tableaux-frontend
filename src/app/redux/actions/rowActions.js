@@ -1,7 +1,10 @@
 import f from "lodash/fp";
 
 import { doto } from "../../helpers/functools";
-import { getSaveableRowDuplicate } from "../../components/cells/cellCopyHelper";
+import {
+  getSaveableRowDuplicate,
+  createRowDuplicatesRequest
+} from "../../components/cells/cellCopyHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import { toggleAnnotationFlag } from "./annotationActions";
 import ActionTypes from "../actionTypes";
@@ -50,11 +53,10 @@ export const safelyDuplicateRow = ({
   const saveableRowDuplicate = getSaveableRowDuplicate({ columns, row });
 
   try {
-    const duplicatedRow = await makeRequest({
-      apiRoute: route.toTable({ tableId }) + "/rows",
-      data: f.pick(["columns", "rows"], saveableRowDuplicate),
-      method: "POST"
-    }).then(f.prop("rows"));
+    const duplicatedRow = await createRowDuplicatesRequest(
+      tableId,
+      saveableRowDuplicate
+    ).then(f.prop("rows"));
     dispatch({
       type: ADDITIONAL_ROWS_DATA_LOADED,
       tableId,
