@@ -16,7 +16,7 @@ import route from "../../helpers/apiRoutes";
 
 // Builds the actual dependent tables/rows DOM elements
 const DependentRowsList = props => {
-  const { row, table, langtag, t } = props;
+  const { row, table, langtag, t, cell } = props;
   const [dependencies, setDependencies] = useState(null);
 
   const checkDependencies = async () => {
@@ -76,7 +76,12 @@ const DependentRowsList = props => {
               <SvgIcon icon="tablelink" containerClasses="color-primary" />
             </a>
           </div>
-          <LinkList langtag={langtag} key={table.id} links={links} />
+          <LinkList
+            langtag={langtag}
+            key={table.id}
+            links={links}
+            cell={cell}
+          />
         </div>
       );
     }

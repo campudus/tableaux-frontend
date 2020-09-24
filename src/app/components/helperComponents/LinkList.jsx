@@ -5,13 +5,9 @@
  */
 
 import React, { useCallback, useState } from "react";
-import { compose, withStateHandlers, withHandlers, mapProps } from "recompose";
-import classNames from "classnames";
 import i18n from "i18next";
 import f from "lodash/fp";
-import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { List } from "react-virtualized";
-import SvgIcon from "../helperComponents/SvgIcon";
 import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 import LinkItem from "../cells/link/LinkItem";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
@@ -19,17 +15,124 @@ import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 const MAX_DISPLAYED_LINKS = 4;
 
 const LinkList = props => {
-  const { links, renderAll, renderPreview, onMouseLeave, boxHandler } = props;
+  const { links, cell, langtag, actions, isAttachment } = props;
+  const { column, row, table, value } = cell;
+  const changeCellAuthorized = canUserChangeCell(props.cell, props.langtag);
+  const sortable = props.sortable && cell && changeCellAuthorized;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = useCallback(() => setExpanded(!expanded));
+  const linksToRender = expanded
+    ? links.length
+    : f.take(MAX_DISPLAYED_LINKS, links).length;
+  const applySwap = ordering => () => {
+    const rearranged = f
+      .map(id => f.find(linkedItem => linkedItem.id === id, links), ordering)
+      .map((el, idx) => ({ ...el, ordering: idx + 1 }));
+
+    actions.changeCellValue({
+      columnId: column.id,
+      rowId: row.id,
+      tableId: table.id,
+      oldValue: value,
+      newValue: rearranged
+    });
+  };
+
+  const renderSortableListItem = () => ({ key, style = {} }) => {
+    const link = f.find(f.propEq("id", key), links);
+    const {
+      linkTarget: { tableId, rowId }
+    } = link;
+
+    const clickHandler = (_, link, evt) => {
+      evt.preventDefault();
+      actions.changeCellValue({
+        cell,
+        tableId,
+        rowId,
+        columnId: cell.column.id,
+        oldValue: cell.value,
+        newValue: f.remove(
+          f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
+        )(cell.value)
+      });
+    };
+    return (
+      <LinkItem
+        row={{ id: link.linkTarget.rowId || link.uuid }}
+        cell={cell}
+        toTable={link.linkTarget.tableId}
+        label={link.label || link.displayName}
+        langtag={langtag}
+        clickHandler={clickHandler}
+        style={style}
+        isLinked
+      />
+    );
+  };
+  const renderListItem = ({ index }) => {
+    const link = links[index];
+    const {
+      linkTarget: { tableId, rowId }
+    } = link;
+    const clickHandler = (_, link, evt) => {
+      evt.preventDefault();
+      actions.changeCellValue({
+        cell,
+        tableId,
+        rowId,
+        columnId: cell.column.id,
+        oldValue: cell.value,
+        newValue: f.remove(
+          f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
+        )(cell.value)
+      });
+    };
+    return (
+      <LinkItem
+        row={{ id: link.linkTarget.rowId || link.uuid }}
+        cell={cell}
+        toTable={link.linkTarget.tableId}
+        label={link.label || link.displayName}
+        langtag={langtag}
+        clickHandler={clickHandler}
+        style={{}}
+        isLinked
+      />
+    );
+  };
+
+  const ListRenderer = sortable ? (
+    <div className="sortable">
+      <div className="linked-items">
+        <LinkedRows
+          entries={f.map("id", links)}
+          rowsToRender={linksToRender}
+          renderListItem={renderSortableListItem}
+          loading={false}
+          applySwap={applySwap}
+        />
+      </div>
+    </div>
+  ) : (
+    <div className="sortable">
+      <div className="linked-items">
+        <List
+          width={window.innerWidth * 0.6 - 100}
+          height={f.min([linksToRender * 42, 430])}
+          rowCount={linksToRender}
+          rowHeight={42}
+          rowRenderer={renderListItem}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="link-list">
-      {expanded
-        ? renderAll(onMouseLeave, boxHandler)
-        : renderPreview(onMouseLeave, boxHandler)}
+      {ListRenderer}
       {canExpand ? (
         <a className="expand-button" href="#" onClick={toggleExpand}>
           <i className={expanded ? "fa fa-angle-up" : "fa fa-angle-down"} />
@@ -42,276 +145,4 @@ const LinkList = props => {
   );
 };
 
-const proceedTo = (linkTarget, langtag) => evt => {
-  if (f.isEmpty(linkTarget)) {
-    return;
-  }
-  evt.stopPropagation();
-  if (f.isString(linkTarget)) {
-    window.open(linkTarget, "_blank");
-  } else {
-    loadAndOpenEntityView(linkTarget, langtag);
-  }
-};
-
-export default compose(
-  mapProps(props => ({
-    ...props,
-    sortable:
-      props.sortable &&
-      props.cell &&
-      canUserChangeCell(props.cell, props.langtag)
-  })),
-  withStateHandlers(
-    {
-      hovered: null
-    },
-    {
-      setHovered: () => hovered => ({ hovered })
-    }
-  ),
-  withHandlers({
-    renderLink: ({ links, langtag }) => ({ index, key = index, style }) => {
-      const { displayName, linkTarget } = links[index];
-      return (
-        <div className="link-label-wrapper-2" key={key} style={style}>
-          <div
-            className="link-label-wrapper"
-            onClick={proceedTo(linkTarget, langtag)}
-          >
-            <a className="link-label" href="#">
-              {displayName}
-              {f.isEmpty(linkTarget) ? null : (
-                <i className="fa fa-long-arrow-right" />
-              )}
-            </a>
-          </div>
-        </div>
-      );
-    },
-    renderInteractiveLink: ({
-      links,
-      unlink,
-      setHovered,
-      hovered,
-      langtag,
-      sortable,
-      cell,
-      hoveredElement
-    }) => boxHandler => ({ index, key = index, style }) => {
-      const link = links[index];
-      const { displayName, linkTarget } = link;
-      const isHovered = hovered === index;
-      const cssClass = classNames("link-label-wrapper has-buttons", {
-        "show-buttons": hovered
-      });
-      const nonSortableLink = () => (
-        <div className="link-label-wrapper-2" style={style} key={key}>
-          <div
-            className={cssClass}
-            onMouseEnter={setHovered}
-            onMouseLeave={() => {
-              if (isHovered) {
-                setHovered(null);
-              }
-            }}
-          >
-            <div
-              className="main-button"
-              onClick={proceedTo(linkTarget, langtag)}
-            >
-              <a href="#">
-                <div className="text-wrapper">{displayName}</div>
-              </a>
-              {hovered ? <i className="fa fa-long-arrow-right" /> : null}
-            </div>
-            {hovered ? (
-              <div className="unlink-button" onClick={unlink(index)}>
-                <a href="#">
-                  <SvgIcon icon="cross" containerClasses="color-primary" />
-                </a>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      );
-
-      const sortableLink = () => {
-        return (
-          <div className="draggable">
-            <LinkItem
-              row={cell.row}
-              cell={cell}
-              label={link.label || link.displayName}
-              langtag={langtag}
-              mouseOverHandler={{
-                box: boxHandler,
-                item: f.noop
-              }}
-              style={style}
-              isLinked
-              selectedMode={hoveredElement}
-            />
-          </div>
-        );
-      };
-      return sortable && canUserChangeCell(cell, langtag)
-        ? sortableLink()
-        : nonSortableLink();
-    },
-    renderSortableLink: ({
-      links,
-      cell,
-      langtag,
-      actions,
-      setHovered,
-      hovered,
-      isAttachment,
-      hoveredElement,
-      setHoveredElement
-    }) => () => ({ key, style = {} }) => {
-      const link = f.find(f.propEq("id", key), links);
-      const {
-        linkTarget: { tableId, rowId }
-      } = link;
-
-      const clickHandler = (_, link, evt) => {
-        evt.preventDefault();
-        actions.changeCellValue({
-          cell,
-          tableId,
-          rowId,
-          columnId: cell.column.id,
-          oldValue: cell.value,
-          newValue: f.remove(
-            f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
-          )(cell.value)
-        });
-      };
-      return (
-        <LinkItem
-          row={{ id: link.linkTarget.rowId || link.uuid }}
-          cell={cell}
-          toTable={link.linkTarget.tableId}
-          label={link.label || link.displayName}
-          langtag={langtag}
-          clickHandler={clickHandler}
-          mouseOverHandler={{
-            box: setHoveredElement,
-            item: () =>
-              setHovered(isAttachment ? link.uuid : link.linkTarget.rowId)
-          }}
-          style={style}
-          isLinked
-          isSelected={
-            hovered === (isAttachment ? link.uuid : link.linkTarget.rowId)
-          }
-          selectedMode={hoveredElement}
-          isAttachment={isAttachment}
-        />
-      );
-    },
-    applySwap: ({
-      value,
-      links,
-      actions,
-      cell: { table, row, column }
-    }) => ordering => () => {
-      const rearranged = f
-        .map(id => f.find(linkedItem => linkedItem.id === id, links), ordering)
-        .map((el, idx) => ({ ...el, ordering: idx + 1 }));
-
-      actions.changeCellValue({
-        columnId: column.id,
-        rowId: row.id,
-        tableId: table.id,
-        oldValue: value,
-        newValue: rearranged
-      });
-    }
-  }),
-  withHandlers({
-    renderPreview: ({
-      links,
-      unlink,
-      renderInteractiveLink,
-      renderLink,
-      renderSortableLink,
-      sortable,
-      applySwap,
-      cell,
-      langtag,
-      setHovered,
-      onMouseLeave
-    }) => () => {
-      const areChangesAllowed = canUserChangeCell(cell, langtag);
-      const nLinks = links.length;
-      const canExpand = nLinks > MAX_DISPLAYED_LINKS;
-      const renderFn =
-        unlink && areChangesAllowed ? renderInteractiveLink : renderLink;
-      const cssClass = classNames("item-content", { "can-expand": canExpand });
-      const renderedLinks = f
-        .range(0, f.min([nLinks, MAX_DISPLAYED_LINKS]))
-        .map(index => renderFn({ index }));
-      return sortable && areChangesAllowed ? (
-        <div className="sortable">
-          <div
-            className="linked-items `${cssClass}`"
-            onMouseLeave={onMouseLeave}
-          >
-            <LinkedRows
-              entries={f.map("id", links)}
-              rowsToRender={4}
-              renderListItem={renderSortableLink}
-              loading={false}
-              applySwap={applySwap}
-              setHovered={setHovered}
-            />
-          </div>
-        </div>
-      ) : (
-        <div className={cssClass}>{renderedLinks}</div>
-      );
-    },
-    renderAll: ({
-      links,
-      unlink,
-      hovered,
-      renderInteractiveLink,
-      renderLink,
-      renderSortableLink,
-      sortable,
-      applySwap,
-      cell,
-      langtag,
-      onMouseLeave,
-      setHovered
-    }) => () => {
-      const nLinks = links.length;
-
-      return sortable && canUserChangeCell(cell, langtag) ? (
-        <div className="sortable">
-          <div className="linked-items" onMouseLeave={onMouseLeave}>
-            <LinkedRows
-              entries={f.map("id", links)}
-              rowsToRender={nLinks}
-              renderListItem={renderSortableLink}
-              loading={false}
-              applySwap={applySwap}
-              setHovered={setHovered}
-            />
-          </div>
-        </div>
-      ) : (
-        <List
-          width={window.innerWidth * 0.6 - 100}
-          height={430}
-          rowCount={nLinks}
-          rowHeight={42}
-          rowRenderer={unlink ? renderInteractiveLink : renderLink}
-          hovered={hovered}
-        />
-      );
-    }
-  })
-)(LinkList);
+export default LinkList;

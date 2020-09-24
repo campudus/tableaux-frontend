@@ -29,8 +29,8 @@ export function initiateDuplicateRow(payload) {
   }
 }
 
-export function initiateRowDependency({ row, table, langtag }) {
-  openShowDependency({ row, table, langtag });
+export function initiateRowDependency({ row, table, langtag, cell }) {
+  openShowDependency({ row, table, langtag, cell });
 }
 
 export function initiateEntityView({ row, langtag, columnId, rows, table }) {

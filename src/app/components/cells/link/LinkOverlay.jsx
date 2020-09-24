@@ -241,27 +241,9 @@ class LinkOverlay extends PureComponent {
       }
     };
 
-    const mouseOverBoxHandler = val => e => {
-      this.setState({
-        selectedMode: val,
-        activeBox: isLinked ? LINKED_ITEMS : UNLINKED_ITEMS
-      });
-      e.stopPropagation();
-    };
-
-    const mouseOverItemHandler = index => e => {
-      this.setSelectedId(index);
-      this.setState({ activeBox: isLinked ? LINKED_ITEMS : UNLINKED_ITEMS });
-      e.stopPropagation();
-    };
-
     return (
       <LinkItem
         key={`${key}-${row.id}`}
-        mouseOverHandler={{
-          box: mouseOverBoxHandler,
-          item: mouseOverItemHandler(index)
-        }}
         refIfLinked={refIfLinked}
         clickHandler={this.addLinkValue}
         isLinked={isLinked}
