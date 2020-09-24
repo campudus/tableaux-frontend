@@ -56,7 +56,6 @@ export const changeCellValue = action => (dispatch, getState) => {
         )
       : action.newValue;
 
-
   dispatch(
     dispatchCellValueChange({
       ...action,
@@ -223,7 +222,7 @@ const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
     [f.equals(oldIds), f.noop],
     [isReordering, reorderLinks(oldIds)],
     [isMultiSet, resetLinkValue],
-    [isFirstLink,resetLinkValue],
+    [isFirstLink, resetLinkValue],
     [f.stubTrue, toggleLink(oldIds)]
   ])(newIds);
 

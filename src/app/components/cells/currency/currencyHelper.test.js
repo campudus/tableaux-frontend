@@ -10,7 +10,7 @@ describe("currencyHelper", () => {
     it("handles non-number values", () => {
       expect(splitPriceDecimals("test")).toEqual(["", ""]);
       expect(splitPriceDecimals({ test: "test" })).toEqual(["", ""]);
-      expect(splitPriceDecimals([0,1])).toEqual(["", ""]);
+      expect(splitPriceDecimals([0, 1])).toEqual(["", ""]);
     });
     it("splits decimal values", () => {
       expect(splitPriceDecimals(2.1)).toEqual(["2", "1"]);
