@@ -18,9 +18,9 @@ describe("currencyHelper", () => {
       expect(splitPriceDecimals(42.69)).toEqual(["42", "69"]);
     });
     it("handles non-decimal values", () => {
-      expect(splitPriceDecimals(2)).toEqual(["2", ""]);
-      expect(splitPriceDecimals(0)).toEqual(["0", ""]);
-      expect(splitPriceDecimals(42)).toEqual(["42", ""]);
+      expect(splitPriceDecimals(2)).toEqual(["2", "00"]);
+      expect(splitPriceDecimals(0)).toEqual(["0", "00"]);
+      expect(splitPriceDecimals(42)).toEqual(["42", "00"]);
     });
   });
 });
