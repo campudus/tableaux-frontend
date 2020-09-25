@@ -1,0 +1,28 @@
+# Submit a pull request
+
+Please make sure the following is true:
+
+- [ ] This is not a duplicate of another PR
+- [ ] The correct target branch selected?
+- Breaking changes
+  - [ ] No existing features have been broken (without good reason)
+  - [ ] PR introduces breaking changes
+- [ ] Commit messages are meaningful
+- [ ] The behaviour is as the documentation describes, or you updated the docs
+- Tests
+  - [ ] Tests have been added/updated for new/modified unit-testable functions/helpers
+  - [ ] Test were run and did pass
+- [ ] The linter was run and did pass
+
+## PR details
+
+- in a few words: what does the PR fix or add?
+- mention/link AC tasks when appropriate, e.g. when the task was big/complex
+
+## Breaking changes
+
+- What is broken, and why
+
+## Other information/comments
+
+- Anything to tell the world? :D
