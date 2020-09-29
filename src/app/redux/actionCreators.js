@@ -664,7 +664,7 @@ const actionCreators = {
       `/tables/${tableId}` +
       (columnId ? `/columns/${columnId}` : "") +
       (rowId ? `/rows/${rowId}` : "");
-    window.history.pushState({}, null,url);
+    window.history.pushState({}, null, url);
     return dispatchParamsFor(TOGGLE_CELL_SELECTION)(data);
   },
   toggleCellEditing: toggleCellEditingOrUnlockCell,

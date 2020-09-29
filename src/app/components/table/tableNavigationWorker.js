@@ -396,7 +396,7 @@ export function setNextSelectedCell(direction) {
 
     var isValidCell = nextCell.rowId > 0 && nextCell.columnId >= 0;
     var isNewCell = !f.isEqual(nextCell, selectedCell);
-    this.scrollToCell(nextCell)
+    this.scrollToCell(nextCell);
 
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
