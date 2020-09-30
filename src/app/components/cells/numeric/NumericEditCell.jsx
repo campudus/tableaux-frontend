@@ -5,7 +5,6 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import NumberInput from "../../helperComponents/NumberInput";
-import { stopPropagation } from "../../../helpers/functools";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
