@@ -48,7 +48,6 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         table,
         langtag,
         finishedLoading,
-        tableView,
         columnOrdering,
         visibleColumns
       } = this.props;

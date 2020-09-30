@@ -213,7 +213,8 @@ class TableView extends PureComponent {
     } = store.getState();
 
     return (
-      `/${langtag}` + `/tables/${table.id}` +
+      `/${langtag}` +
+      `/tables/${table.id}` +
       (columnId ? `/columns/${columnId}` : "") +
       (rowId ? `/rows/${rowId}` : "")
     );

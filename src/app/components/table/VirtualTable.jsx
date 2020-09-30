@@ -530,7 +530,6 @@ export default class VirtualTable extends PureComponent {
       ) &&
         columnIndex !== 0);
 
-
     if (shouldScroll) {
       this.setState({
         scrolledCell: {
