@@ -97,8 +97,6 @@ const NumberInput = (props, ref) => {
       disabled={disabled}
       onKeyDown={handleKeyDown}
       onFocus={onFocus}
-      onClick={onClick}
-      onMouseDown={onMouseDown}
     />
   );
 };
