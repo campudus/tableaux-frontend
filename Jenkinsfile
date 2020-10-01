@@ -1,12 +1,11 @@
-SERVICE_TAG = "frontend"
-SERVICE_NAME = "grud-${SERVICE_TAG}"
-
 DEPLOY_DIR = 'build/deploy'
 TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
-IMAGE_NAME=SERVICE_NAME
-ARCHIVE_FILENAME_DOCKER="${IMAGE_NAME}-docker.tar.gz"
-ARCHIVE_FILENAME_DIST="${IMAGE_NAME}-dist.tar.gz"
+IMAGE_NAME = "campudus/grud-frontend"
+LEGACY_ARCHIVE_FILENAME="grud-frontend-docker.tar.gz"
+ARCHIVE_FILENAME_DIST="grud-frontend-dist.tar.gz"
+DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
+
 
 def slackParams = { GString message, String color ->
   [
@@ -15,6 +14,12 @@ def slackParams = { GString message, String color ->
     color             : color,
     message           : message
   ]
+}
+
+def getTriggeringUser = env.BUILD_USER ? env.BUILD_USER : { sh (
+      script: 'git --no-pager show -s --format=%an',
+      returnStdout: true
+    ).trim()
 }
 
 pipeline {
@@ -28,12 +33,14 @@ pipeline {
 
   environment {
     COMMIT_INFO = sh(returnStdout: true, script: './getCommitHash.sh').trim()
+    GIT_HASH = sh (returnStdout: true, script: 'git log -1 --pretty=%h').trim()
   }
 
   stages {
     stage('Init Build') {
       steps {
         echo "Build with BUILD_ID: $COMMIT_INFO"
+        sh "rm -rf build"
         sh "mkdir -p ${DEPLOY_DIR}"
         sh "mkdir -p output/coverage"
 
@@ -68,21 +75,24 @@ pipeline {
 
     stage('Build docker image') {
       steps {
-        sh "docker build -t ${IMAGE_NAME} -f Dockerfile --rm . --build-arg BUILD_ID=${COMMIT_INFO}"
-        sh "docker save ${IMAGE_NAME} | gzip -c > ${DEPLOY_DIR}/${ARCHIVE_FILENAME_DOCKER}"
+        sh "docker build -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} -t ${IMAGE_NAME}:latest -f Dockerfile --rm . --build-arg BUILD_ID=${COMMIT_INFO}"
+        sh "docker save ${IMAGE_NAME}:latest | gzip -c > ${DEPLOY_DIR}/${LEGACY_ARCHIVE_FILENAME}"
       }
     }
 
     stage('Artifacts') {
       steps {
-        archiveArtifacts artifacts: "${DEPLOY_DIR}/${ARCHIVE_FILENAME_DOCKER}", fingerprint: true
+        archiveArtifacts artifacts: "${DEPLOY_DIR}/${LEGACY_ARCHIVE_FILENAME}", fingerprint: true
         archiveArtifacts artifacts: "${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST}", fingerprint: true
       }
     }
 
-    stage('Cleanup') {
+    stage('Push to docker registry') {
       steps {
-        sh "rm -rf build"
+        withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
+          sh "docker push ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH}"
+          sh "docker push ${IMAGE_NAME}:latest"
+        }
       }
     }
   }
@@ -92,7 +102,8 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           sh "echo successful"
-          slackSend(slackParams("Build successful: <${BUILD_URL}|${env.JOB_NAME} @ ${env.BUILD_NUMBER}> (${BUILD_USER})", "good"))
+          slackSend(slackParams("""Build successful: <${BUILD_URL}|${env.JOB_NAME} @ \
+              ${env.BUILD_NUMBER}> (${getTriggeringUser()})""", "good"))
         }
       }
     }
@@ -101,7 +112,8 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           sh "echo failed"
-          slackSend(slackParams("Build failed: <${BUILD_URL}|${env.JOB_NAME} @ ${env.BUILD_NUMBER}> (${BUILD_USER})", "danger"))
+          slackSend(slackParams("""Build failed: <${BUILD_URL}|${env.JOB_NAME} @ \
+              ${env.BUILD_NUMBER}> (${getTriggeringUser()})""", "danger"))
         }
       }
     }
