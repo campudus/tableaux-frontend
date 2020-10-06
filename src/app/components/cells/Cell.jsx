@@ -33,15 +33,18 @@ import TextCell from "./text/TextCell.jsx";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const mapStateToProps = (state, props) => {
-  const { cell } = props;
+  const { cell, langtag } = props;
   const {
-    selectedCell: { selectedCell }
+    selectedCell: { selectedCell, editing }
   } = state;
+  // console.log(selectedCell);
   const rowId = cell.row.id;
   const columnId = cell.column.id;
   const selected =
-    selectedCell.rowId === rowId && columnId === selectedCell.columnId;
-  return { selected };
+    selectedCell.rowId === rowId &&
+    columnId === selectedCell.columnId &&
+    langtag === selectedCell.langtag;
+  return { selected, editing: selected && editing };
 };
 
 const ExpandCorner = compose(
@@ -208,7 +211,6 @@ class Cell extends React.Component {
   }
 
   render() {
-    // console.log("cellRender")
     const {
       annotationsOpen,
       cell,

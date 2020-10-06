@@ -25,6 +25,7 @@ const NumericCell = props => {
   const isYear = isYearColumn(column);
 
   const handleEditDone = React.useCallback(newValue => {
+    console.log("handleEditDone")
     const validatedValue =
       f.isNil(newValue) || f.isNaN(newValue) ? null : newValue;
     const valueToSave = isMultiLanguage

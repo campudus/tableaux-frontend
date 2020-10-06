@@ -598,6 +598,7 @@ export default class VirtualTable extends PureComponent {
       langtag,
       visibleColumnOrdering
     } = this.props;
+    console.log(selectedCellExpandedRow)
     const { openAnnotations, scrolledCell, showResizeBar } = this.state;
     const { columnIndex, rowIndex, align } = scrolledCell;
 

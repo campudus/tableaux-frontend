@@ -239,7 +239,7 @@ export function toggleCellSelection({ cell, langtag }) {
     tableId
   });
 
-  setSelectedCellExpandedRow(langtag);
+  // setSelectedCellExpandedRow(langtag);
 }
 
 export function toggleCellEditing(params = {}) {
