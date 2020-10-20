@@ -221,7 +221,6 @@ class TableView extends PureComponent {
   };
 
   render = () => {
-    console.log("Table view")
     const {
       tables,
       table,
