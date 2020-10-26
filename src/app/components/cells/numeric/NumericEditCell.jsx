@@ -55,7 +55,6 @@ class NumericEditCell extends React.Component {
   };
 
   doneEditing = () => {
-    console.log("done editing")
     this.props.actions.toggleCellEditing({ editing: false });
     this.props.onSave(this.state.value);
   };

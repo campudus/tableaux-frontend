@@ -239,7 +239,7 @@ export function toggleCellSelection({ cell, langtag }) {
     tableId
   });
 
-  // setSelectedCellExpandedRow(langtag);
+  setSelectedCellExpandedRow(langtag);
 }
 
 export function toggleCellEditing(params = {}) {
@@ -396,7 +396,6 @@ export function setNextSelectedCell(direction) {
 
     var isValidCell = nextCell.rowId > 0 && nextCell.columnId >= 0;
     var isNewCell = !f.isEqual(nextCell, selectedCell);
-    this.scrollToCell(nextCell);
 
     if (isValidCell && isNewCell) {
       toggleCellSelection.call(this, {
@@ -404,17 +403,20 @@ export function setNextSelectedCell(direction) {
         langtag: newSelectedCellExpandedRow
       });
     }
+    this.scrollToCell();
   }
 }
 
 // returns the next row and the next language cell when expanded
 export function getNextRowCell(getPrev) {
-  const { tableView, rows, columns, selectedCellExpandedRow } = this.props;
+  const { tableView, rows, columns, getSelectedCellExpandedRow } = this.props;
+  const globalLangtag = this.props.langtag;
+  const selectedCellExpandedRow = getSelectedCellExpandedRow();
   const { expandedRowIds } = tableView;
   const {
     selectedCell: { selectedCell }
   } = store.getState();
-  const { rowId, langtag, columnId } = selectedCell;
+  const { rowId, columnId } = selectedCell;
   const columnIndex = f.findIndex(col => col.id === columnId, columns);
   const selectedColumn = columns[columnIndex];
 
@@ -456,7 +458,6 @@ export function getNextRowCell(getPrev) {
   // Get the next row id
   const nextRowIndex = Math.max(0, Math.min(nextIndex, numberOfRows - 1));
   const nextRowId = rows[nextRowIndex].id;
-
   if (jumpToNextRow) {
     // Next row is expanded
     if (expandedRowIds && expandedRowIds.indexOf(nextRowId) > -1) {
@@ -469,7 +470,7 @@ export function getNextRowCell(getPrev) {
         nextSelectedCellExpandedRow = DefaultLangtag;
       }
     } else {
-      nextSelectedCellExpandedRow = langtag;
+      nextSelectedCellExpandedRow = globalLangtag;
     }
   }
 
@@ -487,7 +488,7 @@ export function getNextColumnCell(getPrev) {
   const {
     columns,
     tableView,
-    selectedCellExpandedRow,
+    getSelectedCellExpandedRow,
     visibleColumnOrdering
   } = this.props;
   const { expandedRowIds } = tableView;
@@ -517,7 +518,7 @@ export function getNextColumnCell(getPrev) {
     expandedRowIds &&
     expandedRowIds.indexOf(currentSelectedRowId) > -1
       ? DefaultLangtag
-      : selectedCellExpandedRow || DefaultLangtag;
+      : getSelectedCellExpandedRow() || DefaultLangtag;
 
   return {
     id: f.get("id", nextColumn),

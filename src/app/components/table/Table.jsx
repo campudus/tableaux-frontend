@@ -29,8 +29,6 @@ class Table extends PureComponent {
     this.state = {
       windowHeight: window.innerHeight,
       scrolledHorizontal: 0,
-      // needed for multilanguage cell selection
-      selectedCellExpandedRow: null,
       rowContextMenu: null,
       showScrollToLeftButton: false
     };
@@ -39,6 +37,9 @@ class Table extends PureComponent {
   componentWillMount() {
     window.addEventListener("resize", this.windowResize);
   }
+
+  // Don't put this into state, deliberate antipattern to prevent unnecessary rerenders
+  selectedCellExpandedRow: null;
 
   onMouseDownHandler = e => {
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes
@@ -118,11 +119,10 @@ class Table extends PureComponent {
   };
 
   setSelectedCellExpandedRow = langtag => {
-    this.setState({
-      ...this.state,
-      selectedCellExpandedRow: langtag
-    });
+    this.selectedCellExpandedRow = langtag;
   };
+
+  getSelectedCellExpandedRow = () => this.selectedCellExpandedRow;
 
   render() {
     const {
@@ -178,6 +178,7 @@ class Table extends PureComponent {
             finishedLoading={finishedLoading}
             selectedCellExpandedRow={this.state.selectedCellExpandedRow}
             setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
+            getSelectedCellExpandedRow={this.getSelectedCellExpandedRow}
             visibleColumnOrdering={visibleColumnOrdering}
           />
         </div>

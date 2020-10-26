@@ -37,7 +37,6 @@ const mapStateToProps = (state, props) => {
   const {
     selectedCell: { selectedCell, editing }
   } = state;
-  // console.log(selectedCell);
   const rowId = cell.row.id;
   const columnId = cell.column.id;
   const selected =
