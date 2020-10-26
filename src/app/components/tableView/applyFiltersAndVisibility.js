@@ -79,12 +79,7 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         columns
       ]);
 
-      // const hasJumpTarget = !f.every(f.isNil, [
-      //   selectedCell.columnId,
-      //   selectedCell.rowId
-      // ]);
-      // const jumpTargetIsIn = f.any(f.propEq("id", selectedCell.rowId)); // Don't calculate immediately for performance
-      const showCellJumpOverlay = !finishedLoading; // && hasJumpTarget && !jumpTargetIsIn(rows);
+      const showCellJumpOverlay = !finishedLoading;
 
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
