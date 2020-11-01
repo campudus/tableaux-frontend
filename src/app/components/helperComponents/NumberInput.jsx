@@ -31,6 +31,8 @@ const NumberInput = (props, ref) => {
     placeholder,
     localize = true,
     integer = false,
+    onClick = f.noop,
+    onMouseDown = f.noop,
     separator
   } = props;
 
@@ -97,6 +99,8 @@ const NumberInput = (props, ref) => {
       disabled={disabled}
       onKeyDown={handleKeyDown}
       onFocus={onFocus}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
     />
   );
 };
