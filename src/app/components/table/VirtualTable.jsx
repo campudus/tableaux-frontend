@@ -26,6 +26,7 @@ import MultiGrid from "./GrudGrid";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
+import store from "../../redux/store";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -36,10 +37,10 @@ export default class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
     this.keyboardRecentlyUsedTimer = null;
-    this.updateSelectedCell();
+    this.didInitialCellScroll = false;
     this.state = {
       openAnnotations: {},
-      scrolledCell: {},
+      scrolledCell: props.selectedCell,
       lastScrolledCell: {},
       newRowAdded: false,
       showResizeBar: false
@@ -170,29 +171,25 @@ export default class VirtualTable extends PureComponent {
 
     // if we're in the first column, render meta cells
     if (gridData.columnIndex === 0) {
-      return this.renderMetaCell(
-        f.flow(
-          f.update("key", key => `meta-${key}`),
-          f.update("rowIndex", f.add(-1))
-        )(gridData)
-      );
+      return this.renderMetaCell({
+        ...gridData,
+        key: `cell-${gridData.key}`,
+        rowIndex: gridData.rowIndex - 1
+      });
     }
 
-    // else render either column headers or boring normal cells
     return gridData.rowIndex === 0
-      ? this.renderColumnHeader(
-          f.flow(
-            f.update("key", key => `col-${key}`),
-            f.update("columnIndex", f.add(-1))
-          )(gridData)
-        )
-      : this.renderCell(
-          f.flow(
-            f.update("key", key => `cell-${key}`),
-            f.update("rowIndex", f.add(-1)),
-            f.update("columnIndex", f.add(-1))
-          )(gridData)
-        );
+      ? this.renderColumnHeader({
+          ...gridData,
+          key: `cell-${gridData.key}`,
+          columnIndex: gridData.columnIndex - 1
+        })
+      : this.renderCell({
+          ...gridData,
+          key: `cell-${gridData.key}`,
+          rowIndex: gridData.rowIndex - 1,
+          columnIndex: gridData.columnIndex - 1
+        });
   };
 
   renderColumnHeader = ({ columnIndex }) => {
@@ -283,10 +280,8 @@ export default class VirtualTable extends PureComponent {
     const { openAnnotations } = this.state;
     const cell = this.getCell(rowIndex, columnIndex);
     const { value } = cell;
-    const isSelected = this.isCellSelected(cell.column.id, cell.row.id);
-    const isEditing =
-      isSelected && f.getOr(false, "tableView.editing", this.props);
 
+    const annotationState = getAnnotationState(cell);
     return (
       <Cell
         actions={actions}
@@ -295,16 +290,13 @@ export default class VirtualTable extends PureComponent {
         displayValue={cell.displayValue}
         cell={cell}
         columns={columns}
-        annotationState={getAnnotationState(cell)}
+        annotationState={annotationState}
         focusTable={tableNavigationWorker.checkFocusInsideTable.call(this)}
         langtag={langtag}
         annotationsOpen={
           !!openAnnotations.cellId && openAnnotations.cellId === cell.id
         }
         isExpandedCell={false}
-        selected={isSelected}
-        inSelectedRow={this.isInSelectedRow(cell.row.id, langtag)}
-        editing={isEditing}
         toggleAnnotationPopup={this.setOpenAnnotations}
         openCellContextMenu={this.openCellContextMenu}
         closeCellContextMenu={this.props.closeCellContextMenu}
@@ -410,7 +402,7 @@ export default class VirtualTable extends PureComponent {
         value,
         row: rows[rowIndex],
         displayValue: this.getDisplayValueWithFallback(
-          rows[rowIndex],
+          rowIndex,
           columnIndex,
           cell.column,
           value
@@ -446,41 +438,18 @@ export default class VirtualTable extends PureComponent {
       f.contains("expandedRowIds", newPropKeys) &&
       !f.isEmpty(f.xor(next.expandedRowIds, this.props.expandedRowIds));
 
-    if (
-      f.contains("selectedCell", newPropKeys) &&
-      !changeInRowSelection &&
-      next.tableView.selectedCell !== this.state.lastScrolledCell
-    ) {
-      this.scrollToCell(
-        next.tableView.selectedCell,
-        next.selectedCellExpandedRow
-      );
-    } else if (changeInRowSelection) {
+    if (changeInRowSelection) {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
   }
 
-  updateSelectedCell = (
-    cell,
-    selectedLang = this.props.selectedCellExpandedRow
-  ) => {
-    if (f.isEmpty(cell)) {
-      this.selectedIds = {};
-      return;
-    }
-    const { columnId, rowId } = cell;
-    this.selectedIds = {
-      row: parseInt(rowId),
-      column: parseInt(columnId),
-      langtag: selectedLang || null
-    };
-  };
-
-  scrollToCell = (cell, langtag = this.props.selectedCellExpandedRow) => {
-    this.updateSelectedCell(cell, langtag);
+  scrollToCell = () => {
+    const {
+      selectedCell: { selectedCell }
+    } = store.getState();
     const { lastScrolledCell } = this.state;
 
-    if (f.isEmpty(cell)) {
+    if (f.isEmpty(selectedCell)) {
       // when called by cell deselection
       this.setState({
         scrolledCell: {},
@@ -492,24 +461,39 @@ export default class VirtualTable extends PureComponent {
     const { rows, columns, visibleColumnOrdering } = this.props;
     const rowIndex = f.add(
       1,
-      f.findIndex(f.matchesProperty("id", this.selectedIds.row), rows)
+      f.findIndex(f.matchesProperty("id", selectedCell.rowId), rows)
     );
     const columnIndex = f.compose(
-      f.add(1),
       f.get("orderIdx"),
-      f.find(({ id }) => id === this.selectedIds.column),
+      f.find(({ id }) => id === selectedCell.columnId),
       mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
       f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
     )(visibleColumnOrdering);
 
-    this.setState({
-      scrolledCell: {
-        columnIndex,
-        rowIndex,
-        align: cell.align,
-        scrolledCell: cell
-      }
-    });
+    const grid = this.multiGrid._bottomRightGrid;
+    const shouldScroll =
+      !f.inRange(
+        grid._renderedRowStartIndex,
+        grid._renderedRowStopIndex,
+        rowIndex - 1
+      ) ||
+      (!f.inRange(
+        grid._renderedColumnStartIndex,
+        grid._renderedColumnStopIndex,
+        columnIndex - 1
+      ) &&
+        columnIndex !== 0);
+
+    if (shouldScroll) {
+      this.setState({
+        scrolledCell: {
+          columnIndex: columnIndex + 1,
+          rowIndex,
+          align: selectedCell.align,
+          scrolledCell: selectedCell
+        }
+      });
+    }
   };
 
   storeGridElement = node => {
@@ -523,19 +507,10 @@ export default class VirtualTable extends PureComponent {
   }
 
   componentDidUpdate(prev) {
-    // Release control of scrolling position once cell has been focused
-    // Has to be done this way as Grid.scrollToCell() is not exposed properly
-    // by MultiGrid
-    if (!f.isEmpty(this.state.scrolledCell) && this.props.finishedLoading) {
-      // release after table was rendered once for real
-      requestAnimationFrame(() =>
-        this.setState({
-          scrolledCell: {},
-          lastScrolledCell: f.get("scrolledCell", this.state.scrolledCell)
-        })
-      );
+    if (!this.didInitialCellScroll && this.multiGrid._bottomRightGrid) {
+      this.didInitialCellScroll = true;
+      this.scrollToCell();
     }
-
     // jump one row down if a new one was created from keyboardnavigation
     if (this.state.newRowAdded && f.size(prev.rows) < f.size(this.props.rows)) {
       tableNavigationWorker.setNextSelectedCell.call(this, Directions.DOWN);
@@ -604,6 +579,7 @@ export default class VirtualTable extends PureComponent {
           {({ height, width }) => {
             return (
               <MultiGrid
+                isScrollingOptOut={true}
                 enableFixedColumnScroll={true}
                 langtag={langtag}
                 ref={this.storeGridElement}

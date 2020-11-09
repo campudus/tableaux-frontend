@@ -12,14 +12,10 @@ import {
   unless,
   mapIndexed
 } from "../../helpers/functools";
-import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
-import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 import getDisplayValue from "../../helpers/getDisplayValue";
 
 const {
-  TOGGLE_CELL_SELECTION,
-  TOGGLE_CELL_EDITING,
   TOGGLE_EXPANDED_ROW,
   COPY_CELL_VALUE_TO_CLIPBOARD
 } = ActionTypes.tableView;
@@ -46,7 +42,7 @@ const {
 } = ActionTypes;
 
 const initialState = {
-  selectedCell: {},
+  // selectedCell: {},
   copySource: {},
   editing: false,
   visibleColumns: [],
@@ -152,22 +148,6 @@ const insertSkeletonLinks = (state, action, completeState) => {
   return setLinkDisplayValues(state, asLinkFormat);
 };
 
-const toggleSelectedCell = (state, action) => {
-  unlockRow(action.rowId, false);
-  return f.flow(
-    f.assoc("editing", false),
-    f.update("selectedCell", prevSelection =>
-      (action.select !== false &&
-        (prevSelection.rowId !== action.rowId ||
-          prevSelection.columnId !== action.columnId ||
-          prevSelection.langtag !== action.langtag)) ||
-      prevSelection.align !== action.align
-        ? f.pick(["rowId", "columnId", "langtag", "align"], action)
-        : {}
-    )
-  )(state);
-};
-
 const toggleExpandedRow = (state, action) => {
   const { rowId } = action;
 
@@ -176,33 +156,6 @@ const toggleExpandedRow = (state, action) => {
     ifElse(f.includes(rowId), f.pull(rowId), f.concat(rowId)),
     state
   );
-};
-
-const toggleCellEditing = (state, action, completeState) => {
-  const { currentTable, selectedCell: { rowId, columnId } = {} } = state;
-  const tableId = parseInt(currentTable);
-  const row = f.find(f.propEq("id", rowId), completeState.rows[tableId].data);
-  if (action.editing !== false && row && isLocked(row)) {
-    askForSessionUnlock(row);
-    return state;
-  } else {
-    const column = f.find(
-      f.propEq("id", columnId),
-      completeState.columns[tableId].data
-    );
-    // languages don't automatically match countries, so country cells should not switch to edit mode when expanded
-    const shouldStayClosed =
-      column.multilanguage &&
-      column.languageType === "country" &&
-      f.contains(rowId, state.expandedRowIds);
-    return shouldStayClosed
-      ? state
-      : f.update(
-          "editing",
-          wasEditing => action.editing !== false && !wasEditing,
-          state
-        );
-  }
 };
 
 const setInitialVisibleColumns = action => state =>
@@ -340,6 +293,7 @@ const modifyHistory = action => state => {
 };
 
 export default (state = initialState, action, completeState) => {
+  // console.log(action)
   switch (action.type) {
     case SET_STATE:
       return action.state.tableView;
@@ -375,12 +329,12 @@ export default (state = initialState, action, completeState) => {
       return state.currentLanguage === action.lang
         ? state
         : { ...state, currentLanguage: action.lang };
-    case TOGGLE_CELL_SELECTION:
-      return toggleSelectedCell(state, action);
+    // case TOGGLE_CELL_SELECTION:
+    //   return toggleSelectedCell(state, action);
     case TOGGLE_EXPANDED_ROW:
       return toggleExpandedRow(state, action);
-    case TOGGLE_CELL_EDITING:
-      return toggleCellEditing(state, action, completeState);
+    // case TOGGLE_CELL_EDITING:
+    //   return toggleCellEditing(state, action, completeState);
     // Do not clear copySource on table switch! User might want to copy values between tables.
     case COPY_CELL_VALUE_TO_CLIPBOARD:
       return f.assoc("copySource", f.pick(["cell", "langtag"], action), state);
