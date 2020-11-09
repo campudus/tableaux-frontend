@@ -23,6 +23,7 @@ const NumericCell = props => {
 
   const isMultiLanguage = column.multilanguage;
   const isYear = isYearColumn(column);
+  const isInteger = column.kind === "integer";
 
   const handleEditDone = React.useCallback(newValue => {
     const validatedValue =
@@ -48,7 +49,7 @@ const NumericCell = props => {
       <div className="cell-content">
         {f.compose(
           when(f.overSome([f.isNil, f.isNaN]), () => ""),
-          unless(() => isYear, formatNumber)
+          unless(() => isYear || column.separator, formatNumber)
         )(displayValue[langtag])}
       </div>
     );
@@ -61,6 +62,8 @@ const NumericCell = props => {
         isMultiLanguage={isMultiLanguage}
         onSave={handleEditDone}
         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+        separator={column.separator}
+        isInteger={isInteger}
       />
     );
   }

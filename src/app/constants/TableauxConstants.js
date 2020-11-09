@@ -29,7 +29,8 @@ const grudConstants = {
     datetime: null,
     currency: null,
     date: null,
-    group: null
+    group: null,
+    integer: null
   }),
 
   LanguageType: keyMirror({
