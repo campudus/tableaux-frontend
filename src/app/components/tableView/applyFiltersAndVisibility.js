@@ -1,6 +1,7 @@
 import React from "react";
 import { compose, withPropsOnChange } from "recompose";
 import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
+import store from "../../redux/store";
 import f from "lodash/fp";
 
 import { mapIndexed } from "../../helpers/functools";
@@ -79,7 +80,27 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         columns
       ]);
 
-      const showCellJumpOverlay = !finishedLoading;
+      const getSelectedCell = () => {
+        const {
+          selectedCell: { selectedCell }
+        } = store.getState();
+        return selectedCell;
+      };
+
+      const hasJumpTarget = () => {
+        const selectedCell = getSelectedCell();
+        return f.every(f.negate(f.isNil), [
+          selectedCell.columnId,
+          selectedCell.rowId
+        ]);
+      };
+
+      const jumpTargetIn = rows => {
+        const selectedCell = getSelectedCell();
+        return f.any(f.propEq("id", selectedCell.rowId), rows);
+      };
+      const showCellJumpOverlay =
+        !finishedLoading && hasJumpTarget() && !jumpTargetIn(rows);
 
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
