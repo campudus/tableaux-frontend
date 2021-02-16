@@ -68,13 +68,13 @@ const LinkItem = props => {
           <SvgIcon icon="edit" containerClasses="color-primary" />
         </a>
         <div className={mainButtonClass}>
-          <a href="#" draggable={false}>
+          <div draggable={false}>
             {unless(
               f.isString,
               retrieveTranslation(props.langtag),
               props.label
             ) || <Empty langtag={props.langtag} />}
-          </a>
+          </div>
         </div>
       </div>
     </div>
