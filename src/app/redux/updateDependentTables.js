@@ -121,7 +121,7 @@ export const refreshDependentRows = async (
   const dependentTables = getCachedDependencyMap(state.columns);
   if (f.isEmpty(dependentTables[changeOrigin])) return state;
 
-  const clonedState = nativeClone(state);
+  const clonedState = { ...state };
   const refreshedTables = new Set();
 
   const fetchChangedRows = async (tableId, parentTable, changedParentRows) => {
