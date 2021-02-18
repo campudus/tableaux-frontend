@@ -4,10 +4,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import {
-  canUserDeleteRow,
-  canUserEditRows
-} from "../../helpers/accessManagementHelper";
+import { canUserDeleteRow } from "../../helpers/accessManagementHelper";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
 import { isLocked } from "../../helpers/annotationHelper";
@@ -16,13 +13,12 @@ import reduxActionHoc from "../../helpers/reduxActionHoc";
 const mapStateToProps = (state, props) => {
   const { langtag, row } = props;
   const {
-    selectedCell: { selectedCell }
+    selectedCell: { selectedCell, editing }
   } = state;
-  // const rowId = cell.row.id;
   const inSelectedRow =
     row.id === selectedCell.rowId &&
     (f.isEmpty(langtag) || langtag === selectedCell.langtag);
-  return { selected: inSelectedRow };
+  return { selected: inSelectedRow, editing: inSelectedRow && editing };
 };
 
 class MetaCell extends React.Component {
@@ -38,7 +34,10 @@ class MetaCell extends React.Component {
   }
 
   shouldComponentUpdate = nextProps => {
-    return this.props.selected !== nextProps.selected;
+    return (
+      this.props.selected !== nextProps.selected ||
+      this.props.editing !== nextProps.editing
+    );
   };
 
   handleClick = event => {
@@ -67,13 +66,8 @@ class MetaCell extends React.Component {
   }
 
   mkLockStatusIcon = () => {
-    const { row, selected, expanded, table, langtag } = this.props;
-    console.log(!canUserEditRows({ table }, langtag));
-    const cantTranslate =
-      (selected || expanded) && !canUserEditRows({ table }, langtag);
-    if (cantTranslate) {
-      return <i className="fa fa-ban access-denied-icon" />;
-    } else if (row.final) {
+    const { row } = this.props;
+    if (row.final) {
       return (
         <i
           className={

@@ -88,20 +88,6 @@ export const canUserEditColumnDisplayProperty = getPermission([
 export const canUserChangeColumnDisplayName = canUserEditColumnDisplayProperty;
 export const canUserChangeColumnDescription = canUserEditColumnDisplayProperty;
 
-export const canUserEditRows = memoizeWith(
-  f.prop(["table", "id"]),
-  (cellInfo, langtag) => {
-    const tableId = cellInfo.tableId || (cellInfo.table && cellInfo.table.id);
-    const columns = store.getState().columns[tableId].data;
-    return columns.reduce(
-      (allowed, nextColumn) =>
-        allowed &&
-        canUserChangeCell({ ...cellInfo, column: nextColumn }, langtag),
-      true
-    );
-  }
-);
-
 export const canUserEditTableDisplayProperty = getPermission([
   "table",
   "editDisplayProperty"
