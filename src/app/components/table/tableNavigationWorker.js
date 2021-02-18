@@ -543,19 +543,27 @@ export function preventSleepingOnTheKeyboard(cb) {
   }
 }
 
+const getColumnIdx = (columnId, visibleColumns, visibleColumnOrdering) =>
+  f.compose(
+    idx => f.findIndex(colIdx => colIdx === idx, visibleColumnOrdering),
+    f.findIndex(col => col.id === columnId)
+  )(visibleColumns);
+
 function copySelectedCell() {
+  const { actions, rows, columns, visibleColumnOrdering } = this.props;
   const {
-    actions,
-    rows,
-    columns,
-    tableView: {
-      selectedCell: { columnId, rowId, langtag }
+    selectedCell: {
+      selectedCell: { rowId, columnId, langtag }
     }
-  } = this.props;
+  } = store.getState();
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
-  const columnIndex = f.findIndex(col => col.id === columnId, visibleColumns);
+  const columnIndex = getColumnIdx(
+    columnId,
+    visibleColumns,
+    visibleColumnOrdering
+  );
 
   const cell = this.getCell(rowIndex, columnIndex);
 
@@ -569,15 +577,18 @@ function pasteSelectedCell() {
   const {
     rows,
     columns,
-    tableView: {
-      selectedCell: { columnId, rowId, langtag },
-      copySource
-    }
+    tableView: { copySource },
+    visibleColumnOrdering
   } = this.props;
+  const {
+    selectedCell: {
+      selectedCell: { rowId, columnId, langtag }
+    }
+  } = store.getState();
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
   const vColumns = f.filter(col => col.visible || col.id === 0, columns);
-  const columnIndex = f.findIndex(col => col.id === columnId, vColumns);
+  const columnIndex = getColumnIdx(columnId, vColumns, visibleColumnOrdering);
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
 

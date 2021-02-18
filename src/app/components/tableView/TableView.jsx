@@ -86,13 +86,6 @@ class TableView extends PureComponent {
     });
   };
 
-  pasteCellTo = ({ cell, langtag }) => {
-    const { copySource } = f.propOr({}, "tableview.copySource", this.props);
-    const src = copySource.cell;
-    const srcLang = copySource.langtag;
-    pasteCellValue(src, srcLang, cell, langtag);
-  };
-
   clearCellClipboard = () => {
     this.props.actions.copyCellValue({});
   };
