@@ -43,7 +43,10 @@ const mapStateToProps = (state, props) => {
     selectedCell.rowId === rowId &&
     columnId === selectedCell.columnId &&
     langtag === selectedCell.langtag;
-  return { selected, editing: selected && editing };
+  const inSelectedRow =
+    rowId === selectedCell.rowId &&
+    (f.isEmpty(langtag) || langtag === selectedCell.langtag);
+  return { selected, editing: selected && editing, inSelectedRow };
 };
 
 const ExpandCorner = compose(

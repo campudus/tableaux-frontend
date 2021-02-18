@@ -24,7 +24,6 @@ import TableauxConstants, {
   FilterModes
 } from "../../constants/TableauxConstants";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
-import pasteCellValue from "../cells/cellCopyHelper";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import store from "../../redux/store";
 

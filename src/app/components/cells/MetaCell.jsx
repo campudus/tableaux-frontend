@@ -1,4 +1,5 @@
 import React, { PureComponent } from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -10,8 +11,21 @@ import {
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
 import { isLocked } from "../../helpers/annotationHelper";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
 
-class MetaCell extends PureComponent {
+const mapStateToProps = (state, props) => {
+  const { langtag, row } = props;
+  const {
+    selectedCell: { selectedCell }
+  } = state;
+  // const rowId = cell.row.id;
+  const inSelectedRow =
+    row.id === selectedCell.rowId &&
+    (f.isEmpty(langtag) || langtag === selectedCell.langtag);
+  return { selected: inSelectedRow };
+};
+
+class MetaCell extends React.Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
@@ -22,6 +36,10 @@ class MetaCell extends PureComponent {
   constructor(props) {
     super(props);
   }
+
+  shouldComponentUpdate = nextProps => {
+    return this.props.selected !== nextProps.selected;
+  };
 
   handleClick = event => {
     event.stopPropagation();
@@ -50,6 +68,7 @@ class MetaCell extends PureComponent {
 
   mkLockStatusIcon = () => {
     const { row, selected, expanded, table, langtag } = this.props;
+    console.log(!canUserEditRows({ table }, langtag));
     const cantTranslate =
       (selected || expanded) && !canUserEditRows({ table }, langtag);
     if (cantTranslate) {
@@ -98,4 +117,4 @@ class MetaCell extends PureComponent {
   };
 }
 
-export default MetaCell;
+export default reduxActionHoc(MetaCell, mapStateToProps);
