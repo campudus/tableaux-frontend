@@ -1,6 +1,4 @@
-
 .linked-items {
-
   .link-list {
     width: 100%;
     box-sizing: border-box;
@@ -9,7 +7,6 @@
       margin: 3px 0;
       display: flex;
       align-items: center;
-
       position: relative;
       padding-left: 25px;
     }
@@ -25,6 +22,7 @@
         font-size: larger;
         margin-right: 1em;
       }
+
       .text {
         display: flex;
         flex-direction: column;
@@ -34,8 +32,9 @@
   }
 
   .draggable {
-    display:flex;
+    display: flex;
     align-items: center;
+
     .drag-handle {
       cursor: pointer;
       margin-right: 5px;
@@ -70,6 +69,7 @@
   span {
     padding-top: 20px;
     padding-left: 50px;
+
     // fixed height prevents LinkOverlay from infinitely jumping between different line breaks when linking to table with
     // titles containing long words (eg. "Sicherheitsbekleidungsvarianten")
     height: 32px;
@@ -79,6 +79,7 @@
   .link-status-count {
     width: 100%;
     padding-top: 0;
+
     span {
       padding: 0;
     }
@@ -101,7 +102,7 @@
 }
 
 .list-item {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
   display: flex;
   width: 100%;
   height: 37px;
@@ -145,8 +146,8 @@
     }
   }
 
-  .roundCorners{
-    border-radius:  3px 0 0 3px;
+  .roundCorners {
+    border-radius: 3px 0 0 3px;
   }
 
   .linkButton {
@@ -160,9 +161,11 @@
     background-color: $color-light-blue;
     color: $color-primary;
     margin-right: 5px;
-    &:hover{
-      background-color:$color-very-light-blue;
+
+    &:hover {
+      background-color: $color-very-light-blue;
     }
+
     .a {
       fill: $color-primary;
     }
@@ -173,5 +176,23 @@
       height: 1em;
     }
 
+    &-disabled {
+      right: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 50px;
+      height: 100%;
+      background-color: $color-light-blue;
+      color: $color-primary;
+      margin-right: 5px;
+      cursor: default;
+      opacity: 0.3;
+
+      .svg-icon {
+        cursor: default;
+      }
+    }
   }
 }
