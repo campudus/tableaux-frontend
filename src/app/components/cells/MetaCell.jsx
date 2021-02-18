@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
