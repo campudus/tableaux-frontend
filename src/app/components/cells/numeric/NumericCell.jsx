@@ -49,7 +49,7 @@ const NumericCell = props => {
       <div className="cell-content">
         {f.compose(
           when(f.overSome([f.isNil, f.isNaN]), () => ""),
-          unless(() => isYear || column.separator, formatNumber)
+          unless(() => isYear || !column.separator, formatNumber)
         )(displayValue[langtag])}
       </div>
     );
