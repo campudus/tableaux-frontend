@@ -482,7 +482,11 @@ export default class VirtualTable extends PureComponent {
   }
 
   componentDidUpdate(prev) {
-    if (!this.didInitialCellScroll && this.multiGrid._bottomRightGrid) {
+    if (
+      !this.didInitialCellScroll &&
+      this.multiGrid._bottomRightGrid &&
+      this.props.finishedLoading
+    ) {
       this.didInitialCellScroll = true;
       this.scrollToCell();
     }
