@@ -113,6 +113,8 @@ export const hasTransitiveDependencies = (tableId, state) => {
   return !f.isEmpty(transitiveDependencies);
 };
 
+// This function mutates the global state object, but it shouldnt pose a problem as we replace the
+// whole state anyway afterwards
 export const refreshDependentRows = async (
   changeOrigin,
   changedRows,
@@ -121,7 +123,7 @@ export const refreshDependentRows = async (
   const dependentTables = getCachedDependencyMap(state.columns);
   if (f.isEmpty(dependentTables[changeOrigin])) return state;
 
-  const clonedState = nativeClone(state);
+  const clonedState = { ...state };
   const refreshedTables = new Set();
 
   const fetchChangedRows = async (tableId, parentTable, changedParentRows) => {

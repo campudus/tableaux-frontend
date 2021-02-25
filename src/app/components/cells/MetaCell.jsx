@@ -1,17 +1,27 @@
-import React, { PureComponent } from "react";
+import React from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import {
-  canUserDeleteRow,
-  canUserEditRows
-} from "../../helpers/accessManagementHelper";
+import { canUserDeleteRow } from "../../helpers/accessManagementHelper";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
 import { isLocked } from "../../helpers/annotationHelper";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
 
-class MetaCell extends PureComponent {
+const mapStateToProps = (state, props) => {
+  const { langtag, row } = props;
+  const {
+    selectedCell: { selectedCell, editing }
+  } = state;
+  const inSelectedRow =
+    row.id === selectedCell.rowId &&
+    (f.isEmpty(langtag) || langtag === selectedCell.langtag);
+  return { selected: inSelectedRow, editing: inSelectedRow && editing };
+};
+
+class MetaCell extends React.Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     row: PropTypes.object.isRequired,
@@ -22,6 +32,13 @@ class MetaCell extends PureComponent {
   constructor(props) {
     super(props);
   }
+
+  shouldComponentUpdate = nextProps => {
+    return (
+      this.props.selected !== nextProps.selected ||
+      this.props.editing !== nextProps.editing
+    );
+  };
 
   handleClick = event => {
     event.stopPropagation();
@@ -49,12 +66,8 @@ class MetaCell extends PureComponent {
   }
 
   mkLockStatusIcon = () => {
-    const { row, selected, expanded, table, langtag } = this.props;
-    const cantTranslate =
-      (selected || expanded) && !canUserEditRows({ table }, langtag);
-    if (cantTranslate) {
-      return <i className="fa fa-ban access-denied-icon" />;
-    } else if (row.final) {
+    const { row } = this.props;
+    if (row.final) {
       return (
         <i
           className={
@@ -98,4 +111,4 @@ class MetaCell extends PureComponent {
   };
 }
 
-export default MetaCell;
+export default reduxActionHoc(MetaCell, mapStateToProps);

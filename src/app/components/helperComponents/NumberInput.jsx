@@ -86,7 +86,7 @@ const NumberInput = (props, ref) => {
   return (
     <NumberFormat
       ref={inputRef}
-      thousandSeparator={localize && !separator ? thousandSeparator : false}
+      thousandSeparator={localize && separator ? thousandSeparator : false}
       decimalSeparator={decimalSeparator}
       value={value}
       defaultValue={0}

@@ -59,7 +59,9 @@
     line-height: 25px; // Suggested by Alex to center icon on his browser
     border-radius: 30px;
     vertical-align: bottom;
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: white;
     border: 1px solid $color-border-grey;
     position: absolute;

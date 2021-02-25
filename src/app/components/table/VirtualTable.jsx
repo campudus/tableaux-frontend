@@ -47,22 +47,6 @@ export default class VirtualTable extends PureComponent {
     };
   }
 
-  isInSelectedRow = (rowId, langtag) => {
-    const { tableView } = this.props;
-    const selected = f.getOr({}, "selectedCell", tableView);
-    return (
-      rowId === selected.rowId &&
-      (f.isEmpty(langtag) || langtag === selected.langtag)
-    );
-  };
-
-  isCellSelected = (columnId, rowId, langtag) => {
-    return (
-      this.isInSelectedRow(rowId, langtag) &&
-      this.props.tableView.selectedCell.columnId === columnId
-    );
-  };
-
   colWidths = new Map([[0, META_CELL_WIDTH]]);
   columnStartSize = null;
 
@@ -243,7 +227,6 @@ export default class VirtualTable extends PureComponent {
             key={`${key}-${lt}`}
             langtag={lt}
             expanded={true}
-            selected={this.isInSelectedRow(row.id, lt)}
             row={row}
             isLocked={locked}
             table={table}
@@ -257,7 +240,6 @@ export default class VirtualTable extends PureComponent {
         key={`${key}-${row.id}`}
         langtag={langtag}
         row={row}
-        selected={this.isInSelectedRow(row.id, langtag)}
         expanded={false}
         isLocked={locked}
         table={table}
@@ -305,9 +287,8 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderExpandedRowCell = ({ columnIndex, rowIndex, key }) => {
-    const { actions, rows, columns, tableView } = this.props;
+    const { actions, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
-    const row = rows[rowIndex];
     const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
@@ -316,9 +297,6 @@ export default class VirtualTable extends PureComponent {
       <div className="cell-stack">
         {Langtags.map(langtag => {
           const isPrimaryLang = langtag === f.first(Langtags);
-          const isSelected = this.isCellSelected(column.id, row.id, langtag);
-          const isEditing =
-            isSelected && f.getOr(false, "tableView.editing", this.props);
           const displayValue = this.getDisplayValueWithFallback(
             rowIndex,
             columnIndex,
@@ -340,9 +318,6 @@ export default class VirtualTable extends PureComponent {
                 cell.id === openAnnotations.cellId
               }
               isExpandedCell={!isPrimaryLang}
-              selected={isSelected}
-              inSelectedRow={this.isInSelectedRow(row.id, langtag)}
-              editing={isEditing}
               displayValue={displayValue}
               allDisplayValues={tableView.displayValues}
               value={cell.value}
@@ -507,7 +482,11 @@ export default class VirtualTable extends PureComponent {
   }
 
   componentDidUpdate(prev) {
-    if (!this.didInitialCellScroll && this.multiGrid._bottomRightGrid) {
+    if (
+      !this.didInitialCellScroll &&
+      this.multiGrid._bottomRightGrid &&
+      this.props.finishedLoading
+    ) {
       this.didInitialCellScroll = true;
       this.scrollToCell();
     }

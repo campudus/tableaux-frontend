@@ -49,7 +49,7 @@ const toggleCellEditing = (state, action, completeState) => {
 
 const toggleSelectedCell = (state, action) => {
   unlockRow(action.rowId, false);
-  const stuff = f.flow(
+  return f.flow(
     f.assoc("editing", false),
     f.update("selectedCell", prevSelection =>
       (action.select !== false &&
@@ -61,5 +61,4 @@ const toggleSelectedCell = (state, action) => {
         : {}
     )
   )(state);
-  return stuff;
 };

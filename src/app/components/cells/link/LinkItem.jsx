@@ -9,6 +9,7 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
 import { doto } from "../../../helpers/functools";
 import apiUrl from "../../../helpers/apiUrl";
+import { canUserSeeTable } from "../../../helpers/accessManagementHelper.js";
 
 const getCssClass = ({ isLinked, isSelected }) =>
   classNames("list-item", {
@@ -22,8 +23,7 @@ const LinkItem = props => {
     "has-focus": props.selectedMode === 0
   });
   const linkButtonClass = classNames("linkButton", {
-    "has-focus": props.selectedMode === 1,
-    linked: props.isLinked
+    "has-focus": props.selectedMode === 1
   });
   return (
     <div
@@ -47,9 +47,16 @@ const LinkItem = props => {
         </a>
         <a
           href="#"
-          className={linkButtonClass}
+          className={
+            canUserSeeTable(props.cell.column.toTable)
+              ? linkButtonClass
+              : linkButtonClass + " " + linkButtonClass + "--disabled"
+          }
           draggable={false}
           onClick={() => {
+            if (!canUserSeeTable(props.cell.column.toTable)) {
+              return;
+            }
             props.isAttachment
               ? doto(
                   f.find(val => val.uuid === props.row.id, props.cell.value),
@@ -68,13 +75,13 @@ const LinkItem = props => {
           <SvgIcon icon="edit" containerClasses="color-primary" />
         </a>
         <div className={mainButtonClass}>
-          <a href="#" draggable={false}>
+          <div draggable={false}>
             {unless(
               f.isString,
               retrieveTranslation(props.langtag),
               props.label
             ) || <Empty langtag={props.langtag} />}
-          </a>
+          </div>
         </div>
       </div>
     </div>

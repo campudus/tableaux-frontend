@@ -24,7 +24,6 @@ import TableauxConstants, {
   FilterModes
 } from "../../constants/TableauxConstants";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
-import pasteCellValue from "../cells/cellCopyHelper";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import store from "../../redux/store";
 
@@ -84,13 +83,6 @@ class TableView extends PureComponent {
       cell,
       langtag
     });
-  };
-
-  pasteCellTo = ({ cell, langtag }) => {
-    const { copySource } = f.propOr({}, "tableview.copySource", this.props);
-    const src = copySource.cell;
-    const srcLang = copySource.langtag;
-    pasteCellValue(src, srcLang, cell, langtag);
   };
 
   clearCellClipboard = () => {
