@@ -50,7 +50,7 @@ const LinkItem = props => {
           className={
             canUserSeeTable(props.cell.column.toTable)
               ? linkButtonClass
-              : linkButtonClass + " disabled"
+              : linkButtonClass + " " + linkButtonClass + "--disabled"
           }
           draggable={false}
           onClick={() => {
