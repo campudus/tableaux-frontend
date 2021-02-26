@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { formatNumber } from "../../../helpers/multiLanguage";
 
 const NumberDiff = props => {
-  const { diff } = props;
+  const { diff, shouldFormatNumber = true } = props;
   return diff.map(({ add, del, value }, idx) => {
     const cssClass = classNames("content-diff", {
       "content-diff--added": add,
@@ -15,7 +15,7 @@ const NumberDiff = props => {
 
     return (
       <span key={idx} className={cssClass}>
-        {formatNumber(value)}
+        {shouldFormatNumber ? formatNumber(value) : value}
       </span>
     );
   });
@@ -23,5 +23,6 @@ const NumberDiff = props => {
 
 export default NumberDiff;
 NumberDiff.propTypes = {
-  diff: PropTypes.array.isRequired
+  diff: PropTypes.array.isRequired,
+  shouldFormatNumber: PropTypes.boolean
 };
