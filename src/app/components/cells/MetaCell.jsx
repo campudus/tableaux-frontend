@@ -36,7 +36,8 @@ class MetaCell extends React.Component {
   shouldComponentUpdate = nextProps => {
     return (
       this.props.selected !== nextProps.selected ||
-      this.props.editing !== nextProps.editing
+      this.props.editing !== nextProps.editing ||
+      this.props.row.final !== nextProps.row.final
     );
   };
 
