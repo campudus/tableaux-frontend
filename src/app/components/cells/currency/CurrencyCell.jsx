@@ -20,8 +20,6 @@ import {
 import CurrencyEditCell from "./CurrencyEditCell";
 import { when } from "../../../helpers/functools.js";
 
-const CurrencyEditCellWithClickOutside = onClickOutside(CurrencyEditCell);
-
 @translate(["table"])
 class CurrencyCell extends React.PureComponent {
   static propTypes = {
@@ -165,10 +163,9 @@ class CurrencyCell extends React.PureComponent {
     const currencyValues = value;
     const country = getCountryOfLangtag(langtag);
     const currencyCellMarkup = editing ? (
-      <CurrencyEditCellWithClickOutside
+      <CurrencyEditCell
         cell={this.props.cell}
         setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-        onClickOutside={this.handleClickOutside}
         saveCell={this.saveCurrencyCell}
         exitCell={this.exitCurrencyCell}
       />
@@ -188,4 +185,4 @@ class CurrencyCell extends React.PureComponent {
     );
   }
 }
-export default CurrencyCell;
+export default onClickOutside(CurrencyCell);
