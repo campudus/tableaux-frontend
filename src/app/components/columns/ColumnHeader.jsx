@@ -67,10 +67,7 @@ export default class ColumnHeader extends PureComponent {
       tableId,
       resizeIdHandler
     } = this.props;
-    const toTable =
-      column.kind === "link"
-        ? f.find(table => table.id === column.toTable, tables)
-        : {};
+    const toTable = column.kind === "link" ? { id: column.toTable } : {};
 
     const displayName = getColumnDisplayName(column, langtag);
 
