@@ -18,6 +18,7 @@ const getCssClass = ({ isLinked, isSelected }) =>
   });
 
 const LinkItem = props => {
+  const { toTable } = props;
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
@@ -48,13 +49,13 @@ const LinkItem = props => {
         <a
           href="#"
           className={
-            canUserSeeTable(props.cell.column.toTable)
+            canUserSeeTable(toTable)
               ? linkButtonClass
               : linkButtonClass + " " + linkButtonClass + "--disabled"
           }
           draggable={false}
           onClick={() => {
-            if (!canUserSeeTable(props.cell.column.toTable)) {
+            if (!canUserSeeTable(toTable)) {
               return;
             }
             props.isAttachment
@@ -66,7 +67,7 @@ const LinkItem = props => {
                   window.open
                 )
               : loadAndOpenEntityView({
-                  tableId: props.cell.column.toTable,
+                  tableId: toTable,
                   rowId: props.row.id,
                   langtag: props.langtag
                 });
