@@ -77,6 +77,7 @@ const DependentRowsList = props => {
             </a>
           </div>
           <LinkList
+            showToggleButton={false}
             langtag={langtag}
             key={table.id}
             links={links}
