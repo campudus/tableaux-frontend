@@ -71,12 +71,10 @@ export const performRowDeletion = (tableId, rowId, state) => {
   );
 };
 
-const nativeClone = value => value |> JSON.stringify |> JSON.parse;
-
 export const propagateRowDelete = f.curryN(
   3,
   (originTableId, originRowId, state) => {
-    const updatedRows = nativeClone(state.rows);
+    const updatedRows = state.rows;
     const removeLinkFrom = f.remove(f.propEq("id", originRowId));
 
     // in-place update
@@ -98,8 +96,7 @@ export const propagateRowDelete = f.curryN(
         }
       });
     });
-
-    return updatedRows;
+    return { rows: updatedRows };
   }
 );
 
