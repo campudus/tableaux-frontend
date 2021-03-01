@@ -51,13 +51,9 @@ const FlagIconRenderer = onlyUpdateForKeys([
   "annotationsOpen",
   "cell"
 ])(props => {
-  const {
-    cell,
-    cell: { annotations = [] },
-    langtag,
-    annotationsOpen,
-    toggleAnnotationPopup
-  } = props;
+  const { cell, langtag, annotationsOpen, toggleAnnotationPopup } = props;
+
+  const annotations = cell.annotations || {};
 
   const hasTextAnnotations = f.any(f.complement(f.isEmpty), [
     annotations.info,
