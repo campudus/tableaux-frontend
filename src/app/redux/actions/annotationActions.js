@@ -215,12 +215,19 @@ export const toggleAnnotationFlag = action => (dispatch, getState) => {
   const { cell, annotation, onError, onSuccess } = action;
   const { rowIdx, colIdx, annotations } = findAnnotations(getState, action);
   const [value, setTo] = f.props(["value", "setTo"], annotation);
+
+  const valueKey = when(
+    f.eq("translationNeeded"),
+    () => "needs_translation",
+    value
+  );
+
   const existingAnnotation = f.find(
-    ann => ann.type === "flag" && ann.value === value,
+    ann => ann.type === "flag" && ann.value === valueKey,
     annotations
   );
 
-  const shouldDelete = f.isBoolean(setTo) ? setTo : !!existingAnnotation;
+  const shouldDelete = f.isBoolean(setTo) ? !setTo : !!existingAnnotation;
 
   const description = {
     promise: makeRequest(
