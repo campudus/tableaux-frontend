@@ -658,9 +658,8 @@ const actionCreators = {
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
   toggleCellSelection: data => {
-    const { rowId, columnId, tableId, langtag } = data;
+    const { rowId, columnId, tableId } = data;
     const url =
-      `/${langtag}` +
       `/tables/${tableId}` +
       (columnId ? `/columns/${columnId}` : "") +
       (rowId ? `/rows/${rowId}` : "");
