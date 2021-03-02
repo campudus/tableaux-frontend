@@ -329,7 +329,6 @@ class RowContextMenu extends React.Component {
       },
       closeRowContextMenu
     } = this;
-    console.log(cell);
 
     return (
       <div className="prevent-scroll" onClick={closeRowContextMenu}>
