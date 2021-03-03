@@ -1,4 +1,5 @@
 import React, { PureComponent } from "react";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
@@ -66,7 +67,10 @@ export default class ColumnHeader extends PureComponent {
       tableId,
       resizeIdHandler
     } = this.props;
-    const toTable = column.kind === "link" ? { id: column.toTable } : {};
+    const toTable =
+      (column.kind === "link" &&
+        f.find(table => table.id === column.toTable, tables)) ||
+      {};
 
     const displayName = getColumnDisplayName(column, langtag);
 
