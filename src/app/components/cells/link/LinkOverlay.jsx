@@ -249,6 +249,7 @@ class LinkOverlay extends PureComponent {
         isLinked={isLinked}
         isSelected={isSelected}
         row={row}
+        toTable={f.get(["column", "toTable"], cell)}
         cell={cell}
         label={row.label}
         langtag={langtag}

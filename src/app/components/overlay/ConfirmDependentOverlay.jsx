@@ -78,14 +78,24 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
     const neighborRowId =
       rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id");
 
-    store.dispatch(
-      actions.toggleCellSelection({ rowId: neighborRowId, langtag })
-    );
+    const {
+      selectedCell: {
+        selectedCell: { columnId }
+      }
+    } = store.getState();
 
     store.dispatch(actions.deleteRow({ row, table }));
     if (overlayToCloseId) {
       store.dispatch(actions.closeOverlay(overlayToCloseId));
     }
+    store.dispatch(
+      actions.toggleCellSelection({
+        rowId: neighborRowId,
+        tableId,
+        columnId,
+        langtag
+      })
+    );
   };
 
   const buttons = {
@@ -104,6 +114,7 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
           table={table}
           langtag={langtag}
           deleteInfo={true}
+          cell={{ row, table, langtag }}
         />
       ),
       footer: <Footer buttonActions={buttons} />,

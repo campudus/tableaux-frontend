@@ -91,6 +91,7 @@ class View extends PureComponent {
       [ColumnKinds.link]: LinkView,
       [ColumnKinds.attachment]: AttachmentView,
       [ColumnKinds.numeric]: NumericView,
+      [ColumnKinds.integer]: NumericView,
       [ColumnKinds.boolean]: BooleanView,
       [ColumnKinds.date]: DateView,
       [ColumnKinds.datetime]: DateView,

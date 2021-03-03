@@ -15,7 +15,14 @@ import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 const MAX_DISPLAYED_LINKS = 4;
 
 const LinkList = props => {
-  const { links, cell, langtag, actions, isAttachment } = props;
+  const {
+    links,
+    cell,
+    langtag,
+    actions,
+    isAttachment,
+    showToggleButton
+  } = props;
   const { column, row, table, value } = cell;
   const changeCellAuthorized = canUserChangeCell(props.cell, props.langtag);
   const sortable = props.sortable && cell && changeCellAuthorized;
@@ -61,6 +68,7 @@ const LinkList = props => {
     };
     return (
       <LinkItem
+        showToggleButton={showToggleButton}
         row={{ id: link.linkTarget.rowId || link.uuid }}
         cell={cell}
         toTable={link.linkTarget.tableId}
@@ -92,6 +100,7 @@ const LinkList = props => {
     };
     return (
       <LinkItem
+        showToggleButton={showToggleButton}
         row={{ id: link.linkTarget.rowId || link.uuid }}
         cell={cell}
         toTable={link.linkTarget.tableId}
