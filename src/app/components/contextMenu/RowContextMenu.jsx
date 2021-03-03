@@ -322,7 +322,10 @@ class RowContextMenu extends React.Component {
       props: {
         cell,
         t,
-        cell: { table }
+        cell: {
+          table,
+          row: { final }
+        }
       },
       closeRowContextMenu
     } = this;
@@ -376,7 +379,9 @@ class RowContextMenu extends React.Component {
           {this.props.table.type === "settings" || !canUserCreateRow({ table })
             ? ""
             : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-          {this.props.table.type === "settings" || !canUserDeleteRow({ table })
+          {this.props.table.type === "settings" ||
+          !canUserDeleteRow({ table }) ||
+          final
             ? ""
             : this.mkItem(deleteRow, "delete_row", "trash-o")}
           {this.mkItem(showDependency, "show_dependency", "code-fork")}
