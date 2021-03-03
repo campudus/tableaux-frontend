@@ -50,7 +50,12 @@ const ContentDiff = props => {
     case ColumnKinds.currency:
       return <CountryDiff {...props} />;
     case ColumnKinds.numeric:
-      return <NumberDiff {...props} isRevertable={props.revision.revertable} />;
+      return (
+        <NumberDiff
+          {...props}
+          shouldFormatNumber={f.get(["cell", "column", "separator"], props)}
+        />
+      );
     case ColumnKinds.text:
     case ColumnKinds.shorttext:
     case ColumnKinds.richtext:
