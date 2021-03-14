@@ -29,6 +29,7 @@ import { queryFrontendServices } from "./actions/frontendServices";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import store from "./store";
 
 const {
   getAllTables,
@@ -658,9 +659,17 @@ const actionCreators = {
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
   toggleCellSelection: data => {
+    const {
+      selectedCell: {
+        selectedCell: { langtag }
+      }
+    } = store.getState();
+    console.log(langtag, store.getState());
     const { rowId, columnId, tableId } = data;
+    const currentLang = f.split("/", window.location.href)[3];
+    console.log(currentLang)
     const url =
-      `/tables/${tableId}` +
+      `/${currentLang}/tables/${tableId}` +
       (columnId ? `/columns/${columnId}` : "") +
       (rowId ? `/rows/${rowId}` : "");
     window.history.pushState({}, null, url);
