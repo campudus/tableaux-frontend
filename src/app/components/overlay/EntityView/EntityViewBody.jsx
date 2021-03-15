@@ -17,6 +17,7 @@ import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
 import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import TranslationPopup from "../../entityView/TranslationPopup";
+
 import View from "../../entityView/RowView";
 import columnFilter from "./columnFilter";
 import getDisplayValue from "../../../helpers/getDisplayValue";
