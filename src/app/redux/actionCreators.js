@@ -664,7 +664,6 @@ const actionCreators = {
         selectedCell: { langtag }
       }
     } = store.getState();
-    console.log(langtag, store.getState());
     const { rowId, columnId, tableId } = data;
     const currentLang = f.split("/", window.location.href)[3];
     console.log(currentLang)
