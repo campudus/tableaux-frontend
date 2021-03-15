@@ -666,7 +666,6 @@ const actionCreators = {
     } = store.getState();
     const { rowId, columnId, tableId } = data;
     const currentLang = f.split("/", window.location.href)[3];
-    console.log(currentLang)
     const url =
       `/${currentLang}/tables/${tableId}` +
       (columnId ? `/columns/${columnId}` : "") +
