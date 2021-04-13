@@ -313,7 +313,6 @@ export default class VirtualTable extends PureComponent {
               cell={cell}
               langtag={langtag}
               annotationsOpen={
-
                 isPrimaryLang &&
                 !!openAnnotations.cellId &&
                 cell.id === openAnnotations.cellId
