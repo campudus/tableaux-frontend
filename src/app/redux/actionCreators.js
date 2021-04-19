@@ -29,7 +29,6 @@ import { queryFrontendServices } from "./actions/frontendServices";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
-import store from "./store";
 
 const {
   getAllTables,
