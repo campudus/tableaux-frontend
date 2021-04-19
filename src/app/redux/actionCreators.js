@@ -659,11 +659,6 @@ const actionCreators = {
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
   toggleCellSelection: data => {
-    const {
-      selectedCell: {
-        selectedCell: { langtag }
-      }
-    } = store.getState();
     const { rowId, columnId, tableId } = data;
     const currentLang = f.split("/", window.location.href)[3];
     const url =
