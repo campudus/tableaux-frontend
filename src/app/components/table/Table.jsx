@@ -38,6 +38,10 @@ class Table extends PureComponent {
     window.addEventListener("resize", this.windowResize);
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.windowResize);
+  }
+
   // Don't put this into state, deliberate antipattern to prevent unnecessary rerenders
   selectedCellExpandedRow: null;
 
