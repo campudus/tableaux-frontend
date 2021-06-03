@@ -69,7 +69,7 @@ const enrichConfig = config => {
       config[envVar] = envValue === "false" ? false : envValue;
       try {
         config[envVar] = JSON.parse(envValue); // extract bools and numbers
-      } catch {
+      } catch (err) {
         config[envVar] = envValue;
       }
     }
