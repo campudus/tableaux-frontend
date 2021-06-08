@@ -558,12 +558,7 @@ function copySelectedCell() {
   } = store.getState();
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
-  const columnIndex = getColumnIdx(
-    columnId,
-    visibleColumns,
-    visibleColumnOrdering
-  );
+  const columnIndex = getColumnIdx(columnId, columns, visibleColumnOrdering);
 
   const cell = this.getCell(rowIndex, columnIndex);
 
@@ -587,8 +582,7 @@ function pasteSelectedCell() {
   } = store.getState();
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const vColumns = f.filter(col => col.visible || col.id === 0, columns);
-  const columnIndex = getColumnIdx(columnId, vColumns, visibleColumnOrdering);
+  const columnIndex = getColumnIdx(columnId, columns, visibleColumnOrdering);
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
 
