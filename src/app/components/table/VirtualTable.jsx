@@ -418,13 +418,17 @@ export default class VirtualTable extends PureComponent {
     }
   }
 
+  isSelectedCellValid = selectedCell => {
+    return !f.isNil(selectedCell.rowId) && !f.isNil(selectedCell.columnId);
+  };
+
   scrollToCell = () => {
     const {
       selectedCell: { selectedCell }
     } = store.getState();
     const { lastScrolledCell } = this.state;
 
-    if (f.isEmpty(selectedCell)) {
+    if (!this.isSelectedCellValid(selectedCell)) {
       // when called by cell deselection
       this.setState({
         scrolledCell: {},
@@ -528,9 +532,7 @@ export default class VirtualTable extends PureComponent {
     const columnCount = f.size(visibleColumnOrdering) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
-    const isSelectedCellValid = selectedCell.rowId && selectedCell.columnId;
-
-    const selectedCellKey = isSelectedCellValid
+    const selectedCellKey = this.isSelectedCellValid(selectedCell)
       ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
           "colId",
           this.selectedCell
