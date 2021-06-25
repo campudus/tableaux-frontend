@@ -27,6 +27,7 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 import store from "../../redux/store";
+import MetaCellHeader from "../cells/MetaCellHeader";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -199,9 +200,7 @@ export default class VirtualTable extends PureComponent {
   renderMetaCell = ({ rowIndex, key }) => {
     if (rowIndex < 0) {
       return (
-        <div className="id-meta-cell" key="id-cell">
-          ID
-        </div>
+        <MetaCellHeader key="id-cell" displayName="ID" column={{ id: 0 }} />
       );
     }
 
