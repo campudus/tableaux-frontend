@@ -184,4 +184,9 @@ export const switchLanguageHandler = (history, langtag) => {
   history.push(newUrl);
 };
 
+// navigates to path
+export const navigate = (history, path) => {
+  history.push(path);
+};
+
 export default withUserAuthentication(GRUDRouter);

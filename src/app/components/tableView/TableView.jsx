@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { showDialog } from "../overlay/GenericOverlay";
-import { switchLanguageHandler } from "../Router";
+import { switchLanguageHandler, navigate } from "../Router";
 import ColumnFilter from "../header/ColumnFilter";
 import Filter from "../header/filter/Filter.jsx";
 import GrudHeader from "../GrudHeader";
@@ -101,7 +101,6 @@ class TableView extends PureComponent {
       tableView,
       visibleColumns,
       visibleRows,
-      navigate,
       finishedLoading,
       visibleColumnOrdering
     } = this.props;
@@ -135,7 +134,7 @@ class TableView extends PureComponent {
             columnKeys={columnKeys}
             columns={columns}
             tables={tables}
-            navigate={navigate}
+            navigate={this.onNavigate}
             finishedLoading={finishedLoading}
             visibleColumnOrdering={visibleColumnOrdering}
           />
@@ -196,6 +195,11 @@ class TableView extends PureComponent {
     switchLanguageHandler(history, newLangtag);
   };
 
+  onNavigate = path => {
+    const { history } = this.props;
+    navigate(history, path);
+  };
+
   getCellUrl = () => {
     const { langtag, table } = this.props;
     const {
@@ -219,7 +223,6 @@ class TableView extends PureComponent {
       columns,
       langtag,
       tableId,
-      navigate,
       actions,
       allDisplayValues,
       filtering,
@@ -261,7 +264,7 @@ class TableView extends PureComponent {
             langtag={langtag}
             currentTable={table}
             tables={tables}
-            navigate={navigate}
+            navigate={this.onNavigate}
           />
           <TableSettings langtag={langtag} table={table} actions={actions} />
           <Filter
