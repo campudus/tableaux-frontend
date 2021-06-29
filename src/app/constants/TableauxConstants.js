@@ -72,7 +72,7 @@ const grudConstants = {
     id: -1,
     ordering: -1,
     displayName: { de: "ID" },
-    identifier: true,
+    identifier: false,
     kind: "numeric",
     multilanguage: false,
     name: "rowId",
