@@ -66,6 +66,8 @@ const grudConstants = {
 
   PageTitle: "GRUD",
 
+  // This is a meta column which doesn't exist in (or is not provided by) the backend
+  // but is needed for sorting in the frontend
   RowIdColumn: {
     id: -1,
     ordering: -1,
