@@ -66,6 +66,7 @@ class ColumnContextMenu extends React.Component {
     } = this.props;
     const { toggleColumnVisibility } = this.props.actions || {};
     const canEdit =
+      !this.props.isMetaColumn &&
       canUserEditColumnDisplayProperty({ column }) &&
       !f.contains(column.kind, PROTECTED_CELL_KINDS);
     const editorItem = canEdit ? (
@@ -78,6 +79,7 @@ class ColumnContextMenu extends React.Component {
     ) : null;
 
     const followLinkItem =
+      !this.props.isMetaColumn &&
       column.kind === TableauxConstants.ColumnKinds.link &&
       canUserSeeTable(toTable.id) ? (
         <ContextMenuItem
@@ -89,14 +91,15 @@ class ColumnContextMenu extends React.Component {
         </ContextMenuItem>
       ) : null;
 
-    const hideColumnItem = this.props.isId ? null : (
-      <ContextMenuItem
-        closeMenu={closeHandler}
-        onClick={() => toggleColumnVisibility(column.id)}
-        title="table:hide_column"
-        iconName="fa-eye"
-      />
-    );
+    const hideColumnItem =
+      this.props.isMetaColumn || this.props.isId ? null : (
+        <ContextMenuItem
+          closeMenu={closeHandler}
+          onClick={() => toggleColumnVisibility(column.id)}
+          title="table:hide_column"
+          iconName="fa-eye"
+        />
+      );
 
     const sortByThisColumn = direction => () => {
       const currentFilters =
@@ -151,7 +154,8 @@ ColumnContextMenu.propTypes = {
   langtag: PropTypes.string,
   offset: PropTypes.number,
   rect: PropTypes.object.isRequired,
-  alignRight: PropTypes.bool
+  alignRight: PropTypes.bool,
+  isMetaColumn: PropTypes.bool
 };
 
 export default ColumnContextMenu;
