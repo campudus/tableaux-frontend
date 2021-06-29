@@ -60,10 +60,11 @@ class ColumnContextMenu extends React.Component {
       editHandler,
       langtag,
       rect,
-      actions: { toggleColumnVisibility },
       navigate,
-      toTable
+      toTable,
+      alignRight
     } = this.props;
+    const { toggleColumnVisibility } = this.props.actions || {};
     const canEdit =
       canUserEditColumnDisplayProperty({ column }) &&
       !f.contains(column.kind, PROTECTED_CELL_KINDS);
@@ -131,7 +132,7 @@ class ColumnContextMenu extends React.Component {
         style={{
           left: rect.x,
           top: rect.y,
-          transform: "translateX(-100%)"
+          transform: alignRight ? "none" : "translateX(-100%)"
         }}
       >
         {sortingItems}
@@ -146,10 +147,11 @@ class ColumnContextMenu extends React.Component {
 ColumnContextMenu.propTypes = {
   column: PropTypes.object.isRequired,
   closeHandler: PropTypes.func.isRequired,
-  editHandler: PropTypes.func.isRequired,
-  langtag: PropTypes.string.isRequired,
+  editHandler: PropTypes.func,
+  langtag: PropTypes.string,
   offset: PropTypes.number,
-  rect: PropTypes.object.isRequired
+  rect: PropTypes.object.isRequired,
+  alignRight: PropTypes.bool
 };
 
 export default ColumnContextMenu;

@@ -58,6 +58,16 @@ const getFilteredRows = (
   );
   const filteredRows = f.filter(combinedFilter, rowsWithIndex);
   const { sortColumnId, sortValue } = filterSettings;
+
+  // sort by ID
+  if (sortColumnId === 0) {
+    const ordered = f.orderBy(["id"], [f.toLower(sortValue)], filteredRows);
+    return {
+      visibleRows: f.map("rowIndex", ordered),
+      colsWithMatches: f.toArray(closures.colsWithMatches)
+    };
+  }
+
   const columnIndex = f.findIndex(
     column => column.id === sortColumnId,
     columns

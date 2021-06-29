@@ -116,11 +116,7 @@ body div div.column-header-context-menu {
     }
   }
 
-  .id-meta-cell {
-    justify-content: flex-end;
-  }
-
-  .column-head, .id-meta-cell {
+  .column-head, .meta-cell-head {
     border-right: 1px solid $color-border-grey;
     overflow: visible;
     white-space: nowrap;
