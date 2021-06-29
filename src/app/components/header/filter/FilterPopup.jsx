@@ -18,6 +18,7 @@ import TableauxConstants, {
   ColumnKinds,
   FilterModes,
   Langtags,
+  RowIdColumn,
   SortValues
 } from "../../../constants/TableauxConstants";
 
@@ -40,6 +41,7 @@ class FilterPopup extends React.Component {
   static isSortableColumn = column =>
     f.contains(column.kind, SortableCellKinds);
   static isSearchableColumn = column =>
+    column.id !== RowIdColumn.id &&
     f.contains(column.kind, FilterableCellKinds);
 
   sortableColumns = null;
