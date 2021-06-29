@@ -13,7 +13,8 @@ import PropTypes from "prop-types";
 import {
   ColumnKinds,
   Langtags,
-  Directions
+  Directions,
+  RowIdColumn
 } from "../../constants/TableauxConstants";
 import { doto, either, maybe, mapIndexed } from "../../helpers/functools";
 import { isLocked } from "../../helpers/annotationHelper";
@@ -200,7 +201,7 @@ export default class VirtualTable extends PureComponent {
   renderMetaCell = ({ rowIndex, key }) => {
     if (rowIndex < 0) {
       return (
-        <MetaCellHeader key="id-cell" displayName="ID" column={{ id: 0 }} />
+        <MetaCellHeader key="id-cell" displayName="ID" column={RowIdColumn} />
       );
     }
 

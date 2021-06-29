@@ -66,6 +66,17 @@ const grudConstants = {
 
   PageTitle: "GRUD",
 
+  RowIdColumn: {
+    id: -1,
+    ordering: -1,
+    displayName: { de: "ID" },
+    identifier: true,
+    kind: "numeric",
+    multilanguage: false,
+    name: "rowId",
+    separator: false
+  },
+
   get Langtags() {
     return languagetags || null;
   },
