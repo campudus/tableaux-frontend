@@ -55,13 +55,15 @@ const NavigationPopup = props => {
           </Link>
         </li>
 
-        {services.map(service => (
-          <MainMenuEntry
-            key={service.name}
-            langtag={langtag}
-            service={service}
-          />
-        ))}
+        {services
+          .filter(service => service.active)
+          .map(service => (
+            <MainMenuEntry
+              key={service.name}
+              langtag={langtag}
+              service={service}
+            />
+          ))}
         {!noAuthNeeded() && (
           <li className="main-navigation__entry">
             <div
