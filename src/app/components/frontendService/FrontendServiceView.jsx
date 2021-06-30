@@ -59,7 +59,9 @@ const FrontendServiceView = ({
       />
       <div className="frontend-service-main-view wrapper">
         {serviceLoaded ? (
-          <IFrame src={serviceUrl} width="100%" height="100%" />
+          service.active && (
+            <IFrame src={serviceUrl} width="100%" height="100%" />
+          )
         ) : (
           <Spinner loading={true} />
         )}
