@@ -21,7 +21,8 @@ import Table from "../table/Table.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import TableauxConstants, {
-  FilterModes
+  FilterModes,
+  RowIdColumn
 } from "../../constants/TableauxConstants";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
@@ -270,7 +271,7 @@ class TableView extends PureComponent {
           <Filter
             langtag={langtag}
             table={table}
-            columns={columns}
+            columns={[RowIdColumn, ...columns]}
             currentFilter={{
               filters: this.props.tableView.filters,
               sorting: this.props.tableView.sorting

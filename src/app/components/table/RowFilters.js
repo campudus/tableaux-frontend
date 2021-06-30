@@ -3,7 +3,8 @@ import f from "lodash/fp";
 import {
   ColumnKinds,
   FilterModes,
-  SortValues
+  SortValues,
+  RowIdColumn
 } from "../../constants/TableauxConstants";
 import { doto, either, withTryCatch } from "../../helpers/functools";
 import searchFunctions from "../../helpers/searchFunctions";
@@ -60,7 +61,7 @@ const getFilteredRows = (
   const { sortColumnId, sortValue } = filterSettings;
 
   // sort by ID
-  if (sortColumnId === 0) {
+  if (sortColumnId === RowIdColumn.id) {
     const ordered = f.orderBy(["id"], [f.toLower(sortValue)], filteredRows);
     return {
       visibleRows: f.map("rowIndex", ordered),

@@ -50,7 +50,7 @@ const MetaCellHeader = ({ displayName, column }) => {
         menuOpen={menuOpen}
         column={column}
         closeHandler={closeContextMenu}
-        isId={true}
+        isMetaColumn={true}
         rect={ctxCoords}
         alignRight={true}
       />
