@@ -28,7 +28,11 @@ const proxyDestinations = [
 
 const serveStaticFile = serveStatic(config.outDir);
 
-const proxyHandler = ServerConfigTool.configProxy(proxyDestinations);
+const proxyHandler = ServerConfigTool.configProxy(
+  proxyDestinations,
+  null,
+  config
+);
 
 // serve index.html of webapp
 const appHandler = (req, res) => {

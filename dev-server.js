@@ -52,7 +52,8 @@ bundler.serve();
 
 const proxyHandler = ServerConfigTool.configProxy(
   proxyHandlers,
-  defaultHandler
+  defaultHandler,
+  config
 );
 
 ServerConfigTool.startServer(config, [proxyHandler]);

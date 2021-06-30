@@ -99,7 +99,11 @@ const stripProxyPrefixes = prefixes => proxyReq => {
   );
 };
 
-const configProxy = (routes, defaultHandler = null) => {
+const configProxy = (
+  routes,
+  defaultHandler = null,
+  config = configDefaults
+) => {
   const proxy = createProxyServer({
     changeOrigin: true,
     xfwd: true,
@@ -123,7 +127,7 @@ const configProxy = (routes, defaultHandler = null) => {
   });
 
   return (req, res, next) => {
-    if (req.url.includes("/api")) {
+    if (req.url.includes("/api") && !config.disableAuth) {
       upgradeAuthHeaders(req);
     }
 
@@ -140,7 +144,11 @@ const app = express();
 
 const startServer = (config, handlers) => {
   console.log("GRUD server options:", config);
-  app.use(session(sessionOptions));
+
+  if (!config.disableAuth) {
+    app.use(session(sessionOptions));
+  }
+
   app.get("/config.json", (req, res) => res.json(config));
   handlers.forEach(handler => app.use(handler));
   app.listen(config.port, config.host, () => {
