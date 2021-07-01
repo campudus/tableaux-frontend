@@ -109,7 +109,7 @@ export default class VirtualTable extends PureComponent {
     window.addEventListener("mousemove", this.setBarOffset);
   };
 
-  updateColWidth = (index, dx) => {
+  updateColWidth = f.throttle(100)((index, dx) => {
     if (!this.columnStartSize) {
       this.columnStartSize = this.calcColWidth({ index });
     }
@@ -118,7 +118,7 @@ export default class VirtualTable extends PureComponent {
     maybe(this.multiGrid)
       .method("recomputeGridSize")
       .method("invalidateCellSizeAfterRender");
-  };
+  });
 
   setOpenAnnotations = cell => {
     if (f.isNil(cell) && !f.isEmpty(this.state.openAnnotations)) {
