@@ -5,7 +5,7 @@
  */
 
 import { AutoSizer } from "react-virtualized";
-import React, { PureComponent } from "react";
+import React, { PureComponent, createRef } from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
@@ -38,6 +38,7 @@ const ROW_HEIGHT = 45;
 export default class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
+    this.virtualTableRef = createRef();
     this.keyboardRecentlyUsedTimer = null;
     this.didInitialCellScroll = false;
     this.state = {
@@ -67,6 +68,10 @@ export default class VirtualTable extends PureComponent {
       this.colWidths.set(f.toNumber(idx), width)
     );
   }
+
+  focusTable = () => {
+    this.virtualTableRef.current.focus();
+  };
 
   setBarOffset = event => {
     this.divRef.style.left = event.clientX + "px";
@@ -273,7 +278,7 @@ export default class VirtualTable extends PureComponent {
         cell={cell}
         columns={columns}
         annotationState={annotationState}
-        focusTable={tableNavigationWorker.checkFocusInsideTable.call(this)}
+        focusTable={this.focusTable}
         langtag={langtag}
         annotationsOpen={
           !!openAnnotations.cellId && openAnnotations.cellId === cell.id
@@ -483,6 +488,7 @@ export default class VirtualTable extends PureComponent {
     // Switching tables will remount virtual table
     this.settingsColumnIds = doto(this.props.columns, f.take(2), f.map("id"));
     this.divRef = document.getElementById("resize-bar");
+    this.focusTable();
   }
 
   componentDidUpdate(prev) {
@@ -550,6 +556,7 @@ export default class VirtualTable extends PureComponent {
     return (
       <section
         id="virtual-table-wrapper"
+        ref={this.virtualTableRef}
         tabIndex="-1"
         onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
           tableNavigationWorker.getKeyboardShortcuts.bind(this)
