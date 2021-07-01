@@ -10,7 +10,7 @@ import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceH
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { switchLanguageHandler } from "../Router";
 import GrudHeader from "../GrudHeader";
-import Spinner from "../header/Spinner";
+import FrontendServiceNotFound from "./FrontendServiceNotFound";
 
 const FrontendServiceView = ({
   serviceId,
@@ -24,25 +24,16 @@ const FrontendServiceView = ({
   const handleLanguageSwitch = React.useCallback(newLangtag =>
     switchLanguageHandler(history, newLangtag)
   );
-  const [service, setService] = React.useState();
+  const service = f.find(f.propEq("id", serviceId), frontendServices);
 
-  // when service was unknown and services change (= init or service loading finished)
-  React.useEffect(() => {
-    if (service) return; // don't updated if service existed before
-    const serviceToSet = f.find(f.propEq("id", serviceId), frontendServices);
-    setService(serviceToSet);
-  }, [frontendServices]);
-
-  const serviceLoaded = !f.isEmpty(service);
-  const pageTitle = f.isEmpty(service)
-    ? "Frontend Service"
-    : retrieveTranslation(langtag, service.displayName);
-  const serviceUrl = serviceLoaded
-    ? expandServiceUrl(
-        { tableId, columnId, rowId, langtag },
-        service.config.url
-      )
+  const urlParams = { tableId, columnId, rowId, langtag };
+  const serviceUrl = !f.isEmpty(service)
+    ? expandServiceUrl(urlParams, service.config.url)
     : "";
+
+  const pageTitle = !f.isEmpty(service)
+    ? retrieveTranslation(langtag, service.displayName)
+    : "Frontend Service";
 
   const routeToService =
     `/${langtag}/services/${serviceId}` +
@@ -58,12 +49,10 @@ const FrontendServiceView = ({
         pageTitleOrKey={pageTitle}
       />
       <div className="frontend-service-main-view wrapper">
-        {serviceLoaded ? (
-          service.active && (
-            <IFrame src={serviceUrl} width="100%" height="100%" />
-          )
+        {!f.isEmpty(service) && service.active ? (
+          <IFrame src={serviceUrl} width="100%" height="100%" />
         ) : (
-          <Spinner loading={true} />
+          <FrontendServiceNotFound />
         )}
       </div>
       <Redirect to={routeToService} />
