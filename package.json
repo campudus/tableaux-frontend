@@ -37,7 +37,6 @@
     "@storybook/addon-info": "^3.3.13",
     "@storybook/addon-knobs": "^4.1.13",
     "@storybook/react": "^3.4.11",
-    "@synvox/rehook": "0.0.17",
     "autoprefixer": "^9.6.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^7.0.0-0",
