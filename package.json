@@ -101,7 +101,6 @@
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
     "rxjs": "^6.5.2",
-    "sass": "^1.35.1",
     "storybook": "^1.0.0",
     "superagent": "^4.0.0"
   },
