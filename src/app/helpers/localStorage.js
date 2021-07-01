@@ -47,9 +47,21 @@ const saveColumnOrdering = (tableId, ordering = [], name = "default") => {
     f.set([tableId, name, "columnOrdering"], ordering, savedViews)
   );
 };
+
+const saveColumnWidths = (tableId, widths = {}, name = "default") => {
+  if (!localStorage) {
+    return;
+  }
+  const savedViews = getStoredViewObject(null, name);
+  localStorage["tableViews"] = JSON.stringify(
+    f.set([tableId, name, "columnWidths"], widths, savedViews)
+  );
+};
+
 export {
   getStoredViewObject,
   saveFilterSettings,
   saveColumnVisibility,
-  saveColumnOrdering
+  saveColumnOrdering,
+  saveColumnWidths
 };

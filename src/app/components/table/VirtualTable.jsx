@@ -29,6 +29,7 @@ import * as tableNavigationWorker from "./tableNavigationWorker";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 import store from "../../redux/store";
 import MetaCellHeader from "../cells/MetaCellHeader";
+import { saveColumnWidths } from "../../helpers/localStorage";
 
 const META_CELL_WIDTH = 80;
 const HEADER_HEIGHT = 37;
@@ -87,15 +88,7 @@ export default class VirtualTable extends PureComponent {
         widthObj[idx] = width;
       }
     });
-
-    const views = this.getStoredView();
-    localStorage["tableViews"] = JSON.stringify(
-      f.assoc(
-        [this.props.table.id.toString(), "default", "columnWidths"],
-        widthObj,
-        views
-      )
-    );
+    saveColumnWidths(this.props.table.id.toString(), widthObj);
   };
 
   calcRowHeight = ({ index }) => {
