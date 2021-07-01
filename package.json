@@ -77,7 +77,6 @@
     "parcel-bundler": "^1.12.3",
     "parcel-plugin-static-files-copy": "^2.1.2",
     "prettier": "^1.18.2",
-    "raven-js": "^3.27.0",
     "react": "16.10.2",
     "react-codemirror": "^1.0.0",
     "react-datetime": "^2.16.3",
