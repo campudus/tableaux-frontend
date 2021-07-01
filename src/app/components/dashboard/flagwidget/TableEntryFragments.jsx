@@ -2,7 +2,6 @@ import React from "react";
 import { getMultiLangValue } from "../../../helpers/multiLanguage";
 import { compose, pure, withHandlers } from "recompose";
 import classNames from "classnames";
-import App from "ampersand-app";
 import f from "lodash/fp";
 import Header from "./HeaderFragments";
 import ElementCount from "./ElementCountFragments";
@@ -14,10 +13,6 @@ const TableEntry = compose(
   withHandlers({
     onMouseEnter: ({ handleMouseEnter, index }) => () => {
       handleMouseEnter(index);
-    },
-    handleClick: ({ table = {}, flag, langtag }) => event => {
-      event.preventDefault();
-      App.router.navigate(`/${langtag}/tables/${table.id}?filter:flag:${flag}`);
     }
   })
 )(
