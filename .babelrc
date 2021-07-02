@@ -1,19 +1,17 @@
 {
   "presets": [
-      ["@babel/preset-env",
-       {
-           "targets": [
-               "IE >= 11"
-           ]
-       }],
+    [
+      "@babel/preset-env",
+      {
+        "targets": ["IE >= 11"]
+      }
+    ],
     "@babel/preset-flow",
     "@babel/preset-react"
   ],
-    "plugins": [
-      "@babel/plugin-proposal-function-bind",
-      ["@babel/plugin-proposal-pipeline-operator", { "proposal": "fsharp" }],
-      ["@babel/plugin-proposal-decorators", { "legacy": true }],
-      ["@babel/plugin-proposal-class-properties", { "loose": true }],
-      ["@babel/plugin-proposal-private-methods", { "loose": true }]
+  "plugins": [
+    "@babel/plugin-proposal-function-bind",
+    ["@babel/plugin-proposal-pipeline-operator", { "proposal": "fsharp" }],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }]
   ]
 }
