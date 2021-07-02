@@ -33,10 +33,6 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-stage-0": "^7.0.0",
     "@sentry/browser": "^4.6.4",
-    "@storybook/addon-centered": "^3.2.15",
-    "@storybook/addon-info": "^3.3.13",
-    "@storybook/addon-knobs": "^4.1.13",
-    "@storybook/react": "^3.4.11",
     "autoprefixer": "^9.6.0",
     "codemirror": "^5.62.0",
     "compass-mixins": "^0.12.10",
@@ -95,7 +91,6 @@
     "redux": "^4.0.1",
     "regenerator-runtime": "0.13.7",
     "rxjs": "^6.5.2",
-    "storybook": "^1.0.0",
     "superagent": "^4.0.0"
   },
   "dependencies": {
