@@ -509,6 +509,7 @@ export default class VirtualTable extends PureComponent {
         newRowAdded: false
       });
     }
+    this.focusTable();
   }
 
   jumpToLastRow = () => {
