@@ -12,8 +12,8 @@ Please make sure the following is true:
 - [ ] I updated the docs / specifications if possible
 - [ ] I could explain all that code when someone wakes me up at 3am
 - [ ] I checked that the code considers failures and not just the happy path
-- [ ] There are no new dependecies
-- [ ] PR introduces no breaking changes
+- [ ] There are no new dependencies OR I listed them and explained them below
+- [ ] PR introduces no breaking changes OR I listed them and described them below
 - [ ] I added/updated tests for new/modified unit-testable functions/helpers
 - [ ] I ran the tests and they did pass
 
