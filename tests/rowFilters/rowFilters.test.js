@@ -17,7 +17,7 @@ const filterRows = filters => {
   return f.map(rowIndex => rowIndices[rowIndex], visibleRows);
 };
 // const filterRows = () => "empty"
-/*eslint-disable no-undef*/
+/*eslint-disable lodash-fp/no-unused-result*/
 describe("Filter:", () => {
   f.compose(
     f.each(arr => {

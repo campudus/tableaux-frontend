@@ -1,4 +1,7 @@
-import "babel-polyfill";
+// babel polyfill: https://babeljs.io/docs/en/babel-polyfill
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 import "../node_modules/react-select/dist/react-select.css";
 import "../node_modules/codemirror/lib/codemirror.css";
 import "react-virtualized/styles.css";
