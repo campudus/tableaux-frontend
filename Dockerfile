@@ -7,6 +7,7 @@ WORKDIR /usr/app
 
 COPY .npmrc ./
 COPY package* ./
+COPY setupTests.js ./
 
 RUN npm ci -d
 
