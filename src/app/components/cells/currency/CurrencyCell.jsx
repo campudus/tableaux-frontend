@@ -2,7 +2,6 @@ import { translate } from "react-i18next";
 import React from "react";
 import ReactDOM from "react-dom";
 import f from "lodash/fp";
-import onClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
@@ -71,6 +70,8 @@ class CurrencyCell extends React.PureComponent {
   handleClickOutside = () => {
     this.exitCurrencyCell();
   };
+
+  onClickOutside = () => {};
 
   renderPrice(currencyValues, country) {
     const currencyValue = getCurrencyWithCountry(
@@ -185,4 +186,4 @@ class CurrencyCell extends React.PureComponent {
     );
   }
 }
-export default onClickOutside(CurrencyCell);
+export default CurrencyCell;
