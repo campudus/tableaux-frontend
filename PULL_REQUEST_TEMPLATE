@@ -1,13 +1,13 @@
 # Submit a pull request
 
-Please make sure the following is true:
+## Please make sure the following is true:
 
 - [ ] I gave the PR a meaningful name
 - [ ] I checked that the correct target branch is selected
 - [ ] I rebased the branch on the target branch and it can be merged
 - [ ] I ran the linter and it did pass
 - [ ] I checked for unused code / dead code / debug code
-- [ ] I checked that variables/functions have meaninful names
+- [ ] I checked that variables/functions have meaningful names
 - [ ] I checked that the behaviour is as the documentation/task describes and I tested it
 - [ ] I updated the docs / specifications if possible
 - [ ] I could explain all that code when someone wakes me up at 3am
