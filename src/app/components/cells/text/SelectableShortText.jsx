@@ -110,9 +110,7 @@ const enhance = compose(
   withHandlers({
     selectNextCompletion: ({ modifySelection }) => () => modifySelection(1),
     selectPrevCompletion: ({ modifySelection }) => () => modifySelection(-1),
-    focusTable: () => () => {
-      document.querySelector("#table-wrapper").focus();
-    }
+    focusTable: props => () => props.focusTable()
   }),
   lifecycle({
     componentWillReceiveProps(nextProps) {

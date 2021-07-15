@@ -19,24 +19,6 @@ import TextEditOverlay from "../cells/text/TextEditOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
 import store from "../../redux/store";
 
-// Takes care that we never loose focus of the table to guarantee keyboard events are triggered
-export function checkFocusInsideTable() {
-  // Is a cell selected?
-  const {
-    selectedCell: { selectedCell }
-  } = store.getState();
-  if (!f.isEmpty(selectedCell)) {
-    const tableDOMNode = document.getElementById("virtual-table-wrapper");
-    const columnFilterNode = document.getElementById(
-      "column-filter-popup-wrapper"
-    );
-
-    if (tableDOMNode && !columnFilterNode) {
-      maybe(tableDOMNode).method("focus");
-    }
-  }
-}
-
 const tableColumnKey = (tableId, columnId) => `${tableId}-${columnId}`;
 const lookUpCellKind = memoizeWith(tableColumnKey, (tableId, columnId) =>
   doto(
