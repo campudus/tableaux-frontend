@@ -71,8 +71,6 @@ class CurrencyCell extends React.PureComponent {
     this.exitCurrencyCell();
   };
 
-  onClickOutside = () => {};
-
   renderPrice(currencyValues, country) {
     const currencyValue = getCurrencyWithCountry(
       currencyValues,
