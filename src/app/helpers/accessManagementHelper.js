@@ -74,9 +74,12 @@ export const canUserChangeCell = (cellInfo, langtag) => {
   return allowed || noAuthNeeded(); // this special case is not caught by ALLOW_ANYTHING
 };
 
-export const canUserChangeAnyCountryTypeCell = (cellInfo) => {
+export const canUserChangeAnyCountryTypeCell = cellInfo => {
   const allowed =
-    cellInfo |> getPermission(["column", "editCellValue"]) |> f.values |> f.any(f.identity);
+    cellInfo
+    |> getPermission(["column", "editCellValue"])
+    |> f.values
+    |> f.any(f.identity);
   return allowed || noAuthNeeded();
 };
 
