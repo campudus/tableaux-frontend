@@ -114,7 +114,7 @@ const LinkList = props => {
   };
 
   const ListRenderer = sortable ? (
-    <div className="sortable">
+    <div className={`sortable ${expanded && "sortable_expanded"}`}>
       <div className="linked-items">
         <LinkedRows
           entries={f.map("id", links)}
@@ -126,7 +126,7 @@ const LinkList = props => {
       </div>
     </div>
   ) : (
-    <div className="sortable">
+    <div className={`sortable ${expanded && "sortable_expanded"}`}>
       <div className="linked-items">
         <List
           width={window.innerWidth * 0.6 - 100}
