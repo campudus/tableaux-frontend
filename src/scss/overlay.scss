@@ -461,6 +461,10 @@ $dist-from-top: 20px;
     @import "./linkList.scss";
   }
 
+  .sortable_expanded {
+    overflow-y: scroll;
+  }
+
   .link-list {
     max-height: 430px;
     & > .can-expand {
