@@ -118,7 +118,7 @@ export default class VirtualTable extends PureComponent {
     const newWidth = Math.max(100, this.columnStartSize + dx);
     this.setState(f.update("columnWidths", f.assoc(index, newWidth)));
     maybe(this.multiGrid)
-      .method("recomputeGridSize")
+      .method("recomputeGridSize", { columnIndex: index })
       .method("invalidateCellSizeAfterRender");
   };
 
