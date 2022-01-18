@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import * as f from "lodash/fp";
 
 import PropTypes from "prop-types";
@@ -7,6 +7,7 @@ import { compose, lifecycle } from "recompose";
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkEditCell from "./LinkEditCell.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
+import { getVisibleLinkCount } from "./getVisibleLinkCount";
 
 const LinkCell = props => {
   const {
@@ -15,15 +16,21 @@ const LinkCell = props => {
     langtag,
     selected,
     editing,
-    foreignDisplayValues
+    foreignDisplayValues,
+    width
   } = props;
 
   const displayValue = foreignDisplayValues || props.displayValue;
+  const previewLinkCount = useMemo(
+    () => getVisibleLinkCount(f.map(f.get(langtag), displayValue), width),
+    [width]
+  );
+
   // Show a link preview for performance
   // const displayValues = getDisplayValue(column, value);
-  const tooManyLinks = f.size(value) > 3;
+  const tooManyLinks = f.size(value) > previewLinkCount;
   const links = f
-    .take(3, value)
+    .take(previewLinkCount, value)
     .map((element, index) => (
       <LinkLabelCell
         key={element.id}
