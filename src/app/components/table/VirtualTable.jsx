@@ -255,11 +255,12 @@ export default class VirtualTable extends PureComponent {
       : this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({ columnIndex, rowIndex }) => {
+  renderSingleCell = ({ columnIndex, rowIndex, style }) => {
     const { actions, langtag, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const cell = this.getCell(rowIndex, columnIndex);
     const { value } = cell;
+    const { width } = style;
 
     const annotationState = getAnnotationState(cell);
     return (
@@ -280,16 +281,18 @@ export default class VirtualTable extends PureComponent {
         toggleAnnotationPopup={this.setOpenAnnotations}
         openCellContextMenu={this.openCellContextMenu}
         closeCellContextMenu={this.props.closeCellContextMenu}
+        width={width}
       />
     );
   };
 
-  renderExpandedRowCell = ({ columnIndex, rowIndex, key }) => {
+  renderExpandedRowCell = ({ columnIndex, rowIndex, key, style }) => {
     const { actions, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
+    const { width } = style;
 
     return (
       <div className="cell-stack">
@@ -322,6 +325,7 @@ export default class VirtualTable extends PureComponent {
               toggleAnnotationPopup={this.setOpenAnnotations}
               openCellContextMenu={this.openCellContextMenu}
               closeCellContextMenu={this.props.closeCellContextMenu}
+              width={width}
             />
           );
         })}
