@@ -21,10 +21,10 @@ const LinkCell = props => {
   } = props;
 
   const displayValue = foreignDisplayValues || props.displayValue;
-  const previewLinkCount = useMemo(
-    () => getVisibleLinkCount(f.map(f.get(langtag), displayValue), width),
-    [width]
-  );
+  const previewLinkCount = useMemo(() => {
+    const currentLangDisplayValues = f.map(f.get(langtag), displayValue);
+    return getVisibleLinkCount(currentLangDisplayValues, width);
+  }, [width]);
 
   // Show a link preview for performance
   // const displayValues = getDisplayValue(column, value);
