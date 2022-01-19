@@ -41,6 +41,8 @@ const FrontendServiceView = ({
     (columnId ? `/columns/${columnId}` : "") +
     (rowId ? `/rows/${rowId}` : "");
 
+  const permissions = `clipboard-read; clipboard-write self ${serviceUrl}`;
+
   return (
     <>
       <GrudHeader
@@ -50,7 +52,12 @@ const FrontendServiceView = ({
       />
       <div className="frontend-service-main-view wrapper">
         {!f.isEmpty(service) && service.active ? (
-          <IFrame src={serviceUrl} width="100%" height="100%" />
+          <IFrame
+            src={serviceUrl}
+            width="100%"
+            height="100%"
+            allow={permissions}
+          />
         ) : (
           <FrontendServiceNotFound />
         )}
