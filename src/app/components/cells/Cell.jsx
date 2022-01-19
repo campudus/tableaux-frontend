@@ -107,6 +107,8 @@ class Cell extends React.Component {
     ]);
 
     return (
+      (this.props.cell.kind === ColumnKinds.link &&
+        this.props.width !== nextProps.width) ||
       this.props.langtag !== nextProps.langtag ||
       cell.id !== nextCell.id ||
       this.props.selected !== nextProps.selected ||
@@ -224,7 +226,8 @@ class Cell extends React.Component {
       editing,
       inSelectedRow,
       focusTable,
-      toggleAnnotationPopup
+      toggleAnnotationPopup,
+      width
     } = this.props;
     const { concat, text, richtext } = ColumnKinds;
     const { column, row, table } = cell;
@@ -284,6 +287,7 @@ class Cell extends React.Component {
               : this.setKeyboardShortcutsForChildren
           }
           cell={cell}
+          width={width}
         />
         <FlagIconRenderer
           cell={cell}
@@ -337,5 +341,6 @@ Cell.propTypes = {
   editing: PropTypes.bool,
   annotationsOpen: PropTypes.bool,
   toggleAnnotationPopup: PropTypes.func.isRequired,
-  isExpandedCell: PropTypes.bool.isRequired
+  isExpandedCell: PropTypes.bool.isRequired,
+  width: PropTypes.number.isRequired
 };

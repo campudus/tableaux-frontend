@@ -47,7 +47,8 @@ export default class VirtualTable extends PureComponent {
       scrolledCell: props.selectedCell,
       lastScrolledCell: {},
       newRowAdded: false,
-      showResizeBar: false
+      showResizeBar: false,
+      columnWidths: {}
     };
   }
 
@@ -62,12 +63,8 @@ export default class VirtualTable extends PureComponent {
       .getOrElse({});
 
   componentWillMount() {
-    f.flow(
-      f.get("columnWidths"),
-      f.toPairs
-    )(this.getStoredView()).forEach(([idx, width]) =>
-      this.colWidths.set(f.toNumber(idx), width)
-    );
+    const view = this.getStoredView();
+    this.setState({ columnWidths: view.columnWidths || {} });
   }
 
   focusTable = () => {
@@ -87,13 +84,10 @@ export default class VirtualTable extends PureComponent {
     if (!localStorage) {
       return;
     }
-    const widthObj = {};
-    this.colWidths.forEach((width, idx) => {
-      if (idx > 0 && width !== CELL_WIDTH) {
-        widthObj[idx] = width;
-      }
-    });
-    saveColumnWidths(this.props.table.id.toString(), widthObj);
+    const storageKey = this.props.table.id.toString();
+    const { columnWidths = {} } = this.state;
+
+    saveColumnWidths(storageKey, columnWidths);
   };
 
   calcRowHeight = ({ index }) => {
@@ -107,7 +101,10 @@ export default class VirtualTable extends PureComponent {
       : ROW_HEIGHT;
   };
 
-  calcColWidth = ({ index }) => this.colWidths.get(index) || CELL_WIDTH;
+  calcColWidth = ({ index }) => {
+    const widths = this.state.columnWidths || {};
+    return widths[index] || CELL_WIDTH;
+  };
 
   moveResizeBar = () => {
     this.setState({ showResizeBar: true });
@@ -119,9 +116,9 @@ export default class VirtualTable extends PureComponent {
       this.columnStartSize = this.calcColWidth({ index });
     }
     const newWidth = Math.max(100, this.columnStartSize + dx);
-    this.colWidths.set(index, newWidth);
+    this.setState(f.update("columnWidths", f.assoc(index, newWidth)));
     maybe(this.multiGrid)
-      .method("recomputeGridSize")
+      .method("recomputeGridSize", { columnIndex: index })
       .method("invalidateCellSizeAfterRender");
   };
 
@@ -255,11 +252,12 @@ export default class VirtualTable extends PureComponent {
       : this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({ columnIndex, rowIndex }) => {
+  renderSingleCell = ({ columnIndex, rowIndex, style }) => {
     const { actions, langtag, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const cell = this.getCell(rowIndex, columnIndex);
     const { value } = cell;
+    const { width } = style;
 
     const annotationState = getAnnotationState(cell);
     return (
@@ -280,16 +278,18 @@ export default class VirtualTable extends PureComponent {
         toggleAnnotationPopup={this.setOpenAnnotations}
         openCellContextMenu={this.openCellContextMenu}
         closeCellContextMenu={this.props.closeCellContextMenu}
+        width={width}
       />
     );
   };
 
-  renderExpandedRowCell = ({ columnIndex, rowIndex, key }) => {
+  renderExpandedRowCell = ({ columnIndex, rowIndex, key, style }) => {
     const { actions, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
     const annotationsState = getAnnotationState(cell);
+    const { width } = style;
 
     return (
       <div className="cell-stack">
@@ -322,6 +322,7 @@ export default class VirtualTable extends PureComponent {
               toggleAnnotationPopup={this.setOpenAnnotations}
               openCellContextMenu={this.openCellContextMenu}
               closeCellContextMenu={this.props.closeCellContextMenu}
+              width={width}
             />
           );
         })}
