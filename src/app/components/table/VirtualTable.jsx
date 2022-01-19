@@ -103,7 +103,7 @@ export default class VirtualTable extends PureComponent {
 
   calcColWidth = ({ index }) => {
     const widths = this.state.columnWidths || {};
-    return widths[index] || CELL_WIDTH;
+    return index === 0 ? META_CELL_WIDTH : widths[index] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
