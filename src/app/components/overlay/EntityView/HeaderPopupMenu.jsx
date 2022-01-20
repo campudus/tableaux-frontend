@@ -1,18 +1,15 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import i18n from "i18next";
 import classNames from "classnames";
+import i18n from "i18next";
 import * as f from "lodash/fp";
-import { openShowDependency } from "../ConfirmDependentOverlay";
-import {
-  initiateDeleteRow,
-  initiateDuplicateRow
-} from "../../../helpers/rowHelper";
-import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
 import listenToClickOutside from "react-onclickoutside";
-import SvgIcon from "../../helperComponents/SvgIcon";
+import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
 import { openInNewTab } from "../../../helpers/apiUrl";
 import { addCellId } from "../../../helpers/getCellId";
+import { initiateDeleteRow } from "../../../helpers/rowHelper";
+import SvgIcon from "../../helperComponents/SvgIcon";
+import { openShowDependency } from "../ConfirmDependentOverlay";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
@@ -194,7 +191,7 @@ class HeaderPopupMenu extends Component {
                     icon: "repeat"
                   })
                 : null}
-              {this.mkEntry(4, {
+              {/*this.mkEntry(4, {
                 title: "table:duplicate_row",
                 fn: () =>
                   initiateDuplicateRow({
@@ -204,7 +201,7 @@ class HeaderPopupMenu extends Component {
                     rowId: row.id
                   }),
                 icon: "clone"
-              })}
+              })*/}
               {this.mkEntry(5, {
                 title: row.final
                   ? "table:final.set_not_final"
