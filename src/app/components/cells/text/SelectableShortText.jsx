@@ -81,11 +81,11 @@ const SelectableShortText = props => {
     setCompletions(completionValue);
     setIsCompletionSelected(false);
     handleSaveEdits(completionValue);
+    exitEditMode();
   };
   const handleMouseSelection = idx => {
     const idxToSet = shouldInvertList ? f.size(completions) - 1 - idx : idx;
     handleSetSelectedIdx(idxToSet);
-    exitEditMode();
   };
   const handleKeyPress = event => {
     switch (event.key) {
@@ -106,11 +106,11 @@ const SelectableShortText = props => {
       case "Enter":
         event.stopPropagation();
         if (isCompletionSelected) {
-          applySelectedCompletion();
+          applySelectedCompletion(); // implicitly exits edit mode
         } else {
           handleSaveEdits(curValue);
+          exitEditMode();
         }
-        exitEditMode();
         return focusTable();
       default:
         return;
