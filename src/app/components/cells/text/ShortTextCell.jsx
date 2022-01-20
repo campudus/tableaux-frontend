@@ -5,6 +5,7 @@ import SelectableShortText from "./SelectableShortText";
 
 const ShortTextCell = props => {
   const {
+    actions,
     handleEditDone,
     column,
     table,
@@ -29,6 +30,7 @@ const ShortTextCell = props => {
       column={column}
       onBlur={handleEditDone}
       setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+      actions={actions}
     />
   ) : (
     <div className="cell-content">{displayValue[langtag] || ""}</div>

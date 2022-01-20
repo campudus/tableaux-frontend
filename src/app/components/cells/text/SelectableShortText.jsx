@@ -1,13 +1,7 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React from "react";
-import {
-  compose,
-  lifecycle,
-  withHandlers,
-  withProps,
-  withStateHandlers
-} from "recompose";
+import React, { useEffect, useState } from "react";
+import { compose, withProps } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { maybe, stopPropagation } from "../../../helpers/functools";
 import SearchFunctions from "../../../helpers/searchFunctions";
@@ -26,163 +20,131 @@ const extractAndFilterCompletions = (searchValue, list) =>
 
 const getCompletionValueUrl = withProps(({ column, table, langtag }) => {
   const colId = column.id;
+  const langPostfix = column.multilanguage ? `/${langtag}` : "";
   const requestUrl =
-    `/api/tables/${table.id}/columns/${colId}/values` +
-    (column.multilanguage ? `/${langtag}` : "");
+    `/api/tables/${table.id}/columns/${colId}/values` + langPostfix;
   return { requestUrl };
 });
 
 const enhance = compose(
   getCompletionValueUrl,
-  needsAPIData,
-  withStateHandlers(
-    ({ value, column, langtag }) => ({
-      curValue: column.multilanguage ? f.getOr("", langtag, value) : value,
-      completions: [],
-      selected: 0,
-      completionSelected: false,
-      invertList: false
-    }),
-    {
-      handleChange: ({ selected }, { requestedData }) => ({
-        target: { value }
-      }) => {
-        const completions = extractAndFilterCompletions(value, requestedData);
-        return {
-          curValue: value,
-          completions,
-          selected: f.clamp(0, f.size(completions) - 1, selected)
-        };
-      },
-      setInitialCompletionList: () => requestedData => ({
-        completions: extractAndFilterCompletions("", requestedData)
-      }),
-      saveEdits: ({ curValue }, { onBlur }) => () => {
-        onBlur(curValue);
-      },
-      setCaret: ({ curValue }) => inputNode => {
-        const l = f.size(curValue);
-        maybe(inputNode).method("setSelectionRange", l, l);
-      },
-      modifySelection: ({ selected, completions, invertList }) => dir => {
-        const inversion = invertList ? -1 : 1;
-        const len = f.size(completions);
-        const selection = (selected + len + dir * inversion) % len;
-        return {
-          selected: selection,
-          completionSelected: true
-        };
-      },
-      setSelectedCompletion: ({ completions }) => index => ({
-        selected: (index + f.size(completions)) % f.size(completions),
-        completionSelected: true
-      }),
-      applySelectedCompletion: (
-        { selected, completions, curValue },
-        { onBlur }
-      ) => event => {
-        maybe(event).method("stopPropagation");
-        maybe(event).method("preventDefault");
-        onBlur(curValue);
-        return {
-          curValue: f.get(selected, completions),
-          completionSelected: false
-        };
-      },
-      placeCompletionList: () => node => {
-        if (f.isNil(node)) {
-          return;
-        }
-
-        const rect = node.getBoundingClientRect();
-        const h = window.innerHeight;
-        const invertList = rect.bottom + LIST_HEIGHT >= h;
-        const listStyle = invertList ? { bottom: 35 } : { top: 35 };
-
-        return { listStyle, invertList };
-      },
-      selectCompletionUnderMouse: ({ invertList, completions }) => index => {
-        const selected = invertList ? f.size(completions) - 1 - index : index;
-        return { selected };
-      }
-    }
-  ),
-  withHandlers({
-    selectNextCompletion: ({ modifySelection }) => () => modifySelection(1),
-    selectPrevCompletion: ({ modifySelection }) => () => modifySelection(-1),
-    focusTable: props => () => props.focusTable()
-  }),
-  lifecycle({
-    componentWillReceiveProps(nextProps) {
-      if (
-        f.isNil(this.props.requestedData) &&
-        !f.isNil(nextProps.requestedData)
-      ) {
-        this.props.setInitialCompletionList(nextProps.requestedData);
-      }
-    },
-    componentDidMount() {
-      this.props.setCellKeyboardShortcuts({
-        left: event => {
-          event.stopPropagation();
-        },
-        right: event => {
-          event.stopPropagation();
-        },
-        down: event => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.props.selectNextCompletion();
-        },
-        up: event => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.props.selectPrevCompletion();
-        },
-        enter: () => {
-          if (this.props.completionSelected) {
-            this.props.applySelectedCompletion();
-            this.props.focusTable();
-          } else {
-            this.props.saveEdits();
-            // ActionCreator.addRowOrSelectNextCell();
-            this.props.focusTable();
-          }
-        }
-      });
-    },
-    componentWillUnmount() {
-      const { curValue, onBlur, setCellKeyboardShortcuts } = this.props;
-      onBlur(curValue);
-      setCellKeyboardShortcuts({});
-    }
-  })
+  needsAPIData
 );
 
-const SelectableShortText = ({
-  handleKeyboard,
-  setCaret,
-  handleChange,
-  curValue,
-  completions,
-  selected,
-  selectCompletionUnderMouse,
-  applySelectedCompletion,
-  requestedData,
-  placeCompletionList,
-  listStyle,
-  invertList
-}) => {
+const SelectableShortText = props => {
+  const {
+    actions,
+    focusTable,
+    onBlur,
+    requestedData,
+    setCellKeyboardShortcuts,
+    value
+  } = props;
+
+  const [completions, setCompletions] = useState([]);
+  const [isCompletionSelected, setIsCompletionSelected] = useState(false);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [shouldInvertList, setShouldInvertList] = useState(false);
+  const [curValue, setCurValue] = useState(value);
+
+  useEffect(() => setCellKeyboardShortcuts({}));
+
+  const exitEditMode = () => {
+    actions.toggleCellEditing({ editing: false });
+    focusTable();
+  };
+  const handleTextChange = event => {
+    const value = event.currentTarget.value;
+    const completionsForValue = extractAndFilterCompletions(
+      value,
+      requestedData
+    );
+    setCurValue(value);
+    setCompletions(completionsForValue);
+    setSelectedIdx(f.clamp(0, f.size(completions) - 1, selectedIdx)); // clamp selection inside new list
+    setIsCompletionSelected(false);
+  };
+  const handleSaveEdits = value => onBlur(value);
+  const handleSetSelectedIdx = idx => {
+    const l = f.size(completions);
+    const boundedIdx = (idx + l) % l;
+    setSelectedIdx(boundedIdx);
+    setIsCompletionSelected(true);
+  };
+  const updateSelectionIdx = dir => {
+    const inv = shouldInvertList ? -1 : 1;
+    const idx = selectedIdx + dir * inv;
+    handleSetSelectedIdx(idx);
+  };
+  const applySelectedCompletion = () => {
+    const completionValue = f.get(selectedIdx, completions);
+    setCompletions(completionValue);
+    setIsCompletionSelected(false);
+    handleSaveEdits(completionValue);
+    exitEditMode();
+  };
+  const handleMouseSelection = idx => {
+    const idxToSet = shouldInvertList ? f.size(completions) - 1 - idx : idx;
+    handleSetSelectedIdx(idxToSet);
+  };
+  const handleKeyPress = event => {
+    switch (event.key) {
+      case "ArrowLeft":
+      case "ArrowRight":
+        return event.stopPropagation();
+      case "ArrowUp":
+        event.preventDefault();
+        event.stopPropagation();
+        return updateSelectionIdx(-1);
+      case "ArrowDown":
+        event.preventDefault();
+        event.stopPropagation();
+        return updateSelectionIdx(+1);
+      case "Escape":
+        exitEditMode();
+        return focusTable();
+      case "Enter":
+        event.stopPropagation();
+        if (isCompletionSelected) {
+          applySelectedCompletion(); // implicitly exits edit mode
+        } else {
+          handleSaveEdits(curValue);
+          exitEditMode();
+        }
+        return focusTable();
+      default:
+        return;
+    }
+  };
+
+  const placeCaret = inputNode => {
+    const l = f.size(curValue);
+    maybe(inputNode).method("setSelectionRange", l, l);
+  };
+  const placeCompletionList = listContainerNode => {
+    if (f.isNil(listContainerNode)) return;
+    const rect = listContainerNode.getBoundingClientRect();
+    const h = window.innerHeight;
+    setShouldInvertList(rect.bottom + LIST_HEIGHT >= h);
+  };
+
+  useEffect(() => {
+    requestedData &&
+      setCompletions(extractAndFilterCompletions("", requestedData));
+  }, [requestedData]);
+
+  const listStyle = shouldInvertList ? { bottom: 35 } : { top: 35 };
+
   return (
     <div
       className="cell-content editing"
-      onKeyDown={handleKeyboard}
+      onKeyDown={handleKeyPress}
       ref={placeCompletionList}
     >
       <input
-        ref={setCaret}
+        ref={placeCaret}
         value={curValue}
-        onChange={handleChange}
+        onChange={handleTextChange}
         onMouseDown={stopPropagation}
         onClick={stopPropagation}
         autoFocus
@@ -200,12 +162,16 @@ const SelectableShortText = ({
           }}
         >
           <SelectableCompletionList
-            completions={invertList ? f.reverse(completions) : completions}
+            completions={
+              shouldInvertList ? f.reverse(completions) : completions
+            }
             selected={
-              invertList ? f.size(completions) - selected - 1 : selected
+              shouldInvertList
+                ? f.size(completions) - selectedIdx - 1
+                : selectedIdx
             }
             requestedData={requestedData}
-            handleSelection={selectCompletionUnderMouse}
+            handleSelection={handleMouseSelection}
             handleClick={applySelectedCompletion}
           />
         </div>
@@ -222,4 +188,3 @@ SelectableShortText.propTypes = {
 };
 
 export default enhance(SelectableShortText);
-// export default SelectableShortText;

@@ -127,7 +127,7 @@
   "new-comment": "Neuer Kommentar",
   "add-comment": "Kommentar hinzufügen",
   "show-comments": "Kommentare anzeigen",
-  "cell-comments": "Zellenkomentare",
+  "cell-comments": "Zellenkommentare",
   "cardinality-reached": "Ein Datensatz darf zu dieser Tabelle höchstens {{maxLink}} Verknüpfungen haben.",
   "important": "Wichtig",
   "check-me": "Bitte überprüfen",
