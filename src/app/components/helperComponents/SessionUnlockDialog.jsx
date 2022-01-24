@@ -2,6 +2,8 @@ import React from "react";
 import { unlockRow, isLocked } from "../../helpers/annotationHelper";
 import * as f from "lodash/fp";
 import i18n from "i18next";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
+import TableauxConstants from "../../constants/TableauxConstants";
 
 const TOAST_TIME = 3000;
 
@@ -22,18 +24,29 @@ class Candidates {
   }
 }
 
-const askForSessionUnlock = (el, key) => {
-  if (!isLocked(el)) {
+const canChangeAnyLangtag = cell => {
+  const canBeEdited = f.partial(canUserChangeCell, cell);
+  return f.any(canBeEdited, TableauxConstants.Langtags);
+};
+
+const hasSomeEditableCell = row =>
+  f.any(canChangeAnyLangtag, f.getOr([], "cells", row));
+
+const canBeUnlocked = f.allPass([isLocked, hasSomeEditableCell]);
+
+export const askForSessionUnlock = (row, key) => {
+  if (!canBeUnlocked(row)) {
     return {};
   }
-  const { id } = el;
+
+  const { id } = row;
   // Otherwise typing into locked cells would automatically unlock
   // rows
   const keyCanUnlock = key && key === "Enter";
 
   if (Candidates.has(id) && (!key || keyCanUnlock)) {
     Candidates.remove(id);
-    unlockRow(el);
+    unlockRow(row);
     return null;
   } else {
     if (!key || (key && keyCanUnlock)) {
