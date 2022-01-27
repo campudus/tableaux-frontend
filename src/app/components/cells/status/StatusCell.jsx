@@ -3,7 +3,7 @@ import StatusIcon from "./StatusIcon";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import f from "lodash/fp";
 
-const StatusCell = (props) => {
+const StatusCell = props => {
   const {
     cell: { column, value },
     langtag,
@@ -12,12 +12,17 @@ const StatusCell = (props) => {
   } = props;
 
   const filterStatus = columnId => value => {
-    appendFilters({ value, columnId, mode: FilterModes.CONTAINS, columnKind:"text" });
+    appendFilters({
+      value,
+      columnId,
+      mode: FilterModes.CONTAINS,
+      columnKind: "text"
+    });
   };
 
   const renderSymbols = () => {
     const valuesToRender = f.compose(
-      f.map((val) => (
+      f.map(val => (
         <StatusIcon
           icon={val.icon}
           color={val.color}

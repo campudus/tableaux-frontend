@@ -6,7 +6,15 @@ const FontIcon = ({ fontIconKey, style }) => (
 );
 
 const StatusIcon = props => {
-  const { icon, color, blockMode = false, langtag, displayName, clickHandler, invertTooltip } = props;
+  const {
+    icon,
+    color,
+    blockMode = false,
+    langtag,
+    displayName,
+    clickHandler,
+    invertTooltip
+  } = props;
   const { value } = icon;
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const additionalClasses = blockMode ? "status-icon__block " : "";
@@ -18,7 +26,9 @@ const StatusIcon = props => {
       onMouseLeave={() => setTooltipVisible(false)}
       onClick={() => !blockMode && clickHandler(nameToDisplay)}
     >
-      {!blockMode && tooltipVisible && <StatusIconTooltip translations={displayName} invert={invertTooltip}/>}
+      {!blockMode && tooltipVisible && (
+        <StatusIconTooltip translations={displayName} invert={invertTooltip} />
+      )}
       <FontIcon style={{ color }} fontIconKey={value} />
       {blockMode && <div>{nameToDisplay}</div>}
     </div>

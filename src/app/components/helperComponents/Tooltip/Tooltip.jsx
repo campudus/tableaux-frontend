@@ -1,10 +1,8 @@
 import React from "react";
 import i18n from "i18next";
 
-import PropTypes from "prop-types";
-
 const StatusIconTooltip = ({ translations, langtag, invert }) => {
-  const text = translations[langtag] || translations["de"]
+  const text = translations[langtag] || translations["de"];
   return (
     <div className={`tooltip${invert ? "__invert" : ""}`}>
       <div className="tooltip__content">

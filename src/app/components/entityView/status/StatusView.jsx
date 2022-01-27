@@ -2,14 +2,14 @@ import React from "react";
 import StatusIcon from "../../cells/status/StatusIcon";
 import f from "lodash/fp";
 
-const StatusView = (props) => {
+const StatusView = props => {
   const {
     cell: { value, column },
     langtag
   } = props;
 
   const valuesToRender = f.compose(
-    f.map((val) => (
+    f.map(val => (
       <StatusIcon
         icon={val.icon}
         tooltip={val.tooltip}

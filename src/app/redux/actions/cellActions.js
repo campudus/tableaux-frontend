@@ -9,16 +9,24 @@ import {
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
 } from "../../helpers/accessManagementHelper";
-import { removeTranslationNeeded, addTranslationNeeded } from "../../helpers/annotationHelper";
+import {
+  removeTranslationNeeded,
+  addTranslationNeeded
+} from "../../helpers/annotationHelper";
 import ActionTypes from "../actionTypes";
 import openTranslationDialog from "../../components/overlay/TranslationDialog";
 import route from "../../helpers/apiRoutes";
 
 import store from "../store";
 
-const { SET_STATE, CELL_ROLLBACK_VALUE, CELL_SAVED_SUCCESSFULLY, CELL_SET_VALUE } = ActionTypes;
+const {
+  SET_STATE,
+  CELL_ROLLBACK_VALUE,
+  CELL_SAVED_SUCCESSFULLY,
+  CELL_SET_VALUE
+} = ActionTypes;
 
-export const changeCellValue = (action) => (dispatch, getState) => {
+export const changeCellValue = action => (dispatch, getState) => {
   // We either get ids directly, or we extract them from a "cell"
   const rowId = (action.cell && action.cell.row.id) || action.rowId;
   const columnId = (action.cell && action.cell.column.id) || action.columnId;
@@ -28,7 +36,8 @@ export const changeCellValue = (action) => (dispatch, getState) => {
     f.prop(["columns", tableId, "data"]),
     f.find(f.propEq("id", columnId))
   );
-  const column = action.column || (action.cell && action.cell.column) || getColumn();
+  const column =
+    action.column || (action.cell && action.cell.column) || getColumn();
 
   // Merge allowed changes into old cell value, so we can use the
   // delta to calculate a new display value immediately without
@@ -39,7 +48,12 @@ export const changeCellValue = (action) => (dispatch, getState) => {
       : reduceValuesToAllowedLanguages;
   const newValue =
     column.multilanguage && !column.kind === ColumnKinds.link
-      ? f.toArray(merge(action.oldValue, reduceValue({ column, tableId }, action.newValue)))
+      ? f.toArray(
+          merge(
+            action.oldValue,
+            reduceValue({ column, tableId }, action.newValue)
+          )
+        )
       : action.newValue;
 
   dispatch(
@@ -59,11 +73,12 @@ export const changeCellValue = (action) => (dispatch, getState) => {
   );
 };
 
-const dispatchCellValueChange = (action) => (dispatch, getState) => {
+const dispatchCellValueChange = action => (dispatch, getState) => {
   const { tableId, columnId, rowId, oldValue, newValue, column, cell } = action;
 
   // The additional checks help normalising bad link columns' values
-  const isMultiLanguage = column.multilanguage && (f.isPlainObject(newValue) || f.isNil(newValue));
+  const isMultiLanguage =
+    column.multilanguage && (f.isPlainObject(newValue) || f.isNil(newValue));
 
   const update = calculateCellUpdate(action);
   if (f.isNil(update)) {
@@ -71,12 +86,14 @@ const dispatchCellValueChange = (action) => (dispatch, getState) => {
   }
   const changedKeys = isMultiLanguage
     ? f.compose(
-        f.filter((k) => !f.equals(oldValue[k], update.value.value[k])),
+        f.filter(k => !f.equals(oldValue[k], update.value.value[k])),
         f.union
       )(f.keys(newValue), f.keys(oldValue))
     : [];
 
-  const needsUpdate = isMultiLanguage ? !f.isEmpty(changedKeys) : !f.isEqual(oldValue, newValue);
+  const needsUpdate = isMultiLanguage
+    ? !f.isEmpty(changedKeys)
+    : !f.isEqual(oldValue, newValue);
 
   const mainLang = f.head(Langtags);
   const onlyMainLangChanged = f.equals(changedKeys, [mainLang]);
@@ -86,12 +103,17 @@ const dispatchCellValueChange = (action) => (dispatch, getState) => {
     f.omit([f.head(Langtags)])
   )(oldValue);
 
-  const mainLangChecks = isMultiLanguage && newValue[mainLang] && onlyMainLangChanged;
+  const mainLangChecks =
+    isMultiLanguage && newValue[mainLang] && onlyMainLangChanged;
 
   // ask if cell should be marked with translation_needed, when
   // there's a change in the main language
   if (mainLangChecks && hasTranslations) {
-    openTranslationDialog(null, () => addTranslationNeeded(f.tail(Langtags), cell), () => null);
+    openTranslationDialog(
+      null,
+      () => addTranslationNeeded(f.tail(Langtags), cell),
+      () => null
+    );
   }
 
   // automatically add translation_needed if cell is new
@@ -106,12 +128,12 @@ const dispatchCellValueChange = (action) => (dispatch, getState) => {
   )(getState());
 
   const annotation = f.compose(
-    (colIdx) => f.get([colIdx], annotations),
+    colIdx => f.get([colIdx], annotations),
     f.findIndex(f.propEq("id", columnId)),
     f.get(["columns", tableId, "data"])
   )(getState());
 
-  const maybeClearFreshTranslations = (res) => {
+  const maybeClearFreshTranslations = res => {
     if (!f.isEmpty(changedKeys) && !onlyMainLangChanged && annotation) {
       removeTranslationNeeded(changedKeys, cell);
     }
@@ -128,34 +150,51 @@ const dispatchCellValueChange = (action) => (dispatch, getState) => {
     } else {
       dispatch({
         promise: makeRequest({
-          apiRoute: route.toCell({ tableId, rowId, columnId }) + (update.pathPostfix || ""),
+          apiRoute:
+            route.toCell({ tableId, rowId, columnId }) +
+            (update.pathPostfix || ""),
           method: update.method,
-          data: when(() => isMultiLanguage, f.update("value", f.pick(changedKeys)), update.value)
+          data: when(
+            () => isMultiLanguage,
+            f.update("value", f.pick(changedKeys)),
+            update.value
+          )
         }).then(maybeClearFreshTranslations),
         onSuccess: resolve,
         onError: reject,
-        actionTypes: [CELL_SET_VALUE, CELL_SAVED_SUCCESSFULLY, CELL_ROLLBACK_VALUE],
+        actionTypes: [
+          CELL_SET_VALUE,
+          CELL_SAVED_SUCCESSFULLY,
+          CELL_ROLLBACK_VALUE
+        ],
         ...f.dissoc("type", action)
       });
     }
   })
-    .then(() => maybeUpdateStatusColumnValue(tableId, columnId, rowId)(dispatch, store))
+    .then(() =>
+      maybeUpdateStatusColumnValue(tableId, columnId, rowId)(dispatch, store)
+    )
     .then(() => refreshDependentRows(tableId, [rowId], store.getState()))
-    .then((state) => dispatch({ type: SET_STATE, state }));
+    .then(state => dispatch({ type: SET_STATE, state }));
 };
 
-const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (dispatch, store) => {
+const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
+  dispatch,
+  store
+) => {
   const state = store.getState();
-  const calcDependentColumnIds = (conditions) => {
+  const calcDependentColumnIds = conditions => {
     return f.compose(
       f.flatten,
-      f.map((condition) => {
-        return f.has("column", condition) ? condition.column : calcDependentColumnIds(condition);
+      f.map(condition => {
+        return f.has("column", condition)
+          ? condition.column
+          : calcDependentColumnIds(condition);
       })
     )(conditions.values);
   };
   const statusColumns = f.filter(
-    (column) => column.kind === ColumnKinds.status,
+    column => column.kind === ColumnKinds.status,
     state.columns[tableId].data
   );
   if (f.isEmpty(statusColumns)) {
@@ -166,7 +205,7 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (dispatch, st
       if (f.contains(columnId, dependentColumnIds)) {
         makeRequest({
           apiRoute: route.toCell({ tableId, rowId, columnId: column.id })
-        }).then((res) =>
+        }).then(res =>
           dispatch({
             type: CELL_SET_VALUE,
             tableId,
@@ -178,26 +217,31 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (dispatch, st
         );
       }
     }),
-    f.zipWith((column, dependentColumnIds) => ({ column, dependentColumnIds }), statusColumns),
+    f.zipWith(
+      (column, dependentColumnIds) => ({ column, dependentColumnIds }),
+      statusColumns
+    ),
     f.map(
       f.compose(
         f.uniq,
         f.flatten
       )
     ),
-    f.map((column) => f.map((rule) => calcDependentColumnIds(rule.conditions), column.rules))
+    f.map(column =>
+      f.map(rule => calcDependentColumnIds(rule.conditions), column.rules)
+    )
   )(statusColumns);
 };
 
-export const calculateCellUpdate = (action) => {
-  const cellIs = (kind) => f.propEq(["column", "kind"], kind);
+export const calculateCellUpdate = action => {
+  const cellIs = kind => f.propEq(["column", "kind"], kind);
   return f.cond([
     [cellIs(ColumnKinds.link), calculateLinkCellUpdate],
     [f.stubTrue, calculateDefaultCellUpdate]
   ])(action);
 };
 
-const calculateDefaultCellUpdate = (context) => {
+const calculateDefaultCellUpdate = context => {
   const { column, oldValue, newValue, method } = context;
   const reduceLangs = f.flow(
     reduceValuesToAllowedLanguages(context),
@@ -224,13 +268,13 @@ const calculateDefaultCellUpdate = (context) => {
 const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
   const oldIds = f.map("id", oldValue);
   const newIds = f.map("id", newValue);
-  const isReordering = (linkList) =>
+  const isReordering = linkList =>
     linkList.length === oldIds.length &&
     linkList.length > 1 &&
     f.intersection(oldIds, linkList).length === linkList.length;
-  const isMultiSet = (linkList) => f.xor(linkList, oldIds).length > 1;
+  const isMultiSet = linkList => f.xor(linkList, oldIds).length > 1;
   //Backend fails sometimes on a patch with the first link
-  const isFirstLink = (linkList) => f.isEmpty(oldIds) && linkList.length === 1;
+  const isFirstLink = linkList => f.isEmpty(oldIds) && linkList.length === 1;
 
   const action = f.cond([
     [f.equals(oldIds), f.noop],
@@ -243,14 +287,14 @@ const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
   return action;
 };
 
-const resetLinkValue = (newIds) => {
+const resetLinkValue = newIds => {
   return {
     value: { value: newIds },
     method: "PUT"
   };
 };
 
-const reorderLinks = (oldIds) => (newIds) => {
+const reorderLinks = oldIds => newIds => {
   const [swapee, successor, location] = f.props(
     ["id", "successorId", "location"],
     createLinkOrderRequest({ original: oldIds, changed: newIds })
@@ -262,7 +306,7 @@ const reorderLinks = (oldIds) => (newIds) => {
   };
 };
 
-const toggleLink = (oldIds) => (newIds) => {
+const toggleLink = oldIds => newIds => {
   const toggler = f.xor(oldIds, newIds)[0];
   return f.contains(toggler, oldIds)
     ? {
@@ -276,14 +320,21 @@ const toggleLink = (oldIds) => (newIds) => {
       };
 };
 
-export const modifyHistory = (modifyAction, tableId, rowId) => (dispatch, getState) => {
+export const modifyHistory = (modifyAction, tableId, rowId) => (
+  dispatch,
+  getState
+) => {
   const rowSpecific = !f.isNil(rowId);
   const findFn = rowSpecific
     ? f.overEvery([f.propEq("tableId", tableId), f.propEq("rowId", rowId)])
     : f.propEq("tableId", tableId);
   const historyAction = f.compose(
     f.findLast(findFn),
-    f.get(["tableView", "history", modifyAction === "undo" ? "undoQueue" : "redoQueue"])
+    f.get([
+      "tableView",
+      "history",
+      modifyAction === "undo" ? "undoQueue" : "redoQueue"
+    ])
   )(getState());
 
   if (!historyAction) {

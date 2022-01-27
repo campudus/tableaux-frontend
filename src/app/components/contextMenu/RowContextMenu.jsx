@@ -128,7 +128,8 @@ class RowContextMenu extends React.Component {
 
   copyItem = () => {
     const { actions, cell, table, langtag } = this.props;
-    return table.type !== "settings" && !f.contains(cell.kind, [ColumnKinds.concat, ColumnKinds.status])
+    return table.type !== "settings" &&
+      !f.contains(cell.kind, [ColumnKinds.concat, ColumnKinds.status])
       ? this.mkItem(
           () => actions.copyCellValue({ cell, langtag }),
           "copy_cell",

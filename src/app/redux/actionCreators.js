@@ -566,13 +566,15 @@ const deleteMediaFile = fileId => {
 
 const appendFilters = filter => (dispatch, getState) => {
   const state = getState();
-  const {tableView: {filters, sorting}} = state;
+  const {
+    tableView: { filters, sorting }
+  } = state;
   dispatch({
     type: SET_FILTERS_AND_SORTING,
     filters: f.concat(filters, filter),
     sorting
   });
-}
+};
 
 const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   dispatch,
