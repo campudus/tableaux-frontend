@@ -10,7 +10,6 @@ const StatusCell = (props) => {
     actions: { appendFilters },
     rowIndex
   } = props;
-  console.log(rowIndex);
 
   const filterStatus = columnId => value => {
     appendFilters({ value, columnId, mode: FilterModes.CONTAINS, columnKind:"text" });
