@@ -24,6 +24,7 @@ const StatusCell = props => {
     const valuesToRender = f.compose(
       f.map(val => (
         <StatusIcon
+          key={"StatusIcon " + val.name}
           icon={val.icon}
           color={val.color}
           displayName={val.displayName}

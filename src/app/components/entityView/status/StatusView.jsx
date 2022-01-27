@@ -11,6 +11,7 @@ const StatusView = props => {
   const valuesToRender = f.compose(
     f.map(val => (
       <StatusIcon
+        key={"StatusIcon " + val.name}
         icon={val.icon}
         tooltip={val.tooltip}
         color={val.color}

@@ -184,14 +184,11 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
 ) => {
   const state = store.getState();
   const calcDependentColumnIds = conditions => {
-    return f.compose(
-      f.flatten,
-      f.map(condition => {
-        return f.has("column", condition)
-          ? condition.column
-          : calcDependentColumnIds(condition);
-      })
-    )(conditions.values);
+    return f.flatMap(condition => {
+      return f.has("column", condition)
+        ? condition.column
+        : calcDependentColumnIds(condition);
+    }, conditions.values);
   };
   const statusColumns = f.filter(
     column => column.kind === ColumnKinds.status,
@@ -200,7 +197,7 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
   if (f.isEmpty(statusColumns)) {
     return;
   }
-  f.compose(
+  return f.compose(
     f.forEach(({ column, dependentColumnIds }) => {
       if (f.contains(columnId, dependentColumnIds)) {
         makeRequest({
