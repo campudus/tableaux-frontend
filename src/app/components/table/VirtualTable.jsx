@@ -279,6 +279,7 @@ export default class VirtualTable extends PureComponent {
         openCellContextMenu={this.openCellContextMenu}
         closeCellContextMenu={this.props.closeCellContextMenu}
         width={width}
+        rowIndex={rowIndex}
       />
     );
   };

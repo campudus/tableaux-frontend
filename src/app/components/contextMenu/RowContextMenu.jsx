@@ -42,7 +42,8 @@ const translationNeverNeeded = cell =>
     ColumnKinds.currency,
     ColumnKinds.link,
     ColumnKinds.attachment,
-    ColumnKinds.concat
+    ColumnKinds.concat,
+    ColumnKinds.status
   ]);
 
 class RowContextMenu extends React.Component {
@@ -127,7 +128,7 @@ class RowContextMenu extends React.Component {
 
   copyItem = () => {
     const { actions, cell, table, langtag } = this.props;
-    return table.type !== "settings" && cell.kind !== ColumnKinds.concat
+    return table.type !== "settings" && !f.contains(cell.kind, [ColumnKinds.concat, ColumnKinds.status])
       ? this.mkItem(
           () => actions.copyCellValue({ cell, langtag }),
           "copy_cell",
@@ -362,7 +363,8 @@ class RowContextMenu extends React.Component {
           {config.enableHistory &&
           !f.contains(this.props.cell.kind, [
             ColumnKinds.group,
-            ColumnKinds.concat
+            ColumnKinds.concat,
+            ColumnKinds.status
           ])
             ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
             : null}

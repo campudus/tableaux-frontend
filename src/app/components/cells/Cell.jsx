@@ -30,6 +30,7 @@ import LinkCell from "./link/LinkCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
+import StatusCell from "./status/StatusCell.jsx";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const mapStateToProps = (state, props) => {
@@ -201,7 +202,8 @@ class Cell extends React.Component {
     [ColumnKinds.currency]: CurrencyCell,
     [ColumnKinds.text]: TextCell,
     [ColumnKinds.richtext]: TextCell,
-    [ColumnKinds.group]: IdentifierCell
+    [ColumnKinds.group]: IdentifierCell,
+    [ColumnKinds.status]: StatusCell
   };
 
   userCanEditValue() {
@@ -227,7 +229,8 @@ class Cell extends React.Component {
       inSelectedRow,
       focusTable,
       toggleAnnotationPopup,
-      width
+      width,
+      rowIndex
     } = this.props;
     const { concat, text, richtext } = ColumnKinds;
     const { column, row, table } = cell;
@@ -288,6 +291,7 @@ class Cell extends React.Component {
           }
           cell={cell}
           width={width}
+          rowIndex={rowIndex}
         />
         <FlagIconRenderer
           cell={cell}
@@ -342,5 +346,6 @@ Cell.propTypes = {
   annotationsOpen: PropTypes.bool,
   toggleAnnotationPopup: PropTypes.func.isRequired,
   isExpandedCell: PropTypes.bool.isRequired,
-  width: PropTypes.number.isRequired
+  width: PropTypes.number.isRequired,
+  rowIndex: PropTypes.number
 };

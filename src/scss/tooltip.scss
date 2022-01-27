@@ -1,0 +1,53 @@
+$bubble-background: transparentize(black, 0.3);
+.tooltip {
+  color: white;
+  position: absolute;
+  bottom: calc(100% + 15px);
+  left: -20px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    width: 0;
+    height: 0;
+    left: 22px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 15px solid $bubble-background;
+  }
+
+  .tooltip__content {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: $bubble-background;
+    z-index:9999;
+  }
+
+  &__invert {
+    color: white;
+    position: absolute;
+    bottom: calc(100% - 65px);
+    left: -20px;
+    z-index: 9999;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 35px;
+      width: 0;
+      height: 0;
+      left: 22px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 15px solid $bubble-background;
+    }
+    .tooltip__content {
+      padding: 10px;
+      border-radius: 5px;
+      background-color: $bubble-background;
+      z-index:9999;
+    }
+
+  }
+}
