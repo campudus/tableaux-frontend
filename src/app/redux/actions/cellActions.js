@@ -198,9 +198,10 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
     return;
   }
   return f.compose(
-    f.forEach(({ column, dependentColumnIds }) => {
+    promises => Promise.all(promises),
+    f.map(({ column, dependentColumnIds }) => {
       if (f.contains(columnId, dependentColumnIds)) {
-        makeRequest({
+        return makeRequest({
           apiRoute: route.toCell({ tableId, rowId, columnId: column.id })
         }).then(res =>
           dispatch({
