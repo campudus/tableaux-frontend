@@ -264,7 +264,7 @@ class ItemPopupMenu extends Component {
                   store.dispatch(actions.copyCellValue({ cell, langtag })),
                 icon: "files-o"
               })}
-            {cell.kind === ColumnKinds.status || thisUserCantEdit
+            {thisUserCantEdit
               ? null
               : this.mkEntry(2, {
                   title: "table:paste_cell",

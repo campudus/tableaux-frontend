@@ -104,7 +104,7 @@ class View extends PureComponent {
       [ColumnKinds.status]: StatusView
     };
 
-    const isDisabled = !(this.canEditValue() && !lockStatus);
+    const isDisabled = !(this.canEditValue() && !lockStatus && kind !== ColumnKinds.status);
     const isMyTranslationNeeded =
       langtag !== f.first(Langtags) &&
       Annotations.isTranslationNeeded(langtag)(cell);
