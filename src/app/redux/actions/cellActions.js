@@ -171,8 +171,64 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
       });
     }
   })
+    .then(() =>
+      maybeUpdateStatusColumnValue(tableId, columnId, rowId)(dispatch, store)
+    )
     .then(() => refreshDependentRows(tableId, [rowId], store.getState()))
     .then(state => dispatch({ type: SET_STATE, state }));
+};
+
+const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
+  dispatch,
+  store
+) => {
+  const state = store.getState();
+  const calcDependentColumnIds = conditions => {
+    return f.flatMap(condition => {
+      return f.has("column", condition)
+        ? condition.column
+        : calcDependentColumnIds(condition);
+    }, conditions.values);
+  };
+  const statusColumns = f.filter(
+    column => column.kind === ColumnKinds.status,
+    state.columns[tableId].data
+  );
+  if (f.isEmpty(statusColumns)) {
+    return;
+  }
+  return f.compose(
+    promises => Promise.all(promises),
+    f.map(({ column, dependentColumnIds }) => {
+      if (f.contains(columnId, dependentColumnIds)) {
+        return makeRequest({
+          apiRoute: route.toCell({ tableId, rowId, columnId: column.id })
+        }).then(res =>
+          dispatch({
+            type: CELL_SET_VALUE,
+            tableId,
+            columnId: column.id,
+            rowId,
+            newValue: res.value,
+            column
+          })
+        );
+      }
+    }),
+    f.zipWith(
+      (column, dependentColumnIds) => ({ column, dependentColumnIds }),
+      statusColumns
+    ),
+    f.map(
+      f.compose(
+        f.uniq,
+        f.flatten
+      )
+    ),
+    f.map(column =>
+      f.map(rule => calcDependentColumnIds(rule.conditions), column.rules)
+    )
+  )(statusColumns);
 };
 
 export const calculateCellUpdate = action => {

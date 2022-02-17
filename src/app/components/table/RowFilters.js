@@ -16,7 +16,8 @@ export const FilterableCellKinds = [
   ColumnKinds.text,
   ColumnKinds.numeric,
   ColumnKinds.link,
-  ColumnKinds.boolean
+  ColumnKinds.boolean,
+  ColumnKinds.status
 ];
 
 export const SortableCellKinds = [
@@ -348,6 +349,24 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
 
   const getPlainValue = cell =>
     cell.isMultiLanguage ? cell.value[langtag] : cell.value;
+  const getStatusValue = cell => {
+    const {
+      column: { rules },
+      value
+    } = cell;
+    return f.compose(
+      f.join("::"),
+      f.map(f.get(["displayValue", langtag])),
+      f.filter("value"),
+      f.zipWith(
+        (singleValue, rule) => ({
+          value: singleValue,
+          displayValue: rule.displayName
+        }),
+        value
+      )
+    )(rules);
+  };
 
   const getSortableCellValue = cell => {
     const rawValue = f.cond([
@@ -356,14 +375,16 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
       [isOfKind(ColumnKinds.attachment), joinStrings],
       [isOfKind(ColumnKinds.date), getPlainValue],
       [isOfKind(ColumnKinds.datetime), getPlainValue],
+      [isOfKind(ColumnKinds.status), getStatusValue],
       [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
-    const temp = f.cond([
+    const sortFirst = "a"
+    const sortLast = "b"
+    return f.cond([
       [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
-      [isOfKind(ColumnKinds.boolean), f.always(rawValue ? "a" : "b")],
+      [isOfKind(ColumnKinds.boolean), f.always(rawValue ? sortFirst : sortLast)],
       [f.stubTrue, f.always(f.toLower(rawValue) || "")]
     ])(cell);
-    return temp;
   };
 
   const comparator = (a, b) => {

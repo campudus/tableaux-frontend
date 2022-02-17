@@ -21,6 +21,7 @@ import NumericView from "./numeric/NumericView";
 import RowHeadline from "./RowHeadline";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
+import StatusView from "./status/StatusView";
 import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 
 class View extends PureComponent {
@@ -99,10 +100,11 @@ class View extends PureComponent {
       [ColumnKinds.currency]: CurrencyView,
       [ColumnKinds.text]: TextView,
       [ColumnKinds.richtext]: TextView,
-      [ColumnKinds.group]: GroupView
+      [ColumnKinds.group]: GroupView,
+      [ColumnKinds.status]: StatusView
     };
 
-    const isDisabled = !(this.canEditValue() && !lockStatus);
+    const isDisabled = !(this.canEditValue() && !lockStatus && kind !== ColumnKinds.status);
     const isMyTranslationNeeded =
       langtag !== f.first(Langtags) &&
       Annotations.isTranslationNeeded(langtag)(cell);

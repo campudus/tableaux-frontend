@@ -257,12 +257,13 @@ class ItemPopupMenu extends Component {
                   icon: "code-fork"
                 })
               : null}
-            {this.mkEntry(1, {
-              title: "table:copy_cell",
-              fn: () =>
-                store.dispatch(actions.copyCellValue({ cell, langtag })),
-              icon: "files-o"
-            })}
+            {cell.kind !== ColumnKinds.status &&
+              this.mkEntry(1, {
+                title: "table:copy_cell",
+                fn: () =>
+                  store.dispatch(actions.copyCellValue({ cell, langtag })),
+                icon: "files-o"
+              })}
             {thisUserCantEdit
               ? null
               : this.mkEntry(2, {

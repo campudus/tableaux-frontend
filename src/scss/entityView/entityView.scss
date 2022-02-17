@@ -252,6 +252,14 @@
   }
 }
 
+.status {
+  width: 100%;
+  display: flex;
+  gap: 5px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .datetime {
   border-color: inherit;
   border-bottom: 1px solid;

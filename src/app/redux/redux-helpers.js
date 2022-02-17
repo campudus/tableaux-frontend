@@ -150,7 +150,11 @@ export const getUpdatedCellValueToSet = (
   { column, oldValue, newValue },
   isRollback = false
 ) => {
-  const unmergeableTypes = [ColumnKinds.link, ColumnKinds.attachment];
+  const unmergeableTypes = [
+    ColumnKinds.link,
+    ColumnKinds.attachment,
+    ColumnKinds.status
+  ];
   const mergeCellValues = () =>
     !column.multilanguage || f.contains(column.kind, unmergeableTypes)
       ? newValue

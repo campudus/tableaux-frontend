@@ -41,6 +41,7 @@ class RowHeadline extends React.Component {
       [ColumnKinds.datetime]: <i className="column-icon fa fa-calendar" />,
       [ColumnKinds.date]: <i className="column-icon fa fa-calendar" />,
       [ColumnKinds.currency]: <i className="column-icon fa fa-money" />,
+      [ColumnKinds.status]: <div />,
       [ColumnKinds.group]: (
         <SvgIcon
           icon="/img/icons/column-group.svg"
