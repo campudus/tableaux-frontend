@@ -7,7 +7,10 @@ import listenToClickOutside from "react-onclickoutside";
 import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
 import { openInNewTab } from "../../../helpers/apiUrl";
 import { addCellId } from "../../../helpers/getCellId";
-import { initiateDeleteRow } from "../../../helpers/rowHelper";
+import {
+  initiateDeleteRow,
+  initiateDuplicateRow
+} from "../../../helpers/rowHelper";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { openShowDependency } from "../ConfirmDependentOverlay";
 
@@ -191,7 +194,7 @@ class HeaderPopupMenu extends Component {
                     icon: "repeat"
                   })
                 : null}
-              {/*this.mkEntry(4, {
+              {this.mkEntry(4, {
                 title: "table:duplicate_row",
                 fn: () =>
                   initiateDuplicateRow({
@@ -201,7 +204,7 @@ class HeaderPopupMenu extends Component {
                     rowId: row.id
                   }),
                 icon: "clone"
-              })*/}
+              })}
               {this.mkEntry(5, {
                 title: row.final
                   ? "table:final.set_not_final"
