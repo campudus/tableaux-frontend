@@ -378,11 +378,14 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
       [isOfKind(ColumnKinds.status), getStatusValue],
       [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
-    const sortFirst = "a"
-    const sortLast = "b"
+    const sortFirst = "a";
+    const sortLast = "b";
     return f.cond([
       [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
-      [isOfKind(ColumnKinds.boolean), f.always(rawValue ? sortFirst : sortLast)],
+      [
+        isOfKind(ColumnKinds.boolean),
+        f.always(rawValue ? sortFirst : sortLast)
+      ],
       [f.stubTrue, f.always(f.toLower(rawValue) || "")]
     ])(cell);
   };
