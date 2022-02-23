@@ -21,6 +21,7 @@ import Table from "../table/Table.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import TableauxConstants, {
+  ColumnKinds,
   FilterModes,
   RowIdColumn
 } from "../../constants/TableauxConstants";
@@ -37,6 +38,7 @@ const mapStatetoProps = (state, props) => {
   const rows = f.get(`rows.${tableId}.data`, state);
   const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
+  const hasStatusColumn = !!f.find({ kind: ColumnKinds.status }, columns)
   const {
     startedGeneratingDisplayValues,
     visibleColumns,
@@ -62,7 +64,8 @@ const mapStatetoProps = (state, props) => {
     filters,
     sorting,
     finishedLoading,
-    columnOrdering
+    columnOrdering,
+    hasStatusColumn
   };
 };
 
@@ -103,7 +106,8 @@ class TableView extends PureComponent {
       visibleColumns,
       visibleRows,
       finishedLoading,
-      visibleColumnOrdering
+      visibleColumnOrdering,
+      hasStatusColumn
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -138,6 +142,7 @@ class TableView extends PureComponent {
             navigate={this.onNavigate}
             finishedLoading={finishedLoading}
             visibleColumnOrdering={visibleColumnOrdering}
+            hasStatusColumn={hasStatusColumn}
           />
         </div>
       );
@@ -170,7 +175,7 @@ class TableView extends PureComponent {
     if (
       hasSlowFilters(settings) &&
       currentTable.rows.length * currentTable.columns.length >
-        BIG_TABLE_THRESHOLD
+      BIG_TABLE_THRESHOLD
     ) {
       showDialog({
         type: "question",
@@ -228,7 +233,8 @@ class TableView extends PureComponent {
       allDisplayValues,
       filtering,
       tableView,
-      columnOrdering
+      columnOrdering,
+      hasStatusColumn
     } = this.props;
     const columnActions = f.pick(
       [

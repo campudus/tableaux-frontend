@@ -168,7 +168,8 @@ export default class ColumnEntry extends React.PureComponent {
       navigate,
       toTable,
       index,
-      resizeIdHandler
+      resizeIdHandler,
+      fixedColumnCount
     } = this.props;
     const menuOpen = this.state.ctxCoords;
     const showDescription =
@@ -202,7 +203,7 @@ export default class ColumnEntry extends React.PureComponent {
           topRight: false
         }}
         disableDragging
-        onResizeStart={index === 1 ? resizeIdHandler : null}
+        onResizeStart={index === fixedColumnCount - 1 ? resizeIdHandler : null}
         onResizeStop={() => resizeFinishedHandler(index)}
         onResize={this.resize}
       >
