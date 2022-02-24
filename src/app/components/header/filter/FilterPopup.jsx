@@ -56,7 +56,7 @@ class FilterPopup extends React.Component {
         columnId: either(filter)
           .map(cf => {
             const mode = f.get(["mode"], cf);
-            return f.contains(mode, SPECIAL_SEARCHES) ? mode : cf.mode === FilterModes.STATUS ? cf.label : null;
+            return f.contains(mode, SPECIAL_SEARCHES) ? mode : cf.mode === FilterModes.STATUS ? cf.compareValue : null;
           })
           .orElse(
             f.flow(
@@ -67,6 +67,8 @@ class FilterPopup extends React.Component {
           .getOrElse(null),
         mode: f.get("mode", filter),
         value: f.get("value", filter),
+        compareValue: f.get("compareValue", filter),
+        colId: f.get("colId", filter),
         columnKind: f.get("columnKind", filter)
       };
     };
