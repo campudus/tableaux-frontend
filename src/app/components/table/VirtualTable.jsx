@@ -105,7 +105,11 @@ export default class VirtualTable extends PureComponent {
   calcColWidth = ({ index }) => {
     const { hasStatusColumn } = this.props;
     const widths = this.state.columnWidths || {};
-    return index === 0 ? META_CELL_WIDTH : hasStatusColumn && index == 1 ? STATUS_CELL_WIDTH : widths[index] || CELL_WIDTH;
+    return index === 0
+      ? META_CELL_WIDTH
+      : hasStatusColumn && index === 1
+      ? STATUS_CELL_WIDTH
+      : widths[index] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -163,23 +167,23 @@ export default class VirtualTable extends PureComponent {
 
     return gridData.rowIndex === 0
       ? this.renderColumnHeader({
-        ...gridData,
-        key: `cell-${gridData.key}`,
-        columnIndex: gridData.columnIndex - 1
-      })
+          ...gridData,
+          key: `cell-${gridData.key}`,
+          columnIndex: gridData.columnIndex - 1
+        })
       : this.renderCell({
-        ...gridData,
-        key: `cell-${gridData.key}`,
-        rowIndex: gridData.rowIndex - 1,
-        columnIndex: gridData.columnIndex - 1
-      });
+          ...gridData,
+          key: `cell-${gridData.key}`,
+          rowIndex: gridData.rowIndex - 1,
+          columnIndex: gridData.columnIndex - 1
+        });
   };
 
   getFixedColumnCount = () => {
     const { visibleColumnOrdering, hasStatusColumn } = this.props;
     const columnCount = f.size(visibleColumnOrdering) + 1;
-    return columnCount < 3 ? 0 : f.min([columnCount, hasStatusColumn ? 3 : 2])
-  }
+    return columnCount < 3 ? 0 : f.min([columnCount, hasStatusColumn ? 3 : 2]);
+  };
 
   renderColumnHeader = ({ columnIndex }) => {
     const column = this.getVisibleElement(this.props.columns, columnIndex);
@@ -545,9 +549,9 @@ export default class VirtualTable extends PureComponent {
 
     const selectedCellKey = this.isSelectedCellValid(selectedCell)
       ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
-        "colId",
-        this.selectedCell
-      )}-${selectedCellEditing}-${selectedCellExpandedRow}`
+          "colId",
+          this.selectedCell
+        )}-${selectedCellEditing}-${selectedCellExpandedRow}`
       : "";
 
     const resizeBarClass = showResizeBar

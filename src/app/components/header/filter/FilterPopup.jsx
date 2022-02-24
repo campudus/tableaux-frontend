@@ -56,7 +56,11 @@ class FilterPopup extends React.Component {
         columnId: either(filter)
           .map(cf => {
             const mode = f.get(["mode"], cf);
-            return f.contains(mode, SPECIAL_SEARCHES) ? mode : cf.mode === FilterModes.STATUS ? cf.compareValue : null;
+            return f.contains(mode, SPECIAL_SEARCHES)
+              ? mode
+              : cf.mode === FilterModes.STATUS
+              ? cf.compareValue
+              : null;
           })
           .orElse(
             f.flow(
@@ -115,14 +119,20 @@ class FilterPopup extends React.Component {
     );
   }
 
-  calcStatusFilters = (statusColumn) => {
+  calcStatusFilters = statusColumn => {
     const { rules, id } = statusColumn;
     const { langtag } = this.props;
     return f.map(rule => {
       const value = f.get(["displayName", langtag], rule);
-      return { value, label: value, kind: FilterModes.STATUS, columnId: value, colId: id }
-    }, rules)
-  }
+      return {
+        value,
+        label: value,
+        kind: FilterModes.STATUS,
+        columnId: value,
+        colId: id
+      };
+    }, rules);
+  };
 
   getSearchableColumns() {
     const searchableColumns =
@@ -132,7 +142,10 @@ class FilterPopup extends React.Component {
       ));
     const { langtag, columns } = this.props;
     const maybeStatusColumn = f.find({ kind: ColumnKinds.status }, columns);
-    const statusFilters = this.statusFilters || maybeStatusColumn ? this.calcStatusFilters(maybeStatusColumn) : []
+    const statusFilters =
+      this.statusFilters || maybeStatusColumn
+        ? this.calcStatusFilters(maybeStatusColumn)
+        : [];
     return [
       {
         label: f.toUpper(this.props.t("table:filter.generic")),
@@ -140,17 +153,17 @@ class FilterPopup extends React.Component {
       },
       langtag !== f.first(Langtags)
         ? {
-          label: this.props.t("table:translations.this_translation_needed", {
-            langtag
-          }),
-          value: FilterModes.UNTRANSLATED,
-          kind: BOOL
-        }
+            label: this.props.t("table:translations.this_translation_needed", {
+              langtag
+            }),
+            value: FilterModes.UNTRANSLATED,
+            kind: BOOL
+          }
         : {
-          label: this.props.t("table:filter.needs_translation"),
-          value: FilterModes.ANY_UNTRANSLATED,
-          kind: BOOL
-        },
+            label: this.props.t("table:filter.needs_translation"),
+            value: FilterModes.ANY_UNTRANSLATED,
+            kind: BOOL
+          },
       {
         label: this.props.t("table:filter.is_final"),
         value: FilterModes.FINAL,
@@ -197,16 +210,18 @@ class FilterPopup extends React.Component {
   buildColumnOptions(filterFn) {
     const { columns, langtag } = this.props;
 
-    return columns.filter(column => column.kind !== ColumnKinds.status).map(column => {
-      const columnDisplayName = getColumnDisplayName(column, langtag);
+    return columns
+      .filter(column => column.kind !== ColumnKinds.status)
+      .map(column => {
+        const columnDisplayName = getColumnDisplayName(column, langtag);
 
-      return {
-        label: columnDisplayName,
-        value: f.toString(column.id),
-        kind: column.kind,
-        disabled: !filterFn(column)
-      };
-    });
+        return {
+          label: columnDisplayName,
+          value: f.toString(column.id),
+          kind: column.kind,
+          disabled: !filterFn(column)
+        };
+      });
   }
 
   getSortOptions() {
@@ -326,7 +341,7 @@ class FilterPopup extends React.Component {
         columnId,
         label,
         colId
-      }
+      };
     } else {
       const defaultMode = FilterModes.CONTAINS;
       const oldValue = oldFilter.value;
@@ -342,8 +357,8 @@ class FilterPopup extends React.Component {
           columnKind === ColumnKinds.boolean
             ? true
             : f.isString(oldValue)
-              ? oldValue
-              : "",
+            ? oldValue
+            : "",
         columnKind
       };
     }
@@ -386,12 +401,12 @@ class FilterPopup extends React.Component {
 
     const filters = f.isEmpty(this.state.filters)
       ? [
-        {
-          mode: FilterModes.CONTAINS,
-          value: null,
-          columnId: null
-        }
-      ]
+          {
+            mode: FilterModes.CONTAINS,
+            value: null,
+            columnId: null
+          }
+        ]
       : this.state.filters;
 
     const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
@@ -399,7 +414,8 @@ class FilterPopup extends React.Component {
       (filter.columnKind === TEXT &&
         f.isString(filter.value) &&
         !f.isEmpty(filter.value)) ||
-      ((filter.columnKind === BOOL || filter.mode === "STATUS") && f.isBoolean(filter.value));
+      ((filter.columnKind === BOOL || filter.mode === "STATUS") &&
+        f.isBoolean(filter.value));
     const anyFilterHasValue = f.flow(
       f.map(hasFilterValue),
       f.any(f.identity)

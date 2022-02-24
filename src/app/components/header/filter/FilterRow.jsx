@@ -115,7 +115,8 @@ class FilterRow extends PureComponent {
         />
         {filter.columnKind !== BOOL &&
           !f.isNil(filter.columnId) &&
-          Number(filter.columnId) >= 0 && filter.mode !== "STATUS" && (
+          Number(filter.columnId) >= 0 &&
+          filter.mode !== "STATUS" && (
             <Select
               className="filter-row__mode-select col-three"
               searchable={false}

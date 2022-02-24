@@ -38,7 +38,7 @@ const mapStatetoProps = (state, props) => {
   const rows = f.get(`rows.${tableId}.data`, state);
   const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
-  const hasStatusColumn = !!f.find({ kind: ColumnKinds.status }, columns)
+  const hasStatusColumn = !!f.find({ kind: ColumnKinds.status }, columns);
   const {
     startedGeneratingDisplayValues,
     visibleColumns,
@@ -175,7 +175,7 @@ class TableView extends PureComponent {
     if (
       hasSlowFilters(settings) &&
       currentTable.rows.length * currentTable.columns.length >
-      BIG_TABLE_THRESHOLD
+        BIG_TABLE_THRESHOLD
     ) {
       showDialog({
         type: "question",
@@ -233,8 +233,7 @@ class TableView extends PureComponent {
       allDisplayValues,
       filtering,
       tableView,
-      columnOrdering,
-      hasStatusColumn
+      columnOrdering
     } = this.props;
     const columnActions = f.pick(
       [

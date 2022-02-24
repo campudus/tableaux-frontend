@@ -13,7 +13,9 @@ const SearchFunctions = {
     return f.every(f.contains(f, clean(str)), f.words(clean(stringOfFilters)));
   }),
   [FilterModes.STATUS]: f.curry((stringOfFilters, shouldContain, str) => {
-    return shouldContain ? f.contains(stringOfFilters, str) : !f.contains(stringOfFilters, str)
+    return shouldContain
+      ? f.contains(stringOfFilters, str)
+      : !f.contains(stringOfFilters, str);
   }),
   [FilterModes.STARTS_WITH]: f.curry((searchVal, str) => {
     return f.startsWith(clean(searchVal), clean(str));

@@ -3,7 +3,7 @@ import { compose, withPropsOnChange } from "recompose";
 import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 import store from "../../redux/store";
 import f from "lodash/fp";
-import { ColumnKinds } from "../../constants/TableauxConstants"
+import { ColumnKinds } from "../../constants/TableauxConstants";
 
 import { mapIndexed } from "../../helpers/functools";
 
@@ -14,8 +14,12 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
 
       const applyVisibility = (columns, visibleArray) =>
         f.map(
-          (column) =>
-            f.assoc("visible", f.includes(column.id, visibleArray) || column.id === 0, column),
+          column =>
+            f.assoc(
+              "visible",
+              f.includes(column.id, visibleArray) || column.id === 0,
+              column
+            ),
           columns
         );
 
@@ -29,7 +33,9 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
       visibleRows.map(
         f.update(
           "cells",
-          mapIndexed((cell, idx) => f.assoc("column", columnsWithVisibility[idx], cell))
+          mapIndexed((cell, idx) =>
+            f.assoc("column", columnsWithVisibility[idx], cell)
+          )
         )
       );
 
@@ -48,7 +54,11 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         visibleColumns
       } = this.props;
 
-      const sortedVisibleColumns = getSortedVisibleColumns(columnOrdering, visibleColumns, columns);
+      const sortedVisibleColumns = getSortedVisibleColumns(
+        columnOrdering,
+        visibleColumns,
+        columns
+      );
       // Start displayValue worker if neccessary
       if (
         !f.isEmpty(columns) &&
@@ -60,7 +70,11 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         generateDisplayValues(rows, columns, table.id, langtag);
       }
 
-      const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+      const canRenderTable = f.every(f.negate(f.isNil), [
+        tables,
+        rows,
+        columns
+      ]);
 
       const getSelectedCell = () => {
         const {
@@ -71,14 +85,18 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
 
       const hasJumpTarget = () => {
         const selectedCell = getSelectedCell();
-        return f.every(f.negate(f.isNil), [selectedCell.columnId, selectedCell.rowId]);
+        return f.every(f.negate(f.isNil), [
+          selectedCell.columnId,
+          selectedCell.rowId
+        ]);
       };
 
-      const jumpTargetIn = (rows) => {
+      const jumpTargetIn = rows => {
         const selectedCell = getSelectedCell();
         return f.any(f.propEq("id", selectedCell.rowId), rows);
       };
-      const showCellJumpOverlay = !finishedLoading && hasJumpTarget() && !jumpTargetIn(rows);
+      const showCellJumpOverlay =
+        !finishedLoading && hasJumpTarget() && !jumpTargetIn(rows);
 
       if (canRenderTable) {
         const columnsWithVisibility = this.applyColumnVisibility();
@@ -92,7 +110,7 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
                 f.map("id"),
                 f.join(";")
               )(columnsWithVisibility),
-              rows: f.map((rowIndex) => rows[rowIndex], this.props.visibleRows),
+              rows: f.map(rowIndex => rows[rowIndex], this.props.visibleRows),
               visibleRows: this.props.visibleRows,
               canRenderTable,
               showCellJumpOverlay,
@@ -102,7 +120,11 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
           />
         );
       } else {
-        return <ComposedComponent {...{ ...this.props, canRenderTable, showCellJumpOverlay }} />;
+        return (
+          <ComposedComponent
+            {...{ ...this.props, canRenderTable, showCellJumpOverlay }}
+          />
+        );
       }
     }
   };
@@ -134,13 +156,13 @@ const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
     columnOrdering
   );
   if (statusColumnIndex !== -1) {
-    orderedVisible = f.reject(val => val === statusColumnIndex, orderedVisible)
-    orderedVisible.splice(0, 0, statusColumnIndex)
+    orderedVisible = f.reject(val => val === statusColumnIndex, orderedVisible);
+    orderedVisible.splice(0, 0, statusColumnIndex);
   }
   return orderedVisible;
 };
 
-const filterRows = (props) => {
+const filterRows = props => {
   const {
     filters,
     sorting,
@@ -158,13 +180,19 @@ const filterRows = (props) => {
       filtering: false
     };
   }
-  const isFilterEmpty = (filter) => f.isEmpty(filter.value) && !f.isString(filter.mode);
+  const isFilterEmpty = filter =>
+    f.isEmpty(filter.value) && !f.isString(filter.mode);
   const rowsFilter = {
     sortColumnId: sorting.columnId,
     sortValue: sorting.value,
     filters: f.reject(isFilterEmpty, filters)
   };
-  const rowsWithIndex = completeRowInformation(columns, table, rows, allDisplayValues);
+  const rowsWithIndex = completeRowInformation(
+    columns,
+    table,
+    rows,
+    allDisplayValues
+  );
   const { visibleRows, colsWithMatches } = getFilteredRows(
     table,
     rowsWithIndex,

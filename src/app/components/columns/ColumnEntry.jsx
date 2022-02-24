@@ -233,13 +233,13 @@ export default class ColumnEntry extends React.PureComponent {
             left={left}
             bottom={bottom}
           />
-          {kind !== ColumnKinds.status &&
+          {kind !== ColumnKinds.status && (
             <ContextMenuButton
               isConcat={column.kind === ColumnKinds.concat}
               contextMenuClass={contextMenuClass}
               toggleContextMenu={this.toggleContextMenu}
             />
-          }
+          )}
           <ContextMenu
             menuOpen={menuOpen}
             closeHandler={this.closeContextMenu}

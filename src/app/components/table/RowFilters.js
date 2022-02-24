@@ -122,20 +122,20 @@ const getFilteredRows = (
 
   const ordered = f.isFinite(sortColumnId)
     ? f.flow(
-      f.orderBy([getCompareFunc(sortColumn.kind)], [f.toLower(sortValue)]),
-      sorted => {
-        if (f.toLower(sortValue) === "desc") {
-          return sorted;
+        f.orderBy([getCompareFunc(sortColumn.kind)], [f.toLower(sortValue)]),
+        sorted => {
+          if (f.toLower(sortValue) === "desc") {
+            return sorted;
+          }
+          const firstTruthy = f.findIndex(
+            getCompareFunc(sortColumn.kind),
+            sorted
+          );
+          const falsyValues = f.slice(0, firstTruthy, sorted);
+          const truthyValues = f.slice(firstTruthy, sorted.length, sorted);
+          return [...truthyValues, ...falsyValues];
         }
-        const firstTruthy = f.findIndex(
-          getCompareFunc(sortColumn.kind),
-          sorted
-        );
-        const falsyValues = f.slice(0, firstTruthy, sorted);
-        const truthyValues = f.slice(firstTruthy, sorted.length, sorted);
-        return [...truthyValues, ...falsyValues];
-      }
-    )(filteredRows)
+      )(filteredRows)
     : filteredRows;
   return {
     visibleRows: f.map("rowIndex", ordered),
@@ -176,10 +176,7 @@ const mkFilterFn = closures => settings => {
       ({ mode }) => f.contains(mode, valueFilters),
       mkColumnValueFilter(closures)
     ],
-    [
-      ({ mode }) => mode === "STATUS",
-      mkColumnValueFilter(closures)
-    ],
+    [({ mode }) => mode === "STATUS", mkColumnValueFilter(closures)],
     [f.stubTrue, () => f.stubTrue]
   ])(settings);
 };
@@ -284,11 +281,11 @@ const mkFlagFilter = (closures, mode, value) => {
   const findAnnotation = flag
     ? f.get(["annotations", flag]) // search for flag
     : f.flow(
-      f.get("annotations"),
-      f.keys,
-      f.intersection(["info", "warning", "error"]),
-      f.complement(f.isEmpty)
-    );
+        f.get("annotations"),
+        f.keys,
+        f.intersection(["info", "warning", "error"]),
+        f.complement(f.isEmpty)
+      );
 
   return f.flow(
     f.get(["values"]),
@@ -299,10 +296,18 @@ const mkFlagFilter = (closures, mode, value) => {
   );
 };
 
-const mkColumnValueFilter = closures => ({ value, mode, columnId, colId, compareValue }) => {
-  const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId
+const mkColumnValueFilter = closures => ({
+  value,
+  mode,
+  columnId,
+  colId,
+  compareValue
+}) => {
+  const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
   const filterColumnIndex = closures.getColumnIndex(id);
-  const toFilterValue = closures.cleanString(mode === "STATUS" ? compareValue : value);
+  const toFilterValue = closures.cleanString(
+    mode === "STATUS" ? compareValue : value
+  );
   const getSortableCellValue = closures.getSortableCellValue;
 
   if (f.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
@@ -326,7 +331,11 @@ const mkColumnValueFilter = closures => ({ value, mode, columnId, colId, compare
     if (f.contains(targetCell.kind, FilterableCellKinds)) {
       return searchFunction(toFilterValue, getSortableCellValue(targetCell));
     } else if (mode === FilterModes.STATUS) {
-      return searchFunction(toFilterValue, value, getSortableCellValue(targetCell));
+      return searchFunction(
+        toFilterValue,
+        value,
+        getSortableCellValue(targetCell)
+      );
     } else {
       // column type not support for filtering
       return false;
@@ -384,11 +393,14 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
       [isOfKind(ColumnKinds.status), getStatusValue],
       [f.stubTrue, f.get(["displayValue", langtag])]
     ])(cell);
-    const sortFirst = "a"
-    const sortLast = "b"
+    const sortFirst = "a";
+    const sortLast = "b";
     return f.cond([
       [isOfKind(ColumnKinds.numeric), f.always(f.toNumber(rawValue))],
-      [isOfKind(ColumnKinds.boolean), f.always(rawValue ? sortFirst : sortLast)],
+      [
+        isOfKind(ColumnKinds.boolean),
+        f.always(rawValue ? sortFirst : sortLast)
+      ],
       [f.stubTrue, f.always(f.toLower(rawValue) || "")]
     ])(cell);
   };
@@ -412,14 +424,14 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
 
     return sortColumnIdx >= 0
       ? f.cond([
-        [vals => f.every(isEmpty, vals), f.always(equal)],
-        [([A, dummy]) => isEmpty(A), f.always(bFirst)], // eslint-disable-line no-unused-vars
-        [([dummy, B]) => isEmpty(B), f.always(aFirst)], // eslint-disable-line no-unused-vars
-        [
-          f.stubTrue,
-          ([A, B]) => (f.eq(A, B) ? compareRowIds(a, b) : compareValues(A, B))
-        ]
-      ])([a, b].map(getSortValue))
+          [vals => f.every(isEmpty, vals), f.always(equal)],
+          [([A, dummy]) => isEmpty(A), f.always(bFirst)], // eslint-disable-line no-unused-vars
+          [([dummy, B]) => isEmpty(B), f.always(aFirst)], // eslint-disable-line no-unused-vars
+          [
+            f.stubTrue,
+            ([A, B]) => (f.eq(A, B) ? compareRowIds(a, b) : compareValues(A, B))
+          ]
+        ])([a, b].map(getSortValue))
       : compareRowIds(a, b);
   };
 
@@ -459,8 +471,8 @@ const completeRowInformation = (columns, table, rows, allDisplayValues) => {
       displayValue:
         cell.kind === ColumnKinds.link
           ? values[colIndex].map(link =>
-            getLinkDisplayValue(columns[colIndex].toTable)(link.id)
-          )
+              getLinkDisplayValue(columns[colIndex].toTable)(link.id)
+            )
           : tableDisplayValues[rowIndex].values[colIndex],
       value: values[colIndex]
     }))
