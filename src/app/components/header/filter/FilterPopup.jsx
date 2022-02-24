@@ -46,6 +46,7 @@ class FilterPopup extends React.Component {
 
   sortableColumns = null;
   searchableColumns = null;
+  statusFilters = null;
 
   constructor(props) {
     super(props);
@@ -55,7 +56,7 @@ class FilterPopup extends React.Component {
         columnId: either(filter)
           .map(cf => {
             const mode = f.get(["mode"], cf);
-            return f.contains(mode, SPECIAL_SEARCHES) ? mode : null;
+            return f.contains(mode, SPECIAL_SEARCHES) ? mode : cf.mode === FilterModes.STATUS ? cf.label : null;
           })
           .orElse(
             f.flow(
@@ -112,13 +113,24 @@ class FilterPopup extends React.Component {
     );
   }
 
+  calcStatusFilters = (statusColumn) => {
+    const { rules, id } = statusColumn;
+    const { langtag } = this.props;
+    return f.map(rule => {
+      const value = f.get(["displayName", langtag], rule);
+      return { value, label: value, kind: FilterModes.STATUS, columnId: value, colId: id }
+    }, rules)
+  }
+
   getSearchableColumns() {
     const searchableColumns =
       this.searchableColumns ||
       (this.searchableColumns = this.buildColumnOptions(
         FilterPopup.isSearchableColumn()
       ));
-    const { langtag } = this.props;
+    const { langtag, columns } = this.props;
+    const maybeStatusColumn = f.find({ kind: ColumnKinds.status }, columns);
+    const statusFilters = this.statusFilters || maybeStatusColumn ? this.calcStatusFilters(maybeStatusColumn) : []
     return [
       {
         label: f.toUpper(this.props.t("table:filter.generic")),
@@ -126,17 +138,17 @@ class FilterPopup extends React.Component {
       },
       langtag !== f.first(Langtags)
         ? {
-            label: this.props.t("table:translations.this_translation_needed", {
-              langtag
-            }),
-            value: FilterModes.UNTRANSLATED,
-            kind: BOOL
-          }
+          label: this.props.t("table:translations.this_translation_needed", {
+            langtag
+          }),
+          value: FilterModes.UNTRANSLATED,
+          kind: BOOL
+        }
         : {
-            label: this.props.t("table:filter.needs_translation"),
-            value: FilterModes.ANY_UNTRANSLATED,
-            kind: BOOL
-          },
+          label: this.props.t("table:filter.needs_translation"),
+          value: FilterModes.ANY_UNTRANSLATED,
+          kind: BOOL
+        },
       {
         label: this.props.t("table:filter.is_final"),
         value: FilterModes.FINAL,
@@ -163,6 +175,11 @@ class FilterPopup extends React.Component {
         kind: BOOL
       },
       {
+        label: f.toUpper(this.props.t("filter:status")),
+        disabled: true
+      },
+      ...statusFilters,
+      {
         label: f.toUpper(this.props.t("table:filter.specific")),
         disabled: true
       },
@@ -178,7 +195,7 @@ class FilterPopup extends React.Component {
   buildColumnOptions(filterFn) {
     const { columns, langtag } = this.props;
 
-    return columns.map(column => {
+    return columns.filter(column => column.kind !== ColumnKinds.status).map(column => {
       const columnDisplayName = getColumnDisplayName(column, langtag);
 
       return {
@@ -281,6 +298,7 @@ class FilterPopup extends React.Component {
     return f.cond([
       [f.eq(ColumnKinds.boolean), f.always("boolean")],
       [f.eq(ColumnKinds.number), f.always("text")],
+      [f.eq(ColumnKinds.status), f.always("status")],
       [f.stubTrue, f.always("text")]
     ])(kind);
   };
@@ -288,14 +306,25 @@ class FilterPopup extends React.Component {
   onChangeFilterColumn = idx => option => {
     const { value, kind } = option;
     const oldFilter = f.defaultTo({})(f.get(["filters", idx]));
+    let filter;
     if (f.contains(value, SPECIAL_SEARCHES)) {
-      const filter = {
+      filter = {
         columnId: value,
         mode: value,
         columnKind: f.contains(value, SPECIAL_TEXT_SEARCHES) ? TEXT : BOOL,
         value: true
       };
-      this.setState({ filters: f.assoc([idx], filter, this.state.filters) });
+    } else if (kind === "STATUS") {
+      const { columnId, label, colId } = option;
+      filter = {
+        mode: "STATUS",
+        columnKind: "status",
+        value: true,
+        compareValue: value,
+        columnId,
+        label,
+        colId
+      }
     } else {
       const defaultMode = FilterModes.CONTAINS;
       const oldValue = oldFilter.value;
@@ -304,19 +333,19 @@ class FilterPopup extends React.Component {
           ? defaultMode
           : oldFilter.mode || defaultMode;
       const columnKind = this.filtersForKind(kind);
-      const filter = {
+      filter = {
         mode: columnKind === ColumnKinds.boolean ? BOOL : filterMode,
         columnId: value,
         value:
           columnKind === ColumnKinds.boolean
             ? true
             : f.isString(oldValue)
-            ? oldValue
-            : "",
+              ? oldValue
+              : "",
         columnKind
       };
-      this.setState({ filters: f.assoc([idx], filter, this.state.filters) });
     }
+    this.setState({ filters: f.assoc([idx], filter, this.state.filters) });
   };
 
   onChangeSelectSortColumn = selection => {
@@ -355,12 +384,12 @@ class FilterPopup extends React.Component {
 
     const filters = f.isEmpty(this.state.filters)
       ? [
-          {
-            mode: FilterModes.CONTAINS,
-            value: null,
-            columnId: null
-          }
-        ]
+        {
+          mode: FilterModes.CONTAINS,
+          value: null,
+          columnId: null
+        }
+      ]
       : this.state.filters;
 
     const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
@@ -368,7 +397,7 @@ class FilterPopup extends React.Component {
       (filter.columnKind === TEXT &&
         f.isString(filter.value) &&
         !f.isEmpty(filter.value)) ||
-      (filter.columnKind === BOOL && f.isBoolean(filter.value));
+      ((filter.columnKind === BOOL || filter.mode === "STATUS") && f.isBoolean(filter.value));
     const anyFilterHasValue = f.flow(
       f.map(hasFilterValue),
       f.any(f.identity)

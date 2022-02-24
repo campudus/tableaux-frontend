@@ -32,6 +32,7 @@ import MetaCellHeader from "../cells/MetaCellHeader";
 import { saveColumnWidths } from "../../helpers/localStorage";
 
 const META_CELL_WIDTH = 80;
+const STATUS_CELL_WIDTH = 120;
 const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
@@ -104,7 +105,7 @@ export default class VirtualTable extends PureComponent {
   calcColWidth = ({ index }) => {
     const { hasStatusColumn } = this.props;
     const widths = this.state.columnWidths || {};
-    return index === 0 ? META_CELL_WIDTH : hasStatusColumn && index == 1 ? META_CELL_WIDTH : widths[index] || CELL_WIDTH;
+    return index === 0 ? META_CELL_WIDTH : hasStatusColumn && index == 1 ? STATUS_CELL_WIDTH : widths[index] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {

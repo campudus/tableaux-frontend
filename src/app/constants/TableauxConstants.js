@@ -112,7 +112,8 @@ const grudConstants = {
     POSTPONE: null,
     WITH_COMMENT: null,
     ROW_CONTAINS: null,
-    TRANSLATOR_FILTER: null
+    TRANSLATOR_FILTER: null,
+    STATUS: null
   }),
 
   get config() {

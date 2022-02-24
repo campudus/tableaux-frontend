@@ -80,7 +80,6 @@ class FilterRow extends PureComponent {
       valueRenderer
     } = this.props;
     const { columnId } = this.props.filter;
-
     const filterColumnSelected =
       f.isInteger(parseInt(columnId)) ||
       (f.isString(columnId) && !f.isEmpty(columnId));
@@ -116,7 +115,7 @@ class FilterRow extends PureComponent {
         />
         {filter.columnKind !== BOOL &&
           !f.isNil(filter.columnId) &&
-          Number(filter.columnId) >= 0 && (
+          Number(filter.columnId) >= 0 && filter.mode !== "STATUS" && (
             <Select
               className="filter-row__mode-select col-three"
               searchable={false}
@@ -128,7 +127,7 @@ class FilterRow extends PureComponent {
             />
           )}
 
-        {filter.columnKind === BOOL ? (
+        {filter.columnKind === BOOL || filter.mode === "STATUS" ? (
           <BoolInput
             value={this.props.filter.value}
             onChangeValue={this.props.onChangeValue}

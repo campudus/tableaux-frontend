@@ -13,10 +13,12 @@ const StatusCell = props => {
 
   const filterStatus = columnId => value => {
     appendFilters({
-      value,
-      columnId,
-      mode: FilterModes.CONTAINS,
-      columnKind: "text"
+      colId: columnId,
+      compareValue: value,
+      value: true,
+      columnId: value,
+      mode: FilterModes.STATUS,
+      columnKind: "status"
     });
   };
 
