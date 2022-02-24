@@ -7,7 +7,7 @@ import listensToClickOutside from "react-onclickoutside";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { Directions, FilterModes } from "../../constants/TableauxConstants";
+import { ColumnKinds, Directions, FilterModes } from "../../constants/TableauxConstants";
 import { either, stopPropagation } from "../../helpers/functools";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import DragSortList from "../cells/link/DragSortList";
@@ -50,9 +50,9 @@ class ColumnFilterPopup extends React.Component {
     const lvl1 = col => col !== f.first(columns); // ignore ID column
     const lvl2 = filter
       ? f.flow(
-          this.getColName,
-          SearchFunctions[filter.type](filter.value)
-        )
+        this.getColName,
+        SearchFunctions[filter.type](filter.value)
+      )
       : f.stubTrue; // ...or pass all
     return f.allPass([lvl1, lvl2]);
   };
@@ -231,10 +231,10 @@ class ColumnFilterPopup extends React.Component {
 
   render = () => {
     const {
-      columns,
       columnActions: { hideAllColumns, setColumnsVisible },
       tableId
     } = this.props;
+    const columns = f.reject({ kind: ColumnKinds.status }, this.props.columns)
     const { filter, selectedIndex } = this.state;
     const nHidden = f.flow(
       f.drop(1),

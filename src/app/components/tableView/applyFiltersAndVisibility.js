@@ -122,6 +122,7 @@ const tableOrFiltersChanged = (props, nextProps) => {
 
 const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
   const statusColumnIndex = f.findIndex({ kind: ColumnKinds.status }, columns);
+
   let orderedVisible = f.reduce(
     (acc, val) => {
       if (f.contains(val.id, visibleColumns)) {
@@ -133,7 +134,7 @@ const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
     columnOrdering
   );
   if (statusColumnIndex !== -1) {
-    orderedVisible = f.reject(statusColumnIndex, orderedVisible)
+    orderedVisible = f.reject(val => val === statusColumnIndex, orderedVisible)
     orderedVisible.splice(0, 0, statusColumnIndex)
   }
   return orderedVisible;
