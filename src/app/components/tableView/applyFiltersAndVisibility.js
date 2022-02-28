@@ -145,21 +145,25 @@ const tableOrFiltersChanged = (props, nextProps) => {
 const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
   const statusColumnIndex = f.findIndex({ kind: ColumnKinds.status }, columns);
 
-  let orderedVisible = f.reduce(
+  const orderVisible = f.reduce(
     (acc, val) => {
       if (f.contains(val.id, visibleColumns)) {
         return f.concat(acc, [val.idx]);
       }
       return acc;
     },
-    [],
-    columnOrdering
+    []
   );
-  if (statusColumnIndex !== -1) {
-    orderedVisible = f.reject(val => val === statusColumnIndex, orderedVisible);
-    orderedVisible.splice(0, 0, statusColumnIndex);
-  }
-  return orderedVisible;
+
+  const rejectDuplicateStatusColumn = f.compose(
+    f.concat([statusColumnIndex]),
+    f.reject(val => val === statusColumnIndex)
+  )
+
+  return f.compose(
+    orderedVisible => statusColumnIndex !== -1 ? rejectDuplicateStatusColumn(orderedVisible) : orderedVisible,
+    orderVisible
+  )(columnOrdering)
 };
 
 const filterRows = props => {
