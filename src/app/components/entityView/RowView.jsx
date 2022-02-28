@@ -49,7 +49,7 @@ class View extends PureComponent {
     return `view-${cell.column.kind}-${cell.id}`;
   }
 
-  componentDidCatch() {}
+  componentDidCatch() { }
 
   canEditValue = theoretically => {
     const { cell, langtag } = this.props;
@@ -62,8 +62,8 @@ class View extends PureComponent {
     return theoretically
       ? canEditUnlocked
       : canEditUnlocked &&
-          (!Annotations.isLocked(cell.row) ||
-            Annotations.isTranslationNeeded(langtag)(cell));
+      (!Annotations.isLocked(cell.row) ||
+        Annotations.isTranslationNeeded(langtag)(cell));
   };
 
   clickHandler = () => {
@@ -106,8 +106,7 @@ class View extends PureComponent {
 
     const isDisabled = !(
       this.canEditValue() &&
-      !lockStatus &&
-      kind !== ColumnKinds.status
+      !lockStatus
     );
     const isMyTranslationNeeded =
       langtag !== f.first(Langtags) &&
@@ -143,8 +142,8 @@ class View extends PureComponent {
           <a className="content">
             {isMyTranslationNeeded
               ? i18n.t("table:translations.this_translation_needed", {
-                  langtag
-                })
+                langtag
+              })
               : i18n.t("table:translations.translation_needed")}
           </a>
         </span>
@@ -196,11 +195,10 @@ class View extends PureComponent {
           cell={cell}
           langtag={langtag}
           time={cell.kind === ColumnKinds.datetime}
-          key={`${cell.id}-${
-            cell.column.multilanguage
+          key={`${cell.id}-${cell.column.multilanguage
               ? f.get(["value", langtag], cell)
               : cell.value
-          }-${langtag}`}
+            }-${langtag}`}
           setTranslationView={setTranslationView}
           funcs={this.props.funcs}
           thisUserCantEdit={isDisabled}

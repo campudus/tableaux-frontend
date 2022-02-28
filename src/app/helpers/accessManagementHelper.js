@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 
-import { Langtags } from "../constants/TableauxConstants";
+import { Langtags, ImmutableColumnKinds } from "../constants/TableauxConstants";
 import { memoizeWith, unless } from "./functools";
 import { noAuthNeeded } from "./authenticate";
 import store from "../redux/store";
@@ -65,13 +65,14 @@ const getPermission = pathToPermission =>
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = (cellInfo, langtag) => {
+  const { kind } = cellInfo;
   const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
 
   const allowed = f.isBoolean(editCellValue)
     ? editCellValue
     : f.isPlainObject(editCellValue) && editCellValue[langtag];
 
-  return allowed || noAuthNeeded(); // this special case is not caught by ALLOW_ANYTHING
+  return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
 };
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
