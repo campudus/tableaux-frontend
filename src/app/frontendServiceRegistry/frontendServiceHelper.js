@@ -29,7 +29,7 @@ const anyMatches = (constraint, element) =>
     return matches || checkAsRegExp(check, value);
   }, false);
 
-const isServiceAllowed = (constraint, element) => {
+export const isServiceAllowed = (constraint, element) => {
   const { includes, excludes } = constraint;
   if (includes || excludes) {
     return allMatch(includes, element) && !anyMatches(excludes, element);
