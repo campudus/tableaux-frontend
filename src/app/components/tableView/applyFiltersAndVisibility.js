@@ -3,6 +3,7 @@ import { compose, withPropsOnChange } from "recompose";
 import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 import store from "../../redux/store";
 import f from "lodash/fp";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 
 import { mapIndexed } from "../../helpers/functools";
 
@@ -53,15 +54,10 @@ const applyFiltersAndVisibility = function(ComposedComponent) {
         visibleColumns
       } = this.props;
 
-      const sortedVisibleColumns = f.reduce(
-        (acc, val) => {
-          if (f.contains(val.id, visibleColumns)) {
-            return f.concat(acc, [val.idx]);
-          }
-          return acc;
-        },
-        [],
-        columnOrdering
+      const sortedVisibleColumns = getSortedVisibleColumns(
+        columnOrdering,
+        visibleColumns,
+        columns
       );
       // Start displayValue worker if neccessary
       if (
@@ -144,6 +140,30 @@ const tableOrFiltersChanged = (props, nextProps) => {
     !f.isEqual(props.sorting, nextProps.sorting) ||
     !f.isEqual(props.filters, nextProps.filters)
   );
+};
+
+const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
+  const statusColumnIndex = f.findIndex({ kind: ColumnKinds.status }, columns);
+
+  const orderVisible = f.reduce((acc, val) => {
+    if (f.contains(val.id, visibleColumns)) {
+      return f.concat(acc, [val.idx]);
+    }
+    return acc;
+  }, []);
+
+  const rejectDuplicateStatusColumn = f.compose(
+    f.concat([statusColumnIndex]),
+    f.reject(val => val === statusColumnIndex)
+  );
+
+  return f.compose(
+    orderedVisible =>
+      statusColumnIndex !== -1
+        ? rejectDuplicateStatusColumn(orderedVisible)
+        : orderedVisible,
+    orderVisible
+  )(columnOrdering);
 };
 
 const filterRows = props => {

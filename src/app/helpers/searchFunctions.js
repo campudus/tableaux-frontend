@@ -17,6 +17,14 @@ const SearchFunctions = {
   })
 };
 
+export const StatusSearchFunction = f.curry(
+  (stringOfFilters, shouldContain, str) => {
+    return shouldContain
+      ? f.contains(stringOfFilters, str)
+      : !f.contains(stringOfFilters, str);
+  }
+);
+
 SearchFunctions[FilterModes.CONTAINS].displayName = "table:filter.contains";
 SearchFunctions[FilterModes.STARTS_WITH].displayName =
   "table:filter.starts_with";

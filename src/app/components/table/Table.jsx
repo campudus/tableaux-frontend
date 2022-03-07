@@ -140,7 +140,8 @@ class Table extends PureComponent {
       visibleColumns,
       navigate,
       finishedLoading,
-      visibleColumnOrdering
+      visibleColumnOrdering,
+      hasStatusColumn
     } = this.props;
     const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
@@ -184,6 +185,7 @@ class Table extends PureComponent {
             setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
             getSelectedCellExpandedRow={this.getSelectedCellExpandedRow}
             visibleColumnOrdering={visibleColumnOrdering}
+            hasStatusColumn={hasStatusColumn}
           />
         </div>
         {this.noRowsInfo()}

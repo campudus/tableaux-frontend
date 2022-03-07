@@ -3,11 +3,14 @@ import f from "lodash/fp";
 import {
   ColumnKinds,
   FilterModes,
+  StatusFilterMode,
   SortValues,
   RowIdColumn
 } from "../../constants/TableauxConstants";
 import { doto, either, withTryCatch } from "../../helpers/functools";
-import searchFunctions from "../../helpers/searchFunctions";
+import searchFunctions, {
+  StatusSearchFunction
+} from "../../helpers/searchFunctions";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -16,8 +19,7 @@ export const FilterableCellKinds = [
   ColumnKinds.text,
   ColumnKinds.numeric,
   ColumnKinds.link,
-  ColumnKinds.boolean,
-  ColumnKinds.status
+  ColumnKinds.boolean
 ];
 
 export const SortableCellKinds = [
@@ -177,6 +179,7 @@ const mkFilterFn = closures => settings => {
       ({ mode }) => f.contains(mode, valueFilters),
       mkColumnValueFilter(closures)
     ],
+    [({ mode }) => mode === StatusFilterMode, mkColumnValueFilter(closures)],
     [f.stubTrue, () => f.stubTrue]
   ])(settings);
 };
@@ -296,9 +299,18 @@ const mkFlagFilter = (closures, mode, value) => {
   );
 };
 
-const mkColumnValueFilter = closures => ({ value, mode, columnId }) => {
-  const filterColumnIndex = closures.getColumnIndex(columnId);
-  const toFilterValue = closures.cleanString(value);
+const mkColumnValueFilter = closures => ({
+  value,
+  mode,
+  columnId,
+  colId,
+  compareValue
+}) => {
+  const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
+  const filterColumnIndex = closures.getColumnIndex(id);
+  const toFilterValue = closures.cleanString(
+    mode === StatusFilterMode ? compareValue : value
+  );
   const getSortableCellValue = closures.getSortableCellValue;
 
   if (f.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
@@ -321,6 +333,12 @@ const mkColumnValueFilter = closures => ({ value, mode, columnId }) => {
 
     if (f.contains(targetCell.kind, FilterableCellKinds)) {
       return searchFunction(toFilterValue, getSortableCellValue(targetCell));
+    } else if (mode === StatusFilterMode) {
+      return StatusSearchFunction(
+        toFilterValue,
+        value,
+        getSortableCellValue(targetCell)
+      );
     } else {
       // column type not support for filtering
       return false;

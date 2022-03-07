@@ -168,7 +168,8 @@ export default class ColumnEntry extends React.PureComponent {
       navigate,
       toTable,
       index,
-      resizeIdHandler
+      resizeIdHandler,
+      fixedColumnCount
     } = this.props;
     const menuOpen = this.state.ctxCoords;
     const showDescription =
@@ -196,13 +197,13 @@ export default class ColumnEntry extends React.PureComponent {
           bottomLeft: false,
           bottomRight: false,
           left: false,
-          right: true,
+          right: kind !== ColumnKinds.status,
           top: false,
           topLeft: false,
           topRight: false
         }}
         disableDragging
-        onResizeStart={index === 1 ? resizeIdHandler : null}
+        onResizeStart={index === fixedColumnCount - 1 ? resizeIdHandler : null}
         onResizeStop={() => resizeFinishedHandler(index)}
         onResize={this.resize}
       >
@@ -232,11 +233,13 @@ export default class ColumnEntry extends React.PureComponent {
             left={left}
             bottom={bottom}
           />
-          <ContextMenuButton
-            isConcat={column.kind === ColumnKinds.concat}
-            contextMenuClass={contextMenuClass}
-            toggleContextMenu={this.toggleContextMenu}
-          />
+          {kind !== ColumnKinds.status && (
+            <ContextMenuButton
+              isConcat={column.kind === ColumnKinds.concat}
+              contextMenuClass={contextMenuClass}
+              toggleContextMenu={this.toggleContextMenu}
+            />
+          )}
           <ContextMenu
             menuOpen={menuOpen}
             closeHandler={this.closeContextMenu}

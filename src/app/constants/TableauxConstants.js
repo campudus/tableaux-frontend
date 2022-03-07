@@ -34,6 +34,8 @@ const grudConstants = {
     status: null
   }),
 
+  ImmutableColumnKinds: ["status"],
+
   LanguageType: keyMirror({
     country: null
   }),
@@ -112,8 +114,11 @@ const grudConstants = {
     POSTPONE: null,
     WITH_COMMENT: null,
     ROW_CONTAINS: null,
-    TRANSLATOR_FILTER: null
+    TRANSLATOR_FILTER: null,
+    STATUS: null
   }),
+
+  StatusFilterMode: "STATUS",
 
   get config() {
     return _config;

@@ -32,6 +32,7 @@ import MetaCellHeader from "../cells/MetaCellHeader";
 import { saveColumnWidths } from "../../helpers/localStorage";
 
 const META_CELL_WIDTH = 80;
+const STATUS_CELL_WIDTH = 120;
 const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
@@ -77,7 +78,7 @@ export default class VirtualTable extends PureComponent {
 
   saveColWidths = index => {
     this.columnStartSize = null;
-    if (index === 1) {
+    if (index === this.getFixedColumnCount() - 1) {
       window.removeEventListener("mousemove", this.setBarOffset);
       this.setState({ showResizeBar: false });
     }
@@ -102,8 +103,13 @@ export default class VirtualTable extends PureComponent {
   };
 
   calcColWidth = ({ index }) => {
+    const { hasStatusColumn } = this.props;
     const widths = this.state.columnWidths || {};
-    return index === 0 ? META_CELL_WIDTH : widths[index] || CELL_WIDTH;
+    return index === 0
+      ? META_CELL_WIDTH
+      : hasStatusColumn && index === 1
+      ? STATUS_CELL_WIDTH
+      : widths[index] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -173,6 +179,12 @@ export default class VirtualTable extends PureComponent {
         });
   };
 
+  getFixedColumnCount = () => {
+    const { visibleColumnOrdering, hasStatusColumn } = this.props;
+    const columnCount = f.size(visibleColumnOrdering) + 1;
+    return columnCount < 3 ? 0 : f.min([columnCount, hasStatusColumn ? 3 : 2]);
+  };
+
   renderColumnHeader = ({ columnIndex }) => {
     const column = this.getVisibleElement(this.props.columns, columnIndex);
     const { table, tables, actions, navigate } = this.props;
@@ -189,6 +201,7 @@ export default class VirtualTable extends PureComponent {
         width={this.calcColWidth({ index: columnIndex + 1 })}
         actions={actions}
         navigate={navigate}
+        fixedColumnCount={this.getFixedColumnCount()}
       />
     );
   };
@@ -575,7 +588,7 @@ export default class VirtualTable extends PureComponent {
                 noContentRenderer={this.renderEmptyTable}
                 rowCount={rowCount}
                 rowHeight={this.calcRowHeight}
-                fixedColumnCount={columnCount < 3 ? 0 : f.min([columnCount, 2])}
+                fixedColumnCount={this.getFixedColumnCount()}
                 fixedRowCount={1}
                 width={width}
                 height={height}
