@@ -1,13 +1,22 @@
-import { compose } from "recompose";
-import { translate } from "react-i18next";
-import React from "react";
 import f from "lodash/fp";
-import withClickOutside from "react-onclickoutside";
-
 import PropTypes from "prop-types";
-
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { config } from "../../constants/TableauxConstants";
+import React from "react";
+import { translate } from "react-i18next";
+import withClickOutside from "react-onclickoutside";
+import { compose } from "recompose";
+import pasteCellValue from "../../components/cells/cellCopyHelper";
+import {
+  ColumnKinds,
+  config,
+  Langtags
+} from "../../constants/TableauxConstants";
+import {
+  canUserChangeCell,
+  canUserCreateRow,
+  canUserDeleteRow,
+  canUserEditCellAnnotations,
+  canUserEditRowAnnotations
+} from "../../helpers/accessManagementHelper";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
@@ -17,23 +26,16 @@ import {
   setRowFinal
 } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
-import {
-  canUserChangeCell,
-  canUserEditRowAnnotations,
-  canUserEditCellAnnotations,
-  canUserCreateRow,
-  canUserDeleteRow
-} from "../../helpers/accessManagementHelper";
+import { merge } from "../../helpers/functools";
 import {
   initiateDeleteRow,
   initiateDuplicateRow,
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import { merge } from "../../helpers/functools";
+import ContextMenuServices from "../frontendService/ContextMenuEntries";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
-import pasteCellValue from "../../components/cells/cellCopyHelper";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -374,7 +376,7 @@ class RowContextMenu extends React.Component {
           {this.toggleFlagItem("important")}
           {this.toggleFlagItem("check-me")}
           {this.toggleFlagItem("postpone")}
-
+          <ContextMenuServices cell={cell} langtag={this.props.langtag} />
           <div className="separator with-line">{t("menus.data_set")}</div>
           {this.props.table.type === "settings"
             ? ""
