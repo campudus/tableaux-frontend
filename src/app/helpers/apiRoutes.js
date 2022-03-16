@@ -50,7 +50,7 @@ const toFile = (fileId, langtag) =>
   (langtag ? "?langtag=" + langtag : "");
 
 const toServiceRegistry = () => "/system/services";
-const toFrontendServiceView = (id, langtag, params) => {
+const toFrontendServiceView = (id, langtag, params = {}) => {
   const baseUrl = `/${langtag}/services/${id}`;
   return f.compose(
     str => `${str}?${toQueryString(params)}`,
