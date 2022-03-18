@@ -22,7 +22,6 @@ const ContextMenuServices = ({ cell, langtag }) => {
     <>
       {services.map(s => {
         const label = t(langtag, s.displayName);
-        const url = route.toFrontendServiceView(s.id, langtag);
 
         return (
           <ServiceLink
