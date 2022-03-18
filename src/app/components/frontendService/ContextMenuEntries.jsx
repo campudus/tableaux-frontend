@@ -27,7 +27,6 @@ const ContextMenuServices = ({ cell, langtag }) => {
         return (
           <ServiceLink
             key={s.id}
-            to={url}
             classNames="context-menu__item"
             service={s}
             langtag={langtag}
