@@ -5,6 +5,7 @@ import {
   filterCellServices,
   getAllServices
 } from "../../frontendServiceRegistry/frontendServices";
+import ServiceIcon from "../../frontendServiceRegistry/ServiceIcon";
 import route from "../../helpers/apiRoutes";
 import { retrieveTranslation as t } from "../../helpers/multiLanguage";
 import ServiceLink from "./ServiceLink";
@@ -36,7 +37,7 @@ const ContextMenuServices = ({ cell, langtag }) => {
               columnId: column.id
             }}
           >
-            <i className={`context-menu__icon fa fa-${s.icon}`} />
+            <ServiceIcon classNames="context-menu__icon" service={s} />
             <div className="context-menu__item-label item-label">{label}</div>
           </ServiceLink>
         );
