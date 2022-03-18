@@ -18,6 +18,7 @@ const ServiceLink = ({ service, langtag, params = {}, children, classNames }) =>
     </a>
   ) : (
     <Link
+      classNames={classNames}
       to={route.toFrontendServiceView(service.id, langtag, {
         ...params,
         langtag
