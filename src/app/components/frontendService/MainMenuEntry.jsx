@@ -1,21 +1,15 @@
-import React from "react";
-
 import PropTypes from "prop-types";
-
-import { retrieveTranslation } from "../../helpers/multiLanguage";
-import { Link } from "react-router-dom";
+import React from "react";
 import ServiceIcon from "../../frontendServiceRegistry/ServiceIcon";
-import route from "../../helpers/apiRoutes";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import ServiceLink from "./ServiceLink";
 
-const MainMenuEntry = ({ service, service: { displayName, id }, langtag }) => (
+const MainMenuEntry = ({ service, service: { displayName }, langtag }) => (
   <li className="main-navigation__entry">
-    <Link
-      to={route.toFrontendServiceView(id, langtag)}
-      className="main-navigation__entry-button"
-    >
+    <ServiceLink classNames="main-navigation__entry-button" langtag={langtag}>
       <ServiceIcon service={service} />
       {retrieveTranslation(langtag, displayName)}
-    </Link>
+    </ServiceLink>
   </li>
 );
 
