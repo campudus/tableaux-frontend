@@ -6,7 +6,6 @@ import {
   getAllServices
 } from "../../frontendServiceRegistry/frontendServices";
 import ServiceIcon from "../../frontendServiceRegistry/ServiceIcon";
-import route from "../../helpers/apiRoutes";
 import { retrieveTranslation as t } from "../../helpers/multiLanguage";
 import ServiceLink from "./ServiceLink";
 
