@@ -1,5 +1,4 @@
 import f from "lodash/fp";
-
 import { replaceMoustache } from "../helpers/functools";
 
 export const expandServiceUrl = f.curryN(2, (values, serviceUrl) => {
