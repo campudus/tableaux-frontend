@@ -33,9 +33,9 @@ const enhance = compose(
 
 const SelectableShortText = props => {
   const {
-    actions,
     focusTable,
-    onBlur,
+    onChange,
+    onFinish,
     requestedData,
     setCellKeyboardShortcuts,
     value
@@ -45,26 +45,21 @@ const SelectableShortText = props => {
   const [isCompletionSelected, setIsCompletionSelected] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [shouldInvertList, setShouldInvertList] = useState(false);
-  const [curValue, setCurValue] = useState(value);
 
   useEffect(() => setCellKeyboardShortcuts({}));
 
-  const exitEditMode = () => {
-    actions.toggleCellEditing({ editing: false });
-    focusTable();
-  };
   const handleTextChange = event => {
-    const value = event.currentTarget.value;
+    const inputValue = event.currentTarget.value;
     const completionsForValue = extractAndFilterCompletions(
-      value,
+      inputValue,
       requestedData
     );
-    setCurValue(value);
+    onChange(inputValue);
     setCompletions(completionsForValue);
     setSelectedIdx(f.clamp(0, f.size(completions) - 1, selectedIdx)); // clamp selection inside new list
     setIsCompletionSelected(false);
   };
-  const handleSaveEdits = value => onBlur(value);
+
   const handleSetSelectedIdx = idx => {
     const l = f.size(completions);
     const boundedIdx = (idx + l) % l;
@@ -80,8 +75,7 @@ const SelectableShortText = props => {
     const completionValue = f.get(selectedIdx, completions);
     setCompletions(completionValue);
     setIsCompletionSelected(false);
-    handleSaveEdits(completionValue);
-    exitEditMode();
+    onChange(completionValue);
   };
   const handleMouseSelection = idx => {
     const idxToSet = shouldInvertList ? f.size(completions) - 1 - idx : idx;
@@ -101,15 +95,14 @@ const SelectableShortText = props => {
         event.stopPropagation();
         return updateSelectionIdx(+1);
       case "Escape":
-        exitEditMode();
+        onFinish(false);
         return focusTable();
       case "Enter":
         event.stopPropagation();
         if (isCompletionSelected) {
-          applySelectedCompletion(); // implicitly exits edit mode
+          applySelectedCompletion();
         } else {
-          handleSaveEdits(curValue);
-          exitEditMode();
+          onFinish();
         }
         return focusTable();
       default:
@@ -118,7 +111,7 @@ const SelectableShortText = props => {
   };
 
   const placeCaret = inputNode => {
-    const l = f.size(curValue);
+    const l = f.size(value);
     maybe(inputNode).method("setSelectionRange", l, l);
   };
   const placeCompletionList = listContainerNode => {
@@ -143,7 +136,7 @@ const SelectableShortText = props => {
     >
       <input
         ref={placeCaret}
-        value={curValue}
+        value={value}
         onChange={handleTextChange}
         onMouseDown={stopPropagation}
         onClick={stopPropagation}
@@ -181,9 +174,10 @@ const SelectableShortText = props => {
 };
 
 SelectableShortText.propTypes = {
-  onBlur: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onFinish: PropTypes.func.isRequired,
   setCellKeyboardShortcuts: PropTypes.func.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+  value: PropTypes.string.isRequired,
   displayValue: PropTypes.object
 };
 
