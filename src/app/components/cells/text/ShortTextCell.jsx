@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import f from "lodash/fp";
 import TextCell from "./TextCell";
 import SelectableShortText from "./SelectableShortText";
@@ -13,51 +13,72 @@ const ShortTextCell = props => {
     langtag,
     setCellKeyboardShortcuts,
     value,
-    focusTable,
-    displayValue
+    focusTable
   } = props;
+
+  const isMultiLang = column.multilanguage;
 
   if (f.contains("\n", value)) {
     return <TextCell {...props} />;
   }
 
+  const originalValue = isMultiLang ? value[langtag] : value;
+
+  const [editorValue, setEditorValue] = useState(originalValue);
+  const saveEdits = () => handleEditDone(editorValue);
+  const handleFinish = (shouldSave = true) => {
+    if (shouldSave) {
+      handleEditDone(editorValue);
+    } else {
+      setEditorValue(originalValue);
+    }
+    actions.toggleCellEditing({ editing: false });
+    focusTable();
+  };
+
+  useEffect(() => {
+    if (!editing) {
+      saveEdits();
+    }
+  }, [editing]);
+
   return editing ? (
     <SelectableShortText
       focusTable={focusTable}
       langtag={langtag}
-      value={value}
+      value={editorValue}
       table={table}
       column={column}
-      onBlur={handleEditDone}
+      onChange={setEditorValue}
+      onFinish={handleFinish}
       setCellKeyboardShortcuts={setCellKeyboardShortcuts}
       actions={actions}
     />
   ) : (
-    <div className="cell-content">{displayValue[langtag] || ""}</div>
+    <div className="cell-content">{editorValue}</div>
   );
 };
 
-class ShortTextCellContainer extends React.PureComponent {
-  handleEditDone = newValue => {
-    const { value, actions, column, row, table, langtag } = this.props;
-    const valueToSave = column.multilanguage
-      ? { [langtag]: newValue }
-      : newValue;
-    actions.changeCellValue({
-      tableId: table.id,
-      column,
-      columnId: column.id,
-      rowId: row.id,
-      oldValue: value,
-      newValue: valueToSave
-    });
-  };
+const ShortTextCellContainer = props => {
+  const { value, actions, column, row, table, langtag } = props;
+  const handleEditDone = useCallback(
+    newValue => {
+      const valueToSave = column.multilanguage
+        ? { [langtag]: newValue }
+        : newValue;
+      actions.changeCellValue({
+        tableId: table.id,
+        column,
+        columnId: column.id,
+        rowId: row.id,
+        oldValue: value,
+        newValue: valueToSave
+      });
+    },
+    [value, column.id, row.id, table.id, langtag]
+  );
 
-  render() {
-    return (
-      <ShortTextCell {...this.props} handleEditDone={this.handleEditDone} />
-    );
-  }
-}
+  return <ShortTextCell {...props} handleEditDone={handleEditDone} />;
+};
 
 export default ShortTextCellContainer;

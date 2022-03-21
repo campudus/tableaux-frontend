@@ -6,7 +6,11 @@ import ServiceLink from "./ServiceLink";
 
 const MainMenuEntry = ({ service, service: { displayName }, langtag }) => (
   <li className="main-navigation__entry">
-    <ServiceLink classNames="main-navigation__entry-button" langtag={langtag} service={service}>
+    <ServiceLink
+      classNames="main-navigation__entry-button"
+      langtag={langtag}
+      service={service}
+    >
       <ServiceIcon service={service} />
       {retrieveTranslation(langtag, displayName)}
     </ServiceLink>
