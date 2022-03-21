@@ -30,3 +30,10 @@ const ServiceLink = ({ service, langtag, params = {}, children, classNames }) =>
 
 ServiceLink.displayName = "ServiceLink";
 export default ServiceLink;
+
+ServiceLink.propTypes = {
+  service: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  params: PropTypes.object,
+  classNames: PropTypes.string
+};
