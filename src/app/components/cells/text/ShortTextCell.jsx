@@ -13,8 +13,7 @@ const ShortTextCell = props => {
     langtag,
     setCellKeyboardShortcuts,
     value,
-    focusTable,
-    displayValue
+    focusTable
   } = props;
 
   const isMultiLang = column.multilanguage;
