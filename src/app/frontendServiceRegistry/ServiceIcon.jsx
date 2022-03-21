@@ -23,7 +23,7 @@ const ImageIcon = ({ url, base64 }) => {
 
 const FontIcon = ({ fontIconKey }) => <i className={"fa " + fontIconKey} />;
 
-const ServiceIcon = ({ service }) => {
+const ServiceIcon = ({ service, classNames }) => {
   const iconConfig = f.prop(["config", "icon"], service);
   const serviceHasIcon =
     iconConfig &&
@@ -38,8 +38,10 @@ const ServiceIcon = ({ service }) => {
       : "image"
     : ImageTypes.IMAGE;
 
+  const cssClass = `service-icon ${classNames || ""}`;
+
   return (
-    <div className="service-icon">
+    <div className={cssClass}>
       {serviceHasIcon ? (
         iconType === ImageTypes.FONT ? (
           <FontIcon fontIconKey={iconConfig.fontAwesome} />
