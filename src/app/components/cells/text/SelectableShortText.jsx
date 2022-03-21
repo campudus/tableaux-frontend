@@ -101,9 +101,8 @@ const SelectableShortText = props => {
         event.stopPropagation();
         if (isCompletionSelected) {
           applySelectedCompletion();
-        } else {
-          onFinish();
         }
+        onFinish();
         return focusTable();
       default:
         return;
