@@ -1,5 +1,6 @@
-import React from "react";
 import f from "lodash/fp";
+import PropTypes from "prop-types";
+import React from "react";
 import { Link } from "react-router-dom";
 import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
 import route from "../../helpers/apiRoutes";
@@ -32,8 +33,8 @@ ServiceLink.displayName = "ServiceLink";
 export default ServiceLink;
 
 ServiceLink.propTypes = {
-  service: PropTypes.object.isRequired,
+  classNames: PropTypes.string,
   langtag: PropTypes.string.isRequired,
   params: PropTypes.object,
-  classNames: PropTypes.string
+  service: PropTypes.object.isRequired
 };
