@@ -76,6 +76,7 @@ const SelectableShortText = props => {
     setCompletions(completionValue);
     setIsCompletionSelected(false);
     onChange(completionValue);
+    onFinish();
   };
   const handleMouseSelection = idx => {
     const idxToSet = shouldInvertList ? f.size(completions) - 1 - idx : idx;
@@ -100,9 +101,10 @@ const SelectableShortText = props => {
       case "Enter":
         event.stopPropagation();
         if (isCompletionSelected) {
-          applySelectedCompletion();
+          applySelectedCompletion(); // implicit finish
+        } else {
+          onFinish();
         }
-        onFinish();
         return focusTable();
       default:
         return;
