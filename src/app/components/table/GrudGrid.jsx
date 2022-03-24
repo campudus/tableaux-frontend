@@ -91,10 +91,10 @@ export default class GrudGrid extends MultiGrid {
     this.setState(newPosition);
   });
 
-  translateElement(element, position) {
+  translateElement(element, transformation) {
     if (element && element.firstChild) {
-      if (position) {
-        element.firstChild.style.transform = position;
+      if (transformation) {
+        element.firstChild.style.transform = transformation;
       } else {
         element.firstChild.style.removeProperty("transform");
       }
@@ -105,34 +105,21 @@ export default class GrudGrid extends MultiGrid {
     if (!this._trgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);
-      if (this._trgParent) {
-        this._trgParent.onmouseenter = () => (this.hovered = this._blgParent);
-      }
     }
     if (!this._blgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._blgParent = ReactDOM.findDOMNode(this._bottomLeftGrid);
-      if (this._blgParent) {
-        this._blgParent.onmouseenter = () => (this.hovered = this._blgParent);
-      }
     }
     if (!this._brgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._brgParent = ReactDOM.findDOMNode(this._bottomRightGrid);
-      if (this._brgParent) {
-        this._brgParent.onmouseenter = () => (this.hovered = this._brgParent);
-      }
     }
 
     const y = this.state.scrollTop - scrollTop;
     const x = this.state.scrollLeft - scrollLeft;
 
-    if (this.hovered !== this._blgParent) {
-      this.translateElement(this._blgParent, `translateY(${y}px)`);
-    }
-    if (this.hovered !== this._brgParent) {
-      this.translateElement(this._brgParent, `translateY(${y}px)`);
-    }
+    // only the bottom right grid is scrollable, so always adapt the bottom-left and top-right
+    this.translateElement(this._blgParent, `translateY(${y}px)`);
     this.translateElement(this._trgParent, `translateX(${x}px)`);
     this.recalculateScrollPosition.start({ scrollLeft, scrollTop });
   }
