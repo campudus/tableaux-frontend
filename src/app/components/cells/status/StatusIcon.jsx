@@ -19,14 +19,16 @@ const StatusIcon = props => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const additionalClasses = blockMode ? "status-icon__block " : "";
   const nameToDisplay = tooltip[langtag || "de"];
+  const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
+  const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
+
   return (
     <div
       className={`status-icon ${additionalClasses}`}
-      onMouseEnter={() => setTooltipVisible(true)}
-      onMouseLeave={() => setTooltipVisible(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => !blockMode && clickHandler(nameToDisplay)}
     >
-      {!blockMode && tooltipVisible && (
         <StatusIconTooltip translations={tooltip} invert={invertTooltip} />
       )}
       <FontIcon style={{ color }} fontIconKey={value} />
