@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import StatusIconTooltip from "../../helperComponents/Tooltip/Tooltip";
 
 const FontIcon = ({ fontIconKey, style }) => (
@@ -12,8 +12,7 @@ const StatusIcon = props => {
     blockMode = false,
     langtag,
     tooltip,
-    clickHandler,
-    invertTooltip
+    clickHandler
   } = props;
   const { value } = icon;
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -29,8 +28,9 @@ const StatusIcon = props => {
       onMouseLeave={handleMouseLeave}
       onClick={() => !blockMode && clickHandler(nameToDisplay)}
     >
-        <StatusIconTooltip translations={tooltip} invert={invertTooltip} />
-      )}
+      {!blockMode && tooltipVisible ? (
+        <StatusIconTooltip langtag={langtag} translations={tooltip} />
+      ) : null}
       <FontIcon style={{ color }} fontIconKey={value} />
       {blockMode && <div>{nameToDisplay}</div>}
     </div>

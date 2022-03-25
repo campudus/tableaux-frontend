@@ -8,8 +8,7 @@ const StatusCell = props => {
   const {
     cell: { column, value },
     langtag,
-    actions: { appendFilters },
-    rowIndex
+    actions: { appendFilters }
   } = props;
 
   const filterStatus = columnId => value => {
@@ -35,7 +34,6 @@ const StatusCell = props => {
         tooltip={findElementForLanguage(val.tooltip, val.displayName)}
         langtag={langtag}
         clickHandler={filterStatus(column.id)}
-        invertTooltip={rowIndex === 0}
       />
     )),
     f.filter({ value: true }),
