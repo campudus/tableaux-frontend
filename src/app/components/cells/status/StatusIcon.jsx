@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import StatusIconTooltip from "../../helperComponents/Tooltip/Tooltip";
 
 const FontIcon = ({ fontIconKey, style }) => (
@@ -17,7 +18,7 @@ const StatusIcon = props => {
   const { value } = icon;
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const additionalClasses = blockMode ? "status-icon__block " : "";
-  const nameToDisplay = tooltip[langtag || "de"];
+  const nameToDisplay = retrieveTranslation(langtag, tooltip);
   const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
   const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
 
