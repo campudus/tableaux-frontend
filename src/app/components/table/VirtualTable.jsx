@@ -349,11 +349,14 @@ export default class VirtualTable extends PureComponent {
       table: { id, type },
       table,
       actions: { addEmptyRow, showToast },
-      rows
+      rows,
+      columns
     } = this.props;
+    const hasStatusColumn = columns.find(c => c.kind === ColumnKinds.status);
+    const rowButtonColumn = hasStatusColumn ? 2 : 1;
     if (
       type !== "settings" &&
-      columnIndex === 1 &&
+      columnIndex === rowButtonColumn &&
       canUserCreateRow({ table })
     ) {
       return (
