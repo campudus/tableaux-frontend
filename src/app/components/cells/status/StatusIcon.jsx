@@ -7,18 +7,18 @@ const FontIcon = ({ fontIconKey, style }) => (
 
 const StatusIcon = props => {
   const {
-    icon,
+    icon, // TODO: support all allowed icon types
     color,
     blockMode = false,
     langtag,
-    displayName,
+    tooltip,
     clickHandler,
     invertTooltip
   } = props;
   const { value } = icon;
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const additionalClasses = blockMode ? "status-icon__block " : "";
-  const nameToDisplay = displayName[langtag || "de"];
+  const nameToDisplay = tooltip[langtag || "de"];
   return (
     <div
       className={`status-icon ${additionalClasses}`}
@@ -27,7 +27,7 @@ const StatusIcon = props => {
       onClick={() => !blockMode && clickHandler(nameToDisplay)}
     >
       {!blockMode && tooltipVisible && (
-        <StatusIconTooltip translations={displayName} invert={invertTooltip} />
+        <StatusIconTooltip translations={tooltip} invert={invertTooltip} />
       )}
       <FontIcon style={{ color }} fontIconKey={value} />
       {blockMode && <div>{nameToDisplay}</div>}

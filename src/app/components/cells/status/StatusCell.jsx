@@ -1,7 +1,8 @@
-import React from "react";
-import StatusIcon from "./StatusIcon";
-import { FilterModes } from "../../../constants/TableauxConstants";
 import f from "lodash/fp";
+import React from "react";
+import { FilterModes } from "../../../constants/TableauxConstants";
+import StatusIcon from "./StatusIcon";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 const StatusCell = props => {
   const {
@@ -22,25 +23,26 @@ const StatusCell = props => {
     });
   };
 
-  const renderSymbols = () => {
-    const valuesToRender = f.compose(
-      f.map(val => (
-        <StatusIcon
-          key={"StatusIcon " + val.name}
-          icon={val.icon}
-          color={val.color}
-          displayName={val.displayName}
-          langtag={langtag}
-          clickHandler={filterStatus(column.id)}
-          invertTooltip={rowIndex === 0}
-        />
-      )),
-      f.filter({ value: true }),
-      f.zipWith((a, b) => ({ value: a, ...b }), value)
-    )(column.rules);
-    return valuesToRender;
-  };
-  return <div className="status-cell">{renderSymbols()}</div>;
+  const findElementForLanguage = (...elems) =>
+    elems.find(retrieveTranslation(langtag)) || {};
+
+  const renderSymbols = f.compose(
+    f.map(val => (
+      <StatusIcon
+        key={"StatusIcon " + val.name}
+        icon={val.icon}
+        color={val.color}
+        tooltip={findElementForLanguage(val.tooltip, val.displayName)}
+        langtag={langtag}
+        clickHandler={filterStatus(column.id)}
+        invertTooltip={rowIndex === 0}
+      />
+    )),
+    f.filter({ value: true }),
+    f.zipWith((a, b) => ({ value: a, ...b }), value)
+  );
+
+  return <div className="status-cell">{renderSymbols(column.rules)}</div>;
 };
 
 export default StatusCell;
