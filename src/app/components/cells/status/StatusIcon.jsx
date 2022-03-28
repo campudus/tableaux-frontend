@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import StatusIconTooltip from "../../helperComponents/Tooltip/Tooltip";
 
 const FontIcon = ({ fontIconKey, style }) => (
@@ -7,28 +8,31 @@ const FontIcon = ({ fontIconKey, style }) => (
 
 const StatusIcon = props => {
   const {
-    icon,
-    color,
     blockMode = false,
-    langtag,
-    displayName,
     clickHandler,
-    invertTooltip
+    color,
+    filterValue,
+    icon, // TODO: support all allowed icon types
+    langtag,
+    tooltip
   } = props;
   const { value } = icon;
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const additionalClasses = blockMode ? "status-icon__block " : "";
-  const nameToDisplay = displayName[langtag || "de"];
+  const nameToDisplay = retrieveTranslation(langtag, tooltip);
+  const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
+  const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
+
   return (
     <div
       className={`status-icon ${additionalClasses}`}
-      onMouseEnter={() => setTooltipVisible(true)}
-      onMouseLeave={() => setTooltipVisible(false)}
-      onClick={() => !blockMode && clickHandler(nameToDisplay)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={() => !blockMode && clickHandler(filterValue)}
     >
-      {!blockMode && tooltipVisible && (
-        <StatusIconTooltip translations={displayName} invert={invertTooltip} />
-      )}
+      {!blockMode && tooltipVisible ? (
+        <StatusIconTooltip langtag={langtag} translations={tooltip} />
+      ) : null}
       <FontIcon style={{ color }} fontIconKey={value} />
       {blockMode && <div>{nameToDisplay}</div>}
     </div>

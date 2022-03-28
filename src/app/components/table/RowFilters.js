@@ -1,11 +1,10 @@
 import f from "lodash/fp";
-
 import {
   ColumnKinds,
   FilterModes,
-  StatusFilterMode,
+  RowIdColumn,
   SortValues,
-  RowIdColumn
+  StatusFilterMode
 } from "../../constants/TableauxConstants";
 import { doto, either, withTryCatch } from "../../helpers/functools";
 import searchFunctions, {
@@ -367,24 +366,7 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
 
   const getPlainValue = cell =>
     cell.isMultiLanguage ? cell.value[langtag] : cell.value;
-  const getStatusValue = cell => {
-    const {
-      column: { rules },
-      value
-    } = cell;
-    return f.compose(
-      f.join("::"),
-      f.map(f.get(["displayValue", langtag])),
-      f.filter("value"),
-      f.zipWith(
-        (singleValue, rule) => ({
-          value: singleValue,
-          displayValue: rule.displayName
-        }),
-        value
-      )
-    )(rules);
-  };
+  const getStatusValue = cell => cell.displayValue;
 
   const getSortableCellValue = cell => {
     const rawValue = f.cond([
@@ -476,7 +458,7 @@ const completeRowInformation = (columns, table, rows, allDisplayValues) => {
           ? values[colIndex].map(link =>
               getLinkDisplayValue(columns[colIndex].toTable)(link.id)
             )
-          : tableDisplayValues[rowIndex].values[colIndex],
+          : f.get([rowIndex, "values", colIndex], tableDisplayValues),
       value: values[colIndex]
     }))
   }));
