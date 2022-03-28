@@ -66,7 +66,7 @@ Default project configuration can be overwritten via a `config.json` in the base
   "webhookUrl": "..",                             // url for Slack webhook to receive user feedback
   "authServerUrl": "http://localhost:8081/auth",  // Keycloak
   "authRealm": "GRUD",                            // Keycloak realm
-  "clientId": "grud-frontend",                    // Keycloak clientId
+  "authClientId": "grud-frontend",                // Keycloak clientId
   "disableAuth": true                             // disable authentication for frontends behind old proxy (default: false)
 }
 ```
