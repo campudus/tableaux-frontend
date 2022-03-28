@@ -19,9 +19,12 @@ const SearchFunctions = {
 
 export const StatusSearchFunction = f.curry(
   (stringOfFilters, shouldContain, str) => {
+    const filterWords = f.words(clean(stringOfFilters));
+    const cleanedInput = clean(str);
+    const isInInput = f.contains(f.__, cleanedInput);
     return shouldContain
-      ? f.contains(stringOfFilters, str)
-      : !f.contains(stringOfFilters, str);
+      ? f.every(isInInput, filterWords)
+      : !f.some(isInInput, filterWords);
   }
 );
 

@@ -3,6 +3,7 @@ import React from "react";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import StatusIcon from "./StatusIcon";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import { getCellId } from "../../../helpers/getCellId";
 
 const StatusCell = props => {
   const {
@@ -11,19 +12,22 @@ const StatusCell = props => {
     actions: { appendFilters }
   } = props;
 
-  const filterStatus = columnId => value => {
-    appendFilters({
+  const setStatusFilter = columnId => value => {
+    const filterToSet = {
       colId: columnId,
       compareValue: value,
       value: true,
       columnId: value,
       mode: FilterModes.STATUS,
       columnKind: "status"
-    });
+    };
+    appendFilters(filterToSet);
   };
 
   const findElementForLanguage = (...elems) =>
-    elems.find(retrieveTranslation(langtag)) || {};
+    elems.find(
+      elem => !f.isEmpty(elem) && !!retrieveTranslation(langtag, elem)
+    ) || {};
 
   const renderSymbols = f.compose(
     f.map(val => (
@@ -32,8 +36,9 @@ const StatusCell = props => {
         icon={val.icon}
         color={val.color}
         tooltip={findElementForLanguage(val.tooltip, val.displayName)}
+        filterValue={val.name}
         langtag={langtag}
-        clickHandler={filterStatus(column.id)}
+        clickHandler={setStatusFilter(column.id)}
       />
     )),
     f.filter({ value: true }),

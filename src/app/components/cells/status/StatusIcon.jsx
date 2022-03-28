@@ -8,12 +8,13 @@ const FontIcon = ({ fontIconKey, style }) => (
 
 const StatusIcon = props => {
   const {
-    icon, // TODO: support all allowed icon types
-    color,
     blockMode = false,
+    clickHandler,
+    color,
+    filterValue,
+    icon, // TODO: support all allowed icon types
     langtag,
-    tooltip,
-    clickHandler
+    tooltip
   } = props;
   const { value } = icon;
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -27,7 +28,7 @@ const StatusIcon = props => {
       className={`status-icon ${additionalClasses}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => !blockMode && clickHandler(nameToDisplay)}
+      onClick={() => !blockMode && clickHandler(filterValue)}
     >
       {!blockMode && tooltipVisible ? (
         <StatusIconTooltip langtag={langtag} translations={tooltip} />

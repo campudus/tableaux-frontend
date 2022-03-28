@@ -36,6 +36,8 @@ const retrieveDisplayValue = column => value => {
       return getCurrencyValue(column)(value);
     case ColumnKinds.numeric:
       return getNumberValue(column)(value);
+    case ColumnKinds.status:
+      return getStatusValue(column)(value);
     default:
       if (f.startsWith("date", column.kind)) {
         return getDateValue(column)(value);
@@ -122,6 +124,12 @@ const getDateValue = column => value => {
   };
   return applyToAllLangs(getDate);
 };
+
+const getStatusValue = column => value =>
+  (column.rules || [])
+    .filter((_, idx) => value[idx])
+    .map(rule => rule.name)
+    .join(",");
 
 const getLinkValue = column =>
   f.map(
