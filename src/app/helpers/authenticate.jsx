@@ -27,8 +27,8 @@ export const getLogin = f.memoize(
         const keycloakSettings = {
           realm: config.authRealm,
           url: config.authServerUrl,
-          resource: "grud-frontend",
-          clientId: "grud-frontend",
+          resource: config.clientId,
+          clientId: config.clientId,
           "ssl-required": "external",
           "public-client": true,
           "confidential-port": 0
