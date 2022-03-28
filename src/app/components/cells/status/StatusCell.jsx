@@ -1,9 +1,8 @@
 import f from "lodash/fp";
 import React from "react";
 import { FilterModes } from "../../../constants/TableauxConstants";
-import StatusIcon from "./StatusIcon";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { getCellId } from "../../../helpers/getCellId";
+import StatusIcon from "./StatusIcon";
 
 const StatusCell = props => {
   const {
