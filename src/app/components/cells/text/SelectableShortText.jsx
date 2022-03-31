@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { compose, withProps } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
-import { maybe, stopPropagation } from "../../../helpers/functools";
+import { stopPropagation } from "../../../helpers/functools";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import needsAPIData from "../../helperComponents/needsAPIData";
 import SelectableCompletionList, {
