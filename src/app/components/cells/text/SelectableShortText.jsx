@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { compose, withProps } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
-import { maybe, stopPropagation } from "../../../helpers/functools";
+import { stopPropagation } from "../../../helpers/functools";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import needsAPIData from "../../helperComponents/needsAPIData";
 import SelectableCompletionList, {
@@ -111,10 +111,6 @@ const SelectableShortText = props => {
     }
   };
 
-  const placeCaret = inputNode => {
-    const l = f.size(value);
-    maybe(inputNode).method("setSelectionRange", l, l);
-  };
   const placeCompletionList = listContainerNode => {
     if (f.isNil(listContainerNode)) return;
     const rect = listContainerNode.getBoundingClientRect();
@@ -136,7 +132,6 @@ const SelectableShortText = props => {
       ref={placeCompletionList}
     >
       <input
-        ref={placeCaret}
         value={value}
         onChange={handleTextChange}
         onMouseDown={stopPropagation}
