@@ -17,7 +17,8 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 
 const {
   TOGGLE_EXPANDED_ROW,
-  COPY_CELL_VALUE_TO_CLIPBOARD
+  COPY_CELL_VALUE_TO_CLIPBOARD,
+  RERENDER_TABLE
 } = ActionTypes.tableView;
 const {
   SET_STATE,
@@ -58,7 +59,8 @@ const initialState = {
   history: {
     undoQueue: [],
     redoQueue: []
-  }
+  },
+  rerenderTable: ""
 };
 
 const mergeDisplayValues = (oldDisplayValues, newDisplayValues) =>
@@ -161,20 +163,20 @@ const toggleExpandedRow = (state, action) => {
 const setInitialVisibleColumns = action => state =>
   f.isEmpty(f.get("visibleColumns", state))
     ? f.flow(
-        f.prop(["result", "columns"]),
-        f.slice(0, 10),
-        f.map("id"),
-        ids => f.assoc("visibleColumns")(ids)(state)
-      )(action)
+      f.prop(["result", "columns"]),
+      f.slice(0, 10),
+      f.map("id"),
+      ids => f.assoc("visibleColumns")(ids)(state)
+    )(action)
     : state;
 
 const setInitialColumnOrdering = action => state =>
   f.isEmpty(f.get("columnOrdering", state))
     ? f.flow(
-        f.prop(["result", "columns"]),
-        mapIndexed(({ id }, idx) => ({ id, idx })),
-        ids => f.assoc("columnOrdering", ids, state)
-      )(action)
+      f.prop(["result", "columns"]),
+      mapIndexed(({ id }, idx) => ({ id, idx })),
+      ids => f.assoc("columnOrdering", ids, state)
+    )(action)
     : state;
 
 const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
@@ -293,7 +295,6 @@ const modifyHistory = action => state => {
 };
 
 export default (state = initialState, action, completeState) => {
-  // console.log(action)
   switch (action.type) {
     case SET_STATE:
       return action.state.tableView;
@@ -381,6 +382,11 @@ export default (state = initialState, action, completeState) => {
         expandedRowIds: [],
         visibleColumns: []
       };
+    case RERENDER_TABLE:
+      return {
+        ...state,
+        rerenderTable: Math.random()
+      }
     default:
       return state;
   }

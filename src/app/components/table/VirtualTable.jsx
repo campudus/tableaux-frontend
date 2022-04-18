@@ -45,7 +45,7 @@ export default class VirtualTable extends PureComponent {
     this.didInitialCellScroll = false;
     this.state = {
       openAnnotations: {},
-      scrolledCell: props.selectedCell,
+      scrolledCell: {},
       lastScrolledCell: {},
       newRowAdded: false,
       showResizeBar: false,
@@ -108,8 +108,8 @@ export default class VirtualTable extends PureComponent {
     return index === 0
       ? META_CELL_WIDTH
       : hasStatusColumn && index === 1
-      ? STATUS_CELL_WIDTH
-      : widths[index] || CELL_WIDTH;
+        ? STATUS_CELL_WIDTH
+        : widths[index] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -167,16 +167,16 @@ export default class VirtualTable extends PureComponent {
 
     return gridData.rowIndex === 0
       ? this.renderColumnHeader({
-          ...gridData,
-          key: `cell-${gridData.key}`,
-          columnIndex: gridData.columnIndex - 1
-        })
+        ...gridData,
+        key: `cell-${gridData.key}`,
+        columnIndex: gridData.columnIndex - 1
+      })
       : this.renderCell({
-          ...gridData,
-          key: `cell-${gridData.key}`,
-          rowIndex: gridData.rowIndex - 1,
-          columnIndex: gridData.columnIndex - 1
-        });
+        ...gridData,
+        key: `cell-${gridData.key}`,
+        rowIndex: gridData.rowIndex - 1,
+        columnIndex: gridData.columnIndex - 1
+      });
   };
 
   getFixedColumnCount = () => {
@@ -432,6 +432,9 @@ export default class VirtualTable extends PureComponent {
     if (changeInRowSelection) {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
+    if (this.props.rerenderTable !== next.rerenderTable) {
+      this.scrollToCell()
+    }
   }
 
   isSelectedCellValid = selectedCell => {
@@ -442,16 +445,6 @@ export default class VirtualTable extends PureComponent {
     const {
       selectedCell: { selectedCell }
     } = store.getState();
-    const { lastScrolledCell } = this.state;
-
-    if (!this.isSelectedCellValid(selectedCell)) {
-      // when called by cell deselection
-      this.setState({
-        scrolledCell: {},
-        lastScrolledCell
-      });
-      return false;
-    }
 
     const { rows, columns, visibleColumnOrdering } = this.props;
     const rowIndex = f.add(
@@ -552,9 +545,9 @@ export default class VirtualTable extends PureComponent {
 
     const selectedCellKey = this.isSelectedCellValid(selectedCell)
       ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
-          "colId",
-          this.selectedCell
-        )}-${selectedCellEditing}-${selectedCellExpandedRow}`
+        "colId",
+        this.selectedCell
+      )}-${selectedCellEditing}-${selectedCellExpandedRow}`
       : "";
 
     const resizeBarClass = showResizeBar
@@ -564,6 +557,7 @@ export default class VirtualTable extends PureComponent {
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
+
 
     return (
       <section

@@ -44,7 +44,8 @@ const mapStatetoProps = (state, props) => {
     visibleColumns,
     filters,
     sorting,
-    columnOrdering
+    columnOrdering,
+    rerenderTable
   } = tableView;
   const allDisplayValues = f.get(["tableView", "displayValues"], state);
 
@@ -65,7 +66,8 @@ const mapStatetoProps = (state, props) => {
     sorting,
     finishedLoading,
     columnOrdering,
-    hasStatusColumn
+    hasStatusColumn,
+    rerenderTable
   };
 };
 
@@ -107,7 +109,8 @@ class TableView extends PureComponent {
       visibleRows,
       finishedLoading,
       visibleColumnOrdering,
-      hasStatusColumn
+      hasStatusColumn,
+      rerenderTable
     } = this.props;
     if (!canRenderTable) {
       return (
@@ -143,6 +146,7 @@ class TableView extends PureComponent {
             finishedLoading={finishedLoading}
             visibleColumnOrdering={visibleColumnOrdering}
             hasStatusColumn={hasStatusColumn}
+            rerenderTable={rerenderTable}
           />
         </div>
       );
@@ -175,7 +179,7 @@ class TableView extends PureComponent {
     if (
       hasSlowFilters(settings) &&
       currentTable.rows.length * currentTable.columns.length >
-        BIG_TABLE_THRESHOLD
+      BIG_TABLE_THRESHOLD
     ) {
       showDialog({
         type: "question",
