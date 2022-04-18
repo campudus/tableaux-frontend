@@ -54,9 +54,9 @@ class ColumnFilterPopup extends React.Component {
     const lvl1 = col => col !== f.first(columns); // ignore ID column
     const lvl2 = filter
       ? f.flow(
-        this.getColName,
-        SearchFunctions[filter.type](filter.value)
-      )
+          this.getColName,
+          SearchFunctions[filter.type](filter.value)
+        )
       : f.stubTrue; // ...or pass all
     return f.allPass([lvl1, lvl2]);
   };
@@ -201,8 +201,13 @@ class ColumnFilterPopup extends React.Component {
 
     const focusColumn = event => {
       stopPropagation(event);
-      store.dispatch(actions.toggleCellSelection({ columnId: col.id, tableId: this.props.tableId }));
-      store.dispatch(actions.rerenderTable())
+      store.dispatch(
+        actions.toggleCellSelection({
+          columnId: col.id,
+          tableId: this.props.tableId
+        })
+      );
+      store.dispatch(actions.rerenderTable());
     };
 
     return (

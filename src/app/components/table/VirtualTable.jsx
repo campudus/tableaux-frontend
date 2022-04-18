@@ -108,8 +108,8 @@ export default class VirtualTable extends PureComponent {
     return index === 0
       ? META_CELL_WIDTH
       : hasStatusColumn && index === 1
-        ? STATUS_CELL_WIDTH
-        : widths[index] || CELL_WIDTH;
+      ? STATUS_CELL_WIDTH
+      : widths[index] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -167,16 +167,16 @@ export default class VirtualTable extends PureComponent {
 
     return gridData.rowIndex === 0
       ? this.renderColumnHeader({
-        ...gridData,
-        key: `cell-${gridData.key}`,
-        columnIndex: gridData.columnIndex - 1
-      })
+          ...gridData,
+          key: `cell-${gridData.key}`,
+          columnIndex: gridData.columnIndex - 1
+        })
       : this.renderCell({
-        ...gridData,
-        key: `cell-${gridData.key}`,
-        rowIndex: gridData.rowIndex - 1,
-        columnIndex: gridData.columnIndex - 1
-      });
+          ...gridData,
+          key: `cell-${gridData.key}`,
+          rowIndex: gridData.rowIndex - 1,
+          columnIndex: gridData.columnIndex - 1
+        });
   };
 
   getFixedColumnCount = () => {
@@ -433,7 +433,7 @@ export default class VirtualTable extends PureComponent {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
     if (this.props.rerenderTable !== next.rerenderTable) {
-      this.scrollToCell()
+      this.scrollToCell();
     }
   }
 
@@ -545,9 +545,9 @@ export default class VirtualTable extends PureComponent {
 
     const selectedCellKey = this.isSelectedCellValid(selectedCell)
       ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
-        "colId",
-        this.selectedCell
-      )}-${selectedCellEditing}-${selectedCellExpandedRow}`
+          "colId",
+          this.selectedCell
+        )}-${selectedCellEditing}-${selectedCellExpandedRow}`
       : "";
 
     const resizeBarClass = showResizeBar
@@ -557,7 +557,6 @@ export default class VirtualTable extends PureComponent {
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
-
 
     return (
       <section

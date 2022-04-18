@@ -163,20 +163,20 @@ const toggleExpandedRow = (state, action) => {
 const setInitialVisibleColumns = action => state =>
   f.isEmpty(f.get("visibleColumns", state))
     ? f.flow(
-      f.prop(["result", "columns"]),
-      f.slice(0, 10),
-      f.map("id"),
-      ids => f.assoc("visibleColumns")(ids)(state)
-    )(action)
+        f.prop(["result", "columns"]),
+        f.slice(0, 10),
+        f.map("id"),
+        ids => f.assoc("visibleColumns")(ids)(state)
+      )(action)
     : state;
 
 const setInitialColumnOrdering = action => state =>
   f.isEmpty(f.get("columnOrdering", state))
     ? f.flow(
-      f.prop(["result", "columns"]),
-      mapIndexed(({ id }, idx) => ({ id, idx })),
-      ids => f.assoc("columnOrdering", ids, state)
-    )(action)
+        f.prop(["result", "columns"]),
+        mapIndexed(({ id }, idx) => ({ id, idx })),
+        ids => f.assoc("columnOrdering", ids, state)
+      )(action)
     : state;
 
 const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
@@ -386,7 +386,7 @@ export default (state = initialState, action, completeState) => {
       return {
         ...state,
         rerenderTable: Math.random()
-      }
+      };
     default:
       return state;
   }

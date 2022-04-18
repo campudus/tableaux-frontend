@@ -179,7 +179,7 @@ class TableView extends PureComponent {
     if (
       hasSlowFilters(settings) &&
       currentTable.rows.length * currentTable.columns.length >
-      BIG_TABLE_THRESHOLD
+        BIG_TABLE_THRESHOLD
     ) {
       showDialog({
         type: "question",
