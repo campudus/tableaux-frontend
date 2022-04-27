@@ -46,7 +46,6 @@ export default class VirtualTable extends PureComponent {
     this.state = {
       openAnnotations: {},
       scrolledCell: {},
-      lastScrolledCell: {},
       newRowAdded: false,
       showResizeBar: false,
       columnWidths: {}
