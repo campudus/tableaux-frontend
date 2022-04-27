@@ -73,10 +73,7 @@ const SelectableShortText = props => {
   };
   const applySelectedCompletion = () => {
     const completionValue = f.get(selectedIdx, completions);
-    setCompletions(completionValue);
-    setIsCompletionSelected(false);
-    onChange(completionValue);
-    onFinish();
+    onFinish(true, completionValue);
   };
   const handleMouseSelection = idx => {
     const idxToSet = shouldInvertList ? f.size(completions) - 1 - idx : idx;
