@@ -26,9 +26,9 @@ const ShortTextCell = props => {
 
   const [editorValue, setEditorValue] = useState(originalValue);
   const saveEdits = () => handleEditDone(editorValue);
-  const handleFinish = (shouldSave = true) => {
+  const handleFinish = (shouldSave = true, finalValue = undefined) => {
     if (shouldSave) {
-      handleEditDone(editorValue);
+      handleEditDone(finalValue || editorValue);
     } else {
       setEditorValue(originalValue);
     }
