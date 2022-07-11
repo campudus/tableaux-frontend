@@ -1,15 +1,21 @@
-import { compose, withHandlers } from "recompose";
-import React from "react";
 import f from "lodash/fp";
-
+import React, { useMemo } from "react";
+import { compose, withHandlers } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
-import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
-import { doto, when } from "../../../helpers/functools";
 import { makeRequest } from "../../../helpers/apiHelper";
+import route from "../../../helpers/apiRoutes";
+import { doto, when } from "../../../helpers/functools";
+import getDisplayValue from "../../../helpers/getDisplayValue";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import getDisplayValue from "../../../helpers/getDisplayValue";
-import route from "../../../helpers/apiRoutes";
+import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
+
+const getLinkedIds = cell => {
+  const ids = new Set();
+  (cell.value || []).forEach(value => ids.add(value.id));
+  console.log({ ids });
+  return ids;
+};
 
 const withCachedLinks = Component => props => {
   const {
