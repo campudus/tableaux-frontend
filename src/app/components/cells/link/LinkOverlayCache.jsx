@@ -13,7 +13,6 @@ import { connectOverlayToCellValue } from "../../helperComponents/connectOverlay
 const getLinkedIds = cell => {
   const ids = new Set();
   (cell.value || []).forEach(value => ids.add(value.id));
-  console.log({ ids });
   return ids;
 };
 
@@ -102,22 +101,29 @@ const withCachedLinks = Component => props => {
     sortMode
   ];
 
-  const rowResults = loading
-    ? {}
-    : doto(
-        [...cell.value, ...(cell.value.length < maxLinks ? foreignRows : [])],
+  const rowsWithDisplayValues = useMemo(
+    () =>
+      doto(
+        [
+          ...(cell.value || []),
+          ...(cell.value.length < maxLinks ? foreignRows || [] : [])
+        ],
         f.uniqBy(f.prop("id")),
         f.map(addDisplayValues),
-        f.groupBy(link =>
-          f.contains(link.id, linkedIds) ? "linked" : "unlinked"
+        f.groupBy(link => (linkedIds.has(link.id) ? "linked" : "unlinked"))
+      ),
+    [f.prop(["displayValues", column.toTable], grudData)]
+  );
+
+  const rowResults = loading
+    ? {}
+    : f.update(
+        "unlinked",
+        f.flow(
+          f.filter(filterFn),
+          f.sortBy(sortValue)
         ),
-        f.update(
-          "unlinked",
-          f.flow(
-            f.filter(filterFn),
-            f.sortBy(sortValue)
-          )
-        )
+        rowsWithDisplayValues
       );
 
   return (
