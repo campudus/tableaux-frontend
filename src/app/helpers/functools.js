@@ -521,6 +521,20 @@ const usePropAsKey = propName => coll =>
       }, {})
     : {};
 
+function time(arg1, arg2) {
+  const hasTitle = arguments.length === 2;
+  const title = hasTitle ? arg1 : "timed function";
+  const fn = hasTitle ? arg2 : arg1;
+
+  return (...args) => {
+    const start = performance.now();
+    const result = fn(...args);
+    const end = performance.now();
+    console.log(`[${title}] - ${end - start}ms`);
+    return result;
+  };
+}
+
 export {
   Maybe,
   Just,
@@ -557,5 +571,6 @@ export {
   composeP,
   mapP,
   mergeArrays,
-  usePropAsKey
+  usePropAsKey,
+  time
 };
