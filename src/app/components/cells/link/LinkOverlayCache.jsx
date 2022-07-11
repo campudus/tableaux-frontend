@@ -75,17 +75,18 @@ const withCachedLinks = Component => props => {
       });
   });
 
-  const addDisplayValues = link => ({
-    ...link,
-    label: f.compose(
-      retrieveTranslation(langtag),
-      f.prop(["values", 0]),
-      f.find(f.propEq("id", link.id)),
-      f.prop(["displayValues", column.toTable])
-    )(grudData)
-  });
+  const dvLookupTable = f.compose(
+    f.keyBy("id"),
+    f.prop(["displayValues", column.toTable])
+  )(grudData);
 
-  const linkedIds = f.map("id", cell.value);
+  const lookupDisplayValue = link =>
+    retrieveTranslation(langtag, f.prop([link.id, "values", 0], dvLookupTable));
+
+  const addDisplayValues = link =>
+    f.assoc("label", lookupDisplayValue(link), link);
+
+  const linkedIds = getLinkedIds(cell);
 
   const cacheNewForeignRow = row => {
     const link = addDisplayValues(row);
