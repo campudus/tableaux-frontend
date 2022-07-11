@@ -92,10 +92,21 @@ const withCachedLinks = Component => props => {
     setForeignRows([...foreignRows, link]);
   };
 
-  const searchFunction = loading
-    ? f.stubTrue
-    : el => SearchFunctions[filterMode](filterValue)(el.label);
-  const filterFn = f.isEmpty(filterValue) ? f.stubTrue : searchFunction;
+  const [filterFn, setFilterFn] = React.useState(f.stubTrue);
+  const setFilterFnDebounced = React.useCallback(
+    // wrap function to set in another function, else `setState` will
+    // automagically evaluate the function once over its previous value
+    f.debounce(500, fn => setFilterFn(f.always(fn))),
+    [setFilterFn]
+  );
+  React.useEffect(() => {
+    const theFilterFn =
+      loading || f.isEmpty(filterValue)
+        ? f.stubTrue
+        : link => SearchFunctions[filterMode](filterValue)(link.label);
+    setFilterFnDebounced(theFilterFn);
+  }, [setFilterFn, loading, filterValue]);
+
   const sortMode = when(f.isNil, f.always(0), unlinkedOrder);
   const sortValue = [f.prop("id"), el => el.label && f.toLower(el.label)][
     sortMode
