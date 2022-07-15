@@ -96,7 +96,7 @@ const withCachedLinks = Component => props => {
   const setFilterFnDebounced = React.useCallback(
     // wrap function to set in another function, else `setState` will
     // automagically evaluate the function once over its previous value
-    f.debounce(500, fn => setFilterFn(f.always(fn))),
+    f.debounce(400, fn => setFilterFn(f.always(fn))),
     [setFilterFn]
   );
   React.useEffect(() => {
