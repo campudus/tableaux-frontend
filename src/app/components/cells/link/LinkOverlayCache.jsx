@@ -120,8 +120,7 @@ const withCachedLinks = Component => props => {
           ...(cell.value.length < maxLinks ? foreignRows || [] : [])
         ],
         f.uniqBy(f.prop("id")),
-        f.map(addDisplayValues),
-        f.groupBy(link => (linkedIds.has(link.id) ? "linked" : "unlinked"))
+        f.map(addDisplayValues)
       ),
     [f.prop(["displayValues", column.toTable], grudData)]
   );
@@ -134,7 +133,10 @@ const withCachedLinks = Component => props => {
           f.filter(filterFn),
           f.sortBy(sortValue)
         ),
-        rowsWithDisplayValues
+        f.groupBy(
+          link => (linkedIds.has(link.id) ? "linked" : "unlinked"),
+          rowsWithDisplayValues
+        )
       );
 
   return (
