@@ -24,10 +24,13 @@ const PlainMarkdownEditor = (
   const [markdown, setMarkdown] = React.useState(initialMarkdown || "");
   const editorRef = React.useRef();
 
-  const [markdownPreview, setMarkdownPreview] = useLocalStorage(
-    "markdownPreview",
-    PreviewModes.HORIZONTAL
-  );
+  // FIXME: Other preview modes' display components problematic with current
+  // CodeMirror versions
+  const markdownPreview = PreviewModes.HORIZONTAL;
+  // const [markdownPreview, setMarkdownPreview] = useLocalStorage(
+  //   "markdownPreview",
+  //   PreviewModes.HORIZONTAL
+  // );
 
   const cssClass = classNames("plain-markdown-editor", className, {
     "markdown-editor--split-h": markdownPreview === PreviewModes.HORIZONTAL,
@@ -52,27 +55,28 @@ const PlainMarkdownEditor = (
   });
 
   const previewSelectorControls = [
-    {
-      key: PreviewModes.NONE,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.NONE,
-      active: markdownPreview === PreviewModes.NONE,
-      iconComponent: <SvgIcon icon="layoutPlain" />
-    },
-    {
-      key: PreviewModes.VERTICAL,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.VERTICAL,
-      active: markdownPreview === PreviewModes.VERTICAL,
-      iconComponent: <SvgIcon icon="layoutV" />
-    },
-    {
-      key: PreviewModes.HORIZONTAL,
-      toggleStyle: setMarkdownPreview,
-      styleToToggle: PreviewModes.HORIZONTAL,
-      active: markdownPreview === PreviewModes.HORIZONTAL,
-      iconComponent: <SvgIcon icon="layoutH" />
-    }
+    // FIXME: see above
+    // {
+    //   key: PreviewModes.NONE,
+    //   toggleStyle: setMarkdownPreview,
+    //   styleToToggle: PreviewModes.NONE,
+    //   active: markdownPreview === PreviewModes.NONE,
+    //   iconComponent: <SvgIcon icon="layoutPlain" />
+    // },
+    // {
+    //   key: PreviewModes.VERTICAL,
+    //   toggleStyle: setMarkdownPreview,
+    //   styleToToggle: PreviewModes.VERTICAL,
+    //   active: markdownPreview === PreviewModes.VERTICAL,
+    //   iconComponent: <SvgIcon icon="layoutV" />
+    // },
+    // {
+    //   key: PreviewModes.HORIZONTAL,
+    //   toggleStyle: setMarkdownPreview,
+    //   styleToToggle: PreviewModes.HORIZONTAL,
+    //   active: markdownPreview === PreviewModes.HORIZONTAL,
+    //   iconComponent: <SvgIcon icon="layoutH" />
+    // }
   ];
 
   return (
