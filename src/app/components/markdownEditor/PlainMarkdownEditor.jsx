@@ -1,15 +1,10 @@
-import "codemirror/mode/markdown/markdown";
-
-import CodeMirror from "react-codemirror";
-import React from "react";
-import ReactMarkdown from "react-markdown";
-
-import PropTypes from "prop-types";
 import classNames from "classnames";
-
+import "codemirror/mode/markdown/markdown";
+import PropTypes from "prop-types";
+import React from "react";
+import CodeMirror from "react-codemirror";
+import ReactMarkdown from "react-markdown";
 import { StyleIcon } from "./StyleControls";
-import { useLocalStorage } from "../../helpers/useLocalStorage";
-import SvgIcon from "../helperComponents/SvgIcon";
 
 const PreviewModes = {
   HORIZONTAL: "HORIZONTAL",
