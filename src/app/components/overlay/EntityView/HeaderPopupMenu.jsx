@@ -106,8 +106,10 @@ class HeaderPopupMenu extends Component {
     } = this.props;
     const tableId = table.id;
 
-    const rowDataOfTable = grudData.rows[tableId].data;
-    const row = f.head(f.filter(row => row.id === cell.row.id, rowDataOfTable));
+    const row = f.compose(
+      f.find(row => row.id === cell.row.id),
+      f.propOr([], `rows.${tableId}.data`)
+    )(grudData);
     const { open } = this.state;
     const buttonClass = classNames("popup-button", { "is-open": open });
     const cells = f.get(["row", "cells"], this.props);
@@ -139,7 +141,7 @@ class HeaderPopupMenu extends Component {
             <SvgIcon icon="vdots" containerClasses="color-white" />
           </a>
         </div>
-        {open ? (
+        {row && open ? (
           <div className="popup-wrapper">
             <div
               className="popup"
