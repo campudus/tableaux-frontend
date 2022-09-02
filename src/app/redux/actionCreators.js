@@ -29,6 +29,11 @@ import { queryFrontendServices } from "./actions/frontendServices";
 import API_ROUTES from "../helpers/apiRoutes";
 import actionTypes from "./actionTypes";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import store from "./store";
+import { openEntityView } from "../components/overlay/EntityViewOverlay";
+
+const asPromise = (dispatch, action) =>
+  action instanceof Promise ? null : null;
 
 const {
   getAllTables,
@@ -620,18 +625,24 @@ const editColumn = (columnId, tableId, data) => {
   };
 };
 
+const createAndLoadRow = async (dispatch, tableId) => {
+  const freshRow = await makeRequest({
+    apiRoute: API_ROUTES.toRows(tableId),
+    method: "POST"
+  });
+  dispatch(addRows(tableId, [freshRow]));
+  return freshRow;
+};
+
 export const addEmptyRowAndOpenEntityView = (
   tableId,
   langtag,
   cellToUpdate,
   onSuccess
 ) => async dispatch => {
-  dispatch(loadColumns(tableId));
-  const freshRow = await makeRequest({
-    apiRoute: API_ROUTES.toRows(tableId),
-    method: "POST"
-  });
-  loadAndOpenEntityView({ tableId, rowId: freshRow.id, langtag, cellToUpdate });
+  await dispatch(loadColumns(tableId));
+  const freshRow = await createAndLoadRow(dispatch, tableId);
+
   dispatch(
     changeCellValue({
       cell: cellToUpdate,
@@ -639,6 +650,7 @@ export const addEmptyRowAndOpenEntityView = (
       newValue: [...cellToUpdate.value, { id: freshRow.id, label: "" }]
     })
   );
+  loadAndOpenEntityView({ tableId, rowId: freshRow.id, langtag, cellToUpdate });
   onSuccess && onSuccess(freshRow);
 };
 
