@@ -1,34 +1,33 @@
-import React from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-
+import f from "lodash/fp";
+import React from "react";
+import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 import { Langtags } from "../constants/TableauxConstants";
+import { isLocked } from "../helpers/annotationHelper";
+import { makeRequest } from "../helpers/apiHelper";
+import API_ROUTES from "../helpers/apiRoutes";
+import { doto } from "../helpers/functools";
+import {
+  getStoredViewObject,
+  saveColumnOrdering,
+  saveColumnVisibility,
+  saveFilterSettings
+} from "../helpers/localStorage";
+import { checkOrThrow } from "../specs/type";
 import {
   addAnnotationLangtags,
   addTextAnnotation,
   removeAnnotationLangtags,
   removeTextAnnotation,
-  toggleAnnotationFlag,
-  setAllRowsFinal
+  setAllRowsFinal,
+  toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import { changeCellValue, modifyHistory } from "./actions/cellActions";
-import { checkOrThrow } from "../specs/type";
-import { doto } from "../helpers/functools";
-import {
-  getStoredViewObject,
-  saveFilterSettings,
-  saveColumnVisibility,
-  saveColumnOrdering
-} from "../helpers/localStorage";
-import { isLocked } from "../helpers/annotationHelper";
-import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
-import { makeRequest } from "../helpers/apiHelper";
-import { overlayParamsSpec } from "./reducers/overlays";
 import { queryFrontendServices } from "./actions/frontendServices";
-import API_ROUTES from "../helpers/apiRoutes";
+import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
 import actionTypes from "./actionTypes";
-import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
+import { overlayParamsSpec } from "./reducers/overlays";
 
 const {
   getAllTables,
@@ -620,18 +619,24 @@ const editColumn = (columnId, tableId, data) => {
   };
 };
 
+const createAndLoadRow = async (dispatch, tableId) => {
+  const freshRow = await makeRequest({
+    apiRoute: API_ROUTES.toRows(tableId),
+    method: "POST"
+  });
+  dispatch(addRows(tableId, [freshRow]));
+  return freshRow;
+};
+
 export const addEmptyRowAndOpenEntityView = (
   tableId,
   langtag,
   cellToUpdate,
   onSuccess
 ) => async dispatch => {
-  dispatch(loadColumns(tableId));
-  const freshRow = await makeRequest({
-    apiRoute: API_ROUTES.toRows(tableId),
-    method: "POST"
-  });
-  loadAndOpenEntityView({ tableId, rowId: freshRow.id, langtag, cellToUpdate });
+  await dispatch(loadColumns(tableId));
+  const freshRow = await createAndLoadRow(dispatch, tableId);
+
   dispatch(
     changeCellValue({
       cell: cellToUpdate,
@@ -639,6 +644,7 @@ export const addEmptyRowAndOpenEntityView = (
       newValue: [...cellToUpdate.value, { id: freshRow.id, label: "" }]
     })
   );
+  loadAndOpenEntityView({ tableId, rowId: freshRow.id, langtag, cellToUpdate });
   onSuccess && onSuccess(freshRow);
 };
 
