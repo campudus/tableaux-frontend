@@ -1,57 +1,135 @@
-import React, { useState } from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
+import React, { useState } from "react";
 import DependentRowsList from "../../components/rows/DependentRowsList";
-import Footer from "./Footer";
-import Header from "./Header";
-import InfoBox from "./InfoBox";
-import RowConcat, { rowConcatString } from "../../helpers/RowConcatHelper";
+import RowConcat from "../../helpers/RowConcatHelper";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
+import Button from "../Button/Button";
+import Header from "./Header";
+import { openSelectLinkTargetOverlay } from "./SelectLinkTargetOverlay";
+
+const JustDelete = rowToDeleteId => ({
+  action: "delete-row/just-delete",
+  rowToDeleteId
+});
+const MergeRows = (rowToDeleteId, mergedLinkTargetId) => ({
+  action: "delete-row/merge",
+  rowToDeleteId,
+  mergedLinkTargetId
+});
+const isMergeAction = ({ action }) => action === "delete-row/merge";
+
+const getHeadline = (deletion, count) => {
+  const trnKey = f.isNil(count)
+    ? "table:dependent-rows.fetching-dependent-rows"
+    : count === 0
+    ? "table:dependent-rows.no-dependent-rows-header"
+    : "table:dependent-rows.dependent-rows-header";
+  return i18n.t(trnKey, { count });
+};
+
+const DeletionInfoBox = ({ table, row, nLinks, onSubmit, langtag }) => {
+  const headline = getHeadline(true, nLinks);
+  const textKey = `table:dependent-rows.delete-${
+    nLinks === 0 ? "no-" : ""
+  }dependent-rows`;
+
+  const handleSetMergeRowAction = mergeRowId =>
+    onSubmit(MergeRows(row.id, mergeRowId));
+  const handleSetJustDeleteAction = () => onSubmit(JustDelete(row.id));
+  const handleSelectMergeRowId = () => {
+    openSelectLinkTargetOverlay({
+      row,
+      table,
+      langtag,
+      onSubmit: handleSetMergeRowAction
+    });
+  };
+
+  return (
+    <>
+      <div className="deletion-info__header overlay-subheader__title">
+        {headline}
+      </div>
+      <div className="deletion-info__message overlay-subheader__description">
+        {i18n.t(textKey)}
+      </div>
+      {nLinks > 0 ? (
+        <div className="deletion-info__action-select overlay-subheader__buttons">
+          <Button onClick={handleSelectMergeRowId}>
+            {i18n.t("table:dependent-rows.btn-select-merge-rows")}
+          </Button>
+          <Button onClick={handleSetJustDeleteAction}>
+            {i18n.t("table:dependent-rows.btn-select-delete-row")}
+          </Button>
+        </div>
+      ) : null}
+    </>
+  );
+};
+
+const DeletionFooter = ({ deletionAction, onClose }) => {
+  const deleteTextKey =
+    deletionAction && isMergeAction(deletionAction)
+      ? "table:dependent-rows.btn-submit-merge-rows"
+      : "table:dependent-rows.btn-submit-delete-row";
+
+  return (
+    <footer className="button-wrapper">
+      <div className="action-buttons">
+        <Button classNames="negative" disabled={f.isNil(deletionAction)}>
+          {i18n.t(deleteTextKey)}
+        </Button>
+        <Button className="neutral" onClick={onClose}>
+          {i18n.t("common:cancel")}
+        </Button>
+      </div>
+    </footer>
+  );
+};
 
 const RowsOverlay = props => {
-  const [depMessage, setDepMessage] = useState(
-    <p>{i18n.t("table:fetching_dependent_rows")}</p>
-  );
-
-  const { table, row, langtag, deleteInfo, grudData, cell } = props;
-
-  const hasDependencies = () =>
-    setDepMessage(<p>{i18n.t("table:delete_row_dependent_text")}</p>);
-
-  const hasNoDependencies = () =>
-    setDepMessage(
-      <p>{i18n.t(`table:${deleteInfo && "delete_"}no_dependent_text`)}</p>
-    );
-
-  const idColumn = f.prop(["columns", table.id, "data", 0], grudData);
-
-  const rowDisplayLabel = rowConcatString(idColumn, row, langtag);
+  const [deletionAction, setDeletionAction] = useState();
+  const [nLinkedTables, setNLinkedTables] = useState();
+  const { table, row, langtag, deleteInfo, cell } = props;
+  const handleHasDependencies = setNLinkedTables;
+  const handleHasNoDependencies = () => {
+    setNLinkedTables(0);
+    setDeletionAction(JustDelete(row.id));
+  };
 
   return (
     <div className="delete-row-confirmation">
-      {deleteInfo ? (
-        <InfoBox
-          className="item"
-          type="warning"
-          heading={i18n.t("table:confirm_delete_row", {
-            rowName: rowDisplayLabel
-          })}
-          message={depMessage}
-        />
-      ) : null}
+      <section className="overlay-subheader">
+        {deleteInfo ? (
+          <DeletionInfoBox
+            nLinks={nLinkedTables}
+            table={table}
+            row={row}
+            onSubmit={setDeletionAction}
+            langtag={langtag}
+          />
+        ) : (
+          <p>{getHeadline(false, nLinkedTables)}</p>
+        )}
+      </section>
       <DependentRowsList
         className="item"
         table={table}
         row={row}
         langtag={langtag}
-        hasDependency={hasDependencies}
-        hasNoDependency={hasNoDependencies}
+        hasDependency={handleHasDependencies}
+        hasNoDependency={handleHasNoDependencies}
         cell={cell}
       />
+      {deleteInfo ? (
+        <DeletionFooter
+          deletionAction={deletionAction}
+          onClose={props.actions.closeOverlay}
+        />
+      ) : null}
     </div>
   );
 };
@@ -98,11 +176,6 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
     );
   };
 
-  const buttons = {
-    negative: [i18n.t("common:delete_yes_explicit"), onYesRowDelete],
-    neutral: [i18n.t("common:cancel"), null]
-  };
-
   const itemName = getRowConcat(table, row, langtag);
 
   store.dispatch(
@@ -117,7 +190,6 @@ export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
           cell={{ row, table, langtag }}
         />
       ),
-      footer: <Footer buttonActions={buttons} />,
       type: "full-height"
     })
   );
