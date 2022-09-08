@@ -56,7 +56,7 @@ export const changeCellValue = action => (dispatch, getState) => {
         )
       : action.newValue;
 
-  dispatch(
+  return dispatch(
     dispatchCellValueChange({
       ...action,
       column,
@@ -82,7 +82,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
 
   const update = calculateCellUpdate(action);
   if (f.isNil(update)) {
-    return;
+    return Promise.resolve();
   }
   const changedKeys = isMultiLanguage
     ? f.compose(
