@@ -66,10 +66,12 @@ const LinkList = props => {
         )(cell.value)
       });
     };
+    const id = link.linkTarget.rowId || link.uuid;
     return (
       <LinkItem
+        key={id}
         showToggleButton={showToggleButton}
-        row={{ id: link.linkTarget.rowId || link.uuid }}
+        row={{ id }}
         cell={cell}
         toTable={link.linkTarget.tableId}
         label={link.label || link.displayName}
@@ -98,10 +100,12 @@ const LinkList = props => {
         )(cell.value)
       });
     };
+    const id = link.linkTarget.rowId || link.uuid;
     return (
       <LinkItem
+        key={id}
         showToggleButton={showToggleButton}
-        row={{ id: link.linkTarget.rowId || link.uuid }}
+        row={{ id }}
         cell={cell}
         toTable={link.linkTarget.tableId}
         label={link.label || link.displayName}
