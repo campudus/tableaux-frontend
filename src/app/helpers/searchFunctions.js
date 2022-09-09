@@ -1,6 +1,8 @@
 import f from "lodash/fp";
 import { FilterModes } from "../constants/TableauxConstants";
 
+const DEFAULT_FILTER_MODE = FilterModes.CONTAINS;
+
 const clean = f.flow(
   f.toLower,
   f.trim
@@ -36,5 +38,16 @@ export const SEARCH_FUNCTION_IDS = [
   FilterModes.CONTAINS,
   FilterModes.STARTS_WITH
 ];
+
+export const createTextFilter = (mode, value) => {
+  switch (true) {
+    case f.isNil(mode):
+      return createTextFilter(DEFAULT_FILTER_MODE, value);
+    case f.values(FilterModes).includes(mode):
+      return SearchFunctions[mode](value);
+    default:
+      throw new Error(`Unknown search mode: ${mode}`);
+  }
+};
 
 export default SearchFunctions;
