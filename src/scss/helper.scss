@@ -41,7 +41,7 @@
 @mixin setBgColorAndHover($baseColor) {
   background-color: $baseColor;
   &:hover {
-    background-color: darken($baseColor, 5%)
+    background-color: darken($baseColor, 5%);
   }
 }
 
@@ -68,7 +68,8 @@
     @include setBgColorAndHover($color-very-dark);
   }
 
-  &.neutral, &.cancel {
+  &.neutral,
+  &.cancel {
     @include setBgColorAndHover($color-button-grey);
   }
 
@@ -85,10 +86,14 @@
     @include setBgColorAndHover(#fff);
   }
 
-  &:active, &:focus {
+  &:active,
+  &:focus {
     @include grud-shadow(0, 5px);
   }
 
+  &--disabled {
+    opacity: 50%;
+  }
 }
 
 @mixin link-look() {
@@ -150,20 +155,43 @@
       width: 25px;
       position: relative;
 
-      &.dot.important { @include status-dot($color-important, $color-primary-contrast-text); }
-      &.dot.translation { @include status-dot($color-needs-translation, $color-primary-contrast-text); }
-      &.dot.postpone { @include status-dot($color-postpone, $color-primary-contrast-text); }
-      &.dot.check-me { @include status-dot($color-checkme, $color-primary-contrast-text); }
+      &.dot.important {
+        @include status-dot($color-important, $color-primary-contrast-text);
+      }
+      &.dot.translation {
+        @include status-dot(
+          $color-needs-translation,
+          $color-primary-contrast-text
+        );
+      }
+      &.dot.postpone {
+        @include status-dot($color-postpone, $color-primary-contrast-text);
+      }
+      &.dot.check-me {
+        @include status-dot($color-checkme, $color-primary-contrast-text);
+      }
     }
 
-    &:hover, &.active {
+    &:hover,
+    &.active {
       background-color: $color-hover-background;
       color: $color-hover-foreground;
 
-      .dot.important { @include status-dot-hovered($color-important, $color-hover-background); }
-      .dot.translation { @include status-dot-hovered($color-needs-translation, $color-hover-background); }
-      .dot.postpone { @include status-dot-hovered($color-postpone, $color-hover-background); }
-      .dot.check-me { @include status-dot-hovered($color-checkme, $color-hover-background); }
+      .dot.important {
+        @include status-dot-hovered($color-important, $color-hover-background);
+      }
+      .dot.translation {
+        @include status-dot-hovered(
+          $color-needs-translation,
+          $color-hover-background
+        );
+      }
+      .dot.postpone {
+        @include status-dot-hovered($color-postpone, $color-hover-background);
+      }
+      .dot.check-me {
+        @include status-dot-hovered($color-checkme, $color-hover-background);
+      }
     }
   }
 }
