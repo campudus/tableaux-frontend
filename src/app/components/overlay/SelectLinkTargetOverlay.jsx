@@ -34,7 +34,7 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
         <div className="linkButton" onClick={() => onEdit(item.id)}>
           <SvgIcon icon="edit" containerClasses="color-primary" />
         </div>
-        <div className="left">{displayValue}</div>
+        <div className="left link-display-value">{displayValue}</div>
       </div>
     </div>
   );
@@ -122,14 +122,16 @@ const SelectLinkTargetOverlay = props => {
           })}
         </h1>
         {!f.isNil(selectedRowId) ? (
-          <ListItem
-            isLinked={true}
-            onChange={handleSelectRowId}
-            item={{
-              id: selectedRowId,
-              displayValue: displayValueTable[selectedRowId]
-            }}
-          />
+          <div className="sortable selected-link">
+            <ListItem
+              isLinked={true}
+              onChange={handleSelectRowId}
+              item={{
+                id: selectedRowId,
+                displayValue: displayValueTable[selectedRowId]
+              }}
+            />
+          </div>
         ) : (
           <div className="overlay-subheader__description">
             {i18n.t("table:select-link-target:nothing-selected")}
@@ -140,7 +142,7 @@ const SelectLinkTargetOverlay = props => {
         <AutoSizer>
           {({ height, width }) => (
             <List
-              className="items-virtualized-list"
+              className="items-virtualized-list sortable" // "sortable" will just style link items properly
               width={width}
               height={height}
               rowCount={availableRows.length}
