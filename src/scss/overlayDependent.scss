@@ -1,12 +1,27 @@
-.delete-row-confirmation {
-  .delete-row-question {
-    h1 {
-      margin-bottom: 0.5em;
-    }
-  }
+.overlay {
+  .overlay-content {
+    .delete-row-confirmation {
+      margin: 0;
+      display: flex;
+      height: 100%;
+      box-sizing: border-box;
+      flex-direction: column;
 
-  .dependent-row-info {
-    margin-bottom: 30px;
+      .delete-row-question {
+        h1 {
+          margin-bottom: 0.5em;
+        }
+      }
+
+      .dependent-row-info {
+        margin-bottom: 30px;
+      }
+
+      .dependent-wrapper {
+        flex: 1;
+        overflow-y: auto;
+      }
+    }
   }
 }
 
@@ -26,7 +41,6 @@
 }
 
 .dependent-wrapper {
-
   .dependent-table {
     padding: 30px 0;
     border-top: 2px solid $color-border-grey;
@@ -55,7 +69,6 @@
       i {
         padding: 0 5px;
       }
-
     }
   }
 
@@ -82,7 +95,6 @@
           background-color: #fff;
         }
       }
-
     }
   }
 }

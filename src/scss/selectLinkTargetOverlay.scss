@@ -1,0 +1,40 @@
+$padding-x: 50px;
+$padding-y: 24px;
+
+.overlay {
+  .overlay-content {
+    .button {
+      @include button-look();
+    }
+
+    .select-link-target {
+      &.overlay-main-content {
+        height: 100%;
+        padding: $padding-y 0;
+      }
+      .list-item {
+        display: flex;
+      }
+
+      .items-virtualized-list {
+        padding: 0 $padding-x;
+      }
+    }
+
+    .overlay-subheader {
+      background-color: white;
+      margin: 0;
+      padding: $padding-y $padding-x;
+      border-bottom: 4px solid $color-text-light-grey;
+
+      &__title {
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      &__description {
+        color: $color-text-medium-grey;
+      }
+    }
+  }
+}
