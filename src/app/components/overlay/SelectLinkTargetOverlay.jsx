@@ -20,7 +20,7 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
     item.displayValue
   ) || <Empty langtag={langtag} />;
   return (
-    <div key={item.id} style={style} className="list-item-container">
+    <div style={style} className="list-item-container">
       <div className="list-item">
         <div
           className="linkButton roundCorners"
@@ -47,6 +47,7 @@ const renderListItem = ({ items, onChange, onEdit, langtag }) => ({
   const item = items[index] || {};
   return (
     <ListItem
+      key={item.id}
       item={item}
       style={style}
       onChange={onChange}
