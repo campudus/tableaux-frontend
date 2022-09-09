@@ -2,8 +2,12 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import React, { useCallback, useState } from "react";
 import { AutoSizer, List } from "react-virtualized";
+import { buildClassName } from "../../helpers/buildClassName";
 import { unless } from "../../helpers/functools";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
+import {
+  getTableDisplayName,
+  retrieveTranslation
+} from "../../helpers/multiLanguage";
 import { createTextFilter } from "../../helpers/searchFunctions";
 import * as t from "../../helpers/transduce";
 import actions from "../../redux/actionCreators";
@@ -12,6 +16,8 @@ import SearchBar from "../cells/link/LinkOverlaySearchBar";
 import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Header from "./Header";
+import { addEmptyRow } from "../../redux/actions/rowActions";
+import { openEntityView } from "./EntityViewOverlay";
 
 const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
   const displayValue = unless(
@@ -57,11 +63,45 @@ const renderListItem = ({ items, onChange, onEdit, langtag }) => ({
   );
 };
 
+const handleCreateRow = ({ table, langtag, onCreateRow }) => async () => {
+  const newRow = await store
+    .dispatch(addEmptyRow(table.id))
+    .then(f.prop("result"));
+  onCreateRow(newRow.id);
+  openEntityView({ langtag, row: newRow, table });
+};
+
+type RowCreatorProps = {
+  tableName: string,
+  noRowsAvailable: boolean,
+  onClick: () => void
+};
+const RowCreator = ({
+  noRowsAvailable,
+  table,
+  onClick,
+  langtag
+}: RowCreatorProps) => {
+  const cssClass = buildClassName("row-creator", { noRowsAvailable });
+  const tableName = getTableDisplayName(table, langtag);
+
+  return (
+    <div
+      onClick={onClick}
+      className={cssClass}
+      style={{ zIndex: 9, position: "absolute", backgroundClip: "yellow" }}
+    >
+      <SvgIcon icon="plus" containerClasses="color-primary" />
+      <span>{i18n.t("table:link-overlay-add-new-row", { tableName })}</span>
+    </div>
+  );
+};
+
 const getFlatDisplayValue = langtag =>
   f.compose(
     f.join(" "),
     f.compact,
-    f.map(retrieveTranslation(langtag))
+    f.map(val => (f.isNil(val) ? "" : retrieveTranslation(langtag, val)))
   );
 
 const keyValuesById = (accum, next) => {
@@ -85,6 +125,7 @@ const SelectLinkTargetOverlay = props => {
   const { oldRowId, tableId, onSubmit, langtag, grudData, sharedData } = props;
   const [selectedRowId, setSelectedRowId] = useState();
   const displayValueTable = extractDisplayValues(langtag, tableId, grudData);
+  const table = f.propOr({}, ["tables", "data", tableId], grudData);
 
   const filterRows = useCallback(
     mkResultFilter(sharedData.filterMode, sharedData.filterValue),
@@ -107,11 +148,28 @@ const SelectLinkTargetOverlay = props => {
     [tableId]
   );
 
+  const handleOpenEntityView = useCallback(
+    rowId => {
+      const row = f.compose(
+        f.find(f.propEq("id", parseInt(rowId))),
+        f.prop(["rows", tableId, "data"])
+      )(grudData);
+      openEntityView({ row, langtag, table });
+    },
+    [grudData]
+  );
+
   const rowRenderer = renderListItem({
     items: availableRows,
     onChange: handleSelectRowId,
-    langtag
+    langtag,
+    onEdit: handleOpenEntityView
   });
+
+  const onCreateRow = useCallback(
+    handleCreateRow({ table, langtag, onCreateRow: handleSelectRowId }),
+    [table.id, handleSelectRowId]
+  );
 
   return (
     <>
@@ -130,6 +188,7 @@ const SelectLinkTargetOverlay = props => {
                 id: selectedRowId,
                 displayValue: displayValueTable[selectedRowId]
               }}
+              onEdit={handleOpenEntityView}
             />
           </div>
         ) : (
@@ -151,6 +210,12 @@ const SelectLinkTargetOverlay = props => {
             />
           )}
         </AutoSizer>
+        <RowCreator
+          langtag={langtag}
+          onClick={onCreateRow}
+          table={table}
+          noRowsAvailable={availableRows?.length === 0}
+        />
       </section>
     </>
   );
