@@ -25,13 +25,23 @@ const retrieveTranslation = f.curryN(2, (langtag, json) => {
   if (!json) {
     return "";
   }
-  checkOrThrow(getLangObjSpec(), json);
-  const language = getLanguageOfLangtag(langtag);
+  if (Array.isArray(json)) {
+    json.forEach(val => checkOrThrow(getLangObjSpec(), val));
+    return f.flow(
+      f.map(val => retrieveTranslation(langtag, val)),
+      f.compact,
+      f.join(" ")
+    );
+  } else {
+    checkOrThrow(getLangObjSpec(), json);
 
-  return f.flow(
-    f.props([langtag, language, DefaultLangtag, FallbackLanguage]),
-    f.find(value => !f.isEmpty(value))
-  )(json);
+    const language = getLanguageOfLangtag(langtag);
+
+    return f.flow(
+      f.props([langtag, language, DefaultLangtag, FallbackLanguage]),
+      f.find(value => !f.isEmpty(value))
+    )(json);
+  }
 });
 
 function getLanguageOrCountryIcon(langtag, specific = "") {
