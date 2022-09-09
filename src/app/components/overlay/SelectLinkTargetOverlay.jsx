@@ -1,12 +1,14 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import React, { useCallback, useMemo, useState } from "react";
-import { List } from "react-virtualized";
-import { time, unless } from "../../helpers/functools";
+import React, { useCallback, useState } from "react";
+import { AutoSizer, List } from "react-virtualized";
+import { unless } from "../../helpers/functools";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { createTextFilter } from "../../helpers/searchFunctions";
 import * as t from "../../helpers/transduce";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
+import SearchBar from "../cells/link/LinkOverlaySearchBar";
 import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Header from "./Header";
@@ -73,18 +75,26 @@ const extractDisplayValues = (langtag, tableId, grudData) =>
     f.propOr([], ["displayValues", tableId])
   )(grudData);
 
+const mkResultFilter = (mode, value) => {
+  const matchesFilter = createTextFilter(mode, value);
+  return item => matchesFilter(item[1]); // this is performed before entries are transformed to dicts
+};
+
 const SelectLinkTargetOverlay = props => {
-  const { oldRowId, tableId, onSubmit, langtag, grudData } = props;
+  const { oldRowId, tableId, onSubmit, langtag, grudData, sharedData } = props;
   const [selectedRowId, setSelectedRowId] = useState();
-  const displayValueTable = time(
-    "Extract display values",
-    extractDisplayValues
-  )(langtag, tableId, grudData);
+  const displayValueTable = extractDisplayValues(langtag, tableId, grudData);
+
+  const filterRows = useCallback(
+    mkResultFilter(sharedData.filterMode, sharedData.filterValue),
+    [sharedData.filterMode, sharedData.filterValue]
+  );
 
   const availableRows = t.transduceList(
     t.reject(([id]) => id === oldRowId),
     t.reject(([id]) => id === selectedRowId),
     t.reject(([id]) => f.isNil(id)),
+    t.filter(filterRows),
     t.map(([id, displayValue]) => ({ id, displayValue }))
   )(Object.entries(displayValueTable));
 
@@ -96,17 +106,11 @@ const SelectLinkTargetOverlay = props => {
     [tableId]
   );
 
-  const rowRenderer = useMemo(
-    () =>
-      renderListItem({
-        items: availableRows,
-        onChange: handleSelectRowId,
-        langtag
-      }),
-    [tableId]
-  );
-
-  const ROW_HEIGHT = 42;
+  const rowRenderer = renderListItem({
+    items: availableRows,
+    onChange: handleSelectRowId,
+    langtag
+  });
 
   return (
     <>
@@ -126,21 +130,50 @@ const SelectLinkTargetOverlay = props => {
             }}
           />
         ) : (
-          <div className="overlay-subheader__text">
+          <div className="overlay-subheader__description">
             {i18n.t("table:select-link-target:nothing-selected")}
           </div>
         )}
       </section>
-      <section className="overlay-main-content">
-        <List
-          width={window.innerWidth * 0.6 - 100}
-          height={f.min([availableRows.length * ROW_HEIGHT, 600])}
-          rowCount={availableRows.length}
-          rowHeight={42}
-          rowRenderer={rowRenderer}
-        />
+      <section className="select-link-target overlay-main-content">
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              className="items-virtualized-list"
+              width={width}
+              height={height}
+              rowCount={availableRows.length}
+              rowHeight={42}
+              rowRenderer={rowRenderer}
+            />
+          )}
+        </AutoSizer>
       </section>
     </>
+  );
+};
+
+const SelectLinkTargetOverlayHeader = props => {
+  const { id, langtag, updateSharedData, sharedData } = props;
+  const setFilterValue = value =>
+    updateSharedData(f.assoc("filterValue", value));
+  const setFilterMode = mode => updateSharedData(f.assoc("filterMode", mode));
+  return (
+    <Header
+      {...props}
+      context={i18n.t("table:select-link-target.context")}
+      title={""}
+    >
+      <SearchBar
+        id={id}
+        langtag={langtag}
+        filterMode={sharedData.filterMode}
+        filterValue={sharedData.filterValue}
+        setFilterMode={setFilterMode}
+        setFilterValue={setFilterValue}
+        updateSharedData={f.noop}
+      />
+    </Header>
   );
 };
 
@@ -152,7 +185,7 @@ export const openSelectLinkTargetOverlay = ({
 }) => {
   store.dispatch(
     actions.openOverlay({
-      head: <Header context={i18n.t("table:select-link-target")} title={""} />,
+      head: <SelectLinkTargetOverlayHeader />,
       body: (
         <SelectLinkTargetOverlay
           oldRowId={row.id}
