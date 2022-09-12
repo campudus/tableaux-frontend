@@ -161,8 +161,8 @@ const setCellAnnotation = (state, action, completeState) => {
 };
 
 const deleteRow = (action, completeState) => {
-  const { table, row } = action;
-  return performRowDeletion(table.id, row.id, completeState);
+  const { tableId, rowId } = action;
+  return performRowDeletion(tableId, rowId, completeState);
 };
 
 const addRows = (completeState, state, action) => {

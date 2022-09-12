@@ -82,15 +82,13 @@ const RowCreator = ({
   onClick,
   langtag
 }: RowCreatorProps) => {
-  const cssClass = buildClassName("row-creator", { noRowsAvailable });
+  const cssClass = buildClassName("row-creator", {
+    "no-rows-available": noRowsAvailable
+  });
   const tableName = getTableDisplayName(table, langtag);
 
   return (
-    <div
-      onClick={onClick}
-      className={cssClass}
-      style={{ zIndex: 9, position: "absolute", backgroundClip: "yellow" }}
-    >
+    <div onClick={onClick} className={cssClass}>
       <SvgIcon icon="plus" containerClasses="color-primary" />
       <span>{i18n.t("table:link-overlay-add-new-row", { tableName })}</span>
     </div>
@@ -262,7 +260,8 @@ export const openSelectLinkTargetOverlay = ({
           langtag={langtag}
         />
       ),
-      type: "full-height"
+      type: "full-height",
+      classes: "select-link-target-overlay"
     })
   );
 };
