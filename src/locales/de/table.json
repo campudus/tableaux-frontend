@@ -21,6 +21,11 @@
     "fetching-dependent-rows": "Verknüpfte Datensätze werden abgefragt.",
     "no-dependent-rows-header": "Dieser Datensatz ist bisher nicht verknüpft"
   },
+  "select-link-target": {
+    "title": "Verknüpfungen des Datensatzes {{linkTitle}} ändern auf",
+    "nothing-selected": "Sie haben noch keinen Datensatz ausgewählt",
+    "context": "Neu verknüpfen"
+  },
   "show_entity_view": "Zeige Details",
   "entity_view": "Details",
   "duplicate_row": "Zeile duplizieren",

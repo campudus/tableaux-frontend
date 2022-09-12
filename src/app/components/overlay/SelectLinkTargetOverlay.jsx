@@ -173,7 +173,7 @@ const SelectLinkTargetOverlay = props => {
     <>
       <section className="select-link-target overlay-subheader">
         <h1 className="overlay-subheader__title">
-          {i18n.t("tables:select-link-target.title", {
+          {i18n.t("table:select-link-target.title", {
             linkTitle: displayValueTable[oldRowId]
           })}
         </h1>
@@ -191,7 +191,7 @@ const SelectLinkTargetOverlay = props => {
           </div>
         ) : (
           <div className="overlay-subheader__description">
-            {i18n.t("table:select-link-target:nothing-selected")}
+            {i18n.t("table:select-link-target.nothing-selected")}
           </div>
         )}
       </section>
