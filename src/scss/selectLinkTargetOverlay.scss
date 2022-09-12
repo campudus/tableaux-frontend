@@ -3,45 +3,47 @@ $padding-y: 24px;
 $button-margin: 16px;
 
 .overlay {
-  .overlay-subheader {
-    background-color: white;
-    margin: 0;
-    padding: $padding-y $padding-x;
-    border-bottom: 4px solid $color-text-light-grey;
-
-    &__title {
-      font-size: 20px;
-      font-weight: 500;
-      padding-bottom: 16px;
-    }
-
-    &__description {
-      color: $color-text-medium-grey;
-    }
-
-    &__buttons {
-      display: flex;
-      padding-top: $button-margin;
-
-      .button {
-        @include button-look();
+  .overlay-content {
+    .overlay-subheader {
+      background-color: white;
+      margin: 0;
+      padding: $padding-y $padding-x;
+      border-bottom: 4px solid $color-text-light-grey;
+      margin: 0;
+      &__title {
+        font-size: 20px;
+        font-weight: 500;
+        padding-bottom: 16px;
       }
 
-      &--left {
+      &__description {
+        color: $color-text-medium-grey;
+      }
+
+      &__buttons {
+        display: flex;
+        padding-top: $button-margin;
+
         .button {
-          margin-right: $button-margin;
+          @include button-look();
         }
-      }
 
-      &--center {
-        .button {
-          margin: 0 $button-margin;
+        &--left {
+          .button {
+            margin-right: $button-margin;
+          }
         }
-      }
 
-      &--right {
-        .button {
-          margin-left: $button-margin;
+        &--center {
+          .button {
+            margin: 0 $button-margin;
+          }
+        }
+
+        &--right {
+          .button {
+            margin-left: $button-margin;
+          }
         }
       }
     }
@@ -61,8 +63,9 @@ $button-margin: 16px;
       .select-link-target {
         &.overlay-main-content {
           height: 100%;
-          padding: $padding-y 0;
           position: relative;
+          margin: 0;
+          padding-top: $padding-y;
         }
         .list-item {
           display: flex;
@@ -80,7 +83,7 @@ $button-margin: 16px;
           transition: bottom 0.3s ease-in, padding 0.3s ease-in;
 
           left: 50%;
-          transform: translate(-50%, -50%);
+          transform: translateX(-50%);
           bottom: $padding-y;
           background-color: $color-white;
           padding: 8px;
@@ -93,6 +96,7 @@ $button-margin: 16px;
           &--no-rows-available {
             bottom: 50%;
             padding: 25px;
+            transform: translateX(-50%, 50%);
           }
         }
       }
