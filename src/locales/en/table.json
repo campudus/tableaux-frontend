@@ -21,6 +21,11 @@
     "fetching-dependent-rows": "Fetching links to this record...",
     "no-dependent-rows-header": "There are no links to this record"
   },
+  "select-link-target": {
+    "title": "Link records targeting {{linkTitle}} to",
+    "nothing-selected": "No record selected as new target",
+    "context": "Change link targets"
+  },
   "show_entity_view": "Show details",
   "entity_view": "Details",
   "duplicate_row": "Duplicate row",
