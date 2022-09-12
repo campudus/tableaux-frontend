@@ -47,10 +47,10 @@ $overlay-border-radius: 5px;
 
   @keyframes from-right {
     from {
-      transform: translateX(80vw)
+      transform: translateX(80vw);
     }
     to {
-      transform: translateX(20vw)
+      transform: translateX(20vw);
     }
   }
 }
@@ -154,8 +154,8 @@ $dist-from-top: 20px;
 
       display: grid;
       display: -ms-grid;
-      grid-template-columns: $vspacing 1fr 2*$vspacing $vspacing $vspacing;
-      -ms-grid-columns: $vspacing 1fr 2*$vspacing $vspacing $vspacing;
+      grid-template-columns: $vspacing 1fr 2 * $vspacing $vspacing $vspacing;
+      -ms-grid-columns: $vspacing 1fr 2 * $vspacing $vspacing $vspacing;
       grid-template-rows: $vspacing 1fr;
       -ms-grid-rows: $vspacing 1fr;
 
@@ -166,7 +166,6 @@ $dist-from-top: 20px;
         justify-content: center;
         align-items: center;
       }
-
 
       .close-button {
         .svg-icon {
@@ -199,7 +198,7 @@ $dist-from-top: 20px;
           color: $color-text-medium-grey;
           font-size: 14px;
         }
-        &>div {
+        & > div {
           max-width: 100%;
         }
         .title {
@@ -401,7 +400,9 @@ $dist-from-top: 20px;
       }
     }
 
-    input[type=text], input[type=numeric], textarea {
+    input[type="text"],
+    input[type="numeric"],
+    textarea {
       background-color: transparent;
       outline: none;
       width: 100%;
@@ -469,8 +470,12 @@ $dist-from-top: 20px;
     max-height: 430px;
     & > .can-expand {
       .link-label-wrapper-2:last-of-type {
-        .main-button, .unlink-button {
-          background: linear-gradient($color-primary-contrast-text, transparent);
+        .main-button,
+        .unlink-button {
+          background: linear-gradient(
+            $color-primary-contrast-text,
+            transparent
+          );
           color: $color-text-light-grey;
           &:hover {
             background: linear-gradient($color-hover-background, transparent);
@@ -560,7 +565,6 @@ $dist-from-top: 20px;
           }
         }
       }
-
     }
 
     .expand-button {
@@ -607,7 +611,9 @@ $dist-from-top: 20px;
 .overlay .content-items.richtext-cell-editor {
   height: 100%;
   margin: 0;
-  .item, .item-content, textarea {
+  .item,
+  .item-content,
+  textarea {
     height: 100%;
   }
   textarea {
@@ -626,6 +632,7 @@ $dist-from-top: 20px;
   background-color: $color-overlay-header;
   border-bottom-right-radius: $overlay-border-radius;
   border-top-right-radius: $overlay-border-radius;
+  overflow: hidden;
 
   a {
     padding: 20px;
