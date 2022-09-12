@@ -25,6 +25,7 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
     retrieveTranslation(langtag),
     item.displayValue
   ) || <Empty langtag={langtag} />;
+
   return (
     <div style={style} className="list-item-container">
       <div className="list-item">
@@ -95,11 +96,15 @@ const RowCreator = ({
   );
 };
 
+const translateDV = langtag => dv =>
+  Array.isArray(dv)
+    ? f.flatMap(translateDV(langtag), dv)
+    : retrieveTranslation(langtag, dv);
+
 const getFlatDisplayValue = langtag =>
   f.compose(
-    f.join(" "),
-    f.compact,
-    f.map(val => (f.isNil(val) ? "" : retrieveTranslation(langtag, val)))
+    translateDV(langtag),
+    f.first
   );
 
 const keyValuesById = (accum, next) => {
