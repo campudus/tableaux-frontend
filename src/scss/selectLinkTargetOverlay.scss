@@ -1,39 +1,100 @@
 $padding-x: 50px;
 $padding-y: 24px;
+$button-margin: 16px;
 
 .overlay {
-  .overlay-content {
-    .button {
-      @include button-look();
+  .overlay-subheader {
+    background-color: white;
+    margin: 0;
+    padding: $padding-y $padding-x;
+    border-bottom: 4px solid $color-text-light-grey;
+
+    &__title {
+      font-size: 20px;
+      font-weight: 500;
+      padding-bottom: 16px;
     }
 
-    .select-link-target {
-      &.overlay-main-content {
-        height: 100%;
-        padding: $padding-y 0;
-      }
-      .list-item {
-        display: flex;
-      }
-
-      .items-virtualized-list {
-        padding: 0 $padding-x;
-      }
+    &__description {
+      color: $color-text-medium-grey;
     }
 
+    &__buttons {
+      display: flex;
+      padding-top: $button-margin;
+
+      .button {
+        @include button-look();
+      }
+
+      &--left {
+        .button {
+          margin-right: $button-margin;
+        }
+      }
+
+      &--center {
+        .button {
+          margin: 0 $button-margin;
+        }
+      }
+
+      &--right {
+        .button {
+          margin-left: $button-margin;
+        }
+      }
+    }
+  }
+
+  .select-link-target-overlay {
     .overlay-subheader {
-      background-color: white;
-      margin: 0;
-      padding: $padding-y $padding-x;
-      border-bottom: 4px solid $color-text-light-grey;
-
-      &__title {
-        font-size: 20px;
-        font-weight: 500;
+      .link-display-value {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
       }
+    }
+    .overlay-content {
+      display: flex;
+      flex-direction: column;
 
-      &__description {
-        color: $color-text-medium-grey;
+      .select-link-target {
+        &.overlay-main-content {
+          height: 100%;
+          padding: $padding-y 0;
+          position: relative;
+        }
+        .list-item {
+          display: flex;
+        }
+
+        .items-virtualized-list {
+          padding: 0 $padding-x;
+          flex: 1;
+        }
+
+        .row-creator {
+          position: absolute;
+          z-index: 1;
+
+          transition: bottom 0.3s ease-in, padding 0.3s ease-in;
+
+          left: 50%;
+          transform: translate(-50%, -50%);
+          bottom: $padding-y;
+          background-color: $color-white;
+          padding: 8px;
+          display: flex;
+          align-items: center;
+          border: 2px solid $color-light-blue;
+          border-radius: 5px;
+          cursor: pointer;
+
+          &--no-rows-available {
+            bottom: 50%;
+            padding: 25px;
+          }
+        }
       }
     }
   }

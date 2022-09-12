@@ -57,12 +57,12 @@ const DeletionInfoBox = ({ table, row, nLinks, onSubmit, langtag }) => {
         {i18n.t(textKey)}
       </div>
       {nLinks > 0 ? (
-        <div className="deletion-info__action-select overlay-subheader__buttons">
+        <div className="deletion-info__action-select overlay-subheader__buttons overlay-subheader__buttons--left">
+          <Button classNames="negative" onClick={handleSetJustDeleteAction}>
+            {i18n.t("table:dependent-rows.btn-select-delete-row")}
+          </Button>
           <Button onClick={handleSelectMergeRowId}>
             {i18n.t("table:dependent-rows.btn-select-merge-rows")}
-          </Button>
-          <Button onClick={handleSetJustDeleteAction}>
-            {i18n.t("table:dependent-rows.btn-select-delete-row")}
           </Button>
         </div>
       ) : null}
@@ -70,16 +70,23 @@ const DeletionInfoBox = ({ table, row, nLinks, onSubmit, langtag }) => {
   );
 };
 
-const DeletionFooter = ({ deletionAction, onClose }) => {
+const DeletionFooter = ({ deletionAction, onClose, langtag, tableId }) => {
   const deleteTextKey =
     deletionAction && isMergeAction(deletionAction)
       ? "table:dependent-rows.btn-submit-merge-rows"
       : "table:dependent-rows.btn-submit-delete-row";
 
+  const handleSubmit = () =>
+    handleDeleteRow({ langtag, tableId, deletionAction });
+
   return (
     <footer className="button-wrapper">
       <div className="action-buttons">
-        <Button classNames="negative" disabled={f.isNil(deletionAction)}>
+        <Button
+          classNames="negative"
+          disabled={f.isNil(deletionAction)}
+          onClick={handleSubmit}
+        >
           {i18n.t(deleteTextKey)}
         </Button>
         <Button className="neutral" onClick={onClose}>
@@ -87,6 +94,34 @@ const DeletionFooter = ({ deletionAction, onClose }) => {
         </Button>
       </div>
     </footer>
+  );
+};
+
+const handleDeleteRow = ({ tableId, langtag, deletionAction }) => {
+  const rowId = deletionAction.rowToDeleteId;
+  const mergeWithRowId = deletionAction.mergedLinkTargetId;
+  const rows = store.getState() |> f.get(["rows", tableId, "data"]);
+  const rowIdx = f.findIndex(f.propEq("id", rowId))(rows);
+  const neighborRowId =
+    mergeWithRowId ||
+    (rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id"));
+
+  const {
+    selectedCell: {
+      selectedCell: { columnId }
+    }
+  } = store.getState();
+
+  store.dispatch(actions.deleteRow({ rowId, tableId, mergeWithRowId }));
+  store.dispatch(actions.closeOverlay());
+
+  store.dispatch(
+    actions.toggleCellSelection({
+      rowId: neighborRowId,
+      tableId,
+      columnId,
+      langtag
+    })
   );
 };
 
@@ -126,6 +161,8 @@ const RowsOverlay = props => {
       />
       {deleteInfo ? (
         <DeletionFooter
+          langtag={langtag}
+          tableId={table.id}
           deletionAction={deletionAction}
           onClose={props.actions.closeOverlay}
         />
@@ -146,36 +183,7 @@ const getRowConcat = (table, row, langtag) => {
   return <RowConcat row={row} idColumn={idColumn} langtag={langtag} />;
 };
 
-export function confirmDeleteRow({ row, table, langtag }, overlayToCloseId) {
-  const onYesRowDelete = () => {
-    const { id: tableId } = table;
-    const { id: rowId } = row;
-
-    const rows = store.getState() |> f.get(["rows", tableId, "data"]);
-    const rowIdx = f.findIndex(f.propEq("id", rowId))(rows);
-    const neighborRowId =
-      rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id");
-
-    const {
-      selectedCell: {
-        selectedCell: { columnId }
-      }
-    } = store.getState();
-
-    store.dispatch(actions.deleteRow({ row, table }));
-    if (overlayToCloseId) {
-      store.dispatch(actions.closeOverlay(overlayToCloseId));
-    }
-    store.dispatch(
-      actions.toggleCellSelection({
-        rowId: neighborRowId,
-        tableId,
-        columnId,
-        langtag
-      })
-    );
-  };
-
+export function confirmDeleteRow({ row, table, langtag }) {
   const itemName = getRowConcat(table, row, langtag);
 
   store.dispatch(

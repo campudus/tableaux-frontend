@@ -597,14 +597,22 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   }
 };
 
-const deleteRow = action => ({
-  ...action,
-  promise: makeRequest({
-    apiRoute: toRow({ tableId: action.table.id, rowId: action.row.id }),
-    method: "DELETE"
-  }),
-  actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
-});
+const deleteRow = action => {
+  const { mergeWithRowId, tableId, rowId } = action;
+  const queryString =
+    typeof mergeWithRowId === "number"
+      ? `?replacingRowId=${mergeWithRowId}`
+      : "";
+
+  return {
+    ...action,
+    promise: makeRequest({
+      apiRoute: toRow({ tableId, rowId }) + queryString,
+      method: "DELETE"
+    }),
+    actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
+  };
+};
 
 const editColumn = (columnId, tableId, data) => {
   return {
