@@ -79,12 +79,17 @@ const DeletionFooter = ({ deletionAction, onClose, langtag, tableId }) => {
   const handleSubmit = () =>
     handleDeleteRow({ langtag, tableId, deletionAction });
 
+  const isSubmitDisabled =
+    f.isNil(deletionAction) ||
+    (isMergeAction(deletionAction) &&
+      f.isNil(deletionAction.mergedLinkTargetId));
+
   return (
     <footer className="button-wrapper">
       <div className="action-buttons">
         <Button
           classNames="negative"
-          disabled={f.isNil(deletionAction)}
+          disabled={isSubmitDisabled}
           onClick={handleSubmit}
         >
           {i18n.t(deleteTextKey)}
