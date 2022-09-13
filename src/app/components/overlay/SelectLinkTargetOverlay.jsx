@@ -18,6 +18,7 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import Header from "./Header";
 import { addEmptyRow } from "../../redux/actions/rowActions";
 import { openEntityView } from "./EntityViewOverlay";
+import { SwitchSortingButton } from "../cells/link/LinkOverlayFragments";
 
 const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
   const displayValue = unless(
@@ -135,13 +136,17 @@ const SelectLinkTargetOverlay = props => {
     [sharedData.filterMode, sharedData.filterValue]
   );
 
-  const availableRows = t.transduceList(
-    t.reject(([id]) => id === oldRowId),
-    t.reject(([id]) => id === selectedRowId),
-    t.reject(([id]) => f.isNil(id)),
-    t.filter(filterRows),
-    t.map(([id, displayValue]) => ({ id, displayValue }))
-  )(Object.entries(displayValueTable));
+  const itemOrder = sharedData.sorting || f.first(SortMode);
+
+  const availableRows = t
+    .transduceList(
+      t.reject(([id]) => id === oldRowId),
+      t.reject(([id]) => id === selectedRowId),
+      t.reject(([id]) => f.isNil(id)),
+      t.filter(filterRows),
+      t.map(([id, displayValue]) => ({ id: parseInt(id), displayValue }))
+    )(Object.entries(displayValueTable))
+    .sort(itemOrder.fn);
 
   const handleSelectRowId = useCallback(
     rowId => {
@@ -154,7 +159,7 @@ const SelectLinkTargetOverlay = props => {
   const handleOpenEntityView = useCallback(
     rowId => {
       const row = f.compose(
-        f.find(f.propEq("id", parseInt(rowId))),
+        f.find(f.propEq("id", rowId)),
         f.prop(["rows", tableId, "data"])
       )(grudData);
       openEntityView({ row, langtag, table });
@@ -224,11 +229,40 @@ const SelectLinkTargetOverlay = props => {
   );
 };
 
+const SortMode = [
+  {
+    name: "by-id-asc",
+    fn: (itemA, itemB) => itemA.id - itemB.id,
+    icon: "fa fa-sort-numeric-asc"
+  },
+  {
+    name: "by-label-asc",
+    fn: (itemA, itemB) =>
+      itemA.displayValue < itemB.displayValue
+        ? -1
+        : itemA.displayValue > itemB.displayValue
+        ? 1
+        : 0,
+    icon: "fa fa-sort-alpha-asc"
+  }
+];
+
 const SelectLinkTargetOverlayHeader = props => {
   const { id, langtag, updateSharedData, sharedData } = props;
   const setFilterValue = value =>
     updateSharedData(f.assoc("filterValue", value));
   const setFilterMode = mode => updateSharedData(f.assoc("filterMode", mode));
+  const chooseNextSorting = idx => {
+    const sortMode = SortMode[idx];
+    updateSharedData(f.assoc("sorting", sortMode));
+  };
+  const currentSortIndex = f.clamp(
+    0,
+    f.size(SortMode),
+    SortMode.findIndex(mode => mode === sharedData.sorting)
+  );
+  const sortIcons = f.map("icon", SortMode);
+
   return (
     <Header
       {...props}
@@ -243,6 +277,11 @@ const SelectLinkTargetOverlayHeader = props => {
         setFilterMode={setFilterMode}
         setFilterValue={setFilterValue}
         updateSharedData={f.noop}
+      />
+      <SwitchSortingButton
+        setSortOrder={chooseNextSorting}
+        sortOrder={currentSortIndex}
+        sortIcons={sortIcons}
       />
     </Header>
   );
