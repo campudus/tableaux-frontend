@@ -1,9 +1,7 @@
 @import "variables";
 
 .overlay {
-
-  .overlay-wrapper.link-overlay {
-
+  .overlay-wrapper {
     .header-wrapper .Tableaux-Spinner {
       grid-column: 5;
       -ms-grid-column: 5;
@@ -108,7 +106,7 @@
     position: relative;
     display: block;
 
-    input[type=text] {
+    input[type="text"] {
       width: 100%;
       padding: 8px;
       border-radius: 3px;
