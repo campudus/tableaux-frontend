@@ -92,7 +92,9 @@ const DependentRowsList = props => {
     <div className="dependent-wrapper">
       <div className="content-items">
         {dependentTables.length < 1 ? (
-          <div className="item">{i18n.t("table:no_dependent_text")}</div>
+          <div className="item">
+            {i18n.t("table:dependent-rows.no-dependent-rows-header")}
+          </div>
         ) : (
           dependentTables
         )}
