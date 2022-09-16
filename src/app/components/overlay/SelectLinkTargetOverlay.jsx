@@ -98,14 +98,14 @@ const RowCreator = ({
   );
 };
 
-const translateDV = langtag => dv =>
+const translateDisplayValue = langtag => dv =>
   Array.isArray(dv)
-    ? f.flatMap(translateDV(langtag), dv)
+    ? f.flatMap(translateDisplayValue(langtag), dv)
     : retrieveTranslation(langtag, dv);
 
 const getFlatDisplayValue = langtag =>
   f.compose(
-    translateDV(langtag),
+    translateDisplayValue(langtag),
     f.first
   );
 
