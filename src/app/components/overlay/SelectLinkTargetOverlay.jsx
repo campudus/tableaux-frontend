@@ -140,13 +140,20 @@ const SelectLinkTargetOverlay = props => {
 
   const availableRows = t
     .transduceList(
-      t.reject(([id]) => id === oldRowId),
-      t.reject(([id]) => id === selectedRowId),
-      t.reject(([id]) => f.isNil(id)),
       t.filter(filterRows),
-      t.map(([id, displayValue]) => ({ id: parseInt(id), displayValue }))
+      t.map(([id, displayValue]) => ({ id: parseInt(id), displayValue })),
+      t.reject(({ id }) => id === oldRowId),
+      t.reject(({ id }) => id === selectedRowId),
+      t.reject(({ id }) => f.isNil(id))
     )(Object.entries(displayValueTable))
     .sort(itemOrder.fn);
+
+  console.log({
+    oldRowId,
+    selectedRowId,
+    nItems: availableRows.length,
+    ids: availableRows.map(({ id }) => id)
+  });
 
   const handleSelectRowId = useCallback(
     rowId => {
