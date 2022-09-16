@@ -19,6 +19,7 @@ import Header from "./Header";
 import { addEmptyRow } from "../../redux/actions/rowActions";
 import { openEntityView } from "./EntityViewOverlay";
 import { SwitchSortingButton } from "../cells/link/LinkOverlayFragments";
+import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 
 const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
   const displayValue = unless(
@@ -148,13 +149,6 @@ const SelectLinkTargetOverlay = props => {
     )(Object.entries(displayValueTable))
     .sort(itemOrder.fn);
 
-  console.log({
-    oldRowId,
-    selectedRowId,
-    nItems: availableRows.length,
-    ids: availableRows.map(({ id }) => id)
-  });
-
   const handleSelectRowId = useCallback(
     rowId => {
       setSelectedRowId(rowId);
@@ -274,7 +268,7 @@ const SelectLinkTargetOverlayHeader = props => {
     <Header
       {...props}
       context={i18n.t("table:select-link-target.context")}
-      title={""}
+      title={<OverlayHeadRowIdentificator {...props} />}
     >
       <SearchBar
         id={id}
@@ -300,9 +294,11 @@ export const openSelectLinkTargetOverlay = ({
   langtag,
   onSubmit
 }) => {
+  const cell = { ...row.cells[0], value: row.values[0] };
+
   store.dispatch(
     actions.openOverlay({
-      head: <SelectLinkTargetOverlayHeader />,
+      head: <SelectLinkTargetOverlayHeader cell={cell} langtag={langtag} />,
       body: (
         <SelectLinkTargetOverlay
           oldRowId={row.id}
