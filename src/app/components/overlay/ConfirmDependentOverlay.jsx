@@ -10,24 +10,29 @@ import Button from "../Button/Button";
 import Header from "./Header";
 import { openSelectLinkTargetOverlay } from "./SelectLinkTargetOverlay";
 
+const DeleteAction = {
+  delete: "delete-row/just-delete",
+  merge: "delete-row/merge"
+};
+
 const JustDelete = rowToDeleteId => ({
-  action: "delete-row/just-delete",
+  action: DeleteAction.delete,
   rowToDeleteId
 });
 const MergeRows = (rowToDeleteId, mergedLinkTargetId) => ({
-  action: "delete-row/merge",
+  action: DeleteAction.merge,
   rowToDeleteId,
   mergedLinkTargetId
 });
-const isMergeAction = ({ action }) => action === "delete-row/merge";
+const isMergeAction = ({ action }) => action === DeleteAction.merge;
 
 const getHeadline = (deletion, count) => {
-  const trnKey = f.isNil(count)
+  const translationKey = f.isNil(count)
     ? "table:dependent-rows.fetching-dependent-rows"
     : count === 0
     ? "table:dependent-rows.no-dependent-rows-header"
     : "table:dependent-rows.dependent-rows-header";
-  return i18n.t(trnKey, { count });
+  return i18n.t(translationKey, { count });
 };
 
 const DeletionInfoBox = ({ table, row, nLinks, onSubmit, langtag }) => {
