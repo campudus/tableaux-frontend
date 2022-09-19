@@ -45,6 +45,18 @@
   }
 }
 
+@mixin create-button-look($color) {
+  @include setBgColorAndHover($color);
+
+  &.skeleton {
+    background-color: transparent;
+    color: $color;
+    padding: 6px 14px;
+    border: 1px solid $color;
+    border-radius: 4px;
+  }
+}
+
 @mixin button-look() {
   height: 30px;
   font-size: 1em;
@@ -62,28 +74,28 @@
   @include transition(all 250ms ease-out);
 
   //default
-  @include setBgColorAndHover($color-primary);
+  @include create-button-look($color-primary);
 
   &.standard {
-    @include setBgColorAndHover($color-very-dark);
+    @include create-button-look($color-very-dark);
   }
 
   &.neutral,
   &.cancel {
-    @include setBgColorAndHover($color-button-grey);
+    @include create-button-look($color-button-grey);
   }
 
   &.positive {
-    @include setBgColorAndHover($color-green);
+    @include create-button-look($color-green);
   }
 
   &.negative {
-    @include setBgColorAndHover($color-red);
+    @include create-button-look($color-red);
   }
 
   &.white {
     color: $color-very-dark;
-    @include setBgColorAndHover(#fff);
+    @include create-button-look(#fff);
   }
 
   &:active,
