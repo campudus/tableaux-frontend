@@ -24,7 +24,12 @@
     "confirm-merge-body": "On confirmation, the record will be permanenly deleted. All links to it will be relinked to the new target. The deletion can not be undone.",
     "confirm-merge-header": "Really change links' targets to {{linkTargetTitle}}?",
     "fetching-dependent-rows": "Fetching links to this record...",
-    "no-dependent-rows-header": "There are no links to this record"
+    "no-dependent-rows-header": "There are no links to this record",
+    "delete-row-success-context": "Record was deleted.",
+    "delete-row-success-header": "The record {{oldRowTitle}} was permanently deleted.",
+    "delete-row-success-body": "This action cannot be undone.",
+    "merge-rows-success-header": "The record {{oldRowTitle}} was permanenlty deletes. Links targeting it were changed to target {{linkTargetTitle}} instead.",
+    "merge-rows-success-body": "This action cannot be undone."
   },
   "select-link-target": {
     "title": "Link records targeting {{linkTitle}} to",
