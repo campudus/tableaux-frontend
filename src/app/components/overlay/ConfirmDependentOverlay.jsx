@@ -160,20 +160,20 @@ const DeleteRowOverlay = props => {
       }dependent-rows`,
       buttons: [
         ButtonConfig("btn-select-delete-row", selectDeleteMode, "negative"),
-        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "neutral")
+        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "default")
       ]
     },
     [DeleteAction.delete]: {
-      headlineKey: "",
-      bodyTextKey: "",
+      headlineKey: "table:dependent-rows.confirm-delete-header",
+      bodyTextKey: "table:dependent-rows.confirm-delete-body",
       buttons: [
         ButtonConfig("btn-submit-delete-row", submitDeleteAction, "negative"),
-        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "neutral")
+        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "default")
       ]
     },
     [DeleteAction.merge]: {
-      headlineKey: "",
-      bodyTextKey: "",
+      headlineKey: "table:dependent-rows.confirm-merge-header",
+      bodyTextKey: "table:dependent-rows.confirm-merge-body",
       buttons: [
         ButtonConfig(
           "btn-submit-merge-rows",
@@ -181,7 +181,11 @@ const DeleteRowOverlay = props => {
           "negative",
           !canSubmitAction(deletionAction)
         ),
-        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "frame")
+        ButtonConfig(
+          "btn-change-link-target",
+          selectLinkTarget,
+          "default skeleton"
+        )
       ]
     }
   };
