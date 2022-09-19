@@ -127,8 +127,16 @@ const mkResultFilter = (mode, value) => {
 };
 
 const SelectLinkTargetOverlay = props => {
-  const { oldRowId, tableId, onSubmit, langtag, grudData, sharedData } = props;
-  const [selectedRowId, setSelectedRowId] = useState();
+  const {
+    oldRowId,
+    tableId,
+    onSubmit,
+    langtag,
+    grudData,
+    sharedData,
+    initialTargetRowId
+  } = props;
+  const [selectedRowId, setSelectedRowId] = useState(initialTargetRowId);
   const displayValueTable = extractDisplayValues(langtag, tableId, grudData);
   const table = f.propOr({}, ["tables", "data", tableId], grudData);
 
@@ -292,7 +300,8 @@ export const openSelectLinkTargetOverlay = ({
   row,
   table,
   langtag,
-  onSubmit
+  onSubmit,
+  selectedTargetRowId // optional, when re-selecting
 }) => {
   const cell = { ...row.cells[0], value: row.values[0] };
 
@@ -305,6 +314,7 @@ export const openSelectLinkTargetOverlay = ({
           tableId={table.id}
           onSubmit={onSubmit}
           langtag={langtag}
+          initialTargetRowId={selectedTargetRowId}
         />
       ),
       type: "full-height",

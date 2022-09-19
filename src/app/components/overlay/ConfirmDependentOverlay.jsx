@@ -3,6 +3,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import DependentRowsList from "../../components/rows/DependentRowsList";
+import { buildClassName } from "../../helpers/buildClassName";
 import RowConcat from "../../helpers/RowConcatHelper";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
@@ -42,31 +43,28 @@ const getHeadline = (deletion, count) => {
   return i18n.t(translationKey, { count });
 };
 
-const DeleteRowHeader = ({ headlineKey, bodyTextKey, buttons }) => {
-  return (
-    <>
-      <div className="deletion-info__header overlay-subheader__title">
-        {i18n.t(headlineKey)}
-      </div>
-      <div className="deletion-info__message overlay-subheader__description">
-        {i18n.t(bodyTextKey)}
-      </div>
-      <div className="deletion-info__action-select overlay-subheader__buttons overlay-subheader__buttons--left">
-        {buttons.map(({ textKey, onClick, cssClasses, disabled }) => (
-          <Button
-            key={textKey}
-            onClick={onClick}
-            disabled={disabled}
-            classNames={cssClasses}
-          >
-            {i18n.t(textKey)}
-          </Button>
-        ))}
-      </div>
-    </>
-  );
-};
-
+const DeleteRowHeader = ({ headlineKey, bodyTextKey, buttons }) => (
+  <>
+    <div className="deletion-info__header overlay-subheader__title">
+      {i18n.t(headlineKey)}
+    </div>
+    <div className="deletion-info__message overlay-subheader__description">
+      {i18n.t(bodyTextKey)}
+    </div>
+    <div className="deletion-info__action-select overlay-subheader__buttons overlay-subheader__buttons--left">
+      {buttons.map(({ textKey, onClick, cssClasses, disabled }) => (
+        <Button
+          key={textKey}
+          onClick={onClick}
+          disabled={disabled}
+          classNames={cssClasses}
+        >
+          {i18n.t(textKey)}
+        </Button>
+      ))}
+    </div>
+  </>
+);
 const DeleteRowFooter = ({ deletionAction, onClose, onSubmit }) => {
   const deleteTextKey =
     deletionAction && isMergeAction(deletionAction)
@@ -143,7 +141,8 @@ const DeleteRowOverlay = props => {
       row,
       table,
       langtag,
-      onSubmit: selectMergeMode
+      onSubmit: selectMergeMode,
+      selectedTargetRowId: deletionAction.mergedLinkTargetId
     });
   };
   const selectMergeMode = targetId =>
@@ -187,8 +186,12 @@ const DeleteRowOverlay = props => {
     }
   };
 
+  const wrapperCssClass = buildClassName("delete-row-confirmation", {
+    greyout: !isInitialAction(deletionAction)
+  });
+
   return (
-    <div className="delete-row-confirmation">
+    <div className={wrapperCssClass}>
       <section className="overlay-subheader">
         <DeleteRowHeader {...f.get(deletionAction.action, headerConfig)} />
       </section>
