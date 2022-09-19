@@ -16,7 +16,7 @@ const DeleteAction = {
   merge: "delete-row/merge"
 };
 
-const Initial = { action: DeleteAction.initial };
+const NoActionSelected = { action: DeleteAction.initial };
 const JustDelete = rowToDeleteId => ({
   action: DeleteAction.delete,
   rowToDeleteId
@@ -29,6 +29,9 @@ const MergeRows = (rowToDeleteId, mergedLinkTargetId) => ({
 const isInitialAction = f.propEq("action", DeleteAction.initial);
 const isDeleteAction = f.propEq("action", DeleteAction.delete);
 const isMergeAction = f.propEq("action", DeleteAction.merge);
+const canSubmitAction = action =>
+  isDeleteAction(action) ||
+  (isMergeAction(action) && f.isNumber(action.mergedLinkTargetId));
 
 const getHeadline = (deletion, count) => {
   const translationKey = f.isNil(count)
@@ -39,59 +42,38 @@ const getHeadline = (deletion, count) => {
   return i18n.t(translationKey, { count });
 };
 
-const DeletionInfoBox = ({ table, row, nLinks, onSubmit, langtag }) => {
-  const headline = getHeadline(true, nLinks);
-  const textKey = `table:dependent-rows.delete-${
-    nLinks === 0 ? "no-" : ""
-  }dependent-rows`;
-
-  const handleSetMergeRowAction = mergeRowId =>
-    onSubmit(MergeRows(row.id, mergeRowId));
-  const handleSetJustDeleteAction = () => onSubmit(JustDelete(row.id));
-  const handleSelectMergeRowId = () => {
-    openSelectLinkTargetOverlay({
-      row,
-      table,
-      langtag,
-      onSubmit: handleSetMergeRowAction
-    });
-  };
-
+const DeleteRowHeader = ({ headlineKey, bodyTextKey, buttons }) => {
   return (
     <>
       <div className="deletion-info__header overlay-subheader__title">
-        {headline}
+        {i18n.t(headlineKey)}
       </div>
       <div className="deletion-info__message overlay-subheader__description">
-        {i18n.t(textKey)}
+        {i18n.t(bodyTextKey)}
       </div>
-      {nLinks > 0 ? (
-        <div className="deletion-info__action-select overlay-subheader__buttons overlay-subheader__buttons--left">
-          <Button classNames="negative" onClick={handleSetJustDeleteAction}>
-            {i18n.t("table:dependent-rows.btn-select-delete-row")}
+      <div className="deletion-info__action-select overlay-subheader__buttons overlay-subheader__buttons--left">
+        {buttons.map(({ textKey, onClick, cssClasses, disabled }) => (
+          <Button
+            key={textKey}
+            onClick={onClick}
+            disabled={disabled}
+            classNames={cssClasses}
+          >
+            {i18n.t(textKey)}
           </Button>
-          <Button onClick={handleSelectMergeRowId}>
-            {i18n.t("table:dependent-rows.btn-select-merge-rows")}
-          </Button>
-        </div>
-      ) : null}
+        ))}
+      </div>
     </>
   );
 };
 
-const DeletionFooter = ({ deletionAction, onClose, langtag, tableId }) => {
+const DeleteRowFooter = ({ deletionAction, onClose, onSubmit }) => {
   const deleteTextKey =
     deletionAction && isMergeAction(deletionAction)
       ? "table:dependent-rows.btn-submit-merge-rows"
       : "table:dependent-rows.btn-submit-delete-row";
 
-  const handleSubmit = () =>
-    handleDeleteRow({ langtag, tableId, deletionAction });
-
-  const isSubmitDisabled =
-    f.isNil(deletionAction) ||
-    (isMergeAction(deletionAction) &&
-      f.isNil(deletionAction.mergedLinkTargetId));
+  const isSubmitDisabled = !canSubmitAction(deletionAction);
 
   return (
     <footer className="button-wrapper">
@@ -99,7 +81,7 @@ const DeletionFooter = ({ deletionAction, onClose, langtag, tableId }) => {
         <Button
           classNames="negative"
           disabled={isSubmitDisabled}
-          onClick={handleSubmit}
+          onClick={onSubmit}
         >
           {i18n.t(deleteTextKey)}
         </Button>
@@ -139,8 +121,15 @@ const handleDeleteRow = ({ tableId, langtag, deletionAction }) => {
   );
 };
 
+const ButtonConfig = (translationKeyPostfix, effect, cssClasses, disabled) => ({
+  textKey: `table:dependent-rows.${translationKeyPostfix}`,
+  onClick: effect,
+  cssClasses,
+  disabled: !!disabled
+});
+
 const DeleteRowOverlay = props => {
-  const [deletionAction, setDeletionAction] = useState();
+  const [deletionAction, setDeletionAction] = useState(NoActionSelected);
   const [nLinkedTables, setNLinkedTables] = useState();
   const { table, row, langtag, cell } = props;
   const handleHasDependencies = setNLinkedTables;
@@ -149,31 +138,73 @@ const DeleteRowOverlay = props => {
     setDeletionAction(JustDelete(row.id));
   };
 
+  const selectLinkTarget = () => {
+    openSelectLinkTargetOverlay({
+      row,
+      table,
+      langtag,
+      onSubmit: selectMergeMode
+    });
+  };
+  const selectMergeMode = targetId =>
+    setDeletionAction(MergeRows(row.id, targetId));
+  const selectDeleteMode = () => setDeletionAction(JustDelete(row.id));
+  const submitDeleteAction = isInitialAction(deletionAction)
+    ? f.noop
+    : () => handleDeleteRow({ tableId: table.id, langtag, deletionAction });
+
+  const headerConfig = {
+    [DeleteAction.initial]: {
+      headlineKey: getHeadline(true, nLinkedTables),
+      bodyTextKey: `table:dependent-rows.delete-${
+        nLinkedTables === 0 ? "no-" : ""
+      }dependent-rows`,
+      buttons: [
+        ButtonConfig("btn-select-delete-row", selectDeleteMode, "negative"),
+        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "neutral")
+      ]
+    },
+    [DeleteAction.delete]: {
+      headlineKey: "",
+      bodyTextKey: "",
+      buttons: [
+        ButtonConfig("btn-submit-delete-row", submitDeleteAction, "negative"),
+        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "neutral")
+      ]
+    },
+    [DeleteAction.merge]: {
+      headlineKey: "",
+      bodyTextKey: "",
+      buttons: [
+        ButtonConfig(
+          "btn-submit-merge-rows",
+          submitDeleteAction,
+          "negative",
+          !canSubmitAction(deletionAction)
+        ),
+        ButtonConfig("btn-select-merge-rows", selectLinkTarget, "frame")
+      ]
+    }
+  };
+
   return (
     <div className="delete-row-confirmation">
       <section className="overlay-subheader">
-        <DeletionInfoBox
-          nLinks={nLinkedTables}
-          table={table}
-          row={row}
-          onSubmit={setDeletionAction}
-          langtag={langtag}
-        />
+        <DeleteRowHeader {...f.get(deletionAction.action, headerConfig)} />
       </section>
       <DependentRowsList
+        cell={cell}
         className="item"
-        table={table}
-        row={row}
-        langtag={langtag}
         hasDependency={handleHasDependencies}
         hasNoDependency={handleHasNoDependencies}
-        cell={cell}
-      />
-      <DeletionFooter
         langtag={langtag}
-        tableId={table.id}
+        row={row}
+        table={table}
+      />
+      <DeleteRowFooter
         deletionAction={deletionAction}
         onClose={props.actions.closeOverlay}
+        onSubmit={submitDeleteAction}
       />
     </div>
   );
