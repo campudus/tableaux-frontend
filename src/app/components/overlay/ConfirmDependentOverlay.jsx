@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import React, { useState } from "react";
 import DependentRowsList from "../../components/rows/DependentRowsList";
 import { buildClassName } from "../../helpers/buildClassName";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 import RowConcat from "../../helpers/RowConcatHelper";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
@@ -43,10 +44,15 @@ const getHeadline = (deletion, count) => {
   return i18n.t(translationKey, { count });
 };
 
-const DeleteRowHeader = ({ headlineKey, bodyTextKey, buttons }) => (
+const DeleteRowHeader = ({
+  headlineKey,
+  bodyTextKey,
+  buttons,
+  linkTargetTitle
+}) => (
   <>
     <div className="deletion-info__header overlay-subheader__title">
-      {i18n.t(headlineKey)}
+      {i18n.t(headlineKey, { linkTargetTitle })}
     </div>
     <div className="deletion-info__message overlay-subheader__description">
       {i18n.t(bodyTextKey)}
@@ -126,6 +132,25 @@ const ButtonConfig = (translationKeyPostfix, effect, cssClasses, disabled) => ({
   disabled: !!disabled
 });
 
+const lookupRowDisplayName = (store, tableId, langtag) => rowId => {
+  const flattenTranslation = f.compose(
+    f.join(" "),
+    f.compact,
+    f.map(retrieveTranslation(langtag))
+  );
+  const go = f.compose(
+    dv =>
+      Array.isArray(dv)
+        ? flattenTranslation(dv)
+        : retrieveTranslation(langtag, dv),
+    f.get(["values", 0]),
+    f.find(f.propEq("id", rowId)),
+    f.getOr([], ["displayValues", tableId])
+  );
+
+  return go(store);
+};
+
 const DeleteRowOverlay = props => {
   const [deletionAction, setDeletionAction] = useState(NoActionSelected);
   const [nLinkedTables, setNLinkedTables] = useState();
@@ -135,6 +160,10 @@ const DeleteRowOverlay = props => {
     setNLinkedTables(0);
     setDeletionAction(JustDelete(row.id));
   };
+
+  const getRowTitle = lookupRowDisplayName(props.grudData, table.id, langtag);
+  const oldRowTitle = getRowTitle(row.id);
+  const linkTargetTitle = getRowTitle(deletionAction.mergedLinkTargetId);
 
   const selectLinkTarget = () => {
     openSelectLinkTargetOverlay({
@@ -197,7 +226,11 @@ const DeleteRowOverlay = props => {
   return (
     <div className={wrapperCssClass}>
       <section className="overlay-subheader">
-        <DeleteRowHeader {...f.get(deletionAction.action, headerConfig)} />
+        <DeleteRowHeader
+          {...f.get(deletionAction.action, headerConfig)}
+          oldRowTitle={oldRowTitle}
+          linkTargetTitle={linkTargetTitle}
+        />
       </section>
       <DependentRowsList
         cell={cell}
