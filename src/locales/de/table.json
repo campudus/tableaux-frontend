@@ -24,7 +24,12 @@
     "confirm-merge-body": "Mit Bestätigung werden die vorhandenen Verknüpfungen einem anderen Datensatz zugewiesen und der alte Datensatz automatisch gelöscht. Die Aktion kann nicht rückgängig gemacht werden. ",
     "confirm-merge-header": "Möchten Sie bestehende Verknüpfungen dem Datensatz {{linkTargetTitle}} zuweisen?",
     "fetching-dependent-rows": "Verknüpfte Datensätze werden abgefragt.",
-    "no-dependent-rows-header": "Dieser Datensatz ist bisher nicht verknüpft"
+    "no-dependent-rows-header": "Dieser Datensatz ist bisher nicht verknüpft",
+    "delete-row-success-context": "Datensatz wurde gelöscht",
+    "delete-row-success-header": "Der Datensatz {{oldRowTitle}} wurde dauerhaft gelöscht.",
+    "delete-row-success-body": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "merge-rows-success-header": "Der Datensatz {{oldRowTitle}} wurde dauerhaft gelöscht. Darin enthaltene Verknüpfungen wurden mit dem Datensath {{linkTargetTitle}} verknüpft.",
+    "merge-rows-success-body": "Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "select-link-target": {
     "title": "Verknüpfungen des Datensatzes {{linkTitle}} ändern auf",
