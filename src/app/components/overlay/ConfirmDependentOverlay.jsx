@@ -11,10 +11,12 @@ import Header from "./Header";
 import { openSelectLinkTargetOverlay } from "./SelectLinkTargetOverlay";
 
 const DeleteAction = {
+  initial: "delete-row/initial",
   delete: "delete-row/just-delete",
   merge: "delete-row/merge"
 };
 
+const Initial = { action: DeleteAction.initial };
 const JustDelete = rowToDeleteId => ({
   action: DeleteAction.delete,
   rowToDeleteId
@@ -24,7 +26,9 @@ const MergeRows = (rowToDeleteId, mergedLinkTargetId) => ({
   rowToDeleteId,
   mergedLinkTargetId
 });
-const isMergeAction = ({ action }) => action === DeleteAction.merge;
+const isInitialAction = f.propEq("action", DeleteAction.initial);
+const isDeleteAction = f.propEq("action", DeleteAction.delete);
+const isMergeAction = f.propEq("action", DeleteAction.merge);
 
 const getHeadline = (deletion, count) => {
   const translationKey = f.isNil(count)
@@ -135,10 +139,10 @@ const handleDeleteRow = ({ tableId, langtag, deletionAction }) => {
   );
 };
 
-const RowsOverlay = props => {
+const DeleteRowOverlay = props => {
   const [deletionAction, setDeletionAction] = useState();
   const [nLinkedTables, setNLinkedTables] = useState();
-  const { table, row, langtag, deleteInfo, cell } = props;
+  const { table, row, langtag, cell } = props;
   const handleHasDependencies = setNLinkedTables;
   const handleHasNoDependencies = () => {
     setNLinkedTables(0);
@@ -148,17 +152,13 @@ const RowsOverlay = props => {
   return (
     <div className="delete-row-confirmation">
       <section className="overlay-subheader">
-        {deleteInfo ? (
-          <DeletionInfoBox
-            nLinks={nLinkedTables}
-            table={table}
-            row={row}
-            onSubmit={setDeletionAction}
-            langtag={langtag}
-          />
-        ) : (
-          <p>{getHeadline(false, nLinkedTables)}</p>
-        )}
+        <DeletionInfoBox
+          nLinks={nLinkedTables}
+          table={table}
+          row={row}
+          onSubmit={setDeletionAction}
+          langtag={langtag}
+        />
       </section>
       <DependentRowsList
         className="item"
@@ -169,19 +169,43 @@ const RowsOverlay = props => {
         hasNoDependency={handleHasNoDependencies}
         cell={cell}
       />
-      {deleteInfo ? (
-        <DeletionFooter
-          langtag={langtag}
-          tableId={table.id}
-          deletionAction={deletionAction}
-          onClose={props.actions.closeOverlay}
-        />
-      ) : null}
+      <DeletionFooter
+        langtag={langtag}
+        tableId={table.id}
+        deletionAction={deletionAction}
+        onClose={props.actions.closeOverlay}
+      />
     </div>
   );
 };
 
-RowsOverlay.propTypes = {
+const ViewDependentRowsOverlay = props => {
+  const [nLinkedTables, setNLinkedTables] = useState();
+  const { table, row, langtag, cell } = props;
+  const handleHasDependencies = setNLinkedTables;
+  const handleHasNoDependencies = () => {
+    setNLinkedTables(0);
+  };
+
+  return (
+    <div className="delete-row-confirmation">
+      <section className="overlay-subheader">
+        <p>{getHeadline(false, nLinkedTables)}</p>
+      </section>
+      <DependentRowsList
+        className="item"
+        table={table}
+        row={row}
+        langtag={langtag}
+        hasDependency={handleHasDependencies}
+        hasNoDependency={handleHasNoDependencies}
+        cell={cell}
+      />
+    </div>
+  );
+};
+
+ViewDependentRowsOverlay.propTypes = {
   row: PropTypes.object.isRequired,
   table: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
@@ -200,11 +224,10 @@ export function confirmDeleteRow({ row, table, langtag }) {
     actions.openOverlay({
       head: <Header context={i18n.t("table:delete_row")} title={itemName} />,
       body: (
-        <RowsOverlay
+        <DeleteRowOverlay
           row={row}
           table={table}
           langtag={langtag}
-          deleteInfo={true}
           cell={{ row, table, langtag }}
         />
       ),
@@ -220,7 +243,12 @@ export function openShowDependency({ table, row, langtag, cell }) {
     actions.openOverlay({
       head: <Header context={i18n.t("table:dependencies")} title={itemName} />,
       body: (
-        <RowsOverlay row={row} table={table} langtag={langtag} cell={cell} />
+        <ViewDependentRowsOverlay
+          row={row}
+          table={table}
+          langtag={langtag}
+          cell={cell}
+        />
       ),
       type: "full-height"
     })
