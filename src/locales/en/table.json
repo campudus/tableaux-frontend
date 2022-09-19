@@ -10,6 +10,7 @@
   "copy_cell": "Copy cell contents",
   "paste_cell": "Paste cell contents",
   "dependent-rows": {
+    "btn-change-link-target": "Change links",
     "btn-select-delete-row": "Delete record",
     "btn-select-merge-rows": "Change links' target",
     "btn-submit-delete-row": "Delete record and links",
@@ -18,6 +19,10 @@
     "delete-no-dependent-rows": "The record will be deleted permanently.",
     "dependent-rows-header": "There are links to this record in another table",
     "dependent-rows-header_plural": "There are links to this record in {{count}} other tables",
+    "confirm-delete-body": "On confirmation, the record will be permanently deleted and all links to it will be unlinked. This can not be undone.",
+    "confirm-delete-header": "Really delete the record and all links?",
+    "confirm-merge-body": "On confirmation, the record will be permanenly deleted. All links to it will be relinked to the new target. The deletion can not be undone.",
+    "confirm-merge-header": "Really change links' targets to {{linkTargetTitle}}?",
     "fetching-dependent-rows": "Fetching links to this record...",
     "no-dependent-rows-header": "There are no links to this record"
   },

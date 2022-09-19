@@ -10,6 +10,7 @@
   "copy_cell": "Zellinhalt kopieren",
   "paste_cell": "Zellinhalt einfügen",
   "dependent-rows": {
+    "btn-change-link-target": "Verknüpfung ändern",
     "btn-select-delete-row": "Verknüpfungen löschen",
     "btn-select-merge-rows": "Neu verknüpfen",
     "btn-submit-delete-row": "Alten Datensatz löschen",
@@ -18,6 +19,10 @@
     "delete-no-dependent-rows": "Der Datensatz wird dauerhaft gelöscht.",
     "dependent-rows-header": "Der Datensatz ist in einer weiteren Tabelle verknüpft. Was soll mit den Verknüpfungen passieren?",
     "dependent-rows-header_plural": "Der Datensatz ist in {{count}} weiteren Tabellen verknüpft. Was soll mit den Verknüpfungen passieren?",
+    "confirm-delete-body": "Mit Bestätigung werden der bestehende Datensatz und alle Verknüpfungen darauf dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirm-delete-header": "Sind Sie sich sicher, dass Sie die Verknüpfungen löschen wollen?",
+    "confirm-merge-body": "Mit Bestätigung werden die vorhandenen Verknüpfungen einem anderen Datensatz zugewiesen und der alte Datensatz automatisch gelöscht. Die Aktion kann nicht rückgängig gemacht werden. ",
+    "confirm-merge-header": "Möchten Sie bestehende Verknüpfungen dem Datensatz {{linkTargetTitle}} zuweisen?",
     "fetching-dependent-rows": "Verknüpfte Datensätze werden abgefragt.",
     "no-dependent-rows-header": "Dieser Datensatz ist bisher nicht verknüpft"
   },
