@@ -9,6 +9,7 @@ import RowConcat from "../../helpers/RowConcatHelper";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 import Button from "../Button/Button";
+import { showDialog } from "./GenericOverlay";
 import Header from "./Header";
 import { openSelectLinkTargetOverlay } from "./SelectLinkTargetOverlay";
 
@@ -97,7 +98,46 @@ const DeleteRowFooter = ({ deletionAction, onClose, onSubmit }) => {
   );
 };
 
-const handleDeleteRow = ({ tableId, langtag, deletionAction }) => {
+const handleShowDeletionSuccess = options => {
+  const { deletionAction } = options;
+
+  const prefix = "table:dependent-rows.";
+  const isMerge = isMergeAction(deletionAction);
+  const headingKey =
+    prefix +
+    (isMerge ? "merge-rows-success-header" : "delete-row-success-header");
+  const messageKey =
+    prefix + (isMerge ? "merge-rows-success-body" : "delete-row-success-body");
+  const heading = i18n.t(headingKey, options);
+  const message = i18n.t(messageKey, options);
+  const context = i18n.t(prefix + "delete-row-success-context");
+
+  showDialog({
+    type: "info",
+    context,
+    message,
+    heading,
+    buttonActions: { positive: [i18n.t("common.ok"), f.noop] }
+  });
+};
+
+const handleShowDeletionError = err => {
+  showDialog({
+    type: "important",
+    context: i18n.t("common:error"),
+    heading: i18n.t("table:error_occured_hl"),
+    message: err.message,
+    buttonActions: { positive: [i18n.t("common:ok"), f.noop] }
+  });
+};
+
+const handleDeleteRow = ({
+  tableId,
+  langtag,
+  deletionAction,
+  oldRowTitle,
+  linkTargetTitle
+}) => {
   const rowId = deletionAction.rowToDeleteId;
   const mergeWithRowId = deletionAction.mergedLinkTargetId;
   const rows = store.getState() |> f.get(["rows", tableId, "data"]);
@@ -112,7 +152,21 @@ const handleDeleteRow = ({ tableId, langtag, deletionAction }) => {
     }
   } = store.getState();
 
-  store.dispatch(actions.deleteRow({ rowId, tableId, mergeWithRowId }));
+  store.dispatch(
+    actions.deleteRow({
+      rowId,
+      tableId,
+      mergeWithRowId,
+      onSuccess: () =>
+        handleShowDeletionSuccess({
+          deletionAction,
+          oldRowTitle,
+          linkTargetTitle
+        }),
+      onError: handleShowDeletionError
+    })
+  );
+
   store.dispatch(actions.closeOverlay());
 
   store.dispatch(
@@ -179,7 +233,14 @@ const DeleteRowOverlay = props => {
   const selectDeleteMode = () => setDeletionAction(JustDelete(row.id));
   const submitDeleteAction = isInitialAction(deletionAction)
     ? f.noop
-    : () => handleDeleteRow({ tableId: table.id, langtag, deletionAction });
+    : () =>
+        handleDeleteRow({
+          tableId: table.id,
+          langtag,
+          deletionAction,
+          oldRowTitle,
+          linkTargetTitle
+        });
 
   const headerConfig = {
     [DeleteAction.initial]: {
