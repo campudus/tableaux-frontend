@@ -28,7 +28,7 @@
     "delete-row-success-context": "Datensatz wurde gelöscht",
     "delete-row-success-header": "Der Datensatz {{oldRowTitle}} wurde dauerhaft gelöscht.",
     "delete-row-success-body": "Diese Aktion kann nicht rückgängig gemacht werden.",
-    "merge-rows-success-header": "Der Datensatz {{oldRowTitle}} wurde dauerhaft gelöscht. Darin enthaltene Verknüpfungen wurden mit dem Datensath {{linkTargetTitle}} verknüpft.",
+    "merge-rows-success-header": "Der Datensatz {{oldRowTitle}} wurde dauerhaft gelöscht. Darin enthaltene Verknüpfungen wurden mit dem Datensatz {{linkTargetTitle}} verknüpft.",
     "merge-rows-success-body": "Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "select-link-target": {
