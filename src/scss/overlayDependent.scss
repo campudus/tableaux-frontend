@@ -21,6 +21,20 @@
         flex: 1;
         overflow-y: auto;
       }
+
+      &--greyout {
+        .list-item {
+          .left,
+          .linkButton {
+            background-color: lighten($color-text-light-grey, 7);
+            color: $color-text-medium-grey;
+            font-weight: 500;
+            svg {
+              fill: $color-text-medium-grey;
+            }
+          }
+        }
+      }
     }
   }
 }
