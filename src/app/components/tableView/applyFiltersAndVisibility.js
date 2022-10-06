@@ -4,6 +4,7 @@ import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 import store from "../../redux/store";
 import f from "lodash/fp";
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import * as t from "../../helpers/transduce";
 
 import { mapIndexed } from "../../helpers/functools";
 
@@ -142,15 +143,28 @@ const tableOrFiltersChanged = (props, nextProps) => {
   );
 };
 
+const listToSet = (...fs) => list => {
+  const into = (set, item) => set.add(item);
+  const xform = f.compose(...fs);
+
+  return f.reduce(xform(into), new Set(), list);
+};
+
 const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
   const statusColumnIndex = f.findIndex({ kind: ColumnKinds.status }, columns);
+  const visibleColumnIDs = new Set(visibleColumns);
+  const hiddenColumnIDs = listToSet(
+    t.filter(f.prop("hidden")),
+    t.map(f.prop("id"))
+  )(columns);
 
-  const orderVisible = f.reduce((acc, val) => {
-    if (f.contains(val.id, visibleColumns)) {
-      return f.concat(acc, [val.idx]);
-    }
-    return acc;
-  }, []);
+  const isVisibleColumnId = id =>
+    visibleColumnIDs.has(id) && !hiddenColumnIDs.has(id);
+
+  const orderVisible = t.transduceList(
+    t.filter(val => isVisibleColumnId(val.id)),
+    t.map(f.prop("idx"))
+  );
 
   const rejectDuplicateStatusColumn = f.compose(
     f.concat([statusColumnIndex]),
