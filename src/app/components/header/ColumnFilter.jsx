@@ -24,8 +24,18 @@ class ColumnFilter extends React.Component {
       columns,
       tableId,
       columnActions,
-      columnOrdering
+      columnOrdering: rawColumnOrdering
     } = this.props;
+    const objIdces = columns.reduce((lookupTable, col, idx) => {
+      if (!col.hidden) lookupTable[col.id] = idx;
+      return lookupTable;
+    }, {});
+    const columnOrdering = rawColumnOrdering.reduce((ordering, val) => {
+      const idx = objIdces[val.id];
+      if (f.isNumber(idx)) ordering.push({ id: val.id, idx });
+      return ordering;
+    }, []);
+
     const { open } = this.state;
     const nHidden = f.flow(
       f.drop(1),
