@@ -24,7 +24,7 @@ const ShortTextCell = props => {
 
   const originalValue = isMultiLang ? value[langtag] : value;
 
-  const [editorValue, setEditorValue] = useState(originalValue);
+  const [editorValue, setEditorValue] = useState(originalValue || "");
   const saveEdits = () => handleEditDone(editorValue);
   const handleFinish = (shouldSave = true, finalValue = undefined) => {
     if (shouldSave) {
