@@ -16,7 +16,7 @@ const TreeEntry = ({ node, onClick, children, langtag }) => {
   const childrenToRender = node.expanded || node.onPath ? node.children : null;
 
   return (
-    <li onClick={handleClick}>
+    <li onClick={handleClick} style={{ paddingLeft: "24px" }}>
       <span>{retrieveTranslation(langtag, node.displayValue)}</span>
       {t.isLeaf(node) ? null : <span>{childCount}</span>}
       {childrenToRender ? (
