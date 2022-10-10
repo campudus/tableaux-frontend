@@ -14,6 +14,8 @@ import {
 } from "../../helpers/functools";
 import RowContextMenu from "../contextMenu/RowContextMenu";
 import VirtualTable from "./VirtualTable";
+import { isTaxonomyTable } from "../taxonomy/taxonomy";
+import TaxonomyTable from "../taxonomy/TaxonomyTable";
 
 class Table extends PureComponent {
   /**
@@ -161,32 +163,36 @@ class Table extends PureComponent {
         onMouseDown={this.onMouseDownHandler}
       >
         <div className="tableaux-table">
-          <VirtualTable
-            key={`virtual-table-${f.get("id", table)}`}
-            actions={actions}
-            columns={columns}
-            visibleColumns={visibleColumns}
-            ref={this.findAndStoreTableDiv}
-            rows={rows}
-            tableView={tableView}
-            displayValues={displayValues}
-            table={table}
-            tables={tables}
-            langtag={langtag}
-            selectedCell={(tableView && tableView.selectedCell) || {}}
-            selectedCellEditing={(tableView && tableView.editiong) || false}
-            expandedRowIds={tableView.expandedRowIds}
-            fullyLoaded={this.props.fullyLoaded}
-            openCellContextMenu={this.showRowContextMenu}
-            closeCellContextMenu={this.hideRowContextMenu}
-            navigate={navigate}
-            finishedLoading={finishedLoading}
-            selectedCellExpandedRow={this.state.selectedCellExpandedRow}
-            setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
-            getSelectedCellExpandedRow={this.getSelectedCellExpandedRow}
-            visibleColumnOrdering={visibleColumnOrdering}
-            hasStatusColumn={hasStatusColumn}
-          />
+          {isTaxonomyTable(table) ? (
+            <TaxonomyTable tableId={table.id} langtag={langtag} />
+          ) : (
+            <VirtualTable
+              key={`virtual-table-${f.get("id", table)}`}
+              actions={actions}
+              columns={columns}
+              visibleColumns={visibleColumns}
+              ref={this.findAndStoreTableDiv}
+              rows={rows}
+              tableView={tableView}
+              displayValues={displayValues}
+              table={table}
+              tables={tables}
+              langtag={langtag}
+              selectedCell={(tableView && tableView.selectedCell) || {}}
+              selectedCellEditing={(tableView && tableView.editiong) || false}
+              expandedRowIds={tableView.expandedRowIds}
+              fullyLoaded={this.props.fullyLoaded}
+              openCellContextMenu={this.showRowContextMenu}
+              closeCellContextMenu={this.hideRowContextMenu}
+              navigate={navigate}
+              finishedLoading={finishedLoading}
+              selectedCellExpandedRow={this.state.selectedCellExpandedRow}
+              setSelectedCellExpandedRow={this.setSelectedCellExpandedRow}
+              getSelectedCellExpandedRow={this.getSelectedCellExpandedRow}
+              visibleColumnOrdering={visibleColumnOrdering}
+              hasStatusColumn={hasStatusColumn}
+            />
+          )}
         </div>
         {this.noRowsInfo()}
         {rowContextMenu ? (
