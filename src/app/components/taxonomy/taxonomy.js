@@ -1,4 +1,7 @@
 import * as t from "../../helpers/transduce";
+// use memoize from wrong lodash, as it supports passing a cache key resolver
+// eslint-disable-next-line lodash-fp/use-fp
+import { memoize } from "lodash";
 import f from "lodash/fp";
 
 // type alias BuildTreeNode =
@@ -45,19 +48,27 @@ export const buildTree = ({ expandedNodeId }) => nodes => {
 };
 
 // getPathToNode : List TreeNode -> List TreeNode
-export const getPathToNode = nodes => node => {
+export const getPathToNode = nodes => {
   const nodeRecord = f.keyBy("id", nodes);
-
-  const go = (curNode, path) => {
-    const parent = curNode && curNode.parent && nodeRecord[curNode.parent];
-    if (parent) path.unshift(parent);
-    return parent ? go(parent, path) : path;
+  return node => {
+    const go = (curNode, path) => {
+      const parent = curNode && curNode.parent && nodeRecord[curNode.parent];
+      if (parent) path.unshift(parent);
+      return parent ? go(parent, path) : path;
+    };
+    return go(node, []);
   };
-  return go(node, []);
 };
 
-// (String -> Boolean) -> Tree -> List {displayValue: MultilangValue, id: number}
-export const findInTree = (searchFn, tree) => {};
+// findInTree : Langtag -> (String -> Boolean) -> List TreeNode -> List (TreeNode & { path: List (Record String) })
+export const findTreeNodes = langtag => searchFn => nodes => {
+  // eslint-disable-next-line lodash-fp/no-extraneous-args
+  const findPath = memoize(getPathToNode(nodes), f.prop("id"));
+  return t.transduceList(
+    t.filter(node => searchFn(node.displayValue[langtag])),
+    t.map(node => ({ ...node, path: findPath(node) }))
+  )(nodes);
+};
 
 // isLeaf : TreeNode -> Boolean
 export const isLeaf = node => node && f.isEmpty(node.children);
