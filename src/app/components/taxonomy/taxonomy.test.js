@@ -138,6 +138,7 @@ describe("taxonomy helpers", () => {
     });
     it("should build large trees performantly", () => {
       const size = 2000;
+      const threshold = 100;
       const manyNodes = range(0, size).map((_, idx) => {
         const isRootNode = Math.random() < 0.05;
         return {
@@ -149,8 +150,33 @@ describe("taxonomy helpers", () => {
       const buildExpanded = t.buildTree({
         expandedNodeId: Math.round(Math.random() * size)
       });
-      expect(time(buildUnexpanded)(manyNodes)).toBeLessThan(250);
-      expect(time(buildExpanded)(manyNodes)).toBeLessThan(250);
+      expect(time(buildUnexpanded)(manyNodes)).toBeLessThan(threshold);
+      expect(time(buildExpanded)(manyNodes)).toBeLessThan(threshold);
+    });
+  });
+
+  describe("findTreeNodes", () => {
+    const labelledTreeNodes = [
+      { id: 1, parent: null, displayValue: { en: "Not me" } },
+      { id: 2, parent: 1, displayValue: { en: "I am worthy" } },
+      { id: 3, parent: null, displayValue: { en: "Nope" } },
+      { id: 4, parent: 3, displayValue: { en: "Yes! Me!" } },
+      { id: 5, parent: 4, displayValue: { en: "I am none of the results" } },
+      { id: 6, parent: 5, displayValue: { en: "I'm like a deep result" } }
+    ];
+    it("should find tree nodes by search function and add paths", () => {
+      const search = str => !/no/i.test(str);
+
+      const results = t.findTreeNodes("en")(search)(labelledTreeNodes);
+      expect(results.length).toBe(3);
+      expect(results[0].id).toBe(2);
+      expect(results[0].path).toHaveLength(1);
+
+      expect(results[1].id).toBe(4);
+      expect(results[1].path).toHaveLength(1);
+
+      expect(results[2].id).toBe(6);
+      expect(results[2].path).toHaveLength(3);
     });
   });
 });
