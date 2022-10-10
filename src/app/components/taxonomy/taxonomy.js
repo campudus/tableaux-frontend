@@ -3,6 +3,7 @@ import * as t from "../../helpers/transduce";
 // eslint-disable-next-line lodash-fp/use-fp
 import { memoize } from "lodash";
 import f from "lodash/fp";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 // type alias BuildTreeNode =
 //    { id: RowId
@@ -18,14 +19,19 @@ import f from "lodash/fp";
 // type alias TreeState =
 //   { expandedNodeId: RowId
 //   }
-//
-// type alias ExpandTreeCmd =
-//   { id: RowId,
-//   , level: Int
-//   }
 
 // {rows, displayValues} => List BuildTreeNode
-export const tableToTreeNodes = ({ rows, displayValues }) => {};
+export const tableToTreeNodes = ({ rows }) =>
+  (rows || []).map(({ id, cells, values }) => {
+    const displayValue = getDisplayValue(cells[0], values[0]);
+    const parentId = f.prop([3, 0, "id"], values); // id of first (and only) link value in column 4
+
+    return {
+      id,
+      displayValue,
+      parent: parentId
+    };
+  });
 
 // buildTree : TreeState -> List TreeNode -> TreeNode
 export const buildTree = ({ expandedNodeId }) => nodes => {
@@ -72,3 +78,6 @@ export const findTreeNodes = langtag => searchFn => nodes => {
 
 // isLeaf : TreeNode -> Boolean
 export const isLeaf = node => node && f.isEmpty(node.children);
+
+// isTaxonomyTable : Table -> Boolean
+export const isTaxonomyTable = table => table && table.type === "taxonomy";
