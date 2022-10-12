@@ -3,7 +3,16 @@ import { buildClassName } from "../../helpers/buildClassName";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { buildTree, isLeaf } from "./taxonomy";
 
-const ItemButton = ({ children, className, langtag, node, onClick }) => {
+const ItemButton = props => {
+  const {
+    children,
+    className,
+    langtag,
+    node,
+    onClick,
+    shouldShowAction = () => false,
+    NodeActionItem = () => null
+  } = props;
   const handleClick = () => {
     onClick && onClick(node);
   };
@@ -13,6 +22,8 @@ const ItemButton = ({ children, className, langtag, node, onClick }) => {
       className={`tree-node__item-button ${className || ""}`}
       onClick={handleClick}
     >
+      {shouldShowAction(props) ? <NodeActionItem {...props} /> : null}
+
       <span className="tree-node__name">
         {retrieveTranslation(langtag, node.displayValue)}
       </span>
@@ -30,7 +41,12 @@ const Node = props => {
 
   return (
     <>
-      <ItemButton langtag={langtag} node={node} onClick={onToggleExpand}>
+      <ItemButton
+        {...props}
+        langtag={langtag}
+        node={node}
+        onClick={onToggleExpand}
+      >
         <span className="tree-node__child-count">{childCount}</span>
         <span className="hfill" />
         <i className={"tree-node__toggle-indicator " + toggleIcon} />
@@ -48,15 +64,18 @@ const Node = props => {
 
 const Leaf = props => {
   const { onSelectLeaf, node, langtag } = props;
-  return <ItemButton onClick={onSelectLeaf} langtag={langtag} node={node} />;
+  return (
+    <ItemButton
+      {...props}
+      onClick={onSelectLeaf}
+      langtag={langtag}
+      node={node}
+    />
+  );
 };
 
 const TreeItem = props => {
-  const {
-    node,
-    NodeActionItem = () => null,
-    shouldShowAction = () => false
-  } = props;
+  const { node } = props;
   const Component = isLeaf(node) ? Leaf : Node;
   const cssClass = buildClassName("tree-node", {
     leaf: isLeaf(node),
@@ -65,7 +84,6 @@ const TreeItem = props => {
   });
   return (
     <li className={cssClass}>
-      {shouldShowAction(props) ? <NodeActionItem {...props} /> : null}
       <Component {...props} />
     </li>
   );
