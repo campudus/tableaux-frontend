@@ -24,10 +24,12 @@ const ItemButton = props => {
     >
       {shouldShowAction(props) ? <NodeActionItem {...props} /> : null}
 
-      <span className="tree-node__name">
-        {retrieveTranslation(langtag, node.displayValue)}
-      </span>
-      {children}
+      <div className="tree-node__title">
+        <span className="tree-node__name">
+          {retrieveTranslation(langtag, node.displayValue)}
+        </span>
+        {children}
+      </div>
     </div>
   );
 };
@@ -80,7 +82,8 @@ const TreeItem = props => {
   const cssClass = buildClassName("tree-node", {
     leaf: isLeaf(node),
     "on-path": node.onPath,
-    expanded: node.expanded
+    expanded: node.expanded,
+    default: !node.onPath && !node.expanded
   });
   return (
     <li className={cssClass}>

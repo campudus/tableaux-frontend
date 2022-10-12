@@ -1,7 +1,46 @@
 .tree {
+  padding: 24px;
+  max-width: 900px;
+
   .tree-node {
+    .hfill {
+      flex: 1;
+    }
     &__item-button {
       display: flex;
+      align-items: center;
+      margin: 8px 0;
     }
+
+    &__title {
+      flex: 1;
+      display: flex;
+      padding: 12px 24px;
+      font-weight: bold;
+      border-radius: 4px;
+    }
+
+    &__child-count {
+      margin-left: 4px;
+    }
+
+    &--on-path,
+    &--expanded {
+      .tree-node__title {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+      }
+    }
+
+    &--default {
+      .tree-node__title {
+        background-color: $color-white;
+        color: $color-dark;
+      }
+    }
+  }
+
+  .subtree {
+    padding-left: 16px;
   }
 }
