@@ -27,7 +27,7 @@ const ItemButton = props => {
 
       <div className="tree-node__title">
         <span className="tree-node__name">
-          {retrieveTranslation(langtag || "de-DE", node.displayValue)}
+          {retrieveTranslation(langtag, node.displayValue)}
         </span>
         {children}
       </div>
@@ -68,10 +68,8 @@ const AnimateChildNodes = props => {
 
   useEffect(() => {
     if (isInitial) {
-      console.log(node.id, "initial");
       setIsInitial(false);
     } else {
-      console.log(node.id, "=>", show);
       setEntering(show);
       setLeaving(!show);
     }
