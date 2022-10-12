@@ -45,6 +45,13 @@
         color: $color-dark;
       }
     }
+
+    &--leaf {
+      .tree-node__title {
+        color: $color-primary;
+        border-left: 8px solid $color-primary;
+      }
+    }
   }
 
   .subtree {
