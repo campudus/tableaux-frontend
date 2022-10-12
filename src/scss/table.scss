@@ -82,7 +82,10 @@ body div div.column-header-context-menu {
 }
 
 .tableaux-table {
-  background-color: white;
+  &--settings,
+  &--generic {
+    background-color: $color-white;
+  }
   position: absolute;
   top: 0;
   left: 0;

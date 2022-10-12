@@ -16,6 +16,7 @@ import RowContextMenu from "../contextMenu/RowContextMenu";
 import VirtualTable from "./VirtualTable";
 import { isTaxonomyTable } from "../taxonomy/taxonomy";
 import TaxonomyTable from "../taxonomy/TaxonomyTable";
+import { buildClassName } from "../../helpers/buildClassName";
 
 class Table extends PureComponent {
   /**
@@ -157,13 +158,21 @@ class Table extends PureComponent {
       f.map("values")
     );
 
+    const isTaxonomy = table && isTaxonomyTable(table);
+    const isSettings = table && table.type === "settings";
+    const tableClass = buildClassName("tableaux-table", {
+      taxonomy: isTaxonomy,
+      settings: isSettings,
+      generic: !isTaxonomy && !isSettings
+    });
+
     return (
       <section
         id="table-wrapper"
         tabIndex="-1"
         onMouseDown={this.onMouseDownHandler}
       >
-        <div className="tableaux-table">
+        <div className={tableClass}>
           {isTaxonomyTable(table) ? (
             <TaxonomyTable tableId={table.id} langtag={langtag} />
           ) : (
