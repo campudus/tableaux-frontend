@@ -23,51 +23,66 @@ const ItemButton = ({ children, className, langtag, node, onClick }) => {
 
 const Node = props => {
   const { onToggleExpand, node, langtag } = props;
-  const childrenToRender = node.expanded || node.onPath ? node.children : null;
+  const childNodes = node.expanded || node.onPath ? node.children : null;
   const childCount = `(${node.children.length})`;
-  const cssClass = buildClassName("tree-node", {
-    "on-path": node.onPath,
-    expanded: node.expanded
-  });
+  const toggleIcon =
+    node.expanded || node.onPath ? "fa fa-angle-up" : "fa fa-angle-down";
+
   return (
-    <li className={cssClass}>
+    <>
       <ItemButton langtag={langtag} node={node} onClick={onToggleExpand}>
         <span className="tree-node__child-count">{childCount}</span>
+        <span className="hfill" />
+        <i className={"tree-node__toggle-indicator " + toggleIcon} />
       </ItemButton>
-      {childrenToRender ? (
+      {childNodes ? (
         <ul className="subtree">
-          {childrenToRender.map(child => (
+          {childNodes.map(child => (
             <TreeItem key={child.id} {...props} node={child} />
           ))}
         </ul>
       ) : null}
-    </li>
+    </>
   );
 };
 
 const Leaf = props => {
   const { onSelectLeaf, node, langtag } = props;
+  return <ItemButton onClick={onSelectLeaf} langtag={langtag} node={node} />;
+};
+
+const TreeItem = props => {
+  const {
+    node,
+    NodeActionItem = () => null,
+    shouldShowAction = () => false
+  } = props;
+  const Component = isLeaf(node) ? Leaf : Node;
+  const cssClass = buildClassName("tree-node", {
+    leaf: isLeaf(node),
+    "on-path": node.onPath,
+    expanded: node.expanded
+  });
   return (
-    <li className="tree-node__leaf">
-      <ItemButton
-        className="tree-node__item-button--leaf"
-        onClick={onSelectLeaf}
-        langtag={langtag}
-        node={node}
-      ></ItemButton>
+    <li className={cssClass}>
+      {shouldShowAction(props) ? <NodeActionItem {...props} /> : null}
+      <Component {...props} />
     </li>
   );
 };
 
-const TreeItem = props =>
-  isLeaf(props.node) ? <Leaf {...props} /> : <Node {...props} />;
-
-const TreeView = ({ langtag, nodes, onSelectLeaf }) => {
+const TreeView = ({
+  langtag, // String
+  nodes, // List TreeNode
+  onSelectLeaf, // TreeNode -> Effect
+  NodeActionItem, // { node : TreeNode, langtag : String } -> React.Element
+  shouldShowAction // { node : TreeNode, expandedNodeId : RowId } -> Boolean
+}) => {
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const tree = buildTree({ expandedNodeId })(nodes);
   const handleToggleExpand = node => {
-    console.log({ node, expandedNodeId });
-    setExpandedNodeId(expandedNodeId === node.id ? node.parent : node.id);
+    const shouldContract = node.expanded || node.onPath;
+    setExpandedNodeId(shouldContract ? node.parent : node.id);
   };
 
   return (
@@ -80,6 +95,9 @@ const TreeView = ({ langtag, nodes, onSelectLeaf }) => {
             node={node}
             onSelectLeaf={onSelectLeaf}
             onToggleExpand={handleToggleExpand}
+            expandedNodeId={expandedNodeId}
+            NodeActionItem={NodeActionItem}
+            shouldShowAction={shouldShowAction}
           />
         ))}
       </ul>
