@@ -20,7 +20,7 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 //   { expandedNodeId: RowId
 //   }
 
-// {rows, displayValues} => List BuildTreeNode
+// tableToTreeNodes : { rows : List Row } -> List BuildTreeNode
 export const tableToTreeNodes = ({ rows }) =>
   (rows || []).map(({ id, cells, values }) => {
     const displayValue = getDisplayValue(cells[0], values[0]);
