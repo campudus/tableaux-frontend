@@ -81,3 +81,14 @@ export const isLeaf = node => node && f.isEmpty(node.children);
 
 // isTaxonomyTable : Table -> Boolean
 export const isTaxonomyTable = table => table && table.type === "taxonomy";
+
+// countVisibleChildren : TreeNode -> Int
+export const countVisibleChildren = node =>
+  node.expanded
+    ? node.children.length
+    : node.onPath
+    ? 1 +
+      countVisibleChildren(
+        node.children.find(child => child.onPath || child.expanded)
+      )
+    : 0;
