@@ -1,3 +1,7 @@
+:root {
+  --tree-animation-duration: 300ms;
+}
+
 .tree {
   padding: 24px;
   max-width: 900px;
@@ -7,6 +11,7 @@
       flex: 1;
     }
     &__item-button {
+      cursor: pointer;
       display: flex;
       align-items: center;
       margin: 8px 0;
@@ -18,6 +23,8 @@
       padding: 12px 24px;
       font-weight: bold;
       border-radius: 4px;
+      transition: background-color var(--tree-animation-duration) ease-in-out,
+        color var(--tree-animation-duration) ease-in-out;
     }
 
     &__child-count {
@@ -41,6 +48,24 @@
   }
 
   .subtree {
+    padding: 0;
+    margin: 0;
     padding-left: 16px;
+    transition: all var(--tree-animation-duration) ease-in;
+    height: 0;
+    transform-origin: top;
+    display: block;
+    transform: scaleY(0);
+
+    &--show {
+      transform: scaleY(1);
+    }
+    &--entering {
+      transform: scaleY(1);
+    }
+    &--leaving {
+      transform: scaleY(0);
+      height: 0;
+    }
   }
 }
