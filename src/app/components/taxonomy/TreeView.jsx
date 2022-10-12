@@ -63,10 +63,6 @@ const AnimateChildNodes = props => {
   };
 
   useEffect(() => {
-    requestAnimationFrame(() => setEntering(true));
-  }, []);
-
-  useEffect(() => {
     if (isInitial) {
       setIsInitial(false);
     } else {
