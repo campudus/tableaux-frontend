@@ -1,0 +1,76 @@
+.tableaux-table--taxonomy {
+  .tree-node {
+    &__menu-button {
+      flex: 1;
+      height: 100%;
+      background-color: $color-white;
+      border-radius: 4px;
+      @include flex-centered();
+      position: relative;
+
+      &:hover {
+        background-color: $color-primary-hover;
+        color: $color-primary;
+        & > * {
+          fill: $color-primary;
+        }
+      }
+
+      &--open,
+      &--open:hover {
+        background-color: $color-primary;
+        color: $color-primary-contrast-text;
+        & > * {
+          fill: $color-primary-contrast-text;
+        }
+      }
+    }
+
+    &__menu-popup {
+      position: absolute;
+      left: calc(100% + 8px);
+      top: 0;
+      background-color: $color-white;
+      box-shadow: 0 0 15px $color-text-light-grey;
+      border-radius: 4px;
+
+      &__item-group {
+        &:not(:last-of-type) {
+          border-bottom: 1px solid $color-text-light-grey;
+        }
+      }
+
+      &__item {
+        display: grid;
+        padding: 12px 16px;
+        grid-template-columns: var(--tree-item-height) 1fr;
+        color: $color-very-dark;
+
+        & > svg > * {
+          fill: $color-very-dark;
+        }
+
+        .item__icon {
+          @include flex-centered();
+          font-size: 16px;
+
+          .flip-lr {
+            transform: scaleX(-1);
+          }
+
+          .rotate-90 {
+            rotate: 90deg;
+          }
+        }
+
+        .item-title {
+          white-space: nowrap;
+        }
+
+        &:hover {
+          background-color: transparentize($color-text-light-grey, 0.8);
+        }
+      }
+    }
+  }
+}
