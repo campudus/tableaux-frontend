@@ -12,7 +12,7 @@ const shouldShowAction = ({ node, expandedNodeId }) =>
   (!node.parent && !expandedNodeId) || node.parent === expandedNodeId;
 
 // EditorEntryDescription :
-//   { faIcon: String
+//   { icon: String | React.Element
 //   , titleKey: String
 //   , onClick: { node: TreeNode } => ()
 //   , isVisible: { node: TreeNode } => Boolean
@@ -25,7 +25,11 @@ const EditorEntry = ({ entry, node }) => (
     onClick={() => entry.onClick(node)}
   >
     <span className="item__icon">
-      <i className={`fa ${entry.faIcon}`} />
+      {typeof entry.icon === "string" ? (
+        <i className={`fa ${entry.icon}`} />
+      ) : (
+        entry.icon || null
+      )}
     </span>
     <span className="item-title">{i18n.t(entry.titleKey)}</span>
   </li>
@@ -103,15 +107,18 @@ const mkTableEditor = entryGroups => ({ node }) => {
 const TableEditor = mkTableEditor([
   [
     {
-      faIcon: "fa-level-down flip-lr",
+      icon: "fa-level-down flip-lr",
       titleKey: "table:taxonomy.add-sibling-below"
     },
-    { faIcon: "fa-level-up rotate-90", titleKey: "table:taxonomy.add-child" }
+    {
+      icon: <SvgIcon icon="addSubItem" />,
+      titleKey: "table:taxonomy.add-child"
+    }
   ],
   [
-    { faIcon: "fa-pencil", titleKey: "table:taxonomy.edit" },
+    { icon: "fa-pencil", titleKey: "table:taxonomy.edit" },
     {
-      faIcon: "fa-trash",
+      icon: "fa-trash",
       titleKey: "table:taxonomy.delete",
       isVisible: t.isLeaf
     }
