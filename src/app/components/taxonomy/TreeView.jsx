@@ -24,7 +24,11 @@ const ItemButton = props => {
       className={`tree-node__item-button ${className || ""}`}
       onClick={handleClick}
     >
-      {shouldShowAction(props) ? <NodeActionItem {...props} /> : null}
+      {shouldShowAction(props) ? (
+        <span className="tree-node__item-action-button">
+          <NodeActionItem {...props} />
+        </span>
+      ) : null}
 
       <div className="tree-node__title">
         <span className="tree-node__name">
