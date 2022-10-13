@@ -1,5 +1,7 @@
 :root {
   --tree-animation-duration: 300ms;
+  --tree-item-height: 39.6px;
+  --tree-item-margin-y: 8px;
 }
 
 .tree {
@@ -11,10 +13,19 @@
       flex: 1;
     }
     &__item-button {
+      height: var(--tree-item-height);
       cursor: pointer;
       display: flex;
       align-items: center;
-      margin: 8px 0;
+      margin: var(--tree-item-margin-y) 0;
+    }
+    &__item-action-button {
+      height: var(--tree-item-height);
+      width: var(--tree-item-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
     }
 
     &__title {
