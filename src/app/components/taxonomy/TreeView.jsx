@@ -3,6 +3,7 @@ import { buildClassName } from "../../helpers/buildClassName";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { buildTree, countVisibleChildren, isLeaf } from "./taxonomy";
 import { omit } from "lodash/fp";
+import { getCssVarNumeric } from "../../helpers/getCssVar";
 
 const ItemButton = props => {
   const {
@@ -37,13 +38,11 @@ const ItemButton = props => {
 
 const AnimateChildNodes = props => {
   const { node, show } = props;
-  const duration = parseInt(
-    getComputedStyle(document.body).getPropertyValue(
-      "--tree-animation-duration"
-    )
-  );
+  const duration = getCssVarNumeric("--tree-animation-duration");
 
-  const itemHeight = 47.6;
+  const itemHeight =
+    getCssVarNumeric("--tree-item-height") +
+    getCssVarNumeric("--tree-item-margin-y");
 
   const [isInitial, setIsInitial] = useState(true);
   const [entering, setEntering] = useState(false);
