@@ -84,11 +84,9 @@ export const isTaxonomyTable = table => table && table.type === "taxonomy";
 
 // countVisibleChildren : TreeNode -> Int
 export const countVisibleChildren = node =>
-  node.expanded
-    ? node.children.length
-    : node.onPath
-    ? 1 +
-      countVisibleChildren(
-        node.children.find(child => child.onPath || child.expanded)
-      )
+  node.expanded || node.onPath
+    ? node.children.length +
+      node.children
+        .map(child => countVisibleChildren(child))
+        .reduce((a, b) => a + b, 0)
     : 0;
