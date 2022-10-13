@@ -19,6 +19,7 @@ import PropTypes from "prop-types";
 import { makeRequest } from "../../helpers/apiHelper";
 
 const iconUrls = {
+  addSubItem: "/img/icons/add-sub-item.svg",
   arrow: "/img/icons/arrow-long.svg",
   burger: "/img/icons/burger-thin.svg",
   check: "/img/icons/check.svg",
