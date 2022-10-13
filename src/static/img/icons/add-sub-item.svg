@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="12.3201"
+   viewBox="0 0 16 12.3201"
+   fill="none"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="add-sub-item.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs12" />
+  <sodipodi:namedview
+     id="namedview10"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="36.041667"
+     inkscape:cx="7.9907514"
+     inkscape:cy="6.0208092"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
+     inkscape:window-x="1920"
+     inkscape:window-y="96"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
+  <rect
+     x="6.5"
+     y="7.8200998"
+     width="9"
+     height="4"
+     rx="0.5"
+     stroke="#333333"
+     stroke-linejoin="round"
+     id="rect2" />
+  <path
+     d="M 2.43994,2.67993 V 8.8199 c 0,0.5523 0.44772,1 1,1 H 6.5"
+     stroke="#333333"
+     id="path4" />
+  <rect
+     x="0"
+     y="0"
+     width="16"
+     height="5"
+     rx="1"
+     fill="#333333"
+     id="rect6" />
+</svg>
