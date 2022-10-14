@@ -12,7 +12,7 @@ import action from "../../redux/actionCreators";
 import SvgIcon from "../helperComponents/SvgIcon";
 import * as t from "./taxonomy";
 import TreeView from "./TreeView";
-import { openEntityView } from "../overlay/EntityViewOverlay";
+import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { rowValuesToCells } from "../../redux/reducers/rows";
 
 const shouldShowAction = ({ node, expandedNodeId }) =>
@@ -130,11 +130,9 @@ const onCreateNode = ({ dispatch, table, columns }) => async ({
     t.tableToTreeNodes
   )({ rows });
 
-  console.log({ node });
-
   // Timing issue: we need to pass the new row to the next function, as it might
   // not yet be dispatched to the redux store
-  return { node, rows };
+  return node;
 };
 
 const TaxonomyTable = ({ langtag, tableId }) => {
@@ -144,20 +142,14 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   const nodes = t.tableToTreeNodes({ rows, columns });
   const dispatch = useDispatch();
   const createNewNode = onCreateNode({ dispatch, table, columns });
-  const editNode = (node, currentRows = rows) => {
-    // currentRows must be passed if the node is freshly created
-    const row = currentRows.find(row => row.id === node.id);
-    openEntityView({ langtag, row, table });
+  const editNode = node => {
+    loadAndOpenEntityView({ langtag, rowId: node.id, tableId });
   };
   const addSiblingBelow = node => {
-    createNewNode({ tableId, parentNodeId: node.parent }).then(result =>
-      editNode(result.node, result.rows)
-    );
+    createNewNode({ tableId, parentNodeId: node.parent }).then(editNode);
   };
   const addChild = node => {
-    createNewNode({ tableId, parentNodeId: node.id }).then(result =>
-      editNode(result.node, result.rows)
-    );
+    createNewNode({ tableId, parentNodeId: node.id }).then(editNode);
   };
   const deleteNode = node => {
     dispatch(action.deleteRow({ tableId, rowId: node.id }));
