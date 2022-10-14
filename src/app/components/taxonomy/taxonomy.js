@@ -23,7 +23,7 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 // tableToTreeNodes : { rows : List Row } -> List BuildTreeNode
 export const tableToTreeNodes = ({ rows }) =>
   (rows || []).map(({ id, cells, values }) => {
-    const displayValue = getDisplayValue(cells[0], values[0]);
+    const displayValue = getDisplayValue(cells[0].column, values[0]);
     const parentId = f.prop([3, 0, "id"], values); // id of first (and only) link value in column 4
 
     return {
