@@ -168,5 +168,12 @@
     "enter-link": "Enter URL here",
     "linked-text": "Link text",
     "insert-link": "Add link"
+  },
+  "taxonomy": {
+    "add-child": "Add child category",
+    "add-sibling-below": "Add sibling category after",
+    "delete": "Delete",
+    "edit": "Edit",
+    "title": "Categories"
   }
 }
