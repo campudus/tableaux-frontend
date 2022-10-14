@@ -117,7 +117,7 @@ const handleShowDeletionSuccess = options => {
     context,
     message,
     heading,
-    buttonActions: { positive: [i18n.t("common.ok"), f.noop] }
+    buttonActions: { positive: [i18n.t("common:ok"), f.noop] }
   });
 };
 
