@@ -1,12 +1,19 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  canUserCreateRow,
+  canUserDeleteRow
+} from "../../helpers/accessManagementHelper";
+import { buildClassName } from "../../helpers/buildClassName";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
+import action from "../../redux/actionCreators";
+import SvgIcon from "../helperComponents/SvgIcon";
 import * as t from "./taxonomy";
 import TreeView from "./TreeView";
-import SvgIcon from "../helperComponents/SvgIcon";
-import { buildClassName } from "../../helpers/buildClassName";
+import { openEntityView } from "../overlay/EntityViewOverlay";
+import { rowValuesToCells } from "../../redux/reducers/rows";
 
 const shouldShowAction = ({ node, expandedNodeId }) =>
   (!node.parent && !expandedNodeId) || node.parent === expandedNodeId;
@@ -104,30 +111,90 @@ const mkTableEditor = entryGroups => ({ node }) => {
   );
 };
 
-const TableEditor = mkTableEditor([
-  [
-    {
-      icon: "fa-level-down flip-lr",
-      titleKey: "table:taxonomy.add-sibling-below"
-    },
-    {
-      icon: <SvgIcon icon="addSubItem" />,
-      titleKey: "table:taxonomy.add-child"
-    }
-  ],
-  [
-    { icon: "fa-pencil", titleKey: "table:taxonomy.edit" },
-    {
-      icon: "fa-trash",
-      titleKey: "table:taxonomy.delete",
-      isVisible: t.isLeaf
-    }
-  ]
-]);
+const onCreateNode = ({ dispatch, table, columns }) => async ({
+  tableId,
+  parentNodeId
+}) => {
+  const transformRows = rowValuesToCells(table, columns);
+  const rows = await action
+    .createAndLoadRow(dispatch, tableId, {
+      columns: [{ id: 4 }],
+      rows: [{ values: [parentNodeId || null] }]
+    })
+    .then(transformRows);
+
+  const node = f.compose(
+    f.assoc("parent", parentNodeId),
+    f.assoc("children", []),
+    f.first,
+    t.tableToTreeNodes
+  )({ rows });
+
+  console.log({ node });
+
+  // Timing issue: we need to pass the new row to the next function, as it might
+  // not yet be dispatched to the redux store
+  return { node, rows };
+};
 
 const TaxonomyTable = ({ langtag, tableId }) => {
+  const table = useSelector(f.prop(["tables", "data", tableId]));
   const rows = useSelector(f.propOr([], ["rows", tableId, "data"]));
-  const nodes = t.tableToTreeNodes({ rows });
+  const columns = useSelector(f.propOr([], ["columns", tableId, "data"]));
+  const nodes = t.tableToTreeNodes({ rows, columns });
+  const dispatch = useDispatch();
+  const createNewNode = onCreateNode({ dispatch, table, columns });
+  const editNode = (node, currentRows = rows) => {
+    // currentRows must be passed if the node is freshly created
+    const row = currentRows.find(row => row.id === node.id);
+    openEntityView({ langtag, row, table });
+  };
+  const addSiblingBelow = node => {
+    createNewNode({ tableId, parentNodeId: node.parent }).then(result =>
+      editNode(result.node, result.rows)
+    );
+  };
+  const addChild = node => {
+    createNewNode({ tableId, parentNodeId: node.id }).then(result =>
+      editNode(result.node, result.rows)
+    );
+  };
+  const deleteNode = node => {
+    dispatch(action.deleteRow({ tableId, rowId: node.id }));
+  };
+
+  const TableEditor = useCallback(
+    mkTableEditor([
+      [
+        {
+          icon: "fa-level-down flip-lr",
+          titleKey: "table:taxonomy.add-sibling-below",
+          onClick: addSiblingBelow,
+          isVisible: () => canUserCreateRow({ table })
+        },
+        {
+          icon: <SvgIcon icon="addSubItem" />,
+          titleKey: "table:taxonomy.add-child",
+          isVisible: () => canUserCreateRow({ table }),
+          onClick: addChild
+        }
+      ],
+      [
+        {
+          icon: "fa-pencil",
+          titleKey: "table:taxonomy.edit",
+          onClick: editNode
+        },
+        {
+          icon: "fa-trash",
+          titleKey: "table:taxonomy.delete",
+          onClick: deleteNode,
+          isVisible: node => canUserDeleteRow({ table }) && t.isLeaf(node)
+        }
+      ]
+    ]),
+    [tableId]
+  );
 
   return (
     <TreeView
