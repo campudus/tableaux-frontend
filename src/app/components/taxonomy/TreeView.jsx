@@ -125,8 +125,8 @@ const TreeItem = props => {
   const cssClass = buildClassName("tree-node", {
     leaf: isLeaf(node),
     "on-path": node.onPath,
-    expanded: node.expanded,
-    default: !node.onPath && !node.expanded
+    expanded: node.expanded && !isLeaf(node),
+    default: (!node.onPath && !node.expanded) || isLeaf(node)
   });
   return (
     <li className={cssClass}>
