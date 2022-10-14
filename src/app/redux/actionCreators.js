@@ -627,13 +627,19 @@ const editColumn = (columnId, tableId, data) => {
   };
 };
 
-const createAndLoadRow = async (dispatch, tableId) => {
-  const freshRow = await makeRequest({
+const createAndLoadRow = async (dispatch, tableId, { columns, rows } = {}) => {
+  const response = await makeRequest({
     apiRoute: API_ROUTES.toRows(tableId),
-    method: "POST"
+    method: "POST",
+    ...(columns && rows && { data: { columns, rows } })
   });
-  dispatch(addRows(tableId, [freshRow]));
-  return freshRow;
+  const responseRows = Array.isArray(response)
+    ? response
+    : Array.isArray(response.rows)
+    ? response.rows
+    : [];
+  dispatch(addRows(tableId, responseRows));
+  return responseRows;
 };
 
 export const addEmptyRowAndOpenEntityView = (
@@ -674,6 +680,7 @@ const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
   loadAllRows: loadAllRows,
+  createAndLoadRow,
   toggleColumnVisibility: toggleColumnVisibility,
   setColumnsVisible: setColumnsVisible,
   hideAllColumns: hideAllColumns,
