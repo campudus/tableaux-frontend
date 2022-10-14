@@ -12,7 +12,7 @@ import action from "../../redux/actionCreators";
 import SvgIcon from "../helperComponents/SvgIcon";
 import * as t from "./taxonomy";
 import TreeView from "./TreeView";
-import { openEntityView } from "../overlay/EntityViewOverlay";
+import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { rowValuesToCells } from "../../redux/reducers/rows";
 import { confirmDeleteRow } from "../overlay/ConfirmDependentOverlay";
 
@@ -112,15 +112,15 @@ const mkTableEditor = entryGroups => ({ node }) => {
   );
 };
 
-const onCreateNode = ({ dispatch, table, columns }) => async ({
+const onCreateNode = ({ dispatch, table, columns, langtag }) => async ({
   tableId,
   parentNodeId
 }) => {
   const transformRows = rowValuesToCells(table, columns);
   const rows = await action
     .createAndLoadRow(dispatch, tableId, {
-      columns: [{ id: 4 }],
-      rows: [{ values: [parentNodeId || null] }]
+      columns: [{ id: 1 }, { id: 4 }],
+      rows: [{ values: [{ [langtag]: "" }, [parentNodeId || null]] }]
     })
     .then(transformRows);
 
@@ -142,11 +142,10 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   const columns = useSelector(f.propOr([], ["columns", tableId, "data"]));
   const nodes = t.tableToTreeNodes({ rows, columns });
   const dispatch = useDispatch();
-  const createNewNode = onCreateNode({ dispatch, table, columns });
+  const createNewNode = onCreateNode({ dispatch, table, columns, langtag });
   const findRowById = rowId => rows.find(row => row.id === rowId);
   const editNode = node => {
-    const row = findRowById(node.id);
-    openEntityView({ langtag, table, row });
+    loadAndOpenEntityView({ langtag, tableId, rowId: node.id });
   };
   const addSiblingBelow = node => {
     createNewNode({ tableId, parentNodeId: node.parent }).then(editNode);
