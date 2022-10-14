@@ -168,5 +168,12 @@
     "enter-link": "Hier URL eingeben",
     "linked-text": "Linktext",
     "insert-link": "Link hinzufügen"
+  },
+  "taxonomy": {
+    "add-child": "Neue Subkategorie",
+    "add-sibling-below": "Neue Kategorie danach",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "title": "Kategorien"
   }
 }
