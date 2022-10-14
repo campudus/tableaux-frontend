@@ -12,8 +12,9 @@ import action from "../../redux/actionCreators";
 import SvgIcon from "../helperComponents/SvgIcon";
 import * as t from "./taxonomy";
 import TreeView from "./TreeView";
-import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
+import { openEntityView } from "../overlay/EntityViewOverlay";
 import { rowValuesToCells } from "../../redux/reducers/rows";
+import { confirmDeleteRow } from "../overlay/ConfirmDependentOverlay";
 
 const shouldShowAction = ({ node, expandedNodeId }) =>
   (!node.parent && !expandedNodeId) || node.parent === expandedNodeId;
@@ -142,8 +143,10 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   const nodes = t.tableToTreeNodes({ rows, columns });
   const dispatch = useDispatch();
   const createNewNode = onCreateNode({ dispatch, table, columns });
+  const findRowById = rowId => rows.find(row => row.id === rowId);
   const editNode = node => {
-    loadAndOpenEntityView({ langtag, rowId: node.id, tableId });
+    const row = findRowById(node.id);
+    openEntityView({ langtag, table, row });
   };
   const addSiblingBelow = node => {
     createNewNode({ tableId, parentNodeId: node.parent }).then(editNode);
@@ -152,7 +155,8 @@ const TaxonomyTable = ({ langtag, tableId }) => {
     createNewNode({ tableId, parentNodeId: node.id }).then(editNode);
   };
   const deleteNode = node => {
-    dispatch(action.deleteRow({ tableId, rowId: node.id }));
+    const row = findRowById(node.id);
+    confirmDeleteRow({ row, table, langtag });
   };
 
   const TableEditor = useCallback(
@@ -185,7 +189,7 @@ const TaxonomyTable = ({ langtag, tableId }) => {
         }
       ]
     ]),
-    [tableId]
+    [tableId, rows]
   );
 
   return (
