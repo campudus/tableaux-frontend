@@ -92,7 +92,7 @@ const annotationsToObject = annotations => {
   return annObj;
 };
 
-const rowValuesToCells = (table, columns) => rows => {
+export const rowValuesToCells = (table, columns) => rows => {
   const rowsWithCells = rows.map(row => {
     const fakeRow = { id: row.id };
     return {
