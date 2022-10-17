@@ -12,6 +12,7 @@ import { idsToIndices } from "../../redux/redux-helpers";
 import Spinner from "../header/Spinner";
 import * as t from "./taxonomy";
 import TreeView from "./TreeView";
+import Header from "../overlay/Header";
 
 // NodeActionButton :
 //   { onClick : (TreeNode -> ())
@@ -158,6 +159,15 @@ const storeToState = path =>
     f.prop(path)
   );
 
+const selectLiveCell = ({ tableId, columnId, rowId }) => store => {
+  const [rowIdx, colIdx] = idsToIndices({ tableId, columnId, rowId }, store);
+  const row = f.prop(["rows", tableId, "data", rowIdx], store);
+  return {
+    ...f.prop(["cells", colIdx], row),
+    value: f.propOr([], ["values", colIdx], row)
+  };
+};
+
 const DataLoader = props => {
   const { cell } = props;
   const dispatch = useDispatch();
@@ -165,20 +175,13 @@ const DataLoader = props => {
 
   const columnState = useSelector(storeToState(["columns", toTableId]));
   const rowState = useSelector(storeToState(["rows", toTableId]));
-  const liveCell = useSelector(store => {
-    const tableId = cell.table.id;
-    const rowId = cell.row.id;
-    const [rowIdx, colIdx] = idsToIndices(
-      {
-        tableId,
-        columnId: cell.column.id,
-        rowId
-      },
-      store
-    );
-    const row = f.prop(["rows", tableId, "data", rowIdx], store);
-    return { ...row.cells[colIdx], value: row.values[colIdx] };
-  });
+  const liveCell = useSelector(
+    selectLiveCell({
+      columnId: cell.column.id,
+      rowId: cell.column.id,
+      tableId: cell.table.id
+    })
+  );
 
   useEffect(() => {
     if (!f.isNil(toTableId)) dispatch(actionCreator.loadColumns(toTableId));
@@ -203,9 +206,25 @@ const DataLoader = props => {
   );
 };
 
-const TaxonomyLinkOverlayHeader = ({ cell, langtag, title }) => (
-  <div>Taxonomy link header</div>
-);
+const TaxonomyLinkOverlayHeader = props => {
+  const { cell } = props;
+
+  const liveCell = useSelector(
+    selectLiveCell({
+      columnId: cell.column.id,
+      rowId: cell.row.id,
+      tableId: cell.table.id
+    })
+  );
+
+  return (
+    <Header
+      {...props}
+      cell={liveCell}
+      context={i18n.t("table:taxonomy.link-category")}
+    />
+  );
+};
 
 export default {
   Header: TaxonomyLinkOverlayHeader,
