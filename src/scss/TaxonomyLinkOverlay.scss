@@ -1,0 +1,54 @@
+.overlay-wrapper.link-overlay.link-overlay--taxonomy {
+  .overlay-content {
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .overlay-main-content {
+    overflow-y: auto;
+    margin-bottom: 0;
+  }
+
+  .overlay-subheader {
+    font-size: 13px;
+
+    &__title {
+      font-size: 16px;
+      padding-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .cardinality-count {
+      font-size: 16px;
+      font-weight: 500;
+      padding-bottom: 8px;
+      span:not(:first-child) {
+        margin-left: 4px;
+      }
+      .number {
+        color: $color-very-dark;
+      }
+    }
+  }
+
+  .set-link-button {
+    flex: 1;
+    height: 100%;
+    text-align: center;
+    border-radius: 4px;
+    background-color: $color-light-link-color;
+    color: $color-primary;
+
+    &:hover {
+      background-color: $color-subtle-grey;
+    }
+
+    &--disabled,
+    &--disabled:hover {
+      background-color: $color-text-light-grey;
+      color: $color-text-medium-grey;
+    }
+  }
+}
