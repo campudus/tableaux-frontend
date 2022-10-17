@@ -178,7 +178,7 @@ const DataLoader = props => {
   const liveCell = useSelector(
     selectLiveCell({
       columnId: cell.column.id,
-      rowId: cell.column.id,
+      rowId: cell.row.id,
       tableId: cell.table.id
     })
   );
