@@ -90,7 +90,7 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
   return (
     <>
       <section className="taxonomy-link-overlay overlay-subheader">
-        <h1 className="overlay-subheader__title">{headline}</h1>
+        <div className="overlay-subheader__title">{headline}</div>
         <div className="overlay-subheader__description">
           <CardinalityInfo
             nLinked={linkedCategories.length}
