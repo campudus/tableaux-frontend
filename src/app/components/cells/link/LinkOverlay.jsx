@@ -27,6 +27,7 @@ import LinkOverlayHeader from "./LinkOverlayHeader";
 import withCachedLinks from "./LinkOverlayCache.jsx";
 import { isTaxonomyTable } from "../../taxonomy/taxonomy";
 import store from "../../../redux/store";
+import { buildClassName } from "../../../helpers/buildClassName";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -414,12 +415,15 @@ export const openLinkOverlay = ({ cell, langtag, actions }) => {
     ? TaxonomyLinkOverlay.Header
     : LinkOverlayHeader;
   const Body = isTaxonomyLink ? TaxonomyLinkOverlay.Body : ReduxLinkOverlay;
+  const overlayClass = buildClassName("link-overlay", {
+    taxonomy: isTaxonomyLink
+  });
 
   actions.openOverlay({
     head: <Header langtag={langtag} cell={cell} title={cell} />,
     body: <Body cell={cell} langtag={langtag} />,
     type: "full-height",
-    classes: "link-overlay",
+    classes: overlayClass,
     title: cell,
     filterMode: FilterModes.CONTAINS,
     unlinkedOrder: 1
