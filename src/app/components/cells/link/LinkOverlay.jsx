@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";
 import i18n from "i18next";
+import TaxonomyLinkOverlay from "../../taxonomy/TaxonomyLinkOverlay";
 
 import { Directions, FilterModes } from "../../../constants/TableauxConstants";
 import {
@@ -24,6 +25,8 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import LinkItem from "./LinkItem";
 import LinkOverlayHeader from "./LinkOverlayHeader";
 import withCachedLinks from "./LinkOverlayCache.jsx";
+import { isTaxonomyTable } from "../../taxonomy/taxonomy";
+import store from "../../../redux/store";
 
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
@@ -400,11 +403,21 @@ class LinkOverlay extends PureComponent {
 
 export const openLinkOverlay = ({ cell, langtag, actions }) => {
   const ReduxLinkOverlay = withCachedLinks(LinkOverlay);
-  const overlayContent = <ReduxLinkOverlay cell={cell} langtag={langtag} />;
+  const linkTargetTableId = cell.column.toTable;
+  const linkTargetTable = f.prop(
+    ["tables", "data", linkTargetTableId],
+    store.getState()
+  );
+
+  const isTaxonomyLink = isTaxonomyTable(linkTargetTable);
+  const Header = isTaxonomyLink
+    ? TaxonomyLinkOverlay.Header
+    : LinkOverlayHeader;
+  const Body = isTaxonomyLink ? TaxonomyLinkOverlay.Body : ReduxLinkOverlay;
 
   actions.openOverlay({
-    head: <LinkOverlayHeader langtag={langtag} cell={cell} title={cell} />,
-    body: overlayContent,
+    head: <Header langtag={langtag} cell={cell} title={cell} />,
+    body: <Body cell={cell} langtag={langtag} />,
     type: "full-height",
     classes: "link-overlay",
     title: cell,
