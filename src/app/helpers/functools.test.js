@@ -7,7 +7,8 @@ import {
   replaceMoustache,
   slidingWindow,
   usePropAsKey,
-  where
+  where,
+  intersperse
 } from "./functools";
 
 describe("functools", () => {
@@ -202,6 +203,11 @@ describe("functools", () => {
     it("is nil safe", () => {
       expect(usePropAsKey()(arr)).toEqual({});
       expect(usePropAsKey("foo")()).toEqual({});
+    });
+  });
+  describe("intersperse()", () => {
+    it("should intersperse elements between array items", () => {
+      expect(intersperse("x", [1, 2, 3])).toEqual([1, "x", 2, "x", 3]);
     });
   });
 });
