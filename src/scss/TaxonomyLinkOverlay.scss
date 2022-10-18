@@ -9,6 +9,7 @@
   .overlay-main-content {
     overflow-y: auto;
     margin-bottom: 0;
+    padding: 0 24px;
   }
 
   .overlay-subheader {
@@ -29,6 +30,33 @@
       }
       .number {
         color: $color-very-dark;
+      }
+    }
+
+    .linked-item {
+      display: flex;
+      height: var(--tree-item-height);
+      &:not(:last-of-type) {
+        margin-bottom: var(--tree-item-margin-y);
+      }
+      &__content {
+        flex: 1;
+        background-color: $color-primary;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+
+        &-title {
+          color: $color-primary-contrast-text;
+          font-weight: bold;
+        }
+      }
+
+      .set-link-button {
+        width: var(--tree-item-height);
+        max-width: var(--tree-item-height);
+        margin-right: 8px;
       }
     }
   }
