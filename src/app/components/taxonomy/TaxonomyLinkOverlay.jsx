@@ -1,6 +1,6 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { buildClassName } from "../../helpers/buildClassName";
 import {
@@ -35,7 +35,7 @@ const mkNodeActionButton = ({ onClick, icon, idsToDisable }) => ({ node }) => {
   );
 };
 
-const LinkedItem = ({ node, langtag, ActionButton, path }) => {
+const LinkedItem = ({ node, langtag, ActionButton, path, onFocusNode }) => {
   const PathSeparator = (
     <span className="linked-item__path-separator">&gt;</span>
   );
@@ -54,6 +54,7 @@ const LinkedItem = ({ node, langtag, ActionButton, path }) => {
                   key={n.id}
                   className="linked-item__path-step"
                   title={title}
+                  onClick={() => onFocusNode(n)}
                 >
                   {title}
                 </span>
@@ -95,6 +96,7 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
   const linkedIds = new Set(f.map("id", cell.value));
   const onLinkNode = setNodeIsLinked(cell, true);
   const onUnlinkNode = setNodeIsLinked(cell, false);
+  const [focusFX, setFocusFX] = useState(undefined);
   const shouldShowAction = ({ node, expandedNodeId }) =>
     t.isLeaf(node) &&
     (f.every(f.isNil, [node.parent, expandedNodeId]) ||
@@ -115,6 +117,10 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
     [() => true, () => new Set(f.map("id", nodes))]
   ])(cardinalityConstraint);
 
+  const handleFocusFX = useCallback(node => {
+    setFocusFX(node);
+  });
+
   return (
     <>
       <section className="taxonomy-link-overlay overlay-subheader">
@@ -134,6 +140,7 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
                   node={node}
                   langtag={langtag}
                   path={t.getPathToNode(nodes)(node)}
+                  onFocusNode={handleFocusFX}
                   ActionButton={mkNodeActionButton({
                     onClick: onUnlinkNode,
                     icon: "fa-minus"
@@ -146,6 +153,7 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
       </section>
       <section className="taxonomy-link-overlay overlay-main-content">
         <TreeView
+          focusNode={focusFX}
           nodes={nodes}
           langtag={langtag}
           shouldShowAction={shouldShowAction}
