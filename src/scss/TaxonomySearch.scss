@@ -1,0 +1,74 @@
+.taxonomy-search {
+  position: relative;
+  &__wrapper {
+    position: relative;
+    font-size: 18px;
+  }
+  &__input {
+    width: 100%;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    outline: none;
+    border: 1px solid transparent;
+  }
+  &__icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $color-text-medium-grey;
+  }
+
+  &__results {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background-color: $color-white;
+    max-height: 40vh;
+    overflow: auto;
+    box-shadow: 0 15px 25px 5px $color-very-dark;
+    border-radius: 4px;
+  }
+
+  &__result-item {
+    &:hover {
+      background-color: transparentize($color-text-medium-grey, 0.8);
+      cursor: pointer;
+    }
+    display: flex;
+    padding: 8px 16px;
+    color: $color-very-dark;
+
+    &__title {
+      font-weight: bold;
+    }
+
+    &--leaf {
+      color: $color-primary;
+      border-left: 8px solid $color-primary;
+      padding-left: 8px;
+    }
+
+    &__path {
+      display: flex;
+      max-width: 50%;
+      color: $color-text-medium-grey;
+
+      &-step {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-style: italic;
+
+        &:last-child {
+          margin-right: 8px;
+        }
+      }
+      &-separator {
+        margin: 0 4px;
+      }
+    }
+  }
+}

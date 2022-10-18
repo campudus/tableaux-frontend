@@ -1,11 +1,18 @@
 import i18n from "i18next";
 import * as f from "lodash/fp";
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { FilterModes } from "../../constants/TableauxConstants";
 import { buildClassName } from "../../helpers/buildClassName";
 import { intersperse } from "../../helpers/functools";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { createTextFilter } from "../../helpers/searchFunctions";
+import { outsideClickEffect } from "../../helpers/useOutsideClick";
 import * as t from "./taxonomy";
 
 const ResultItem = ({ langtag, node, onSelect }) => {
@@ -36,11 +43,19 @@ const ResultItem = ({ langtag, node, onSelect }) => {
     <li className={className} onClick={() => onSelect(node)}>
       <div className="taxonomy-search__result-item__path">{path}</div>
       <div className="taxonomy-search__result-item__content">
-        {retrieveTranslation(langtag, node.displayValue)}
+        <span className="taxonomy-search__result-item__title">
+          {retrieveTranslation(langtag, node.displayValue)}
+        </span>
       </div>
     </li>
   );
 };
+
+const pathToStrings = langtag => node =>
+  node.path.map(step => retrieveTranslation(langtag, step.displayValue));
+
+const extractDisplayValue = langtag => node =>
+  retrieveTranslation(langtag, node.displayValue);
 
 const TaxonomySearch = ({
   nodes, // List TreeNode
@@ -53,17 +68,31 @@ const TaxonomySearch = ({
   const searchFn = useCallback(createTextFilter(searchMode, searchTerm), [
     searchTerm
   ]);
-  const results = useMemo(() => t.findTreeNodes(langtag)(searchFn)(nodes), [
-    nodes,
-    searchFn
-  ]);
+  const containerRef = useRef();
+  useEffect(
+    outsideClickEffect({
+      shouldListen: showResults,
+      containerRef,
+      onOutsideClick: () => setShowResults(false)
+    })
+  );
+  const results = useMemo(() => {
+    // we need to do that, as nodes are not yet parsed as a tree
+    const parents = nodes.reduce((accum, n) => {
+      if (n.parent) accum.add(n.parent);
+      return accum;
+    }, new Set());
+    return f.compose(
+      f.orderBy([pathToStrings(langtag), extractDisplayValue(langtag)], "asc"),
+      t.findTreeNodes(langtag)(searchFn),
+      f.map(n => (parents.has(n.id) ? { ...n, children: [1] } : n))
+    )(nodes);
+  }, [nodes, searchFn]);
 
   const handleFocusInput = useCallback(() => {
     setShowResults(true);
   }, []);
-  const handleBlurInput = () => {
-    setShowResults(false);
-  };
+
   const handleKeyPress = useCallback(event => {
     const key = event.key;
 
@@ -76,12 +105,16 @@ const TaxonomySearch = ({
     setSearchTerm(event.target.value);
   }, []);
 
+  const handleSelect = node => {
+    setShowResults(false);
+    onSelect(node);
+  };
+
   return (
-    <div className="taxonomy-search">
+    <div className="taxonomy-search" ref={containerRef}>
       <div className="taxonomy-search__wrapper">
         <input
           onFocus={handleFocusInput}
-          onBlur={handleBlurInput}
           className="taxonomy-search__input"
           type="text"
           value={searchTerm}
@@ -89,7 +122,7 @@ const TaxonomySearch = ({
           onChange={handleInput}
           onKeyDown={handleKeyPress}
         />
-        <i className="fa fa-search" />
+        <i className="taxonomy-search__icon fa fa-search" />
       </div>
       {showResults ? (
         <div className="taxonomy-search__results">
@@ -98,7 +131,7 @@ const TaxonomySearch = ({
               <ResultItem
                 key={node.id}
                 langtag={langtag}
-                onSelect={onSelect}
+                onSelect={handleSelect}
                 node={node}
               />
             ))}
