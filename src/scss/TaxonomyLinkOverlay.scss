@@ -33,6 +33,10 @@
       }
     }
 
+    .taxonomy-link-overlay__linked-items {
+      margin-top: 16px;
+    }
+
     .linked-item {
       display: flex;
       height: var(--tree-item-height);
@@ -57,6 +61,27 @@
         width: var(--tree-item-height);
         max-width: var(--tree-item-height);
         margin-right: 8px;
+      }
+
+      &__path {
+        color: transparentize($color-primary-contrast-text, 0.3);
+        max-width: 50%;
+        display: flex;
+        &-separator {
+          margin: 0 4px;
+        }
+        &-step {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+          &:last-of-type {
+            margin-right: 4px;
+          }
+        }
       }
     }
   }
