@@ -140,7 +140,8 @@ const TreeView = ({
   nodes, // List TreeNode
   onSelectLeaf, // TreeNode -> Effect
   NodeActionItem, // { node : TreeNode, langtag : String } -> React.Element
-  shouldShowAction // { node : TreeNode, expandedNodeId : RowId } -> Boolean
+  shouldShowAction, // { node : TreeNode, expandedNodeId : RowId } -> Boolean
+  focusNode // TreeNode | undefined
 }) => {
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const tree = buildTree({ expandedNodeId })(nodes);
@@ -148,6 +149,10 @@ const TreeView = ({
     const shouldContract = node.expanded || node.onPath;
     setExpandedNodeId(shouldContract ? node.parent : node.id);
   };
+
+  useEffect(() => {
+    if (focusNode) setExpandedNodeId(focusNode.id);
+  }, [focusNode && focusNode.id]);
 
   return (
     <section className="tree-view">
