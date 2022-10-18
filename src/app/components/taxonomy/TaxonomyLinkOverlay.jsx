@@ -13,6 +13,7 @@ import Spinner from "../header/Spinner";
 import * as t from "./taxonomy";
 import TreeView from "./TreeView";
 import Header from "../overlay/Header";
+import { intersperse } from "../../helpers/functools";
 
 // NodeActionButton :
 //   { onClick : (TreeNode -> ())
@@ -34,16 +35,39 @@ const mkNodeActionButton = ({ onClick, icon, idsToDisable }) => ({ node }) => {
   );
 };
 
-const LinkedItem = ({ node, langtag, ActionButton }) => (
-  <li className="linked-item">
-    <ActionButton node={node} />
-    <div className="linked-item__content">
-      <span className="linked-item__content-title">
-        {retrieveTranslation(langtag, node.displayValue)}
-      </span>
-    </div>
-  </li>
-);
+const LinkedItem = ({ node, langtag, ActionButton, path }) => {
+  const PathSeparator = (
+    <span className="linked-item__path-separator">&gt;</span>
+  );
+
+  return (
+    <li className="linked-item">
+      <ActionButton node={node} />
+      <div className="linked-item__content">
+        <div className="linked-item__path">
+          {intersperse(
+            PathSeparator,
+            f.map(n => {
+              const title = retrieveTranslation(langtag, n.displayValue);
+              return (
+                <span
+                  key={n.id}
+                  className="linked-item__path-step"
+                  title={title}
+                >
+                  {title}
+                </span>
+              );
+            }, path)
+          )}
+        </div>
+        <span className="linked-item__content-title">
+          {retrieveTranslation(langtag, node.displayValue)}
+        </span>
+      </div>
+    </li>
+  );
+};
 
 const CardinalityInfo = ({ nLinked, limit }) => {
   const parts = i18n.t("table:link-overlay-count").split("|");
@@ -109,6 +133,7 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
                   key={node.id}
                   node={node}
                   langtag={langtag}
+                  path={t.getPathToNode(nodes)(node)}
                   ActionButton={mkNodeActionButton({
                     onClick: onUnlinkNode,
                     icon: "fa-minus"
