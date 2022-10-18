@@ -37,7 +37,11 @@ const mkNodeActionButton = ({ onClick, icon, idsToDisable }) => ({ node }) => {
 const LinkedItem = ({ node, langtag, ActionButton }) => (
   <li className="linked-item">
     <ActionButton node={node} />
-    <div>{retrieveTranslation(langtag, node.displayValue)}</div>
+    <div className="linked-item__content">
+      <span className="linked-item__content-title">
+        {retrieveTranslation(langtag, node.displayValue)}
+      </span>
+    </div>
   </li>
 );
 
