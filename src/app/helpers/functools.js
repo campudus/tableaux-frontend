@@ -535,6 +535,14 @@ function time(arg1, arg2) {
   };
 }
 
+const intersperse = curryN(2)((delim, coll) =>
+  coll.reduce((accum, next, idx) => {
+    accum.push(next);
+    if (idx < coll.length - 1) accum.push(delim);
+    return accum;
+  }, [])
+);
+
 export {
   Maybe,
   Just,
@@ -572,5 +580,6 @@ export {
   mapP,
   mergeArrays,
   usePropAsKey,
-  time
+  time,
+  intersperse
 };
