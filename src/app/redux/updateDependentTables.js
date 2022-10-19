@@ -1,6 +1,7 @@
 // @flow
 
 import f from "lodash/fp";
+import { set } from "lodash"; // eslint-disable-line
 
 import { ColumnKinds } from "../constants/TableauxConstants";
 import {
@@ -143,9 +144,9 @@ export const refreshDependentRows = async (
       );
     const linksToChangedRow = row =>
       row |> getLinkCellValues |> f.any(f.contains(f.__, changedParentRows));
-    const rowsToUpdate = clonedState.rows[tableId].data.filter(
-      linksToChangedRow
-    );
+    const rowsToUpdate = f
+      .propOr([], ["rows", tableId, "data"], clonedState)
+      .filter(linksToChangedRow);
     const fetchRows = mapPromise(({ id }) =>
       makeRequest({ apiRoute: route.toRow({ tableId, rowId: id }) })
     );
@@ -158,15 +159,25 @@ export const refreshDependentRows = async (
     );
 
     freshRows.forEach((row, ii) => {
+      // Here be mutations!
       const rowIdx = f.findIndex(
         f.propEq("id", row.id),
         state.rows[tableId].data
       );
+      const pathToRow = ["rows", tableId, "data", rowIdx];
+      if (!f.prop(pathToRow, clonedState)) {
+        set(clonedState, pathToRow, {}); // eslint-disable-line
+      }
       clonedState.rows[tableId].data[rowIdx].values = row.values;
       const dvIdx = f.findIndex(
         f.propEq("id", row.id),
         state.tableView.displayValues[tableId]
       );
+
+      const pathToDisplayValue = ["tableView", "displayValues", tableId, dvIdx];
+      if (!f.prop(pathToDisplayValue, clonedState)) {
+        set(clonedState, pathToDisplayValue, {}); // eslint-disable-line
+      }
       clonedState.tableView.displayValues[tableId][dvIdx].values =
         freshDisplayValues[ii];
     });
