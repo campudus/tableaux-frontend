@@ -83,6 +83,7 @@
           cursor: pointer;
           &:hover {
             text-decoration: underline;
+            min-width: fit-content;
           }
           &:last-of-type {
             margin-right: 4px;
