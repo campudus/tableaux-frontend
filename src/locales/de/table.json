@@ -175,6 +175,8 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "link-category": "Kategorie hinzufügen",
+    "search-input-placeholder": "Suche nach Kategorien oder Datensätzen",
+    "search-no-results": "Keine Suchergebnisse",
     "title": "Kategorien"
   }
 }
