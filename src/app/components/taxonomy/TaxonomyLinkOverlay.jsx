@@ -288,6 +288,7 @@ const TaxonomyLinkOverlayHeader = props => {
         langtag={langtag}
         nodes={nodes}
         onSelect={onSelectSearchResult}
+        classNames="filter-bar"
       />
     </Header>
   );
