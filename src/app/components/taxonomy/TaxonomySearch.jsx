@@ -15,6 +15,18 @@ import { createTextFilter } from "../../helpers/searchFunctions";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 import * as t from "./taxonomy";
 
+const EmptyResultsPlaceholder = () => {
+  const classNames = buildClassName("taxonomy-search__result-item", {
+    placeholder: true
+  });
+
+  return (
+    <li className={classNames}>
+      <span>{i18n.t("table:taxonomy.search-no-results")}</span>
+    </li>
+  );
+};
+
 const ResultItem = ({ langtag, node, onSelect }) => {
   const Separator = (
     <span className="taxonomy-search__result-item__path-separator">&gt;</span>
@@ -41,11 +53,13 @@ const ResultItem = ({ langtag, node, onSelect }) => {
 
   return (
     <li className={className} onClick={() => onSelect(node)}>
-      <div className="taxonomy-search__result-item__path">{path}</div>
-      <div className="taxonomy-search__result-item__content">
-        <span className="taxonomy-search__result-item__title">
-          {retrieveTranslation(langtag, node.displayValue)}
-        </span>
+      <div className="taxonomy-search__result-item__wrapper">
+        <div className="taxonomy-search__result-item__path">{path}</div>
+        <div className="taxonomy-search__result-item__content">
+          <span className="taxonomy-search__result-item__title">
+            {retrieveTranslation(langtag, node.displayValue)}
+          </span>
+        </div>
       </div>
     </li>
   );
@@ -60,7 +74,8 @@ const extractDisplayValue = langtag => node =>
 const TaxonomySearch = ({
   nodes, // List TreeNode
   onSelect, // TreeNode -> ()
-  langtag
+  langtag,
+  classNames
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -111,14 +126,14 @@ const TaxonomySearch = ({
   };
 
   return (
-    <div className="taxonomy-search" ref={containerRef}>
+    <div className={`taxonomy-search ${classNames || ""}`} ref={containerRef}>
       <div className="taxonomy-search__wrapper">
         <input
           onFocus={handleFocusInput}
           className="taxonomy-search__input"
           type="text"
           value={searchTerm}
-          placeholder={i18n.t("table:taxonomy.search-placeholder")}
+          placeholder={i18n.t("table:taxonomy.search-input-placeholder")}
           onChange={handleInput}
           onKeyDown={handleKeyPress}
         />
@@ -127,14 +142,18 @@ const TaxonomySearch = ({
       {showResults ? (
         <div className="taxonomy-search__results">
           <ul className="taxonomy-search__results-list">
-            {results.map(node => (
-              <ResultItem
-                key={node.id}
-                langtag={langtag}
-                onSelect={handleSelect}
-                node={node}
-              />
-            ))}
+            {f.isEmpty(results) ? (
+              <EmptyResultsPlaceholder />
+            ) : (
+              results.map(node => (
+                <ResultItem
+                  key={node.id}
+                  langtag={langtag}
+                  onSelect={handleSelect}
+                  node={node}
+                />
+              ))
+            )}
           </ul>
         </div>
       ) : null}
