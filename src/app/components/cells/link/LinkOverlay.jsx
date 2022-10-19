@@ -28,7 +28,6 @@ import withCachedLinks from "./LinkOverlayCache.jsx";
 import { isTaxonomyTable } from "../../taxonomy/taxonomy";
 import store from "../../../redux/store";
 import { buildClassName } from "../../../helpers/buildClassName";
-h;
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
 const LINKED_ITEMS = 0;
