@@ -121,6 +121,15 @@ const Leaf = props => {
 
 const TreeItem = props => {
   const { node } = props;
+  useEffect(() => {
+    if (node.expanded && nodeRef.current) {
+      setTimeout(
+        () => nodeRef.current.scrollIntoView({ behavior: "smooth" }),
+        getCssVarNumeric("--tree-animation-duration")
+      );
+    }
+  }, [node.id, node.expanded]);
+  const nodeRef = useRef();
   const Component = isLeaf(node) ? Leaf : Node;
   const cssClass = buildClassName("tree-node", {
     leaf: isLeaf(node),
@@ -129,7 +138,7 @@ const TreeItem = props => {
     default: (!node.onPath && !node.expanded) || isLeaf(node)
   });
   return (
-    <li className={cssClass}>
+    <li ref={nodeRef} className={cssClass}>
       <Component {...props} />
     </li>
   );
