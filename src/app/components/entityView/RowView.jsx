@@ -23,6 +23,7 @@ import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
 import StatusView from "./status/StatusView";
 import { getCountryOfLangtag } from "../../helpers/multiLanguage";
+import Spinner from "../header/Spinner";
 
 class View extends PureComponent {
   static propTypes = {
@@ -87,6 +88,13 @@ class View extends PureComponent {
       hasFocusedChild,
       lockStatus
     } = this.props;
+
+    if (!cell || !cell.column) {
+      // This can happen when a request to load columns initially resets the
+      // column for the fraction of a second
+      return <Spinner />;
+    }
+
     const { kind, column } = cell;
     const views = {
       [ColumnKinds.link]: LinkView,
