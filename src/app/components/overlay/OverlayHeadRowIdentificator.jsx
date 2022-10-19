@@ -71,14 +71,14 @@ const setupIdProps = withProps(({ cell, title, langtag }) => {
     column.kind === ColumnKinds.concat
       ? null
       : getColumnDisplayName(cellOrTitle.column, langtag);
-  const firstColumn = f.prop(["columns", table.id, "data", 0], state);
+  const firstColumnId = f.prop(["columns", table.id, "data", 0, "id"], state);
   const liveRow = doto(
     state,
     f.prop(["rows", table.id, "data"]),
     f.find(f.propEq("id", row.id))
   );
 
-  return firstColumn.id === column.id
+  return firstColumnId === column.id
     ? {
         cell: cellOrTitle,
         columnDisplayName
