@@ -35,6 +35,7 @@
     overflow: auto;
     box-shadow: 0 15px 25px 5px $color-text-medium-grey;
     border-radius: 4px;
+    z-index: 1;
   }
 
   &__result-item {
@@ -63,7 +64,8 @@
 
     &__path {
       display: flex;
-      max-width: 50%;
+      flex: 0 1 auto;
+      min-width: 0;
       color: $color-text-medium-grey;
 
       &-step {
