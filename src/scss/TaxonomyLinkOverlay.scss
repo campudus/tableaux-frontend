@@ -50,6 +50,11 @@
         display: flex;
         align-items: center;
         padding: 0 24px;
+        white-space: nowrap;
+        max-width: calc(
+          100% - var(--tree-item-height) - var(--tree-item-margin-y)
+        );
+        box-sizing: border-box;
 
         &-title {
           color: $color-primary-contrast-text;
@@ -58,14 +63,15 @@
       }
 
       .set-link-button {
-        width: var(--tree-item-height);
+        min-width: var(--tree-item-height);
         max-width: var(--tree-item-height);
         margin-right: 8px;
       }
 
       &__path {
         color: transparentize($color-primary-contrast-text, 0.3);
-        max-width: 50%;
+        flex: 0 1 auto;
+        min-width: 0;
         display: flex;
         &-separator {
           margin: 0 4px;
