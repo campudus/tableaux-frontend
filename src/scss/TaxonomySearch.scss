@@ -73,6 +73,9 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         font-style: italic;
+        &:hover {
+          min-width: fit-content;
+        }
 
         &:last-child {
           margin-right: 8px;
