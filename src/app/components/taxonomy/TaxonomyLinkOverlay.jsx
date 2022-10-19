@@ -1,6 +1,6 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { buildClassName } from "../../helpers/buildClassName";
 import {
@@ -14,6 +14,9 @@ import * as t from "./taxonomy";
 import TreeView from "./TreeView";
 import Header from "../overlay/Header";
 import { intersperse } from "../../helpers/functools";
+import TaxonomySearch from "./TaxonomySearch";
+
+const EXPANDED_NODE_KEY = "expandedNode";
 
 // NodeActionButton :
 //   { onClick : (TreeNode -> ())
@@ -83,7 +86,13 @@ const CardinalityInfo = ({ nLinked, limit }) => {
   );
 };
 
-const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
+const TaxonomyLinkOverlayBody = ({
+  actions,
+  cell,
+  langtag,
+  nodes,
+  sharedData
+}) => {
   const setNodeIsLinked = (cell, shouldLink) => node => {
     const newValue = shouldLink
       ? [...cell.value, { id: node.id, value: node.displayValue }]
@@ -97,6 +106,15 @@ const TaxonomyLinkOverlayBody = ({ actions, cell, langtag, nodes }) => {
   const onLinkNode = setNodeIsLinked(cell, true);
   const onUnlinkNode = setNodeIsLinked(cell, false);
   const [focusFX, setFocusFX] = useState(undefined);
+  useEffect(() => {
+    const nodeToExpand = f.prop(EXPANDED_NODE_KEY, sharedData);
+    if (nodeToExpand) {
+      setFocusFX(nodeToExpand);
+    }
+  }, [
+    !!f.prop(EXPANDED_NODE_KEY, sharedData),
+    f.prop([EXPANDED_NODE_KEY, "id"], sharedData)
+  ]);
   const shouldShowAction = ({ node, expandedNodeId }) =>
     t.isLeaf(node) &&
     (f.every(f.isNil, [node.parent, expandedNodeId]) ||
@@ -244,7 +262,7 @@ const DataLoader = props => {
 };
 
 const TaxonomyLinkOverlayHeader = props => {
-  const { cell } = props;
+  const { cell, langtag, updateSharedData } = props;
 
   const liveCell = useSelector(
     selectLiveCell({
@@ -254,13 +272,39 @@ const TaxonomyLinkOverlayHeader = props => {
     })
   );
 
+  const onSelectSearchResult = node =>
+    updateSharedData(f.assoc(EXPANDED_NODE_KEY, node));
+
+  const rows = useSelector(f.prop(["rows", cell.column.toTable, "data"]));
+  const nodes = useMemo(() => t.tableToTreeNodes({ rows }), [rows]);
+
   return (
     <Header
       {...props}
       cell={liveCell}
       context={i18n.t("table:taxonomy.link-category")}
-    />
+    >
+      <TaxonomySearch
+        langtag={langtag}
+        nodes={nodes}
+        onSelect={onSelectSearchResult}
+      />
+    </Header>
   );
+};
+
+export const openTaxonomyLinkOverlay = ({ cell, langtag, actions }) => {
+  const overlayClass = buildClassName("link-overlay", { taxonomy: true });
+
+  actions.openOverlay({
+    head: (
+      <TaxonomyLinkOverlayHeader langtag={langtag} cell={cell} title={cell} />
+    ),
+    body: <DataLoader cell={cell} langtag={langtag} />,
+    type: "full-height",
+    classes: overlayClass,
+    title: cell
+  });
 };
 
 export default {
