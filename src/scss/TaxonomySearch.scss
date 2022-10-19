@@ -1,4 +1,9 @@
 .taxonomy-search {
+  &.filter-bar {
+    .taxonomy-search__results {
+      top: calc(100% - 16px);
+    }
+  }
   position: relative;
   &__wrapper {
     position: relative;
@@ -28,27 +33,32 @@
     background-color: $color-white;
     max-height: 40vh;
     overflow: auto;
-    box-shadow: 0 15px 25px 5px $color-very-dark;
+    box-shadow: 0 15px 25px 5px $color-text-medium-grey;
     border-radius: 4px;
   }
 
   &__result-item {
+    margin: 2px 0;
     &:hover {
       background-color: transparentize($color-text-medium-grey, 0.8);
       cursor: pointer;
     }
-    display: flex;
-    padding: 8px 16px;
-    color: $color-very-dark;
+    &__wrapper {
+      display: flex;
+      padding: 8px 16px;
+      color: $color-very-dark;
+    }
 
     &__title {
       font-weight: bold;
     }
 
     &--leaf {
-      color: $color-primary;
-      border-left: 8px solid $color-primary;
-      padding-left: 8px;
+      border-left: 6px solid $color-primary;
+      .taxonomy-search__result-item__wrapper {
+        color: $color-primary;
+        padding-left: 10px;
+      }
     }
 
     &__path {
