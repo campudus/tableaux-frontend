@@ -51,8 +51,12 @@ const ResultItem = ({ langtag, node, onSelect }) => {
     leaf: t.isLeaf(node)
   });
 
+  const handleSelect = () => {
+    onSelect(t.isLeaf(node) ? { id: node.parent } : node);
+  };
+
   return (
-    <li className={className} onClick={() => onSelect(node)}>
+    <li className={className} onClick={handleSelect}>
       <div className="taxonomy-search__result-item__wrapper">
         <div className="taxonomy-search__result-item__path">{path}</div>
         <div className="taxonomy-search__result-item__content">
