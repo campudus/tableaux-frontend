@@ -33,7 +33,7 @@ export class ForeignEntityViewBody extends PureComponent {
         .map(([column, value]) => getDisplayValue(column, value));
 
       // generate cell object
-      const titleSpec = {
+      const cell = {
         row,
         column: f.first(columns),
         table: grudData.tables.data[tableId]
@@ -53,12 +53,12 @@ export class ForeignEntityViewBody extends PureComponent {
       // set retrieved values as overlay props so we can fallback to
       // default entity view
       actions.setOverlayState({
-        title: titleSpec,
-        cell: titleSpec,
+        title: cell,
+        cell,
         id,
         columns,
         row,
-        table: titleSpec.table,
+        table: cell.table,
         loading: false
       });
     } catch (err) {
