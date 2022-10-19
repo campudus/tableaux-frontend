@@ -175,6 +175,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "link-category": "Link category",
+    "search-input-placeholder": "Search for categories or records",
+    "search-no-results": "No results found",
     "title": "Categories"
   }
 }
