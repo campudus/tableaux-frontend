@@ -37,8 +37,7 @@ const selectTaxonomyTables = f.compose(
 
 const TaxonomyDashboard = props => {
   const { langtag } = props;
-  const tables_ = useSelector(selectTaxonomyTables);
-  const tables = Array(12).fill(tables_[0]);
+  const tables = useSelector(selectTaxonomyTables);
   const handleSwitchLangtag = useCallback(newLangtag => {
     switchLanguageHandler(history, newLangtag);
   });
