@@ -47,6 +47,16 @@ const NavigationPopup = props => {
 
         <li className="main-navigation__entry">
           <Link
+            to={"/" + langtag + "/taxonomies"}
+            className="main-navigation__entry-button"
+          >
+            <SvgIcon icon="addSubItem" />
+            {t("header:menu.taxonomies")}
+          </Link>
+        </li>
+
+        <li className="main-navigation__entry">
+          <Link
             to={"/" + langtag + "/media"}
             className="main-navigation__entry-button"
           >
