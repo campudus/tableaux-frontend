@@ -34,6 +34,8 @@ const GRUDRouter = React.memo(() => {
     renderView(ViewNames.DASHBOARD_VIEW)
   );
 
+  const renderTaxonomyDashboard = renderView(ViewNames.TAXONOMY_DASHBOARD_VIEW);
+
   const renderTableView = React.useCallback(routeProps => {
     const validParams = validateRouteParams(routeProps.match.params, tables);
     const { tableId } = validParams;
@@ -78,6 +80,7 @@ const GRUDRouter = React.memo(() => {
     <Router>
       <Switch>
         <Route path="/:langtag?/dashboard" render={renderDashboard} />
+        <Route path="/:langtag?/taxonomies" render={renderTaxonomyDashboard} />
         <Route
           path="/:langtag?/(table|tables)/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?"
           render={renderTableView}
