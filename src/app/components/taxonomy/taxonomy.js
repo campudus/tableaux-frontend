@@ -57,12 +57,15 @@ export const buildTree = ({ expandedNodeId }) => nodes => {
 export const getPathToNode = nodes => {
   const nodeRecord = f.keyBy("id", nodes);
   return node => {
-    const go = (curNode, path) => {
-      const parent = curNode && curNode.parent && nodeRecord[curNode.parent];
+    let curNode = node;
+    let path = [];
+    while (curNode) {
+      const parent = curNode.parent && nodeRecord[curNode.parent];
       if (parent) path.unshift(parent);
-      return parent ? go(parent, path) : path;
-    };
-    return go(node, []);
+      curNode = parent;
+    }
+
+    return path;
   };
 };
 
