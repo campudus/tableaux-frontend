@@ -223,7 +223,7 @@ const selectLiveCell = ({ tableId, columnId, rowId }) => store => {
   };
 };
 
-const DataLoader = props => {
+const DataLoader = Component => props => {
   const { cell } = props;
   const dispatch = useDispatch();
   const toTableId = cell.column.toTable;
@@ -248,10 +248,12 @@ const DataLoader = props => {
 
   const componentState = combineStates(columnState, rowState);
 
+  console.log({ rows: componentState.data });
+
   return isLoading(componentState) ? (
     <Spinner />
   ) : isDone(componentState) ? (
-    <TaxonomyLinkOverlayBody
+    <Component
       {...props}
       nodes={t.tableToTreeNodes({ rows: componentState.data })}
       cell={liveCell}
@@ -310,5 +312,7 @@ export const openTaxonomyLinkOverlay = ({ cell, langtag, actions }) => {
 
 export default {
   Header: TaxonomyLinkOverlayHeader,
-  Body: DataLoader
+  Body: DataLoader(TaxonomyLinkOverlayBody),
+  DataLoader,
+  LinkedItem
 };
