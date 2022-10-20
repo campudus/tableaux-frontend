@@ -10,7 +10,7 @@ import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import * as t from "./taxonomy";
 import route from "../../helpers/apiRoutes";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 const TaxonomyTableCard = ({ table, langtag }) => (
   <div className="card">
@@ -36,7 +36,7 @@ const selectTaxonomyTables = f.compose(
 );
 
 const TaxonomyDashboard = props => {
-  const { langtag } = props;
+  const { history, langtag } = props;
   const tables = useSelector(selectTaxonomyTables);
   const handleSwitchLangtag = useCallback(newLangtag => {
     switchLanguageHandler(history, newLangtag);
@@ -69,4 +69,4 @@ const TaxonomyDashboard = props => {
 };
 
 TaxonomyDashboard.displayName = "TaxonomyDashboard";
-export default TaxonomyDashboard;
+export default withRouter(TaxonomyDashboard);
