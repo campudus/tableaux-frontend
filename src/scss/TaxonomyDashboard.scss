@@ -1,0 +1,51 @@
+.taxonomy-dashboard {
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  &__content-wrapper {
+    padding-top: 55px;
+    color: $color-very-dark;
+  }
+
+  &__header {
+    background-color: $color-white;
+    padding: 32px 56px;
+  }
+
+  &__content {
+    padding: 56px;
+    padding-right: 0;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    height: 210px;
+    width: 320px;
+    background-color: $color-white;
+    border-radius: 8px;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    margin-right: 56px;
+    margin-bottom: 56px;
+
+    &__header {
+      margin-bottom: 8px;
+    }
+    &__content {
+      flex: 1;
+      overflow: auto;
+      color: $color-text-medium-grey;
+    }
+    &__footer {
+      padding-top: 16px;
+    }
+
+    .button {
+      @include button-look();
+    }
+  }
+}
