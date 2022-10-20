@@ -16,6 +16,7 @@ import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { rowValuesToCells } from "../../redux/reducers/rows";
 import { confirmDeleteRow } from "../overlay/ConfirmDependentOverlay";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
+import TaxonomySearch from "./TaxonomySearch";
 
 const shouldShowAction = ({ node, expandedNodeId }) =>
   (!node.parent && !expandedNodeId) || node.parent === expandedNodeId;
@@ -192,19 +193,36 @@ const TaxonomyTable = ({ langtag, tableId }) => {
     [tableId, rows]
   );
 
+  const [nodeToFocus, focusNodeOnce] = useState(undefined);
+
+  const handleFocusSearchResult = node => {
+    console.log("handleFocusSearchResult", { node });
+    focusNodeOnce(node);
+  };
+
   return (
     <>
       <section className="table__subheader">
         <h1 className="table__subheader-title">
           {getTableDisplayName(table, langtag)}
         </h1>
+        <div className="taxonomy-table__search">
+          <TaxonomySearch
+            nodes={nodes}
+            langtag={langtag}
+            onSelect={handleFocusSearchResult}
+          />
+        </div>
       </section>
-      <TreeView
-        nodes={nodes}
-        langtag={langtag}
-        shouldShowAction={shouldShowAction}
-        NodeActionItem={TableEditor}
-      />
+      <section className="taxonomy-table__tree">
+        <TreeView
+          nodes={nodes}
+          langtag={langtag}
+          shouldShowAction={shouldShowAction}
+          NodeActionItem={TableEditor}
+          focusNode={nodeToFocus}
+        />
+      </section>
     </>
   );
 };
