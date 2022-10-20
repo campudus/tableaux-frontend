@@ -8,6 +8,9 @@ import Header from "../overlay/Header";
 import { buildClassName } from "../../helpers/buildClassName";
 import i18n from "i18next";
 import TaxonomySearch from "./TaxonomySearch";
+import { forkJoin } from "../../helpers/functools";
+import getDisplayValue from "../../helpers/getDisplayValue";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 
 const NODES_KEY = "nodes";
 const FOCUSED_NODE_KEY = "focused_node";
@@ -71,6 +74,16 @@ const SelectLinkTargetOverlayBody = ({
     onSubmit(node.id);
   };
 
+  const recordDisplayValue = f.compose(
+    retrieveTranslation(langtag),
+    forkJoin(
+      getDisplayValue,
+      f.prop(["cells", 0, "column"]),
+      f.prop(["values", 0])
+    ),
+    f.find(f.propEq("id", oldRowId))
+  )(rows);
+
   useEffect(() => {
     const nodeToFocus = f.get(FOCUSED_NODE_KEY, sharedData);
     if (nodeToFocus) focusNodeFX(nodeToFocus);
@@ -92,11 +105,14 @@ const SelectLinkTargetOverlayBody = ({
 
   const selectedNode = selectedRowId && nodes.find(n => n.id === selectedRowId);
 
-  console.log(focusedNode);
   return (
     <>
       <section className="overlay-subheader">
-        <div className="overlay-subheader__title"></div>
+        <div className="overlay-subheader__title">
+          {i18n.t("table:select-link-target.title", {
+            linkTitle: recordDisplayValue
+          })}
+        </div>
         <div className="overlay-subheader__description">
           {f.isNil(selectedRowId) ? (
             <span>{i18n.t("table:link-overlay-empty")}</span>
