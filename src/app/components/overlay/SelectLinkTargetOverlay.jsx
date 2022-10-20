@@ -22,6 +22,7 @@ import { SwitchSortingButton } from "../cells/link/LinkOverlayFragments";
 import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
 import * as tax from "../taxonomy/taxonomy";
 import TaxonomySelectLinkTargetOverlay from "../taxonomy/TaxonomySelectLinkTargetOverlay";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
   const displayValue = unless(
@@ -321,7 +322,17 @@ export const openSelectLinkTargetOverlay = ({
 
   store.dispatch(
     actions.openOverlay({
-      head: <Head cell={cell} langtag={langtag} />,
+      head: (
+        <Head
+          title={retrieveTranslation(
+            langtag,
+            getDisplayValue(cell.column, cell.value)
+          )}
+          cell={cell}
+          langtag={langtag}
+          context={i18n.t("table:select-link-target.context")}
+        />
+      ),
       body: (
         <Body
           oldRowId={row.id}
