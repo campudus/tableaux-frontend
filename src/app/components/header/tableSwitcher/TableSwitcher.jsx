@@ -1,13 +1,13 @@
-import { translate } from "react-i18next";
-import React from "react";
-import f from "lodash/fp";
-import TableauxConstants from "../../../constants/TableauxConstants";
-import TableSwitcherPopup from "./TableSwitcherPopup";
 import classNames from "classnames";
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
-import { getTableDisplayName } from "../../../helpers/multiLanguage";
+import React from "react";
+import { translate } from "react-i18next";
+import TableauxConstants from "../../../constants/TableauxConstants";
 import { memoizeOne } from "../../../helpers/functools.js";
+import { getTableDisplayName } from "../../../helpers/multiLanguage";
+import { isTaxonomyTable } from "../../taxonomy/taxonomy";
+import TableSwitcherPopup from "./TableSwitcherPopup";
 
 const sortTables = memoizeOne((langtag, tables, getDisplayName) =>
   f.compose(
@@ -47,7 +47,14 @@ class TableSwitcherButton extends React.PureComponent {
   };
 
   renderPopup = () => {
-    const { t, langtag, tables, currentTable, navigate } = this.props;
+    const {
+      t,
+      langtag,
+      tables: allTables,
+      currentTable,
+      navigate
+    } = this.props;
+    const tables = f.reject(isTaxonomyTable, allTables);
 
     const groups = f.flow(
       f.reject("hidden"), //   ...of visible tables
