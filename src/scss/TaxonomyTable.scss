@@ -1,4 +1,13 @@
 .tableaux-table--taxonomy {
+  .table__subheader {
+    color: $color-very-dark;
+    background-color: $color-white;
+    padding: 32px 56px;
+    &-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
   overflow-y: auto;
   .tree-node {
     &__menu-button {
