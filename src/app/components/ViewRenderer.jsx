@@ -7,6 +7,7 @@ import FrontendServiceView from "./frontendService/FrontendServiceView";
 import MediaView from "../components/media/MediaView.jsx";
 import TableView from "./tableView/TableView.jsx";
 import reduxActionHoc from "../helpers/reduxActionHoc";
+import TaxonomyDashboard from "./taxonomy/TaxonomyDashboard";
 
 const viewNameIs = name => f.matchesProperty("viewName", name);
 
@@ -25,11 +26,16 @@ const renderFrontendService = ({ params }) => (
   <FrontendServiceView {...params} />
 );
 
+const renderTaxonomyDashboard = props => (
+  <TaxonomyDashboard {...props.params} history={history} />
+);
+
 const ViewRenderer = f.cond([
   [viewNameIs(ViewNames.TABLE_VIEW), renderTableView],
   [viewNameIs(ViewNames.MEDIA_VIEW), renderMediaView],
   [viewNameIs(ViewNames.DASHBOARD_VIEW), renderDashboard],
-  [viewNameIs(ViewNames.FRONTEND_SERVICE_VIEW), renderFrontendService]
+  [viewNameIs(ViewNames.FRONTEND_SERVICE_VIEW), renderFrontendService],
+  [viewNameIs(ViewNames.TAXONOMY_DASHBOARD_VIEW), renderTaxonomyDashboard]
 ]);
 
 export default reduxActionHoc(ViewRenderer, () => {
