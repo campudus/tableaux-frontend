@@ -1,14 +1,67 @@
+@mixin taxonomy-interactive-element(
+  $idle-color: $color-text-light-grey,
+  $hover-color: $color-light-blue,
+  $active-color: $color-primary
+) {
+  background-color: $color-white;
+  border-radius: 4px;
+
+  border-color: $idle-color;
+  svg > * {
+    fill: $idle-color;
+  }
+
+  &:hover {
+    border-color: $hover-color;
+    svg > * {
+      fill: $hover-color;
+    }
+  }
+
+  &--active,
+  &:focus {
+    border-color: $active-color;
+    svg > * {
+      fill: $active-color;
+    }
+  }
+}
+
 .tableaux-table--taxonomy {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
   .table__subheader {
     color: $color-very-dark;
     background-color: $color-white;
     padding: 32px 56px;
+    box-shadow: 0 1px 15px 1px $color-text-light-grey;
+    z-index: 1;
+
     &-title {
       font-size: 20px;
       font-weight: 600;
     }
+
+    .taxonomy-table__search {
+      width: 720px;
+      margin-top: 24px;
+
+      .taxonomy-search__input {
+        @include taxonomy-interactive-element();
+        color: $color-text-medium-grey;
+        &--placeholder {
+          font-style: italic;
+        }
+      }
+    }
   }
-  overflow-y: auto;
+
+  .taxonomy-table__tree {
+    overflow-y: auto;
+    flex: 1;
+  }
   .tree-node {
     &__menu-button {
       flex: 1;
