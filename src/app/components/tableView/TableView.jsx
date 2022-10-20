@@ -3,6 +3,7 @@ import React, { PureComponent } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 import { branch, renderComponent } from "recompose";
+import { isTaxonomyTable } from "../taxonomy/taxonomy";
 
 import PropTypes from "prop-types";
 
@@ -266,48 +267,58 @@ class TableView extends PureComponent {
           handleLanguageSwitch={this.onLanguageSwitch}
           pageTitleOrKey="pageTitle.tables"
         >
-          <TableSwitcher
-            langtag={langtag}
-            currentTable={table}
-            tables={tables}
-            navigate={this.onNavigate}
-          />
-          <TableSettings langtag={langtag} table={table} actions={actions} />
-          <Filter
-            langtag={langtag}
-            table={table}
-            columns={[RowIdColumn, ...columns]}
-            currentFilter={{
-              filters: this.props.tableView.filters,
-              sorting: this.props.tableView.sorting
-            }}
-            setRowFilter={this.props.actions.setFiltersAndSorting}
-            actions={actions}
-          />
-          {table && columns && columns.length > 1 ? (
-            <ColumnFilter
-              langtag={langtag}
-              columns={columns}
-              tableId={tableId}
-              columnActions={columnActions}
-              columnOrdering={columnOrdering}
-            />
+          {isTaxonomyTable(table) ? (
+            <div className="hfill" />
           ) : (
-            <div />
+            <>
+              <TableSwitcher
+                langtag={langtag}
+                currentTable={table}
+                tables={tables}
+                navigate={this.onNavigate}
+              />
+              <TableSettings
+                langtag={langtag}
+                table={table}
+                actions={actions}
+              />
+              <Filter
+                langtag={langtag}
+                table={table}
+                columns={[RowIdColumn, ...columns]}
+                currentFilter={{
+                  filters: this.props.tableView.filters,
+                  sorting: this.props.tableView.sorting
+                }}
+                setRowFilter={this.props.actions.setFiltersAndSorting}
+                actions={actions}
+              />
+              {table && columns && columns.length > 1 ? (
+                <ColumnFilter
+                  langtag={langtag}
+                  columns={columns}
+                  tableId={tableId}
+                  columnActions={columnActions}
+                  columnOrdering={columnOrdering}
+                />
+              ) : (
+                <div />
+              )}
+              <HistoryButtons
+                tableId={tableId}
+                actions={actions}
+                tableView={tableView}
+              />
+              <div className="header-separator" />
+              <Spinner isLoading={f.isEmpty(allDisplayValues)} />
+              <PasteCellIcon
+                clearCellClipboard={this.clearCellClipboard}
+                pasteOriginCell={pasteOriginCell}
+                pasteOriginCellLang={pasteOriginCellLang}
+                tableId={table.id}
+              />
+            </>
           )}
-          <HistoryButtons
-            tableId={tableId}
-            actions={actions}
-            tableView={tableView}
-          />
-          <div className="header-separator" />
-          <Spinner isLoading={f.isEmpty(allDisplayValues)} />
-          <PasteCellIcon
-            clearCellClipboard={this.clearCellClipboard}
-            pasteOriginCell={pasteOriginCell}
-            pasteOriginCellLang={pasteOriginCellLang}
-            tableId={table.id}
-          />
         </GrudHeader>
         {this.renderTableOrSpinner()}
         <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
