@@ -16,38 +16,38 @@ $status-error-border-color: #ff8080;
 $status-error-background-color: #ffa088;*/
 
 // Colors ----------------------------------- //
-$color-body-background: #EFEFEF;
-$color-background-very-light-grey: #F8F8F8;
-$color-primary: #3296DC;
-$color-primary-hover: #96D9FF;
-$color-primary-lighter: #91C8FF;
+$color-body-background: #efefef;
+$color-background-very-light-grey: #f8f8f8;
+$color-primary: #3296dc;
+$color-primary-hover: #96d9ff;
+$color-primary-lighter: #91c8ff;
 $color-primary-darker: darken($color-primary, 10);
-$color-subtle-grey: #DFDFDF;
-$color-text-light-grey: #C4C4C4;
+$color-subtle-grey: #dfdfdf;
+$color-text-light-grey: #c4c4c4;
 $color-dark: #555555;
 $color-text-medium-grey: #999999;
 $color-very-dark: #333333;
-$color-button-grey: #A0A0A0;
-$color-border-grey: #EFEFEF;
-$color-primary-contrast-text: #FFFFFF;
+$color-button-grey: #a0a0a0;
+$color-border-grey: #efefef;
+$color-primary-contrast-text: #ffffff;
 $color-primary-text: #333333;
-$color-link-color: #E4EFF7;
-$color-grey-dark: #DEDEDE;
-$color-light-link-color: #E7F1F8;
-$color-darker-link-color: #C5D9E8;
-$color-text-link-color: #7C94A6;
-$color-selected-row: #F3FAFF;
-$color-select-list-focus: #E8E8E8;
-$color-select-list-selected: #E8F6FF;
-$color-success: #5EC786;
+$color-link-color: #e4eff7;
+$color-grey-dark: #dedede;
+$color-light-link-color: #e7f1f8;
+$color-darker-link-color: #c5d9e8;
+$color-text-link-color: #7c94a6;
+$color-selected-row: #f3faff;
+$color-select-list-focus: #e8e8e8;
+$color-select-list-selected: #e8f6ff;
+$color-success: #5ec786;
 $color-green: $color-success;
-$color-red: #D86357;
+$color-red: #d86357;
 $color-light-blue: #bde4ff;
 $color-very-light-blue: #e7f1f8;
-$dark-blue-grey-background: #3C4246;
-$color-background-disabled: #FAFAFA;
+$dark-blue-grey-background: #3c4246;
+$color-background-disabled: #fafafa;
 $color-foreground-disabled: $color-text-medium-grey;
-$color-needs-translation: #FB9429;
+$color-needs-translation: #fb9429;
 $color-needs-translation-dark: darken(#ff9600, 5);
 $color-fully-translated: lighten($color-green, 30);
 $color-hover-background: $color-light-link-color;
@@ -69,16 +69,16 @@ $color-overlay-success: #6ec;
 $color-overlay-warning: #f55;
 
 $color-hover-dark: #4a4f53;
-$color-revision-added: #D1F2E7;
-$color-revision-link-added: #66D6B0;
-$color-revision-deleted: #DFDFDF;
-$color-revision-filter-background: #464B4F;
+$color-revision-added: #d1f2e7;
+$color-revision-link-added: #66d6b0;
+$color-revision-deleted: #dfdfdf;
+$color-revision-filter-background: #464b4f;
 
-$color-header-gradient-start: #2F95DB;
-$color-header-gradient-end: #15E2C3;
+$color-header-gradient-start: #2f95db;
+$color-header-gradient-end: #15e2c3;
 
 // Fonts ----------------------------------- //
-$font-main: 'Roboto', Helvetica Neue, Helvetica, Arial, sans-serif;
+$font-main: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
 $font-sec: $font-main;
 
 // Font sizes ----------------------------------- //
@@ -117,7 +117,12 @@ $space-height-link-delete-button: 23px;
   box-sizing: border-box;
 }
 
-@mixin status-dot($dot-color, $background-color, $diameter: 6px, $yoffset: -2px) {
+@mixin status-dot(
+  $dot-color,
+  $background-color,
+  $diameter: 6px,
+  $yoffset: -2px
+) {
   &:before {
     position: absolute;
     content: "";
@@ -141,8 +146,14 @@ $space-height-link-delete-button: 23px;
   }
 }
 
-@mixin status-dot-hovered($dot-color, $background-color, $diameter: 6px, $yoffset: -2px) {
-  &:before, &.inactive:before {
+@mixin status-dot-hovered(
+  $dot-color,
+  $background-color,
+  $diameter: 6px,
+  $yoffset: -2px
+) {
+  &:before,
+  &.inactive:before {
     position: absolute;
     content: "";
     width: $diameter;
@@ -189,4 +200,8 @@ $space-height-link-delete-button: 23px;
   &:hover .svg-icon-content * {
     fill: $color-hovered;
   }
+}
+
+.hfill {
+  flex: 1;
 }
