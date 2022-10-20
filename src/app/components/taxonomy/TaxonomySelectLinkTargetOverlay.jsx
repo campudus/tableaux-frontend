@@ -7,7 +7,9 @@ import TreeView from "./TreeView";
 import Header from "../overlay/Header";
 import { buildClassName } from "../../helpers/buildClassName";
 import i18n from "i18next";
+import TaxonomySearch from "./TaxonomySearch";
 
+const NODES_KEY = "nodes";
 const FOCUSED_NODE_KEY = "focused_node";
 const ButtonMode = {
   add: "add",
@@ -15,8 +17,23 @@ const ButtonMode = {
 };
 
 const SelectLinkTargetOverlayHeader = props => {
-  const { cell, langtag, sharedData, updateSharedData } = props;
-  return <Header {...props} />;
+  const { langtag, sharedData, updateSharedData } = props;
+  const nodes = f.propOr([], NODES_KEY, sharedData);
+
+  const onSelectSearchResult = useCallback(node => {
+    updateSharedData(f.assoc(FOCUSED_NODE_KEY, node));
+  });
+
+  return (
+    <Header {...props}>
+      <TaxonomySearch
+        langtag={langtag}
+        nodes={nodes}
+        onSelect={onSelectSearchResult}
+        classNames="filter-bar"
+      />
+    </Header>
+  );
 };
 
 const mkActionButton = ({ onSubmit, selectedRowId, buttonMode, oldRowId }) => ({
@@ -37,7 +54,6 @@ const mkActionButton = ({ onSubmit, selectedRowId, buttonMode, oldRowId }) => ({
 };
 
 const SelectLinkTargetOverlayBody = ({
-  actions,
   tableId,
   updateSharedData,
   sharedData,
@@ -57,11 +73,14 @@ const SelectLinkTargetOverlayBody = ({
 
   useEffect(() => {
     const nodeToFocus = f.get(FOCUSED_NODE_KEY, sharedData);
-    if (focusedNode) focusNodeFX(nodeToFocus);
+    if (nodeToFocus) focusNodeFX(nodeToFocus);
   }, [
     f.prop(FOCUSED_NODE_KEY, sharedData),
     f.prop([FOCUSED_NODE_KEY, "id"], sharedData)
   ]);
+  useEffect(() => {
+    updateSharedData(f.assoc(NODES_KEY, nodes));
+  }, [nodes]);
 
   const shouldShowAction = useCallback(
     ({ node, expandedNodeId }) =>
@@ -73,6 +92,7 @@ const SelectLinkTargetOverlayBody = ({
 
   const selectedNode = selectedRowId && nodes.find(n => n.id === selectedRowId);
 
+  console.log(focusedNode);
   return (
     <>
       <section className="overlay-subheader">
