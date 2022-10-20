@@ -20,6 +20,8 @@ import { addEmptyRow } from "../../redux/actions/rowActions";
 import { openEntityView } from "./EntityViewOverlay";
 import { SwitchSortingButton } from "../cells/link/LinkOverlayFragments";
 import OverlayHeadRowIdentificator from "../overlay/OverlayHeadRowIdentificator";
+import * as tax from "../taxonomy/taxonomy";
+import TaxonomySelectLinkTargetOverlay from "../taxonomy/TaxonomySelectLinkTargetOverlay";
 
 const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
   const displayValue = unless(
@@ -304,12 +306,24 @@ export const openSelectLinkTargetOverlay = ({
   selectedTargetRowId // optional, when re-selecting
 }) => {
   const cell = { ...row.cells[0], value: row.values[0] };
+  const isTaxonomyTable = tax.isTaxonomyTable(cell.table);
+
+  const Head = isTaxonomyTable
+    ? TaxonomySelectLinkTargetOverlay.Head
+    : SelectLinkTargetOverlayHeader;
+  const Body = isTaxonomyTable
+    ? TaxonomySelectLinkTargetOverlay.Body
+    : SelectLinkTargetOverlay;
+
+  const cssClass = buildClassName("select-link-target-overlay", {
+    taxonomy: isTaxonomyTable
+  });
 
   store.dispatch(
     actions.openOverlay({
-      head: <SelectLinkTargetOverlayHeader cell={cell} langtag={langtag} />,
+      head: <Head cell={cell} langtag={langtag} />,
       body: (
-        <SelectLinkTargetOverlay
+        <Body
           oldRowId={row.id}
           tableId={table.id}
           onSubmit={onSubmit}
@@ -318,7 +332,7 @@ export const openSelectLinkTargetOverlay = ({
         />
       ),
       type: "full-height",
-      classes: "select-link-target-overlay"
+      classes: cssClass
     })
   );
 };
