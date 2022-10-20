@@ -15,6 +15,7 @@ import TreeView from "./TreeView";
 import { loadAndOpenEntityView } from "../overlay/EntityViewOverlay";
 import { rowValuesToCells } from "../../redux/reducers/rows";
 import { confirmDeleteRow } from "../overlay/ConfirmDependentOverlay";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
 
 const shouldShowAction = ({ node, expandedNodeId }) =>
   (!node.parent && !expandedNodeId) || node.parent === expandedNodeId;
@@ -192,12 +193,19 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   );
 
   return (
-    <TreeView
-      nodes={nodes}
-      langtag={langtag}
-      shouldShowAction={shouldShowAction}
-      NodeActionItem={TableEditor}
-    />
+    <>
+      <section className="table__subheader">
+        <h1 className="table__subheader-title">
+          {getTableDisplayName(table, langtag)}
+        </h1>
+      </section>
+      <TreeView
+        nodes={nodes}
+        langtag={langtag}
+        shouldShowAction={shouldShowAction}
+        NodeActionItem={TableEditor}
+      />
+    </>
   );
 };
 
