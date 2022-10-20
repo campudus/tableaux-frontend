@@ -129,12 +129,16 @@ const TaxonomySearch = ({
     onSelect(node);
   };
 
+  const inputClass = buildClassName("taxonomy-search__input", {
+    placeholder: f.isEmpty(searchTerm)
+  });
+
   return (
     <div className={`taxonomy-search ${classNames || ""}`} ref={containerRef}>
       <div className="taxonomy-search__wrapper">
         <input
           onFocus={handleFocusInput}
-          className="taxonomy-search__input"
+          className={inputClass}
           type="text"
           value={searchTerm}
           placeholder={i18n.t("table:taxonomy.search-input-placeholder")}
