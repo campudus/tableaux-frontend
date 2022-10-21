@@ -33,7 +33,7 @@
     background-color: $color-white;
     max-height: 40vh;
     overflow: auto;
-    box-shadow: 0 15px 25px 5px $color-text-medium-grey;
+    box-shadow: $box-shadow-light;
     border-radius: 4px;
     z-index: 1;
   }

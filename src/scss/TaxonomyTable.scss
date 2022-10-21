@@ -45,11 +45,11 @@
 
     &-title {
       font-size: 20px;
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .taxonomy-table__search {
-      width: 720px;
+      width: 900px;
       margin-top: 24px;
 
       .taxonomy-search__input {
@@ -98,7 +98,7 @@
       left: calc(100% + 8px);
       top: 0;
       background-color: $color-white;
-      box-shadow: 0 0 15px $color-text-light-grey;
+      box-shadow: $box-shadow-light;
       border-radius: 4px;
       z-index: 1;
 
@@ -111,6 +111,7 @@
       &__item {
         display: grid;
         padding: 12px 16px;
+        padding-right: 32px;
         grid-template-columns: var(--tree-item-height) 1fr;
         color: $color-very-dark;
 
