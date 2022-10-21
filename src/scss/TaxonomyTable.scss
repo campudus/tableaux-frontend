@@ -96,6 +96,7 @@
       background-color: $color-white;
       box-shadow: 0 0 15px $color-text-light-grey;
       border-radius: 4px;
+      z-index: 1;
 
       &__item-group {
         &:not(:last-of-type) {
