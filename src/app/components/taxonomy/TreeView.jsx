@@ -4,6 +4,7 @@ import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { buildTree, countVisibleChildren, isLeaf } from "./taxonomy";
 import { omit } from "lodash/fp";
 import { getCssVarNumeric } from "../../helpers/getCssVar";
+import Empty from "../helperComponents/emptyEntry";
 
 const ItemButton = props => {
   const {
@@ -32,7 +33,9 @@ const ItemButton = props => {
 
       <div className="tree-node__title">
         <span className="tree-node__name">
-          {retrieveTranslation(langtag, node.displayValue)}
+          {retrieveTranslation(langtag, node.displayValue) || (
+            <Empty langtag={langtag} />
+          )}
         </span>
         {children}
       </div>
