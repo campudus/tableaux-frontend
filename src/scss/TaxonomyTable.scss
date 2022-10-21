@@ -54,7 +54,7 @@
 
       .taxonomy-search__input {
         @include taxonomy-interactive-element();
-        color: $color-text-medium-grey;
+        color: $color-primary-text;
         &--placeholder {
           font-style: italic;
         }
