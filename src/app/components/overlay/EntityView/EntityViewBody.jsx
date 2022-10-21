@@ -451,11 +451,26 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
     return displayValueFound ? displayValue : getDisplayValue(column, value);
   };
 
+  const hiddenColIdces = f
+    .prop(["columns", table.id, "data"], grudData)
+    .reduce((idces, col, idx) => {
+      if (col.hidden) idces.add(idx);
+      return idces;
+    }, new Set());
+
+  // can not use this with default lodash.filter!
+  const isNotHidden = (_, idx) => !hiddenColIdces.has(idx);
+
   const rowData =
     doto(
       grudData,
       f.prop(["rows", table.id, "data"]),
-      f.find(f.propEq("id", row.id))
+      f.find(f.propEq("id", row.id)),
+      data => ({
+        ...data,
+        cells: f.propOr([], "cells", data).filter(isNotHidden),
+        values: f.propOr([], "values", data).filter(isNotHidden)
+      })
     ) || {};
 
   const cells = f
