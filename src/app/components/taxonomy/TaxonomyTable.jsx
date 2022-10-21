@@ -114,10 +114,13 @@ const mkTableEditor = entryGroups => ({ node }) => {
   );
 };
 
-const onCreateNode = ({ dispatch, table, columns, langtag }) => async ({
-  tableId,
-  parentNodeId
-}) => {
+const onCreateNode = ({
+  dispatch,
+  table,
+  columns,
+  langtag,
+  onFocusNode
+}) => async ({ tableId, parentNodeId }) => {
   const transformRows = rowValuesToCells(table, columns);
   const rows = await action
     .createAndLoadRow(dispatch, tableId, {
@@ -135,6 +138,7 @@ const onCreateNode = ({ dispatch, table, columns, langtag }) => async ({
 
   // Timing issue: we need to pass the new row to the next function, as it might
   // not yet be dispatched to the redux store
+  if (f.isFunction(onFocusNode)) onFocusNode({ id: node.parent });
   return node;
 };
 
@@ -144,7 +148,14 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   const columns = useSelector(f.propOr([], ["columns", tableId, "data"]));
   const nodes = t.tableToTreeNodes({ rows, columns });
   const dispatch = useDispatch();
-  const createNewNode = onCreateNode({ dispatch, table, columns, langtag });
+  const [nodeToFocus, focusNodeOnce] = useState(undefined);
+  const createNewNode = onCreateNode({
+    dispatch,
+    table,
+    columns,
+    langtag,
+    onFocusNode: focusNodeOnce
+  });
   const findRowById = rowId => rows.find(row => row.id === rowId);
   const editNode = node => {
     loadAndOpenEntityView({ langtag, tableId, rowId: node.id });
@@ -192,8 +203,6 @@ const TaxonomyTable = ({ langtag, tableId }) => {
     ]),
     [tableId, rows]
   );
-
-  const [nodeToFocus, focusNodeOnce] = useState(undefined);
 
   const handleFocusSearchResult = node => {
     console.log("handleFocusSearchResult", { node });
