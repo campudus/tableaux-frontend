@@ -103,11 +103,11 @@
     height: 100%;
     text-align: center;
     border-radius: 4px;
-    background-color: $color-light-link-color;
+    background-color: $color-light-blue;
     color: $color-primary;
 
     &:hover {
-      background-color: $color-subtle-grey;
+      background-color: $color-hover-background;
     }
 
     &--disabled,
