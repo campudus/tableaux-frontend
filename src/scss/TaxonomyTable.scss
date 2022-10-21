@@ -32,6 +32,10 @@
   display: flex;
   flex-direction: column;
 
+  .tree {
+    padding: 24px 56px;
+  }
+
   .table__subheader {
     color: $color-very-dark;
     background-color: $color-white;
