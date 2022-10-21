@@ -50,7 +50,7 @@ const NavigationPopup = props => {
             to={"/" + langtag + "/taxonomies"}
             className="main-navigation__entry-button"
           >
-            <div className="service-icon">
+            <div className="service-icon icon-taxonomy">
               <SvgIcon icon="addSubItem" />
             </div>
             {t("header:menu.taxonomies")}
