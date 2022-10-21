@@ -8,7 +8,12 @@
   height: $space-height-header;
   padding: 0 20px;
   border-bottom: 5px solid $color-primary; // set border width and fallback color
-  border-image: linear-gradient(to right, $color-header-gradient-start, $color-header-gradient-end) 1;
+  border-image: linear-gradient(
+      to right,
+      $color-header-gradient-start,
+      $color-header-gradient-end
+    )
+    1;
   position: fixed;
   z-index: 9;
   overflow: visible;
@@ -19,8 +24,8 @@
   }
 
   .Select {
-
-    .Select-placeholder, :not(.Select--multi) > .Select-control .Select-value {
+    .Select-placeholder,
+    :not(.Select--multi) > .Select-control .Select-value {
       line-height: $space-height-header-buttons - 2;
     }
 
@@ -43,7 +48,9 @@
       border: 1px solid $color-grey-dark;
     }
 
-    .Select-value, .Select-input, .Select-value-label {
+    .Select-value,
+    .Select-input,
+    .Select-value-label {
       height: $space-height-header-buttons - 2;
       line-height: $space-height-header-buttons - 2;
     }
@@ -116,7 +123,6 @@
 
     .main-navigation__list {
       line-height: 3em;
-
     }
   }
 
@@ -127,7 +133,8 @@
     &:hover {
       background-color: $color-hover-background;
     }
-    i, img {
+    i,
+    img {
       margin-right: 1em;
     }
   }
@@ -137,13 +144,16 @@
     position: relative;
     margin-right: 1em;
 
-    &>*:first-child {
+    & > *:first-child {
       max-width: 1em;
       height: 1em;
       max-height: 1em;
     }
-  }
 
+    &.icon-taxonomy .svg-icon {
+      padding: 0;
+    }
+  }
 
   #header-pagename {
     margin-right: 20px;
@@ -157,7 +167,6 @@
     @media (max-width: 800px) {
       display: none;
     }
-
   }
 
   #main-navigation-wrapper:not(.active) #burger,
