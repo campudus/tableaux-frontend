@@ -125,7 +125,7 @@ const onCreateNode = ({
   const rows = await action
     .createAndLoadRow(dispatch, tableId, {
       columns: [{ id: 1 }, { id: 4 }],
-      rows: [{ values: [{ [langtag]: "" }, [parentNodeId || null]] }]
+      rows: [{ values: [{ [langtag]: "" }, f.compact([parentNodeId])] }]
     })
     .then(transformRows);
 
