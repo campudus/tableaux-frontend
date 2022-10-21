@@ -70,17 +70,17 @@
     &__menu-button {
       flex: 1;
       height: 100%;
-      background-color: $color-white;
+      background-color: $color-light-blue;
       border-radius: 4px;
       @include flex-centered();
       position: relative;
+      color: $color-primary;
+      & > * {
+        fill: $color-primary;
+      }
 
       &:hover {
-        background-color: $color-primary-hover;
-        color: $color-primary;
-        & > * {
-          fill: $color-primary;
-        }
+        background-color: $color-hover-background;
       }
 
       &--open,
