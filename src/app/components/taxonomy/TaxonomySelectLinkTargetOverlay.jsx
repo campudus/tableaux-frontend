@@ -65,7 +65,7 @@ const SelectLinkTargetOverlayBody = ({
   langtag,
   initialTargetRowId
 }) => {
-  const [focusedNode, focusNodeFX] = useState(undefined);
+  const [focusedNode, focusNodeFX] = useState({ id: oldRowId });
   const rows = useSelector(f.prop(["rows", tableId, "data"]));
   const nodes = useMemo(() => t.tableToTreeNodes({ rows }), [rows]);
   const [selectedRowId, setSelectedRowId] = useState(initialTargetRowId);
