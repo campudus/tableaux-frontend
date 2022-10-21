@@ -51,6 +51,48 @@
       }
     }
 
+    // tree lines
+    &--expanded .subtree .tree-node {
+      position: relative;
+      &::before,
+      &::after {
+        position: absolute;
+        content: "";
+        left: calc(0px - (var(--tree-item-height) / 2));
+        transition: border-color var(--tree-animation-duration) ease-out;
+      }
+      &::before {
+        border-top: 1px solid #ccc;
+        top: calc(var(--tree-item-height) / 2);
+        width: calc(var(--tree-item-height) / 2);
+      }
+      &::after {
+        border-left: 1px solid #ccc;
+        height: calc(var(--tree-item-height) + 18px);
+        width: 0;
+        top: 2px;
+      }
+
+      &:first-child::after {
+        top: -8px;
+      }
+
+      &:last-child::after {
+        height: calc(var(--tree-item-height) / 2);
+      }
+
+      &:last-child:first-child::after {
+        height: calc(var(--tree-item-height) / 2 + 8px);
+      }
+    }
+    .subtree--entering,
+    .subtree--leaving {
+      .tree-node::before,
+      .tree-node::after {
+        border-color: transparent;
+      }
+    }
+
     &--default {
       .tree-node__title {
         background-color: $color-white;
