@@ -43,6 +43,7 @@
     .skeleton__button,
     .skeleton__row {
       height: var(--tree-item-height);
+      border-radius: 4px;
     }
     .skeleton__button {
       background-color: transparentize($color-text-medium-grey, 0.7);
