@@ -58,7 +58,7 @@ const EditorEntryGroup = ({ entries, node }) => (
 
 const mustInvertPopup = event => {
   const mouseY = event.screenY;
-  const height = window.innerWidth;
+  const height = window.innerHeight;
 
   return mouseY > height * 0.75;
 };
