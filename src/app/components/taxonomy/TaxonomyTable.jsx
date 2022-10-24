@@ -153,6 +153,27 @@ const onCreateNode = ({
   return node;
 };
 
+const EmptyTable = ({ createFirstNode }) => (
+  <section className="tree empty-taxonony-table">
+    <div className="skeleton__rows">
+      {Array(4)
+        .fill(null)
+        .map(() => (
+          <>
+            <div className="skeleton__button"></div>
+            <div className="skeleton__row"></div>{" "}
+          </>
+        ))}
+    </div>
+    <button className="create-row-button" onClick={createFirstNode}>
+      <i className="fa fa-plus"></i>
+      <span className="create-row-button__text">
+        {i18n.t("table:taxonomy.create-new-category")}
+      </span>
+    </button>
+  </section>
+);
+
 const TaxonomyTable = ({ langtag, tableId }) => {
   const table = useSelector(f.prop(["tables", "data", tableId]));
   const rows = useSelector(f.propOr([], ["rows", tableId, "data"]));
@@ -234,15 +255,23 @@ const TaxonomyTable = ({ langtag, tableId }) => {
           />
         </div>
       </section>
-      <section className="taxonomy-table__tree">
-        <TreeView
-          nodes={nodes}
-          langtag={langtag}
-          shouldShowAction={shouldShowAction}
-          NodeActionItem={TableEditor}
-          focusNode={nodeToFocus}
+      {nodes.length > 0 ? (
+        <section className="taxonomy-table__tree">
+          <TreeView
+            nodes={nodes}
+            langtag={langtag}
+            shouldShowAction={shouldShowAction}
+            NodeActionItem={TableEditor}
+            focusNode={nodeToFocus}
+          />
+        </section>
+      ) : (
+        <EmptyTable
+          createFirstNode={() =>
+            addSiblingBelow({ tableId, parentNodeId: undefined })
+          }
         />
-      </section>
+      )}
     </>
   );
 };
