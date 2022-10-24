@@ -52,7 +52,21 @@
     }
 
     // tree lines
-    &--expanded .subtree .tree-node {
+    //
+    .subtree--fill-line {
+      position: relative;
+      &::after {
+        position: absolute;
+        content: "";
+        left: calc(var(--tree-item-height) / 2 - 8px);
+        transition: border-color var(--tree-animation-duration) ease-out;
+        height: calc(100% - var(--tree-item-height) / 2);
+        border-left: 1px solid #ccc;
+        top: 0;
+      }
+    }
+    &--expanded &--on-path,
+    .subtree .tree-node {
       position: relative;
       &::before,
       &::after {
@@ -85,6 +99,7 @@
         height: calc(var(--tree-item-height) / 2 + 8px);
       }
     }
+
     .subtree--entering,
     .subtree--leaving {
       .tree-node::before,
