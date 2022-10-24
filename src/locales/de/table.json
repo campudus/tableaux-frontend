@@ -172,6 +172,7 @@
   "taxonomy": {
     "add-child": "Neue Subkategorie",
     "add-sibling-below": "Neue Kategorie danach",
+    "create-new-category": "Neue Kategorie hinzufügen",
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "link-category": "Kategorie hinzufügen",
