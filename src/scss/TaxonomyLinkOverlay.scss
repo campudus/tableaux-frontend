@@ -75,6 +75,10 @@
         min-width: var(--tree-item-height);
         max-width: var(--tree-item-height);
         margin-right: 8px;
+
+        i {
+          padding-top: 4px;
+        }
       }
 
       &__path {
@@ -111,7 +115,7 @@
     color: $color-primary;
 
     &:hover {
-      background-color: $color-hover-background;
+      background-color: darken($color-hover-background, 10);
     }
 
     &--disabled,
