@@ -80,7 +80,7 @@
       }
 
       &:hover {
-        background-color: $color-hover-background;
+        background-color: darken($color-hover-background, 10);
       }
 
       &--open,
