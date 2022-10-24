@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { buildClassName } from "../../helpers/buildClassName";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { buildTree, countVisibleChildren, isLeaf } from "./taxonomy";
-import { omit } from "lodash/fp";
+import { last, omit } from "lodash/fp";
 import { getCssVarNumeric } from "../../helpers/getCssVar";
 import Empty from "../helperComponents/emptyEntry";
 
@@ -51,6 +51,11 @@ const AnimateChildNodes = props => {
     getCssVarNumeric("--tree-item-height") +
     getCssVarNumeric("--tree-item-margin-y");
 
+  const mustFillTreeLine =
+    node.onPath &&
+    node.children.find(child => child.onPath || child.expanded) !==
+      last(node.children);
+
   const [isInitial, setIsInitial] = useState(true);
   const [entering, setEntering] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -60,7 +65,8 @@ const AnimateChildNodes = props => {
   const cssClass = buildClassName("subtree", {
     entering,
     leaving,
-    show: !entering && !leaving && show
+    show: !entering && !leaving && show,
+    "fill-line": mustFillTreeLine
   });
   const animationTimer = useRef(null);
   const announceAnimationEnd = () => {
