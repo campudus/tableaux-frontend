@@ -56,6 +56,13 @@ const EditorEntryGroup = ({ entries, node }) => (
   </li>
 );
 
+const mustInvertPopup = event => {
+  const mouseY = event.screenY;
+  const height = window.innerWidth;
+
+  return mouseY > height * 0.75;
+};
+
 // mkTableEditor : List (List EditorEntryDescription) -> { node: TreeNode } -> React.Element
 const mkTableEditor = entryGroups => ({ node }) => {
   const groups = entryGroups
@@ -67,10 +74,12 @@ const mkTableEditor = entryGroups => ({ node }) => {
     .filter(group => !f.isEmpty(group));
 
   const [isOpen, setIsOpen] = useState(false);
+  const [invert, setInvert] = useState(false); // open popup inverted
   const handleTogglePopup = useCallback(
     event => {
       event.stopPropagation();
       setIsOpen(!isOpen);
+      if (!isOpen) setInvert(!!mustInvertPopup(event));
     },
     [isOpen]
   );
@@ -90,6 +99,8 @@ const mkTableEditor = entryGroups => ({ node }) => {
     open: isOpen
   });
 
+  const popupClass = buildClassName("tree-node__menu-popup", { invert });
+
   return (
     <button
       className={buttonClass}
@@ -102,7 +113,7 @@ const mkTableEditor = entryGroups => ({ node }) => {
         center
       />
       {isOpen ? (
-        <div className="tree-node__menu-popup">
+        <div className={popupClass}>
           <ul className="tree--node__menu-popup__items-list">
             {groups.map((entries, idx) => (
               <EditorEntryGroup key={idx} entries={entries} node={node} />
