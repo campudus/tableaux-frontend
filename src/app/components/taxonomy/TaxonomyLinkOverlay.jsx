@@ -252,8 +252,6 @@ const DataLoader = Component => props => {
 
   const componentState = combineStates(columnState, rowState);
 
-  console.log({ rows: componentState.data });
-
   return isLoading(componentState) ? (
     <Spinner />
   ) : isDone(componentState) ? (
