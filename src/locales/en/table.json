@@ -172,6 +172,7 @@
   "taxonomy": {
     "add-child": "Add child category",
     "add-sibling-below": "Add sibling category after",
+    "create-new-category": "Add new category",
     "delete": "Delete",
     "edit": "Edit",
     "link-category": "Link category",
