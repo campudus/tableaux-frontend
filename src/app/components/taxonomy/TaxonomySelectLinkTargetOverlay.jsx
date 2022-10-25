@@ -2,7 +2,7 @@ import f from "lodash/fp";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import * as t from "./taxonomy";
-import TLO from "./TaxonomyLinkOverlay";
+import { LinkedItem } from "./TaxonomyLinkOverlay";
 import TreeView from "./TreeView";
 import Header from "../overlay/Header";
 import { buildClassName } from "../../helpers/buildClassName";
@@ -117,7 +117,7 @@ const SelectLinkTargetOverlayBody = ({
           {f.isNil(selectedRowId) ? (
             <span>{i18n.t("table:link-overlay-empty")}</span>
           ) : (
-            <TLO.LinkedItem
+            <LinkedItem
               node={selectedNode}
               langtag={langtag}
               ActionButton={mkActionButton({
