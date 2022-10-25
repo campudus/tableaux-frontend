@@ -60,6 +60,9 @@ const mustInvertPopup = event => {
   const mouseY = event.screenY;
   const height = window.innerHeight;
 
+  // TODO: This is just a generous estimation. Number of items varies, and after
+  // backend improvement there are more items to come. We avoid clumsy/costy
+  // pre-rendering and measuring for the time being.
   return mouseY > height * 0.75;
 };
 
