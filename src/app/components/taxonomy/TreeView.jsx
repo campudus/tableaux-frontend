@@ -19,18 +19,26 @@ const ItemButton = props => {
   const handleClick = () => {
     onClick && onClick(node);
   };
+  const hasActionButton = shouldShowAction(props);
+  const cssClass = buildClassName(
+    "tree-node__item-button",
+    { "with-action-button": hasActionButton },
+    className
+  );
 
   return (
-    <div
-      className={`tree-node__item-button ${className || ""}`}
-      onClick={handleClick}
-    >
+    <div className={cssClass} onClick={handleClick}>
+      {node.parent ? (
+        <>
+          <div className="tree-node__border-left" />
+          <div className="tree-node__border-right" />
+        </>
+      ) : null}
       {shouldShowAction(props) ? (
         <span className="tree-node__item-action-button">
           <NodeActionItem {...props} />
         </span>
       ) : null}
-
       <div className="tree-node__title">
         <span className="tree-node__name">
           {retrieveTranslation(langtag, node.displayValue) || (
@@ -48,6 +56,7 @@ const AnimateChildNodes = props => {
   const duration = getCssVarNumeric("--tree-animation-duration");
 
   const itemHeight =
+    1 +
     getCssVarNumeric("--tree-item-height") +
     getCssVarNumeric("--tree-item-margin-y");
 
@@ -89,13 +98,17 @@ const AnimateChildNodes = props => {
   }, [!!show]);
 
   return (
-    <ul className={cssClass} style={style}>
-      {show || leaving
-        ? node.children.map(child => (
-            <TreeItem key={child.id} {...omit("show", props)} node={child} />
-          ))
-        : null}
-    </ul>
+    <div className={cssClass} style={style}>
+      <div className="subtree__border-left" />
+      <div className="subtree__border-right" />
+      <ul className="subtree__items">
+        {show || leaving
+          ? node.children.map(child => (
+              <TreeItem key={child.id} {...omit("show", props)} node={child} />
+            ))
+          : null}
+      </ul>
+    </div>
   );
 };
 
@@ -144,7 +157,8 @@ const TreeItem = props => {
     leaf: isLeaf(node),
     "on-path": node.onPath,
     expanded: node.expanded && !isLeaf(node),
-    default: (!node.onPath && !node.expanded) || isLeaf(node)
+    default: (!node.onPath && !node.expanded) || isLeaf(node),
+    root: !node.parent
   });
   return (
     <li ref={nodeRef} className={cssClass}>
