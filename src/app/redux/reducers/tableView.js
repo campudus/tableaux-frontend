@@ -293,7 +293,6 @@ const modifyHistory = action => state => {
 };
 
 export default (state = initialState, action, completeState) => {
-  // console.log(action)
   switch (action.type) {
     case SET_STATE:
       return action.state.tableView;
