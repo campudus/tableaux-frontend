@@ -172,7 +172,7 @@ class Table extends PureComponent {
         onMouseDown={this.onMouseDownHandler}
       >
         <div className={tableClass}>
-          {isTaxonomyTable(table) ? (
+          {isTaxonomy ? (
             <TaxonomyTable tableId={table.id} langtag={langtag} />
           ) : (
             <VirtualTable
