@@ -1,12 +1,80 @@
 :root {
   --tree-animation-duration: 300ms;
-  --tree-item-height: 39.6px;
+  --tree-item-height: 40px;
   --tree-item-margin-y: 8px;
+  --tree-level-indent: 32px;
+  --tree-half-indent: calc(var(--tree-level-indent) / 2);
+  --tree-action-button-width: calc(var(--tree-item-height) + 8px);
+  --tree-item-half-height: calc(var(--tree-item-height) / 2);
 }
+
+$tree-action-button-width: var(--tree-action-button-width);
+$tree-half-indent: var(--tree-half-indent);
+$tree-item-half-height: var(--tree-item-half-height);
+$tree-line: 1px solid #ccc;
 
 .tree {
   padding: 24px;
   max-width: 900px;
+
+  .tree-node__item-button {
+    display: grid;
+    grid-template-columns: $tree-half-indent $tree-half-indent 1fr;
+    &--with-action-button {
+      grid-template-columns: $tree-half-indent $tree-half-indent $tree-action-button-width 1fr;
+    }
+  }
+  .tree-node--root > .tree-node__item-button {
+    display: grid;
+    grid-template-columns: 1fr;
+    &--with-action-button {
+      grid-template-columns: $tree-action-button-width 1fr;
+    }
+  }
+  .subtree {
+    display: grid;
+    grid-template-columns: $tree-half-indent $tree-half-indent 1fr;
+
+    &__border-left {
+      transition: border-color var(--tree-animation-duration) ease-out;
+      border-right: $tree-line;
+      border-color: transparent;
+    }
+  }
+  .tree-node--root > .subtree {
+    grid-template-columns: 1fr;
+  }
+  .tree-node {
+    &__border-left {
+      height: calc(100% + 2 * var(--tree-item-margin-y));
+      border-right: $tree-line;
+    }
+    &__border-right {
+      height: $tree-item-half-height;
+      margin-bottom: $tree-item-half-height;
+      border-bottom: $tree-line;
+    }
+  }
+  .tree-node:last-child > .tree-node__item-button > .tree-node__border-left {
+    height: $tree-item-half-height;
+    margin-bottom: $tree-item-half-height;
+  }
+
+  .tree-node:last-child:first-child
+    > .tree-node__item-button
+    > .tree-node__border-left {
+    height: calc(50% + var(--tree-item-margin-y) - 1px);
+    margin-bottom: calc(
+      var(--tree-item-height) / 2 + var(--tree-item-margin-y)
+    );
+  }
+  .subtree--fill-line
+    > .subtree__items
+    > .tree-node
+    > .subtree
+    > .subtree__border-left {
+    border-right: $tree-line;
+  }
 
   .tree-node {
     .hfill {
@@ -15,9 +83,8 @@
     &__item-button {
       height: var(--tree-item-height);
       cursor: pointer;
-      display: flex;
       align-items: center;
-      margin: var(--tree-item-margin-y) 0;
+      margin-bottom: 8px;
     }
     &__item-action-button {
       height: var(--tree-item-height);
@@ -51,63 +118,6 @@
       }
     }
 
-    // tree lines
-    //
-    .subtree--fill-line {
-      position: relative;
-      &::after {
-        position: absolute;
-        content: "";
-        left: calc(var(--tree-item-height) / 2 - 8px);
-        transition: border-color var(--tree-animation-duration) ease-out;
-        height: calc(100% - var(--tree-item-height) / 2);
-        border-left: 1px solid #ccc;
-        top: 0;
-      }
-    }
-    &--expanded &--on-path,
-    .subtree .tree-node {
-      position: relative;
-      &::before,
-      &::after {
-        position: absolute;
-        content: "";
-        left: calc(0px - (var(--tree-item-height) / 2));
-        transition: border-color var(--tree-animation-duration) ease-out;
-      }
-      &::before {
-        border-top: 1px solid #ccc;
-        top: calc(var(--tree-item-height) / 2);
-        width: calc(var(--tree-item-height) / 2);
-      }
-      &::after {
-        border-left: 1px solid #ccc;
-        height: calc(var(--tree-item-height) + 18px);
-        width: 0;
-        top: 2px;
-      }
-
-      &:first-child::after {
-        top: -8px;
-      }
-
-      &:last-child::after {
-        height: calc(var(--tree-item-height) / 2);
-      }
-
-      &:last-child:first-child::after {
-        height: calc(var(--tree-item-height) / 2 + 8px);
-      }
-    }
-
-    .subtree--entering,
-    .subtree--leaving {
-      .tree-node::before,
-      .tree-node::after {
-        border-color: transparent;
-      }
-    }
-
     &--default {
       .tree-node__title {
         background-color: $color-white;
@@ -126,11 +136,9 @@
   .subtree {
     padding: 0;
     margin: 0;
-    padding-left: 32px;
     transition: all var(--tree-animation-duration) ease-in;
     height: 0;
     transform-origin: top;
-    display: block;
     transform: scaleY(0);
 
     &--show {
