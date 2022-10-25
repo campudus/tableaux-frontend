@@ -73,12 +73,16 @@ const LinkedItem = ({ node, langtag, ActionButton, path, onFocusNode }) => {
 const CardinalityInfo = ({ nLinked, limit }) => {
   const parts = i18n.t("table:link-overlay-count").split("|");
   return (
-    /*!limit ? null : */ <p className="cardinality-count">
-      <span className="text">{parts[0]}</span>
-      <span className="number">{nLinked}</span>
-      <span className="text">{parts[1]}</span>
-      <span className="number">{limit || "∞"}</span>
-      <span className="text">{parts[2]}</span>
+    <p className="cardinality-count">
+      {!limit ? null : (
+        <>
+          <span className="text">{parts[0]}</span>
+          <span className="number">{nLinked}</span>
+          <span className="text">{parts[1]}</span>
+          <span className="number">{limit}</span>
+          <span className="text">{parts[2]}</span>
+        </>
+      )}
     </p>
   );
 };
