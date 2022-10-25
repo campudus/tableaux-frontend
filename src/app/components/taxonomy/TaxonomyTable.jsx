@@ -237,7 +237,6 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   );
 
   const handleFocusSearchResult = node => {
-    console.log("handleFocusSearchResult", { node });
     focusNodeOnce(node);
   };
 
