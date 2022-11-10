@@ -510,6 +510,19 @@
     }
   }
 }
+.button--disabled {
+    color: white;
+    padding: 0.5em 1em;
+    border: 1px solid $color-text-light-grey;
+    border-radius: 3px;
+    position: relative;
+    display: block;
+    cursor: not-allowed;
+    background-color: $color-button-grey;
+    a {
+      @include button-with-icon();
+    }
+}
 
 .language-info-toast {
   padding: 0 50px;
