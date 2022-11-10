@@ -56,7 +56,7 @@ const LinkList = props => {
     const clickHandler = (_, link, evt) => {
       evt.preventDefault();
       if (!changeCellAuthorized) {
-        return
+        return;
       }
       actions.changeCellValue({
         cell,
@@ -91,7 +91,7 @@ const LinkList = props => {
     const clickHandler = (_, link, evt) => {
       evt.preventDefault();
       if (!changeCellAuthorized) {
-        return
+        return;
       }
       actions.changeCellValue({
         cell,
