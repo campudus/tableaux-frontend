@@ -154,7 +154,7 @@ class Cell extends React.Component {
         tableId: table.id
       });
     } else if (!withRightClick && this.userCanEditValue()) {
-      actions.toggleCellEditing({ row });
+      actions.toggleCellEditing({ row, cell, eventKey: event.key });
     }
 
     if (withRightClick) {
@@ -261,8 +261,8 @@ class Cell extends React.Component {
         onKeyDown={
           selected
             ? KeyboardShortcutsHelper.onKeyboardShortcut(
-                this.getKeyboardShortcuts
-              )
+              this.getKeyboardShortcuts
+            )
             : f.noop
         }
         onMouseDown={this.onMouseDownHandler}
