@@ -111,21 +111,21 @@ class File extends Component {
     // delete and edit file
     const mediaOptions = (
       <div className="media-options">
-        <span onClick={this.onEdit} className="button" alt="edit">
-          <i className="icon fa fa-pencil-square-o" />
-          {t("change_file")}
-        </span>
-        {canUserEditFiles() && (
-          <a
-            href={imageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="button"
-          >
-            <i className="icon fa fa-external-link" />
-            {t("show_file")}
-          </a>
-        )}
+        {
+          canUserEditFiles() &&
+          (<span onClick={this.onEdit} className="button" alt="edit">
+            <i className="icon fa fa-pencil-square-o" />
+            {t("change_file")}
+          </span>)}
+        <a
+          href={imageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="button"
+        >
+          <i className="icon fa fa-external-link" />
+          {t("show_file")}
+        </a>
         {canUserDeleteFiles() ? (
           <span
             className="button"
