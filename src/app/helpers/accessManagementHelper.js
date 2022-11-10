@@ -64,7 +64,7 @@ const getPermission = pathToPermission =>
   );
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
-export const canUserChangeCell = (cellInfo, langtag) => {
+export const canUserChangeCell = f.curry((cellInfo, langtag) => {
   const { kind } = cellInfo;
   const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
 
@@ -73,7 +73,7 @@ export const canUserChangeCell = (cellInfo, langtag) => {
     : f.isPlainObject(editCellValue) && editCellValue[langtag];
 
   return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
-};
+});
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
   const allowed =
