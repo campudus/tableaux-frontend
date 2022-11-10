@@ -5,7 +5,6 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { openLinkOverlay } from "../../cells/link/LinkOverlay";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
@@ -15,43 +14,7 @@ class LinkView extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
     cell: PropTypes.object.isRequired,
-    thisUserCantEdit: PropTypes.bool,
     actions: PropTypes.object.isRequired
-  };
-
-  openOverlay = () => {
-    const { cell, langtag, actions } = this.props;
-    openLinkOverlay({ cell, langtag, actions });
-  };
-
-  removeLink = id => () => {
-    if (this.props.thisUserCantEdit) {
-      return;
-    }
-    const { cell, actions } = this.props;
-    const newValue = f.pullAt(id, cell.value);
-    actions.changeCellValue({ cell, oldValue: cell.value, newValue });
-  };
-
-  applySwap = ordering => () => {
-    const {
-      value,
-      linkList,
-      actions,
-      cell: { table, row, column }
-    } = this.props;
-
-    const rearranged = f.map(
-      id => f.find(linkedItem => linkedItem.id === id, linkList),
-      ordering
-    );
-    actions.changeCellValue({
-      columnId: column.id,
-      rowId: row.id,
-      tableId: table.id,
-      oldValue: value,
-      newValue: rearranged
-    });
   };
 
   render() {
@@ -73,7 +36,6 @@ class LinkView extends Component {
         <LinkList
           links={linkList}
           langtag={langtag}
-          unlink={this.removeLink}
           cell={cell}
           actions={actions}
           value={value}
