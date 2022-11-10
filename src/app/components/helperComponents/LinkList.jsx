@@ -55,6 +55,9 @@ const LinkList = props => {
 
     const clickHandler = (_, link, evt) => {
       evt.preventDefault();
+      if (!changeCellAuthorized) {
+        return
+      }
       actions.changeCellValue({
         cell,
         tableId,
@@ -87,6 +90,9 @@ const LinkList = props => {
     } = link;
     const clickHandler = (_, link, evt) => {
       evt.preventDefault();
+      if (!changeCellAuthorized) {
+        return
+      }
       actions.changeCellValue({
         cell,
         tableId,
@@ -108,6 +114,7 @@ const LinkList = props => {
         langtag={langtag}
         clickHandler={clickHandler}
         style={{}}
+        userCanEdit={changeCellAuthorized}
         isLinked
       />
     );
