@@ -81,7 +81,7 @@ class RowHeadline extends React.Component {
       >
         {thisUserCantEdit ? (
           <a
-            className="column-icon button neutral"
+            className=" button--disabled neutral"
             href="#"
             ref={el => {
               funcs.register(el);
