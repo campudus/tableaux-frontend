@@ -18,7 +18,7 @@ const getCssClass = ({ isLinked, isSelected }) =>
   });
 
 const LinkItem = props => {
-  const { toTable, showToggleButton = true } = props;
+  const { toTable, showToggleButton = true, userCanEdit = true } = props;
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
@@ -37,7 +37,7 @@ const LinkItem = props => {
         {showToggleButton && (
           <a
             href="#"
-            className={linkButtonClass + " roundCorners"}
+            className={linkButtonClass + " roundCorners" + (userCanEdit ? "" : " linkButton--disabled")}
             draggable={false}
             onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
           >
@@ -62,17 +62,17 @@ const LinkItem = props => {
             }
             props.isAttachment
               ? doto(
-                  f.find(val => val.uuid === props.row.id, props.cell.value),
-                  f.get("url"),
-                  retrieveTranslation(props.langtag),
-                  apiUrl,
-                  window.open
-                )
+                f.find(val => val.uuid === props.row.id, props.cell.value),
+                f.get("url"),
+                retrieveTranslation(props.langtag),
+                apiUrl,
+                window.open
+              )
               : loadAndOpenEntityView({
-                  tableId: toTable,
-                  rowId: props.row.id,
-                  langtag: props.langtag
-                });
+                tableId: toTable,
+                rowId: props.row.id,
+                langtag: props.langtag
+              });
           }}
         >
           <SvgIcon icon="edit" containerClasses="color-primary" />
@@ -101,7 +101,8 @@ LinkItem.propTypes = {
   langtag: PropTypes.string.isRequired,
   style: PropTypes.object,
   toTable: PropTypes.number.isRequired,
-  showToggleButton: PropTypes.bool
+  showToggleButton: PropTypes.bool,
+  userCanEdit: PropTypes.bool
 };
 
 export default LinkItem;
