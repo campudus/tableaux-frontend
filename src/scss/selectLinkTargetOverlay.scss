@@ -46,14 +46,32 @@ $button-margin: 16px;
           }
         }
       }
+
+      .cardinality-info {
+        padding-bottom: 8px;
+        &__text {
+          color: $color-text-medium-grey;
+        }
+        &__count {
+          color: $color-primary-text;
+          font-weight: bold;
+          margin: 0 4px;
+        }
+      }
     }
   }
 
   .select-link-target-overlay {
     .overlay-subheader {
+      &__title {
+        margin-bottom: 0;
+      }
       .link-display-value {
         background-color: $color-primary;
         color: $color-primary-contrast-text;
+      }
+      .selected-link {
+        margin-top: 16px;
       }
     }
     .overlay-content {
