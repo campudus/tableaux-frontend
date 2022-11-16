@@ -22,7 +22,7 @@ const openOverlay = (state, action) => {
   const timestamp = new Date().getTime();
   const namedContent = doto(
     content,
-    when(cont => f.isEmpty(cont.name), f.assoc("name", timestamp)),
+    when(cont => f.isEmpty(cont.name), f.assoc("name", String(timestamp))),
     f.assoc("id", timestamp)
   );
 
