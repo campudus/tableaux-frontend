@@ -61,6 +61,10 @@ $button-margin: 16px;
       flex-direction: column;
 
       .select-link-target {
+        &--has-link.overlay-subheader {
+          background-color: transparent;
+          border-bottom: none;
+        }
         &.overlay-main-content {
           height: 100%;
           position: relative;

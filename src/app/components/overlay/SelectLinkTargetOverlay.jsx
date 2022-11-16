@@ -188,15 +188,23 @@ const SelectLinkTargetOverlay = props => {
     [table.id, handleSelectRowId]
   );
 
+  const hasLink = f.isNumber(selectedRowId);
+
+  const subheaderClass = buildClassName(
+    "select-link-target",
+    { "has-link": hasLink },
+    "overlay-subheader"
+  );
+
   return (
     <>
-      <section className="select-link-target overlay-subheader">
+      <section className={subheaderClass}>
         <h1 className="overlay-subheader__title">
           {i18n.t("table:select-link-target.title", {
             linkTitle: displayValueTable[oldRowId]
           })}
         </h1>
-        {!f.isNil(selectedRowId) ? (
+        {hasLink ? (
           <div className="sortable selected-link">
             <ListItem
               isLinked={true}
@@ -215,18 +223,20 @@ const SelectLinkTargetOverlay = props => {
         )}
       </section>
       <section className="select-link-target overlay-main-content">
-        <AutoSizer>
-          {({ height, width }) => (
-            <List
-              className="items-virtualized-list sortable" // "sortable" will just style link items properly
-              width={width}
-              height={height}
-              rowCount={availableRows.length}
-              rowHeight={42}
-              rowRenderer={rowRenderer}
-            />
-          )}
-        </AutoSizer>
+        {hasLink ? null : (
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                className="items-virtualized-list sortable" // "sortable" will just style link items properly
+                width={width}
+                height={height}
+                rowCount={availableRows.length}
+                rowHeight={42}
+                rowRenderer={rowRenderer}
+              />
+            )}
+          </AutoSizer>
+        )}
         <RowCreator
           langtag={langtag}
           onClick={onCreateRow}
