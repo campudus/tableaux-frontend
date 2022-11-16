@@ -126,6 +126,21 @@ const mkResultFilter = (mode, value) => {
   return item => matchesFilter(item[1]); // this is performed before entries are transformed to dicts
 };
 
+const CardinalityInfo = ({ max, n }) => {
+  const [prefix, middle, suffix] = i18n
+    .t("table:link-overlay-count")
+    .split("|");
+  return max > 0 ? (
+    <div className="cardinality-info">
+      <span className="cardinality-info__text">{prefix}</span>
+      <span className="cardinality-info__count">{n}</span>
+      <span className="cardinality-info__text">{middle}</span>
+      <span className="cardinality-info__count">{max}</span>
+      <span className="cardinality-info__text">{suffix}</span>
+    </div>
+  ) : null;
+};
+
 const SelectLinkTargetOverlay = props => {
   const {
     oldRowId,
@@ -204,6 +219,8 @@ const SelectLinkTargetOverlay = props => {
             linkTitle: displayValueTable[oldRowId]
           })}
         </h1>
+        <CardinalityInfo max={1} n={hasLink ? 1 : 0} />
+
         {hasLink ? (
           <div className="sortable selected-link">
             <ListItem
@@ -216,11 +233,7 @@ const SelectLinkTargetOverlay = props => {
               onEdit={handleOpenEntityView}
             />
           </div>
-        ) : (
-          <div className="overlay-subheader__description">
-            {i18n.t("table:select-link-target.nothing-selected")}
-          </div>
-        )}
+        ) : null}
       </section>
       <section className="select-link-target overlay-main-content">
         {hasLink ? null : (
