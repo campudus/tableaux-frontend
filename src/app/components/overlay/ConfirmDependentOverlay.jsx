@@ -2,6 +2,7 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import DependentRowsList from "../../components/rows/DependentRowsList";
 import { buildClassName } from "../../helpers/buildClassName";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
@@ -49,7 +50,8 @@ const DeleteRowHeader = ({
   headlineKey,
   bodyTextKey,
   buttons,
-  linkTargetTitle
+  linkTargetTitle,
+  isWaiting
 }) => (
   <>
     <div className="deletion-info__header overlay-subheader__title">
@@ -65,14 +67,14 @@ const DeleteRowHeader = ({
           onClick={onClick}
           disabled={disabled}
           classNames={cssClasses}
-        >
-          {i18n.t(textKey)}
-        </Button>
+          waiting={isWaiting}
+          text={i18n.t(textKey)}
+        />
       ))}
     </div>
   </>
 );
-const DeleteRowFooter = ({ deletionAction, onClose, onSubmit }) => {
+const DeleteRowFooter = ({ deletionAction, onClose, onSubmit, isWaiting }) => {
   const deleteTextKey =
     deletionAction && isMergeAction(deletionAction)
       ? "table:dependent-rows.btn-submit-merge-rows"
@@ -87,12 +89,15 @@ const DeleteRowFooter = ({ deletionAction, onClose, onSubmit }) => {
           classNames="negative"
           disabled={isSubmitDisabled}
           onClick={onSubmit}
-        >
-          {i18n.t(deleteTextKey)}
-        </Button>
-        <Button className="neutral" onClick={onClose}>
-          {i18n.t("common:cancel")}
-        </Button>
+          waiting={isWaiting}
+          text={i18n.t(deleteTextKey)}
+        />
+        <Button
+          className="neutral"
+          onClick={onClose}
+          waiting={isWaiting}
+          text={i18n.t("common:cancel")}
+        />
       </div>
     </footer>
   );
@@ -137,47 +142,51 @@ const handleDeleteRow = ({
   deletionAction,
   oldRowTitle,
   linkTargetTitle
-}) => {
-  const rowId = deletionAction.rowToDeleteId;
-  const mergeWithRowId = deletionAction.mergedLinkTargetId;
-  const rows = store.getState() |> f.get(["rows", tableId, "data"]);
-  const rowIdx = f.findIndex(f.propEq("id", rowId))(rows);
-  const neighborRowId =
-    mergeWithRowId ||
-    (rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id"));
+}) =>
+  new Promise((resolve, reject) => {
+    const rowId = deletionAction.rowToDeleteId;
+    const mergeWithRowId = deletionAction.mergedLinkTargetId;
+    const rows = store.getState() |> f.get(["rows", tableId, "data"]);
+    const rowIdx = f.findIndex(f.propEq("id", rowId))(rows);
+    const neighborRowId =
+      mergeWithRowId ||
+      (rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id"));
 
-  const {
-    selectedCell: {
-      selectedCell: { columnId }
-    }
-  } = store.getState();
+    const {
+      selectedCell: {
+        selectedCell: { columnId }
+      }
+    } = store.getState();
 
-  store.dispatch(
-    actions.deleteRow({
-      rowId,
-      tableId,
-      mergeWithRowId,
-      onSuccess: () =>
-        handleShowDeletionSuccess({
-          deletionAction,
-          oldRowTitle,
-          linkTargetTitle
-        }),
-      onError: handleShowDeletionError
-    })
-  );
+    store.dispatch(
+      actions.deleteRow({
+        rowId,
+        tableId,
+        mergeWithRowId,
+        onSuccess: () => {
+          handleShowDeletionSuccess({
+            deletionAction,
+            oldRowTitle,
+            linkTargetTitle
+          });
+          resolve();
+        },
+        onError: err => {
+          handleShowDeletionError(err);
+          reject(err);
+        }
+      })
+    );
 
-  store.dispatch(actions.closeOverlay());
-
-  store.dispatch(
-    actions.toggleCellSelection({
-      rowId: neighborRowId,
-      tableId,
-      columnId,
-      langtag
-    })
-  );
-};
+    store.dispatch(
+      actions.toggleCellSelection({
+        rowId: neighborRowId,
+        tableId,
+        columnId,
+        langtag
+      })
+    );
+  });
 
 const ButtonConfig = (translationKeyPostfix, effect, cssClasses, disabled) => ({
   textKey: `table:dependent-rows.${translationKeyPostfix}`,
@@ -214,6 +223,8 @@ const DeleteRowOverlay = props => {
     setNLinkedTables(0);
     setDeletionAction(JustDelete(row.id));
   };
+  const [isWaiting, setIsWaiting] = useState(false);
+  const dispatch = useDispatch();
 
   const getRowTitle = lookupRowDisplayName(props.grudData, table.id, langtag);
   const oldRowTitle = getRowTitle(row.id);
@@ -233,14 +244,18 @@ const DeleteRowOverlay = props => {
   const selectDeleteMode = () => setDeletionAction(JustDelete(row.id));
   const submitDeleteAction = isInitialAction(deletionAction)
     ? f.noop
-    : () =>
+    : () => {
+        setIsWaiting(true);
         handleDeleteRow({
           tableId: table.id,
           langtag,
           deletionAction,
           oldRowTitle,
           linkTargetTitle
-        });
+        })
+          .finally(() => setIsWaiting(false))
+          .then(() => dispatch(actions.closeOverlay(String(props.name))));
+      };
 
   const headerConfig = {
     [DeleteAction.initial]: {
@@ -291,6 +306,7 @@ const DeleteRowOverlay = props => {
           {...f.get(deletionAction.action, headerConfig)}
           oldRowTitle={oldRowTitle}
           linkTargetTitle={linkTargetTitle}
+          isWaiting={isWaiting}
         />
       </section>
       <DependentRowsList
@@ -303,6 +319,7 @@ const DeleteRowOverlay = props => {
         table={table}
       />
       <DeleteRowFooter
+        isWaiting={isWaiting}
         deletionAction={deletionAction}
         onClose={props.actions.closeOverlay}
         onSubmit={submitDeleteAction}
