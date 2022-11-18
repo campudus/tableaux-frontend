@@ -11,6 +11,10 @@
     flex-direction: column;
   }
 
+  .tree-node__child-count {
+    display: none;
+  }
+
   .overlay-main-content {
     overflow-y: auto;
     margin-bottom: 0;
