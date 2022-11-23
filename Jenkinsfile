@@ -80,7 +80,6 @@ pipeline {
         sh """
           docker build \
           --build-arg BUILD_ID=${COMMIT_INFO} \
-          --label "BRANCH_NAME=${BRANCH_NAME}" \
           --label "GIT_COMMIT=${GIT_COMMIT}" \
           --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
           --label "BUILD_DATE=${BUILD_DATE}" \
