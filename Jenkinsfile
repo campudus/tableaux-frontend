@@ -34,6 +34,8 @@ pipeline {
   environment {
     COMMIT_INFO = sh(returnStdout: true, script: './getCommitHash.sh').trim()
     GIT_HASH = sh (returnStdout: true, script: 'git log -1 --pretty=%h').trim()
+    BUILD_DATE = sh(returnStdout: true, script: 'date \"+%Y-%m-%d %H:%M:%S\"').trim()
+    GIT_COMMIT_DATE = sh(returnStdout: true, script: "git show -s --format=%ci").trim()
   }
 
   stages {
@@ -75,7 +77,17 @@ pipeline {
 
     stage('Build docker image') {
       steps {
-        sh "docker build -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} -t ${IMAGE_NAME}:latest -f Dockerfile --rm . --build-arg BUILD_ID=${COMMIT_INFO}"
+        sh """
+          docker build \
+          --build-arg BUILD_ID=${COMMIT_INFO} \
+          --label "BRANCH_NAME=${BRANCH_NAME}" \
+          --label "GIT_COMMIT=${GIT_COMMIT}" \
+          --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
+          --label "BUILD_DATE=${BUILD_DATE}" \
+          -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} \
+          -t ${IMAGE_NAME}:latest \
+          -f Dockerfile --rm .
+        """
         sh "docker save ${IMAGE_NAME}:latest | gzip -c > ${DEPLOY_DIR}/${LEGACY_ARCHIVE_FILENAME}"
       }
     }
