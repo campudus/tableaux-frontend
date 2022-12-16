@@ -156,15 +156,15 @@ describe("taxonomy helpers", () => {
   });
 
   describe("findTreeNodes", () => {
-    const labelledTreeNodes = [
-      { id: 1, parent: null, displayValue: { en: "Not me" } },
-      { id: 2, parent: 1, displayValue: { en: "I am worthy" } },
-      { id: 3, parent: null, displayValue: { en: "Nope" } },
-      { id: 4, parent: 3, displayValue: { en: "Yes! Me!" } },
-      { id: 5, parent: 4, displayValue: { en: "I am none of the results" } },
-      { id: 6, parent: 5, displayValue: { en: "I'm like a deep result" } }
-    ];
     it("should find tree nodes by search function and add paths", () => {
+      const labelledTreeNodes = [
+        { id: 1, parent: null, displayValue: { en: "Not me" } },
+        { id: 2, parent: 1, displayValue: { en: "I am worthy" } },
+        { id: 3, parent: null, displayValue: { en: "Nope" } },
+        { id: 4, parent: 3, displayValue: { en: "Yes! Me!" } },
+        { id: 5, parent: 4, displayValue: { en: "I am none of the results" } },
+        { id: 6, parent: 5, displayValue: { en: "I'm like a deep result" } }
+      ];
       const search = str => !/no/i.test(str);
 
       const results = t.findTreeNodes("en")(search)(labelledTreeNodes);
@@ -177,6 +177,35 @@ describe("taxonomy helpers", () => {
 
       expect(results[2].id).toBe(6);
       expect(results[2].path).toHaveLength(3);
+    });
+
+    it("should use multilang fallback search", () => {
+      const labelledTreeNodes = [
+        { id: 1, parent: null, displayValue: { de: "Des find ma" } },
+        {
+          id: 2,
+          parent: 1,
+          displayValue: { de: "Der Suche Erfolg trifft auch mich" }
+        },
+        {
+          id: 3,
+          parent: null,
+          displayValue: { en: "Nope", de: "Ich will nicht." }
+        },
+        { id: 4, parent: 3, displayValue: { de: "Der Knoten ist gut." } },
+        { id: 5, parent: 4, displayValue: { en: "I am none of the results" } },
+        { id: 6, parent: 5, displayValue: { en: "I'm like a deep result" } }
+      ];
+
+      const search = str => /de/i.test(str);
+      const results = t.findTreeNodes("en")(search)(labelledTreeNodes);
+
+      expect(results).toEqual([
+        expect.objectContaining({ id: 1 }),
+        expect.objectContaining({ id: 2 }),
+        expect.objectContaining({ id: 4 }),
+        expect.objectContaining({ id: 6 })
+      ]);
     });
   });
 });

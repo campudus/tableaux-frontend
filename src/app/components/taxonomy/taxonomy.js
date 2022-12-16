@@ -4,6 +4,7 @@ import * as t from "../../helpers/transduce";
 import { memoize } from "lodash";
 import f from "lodash/fp";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 
 // type alias BuildTreeNode =
 //    { id: RowId
@@ -74,7 +75,7 @@ export const findTreeNodes = langtag => searchFn => nodes => {
   // eslint-disable-next-line lodash-fp/no-extraneous-args
   const findPath = memoize(getPathToNode(nodes), f.prop("id"));
   return t.transduceList(
-    t.filter(node => searchFn(node.displayValue[langtag])),
+    t.filter(node => searchFn(retrieveTranslation(langtag, node.displayValue))),
     t.map(node => ({ ...node, path: findPath(node) }))
   )(nodes);
 };
