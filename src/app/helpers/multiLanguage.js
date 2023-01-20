@@ -86,7 +86,7 @@ const currencyCodeMap = {
   GB: "GBP", // Great Britain
   GR: "EUR", // Greece
   HK: "HKD", // Hong Kong
-  HR: "HRK", // Croatia
+  HR: "EUR", // Croatia
   HU: "HUF", // Hungary
   ID: "IDR", // Indonesia
   IE: "EUR", // Ireland
