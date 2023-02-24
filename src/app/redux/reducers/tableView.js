@@ -385,7 +385,7 @@ export default (state = initialState, action, completeState) => {
     case RERENDER_TABLE:
       return {
         ...state,
-        rerenderTable: Math.random()
+        rerenderTable: !state.rerenderTable
       };
     default:
       return state;
