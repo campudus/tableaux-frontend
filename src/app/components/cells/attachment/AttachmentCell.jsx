@@ -7,6 +7,10 @@ import Header from "../../overlay/Header";
 import AttachmentOverlay from "./AttachmentOverlay.jsx";
 import { isLocked } from "../../../helpers/annotationHelper";
 import { maybe } from "../../../helpers/functools";
+import { doto } from "../../../helpers/functools";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import apiUrl from "../../../helpers/apiUrl";
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 
 const AttachmentCell = props => {
   const {
@@ -22,10 +26,21 @@ const AttachmentCell = props => {
     selected: selected
   });
 
-  const openOverlay = (event, folderId) => {
-    if (isLocked(cell.row) || !editing) {
-      return;
+  const handleAttachmentLabelClick = (attachmentElement) => (event) => {
+    if (!isLocked(cell.row) && canUserChangeCell(cell, langtag)) {
+      openOverlay(event, attachmentElement.folder)
+    } else {
+      doto(
+        attachmentElement,
+        f.get("url"),
+        retrieveTranslation(props.langtag),
+        apiUrl,
+        window.open
+      );
     }
+  }
+
+  const openOverlay = (event, folderId) => {
     maybe(event).method("stopPropagation");
 
     actions.openOverlay({
@@ -55,13 +70,29 @@ const AttachmentCell = props => {
         selected={selected}
         cell={cell}
         editing={editing}
+        handleClick={handleAttachmentLabelClick}
       />
     )
   );
 
+  const allAttachmentsHaveSameFolderId = (attachments) => {
+    return f.compose(
+      f.eq(1),
+      f.size,
+      f.uniq,
+      f.map((attachment) => attachment.folder)
+    )(attachments)
+  }
+
   const handleClick = e => {
+
     if (editing && selected) {
-      openOverlay(e);
+      if (allAttachmentsHaveSameFolderId(value)) {
+        openOverlay(e, f.get("folder", f.head(value)));
+      } else {
+        openOverlay(e);
+      }
+
     }
   };
 
@@ -70,11 +101,11 @@ const AttachmentCell = props => {
       {f.size(attachments) === f.size(value)
         ? attachments
         : [
-            ...attachments,
-            <span key={"more"} className="more">
-              &hellip;
-            </span>
-          ]}
+          ...attachments,
+          <span key={"more"} className="more">
+            &hellip;
+          </span>
+        ]}
       {editing && selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
