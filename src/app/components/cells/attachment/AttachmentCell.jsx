@@ -26,9 +26,9 @@ const AttachmentCell = props => {
     selected: selected
   });
 
-  const handleAttachmentLabelClick = (attachmentElement) => (event) => {
+  const handleAttachmentLabelClick = attachmentElement => event => {
     if (!isLocked(cell.row) && canUserChangeCell(cell, langtag)) {
-      openOverlay(event, attachmentElement.folder)
+      openOverlay(event, attachmentElement.folder);
     } else {
       doto(
         attachmentElement,
@@ -38,7 +38,7 @@ const AttachmentCell = props => {
         window.open
       );
     }
-  }
+  };
 
   const openOverlay = (event, folderId) => {
     maybe(event).method("stopPropagation");
@@ -75,24 +75,22 @@ const AttachmentCell = props => {
     )
   );
 
-  const allAttachmentsHaveSameFolderId = (attachments) => {
+  const allAttachmentsHaveSameFolderId = attachments => {
     return f.compose(
       f.eq(1),
       f.size,
       f.uniq,
-      f.map((attachment) => attachment.folder)
-    )(attachments)
-  }
+      f.map(attachment => attachment.folder)
+    )(attachments);
+  };
 
   const handleClick = e => {
-
     if (editing && selected) {
       if (allAttachmentsHaveSameFolderId(value)) {
         openOverlay(e, f.get("folder", f.head(value)));
       } else {
         openOverlay(e);
       }
-
     }
   };
 
@@ -101,11 +99,11 @@ const AttachmentCell = props => {
       {f.size(attachments) === f.size(value)
         ? attachments
         : [
-          ...attachments,
-          <span key={"more"} className="more">
-            &hellip;
-          </span>
-        ]}
+            ...attachments,
+            <span key={"more"} className="more">
+              &hellip;
+            </span>
+          ]}
       {editing && selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
