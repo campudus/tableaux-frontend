@@ -26,17 +26,18 @@ const AttachmentCell = props => {
     selected: selected
   });
 
+  const viewAttachment = (attachment) => f.flow(
+    f.get("url"),
+    retrieveTranslation(props.langtag),
+    apiUrl,
+    window.open
+  )(attachment)
+
   const handleAttachmentLabelClick = attachmentElement => event => {
     if (!isLocked(cell.row) && canUserChangeCell(cell, langtag)) {
       openOverlay(event, attachmentElement.folder);
     } else {
-      doto(
-        attachmentElement,
-        f.get("url"),
-        retrieveTranslation(props.langtag),
-        apiUrl,
-        window.open
-      );
+      viewAttachment(attachmentElement)
     }
   };
 
@@ -99,11 +100,11 @@ const AttachmentCell = props => {
       {f.size(attachments) === f.size(value)
         ? attachments
         : [
-            ...attachments,
-            <span key={"more"} className="more">
-              &hellip;
-            </span>
-          ]}
+          ...attachments,
+          <span key={"more"} className="more">
+            &hellip;
+          </span>
+        ]}
       {editing && selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
