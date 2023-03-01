@@ -7,7 +7,6 @@ import Header from "../../overlay/Header";
 import AttachmentOverlay from "./AttachmentOverlay.jsx";
 import { isLocked } from "../../../helpers/annotationHelper";
 import { maybe } from "../../../helpers/functools";
-import { doto } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import apiUrl from "../../../helpers/apiUrl";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
@@ -26,18 +25,19 @@ const AttachmentCell = props => {
     selected: selected
   });
 
-  const viewAttachment = (attachment) => f.flow(
-    f.get("url"),
-    retrieveTranslation(props.langtag),
-    apiUrl,
-    window.open
-  )(attachment)
+  const viewAttachment = attachment =>
+    f.flow(
+      f.get("url"),
+      retrieveTranslation(props.langtag),
+      apiUrl,
+      window.open
+    )(attachment);
 
   const handleAttachmentLabelClick = attachmentElement => event => {
     if (!isLocked(cell.row) && canUserChangeCell(cell, langtag)) {
       openOverlay(event, attachmentElement.folder);
     } else {
-      viewAttachment(attachmentElement)
+      viewAttachment(attachmentElement);
     }
   };
 
@@ -100,11 +100,11 @@ const AttachmentCell = props => {
       {f.size(attachments) === f.size(value)
         ? attachments
         : [
-          ...attachments,
-          <span key={"more"} className="more">
-            &hellip;
-          </span>
-        ]}
+            ...attachments,
+            <span key={"more"} className="more">
+              &hellip;
+            </span>
+          ]}
       {editing && selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
