@@ -56,6 +56,7 @@ $color-important: #ed475e;
 $color-checkme: #66d6b0;
 $color-postpone: #999999;
 $color-comments: #2f95db;
+$color-disabled-grey: #f0f0f0;
 
 $color-black: black;
 $color-white: white;
@@ -95,7 +96,8 @@ $space-standard-cell-width: 300px;
 $space-height-cell: 45px;
 $space-height-table-header: 40px;
 $space-border-size-table-header: 3px;
-$space-inner-height-table-header: $space-height-table-header -$space-border-size-table-header;
+$space-inner-height-table-header: $space-height-table-header -
+  $space-border-size-table-header;
 $space-height-cell-content: 25px;
 $space-height-link-delete-button: 23px;
 
