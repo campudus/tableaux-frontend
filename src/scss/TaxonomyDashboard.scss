@@ -53,4 +53,38 @@
       @include button-look();
     }
   }
+
+  &__content--empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 24px;
+
+    .fancy-image {
+      width: 33vw;
+      min-width: 700px;
+      height: auto;
+      margin: 32px 0;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 24px 0;
+    }
+
+    .description {
+      font-size: 18px;
+      font-weight: 400;
+      max-width: 33vw;
+      text-align: center;
+      color: $color-text-medium-grey;
+    }
+
+    .support-email-button {
+      @include button-look();
+      margin: 48px 0;
+    }
+  }
 }
