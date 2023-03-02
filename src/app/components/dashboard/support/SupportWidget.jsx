@@ -8,14 +8,16 @@ import PropTypes from "prop-types";
 import { config } from "../../../constants/TableauxConstants";
 import { getUserName } from "../../../helpers/userNameHelper";
 
+export const supportDetails = {
+  title: "GRUD Team",
+  phone: "+49 871 20667909",
+  email: "support@grud.de"
+};
+
 const enhance = compose(
   pure,
   withProps({
-    details: {
-      title: "GRUD Team",
-      phone: "+49 871 20667909",
-      email: "support@grud.de"
-    }
+    details: supportDetails
   }),
   withStateHandlers(() => ({ feedback: "" }), {
     handleChange: ({ feedback }) => event => ({
@@ -29,8 +31,8 @@ const enhance = compose(
           attachments: [
             {
               text: feedback,
-              title: location.href, // contains GRUD instance and user langtag
-              author_name: getUserName() // eslint-disable-line camelcase
+              title: location.href, //   contains GRUD instance and user langtag
+              author_name: getUserName() //   eslint-disable-line camelcase
             }
           ]
         })
