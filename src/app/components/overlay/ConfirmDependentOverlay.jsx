@@ -37,7 +37,7 @@ const canSubmitAction = action =>
   isDeleteAction(action) ||
   (isMergeAction(action) && f.isNumber(action.mergedLinkTargetId));
 
-const getHeadline = (deletion, count) => {
+const getHeadline = count => {
   const translationKey = f.isNil(count)
     ? "table:dependent-rows.fetching-dependent-rows"
     : count === 0
@@ -259,7 +259,7 @@ const DeleteRowOverlay = props => {
 
   const headerConfig = {
     [DeleteAction.initial]: {
-      headlineKey: getHeadline(true, nLinkedTables),
+      headlineKey: getHeadline(nLinkedTables),
       bodyTextKey: `table:dependent-rows.delete-${
         nLinkedTables === 0 ? "no-" : ""
       }dependent-rows`,
@@ -339,7 +339,7 @@ const ViewDependentRowsOverlay = props => {
   return (
     <div className="delete-row-confirmation">
       <section className="overlay-subheader">
-        <p>{getHeadline(false, nLinkedTables)}</p>
+        <p>{getHeadline(nLinkedTables)}</p>
       </section>
       <DependentRowsList
         className="item"
