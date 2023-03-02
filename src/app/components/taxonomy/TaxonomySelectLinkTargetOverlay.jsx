@@ -66,8 +66,12 @@ const SelectLinkTargetOverlayBody = ({
   initialTargetRowId
 }) => {
   const [focusedNode, focusNodeFX] = useState({ id: oldRowId });
+  const isRowToDelete = f.propEq("id", oldRowId);
   const rows = useSelector(f.prop(["rows", tableId, "data"]));
-  const nodes = useMemo(() => t.tableToTreeNodes({ rows }), [rows]);
+  const nodes = useMemo(
+    () => t.tableToTreeNodes({ rows: f.reject(isRowToDelete, rows) }),
+    [rows]
+  );
   const [selectedRowId, setSelectedRowId] = useState(initialTargetRowId);
   const handleSelectNode = node => () => {
     setSelectedRowId(node.id);
@@ -114,7 +118,7 @@ const SelectLinkTargetOverlayBody = ({
           })}
         </div>
         <div className="overlay-subheader__description">
-          {f.isNil(selectedRowId) ? (
+          {f.isNil(selectedNode) ? (
             <span>{i18n.t("table:link-overlay-empty")}</span>
           ) : (
             <LinkedItem
