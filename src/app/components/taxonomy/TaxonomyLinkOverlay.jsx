@@ -38,7 +38,13 @@ const mkNodeActionButton = ({ onClick, icon, idsToDisable }) => ({ node }) => {
   );
 };
 
-const LinkedItem = ({ node, langtag, ActionButton, path, onFocusNode }) => {
+export const LinkedItem = ({
+  node,
+  langtag,
+  ActionButton,
+  path,
+  onFocusNode
+}) => {
   const PathSeparator = (
     <span className="linked-item__path-separator">&gt;</span>
   );
