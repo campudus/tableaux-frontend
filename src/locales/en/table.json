@@ -28,7 +28,7 @@
     "delete-row-success-context": "Record was deleted.",
     "delete-row-success-header": "The record {{oldRowTitle}} was permanently deleted.",
     "delete-row-success-body": "This action cannot be undone.",
-    "merge-rows-success-header": "The record {{oldRowTitle}} was permanenlty deletes. Links targeting it were changed to target {{linkTargetTitle}} instead.",
+    "merge-rows-success-header": "The record {{oldRowTitle}} was permanently deleted. Links targeting it were changed to target {{linkTargetTitle}} instead.",
     "merge-rows-success-body": "This action cannot be undone."
   },
   "select-link-target": {
