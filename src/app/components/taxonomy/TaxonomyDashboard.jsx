@@ -11,6 +11,7 @@ import { switchLanguageHandler } from "../Router";
 import * as t from "./taxonomy";
 import route from "../../helpers/apiRoutes";
 import { Link, withRouter } from "react-router-dom";
+import { supportDetails } from "../dashboard/support/SupportWidget";
 
 const TaxonomyTableCard = ({ table, langtag }) => (
   <div className="card">
@@ -35,6 +36,31 @@ const selectTaxonomyTables = f.compose(
   f.propOr([], "tables.data")
 );
 
+const TaxonomyTiles = ({ tables, langtag }) => (
+  <section className="taxonomy-dashboard__content">
+    {tables.map(table => (
+      <TaxonomyTableCard key={table.name} table={table} langtag={langtag} />
+    ))}
+  </section>
+);
+
+const NoTaxonomiesYet = () => (
+  <section className="taxonomy-dashboard__content--empty">
+    <img className="fancy-image" alt="" src="/img/taxonomies-empty.png" />
+    <div className="title">{i18n.t("dashboard:taxonomy.title")}</div>
+    <div className="description">
+      {i18n.t("dashboard:taxonomy.description")}
+    </div>
+
+    <a
+      className="support-email-button"
+      href={`mailto://${supportDetails.email}`}
+    >
+      {i18n.t("dashboard:taxonomy.cta")}
+    </a>
+  </section>
+);
+
 const TaxonomyDashboard = props => {
   const { history, langtag } = props;
   const tables = useSelector(selectTaxonomyTables);
@@ -54,15 +80,11 @@ const TaxonomyDashboard = props => {
             {i18n.t("table:taxonomy.title")}
           </h1>
         </section>
-        <section className="taxonomy-dashboard__content">
-          {tables.map(table => (
-            <TaxonomyTableCard
-              key={table.name}
-              table={table}
-              langtag={langtag}
-            />
-          ))}
-        </section>
+        {f.isEmpty(tables) ? (
+          <NoTaxonomiesYet />
+        ) : (
+          <TaxonomyTiles tables={tables} langtag={langtag} />
+        )}
       </main>
     </div>
   );
