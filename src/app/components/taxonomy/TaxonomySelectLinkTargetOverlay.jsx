@@ -65,7 +65,10 @@ const SelectLinkTargetOverlayBody = ({
   langtag,
   initialTargetRowId
 }) => {
-  const [focusedNode, focusNodeFX] = useState({ id: oldRowId });
+  const [focusedNode, setFocusedNode] = useState({ id: oldRowId });
+  const focusNodeFX = useCallback(node => {
+    setFocusedNode({ ...node, focused: new Date() });
+  });
   const isRowToDelete = f.propEq("id", oldRowId);
   const rows = useSelector(f.prop(["rows", tableId, "data"]));
   const nodes = useMemo(
