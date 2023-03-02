@@ -25,5 +25,11 @@
     "heading-check-me": "$t(table:check-me)",
     "heading-postpone": "$t(table:postpone)"
   },
-  "footer-text": "GRUD is an innovative product created and developed by Campudus GmbH"
+  "footer-text": "GRUD is an innovative product created and developed by Campudus GmbH",
+  "footer-text": "GRUD ist ein innovatives Produkt der Campudus GmbH",
+  "taxonomy": {
+    "title": "Start with your first category",
+    "description": "Contact our GRUD support team to have us create the category tables you require. When that's done you'll be able to enter and edit categories to your heart's desire.",
+    "cta": "Contact us"
+  }
 }

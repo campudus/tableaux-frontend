@@ -25,5 +25,10 @@
     "heading-check-me": "$t(table:check-me)",
     "heading-postpone": "$t(table:postpone)"
   },
-  "footer-text": "GRUD ist ein innovatives Produkt der Campudus GmbH"
+  "footer-text": "GRUD ist ein innovatives Produkt der Campudus GmbH",
+  "taxonomy": {
+    "title": "Starten Sie mit Ihrer ersten Kategorie",
+    "description": "Nehmen Sie dazu Kontakt mit unserem GRUD-Support auf. Wir machen für Sie den ersten Schritt und legen die Kategorien an. Anschließend können Sie Ihre Kategorien individuell befüllen und  bearbeiten.",
+    "cta": "Kontakt aufnehmen"
+  }
 }
