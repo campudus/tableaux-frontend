@@ -184,7 +184,7 @@ const TreeView = ({
 
   useEffect(() => {
     if (focusNode) setExpandedNodeId(focusNode.id);
-  }, [focusNode && focusNode.id]);
+  }, [focusNode && focusNode.id, focusNode && focusNode.focused]);
 
   return (
     <section className="tree-view">
