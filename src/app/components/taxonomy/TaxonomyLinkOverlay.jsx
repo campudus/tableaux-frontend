@@ -124,8 +124,13 @@ const TaxonomyLinkOverlayBody = ({
     (f.every(f.isNil, [node.parent, expandedNodeId]) ||
       node.parent === expandedNodeId);
 
+  const linkTargetTableId = f.prop("column.toTable", cell);
+  const linkTargetTable = useSelector(
+    f.prop(["tables", "data", linkTargetTableId])
+  );
+
   const headline = i18n.t("table:link-overlay-items-title", {
-    name: getTableDisplayName(cell.table, langtag)
+    name: getTableDisplayName(linkTargetTable, langtag)
   });
 
   const cardinalityConstraint = f.prop(
