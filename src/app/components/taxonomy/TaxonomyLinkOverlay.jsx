@@ -151,8 +151,8 @@ const TaxonomyLinkOverlayBody = ({
   ])(cardinalityConstraint);
 
   const handleFocusFX = useCallback(node => {
-    setFocusFX(node);
-  });
+    setFocusFX({ ...node, focused: new Date() });
+  }, []);
 
   return (
     <>

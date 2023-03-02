@@ -183,7 +183,13 @@ const TaxonomyTable = ({ langtag, tableId }) => {
   const columns = useSelector(f.propOr([], ["columns", tableId, "data"]));
   const nodes = t.tableToTreeNodes({ rows, columns });
   const dispatch = useDispatch();
-  const [nodeToFocus, focusNodeOnce] = useState(undefined);
+  const [nodeToFocus, setNodeToFocus] = useState(undefined);
+  const focusNodeOnce = useCallback(node => {
+    setNodeToFocus({
+      ...node,
+      focused: new Date()
+    });
+  }, []);
   const createNewNode = onCreateNode({
     dispatch,
     table,
