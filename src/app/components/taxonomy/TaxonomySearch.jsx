@@ -129,8 +129,10 @@ const TaxonomySearch = ({
     onSelect(node);
   };
 
+  const disabled = f.isEmpty(nodes);
   const inputClass = buildClassName("taxonomy-search__input", {
-    placeholder: f.isEmpty(searchTerm)
+    placeholder: f.isEmpty(searchTerm),
+    disabled
   });
 
   return (
@@ -144,6 +146,7 @@ const TaxonomySearch = ({
           placeholder={i18n.t("table:taxonomy.search-input-placeholder")}
           onChange={handleInput}
           onKeyDown={handleKeyPress}
+          disabled={disabled}
         />
         <i className="taxonomy-search__icon fa fa-search" />
       </div>
