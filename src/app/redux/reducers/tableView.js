@@ -17,7 +17,8 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 
 const {
   TOGGLE_EXPANDED_ROW,
-  COPY_CELL_VALUE_TO_CLIPBOARD
+  COPY_CELL_VALUE_TO_CLIPBOARD,
+  RERENDER_TABLE
 } = ActionTypes.tableView;
 const {
   SET_STATE,
@@ -58,7 +59,8 @@ const initialState = {
   history: {
     undoQueue: [],
     redoQueue: []
-  }
+  },
+  rerenderTable: ""
 };
 
 const mergeDisplayValues = (oldDisplayValues, newDisplayValues) =>
@@ -293,7 +295,6 @@ const modifyHistory = action => state => {
 };
 
 export default (state = initialState, action, completeState) => {
-  // console.log(action)
   switch (action.type) {
     case SET_STATE:
       return action.state.tableView;
@@ -380,6 +381,11 @@ export default (state = initialState, action, completeState) => {
         history: [],
         expandedRowIds: [],
         visibleColumns: []
+      };
+    case RERENDER_TABLE:
+      return {
+        ...state,
+        rerenderTable: !state.rerenderTable
       };
     default:
       return state;

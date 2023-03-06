@@ -201,7 +201,13 @@ class ColumnFilterPopup extends React.Component {
 
     const focusColumn = event => {
       stopPropagation(event);
-      store.dispatch(actions.toggleCellSelection({ columnId: col.id }));
+      store.dispatch(
+        actions.toggleCellSelection({
+          columnId: col.id,
+          tableId: this.props.tableId
+        })
+      );
+      store.dispatch(actions.rerenderTable());
     };
 
     return (

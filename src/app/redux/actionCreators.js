@@ -74,7 +74,8 @@ const {
   TOGGLE_CELL_SELECTION,
   TOGGLE_CELL_EDITING,
   TOGGLE_EXPANDED_ROW,
-  COPY_CELL_VALUE_TO_CLIPBOARD
+  COPY_CELL_VALUE_TO_CLIPBOARD,
+  RERENDER_TABLE
 } = actionTypes.tableView;
 
 const {
@@ -662,6 +663,10 @@ const changeTableName = (tableId, displayName) => ({
   tableId
 });
 
+const rerenderTable = () => ({
+  type: RERENDER_TABLE
+});
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -722,7 +727,8 @@ const actionCreators = {
   changeTableName,
   queryFrontendServices,
   setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
-  setColumnOrdering
+  setColumnOrdering,
+  rerenderTable
 };
 
 export default actionCreators;

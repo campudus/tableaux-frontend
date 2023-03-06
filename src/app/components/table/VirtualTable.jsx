@@ -45,8 +45,7 @@ export default class VirtualTable extends PureComponent {
     this.didInitialCellScroll = false;
     this.state = {
       openAnnotations: {},
-      scrolledCell: props.selectedCell,
-      lastScrolledCell: {},
+      scrolledCell: {},
       newRowAdded: false,
       showResizeBar: false,
       columnWidths: {}
@@ -432,6 +431,9 @@ export default class VirtualTable extends PureComponent {
     if (changeInRowSelection) {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
+    if (this.props.rerenderTable !== next.rerenderTable) {
+      this.scrollToCell();
+    }
   }
 
   isSelectedCellValid = selectedCell => {
@@ -442,16 +444,6 @@ export default class VirtualTable extends PureComponent {
     const {
       selectedCell: { selectedCell }
     } = store.getState();
-    const { lastScrolledCell } = this.state;
-
-    if (!this.isSelectedCellValid(selectedCell)) {
-      // when called by cell deselection
-      this.setState({
-        scrolledCell: {},
-        lastScrolledCell
-      });
-      return false;
-    }
 
     const { rows, columns, visibleColumnOrdering } = this.props;
     const rowIndex = f.add(
