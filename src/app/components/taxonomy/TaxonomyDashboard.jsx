@@ -52,7 +52,11 @@ const NoTaxonomiesYet = () => (
       {i18n.t("dashboard:taxonomy.description")}
     </div>
 
-    <a className="support-email-button" href={`mailto:${supportDetails.email}`}>
+    <a
+      className="support-email-button"
+      href={`mailto:
+${supportDetails.email}`}
+    >
       {i18n.t("dashboard:taxonomy.cta")}
     </a>
   </section>
