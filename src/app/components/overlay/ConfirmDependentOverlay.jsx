@@ -329,25 +329,15 @@ const DeleteRowOverlay = props => {
 };
 
 const ViewDependentRowsOverlay = props => {
-  const [nLinkedTables, setNLinkedTables] = useState();
   const { table, row, langtag, cell } = props;
-  const handleHasDependencies = setNLinkedTables;
-  const handleHasNoDependencies = () => {
-    setNLinkedTables(0);
-  };
 
   return (
     <div className="delete-row-confirmation">
-      <section className="overlay-subheader">
-        <p>{getHeadline(nLinkedTables)}</p>
-      </section>
       <DependentRowsList
         className="item"
         table={table}
         row={row}
         langtag={langtag}
-        hasDependency={handleHasDependencies}
-        hasNoDependency={handleHasNoDependencies}
         cell={cell}
       />
     </div>
