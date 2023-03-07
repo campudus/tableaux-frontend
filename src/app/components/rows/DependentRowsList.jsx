@@ -25,8 +25,8 @@ const DependentRowsList = props => {
     }).then(f.prop("dependentRows"));
     ifElse(
       f.lt(0),
-      props.hasDependency,
-      props.hasNoDependency,
+      props.hasDependency || f.noop,
+      props.hasNoDependency || f.noop,
       f.size(response)
     );
     setDependencies(response);
