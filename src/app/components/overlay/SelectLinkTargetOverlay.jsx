@@ -114,10 +114,21 @@ const keyValuesById = (accum, next) => {
   return accum;
 };
 
+const removeStaleRows = (tableId, grudData) => rows => {
+  // While deleted rows get cleared from redux states, display value cache is
+  // read-only (important for performance on big datasets).
+  // As we build the selectable rows from display values for reasons of
+  // performance and simplicity, we need to consider that fact.
+  const ids = new Set();
+  f.prop(["rows", tableId, "data"], grudData).forEach(row => ids.add(row.id));
+  return rows.filter(row => ids.has(row.id));
+};
+
 const extractDisplayValues = (langtag, tableId, grudData) =>
   f.compose(
     f.reduce(keyValuesById, {}),
     f.map(f.update("values", getFlatDisplayValue(langtag))),
+    removeStaleRows(tableId, grudData),
     f.propOr([], ["displayValues", tableId])
   )(grudData);
 
