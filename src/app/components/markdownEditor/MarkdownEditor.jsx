@@ -90,6 +90,7 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   return (
     <div className={cssClass} onClick={focusInput}>
       <UserEditor
+        cell={cell}
         ref={editorRef}
         initialMarkdown={theMarkdown.current}
         onChange={handleChange}
