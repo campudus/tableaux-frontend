@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { compose, withProps } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { stopPropagation } from "../../../helpers/functools";
@@ -9,6 +9,8 @@ import needsAPIData from "../../helperComponents/needsAPIData";
 import SelectableCompletionList, {
   ROW_HEIGHT
 } from "./SelectableCompletionList";
+import i18n from "i18next";
+import { columnHasMaxLength, columnHasMinLength, getTextLength, isTextTooLong, isTextTooShort } from "../../../helpers/limitTextLength";
 
 const LIST_HEIGHT = 200;
 
@@ -31,6 +33,21 @@ const enhance = compose(
   needsAPIData
 );
 
+
+function useOutsideAlerter(callback, ref) {
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback()
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
+}
+
 const SelectableShortText = props => {
   const {
     focusTable,
@@ -38,15 +55,24 @@ const SelectableShortText = props => {
     onFinish,
     requestedData,
     setCellKeyboardShortcuts,
-    value
+    value,
+    column,
+    actions: {
+      setPreventCellSelection
+    }
   } = props;
-
+  const shorttextRef = useRef(null)
   const [completions, setCompletions] = useState([]);
   const [isCompletionSelected, setIsCompletionSelected] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [shouldInvertList, setShouldInvertList] = useState(false);
+  const [shouldShowErrorState, setShouldShowErrorState] = useState(false);
+  const errorCssClass = shouldShowErrorState && isTextTooShort(column, value) ? "selectable-shorttext_error" : ""
 
   useEffect(() => setCellKeyboardShortcuts({}));
+  useOutsideAlerter(() => {
+    setShouldShowErrorState(true)
+  }, shorttextRef)
 
   const handleTextChange = event => {
     const inputValue = event.currentTarget.value;
@@ -54,10 +80,17 @@ const SelectableShortText = props => {
       inputValue,
       requestedData
     );
+    if (inputValue.length > column.maxLength) return;
+    if (isTextTooShort(column, inputValue)) {
+      setPreventCellSelection({ value: true })
+    } else {
+      setPreventCellSelection({ value: false })
+    }
     onChange(inputValue);
     setCompletions(completionsForValue);
     setSelectedIdx(f.clamp(0, f.size(completions) - 1, selectedIdx)); // clamp selection inside new list
     setIsCompletionSelected(false);
+    setShouldShowErrorState(false);
   };
 
   const handleSetSelectedIdx = idx => {
@@ -73,6 +106,17 @@ const SelectableShortText = props => {
   };
   const applySelectedCompletion = () => {
     const completionValue = f.get(selectedIdx, completions);
+    if (isTextTooShort(column, completionValue)) {
+      onChange(completionValue)
+      setPreventCellSelection({ value: true })
+      return
+    }
+    if (isTextTooLong(column, completionValue)) {
+      onChange(f.take(column.maxLength, completionValue))
+      setPreventCellSelection({ value: false })
+      return
+    }
+    setPreventCellSelection({ value: false })
     onFinish(true, completionValue);
   };
   const handleMouseSelection = idx => {
@@ -100,6 +144,10 @@ const SelectableShortText = props => {
         if (isCompletionSelected) {
           applySelectedCompletion(); // implicit finish
         } else {
+          if (isTextTooShort(column, value)) {
+            setShouldShowErrorState(true)
+            return
+          }
           onFinish();
         }
         return focusTable();
@@ -120,21 +168,34 @@ const SelectableShortText = props => {
       setCompletions(extractAndFilterCompletions("", requestedData));
   }, [requestedData]);
 
+  useEffect(() => {
+    placeCompletionList(shorttextRef.current)
+  }, [shorttextRef])
+
   const listStyle = shouldInvertList ? { bottom: 35 } : { top: 35 };
+
+  const { minLength, maxLength } = column
+  const minLengthText = columnHasMinLength(column) ? i18n.t("table:text-length:min-length-short", { minLength }) : ""
+  const maxLengthText = columnHasMaxLength(column) ? `${getTextLength(value)}/${maxLength}` : ""
 
   return (
     <div
       className="cell-content editing"
       onKeyDown={handleKeyPress}
-      ref={placeCompletionList}
+      ref={shorttextRef}
     >
       <input
+        className={errorCssClass}
         value={value}
         onChange={handleTextChange}
         onMouseDown={stopPropagation}
         onClick={stopPropagation}
         autoFocus
       />
+      <div className="selectable-shorttext_text-limits">
+        <div className={errorCssClass}>{minLengthText}</div>
+        <div className="selectable-shorttext_max-length">{maxLengthText}</div>
+      </div>
       {!f.isNil(requestedData) && f.isEmpty(completions) ? null : (
         <div
           className="completion-list"
