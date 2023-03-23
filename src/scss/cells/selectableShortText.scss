@@ -29,3 +29,16 @@
     }
   }
 }
+.selectable-shorttext_text-limits {
+  line-height:3px;
+  font-size: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.selectable-shorttext_error {
+  color: red;
+}
+
+.selectable-shorttext_max-length {
+  margin-right: 15px;
+}

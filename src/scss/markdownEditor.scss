@@ -9,10 +9,31 @@ $block-margin-narrow: 5px;
   }
 }
 
+.catchOutsideClick {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+}
+
 .overlay .text-editor-overlay .overlay-content {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+.markdown-editor_error {
+  color: red;
+  .CodeMirror-code {
+    color: red;
+  }
+}
+
+.CodeMirror-scroll {
+overflow: auto; min-height: 50px;
+height: auto; overflow-y: scroll;
+max-height: 100%; background-color: white;
+margin-right: auto;
 }
 
 .text-editor-overlay .markdown-editor {
@@ -227,6 +248,25 @@ $block-margin-narrow: 5px;
 
 }
 
+.cm-wrapper {
+  flex: 1;
+
+  .length-limits {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    color: $color-text-medium-grey;
+  }
+
+  .min-length {
+    flex: 1;
+  }
+  .max-length {
+    flex: 1;
+    text-align:right;
+  }
+}
+
 .plain-markdown-editor {
   display: flex;
   flex: 1;
@@ -278,10 +318,6 @@ $block-margin-narrow: 5px;
   background-color: transparent;
   height: 100%;
   box-sizing: border-box;
-}
-
-.CodeMirrow-scroll {
-
 }
 
 .toggle-editor-buttons {
