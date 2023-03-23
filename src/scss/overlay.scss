@@ -302,6 +302,26 @@ $dist-from-top: 20px;
         box-sizing: border-box;
         border-color: transparent;
 
+  .length-limits {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    color: $color-text-medium-grey;
+  }
+
+  .min-length {
+    flex: 1;
+  }
+  .max-length {
+    flex: 1;
+    text-align:right;
+  }
+
+        .textarea_wrapper {
+          position: relative;
+          max-height: 95%;
+        }
+
         &:hover {
           border-color: $color-primary;
         }
