@@ -179,5 +179,9 @@
     "search-input-placeholder": "Search for categories or records",
     "search-no-results": "No results found",
     "title": "Categories"
+  },
+"text-length": {
+    "min-length-full": "minimum {{minLength}} characters",
+    "min-length-short": "(min. {{minLength}} characters)"
   }
 }
