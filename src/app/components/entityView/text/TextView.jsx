@@ -23,7 +23,7 @@ class TextView extends React.PureComponent {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       event.preventDefault();
-      (fn || function() {})(event);
+      (fn || function() { })(event);
     };
 
     return {
@@ -63,7 +63,7 @@ class TextView extends React.PureComponent {
       ? `${getTextLength(editValue)}/${maxLength}`
       : "";
     const textTooShort = isTextTooShort(column, editValue);
-    const errorCssClass = textTooShort ? "markdown-editor_error" : "";
+    const textTooShortErrorCssClass = textTooShort ? "markdown-editor_error" : "";
 
     const onChange = evt => {
       const value = evt.target.value;
@@ -72,6 +72,13 @@ class TextView extends React.PureComponent {
       }
       handleChange(evt);
     };
+
+    const onBlur = () => {
+      if (isTextTooShort(column, editValue)) {
+        return;
+      }
+      saveEdits()
+    }
 
     return (
       <div className="item-content shorttext" tabIndex={1}>
@@ -83,11 +90,11 @@ class TextView extends React.PureComponent {
           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
             this.getKeyboardShortcuts
           )}
-          onBlur={saveEdits}
+          onBlur={onBlur}
           ref={this.setRef}
         />
         <div className="length-limits">
-          <div className={`min-length ${errorCssClass}`}>{minLengthText} </div>
+          <div className={`min-length ${textTooShortErrorCssClass}`}>{minLengthText} </div>
           <div className="max-length">{maxLengthText} </div>
         </div>
         {this.props.children}

@@ -70,7 +70,7 @@ const SelectableShortText = props => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [shouldInvertList, setShouldInvertList] = useState(false);
   const [shouldShowErrorState, setShouldShowErrorState] = useState(false);
-  const errorCssClass =
+  const textTooShortErrorCssClass =
     shouldShowErrorState && isTextTooShort(column, value)
       ? "selectable-shorttext_error"
       : "";
@@ -195,7 +195,7 @@ const SelectableShortText = props => {
       ref={shorttextRef}
     >
       <input
-        className={errorCssClass}
+        className={textTooShortErrorCssClass}
         value={value}
         onChange={handleTextChange}
         onMouseDown={stopPropagation}
@@ -203,7 +203,7 @@ const SelectableShortText = props => {
         autoFocus
       />
       <div className="selectable-shorttext_text-limits">
-        <div className={errorCssClass}>{minLengthText}</div>
+        <div className={textTooShortErrorCssClass}>{minLengthText}</div>
         <div className="selectable-shorttext_max-length">{maxLengthText}</div>
       </div>
       {!f.isNil(requestedData) && f.isEmpty(completions) ? null : (

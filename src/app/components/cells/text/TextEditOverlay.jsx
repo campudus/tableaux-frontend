@@ -27,7 +27,7 @@ const TextEditOverlay = props => {
     : "";
   const textTooShort = isTextTooShort(column, editedValue);
   const shouldCatchOutsideClick = textTooShort;
-  const errorCssClass =
+  const textTooShortErrorCssClass =
     clickedOutside && textTooShort ? "markdown-editor_error" : "";
   const onOutsideClick = evt => {
     setClickedOutside(true);
@@ -56,7 +56,7 @@ const TextEditOverlay = props => {
         )}
         <div className="item-content shorttext textarea_wrapper" tabIndex={1}>
           <textarea
-            className={errorCssClass}
+            className={textTooShortErrorCssClass}
             disabled={!!readOnly}
             value={editedValue}
             placeholder={i18n.t("table:empty.text")}
@@ -65,7 +65,7 @@ const TextEditOverlay = props => {
           />
         </div>
         <div className="length-limits">
-          <div className={`min-length ${errorCssClass}`}>{minLengthText} </div>
+          <div className={`min-length ${textTooShortErrorCssClass}`}>{minLengthText} </div>
           <div className="max-length">{maxLengthText} </div>
         </div>
       </div>
