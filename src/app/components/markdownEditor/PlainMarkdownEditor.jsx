@@ -6,7 +6,12 @@ import React from "react";
 import CodeMirror from "react-codemirror";
 import ReactMarkdown from "react-markdown";
 import { StyleIcon } from "./StyleControls";
-import { columnHasMinLength, columnHasMaxLength, isTextTooShort, getTextLength } from "../../helpers/limitTextLength";
+import {
+  columnHasMinLength,
+  columnHasMaxLength,
+  isTextTooShort,
+  getTextLength
+} from "../../helpers/limitTextLength";
 import i18n from "i18next";
 
 const PreviewModes = {
@@ -16,7 +21,14 @@ const PreviewModes = {
 };
 
 const PlainMarkdownEditor = (
-  { controlButtons, initialMarkdown, className, onChange, readOnly, cell: { column } },
+  {
+    controlButtons,
+    initialMarkdown,
+    className,
+    onChange,
+    readOnly,
+    cell: { column }
+  },
   ref
 ) => {
   const [markdown, setMarkdown] = React.useState(initialMarkdown || "");
@@ -24,8 +36,12 @@ const PlainMarkdownEditor = (
   const editorRef = React.useRef();
 
   const { minLength, maxLength } = column;
-  const minLengthText = columnHasMinLength(column) ? i18n.t("table:text-length:min-length-full", { minLength }) : ""
-  const maxLengthText = columnHasMaxLength(column) ? `${getTextLength(markdown)}/${maxLength}` : ""
+  const minLengthText = columnHasMinLength(column)
+    ? i18n.t("table:text-length:min-length-full", { minLength })
+    : "";
+  const maxLengthText = columnHasMaxLength(column)
+    ? `${getTextLength(markdown)}/${maxLength}`
+    : "";
   // FIXME: Other preview modes' display components problematic with current
   // CodeMirror versions
   const markdownPreview = PreviewModes.HORIZONTAL;
@@ -44,35 +60,38 @@ const PlainMarkdownEditor = (
     lineNumbers: false,
     mode: "markdown",
     lineWrapping: true,
-    readOnly: false,
+    readOnly
   };
 
   React.useImperativeHandle(ref, () => ({
     focus: () => editorRef.current && editorRef.current.focus()
   }));
 
-  const handleChange = (newValue) => {
-    setClickedOutside(false)
-    if (columnHasMaxLength(column) && (getTextLength(newValue) > column.maxLength)) {
+  const handleChange = newValue => {
+    setClickedOutside(false);
+    if (
+      columnHasMaxLength(column) &&
+      getTextLength(newValue) > column.maxLength
+    ) {
       //We have to manually set the value of the internal codemirror instance
       //as this is not a true controlled component. Not doing this WILL lead
       //to different states.
-      const codeMirrorDoc = editorRef.current.getCodeMirror().getDoc()
-      const currentCursor = codeMirrorDoc.getCursor()
-      const newCursor = { ...currentCursor, ch: currentCursor.ch - 1 }
-      codeMirrorDoc.setValue(markdown)
+      const codeMirrorDoc = editorRef.current.getCodeMirror().getDoc();
+      const currentCursor = codeMirrorDoc.getCursor();
+      const newCursor = { ...currentCursor, ch: currentCursor.ch - 1 };
+      codeMirrorDoc.setValue(markdown);
       //set cursor to previous location
-      codeMirrorDoc.setCursor(newCursor)
+      codeMirrorDoc.setCursor(newCursor);
 
-      return
+      return;
     }
     setMarkdown(newValue);
     if (isTextTooShort(newValue)) {
       onChange(initialMarkdown);
     } else {
-      onChange(newValue)
+      onChange(newValue);
     }
-  }
+  };
 
   const previewSelectorControls = [
     // FIXME: see above
@@ -102,11 +121,12 @@ const PlainMarkdownEditor = (
   const onOutsideClick = evt => {
     evt.stopPropagation();
     setClickedOutside(true);
-  }
+  };
 
-  const textTooShort = isTextTooShort(column, markdown)
-  const shouldCatchOutsideClick = textTooShort
-  const errorCssClass = (clickedOutside && textTooShort) ? "markdown-editor_error" : ""
+  const textTooShort = isTextTooShort(column, markdown);
+  const shouldCatchOutsideClick = textTooShort;
+  const errorCssClass =
+    clickedOutside && textTooShort ? "markdown-editor_error" : "";
 
   return (
     <>
@@ -118,7 +138,9 @@ const PlainMarkdownEditor = (
         {controlButtons}
       </header>
       <div className={cssClass}>
-        {shouldCatchOutsideClick && (<div className="catchOutsideClick" onClick={onOutsideClick} />)}
+        {shouldCatchOutsideClick && (
+          <div className="catchOutsideClick" onClick={onOutsideClick} />
+        )}
         <div className={`cm-wrapper ${errorCssClass}`}>
           <CodeMirror
             ref={editorRef}
@@ -127,8 +149,10 @@ const PlainMarkdownEditor = (
             options={editorOptions}
             autoFocus={true}
           />
-          <div className="length-limits" >
-            <div className={`min-length ${errorCssClass}`}>{minLengthText} </div>
+          <div className="length-limits">
+            <div className={`min-length ${errorCssClass}`}>
+              {minLengthText}{" "}
+            </div>
             <div className="max-length">{maxLengthText} </div>
           </div>
         </div>

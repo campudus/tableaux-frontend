@@ -10,7 +10,13 @@ import SelectableCompletionList, {
   ROW_HEIGHT
 } from "./SelectableCompletionList";
 import i18n from "i18next";
-import { columnHasMaxLength, columnHasMinLength, getTextLength, isTextTooLong, isTextTooShort } from "../../../helpers/limitTextLength";
+import {
+  columnHasMaxLength,
+  columnHasMinLength,
+  getTextLength,
+  isTextTooLong,
+  isTextTooShort
+} from "../../../helpers/limitTextLength";
 
 const LIST_HEIGHT = 200;
 
@@ -33,12 +39,11 @@ const enhance = compose(
   needsAPIData
 );
 
-
 function useOutsideAlerter(callback, ref) {
   useEffect(() => {
     function handleClickOutside(event) {
       if (ref.current && !ref.current.contains(event.target)) {
-        callback()
+        callback();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -57,22 +62,23 @@ const SelectableShortText = props => {
     setCellKeyboardShortcuts,
     value,
     column,
-    actions: {
-      setPreventCellSelection
-    }
+    actions: { setPreventCellSelection }
   } = props;
-  const shorttextRef = useRef(null)
+  const shorttextRef = useRef(null);
   const [completions, setCompletions] = useState([]);
   const [isCompletionSelected, setIsCompletionSelected] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [shouldInvertList, setShouldInvertList] = useState(false);
   const [shouldShowErrorState, setShouldShowErrorState] = useState(false);
-  const errorCssClass = shouldShowErrorState && isTextTooShort(column, value) ? "selectable-shorttext_error" : ""
+  const errorCssClass =
+    shouldShowErrorState && isTextTooShort(column, value)
+      ? "selectable-shorttext_error"
+      : "";
 
   useEffect(() => setCellKeyboardShortcuts({}));
   useOutsideAlerter(() => {
-    setShouldShowErrorState(true)
-  }, shorttextRef)
+    setShouldShowErrorState(true);
+  }, shorttextRef);
 
   const handleTextChange = event => {
     const inputValue = event.currentTarget.value;
@@ -82,9 +88,9 @@ const SelectableShortText = props => {
     );
     if (inputValue.length > column.maxLength) return;
     if (isTextTooShort(column, inputValue)) {
-      setPreventCellSelection({ value: true })
+      setPreventCellSelection({ value: true });
     } else {
-      setPreventCellSelection({ value: false })
+      setPreventCellSelection({ value: false });
     }
     onChange(inputValue);
     setCompletions(completionsForValue);
@@ -107,16 +113,16 @@ const SelectableShortText = props => {
   const applySelectedCompletion = () => {
     const completionValue = f.get(selectedIdx, completions);
     if (isTextTooShort(column, completionValue)) {
-      onChange(completionValue)
-      setPreventCellSelection({ value: true })
-      return
+      onChange(completionValue);
+      setPreventCellSelection({ value: true });
+      return;
     }
     if (isTextTooLong(column, completionValue)) {
-      onChange(f.take(column.maxLength, completionValue))
-      setPreventCellSelection({ value: false })
-      return
+      onChange(f.take(column.maxLength, completionValue));
+      setPreventCellSelection({ value: false });
+      return;
     }
-    setPreventCellSelection({ value: false })
+    setPreventCellSelection({ value: false });
     onFinish(true, completionValue);
   };
   const handleMouseSelection = idx => {
@@ -145,8 +151,8 @@ const SelectableShortText = props => {
           applySelectedCompletion(); // implicit finish
         } else {
           if (isTextTooShort(column, value)) {
-            setShouldShowErrorState(true)
-            return
+            setShouldShowErrorState(true);
+            return;
           }
           onFinish();
         }
@@ -169,14 +175,18 @@ const SelectableShortText = props => {
   }, [requestedData]);
 
   useEffect(() => {
-    placeCompletionList(shorttextRef.current)
-  }, [shorttextRef])
+    placeCompletionList(shorttextRef.current);
+  }, [shorttextRef]);
 
   const listStyle = shouldInvertList ? { bottom: 35 } : { top: 35 };
 
-  const { minLength, maxLength } = column
-  const minLengthText = columnHasMinLength(column) ? i18n.t("table:text-length:min-length-short", { minLength }) : ""
-  const maxLengthText = columnHasMaxLength(column) ? `${getTextLength(value)}/${maxLength}` : ""
+  const { minLength, maxLength } = column;
+  const minLengthText = columnHasMinLength(column)
+    ? i18n.t("table:text-length:min-length-short", { minLength })
+    : "";
+  const maxLengthText = columnHasMaxLength(column)
+    ? `${getTextLength(value)}/${maxLength}`
+    : "";
 
   return (
     <div
