@@ -2,7 +2,7 @@ import f from "lodash/fp";
 
 export function columnHasMinLength(column) {
   const { minLength } = column;
-  return f.isNumber(minLength);
+  return f.isNumber(minLength) && minLength > 0;
 }
 export function columnHasMaxLength(column) {
   const { maxLength } = column;
@@ -18,12 +18,11 @@ export function isTextTooShort(column, text) {
 }
 
 export function getTextWithoutWhiteSpace(text) {
-  const textWithoutWhiteSpace = text.replace(/\s+/g, "");
-  return textWithoutWhiteSpace;
+  return text.replace(/\s+/g, "");
 }
 
 export function getTextLengthWithoutWhiteSpace(text) {
-  return getTextWithoutWhiteSpace(text).length;
+  return getTextLength(getTextWithoutWhiteSpace(text));
 }
 
 export function getTextLength(text) {
@@ -35,8 +34,4 @@ export function isTextTooLong(column, text) {
     return false;
   }
   return getTextLength(text) > column.maxLength;
-}
-
-export function isTextInRange(minLength, maxLength, text) {
-  return isTextTooShort(minLength, text) && isTextTooLong(maxLength, text);
 }
