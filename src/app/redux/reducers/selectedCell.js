@@ -5,7 +5,7 @@ import ActionTypes from "../actionTypes";
 const {
   TOGGLE_CELL_SELECTION,
   TOGGLE_CELL_EDITING,
-  SET_PREVENT_CELL_SELECTION
+  SET_PREVENT_CELL_DESELECTION
 } = ActionTypes.tableView;
 
 const initialState = { selectedCell: {}, preventCellSelection: false };
@@ -16,14 +16,14 @@ export default (state = initialState, action, completeState) => {
       return toggleSelectedCell(state, action);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action, completeState);
-    case SET_PREVENT_CELL_SELECTION:
-      return setPreventCellSelection(state, action);
+    case SET_PREVENT_CELL_DESELECTION:
+      return setPreventCellDeselection(state, action);
     default:
       return state;
   }
 };
 
-const setPreventCellSelection = (state, action) => {
+const setPreventCellDeselection = (state, action) => {
   const { value } = action;
   return { ...state, preventCellSelection: value };
 };
@@ -51,10 +51,10 @@ const toggleCellEditing = (state, action, completeState) => {
     return shouldStayClosed
       ? state
       : f.update(
-          "editing",
-          wasEditing => action.editing !== false && !wasEditing,
-          state
-        );
+        "editing",
+        wasEditing => action.editing !== false && !wasEditing,
+        state
+      );
   }
 };
 
@@ -68,7 +68,7 @@ const toggleSelectedCell = (state, action) => {
         (prevSelection.rowId !== action.rowId ||
           prevSelection.columnId !== action.columnId ||
           prevSelection.langtag !== action.langtag)) ||
-      prevSelection.align !== action.align
+        prevSelection.align !== action.align
         ? f.pick(["rowId", "columnId", "langtag", "align"], action)
         : {}
     )
