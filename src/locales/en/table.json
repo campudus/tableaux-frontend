@@ -180,8 +180,8 @@
     "search-no-results": "No results found",
     "title": "Categories"
   },
-"text-length": {
+  "text-length": {
     "min-length-full": "minimum {{minLength}} characters",
-    "min-length-short": "(min. {{minLength}} characters)"
+    "min-length-short": "min. {{minLength}} characters"
   }
 }
