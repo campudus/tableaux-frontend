@@ -3,6 +3,13 @@ import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import i18n from "i18next";
 import PropTypes from "prop-types";
 import { withStateHandlers } from "recompose";
+import {
+  columnHasMinLength,
+  columnHasMaxLength,
+  isTextTooShort,
+  getTextLength,
+  isTextTooLong
+} from "../../../helpers/limitTextLength";
 
 class TextView extends React.PureComponent {
   static propTypes = {
@@ -16,7 +23,7 @@ class TextView extends React.PureComponent {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       event.preventDefault();
-      (fn || function() {})(event);
+      (fn || function() { })(event);
     };
 
     return {
@@ -40,7 +47,26 @@ class TextView extends React.PureComponent {
   };
 
   render() {
-    const { thisUserCantEdit, editValue, handleChange, saveEdits } = this.props;
+    const { thisUserCantEdit, editValue, handleChange, saveEdits, cell: { column }, clickedOutside, setClickedOutside } = this.props;
+
+    const { minLength, maxLength } = column;
+    const minLengthText = columnHasMinLength(column)
+      ? i18n.t("table:text-length:min-length-full", { minLength })
+      : "";
+    const maxLengthText = columnHasMaxLength(column)
+      ? `${getTextLength(editValue)}/${maxLength}`
+      : "";
+    const textTooShort = isTextTooShort(column, editValue);
+    const errorCssClass =
+      textTooShort ? "markdown-editor_error" : "";
+
+    const onChange = evt => {
+      const value = evt.target.value
+      if (isTextTooLong(column, value)) {
+        return
+      }
+      handleChange(evt)
+    }
 
     return (
       <div className="item-content shorttext" tabIndex={1}>
@@ -48,13 +74,19 @@ class TextView extends React.PureComponent {
           value={editValue}
           placeholder={i18n.t("table:empty.text")}
           disabled={thisUserCantEdit}
-          onChange={handleChange}
+          onChange={onChange}
           onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
             this.getKeyboardShortcuts
           )}
           onBlur={saveEdits}
           ref={this.setRef}
         />
+        <div className="length-limits">
+          <div className={`min-length ${errorCssClass}`}>
+            {minLengthText}{" "}
+          </div>
+          <div className="max-length">{maxLengthText} </div>
+        </div>
         {this.props.children}
       </div>
     );
