@@ -2,7 +2,11 @@ import f from "lodash/fp";
 import { isLocked, unlockRow } from "../../helpers/annotationHelper";
 import askForSessionUnlock from "../../components/helperComponents/SessionUnlockDialog";
 import ActionTypes from "../actionTypes";
-const { TOGGLE_CELL_SELECTION, TOGGLE_CELL_EDITING, SET_PREVENT_CELL_SELECTION } = ActionTypes.tableView;
+const {
+  TOGGLE_CELL_SELECTION,
+  TOGGLE_CELL_EDITING,
+  SET_PREVENT_CELL_SELECTION
+} = ActionTypes.tableView;
 
 const initialState = { selectedCell: {}, preventCellSelection: false };
 
@@ -20,9 +24,9 @@ export default (state = initialState, action, completeState) => {
 };
 
 const setPreventCellSelection = (state, action) => {
-  const { value } = action
-  return { ...state, preventCellSelection: value }
-}
+  const { value } = action;
+  return { ...state, preventCellSelection: value };
+};
 
 const toggleCellEditing = (state, action, completeState) => {
   const { selectedCell: { rowId, columnId } = {} } = state;
@@ -47,10 +51,10 @@ const toggleCellEditing = (state, action, completeState) => {
     return shouldStayClosed
       ? state
       : f.update(
-        "editing",
-        wasEditing => action.editing !== false && !wasEditing,
-        state
-      );
+          "editing",
+          wasEditing => action.editing !== false && !wasEditing,
+          state
+        );
   }
 };
 
@@ -64,7 +68,7 @@ const toggleSelectedCell = (state, action) => {
         (prevSelection.rowId !== action.rowId ||
           prevSelection.columnId !== action.columnId ||
           prevSelection.langtag !== action.langtag)) ||
-        prevSelection.align !== action.align
+      prevSelection.align !== action.align
         ? f.pick(["rowId", "columnId", "langtag", "align"], action)
         : {}
     )

@@ -127,6 +127,7 @@ class GenericOverlay extends Component {
   };
 
   render() {
+    console.log("##############################");
     const overlayType = f.contains(this.props.type, this.allowedTypes)
       ? this.props.type
       : "normal";
