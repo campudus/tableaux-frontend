@@ -49,7 +49,6 @@ export default class Tableaux extends React.Component {
 
   render() {
     const { initialParams, actions, initialViewName } = this.props;
-    console.log(initialParams);
 
     return (
       <I18nextProvider i18n={i18n}>

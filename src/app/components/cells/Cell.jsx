@@ -144,9 +144,6 @@ class Cell extends React.Component {
     if (!withRightClick) {
       this.props.closeCellContextMenu();
     }
-    if (editing) {
-      console.log("click");
-    }
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected) {
@@ -264,8 +261,8 @@ class Cell extends React.Component {
         onKeyDown={
           selected
             ? KeyboardShortcutsHelper.onKeyboardShortcut(
-                this.getKeyboardShortcuts
-              )
+              this.getKeyboardShortcuts
+            )
             : f.noop
         }
         onMouseDown={this.onMouseDownHandler}

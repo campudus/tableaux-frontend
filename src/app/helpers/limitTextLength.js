@@ -1,8 +1,4 @@
 import f from "lodash/fp";
-// export function getTextLimits(column) {
-//   const { minLength, maxLength } = column
-//   return { minLength, maxLength }
-// }
 
 export function columnHasMinLength(column) {
   const { minLength } = column;
