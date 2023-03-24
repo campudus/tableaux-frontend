@@ -2,7 +2,6 @@ import classNames from "classnames";
 import "codemirror/mode/markdown/markdown";
 import PropTypes from "prop-types";
 import React from "react";
-// import { Controlled as CodeMirror } from "react-codemirror2";
 import CodeMirror from "react-codemirror";
 import ReactMarkdown from "react-markdown";
 import { StyleIcon } from "./StyleControls";
