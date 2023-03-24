@@ -30,10 +30,13 @@ $block-margin-narrow: 5px;
 }
 
 .CodeMirror-scroll {
-overflow: auto; min-height: 50px;
-height: auto; overflow-y: scroll;
-max-height: 100%; background-color: white;
-margin-right: auto;
+  overflow: auto;
+  min-height: 50px;
+  height: auto;
+  overflow-y: scroll;
+  max-height: 100%;
+  background-color: white;
+  margin-right: auto;
 }
 
 .text-editor-overlay .markdown-editor {

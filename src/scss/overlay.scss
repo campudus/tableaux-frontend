@@ -302,20 +302,20 @@ $dist-from-top: 20px;
         box-sizing: border-box;
         border-color: transparent;
 
-  .length-limits {
-    display: flex;
-    flex-direction: row;
-    padding: 20px 0px 20px 0px;
-    color: $color-text-medium-grey;
-  }
+        .length-limits {
+          display: flex;
+          flex-direction: row;
+          padding: 20px 0px 20px 0px;
+          color: $color-text-medium-grey;
+        }
 
-  .min-length {
-    flex: 1;
-  }
-  .max-length {
-    flex: 1;
-    text-align:right;
-  }
+        .min-length {
+          flex: 1;
+        }
+        .max-length {
+          flex: 1;
+          text-align:right;
+        }
 
         .textarea_wrapper {
           position: relative;
