@@ -142,7 +142,7 @@ class GenericOverlay extends Component {
     });
     const wrapperClass = classNames(
       `overlay-wrapper ${overlayType} ${this.props.classes ||
-      ""} ${specialClass || ""}`,
+        ""} ${specialClass || ""}`,
       {
         "is-new": this.state.overlayIsNew,
         "is-right": this.props.preferRight,

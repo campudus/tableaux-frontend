@@ -65,7 +65,9 @@ const TextEditOverlay = props => {
           />
         </div>
         <div className="length-limits">
-          <div className={`min-length ${textTooShortErrorCssClass}`}>{minLengthText} </div>
+          <div className={`min-length ${textTooShortErrorCssClass}`}>
+            {minLengthText}{" "}
+          </div>
           <div className="max-length">{maxLengthText} </div>
         </div>
       </div>

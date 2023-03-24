@@ -66,7 +66,7 @@ const enhance = compose(
       const captureEventAnd = fn => event => {
         event.stopPropagation();
         event.preventDefault();
-        (fn || function() { })(event);
+        (fn || function() {})(event);
       };
 
       return {
@@ -100,7 +100,9 @@ const ShortTextView = ({
     ? `${getTextLength(value)}/${maxLength}`
     : "";
   const textTooShort = isTextTooShort(column, value);
-  const textTooShortErrorCssClass = textTooShort ? "selectable-shorttext_error" : "";
+  const textTooShortErrorCssClass = textTooShort
+    ? "selectable-shorttext_error"
+    : "";
 
   const onChange = evt => {
     const newValue = evt.target.value;
@@ -114,8 +116,8 @@ const ShortTextView = ({
     if (isTextTooShort(column, value)) {
       return;
     }
-    saveChanges()
-  }
+    saveChanges();
+  };
   return (
     <div className="item-content shorttext" tabIndex={1}>
       <input
@@ -131,7 +133,9 @@ const ShortTextView = ({
         onBlur={onBlur}
       />
       <div className="length-limits">
-        <div className={`min-length ${textTooShortErrorCssClass}`}>{minLengthText} </div>
+        <div className={`min-length ${textTooShortErrorCssClass}`}>
+          {minLengthText}{" "}
+        </div>
         <div className="max-length">{maxLengthText} </div>
       </div>
       {children}

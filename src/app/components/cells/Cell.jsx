@@ -261,8 +261,8 @@ class Cell extends React.Component {
         onKeyDown={
           selected
             ? KeyboardShortcutsHelper.onKeyboardShortcut(
-              this.getKeyboardShortcuts
-            )
+                this.getKeyboardShortcuts
+              )
             : f.noop
         }
         onMouseDown={this.onMouseDownHandler}
