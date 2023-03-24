@@ -62,7 +62,7 @@ const SelectableShortText = props => {
     setCellKeyboardShortcuts,
     value,
     column,
-    actions: { setPreventCellSelection }
+    actions: { setPreventCellDeselection }
   } = props;
   const shorttextRef = useRef(null);
   const [completions, setCompletions] = useState([]);
@@ -88,9 +88,9 @@ const SelectableShortText = props => {
     );
     if (inputValue.length > column.maxLength) return;
     if (isTextTooShort(column, inputValue)) {
-      setPreventCellSelection({ value: true });
+      setPreventCellDeselection({ value: true });
     } else {
-      setPreventCellSelection({ value: false });
+      setPreventCellDeselection({ value: false });
     }
     onChange(inputValue);
     setCompletions(completionsForValue);
@@ -114,15 +114,15 @@ const SelectableShortText = props => {
     const completionValue = f.get(selectedIdx, completions);
     if (isTextTooShort(column, completionValue)) {
       onChange(completionValue);
-      setPreventCellSelection({ value: true });
+      setPreventCellDeselection({ value: true });
       return;
     }
     if (isTextTooLong(column, completionValue)) {
       onChange(f.take(column.maxLength, completionValue));
-      setPreventCellSelection({ value: false });
+      setPreventCellDeselection({ value: false });
       return;
     }
-    setPreventCellSelection({ value: false });
+    setPreventCellDeselection({ value: false });
     onFinish(true, completionValue);
   };
   const handleMouseSelection = idx => {
