@@ -66,7 +66,7 @@ const enhance = compose(
       const captureEventAnd = fn => event => {
         event.stopPropagation();
         event.preventDefault();
-        (fn || function() { })(event);
+        (fn || function() {})(event);
       };
 
       return {
@@ -90,9 +90,7 @@ const ShortTextView = ({
   children,
   getKeyboardShortcuts,
   saveChanges,
-  cell: {
-    column
-  }
+  cell: { column }
 }) => {
   const { minLength, maxLength } = column;
   const minLengthText = columnHasMinLength(column)
@@ -102,37 +100,36 @@ const ShortTextView = ({
     ? `${getTextLength(value)}/${maxLength}`
     : "";
   const textTooShort = isTextTooShort(column, value);
-  const errorCssClass =
-    textTooShort ? "selectable-shorttext_error" : "";
+  const errorCssClass = textTooShort ? "selectable-shorttext_error" : "";
 
   const onChange = evt => {
-    const newValue = evt.target.value
+    const newValue = evt.target.value;
     if (isTextTooLong(column, newValue)) {
-      return
+      return;
     }
-    handleChange(evt)
-  }
-  return (<div className="item-content shorttext" tabIndex={1}>
-    <input
-      type="text"
-      ref={registerInput}
-      disabled={thisUserCantEdit}
-      value={value || ""}
-      placeholder={i18n.t("table:empty.text")}
-      onChange={onChange}
-      onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
-        getKeyboardShortcuts
-      )}
-      onBlur={saveChanges}
-    />
-    <div className="length-limits">
-      <div className={`min-length ${errorCssClass}`}>
-        {minLengthText}{" "}
+    handleChange(evt);
+  };
+  return (
+    <div className="item-content shorttext" tabIndex={1}>
+      <input
+        type="text"
+        ref={registerInput}
+        disabled={thisUserCantEdit}
+        value={value || ""}
+        placeholder={i18n.t("table:empty.text")}
+        onChange={onChange}
+        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
+          getKeyboardShortcuts
+        )}
+        onBlur={saveChanges}
+      />
+      <div className="length-limits">
+        <div className={`min-length ${errorCssClass}`}>{minLengthText} </div>
+        <div className="max-length">{maxLengthText} </div>
       </div>
-      <div className="max-length">{maxLengthText} </div>
+      {children}
     </div>
-    {children}
-  </div>)
+  );
 };
 
 export default enhance(ShortTextView);
