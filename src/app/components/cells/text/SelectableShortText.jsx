@@ -86,7 +86,7 @@ const SelectableShortText = props => {
       inputValue,
       requestedData
     );
-    if (inputValue.length > column.maxLength) return;
+    if (isTextTooLong(column, inputValue)) return;
     if (isTextTooShort(column, inputValue)) {
       setPreventCellDeselection({ value: true });
     } else {
