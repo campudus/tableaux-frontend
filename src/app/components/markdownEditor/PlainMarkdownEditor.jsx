@@ -85,11 +85,7 @@ const PlainMarkdownEditor = (
       return;
     }
     setMarkdown(newValue);
-    if (isTextTooShort(newValue)) {
-      onChange(initialMarkdown);
-    } else {
-      onChange(newValue);
-    }
+    onChange(newValue);
   };
 
   const previewSelectorControls = [
@@ -124,7 +120,7 @@ const PlainMarkdownEditor = (
 
   const textTooShort = isTextTooShort(column, markdown);
   const shouldCatchOutsideClick = textTooShort;
-  const errorCssClass =
+  const textTooShortErrorCssClass =
     clickedOutside && textTooShort ? "markdown-editor_error" : "";
 
   return (
@@ -140,7 +136,7 @@ const PlainMarkdownEditor = (
         {shouldCatchOutsideClick && (
           <div className="catchOutsideClick" onClick={onOutsideClick} />
         )}
-        <div className={`cm-wrapper ${errorCssClass}`}>
+        <div className={`cm-wrapper ${textTooShortErrorCssClass}`}>
           <CodeMirror
             ref={editorRef}
             value={markdown}
@@ -149,7 +145,7 @@ const PlainMarkdownEditor = (
             autoFocus={true}
           />
           <div className="length-limits">
-            <div className={`min-length ${errorCssClass}`}>
+            <div className={`min-length ${textTooShortErrorCssClass}`}>
               {minLengthText}{" "}
             </div>
             <div className="max-length">{maxLengthText} </div>
