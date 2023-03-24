@@ -17,14 +17,6 @@ export function isTextTooShort(column, text) {
   return textLength !== 0 && textLength < column.minLength;
 }
 
-export function getTextWithoutWhiteSpace(text) {
-  return text.replace(/\s+/g, "");
-}
-
-export function getTextLengthWithoutWhiteSpace(text) {
-  return getTextLength(getTextWithoutWhiteSpace(text));
-}
-
 export function getTextLength(text) {
   return f.size(text);
 }
