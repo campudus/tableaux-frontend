@@ -398,10 +398,10 @@ const showToast = data => {
   return f.isEmpty(data)
     ? { type: "NOTHING_TO_DO" }
     : {
-      type: SHOW_TOAST,
-      content: data.content,
-      duration: data.duration || 2700
-    };
+        type: SHOW_TOAST,
+        content: data.content,
+        duration: data.duration || 2700
+      };
 };
 
 const hideToast = () => ({ type: HIDE_TOAST });
@@ -444,11 +444,11 @@ const closeOverlay = name => (dispatch, getState) => {
   const fullSizeOverlays = overlays.filter(f.propEq("type", "full-height"));
   return fullSizeOverlays.length > 1 && overlayToClose.type === "full-height"
     ? dispatch(
-      closeOverlayWithAnimation({
-        overlayId: overlayToClose.id,
-        closingAnimationDuration
-      })
-    )
+        closeOverlayWithAnimation({
+          overlayId: overlayToClose.id,
+          closingAnimationDuration
+        })
+      )
     : dispatch(closeOverlayImmediately(overlayToClose.id));
 };
 

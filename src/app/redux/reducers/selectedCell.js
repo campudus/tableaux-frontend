@@ -51,10 +51,10 @@ const toggleCellEditing = (state, action, completeState) => {
     return shouldStayClosed
       ? state
       : f.update(
-        "editing",
-        wasEditing => action.editing !== false && !wasEditing,
-        state
-      );
+          "editing",
+          wasEditing => action.editing !== false && !wasEditing,
+          state
+        );
   }
 };
 
@@ -68,7 +68,7 @@ const toggleSelectedCell = (state, action) => {
         (prevSelection.rowId !== action.rowId ||
           prevSelection.columnId !== action.columnId ||
           prevSelection.langtag !== action.langtag)) ||
-        prevSelection.align !== action.align
+      prevSelection.align !== action.align
         ? f.pick(["rowId", "columnId", "langtag", "align"], action)
         : {}
     )
