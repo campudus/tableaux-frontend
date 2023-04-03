@@ -143,6 +143,7 @@ const SelectableShortText = props => {
         event.stopPropagation();
         return updateSelectionIdx(+1);
       case "Escape":
+        setPreventCellDeselection({ value: false });
         onFinish(false);
         return focusTable();
       case "Enter":
