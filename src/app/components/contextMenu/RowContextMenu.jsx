@@ -36,6 +36,7 @@ import {
 import ContextMenuServices from "../frontendService/ContextMenuEntries";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
+import { isTextInRange } from "../../helpers/limitTextLength";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -133,26 +134,29 @@ class RowContextMenu extends React.Component {
     return table.type !== "settings" &&
       !f.contains(cell.kind, [ColumnKinds.concat, ColumnKinds.status])
       ? this.mkItem(
-          () => actions.copyCellValue({ cell, langtag }),
-          "copy_cell",
-          "files-o"
-        )
+        () => actions.copyCellValue({ cell, langtag }),
+        "copy_cell",
+        "files-o"
+      )
       : null;
   };
 
   pasteItem = () => {
     const { cell, table, copySource, langtag } = this.props;
+    const isCopySourceMultiLanguage = f.get(["cell", "column", "multilanguage"], copySource)
+    const copySourceValue = isCopySourceMultiLanguage ? f.get(["cell", "value", langtag], copySource) : f.get(["cell", "value"], copySource)
     return table.type !== "settings" &&
       copySource &&
       !f.isEmpty(copySource) &&
       canConvert(copySource.cell.kind, cell.kind) &&
-      !f.eq(cell.id, copySource.cell.id)
+      !f.eq(cell.id, copySource.cell.id) &&
+      isTextInRange(cell.column, copySourceValue)
       ? this.mkItem(
-          () =>
-            pasteCellValue(copySource.cell, copySource.langtag, cell, langtag),
-          "paste_cell",
-          "clipboard"
-        )
+        () =>
+          pasteCellValue(copySource.cell, copySource.langtag, cell, langtag),
+        "paste_cell",
+        "clipboard"
+      )
       : null;
   };
 
@@ -251,11 +255,11 @@ class RowContextMenu extends React.Component {
     const existingAnnotation = f.get(["annotations", flag], cell);
     const toggleFn = existingAnnotation
       ? () =>
-          deleteCellAnnotation(
-            { type: "flag", value: flag, uuid: existingAnnotation },
-            cell,
-            "do-it!"
-          )
+        deleteCellAnnotation(
+          { type: "flag", value: flag, uuid: existingAnnotation },
+          cell,
+          "do-it!"
+        )
       : () => setCellAnnotation({ type: "flag", value: flag }, cell);
     return this.mkItem(
       toggleFn,
@@ -348,27 +352,27 @@ class RowContextMenu extends React.Component {
           {this.pasteItem()}
           {canUserEditCellAnnotations(cell)
             ? this.mkItem(
-                () => this.props.openAnnotations(cell),
-                "add-comment",
-                "commenting"
-              )
+              () => this.props.openAnnotations(cell),
+              "add-comment",
+              "commenting"
+            )
             : null}
           {f.any(
             f.complement(f.isEmpty),
             f.props(["info", "error", "warning"], cell.annotations)
           )
             ? this.mkItem(
-                () => this.props.openAnnotations(cell),
-                "show-comments",
-                "commenting-o"
-              )
+              () => this.props.openAnnotations(cell),
+              "show-comments",
+              "commenting-o"
+            )
             : null}
           {config.enableHistory &&
-          !f.contains(this.props.cell.kind, [
-            ColumnKinds.group,
-            ColumnKinds.concat,
-            ColumnKinds.status
-          ])
+            !f.contains(this.props.cell.kind, [
+              ColumnKinds.group,
+              ColumnKinds.concat,
+              ColumnKinds.status
+            ])
             ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
             : null}
           {this.requestTranslationsItem()}
@@ -385,8 +389,8 @@ class RowContextMenu extends React.Component {
             ? ""
             : this.mkItem(duplicateRow, "duplicate_row", "clone")}
           {this.props.table.type === "settings" ||
-          !canUserDeleteRow({ table }) ||
-          final
+            !canUserDeleteRow({ table }) ||
+            final
             ? ""
             : this.mkItem(deleteRow, "delete_row", "trash-o")}
           {this.mkItem(showDependency, "show_dependency", "code-fork")}

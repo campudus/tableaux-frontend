@@ -27,3 +27,7 @@ export function isTextTooLong(column, text) {
   }
   return getTextLength(text) > column.maxLength;
 }
+
+export function isTextInRange(column, text) {
+  return !isTextTooLong(column, text) && !isTextTooShort(column, text)
+}
