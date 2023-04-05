@@ -29,5 +29,5 @@ export function isTextTooLong(column, text) {
 }
 
 export function isTextInRange(column, text) {
-  return !isTextTooLong(column, text) && !isTextTooShort(column, text)
+  return !isTextTooLong(column, text) && !isTextTooShort(column, text);
 }
