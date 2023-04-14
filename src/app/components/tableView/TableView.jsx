@@ -320,6 +320,7 @@ class TableView extends PureComponent {
                 pasteOriginCell={pasteOriginCell}
                 pasteOriginCellLang={pasteOriginCellLang}
                 tableId={table.id}
+                actions={actions}
               />
             </>
           )}
