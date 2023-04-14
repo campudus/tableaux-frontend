@@ -303,8 +303,8 @@ const pasteCellValue = function(
     );
     return dst.column.multilanguage
       ? (src.column.multilanguage && !f.isEmpty(translatableLangtags)) ||
-      (!src.column.multilanguage &&
-        f.contains(dstLang, translatableLangtags))
+          (!src.column.multilanguage &&
+            f.contains(dstLang, translatableLangtags))
       : false;
   };
 
