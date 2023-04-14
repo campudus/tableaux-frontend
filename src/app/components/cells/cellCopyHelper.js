@@ -308,13 +308,17 @@ const pasteCellValue = function(
       : false;
   };
 
-  const columnKindsWithPossibleLengthConstraints = [ColumnKinds.text, ColumnKinds.shorttext, ColumnKinds.richtext]
+  const columnKindsWithPossibleLengthConstraints = [
+    ColumnKinds.text,
+    ColumnKinds.shorttext,
+    ColumnKinds.richtext
+  ];
   // Check possible text limits of destination cell
   if (columnKindsWithPossibleLengthConstraints.includes(dst.kind)) {
-    const srcValue = src.column.multilanguage ? src.value[langtag] : src.value
+    const srcValue = src.column.multilanguage ? src.value[srcLang] : src.value;
     if (!isTextInRange(dst.column, srcValue)) {
       showErrorToast("table:copy_kind_error");
-      return
+      return;
     }
   }
 
