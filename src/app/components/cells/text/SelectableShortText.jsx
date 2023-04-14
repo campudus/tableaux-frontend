@@ -17,6 +17,7 @@ import {
   isTextTooLong,
   isTextTooShort
 } from "../../../helpers/limitTextLength";
+import useOutsideAlerter from "../../helperComponents/useOutsideAlerter";
 
 const LIST_HEIGHT = 200;
 
@@ -38,20 +39,6 @@ const enhance = compose(
   getCompletionValueUrl,
   needsAPIData
 );
-
-function useOutsideAlerter(callback, ref) {
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
-        callback();
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref]);
-}
 
 const SelectableShortText = props => {
   const {
