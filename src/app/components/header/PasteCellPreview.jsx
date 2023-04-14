@@ -75,6 +75,10 @@ const CellPreview = props => {
       <div className={`cell cell-${cell.kind}`}>
         <CellType
           cell={cell}
+          column={cell.column}
+          row={cell.row}
+          table={cell.table}
+          actions={props.actions}
           langtag={langtag}
           selected={false}
           editing={false}
