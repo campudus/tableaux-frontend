@@ -21,6 +21,7 @@ import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import route from "../../helpers/apiRoutes";
 import store from "../../redux/store";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { isTextInRange } from "../../helpers/limitTextLength";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -302,10 +303,20 @@ const pasteCellValue = function(
     );
     return dst.column.multilanguage
       ? (src.column.multilanguage && !f.isEmpty(translatableLangtags)) ||
-          (!src.column.multilanguage &&
-            f.contains(dstLang, translatableLangtags))
+      (!src.column.multilanguage &&
+        f.contains(dstLang, translatableLangtags))
       : false;
   };
+
+  const columnKindsWithPossibleLengthConstraints = [ColumnKinds.text, ColumnKinds.shorttext, ColumnKinds.richtext]
+  // Check possible text limits of destination cell
+  if (columnKindsWithPossibleLengthConstraints.includes(dst.kind)) {
+    const srcValue = src.column.multilanguage ? src.value[langtag] : src.value
+    if (!isTextInRange(dst.column, srcValue)) {
+      showErrorToast("table:copy_kind_error");
+      return
+    }
+  }
 
   if (!canUserChangeCell(dst, dstLang)) {
     dst.column.multilanguage &&
