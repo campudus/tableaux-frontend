@@ -637,8 +637,8 @@ const createAndLoadRow = async (dispatch, tableId, { columns, rows } = {}) => {
   const responseRows = Array.isArray(response)
     ? response
     : Array.isArray(response.rows)
-    ? response.rows
-    : [];
+      ? response.rows
+      : [response];
   dispatch(addRows(tableId, responseRows));
   return responseRows;
 };
@@ -650,7 +650,7 @@ export const addEmptyRowAndOpenEntityView = (
   onSuccess
 ) => async dispatch => {
   await dispatch(loadColumns(tableId));
-  const freshRow = await createAndLoadRow(dispatch, tableId);
+  const [freshRow] = await createAndLoadRow(dispatch, tableId);
 
   dispatch(
     changeCellValue({
