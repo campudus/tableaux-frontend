@@ -637,8 +637,8 @@ const createAndLoadRow = async (dispatch, tableId, { columns, rows } = {}) => {
   const responseRows = Array.isArray(response)
     ? response
     : Array.isArray(response.rows)
-      ? response.rows
-      : [response];
+    ? response.rows
+    : [response];
   dispatch(addRows(tableId, responseRows));
   return responseRows;
 };
