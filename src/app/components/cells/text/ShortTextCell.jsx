@@ -25,7 +25,7 @@ const ShortTextCell = props => {
   const originalValue = isMultiLang ? value[langtag] : value;
 
   const [editorValue, setEditorValue] = useState(originalValue || "");
-  const saveEdits = () => handleEditDone(editorValue);
+  const saveEdits = () => handleEditDone(editorValue?.trim());
   const handleFinish = (shouldSave = true, finalValue = undefined) => {
     if (shouldSave) {
       handleEditDone(finalValue || editorValue);
@@ -37,7 +37,10 @@ const ShortTextCell = props => {
   };
 
   useEffect(() => {
-    if (!editing) {
+    const setNewValue = !originalValue && Boolean(editorValue);
+    const changedExistingValue =
+      editorValue !== originalValue && Boolean(originalValue);
+    if (!editing && (setNewValue || changedExistingValue)) {
       saveEdits();
     }
   }, [editing]);
