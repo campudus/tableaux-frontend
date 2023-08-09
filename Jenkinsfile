@@ -2,7 +2,6 @@ DEPLOY_DIR = 'build/deploy'
 TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
 IMAGE_NAME = "campudus/grud-frontend"
-LEGACY_ARCHIVE_FILENAME="grud-frontend-docker.tar.gz"
 ARCHIVE_FILENAME_DIST="grud-frontend-dist.tar.gz"
 DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
 
@@ -36,7 +35,12 @@ pipeline {
     GIT_HASH = sh (returnStdout: true, script: 'git log -1 --pretty=%h').trim()
     BUILD_DATE = sh(returnStdout: true, script: 'date \"+%Y-%m-%d %H:%M:%S\"').trim()
     GIT_COMMIT_DATE = sh(returnStdout: true, script: "git show -s --format=%ci").trim()
+    BRANCH_NAME = params.BRANCH.tokenize('/').last()
   }
+
+	parameters {
+		gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
+	}
 
   stages {
     stage('Init Build') {
@@ -84,16 +88,15 @@ pipeline {
           --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
           --label "BUILD_DATE=${BUILD_DATE}" \
           -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} \
+          -t ${IMAGE_NAME}:${env.BRANCH_NAME} \
           -t ${IMAGE_NAME}:latest \
           -f Dockerfile --rm .
         """
-        sh "docker save ${IMAGE_NAME}:latest | gzip -c > ${DEPLOY_DIR}/${LEGACY_ARCHIVE_FILENAME}"
       }
     }
 
     stage('Artifacts') {
       steps {
-        archiveArtifacts artifacts: "${DEPLOY_DIR}/${LEGACY_ARCHIVE_FILENAME}", fingerprint: true
         archiveArtifacts artifacts: "${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST}", fingerprint: true
       }
     }
@@ -102,7 +105,12 @@ pipeline {
       steps {
         withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
           sh "docker push ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH}"
-          sh "docker push ${IMAGE_NAME}:latest"
+          sh "docker push ${IMAGE_NAME}:${env.BRANCH_NAME}"
+          script {
+            if (env.BRANCH_NAME == "master") {
+                sh "docker push ${IMAGE_NAME}:latest"
+            }
+          }
         }
       }
     }
