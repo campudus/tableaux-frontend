@@ -53,7 +53,13 @@ const SearchFunctions = {
       ]);
       return isEmptyValue(value);
     }),
-    column => ![ColumnKinds.group, ColumnKinds.status].includes(column.kind)
+    column =>
+      ![
+        ColumnKinds.group,
+        ColumnKinds.status,
+        ColumnKinds.currency,
+        ColumnKinds.boolean
+      ].includes(column.kind)
   )
 };
 
