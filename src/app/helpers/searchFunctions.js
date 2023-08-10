@@ -40,10 +40,13 @@ const SearchFunctions = {
         [f.isNumber, f.isNaN],
         [Array.isArray, f.isEmpty],
         [f.isPlainObject, f.isEmpty],
-        [f.stubTrue, x => !Boolean(x)]
+        [f.isString, f.isEmpty],
+        [f.isBoolean, f.isNil],
+        [f.stubTrue, f.isNil]
       ]);
       return isEmptyValue(value);
-    })
+    }),
+    column => ![ColumnKinds.group, ColumnKinds.status].includes(column.kind)
   )
 };
 
@@ -60,11 +63,7 @@ export const StatusSearchFunction = TaggedFunction(
   column => column.kind === ColumnKinds.status
 );
 
-export const SEARCH_FUNCTION_IDS = [
-  FilterModes.CONTAINS,
-  FilterModes.STARTS_WITH,
-  FilterModes.IS_EMPTY
-];
+export const SEARCH_FUNCTION_IDS = Object.keys(SearchFunctions);
 
 export const createTextFilter = (mode, value) => {
   switch (true) {

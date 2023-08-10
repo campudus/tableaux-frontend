@@ -6,6 +6,11 @@ import {
   SortValues
 } from "../../constants/TableauxConstants";
 import { doto, either, withTryCatch } from "../../helpers/functools";
+import {
+  getCountryOfLangtag,
+  getLanguageOfLangtag,
+  retrieveTranslation
+} from "../../helpers/multiLanguage";
 import searchFunctions, {
   StatusSearchFunction
 } from "../../helpers/searchFunctions";
@@ -169,6 +174,7 @@ const mkFilterFn = closures => settings => {
       ({ mode }) => f.contains(mode, FlagSearches),
       ({ mode, value }) => mkFlagFilter(closures, mode, value)
     ],
+    [f.propEq("mode", FilterModes.IS_EMPTY), mkEmptyValueFilter(closures)],
     [
       f.matchesProperty("columnKind", ColumnKinds.boolean),
       mkBoolFilter(closures)
@@ -297,6 +303,21 @@ const mkFlagFilter = (closures, mode, value) => {
   );
 };
 
+const mkEmptyValueFilter = closures => settings => {
+  const { columnId, colId } = settings;
+  const { getColumnIndex, getPlainCellValue } = closures;
+  const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
+  const columnIdx = getColumnIndex(id);
+
+  return row =>
+    doto(
+      row,
+      f.prop(`values.${columnIdx}`),
+      getPlainCellValue,
+      searchFunctions[FilterModes.IS_EMPTY](null)
+    );
+};
+
 const mkColumnValueFilter = closures => ({
   value,
   mode,
@@ -309,25 +330,17 @@ const mkColumnValueFilter = closures => ({
   const toFilterValue = closures.cleanString(
     mode === FilterModes.STATUS ? compareValue : value
   );
-  const { getSortableCellValue, getPlainCellValue } = closures;
+  const { getSortableCellValue } = closures;
 
   if (f.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
     return f.stubTrue;
   }
-
   const searchFunction = searchFunctions[mode];
-
   const isStatusFilter = () => mode === FilterModes.STATUS;
-  const isEmptyFilter = () => mode === FilterModes.IS_EMPTY;
-
-  const searchPlainValue = cell =>
-    searchFunction(null, getPlainCellValue(cell));
   const searchFilterableValue = cell =>
     searchFunction(toFilterValue, getSortableCellValue(cell));
   const searchStatus = cell =>
     StatusSearchFunction(toFilterValue, value, getSortableCellValue(cell));
-
-  console.log({ searchFunction });
 
   return row => {
     const firstCell = f.get(["values", 0], row);
@@ -345,7 +358,6 @@ const mkColumnValueFilter = closures => ({
       f.contains(targetCell.kind, FilterableCellKinds);
 
     return f.cond([
-      [f.allPass([isEmptyFilter, canSearchTargetCell]), searchPlainValue],
       [canSearchTargetCell, searchFilterableValue],
       [isStatusFilter, searchStatus],
       [
@@ -377,8 +389,19 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     f.join("::")
   );
 
-  const getPlainValue = cell =>
-    cell.isMultiLanguage ? cell.value[langtag] : cell.value;
+  const language = getLanguageOfLangtag(langtag);
+  const country = getCountryOfLangtag(langtag);
+
+  const findNonNilLanguage = f.flow(
+    f.props([langtag, language, country]),
+    f.find(f.complement(f.isNil))
+  );
+
+  const getPlainValue = cell => {
+    return cell.isMultiLanguage || f.isPlainObject(cell.value)
+      ? findNonNilLanguage(cell.value)
+      : cell.value;
+  };
   const getStatusValue = cell => cell.displayValue;
 
   const getSortableCellValue = cell => {
