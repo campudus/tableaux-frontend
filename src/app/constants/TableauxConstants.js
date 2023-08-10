@@ -104,19 +104,20 @@ const grudConstants = {
   }),
 
   FilterModes: keyMirror({
-    CONTAINS: null,
-    STARTS_WITH: null,
-    ID_ONLY: null,
-    UNTRANSLATED: null,
     ANY_UNTRANSLATED: null,
-    FINAL: null,
-    IMPORTANT: null,
     CHECK_ME: null,
+    CONTAINS: null,
+    FINAL: null,
+    ID_ONLY: null,
+    IS_EMPTY: null,
+    IMPORTANT: null,
     POSTPONE: null,
-    WITH_COMMENT: null,
     ROW_CONTAINS: null,
+    STARTS_WITH: null,
+    STATUS: null,
     TRANSLATOR_FILTER: null,
-    STATUS: null
+    UNTRANSLATED: null,
+    WITH_COMMENT: null
   }),
 
   StatusFilterMode: "STATUS",

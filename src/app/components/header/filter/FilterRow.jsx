@@ -1,15 +1,14 @@
-import { translate } from "react-i18next";
-import React, { useCallback, useRef } from "react";
-import Select from "react-select";
-import f from "lodash/fp";
 import i18n from "i18next";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
-import { BoolInput } from "./FilterFragments";
+import React, { useCallback, useRef } from "react";
+import { translate } from "react-i18next";
+import Select from "react-select";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import { BoolInput } from "./FilterFragments";
+import { FilterModes } from "../../../constants/TableauxConstants";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
@@ -26,7 +25,7 @@ const FilterRow = ({
   valueRenderer,
   t
 }) => {
-  const { columnId } = filter;
+  const columnId = parseInt(filter.columnId);
   const clearValue = () => {
     if (onChangeValue) onChangeValue({});
   };
@@ -59,14 +58,36 @@ const FilterRow = ({
     if (onRemoveFilter) onRemoveFilter();
     else clearFilter();
   };
-  const handleChangeFilterMode = mode => onChangeMode(mode.value);
+  const handleChangeFilterMode = mode => {
+    onChangeMode(mode.value);
+  };
 
-  const isFilterColumnSelected =
-    f.isInteger(parseInt(columnId)) ||
-    (f.isString(columnId) && !f.isEmpty(columnId));
+  const selectedColumn = searchableColumns.find(
+    option => parseInt(option.value) === columnId
+  );
+  const isFilterColumnSelected = !f.isNil(selectedColumn);
+  const handleChangeColumn = column => {
+    onChangeColumn(column);
+    if (!SearchFunctions[filter.mode].isValidColumn(column)) {
+      onChangeMode(Object.keys(SearchFunctions))[0];
+    }
+  };
+
+  console.log({
+    columnId,
+    searchableColumns,
+    selectedColumn,
+    isFilterColumnSelected
+  });
+
   const filterModeOptions =
     SearchFunctions
     |> f.keys
+    |> f.filter(
+      key =>
+        !isFilterColumnSelected ||
+        SearchFunctions[key].isValidColumn(selectedColumn)
+    )
     |> f.map(key => ({
       value: key,
       label: i18n.t(SearchFunctions[key].displayName)
@@ -88,7 +109,7 @@ const FilterRow = ({
         clearable={false}
         openOnFocus
         value={columnId}
-        onChange={onChangeColumn}
+        onChange={handleChangeColumn}
         placeholder={t("filter:input.filter")}
         valueRenderer={valueRenderer}
         noResultsText={t("input.noResult")}
@@ -96,7 +117,7 @@ const FilterRow = ({
       {filter.columnKind !== BOOL &&
         !f.isNil(filter.columnId) &&
         Number(filter.columnId) >= 0 &&
-        filter.mode !== "STATUS" && (
+        filter.mode !== FilterModes.STATUS && (
           <Select
             className="filter-row__mode-select col-three"
             searchable={false}
@@ -108,8 +129,10 @@ const FilterRow = ({
           />
         )}
 
-      {filter.columnKind === BOOL || filter.mode === "STATUS" ? (
+      {filter.columnKind === BOOL || filter.mode === FilterModes.STATUS ? (
         <BoolInput value={filter.value} onChangeValue={onChangeValue} />
+      ) : filter.mode === FilterModes.IS_EMPTY ? (
+        <div />
       ) : (
         <span className="filter-mode-wrapper col-four">
           <input

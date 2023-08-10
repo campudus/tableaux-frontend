@@ -216,6 +216,7 @@ class FilterPopup extends React.Component {
         const columnDisplayName = getColumnDisplayName(column, langtag);
 
         return {
+          // ...column, // TODO: may be required if we need more specific predicates, but could break persisted filter state
           label: columnDisplayName,
           value: f.toString(column.id),
           kind: column.kind,
@@ -259,6 +260,7 @@ class FilterPopup extends React.Component {
   };
 
   changeFilterMode = idx => mode => {
+    console.log("set filter mode", { idx, mode });
     this.setState({
       filters: f.assoc([idx, "mode"], mode, this.state.filters)
     });
@@ -414,8 +416,9 @@ class FilterPopup extends React.Component {
       (filter.columnKind === TEXT &&
         f.isString(filter.value) &&
         !f.isEmpty(filter.value)) ||
-      ((filter.columnKind === BOOL || filter.mode === "STATUS") &&
-        f.isBoolean(filter.value));
+      ((filter.columnKind === BOOL || filter.mode === FilterModes.STATUS) &&
+        f.isBoolean(filter.value)) ||
+      filter.mode === FilterModes.IS_EMPTY;
     const anyFilterHasValue = f.flow(
       f.map(hasFilterValue),
       f.any(f.identity)
