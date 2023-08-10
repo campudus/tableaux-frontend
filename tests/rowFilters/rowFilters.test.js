@@ -50,7 +50,7 @@ describe("Sorting:", () => {
 });
 
 describe("empty filters", () => {
-  it.only.each`
+  it.each`
     colId | check
     ${1}  | ${"attachment"}
     ${2}  | ${"boolean"}
