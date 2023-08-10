@@ -49,31 +49,6 @@ describe("Sorting:", () => {
   )(testData);
 });
 
-/*
-    ${1}  | ${"attachment"}
-    ${2}  | ${"boolean"}
-    ${3}  | ${"date"}
-    ${4}  | ${"datetime"}
-    ${5}  | ${"integer"}
-    ${6}  | ${"link"}
-    ${7}  | ${"numeric"}
-    ${8}  | ${"richtext"}
-    ${9}  | ${"shorttext"}
-    ${10} | ${"text"}
-    ${11} | ${"multilang attachment"}
-    ${12} | ${"multilang boolean"}
-    ${13} | ${"multilang currency"}
-    ${14} | ${"multilang date"}
-    ${15} | ${"multilang datetime"}
-    ${16} | ${"multilang integer"}
-    ${17} | ${"multilang link"}
-    ${18} | ${"multilang numeric"}
-    ${19} | ${"multilang richtext"}
-    ${20} | ${"multilang shortext"}
-    ${21} | ${"multilang text"}
-
- */
-
 describe("empty filters", () => {
   it.only.each`
     colId | check
@@ -117,11 +92,6 @@ describe("empty filters", () => {
       "de-DE",
       filterSetting
     ).visibleRows;
-    // console.log({
-    //   colId,
-    //   filterSetting: filterSetting.filters,
-    //   filterResult
-    // });
     expect(filterResult.map(idx => sparseRows.rows[idx].id)).toEqual([colId]);
   });
 });
