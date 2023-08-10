@@ -1,12 +1,14 @@
 import f from "lodash/fp";
 import { ColumnKinds, FilterModes } from "../constants/TableauxConstants";
+import { FilterableCellKinds } from "../components/table/RowFilters";
 
-const TaggedFunction = (displayName, fn, isValidColumn = () => true) => {
+const TaggedFunction = (mode, displayName, fn, isValidColumn = () => true) => {
   const taggedFn = function(...args) {
     return fn(...args);
   };
-  (taggedFn.displayName = displayName),
-    (taggedFn.isValidColumn = isValidColumn);
+  taggedFn.mode = mode;
+  taggedFn.displayName = displayName;
+  taggedFn.isValidColumn = isValidColumn;
   return taggedFn;
 };
 
@@ -19,21 +21,26 @@ const clean = f.flow(
 
 const SearchFunctions = {
   [FilterModes.CONTAINS]: TaggedFunction(
+    FilterModes.CONTAINS,
     "table:filter.contains",
     f.curry((stringOfFilters, str) => {
       return f.every(
         f.contains(f, clean(str)),
         f.words(clean(stringOfFilters))
       );
-    })
+    }),
+    column => FilterableCellKinds.includes(column.kind)
   ),
   [FilterModes.STARTS_WITH]: TaggedFunction(
+    FilterModes.STARTS_WITH,
     "table:filter.starts_with",
     f.curry((searchVal, str) => {
       return f.startsWith(clean(searchVal), clean(str));
-    })
+    }),
+    column => FilterableCellKinds.includes(column.kind)
   ),
   [FilterModes.IS_EMPTY]: TaggedFunction(
+    FilterModes.IS_EMPTY,
     "table:filter.is_empty",
     f.curry((_, value) => {
       const isEmptyValue = f.cond([
@@ -51,6 +58,7 @@ const SearchFunctions = {
 };
 
 export const StatusSearchFunction = TaggedFunction(
+  FilterModes.STATUS,
   "Status",
   f.curry((stringOfFilters, shouldContain, str) => {
     const filterWords = f.words(clean(stringOfFilters));
@@ -64,6 +72,17 @@ export const StatusSearchFunction = TaggedFunction(
 );
 
 export const SEARCH_FUNCTION_IDS = Object.keys(SearchFunctions);
+
+const allFilters = [...Object.values(SearchFunctions), StatusSearchFunction];
+export const canColumnBeSearched = column =>
+  allFilters.some(filter => filter.isValidColumn(column));
+export const getFiltersForColumn = column =>
+  allFilters.filter(filter => filter.isValidColumn(column));
+export const getSearchFunction = mode =>
+  f.cond([
+    [f.eq(FilterModes.STATUS), () => StatusSearchFunction],
+    [f.contains(f.__, SEARCH_FUNCTION_IDS), () => SearchFunctions[mode]]
+  ])(mode);
 
 export const createTextFilter = (mode, value) => {
   switch (true) {
