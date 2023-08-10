@@ -17,8 +17,6 @@ const clean = f.flow(
   f.trim
 ); // normalise string
 
-// TODO: Filternamen in locale speichern, Schema: {filters: {[mode]: display name}}
-
 const SearchFunctions = {
   [FilterModes.CONTAINS]: TaggedFunction(
     "table:filter.contains",

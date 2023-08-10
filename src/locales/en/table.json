@@ -110,7 +110,8 @@
     "save-filter": "Save filter",
     "filters": "Filters",
     "sorting": "Sorting",
-    "enter-name": "Enter filter title..."
+    "enter-name": "Enter filter title...",
+    "is_empty": "Is empty"
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",
