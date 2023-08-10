@@ -92,6 +92,9 @@ describe("empty filters", () => {
       "de-DE",
       filterSetting
     ).visibleRows;
+    // The test data consists of a table with 21 columns and 21 rows. All cells
+    // are filled, except the diagonal (rowId = i, columnId = i); diagonal cells
+    // are set to empty so we can easily test all valid column types.
     expect(filterResult.map(idx => sparseRows.rows[idx].id)).toEqual([colId]);
   });
 });
