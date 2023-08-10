@@ -260,7 +260,6 @@ class FilterPopup extends React.Component {
   };
 
   changeFilterMode = idx => mode => {
-    console.log("set filter mode", { idx, mode });
     this.setState({
       filters: f.assoc([idx, "mode"], mode, this.state.filters)
     });
