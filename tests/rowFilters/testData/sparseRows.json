@@ -938,7 +938,7 @@
         {
           "kind": "currency",
           "value": {
-            "DE": null
+            "DE": 0
           }
         },
         {
@@ -1126,7 +1126,7 @@
         {
           "kind": "date",
           "value": {
-            "de-DE": null
+            "de-DE": "2023-08-07"
           }
         },
         {
@@ -1314,7 +1314,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -1496,7 +1496,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -1678,7 +1678,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -1855,7 +1855,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -2032,7 +2032,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -2209,7 +2209,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -2386,7 +2386,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -2563,7 +2563,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -2713,7 +2713,7 @@
         {
           "kind": "datetime",
           "value": {
-            "de-DE": null
+            "de-DE": "2022-12-12T00:00:00.000Z"
           }
         },
         {
@@ -2862,6 +2862,453 @@
         {
           "kind": "datetime",
           "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [
+            {
+              "id": 12,
+              "value": ["Darmstadt", "Darmstadt"]
+            }
+          ]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 12,
+      "id": 13,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": null
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [
+            {
+              "id": 12,
+              "value": ["Darmstadt", "Darmstadt"]
+            }
+          ]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 13,
+      "id": 14,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": null
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [
+            {
+              "id": 12,
+              "value": ["Darmstadt", "Darmstadt"]
+            }
+          ]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 14,
+      "id": 15,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
             "de-DE": null
           }
         },
@@ -2902,6 +3349,875 @@
           "kind": "text",
           "value": {
             "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 15,
+      "id": 16,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": null
+          }
+        },
+        {
+          "kind": "link",
+          "value": [
+            {
+              "id": 12,
+              "value": ["Darmstadt", "Darmstadt"]
+            }
+          ]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 16,
+      "id": 17,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": []
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 17,
+      "id": 18,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [null]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": null
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 18,
+      "id": 19,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [null]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": null
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "0"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 19,
+      "id": 20,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [null]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": null
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": "0"
+          }
+        }
+      ]
+    },
+    {
+      "rowIndex": 20,
+      "id": 21,
+      "values": [
+        {
+          "kind": "concat",
+          "value": [
+            "foo",
+            {
+              "de-DE": "0"
+            }
+          ]
+        },
+        {
+          "kind": "attachment",
+          "value": [
+            {
+              "ordering": 1,
+              "url": {
+                "de-DE": "/files/8c4d992c-5b64-41d7-9955-114f909883f2/de-DE/foo.md"
+              },
+              "uuid": "8c4d992c-5b64-41d7-9955-114f909883f2",
+              "folder": null,
+              "folders": [],
+              "title": {
+                "de-DE": "foo.md"
+              },
+              "description": {
+                "de-DE": ""
+              },
+              "internalName": {
+                "de-DE": "2793ba1b-a4dc-46a0-8252-227374b2a70f.md"
+              },
+              "externalName": {
+                "de-DE": "foo.md"
+              },
+              "mimeType": {
+                "de-DE": "text/markdown"
+              },
+              "createdAt": "2023-08-07T10:41:11.843+02:00",
+              "updatedAt": "2023-08-07T10:41:11.911+02:00"
+            }
+          ]
+        },
+        {
+          "kind": "boolean",
+          "value": false
+        },
+        {
+          "kind": "date",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "datetime",
+          "value": "2023-08-07T08:41:28.043Z"
+        },
+        {
+          "kind": "integer",
+          "value": 0
+        },
+        {
+          "kind": "link",
+          "value": [{ "id": 1, "value": [] }]
+        },
+        {
+          "kind": "numeric",
+          "value": 0
+        },
+        {
+          "kind": "richtext",
+          "value": "foo"
+        },
+        {
+          "kind": "shorttext",
+          "value": "foo"
+        },
+        {
+          "kind": "text",
+          "value": "foo"
+        },
+        {
+          "kind": "attachment",
+          "value": [{}]
+        },
+        {
+          "kind": "boolean",
+          "value": {
+            "de-DE": false
+          }
+        },
+        {
+          "kind": "currency",
+          "value": {
+            "DE": 0
+          }
+        },
+        {
+          "kind": "date",
+          "value": {
+            "de-DE": "2023-08-07"
+          }
+        },
+        {
+          "kind": "datetime",
+          "value": {
+            "de-DE": "2022-12-12T00:00:00.000Z"
+          }
+        },
+        {
+          "kind": "integer",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "link",
+          "value": [null]
+        },
+        {
+          "kind": "numeric",
+          "value": {
+            "de-DE": 0
+          }
+        },
+        {
+          "kind": "richtext",
+          "value": {
+            "de-DE": "foo"
+          }
+        },
+        {
+          "kind": "shorttext",
+          "value": {
+            "de-DE": "text"
+          }
+        },
+        {
+          "kind": "text",
+          "value": {
+            "de-DE": ""
           }
         }
       ]
